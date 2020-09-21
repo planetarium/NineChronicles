@@ -202,15 +202,12 @@ namespace Nekoyume.BlockChain
                 Widget.Find<SystemPopup>().Show("UI_RESET_STORE", "UI_RESET_STORE_CONTENT");
             }
 
-            if (BlockPolicySource.ActivatedAccounts is null)
-            {
-                var rawState = blocks?.GetState(ActivatedAccountsState.Address);
-                BlockPolicySource.UpdateActivationSet(rawState);
-            }
-
             if (blocks?.GetState(AuthorizedMinersState.Address) is Dictionary asm)
             {
-                BlockPolicySource.AuthorizedMinersState = new AuthorizedMinersState(asm);
+                if (policy is BlockPolicy bp)
+                {
+                    bp.AuthorizedMinersState = new AuthorizedMinersState(asm);
+                }
             }
 
 #if BLOCK_LOG_USE
@@ -696,8 +693,7 @@ namespace Nekoyume.BlockChain
                             PreloadProcessed?.Invoke(this, state)
                         ),
                         trustedStateValidators: _trustedPeers,
-                        cancellationToken: _cancellationTokenSource.Token,
-                        blockDownloadFailed: PreloadBLockDownloadFailed
+                        cancellationToken: _cancellationTokenSource.Token
                     );
                 });
 
@@ -954,12 +950,6 @@ namespace Nekoyume.BlockChain
 
                 yield return new WaitForSeconds(.3f);
             }
-        }
-
-        private void PreloadBLockDownloadFailed(object sender, PreloadBlockDownloadFailEventArgs e)
-        {
-            SyncSucceed = false;
-            BlockDownloadFailed = true;
         }
 
         private string GetLoadingScreenMessage(PreloadState state)
