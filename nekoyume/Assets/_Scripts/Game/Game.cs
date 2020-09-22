@@ -339,6 +339,10 @@ namespace Nekoyume.Game
                 yield break;
             }
 
+            var settings = Widget.Find<UI.Settings>();
+            settings.UpdateSoundSettings();
+            settings.UpdatePrivateKey(_options.PrivateKey);
+
             var loginPopup = Widget.Find<LoginPopup>();
 
             if (Application.isBatchMode)
@@ -347,7 +351,6 @@ namespace Nekoyume.Game
             }
             else
             {
-                Widget.Find<UI.Settings>().UpdateSoundSettings();
                 var title = Widget.Find<Title>();
                 title.Show(_options.KeyStorePath, _options.PrivateKey);
                 yield return new WaitUntil(() => loginPopup.Login);
