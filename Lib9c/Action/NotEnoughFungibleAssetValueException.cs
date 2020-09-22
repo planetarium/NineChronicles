@@ -15,7 +15,7 @@ namespace Nekoyume.Action
 
         public NotEnoughFungibleAssetValueException(string require, string current)
             : this(
-                $"Aborted as the signer's balance ({current}) is insufficient to pay entrance fee/stake ({require}).")
+                $"Aborted as the signer's balance is insufficient to pay entrance fee/stake: {current} < {require}.")
         {
         }
 

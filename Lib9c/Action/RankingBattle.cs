@@ -77,8 +77,7 @@ namespace Nekoyume.Action
             }
 
             var weeklyArenaState = states.GetWeeklyArenaState(WeeklyArenaAddress);
-
-            //FIXME 오류던지게 고쳐야함
+            
             if (weeklyArenaState.Ended)
             {
                 throw new WeeklyArenaStateAlreadyEndedException();
