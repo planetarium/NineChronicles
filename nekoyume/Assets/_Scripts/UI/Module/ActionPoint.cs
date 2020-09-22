@@ -92,5 +92,10 @@ namespace Nekoyume.UI.Module
         {
             Widget.Find<VanilaTooltip>().Close();
         }
+
+        public void SetActionPoint(int actionPoint)
+        {
+            SetActionPoint(actionPoint, false);
+        }
     }
 }

@@ -493,6 +493,7 @@ namespace Nekoyume.Game
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             var avatarState = new AvatarState(
                 (Bencodex.Types.Dictionary) Game.instance.Agent.GetState(avatarAddress));
+            _battleResultModel.actionPoint = avatarState.actionPoint;
             _battleResultModel.State = log.result;
             Game.instance.TableSheets.WorldSheet.TryGetValue(log.worldId, out var world);
             _battleResultModel.WorldName = world?.GetLocalizedName();
