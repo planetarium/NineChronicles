@@ -192,8 +192,17 @@ namespace Nekoyume.UI
                     StartCoroutine(CoUpdateViewAsVictory());
                     break;
                 case BattleLog.Result.Lose:
-                case BattleLog.Result.TimeOver:
                     UpdateViewAsDefeat(SharedModel.State);
+                    break;
+                case BattleLog.Result.TimeOver:
+                    if (SharedModel.ClearedWaveNumber > 0)
+                    {
+                        StartCoroutine(CoUpdateViewAsVictory());
+                    }
+                    else
+                    {
+                        UpdateViewAsDefeat(SharedModel.State);
+                    }
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
