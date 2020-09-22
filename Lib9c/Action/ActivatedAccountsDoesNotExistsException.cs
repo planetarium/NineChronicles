@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.Serialization;
 
 namespace Nekoyume.Action
 {
@@ -6,6 +7,12 @@ namespace Nekoyume.Action
     public class ActivatedAccountsDoesNotExistsException : ActivationException
     {
         public ActivatedAccountsDoesNotExistsException()
+        {
+        }
+
+        public ActivatedAccountsDoesNotExistsException(
+            SerializationInfo info, StreamingContext context
+        ) : base(info, context)
         {
         }
     }
