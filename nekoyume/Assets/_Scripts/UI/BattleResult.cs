@@ -35,6 +35,7 @@ namespace Nekoyume.UI
             public bool ShouldExit;
             public bool ShouldRepeat;
             public int ClearedWaveNumber;
+            public int actionPoint;
 
             public IReadOnlyList<CountableItem> Rewards => _rewards;
 
@@ -112,6 +113,9 @@ namespace Nekoyume.UI
         [SerializeField]
         private GameObject[] victoryResultTexts = null;
 
+        [SerializeField]
+        private ActionPoint actionPoint;
+
         private BattleWin01VFX _battleWin01VFX;
 
         private BattleWin02VFX _battleWin02VFX;
@@ -167,6 +171,7 @@ namespace Nekoyume.UI
             SharedModel = model;
 
             worldStageId.text = $"{SharedModel.WorldName} {SharedModel.StageID}";
+            actionPoint.SetActionPoint(model.actionPoint);
 
             foreach (var reward in rewardsArea.rewards)
             {

@@ -2,11 +2,15 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 using mixpanel;
+using Nekoyume.UI.Module;
 
 namespace Nekoyume.UI
 {
     public class Title : ScreenWidget
     {
+        [SerializeField]
+        private SettingButton settingButton;
+
         private bool _ready;
         public Animator animator;
 
@@ -53,6 +57,11 @@ namespace Nekoyume.UI
         {
             _ready = true;
             animator.enabled = true;
+        }
+
+        public void ShowSettingButton()
+        {
+            settingButton.Show();
         }
     }
 }
