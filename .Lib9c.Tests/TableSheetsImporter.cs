@@ -2,7 +2,6 @@ namespace Lib9c.Tests
 {
     using System.Collections.Generic;
     using System.IO;
-    using Nekoyume.Model.State;
 
     public static class TableSheetsImporter
     {
@@ -11,7 +10,6 @@ namespace Lib9c.Tests
             var sheets = new Dictionary<string, string>();
             var dir = Path.Combine("Data", "TableCSV");
             var files = Directory.GetFiles(dir, "*.csv", SearchOption.AllDirectories);
-            var state = new Action.State();
             foreach (var filePath in files)
             {
                 var fileName = Path.GetFileName(filePath);
