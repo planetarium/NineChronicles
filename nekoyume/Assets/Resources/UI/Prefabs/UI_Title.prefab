@@ -91,6 +91,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 61a92f565b3cfc3449b0c546c82249e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  settingButton: {fileID: 9026698595490367585}
   animator: {fileID: 4505301955976567871}
 --- !u!114 &6736393873814236508
 MonoBehaviour:
@@ -376,6 +377,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: SettingButton
       objectReference: {fileID: 0}
+    - target: {fileID: 2281915797853084, guid: 9958b2722fb81124bb04cd5640d9b4fc, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8906158154467180903, guid: 9958b2722fb81124bb04cd5640d9b4fc,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -481,6 +486,11 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
+    - target: {fileID: 4727936511996701799, guid: 9958b2722fb81124bb04cd5640d9b4fc,
+        type: 3}
+      propertyPath: l10nKey
+      value: UI_SETTINGS
+      objectReference: {fileID: 0}
     - target: {fileID: 3608999211004217049, guid: 9958b2722fb81124bb04cd5640d9b4fc,
         type: 3}
       propertyPath: m_textInfo.characterCount
@@ -509,3 +519,15 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 6913192245454487614}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &9026698595490367585 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2501135190298216543, guid: 9958b2722fb81124bb04cd5640d9b4fc,
+    type: 3}
+  m_PrefabInstance: {fileID: 6913192245454487614}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 30bb1405f35a4ab684a79ca76f87916b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
