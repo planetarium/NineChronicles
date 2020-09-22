@@ -106,7 +106,7 @@ namespace Nekoyume.Game
 #if UNITY_EDITOR
             if (useSystemLanguage)
             {
-                yield return L10nManager.Initialize().ToYieldInstruction();
+                yield return L10nManager.Initialize((LanguageType) Enum.Parse(typeof(LanguageType), _options.Language) ).ToYieldInstruction();
             }
             else
             {
