@@ -433,7 +433,7 @@ namespace Nekoyume.Game
 
             yield return new WaitForSeconds(2.0f);
 
-            AudioController.instance.PlayMusic(data.BGM);
+            AudioController.instance.PlayMusic(AudioController.MusicCode.PVPBattle);
         }
 
         private IEnumerator CoStageEnd(BattleLog log)
