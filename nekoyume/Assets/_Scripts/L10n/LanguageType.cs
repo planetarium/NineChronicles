@@ -58,15 +58,16 @@ namespace Nekoyume.L10n
         ///     - Character Set: ASCII
         ///     - Render Mode: SDFAA
         ///     - Get Kerning Pairs: true
-        /// font asset file 2: Assets/Resources/Font/SDF/Hanazome-01-2538(2339) SDF SDF.asset
+        /// font asset file 2: Assets/Resources/Font/SDF/Hanazome-01-2539(2340) SDF SDF.asset
         ///     - Sampling Font Size: Auto Sizing
         ///     - Padding: 7
         ///     - Packing Method: Fast
         ///     - Atlas Resolution: 4096x4096
         ///     - Character Set: Custom Range
-        ///     - Character Sequence (Decimal): Assets/Resources/Font/CharacterFiles/japanese-custom-range-01-2538.txt
+        ///     - Character Sequence (Decimal): Assets/Resources/Font/CharacterFiles/japanese-custom-range-01-2539.txt
         ///           https://www.youtube.com/watch?v=Dj4XaZJTEQM
         ///           https://gist.github.com/boscohyun/9ca2fc65b0e042bab999c9adce4d4094
+        ///           37799
         ///     - Render Mode: SDFAA
         ///     - Get Kerning Pairs: true
         /// </summary>
