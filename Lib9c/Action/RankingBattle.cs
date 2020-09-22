@@ -48,7 +48,10 @@ namespace Nekoyume.Action
                 throw new InvalidAddressException("Aborted as the signer tried to battle for themselves.");
             }
 
-            if (!states.TryGetAgentAvatarStates(ctx.Signer, AvatarAddress, out var agentState,
+            if (!states.TryGetAgentAvatarStates(
+                ctx.Signer,
+                AvatarAddress,
+                out var agentState,
                 out var avatarState))
             {
                 throw new FailedLoadStateException("Aborted as the avatar state of the signer was failed to load.");
@@ -56,12 +59,8 @@ namespace Nekoyume.Action
 
             avatarState.ValidateEquipments(equipmentIds, context.BlockIndex);
 
-            if (!avatarState.worldInformation.TryGetUnlockedWorldByStageClearedBlockIndex(out var world))
-            {
-                throw new InvalidWorldException("Aborted as the WorldInformation was failed to load or not cleared yet.");
-            }
-
-            if (world.StageClearedId < GameConfig.RequireClearedStageLevel.ActionsInRankingBoard)
+            if (!avatarState.worldInformation.TryGetUnlockedWorldByStageClearedBlockIndex(out var world) ||
+                world.StageClearedId < GameConfig.RequireClearedStageLevel.ActionsInRankingBoard)
             {
                 throw new NotEnoughClearedStageLevelException(
                     GameConfig.RequireClearedStageLevel.ActionsInRankingBoard,
@@ -99,7 +98,15 @@ namespace Nekoyume.Action
 
             if (!arenaInfo.Active)
             {
-                FungibleAssetValue agentBalance = states.GetBalance(ctx.Signer, states.GetGoldCurrency());
+                FungibleAssetValue agentBalance = default;
+                try
+                {
+                    agentBalance = states.GetBalance(ctx.Signer, states.GetGoldCurrency());
+                }
+                catch (InvalidOperationException)
+                {
+                    throw new NotEnoughFungibleAssetValueException(EntranceFee, agentBalance);
+                }
 
                 if (agentBalance >= new FungibleAssetValue(agentBalance.Currency, EntranceFee, 0))
                 {
