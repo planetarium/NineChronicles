@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 4589514474119130}
   - component: {fileID: 82108824567621936}
   m_Layer: 0
-  m_Name: bgm_win
+  m_Name: bgm_pvp_win
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -42,9 +42,9 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 243079531108902290, guid: f84234ca553c443c69f5457997eda065,
     type: 2}
-  m_audioClip: {fileID: 8300000, guid: 14a7bfc0e9c1848248283e4ed671d2bd, type: 3}
+  m_audioClip: {fileID: 8300000, guid: 24411cf0ffba54cc9bce766d1ec47608, type: 3}
   m_PlayOnAwake: 0
-  m_Volume: 0.6
+  m_Volume: 1
   m_Pitch: 1
   Loop: 0
   Mute: 0
