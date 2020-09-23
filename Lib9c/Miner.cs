@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Threading;
 using System.Threading.Tasks;
 using Libplanet;
@@ -11,7 +10,6 @@ using Libplanet.Crypto;
 using Libplanet.Net;
 using Libplanet.Tx;
 using Nekoyume.Action;
-using Nekoyume.Model.State;
 using Serilog;
 
 namespace Nekoyume.BlockChain
@@ -27,17 +25,6 @@ namespace Nekoyume.BlockChain
         public async Task<Block<PolymorphicAction<ActionBase>>> MineBlockAsync(CancellationToken cancellationToken)
         {
             var txs = new HashSet<Transaction<PolymorphicAction<ActionBase>>>();
-
-            var timeStamp = DateTimeOffset.UtcNow;
-            var prevTimeStamp = _chain?.Tip?.Timestamp;
-            // FIXME 년도가 바뀌면 깨지는 계산 방식. 테스트 끝나면 변경해야함
-            // 하루 한번 보상을 제공
-            // TODO: Move ranking reward logic and condition into block action.
-            if (prevTimeStamp is DateTimeOffset t && timeStamp.DayOfYear - t.DayOfYear == 1)
-            {
-                var rankingRewardTx = RankingReward();
-                txs.Add(rankingRewardTx);
-            }
 
             var invalidTxs = txs;
             Block<PolymorphicAction<ActionBase>> block = null;
@@ -95,25 +82,6 @@ namespace Nekoyume.BlockChain
 
             _privateKey = privateKey;
             Address = _privateKey.PublicKey.ToAddress();
-        }
-
-        private Transaction<PolymorphicAction<ActionBase>> RankingReward()
-        {
-            // private 테스트용 임시 로직 변경
-            var index = (int) _chain.Tip.Index / GameConfig.WeeklyArenaInterval;
-            var weeklyArenaAddress = WeeklyArenaState.DeriveAddress(index);
-            var weeklyArenaState = new WeeklyArenaState(_chain.GetState(weeklyArenaAddress));
-            var actions = new List<PolymorphicAction<ActionBase>>
-            {
-                new RankingReward
-                {
-                    gold1 = 50,
-                    gold2 = 30,
-                    gold3 = 10,
-                    agentAddresses = weeklyArenaState.GetAgentAddresses(3),
-                }
-            };
-            return _chain.MakeTransaction(_privateKey, actions.ToImmutableHashSet());
         }
     }
 }
