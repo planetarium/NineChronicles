@@ -201,8 +201,6 @@ namespace Nekoyume.UI
             base.Close(ignoreCloseAnimation);
 
             _npc.gameObject.SetActive(false);
-
-            AudioController.instance.PlayMusic(AudioController.MusicCode.Main);
         }
 
         #endregion
