@@ -18,7 +18,6 @@ namespace Nekoyume.BlockChain
     {
         private BlockChain<PolymorphicAction<ActionBase>> _chain;
         private Swarm<PolymorphicAction<ActionBase>> _swarm;
-        private PrivateKey _privateKey;
 
         public Address Address { get; }
 
@@ -80,8 +79,7 @@ namespace Nekoyume.BlockChain
             _chain = chain ?? throw new ArgumentNullException(nameof(chain));
             _swarm = swarm ?? throw new ArgumentNullException(nameof(swarm));
 
-            _privateKey = privateKey;
-            Address = _privateKey.PublicKey.ToAddress();
+            Address = privateKey.PublicKey.ToAddress();
         }
     }
 }
