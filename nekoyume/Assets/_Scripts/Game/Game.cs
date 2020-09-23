@@ -116,6 +116,7 @@ namespace Nekoyume.Game
             yield return L10nManager.Initialize().ToYieldInstruction();
 #endif
 
+            Widget.Find<Title>().ShowSettingButton();
             MainCanvas.instance.InitializeFirst();
             yield return Addressables.InitializeAsync();
             yield return StartCoroutine(CoInitializeTableSheets());
