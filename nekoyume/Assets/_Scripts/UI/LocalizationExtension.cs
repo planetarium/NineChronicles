@@ -11,7 +11,6 @@ using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.Quest;
 using Nekoyume.Model.Stat;
-using Nekoyume.TableData;
 using UnityEngine;
 using MailModel = Nekoyume.Model.Mail.Mail;
 using QuestModel = Nekoyume.Model.Quest.Quest;
@@ -64,6 +63,7 @@ namespace Nekoyume.UI
             {
                 case CollectQuest _:
                 case CombinationQuest _:
+                case ItemEnhancementQuest _:
                 case CombinationEquipmentQuest _:
                     return L10nManager.Localize("QUEST_TITLE_CRAFT");
                 case GeneralQuest generalQuest:
@@ -85,7 +85,6 @@ namespace Nekoyume.UI
                             throw new ArgumentOutOfRangeException();
                     }
                     return L10nManager.Localize($"QUEST_TITLE_{key}");
-                case ItemEnhancementQuest _:
                 case ItemGradeQuest _:
                 case ItemTypeCollectQuest _:
                 case MonsterQuest _:
