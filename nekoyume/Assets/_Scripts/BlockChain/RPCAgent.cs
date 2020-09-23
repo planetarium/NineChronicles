@@ -6,7 +6,6 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
-using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Bencodex;
 using Bencodex.Types;
@@ -20,10 +19,13 @@ using Libplanet.Tx;
 using MagicOnion.Client;
 using Nekoyume.Action;
 using Nekoyume.Helper;
+using Nekoyume.L10n;
 using Nekoyume.Model.State;
 using Nekoyume.Shared.Hubs;
 using Nekoyume.Shared.Services;
 using Nekoyume.State;
+using Nekoyume.UI;
+using NineChronicles.RPC.Shared.Exceptions;
 using UniRx;
 using UnityEngine;
 using UnityEngine.Events;
@@ -163,14 +165,14 @@ namespace Nekoyume.BlockChain
             );
 
             // 랭킹의 상태를 한 번 동기화 한다.
-                for (var i = 0; i < RankingState.RankingMapCapacity; ++i)
-                {
-                    var address = RankingState.Derive(i);
-                    var mapState = GetState(address) is Bencodex.Types.Dictionary serialized
-                        ? new RankingMapState(serialized)
-                        : new RankingMapState(address);
-                    States.Instance.SetRankingMapStates(mapState);
-                }
+            for (var i = 0; i < RankingState.RankingMapCapacity; ++i)
+            {
+                var address = RankingState.Derive(i);
+                var mapState = GetState(address) is Bencodex.Types.Dictionary serialized
+                    ? new RankingMapState(serialized)
+                    : new RankingMapState(address);
+                States.Instance.SetRankingMapStates(mapState);
+            }
 
             // 상점의 상태를 한 번 동기화 한다.
             States.Instance.SetShopState(
@@ -319,6 +321,22 @@ namespace Nekoyume.BlockChain
                 Block<PolymorphicAction<ActionBase>>.Deserialize(newTip),
                 Block<PolymorphicAction<ActionBase>>.Deserialize(branchpoint)
             );
+        }
+
+        public void OnException(int code, string message)
+        {
+            switch (code)
+            {
+                case (int)RPCException.NetworkException:
+                    Widget.Find<SystemPopup>().Show("UI_ERROR", "ERROR_NETWORK");
+                    break;
+
+                default:
+                    Debug.LogError($"Unhandled exception {code} received.");
+                    break;
+            }
+
+            Debug.Log($"{message} (code: {code})");
         }
     }
 }
