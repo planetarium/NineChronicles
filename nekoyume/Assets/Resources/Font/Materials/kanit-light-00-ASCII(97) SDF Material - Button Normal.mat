@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: kanit-regular-00-ASCII(97) SDF Material - CP
+  m_Name: kanit-light-00-ASCII(97) SDF Material - Button Normal
   m_Shader: {fileID: 4800000, guid: 68e6db2ebdc24f95958faec2be5558d6, type: 3}
   m_ShaderKeywords: UNDERLAY_ON
   m_LightmapFlags: 4
@@ -32,7 +32,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 5604757065509959205, guid: 0a19bbb2b89824ab2ab62ee5ea4fcee6,
+        m_Texture: {fileID: 1420330521112580617, guid: 0a19bbb2b89824ab2ab62ee5ea4fcee6,
           type: 2}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
@@ -52,28 +52,25 @@ Material:
     - _ColorMask: 15
     - _Diffuse: 0
     - _FaceDilate: -0.05
-    - _FaceShininess: 0
     - _FaceUVSpeedX: 0
     - _FaceUVSpeedY: 0
     - _GlowInner: 1
     - _GlowOffset: 1
     - _GlowOuter: 1
     - _GlowPower: 1
-    - _GradientScale: 6
+    - _GradientScale: 8
     - _LightAngle: 6.28
     - _MaskSoftnessX: 0
     - _MaskSoftnessY: 0
-    - _OutlineShininess: 0
     - _OutlineSoftness: 0
     - _OutlineUVSpeedX: 0
     - _OutlineUVSpeedY: 0
     - _OutlineWidth: 0
-    - _Padding: 0
     - _PerspectiveFilter: 0.875
     - _Reflectivity: 10
-    - _ScaleRatioA: 0.8333333
-    - _ScaleRatioB: 0.359375
-    - _ScaleRatioC: 0.51339287
+    - _ScaleRatioA: 0.875
+    - _ScaleRatioB: 0.37734374
+    - _ScaleRatioC: 0.5390625
     - _ScaleX: 1
     - _ScaleY: 1
     - _ShaderFlags: 0
@@ -84,20 +81,18 @@ Material:
     - _StencilOp: 0
     - _StencilReadMask: 255
     - _StencilWriteMask: 255
-    - _TextureHeight: 4096
-    - _TextureWidth: 4096
+    - _TextureHeight: 512
+    - _TextureWidth: 512
     - _UnderlayDilate: 1
     - _UnderlayOffsetX: 0
     - _UnderlayOffsetY: -0.4
     - _UnderlaySoftness: 0
-    - _UseUIAlphaClip: 0
     - _VertexOffsetX: 0
     - _VertexOffsetY: 0
     - _WeightBold: 0.75
     - _WeightNormal: 0
     m_Colors:
     - _ClipRect: {r: -32767, g: -32767, b: 32767, a: 32767}
-    - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EnvMatrixRotation: {r: 6, g: 6, b: 0, a: 0}
     - _FaceColor: {r: 1, g: 1, b: 1, a: 1}
     - _GlowColor: {r: 0, g: 0, b: 0, a: 1}
@@ -105,6 +100,5 @@ Material:
     - _OutlineColor: {r: 0.14509805, g: 0.050980393, b: 0.050980393, a: 1}
     - _ReflectFaceColor: {r: 0, g: 0, b: 0, a: 1}
     - _ReflectOutlineColor: {r: 0, g: 0, b: 0, a: 1}
-    - _SpecColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecularColor: {r: 0, g: 0, b: 0, a: 1}
     - _UnderlayColor: {r: 0, g: 0, b: 0, a: 1}
