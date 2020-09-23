@@ -1,6 +1,10 @@
+using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Blocks;
@@ -43,6 +47,31 @@ namespace Lib9c.Tools
                 pendingActivationStates.Add(s);
                 activationKeys.Add(ak);
             }
+        }
+
+        public static AuthorizedMinersState GetAuthorizedMinersState(string configPath)
+        {
+            var options = new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            };
+
+            string json = File.ReadAllText(configPath);
+            var config = JsonSerializer.Deserialize<AuthorizedMinersStateConfig>(json, options);
+            return new AuthorizedMinersState(
+                miners: config.Miners.Select(addr => new Address(addr)),
+                interval: config.Interval,
+                validUntil: config.ValidUntil);
+        }
+
+        [Serializable]
+        public struct AuthorizedMinersStateConfig
+        {
+            public long Interval { get; set; }
+
+            public List<string> Miners { get; set; }
+
+            public long ValidUntil { get; set; }
         }
     }
 }
