@@ -52,7 +52,7 @@ namespace Tests.EditMode
         {
             Console.WriteLine(LanguageType.Korean);
             var opt = CommandLineOptions.Load(Path.Combine(jsonFixturePath, "clo_language.json"));
-            Assert.AreEqual(LanguageType.Korean, (LanguageType) Enum.Parse(typeof(LanguageType), opt.Language));
+            Assert.AreEqual(LanguageType.Korean, LanguageTypeMapper.ISO396(opt.Language));
         }
     }
 }

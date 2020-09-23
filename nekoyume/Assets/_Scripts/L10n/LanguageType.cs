@@ -136,4 +136,38 @@ namespace Nekoyume.L10n
             return obj.GetHashCode();
         }
     }
+
+    public class LanguageTypeMapper
+    {
+        /** FIXME
+         * 현재 Unity Player에서는 iso396 표준이 아닌, 일종의 방언을 사용하고 있습니다.
+         * 따라서 인자로 받는 iso396-1 코드를 방언으로 변환시켜주는 해당 매퍼가 필요한데,
+         * LanguageType enum을 CultureInfo(https://docs.microsoft.com/en-us/dotnet/api/system.globalization.cultureinfo?view=netstandard-2.0)
+         * 로 리팩토링한다면 훨씬 깔끔해 질 것 같습니다.
+         * https://github.com/planetarium/nekoyume-unity/pull/2835#discussion_r493197244
+         */
+
+        public static LanguageType ISO396(string iso396)
+        {
+            switch (iso396)
+            {
+                case "ko":
+                    return LanguageType.Korean;
+                case "en":
+                    return LanguageType.English;
+                case "pt-BR":
+                    return LanguageType.PortugueseBrazil;
+                case "pl":
+                    return LanguageType.Polish;
+                case "ja":
+                    return LanguageType.Japanese;
+                case "zh-Hans":
+                    return LanguageType.ChineseSimplified;
+                case "th":
+                    return LanguageType.Thai;
+                default:
+                    return LanguageType.English;
+            }
+        }
+    }
 }
