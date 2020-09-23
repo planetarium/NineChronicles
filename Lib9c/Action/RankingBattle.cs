@@ -45,31 +45,26 @@ namespace Nekoyume.Action
 
             if (AvatarAddress.Equals(EnemyAddress))
             {
-                return LogError(context, "Aborted as the signer tried to battle for themselves.");
+                throw new InvalidAddressException("Aborted as the signer tried to battle for themselves.");
             }
 
-            if (!states.TryGetAgentAvatarStates(ctx.Signer, AvatarAddress, out var agentState,
+            if (!states.TryGetAgentAvatarStates(
+                ctx.Signer,
+                AvatarAddress,
+                out var agentState,
                 out var avatarState))
             {
-                return LogError(context, "Aborted as the avatar state of the signer was failed to load.");
+                throw new FailedLoadStateException("Aborted as the avatar state of the signer was failed to load.");
             }
 
             avatarState.ValidateEquipments(equipmentIds, context.BlockIndex);
 
-            if (!avatarState.worldInformation.TryGetUnlockedWorldByStageClearedBlockIndex(out var world))
+            if (!avatarState.worldInformation.TryGetUnlockedWorldByStageClearedBlockIndex(out var world) ||
+                world.StageClearedId < GameConfig.RequireClearedStageLevel.ActionsInRankingBoard)
             {
-                return LogError(context, "Aborted as the WorldInformation was failed to load or not cleared yet.");
-            }
-
-            if (world.StageClearedId < GameConfig.RequireClearedStageLevel.ActionsInRankingBoard)
-            {
-                // 스테이지 클리어 부족 에러.
-                return LogError(
-                    context,
-                    "Aborted as the signer is not cleared the minimum stage level required to battle with other players yet: {ClearedLevel} < {RequiredLevel}.",
-                    world.StageClearedId,
-                    GameConfig.RequireClearedStageLevel.ActionsInRankingBoard
-                );
+                throw new NotEnoughClearedStageLevelException(
+                    GameConfig.RequireClearedStageLevel.ActionsInRankingBoard,
+                    world.StageClearedId);
             }
 
             avatarState.EquipCostumes(costumeIds);
@@ -78,36 +73,39 @@ namespace Nekoyume.Action
             var enemyAvatarState = states.GetAvatarState(EnemyAddress);
             if (enemyAvatarState is null)
             {
-                return LogError(
-                    context,
-                    "Aborted as the avatar state of the opponent ({OpponentAddress}) was failed to load.",
-                    EnemyAddress
-                );
+                throw new FailedLoadStateException($"Aborted as the avatar state of the opponent ({EnemyAddress}) was failed to load.");
             }
 
             var weeklyArenaState = states.GetWeeklyArenaState(WeeklyArenaAddress);
-
-            //FIXME 오류던지게 고쳐야함
+            
             if (weeklyArenaState.Ended)
             {
-                return LogError(context, "Aborted as the weekly arena state already ended.");
+                throw new WeeklyArenaStateAlreadyEndedException();
             }
 
             if (!weeklyArenaState.ContainsKey(AvatarAddress))
             {
-                return LogError(context, "Aborted as the weekly arena state was failed to load.");
+                throw new WeeklyArenaStateNotContainsAvatarAddressException(AvatarAddress);
             }
 
             var arenaInfo = weeklyArenaState[AvatarAddress];
 
             if (arenaInfo.DailyChallengeCount <= 0)
             {
-                return LogError(context, "Aborted as the arena state reached the daily limit.");
+                throw new NotEnoughWeeklyArenaChallengeCountException();
             }
 
             if (!arenaInfo.Active)
             {
-                FungibleAssetValue agentBalance = states.GetBalance(ctx.Signer, states.GetGoldCurrency());
+                FungibleAssetValue agentBalance = default;
+                try
+                {
+                    agentBalance = states.GetBalance(ctx.Signer, states.GetGoldCurrency());
+                }
+                catch (InvalidOperationException)
+                {
+                    throw new NotEnoughFungibleAssetValueException(EntranceFee, agentBalance);
+                }
 
                 if (agentBalance >= new FungibleAssetValue(agentBalance.Currency, EntranceFee, 0))
                 {
@@ -124,22 +122,13 @@ namespace Nekoyume.Action
                 }
                 else
                 {
-                    return LogError(
-                        context,
-                        "Aborted as the signer's balance ({Balance}) is insufficient to pay entrance fee/stake ({EntranceFee}).",
-                        agentBalance,
-                        EntranceFee
-                    );
+                    throw new NotEnoughFungibleAssetValueException(EntranceFee, agentBalance);
                 }
             }
 
             if (!weeklyArenaState.ContainsKey(EnemyAddress))
             {
-                return LogError(
-                    context,
-                    "Aborted as the opponent ({OpponentAddress}) is not registered in the weekly arena state.",
-                    EnemyAddress
-                );
+                throw new WeeklyArenaStateNotContainsAvatarAddressException(EnemyAddress);
             }
 
             Log.Debug(weeklyArenaState.address.ToHex());
