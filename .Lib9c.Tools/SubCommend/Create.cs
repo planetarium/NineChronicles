@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using Cocona;
@@ -15,10 +16,14 @@ namespace Lib9c.Tools.SubCommend
     public class Create
     {
         public void Genesis(
-            [Option('g')] string gameConfigDir,
-            [Option('d')] string goldDistributedPath,
-            [Option('a')] uint activationKeyCount,
-            [Option('m')] string authorizedMinerConfigPath = null
+            [Option('g', Description = "/path/to/nekoyume-unity/nekoyume/Assets/AddressableAssets/TableCSV")]
+            string gameConfigDir,
+            [Option('d', Description = "/path/to/nekoyume-unity/nekoyume/Assets/StreamingAssets/GoldDistribution.csv")]
+            string goldDistributedPath,
+            [Option('a', Description = "Number of activation keys to generate")]
+            uint activationKeyCount,
+            [Option('m', Description = "Config path to create AuthorizedMinersState")]
+            string authorizedMinerConfigPath = null
         )
         {
             Dictionary<string, string> tableSheets = Utils.ImportSheets(gameConfigDir);
