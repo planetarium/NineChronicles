@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: kanit-regular-00-ASCII(97) SDF Material - RankingBoardInfo
+  m_Name: kanit-light-00-ASCII(97) SDF Material - RankingBoardInfo
   m_Shader: {fileID: 4800000, guid: 68e6db2ebdc24f95958faec2be5558d6, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
@@ -32,7 +32,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 5604757065509959205, guid: 0a19bbb2b89824ab2ab62ee5ea4fcee6,
+        m_Texture: {fileID: 1420330521112580617, guid: 0a19bbb2b89824ab2ab62ee5ea4fcee6,
           type: 2}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
@@ -58,7 +58,7 @@ Material:
     - _GlowOffset: 1
     - _GlowOuter: 1
     - _GlowPower: 1
-    - _GradientScale: 6
+    - _GradientScale: 8
     - _LightAngle: 6.28
     - _MaskSoftnessX: 0
     - _MaskSoftnessY: 0
@@ -81,8 +81,8 @@ Material:
     - _StencilOp: 0
     - _StencilReadMask: 255
     - _StencilWriteMask: 255
-    - _TextureHeight: 4096
-    - _TextureWidth: 4096
+    - _TextureHeight: 512
+    - _TextureWidth: 512
     - _UnderlayDilate: 1
     - _UnderlayOffsetX: 0
     - _UnderlayOffsetY: -0.4
