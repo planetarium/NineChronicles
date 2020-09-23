@@ -1703,6 +1703,11 @@
             their corresponding <see cref="T:Libplanet.Tx.Transaction`1"/>s.
             </summary>
         </member>
+        <member name="F:Libplanet.Blockchain.BlockChain`1._genesis">
+            <summary>
+            Cached genesis block.
+            </summary>
+        </member>
         <member name="M:Libplanet.Blockchain.BlockChain`1.#ctor(Libplanet.Blockchain.Policies.IBlockPolicy{`0},Libplanet.Store.IStore,Libplanet.Store.IStateStore,Libplanet.Blocks.Block{`0},System.Collections.Generic.IEnumerable{Libplanet.Blockchain.Renderers.IRenderer{`0}})">
             <summary>
             Initializes a new instance of the <see cref="T:Libplanet.Blockchain.BlockChain`1"/> class.
@@ -2118,7 +2123,7 @@
             <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> type.  It should match
             to <see cref="T:Libplanet.Blocks.Block`1"/>'s type parameter.</typeparam>
         </member>
-        <member name="M:Libplanet.Blockchain.Policies.BlockPolicy`1.#ctor(Libplanet.Action.IAction,System.Int32,System.Int64,System.Int32,System.Predicate{Libplanet.Tx.Transaction{`0}})">
+        <member name="M:Libplanet.Blockchain.Policies.BlockPolicy`1.#ctor(Libplanet.Action.IAction,System.Int32,System.Int64,System.Int32,System.Func{Libplanet.Tx.Transaction{`0},Libplanet.Blockchain.BlockChain{`0},System.Boolean})">
             <summary>
             Creates a <see cref="T:Libplanet.Blockchain.Policies.BlockPolicy`1"/> with configuring
             <see cref="P:Libplanet.Blockchain.Policies.BlockPolicy`1.BlockInterval"/> in milliseconds,
@@ -2139,7 +2144,7 @@
             A predicate that determines if the transaction follows the block policy.
             </param>
         </member>
-        <member name="M:Libplanet.Blockchain.Policies.BlockPolicy`1.#ctor(Libplanet.Action.IAction,System.TimeSpan,System.Int64,System.Int32,System.Predicate{Libplanet.Tx.Transaction{`0}})">
+        <member name="M:Libplanet.Blockchain.Policies.BlockPolicy`1.#ctor(Libplanet.Action.IAction,System.TimeSpan,System.Int64,System.Int32,System.Func{Libplanet.Tx.Transaction{`0},Libplanet.Blockchain.BlockChain{`0},System.Boolean})">
             <summary>
             Creates a <see cref="T:Libplanet.Blockchain.Policies.BlockPolicy`1"/> with configuring
             <see cref="P:Libplanet.Blockchain.Policies.BlockPolicy`1.BlockInterval"/>, <see cref="P:Libplanet.Blockchain.Policies.BlockPolicy`1.MinimumDifficulty"/> and
@@ -2170,6 +2175,10 @@
             than this <see cref="P:Libplanet.Blocks.Block`1.Difficulty"/> is dropped.</para>
             </summary>
         </member>
+        <member name="M:Libplanet.Blockchain.Policies.BlockPolicy`1.DoesTransactionFollowsPolicy(Libplanet.Tx.Transaction{`0},Libplanet.Blockchain.BlockChain{`0})">
+            <inheritdoc
+            cref="M:Libplanet.Blockchain.Policies.IBlockPolicy`1.DoesTransactionFollowsPolicy(Libplanet.Tx.Transaction{`0},Libplanet.Blockchain.BlockChain{`0})"/>
+        </member>
         <member name="M:Libplanet.Blockchain.Policies.BlockPolicy`1.ValidateNextBlock(Libplanet.Blockchain.BlockChain{`0},Libplanet.Blocks.Block{`0})">
             <inheritdoc/>
             <exception cref="T:Libplanet.Blocks.InvalidBlockStateRootHashException">It will be thrown when the
@@ -2192,11 +2201,13 @@
             A block action to execute and be rendered for every block.
             </summary>
         </member>
-        <member name="M:Libplanet.Blockchain.Policies.IBlockPolicy`1.DoesTransactionFollowsPolicy(Libplanet.Tx.Transaction{`0})">
+        <member name="M:Libplanet.Blockchain.Policies.IBlockPolicy`1.DoesTransactionFollowsPolicy(Libplanet.Tx.Transaction{`0},Libplanet.Blockchain.BlockChain{`0})">
             <summary>
             A predicate that determines if the transaction follows the block policy.
             </summary>
             <param name="transaction">A <see cref="T:Libplanet.Tx.Transaction`1"/> to determine.</param>
+            <param name="blockChain">A <see cref="T:Libplanet.Blockchain.BlockChain`1" /> for given
+            <paramref name="transaction" />.</param>
             <returns><c>true</c> if <paramref name="transaction"/>is valid; otherwise, <c>false</c>.
             </returns>
         </member>
@@ -4998,17 +5009,6 @@
             Delay of verification in milliseconds.
             </summary>
         </member>
-        <member name="T:Libplanet.Net.PreloadBlockDownloadFailEventArgs">
-            <summary>
-            The event data that provides value to the event handler which is triggered when the block
-            downloading fails during preloading.
-            </summary>
-        </member>
-        <member name="P:Libplanet.Net.PreloadBlockDownloadFailEventArgs.InnerExceptions">
-            <summary>
-            The exceptions thrown while the block downloading in preloading.
-            </summary>
-        </member>
         <member name="F:Libplanet.Net.PreloadState.TotalPhase">
             <summary>
             The number of total phases.
@@ -5238,7 +5238,7 @@
             a lot of calls to methods of <see cref="P:Libplanet.Blockchain.BlockChain`1.Renderers"/> in a short
             period of time.  This can lead a game startup slow.  If you want to omit rendering of
             these actions in the behind blocks use <see cref=
-            "M:Libplanet.Net.Swarm`1.PreloadAsync(System.Nullable{System.TimeSpan},System.IProgress{Libplanet.Net.PreloadState},System.Collections.Immutable.IImmutableSet{Libplanet.Address},System.EventHandler{Libplanet.Net.PreloadBlockDownloadFailEventArgs},System.Threading.CancellationToken)"
+            "M:Libplanet.Net.Swarm`1.PreloadAsync(System.Nullable{System.TimeSpan},System.IProgress{Libplanet.Net.PreloadState},System.Collections.Immutable.IImmutableSet{Libplanet.Address},System.Threading.CancellationToken)"
             /> method too.</remarks>
         </member>
         <member name="M:Libplanet.Net.Swarm`1.StartAsync(System.TimeSpan,System.TimeSpan,System.Collections.Immutable.IImmutableSet{Libplanet.Address},System.Threading.CancellationToken)">
@@ -5272,7 +5272,7 @@
             a lot of calls to methods of <see cref="P:Libplanet.Blockchain.BlockChain`1.Renderers"/> in a short
             period of time.  This can lead a game startup slow.  If you want to omit rendering of
             these actions in the behind blocks use <see cref=
-            "M:Libplanet.Net.Swarm`1.PreloadAsync(System.Nullable{System.TimeSpan},System.IProgress{Libplanet.Net.PreloadState},System.Collections.Immutable.IImmutableSet{Libplanet.Address},System.EventHandler{Libplanet.Net.PreloadBlockDownloadFailEventArgs},System.Threading.CancellationToken)"
+            "M:Libplanet.Net.Swarm`1.PreloadAsync(System.Nullable{System.TimeSpan},System.IProgress{Libplanet.Net.PreloadState},System.Collections.Immutable.IImmutableSet{Libplanet.Address},System.Threading.CancellationToken)"
             /> method too.</remarks>
         </member>
         <member name="M:Libplanet.Net.Swarm`1.BootstrapAsync(System.Collections.Generic.IEnumerable{Libplanet.Net.Peer},System.Nullable{System.TimeSpan},System.Nullable{System.TimeSpan},System.Int32,System.Threading.CancellationToken)">
@@ -5305,7 +5305,7 @@
             </param>
             <returns><see cref="T:Libplanet.Net.PeerChainState"/> of the connected <see cref="P:Libplanet.Net.Swarm`1.Peers"/>.</returns>
         </member>
-        <member name="M:Libplanet.Net.Swarm`1.PreloadAsync(System.Nullable{System.TimeSpan},System.IProgress{Libplanet.Net.PreloadState},System.Collections.Immutable.IImmutableSet{Libplanet.Address},System.EventHandler{Libplanet.Net.PreloadBlockDownloadFailEventArgs},System.Threading.CancellationToken)">
+        <member name="M:Libplanet.Net.Swarm`1.PreloadAsync(System.Nullable{System.TimeSpan},System.IProgress{Libplanet.Net.PreloadState},System.Collections.Immutable.IImmutableSet{Libplanet.Address},System.Threading.CancellationToken)">
             <summary>
             Preemptively downloads blocks from registered <see cref="T:Libplanet.Net.Peer"/>s.
             </summary>
@@ -5324,9 +5324,6 @@
             Note that this option is intended to be exposed to end users through a feasible user
             interface so that they can decide whom to trust for themselves.
             </param>
-            <param name="blockDownloadFailed">
-            The <see cref="T:System.EventHandler" /> triggered when block downloading fails.
-            </param>
             <param name="cancellationToken">
             A cancellation token used to propagate notification that this
             operation should be canceled.
@@ -5338,7 +5335,7 @@
             <remarks>This does not render downloaded <see cref="T:Libplanet.Action.IAction"/>s, but fills states only.
             </remarks>
             <exception cref="T:System.AggregateException">Thrown when the given the block downloading is
-            failed and if <paramref name="blockDownloadFailed "/> is <c>null</c>.</exception>
+            failed.</exception>
         </member>
         <member name="M:Libplanet.Net.Swarm`1.FindSpecificPeerAsync(Libplanet.Address,System.Int32,System.Nullable{System.TimeSpan},System.Threading.CancellationToken)">
             <summary>
@@ -5427,6 +5424,11 @@
         <member name="P:Libplanet.Net.SwarmOptions.RecentStateRecvTimeout">
             <summary>
             The timeout used to receive recent states from other peers.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.SwarmOptions.BlockDownloadTimeout">
+            <summary>
+            The timeout used to block download in preloading.
             </summary>
         </member>
         <member name="T:Libplanet.Nonce">

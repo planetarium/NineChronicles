@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Numerics;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Assets;
@@ -9,7 +8,6 @@ using Nekoyume.Action;
 using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
 using Nekoyume.Manager;
-using Nekoyume.Model;
 using Nekoyume.Model.Item;
 using Nekoyume.State;
 using Nekoyume.UI;
@@ -58,7 +56,6 @@ namespace Nekoyume.BlockChain
             Sell();
             SellCancellation();
             Buy();
-            RankingReward();
             DailyReward();
             ItemEnhancement();
             QuestReward();
@@ -187,66 +184,6 @@ namespace Nekoyume.BlockChain
                 .Where(ValidateEvaluationForAgentState)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseBuy).AddTo(_disposables);
-        }
-
-        private void RankingReward()
-        {
-            _renderer.EveryRender<RankingReward>()
-                .Where(ValidateEvaluationForAgentState)
-                .ObserveOnMainThread()
-                .Subscribe(eval =>
-                {
-                    Address[] agentAddresses = eval.Action.agentAddresses;
-                    for (var index = 0; index < agentAddresses.Length; index++)
-                    {
-                        if(index < 3) // index 는 3보다 작아야 => 0,1,2 만가능
-                        {
-                            try
-                            {
-                                BigInteger gold = 0;
-
-                                if (index == 0)
-                                {
-                                    gold = eval.Action.gold1;
-                                }
-                                else if (index == 1)
-                                {
-                                    gold = eval.Action.gold2;
-                                }
-                                else
-                                {
-                                    gold = eval.Action.gold3;
-                                }
-
-                                //[TentuPlay] RankingReward 기록
-                                //Local에서 변경하는 States.Instance 보다는 블락에서 꺼내온 eval.OutputStates를 사용
-                                Address agentAddress = States.Instance.AgentState.address;
-                                if (eval.OutputStates.TryGetGoldBalance(agentAddress, GoldCurrency, out var balance))
-                                {
-                                    var total = balance +
-                                                new FungibleAssetValue(balance.Currency, gold, 0);
-                                    new TPStashEvent().CharacterCurrencyGet(
-                                        player_uuid: agentAddress.ToHex(),
-                                        character_uuid: States.Instance.CurrentAvatarState.address.ToHex().Substring(0, 4),
-                                        currency_slug: "gold",
-                                        currency_quantity: (float) gold,
-                                        currency_total_quantity: float.Parse(total.GetQuantityString()),
-                                        reference_entity: entity.Quests,
-                                        reference_category_slug: "arena",
-                                        reference_slug: "RankingRewardIndex" + index
-                                    );
-                                }
-                            }
-                            catch
-                            {
-                                // TentuPlay 실행 시 혹시 에러가 나더라도 넘어가도록.
-                            }
-                        }
-                    }
-
-                    UpdateAgentState(eval);
-
-                }).AddTo(_disposables);
         }
 
         private void ItemEnhancement()
@@ -765,45 +702,98 @@ namespace Nekoyume.BlockChain
 
         private void ResponseRankingBattle(ActionBase.ActionEvaluation<RankingBattle> eval)
         {
-            var weeklyArenaAddress = eval.Action.WeeklyArenaAddress;
-            var avatarAddress = eval.Action.AvatarAddress;
-
-            // fixme: 지금 개발 단계에서는 참가 액션이 분리되어 있지 않기 때문에, 참가할 때 깎은 골드를 더하지 못함.
-            // LocalStateModifier.ModifyAgentGold(States.Instance.AgentState.address, GameConfig.ArenaActivationCostNCG);
-            // fixme: 지금 개발 단계에서는 참가 액션이 분리되어 있지 않기 때문에, 참가할 때 더한 골드를 빼주지 못함.
-            // LocalStateModifier.ModifyWeeklyArenaGold(-GameConfig.ArenaActivationCostNCG);
-            LocalStateModifier.RemoveWeeklyArenaInfoActivator(weeklyArenaAddress, avatarAddress);
-
-            //[TentuPlay] RankingBattle 참가비 사용 기록 // 위의 fixme 내용과 어떻게 연결되는지?
-            //Local에서 변경하는 States.Instance 보다는 블락에서 꺼내온 eval.OutputStates를 사용
-            Address agentAddress = States.Instance.AgentState.address;
-            if (eval.OutputStates.TryGetGoldBalance(agentAddress, GoldCurrency, out var balance))
+            if (eval.Exception is null)
             {
-                var total = balance - new FungibleAssetValue(balance.Currency,
-                    Nekoyume.GameConfig.ArenaActivationCostNCG, 0);
-                new TPStashEvent().CharacterCurrencyUse(
-                    player_uuid: agentAddress.ToHex(),
-                    character_uuid: States.Instance.CurrentAvatarState.address.ToHex().Substring(0, 4),
-                    currency_slug: "gold",
-                    currency_quantity: (float)Nekoyume.GameConfig.ArenaActivationCostNCG,
-                    currency_total_quantity: float.Parse(total.GetQuantityString()),
-                    reference_entity: entity.Quests,
-                    reference_category_slug: "arena",
-                    reference_slug: "WeeklyArenaEntryFee"
-                );
+                var weeklyArenaAddress = eval.Action.WeeklyArenaAddress;
+                var avatarAddress = eval.Action.AvatarAddress;
+
+                LocalStateModifier.RemoveWeeklyArenaInfoActivator(weeklyArenaAddress, avatarAddress);
+
+                //[TentuPlay] RankingBattle 참가비 사용 기록 // 위의 fixme 내용과 어떻게 연결되는지?
+                //Local에서 변경하는 States.Instance 보다는 블락에서 꺼내온 eval.OutputStates를 사용
+                Address agentAddress = States.Instance.AgentState.address;
+                if (eval.OutputStates.TryGetGoldBalance(agentAddress, GoldCurrency, out var balance))
+                {
+                    var total = balance - new FungibleAssetValue(balance.Currency,
+                        Nekoyume.GameConfig.ArenaActivationCostNCG, 0);
+                    new TPStashEvent().CharacterCurrencyUse(
+                        player_uuid: agentAddress.ToHex(),
+                        character_uuid: States.Instance.CurrentAvatarState.address.ToHex().Substring(0, 4),
+                        currency_slug: "gold",
+                        currency_quantity: (float)Nekoyume.GameConfig.ArenaActivationCostNCG,
+                        currency_total_quantity: float.Parse(total.GetQuantityString()),
+                        reference_entity: entity.Quests,
+                        reference_category_slug: "arena",
+                        reference_slug: "WeeklyArenaEntryFee"
+                    );
+                }
+
+                UpdateAgentState(eval);
+                UpdateCurrentAvatarState(eval);
+                UpdateWeeklyArenaState(eval);
+
+                var actionFailPopup = Widget.Find<ActionFailPopup>();
+                actionFailPopup.CloseCallback = null;
+                actionFailPopup.Close();
+
+                if (Widget.Find<ArenaBattleLoadingScreen>().IsActive())
+                {
+                    Widget.Find<RankingBoard>().GoToStage(eval);
+                }
             }
-
-            UpdateAgentState(eval);
-            UpdateCurrentAvatarState(eval);
-            UpdateWeeklyArenaState(eval);
-
-            var actionFailPopup = Widget.Find<ActionFailPopup>();
-            actionFailPopup.CloseCallback = null;
-            actionFailPopup.Close();
-
-            if (Widget.Find<ArenaBattleLoadingScreen>().IsActive())
+            else
             {
-                Widget.Find<RankingBoard>().GoToStage(eval);
+                var showLoadingScreen = false;
+                if (Widget.Find<ArenaBattleLoadingScreen>().IsActive())
+                {
+                    Widget.Find<ArenaBattleLoadingScreen>().Close();
+                }
+                if (Widget.Find<RankingBattleResult>().IsActive())
+                {
+                    showLoadingScreen = true;
+                    Widget.Find<RankingBattleResult>().Close();
+                }
+
+                Event.OnRoomEnter.Invoke(showLoadingScreen);
+                Game.Game.instance.Stage.OnRoomEnterEnd
+                    .First()
+                    .Subscribe(_ =>
+                    {
+                        var exc = eval.Exception.InnerException;
+                        var key = "ERROR_UNKNOWN";
+                        switch (exc)
+                        {
+                            case InvalidAddressException _:
+                                key = "ERROR_INVALID_ADDRESS";
+                                break;
+                            case FailedLoadStateException _:
+                                key = "ERROR_FAILED_LOAD_STATE";
+                                break;
+                            case NotEnoughClearedStageLevelException _:
+                                key = "ERROR_NOT_ENOUGH_CLEARED_STAGE_LEVEL";
+                                break;
+                            case WeeklyArenaStateAlreadyEndedException _:
+                                key = "ERROR_WEEKLY_ARENA_STATE_ALREADY_ENDED";
+                                break;
+                            case WeeklyArenaStateNotContainsAvatarAddressException _:
+                                key = "ERROR_WEEKLY_ARENA_STATE_NOT_CONTAINS_AVATAR_ADDRESS";
+                                break;
+                            case NotEnoughWeeklyArenaChallengeCountException _:
+                                key = "ERROR_NOT_ENOUGH_WEEKLY_ARENA_CHALLENGE_COUNT";
+                                break;
+                            case NotEnoughFungibleAssetValueException _:
+                                key = "ERROR_NOT_ENOUGH_FUNGIBLE_ASSET_VALUE";
+                                break;
+                        }
+                        var errorMsg = string.Format(
+                            L10nManager.Localize("UI_ERROR_RETRY_FORMAT"),
+                            L10nManager.Localize(key));
+                        Widget.Find<Alert>().Show(
+                            L10nManager.Localize("UI_ERROR"),
+                            errorMsg,
+                            L10nManager.Localize("UI_OK"),
+                            false);
+                    });
             }
         }
 
