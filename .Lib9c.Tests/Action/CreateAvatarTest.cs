@@ -68,7 +68,7 @@ namespace Lib9c.Tests.Action
             });
 
             Assert.Equal(
-                CreateAvatar.InitialGoldBalance,
+                0,
                 nextState.GetBalance(default, gold.Currency).MajorUnit
             );
             Assert.True(nextState.TryGetAgentAvatarStates(

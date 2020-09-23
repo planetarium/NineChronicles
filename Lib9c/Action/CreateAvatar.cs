@@ -20,9 +20,6 @@ namespace Nekoyume.Action
     [ActionType("create_avatar")]
     public class CreateAvatar : GameAction
     {
-        // 계정당 기본 소지 골드
-        public static readonly BigInteger InitialGoldBalance = 1500;
-
         public Address avatarAddress;
         public int index;
         public int hair;
@@ -106,16 +103,6 @@ namespace Nekoyume.Action
             sw.Stop();
             Log.Debug("CreateAvatar Get AgentAvatarStates: {Elapsed}", sw.Elapsed);
             sw.Restart();
-
-            if (existingAgentState is null)
-            {
-                // 첫 아바타 생성이면 계정당 기본 소지금 부여.
-                states = states.TransferAsset(
-                    GoldCurrencyState.Address,
-                    ctx.Signer,
-                    states.GetGoldCurrency() * InitialGoldBalance
-                );
-            }
 
             Log.Debug("Execute CreateAvatar; player: {AvatarAddress}", avatarAddress);
 
