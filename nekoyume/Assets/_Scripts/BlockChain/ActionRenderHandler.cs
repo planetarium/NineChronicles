@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Numerics;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Assets;
@@ -9,7 +8,6 @@ using Nekoyume.Action;
 using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
 using Nekoyume.Manager;
-using Nekoyume.Model;
 using Nekoyume.Model.Item;
 using Nekoyume.State;
 using Nekoyume.UI;
@@ -58,7 +56,6 @@ namespace Nekoyume.BlockChain
             Sell();
             SellCancellation();
             Buy();
-            RankingReward();
             DailyReward();
             ItemEnhancement();
             QuestReward();
@@ -187,66 +184,6 @@ namespace Nekoyume.BlockChain
                 .Where(ValidateEvaluationForAgentState)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseBuy).AddTo(_disposables);
-        }
-
-        private void RankingReward()
-        {
-            _renderer.EveryRender<RankingReward>()
-                .Where(ValidateEvaluationForAgentState)
-                .ObserveOnMainThread()
-                .Subscribe(eval =>
-                {
-                    Address[] agentAddresses = eval.Action.agentAddresses;
-                    for (var index = 0; index < agentAddresses.Length; index++)
-                    {
-                        if(index < 3) // index 는 3보다 작아야 => 0,1,2 만가능
-                        {
-                            try
-                            {
-                                BigInteger gold = 0;
-
-                                if (index == 0)
-                                {
-                                    gold = eval.Action.gold1;
-                                }
-                                else if (index == 1)
-                                {
-                                    gold = eval.Action.gold2;
-                                }
-                                else
-                                {
-                                    gold = eval.Action.gold3;
-                                }
-
-                                //[TentuPlay] RankingReward 기록
-                                //Local에서 변경하는 States.Instance 보다는 블락에서 꺼내온 eval.OutputStates를 사용
-                                Address agentAddress = States.Instance.AgentState.address;
-                                if (eval.OutputStates.TryGetGoldBalance(agentAddress, GoldCurrency, out var balance))
-                                {
-                                    var total = balance +
-                                                new FungibleAssetValue(balance.Currency, gold, 0);
-                                    new TPStashEvent().CharacterCurrencyGet(
-                                        player_uuid: agentAddress.ToHex(),
-                                        character_uuid: States.Instance.CurrentAvatarState.address.ToHex().Substring(0, 4),
-                                        currency_slug: "gold",
-                                        currency_quantity: (float) gold,
-                                        currency_total_quantity: float.Parse(total.GetQuantityString()),
-                                        reference_entity: entity.Quests,
-                                        reference_category_slug: "arena",
-                                        reference_slug: "RankingRewardIndex" + index
-                                    );
-                                }
-                            }
-                            catch
-                            {
-                                // TentuPlay 실행 시 혹시 에러가 나더라도 넘어가도록.
-                            }
-                        }
-                    }
-
-                    UpdateAgentState(eval);
-
-                }).AddTo(_disposables);
         }
 
         private void ItemEnhancement()
