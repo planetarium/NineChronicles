@@ -113,7 +113,7 @@ namespace Nekoyume.Battle
             Log.clearedWaveNumber = 0;
             Log.newlyCleared = false;
             Player.Spawn();
-            TurnNumber = 1;
+            TurnNumber = 0;
             for (var i = 0; i < _waves.Count; i++)
             {
                 Characters = new SimplePriorityQueue<CharacterBase, decimal>();
