@@ -20,7 +20,7 @@ namespace Nekoyume
             IDictionary<string, string> tableSheets,
             GoldDistribution[] goldDistributions,
             PendingActivationState[] pendingActivationStates,
-            Address adminAddress,
+            AdminState adminState,
             AuthorizedMinersState authorizedMinersState = null,
             bool isActivateAdminAddress = false
         )
@@ -43,10 +43,10 @@ namespace Nekoyume
                 TableSheets = (Dictionary<string, string>) tableSheets,
                 GameConfigState = gameConfigState,
                 RedeemCodeState = new RedeemCodeState(redeemCodeListSheet),
-                AdminAddressState = new AdminState(adminAddress, 1500000),
+                AdminAddressState = adminState,
                 ActivatedAccountsState = new ActivatedAccountsState(
                     isActivateAdminAddress
-                    ? ImmutableHashSet<Address>.Empty.Add(adminAddress)
+                    ? ImmutableHashSet<Address>.Empty.Add(adminState.AdminAddress)
                     : ImmutableHashSet<Address>.Empty),
                 GoldCurrencyState = new GoldCurrencyState(ncg),
                 GoldDistributions = goldDistributions,

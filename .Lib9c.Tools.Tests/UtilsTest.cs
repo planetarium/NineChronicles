@@ -68,5 +68,22 @@ namespace Lib9c.Tools.Tests
                 }.ToImmutableHashSet(),
                 authorizedMinerState.Miners);
         }
+
+        [Fact]
+        public void GetAdminState()
+        {
+            var json = @" {
+                 ""validUntil"": 1500000,
+                 ""adminAddress"": ""0000000000000000000000000000000000000001""
+                 }";
+            var configPath = Path.GetTempFileName();
+            File.WriteAllText(configPath, json);
+
+            var adminState = Utils.GetAdminState(configPath);
+            Assert.Equal(1500000, adminState.ValidUntil);
+            Assert.Equal(
+                new Address("0000000000000000000000000000000000000001"),
+                adminState.AdminAddress);
+        }
     }
 }

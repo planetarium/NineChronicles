@@ -22,8 +22,11 @@ namespace Lib9c.Tools.SubCommend
             string goldDistributedPath,
             [Option('a', Description = "Number of activation keys to generate")]
             uint activationKeyCount,
+            [Option("adminStateConfig", Description = "Config path to create AdminState")]
+            string adminStateConfigPath,
             [Option('m', Description = "Config path to create AuthorizedMinersState")]
             string authorizedMinerConfigPath = null
+
         )
         {
             Dictionary<string, string> tableSheets = Utils.ImportSheets(gameConfigDir);
@@ -33,6 +36,8 @@ namespace Lib9c.Tools.SubCommend
                 activationKeyCount);
             GoldDistribution[] goldDistributions = GoldDistribution
                 .LoadInDescendingEndBlockOrder(goldDistributedPath);
+
+            AdminState adminState = Utils.GetAdminState(adminStateConfigPath);
 
             AuthorizedMinersState authorizedMinersState = null;
             if (!(authorizedMinerConfigPath is null))
@@ -44,7 +49,7 @@ namespace Lib9c.Tools.SubCommend
                 tableSheets,
                 goldDistributions,
                 pendingActivationStates.ToArray(),
-                new Address("F9A15F870701268Bd7bBeA6502eB15F4997f32f9"),
+                adminState,
                 isActivateAdminAddress: activationKeyCount != 0,
                 authorizedMinersState: authorizedMinersState);
 

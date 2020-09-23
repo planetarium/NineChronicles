@@ -64,12 +64,34 @@ namespace Lib9c.Tools
                 validUntil: config.ValidUntil);
         }
 
+        public static AdminState GetAdminState(string configPath)
+        {
+            var options = new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            };
+
+            string json = File.ReadAllText(configPath);
+            var config = JsonSerializer.Deserialize<AdminStateConfig>(json, options);
+            return new AdminState(
+                adminAddress: new Address(config.AdminAddress),
+                validUntil: config.ValidUntil);
+        }
+
         [Serializable]
         public struct AuthorizedMinersStateConfig
         {
             public long Interval { get; set; }
 
             public List<string> Miners { get; set; }
+
+            public long ValidUntil { get; set; }
+        }
+
+        [Serializable]
+        public struct AdminStateConfig
+        {
+            public string AdminAddress { get; set; }
 
             public long ValidUntil { get; set; }
         }
