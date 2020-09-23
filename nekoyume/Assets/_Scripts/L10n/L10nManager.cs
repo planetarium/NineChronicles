@@ -193,34 +193,41 @@ namespace Nekoyume.L10n
                         (header, index) => header.ToLower();
                     var records = csvReader.GetRecords<L10nCsvModel>();
                     var recordsIndex = 0;
-                    foreach (var record in records)
+                    try
                     {
+                        foreach (var record in records)
+                        {
 #if TEST_LOG
                         Debug.Log($"{csvFileInfo.Name}: {recordsIndex}");
 #endif
-                        var key = record.Key;
-                        if (string.IsNullOrEmpty(key))
-                        {
+                            var key = record.Key;
+                            if (string.IsNullOrEmpty(key))
+                            {
+                                recordsIndex++;
+                                continue;
+                            }
+
+                            var value = (string) typeof(L10nCsvModel)
+                                .GetProperty(languageType.ToString())?
+                                .GetValue(record);
+
+                            if (string.IsNullOrEmpty(value))
+                            {
+                                value = record.English;
+                            }
+
+                            if (dictionary.ContainsKey(key))
+                            {
+                                throw new L10nAlreadyContainsKeyException($"key: {key}, recordsIndex: {recordsIndex}, csvFileInfo: {csvFileInfo.FullName}");
+                            }
+
+                            dictionary.Add(key, value);
                             recordsIndex++;
-                            continue;
                         }
-
-                        var value = (string) typeof(L10nCsvModel)
-                            .GetProperty(languageType.ToString())?
-                            .GetValue(record);
-
-                        if (string.IsNullOrEmpty(value))
-                        {
-                            value = record.English;
-                        }
-
-                        if (dictionary.ContainsKey(key))
-                        {
-                            throw new L10nAlreadyContainsKeyException($"key: {key}, recordsIndex: {recordsIndex}, csvFileInfo: {csvFileInfo.FullName}");
-                        }
-
-                        dictionary.Add(key, value);
-                        recordsIndex++;
+                    }
+                    catch (CsvHelper.MissingFieldException e)
+                    {
+                        Debug.LogWarning($"`{csvFileInfo.Name}` file has empty field.\n{e}");
                     }
                 }
             }
