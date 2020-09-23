@@ -42,6 +42,9 @@ namespace Nekoyume.Game.Controller
             public const string Win = "bgm_win";
             public const string Lose = "bgm_lose";
             public const string PrologueBattle = "bgm_prologue_battle";
+            public const string PVPBattle = "bgm_pvp_battle";
+            public const string PVPWin = "bgm_pvp_win";
+            public const string PVPLose = "bgm_pvp_lose";
         }
 
         public class SfxCode

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Nekoyume.Game;
+using Nekoyume.Game.Controller;
 using Nekoyume.L10n;
 using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.Item;
@@ -35,6 +36,8 @@ namespace Nekoyume.UI
             base.Show();
 
             var win = log.result == BattleLog.Result.Win;
+            var code = win ? AudioController.MusicCode.PVPWin : AudioController.MusicCode.PVPLose;
+            AudioController.instance.PlayMusic(code);
             victoryImageContainer.SetActive(win);
             defeatImageContainer.SetActive(!win);
             scoreText.text = $"{log.score}";
