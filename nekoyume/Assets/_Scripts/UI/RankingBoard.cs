@@ -189,8 +189,6 @@ namespace Nekoyume.UI
 
             _npc.gameObject.SetActive(false);
             speechBubble.Hide();
-
-            AudioController.instance.PlayMusic(AudioController.MusicCode.Main);
         }
 
         private void SubscribeState(StateType stateType)
