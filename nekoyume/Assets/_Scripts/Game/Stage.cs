@@ -1228,7 +1228,7 @@ namespace Nekoyume.Game
         {
             try
             {
-                stageStatus stage_status = stageStatus.Unknown;
+                stageStatus stageStatus = stageStatus.Unknown;
                 switch (log.result)
                 {
                     case BattleLog.Result.Win:
