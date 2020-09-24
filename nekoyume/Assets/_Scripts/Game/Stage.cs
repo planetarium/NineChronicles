@@ -1192,7 +1192,7 @@ namespace Nekoyume.Game
             }
         }
 
-        private void onCharacterConsumablePlay(string stage_category_slug, string stage_slug)
+        private void OnCharacterConsumablePlay(string stageCategorySlug, string stageSlug)
         {
             try
             {
