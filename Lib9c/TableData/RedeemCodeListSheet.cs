@@ -7,18 +7,20 @@ using static Nekoyume.TableData.TableExtensions;
 namespace Nekoyume.TableData
 {
     [Serializable]
-    public class RedeemCodeListSheet : Sheet<PublicKey, RedeemCodeListSheet.Row>
+    public class RedeemCodeListSheet : Sheet<int, RedeemCodeListSheet.Row>
     {
         [Serializable]
-        public class Row : SheetRow<PublicKey>
+        public class Row : SheetRow<int>
         {
-            public override PublicKey Key => _key;
-            private PublicKey _key;
+            public override int Key => Id;
+            public int Id { get; private set; }
             public int RewardId { get; private set; }
+            public PublicKey PublicKey { get; private set; }
             public override void Set(IReadOnlyList<string> fields)
             {
-                _key = new PublicKey(ByteUtil.ParseHex(fields[0]));
+                Id = ParseInt(fields[0]);
                 RewardId = ParseInt(fields[1]);
+                PublicKey = new PublicKey(ByteUtil.ParseHex(fields[2]));
             }
         }
 
