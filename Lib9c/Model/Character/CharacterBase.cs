@@ -394,7 +394,7 @@ namespace Nekoyume.Model
             if (!_skillsCooldown.Any())
                 return;
 
-            foreach (var key in _skillsCooldown.Keys.ToList())
+            foreach (var key in _skillsCooldown.Keys.OrderBy(i => i))
             {
                 var value = _skillsCooldown[key];
                 if (value <= 1)

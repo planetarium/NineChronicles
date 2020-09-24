@@ -135,7 +135,7 @@ namespace Nekoyume.Battle
 
             var itemSelector = new WeightedSelector<StageSheet.RewardData>(Random);
             var rewardSheet = WeeklyArenaRewardSheet;
-            foreach (var row in rewardSheet.Values)
+            foreach (var row in rewardSheet.OrderedList)
             {
                 var reward = row.Reward;
                 if (reward.RequiredLevel <= Player.Level)

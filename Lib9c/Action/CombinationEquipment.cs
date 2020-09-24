@@ -209,7 +209,7 @@ namespace Nekoyume.Action
             avatarState.actionPoint -= requiredActionPoint;
             if (!(optionIds is null))
             {
-                foreach (var id in optionIds)
+                foreach (var id in optionIds.OrderBy(id => id))
                 {
                     agentState.unlockedOptions.Add(id);
                 }
@@ -326,7 +326,7 @@ namespace Nekoyume.Action
             }
             finally
             {
-                foreach (var optionRow in optionRows)
+                foreach (var optionRow in optionRows.OrderBy(r => r.Id))
                 {
                     if (optionRow.StatType != StatType.NONE)
                     {
