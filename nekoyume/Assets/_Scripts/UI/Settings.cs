@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using UnityEngine;
 using System.Collections.Generic;
 using Libplanet;
+using Libplanet.Crypto;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using UniRx;
@@ -28,6 +29,8 @@ namespace Nekoyume.UI
         public TextMeshProUGUI redeemCodeText;
         public Blur blur;
         public RedeemCode redeemCode;
+
+        private PrivateKey _privateKey;
 
         #region Mono
 
@@ -60,15 +63,23 @@ namespace Nekoyume.UI
 
         public override void Show(bool ignoreStartAnimation = false)
         {
-            if (Game.Game.instance.Agent.PrivateKey is null)
+            if (!(_privateKey is null))
             {
-                addressContentInputField.text = string.Empty;
-                privateKeyContentInputField.text = string.Empty;
+                addressContentInputField.text = _privateKey.ToAddress().ToHex();
+                privateKeyContentInputField.text = ByteUtil.Hex(_privateKey.ByteArray);
             }
             else
             {
-                addressContentInputField.text = Game.Game.instance.Agent.Address.ToHex();
-                privateKeyContentInputField.text = ByteUtil.Hex(Game.Game.instance.Agent.PrivateKey.ByteArray);
+                if (Game.Game.instance.Agent.PrivateKey is null)
+                {
+                    addressContentInputField.text = string.Empty;
+                    privateKeyContentInputField.text = string.Empty;
+                }
+                else
+                {
+                    addressContentInputField.text = Game.Game.instance.Agent.Address.ToHex();
+                    privateKeyContentInputField.text = ByteUtil.Hex(Game.Game.instance.Agent.PrivateKey.ByteArray);
+                }
             }
 
             var muteString = L10nManager.Localize("UI_MUTE_AUDIO");
@@ -109,6 +120,14 @@ namespace Nekoyume.UI
             var settings = Nekoyume.Settings.Instance;
             SetVolumeMaster(settings.volumeMaster);
             SetVolumeMasterMute(settings.isVolumeMasterMuted);
+        }
+
+        public void UpdatePrivateKey(string privateKeyHex)
+        {
+            if (!string.IsNullOrEmpty(privateKeyHex))
+            {
+                _privateKey = new PrivateKey(ByteUtil.ParseHex(privateKeyHex));
+            }
         }
 
         private void CopyAddressToClipboard()

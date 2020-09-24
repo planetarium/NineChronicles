@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
@@ -210,9 +211,12 @@ namespace Nekoyume.UI
                         opened = false;
                         string left = text.Substring(0, openIndex);
                         string right = text.Substring(i + 1);
-                        string[] pair = text.Substring(openIndex + 1, i - openIndex - 1).Split(':');
+                        string[] pair = text.Substring(openIndex + 1, i - openIndex - 1)
+                            .Split(':', '：')
+                            .Select(value => value.Trim())
+                            .ToArray();
                         string pairKey = pair[0].ToLower();
-                        int.TryParse(pair[1], out int pairValue);
+                        int.TryParse(pair[1], out _);
                         switch (pairKey)
                         {
                             case "npc":

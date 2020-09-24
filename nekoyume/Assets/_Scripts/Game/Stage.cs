@@ -495,7 +495,7 @@ namespace Nekoyume.Game
 
             yield return new WaitForSeconds(2.0f);
 
-            AudioController.instance.PlayMusic(data.BGM);
+            AudioController.instance.PlayMusic(AudioController.MusicCode.PVPBattle);
         }
 
         private IEnumerator CoStageEnd(BattleLog log)
@@ -555,6 +555,7 @@ namespace Nekoyume.Game
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             var avatarState = new AvatarState(
                 (Bencodex.Types.Dictionary) Game.instance.Agent.GetState(avatarAddress));
+            _battleResultModel.actionPoint = avatarState.actionPoint;
             _battleResultModel.State = log.result;
             Game.instance.TableSheets.WorldSheet.TryGetValue(log.worldId, out var world);
             _battleResultModel.WorldName = world?.GetLocalizedName();
@@ -1051,13 +1052,14 @@ namespace Nekoyume.Game
 #if TEST_LOG
             Debug.LogWarning($"{nameof(this.waveTurn)}: {this.waveTurn} / {nameof(CoWaveTurnEnd)} Enter");
 #endif
+            yield return new WaitWhile(() => selectedPlayer.actions.Any());
+            Event.OnPlayerTurnEnd.Invoke(turnNumber);
             var characters = GetComponentsInChildren<Character.CharacterBase>();
             yield return new WaitWhile(() => characters.Any(i => i.actions.Any()));
             this.waveTurn = waveTurn;
 #if TEST_LOG
             Debug.LogWarning($"{nameof(this.waveTurn)}: {this.waveTurn} / {nameof(CoWaveTurnEnd)} Exit");
 #endif
-            Event.OnPlayerTurnEnd.Invoke(turnNumber);
         }
 
         #endregion

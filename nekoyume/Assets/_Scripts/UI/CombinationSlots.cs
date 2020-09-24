@@ -16,9 +16,11 @@ namespace Nekoyume.UI
         protected override void Awake()
         {
             base.Awake();
-            CombinationSlotStatesSubject.CombinationSlotStates.Subscribe(SetSlots)
+            CombinationSlotStatesSubject.CombinationSlotStates
+                .Subscribe(SetSlots)
                 .AddTo(gameObject);
-            Game.Game.instance.Agent.BlockIndexSubject.ObserveOnMainThread().Subscribe(SubscribeBlockIndex)
+            Game.Game.instance.Agent.BlockIndexSubject.ObserveOnMainThread()
+                .Subscribe(SubscribeBlockIndex)
                 .AddTo(gameObject);
             _blockIndex = Game.Game.instance.Agent.BlockIndex;
         }

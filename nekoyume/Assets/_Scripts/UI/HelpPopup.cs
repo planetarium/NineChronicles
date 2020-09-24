@@ -15,6 +15,7 @@ using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.UI;
 using mixpanel;
+using Nekoyume.EnumType;
 using Nekoyume.L10n;
 
 namespace Nekoyume.UI
@@ -119,6 +120,8 @@ namespace Nekoyume.UI
         private List<(Image, float)> _images = new List<(Image, float)>();
         private List<(Image, float)> _spinningImages = new List<(Image, float)>();
         private List<(TextMeshProUGUI, float)> _texts = new List<(TextMeshProUGUI, float)>();
+
+        public override WidgetType WidgetType => WidgetType.Tooltip;
 
         #region Control
 

@@ -116,6 +116,7 @@ namespace Nekoyume.Game
             yield return L10nManager.Initialize().ToYieldInstruction();
 #endif
 
+            Widget.Find<Title>().ShowSettingButton();
             MainCanvas.instance.InitializeFirst();
             yield return Addressables.InitializeAsync();
             yield return StartCoroutine(CoInitializeTableSheets());
@@ -150,6 +151,15 @@ namespace Nekoyume.Game
                 .AddTo(gameObject);
 
             ShowNext(agentInitializeSucceed);
+
+            Agent.BlockRenderer
+                .ReorgSubject
+                .ObserveOnMainThread()
+                .Subscribe(_ =>
+                {
+                    var msg = L10nManager.Localize("ERROR_REORG_OCCURRED");
+                    UI.Notification.Push(Model.Mail.MailType.System, msg);
+                });
 
             if (Agent is RPCAgent rpcAgent)
             {
@@ -339,6 +349,10 @@ namespace Nekoyume.Game
                 yield break;
             }
 
+            var settings = Widget.Find<UI.Settings>();
+            settings.UpdateSoundSettings();
+            settings.UpdatePrivateKey(_options.PrivateKey);
+
             var loginPopup = Widget.Find<LoginPopup>();
 
             if (Application.isBatchMode)
@@ -347,7 +361,6 @@ namespace Nekoyume.Game
             }
             else
             {
-                Widget.Find<UI.Settings>().UpdateSoundSettings();
                 var title = Widget.Find<Title>();
                 title.Show(_options.KeyStorePath, _options.PrivateKey);
                 yield return new WaitUntil(() => loginPopup.Login);
