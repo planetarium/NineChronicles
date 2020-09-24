@@ -15,6 +15,10 @@ namespace Nekoyume.L10n
         private bool fixedFontAsset = default;
 
         [SerializeField,
+         Tooltip("`L10nManager.OnLanguageTypeSettingsChange`를 구독해서 폰트 스타일을 교체할지를 설정합니다.")]
+        private bool fixedFontStyle = default;
+
+        [SerializeField,
          Tooltip("`L10nManager.OnLanguageTypeSettingsChange`를 구독해서 폰트 사이즈 오프셋을 반영할지를 설정합니다.")]
         private bool fixedFontSizeOffset = default;
 
@@ -31,6 +35,8 @@ namespace Nekoyume.L10n
         private TextMeshProUGUI _textCache;
 
         private int? _fontMaterialIndexCache;
+
+        private FontStyles? _defaultFontStylesCache;
 
         private float? _defaultFontSizeCache;
 
@@ -52,6 +58,9 @@ namespace Nekoyume.L10n
                 .ToList()
                 .IndexOf(Text.fontMaterial)).Value;
 
+        private FontStyles DefaultFontStyles =>
+            _defaultFontStylesCache ?? (_defaultFontStylesCache = Text.fontStyle).Value;
+
         private float DefaultFontSize =>
             _defaultFontSizeCache ?? (_defaultFontSizeCache = Text.fontSize).Value;
 
@@ -69,6 +78,7 @@ namespace Nekoyume.L10n
         {
             Assert.NotNull(Text);
             Assert.AreEqual(FontMaterialIndex, _fontMaterialIndexCache);
+            Assert.AreEqual(DefaultFontStyles, _defaultFontStylesCache);
             Assert.AreEqual(DefaultFontSize, _defaultFontSizeCache);
             Assert.AreEqual(DefaultCharacterSpacing, _defaultCharacterSpacingCache);
             Assert.AreEqual(DefaultWordSpacing, _defaultWordSpacingCache);
@@ -119,6 +129,17 @@ namespace Nekoyume.L10n
                 {
                     Text.fontSharedMaterial = fontMaterial;
                 }
+            }
+
+            if (!fixedFontStyle)
+            {
+                var mask = ~FontStyles.Normal;
+                if (data.SetFontStyleBoldToDisabledAsForced)
+                {
+                    mask &= ~FontStyles.Bold;
+                }
+
+                Text.fontStyle = DefaultFontStyles & mask;
             }
 
             if (!fixedFontSizeOffset)

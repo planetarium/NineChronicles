@@ -19,6 +19,9 @@ namespace Nekoyume.L10n
         private List<FontMaterialData> fontMaterialDataList = null;
 
         [SerializeField]
+        private bool setFontStyleBoldToDisabledAsForced = default;
+
+        [SerializeField]
         private float fontSizeOffset = default;
 
         [SerializeField]
@@ -33,6 +36,8 @@ namespace Nekoyume.L10n
         public TMP_FontAsset FontAsset => fontAsset;
 
         public IReadOnlyList<FontMaterialData> FontMaterialDataList => fontMaterialDataList;
+
+        public bool SetFontStyleBoldToDisabledAsForced => setFontStyleBoldToDisabledAsForced;
 
         public float FontSizeOffset => fontSizeOffset;
 
