@@ -1,6 +1,5 @@
 using System;
 using System.Linq;
-using NUnit.Framework;
 using TMPro;
 using UniRx;
 using UnityEngine;
@@ -34,17 +33,41 @@ namespace Nekoyume.L10n
 
         private TextMeshProUGUI _textCache;
 
-        private int? _fontMaterialIndexCache;
+        [SerializeField, HideInInspector]
+        private bool fontMaterialIndexInitialized = false;
 
-        private FontStyles? _defaultFontStylesCache;
+        [SerializeField, HideInInspector]
+        private int fontMaterialIndex;
 
-        private float? _defaultFontSizeCache;
+        [SerializeField, HideInInspector]
+        private bool defaultFontStylesInitialized = false;
 
-        private float? _defaultCharacterSpacingCache;
+        [SerializeField, HideInInspector]
+        private FontStyles defaultFontStyles;
 
-        private float? _defaultWordSpacingCache;
+        [SerializeField, HideInInspector]
+        private bool defaultFontSizeInitialized = false;
 
-        private float? _defaultLineSpacingCache;
+        [SerializeField, HideInInspector]
+        private float defaultFontSize = default;
+
+        [SerializeField, HideInInspector]
+        private bool defaultCharacterSpacingInitialized = false;
+
+        [SerializeField, HideInInspector]
+        private float defaultCharacterSpacing;
+
+        [SerializeField, HideInInspector]
+        private bool defaultWordSpacingInitialized = false;
+
+        [SerializeField, HideInInspector]
+        private float defaultWordSpacing;
+
+        [SerializeField, HideInInspector]
+        private bool defaultLineSpacingInitialized = false;
+
+        [SerializeField, HideInInspector]
+        private float defaultLineSpacing;
 
         private IDisposable _l10nManagerOnLanguageTypeSettingsChangeDisposable;
 
@@ -52,37 +75,45 @@ namespace Nekoyume.L10n
             ? _textCache
             : _textCache = GetComponent<TextMeshProUGUI>();
 
-        private int FontMaterialIndex =>
-            _fontMaterialIndexCache ??
-            (_fontMaterialIndexCache = Text.fontMaterials
-                .ToList()
-                .IndexOf(Text.fontMaterial)).Value;
-
-        private FontStyles DefaultFontStyles =>
-            _defaultFontStylesCache ?? (_defaultFontStylesCache = Text.fontStyle).Value;
-
-        private float DefaultFontSize =>
-            _defaultFontSizeCache ?? (_defaultFontSizeCache = Text.fontSize).Value;
-
-        private float DefaultCharacterSpacing =>
-            _defaultCharacterSpacingCache ??
-            (_defaultCharacterSpacingCache = Text.characterSpacing).Value;
-
-        private float DefaultWordSpacing =>
-            _defaultWordSpacingCache ?? (_defaultWordSpacingCache = Text.wordSpacing).Value;
-
-        private float DefaultLineSpacing =>
-            _defaultLineSpacingCache ?? (_defaultLineSpacingCache = Text.lineSpacing).Value;
-
         private void Awake()
         {
-            Assert.NotNull(Text);
-            Assert.AreEqual(FontMaterialIndex, _fontMaterialIndexCache);
-            Assert.AreEqual(DefaultFontStyles, _defaultFontStylesCache);
-            Assert.AreEqual(DefaultFontSize, _defaultFontSizeCache);
-            Assert.AreEqual(DefaultCharacterSpacing, _defaultCharacterSpacingCache);
-            Assert.AreEqual(DefaultWordSpacing, _defaultWordSpacingCache);
-            Assert.AreEqual(DefaultLineSpacing, _defaultLineSpacingCache);
+            if (!fontMaterialIndexInitialized)
+            {
+                fontMaterialIndex = Text.fontMaterials
+                    .ToList()
+                    .IndexOf(Text.fontMaterial);
+                fontMaterialIndexInitialized = true;
+            }
+
+            if (!defaultFontStylesInitialized)
+            {
+                defaultFontStyles = Text.fontStyle;
+                defaultFontStylesInitialized = true;
+            }
+
+            if (!defaultFontSizeInitialized)
+            {
+                defaultFontSize = Text.fontSize;
+                defaultFontSizeInitialized = true;
+            }
+
+            if (!defaultCharacterSpacingInitialized)
+            {
+                defaultCharacterSpacing = Text.characterSpacing;
+                defaultCharacterSpacingInitialized = true;
+            }
+
+            if (!defaultWordSpacingInitialized)
+            {
+                defaultWordSpacing = Text.wordSpacing;
+                defaultWordSpacingInitialized = true;
+            }
+
+            if (!defaultLineSpacingInitialized)
+            {
+                defaultLineSpacing = Text.lineSpacing;
+                defaultWordSpacingInitialized = true;
+            }
 
             if (L10nManager.CurrentState == L10nManager.State.Initialized)
             {
@@ -139,19 +170,19 @@ namespace Nekoyume.L10n
                     mask &= ~FontStyles.Bold;
                 }
 
-                Text.fontStyle = DefaultFontStyles & mask;
+                Text.fontStyle = defaultFontStyles & mask;
             }
 
             if (!fixedFontSizeOffset)
             {
-                Text.fontSize = DefaultFontSize + data.FontSizeOffset;
+                Text.fontSize = defaultFontSize + data.FontSizeOffset;
             }
 
             if (!fixedSpacingOption)
             {
-                Text.characterSpacing = DefaultCharacterSpacing + data.CharacterSpacingOffset;
-                Text.wordSpacing = DefaultWordSpacing + data.WordSpacingOffset;
-                Text.lineSpacing = DefaultLineSpacing + data.LineSpacingOffset;
+                Text.characterSpacing = defaultCharacterSpacing + data.CharacterSpacingOffset;
+                Text.wordSpacing = defaultWordSpacing + data.WordSpacingOffset;
+                Text.lineSpacing = defaultLineSpacing + data.LineSpacingOffset;
             }
         }
     }

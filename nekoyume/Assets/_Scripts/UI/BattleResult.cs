@@ -114,7 +114,7 @@ namespace Nekoyume.UI
         private GameObject[] victoryResultTexts = null;
 
         [SerializeField]
-        private ActionPoint actionPoint;
+        private ActionPoint actionPoint = null;
 
         private BattleWin01VFX _battleWin01VFX;
 
