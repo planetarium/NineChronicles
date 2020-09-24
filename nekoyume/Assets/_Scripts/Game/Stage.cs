@@ -1224,7 +1224,7 @@ namespace Nekoyume.Game
             }
         }
 
-        private void onCharacterStageEnd(BattleLog log, string stage_category_slug, string stage_slug, int stage_score)
+        private void OnCharacterStageEnd(BattleLog log, string stageCategorySlug, string stageSlug, int stageScore)
         {
             try
             {
