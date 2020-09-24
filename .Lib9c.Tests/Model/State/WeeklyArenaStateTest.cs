@@ -126,6 +126,7 @@ namespace Lib9c.Tests.Model.State
         [InlineData(10, 1, 1, 1)]
         [InlineData(10, 6, 50, 5)]
         [InlineData(10, 6, 1, 1)]
+        [InlineData(0, 1, 1, 0)]
         public void GetArenaInfosByFirstRankAndCount(
             int infoCount,
             int firstRank,
