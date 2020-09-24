@@ -1164,7 +1164,7 @@ namespace Nekoyume.Game
             }
         }
 
-        private void onCharacterCostumePlay(string stage_category_slug, string stage_slug)
+        private void OnCharacterCostumePlay(string stageCategorySlug, string stageSlug)
         {
             try
             {
