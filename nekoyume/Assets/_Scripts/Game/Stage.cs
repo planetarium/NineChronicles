@@ -579,7 +579,7 @@ namespace Nekoyume.Game
             string stage_slug = "HackAndSlash" + "_" + log.worldId + "_" + log.stageId;
             onCharacterConsumablePlay("HackAndSlash", stage_slug);
 
-            //[TentuPlay] RankingBattle 끝 기록
+            //[TentuPlay] PlayStage 끝 기록
             onCharacterStageEnd(log, "HackAndSlash", stage_slug, log.clearedWaveNumber);
 
             var props = new Value
