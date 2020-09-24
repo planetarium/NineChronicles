@@ -57,11 +57,11 @@ namespace Nekoyume.BlockChain
               var tableSheets = Game.Game.GetTableCsvAssets();
               string goldDistributionCsvPath = Path.Combine(Application.streamingAssetsPath, "GoldDistribution.csv");
               GoldDistribution[] goldDistributions = GoldDistribution.LoadInDescendingEndBlockOrder(goldDistributionCsvPath);
-             return Nekoyume.BlockHelper.MineGenesisBlock(
-                 tableSheets,
-                 goldDistributions,
-                 pendingActivationStates,
-                 adminAddress: new Address("F9A15F870701268Bd7bBeA6502eB15F4997f32f9"),
+              return Nekoyume.BlockHelper.MineGenesisBlock(
+                  tableSheets,
+                  goldDistributions,
+                  pendingActivationStates,
+                  new AdminState(new Address("F9A15F870701268Bd7bBeA6502eB15F4997f32f9"), 1500000),
                  isActivateAdminAddress: false);
           }
 
