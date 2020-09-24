@@ -32,9 +32,9 @@ namespace Nekoyume.Action
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
             new Dictionary<string, IValue>
             {
-                ["costumes"] = new List(costumes.Select(e => e.Serialize())),
-                ["equipments"] = new List(equipments.Select(e => e.Serialize())),
-                ["foods"] = new List(foods.Select(e => e.Serialize())),
+                ["costumes"] = new List(costumes.OrderBy(i => i).Select(e => e.Serialize())),
+                ["equipments"] = new List(equipments.OrderBy(i => i).Select(e => e.Serialize())),
+                ["foods"] = new List(foods.OrderBy(i => i).Select(e => e.Serialize())),
                 ["worldId"] = worldId.Serialize(),
                 ["stageId"] = stageId.Serialize(),
                 ["avatarAddress"] = avatarAddress.Serialize(),

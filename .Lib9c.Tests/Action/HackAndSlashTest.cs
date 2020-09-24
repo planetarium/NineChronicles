@@ -630,11 +630,26 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void PlainValue()
         {
+            var guid1 = new Guid("F9168C5E-CEB2-4faa-B6BF-329BF39FA1E4");
+            var guid2 = new Guid("936DA01F-9ABD-4d9d-80C7-02AF85C822A8");
             var action = new HackAndSlash()
             {
-                costumes = new List<int>(),
-                equipments = new List<Guid>(),
-                foods = new List<Guid>(),
+                costumes = new List<int>()
+                {
+                    3,
+                    2,
+                    1,
+                },
+                equipments = new List<Guid>()
+                {
+                    guid2,
+                    guid1,
+                },
+                foods = new List<Guid>()
+                {
+                    guid2,
+                    guid1,
+                },
                 worldId = 1,
                 stageId = 1,
                 avatarAddress = _avatarAddress,
