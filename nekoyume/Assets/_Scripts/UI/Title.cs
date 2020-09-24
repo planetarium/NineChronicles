@@ -9,7 +9,7 @@ namespace Nekoyume.UI
     public class Title : ScreenWidget
     {
         [SerializeField]
-        private SettingButton settingButton;
+        private SettingButton settingButton = null;
 
         private bool _ready;
         public Animator animator;

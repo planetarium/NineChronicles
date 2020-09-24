@@ -74,7 +74,9 @@ namespace Nekoyume.UI
             new ReactiveProperty<StateType>(StateType.Arena);
 
         private readonly List<IDisposable> _disposablesAtClose = new List<IDisposable>();
-        private HashSet<Nekoyume.Model.State.RankingInfo> _rankingInfos = new HashSet<Nekoyume.Model.State.RankingInfo>();
+
+        private HashSet<Nekoyume.Model.State.RankingInfo> _rankingInfos =
+            new HashSet<Nekoyume.Model.State.RankingInfo>();
 
         protected override void Awake()
         {
@@ -168,9 +170,12 @@ namespace Nekoyume.UI
 
             AudioController.instance.PlayMusic(AudioController.MusicCode.Ranking);
 
-            WeeklyArenaStateSubject.WeeklyArenaState.Subscribe(state => UpdateArena())
+            WeeklyArenaStateSubject.WeeklyArenaState
+                .Subscribe(state => UpdateArena())
                 .AddTo(_disposablesAtClose);
-            RankingMapStatesSubject.RankingMapStates.Subscribe(SetRankingInfos).AddTo(_disposablesAtClose);
+            RankingMapStatesSubject.RankingMapStates
+                .Subscribe(SetRankingInfos)
+                .AddTo(_disposablesAtClose);
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
@@ -286,14 +291,26 @@ namespace Nekoyume.UI
                 {
                     currentAvatarCellView.Hide();
 
-                    var rank = 1;
-                    arenaRankScroll.Show(weeklyArenaState.OrderedArenaInfos
-                        .Select(arenaInfo => new ArenaRankCell.ViewModel
+                    arenaRankScroll.Show(weeklyArenaState
+                        .GetArenaInfos(1, 100)
+                        .Select(tuple => new ArenaRankCell.ViewModel
                         {
-                            rank = rank++,
-                            arenaInfo = arenaInfo,
+                            rank = tuple.rank,
+                            arenaInfo = tuple.arenaInfo,
                             currentAvatarArenaInfo = null
                         }).ToList(), true);
+                    // NOTE: If you want to test many arena cells, use below instead of above.
+                    // arenaRankScroll.Show(Enumerable
+                    //     .Range(1, 1000)
+                    //     .Select(rank => new ArenaRankCell.ViewModel
+                    //     {
+                    //         rank = rank,
+                    //         arenaInfo = new ArenaInfo(
+                    //             States.Instance.CurrentAvatarState,
+                    //             Game.Game.instance.TableSheets.CharacterSheet,
+                    //             true),
+                    //         currentAvatarArenaInfo = null
+                    //     }).ToList(), true);
 
                     return;
                 }
@@ -310,9 +327,6 @@ namespace Nekoyume.UI
 
                 arenaRankScroll.Show(weeklyArenaState
                     .GetArenaInfos(1, 100)
-                    .Where(tuple =>
-                        tuple.arenaInfo.Level >=
-                        GameConfig.RequireClearedStageLevel.ActionsInRankingBoard)
                     .Select(tuple => new ArenaRankCell.ViewModel
                     {
                         rank = tuple.rank,
@@ -331,6 +345,7 @@ namespace Nekoyume.UI
                     expRankScroll.Show();
                     return;
                 }
+
                 SetRankingInfos(rankingState);
 
                 var rank = 1;
@@ -342,7 +357,8 @@ namespace Nekoyume.UI
                 {
                     var currentBlockIndex = Game.Game.instance.Agent.BlockIndex;
                     rankingInfos = rankingInfos
-                        .Where(context => currentBlockIndex - context.UpdatedAt <= GameConfig.DailyRewardInterval)
+                        .Where(context =>
+                            currentBlockIndex - context.UpdatedAt <= GameConfig.DailyRewardInterval)
                         .ToList();
                 }
 
