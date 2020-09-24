@@ -173,6 +173,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   fixedFontAsset: 0
   fixedFontSizeOffset: 0
+  fixedSpacingOption: 0
   fontMaterialType: 0
   l10nKey: 
 --- !u!1 &2162572051453755382
@@ -423,6 +424,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   fixedFontAsset: 0
   fixedFontSizeOffset: 0
+  fixedSpacingOption: 0
   fontMaterialType: 0
   l10nKey: 
 --- !u!1 &3331192129946594787
@@ -1118,6 +1120,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Pivot.y
       value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4727936511996701799, guid: 9958b2722fb81124bb04cd5640d9b4fc,
+        type: 3}
+      propertyPath: l10nKey
+      value: UI_SETTINGS
       objectReference: {fileID: 0}
     - target: {fileID: 3608999211004217049, guid: 9958b2722fb81124bb04cd5640d9b4fc,
         type: 3}

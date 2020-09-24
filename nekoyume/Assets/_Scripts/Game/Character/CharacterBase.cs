@@ -840,7 +840,8 @@ namespace Nekoyume.Game.Character
                         {
                             if (character.actions.Any())
                             {
-                                yield return new WaitWhile(() => character.actions.Any());
+                                var time = Time.time;
+                                yield return new WaitWhile(() => Time.time - time > 10f || character.actions.Any());
                             }
                         }
                     }
