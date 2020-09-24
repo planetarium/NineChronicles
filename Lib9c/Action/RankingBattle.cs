@@ -147,7 +147,7 @@ namespace Nekoyume.Action
 
             Result = simulator.Log;
 
-            foreach (var itemBase in simulator.Reward)
+            foreach (var itemBase in simulator.Reward.OrderBy(i => i.Id))
             {
                 avatarState.inventory.AddItem(itemBase);
             }
