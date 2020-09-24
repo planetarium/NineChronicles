@@ -483,7 +483,10 @@ namespace Nekoyume.Model.State
                 [(Text)"lens"] = (Integer)lens,
                 [(Text)"ear"] = (Integer)ear,
                 [(Text)"tail"] = (Integer)tail,
-                [(Text)"combinationSlotAddresses"] = combinationSlotAddresses.Select(i => i.Serialize()).Serialize(),
+                [(Text)"combinationSlotAddresses"] = combinationSlotAddresses
+                    .OrderBy(i => i)
+                    .Select(i => i.Serialize())
+                    .Serialize(),
                 [(Text) "nonce"] = Nonce.Serialize(),
                 [(Text)"ranking_map_address"] = RankingMapAddress.Serialize(),
             }.Union((Dictionary)base.Serialize()));

@@ -127,7 +127,9 @@ namespace Nekoyume.Model.Mail
             _mails.Add(mail);
         }
 
-        public IValue Serialize() =>
-            new List(this.Select(m => m.Serialize()));
+        public IValue Serialize() => new List(_mails
+            .OrderByDescending(i => i.blockIndex)
+            .ThenBy(i => i.id)
+            .Select(m => m.Serialize()));
     }
 }
