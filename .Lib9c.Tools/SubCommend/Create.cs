@@ -1,11 +1,13 @@
+using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using Cocona;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Blocks;
-using Libplanet.Crypto;
 using Nekoyume;
 using Nekoyume.Action;
 using Nekoyume.Model;
@@ -16,9 +18,20 @@ namespace Lib9c.Tools.SubCommend
     public class Create
     {
         public void Genesis(
-            [Option('g')] string gameConfigDir,
-            [Option('d')] string goldDistributedPath,
-            [Option('a')] uint activationKeyCount)
+            [Option('g', Description = "/path/to/nekoyume-unity/nekoyume/Assets/AddressableAssets/TableCSV")]
+            string gameConfigDir,
+            [Option('d', Description = "/path/to/nekoyume-unity/nekoyume/Assets/StreamingAssets/GoldDistribution.csv")]
+            string goldDistributedPath,
+            [Option('a', Description = "Number of activation keys to generate")]
+            uint activationKeyCount,
+            [Option("adminStateConfig", Description = "Config path to create AdminState")]
+            string adminStateConfigPath,
+            [Option("activatedAccountsList", Description = "List of accounts to be activated")]
+            string activatedAccountsListPath = null,
+            [Option('m', Description = "Config path to create AuthorizedMinersState")]
+            string authorizedMinerConfigPath = null
+
+        )
         {
             Dictionary<string, string> tableSheets = Utils.ImportSheets(gameConfigDir);
             Utils.CreateActivationKey(
@@ -27,14 +40,28 @@ namespace Lib9c.Tools.SubCommend
                 activationKeyCount);
             GoldDistribution[] goldDistributions = GoldDistribution
                 .LoadInDescendingEndBlockOrder(goldDistributedPath);
-            
+
+            AdminState adminState = Utils.GetAdminState(adminStateConfigPath);
+
+            AuthorizedMinersState authorizedMinersState = null;
+            if (!(authorizedMinerConfigPath is null))
+            {
+                authorizedMinersState = Utils.GetAuthorizedMinersState(authorizedMinerConfigPath);
+            }
+
+            var activatedAccounts = activatedAccountsListPath is null
+                ? ImmutableHashSet<Address>.Empty
+                : Utils.GetActivatedAccounts(activatedAccountsListPath);
+
             Block<PolymorphicAction<ActionBase>> block = BlockHelper.MineGenesisBlock(
                 tableSheets,
                 goldDistributions,
                 pendingActivationStates.ToArray(),
-                new Address("F9A15F870701268Bd7bBeA6502eB15F4997f32f9"),
+                adminState,
+                authorizedMinersState: authorizedMinersState,
+                activatedAccounts: activatedAccounts,
                 isActivateAdminAddress: activationKeyCount != 0);
-            
+
             ExportBlock(block, "genesis-block");
             ExportKeys(activationKeys, "keys.txt");
         }

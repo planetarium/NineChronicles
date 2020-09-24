@@ -1,6 +1,10 @@
+using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Blocks;
@@ -43,6 +47,77 @@ namespace Lib9c.Tools
                 pendingActivationStates.Add(s);
                 activationKeys.Add(ak);
             }
+        }
+
+        public static AuthorizedMinersState GetAuthorizedMinersState(string configPath)
+        {
+            var options = new JsonSerializerOptions
+            {
+                AllowTrailingCommas = true,
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            };
+
+            string json = File.ReadAllText(configPath);
+            var config = JsonSerializer.Deserialize<AuthorizedMinersStateConfig>(json, options);
+            return new AuthorizedMinersState(
+                miners: config.Miners.Select(addr => new Address(addr)),
+                interval: config.Interval,
+                validUntil: config.ValidUntil);
+        }
+
+        public static AdminState GetAdminState(string configPath)
+        {
+            var options = new JsonSerializerOptions
+            {
+                AllowTrailingCommas = true,
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            };
+
+            string json = File.ReadAllText(configPath);
+            var config = JsonSerializer.Deserialize<AdminStateConfig>(json, options);
+            return new AdminState(
+                adminAddress: new Address(config.AdminAddress),
+                validUntil: config.ValidUntil);
+        }
+
+        public static ImmutableHashSet<Address> GetActivatedAccounts(string listPath)
+        {
+            var options = new JsonSerializerOptions
+            {
+                AllowTrailingCommas = true,
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            };
+
+            string json = File.ReadAllText(listPath);
+            ActivatedAccounts activatedAccounts = JsonSerializer.Deserialize<ActivatedAccounts>(json, options);
+
+            return activatedAccounts.Accounts
+                .Select(account => new Address(account))
+                .ToImmutableHashSet();
+        }
+
+        [Serializable]
+        private struct AuthorizedMinersStateConfig
+        {
+            public long Interval { get; set; }
+
+            public List<string> Miners { get; set; }
+
+            public long ValidUntil { get; set; }
+        }
+
+        [Serializable]
+        private struct AdminStateConfig
+        {
+            public string AdminAddress { get; set; }
+
+            public long ValidUntil { get; set; }
+        }
+
+        [Serializable]
+        private struct ActivatedAccounts
+        {
+            public List<string> Accounts { get; set; }
         }
     }
 }
