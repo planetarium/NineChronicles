@@ -1106,7 +1106,7 @@ namespace Nekoyume.Game
             ActionCamera.instance.ChaseX(player.transform);
         }
 
-        private void onCharacterStageStart(string stage_category_slug, string stage_slug, string stage_level)
+        private void OnCharacterStageStart(string stageCategorySlug, string stageSlug, string stageLevel)
         {
             try
             {
