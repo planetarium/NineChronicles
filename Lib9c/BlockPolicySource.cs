@@ -76,15 +76,24 @@ namespace Nekoyume.BlockChain
                 return true;
             }
 
-            if (blockChain.GetState(ActivatedAccountsState.Address) is Dictionary asDict)
+            try
             {
-                IImmutableSet<Address> activatedAccounts =
-                    new ActivatedAccountsState(asDict).Accounts;
-                return !activatedAccounts.Any() ||
-                    activatedAccounts.Contains(transaction.Signer);
+                if (blockChain.GetState(ActivatedAccountsState.Address) is Dictionary asDict)
+                {
+                    IImmutableSet<Address> activatedAccounts =
+                        new ActivatedAccountsState(asDict).Accounts;
+                    return !activatedAccounts.Any() ||
+                        activatedAccounts.Contains(transaction.Signer);
+                }
+                else
+                {
+                    return true;
+                }
             }
-            else
+            catch (IncompleteBlockStatesException)
             {
+                // It can be caused during `Swarm<T>.PreloadAsync()` because it doesn't fill its 
+                // state right away...
                 return true;
             }
         }
