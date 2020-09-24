@@ -120,6 +120,7 @@ namespace Nekoyume.Model.Item
 
         public IValue Serialize() => new Bencodex.Types.List(Items
             .OrderBy(i => i.item.Id)
+            .ThenByDescending(i => i.count)
             .Select(i => i.Serialize()));
 
         #region Add

@@ -128,8 +128,7 @@ namespace Nekoyume.Model.Mail
         }
 
         public IValue Serialize() => new List(_mails
-            .OrderByDescending(i => i.blockIndex)
-            .ThenBy(i => i.id)
+            .OrderBy(i => i.id)
             .Select(m => m.Serialize()));
     }
 }
