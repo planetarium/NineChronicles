@@ -332,7 +332,7 @@ namespace Nekoyume.BlockChain
                     break;
 
                 default:
-                    Debug.LogError($"Unhandled exception {code} received.");
+                    Widget.Find<SystemPopup>().Show("UI_ERROR", "ERROR_UNHANDLED");
                     break;
             }
 
