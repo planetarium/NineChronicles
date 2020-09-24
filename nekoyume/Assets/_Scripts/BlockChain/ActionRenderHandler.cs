@@ -659,89 +659,10 @@ namespace Nekoyume.BlockChain
                     .First()
                     .Subscribe(_ =>
                     {
-                        Address agentAddress = States.Instance.AgentState.address;
-                        var avatarState =
-                            eval.OutputStates.GetAvatarState(eval.Action.avatarAddress);
-
-                        TPStashEvent myStashEvent = new TPStashEvent();
-                        //[TentuPlay] 전투 입장 시 사용하는 Action Point
-                        myStashEvent.CharacterCurrencyUse(
-                            player_uuid: agentAddress.ToHex(),
-                            character_uuid: avatarState.address.ToHex().Substring(0, 4),
-                            currency_slug: "action_point",
-                            currency_quantity: 5,
-                            currency_total_quantity: (float)avatarState.actionPoint,
-                            reference_entity: entity.Stages,
-                            reference_category_slug: "HackAndSlash",
-                            reference_slug: "HackAndSlash" + "_" + eval.Action.worldId + "_" + eval.Action.stageId
-                            );
-
-                        //[TentuPlay] 전투 입장 시 사용하는 아이템 - 장비
-                        List<int> allEquippedEquipmentsId = new List<int>();
-                        List<int> weapon = avatarState.inventory.Items.Select(i => i.item).OfType<Weapon>().Where(e => e.equipped).Select(r => r.Id).ToList();
-                        List<int> armor = avatarState.inventory.Items.Select(i => i.item).OfType<Armor>().Where(e => e.equipped).Select(r => r.Id).ToList();
-                        List<int> belt = avatarState.inventory.Items.Select(i => i.item).OfType<Belt>().Where(e => e.equipped).Select(r => r.Id).ToList();
-                        List<int> necklace = avatarState.inventory.Items.Select(i => i.item).OfType<Necklace>().Where(e => e.equipped).Select(r => r.Id).ToList();
-                        List<int> ring = avatarState.inventory.Items.Select(i => i.item).OfType<Ring>().Where(e => e.equipped).Select(r => r.Id).ToList();
-                        allEquippedEquipmentsId.AddRange(weapon);
-                        allEquippedEquipmentsId.AddRange(armor);
-                        allEquippedEquipmentsId.AddRange(belt);
-                        allEquippedEquipmentsId.AddRange(necklace);
-                        allEquippedEquipmentsId.AddRange(ring); //need some fancier way than this...
-                        foreach (int id in allEquippedEquipmentsId)
-                        {
-                            myStashEvent.CharacterItemPlay(
-                                player_uuid: agentAddress.ToHex(),
-                                character_uuid: avatarState.address.ToHex().Substring(0, 4),
-                                item_category: itemCategory.Equipment,
-                                item_slug: id.ToString(),
-                                reference_entity: entity.Stages,
-                                reference_category_slug: "HackAndSlash",
-                                reference_slug: "HackAndSlash" + "_" + eval.Action.worldId + "_" + eval.Action.stageId
-                                );
-                        }
-                        //[TentuPlay] 전투 입장 시 사용하는 아이템 - 코스튬
-                        List<int> allEquippedCostumeIds = avatarState.inventory.Items.Select(i => i.item).OfType<Costume>().Where(e => e.equipped)
-                        .Where(s => s.ItemSubType == ItemSubType.FullCostume || s.ItemSubType == ItemSubType.Title)
-                        .Select(r => r.Id).ToList();
-                        foreach (int id in allEquippedCostumeIds)
-                        {
-                            myStashEvent.CharacterItemPlay(
-                                player_uuid: agentAddress.ToHex(),
-                                character_uuid: avatarState.address.ToHex().Substring(0, 4),
-                                item_category: itemCategory.Cosmetics,
-                                item_slug: id.ToString(),
-                                reference_entity: entity.Stages,
-                                reference_category_slug: "HackAndSlash",
-                                reference_slug: "HackAndSlash" + "_" + eval.Action.worldId + "_" + eval.Action.stageId
-                                );
-                        }
-
-                        //[TentuPlay] 전투 입장 시 사용하는 아이템 - 소모품
-                        List<Guid> consumableGuid = eval.Action.foods;
-                        // TODO: this doesn't work
-                        var consumableIds = avatarState.inventory.Items
-                            .Select(i => i.item)
-                            .OfType<Consumable>()
-                            .Where(i => consumableGuid.Contains(i.ItemId))
-                            .ToList();
-                        foreach (var food in consumableIds)
-                        {
-                            myStashEvent.CharacterItemPlay(
-                                player_uuid: agentAddress.ToHex(),
-                                character_uuid: avatarState.address.ToHex().Substring(0, 4),
-                                item_category: itemCategory.Consumable,
-                                item_slug: food.Id.ToString(),
-                                reference_entity: entity.Stages,
-                                reference_category_slug: "HackAndSlash",
-                                reference_slug: "HackAndSlash" + "_" + eval.Action.worldId + "_" + eval.Action.stageId
-                                );
-                        }
-
                         UpdateCurrentAvatarState(eval);
                         UpdateWeeklyArenaState(eval);
-                        //var avatarState =
-                        //    eval.OutputStates.GetAvatarState(eval.Action.avatarAddress);
+                        var avatarState =
+                            eval.OutputStates.GetAvatarState(eval.Action.avatarAddress);
                         States.Instance.SetCombinationSlotStates(avatarState);
                         RenderQuest(eval.Action.avatarAddress,
                             avatarState.questList.completedQuestIds);
