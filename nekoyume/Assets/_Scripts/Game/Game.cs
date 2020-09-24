@@ -152,6 +152,15 @@ namespace Nekoyume.Game
 
             ShowNext(agentInitializeSucceed);
 
+            Agent.BlockRenderer
+                .ReorgSubject
+                .ObserveOnMainThread()
+                .Subscribe(_ =>
+                {
+                    var msg = L10nManager.Localize("ERROR_REORG_OCCURRED");
+                    UI.Notification.Push(Model.Mail.MailType.System, msg);
+                });
+
             if (Agent is RPCAgent rpcAgent)
             {
                 rpcAgent.OnDisconnected

@@ -964,13 +964,14 @@ namespace Nekoyume.Game
 #if TEST_LOG
             Debug.LogWarning($"{nameof(this.waveTurn)}: {this.waveTurn} / {nameof(CoWaveTurnEnd)} Enter");
 #endif
+            yield return new WaitWhile(() => selectedPlayer.actions.Any());
+            Event.OnPlayerTurnEnd.Invoke(turnNumber);
             var characters = GetComponentsInChildren<Character.CharacterBase>();
             yield return new WaitWhile(() => characters.Any(i => i.actions.Any()));
             this.waveTurn = waveTurn;
 #if TEST_LOG
             Debug.LogWarning($"{nameof(this.waveTurn)}: {this.waveTurn} / {nameof(CoWaveTurnEnd)} Exit");
 #endif
-            Event.OnPlayerTurnEnd.Invoke(turnNumber);
         }
 
         #endregion
