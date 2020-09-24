@@ -22,6 +22,7 @@ namespace Nekoyume
             PendingActivationState[] pendingActivationStates,
             AdminState adminState,
             AuthorizedMinersState authorizedMinersState = null,
+            IImmutableSet<Address> activatedAccounts = null,
             bool isActivateAdminAddress = false
         )
         {
@@ -36,6 +37,7 @@ namespace Nekoyume
             // FIXME Must use a separate key for the mainnet.
             var minterKey = new PrivateKey();
             var ncg = new Currency("NCG", 2, minterKey.ToAddress());
+            activatedAccounts = activatedAccounts ?? ImmutableHashSet<Address>.Empty;
             var initialStatesAction = new InitializeStates
             {
                 RankingState = new RankingState(),
@@ -46,8 +48,8 @@ namespace Nekoyume
                 AdminAddressState = adminState,
                 ActivatedAccountsState = new ActivatedAccountsState(
                     isActivateAdminAddress
-                    ? ImmutableHashSet<Address>.Empty.Add(adminState.AdminAddress)
-                    : ImmutableHashSet<Address>.Empty),
+                    ? activatedAccounts.Add(adminState.AdminAddress)
+                    : activatedAccounts),
                 GoldCurrencyState = new GoldCurrencyState(ncg),
                 GoldDistributions = goldDistributions,
                 PendingActivationStates = pendingActivationStates,

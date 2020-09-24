@@ -85,5 +85,27 @@ namespace Lib9c.Tools.Tests
                 new Address("0000000000000000000000000000000000000001"),
                 adminState.AdminAddress);
         }
+
+        [Fact]
+        public void GetActivatedAccounts()
+        {
+            var json = @"{""accounts"": [
+                     ""0000000000000000000000000000000000000001"",
+                     ""0000000000000000000000000000000000000002"",
+                     ""0000000000000000000000000000000000000003"",
+                     ""0000000000000000000000000000000000000004"",
+                     ""0000000000000000000000000000000000000005""
+                 ]}";
+            var configPath = Path.GetTempFileName();
+            File.WriteAllText(configPath, json);
+
+            ImmutableHashSet<Address> activatedAccounts = Utils.GetActivatedAccounts(configPath);
+            Assert.Equal(5, activatedAccounts.Count);
+            Assert.Contains(new Address("0000000000000000000000000000000000000001"), activatedAccounts);
+            Assert.Contains(new Address("0000000000000000000000000000000000000002"), activatedAccounts);
+            Assert.Contains(new Address("0000000000000000000000000000000000000003"), activatedAccounts);
+            Assert.Contains(new Address("0000000000000000000000000000000000000004"), activatedAccounts);
+            Assert.Contains(new Address("0000000000000000000000000000000000000005"), activatedAccounts);
+        }
     }
 }

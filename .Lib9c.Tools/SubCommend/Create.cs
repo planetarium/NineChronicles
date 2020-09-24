@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
@@ -24,6 +26,8 @@ namespace Lib9c.Tools.SubCommend
             uint activationKeyCount,
             [Option("adminStateConfig", Description = "Config path to create AdminState")]
             string adminStateConfigPath,
+            [Option("activatedAccountsList", Description = "List of accounts to be activated")]
+            string activatedAccountsListPath = null,
             [Option('m', Description = "Config path to create AuthorizedMinersState")]
             string authorizedMinerConfigPath = null
 
@@ -45,13 +49,18 @@ namespace Lib9c.Tools.SubCommend
                 authorizedMinersState = Utils.GetAuthorizedMinersState(authorizedMinerConfigPath);
             }
 
+            var activatedAccounts = activatedAccountsListPath is null
+                ? ImmutableHashSet<Address>.Empty
+                : Utils.GetActivatedAccounts(activatedAccountsListPath);
+
             Block<PolymorphicAction<ActionBase>> block = BlockHelper.MineGenesisBlock(
                 tableSheets,
                 goldDistributions,
                 pendingActivationStates.ToArray(),
                 adminState,
-                isActivateAdminAddress: activationKeyCount != 0,
-                authorizedMinersState: authorizedMinersState);
+                authorizedMinersState: authorizedMinersState,
+                activatedAccounts: activatedAccounts,
+                isActivateAdminAddress: activationKeyCount != 0);
 
             ExportBlock(block, "genesis-block");
             ExportKeys(activationKeys, "keys.txt");

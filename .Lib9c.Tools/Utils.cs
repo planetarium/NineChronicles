@@ -53,6 +53,7 @@ namespace Lib9c.Tools
         {
             var options = new JsonSerializerOptions
             {
+                AllowTrailingCommas = true,
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
             };
 
@@ -68,6 +69,7 @@ namespace Lib9c.Tools
         {
             var options = new JsonSerializerOptions
             {
+                AllowTrailingCommas = true,
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
             };
 
@@ -78,8 +80,24 @@ namespace Lib9c.Tools
                 validUntil: config.ValidUntil);
         }
 
+        public static ImmutableHashSet<Address> GetActivatedAccounts(string listPath)
+        {
+            var options = new JsonSerializerOptions
+            {
+                AllowTrailingCommas = true,
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            };
+
+            string json = File.ReadAllText(listPath);
+            ActivatedAccounts activatedAccounts = JsonSerializer.Deserialize<ActivatedAccounts>(json, options);
+
+            return activatedAccounts.Accounts
+                .Select(account => new Address(account))
+                .ToImmutableHashSet();
+        }
+
         [Serializable]
-        public struct AuthorizedMinersStateConfig
+        private struct AuthorizedMinersStateConfig
         {
             public long Interval { get; set; }
 
@@ -89,11 +107,17 @@ namespace Lib9c.Tools
         }
 
         [Serializable]
-        public struct AdminStateConfig
+        private struct AdminStateConfig
         {
             public string AdminAddress { get; set; }
 
             public long ValidUntil { get; set; }
+        }
+
+        [Serializable]
+        private struct ActivatedAccounts
+        {
+            public List<string> Accounts { get; set; }
         }
     }
 }
