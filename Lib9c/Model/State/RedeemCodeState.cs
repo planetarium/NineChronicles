@@ -55,7 +55,7 @@ namespace Nekoyume.Model.State
             //TODO 프라이빗키 목록을 받아서 주소대신 퍼블릭키를 키로 써야함.
             foreach (var row in sheet.Values)
             {
-                _map[row.Key] = new Reward(row.RewardId);
+                _map[row.PublicKey] = new Reward(row.RewardId);
             }
         }
 
