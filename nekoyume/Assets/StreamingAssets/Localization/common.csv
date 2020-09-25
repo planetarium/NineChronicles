@@ -972,7 +972,7 @@ UI_SFX_VOLUME,SFX Volume,효과음 볼륨,Volume do SFX,,SE ボリューム,Soun
 UI_MUTE_AUDIO,Mute,음소거,Mudo,,ミュート,Stumm schalten,,ปิดเสียง,Wycisz,,,Bisukan,,,,,静音,
 UI_YOUR_ADDRESS,Your Address,당신의 주소,Seu endereço,,あなたのアドレス,Deine Adresse,,Address ของคุณ,Twój adres,,,Alamat Anda,,,,,您的地址,
 UI_YOUR_PRIVATE_KEY,Your Private Key,당신의 비밀 키,Sua Chave Privada,,秘密鍵,Dein privater Schlüssel,,Private Key ของคุณ,Twój klucz prywatny,,,Private Key Anda,,,,,您的私钥,
-BLOCK_CHAIN_MINING_TX,Mining Transactions..,트랜젝션을 전파 중..,Transações de mineração..,,トランザクションをマイニング中…,,,กำลังขุดรายการธุรกรรม,Kopanie transakcji...,,,Mining Transactions..,,,,,采矿交易..,
+BLOCK_CHAIN_MINING_TX,Mining Transactions,트랜젝션을 전파 중,Transações de mineração,,トランザクションをマイニング中,,,กำลังขุดรายการธุรกรรม,Kopanie transakcji,,,Mining Transactions,,,,,采矿交易,
 STAGE_BLOCK_CHAIN_MINING_TX,Mining Transactions.. Going to {0} {1},트랜젝션을 전파 중.. {0} {1} 이동 중..,Transações de mineração.. Going to {0} {1},,,,,,,,,,,,,,,
 BLOCK_DOWNLOAD_FAIL,Block Download Failed,블록 다운로드 실패,Falha no download do bloco,,ブロックダウンロード失敗,Herunterladen des Blocks fehlgeschlagen,,การดาวน์โหลดบล็อกล้มเหลว,Pobieranie Bloku nie powiodło się,,,Gagal Mengunduh Block,,,,,块下载失败,
 BOOTSTRAP_FAIL,Network Initialization Failed,네트워크 초기 설정 실패,Falha na inicialização da rede,,ネットワーク初期化失敗,Netzwerk-Initialisierung fehlgeschlagen,,การเริ่มต้นเครือข่ายล้มเหลว,Inicjalizacja sieci nie powiodła się,,,Inisialisasi Jaringan Gagal,,,,,网络初始化失败,
