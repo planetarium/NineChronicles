@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Immutable;
 using Bencodex.Types;
-using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
@@ -13,8 +12,6 @@ namespace Nekoyume.Action
     [ActionType("patch_table_sheet")]
     public class PatchTableSheet : GameAction
     {
-        public static ImmutableHashSet<Address> Administrators => ImmutableHashSet<Address>.Empty;
-        
         public string TableName;
         public string TableCsv;
 
