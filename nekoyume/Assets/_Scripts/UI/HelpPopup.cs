@@ -68,6 +68,8 @@ namespace Nekoyume.UI
             public string textL10nKey;
             public int fontSize;
             public float2 anchoredPosition;
+            // Default value : TopLeft
+            public string alignment;
         }
 
         #endregion
@@ -471,6 +473,16 @@ namespace Nekoyume.UI
             text.rectTransform.anchoredPosition = textModel.anchoredPosition;
             text.text = L10nManager.Localize(textModel.textL10nKey);
             text.fontSize = textModel.fontSize;
+
+            if (!Enum.TryParse<TextAlignmentOptions>(textModel.alignment, out var alignment))
+            {
+                text.alignment = TextAlignmentOptions.TopLeft;
+            }
+            else
+            {
+                text.alignment = alignment;
+            }
+            
             _texts.Add((
                 text,
                 textModel.duration < 0f
