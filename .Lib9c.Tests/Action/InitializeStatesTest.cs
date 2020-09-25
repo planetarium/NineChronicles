@@ -38,22 +38,21 @@ namespace Lib9c.Tests.Action
             (ActivationKey activationKey, PendingActivationState pendingActivation) =
                 ActivationKey.Create(privateKey, nonce);
 
-            var action = new InitializeStates
-            {
-                RankingState = new RankingState(),
-                ShopState = new ShopState(),
-                TableSheets = _sheets,
-                GameConfigState = gameConfigState,
-                RedeemCodeState = new RedeemCodeState(redeemCodeListSheet),
-                AdminAddressState = new AdminState(
+            var action = new InitializeStates(
+                rankingState: new RankingState(),
+                shopState: new ShopState(),
+                tableSheets: _sheets,
+                gameConfigState: gameConfigState,
+                redeemCodeState: new RedeemCodeState(redeemCodeListSheet),
+                adminAddressState: new AdminState(
                     new Address("F9A15F870701268Bd7bBeA6502eB15F4997f32f9"),
                     1500000
                 ),
-                ActivatedAccountsState = new ActivatedAccountsState(),
-                GoldCurrencyState = new GoldCurrencyState(ncg),
-                GoldDistributions = goldDistributions,
-                PendingActivationStates = new[] { pendingActivation },
-            };
+                activatedAccountsState: new ActivatedAccountsState(),
+                goldCurrencyState: new GoldCurrencyState(ncg),
+                goldDistributions: goldDistributions,
+                pendingActivationStates: new[] { pendingActivation }
+            );
 
             var genesisState = action.Execute(new ActionContext()
             {
@@ -97,27 +96,26 @@ namespace Lib9c.Tests.Action
             (ActivationKey activationKey, PendingActivationState pendingActivation) =
                 ActivationKey.Create(privateKey, nonce);
 
-            var action = new InitializeStates
-            {
-                RankingState = new RankingState(),
-                ShopState = new ShopState(),
-                TableSheets = _sheets,
-                GameConfigState = gameConfigState,
-                RedeemCodeState = new RedeemCodeState(redeemCodeListSheet),
-                AdminAddressState = new AdminState(
+            var action = new InitializeStates(
+                rankingState: new RankingState(),
+                shopState: new ShopState(),
+                tableSheets: _sheets,
+                gameConfigState: gameConfigState,
+                redeemCodeState: new RedeemCodeState(redeemCodeListSheet),
+                adminAddressState: new AdminState(
                     new Address("F9A15F870701268Bd7bBeA6502eB15F4997f32f9"),
                     1500000
                 ),
-                ActivatedAccountsState = new ActivatedAccountsState(),
-                GoldCurrencyState = new GoldCurrencyState(ncg),
-                GoldDistributions = goldDistributions,
-                PendingActivationStates = new[] { pendingActivation },
-                AuthorizedMinersState = new AuthorizedMinersState(
+                activatedAccountsState: new ActivatedAccountsState(),
+                goldCurrencyState: new GoldCurrencyState(ncg),
+                goldDistributions: goldDistributions,
+                pendingActivationStates: new[] { pendingActivation },
+                authorizedMinersState: new AuthorizedMinersState(
                     interval: 50,
                     validUntil: 1000,
                     miners: new[] { default(Address) }
-                ),
-            };
+                )
+            );
 
             var genesisState = action.Execute(new ActionContext()
             {
@@ -151,19 +149,18 @@ namespace Lib9c.Tests.Action
                 ActivationKey.Create(privateKey, nonce);
             var adminAddress = new Address("F9A15F870701268Bd7bBeA6502eB15F4997f32f9");
 
-            var action = new InitializeStates
-            {
-                RankingState = new RankingState(),
-                ShopState = new ShopState(),
-                TableSheets = _sheets,
-                GameConfigState = gameConfigState,
-                RedeemCodeState = new RedeemCodeState(redeemCodeListSheet),
-                AdminAddressState = new AdminState(adminAddress, 1500000),
-                ActivatedAccountsState = new ActivatedAccountsState(ImmutableHashSet<Address>.Empty.Add(adminAddress)),
-                GoldCurrencyState = new GoldCurrencyState(ncg),
-                GoldDistributions = goldDistributions,
-                PendingActivationStates = new[] { pendingActivation },
-            };
+            var action = new InitializeStates(
+                rankingState: new RankingState(),
+                shopState: new ShopState(),
+                tableSheets: _sheets,
+                gameConfigState: gameConfigState,
+                redeemCodeState: new RedeemCodeState(redeemCodeListSheet),
+                adminAddressState: new AdminState(adminAddress, 1500000),
+                activatedAccountsState: new ActivatedAccountsState(ImmutableHashSet<Address>.Empty.Add(adminAddress)),
+                goldCurrencyState: new GoldCurrencyState(ncg),
+                goldDistributions: goldDistributions,
+                pendingActivationStates: new[] { pendingActivation }
+            );
 
             var genesisState = action.Execute(new ActionContext()
             {

@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Linq;
+using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Assets;
@@ -39,22 +41,22 @@ namespace Nekoyume
             var ncg = new Currency("NCG", 2, minterKey.ToAddress());
             activatedAccounts = activatedAccounts ?? ImmutableHashSet<Address>.Empty;
             var initialStatesAction = new InitializeStates
-            {
-                RankingState = new RankingState(),
-                ShopState = new ShopState(),
-                TableSheets = (Dictionary<string, string>) tableSheets,
-                GameConfigState = gameConfigState,
-                RedeemCodeState = new RedeemCodeState(redeemCodeListSheet),
-                AdminAddressState = adminState,
-                ActivatedAccountsState = new ActivatedAccountsState(
+            (
+                rankingState: new RankingState(),
+                shopState: new ShopState(),
+                tableSheets: (Dictionary<string, string>) tableSheets,
+                gameConfigState: gameConfigState,
+                redeemCodeState: new RedeemCodeState(redeemCodeListSheet),
+                adminAddressState: adminState,
+                activatedAccountsState: new ActivatedAccountsState(
                     isActivateAdminAddress
                     ? activatedAccounts.Add(adminState.AdminAddress)
                     : activatedAccounts),
-                GoldCurrencyState = new GoldCurrencyState(ncg),
-                GoldDistributions = goldDistributions,
-                PendingActivationStates = pendingActivationStates,
-                AuthorizedMinersState = authorizedMinersState,
-            };
+                goldCurrencyState: new GoldCurrencyState(ncg),
+                goldDistributions: goldDistributions,
+                pendingActivationStates: pendingActivationStates,
+                authorizedMinersState: authorizedMinersState
+            );
             var actions = new PolymorphicAction<ActionBase>[]
             {
                 initialStatesAction,

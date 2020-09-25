@@ -305,25 +305,24 @@ namespace Lib9c.Tests
             return BlockChain<PolymorphicAction<ActionBase>>.MakeGenesisBlock(
                     new PolymorphicAction<ActionBase>[]
                     {
-                        new InitializeStates()
-                        {
-                            RankingState = new RankingState(),
-                            ShopState = new ShopState(),
-                            TableSheets = TableSheetsImporter.ImportSheets(),
-                            GameConfigState = new GameConfigState(),
-                            RedeemCodeState = new RedeemCodeState(Dictionary.Empty
+                        new InitializeStates(
+                            rankingState: new RankingState(),
+                            shopState: new ShopState(),
+                            tableSheets: TableSheetsImporter.ImportSheets(),
+                            gameConfigState: new GameConfigState(),
+                            redeemCodeState: new RedeemCodeState(Dictionary.Empty
                                 .Add("address", RedeemCodeState.Address.Serialize())
                                 .Add("map", Dictionary.Empty)
                             ),
-                            AdminAddressState = new AdminState(adminAddress, 1500000),
-                            ActivatedAccountsState = new ActivatedAccountsState(activatedAddresses),
-                            GoldCurrencyState = new GoldCurrencyState(
+                            adminAddressState: new AdminState(adminAddress, 1500000),
+                            activatedAccountsState: new ActivatedAccountsState(activatedAddresses),
+                            goldCurrencyState: new GoldCurrencyState(
                                 new Currency("NCG", 2, minter: null)
                             ),
-                            GoldDistributions = new GoldDistribution[0],
-                            PendingActivationStates = new[] { pendingActivation },
-                            AuthorizedMinersState = authorizedMinersState,
-                        },
+                            goldDistributions: new GoldDistribution[0],
+                            pendingActivationStates: new[] { pendingActivation },
+                            authorizedMinersState: authorizedMinersState
+                        ),
                     },
                     timestamp: timestamp ?? DateTimeOffset.MinValue
                 );
