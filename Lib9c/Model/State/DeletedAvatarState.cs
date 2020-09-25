@@ -8,18 +8,18 @@ namespace Nekoyume.Model.State
     [Serializable]
     public class DeletedAvatarState : AvatarState
     {
-        public DateTimeOffset deletedAt;
+        public long deletedAt;
 
-        public DeletedAvatarState(AvatarState avatarState, DateTimeOffset deletedAt)
+        public DeletedAvatarState(AvatarState avatarState, long blockIndex)
             : base(avatarState)
         {
-            this.deletedAt = deletedAt;
+            deletedAt = blockIndex;
         }
 
         public DeletedAvatarState(Dictionary serialized)
             : base(serialized)
         {
-            deletedAt = serialized["deletedAt"].ToDateTimeOffset();
+            deletedAt = serialized["deletedAt"].ToLong();
         }
 
         public override IValue Serialize() =>

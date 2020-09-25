@@ -91,7 +91,7 @@ namespace Nekoyume.Model.Item
         private readonly List<Item> _items = new List<Item>();
 
         public IReadOnlyList<Item> Items => _items;
-        
+
         public IEnumerable<Costume> Costumes => _items
             .Select(item => item.item)
             .OfType<Costume>();
@@ -118,8 +118,10 @@ namespace Nekoyume.Model.Item
             _items.Sort();
         }
 
-        public IValue Serialize() =>
-            new Bencodex.Types.List(Items.Select(i => i.Serialize()));
+        public IValue Serialize() => new Bencodex.Types.List(Items
+            .OrderBy(i => i.item.Id)
+            .ThenByDescending(i => i.count)
+            .Select(i => i.Serialize()));
 
         #region Add
 

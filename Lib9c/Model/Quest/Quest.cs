@@ -355,8 +355,12 @@ namespace Nekoyume.Model.Quest
 
         public IValue Serialize() => new Dictionary(new Dictionary<IKey, IValue>
         {
-            [(Text) "quests"] = new List(this.Select(q => q.Serialize())),
-            [(Text) "completedQuestIds"] = new List(completedQuestIds.Select(i => i.Serialize()))
+            [(Text) "quests"] = new List(_quests
+                .OrderBy(i => i.Id)
+                .Select(q => q.Serialize())),
+            [(Text) "completedQuestIds"] = new List(completedQuestIds
+                .OrderBy(i => i)
+                .Select(i => i.Serialize()))
         });
 
         public void UpdateCombinationEquipmentQuest(int recipeId)

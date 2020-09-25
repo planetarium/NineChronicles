@@ -118,8 +118,14 @@ namespace Nekoyume.Model.Item
             {
                 [(Text) "itemId"] = ItemId.Serialize(),
                 [(Text) "statsMap"] = StatsMap.Serialize(),
-                [(Text) "skills"] = new List(Skills.Select(s => s.Serialize())),
-                [(Text) "buffSkills"] = new List(BuffSkills.Select(s => s.Serialize())),
+                [(Text) "skills"] = new List(Skills
+                    .OrderByDescending(i => i.Chance)
+                    .ThenByDescending(i => i.Power)
+                    .Select(s => s.Serialize())),
+                [(Text) "buffSkills"] = new List(BuffSkills
+                    .OrderByDescending(i => i.Chance)
+                    .ThenByDescending(i => i.Power)
+                    .Select(s => s.Serialize())),
                 [(Text) "requiredBlockIndex"] = RequiredBlockIndex.Serialize(),
             }.Union((Dictionary) base.Serialize()));
     }
