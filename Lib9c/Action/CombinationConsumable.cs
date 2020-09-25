@@ -168,7 +168,7 @@ namespace Nekoyume.Action
                 return LogError(context, "Aborted as the recipe was failed to load.");
             }
             var materials = new Dictionary<Material, int>();
-            foreach (var materialInfo in recipeRow.Materials)
+            foreach (var materialInfo in recipeRow.Materials.OrderBy(r => r.Id))
             {
                 var materialId = materialInfo.Id;
                 var count = materialInfo.Count;

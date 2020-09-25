@@ -301,6 +301,7 @@ namespace Nekoyume.Action
             var optionSelector = new WeightedSelector<EquipmentItemOptionSheet.Row>(random);
             var optionIds = new HashSet<int>();
 
+            //Skip options sort because sorting in WeightedSelector.Select();
             foreach (var optionInfo in subRecipe.Options)
             {
                 if (!optionSheet.TryGetValue(optionInfo.Id, out var optionRow))
