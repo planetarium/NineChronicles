@@ -30,7 +30,7 @@ namespace Nekoyume.UI
         public void RequestRedeemCode()
         {
             Game.Game.instance.ActionManager.RedeemCode(codeField.text.Trim());
-            Notification.Push(MailType.System, "Request Redeem Code.");
+            Notification.Push(MailType.System, L10nManager.Localize("NOTIFICATION_REQUEST_REDEEM_CODE"));
             OnRequested.Invoke();
             Close();
         }
