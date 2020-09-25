@@ -74,6 +74,42 @@ namespace Lib9c.Tests.Model.State
         }
 
         [Fact]
+        public void SerializeEquals()
+        {
+            var avatarAddress = _agentAddress.Derive("avatar");
+            var avatarState = new AvatarState(
+                avatarAddress,
+                _agentAddress,
+                0,
+                _tableSheets.GetAvatarSheets(),
+                new GameConfigState(),
+                _rankingMapAddress,
+                "test"
+            );
+
+            var avatarAddress2 = _agentAddress.Derive("avatar2");
+            var avatarState2 = new AvatarState(
+                avatarAddress2,
+                _agentAddress,
+                0,
+                _tableSheets.GetAvatarSheets(),
+                new GameConfigState(),
+                _rankingMapAddress,
+                "test2"
+            );
+
+            var state = new RankingMapState(_rankingMapAddress);
+            state.Update(avatarState);
+            state.Update(avatarState2);
+
+            var state2 = new RankingMapState(_rankingMapAddress);
+            state2.Update(avatarState2);
+            state2.Update(avatarState);
+
+            Assert.Equal(state2.Serialize(), state.Serialize());
+        }
+
+        [Fact]
         public void Update()
         {
             var avatarAddress = _agentAddress.Derive("avatar");
