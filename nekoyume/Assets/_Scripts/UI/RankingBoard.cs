@@ -299,6 +299,18 @@ namespace Nekoyume.UI
                             arenaInfo = tuple.arenaInfo,
                             currentAvatarArenaInfo = null
                         }).ToList(), true);
+                    // NOTE: If you want to test many arena cells, use below instead of above.
+                    // arenaRankScroll.Show(Enumerable
+                    //     .Range(1, 1000)
+                    //     .Select(rank => new ArenaRankCell.ViewModel
+                    //     {
+                    //         rank = rank,
+                    //         arenaInfo = new ArenaInfo(
+                    //             States.Instance.CurrentAvatarState,
+                    //             Game.Game.instance.TableSheets.CharacterSheet,
+                    //             true),
+                    //         currentAvatarArenaInfo = null
+                    //     }).ToList(), true);
 
                     return;
                 }

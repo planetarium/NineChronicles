@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Nekoyume.L10n;
 using UnityEngine;
 
 namespace Nekoyume.Helper
@@ -51,6 +52,8 @@ namespace Nekoyume.Helper
         private string appProtocolVersion;
 
         private string[] trustedAppProtocolVersionSigners = new string[] { };
+
+        private string language = "English";
 
         // Unity 단독 빌드시의 해시 파워가 낮기 때문에, Unity 버전의 기존치는 .NET Core보다 낮게 잡습니다.
         private int minimumDifficulty = 100000;
@@ -299,6 +302,17 @@ namespace Nekoyume.Helper
             set
             {
                 genesisBlockPath = value;
+                Empty = false;
+            }
+        }
+
+        [Option("language", Required = false, HelpText = "Choose language.")]
+        public string Language
+        {
+            get => language;
+            set
+            {
+                language = value;
                 Empty = false;
             }
         }
