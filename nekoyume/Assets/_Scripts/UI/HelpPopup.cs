@@ -17,6 +17,7 @@ using UnityEngine.UI;
 using mixpanel;
 using Nekoyume.EnumType;
 using Nekoyume.L10n;
+using System.Text.RegularExpressions;
 
 namespace Nekoyume.UI
 {
@@ -471,7 +472,8 @@ namespace Nekoyume.UI
 
             var text = textPool.Rent();
             text.rectTransform.anchoredPosition = textModel.anchoredPosition;
-            text.text = L10nManager.Localize(textModel.textL10nKey);
+            var localizedString = L10nManager.Localize(textModel.textL10nKey);
+            text.text = Regex.Unescape(localizedString);
             text.fontSize = textModel.fontSize;
 
             if (!Enum.TryParse<TextAlignmentOptions>(textModel.alignment, out var alignment))
