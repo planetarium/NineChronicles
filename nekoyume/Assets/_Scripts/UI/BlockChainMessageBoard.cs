@@ -40,7 +40,6 @@ namespace Nekoyume.UI
             base.Initialize();
 
             panel.SetActive(false);
-            messageText.text = L10nManager.Localize("BLOCK_CHAIN_MINING_TX");
 
             _currentPanelAnimationState = PanelAnimationState.Off;
             _nextPanelAnimationState = PanelAnimationState.Off;

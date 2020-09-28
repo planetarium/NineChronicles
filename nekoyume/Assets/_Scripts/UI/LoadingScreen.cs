@@ -60,7 +60,7 @@ namespace Nekoyume.UI
 
         protected override void OnDisable()
         {
-            Message = L10nManager.Localize("BLOCK_CHAIN_MINING_TX");
+            Message = L10nManager.Localize("BLOCK_CHAIN_MINING_TX") + "...";
 
             base.OnDisable();
         }
