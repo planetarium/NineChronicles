@@ -30,14 +30,14 @@ jobs:
         ULF: ${{ secrets.ULF }}
         APV_SIGNING_PRIVATE_KEY: ${{ secrets.APV_SIGNING_PRIVATE_KEY }}
       with:
-        entrypoint: scripts/build-development.sh
+        entrypoint: scripts/build-production.sh
         args: MacOS
     - uses: docker://gableroux/unity3d:2019.1.0f2
       env:
         ULF: ${{ secrets.ULF }}
         APV_SIGNING_PRIVATE_KEY: ${{ secrets.APV_SIGNING_PRIVATE_KEY }}
       with:
-        entrypoint: scripts/build-development.sh
+        entrypoint: scripts/build-production.sh
         args: Windows
     # GitHub Actions의 아티펙트 기능을 쓰면 권한 등의 속성이 다 날아감.
     # 그런 파일 속성들을 보존할 수 있는 타볼 형식으로 한 번 감싸야 함.
