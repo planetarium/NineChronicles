@@ -108,5 +108,69 @@ namespace Lib9c.Tests.Action
             Assert.Equal(equipment.ItemId, item.ItemId);
             Assert.Equal(1, item.RequiredBlockIndex);
         }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData(1)]
+        public void ResultModelDeterministic(int? subRecipeId)
+        {
+            var row = _tableSheets.MaterialItemSheet.Values.First();
+            var row2 = _tableSheets.MaterialItemSheet.Values.Last();
+
+            Assert.True(row.Id < row2.Id);
+
+            var material = ItemFactory.CreateMaterial(row);
+            var material2 = ItemFactory.CreateMaterial(row2);
+
+            var itemUsable = ItemFactory.CreateItemUsable(_tableSheets.EquipmentItemSheet.Values.First(), default, 0);
+            var r = new CombinationConsumable.ResultModel()
+            {
+                id = default,
+                gold = 0,
+                actionPoint = 0,
+                recipeId = 1,
+                subRecipeId = subRecipeId,
+                materials = new Dictionary<Material, int>()
+                {
+                    [material] = 1,
+                    [material2] = 1,
+                },
+                itemUsable = itemUsable,
+            };
+            var result = new RapidCombination.ResultModel((Dictionary)r.Serialize())
+            {
+                cost = new Dictionary<Material, int>()
+                {
+                    [material] = 1,
+                    [material2] = 1,
+                },
+            };
+
+            var r2 = new CombinationConsumable.ResultModel()
+            {
+                id = default,
+                gold = 0,
+                actionPoint = 0,
+                recipeId = 1,
+                subRecipeId = subRecipeId,
+                materials = new Dictionary<Material, int>()
+                {
+                    [material2] = 1,
+                    [material] = 1,
+                },
+                itemUsable = itemUsable,
+            };
+
+            var result2 = new RapidCombination.ResultModel((Dictionary)r2.Serialize())
+            {
+                cost = new Dictionary<Material, int>()
+                {
+                    [material2] = 1,
+                    [material] = 1,
+                },
+            };
+
+            Assert.Equal(result.Serialize(), result2.Serialize());
+        }
     }
 }
