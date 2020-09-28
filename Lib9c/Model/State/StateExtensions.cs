@@ -222,11 +222,15 @@ namespace Nekoyume.Model.State
         {
             return
                 new List(
-                    value.Select(
-                        pair =>
-                            (IValue)Dictionary.Empty
-                                .Add("material", pair.Key.Serialize())
-                                .Add("count", pair.Value.Serialize())));
+                    value
+                        .OrderBy(kv => kv.Key.Id)
+                        .Select(
+                            pair =>
+                                (IValue)Dictionary.Empty
+                                    .Add("material", pair.Key.Serialize())
+                                    .Add("count", pair.Value.Serialize())
+                        )
+                );
         }
 
         public static Dictionary<Material, int> ToDictionary_Material_int(this IValue serialized)

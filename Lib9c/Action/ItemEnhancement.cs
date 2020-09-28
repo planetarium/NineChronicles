@@ -55,7 +55,7 @@ namespace Nekoyume.Action
                 new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
                 {
                     [(Text) "id"] = id.Serialize(),
-                    [(Text) "materialItemIdList"] =  materialItemIdList.Select(g => g.Serialize()).Serialize(),
+                    [(Text) "materialItemIdList"] =  materialItemIdList.OrderBy(i => i).Select(g => g.Serialize()).Serialize(),
                     [(Text) "gold"] = gold.Serialize(),
                     [(Text) "actionPoint"] = actionPoint.Serialize(),
                 }.Union((Bencodex.Types.Dictionary)base.Serialize()));
@@ -316,7 +316,7 @@ namespace Nekoyume.Action
                 var dict = new Dictionary<string, IValue>
                 {
                     ["itemId"] = itemId.Serialize(),
-                    ["materialIds"] = materialIds.Select(g => g.Serialize()).Serialize(),
+                    ["materialIds"] = materialIds.OrderBy(i => i).Select(g => g.Serialize()).Serialize(),
                     ["avatarAddress"] = avatarAddress.Serialize(),
                 };
 
