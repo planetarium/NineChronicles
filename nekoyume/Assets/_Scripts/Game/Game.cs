@@ -253,10 +253,6 @@ namespace Nekoyume.Game
                 Mixpanel.Track("Unity/Player Quit");
                 Mixpanel.Flush();
             }
-
-#if !UNITY_EDITOR
-            Application.OpenURL("https://forms.gle/sgGWJ6g9sBugoACS6");
-#endif
         }
 
         public static void Quit()
