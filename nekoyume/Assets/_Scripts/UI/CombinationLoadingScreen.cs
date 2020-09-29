@@ -108,6 +108,8 @@ namespace Nekoyume.UI
 
         public void AnimateNPC()
         {
+            var format = L10nManager.Localize("UI_PRESS_TO_CONTINUE_FORMAT");
+            continueText.text = string.Format(format, ContinueTime);
             _npcAppearCoroutine = StartCoroutine(CoAnimateNPC());
         }
 
