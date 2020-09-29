@@ -212,6 +212,18 @@ MonoBehaviour:
   fixedSpacingOption: 0
   fontMaterialType: 15
   l10nKey: 
+  fontMaterialIndexInitialized: 0
+  fontMaterialIndex: 0
+  defaultFontStylesInitialized: 0
+  defaultFontStyles: 0
+  defaultFontSizeInitialized: 0
+  defaultFontSize: 0
+  defaultCharacterSpacingInitialized: 0
+  defaultCharacterSpacing: 0
+  defaultWordSpacingInitialized: 0
+  defaultWordSpacing: 0
+  defaultLineSpacingInitialized: 0
+  defaultLineSpacing: 0
 --- !u!1 &1628641988695557761
 GameObject:
   m_ObjectHideFlags: 0
@@ -383,9 +395,9 @@ MonoBehaviour:
   m_fontSize: 16
   m_fontSizeBase: 16
   m_fontWeight: 400
-  m_enableAutoSizing: 0
-  m_fontSizeMin: 18
-  m_fontSizeMax: 72
+  m_enableAutoSizing: 1
+  m_fontSizeMin: 12
+  m_fontSizeMax: 16
   m_fontStyle: 0
   m_textAlignment: 257
   m_characterSpacing: 0
@@ -462,6 +474,18 @@ MonoBehaviour:
   fixedSpacingOption: 0
   fontMaterialType: 15
   l10nKey: 
+  fontMaterialIndexInitialized: 0
+  fontMaterialIndex: 0
+  defaultFontStylesInitialized: 0
+  defaultFontStyles: 0
+  defaultFontSizeInitialized: 0
+  defaultFontSize: 0
+  defaultCharacterSpacingInitialized: 0
+  defaultCharacterSpacing: 0
+  defaultWordSpacingInitialized: 0
+  defaultWordSpacing: 0
+  defaultLineSpacingInitialized: 0
+  defaultLineSpacing: 0
 --- !u!1 &3370728888462256524
 GameObject:
   m_ObjectHideFlags: 0
@@ -872,6 +896,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   backgroundImageButton: {fileID: 2412437715510943033}
   panel: {fileID: 8067403816682423816}
+  textArea: {fileID: 1959204274677751728}
   titleText: {fileID: 8598550794807671157}
   imagePool:
     parent: {fileID: 7402210934264625561}
@@ -1067,12 +1092,12 @@ PrefabInstance:
       propertyPath: m_Padding.m_Right
       value: 30
       objectReference: {fileID: 0}
-    - target: {fileID: 8804429028567751081, guid: f7054cc9c15e14f0fa1e5cbc714e3845,
+    - target: {fileID: 4746780952003505611, guid: f7054cc9c15e14f0fa1e5cbc714e3845,
         type: 3}
       propertyPath: l10nKey
       value: UI_PREVIOUS
       objectReference: {fileID: 0}
-    - target: {fileID: 4746780952003505611, guid: f7054cc9c15e14f0fa1e5cbc714e3845,
+    - target: {fileID: 8804429028567751081, guid: f7054cc9c15e14f0fa1e5cbc714e3845,
         type: 3}
       propertyPath: l10nKey
       value: UI_PREVIOUS
@@ -1280,12 +1305,12 @@ PrefabInstance:
       propertyPath: m_Padding.m_Right
       value: 30
       objectReference: {fileID: 0}
-    - target: {fileID: 8804429028567751081, guid: f7054cc9c15e14f0fa1e5cbc714e3845,
+    - target: {fileID: 4746780952003505611, guid: f7054cc9c15e14f0fa1e5cbc714e3845,
         type: 3}
       propertyPath: l10nKey
       value: UI_GOT_IT
       objectReference: {fileID: 0}
-    - target: {fileID: 4746780952003505611, guid: f7054cc9c15e14f0fa1e5cbc714e3845,
+    - target: {fileID: 8804429028567751081, guid: f7054cc9c15e14f0fa1e5cbc714e3845,
         type: 3}
       propertyPath: l10nKey
       value: UI_GOT_IT
@@ -1478,12 +1503,12 @@ PrefabInstance:
       propertyPath: m_Padding.m_Right
       value: 30
       objectReference: {fileID: 0}
-    - target: {fileID: 8804429028567751081, guid: f7054cc9c15e14f0fa1e5cbc714e3845,
+    - target: {fileID: 4746780952003505611, guid: f7054cc9c15e14f0fa1e5cbc714e3845,
         type: 3}
       propertyPath: l10nKey
       value: UI_NEXT
       objectReference: {fileID: 0}
-    - target: {fileID: 4746780952003505611, guid: f7054cc9c15e14f0fa1e5cbc714e3845,
+    - target: {fileID: 8804429028567751081, guid: f7054cc9c15e14f0fa1e5cbc714e3845,
         type: 3}
       propertyPath: l10nKey
       value: UI_NEXT
