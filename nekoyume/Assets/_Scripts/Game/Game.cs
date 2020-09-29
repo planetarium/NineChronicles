@@ -106,14 +106,14 @@ namespace Nekoyume.Game
 #if UNITY_EDITOR
             if (useSystemLanguage)
             {
-                yield return L10nManager.Initialize(LanguageTypeMapper.ISO396(_options.Language)).ToYieldInstruction();
+                yield return L10nManager.Initialize().ToYieldInstruction();
             }
             else
             {
                 yield return L10nManager.Initialize(languageType).ToYieldInstruction();
             }
 #else
-            yield return L10nManager.Initialize().ToYieldInstruction();
+            yield return L10nManager.Initialize(LanguageTypeMapper.ISO396(_options.Language)).ToYieldInstruction();
 #endif
 
             Widget.Find<Title>().ShowSettingButton();
@@ -253,10 +253,6 @@ namespace Nekoyume.Game
                 Mixpanel.Track("Unity/Player Quit");
                 Mixpanel.Flush();
             }
-
-#if !UNITY_EDITOR
-            Application.OpenURL("https://forms.gle/sgGWJ6g9sBugoACS6");
-#endif
         }
 
         public static void Quit()
