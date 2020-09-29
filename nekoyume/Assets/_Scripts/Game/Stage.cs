@@ -85,6 +85,8 @@ namespace Nekoyume.Game
 
         private Character.Player _stageRunningPlayer = null;
 
+        private List<int> prevFood;
+
         #region Events
 
         private readonly ISubject<Stage> _onEnterToStageEnd = new Subject<Stage>();
@@ -293,15 +295,33 @@ namespace Nekoyume.Game
 
         private IEnumerator CoPlayStage(BattleLog log)
         {
+            AvatarState avatarState = States.Instance.CurrentAvatarState;
+            string stage_slug = "HackAndSlash" + "_" + log.worldId + "_" + log.stageId;
+
             //[TentuPlay] PlayStage 시작 기록
-            new TPStashEvent().PlayerStage(
+            OnCharacterStageStart("HackAndSlash", stage_slug, log.worldId + "_" + log.stageId);
+
+            //[TentuPlay] 전투 입장 시 사용하는 Action Point
+            new TPStashEvent().CharacterCurrencyUse(
                 player_uuid: Game.instance.Agent.Address.ToHex(),
-                stage_category_slug: "HackAndSlash",
-                stage_slug: "HackAndSlash" + "_" + log.worldId + "_" + log.stageId,
-                stage_status: stageStatus.Start,
-                stage_level: log.worldId + "_" + log.stageId,
-                is_autocombat_committed: isAutocombat.AutocombatOn
-            );
+                character_uuid: avatarState.address.ToHex().Substring(0, 4),
+                currency_slug: "action_point",
+                currency_quantity: 5,
+                currency_total_quantity: (float)avatarState.actionPoint,
+                reference_entity: entity.Stages,
+                reference_category_slug: "HackAndSlash",
+                reference_slug: "HackAndSlash" + "_" + log.worldId + "_" + log.stageId
+                );
+
+            //[TentuPlay] PlayStage 장비 착용 기록
+            OnCharacterEquipmentPlay("HackAndSlash", stage_slug);
+
+            //[TentuPlay] PlayStage 코스튬 착용 기록
+            OnCharacterCostumePlay("HackAndSlash", stage_slug);
+
+            prevFood = avatarState.inventory.Items.Select(i => i.item).OfType<Consumable>()
+           .Where(s => s.ItemSubType == ItemSubType.Food)
+           .Select(r => r.Id).ToList();
 
             IsInStage = true;
             yield return StartCoroutine(CoStageEnter(log));
@@ -317,14 +337,13 @@ namespace Nekoyume.Game
         private IEnumerator CoPlayRankingBattle(BattleLog log)
         {
             //[TentuPlay] RankingBattle 시작 기록
-            new TPStashEvent().PlayerStage(
-                player_uuid: Game.instance.Agent.Address.ToHex(),
-                stage_category_slug: "RankingBattle",
-                stage_slug: "RankingBattle",
-                stage_status: stageStatus.Start,
-                stage_level: null,
-                is_autocombat_committed: isAutocombat.AutocombatOn
-            );
+            OnCharacterStageStart("RankingBattle", "RankingBattle", null);
+
+            //[TentuPlay] RankingBattle 장비 착용 기록
+            OnCharacterEquipmentPlay("RankingBattle", "RankingBattle");
+
+            //[TentuPlay] RankingBattle 코스튬 착용 기록
+            OnCharacterCostumePlay("RankingBattle", "RankingBattle");
 
             IsInStage = true;
             yield return StartCoroutine(CoRankingBattleEnter(log));
@@ -550,31 +569,13 @@ namespace Nekoyume.Game
             Widget.Find<BattleResult>().Show(_battleResultModel);
             yield return null;
 
-            //[TentuPlay] PlayStage 끝 기록
-            stageStatus stage_status = stageStatus.Unknown;
-            switch (log.result)
-            {
-                case BattleLog.Result.Win:
-                    stage_status = stageStatus.Win;
-                    break;
-                case BattleLog.Result.Lose:
-                    stage_status = stageStatus.Lose;
-                    break;
-                case BattleLog.Result.TimeOver:
-                    stage_status = stageStatus.Timeout;
-                    break;
-            }
+            //[TentuPlay] 전투 입장 시 사용한 아이템 - 소모품
+            string stage_slug = "HackAndSlash" + "_" + log.worldId + "_" + log.stageId;
+            OnCharacterConsumablePlay("HackAndSlash", stage_slug);
 
-            new TPStashEvent().PlayerStage(
-                player_uuid: Game.instance.Agent.Address.ToHex(),
-                stage_category_slug: "HackAndSlash",
-                stage_slug: "HackAndSlash" + "_" + log.worldId + "_" + log.stageId,
-                stage_status: stage_status,
-                stage_level: log.worldId + "_" + log.stageId,
-                stage_score: log.clearedWaveNumber,
-                stage_playtime: null,
-                is_autocombat_committed: isAutocombat.AutocombatOn
-            );
+            //[TentuPlay] PlayStage 끝 기록
+            OnCharacterStageEnd(log, "HackAndSlash", stage_slug, log.clearedWaveNumber);
+
             var props = new Value
             {
                 ["StageId"] = log.stageId
@@ -612,30 +613,7 @@ namespace Nekoyume.Game
             yield return null;
 
             //[TentuPlay] RankingBattle 끝 기록
-            stageStatus stage_status = stageStatus.Unknown;
-            switch (log.result)
-            {
-                case BattleLog.Result.Win:
-                    stage_status = stageStatus.Win;
-                    break;
-                case BattleLog.Result.Lose:
-                    stage_status = stageStatus.Lose;
-                    break;
-                case BattleLog.Result.TimeOver:
-                    stage_status = stageStatus.Timeout;
-                    break;
-            }
-
-            new TPStashEvent().PlayerStage(
-                player_uuid: Game.instance.Agent.Address.ToHex(),
-                stage_category_slug: "RankingBattle",
-                stage_slug: "RankingBattle",
-                stage_status: stage_status,
-                stage_level: null,
-                stage_score: log.diffScore,
-                stage_playtime: null,
-                is_autocombat_committed: isAutocombat.AutocombatOn
-            );
+            OnCharacterStageEnd(log, "RankingBattle", "RankingBattle", log.diffScore);
         }
 
         public IEnumerator CoSpawnPlayer(Model.Player character)
@@ -1117,6 +1095,159 @@ namespace Nekoyume.Game
         {
             player.StartRun();
             ActionCamera.instance.ChaseX(player.transform);
+        }
+
+        private void OnCharacterStageStart(string stageCategorySlug, string stageSlug, string stageLevel)
+        {
+            try
+            {
+                TPStashEvent myStashEvent = new TPStashEvent();
+                AvatarState avatarState = States.Instance.CurrentAvatarState;
+
+                myStashEvent.CharacterStage(
+                    player_uuid: Game.instance.Agent.Address.ToHex(),
+                    character_uuid: avatarState.address.ToHex().Substring(0, 4),
+                    stage_category_slug: stageCategorySlug,
+                    stage_slug: stageSlug,
+                    stage_status: stageStatus.Start,
+                    stage_level: stageLevel,
+                    is_autocombat_committed: isAutocombat.AutocombatOn
+                );
+            }
+            catch
+            {
+            }
+        }
+
+        private void OnCharacterEquipmentPlay(string stageCategorySlug, string stageSlug)
+        {
+            try
+            {
+                TPStashEvent myStashEvent = new TPStashEvent();
+                AvatarState avatarState = States.Instance.CurrentAvatarState;
+
+                List<int> allEquippedEquipmentsId = new List<int>();
+                List<int> weapon = avatarState.inventory.Items.Select(i => i.item).OfType<Weapon>().Where(e => e.equipped).Select(r => r.Id).ToList();
+                List<int> armor = avatarState.inventory.Items.Select(i => i.item).OfType<Armor>().Where(e => e.equipped).Select(r => r.Id).ToList();
+                List<int> belt = avatarState.inventory.Items.Select(i => i.item).OfType<Belt>().Where(e => e.equipped).Select(r => r.Id).ToList();
+                List<int> necklace = avatarState.inventory.Items.Select(i => i.item).OfType<Necklace>().Where(e => e.equipped).Select(r => r.Id).ToList();
+                List<int> ring = avatarState.inventory.Items.Select(i => i.item).OfType<Ring>().Where(e => e.equipped).Select(r => r.Id).ToList();
+                allEquippedEquipmentsId.AddRange(weapon);
+                allEquippedEquipmentsId.AddRange(armor);
+                allEquippedEquipmentsId.AddRange(belt);
+                allEquippedEquipmentsId.AddRange(necklace);
+                allEquippedEquipmentsId.AddRange(ring);
+                foreach (int id in allEquippedEquipmentsId)
+                {
+                    myStashEvent.CharacterItemPlay(
+                        player_uuid: Game.instance.Agent.Address.ToHex(),
+                        character_uuid: avatarState.address.ToHex().Substring(0, 4),
+                        item_category: itemCategory.Equipment,
+                        item_slug: id.ToString(),
+                        reference_entity: entity.Stages,
+                        reference_category_slug: stageCategorySlug,
+                        reference_slug: stageSlug
+                        );
+                }
+            }
+            catch
+            {
+            }
+        }
+
+        private void OnCharacterCostumePlay(string stageCategorySlug, string stageSlug)
+        {
+            try
+            {
+                TPStashEvent myStashEvent = new TPStashEvent();
+                AvatarState avatarState = States.Instance.CurrentAvatarState;
+
+                List<int> allEquippedCostumeIds = avatarState.inventory.Items.Select(i => i.item).OfType<Costume>().Where(e => e.equipped)
+                .Where(s => s.ItemSubType == ItemSubType.FullCostume || s.ItemSubType == ItemSubType.Title)
+                .Select(r => r.Id).ToList();
+                foreach (int id in allEquippedCostumeIds)
+                {
+                    myStashEvent.CharacterItemPlay(
+                        player_uuid: Game.instance.Agent.Address.ToHex(),
+                        character_uuid: avatarState.address.ToHex().Substring(0, 4),
+                        item_category: itemCategory.Cosmetics,
+                        item_slug: id.ToString(),
+                        reference_entity: entity.Stages,
+                        reference_category_slug: stageCategorySlug,
+                        reference_slug: stageSlug
+                        );
+                }
+            }
+            catch
+            {
+            }
+        }
+
+        private void OnCharacterConsumablePlay(string stageCategorySlug, string stageSlug)
+        {
+            try
+            {
+                TPStashEvent myStashEvent = new TPStashEvent();
+                AvatarState avatarState = States.Instance.CurrentAvatarState;
+
+                List<int> CurrentFood = avatarState.inventory.Items.Select(i => i.item).OfType<Consumable>()
+                    .Where(s => s.ItemSubType == ItemSubType.Food)
+                    .Select(r => r.Id).ToList();
+                foreach (int foodId in CurrentFood)
+                {
+                    prevFood.Remove(foodId);
+                }
+                foreach (int foodId in prevFood)
+                {
+                    myStashEvent.CharacterItemPlay(
+                        player_uuid: Game.instance.Agent.Address.ToHex(),
+                        character_uuid: avatarState.address.ToHex().Substring(0, 4),
+                        item_category: itemCategory.Consumable,
+                        item_slug: foodId.ToString(),
+                        reference_entity: entity.Stages,
+                        reference_category_slug: stageCategorySlug,
+                        reference_slug: stageSlug
+                        );
+                }
+            }
+            catch
+            {
+            }
+        }
+
+        private void OnCharacterStageEnd(BattleLog log, string stageCategorySlug, string stageSlug, int stageScore)
+        {
+            try
+            {
+                stageStatus stageStatus = stageStatus.Unknown;
+                switch (log.result)
+                {
+                    case BattleLog.Result.Win:
+                        stageStatus = stageStatus.Win;
+                        break;
+                    case BattleLog.Result.Lose:
+                        stageStatus = stageStatus.Lose;
+                        break;
+                    case BattleLog.Result.TimeOver:
+                        stageStatus = stageStatus.Timeout;
+                        break;
+                }
+
+                new TPStashEvent().CharacterStage(
+                    player_uuid: Game.instance.Agent.Address.ToHex(),
+                    character_uuid: States.Instance.CurrentAvatarState.address.ToHex().Substring(0, 4),
+                    stage_category_slug: stageCategorySlug,
+                    stage_slug: stageSlug,
+                    stage_status: stageStatus,
+                    stage_level: log.worldId + "_" + log.stageId,
+                    stage_score: stageScore,
+                    stage_playtime: null,
+                    is_autocombat_committed: isAutocombat.AutocombatOn
+                );
+            }
+            catch
+            {
+            }
         }
     }
 }
