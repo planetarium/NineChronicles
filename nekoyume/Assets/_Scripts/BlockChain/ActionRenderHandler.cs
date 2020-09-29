@@ -129,6 +129,18 @@ namespace Nekoyume.BlockChain
                 .ObserveOnMainThread()
                 .Subscribe(eval =>
                 {
+                    //[TentuPlay] 캐릭터 획득
+                    Address agentAddress = States.Instance.AgentState.address;
+                    new TPStashEvent().PlayerCharacterGet(
+                            player_uuid: agentAddress.ToHex(),
+                            character_uuid: eval.Action.avatarAddress.ToHex().Substring(0, 4),
+                            characterarchetype_slug: Nekoyume.GameConfig.DefaultAvatarCharacterId.ToString(), //100010 for now.
+                            //-> WARRIOR, ARCHER, MAGE, ACOLYTE를 구분할 수 있는 구분자여야한다.
+                            reference_entity: entity.Etc,
+                            reference_category_slug: null,
+                            reference_slug: null
+                        );
+
                     UpdateAgentState(eval);
                     UpdateAvatarState(eval, eval.Action.index);
                 }).AddTo(_disposables);
@@ -141,6 +153,18 @@ namespace Nekoyume.BlockChain
                 .ObserveOnMainThread()
                 .Subscribe(eval =>
                 {
+                    //[TentuPlay] 캐릭터 삭제
+                    Address agentAddress = States.Instance.AgentState.address;
+                    new TPStashEvent().PlayerCharacterDismiss(
+                            player_uuid: agentAddress.ToHex(),
+                            character_uuid: eval.Action.avatarAddress.ToHex().Substring(0, 4),
+                            characterarchetype_slug: Nekoyume.GameConfig.DefaultAvatarCharacterId.ToString(), //100010 for now.
+                            //-> WARRIOR, ARCHER, MAGE, ACOLYTE를 구분할 수 있는 구분자여야한다.
+                            reference_entity: entity.Etc,
+                            reference_category_slug: null,
+                            reference_slug: null
+                        );
+
                     UpdateAgentState(eval);
                     UpdateAvatarState(eval, eval.Action.index);
                 }).AddTo(_disposables);
@@ -300,15 +324,16 @@ namespace Nekoyume.BlockChain
                 .Count(i => i.ItemSubType == ItemSubType.Hourglass);
             var prevQty = eval.PreviousStates.GetAvatarState(avatarAddress).inventory.Materials
                 .Count(i => i.ItemSubType == ItemSubType.Hourglass);
-            new TPStashEvent().CharacterCurrencyUse(
+            new TPStashEvent().CharacterItemUse(
                 player_uuid: agentAddress.ToHex(),
                 character_uuid: States.Instance.CurrentAvatarState.address.ToHex().Substring(0, 4),
-                currency_slug: "hourglass",
-                currency_quantity: (float) (prevQty - qty),
-                currency_total_quantity: (float) qty,
+                item_category: itemCategory.Consumable,
+                item_slug: "hourglass",
+                item_quantity: (float)(prevQty - qty),
                 reference_entity: entity.Items,
                 reference_category_slug: "consumables_rapid_combination",
-                reference_slug: slot.Result.itemUsable.Id.ToString());
+                reference_slug: slot.Result.itemUsable.Id.ToString()
+                );
 
             UpdateAgentState(eval);
             UpdateCurrentAvatarState(eval);

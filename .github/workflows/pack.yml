@@ -16,15 +16,6 @@ jobs:
     - uses: actions/checkout@master
       with:
         submodules: true
-    - run: |
-        # TentuPlay 설정 파일 만들기
-        sed 's|__API_KEY__|${{ secrets.TENTU_API_KEY }}|' \
-          .github/data/TentuPlaySettings.asset.template \
-          | sed 's|__SECRET__|${{ secrets.TENTU_SECRET }}|' \
-          | sed 's|__DEBUG__|0|' \
-          | sed 's|__USE_PERSIST_DB_CONN__|0|' \
-          | sed 's|__AUTO_UPLOAD__|1|' \
-          > nekoyume/Assets/TentuPlay/Resources/TentuPlaySettings.asset
     - uses: docker://gableroux/unity3d:2019.1.0f2
       env:
         ULF: ${{ secrets.ULF }}
