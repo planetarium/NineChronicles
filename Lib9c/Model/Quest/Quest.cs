@@ -233,7 +233,7 @@ namespace Nekoyume.Model.Quest
 
         public IEnumerator<Quest> GetEnumerator()
         {
-            return _quests.GetEnumerator();
+            return _quests.OrderBy(q => q.Id).GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -390,7 +390,7 @@ namespace Nekoyume.Model.Quest
             var itemMap = new Dictionary<int, int>();
             if (rewardSheet.TryGetValue(rewardId, out var questRewardRow))
             {
-                foreach (var id in questRewardRow.RewardIds)
+                foreach (var id in questRewardRow.RewardIds.OrderBy(i => i))
                 {
                     if (itemRewardSheet.TryGetValue(id, out var itemRewardRow))
                     {
