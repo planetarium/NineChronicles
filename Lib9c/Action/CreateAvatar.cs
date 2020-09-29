@@ -179,21 +179,21 @@ namespace Nekoyume.Action
             EquipmentItemSheet equipmentItemSheet
         )
         {
-            foreach (var row in costumeItemSheet)
+            foreach (var row in costumeItemSheet.OrderedList)
             {
                 avatarState.inventory.AddItem(ItemFactory.CreateCostume(row));
             }
 
-            foreach (var row in materialItemSheet)
+            foreach (var row in materialItemSheet.OrderedList)
             {
                 avatarState.inventory.AddItem(ItemFactory.CreateMaterial(row), 10);
             }
 
-            foreach (var pair in equipmentItemSheet.Where(pair =>
-                pair.Value.Id > GameConfig.DefaultAvatarWeaponId))
+            foreach (var row in equipmentItemSheet.OrderedList.Where(row =>
+                row.Id > GameConfig.DefaultAvatarWeaponId))
             {
                 var itemId = random.GenerateRandomGuid();
-                avatarState.inventory.AddItem(ItemFactory.CreateItemUsable(pair.Value, itemId, default));
+                avatarState.inventory.AddItem(ItemFactory.CreateItemUsable(row, itemId, default));
             }
         }
     }

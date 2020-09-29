@@ -55,10 +55,12 @@ namespace Nekoyume.Action
                 new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
                 {
                     [(Text) "id"] = id.Serialize(),
-                    [(Text) "materialItemIdList"] =  materialItemIdList.OrderBy(i => i).Select(g => g.Serialize()).Serialize(),
+                    [(Text) "materialItemIdList"] = materialItemIdList
+                        .OrderBy(i => i)
+                        .Select(g => g.Serialize()).Serialize(),
                     [(Text) "gold"] = gold.Serialize(),
                     [(Text) "actionPoint"] = actionPoint.Serialize(),
-                }.Union((Bencodex.Types.Dictionary)base.Serialize()));
+                }.Union((Bencodex.Types.Dictionary) base.Serialize()));
         }
 
         public override IAccountStateDelta Execute(IActionContext context)
@@ -177,7 +179,7 @@ namespace Nekoyume.Action
             }
 
             var materials = new List<Equipment>();
-            foreach (var materialId in materialIds)
+            foreach (var materialId in materialIds.OrderBy(guid => guid))
             {
                 if (!avatarState.inventory.TryGetNonFungibleItem(materialId, out ItemUsable materialItem))
                 {
@@ -316,7 +318,10 @@ namespace Nekoyume.Action
                 var dict = new Dictionary<string, IValue>
                 {
                     ["itemId"] = itemId.Serialize(),
-                    ["materialIds"] = materialIds.OrderBy(i => i).Select(g => g.Serialize()).Serialize(),
+                    ["materialIds"] = materialIds
+                        .OrderBy(i => i)
+                        .Select(g => g.Serialize())
+                        .Serialize(),
                     ["avatarAddress"] = avatarAddress.Serialize(),
                 };
 
@@ -344,7 +349,7 @@ namespace Nekoyume.Action
         private BigInteger GetRequiredNCG(EnhancementCostSheet costSheet, int grade, int level)
         {
             var row = costSheet
-                .Values
+                .OrderedList
                 .FirstOrDefault(x => x.Grade == grade && x.Level == level);
 
             return row is null ? 0 : row.Cost;

@@ -3,11 +3,15 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+#if UNITY_EDITOR
 using System.Text;
+#endif
 using Bencodex.Types;
 using JetBrains.Annotations;
 using Nekoyume.Model.State;
+#if UNITY_EDITOR
 using Serilog;
+#endif
 
 namespace Nekoyume.TableData
 {

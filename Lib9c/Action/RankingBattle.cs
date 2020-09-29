@@ -77,7 +77,7 @@ namespace Nekoyume.Action
             }
 
             var weeklyArenaState = states.GetWeeklyArenaState(WeeklyArenaAddress);
-            
+
             if (weeklyArenaState.Ended)
             {
                 throw new WeeklyArenaStateAlreadyEndedException();
@@ -164,9 +164,15 @@ namespace Nekoyume.Action
                 ["avatarAddress"] = AvatarAddress.Serialize(),
                 ["enemyAddress"] = EnemyAddress.Serialize(),
                 ["weeklyArenaAddress"] = WeeklyArenaAddress.Serialize(),
-                ["costume_ids"] = new Bencodex.Types.List(costumeIds.Select(e => e.Serialize())),
-                ["equipment_ids"] = new Bencodex.Types.List(equipmentIds.Select(e => e.Serialize())),
-                ["consumable_ids"] = new Bencodex.Types.List(consumableIds.Select(e => e.Serialize())),
+                ["costume_ids"] = new Bencodex.Types.List(costumeIds
+                    .OrderBy(element => element)
+                    .Select(e => e.Serialize())),
+                ["equipment_ids"] = new Bencodex.Types.List(equipmentIds
+                    .OrderBy(element => element)
+                    .Select(e => e.Serialize())),
+                ["consumable_ids"] = new Bencodex.Types.List(consumableIds
+                    .OrderBy(element => element)
+                    .Select(e => e.Serialize())),
             }.ToImmutableDictionary();
 
         protected override void LoadPlainValueInternal(IImmutableDictionary<string, IValue> plainValue)
@@ -174,16 +180,15 @@ namespace Nekoyume.Action
             AvatarAddress = plainValue["avatarAddress"].ToAddress();
             EnemyAddress = plainValue["enemyAddress"].ToAddress();
             WeeklyArenaAddress = plainValue["weeklyArenaAddress"].ToAddress();
-            costumeIds = ((Bencodex.Types.List) plainValue["costume_ids"]).Select(
-                e => e.ToInteger()
-            ).ToList();
-            equipmentIds = ((Bencodex.Types.List) plainValue["equipment_ids"]).Select(
-                e => e.ToGuid()
-            ).ToList();
-            consumableIds = ((Bencodex.Types.List) plainValue["consumable_ids"]).Select(
-                e => e.ToGuid()
-            ).ToList();
-
+            costumeIds = ((Bencodex.Types.List) plainValue["costume_ids"])
+                .Select(e => e.ToInteger())
+                .ToList();
+            equipmentIds = ((Bencodex.Types.List) plainValue["equipment_ids"])
+                .Select(e => e.ToGuid())
+                .ToList();
+            consumableIds = ((Bencodex.Types.List) plainValue["consumable_ids"])
+                .Select(e => e.ToGuid())
+                .ToList();
         }
     }
 }
