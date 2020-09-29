@@ -46,15 +46,9 @@ namespace Nekoyume.Action
         protected override void LoadPlainValueInternal(
             IImmutableDictionary<string, IValue> plainValue)
         {
-            costumes = ((List) plainValue["costumes"]).Select(
-                e => e.ToInteger()
-            ).ToList();
-            equipments = ((List) plainValue["equipments"]).Select(
-                e => e.ToGuid()
-            ).ToList();
-            foods = ((List) plainValue["foods"]).Select(
-                e => e.ToGuid()
-            ).ToList();
+            costumes = ((List) plainValue["costumes"]).Select(e => e.ToInteger()).ToList();
+            equipments = ((List) plainValue["equipments"]).Select(e => e.ToGuid()).ToList();
+            foods = ((List) plainValue["foods"]).Select(e => e.ToGuid()).ToList();
             worldId = plainValue["worldId"].ToInteger();
             stageId = plainValue["stageId"].ToInteger();
             avatarAddress = plainValue["avatarAddress"].ToAddress();

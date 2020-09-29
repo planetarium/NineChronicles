@@ -109,6 +109,10 @@ namespace Nekoyume.Model.State
                 combinationSlotAddresses.Add(slotAddress);
             }
 
+            combinationSlotAddresses = combinationSlotAddresses
+                .OrderBy(element => element)
+                .ToList();
+
             RankingMapAddress = rankingMapAddress;
             UpdateGeneralQuest(new[] { createEvent, levelEvent });
             UpdateCompletedQuest();
@@ -312,7 +316,7 @@ namespace Nekoyume.Model.State
             var items = new List<Material>();
             foreach (var pair in quest.Reward.ItemMap)
             {
-                var row = materialItemSheet.Values.First(itemRow => itemRow.Id == pair.Key);
+                var row = materialItemSheet.OrderedList.First(itemRow => itemRow.Id == pair.Key);
                 var item = ItemFactory.CreateMaterial(row);
                 var map = inventory.AddItem(item, pair.Value);
                 itemMap.Add(map);
