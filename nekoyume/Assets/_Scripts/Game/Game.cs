@@ -106,14 +106,14 @@ namespace Nekoyume.Game
 #if UNITY_EDITOR
             if (useSystemLanguage)
             {
-                yield return L10nManager.Initialize(LanguageTypeMapper.ISO396(_options.Language)).ToYieldInstruction();
+                yield return L10nManager.Initialize().ToYieldInstruction();
             }
             else
             {
                 yield return L10nManager.Initialize(languageType).ToYieldInstruction();
             }
 #else
-            yield return L10nManager.Initialize().ToYieldInstruction();
+            yield return L10nManager.Initialize(LanguageTypeMapper.ISO396(_options.Language)).ToYieldInstruction();
 #endif
 
             Widget.Find<Title>().ShowSettingButton();
