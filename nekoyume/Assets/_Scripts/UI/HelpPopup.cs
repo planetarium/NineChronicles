@@ -17,6 +17,7 @@ using UnityEngine.UI;
 using mixpanel;
 using Nekoyume.EnumType;
 using Nekoyume.L10n;
+using System.Text.RegularExpressions;
 
 namespace Nekoyume.UI
 {
@@ -44,30 +45,34 @@ namespace Nekoyume.UI
             public string titleL10nKey;
             public PageImageModel[] images;
             public PageTextModel[] texts;
+            [NonSerialized]
+            public List<PageElement> elements;
         }
 
         [Serializable]
-        public class PageImageModel
+        public abstract class PageElement
         {
             public float delay;
             public float duration;
+            public float2 anchoredPosition;
+        }
+
+        [Serializable]
+        public class PageImageModel : PageElement
+        {
             public string resourcePath;
 
             // NOTE: 아래 두 값이 없으면 해상도 변경에 따라서 포지션 이슈가 생길 수 있습니다.
             // public AnchorPresetType AnchorPresetType { get; }
             // public PivotPresetType PivotPresetType { get; }
-            public float2 anchoredPosition;
             public bool spinning;
         }
 
         [Serializable]
-        public class PageTextModel
+        public class PageTextModel : PageElement
         {
-            public float delay;
-            public float duration;
             public string textL10nKey;
             public int fontSize;
-            public float2 anchoredPosition;
             // Default value : TopLeft
             public string alignment;
         }
@@ -93,6 +98,9 @@ namespace Nekoyume.UI
         private RectTransform panel = null;
 
         [SerializeField]
+        private RectTransform textArea = null;
+
+        [SerializeField]
         private TextMeshProUGUI titleText = null;
 
         [SerializeField]
@@ -115,10 +123,8 @@ namespace Nekoyume.UI
 
         private ViewModel _viewModel;
         private int _pageIndex = -1;
-        private int _pageImageIndex = -1;
-        private int _pageTextIndex = -1;
-        private float _timeSinceStartImage;
-        private float _timeSinceStartText;
+        private int _pageElementIndex = -1;
+        private float _timeSinceStartElement;
         private List<(Image, float)> _images = new List<(Image, float)>();
         private List<(Image, float)> _spinningImages = new List<(Image, float)>();
         private List<(TextMeshProUGUI, float)> _texts = new List<(TextMeshProUGUI, float)>();
@@ -177,6 +183,23 @@ namespace Nekoyume.UI
             if (!string.IsNullOrEmpty(json))
             {
                 var jsonModel = JsonUtility.FromJson<JsonModel>(json);
+                foreach (var view in jsonModel.viewModels)
+                {
+                    foreach (var page in view.pages)
+                    {
+                        page.elements = new List<PageElement>();
+                        foreach (var image in page.images)
+                        {
+                            page.elements.Add(image);
+                        }
+
+                        foreach (var text in page.texts)
+                        {
+                            page.elements.Add(text);
+                        }
+                        page.elements.Sort((a, b) => b.anchoredPosition.y.CompareTo(a.anchoredPosition.y));
+                    }
+                }
                 return jsonModel.viewModels.ToList();
             }
 
@@ -225,8 +248,7 @@ namespace Nekoyume.UI
         protected override void Update()
         {
             base.Update();
-            _timeSinceStartImage += Time.deltaTime;
-            _timeSinceStartText += Time.deltaTime;
+            _timeSinceStartElement += Time.deltaTime;
             UpdatePageImagesAndTexts();
         }
 
@@ -240,14 +262,11 @@ namespace Nekoyume.UI
             // Pages
             var page = _viewModel.pages[_pageIndex];
 
-            // Images
+            // Elements
             CheckTimeAndReturnToPool(ref _images, imagePool);
-            UpdateSpinningImages();
-            TryShowNextImage(page);
-
-            // Texts
             CheckTimeAndReturnToPool(ref _texts, textPool);
-            TryShowNextText(page);
+            UpdateSpinningImages();
+            TryShowNextElement(page);
         }
 
         private void UpdateButtons()
@@ -391,10 +410,8 @@ namespace Nekoyume.UI
 
             ReturnToPoolAll();
             _pageIndex = pageIndex;
-            _pageImageIndex = -1;
-            _pageTextIndex = -1;
-            _timeSinceStartImage = 0f;
-            _timeSinceStartText = 0f;
+            _pageElementIndex = -1;
+            _timeSinceStartElement = 0f;
 
             var pageModel = viewModel.pages[_pageIndex];
             titleText.text = L10nManager.Localize(pageModel.titleL10nKey);
@@ -404,30 +421,52 @@ namespace Nekoyume.UI
             return true;
         }
 
-        private bool TryShowNextImage(PageModel pageModel)
+        private bool TryShowNextElement(PageModel pageModel)
         {
-            var pageImageIndex = _pageImageIndex + 1;
-            if (pageImageIndex < 0 ||
-                pageImageIndex >= pageModel.images.Length)
+            var pageElementIndex = _pageElementIndex + 1;
+            if (pageElementIndex < 0 ||
+                pageElementIndex >= pageModel.elements.Count)
             {
                 return false;
             }
 
-            var imageModel = pageModel.images[pageImageIndex];
-            if (imageModel.delay < _timeSinceStartImage)
+            var element = pageModel.elements[pageElementIndex];
+            // When image and text appears at the same time.
+            if (element.delay + Time.deltaTime < _timeSinceStartElement)
             {
                 return false;
             }
 
+            switch (element)
+            {
+                case PageImageModel imageModel:
+                    ShowImage(imageModel, pageElementIndex);
+                    break;
+                case PageTextModel textModel:
+                    var nextElement = (pageModel.elements.Count > pageElementIndex + 1) ?
+                        pageModel.elements[pageElementIndex + 1] : null;
+                    var nextElementPosY =
+                        nextElement is null ? -textArea.rect.height : nextElement.anchoredPosition.y;
+                    ShowText(textModel, pageElementIndex, nextElementPosY);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+
+            return true;
+        }
+
+        private void ShowImage(PageImageModel imageModel, int index)
+        {
             var sprite = Resources.Load<Sprite>(imageModel.resourcePath);
             if (sprite is null)
             {
                 Debug.LogError($"Failed to load resource at {imageModel.resourcePath}");
-                return false;
+                return;
             }
 
-            _pageImageIndex = pageImageIndex;
-            _timeSinceStartImage = 0f;
+            _pageElementIndex = index;
+            _timeSinceStartElement = 0f;
 
             var image = imagePool.Rent();
             var imageRectTransform = image.rectTransform;
@@ -447,32 +486,22 @@ namespace Nekoyume.UI
                 _spinningImages.Add(tuple);
                 Debug.LogWarning("_spinningImages.Add() called!");
             }
-
-            return true;
         }
 
-        private bool TryShowNextText(PageModel pageModel)
+        private void ShowText(PageTextModel textModel, int index, float nextElementPosY)
         {
-            var pageTextIndex = _pageTextIndex + 1;
-            if (pageTextIndex < 0 ||
-                pageTextIndex >= pageModel.texts.Length)
-            {
-                return false;
-            }
-
-            var textModel = pageModel.texts[pageTextIndex];
-            if (textModel.delay < _timeSinceStartText)
-            {
-                return false;
-            }
-
-            _pageTextIndex = pageTextIndex;
-            _timeSinceStartText = 0f;
+            _pageElementIndex = index;
+            _timeSinceStartElement = 0f;
 
             var text = textPool.Rent();
-            text.rectTransform.anchoredPosition = textModel.anchoredPosition;
-            text.text = L10nManager.Localize(textModel.textL10nKey);
-            text.fontSize = textModel.fontSize;
+            var textRectTransform = text.rectTransform;
+            textRectTransform.anchoredPosition = textModel.anchoredPosition;
+            textRectTransform.sizeDelta =
+                new Vector2(textRectTransform.sizeDelta.x,
+                Mathf.Abs(nextElementPosY - textRectTransform.anchoredPosition.y));
+            var localizedString = L10nManager.Localize(textModel.textL10nKey);
+            text.text = Regex.Unescape(localizedString);
+            text.fontSizeMax = textModel.fontSize;
 
             if (!Enum.TryParse<TextAlignmentOptions>(textModel.alignment, out var alignment))
             {
@@ -488,8 +517,6 @@ namespace Nekoyume.UI
                 textModel.duration < 0f
                     ? -1f
                     : Time.timeSinceLevelLoad + textModel.duration));
-
-            return true;
         }
 
         #endregion
@@ -551,12 +578,9 @@ namespace Nekoyume.UI
             }
 
             var page = _viewModel.pages[_pageIndex];
-            var imagesLength = page.images.Length;
-            var textsLength = page.texts.Length;
-            if (_pageImageIndex < imagesLength - 1 ||
-                _pageImageIndex >= imagesLength ||
-                _pageTextIndex < textsLength - 1 ||
-                _pageTextIndex >= textsLength)
+            var elementsCount = page.elements.Count;
+            if (_pageElementIndex < elementsCount - 1 ||
+                _pageElementIndex >= elementsCount)
             {
                 return false;
             }
