@@ -14,7 +14,9 @@ namespace Nekoyume.Model.Quest
 
         public QuestReward(Dictionary<int, int> map)
         {
-            ItemMap = map;
+            ItemMap = map
+                .ToDictionary(kv => kv.Key, kv => kv.Value
+            );
         }
 
         public QuestReward(Dictionary serialized)

@@ -314,7 +314,7 @@ namespace Nekoyume.Model.State
         public void UpdateFromQuestReward(Quest.Quest quest, MaterialItemSheet materialItemSheet)
         {
             var items = new List<Material>();
-            foreach (var pair in quest.Reward.ItemMap)
+            foreach (var pair in quest.Reward.ItemMap.OrderBy(kv => kv.Key))
             {
                 var row = materialItemSheet.OrderedList.First(itemRow => itemRow.Id == pair.Key);
                 var item = ItemFactory.CreateMaterial(row);
