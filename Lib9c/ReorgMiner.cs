@@ -14,6 +14,9 @@ using Serilog;
 
 namespace Nekoyume.BlockChain
 {
+    /// <summary>
+    /// Intentionally causes repetitive reorgs for debugging purpose.
+    /// </summary>
     public class ReorgMiner
     {
         private readonly BlockChain<PolymorphicAction<ActionBase>> _mainChain;
