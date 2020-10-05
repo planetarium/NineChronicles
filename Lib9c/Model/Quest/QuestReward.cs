@@ -15,7 +15,6 @@ namespace Nekoyume.Model.Quest
         public QuestReward(Dictionary<int, int> map)
         {
             ItemMap = map
-                .OrderBy(kv => kv.Key)
                 .ToDictionary(kv => kv.Key, kv => kv.Value
             );
         }
