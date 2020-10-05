@@ -5,10 +5,11 @@ namespace Lib9c.Tests
 
     public static class TableSheetsImporter
     {
-        public static Dictionary<string, string> ImportSheets()
+        public static Dictionary<string, string> ImportSheets(
+            string dir = null)
         {
             var sheets = new Dictionary<string, string>();
-            var dir = Path.Combine("Data", "TableCSV");
+            dir ??= Path.Combine("Data", "TableCSV");
             var files = Directory.GetFiles(dir, "*.csv", SearchOption.AllDirectories);
             foreach (var filePath in files)
             {
