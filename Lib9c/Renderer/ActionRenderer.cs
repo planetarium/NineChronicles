@@ -3,6 +3,7 @@ using Libplanet;
 using Libplanet.Action;
 using Libplanet.Blockchain.Renderers;
 using Libplanet.Blocks;
+using Nekoyume.Action;
 using static Nekoyume.Action.ActionBase;
 using Serilog;
 #if UNITY_EDITOR || UNITY_STANDALONE
@@ -12,7 +13,7 @@ using System.Reactive.Subjects;
 using System.Reactive.Linq;
 #endif
 
-namespace Nekoyume.Action
+namespace Lib9c.Renderer
 {
     using NCAction = PolymorphicAction<ActionBase>;
     using NCBlock = Block<PolymorphicAction<ActionBase>>;

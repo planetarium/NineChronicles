@@ -1,11 +1,11 @@
-﻿namespace Lib9c.Tests.Action
+﻿namespace Lib9c.Tests.Renderer
 {
     using System;
     using System.Linq;
+    using Lib9c.Renderer;
     using Libplanet;
     using Libplanet.Blocks;
     using Libplanet.Tx;
-    using Nekoyume.Action;
     using Xunit;
     using NCAction = Libplanet.Action.PolymorphicAction<Nekoyume.Action.ActionBase>;
     using NCBlock = Libplanet.Blocks.Block<Libplanet.Action.PolymorphicAction<Nekoyume.Action.ActionBase>>;

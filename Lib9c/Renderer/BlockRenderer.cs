@@ -2,7 +2,7 @@ using System;
 using Libplanet.Action;
 using Libplanet.Blockchain.Renderers;
 using Libplanet.Blocks;
-using static Nekoyume.Action.ActionBase;
+using Nekoyume.Action;
 #if UNITY_EDITOR || UNITY_STANDALONE
 using UniRx;
 #else
@@ -10,7 +10,7 @@ using System.Reactive.Subjects;
 using System.Reactive.Linq;
 #endif
 
-namespace Nekoyume.Action
+namespace Lib9c.Renderer
 {
     using NCAction = PolymorphicAction<ActionBase>;
     using NCBlock = Block<PolymorphicAction<ActionBase>>;
