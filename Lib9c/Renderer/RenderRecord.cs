@@ -1,4 +1,7 @@
-﻿using System;
+﻿// FIXME: This class is brought from Libplanet.Tests.
+// Should be published on NuGet instead of being included in this project. See:
+// https://github.com/planetarium/libplanet/blob/85252a03486435d18a3a1356166d606b8024fd6b/Libplanet.Tests/Common/RenderRecord.cs
+using System;
 using Libplanet.Action;
 
 namespace Lib9c.Renderer
