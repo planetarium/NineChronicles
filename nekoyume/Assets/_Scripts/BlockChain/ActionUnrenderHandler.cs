@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Nekoyume.Action;
+using Lib9c.Renderer;
 
 namespace Nekoyume.BlockChain
 {
