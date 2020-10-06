@@ -7,6 +7,7 @@ using Nekoyume.Model.State;
 
 namespace Nekoyume.Action
 {
+    // NOTE: This class not used anymore.
     [Serializable]
     [ActionType("weekly_arena")]
     public class WeeklyArena : ActionBase

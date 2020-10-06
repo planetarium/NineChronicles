@@ -301,6 +301,22 @@ namespace Nekoyume.Action
 
         public static T GetSheet<T>(this IAccountStateDelta states) where T : ISheet, new()
         {
+            try
+            {
+                var csv = GetSheetCsv<T>(states);
+                var sheet = new T();
+                sheet.Set(csv);
+                return sheet;
+            }
+            catch (Exception e)
+            {
+                Log.Error(e, $"Unexpected error occurred during {nameof(T)}()");
+                throw;
+            }
+        }
+
+        public static string GetSheetCsv<T>(this IAccountStateDelta states) where T : ISheet, new()
+        {
             var address = Addresses.GetSheetAddress<T>();
             var value = states.GetState(address);
             if (value is null)
@@ -311,10 +327,7 @@ namespace Nekoyume.Action
 
             try
             {
-                var csv = value.ToDotnetString();
-                var sheet = new T();
-                sheet.Set(csv);
-                return sheet;
+                return value.ToDotnetString();
             }
             catch (Exception e)
             {
@@ -399,6 +412,16 @@ namespace Nekoyume.Action
                 throw new FailedLoadStateException(nameof(RankingState));
             }
             return new RankingState((Dictionary) value);
+        }
+
+        public static ShopState GetShopState(this IAccountStateDelta states)
+        {
+            var value = states.GetState(Addresses.Shop);
+            if (value is null)
+            {
+                throw new FailedLoadStateException(nameof(ShopState));
+            }
+            return new ShopState((Dictionary) value);
         }
     }
 }
