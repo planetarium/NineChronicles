@@ -1,7 +1,9 @@
 namespace Lib9c.Tests.Model.State
 {
     using System.Collections.Generic;
+    using System.IO;
     using System.Linq;
+    using System.Runtime.Serialization.Formatters.Binary;
     using System.Security.Cryptography;
     using System.Threading.Tasks;
     using Bencodex;
@@ -23,27 +25,32 @@ namespace Lib9c.Tests.Model.State
             _tableSheets = new TableSheets(_sheets);
         }
 
+        [Fact]
+        public void Serialize()
+        {
+            Address avatarAddress = new PrivateKey().ToAddress();
+            Address agentAddress = new PrivateKey().ToAddress();
+            var avatarState = GetNewAvatarState(avatarAddress, agentAddress);
+
+            var serialized = avatarState.Serialize();
+            var deserialized = new AvatarState((Bencodex.Types.Dictionary)serialized);
+
+            Assert.Equal(avatarState.address, deserialized.address);
+            Assert.Equal(avatarState.agentAddress, deserialized.agentAddress);
+            Assert.Equal(avatarState.blockIndex, deserialized.blockIndex);
+        }
+
         [Theory]
         [InlineData(1)]
         [InlineData(2)]
         [InlineData(4)]
         public async Task ConstructDeterministic(int waitMilliseconds)
         {
-            var rankingState = new RankingState();
             Address avatarAddress = new PrivateKey().ToAddress();
             Address agentAddress = new PrivateKey().ToAddress();
-            AvatarState AvatarStateConstructor() =>
-                new AvatarState(
-                    avatarAddress,
-                    agentAddress,
-                    0,
-                    _tableSheets.GetAvatarSheets(),
-                    new GameConfigState(),
-                    rankingState.UpdateRankingMap(avatarAddress));
-
-            AvatarState avatarStateA = AvatarStateConstructor();
+            AvatarState avatarStateA = GetNewAvatarState(avatarAddress, agentAddress);
             await Task.Delay(waitMilliseconds);
-            AvatarState avatarStateB = AvatarStateConstructor();
+            AvatarState avatarStateB = GetNewAvatarState(avatarAddress, agentAddress);
 
             HashDigest<SHA256> Hash(AvatarState avatarState) => Hashcash.Hash(new Codec().Encode(avatarState.Serialize()));
             Assert.Equal(Hash(avatarStateA), Hash(avatarStateB));
@@ -90,6 +97,18 @@ namespace Lib9c.Tests.Model.State
                     306023,
                 }
             );
+        }
+
+        private AvatarState GetNewAvatarState(Address avatarAddress, Address agentAddress)
+        {
+            var rankingState = new RankingState();
+            return new AvatarState(
+                avatarAddress,
+                agentAddress,
+                0,
+                _tableSheets.GetAvatarSheets(),
+                new GameConfigState(),
+                rankingState.UpdateRankingMap(avatarAddress));
         }
     }
 }

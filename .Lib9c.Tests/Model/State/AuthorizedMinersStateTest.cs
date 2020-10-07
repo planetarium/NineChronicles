@@ -1,5 +1,7 @@
 namespace Lib9c.Tests.Model.State
 {
+    using System.IO;
+    using System.Runtime.Serialization.Formatters.Binary;
     using Bencodex.Types;
     using Libplanet;
     using Nekoyume.Model.State;
@@ -10,7 +12,24 @@ namespace Lib9c.Tests.Model.State
         [Fact]
         public void Serialize()
         {
-            var miners = new[]
+            var miners = GetNewMiners();
+            var state = new AuthorizedMinersState(
+                miners: miners,
+                interval: 50,
+                validUntil: 1000
+            );
+
+            var serialized = (Dictionary)state.Serialize();
+            var deserialized = new AuthorizedMinersState(serialized);
+
+            Assert.Equal(miners, deserialized.Miners);
+            Assert.Equal(50, deserialized.Interval);
+            Assert.Equal(1000, deserialized.ValidUntil);
+        }
+
+        private static Address[] GetNewMiners()
+        {
+            return new[]
             {
                 new Address(
                     new byte[]
@@ -31,19 +50,6 @@ namespace Lib9c.Tests.Model.State
                     }
                 ),
             };
-
-            var state = new AuthorizedMinersState(
-                miners: miners,
-                interval: 50,
-                validUntil: 1000
-            );
-
-            var serialized = (Dictionary)state.Serialize();
-            var deserialized = new AuthorizedMinersState(serialized);
-
-            Assert.Equal(miners, deserialized.Miners);
-            Assert.Equal(50, deserialized.Interval);
-            Assert.Equal(1000, deserialized.ValidUntil);
         }
     }
 }
