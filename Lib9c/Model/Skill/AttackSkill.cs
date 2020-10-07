@@ -32,17 +32,19 @@ namespace Nekoyume.Model.Skill
             for (var i = 0; i < SkillRow.HitCount; i++)
             {
                 var multiplier = multipliers[i];
-                var damage = (int) (totalDamage * multiplier);
 
                 foreach (var target in targets)
                 {
+                    var damage = 0;
                     var isCritical = false;
                     // 일반 공격이 아니거나 일반 공격인데 명중한 경우.
                     if (!isNormalAttack ||
                         target.IsHit(caster))
                     {
                         // 방깎 적용.
-                        damage -= target.DEF;
+                        damage = totalDamage - target.DEF;
+                        // 멀티 히트 적용.
+                        damage = (int) (damage * multiplier);
                         if (damage < 1)
                         {
                             damage = 1;
@@ -53,8 +55,10 @@ namespace Nekoyume.Model.Skill
                             damage = caster.GetDamage(damage, isNormalAttack);
                             // 속성 적용.
                             damage = elementalType.GetDamage(target.defElementType, damage);
-                            // 치명 적용.
-                            isCritical = caster.IsCritical(isNormalAttack);
+                            // 치명 적용. 연타공격은 항상 연출이 크리티컬로 보이도록 처리.
+                            isCritical = SkillRow.SkillCategory == SkillCategory.DoubleAttack ||
+                                         caster.IsCritical(isNormalAttack);
+
                             if (isCritical)
                             {
                                 damage = (int) (damage * CharacterBase.CriticalMultiplier);
@@ -62,17 +66,6 @@ namespace Nekoyume.Model.Skill
                         }
 
                         target.CurrentHP -= damage;
-                    }
-                    // 명중 실패.
-                    else
-                    {
-                        damage = 0;
-                    }
-
-                    // 연타공격은 항상 연출이 크리티컬로 보이도록 처리.
-                    if (SkillRow.SkillCategory == SkillCategory.DoubleAttack)
-                    {
-                        isCritical = true;
                     }
 
                     infos.Add(new BattleStatus.Skill.SkillInfo((CharacterBase) target.Clone(), damage, isCritical,
