@@ -67,7 +67,7 @@ namespace Lib9c.Renderer
             Exception exception
         )
         {
-            Log.Error(exception, "{action} exeuction failed.", action);
+            Log.Error(exception, "{action} execution failed.", action);
             ActionRenderSubject.OnNext(new ActionEvaluation<ActionBase>()
             {
                 Action = GetActionBase(action),
