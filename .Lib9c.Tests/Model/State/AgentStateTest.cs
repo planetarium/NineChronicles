@@ -34,8 +34,6 @@ namespace Lib9c.Tests.Model.State
             var deserialized = (AgentState)formatter.Deserialize(ms);
 
             Assert.Equal(agentStateAddress, deserialized.address);
-
-            ms.Dispose();
         }
     }
 }

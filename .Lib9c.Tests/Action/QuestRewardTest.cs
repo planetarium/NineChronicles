@@ -92,7 +92,9 @@ namespace Lib9c.Tests.Action
             foreach (var rewardId in worldQuestRewardRow.RewardIds.OrderBy(id => id))
             {
                 Assert.True(questItemRewardSheet.TryGetValue(rewardId, out var questItemRewardRow));
-                nextAvatarState.inventory.HasItem(questItemRewardRow.Id, questItemRewardRow.Count);
+                Assert.True(nextAvatarState.inventory.HasItem(
+                    questItemRewardRow.ItemId,
+                    questItemRewardRow.Count));
             }
         }
     }

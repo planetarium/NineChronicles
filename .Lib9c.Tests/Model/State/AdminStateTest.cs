@@ -37,7 +37,8 @@ namespace Lib9c.Tests.Model.State
 
             var deserialized = (AdminState)formatter.Deserialize(ms);
 
-            ms.Dispose();
+            Assert.Equal(adminStateAddress, deserialized.AdminAddress);
+            Assert.Equal(validUntil, deserialized.ValidUntil);
         }
     }
 }
