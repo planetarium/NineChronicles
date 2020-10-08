@@ -1,9 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.ComponentModel;
-using System.IO;
-using System.Linq;
 using Cocona;
 using Libplanet;
 using Libplanet.Action;
@@ -12,12 +6,17 @@ using Nekoyume;
 using Nekoyume.Action;
 using Nekoyume.Model;
 using Nekoyume.Model.State;
+using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.IO;
+using System.Linq;
 
-namespace Lib9c.Tools.SubCommend
+namespace Lib9c.Tools.SubCommand
 {
-    public class Create
+    public class Genesis
     {
-        public void Genesis(
+        [Command(Description = "Create a new genesis block.")]
+        public void Create(
             [Option('g', Description = "/path/to/nekoyume-unity/nekoyume/Assets/AddressableAssets/TableCSV")]
             string gameConfigDir,
             [Option('d', Description = "/path/to/nekoyume-unity/nekoyume/Assets/StreamingAssets/GoldDistribution.csv")]

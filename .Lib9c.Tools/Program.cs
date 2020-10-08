@@ -1,11 +1,9 @@
-﻿using System;
 using Cocona;
-using Lib9c.Tools.SubCommend;
+using Lib9c.Tools.SubCommand;
 
 namespace Lib9c.Tools
 {
-    // FIXME more detailed description need
-    [HasSubCommands(typeof(Create), Description = "Create Genesis Block")]
+    [HasSubCommands(typeof(Genesis), Description = "Manage genesis block.")]
     class Program
     {
         static void Main(string[] args) => CoconaLiteApp.Run<Program>(args);
