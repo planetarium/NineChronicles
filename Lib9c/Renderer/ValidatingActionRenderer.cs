@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Libplanet.Action;
-using Libplanet.Blockchain.Policies;
 using Libplanet.Blockchain.Renderers;
 using Libplanet.Blocks;
 
@@ -21,11 +20,11 @@ namespace Lib9c.Renderer
     public class ValidatingActionRenderer<T> : RecordingRenderer<T>
         where T : IAction, new()
     {
-        private readonly IBlockPolicy<T> _policy;
+        private readonly Action<IReadOnlyList<RenderRecord<T>>, Block<T>, Block<T>, Block<T>> _validateReorgEnd;
 
-        public ValidatingActionRenderer(IBlockPolicy<T> policy)
+        public ValidatingActionRenderer(Action<IReadOnlyList<RenderRecord<T>>, Block<T>, Block<T>, Block<T>> validateReorgEnd)
         {
-            _policy = policy ?? throw new ArgumentNullException(nameof(policy));
+            _validateReorgEnd = validateReorgEnd;
         }
         
         private enum RenderState
@@ -92,41 +91,6 @@ namespace Lib9c.Renderer
         {
             base.RenderBlockEnd(oldTip, newTip);
             Validate();
-
-            List<IAction> expectedActions = new List<IAction>();
-            
-            foreach (var tx in newTip.Transactions)
-            {
-                expectedActions.AddRange(tx.Actions.Cast<IAction>());
-            }
-            
-            if (_policy.BlockAction != null)
-            {
-                expectedActions.Add(_policy.BlockAction);
-            }
-
-            List<IAction> actualActions = new List<IAction>();
-            foreach (var record in Records.Reverse())
-            {
-                if (record is RenderRecord<T>.Block b && b.Begin)
-                {
-                    break;
-                }
-
-                if (record is RenderRecord<T>.ActionBase a && a.Render)
-                {
-                    actualActions.Add(a.Action);
-                }
-            }
-
-            actualActions.Reverse();
-
-            if (!actualActions.Select(a => a.PlainValue).SequenceEqual(expectedActions.Select(a => a.PlainValue)))
-            {
-                var message = $"The render action record does not match with actions in the block {newTip}. " +
-                              $"(expected: {expectedActions.Count}, actual: {actualActions.Count})";
-                throw new InvalidRenderException(Records, message);
-            }
         }
 
         public override void RenderReorgEnd(
@@ -137,6 +101,8 @@ namespace Lib9c.Renderer
         {
             base.RenderReorgEnd(oldTip, newTip, branchpoint);
             Validate();
+
+            _validateReorgEnd(Records, oldTip, newTip, branchpoint);
         }
 
         private void Validate()
