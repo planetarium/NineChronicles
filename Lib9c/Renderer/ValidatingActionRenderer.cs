@@ -95,9 +95,9 @@ namespace Lib9c.Renderer
 
             List<IAction> expectedActions = new List<IAction>();
             
-            foreach(var tx in newTip.Transactions)
+            foreach (var tx in newTip.Transactions)
             {
-                expectedActions.AddRange(tx.Actions.Select(a => (IAction) a));
+                expectedActions.AddRange(tx.Actions.Cast<IAction>());
             }
             
             if (_policy.BlockAction != null)
