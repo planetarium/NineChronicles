@@ -81,7 +81,7 @@ namespace Nekoyume.UI.Scroller
                 if (!(rewardView.Model is null) && rewardView.gameObject.activeSelf)
                 {
                     lastVFX =
-                        VFXController.instance.CreateAndChaseCam<ItemMoveVFX>(rewardView.transform.position);
+                        VFXController.instance.CreateAndChaseCam<ItemMoveVFX>(rewardView.transform.position).SetEmitDuration(0.1f);
                 }
             }
             ShowAsComplete();
