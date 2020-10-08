@@ -11,6 +11,9 @@ namespace Nekoyume.UI
         [SerializeField]
         private SettingButton settingButton = null;
 
+        [SerializeField]
+        private GameObject pressToStart;
+
         private bool _ready;
         public Animator animator;
 
@@ -26,6 +29,12 @@ namespace Nekoyume.UI
                 EventSystem.current.SetSelectedGameObject(null);
                 OnClick();
             };
+        }
+
+        public void Init()
+        {
+            settingButton.Show();
+            pressToStart.SetActive(true);
         }
 
         public void Show(string keyStorePath, string privateKey)
@@ -57,11 +66,6 @@ namespace Nekoyume.UI
         {
             _ready = true;
             animator.enabled = true;
-        }
-
-        public void ShowSettingButton()
-        {
-            settingButton.Show();
         }
     }
 }

@@ -116,7 +116,7 @@ namespace Nekoyume.Game
             yield return L10nManager.Initialize(LanguageTypeMapper.ISO396(_options.Language)).ToYieldInstruction();
 #endif
 
-            Widget.Find<Title>().ShowSettingButton();
+            Widget.Find<Title>().Init();
             MainCanvas.instance.InitializeFirst();
             yield return Addressables.InitializeAsync();
             yield return StartCoroutine(CoInitializeTableSheets());
