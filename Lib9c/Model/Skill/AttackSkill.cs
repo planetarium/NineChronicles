@@ -55,14 +55,15 @@ namespace Nekoyume.Model.Skill
                             damage = caster.GetDamage(damage, isNormalAttack);
                             // 속성 적용.
                             damage = elementalType.GetDamage(target.defElementType, damage);
-                            // 치명 적용. 연타공격은 항상 연출이 크리티컬로 보이도록 처리.
-                            isCritical = SkillRow.SkillCategory == SkillCategory.DoubleAttack ||
-                                         caster.IsCritical(isNormalAttack);
-
+                            // 치명 적용.
+                            isCritical = caster.IsCritical(isNormalAttack);
                             if (isCritical)
                             {
                                 damage = (int) (damage * CharacterBase.CriticalMultiplier);
                             }
+
+                            // 연타공격은 항상 연출이 크리티컬로 보이도록 처리.
+                            isCritical |= SkillRow.SkillCategory == SkillCategory.DoubleAttack;
                         }
 
                         target.CurrentHP -= damage;
