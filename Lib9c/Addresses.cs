@@ -19,6 +19,7 @@ namespace Nekoyume
         public static readonly Address GoldCurrency      = new Address("000000000000000000000000000000000000000a");
         public static readonly Address GoldDistribution  = new Address("000000000000000000000000000000000000000b");
         public static readonly Address AuthorizedMiners  = new Address("000000000000000000000000000000000000000c");
+        public static readonly Address Credits           = new Address("000000000000000000000000000000000000000d");
 
         public static Address GetSheetAddress<T>() where T : ISheet
         {

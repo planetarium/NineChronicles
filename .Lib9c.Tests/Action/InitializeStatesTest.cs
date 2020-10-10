@@ -174,5 +174,53 @@ namespace Lib9c.Tests.Action
 
             Assert.Contains(adminAddress, fetchedState.Accounts);
         }
+
+        [Fact]
+        public void ExecuteWithCredits()
+        {
+            var gameConfigState = new GameConfigState(_sheets[nameof(GameConfigSheet)]);
+            var redeemCodeListSheet = new RedeemCodeListSheet();
+            redeemCodeListSheet.Set(_sheets[nameof(RedeemCodeListSheet)]);
+            var goldDistributionCsvPath = GoldDistributionTest.CreateFixtureCsvFile();
+            var goldDistributions = GoldDistribution.LoadInDescendingEndBlockOrder(goldDistributionCsvPath);
+            var minterKey = new PrivateKey();
+            var ncg = new Currency("NCG", 2, minterKey.ToAddress());
+            var nonce = new byte[] { 0x00, 0x01, 0x02, 0x03 };
+            var adminAddress = new Address("F9A15F870701268Bd7bBeA6502eB15F4997f32f9");
+            var creditState = new CreditsState(
+                new[]
+                {
+                    "John Smith",
+                    "홍길동",
+                    "山田太郎",
+                }
+            );
+
+            var action = new InitializeStates(
+                rankingState: new RankingState(),
+                shopState: new ShopState(),
+                tableSheets: _sheets,
+                gameConfigState: gameConfigState,
+                redeemCodeState: new RedeemCodeState(redeemCodeListSheet),
+                adminAddressState: new AdminState(adminAddress, 1500000),
+                activatedAccountsState: new ActivatedAccountsState(ImmutableHashSet<Address>.Empty.Add(adminAddress)),
+                goldCurrencyState: new GoldCurrencyState(ncg),
+                goldDistributions: goldDistributions,
+                pendingActivationStates: new PendingActivationState[0],
+                creditsState: creditState
+            );
+
+            var genesisState = action.Execute(new ActionContext()
+            {
+                BlockIndex = 0,
+                Miner = default,
+                PreviousStates = new State(),
+            });
+
+            var fetchedState = new CreditsState(
+                (Dictionary)genesisState.GetState(CreditsState.Address));
+
+            Assert.Equal(creditState.Names, fetchedState.Names);
+        }
     }
 }
