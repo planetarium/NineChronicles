@@ -29,6 +29,8 @@ namespace Nekoyume.Action
 
         public Bencodex.Types.Dictionary? AuthorizedMiners { get; set; }
 
+        public Bencodex.Types.Dictionary? Credits { get; set; }
+
         public InitializeStates()
         {
         }
@@ -44,7 +46,8 @@ namespace Nekoyume.Action
             GoldCurrencyState goldCurrencyState,
             GoldDistribution[] goldDistributions,
             PendingActivationState[] pendingActivationStates,
-            AuthorizedMinersState authorizedMinersState = null)
+            AuthorizedMinersState authorizedMinersState = null,
+            CreditsState creditsState = null)
         {
             Ranking = (Bencodex.Types.Dictionary)rankingState.Serialize();
             Shop = (Bencodex.Types.Dictionary)shopState.Serialize();
@@ -62,6 +65,11 @@ namespace Nekoyume.Action
             if (!(authorizedMinersState is null))
             {
                 AuthorizedMiners = (Bencodex.Types.Dictionary)authorizedMinersState.Serialize();
+            }
+
+            if (!(creditsState is null))
+            {
+                Credits = (Bencodex.Types.Dictionary)creditsState.Serialize();
             }
         }
 
@@ -97,6 +105,7 @@ namespace Nekoyume.Action
                     );
                 }
                 states = states.SetState(AuthorizedMinersState.Address, MarkChanged);
+                states = states.SetState(CreditsState.Address, MarkChanged);
                 return states;
             }
 
@@ -138,6 +147,11 @@ namespace Nekoyume.Action
                 );
             }
 
+            if (!(Credits is null))
+            {
+                states = states.SetState(CreditsState.Address, Credits);
+            }
+
             var currency = new GoldCurrencyState(GoldCurrency).Currency;
             states = states.MintAsset(GoldCurrencyState.Address, currency * 1000000000);
             return states;
@@ -166,11 +180,15 @@ namespace Nekoyume.Action
                 {
                     rv = rv.Add("authorized_miners_state", AuthorizedMiners);
                 }
+
+                if (!(Credits is null))
+                {
+                    rv = rv.Add("credits_state", Credits);
+                }
                 
                 return rv;
             }
         }
-            
 
         protected override void LoadPlainValueInternal(IImmutableDictionary<string, Bencodex.Types.IValue> plainValue)
         {
@@ -189,9 +207,14 @@ namespace Nekoyume.Action
             GoldDistributions = (Bencodex.Types.List)plainValue["gold_distributions"];
             PendingActivations = (Bencodex.Types.List)plainValue["pending_activation_states"];
 
-            if (plainValue.TryGetValue("authorized_miners_state", out Bencodex.Types.IValue rawState))
+            if (plainValue.TryGetValue("authorized_miners_state", out Bencodex.Types.IValue authorizedMiners))
             {
-                AuthorizedMiners = (Bencodex.Types.Dictionary)rawState;
+                AuthorizedMiners = (Bencodex.Types.Dictionary)authorizedMiners;
+            }
+
+            if (plainValue.TryGetValue("credits_state", out Bencodex.Types.IValue credits))
+            {
+                Credits = (Bencodex.Types.Dictionary)credits;
             }
         }
     }
