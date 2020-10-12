@@ -77,11 +77,8 @@ namespace Nekoyume.Action
 
             if (!Regex.IsMatch(name, GameConfig.AvatarNickNamePattern))
             {
-                return LogError(
-                    context,
-                    "Aborted as the input name {@Name} does not follow the allowed name pattern.",
-                    name
-                );
+                throw new InvalidNamePatternException(
+                    $"Aborted as the input name {name} does not follow the allowed name pattern.");
             }
 
             var sw = new Stopwatch();
@@ -93,12 +90,13 @@ namespace Nekoyume.Action
             var avatarState = states.GetAvatarState(avatarAddress);
             if (!(avatarState is null))
             {
-                return LogError(context, "Aborted as there is already an avatar at {Address}.", avatarAddress);
+                throw new InvalidAddressException($"Aborted as there is already an avatar at {avatarAddress}.");
             }
 
             if (agentState.avatarAddresses.ContainsKey(index))
             {
-                return LogError(context, "Aborted as the signer already has an avatar at index #{Index}.", index);
+                throw new AvatarIndexAlreadyUsedException(
+                    $"Aborted as the signer already has an avatar at index #{index}.");
             }
             sw.Stop();
             Log.Debug("CreateAvatar Get AgentAvatarStates: {Elapsed}", sw.Elapsed);

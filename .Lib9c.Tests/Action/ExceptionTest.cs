@@ -1,5 +1,6 @@
 namespace Lib9c.Tests.Action
 {
+    using System;
     using System.IO;
     using System.Runtime.Serialization.Formatters.Binary;
     using Nekoyume.Action;
@@ -11,46 +12,47 @@ namespace Lib9c.Tests.Action
         public void AlreadyReceivedExceptionSerializable()
         {
             var exc = new AlreadyReceivedException("for testing");
-
-            var formatter = new BinaryFormatter();
-            using (var ms = new MemoryStream())
-            {
-                formatter.Serialize(ms, exc);
-
-                ms.Seek(0, SeekOrigin.Begin);
-                var deserialized = (AlreadyReceivedException)formatter.Deserialize(ms);
-                Assert.Equal("for testing", deserialized.Message);
-            }
+            AssertException<AlreadyReceivedException>(exc);
         }
 
         [Fact]
         public void ArenaNotEndedExceptionSerializable()
         {
             var exc = new ArenaNotEndedException("for testing");
+            AssertException<ArenaNotEndedException>(exc);
+        }
 
-            var formatter = new BinaryFormatter();
-            using (var ms = new MemoryStream())
-            {
-                formatter.Serialize(ms, exc);
-
-                ms.Seek(0, SeekOrigin.Begin);
-                var deserialized = (ArenaNotEndedException)formatter.Deserialize(ms);
-                Assert.Equal("for testing", deserialized.Message);
-            }
+        [Fact]
+        public void AvatarIndexAlreadyUsedExceptionSerializable()
+        {
+            var exc = new AvatarIndexAlreadyUsedException("for testing");
+            AssertException<AvatarIndexAlreadyUsedException>(exc);
         }
 
         [Fact]
         public void FailedLoadStateExceptionSerializable()
         {
             var exc = new FailedLoadStateException("for testing");
+            AssertException<FailedLoadStateException>(exc);
+        }
 
+        [Fact]
+        public void InvalidNamePatternExceptionSerializable()
+        {
+            var exc = new InvalidNamePatternException("for testing");
+            AssertException<InvalidNamePatternException>(exc);
+        }
+
+        private static void AssertException<T>(Exception exc)
+            where T : Exception
+        {
             var formatter = new BinaryFormatter();
             using (var ms = new MemoryStream())
             {
                 formatter.Serialize(ms, exc);
 
                 ms.Seek(0, SeekOrigin.Begin);
-                var deserialized = (FailedLoadStateException)formatter.Deserialize(ms);
+                var deserialized = (T)formatter.Deserialize(ms);
                 Assert.Equal("for testing", deserialized.Message);
             }
         }

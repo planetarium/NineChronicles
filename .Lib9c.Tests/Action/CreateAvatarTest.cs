@@ -6,7 +6,6 @@ namespace Lib9c.Tests.Action
     using System.IO;
     using System.Linq;
     using System.Runtime.Serialization.Formatters.Binary;
-    using Bencodex.Types;
     using Libplanet;
     using Libplanet.Assets;
     using Nekoyume;
@@ -17,15 +16,23 @@ namespace Lib9c.Tests.Action
 
     public class CreateAvatarTest
     {
+        private readonly Address _agentAddress;
+        private readonly Address _avatarAddress;
+        private readonly TableSheets _tableSheets;
+
+        public CreateAvatarTest()
+        {
+            _agentAddress = default;
+            _avatarAddress = _agentAddress.Derive("avatar");
+            _tableSheets = new TableSheets(TableSheetsImporter.ImportSheets());
+        }
+
         [Fact]
         public void Execute()
         {
-            var agentAddress = default(Address);
-            var avatarAddress = agentAddress.Derive("avatar");
-
             var action = new CreateAvatar()
             {
-                avatarAddress = avatarAddress,
+                avatarAddress = _avatarAddress,
                 index = 0,
                 hair = 0,
                 ear = 0,
@@ -63,7 +70,7 @@ namespace Lib9c.Tests.Action
             var nextState = action.Execute(new ActionContext()
             {
                 PreviousStates = state,
-                Signer = agentAddress,
+                Signer = _agentAddress,
                 BlockIndex = 0,
             });
 
@@ -73,13 +80,108 @@ namespace Lib9c.Tests.Action
             );
             Assert.True(nextState.TryGetAgentAvatarStates(
                 default,
-                avatarAddress,
+                _avatarAddress,
                 out var agentState,
                 out var nextAvatarState)
             );
             Assert.True(agentState.avatarAddresses.Any());
             Assert.Equal("test", nextAvatarState.name);
-            Assert.Equal(avatarAddress, nextState.GetRankingState().RankingMap[nextAvatarState.RankingMapAddress].First());
+            Assert.Equal(_avatarAddress, nextState.GetRankingState().RankingMap[nextAvatarState.RankingMapAddress].First());
+        }
+
+        [Theory]
+        [InlineData("홍길동")]
+        [InlineData("山田太郎")]
+        public void ExecuteThrowInvalidNamePatterException(string nickName)
+        {
+            var agentAddress = default(Address);
+            var avatarAddress = agentAddress.Derive("avatar");
+
+            var action = new CreateAvatar()
+            {
+                avatarAddress = avatarAddress,
+                index = 0,
+                hair = 0,
+                ear = 0,
+                lens = 0,
+                tail = 0,
+                name = nickName,
+            };
+
+            var state = new State();
+
+            Assert.Throws<InvalidNamePatternException>(() => action.Execute(new ActionContext()
+                {
+                    PreviousStates = state,
+                    Signer = agentAddress,
+                    BlockIndex = 0,
+                })
+            );
+        }
+
+        [Fact]
+        public void ExecuteThrowInvalidAddressException()
+        {
+            var avatarState = new AvatarState(
+                _avatarAddress,
+                _agentAddress,
+                0,
+                _tableSheets.GetAvatarSheets(),
+                new GameConfigState(),
+                default
+            );
+
+            var action = new CreateAvatar()
+            {
+                avatarAddress = _avatarAddress,
+                index = 0,
+                hair = 0,
+                ear = 0,
+                lens = 0,
+                tail = 0,
+                name = "test",
+            };
+
+            var sheets = TableSheetsImporter.ImportSheets();
+            var state = new State().SetState(_avatarAddress, avatarState.Serialize());
+
+            Assert.Throws<InvalidAddressException>(() => action.Execute(new ActionContext()
+                {
+                    PreviousStates = state,
+                    Signer = _agentAddress,
+                    BlockIndex = 0,
+                })
+            );
+        }
+
+        [Theory]
+        [InlineData(0)]
+        [InlineData(1)]
+        [InlineData(2)]
+        public void ExecuteThrowAvatarIndexAlreadyUsedException(int index)
+        {
+            var agentState = new AgentState(_agentAddress);
+            agentState.avatarAddresses[index] = _avatarAddress;
+            var state = new State().SetState(_agentAddress, agentState.Serialize());
+
+            var action = new CreateAvatar()
+            {
+                avatarAddress = _avatarAddress,
+                index = index,
+                hair = 0,
+                ear = 0,
+                lens = 0,
+                tail = 0,
+                name = "test",
+            };
+
+            Assert.Throws<AvatarIndexAlreadyUsedException>(() => action.Execute(new ActionContext()
+                {
+                    PreviousStates = state,
+                    Signer = _agentAddress,
+                    BlockIndex = 0,
+                })
+            );
         }
 
         [Fact]
