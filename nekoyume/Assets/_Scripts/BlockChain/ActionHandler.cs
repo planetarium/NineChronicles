@@ -112,7 +112,8 @@ namespace Nekoyume.BlockChain
 
         protected void UpdateWeeklyArenaState<T>(ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
         {
-            var index = (int) evaluation.BlockIndex / GameConfig.WeeklyArenaInterval;
+            var gameConfigState = States.Instance.GameConfigState;
+            var index = (int) evaluation.BlockIndex / gameConfigState.WeeklyArenaInterval;
             var weeklyArenaState = evaluation.OutputStates.GetWeeklyArenaState(WeeklyArenaState.DeriveAddress(index));
             States.Instance.SetWeeklyArenaState(weeklyArenaState);
         }

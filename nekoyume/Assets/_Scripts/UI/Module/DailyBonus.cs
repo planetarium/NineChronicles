@@ -56,7 +56,8 @@ namespace Nekoyume.UI.Module
         private void Awake()
         {
             sliderAnimator.OnSliderChange.Subscribe(_ => OnSliderChange()).AddTo(gameObject);
-            sliderAnimator.SetMaxValue(GameConfig.DailyRewardInterval);
+            var gameConfigState = States.Instance.GameConfigState;
+            sliderAnimator.SetMaxValue(gameConfigState.DailyRewardInterval);
             sliderAnimator.SetValue(0f, false);
         }
 
@@ -126,9 +127,10 @@ namespace Nekoyume.UI.Module
 
         private void UpdateSlider(bool useAnimation)
         {
+            var gameConfigState = States.Instance.GameConfigState;
             var endValue = Math.Min(
                 Math.Max(0, _currentBlockIndex - _rewardReceivedBlockIndex),
-                GameConfig.DailyRewardInterval);
+                gameConfigState.DailyRewardInterval);
 
             sliderAnimator.SetValue(endValue, useAnimation);
         }

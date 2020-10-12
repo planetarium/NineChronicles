@@ -1,6 +1,7 @@
 using System;
 using Libplanet;
 using Nekoyume.Model.State;
+using Nekoyume.State;
 using UnityEngine;
 
 namespace Nekoyume
@@ -14,7 +15,8 @@ namespace Nekoyume
 
         public static bool TryGetThisWeekAddress(long blockIndex, out Address weeklyArenaAddress)
         {
-            var index = (int) blockIndex / GameConfig.WeeklyArenaInterval;
+            var gameConfigState = States.Instance.GameConfigState;
+            var index = (int) blockIndex / gameConfigState.WeeklyArenaInterval;
             if (index < 0)
             {
                 return false;
@@ -53,7 +55,8 @@ namespace Nekoyume
         
         public static Address GetPrevWeekAddress(long thisWeekBlockIndex)
         {
-            var index = Math.Max((int) thisWeekBlockIndex / GameConfig.WeeklyArenaInterval, 0);
+            var gameConfigState = States.Instance.GameConfigState;
+            var index = Math.Max((int) thisWeekBlockIndex / gameConfigState.WeeklyArenaInterval, 0);
             return WeeklyArenaState.DeriveAddress(index);
         }
 
@@ -75,7 +78,8 @@ namespace Nekoyume
 
         public static Address GetNextWeekAddress(long blockIndex)
         {
-            var index = (int) blockIndex / GameConfig.WeeklyArenaInterval;
+            var gameConfigState = States.Instance.GameConfigState;
+            var index = (int) blockIndex / gameConfigState.WeeklyArenaInterval;
             index++;
             return WeeklyArenaState.DeriveAddress(index);
         }
