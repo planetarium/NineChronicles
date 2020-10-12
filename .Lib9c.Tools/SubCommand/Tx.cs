@@ -1,0 +1,104 @@
+using Bencodex;
+using Bencodex.Types;
+using Cocona;
+using Libplanet;
+using Libplanet.Assets;
+using Libplanet.Blocks;
+using Libplanet.Crypto;
+using Libplanet.Tx;
+using Nekoyume.Action;
+using Nekoyume.Model.State;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Security.Cryptography;
+using NCAction = Libplanet.Action.PolymorphicAction<Nekoyume.Action.ActionBase>;
+
+namespace Lib9c.Tools.SubCommand
+{
+    public class Tx
+    {
+        private static Codec _codec = new Codec();
+
+        [Command(Description = "Create TransferAsset action and dump it.")]
+        public void TransferAsset(
+            [Argument("SENDER", Description = "An address of sender.")] string sender,
+            [Argument("RECIPIENT", Description = "An address of recipient.")] string recipient,
+            [Argument("AMOUNT", Description = "An amount of gold to transfer.")] int goldAmount,
+            [Argument("GENESIS-BLOCK", Description = "A genesis block containing InitializeStates.")] string genesisBlock
+        )
+        {
+            Block<NCAction> genesis = Block<NCAction>.Deserialize(File.ReadAllBytes(genesisBlock));
+            var initStates = (InitializeStates)genesis.Transactions.Single().Actions.Single().InnerAction;
+            Currency currency = new GoldCurrencyState(initStates.GoldCurrency).Currency;
+
+            var action = new TransferAsset(
+                new Address(sender),
+                new Address(recipient),
+                currency * goldAmount
+            );
+
+            var bencoded = new List(
+                new IValue[]
+                {
+                    (Text) nameof(TransferAsset),
+                    action.PlainValue
+                }
+            );
+            
+            byte[] raw = _codec.Encode(bencoded);
+            Console.Write(ByteUtil.Hex(raw));
+        }
+
+        [Command(Description = "Create new transaction with given actions and dump it.")]
+        public void Sign(
+            [Argument("PRIVATE-KEY", Description = "A hex-encoded private key for signing.")] string privateKey,
+            [Argument("NONCE", Description = "A nonce for new transaction.")] long nonce,
+            [Argument("TIMESTAMP", Description = "A datetime for new transaction.")] string timestamp = null,
+            [Argument("GENESIS-HASH", Description = "A hex-encoded genesis block hash.")] string genesisHash = null,
+            [Option("action", new[] { 'a' }, Description = "Hex-encoded actions.")] string[] actions = null,
+            [Option("bytes", new[] { 'b' }, Description = "Print raw bytes instead of hexadecimal.  No trailing LF appended.")] bool bytes = false
+        )
+        {
+            List<NCAction> parsedActions = null;
+            if (!(actions is null))
+            {
+                parsedActions = actions.Select(a =>
+                {
+                    var bencoded = (List)_codec.Decode(ByteUtil.ParseHex(a));
+                    string type = (Text) bencoded[0];
+                    Dictionary plainValue = (Dictionary)bencoded[1];
+                    
+                    ActionBase action = null;
+                    action = type switch
+                    {
+                        nameof(TransferAsset) => new TransferAsset(),
+                        _ => throw new CommandExitedException($"Can't determine given action type: {type}", 128),
+                    };
+                    action.LoadPlainValue(plainValue);
+
+                    return (NCAction)action;
+                }).ToList();
+            }
+            Transaction<NCAction> tx = Transaction<NCAction>.Create(
+                nonce: nonce,
+                privateKey: new PrivateKey(ByteUtil.ParseHex(privateKey)),
+                genesisHash: (genesisHash is null) ? default : new HashDigest<SHA256>(ByteUtil.ParseHex(genesisHash)),
+                timestamp: (timestamp is null) ? default : DateTimeOffset.Parse(timestamp),
+                actions: parsedActions
+            );
+            byte[] raw = tx.Serialize(true);
+
+            if (bytes)
+            {
+                using Stream stdout = Console.OpenStandardOutput();
+                stdout.Write(raw);
+            }
+            else
+            {
+                Console.WriteLine(ByteUtil.Hex(raw));
+            }
+        }
+    }
+}
