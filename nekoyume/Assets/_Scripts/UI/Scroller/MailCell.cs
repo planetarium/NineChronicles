@@ -5,6 +5,7 @@ using Nekoyume.L10n;
 using TMPro;
 using UniRx;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI.Scroller
@@ -28,14 +29,15 @@ namespace Nekoyume.UI.Scroller
         private Button button = null;
 
         [SerializeField]
+        private GameObject unseal = null;
+
+        [SerializeField]
         private TextMeshProUGUI submitText = null;
 
         [SerializeField]
         private TextMeshProUGUI selectedSubmitText = null;
 
         private Nekoyume.Model.Mail.Mail _mail;
-
-        public Action<MailCell> onClickSubmitButton;
 
         private void Awake()
         {
@@ -44,6 +46,11 @@ namespace Nekoyume.UI.Scroller
                 .ThrottleFirst(new TimeSpan(0, 0, 1))
                 .Subscribe(OnClickButton)
                 .AddTo(gameObject);
+
+            SetText(ref submitText, "UI_RECEIVE", "fff9dd");
+            SetText(ref selectedSubmitText, "UI_RECEIVED", "955C4A");
+            buttonRectTransform.offsetMin = LeftBottom;
+            buttonRectTransform.offsetMax = MinusRightTop;
         }
 
         public override void UpdateContent(Nekoyume.Model.Mail.Mail itemData)
@@ -61,44 +68,40 @@ namespace Nekoyume.UI.Scroller
             }
 
             var isNew = _mail.New;
-            button.interactable = isNew;
-            submitText.text = isNew
-                ? L10nManager.Localize("UI_RECEIVE")
-                : L10nManager.Localize("UI_RECEIVED");
-            selectedSubmitText.text = submitText.text;
-            buttonRectTransform.offsetMin = isNew ? LeftBottom : Vector2.zero;
-            buttonRectTransform.offsetMax = isNew ? MinusRightTop : Vector2.zero;
+
+            button.gameObject.SetActive(isNew);
+            unseal.SetActive(!isNew);
             iconImage.overrideSprite = SpriteHelper.GetMailIcon(_mail.MailType);
+
             content.text = _mail.ToInfo();
             content.color = isNew
                 ? ColorHelper.HexToColorRGB("fff9dd")
                 : ColorHelper.HexToColorRGB("7a7a7a");
-            submitText.gameObject.SetActive(!isNew);
-            selectedSubmitText.gameObject.SetActive(isNew);
         }
 
         private void OnClickButton(Unit unit)
         {
             AudioController.PlayClick();
+            button.gameObject.SetActive(false);
 
-            submitText.text = L10nManager.Localize("UI_RECEIVED");
-            buttonRectTransform.offsetMin = Vector2.zero;
-            buttonRectTransform.offsetMax = Vector2.zero;
             if (!_mail.New)
             {
                 return;
             }
 
             _mail.New = false;
-            button.interactable = false;
-            submitText.gameObject.SetActive(true);
-            selectedSubmitText.gameObject.SetActive(false);
+            unseal.SetActive(true);
             content.color = ColorHelper.HexToColorRGB("7a7a7a");
 
             var mail = Widget.Find<Mail>();
             _mail.Read(mail);
             mail.UpdateTabs();
-            onClickSubmitButton?.Invoke(this);
+        }
+
+        private void SetText(ref TextMeshProUGUI textMesh, string textKey, string hex)
+        {
+            textMesh.text = L10nManager.Localize(textKey);
+            textMesh.color = ColorHelper.HexToColorRGB(hex);
         }
     }
 }
