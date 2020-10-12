@@ -1,5 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
+# 
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lib9c", "Lib9c\Lib9c.csproj", "{246AD406-4D3E-409B-8F91-D316A8520CFC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lib9c.Tests", ".Lib9c.Tests\Lib9c.Tests.csproj", "{737F362E-9F25-46B3-80F2-4E10D0BFAE39}"
@@ -7,6 +8,12 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lib9c.Tools", ".Lib9c.Tools\Lib9c.Tools.csproj", "{3E08B733-4D8E-4289-BD9D-797253DE982C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lib9c.Tools.Tests", ".Lib9c.Tools.Tests\Lib9c.Tools.Tests.csproj", "{451E155A-BD5F-4035-9DB0-7C561B1B7197}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libplanet", "Libplanet", "{AFA609F0-8CAE-4494-A4E2-EABD9E95D678}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Libplanet.Stun", "Libplanet\Libplanet.Stun\Libplanet.Stun.csproj", "{6126D57A-F079-4B07-B1E4-531630DCCDBF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Libplanet", "Libplanet\Libplanet\Libplanet.csproj", "{5C9F5F97-367E-4F8B-A123-D9AADE786CA1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -34,5 +41,17 @@ Global
 		{451E155A-BD5F-4035-9DB0-7C561B1B7197}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{451E155A-BD5F-4035-9DB0-7C561B1B7197}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{451E155A-BD5F-4035-9DB0-7C561B1B7197}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6126D57A-F079-4B07-B1E4-531630DCCDBF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6126D57A-F079-4B07-B1E4-531630DCCDBF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6126D57A-F079-4B07-B1E4-531630DCCDBF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6126D57A-F079-4B07-B1E4-531630DCCDBF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5C9F5F97-367E-4F8B-A123-D9AADE786CA1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5C9F5F97-367E-4F8B-A123-D9AADE786CA1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5C9F5F97-367E-4F8B-A123-D9AADE786CA1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5C9F5F97-367E-4F8B-A123-D9AADE786CA1}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{6126D57A-F079-4B07-B1E4-531630DCCDBF} = {AFA609F0-8CAE-4494-A4E2-EABD9E95D678}
+		{5C9F5F97-367E-4F8B-A123-D9AADE786CA1} = {AFA609F0-8CAE-4494-A4E2-EABD9E95D678}
 	EndGlobalSection
 EndGlobal
