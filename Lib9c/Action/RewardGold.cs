@@ -51,7 +51,8 @@ namespace Nekoyume.Action
 
         public IAccountStateDelta WeeklyArenaRankingBoard(IActionContext ctx, IAccountStateDelta states)
         {
-            var index = Math.Max((int) ctx.BlockIndex / GameConfig.WeeklyArenaInterval, 0);
+            var gameConfigState = states.GetGameConfigState();
+            var index = Math.Max((int) ctx.BlockIndex / gameConfigState.WeeklyArenaInterval, 0);
             var weekly = states.GetWeeklyArenaState(index);
             var nextIndex = index + 1;
             var nextWeekly = states.GetWeeklyArenaState(nextIndex);
@@ -60,7 +61,8 @@ namespace Nekoyume.Action
                 nextWeekly = new WeeklyArenaState(nextIndex);
                 states = states.SetState(nextWeekly.address, nextWeekly.Serialize());
             }
-            if (ctx.BlockIndex % GameConfig.WeeklyArenaInterval == 0 && index > 0)
+
+            if (ctx.BlockIndex % gameConfigState.WeeklyArenaInterval == 0 && index > 0)
             {
                 var prevWeekly = states.GetWeeklyArenaState(index - 1);
                 if (!prevWeekly.Ended)
@@ -71,7 +73,7 @@ namespace Nekoyume.Action
                     states = states.SetState(weekly.address, weekly.Serialize());
                 }
             }
-            else if (ctx.BlockIndex - weekly.ResetIndex >= GameConfig.DailyArenaInterval)
+            else if (ctx.BlockIndex - weekly.ResetIndex >= gameConfigState.DailyArenaInterval)
             {
                 weekly.ResetCount(ctx.BlockIndex);
                 states = states.SetState(weekly.address, weekly.Serialize());

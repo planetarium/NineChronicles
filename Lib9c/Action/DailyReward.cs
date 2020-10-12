@@ -34,7 +34,7 @@ namespace Nekoyume.Action
                 throw new ArgumentNullException(nameof(gameConfigState), "Aborted as the game config was failed to load.");
             }
 
-            if (ctx.BlockIndex - avatarState.dailyRewardReceivedIndex >= GameConfig.DailyRewardInterval)
+            if (ctx.BlockIndex - avatarState.dailyRewardReceivedIndex >= gameConfigState.DailyRewardInterval)
             {
                 avatarState.dailyRewardReceivedIndex = ctx.BlockIndex;
                 avatarState.actionPoint = gameConfigState.ActionPointMax;
