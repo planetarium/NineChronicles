@@ -68,6 +68,14 @@ namespace Nekoyume.Model.State
             return new Dictionary(values.Union((Dictionary) base.Serialize()));
         }
 
+        public void Set(GameConfigSheet sheet)
+        {
+            foreach (var row in sheet)
+            {
+                Update(row);
+            }
+        }
+
         public void Update(GameConfigSheet.Row row)
         {
             switch (row.Key)
