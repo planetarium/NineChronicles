@@ -1,7 +1,6 @@
 namespace Lib9c.Tests.Action
 {
     using System.Linq;
-    using Bencodex.Types;
     using Libplanet;
     using Libplanet.Action;
     using Libplanet.Assets;
