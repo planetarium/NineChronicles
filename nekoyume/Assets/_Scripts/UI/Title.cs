@@ -31,7 +31,7 @@ namespace Nekoyume.UI
             };
         }
 
-        public void Init()
+        public void ShowLocalizedObjects()
         {
             settingButton.Show();
             pressToStart.SetActive(true);
