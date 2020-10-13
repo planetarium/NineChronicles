@@ -480,18 +480,19 @@ namespace Nekoyume.BlockChain
 
         private void ResponseSell(ActionBase.ActionEvaluation<Sell> eval)
         {
-            var avatarAddress = eval.Action.sellerAvatarAddress;
-            var itemId = eval.Action.itemId;
-
-            // NOTE: 최종적으로 UpdateCurrentAvatarState()를 호출한다면, 그곳에서 상태를 새로 설정할 것이다.
-            LocalStateModifier.AddItem(avatarAddress, itemId, false);
-            var format = L10nManager.Localize("NOTIFICATION_SELL_COMPLETE");
-            var shopState = new ShopState((Dictionary) eval.OutputStates.GetState(ShopState.Address));
-            if (shopState.TryGet(eval.Signer, eval.Action.productId, out var pair))
+            if (eval.Exception is null)
             {
-                UI.Notification.Push(MailType.Auction, string.Format(format, pair.ItemUsable.GetLocalizedName()));
+                var avatarAddress = eval.Action.sellerAvatarAddress;
+                var itemId = eval.Action.itemId;
+
+                // NOTE: 최종적으로 UpdateCurrentAvatarState()를 호출한다면, 그곳에서 상태를 새로 설정할 것이다.
+                LocalStateModifier.AddItem(avatarAddress, itemId, false);
+                var format = L10nManager.Localize("NOTIFICATION_SELL_COMPLETE");
+                var shopState = new ShopState((Dictionary) eval.OutputStates.GetState(ShopState.Address));
+                var shopItem = shopState.Products.Values.First(r => r.ItemUsable.ItemId == itemId);
+                UI.Notification.Push(MailType.Auction, string.Format(format, shopItem.ItemUsable.GetLocalizedName()));
+                UpdateCurrentAvatarState(eval);
             }
-            UpdateCurrentAvatarState(eval);
         }
 
         private void ResponseSellCancellation(ActionBase.ActionEvaluation<SellCancellation> eval)
