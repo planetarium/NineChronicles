@@ -180,13 +180,6 @@ namespace Nekoyume.BlockChain
                     ? new ShopState(shopDict)
                     : new ShopState());
 
-            if (ArenaHelper.TryGetThisWeekState(BlockIndex, out var weeklyArenaState))
-            {
-                States.Instance.SetWeeklyArenaState(weeklyArenaState);
-            }
-            else
-                throw new FailedToInstantiateStateException<WeeklyArenaState>();
-
             if (GetState(GameConfigState.Address) is Dictionary configDict)
             {
                 States.Instance.SetGameConfigState(new GameConfigState(configDict));
@@ -195,6 +188,13 @@ namespace Nekoyume.BlockChain
             {
                 throw new FailedToInstantiateStateException<GameConfigState>();
             }
+
+            if (ArenaHelper.TryGetThisWeekState(BlockIndex, out var weeklyArenaState))
+            {
+                States.Instance.SetWeeklyArenaState(weeklyArenaState);
+            }
+            else
+                throw new FailedToInstantiateStateException<WeeklyArenaState>();
 
             ActionRenderHandler.Instance.GoldCurrency = goldCurrency;
 
