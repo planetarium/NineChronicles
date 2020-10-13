@@ -1,5 +1,6 @@
 namespace Lib9c.Tests.Action
 {
+    using System;
     using System.Linq;
     using Libplanet;
     using Libplanet.Action;
@@ -21,9 +22,10 @@ namespace Lib9c.Tests.Action
         public RewardGoldTest()
         {
             var sheets = TableSheetsImporter.ImportSheets();
-            sheets[nameof(CharacterSheet)] =
-                @"id,_name,size_type,elemental_type,hp,atk,def,cri,hit,spd,lv_hp,lv_atk,lv_def,lv_cri,lv_hit,lv_spd,attack_range,run_speed
-                  100010,전사,S,0,300,20,10,10,90,70,12,0.8,0.4,0,3.6,2.8,2,3";
+            sheets[nameof(CharacterSheet)] = string.Join(
+                    Environment.NewLine,
+                    "id,_name,size_type,elemental_type,hp,atk,def,cri,hit,spd,lv_hp,lv_atk,lv_def,lv_cri,lv_hit,lv_spd,attack_range,run_speed",
+                    "100010,전사,S,0,300,20,10,10,90,70,12,0.8,0.4,0,3.6,2.8,2,3");
 
             var privateKey = new PrivateKey();
             var agentAddress = privateKey.PublicKey.ToAddress();
