@@ -25,7 +25,8 @@ namespace Nekoyume
             AdminState adminState,
             AuthorizedMinersState authorizedMinersState = null,
             IImmutableSet<Address> activatedAccounts = null,
-            bool isActivateAdminAddress = false
+            bool isActivateAdminAddress = false,
+            IEnumerable<string> credits = null
         )
         {
             if (!tableSheets.TryGetValue(nameof(GameConfigSheet), out var csv))
@@ -55,7 +56,8 @@ namespace Nekoyume
                 goldCurrencyState: new GoldCurrencyState(ncg),
                 goldDistributions: goldDistributions,
                 pendingActivationStates: pendingActivationStates,
-                authorizedMinersState: authorizedMinersState
+                authorizedMinersState: authorizedMinersState,
+                creditsState: credits is null ? null : new CreditsState(credits) 
             );
             var actions = new PolymorphicAction<ActionBase>[]
             {
