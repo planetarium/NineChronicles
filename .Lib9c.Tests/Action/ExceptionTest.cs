@@ -43,6 +43,20 @@ namespace Lib9c.Tests.Action
             AssertException<InvalidNamePatternException>(exc);
         }
 
+        [Fact]
+        public void CombinationSlotUnlockExceptionSerializable()
+        {
+            var exc = new CombinationSlotUnlockException("for testing");
+            AssertException<CombinationSlotUnlockException>(exc);
+        }
+
+        [Fact]
+        public void NotEnoughMaterialExceptionSerializable()
+        {
+            var exc = new NotEnoughMaterialException("for testing");
+            AssertException<NotEnoughMaterialException>(exc);
+        }
+
         private static void AssertException<T>(Exception exc)
             where T : Exception
         {
