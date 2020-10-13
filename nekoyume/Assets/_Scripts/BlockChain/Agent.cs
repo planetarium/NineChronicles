@@ -395,13 +395,6 @@ namespace Nekoyume.BlockChain
                         ? new ShopState(shopDict)
                         : new ShopState());
 
-                if (ArenaHelper.TryGetThisWeekState(BlockIndex, out var weeklyArenaState))
-                {
-                    States.Instance.SetWeeklyArenaState(weeklyArenaState);
-                }
-                else
-                    throw new FailedToInstantiateStateException<WeeklyArenaState>();
-
                 if (GetState(GameConfigState.Address) is Dictionary configDict)
                 {
                     States.Instance.SetGameConfigState(new GameConfigState(configDict));
@@ -410,6 +403,13 @@ namespace Nekoyume.BlockChain
                 {
                     throw new FailedToInstantiateStateException<GameConfigState>();
                 }
+
+                if (ArenaHelper.TryGetThisWeekState(BlockIndex, out var weeklyArenaState))
+                {
+                    States.Instance.SetWeeklyArenaState(weeklyArenaState);
+                }
+                else
+                    throw new FailedToInstantiateStateException<WeeklyArenaState>();
 
                 // 그리고 모든 액션에 대한 랜더와 언랜더를 핸들링하기 시작한다.
                 ActionRenderHandler.Instance.Start(ActionRenderer);
