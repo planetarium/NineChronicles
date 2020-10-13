@@ -52,18 +52,19 @@ namespace Nekoyume.Action
             if (!states.TryGetAgentAvatarStates(ctx.Signer, AvatarAddress, out var agentState,
                 out var avatarState))
             {
-                return LogError(context, "Aborted as the avatar state of the signer was failed to load.");
+                throw new FailedLoadStateException("Aborted as the avatar state of the signer was failed to load.");
             }
 
             var slotState = states.GetCombinationSlotState(AvatarAddress, SlotIndex);
-            if (slotState is null || !(slotState.Validate(avatarState, ctx.BlockIndex)))
+            if (slotState is null)
             {
-                return LogError(
-                    context,
-                    "Aborted as the slot state is failed to load or invalid: {@SlotState} @ {SlotIndex}",
-                    slotState,
-                    SlotIndex
-                );
+                throw new FailedLoadStateException("Aborted as the slot state is failed to load");
+            }
+
+            if (!slotState.Validate(avatarState, ctx.BlockIndex))
+            {
+                throw new CombinationSlotUnlockException(
+                    $"Aborted as the slot state is invalid: {slotState} @ {SlotIndex}");
             }
 
             var recipeSheet = states.GetSheet<EquipmentItemRecipeSheet>();
@@ -73,21 +74,15 @@ namespace Nekoyume.Action
             // 레시피 검증
             if (!recipeSheet.TryGetValue(RecipeId, out var recipe))
             {
-                return LogError(
-                    context,
-                    "Aborted as the recipe {RecipeId} was failed to load from the sheet.",
-                    RecipeId
-                );
+                throw new SheetRowNotFoundException(nameof(EquipmentItemRecipeSheet), RecipeId);
             }
 
             if (!(SubRecipeId is null))
             {
                 if (!recipe.SubRecipeIds.Contains((int) SubRecipeId))
                 {
-                    return LogError(
-                        context,
-                        "Aborted as the subrecipe {SubRecipeId} was failed to load from the sheet.",
-                        SubRecipeId
+                    throw new SheetRowColumnException(
+                        $"Aborted as the sub recipe {SubRecipeId} was failed to load from the sheet."
                     );
                 }
             }
@@ -95,29 +90,19 @@ namespace Nekoyume.Action
             // 메인 레시피 해금 검사.
             if (!avatarState.worldInformation.IsStageCleared(recipe.UnlockStage))
             {
-                return LogError(
-                    context,
-                    "Aborted as the signer is not cleared the minimum stage level required to use the recipe {@Recipe} yet.",
-                    recipe
-                );
+                avatarState.worldInformation.TryGetLastClearedStageId(out var current);
+                throw new NotEnoughClearedStageLevelException(recipe.UnlockStage, current);
             }
 
             if (!materialSheet.TryGetValue(recipe.MaterialId, out var material))
             {
-                return LogError(
-                    context,
-                    "Aborted as the material {MaterialId} was failed to load from the sheet.",
-                    recipe.MaterialId
-                );
+                throw new SheetRowNotFoundException(nameof(MaterialItemSheet), recipe.MaterialId);
             }
 
             if (!avatarState.inventory.RemoveMaterial(material.ItemId, recipe.MaterialCount))
             {
-                return LogError(
-                    context,
-                    "Aborted as the player has no enough material ({Material} * {Quantity})",
-                    material,
-                    recipe.MaterialCount
+                throw new NotEnoughMaterialException(
+                    $"Aborted as the player has no enough material ({material} * {recipe.MaterialCount})"
                 );
             }
 
@@ -131,11 +116,7 @@ namespace Nekoyume.Action
             // 장비 제작
             if (!equipmentItemSheet.TryGetValue(recipe.ResultEquipmentId, out var equipRow))
             {
-                return LogError(
-                    context,
-                    "Aborted as the equipment item {EquipmentId} was failed to load from the sheet.",
-                    recipe.ResultEquipmentId
-                );
+                throw new SheetRowNotFoundException(nameof(equipmentItemSheet), recipe.ResultEquipmentId);
             }
 
             var requiredBlockIndex = ctx.BlockIndex + recipe.RequiredBlockIndex;
@@ -150,13 +131,10 @@ namespace Nekoyume.Action
             if (SubRecipeId.HasValue)
             {
                 var subSheet = states.GetSheet<EquipmentItemSubRecipeSheet>();
-                if (!subSheet.TryGetValue((int) SubRecipeId, out var subRecipe))
+                var subId = (int) SubRecipeId;
+                if (!subSheet.TryGetValue(subId, out var subRecipe))
                 {
-                    return LogError(
-                        context,
-                        "Aborted as the subrecipe {SubRecipeId} was failed to load from the subsheet.",
-                        SubRecipeId
-                    );
+                    throw new SheetRowNotFoundException(nameof(EquipmentItemSubRecipeSheet), subId);
                 }
 
                 requiredBlockIndex += subRecipe.RequiredBlockIndex;
@@ -167,21 +145,14 @@ namespace Nekoyume.Action
                 {
                     if (!materialSheet.TryGetValue(materialInfo.Id, out var subMaterialRow))
                     {
-                        return LogError(
-                            context,
-                            "Aborted as the meterial info {MaterialInfoId} was failed to load from the submaterial sheet.",
-                            materialInfo.Id
-                        );
+                        throw new SheetRowNotFoundException(nameof(MaterialItemSheet), materialInfo.Id);
                     }
 
                     if (!avatarState.inventory.RemoveMaterial(subMaterialRow.ItemId,
                         materialInfo.Count))
                     {
-                        return LogError(
-                            context,
-                            "Aborted as the player has no enough material ({Material} * {Quantity})",
-                            subMaterialRow,
-                            materialInfo.Count
+                        throw new NotEnoughMaterialException(
+                            $"Aborted as the player has no enough material ({subMaterialRow} * {materialInfo.Count})"
                         );
                     }
 
@@ -198,11 +169,8 @@ namespace Nekoyume.Action
             FungibleAssetValue agentBalance = states.GetBalance(ctx.Signer, states.GetGoldCurrency());
             if (agentBalance < (states.GetGoldCurrency() * requiredGold) || avatarState.actionPoint < requiredActionPoint)
             {
-                return LogError(
-                    context,
-                    "Aborted due to insufficient action point: {ActionPointBalance} < {ActionCost}",
-                    avatarState.actionPoint,
-                    requiredActionPoint
+                throw new NotEnoughActionPointException(
+                    $"Aborted due to insufficient action point: {avatarState.actionPoint} < {requiredActionPoint}"
                 );
             }
 
