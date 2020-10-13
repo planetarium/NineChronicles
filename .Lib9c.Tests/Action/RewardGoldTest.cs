@@ -22,9 +22,8 @@ namespace Lib9c.Tests.Action
         {
             var sheets = TableSheetsImporter.ImportSheets();
             sheets[nameof(CharacterSheet)] =
-                "id,_name,size_type,elemental_type,hp,atk,def,cri,hit,spd,lv_hp,lv_atk,lv_def,lv_cri,lv_hit,lv_spd,attack_range,run_speed\n100010,전사,S,0,300,20,10,10,90,70,12,0.8,0.4,0,3.6,2.8,2,3";
-            sheets[nameof(GameConfigSheet)] =
-                "key,value\nhourglass_per_block,3\naction_point_max,120\ndaily_reward_interval,1700\ndaily_arena_interval,500\nweekly_arena_interval,56000";
+                @"id,_name,size_type,elemental_type,hp,atk,def,cri,hit,spd,lv_hp,lv_atk,lv_def,lv_cri,lv_hit,lv_spd,attack_range,run_speed
+                  100010,전사,S,0,300,20,10,10,90,70,12,0.8,0.4,0,3.6,2.8,2,3";
 
             var privateKey = new PrivateKey();
             var agentAddress = privateKey.PublicKey.ToAddress();
