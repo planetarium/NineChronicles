@@ -9,11 +9,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lib9c.Tools", ".Lib9c.Tools
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lib9c.Tools.Tests", ".Lib9c.Tools.Tests\Lib9c.Tools.Tests.csproj", "{451E155A-BD5F-4035-9DB0-7C561B1B7197}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libplanet", "Libplanet", "{AFA609F0-8CAE-4494-A4E2-EABD9E95D678}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libplanet", ".Libplanet", "{AFA609F0-8CAE-4494-A4E2-EABD9E95D678}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Libplanet.Stun", "Libplanet\Libplanet.Stun\Libplanet.Stun.csproj", "{6126D57A-F079-4B07-B1E4-531630DCCDBF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Libplanet.Stun", ".Libplanet\Libplanet.Stun\Libplanet.Stun.csproj", "{6126D57A-F079-4B07-B1E4-531630DCCDBF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Libplanet", "Libplanet\Libplanet\Libplanet.csproj", "{5C9F5F97-367E-4F8B-A123-D9AADE786CA1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Libplanet", ".Libplanet\Libplanet\Libplanet.csproj", "{5C9F5F97-367E-4F8B-A123-D9AADE786CA1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
