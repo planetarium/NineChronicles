@@ -57,6 +57,20 @@ namespace Lib9c.Tests.Action
             AssertException<NotEnoughMaterialException>(exc);
         }
 
+        [Fact]
+        public void InvalidPriceExceptionSerializable()
+        {
+            var exc = new InvalidPriceException("for testing");
+            AssertException<InvalidPriceException>(exc);
+        }
+
+        [Fact]
+        public void ItemDoesNotExistException()
+        {
+            var exc = new ItemDoesNotExistException("for testing");
+            AssertException<ItemDoesNotExistException>(exc);
+        }
+
         private static void AssertException<T>(Exception exc)
             where T : Exception
         {
@@ -67,7 +81,7 @@ namespace Lib9c.Tests.Action
 
                 ms.Seek(0, SeekOrigin.Begin);
                 var deserialized = (T)formatter.Deserialize(ms);
-                Assert.Equal("for testing", deserialized.Message);
+                Assert.Equal(exc.Message, deserialized.Message);
             }
         }
     }

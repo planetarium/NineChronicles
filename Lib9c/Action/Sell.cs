@@ -56,36 +56,26 @@ namespace Nekoyume.Action
 
             if (price.Sign < 0)
             {
-                return LogError(context, "Aborted as the price is less than zero: {Price}.", price);
+                throw new InvalidPriceException($"Aborted as the price is less than zero: {price}.");
             }
 
             if (!states.TryGetAgentAvatarStates(ctx.Signer, sellerAvatarAddress, out AgentState agentState, out AvatarState avatarState))
             {
-                return LogError(context, "Aborted as the avatar state of the signer was failed to load.");
+                throw new FailedLoadStateException("Aborted as the avatar state of the signer was failed to load.");
             }
             sw.Stop();
             Log.Debug("Sell Get AgentAvatarStates: {Elapsed}", sw.Elapsed);
             sw.Restart();
 
-            if (!avatarState.worldInformation.TryGetUnlockedWorldByStageClearedBlockIndex(out var world))
+            if (!avatarState.worldInformation.IsStageCleared(GameConfig.RequireClearedStageLevel.ActionsInShop))
             {
-                return LogError(context, "Aborted as the WorldInformation was failed to load.");
-            }
-
-            if (world.StageClearedId < GameConfig.RequireClearedStageLevel.ActionsInShop)
-            {
-                // 스테이지 클리어 부족 에러.
-                return LogError(
-                    context,
-                    "Aborted as the signer is not cleared the minimum stage level required to sell items yet: {ClearedLevel} < {RequiredLevel}.",
-                    world.StageClearedId,
-                    GameConfig.RequireClearedStageLevel.ActionsInShop
-                );
+                avatarState.worldInformation.TryGetLastClearedStageId(out var current);
+                throw new NotEnoughClearedStageLevelException(GameConfig.RequireClearedStageLevel.ActionsInShop, current);
             }
 
             if (!states.TryGetState(ShopState.Address, out Bencodex.Types.Dictionary d))
             {
-                return LogError(context, "Aborted as the shop state was failed to load.");
+                throw new FailedLoadStateException("Aborted as the shop state was failed to load.");
             }
             var shopState = new ShopState(d);
             sw.Stop();
@@ -97,21 +87,15 @@ namespace Nekoyume.Action
             // 인벤토리에서 판매할 아이템을 선택하고 수량을 조절한다.
             if (!avatarState.inventory.TryGetNonFungibleItem(itemId, out ItemUsable nonFungibleItem))
             {
-                return LogError(
-                    context,
-                    "Aborted as the NonFungibleItem ({@Item}) was failed to load from avatar's inventory.",
-                    itemId
+                throw new ItemDoesNotExistException(
+                    $"Aborted as the NonFungibleItem ({itemId}) was failed to load from avatar's inventory."
                 );
             }
 
             if (nonFungibleItem.RequiredBlockIndex > context.BlockIndex)
             {
-                // 필요 블럭 인덱스 불충분 에러.
-                return LogError(
-                    context,
-                    "Aborted as the equipment to enhance ({@Item}) is not available yet; it will be available at the block #{RequiredBlockIndex}.",
-                    itemId,
-                    nonFungibleItem.RequiredBlockIndex
+                throw new RequiredBlockIndexException(
+                    $"Aborted as the equipment to enhance ({itemId}) is not available yet; it will be available at the block #{nonFungibleItem.RequiredBlockIndex}."
                 );
             }
 
@@ -121,22 +105,13 @@ namespace Nekoyume.Action
                 equipment.equipped = false;
             }
 
-            // 상점에 아이템을 등록한다.
-            try
-            {
-                shopState.Register(new ShopItem(
-                    ctx.Signer,
-                    sellerAvatarAddress,
-                    productId,
-                    nonFungibleItem,
-                    price
-                ));
-            }
-            catch (ShopStateAlreadyContainsException e)
-            {
-                Log.Error(e.Message);
-                throw;
-            }
+            shopState.Register(new ShopItem(
+                ctx.Signer,
+                sellerAvatarAddress,
+                productId,
+                nonFungibleItem,
+                price
+            ));
 
             sw.Stop();
             Log.Debug("Sell Get Register Item: {Elapsed}", sw.Elapsed);
