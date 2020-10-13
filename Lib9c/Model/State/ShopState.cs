@@ -45,6 +45,10 @@ namespace Nekoyume.Model.State
         public void Register(ShopItem shopItem)
         {
             var productId = shopItem.ProductId;
+            if (_products.ContainsKey(productId))
+            {
+                throw new ShopStateAlreadyContainsException($"Aborted as the item already registered # {productId}.");
+            }
             _products[productId] = shopItem;
         }
 

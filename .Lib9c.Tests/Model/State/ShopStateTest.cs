@@ -79,6 +79,36 @@ namespace Lib9c.Tests.Model.State
         }
 
         [Fact]
+        public void RegisterThrowShopStateAlreadyContainsException()
+        {
+            var shopState = new ShopState();
+            var agentAddress = new PrivateKey().ToAddress();
+            var avatarAddress = new PrivateKey().ToAddress();
+            var productId = Guid.NewGuid();
+            var weaponRow = new EquipmentItemSheet.Row();
+            weaponRow.Set(new[]
+            {
+                "10100000", "Weapon", "0", "Normal", "0", "ATK", "1", "2", "10100000",
+            });
+            var itemUsable = new Weapon(
+                weaponRow,
+                Guid.NewGuid(),
+                0);
+            var price = new FungibleAssetValue(new Currency("NCG", 2, minter: null));
+            var shopItem = new ShopItem(
+                agentAddress,
+                avatarAddress,
+                productId,
+                itemUsable,
+                price
+            );
+
+            shopState.Register(shopItem);
+
+            Assert.Throws<ShopStateAlreadyContainsException>(() => shopState.Register(shopItem));
+        }
+
+        [Fact]
         public void Unregister()
         {
             var shopState = new ShopState();

@@ -92,12 +92,10 @@ namespace Lib9c.Tests.Action
 
             var currencyState = _initialState.GetGoldCurrency();
             var price = new FungibleAssetValue(currencyState, 100, 0);
-            var productId = Guid.NewGuid();
             var sellAction = new Sell
             {
                 itemId = equipment.ItemId,
                 price = price,
-                productId = productId,
                 sellerAvatarAddress = _avatarAddress,
             };
             var nextState = sellAction.Execute(new ActionContext
@@ -106,6 +104,7 @@ namespace Lib9c.Tests.Action
                 PreviousStates = _initialState,
                 Rehearsal = false,
                 Signer = _agentAddress,
+                Random = new ItemEnhancementTest.TestRandom(),
             });
 
             var nextAvatarState = nextState.GetAvatarState(_avatarAddress);
@@ -118,7 +117,6 @@ namespace Lib9c.Tests.Action
             Assert.NotNull(shopItem);
             Assert.Equal(equipment.ItemId, shopItem.ItemUsable.ItemId);
             Assert.Equal(price, shopItem.Price);
-            Assert.Equal(productId, shopItem.ProductId);
             Assert.Equal(_agentAddress, shopItem.SellerAgentAddress);
             Assert.Equal(_avatarAddress, shopItem.SellerAvatarAddress);
         }
@@ -130,7 +128,6 @@ namespace Lib9c.Tests.Action
             {
                 itemId = default,
                 price = -1 * _currency,
-                productId = default,
                 sellerAvatarAddress = _avatarAddress,
             };
 
@@ -149,7 +146,6 @@ namespace Lib9c.Tests.Action
             {
                 itemId = default,
                 price = 0 * _currency,
-                productId = default,
                 sellerAvatarAddress = _avatarAddress,
             };
 
@@ -179,7 +175,6 @@ namespace Lib9c.Tests.Action
             {
                 itemId = default,
                 price = 0 * _currency,
-                productId = default,
                 sellerAvatarAddress = _avatarAddress,
             };
 
@@ -198,7 +193,6 @@ namespace Lib9c.Tests.Action
             {
                 itemId = default,
                 price = 0 * _currency,
-                productId = default,
                 sellerAvatarAddress = _avatarAddress,
             };
 
@@ -226,7 +220,6 @@ namespace Lib9c.Tests.Action
             {
                 itemId = equipmentId,
                 price = 0 * _currency,
-                productId = default,
                 sellerAvatarAddress = _avatarAddress,
             };
 

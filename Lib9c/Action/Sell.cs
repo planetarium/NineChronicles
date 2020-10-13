@@ -18,14 +18,12 @@ namespace Nekoyume.Action
     public class Sell : GameAction
     {
         public Address sellerAvatarAddress;
-        public Guid productId;
         public Guid itemId;
         public FungibleAssetValue price;
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal => new Dictionary<string, IValue>
         {
             ["sellerAvatarAddress"] = sellerAvatarAddress.Serialize(),
-            ["productId"] = productId.Serialize(),
             ["itemId"] = itemId.Serialize(),
             ["price"] = price.Serialize(),
         }.ToImmutableDictionary();
@@ -33,7 +31,6 @@ namespace Nekoyume.Action
         protected override void LoadPlainValueInternal(IImmutableDictionary<string, IValue> plainValue)
         {
             sellerAvatarAddress = plainValue["sellerAvatarAddress"].ToAddress();
-            productId = plainValue["productId"].ToGuid();
             itemId = plainValue["itemId"].ToGuid();
             price = plainValue["price"].ToFungibleAssetValue();
         }
@@ -104,6 +101,8 @@ namespace Nekoyume.Action
             {
                 equipment.equipped = false;
             }
+
+            var productId = context.Random.GenerateRandomGuid();
 
             shopState.Register(new ShopItem(
                 ctx.Signer,
