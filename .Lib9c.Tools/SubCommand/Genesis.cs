@@ -28,8 +28,9 @@ namespace Lib9c.Tools.SubCommand
             [Option("activatedAccountsList", Description = "List of accounts to be activated")]
             string activatedAccountsListPath = null,
             [Option('m', Description = "Config path to create AuthorizedMinersState")]
-            string authorizedMinerConfigPath = null
-
+            string authorizedMinerConfigPath = null,
+            [Option('c', Description = "Path of a plain text file containing names for credits.")]
+            string creditsPath = null
         )
         {
             Dictionary<string, string> tableSheets = Utils.ImportSheets(gameConfigDir);
@@ -59,7 +60,9 @@ namespace Lib9c.Tools.SubCommand
                 adminState,
                 authorizedMinersState: authorizedMinersState,
                 activatedAccounts: activatedAccounts,
-                isActivateAdminAddress: activationKeyCount != 0);
+                isActivateAdminAddress: activationKeyCount != 0,
+                credits: creditsPath is null ? null : File.ReadLines(creditsPath)
+            );
 
             ExportBlock(block, "genesis-block");
             ExportKeys(activationKeys, "keys.txt");

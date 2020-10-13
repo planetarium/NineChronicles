@@ -28,6 +28,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Libplanet\Libplanet\Libplanet.csproj" />
+    <ProjectReference Include="..\.Libplanet\Libplanet\Libplanet.csproj" />
   </ItemGroup>
 </Project>
