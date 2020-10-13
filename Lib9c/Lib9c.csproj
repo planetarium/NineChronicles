@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <NoWarn>$(NoWarn);CS0162</NoWarn>
+    <NoWarn>$(NoWarn);CS0162;CS8032</NoWarn>
     <CodeAnalysisRuleSet>Lib9c.ruleset</CodeAnalysisRuleSet>
     <OutputPath>.bin</OutputPath>
     <IntermediateOutputPath>.obj</IntermediateOutputPath>
@@ -29,5 +29,10 @@
 
   <ItemGroup>
     <ProjectReference Include="..\.Libplanet\Libplanet\Libplanet.csproj" />
+    <ProjectReference Include="..\.Libplanet\Libplanet.Analyzers\Libplanet.Analyzers.csproj">
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <OutputItemType>Analyzer</OutputItemType>
+      <!-- https://github.com/dotnet/roslyn/issues/18093#issuecomment-405702631 -->
+    </ProjectReference>
   </ItemGroup>
 </Project>
