@@ -16,7 +16,7 @@ namespace Nekoyume.Game.VFX
         private float _particlesDuration = 0f;
 
         protected ParticleSystem _particlesRoot = null;
-        protected virtual float EmitDuration => 1f;
+        protected virtual float EmitDuration { get; set; } = 1.0f;
 
         private bool _isPlaying = false;
         private bool _isFinished = false;
