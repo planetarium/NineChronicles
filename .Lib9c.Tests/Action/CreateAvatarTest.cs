@@ -142,10 +142,38 @@ namespace Lib9c.Tests.Action
                 name = "test",
             };
 
-            var sheets = TableSheetsImporter.ImportSheets();
             var state = new State().SetState(_avatarAddress, avatarState.Serialize());
 
             Assert.Throws<InvalidAddressException>(() => action.Execute(new ActionContext()
+                {
+                    PreviousStates = state,
+                    Signer = _agentAddress,
+                    BlockIndex = 0,
+                })
+            );
+        }
+
+        [Theory]
+        [InlineData(-1)]
+        [InlineData(3)]
+        public void ExecuteThrowAvatarIndexOutOfRangeException(int index)
+        {
+            var agentState = new AgentState(_agentAddress);
+            agentState.avatarAddresses[index] = _avatarAddress;
+            var state = new State().SetState(_agentAddress, agentState.Serialize());
+
+            var action = new CreateAvatar()
+            {
+                avatarAddress = _avatarAddress,
+                index = index,
+                hair = 0,
+                ear = 0,
+                lens = 0,
+                tail = 0,
+                name = "test",
+            };
+
+            Assert.Throws<AvatarIndexOutOfRangeException>(() => action.Execute(new ActionContext
                 {
                     PreviousStates = state,
                     Signer = _agentAddress,
