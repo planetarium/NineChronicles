@@ -170,12 +170,13 @@ namespace Nekoyume.UI
 
             AudioController.instance.PlayMusic(AudioController.MusicCode.Ranking);
 
-            WeeklyArenaStateSubject.WeeklyArenaState
-                .Subscribe(state => UpdateArena())
-                .AddTo(_disposablesAtClose);
-            RankingMapStatesSubject.RankingMapStates
-                .Subscribe(SetRankingInfos)
-                .AddTo(_disposablesAtClose);
+            // NOTE: It only updates once when player open the RankingBoard without subscribing to the status.
+            // WeeklyArenaStateSubject.WeeklyArenaState
+            //     .Subscribe(state => UpdateArena())
+            //     .AddTo(_disposablesAtClose);
+            // RankingMapStatesSubject.RankingMapStates
+            //     .Subscribe(SetRankingInfos)
+            //     .AddTo(_disposablesAtClose);
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
