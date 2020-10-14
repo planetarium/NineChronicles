@@ -183,7 +183,6 @@ namespace Nekoyume.BlockChain
             var action = new Sell
             {
                 sellerAvatarAddress = avatarAddress,
-                productId = Guid.NewGuid(),
                 itemId = itemUsable.ItemId,
                 price = price
             };
