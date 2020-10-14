@@ -90,7 +90,14 @@ namespace Nekoyume.Action
             var avatarState = states.GetAvatarState(avatarAddress);
             if (!(avatarState is null))
             {
-                throw new InvalidAddressException($"Aborted as there is already an avatar at {avatarAddress}.");
+                throw new InvalidAddressException(
+                    $"Aborted as there is already an avatar at {avatarAddress}.");
+            }
+
+            if (!(0 <= index && index < GameConfig.SlotCount))
+            {
+                throw new AvatarIndexOutOfRangeException(
+                    $"Aborted as the index is out of range #{index}.");
             }
 
             if (agentState.avatarAddresses.ContainsKey(index))
