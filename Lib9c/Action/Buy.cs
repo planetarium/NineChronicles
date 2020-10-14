@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
-using System.Numerics;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
@@ -121,7 +120,7 @@ namespace Nekoyume.Action
 
             if (ctx.Signer.Equals(sellerAgentAddress))
             {
-                return LogError(context, "Aborted as the signer is the seller.");
+                throw new InvalidAddressException("Aborted as the signer is the seller.");
             }
 
             var sw = new Stopwatch();
@@ -131,31 +130,21 @@ namespace Nekoyume.Action
 
             if (!states.TryGetAgentAvatarStates(ctx.Signer, buyerAvatarAddress, out var buyerAgentState, out var buyerAvatarState))
             {
-                return LogError(context, "Aborted as the avatar state of the buyer was failed to load.");
+                throw new FailedLoadStateException("Aborted as the avatar state of the buyer was failed to load.");
             }
             sw.Stop();
             Log.Debug("Buy Get Buyer AgentAvatarStates: {Elapsed}", sw.Elapsed);
             sw.Restart();
 
-            if (!buyerAvatarState.worldInformation.TryGetUnlockedWorldByStageClearedBlockIndex(out var world))
+            if (!buyerAvatarState.worldInformation.IsStageCleared(GameConfig.RequireClearedStageLevel.ActionsInShop))
             {
-                return LogError(context, "Aborted as the WorldInformation was failed to load.");
-            }
-
-            if (world.StageClearedId < GameConfig.RequireClearedStageLevel.ActionsInShop)
-            {
-                // 스테이지 클리어 부족 에러.
-                return LogError(
-                    context,
-                    "Aborted as the signer is not cleared the minimum stage level required to use shop yet: {ClearedLevel} < {RequiredLevel}.",
-                    world.StageClearedId,
-                    GameConfig.RequireClearedStageLevel.ActionsInShop
-                );
+                buyerAvatarState.worldInformation.TryGetLastClearedStageId(out var current);
+                throw new NotEnoughClearedStageLevelException(GameConfig.RequireClearedStageLevel.ActionsInShop, current);
             }
 
             if (!states.TryGetState(ShopState.Address, out Bencodex.Types.Dictionary d))
             {
-                return LogError(context, "Aborted as the shop state was failed to load.");
+                throw new FailedLoadStateException("Aborted as the shop state was failed to load.");
             }
 
             var shopState = new ShopState(d);
@@ -167,11 +156,8 @@ namespace Nekoyume.Action
             // 상점에서 구매할 아이템을 찾는다.
             if (!shopState.TryGet(sellerAgentAddress, productId, out var shopItem))
             {
-                return LogError(
-                    context,
-                    "Aborted as the shop item ({ProductId}) was failed to get from the seller agent ({SellerAgent}).",
-                    productId,
-                    sellerAgentAddress
+                throw new ItemDoesNotExistException(
+                    $"Aborted as the shop item ({productId}) was failed to get from the seller agent ({sellerAgentAddress})."
                 );
             }
             sw.Stop();
@@ -180,11 +166,8 @@ namespace Nekoyume.Action
 
             if (!states.TryGetAgentAvatarStates(sellerAgentAddress, sellerAvatarAddress, out var sellerAgentState, out var sellerAvatarState))
             {
-                return LogError(
-                    context,
-                    "Aborted as the seller agent/avatar was filed to load from {SellerAgent}/{SellerAvatar}.",
-                    sellerAgentAddress,
-                    sellerAvatarAddress
+                throw new FailedLoadStateException(
+                    $"Aborted as the seller agent/avatar was failed to load from {sellerAgentAddress}/{sellerAvatarAddress}."
                 );
             }
             sw.Stop();
@@ -195,12 +178,10 @@ namespace Nekoyume.Action
             FungibleAssetValue buyerBalance = states.GetBalance(context.Signer, states.GetGoldCurrency());
             if (buyerBalance < shopItem.Price)
             {
-                return LogError(
-                    context,
-                    "Aborted as the buyer ({Buyer}) has no sufficient gold: {BuyerBalance} < {ItemPrice}",
+                throw new InsufficientBalanceException(
                     ctx.Signer,
                     buyerBalance,
-                    shopItem.Price
+                    $"Aborted as the buyer ({ctx.Signer}) has no sufficient gold: {buyerBalance} < {shopItem.Price}"
                 );
             }
 
@@ -220,20 +201,7 @@ namespace Nekoyume.Action
                 taxedPrice
             );
 
-            // 상점에서 구매할 아이템을 제거한다.
-            try
-            {
-                shopState.Unregister(shopItem);
-            }
-            catch (FailedToUnregisterInShopStateException)
-            {
-                return LogError(
-                    context,
-                    "Aborted as the item ({@ProductId}) was failed to unregister from seller ({Seller})'s inventory.",
-                    shopItem.ProductId,
-                    sellerAgentAddress
-                );
-            }
+            shopState.Unregister(shopItem);
 
             // 구매자, 판매자에게 결과 메일 전송
             buyerResult = new BuyerResult
