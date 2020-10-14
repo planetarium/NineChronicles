@@ -17,6 +17,8 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private Image background = null;
 
+        private const string BACKGROUND_PATH = "UI/Textures/WorldMap/battle_UI_BG";
+
         public IReadOnlyList<WorldMapStage> Stages => stages;
 
         public void Show(List<WorldMapStage.ViewModel> stageModels, string imageKey, int pageIndex)
@@ -52,7 +54,9 @@ namespace Nekoyume.UI.Module
             var enable = activeCount > 10;
             line.gameObject.SetActive(enable);
             line2.gameObject.SetActive(!enable);
-            background.sprite = Resources.Load<Sprite>($"UI/Textures/WorldMap/battle_UI_BG_{imageKey}_{pageIndex:D2}");
+
+            var sprite = Resources.Load<Sprite>($"{BACKGROUND_PATH}_{imageKey}_{pageIndex:D2}");
+            background.sprite = sprite != null ? sprite : Resources.Load<Sprite>($"{BACKGROUND_PATH}_01_{pageIndex:D2}");
         }
     }
 }
