@@ -159,9 +159,7 @@ namespace Lib9c.Tests.Action
         public void ExecuteThrowAvatarIndexOutOfRangeException(int index)
         {
             var agentState = new AgentState(_agentAddress);
-            agentState.avatarAddresses[index] = _avatarAddress;
             var state = new State().SetState(_agentAddress, agentState.Serialize());
-
             var action = new CreateAvatar()
             {
                 avatarAddress = _avatarAddress,
