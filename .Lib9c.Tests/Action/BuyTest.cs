@@ -17,11 +17,14 @@ namespace Lib9c.Tests.Action
 
     public class BuyTest
     {
-        private readonly IAccountStateDelta _initialState;
         private readonly Address _sellerAgentAddress;
         private readonly Address _sellerAvatarAddress;
         private readonly Address _buyerAgentAddress;
         private readonly Address _buyerAvatarAddress;
+        private readonly AvatarState _buyerAvatarState;
+        private readonly TableSheets _tableSheets;
+        private readonly GoldCurrencyState _goldCurrencyState;
+        private IAccountStateDelta _initialState;
 
         public BuyTest(ITestOutputHelper outputHelper)
         {
@@ -38,10 +41,10 @@ namespace Lib9c.Tests.Action
                     .SetState(Addresses.TableSheet.Derive(key), value.Serialize());
             }
 
-            var tableSheets = new TableSheets(sheets);
+            _tableSheets = new TableSheets(sheets);
 
             var currency = new Currency("NCG", 2, minters: null);
-            var goldCurrencyState = new GoldCurrencyState(currency);
+            _goldCurrencyState = new GoldCurrencyState(currency);
 
             _sellerAgentAddress = new PrivateKey().ToAddress();
             var sellerAgentState = new AgentState(_sellerAgentAddress);
@@ -51,13 +54,13 @@ namespace Lib9c.Tests.Action
                 _sellerAvatarAddress,
                 _sellerAgentAddress,
                 0,
-                tableSheets.GetAvatarSheets(),
+                _tableSheets.GetAvatarSheets(),
                 new GameConfigState(),
                 rankingMapAddress)
             {
                 worldInformation = new WorldInformation(
                     0,
-                    tableSheets.WorldSheet,
+                    _tableSheets.WorldSheet,
                     GameConfig.RequireClearedStageLevel.ActionsInShop),
             };
             sellerAgentState.avatarAddresses[0] = _sellerAvatarAddress;
@@ -65,23 +68,23 @@ namespace Lib9c.Tests.Action
             _buyerAgentAddress = new PrivateKey().ToAddress();
             var buyerAgentState = new AgentState(_buyerAgentAddress);
             _buyerAvatarAddress = new PrivateKey().ToAddress();
-            var buyerAvatarState = new AvatarState(
+            _buyerAvatarState = new AvatarState(
                 _buyerAvatarAddress,
                 _buyerAgentAddress,
                 0,
-                tableSheets.GetAvatarSheets(),
+                _tableSheets.GetAvatarSheets(),
                 new GameConfigState(),
                 rankingMapAddress)
             {
                 worldInformation = new WorldInformation(
                     0,
-                    tableSheets.WorldSheet,
+                    _tableSheets.WorldSheet,
                     GameConfig.RequireClearedStageLevel.ActionsInShop),
             };
             buyerAgentState.avatarAddresses[0] = _buyerAvatarAddress;
 
             var equipment = ItemFactory.CreateItemUsable(
-                tableSheets.EquipmentItemSheet.First,
+                _tableSheets.EquipmentItemSheet.First,
                 Guid.NewGuid(),
                 0);
             var shopState = new ShopState();
@@ -90,16 +93,16 @@ namespace Lib9c.Tests.Action
                 _sellerAvatarAddress,
                 Guid.NewGuid(),
                 equipment,
-                new FungibleAssetValue(goldCurrencyState.Currency, 100, 0)));
+                new FungibleAssetValue(_goldCurrencyState.Currency, 100, 0)));
 
             _initialState = _initialState
-                .SetState(GoldCurrencyState.Address, goldCurrencyState.Serialize())
+                .SetState(GoldCurrencyState.Address, _goldCurrencyState.Serialize())
                 .SetState(Addresses.Shop, shopState.Serialize())
                 .SetState(_sellerAgentAddress, sellerAgentState.Serialize())
                 .SetState(_sellerAvatarAddress, sellerAvatarState.Serialize())
                 .SetState(_buyerAgentAddress, buyerAgentState.Serialize())
-                .SetState(_buyerAvatarAddress, buyerAvatarState.Serialize())
-                .MintAsset(_buyerAgentAddress, goldCurrencyState.Currency * 100);
+                .SetState(_buyerAvatarAddress, _buyerAvatarState.Serialize())
+                .MintAsset(_buyerAgentAddress, _goldCurrencyState.Currency * 100);
         }
 
         [Fact]
@@ -134,7 +137,8 @@ namespace Lib9c.Tests.Action
             Assert.Empty(nextShopState.Products);
 
             var nextBuyerAvatarState = nextState.GetAvatarState(_buyerAvatarAddress);
-            Assert.True(nextBuyerAvatarState.inventory.TryGetNonFungibleItem(shopItem.ItemUsable.ItemId, out ItemUsable _));
+            Assert.True(
+                nextBuyerAvatarState.inventory.TryGetNonFungibleItem(shopItem.ItemUsable.ItemId, out ItemUsable _));
 
             var goldCurrencyState = nextState.GetGoldCurrency();
             var goldCurrencyGold = nextState.GetBalance(Addresses.GoldCurrency, goldCurrencyState);
@@ -143,6 +147,130 @@ namespace Lib9c.Tests.Action
             Assert.Equal(taxedPrice, sellerGold);
             var buyerGold = nextState.GetBalance(_buyerAgentAddress, goldCurrencyState);
             Assert.Equal(new FungibleAssetValue(goldCurrencyState, 0, 0), buyerGold);
+        }
+
+        [Fact]
+        public void ExecuteThrowInvalidAddressException()
+        {
+            var action = new Buy
+            {
+                buyerAvatarAddress = _buyerAvatarAddress,
+                productId = default,
+                sellerAgentAddress = _buyerAgentAddress,
+                sellerAvatarAddress = _buyerAvatarAddress,
+            };
+
+            Assert.Throws<InvalidAddressException>(() => action.Execute(new ActionContext()
+                {
+                    BlockIndex = 0,
+                    PreviousStates = new State(),
+                    Random = new ItemEnhancementTest.TestRandom(),
+                    Signer = _buyerAgentAddress,
+                })
+            );
+        }
+
+        [Fact]
+        public void ExecuteThrowFailedLoadStateException()
+        {
+            var action = new Buy
+            {
+                buyerAvatarAddress = _buyerAvatarAddress,
+                productId = default,
+                sellerAgentAddress = _sellerAgentAddress,
+                sellerAvatarAddress = _sellerAvatarAddress,
+            };
+
+            Assert.Throws<FailedLoadStateException>(() => action.Execute(new ActionContext()
+                {
+                    BlockIndex = 0,
+                    PreviousStates = new State(),
+                    Random = new ItemEnhancementTest.TestRandom(),
+                    Signer = _buyerAgentAddress,
+                })
+            );
+        }
+
+        [Fact]
+        public void ExecuteThrowNotEnoughClearedStageLevelException()
+        {
+            var avatarState = new AvatarState(_buyerAvatarState)
+            {
+                worldInformation = new WorldInformation(
+                    0,
+                    _tableSheets.WorldSheet,
+                    0
+                ),
+            };
+            _initialState = _initialState.SetState(_buyerAvatarAddress, avatarState.Serialize());
+
+            var action = new Buy
+            {
+                buyerAvatarAddress = _buyerAvatarAddress,
+                productId = default,
+                sellerAgentAddress = _sellerAgentAddress,
+                sellerAvatarAddress = _sellerAvatarAddress,
+            };
+
+            Assert.Throws<NotEnoughClearedStageLevelException>(() => action.Execute(new ActionContext()
+                {
+                    BlockIndex = 0,
+                    PreviousStates = _initialState,
+                    Random = new ItemEnhancementTest.TestRandom(),
+                    Signer = _buyerAgentAddress,
+                })
+            );
+        }
+
+        [Fact]
+        public void ExecuteThrowItemDoesNotExistException()
+        {
+            var action = new Buy
+            {
+                buyerAvatarAddress = _buyerAvatarAddress,
+                productId = default,
+                sellerAgentAddress = _sellerAgentAddress,
+                sellerAvatarAddress = _sellerAvatarAddress,
+            };
+
+            Assert.Throws<ItemDoesNotExistException>(() => action.Execute(new ActionContext()
+                {
+                    BlockIndex = 0,
+                    PreviousStates = _initialState,
+                    Random = new ItemEnhancementTest.TestRandom(),
+                    Signer = _buyerAgentAddress,
+                })
+            );
+        }
+
+        [Fact]
+        public void ExecuteThrowInsufficientBalanceException()
+        {
+            var shopState = _initialState.GetShopState();
+            Assert.NotEmpty(shopState.Products);
+
+            var (productId, shopItem) = shopState.Products.FirstOrDefault();
+            Assert.NotNull(shopItem);
+
+            var balance = _initialState.GetBalance(_buyerAgentAddress, _goldCurrencyState.Currency);
+            _initialState = _initialState.BurnAsset(_buyerAgentAddress, balance);
+
+            var action = new Buy
+            {
+                buyerAvatarAddress = _buyerAvatarAddress,
+                productId = productId,
+                sellerAgentAddress = _sellerAgentAddress,
+                sellerAvatarAddress = _sellerAvatarAddress,
+            };
+
+            Assert.Throws<InsufficientBalanceException>(() => action.Execute(new ActionContext()
+                {
+                    BlockIndex = 0,
+                    PreviousStates = _initialState,
+                    Random = new ItemEnhancementTest.TestRandom(),
+                    Signer = _buyerAgentAddress,
+                })
+            );
         }
     }
 }
