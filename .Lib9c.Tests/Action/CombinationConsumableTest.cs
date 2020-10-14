@@ -21,6 +21,8 @@ namespace Lib9c.Tests.Action
         private readonly Dictionary<string, string> _sheets;
         private readonly IRandom _random;
         private readonly TableSheets _tableSheets;
+        private readonly AvatarState _avatarState;
+        private IAccountStateDelta _initialState;
 
         public CombinationConsumableTest()
         {
@@ -36,16 +38,12 @@ namespace Lib9c.Tests.Action
             _sheets = TableSheetsImporter.ImportSheets();
             _random = new ItemEnhancementTest.TestRandom();
             _tableSheets = new TableSheets(_sheets);
-        }
 
-        [Fact]
-        public void Execute()
-        {
             var agentState = new AgentState(_agentAddress);
             agentState.avatarAddresses[0] = _avatarAddress;
-
             var gameConfigState = new GameConfigState();
-            var avatarState = new AvatarState(
+
+            _avatarState = new AvatarState(
                 _avatarAddress,
                 _agentAddress,
                 1,
@@ -53,30 +51,38 @@ namespace Lib9c.Tests.Action
                 gameConfigState,
                 default
             );
+
+            _initialState = new State()
+                .SetState(_agentAddress, agentState.Serialize())
+                .SetState(_avatarAddress, _avatarState.Serialize());
+
+            foreach (var (key, value) in _sheets)
+            {
+                _initialState =
+                    _initialState.SetState(Addresses.TableSheet.Derive(key), value.Serialize());
+            }
+        }
+
+        [Fact]
+        public void Execute()
+        {
             var row = _tableSheets.ConsumableItemRecipeSheet.Values.First();
             foreach (var materialInfo in row.Materials)
             {
                 var materialRow = _tableSheets.MaterialItemSheet[materialInfo.Id];
                 var material = ItemFactory.CreateItem(materialRow);
-                avatarState.inventory.AddItem(material, materialInfo.Count);
+                _avatarState.inventory.AddItem(material, materialInfo.Count);
             }
 
             const int requiredStage = GameConfig.RequireClearedStageLevel.CombinationConsumableAction;
             for (var i = 1; i < requiredStage + 1; i++)
             {
-                avatarState.worldInformation.ClearStage(1, i, 0, _tableSheets.WorldSheet, _tableSheets.WorldUnlockSheet);
+                _avatarState.worldInformation.ClearStage(1, i, 0, _tableSheets.WorldSheet, _tableSheets.WorldUnlockSheet);
             }
 
-            var initialState = new State()
-                .SetState(_agentAddress, agentState.Serialize())
-                .SetState(_avatarAddress, avatarState.Serialize())
+            _initialState = _initialState
+                .SetState(_avatarAddress, _avatarState.Serialize())
                 .SetState(_slotAddress, new CombinationSlotState(_slotAddress, requiredStage).Serialize());
-
-            foreach (var (key, value) in _sheets)
-            {
-                initialState =
-                    initialState.SetState(Addresses.TableSheet.Derive(key), value.Serialize());
-            }
 
             var action = new CombinationConsumable()
             {
@@ -87,7 +93,7 @@ namespace Lib9c.Tests.Action
 
             var nextState = action.Execute(new ActionContext()
             {
-                PreviousStates = initialState,
+                PreviousStates = _initialState,
                 Signer = _agentAddress,
                 BlockIndex = 1,
                 Random = _random,
@@ -99,6 +105,141 @@ namespace Lib9c.Tests.Action
 
             var consumable = (Consumable)slotState.Result.itemUsable;
             Assert.NotNull(consumable);
+        }
+
+        [Fact]
+        public void ExecuteThrowFailedLoadStateException()
+        {
+            var action = new CombinationConsumable()
+            {
+                AvatarAddress = _avatarAddress,
+                recipeId = 1,
+                slotIndex = 0,
+            };
+
+            Assert.Throws<FailedLoadStateException>(() => action.Execute(new ActionContext()
+                {
+                    PreviousStates = new State(),
+                    Signer = _agentAddress,
+                    BlockIndex = 1,
+                    Random = _random,
+                })
+            );
+        }
+
+        [Fact]
+        public void ExecuteThrowNotEnoughClearedStageLevelException()
+        {
+            _initialState = _initialState
+                .SetState(_slotAddress, new CombinationSlotState(_slotAddress, 0).Serialize());
+
+            var action = new CombinationConsumable()
+            {
+                AvatarAddress = _avatarAddress,
+                recipeId = 1,
+                slotIndex = 0,
+            };
+
+            Assert.Throws<NotEnoughClearedStageLevelException>(() => action.Execute(new ActionContext()
+                {
+                    PreviousStates = _initialState,
+                    Signer = _agentAddress,
+                    BlockIndex = 1,
+                    Random = _random,
+                })
+            );
+        }
+
+        [Fact]
+        public void ExecuteThrowCombinationSlotUnlockException()
+        {
+            const int requiredStage = GameConfig.RequireClearedStageLevel.CombinationConsumableAction;
+            for (var i = 1; i < requiredStage + 1; i++)
+            {
+                _avatarState.worldInformation.ClearStage(1, i, 0, _tableSheets.WorldSheet, _tableSheets.WorldUnlockSheet);
+            }
+
+            _initialState = _initialState
+                .SetState(_avatarAddress, _avatarState.Serialize())
+                .SetState(_slotAddress, new CombinationSlotState(_slotAddress, requiredStage + 10).Serialize());
+
+            var action = new CombinationConsumable()
+            {
+                AvatarAddress = _avatarAddress,
+                recipeId = 1,
+                slotIndex = 0,
+            };
+
+            Assert.Throws<CombinationSlotUnlockException>(() => action.Execute(new ActionContext()
+                {
+                    PreviousStates = _initialState,
+                    Signer = _agentAddress,
+                    BlockIndex = 1,
+                    Random = _random,
+                })
+            );
+        }
+
+        [Fact]
+        public void ExecuteThrowSheetRowNotFoundException()
+        {
+            const int requiredStage = GameConfig.RequireClearedStageLevel.CombinationConsumableAction;
+            for (var i = 1; i < requiredStage + 1; i++)
+            {
+                _avatarState.worldInformation.ClearStage(1, i, 0, _tableSheets.WorldSheet, _tableSheets.WorldUnlockSheet);
+            }
+
+            _initialState = _initialState
+                .SetState(_avatarAddress, _avatarState.Serialize())
+                .SetState(_slotAddress, new CombinationSlotState(_slotAddress, requiredStage).Serialize());
+
+            var action = new CombinationConsumable()
+            {
+                AvatarAddress = _avatarAddress,
+                recipeId = -1,
+                slotIndex = 0,
+            };
+
+            Assert.Throws<SheetRowNotFoundException>(() => action.Execute(new ActionContext()
+                {
+                    PreviousStates = _initialState,
+                    Signer = _agentAddress,
+                    BlockIndex = 1,
+                    Random = _random,
+                })
+            );
+        }
+
+        [Fact]
+        public void ExecuteThrowNotEnoughMaterialException()
+        {
+            var row = _tableSheets.ConsumableItemRecipeSheet.Values.First();
+
+            const int requiredStage = GameConfig.RequireClearedStageLevel.CombinationConsumableAction;
+            for (var i = 1; i < requiredStage + 1; i++)
+            {
+                _avatarState.worldInformation.ClearStage(1, i, 0, _tableSheets.WorldSheet, _tableSheets.WorldUnlockSheet);
+            }
+
+            _initialState = _initialState
+                .SetState(_avatarAddress, _avatarState.Serialize())
+                .SetState(_slotAddress, new CombinationSlotState(_slotAddress, requiredStage).Serialize());
+
+            var action = new CombinationConsumable()
+            {
+                AvatarAddress = _avatarAddress,
+                recipeId = row.Id,
+                slotIndex = 0,
+            };
+
+            Assert.Throws<NotEnoughMaterialException>(() => action.Execute(new ActionContext()
+                {
+                    PreviousStates = _initialState,
+                    Signer = _agentAddress,
+                    BlockIndex = 1,
+                    Random = _random,
+                })
+            );
         }
 
         [Theory]
