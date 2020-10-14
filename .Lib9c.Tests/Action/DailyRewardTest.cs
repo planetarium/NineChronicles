@@ -74,5 +74,22 @@ namespace Lib9c.Tests.Action
             var nextAvatarState = nextState.GetAvatarState(_avatarAddress);
             Assert.Equal(gameConfigState.ActionPointMax, nextAvatarState.actionPoint);
         }
+
+        [Fact]
+        public void ExecuteThrowFailedLoadStateException()
+        {
+            var action = new DailyReward
+            {
+                avatarAddress = _avatarAddress,
+            };
+
+            Assert.Throws<FailedLoadStateException>(() => action.Execute(new ActionContext()
+                {
+                    PreviousStates = new State(),
+                    Signer = _agentAddress,
+                    BlockIndex = 0,
+                })
+            );
+        }
     }
 }

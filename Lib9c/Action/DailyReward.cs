@@ -25,13 +25,13 @@ namespace Nekoyume.Action
 
             if (!states.TryGetAgentAvatarStates(ctx.Signer, avatarAddress, out _, out AvatarState avatarState))
             {
-                return LogError(context, "Aborted as the avatar state of the signer was failed to load.");
+                throw new FailedLoadStateException("Aborted as the avatar state of the signer was failed to load.");
             }
 
             var gameConfigState = states.GetGameConfigState();
             if (gameConfigState is null)
             {
-                throw new ArgumentNullException(nameof(gameConfigState), "Aborted as the game config was failed to load.");
+                throw new FailedLoadStateException("Aborted as the game config was failed to load.");
             }
 
             if (ctx.BlockIndex - avatarState.dailyRewardReceivedIndex >= gameConfigState.DailyRewardInterval)
