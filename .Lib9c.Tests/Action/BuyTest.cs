@@ -252,15 +252,25 @@ namespace Lib9c.Tests.Action
             var (productId, shopItem) = shopState.Products.FirstOrDefault();
             Assert.NotNull(shopItem);
 
-            _initialState = _initialState.MintAsset(_buyerAgentAddress, _goldCurrencyState.Currency * 0);
+            var balance = _initialState.GetBalance(_buyerAgentAddress, _goldCurrencyState.Currency);
+            _initialState = _initialState.BurnAsset(_buyerAgentAddress, balance);
 
-            var buyAction = new Buy
+            var action = new Buy
             {
                 buyerAvatarAddress = _buyerAvatarAddress,
                 productId = productId,
                 sellerAgentAddress = _sellerAgentAddress,
                 sellerAvatarAddress = _sellerAvatarAddress,
             };
+
+            Assert.Throws<InsufficientBalanceException>(() => action.Execute(new ActionContext()
+                {
+                    BlockIndex = 0,
+                    PreviousStates = _initialState,
+                    Random = new ItemEnhancementTest.TestRandom(),
+                    Signer = _buyerAgentAddress,
+                })
+            );
         }
     }
 }
