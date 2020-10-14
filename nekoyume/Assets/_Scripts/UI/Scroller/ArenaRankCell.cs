@@ -69,12 +69,6 @@ namespace Nekoyume.UI.Scroller
         [SerializeField]
         private SubmitButton challengeButton = null;
 
-        [SerializeField]
-        private DOTweenRectTransformMoveBy tweenMove = null;
-
-        [SerializeField]
-        private DOTweenGroupAlpha tweenAlpha = null;
-
         private RectTransform _rectTransformCache;
         private bool _isCurrentUser;
         private readonly Subject<ArenaRankCell> _onClickAvatarInfo = new Subject<ArenaRankCell>();
@@ -188,9 +182,6 @@ namespace Nekoyume.UI.Scroller
                                                currentAvatarArenaInfo.Active &&
                                                currentAvatarArenaInfo.DailyChallengeCount > 0);
             }
-
-            tweenMove.StartDelay = rank * 0.16f;
-            tweenAlpha.StartDelay = rank * 0.16f;
         }
 
         private void UpdateRank(int rank)

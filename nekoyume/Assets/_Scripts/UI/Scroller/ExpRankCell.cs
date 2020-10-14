@@ -40,12 +40,6 @@ namespace Nekoyume.UI.Scroller
         [SerializeField]
         private TextMeshProUGUI stageText = null;
 
-        [SerializeField]
-        private Tween.DOTweenRectTransformMoveBy tweenMove = null;
-
-        [SerializeField]
-        private Tween.DOTweenGroupAlpha tweenAlpha = null;
-
         private RectTransform _rectTransformCache;
         private bool _isCurrentUser;
 
@@ -105,9 +99,6 @@ namespace Nekoyume.UI.Scroller
             {
                 characterView.SetByAvatarAddress(RankingInfo.AvatarAddress);
             }
-
-            tweenMove.StartDelay = rank * 0.16f;
-            tweenAlpha.StartDelay = rank * 0.16f;
         }
     }
 }
