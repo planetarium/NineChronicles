@@ -20,12 +20,54 @@ namespace Lib9c.Tests.Action
         private readonly IRandom _random;
         private readonly Dictionary<string, string> _sheets;
         private readonly TableSheets _tableSheets;
+        private readonly Address _agentAddress;
+        private readonly Address _avatarAddress;
+        private readonly Address _slotAddress;
+        private readonly AvatarState _avatarState;
+        private readonly Currency _currency;
+        private IAccountStateDelta _initialState;
 
         public ItemEnhancementTest()
         {
             _sheets = TableSheetsImporter.ImportSheets();
             _random = new TestRandom();
             _tableSheets = new TableSheets(_sheets);
+            var privateKey = new PrivateKey();
+            _agentAddress = privateKey.PublicKey.ToAddress();
+            var agentState = new AgentState(_agentAddress);
+
+            _avatarAddress = _agentAddress.Derive("avatar");
+            _avatarState = new AvatarState(
+                _avatarAddress,
+                _agentAddress,
+                0,
+                _tableSheets.GetAvatarSheets(),
+                new GameConfigState(),
+                default
+            );
+
+            agentState.avatarAddresses.Add(0, _avatarAddress);
+
+            _currency = new Currency("NCG", 2, minter: null);
+            var gold = new GoldCurrencyState(_currency);
+            _slotAddress =
+                _avatarAddress.Derive(string.Format(CultureInfo.InvariantCulture, CombinationSlotState.DeriveFormat, 0));
+
+            _initialState = new State()
+                .SetState(_agentAddress, agentState.Serialize())
+                .SetState(_avatarAddress, _avatarState.Serialize())
+                .SetState(_slotAddress, new CombinationSlotState(_slotAddress, 0).Serialize())
+                .SetState(GoldCurrencyState.Address, gold.Serialize())
+                .MintAsset(GoldCurrencyState.Address, gold.Currency * 100000000000)
+                .TransferAsset(Addresses.GoldCurrency, _agentAddress, gold.Currency * 1000);
+
+            Assert.Equal(gold.Currency * 99999999000, _initialState.GetBalance(Addresses.GoldCurrency, gold.Currency));
+            Assert.Equal(gold.Currency * 1000, _initialState.GetBalance(_agentAddress, gold.Currency));
+
+            foreach (var (key, value) in _sheets)
+            {
+                _initialState = _initialState.SetState(Addresses.TableSheet.Derive(key), value.Serialize());
+            }
         }
 
         [Theory]
@@ -33,79 +75,348 @@ namespace Lib9c.Tests.Action
         [InlineData(3, 4, 0)]
         public void Execute(int level, int expectedLevel, int expectedGold)
         {
-            var privateKey = new PrivateKey();
-            var agentAddress = privateKey.PublicKey.ToAddress();
-            var agentState = new AgentState(agentAddress);
-
-            var avatarAddress = agentAddress.Derive("avatar");
-            var avatarState = new AvatarState(
-                avatarAddress,
-                agentAddress,
-                0,
-                _tableSheets.GetAvatarSheets(),
-                new GameConfigState(),
-                default
-            );
-
-            agentState.avatarAddresses.Add(0, avatarAddress);
-
             var row = _tableSheets.EquipmentItemSheet.Values.First(r => r.Grade == 1);
             var equipment = (Equipment)ItemFactory.CreateItemUsable(row, default, 0, level);
             var materialId = Guid.NewGuid();
             var material = (Equipment)ItemFactory.CreateItemUsable(row, materialId, 0, level);
 
-            avatarState.inventory.AddItem(equipment, 1);
-            avatarState.inventory.AddItem(material, 1);
+            _avatarState.inventory.AddItem(equipment, 1);
+            _avatarState.inventory.AddItem(material, 1);
 
-            avatarState.worldInformation.ClearStage(1, 1, 1, _tableSheets.WorldSheet, _tableSheets.WorldUnlockSheet);
+            _avatarState.worldInformation.ClearStage(1, 1, 1, _tableSheets.WorldSheet, _tableSheets.WorldUnlockSheet);
 
             var slotAddress =
-                avatarAddress.Derive(string.Format(CultureInfo.InvariantCulture, CombinationSlotState.DeriveFormat, 0));
+                _avatarAddress.Derive(string.Format(CultureInfo.InvariantCulture, CombinationSlotState.DeriveFormat, 0));
 
             Assert.Equal(level, equipment.level);
 
-            var gold = new GoldCurrencyState(new Currency("NCG", 2, minter: null));
-
-            var state = new State()
-                .SetState(agentAddress, agentState.Serialize())
-                .SetState(avatarAddress, avatarState.Serialize())
-                .SetState(slotAddress, new CombinationSlotState(slotAddress, 0).Serialize())
-                .SetState(GoldCurrencyState.Address, gold.Serialize())
-                .MintAsset(GoldCurrencyState.Address, gold.Currency * 100000000000)
-                .TransferAsset(Addresses.GoldCurrency, agentAddress, gold.Currency * 1000);
-
-            Assert.Equal(gold.Currency * 99999999000, state.GetBalance(Addresses.GoldCurrency, gold.Currency));
-            Assert.Equal(gold.Currency * 1000, state.GetBalance(agentAddress, gold.Currency));
-
-            foreach (var (key, value) in _sheets)
-            {
-                state = state.SetState(Addresses.TableSheet.Derive(key), value.Serialize());
-            }
+            _initialState = _initialState.SetState(_avatarAddress, _avatarState.Serialize());
 
             var action = new ItemEnhancement()
             {
                 itemId = default,
                 materialIds = new[] { materialId },
-                avatarAddress = avatarAddress,
+                avatarAddress = _avatarAddress,
                 slotIndex = 0,
             };
 
             var nextState = action.Execute(new ActionContext()
             {
-                PreviousStates = state,
-                Signer = agentAddress,
+                PreviousStates = _initialState,
+                Signer = _agentAddress,
                 BlockIndex = 1,
                 Random = _random,
             });
 
-            var slotState = nextState.GetCombinationSlotState(avatarAddress, 0);
+            var slotState = nextState.GetCombinationSlotState(_avatarAddress, 0);
             var resultEquipment = (Equipment)slotState.Result.itemUsable;
             Assert.Equal(expectedLevel, resultEquipment.level);
             Assert.Equal(default, resultEquipment.ItemId);
-            Assert.Equal(expectedGold * gold.Currency, nextState.GetBalance(agentAddress, gold.Currency));
+            Assert.Equal(expectedGold * _currency, nextState.GetBalance(_agentAddress, _currency));
             Assert.Equal(
-                (1000 - expectedGold) * gold.Currency,
-                nextState.GetBalance(Addresses.Blacksmith, gold.Currency)
+                (1000 - expectedGold) * _currency,
+                nextState.GetBalance(Addresses.Blacksmith, _currency)
+            );
+        }
+
+        [Fact]
+        public void ExecuteThrowFailedLoadStateException()
+        {
+            var action = new ItemEnhancement()
+            {
+                itemId = default,
+                materialIds = default,
+                avatarAddress = _avatarAddress,
+                slotIndex = 0,
+            };
+
+            Assert.Throws<FailedLoadStateException>(() => action.Execute(new ActionContext()
+                {
+                    PreviousStates = new State(),
+                    Signer = _agentAddress,
+                    BlockIndex = 0,
+                })
+            );
+        }
+
+        [Fact]
+        public void ExecuteThrowItemDoesNotExistException()
+        {
+            var action = new ItemEnhancement()
+            {
+                itemId = default,
+                materialIds = default,
+                avatarAddress = _avatarAddress,
+                slotIndex = 0,
+            };
+
+            Assert.Throws<ItemDoesNotExistException>(() => action.Execute(new ActionContext()
+                {
+                    PreviousStates = _initialState,
+                    Signer = _agentAddress,
+                    BlockIndex = 0,
+                })
+            );
+        }
+
+        [Fact]
+        public void ExecuteThrowRequiredBlockIndexException()
+        {
+            var row = _tableSheets.EquipmentItemSheet.Values.First(r => r.Grade == 1);
+            var equipment = (Equipment)ItemFactory.CreateItemUsable(row, default, 100, 1);
+
+            _avatarState.inventory.AddItem(equipment, 1);
+
+            _initialState = _initialState.SetState(_avatarAddress, _avatarState.Serialize());
+
+            var action = new ItemEnhancement()
+            {
+                itemId = equipment.ItemId,
+                materialIds = default,
+                avatarAddress = _avatarAddress,
+                slotIndex = 0,
+            };
+
+            Assert.Throws<RequiredBlockIndexException>(() => action.Execute(new ActionContext()
+                {
+                    PreviousStates = _initialState,
+                    Signer = _agentAddress,
+                    BlockIndex = 0,
+                })
+            );
+        }
+
+        [Fact]
+        public void ExecuteThrowInvalidCastException()
+        {
+            var row = _tableSheets.ConsumableItemSheet.Values.First(r => r.Grade == 1);
+            var consumable = (Consumable)ItemFactory.CreateItemUsable(row, default, 0, 1);
+
+            _avatarState.inventory.AddItem(consumable, 1);
+
+            _initialState = _initialState.SetState(_avatarAddress, _avatarState.Serialize());
+
+            var action = new ItemEnhancement()
+            {
+                itemId = consumable.ItemId,
+                materialIds = default,
+                avatarAddress = _avatarAddress,
+                slotIndex = 0,
+            };
+
+            Assert.Throws<InvalidCastException>(() => action.Execute(new ActionContext()
+                {
+                    PreviousStates = _initialState,
+                    Signer = _agentAddress,
+                    BlockIndex = 0,
+                })
+            );
+        }
+
+        [Fact]
+        public void ExecuteThrowCombinationSlotUnlockException()
+        {
+            var row = _tableSheets.EquipmentItemSheet.Values.First(r => r.Grade == 1);
+            var equipment = (Equipment)ItemFactory.CreateItemUsable(row, default, 0, 1);
+
+            _avatarState.inventory.AddItem(equipment, 1);
+
+            _initialState = _initialState
+                .SetState(_avatarAddress, _avatarState.Serialize())
+                .SetState(_slotAddress, new CombinationSlotState(_slotAddress, 100).Serialize());
+
+            var action = new ItemEnhancement()
+            {
+                itemId = equipment.ItemId,
+                materialIds = default,
+                avatarAddress = _avatarAddress,
+                slotIndex = 0,
+            };
+
+            Assert.Throws<CombinationSlotUnlockException>(() => action.Execute(new ActionContext()
+                {
+                    PreviousStates = _initialState,
+                    Signer = _agentAddress,
+                    BlockIndex = 0,
+                })
+            );
+        }
+
+        [Fact]
+        public void ExecuteThrowEquipmentLevelExceededException()
+        {
+            var row = _tableSheets.EquipmentItemSheet.Values.First(r => r.Grade == 1);
+            var equipment = (Equipment)ItemFactory.CreateItemUsable(row, default, 0, 10);
+            var materialId = Guid.NewGuid();
+            var material = (Equipment)ItemFactory.CreateItemUsable(row, materialId, 0);
+
+            _avatarState.inventory.AddItem(equipment, 1);
+            _avatarState.inventory.AddItem(material, 1);
+
+            _avatarState.worldInformation.ClearStage(1, 1, 1, _tableSheets.WorldSheet, _tableSheets.WorldUnlockSheet);
+
+            _initialState = _initialState.SetState(_avatarAddress, _avatarState.Serialize());
+
+            var action = new ItemEnhancement()
+            {
+                itemId = equipment.ItemId,
+                materialIds = new[] { materialId },
+                avatarAddress = _avatarAddress,
+                slotIndex = 0,
+            };
+
+            Assert.Throws<EquipmentLevelExceededException>(() => action.Execute(new ActionContext()
+                {
+                    PreviousStates = _initialState,
+                    Signer = _agentAddress,
+                    BlockIndex = 0,
+                })
+            );
+        }
+
+        [Fact]
+        public void ExecuteThrowNotEnoughMaterialException()
+        {
+            var row = _tableSheets.EquipmentItemSheet.Values.First(r => r.Grade == 1);
+            var equipment = (Equipment)ItemFactory.CreateItemUsable(row, default, 0);
+            var materialId = Guid.NewGuid();
+
+            _avatarState.inventory.AddItem(equipment);
+
+            _avatarState.worldInformation.ClearStage(1, 1, 1, _tableSheets.WorldSheet, _tableSheets.WorldUnlockSheet);
+
+            _initialState = _initialState.SetState(_avatarAddress, _avatarState.Serialize());
+
+            var action = new ItemEnhancement()
+            {
+                itemId = equipment.ItemId,
+                materialIds = new[] { materialId },
+                avatarAddress = _avatarAddress,
+                slotIndex = 0,
+            };
+
+            Assert.Throws<NotEnoughMaterialException>(() => action.Execute(new ActionContext()
+                {
+                    PreviousStates = _initialState,
+                    Signer = _agentAddress,
+                    BlockIndex = 0,
+                })
+            );
+        }
+
+        [Fact]
+        public void ExecuteThrowDuplicateMaterialException()
+        {
+            var row = _tableSheets.EquipmentItemSheet.Values.First(r => r.Grade == 1);
+            var equipment = (Equipment)ItemFactory.CreateItemUsable(row, default, 0, 0);
+            var materialId = Guid.NewGuid();
+            var material = (Equipment)ItemFactory.CreateItemUsable(row, materialId, 0);
+
+            _avatarState.inventory.AddItem(equipment);
+            _avatarState.inventory.AddItem(material);
+
+            _avatarState.worldInformation.ClearStage(1, 1, 1, _tableSheets.WorldSheet, _tableSheets.WorldUnlockSheet);
+
+            _initialState = _initialState.SetState(_avatarAddress, _avatarState.Serialize());
+
+            var action = new ItemEnhancement()
+            {
+                itemId = equipment.ItemId,
+                materialIds = new[] { materialId, materialId },
+                avatarAddress = _avatarAddress,
+                slotIndex = 0,
+            };
+
+            Assert.Throws<DuplicateMaterialException>(() => action.Execute(new ActionContext()
+                {
+                    PreviousStates = _initialState,
+                    Signer = _agentAddress,
+                    BlockIndex = 0,
+                })
+            );
+        }
+
+        [Theory]
+        [InlineData(
+            "F9168C5E-CEB2-4faa-B6BF-329BF39FA1E4",
+            ItemSubType.Weapon,
+            1,
+            1,
+            "F9168C5E-CEB2-4faa-B6BF-329BF39FA1E4",
+            ItemSubType.Weapon,
+            1,
+            1
+        )]
+        [InlineData(
+            "F9168C5E-CEB2-4faa-B6BF-329BF39FA1E4",
+            ItemSubType.Weapon,
+            1,
+            1,
+            "936DA01F-9ABD-4d9d-80C7-02AF85C822A8",
+            ItemSubType.Armor,
+            1,
+            1
+        )]
+        [InlineData(
+            "F9168C5E-CEB2-4faa-B6BF-329BF39FA1E4",
+            ItemSubType.Weapon,
+            1,
+            1,
+            "936DA01F-9ABD-4d9d-80C7-02AF85C822A8",
+            ItemSubType.Weapon,
+            2,
+            1
+        )]
+        [InlineData(
+            "F9168C5E-CEB2-4faa-B6BF-329BF39FA1E4",
+            ItemSubType.Weapon,
+            1,
+            2,
+            "936DA01F-9ABD-4d9d-80C7-02AF85C822A8",
+            ItemSubType.Weapon,
+            1,
+            1
+        )]
+        public void ExecuteThrowInvalidMaterialException(
+            string equipmentGuid,
+            ItemSubType equipmentSubType,
+            int equipmentGrade,
+            int equipmentLevel,
+            string materialGuid,
+            ItemSubType materialSubType,
+            int materialGrade,
+            int materialLevel
+        )
+        {
+            var equipmentRow = _tableSheets.EquipmentItemSheet.Values.First(r =>
+                r.Grade == equipmentGrade && r.ItemSubType == equipmentSubType);
+            var materialRow = _tableSheets.EquipmentItemSheet.Values.First(r =>
+                r.Grade == materialGrade && r.ItemSubType == materialSubType);
+            var equipment = (Equipment)ItemFactory.CreateItemUsable(equipmentRow, new Guid(equipmentGuid), 0, equipmentLevel);
+            var materialId = new Guid(materialGuid);
+            var material = (Equipment)ItemFactory.CreateItemUsable(materialRow, materialId, 0, materialLevel);
+
+            _avatarState.inventory.AddItem(equipment);
+            _avatarState.inventory.AddItem(material);
+
+            _avatarState.worldInformation.ClearStage(1, 1, 1, _tableSheets.WorldSheet, _tableSheets.WorldUnlockSheet);
+
+            _initialState = _initialState.SetState(_avatarAddress, _avatarState.Serialize());
+
+            var action = new ItemEnhancement()
+            {
+                itemId = equipment.ItemId,
+                materialIds = new[] { materialId, materialId },
+                avatarAddress = _avatarAddress,
+                slotIndex = 0,
+            };
+
+            Assert.Throws<InvalidMaterialException>(() => action.Execute(new ActionContext()
+                {
+                    PreviousStates = _initialState,
+                    Signer = _agentAddress,
+                    BlockIndex = 0,
+                })
             );
         }
 

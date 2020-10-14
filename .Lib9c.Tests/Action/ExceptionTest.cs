@@ -71,6 +71,27 @@ namespace Lib9c.Tests.Action
             AssertException<ItemDoesNotExistException>(exc);
         }
 
+        [Fact]
+        public void EquipmentLevelExceededExceptionSerializable()
+        {
+            var exc = new EquipmentLevelExceededException("for testing");
+            AssertException<EquipmentLevelExceededException>(exc);
+        }
+
+        [Fact]
+        public void DuplicateMaterialExceptionSerializable()
+        {
+            var exc = new DuplicateMaterialException("for testing");
+            AssertException<DuplicateMaterialException>(exc);
+        }
+
+        [Fact]
+        public void InvalidMaterialExceptionSerializable()
+        {
+            var exc = new InvalidMaterialException("for testing");
+            AssertException<InvalidMaterialException>(exc);
+        }
+
         private static void AssertException<T>(Exception exc)
             where T : Exception
         {
