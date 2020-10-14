@@ -14,10 +14,14 @@ namespace Nekoyume.UI.Module
         private Image line = null;
         [SerializeField]
         private Image line2 = null;
+        [SerializeField]
+        private Image background = null;
+
+        private const string BACKGROUND_PATH = "UI/Textures/WorldMap/battle_UI_BG";
 
         public IReadOnlyList<WorldMapStage> Stages => stages;
 
-        public void Show(List<WorldMapStage.ViewModel> stageModels, string imageKey)
+        public void Show(List<WorldMapStage.ViewModel> stageModels, string imageKey, int pageIndex)
         {
             if (stageModels is null)
             {
@@ -50,6 +54,9 @@ namespace Nekoyume.UI.Module
             var enable = activeCount > 10;
             line.gameObject.SetActive(enable);
             line2.gameObject.SetActive(!enable);
+
+            var sprite = Resources.Load<Sprite>($"{BACKGROUND_PATH}_{imageKey}_{pageIndex:D2}");
+            background.sprite = sprite != null ? sprite : Resources.Load<Sprite>($"{BACKGROUND_PATH}_01_{pageIndex:D2}");
         }
     }
 }
