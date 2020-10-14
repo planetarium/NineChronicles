@@ -75,13 +75,13 @@ namespace Nekoyume.UI.Scroller
 
             AudioController.PlayClick();
 
-            ItemMoveVFX lastVFX = null;
+            QuestRewardVFX lastVFX = null;
             foreach (var rewardView in rewardViews)
             {
                 if (!(rewardView.Model is null) && rewardView.gameObject.activeSelf)
                 {
-                    lastVFX =
-                        VFXController.instance.CreateAndChaseCam<ItemMoveVFX>(rewardView.transform.position);
+                    lastVFX = VFXController.instance.CreateAndChaseCam<QuestRewardVFX>(rewardView
+                        .transform.position);
                 }
             }
             ShowAsComplete();

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Nekoyume.L10n;
 using Nekoyume.Model.State;
 using Nekoyume.State;
@@ -29,7 +29,8 @@ namespace Nekoyume.UI
         private void Awake()
         {
             remainTimeSlider.OnValueChangedAsObservable().Subscribe(OnSliderChange).AddTo(gameObject);
-            remainTimeSlider.maxValue = GameConfig.DailyArenaInterval;
+            var gameConfigState = States.Instance.GameConfigState;
+            remainTimeSlider.maxValue = gameConfigState.DailyArenaInterval;
             remainTimeSlider.value = 0;
 
             WeeklyArenaStateSubject.WeeklyArenaState.ObserveOnMainThread().Subscribe(SetData).AddTo(gameObject);
@@ -77,7 +78,8 @@ namespace Nekoyume.UI
 
         private void OnSliderChange(float value)
         {
-            var remainSecond = (GameConfig.DailyArenaInterval - value) * 15;
+            var gameConfigState = States.Instance.GameConfigState;
+            var remainSecond = (gameConfigState.DailyArenaInterval - value) * 15;
             var timeSpan = TimeSpan.FromSeconds(remainSecond);
 
             var remainString = $"{timeSpan.Hours}h {timeSpan.Minutes}m";
@@ -85,7 +87,7 @@ namespace Nekoyume.UI
             remainString = remainString.Replace("h 0m", "");
 
             remainTime.text = string.Format(L10nManager.Localize("UI_REMAININGTIME"), remainString,
-                (int) value, GameConfig.DailyArenaInterval);
+                (int) value, gameConfigState.DailyArenaInterval);
         }
     }
 }

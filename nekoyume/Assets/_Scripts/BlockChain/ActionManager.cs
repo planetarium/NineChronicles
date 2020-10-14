@@ -66,29 +66,6 @@ namespace Nekoyume.BlockChain
                 .Timeout(ActionTimeout);
         }
 
-        public IObservable<ActionBase.ActionEvaluation<DeleteAvatar>> DeleteAvatar(int index)
-        {
-            if (!States.Instance.AvatarStates.ContainsKey(index))
-            {
-                throw new KeyNotFoundException($"Not found {index} in {States.Instance.AvatarStates}");
-            }
-
-            var avatarAddress = States.Instance.AvatarStates[index].address;
-            var action = new DeleteAvatar
-            {
-                index = index,
-                avatarAddress = avatarAddress,
-            };
-            ProcessAction(action);
-
-            return _renderer.EveryRender<DeleteAvatar>()
-                .SkipWhile(eval => !eval.Action.Id.Equals(action.Id))
-                .Take(1)
-                .Last()
-                .ObserveOnMainThread()
-                .Timeout(ActionTimeout);
-        }
-
         public IObservable<ActionBase.ActionEvaluation<HackAndSlash>> HackAndSlash(
             Player player,
             int worldId,
@@ -183,7 +160,6 @@ namespace Nekoyume.BlockChain
             var action = new Sell
             {
                 sellerAvatarAddress = avatarAddress,
-                productId = Guid.NewGuid(),
                 itemId = itemUsable.ItemId,
                 price = price
             };

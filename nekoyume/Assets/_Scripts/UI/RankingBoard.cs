@@ -338,7 +338,8 @@ namespace Nekoyume.UI
             {
                 arenaRankScroll.Hide();
 
-                var rankingState = States.Instance.RankingMapStates;
+                var states = States.Instance;
+                var rankingState = states.RankingMapStates;
                 if (rankingState is null)
                 {
                     expRankScroll.ClearData();
@@ -353,12 +354,13 @@ namespace Nekoyume.UI
                     .OrderByDescending(c => c.Exp)
                     .ThenBy(c => c.StageClearedBlockIndex)
                     .ToList();
+                var gameConfigState = states.GameConfigState;
                 if (stateType == StateType.Filtered)
                 {
                     var currentBlockIndex = Game.Game.instance.Agent.BlockIndex;
                     rankingInfos = rankingInfos
                         .Where(context =>
-                            currentBlockIndex - context.UpdatedAt <= GameConfig.DailyRewardInterval)
+                            currentBlockIndex - context.UpdatedAt <= gameConfigState.DailyRewardInterval)
                         .ToList();
                 }
 
