@@ -130,7 +130,7 @@ namespace Nekoyume.Action
 
             if (!states.TryGetAgentAvatarStates(ctx.Signer, buyerAvatarAddress, out var buyerAgentState, out var buyerAvatarState))
             {
-                throw new FailedLoadStateException( "Aborted as the avatar state of the buyer was failed to load.");
+                throw new FailedLoadStateException("Aborted as the avatar state of the buyer was failed to load.");
             }
             sw.Stop();
             Log.Debug("Buy Get Buyer AgentAvatarStates: {Elapsed}", sw.Elapsed);
@@ -144,7 +144,7 @@ namespace Nekoyume.Action
 
             if (!states.TryGetState(ShopState.Address, out Bencodex.Types.Dictionary d))
             {
-                throw new FailedLoadStateException( "Aborted as the shop state was failed to load.");
+                throw new FailedLoadStateException("Aborted as the shop state was failed to load.");
             }
 
             var shopState = new ShopState(d);
@@ -167,7 +167,7 @@ namespace Nekoyume.Action
             if (!states.TryGetAgentAvatarStates(sellerAgentAddress, sellerAvatarAddress, out var sellerAgentState, out var sellerAvatarState))
             {
                 throw new FailedLoadStateException(
-                    $"Aborted as the seller agent/avatar was filed to load from {sellerAgentAddress}/{sellerAvatarAddress}."
+                    $"Aborted as the seller agent/avatar was failed to load from {sellerAgentAddress}/{sellerAvatarAddress}."
                 );
             }
             sw.Stop();
