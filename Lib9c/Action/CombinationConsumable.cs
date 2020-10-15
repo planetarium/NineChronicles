@@ -126,38 +126,30 @@ namespace Nekoyume.Action
             if (!states.TryGetAgentAvatarStates(ctx.Signer, AvatarAddress, out AgentState agentState,
                 out AvatarState avatarState))
             {
-                return LogError(context, "Aborted as the avatar state of the signer was failed to load.");
+                throw new FailedLoadStateException("Aborted as the avatar state of the signer was failed to load.");
             }
 
             sw.Stop();
             Log.Debug("Combination Get AgentAvatarStates: {Elapsed}", sw.Elapsed);
             sw.Restart();
 
-            if (!avatarState.worldInformation.TryGetUnlockedWorldByStageClearedBlockIndex(out var world))
+            if (!avatarState.worldInformation.IsStageCleared(GameConfig.RequireClearedStageLevel.CombinationEquipmentAction))
             {
-                return LogError(context, "Aborted as the WorldInformation was failed to load.");
-            }
-
-            if (world.StageClearedId < GameConfig.RequireClearedStageLevel.CombinationEquipmentAction)
-            {
-                // 스테이지 클리어 부족 에러.
-                return LogError(
-                    context,
-                    "Aborted as the signer is not cleared the minimum stage level required to combine consumables yet: {ClearedLevel} < {RequiredLevel}.",
-                    world.StageClearedId,
-                    GameConfig.RequireClearedStageLevel.CombinationEquipmentAction
-                );
+                avatarState.worldInformation.TryGetLastClearedStageId(out var current);
+                throw new NotEnoughClearedStageLevelException(
+                    GameConfig.RequireClearedStageLevel.CombinationEquipmentAction, current);
             }
 
             var slotState = states.GetCombinationSlotState(AvatarAddress, slotIndex);
-            if (slotState is null || !(slotState.Validate(avatarState, ctx.BlockIndex)))
+            if (slotState is null)
             {
-                return LogError(
-                    context,
-                    "Aborted as the slot state is failed to load or invalid: {@SlotState} @ {SlotIndex}",
-                    slotState,
-                    slotIndex
-                );
+                throw new FailedLoadStateException($"Aborted as the slot state is failed to load: # {slotIndex}");
+            }
+
+            if(!slotState.Validate(avatarState, ctx.BlockIndex))
+            {
+                throw new CombinationSlotUnlockException(
+                    $"Aborted as the slot state is invalid: {slotState} @ {slotIndex}");
             }
 
             Log.Debug("Execute Combination; player: {Player}", AvatarAddress);
@@ -165,7 +157,7 @@ namespace Nekoyume.Action
             var recipeRow = states.GetSheet<ConsumableItemRecipeSheet>().Values.FirstOrDefault(r => r.Id == recipeId);
             if (recipeRow is null)
             {
-                return LogError(context, "Aborted as the recipe was failed to load.");
+                throw new SheetRowNotFoundException(nameof(ConsumableItemRecipeSheet), recipeId);
             }
             var materials = new Dictionary<Material, int>();
             foreach (var materialInfo in recipeRow.Materials.OrderBy(r => r.Id))
@@ -181,12 +173,8 @@ namespace Nekoyume.Action
                 }
                 else
                 {
-                    return LogError(
-                        context,
-                        "Aborted as the player has no enough material ({Material} * {Quantity})",
-                        materialId,
-                        count
-                    );
+                    throw new NotEnoughMaterialException(
+                        $"Aborted as the player has no enough material ({materialId} * {count})");
                 }
             }
 
@@ -204,12 +192,8 @@ namespace Nekoyume.Action
             var costAP = recipeRow.RequiredActionPoint;
             if (avatarState.actionPoint < costAP)
             {
-                // ap 부족 에러.
-                return LogError(
-                    context,
-                    "Aborted due to insufficient action point: {ActionPointBalance} < {ActionCost}",
-                    avatarState.actionPoint,
-                    costAP
+                throw new NotEnoughActionPointException(
+                    $"Aborted due to insufficient action point: {avatarState.actionPoint} < {costAP}"
                 );
             }
 
@@ -225,12 +209,7 @@ namespace Nekoyume.Action
 
             if (!consumableItemSheet.TryGetValue(resultConsumableItemId, out var consumableItemRow))
             {
-                // 소모품 테이블 값 가져오기 실패.
-                return LogError(
-                    context,
-                    "Aborted as the consumable item ({ItemId} was failed to load from the data table.",
-                    resultConsumableItemId
-                );
+                throw new SheetRowNotFoundException(nameof(ConsumableItemSheet), resultConsumableItemId);
             }
 
             // 조합 결과 획득.
