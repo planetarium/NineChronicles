@@ -5,9 +5,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Libplanet.Action;
-using Libplanet.Blockchain.Policies;
+using Libplanet.Blockchain;
 using Libplanet.Blockchain.Renderers;
 using Libplanet.Blocks;
+using Libplanet.Store;
 
 namespace Lib9c.Renderer
 {
@@ -21,12 +22,8 @@ namespace Lib9c.Renderer
     public class ValidatingActionRenderer<T> : RecordingRenderer<T>
         where T : IAction, new()
     {
-        private readonly IBlockPolicy<T> _policy;
-
-        public ValidatingActionRenderer(IBlockPolicy<T> policy)
-        {
-            _policy = policy ?? throw new ArgumentNullException(nameof(policy));
-        }
+        public IStore Store;
+        public BlockChain<T> BlockChain;
         
         private enum RenderState
         {
@@ -92,41 +89,6 @@ namespace Lib9c.Renderer
         {
             base.RenderBlockEnd(oldTip, newTip);
             Validate();
-
-            List<IAction> expectedActions = new List<IAction>();
-            
-            foreach (var tx in newTip.Transactions)
-            {
-                expectedActions.AddRange(tx.Actions.Cast<IAction>());
-            }
-            
-            if (_policy.BlockAction != null)
-            {
-                expectedActions.Add(_policy.BlockAction);
-            }
-
-            List<IAction> actualActions = new List<IAction>();
-            foreach (var record in Records.Reverse())
-            {
-                if (record is RenderRecord<T>.Block b && b.Begin)
-                {
-                    break;
-                }
-
-                if (record is RenderRecord<T>.ActionBase a && a.Render)
-                {
-                    actualActions.Add(a.Action);
-                }
-            }
-
-            actualActions.Reverse();
-
-            if (!actualActions.Select(a => a.PlainValue).SequenceEqual(expectedActions.Select(a => a.PlainValue)))
-            {
-                var message = $"The render action record does not match with actions in the block {newTip}. " +
-                              $"(expected: {expectedActions.Count}, actual: {actualActions.Count})";
-                throw new InvalidRenderException(Records, message);
-            }
         }
 
         public override void RenderReorgEnd(
@@ -137,6 +99,98 @@ namespace Lib9c.Renderer
         {
             base.RenderReorgEnd(oldTip, newTip, branchpoint);
             Validate();
+
+            ValidateReorgEnd(oldTip, newTip, branchpoint);
+        }
+
+        private void ValidateReorgEnd(
+            Block<T> oldTip,
+            Block<T> newTip,
+            Block<T> branchpoint)
+        {
+            var store = Store ?? throw new Exception("Store is null.");
+            var chain = BlockChain ?? throw new Exception("Chain is null.");
+            
+            List<IAction> expectedUnrenderedActions = new List<IAction>();
+            List<IAction> expectedRenderedActions = new List<IAction>();
+
+            var block = oldTip;
+            bool repeat;
+            do
+            {
+                repeat = !block.PreviousHash.Equals(branchpoint.Hash);
+                expectedUnrenderedActions.AddRange(
+                    block.Transactions.SelectMany(t => t.Actions).Cast<IAction>());
+                if (!(chain.Policy.BlockAction is null))
+                {
+                    expectedUnrenderedActions.Add(chain.Policy.BlockAction);
+                }
+
+                block = block.PreviousHash is null
+                    ? throw new InvalidRenderException(Records, "Reorg occurred from the chain with different genesis.")
+                    : store.GetBlock<T>(block.PreviousHash.Value);
+            }
+            while (repeat);
+
+            block = newTip;
+            do
+            {
+                repeat = !block.PreviousHash.Equals(branchpoint.Hash);
+                var actions = block.Transactions.SelectMany(t => t.Actions).Cast<IAction>().ToList();
+                if (!(chain.Policy.BlockAction is null))
+                {
+                    actions.Add(chain.Policy.BlockAction);
+                }
+
+                expectedRenderedActions = actions.Concat(expectedRenderedActions).ToList();
+                block = block.PreviousHash is null
+                    ? throw new InvalidRenderException(Records, "Reorg occurred from the chain with different genesis.")
+                    : store.GetBlock<T>(block.PreviousHash.Value);
+            }
+            while (repeat);
+
+            List<IAction> actualRenderedActions = new List<IAction>();
+            List<IAction> actualUnrenderedActions = new List<IAction>();
+            foreach (var record in Records.Reverse())
+            {
+                if (record is RenderRecord<T>.Reorg b && b.Begin)
+                {
+                    break;
+                }
+
+                if (record is RenderRecord<T>.ActionBase a)
+                {
+                    if (a.Render)
+                    {
+                        actualRenderedActions.Add(a.Action);
+                    }
+                    else
+                    {
+                        actualUnrenderedActions.Add(a.Action);
+                    }
+                }
+            }
+
+            actualRenderedActions.Reverse();
+            actualUnrenderedActions.Reverse();
+
+            if (!actualUnrenderedActions.Select(a => a.PlainValue).SequenceEqual(expectedUnrenderedActions.Select(a => a.PlainValue)))
+            {
+                var message =
+                    "The unrender action record does not match with actions in the block when reorg occurred. " +
+                    $"(oldTip: {oldTip}, newTip: {newTip}, branchpoint: {branchpoint}); " +
+                    $"(expected: {expectedUnrenderedActions.Count}, actual: {actualUnrenderedActions.Count})";
+                throw new InvalidRenderException(Records, message);
+            }
+
+            if (!actualRenderedActions.Select(a => a.PlainValue).SequenceEqual(expectedRenderedActions.Select(a => a.PlainValue)))
+            {
+                var message =
+                    "The render action record does not match with actions in the block when reorg occurred. " +
+                    $"(oldTip: {oldTip}, newTip: {newTip}, branchpoint: {branchpoint}); " +
+                    $"(expected: {expectedRenderedActions.Count}, actual: {actualRenderedActions.Count})";
+                throw new InvalidRenderException(Records, message);
+            }
         }
 
         private void Validate()
@@ -376,7 +430,7 @@ namespace Lib9c.Renderer
                     int commonPostfix = 0;
                     for (int i = 0, end = Records.Min(r => r.StackTrace.Length); i < end; i++)
                     {
-                        char charInFirst = firstTrace[StackTrace.Length - (i + 1)];
+                        char charInFirst = firstTrace[firstTrace.Length - (i + 1)];
                         bool allEqual = Records.Skip(1).All(r =>
                         {
                             string stackTrace = r.StackTrace;
