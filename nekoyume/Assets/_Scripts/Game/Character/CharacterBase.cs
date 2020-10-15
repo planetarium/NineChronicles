@@ -130,6 +130,7 @@ namespace Nekoyume.Game.Character
             action = null;
             if (!_applicationQuitting)
                 DisableHUD();
+            _forceStop = false;
         }
 
         #endregion
