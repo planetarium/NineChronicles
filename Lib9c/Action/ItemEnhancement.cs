@@ -149,7 +149,6 @@ namespace Nekoyume.Action
             var requiredAP = GetRequiredAp();
             if (avatarState.actionPoint < requiredAP)
             {
-                // AP 부족 에러.
                 throw new NotEnoughActionPointException(
                     $"Aborted due to insufficient action point: {avatarState.actionPoint} < {requiredAP}"
                 );
