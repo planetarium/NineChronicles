@@ -69,14 +69,15 @@ namespace Nekoyume.BlockChain
             BlockChain<NCAction> blockChain
         )
         {
-            if (transaction.Actions.Count == 1 &&
-                transaction.Actions.First().InnerAction is ActivateAccount)
-            {
-                return true;
-            }
-
             try
             {
+                if (transaction.Actions.Count == 1 &&
+                    transaction.Actions.First().InnerAction is ActivateAccount aa)
+                {
+                    return blockChain.GetState(aa.PendingAddress) is Dictionary rawPending &&
+                        new PendingActivationState(rawPending).Verify(aa);
+                }
+
                 if (blockChain.GetState(ActivatedAccountsState.Address) is Dictionary asDict)
                 {
                     IImmutableSet<Address> activatedAccounts =
@@ -88,6 +89,10 @@ namespace Nekoyume.BlockChain
                 {
                     return true;
                 }
+            }
+            catch (InvalidSignatureException)
+            {
+                return false;
             }
             catch (IncompleteBlockStatesException)
             {
