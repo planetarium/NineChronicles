@@ -176,7 +176,7 @@ namespace Nekoyume.Action
                 if (!avatarState.inventory.TryGetNonFungibleItem(materialId, out ItemUsable materialItem))
                 {
                     throw new NotEnoughMaterialException(
-                        $"Aborted as the the signer does not have a necessary material ({materialId})."
+                        $"Aborted as the signer does not have a necessary material ({materialId})."
                     );
                 }
 
@@ -190,7 +190,7 @@ namespace Nekoyume.Action
                 if (!(materialItem is Equipment materialEquipment))
                 {
                     throw new InvalidCastException(
-                        $"Aborted as the material item is not a {nameof(Equipment)}, but {materialItem.GetType().Name}."
+                        $"Aborted as the material item is not an {nameof(Equipment)}, but {materialItem.GetType().Name}."
                     );
                 }
 
@@ -220,7 +220,7 @@ namespace Nekoyume.Action
                 {
                     // Invalid Grade
                     throw new InvalidMaterialException(
-                        $"Aborted as grades of the equipment to enhance ({enhancementEquipment.Grade}) and a material ({materialEquipment.Grade}) do not match."
+                        $"Aborted as grades of the equipment to enhance ({enhancementEquipment.Grade}) and a material ({materialEquipment.Grade}) does not match."
                     );
                 }
 
@@ -228,7 +228,7 @@ namespace Nekoyume.Action
                 {
                     // Invalid level
                     throw new InvalidMaterialException(
-                        $"Aborted as levels of the equipment to enhance ({enhancementEquipment.level}l}}) and a material ({materialEquipment.level}) do not match."
+                        $"Aborted as levels of the equipment to enhance ({enhancementEquipment.level}) and a material ({materialEquipment.level}) does not match."
                     );
                 }
                 sw.Stop();
