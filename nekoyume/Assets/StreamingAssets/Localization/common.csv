@@ -1171,9 +1171,9 @@ Anyone can steal your assets if this private key is exposed.","<sprite name=UI_m
 비밀 키가 노출되면 누구나 당신의 계정에서 자산을 빼갈 수 있습니다.","<sprite name=UI_main_icon_quest_02>Nunca exponha a chave privada acima a outras pessoas.
 Qualquer pessoa pode roubar seus ativos se essa chave privada estiver exposta.",,"<sprite name=UI_main_icon_quest_02>秘密鍵は決して誰にも見せないでください。
 秘密鍵を知られると誰でもあなたの資産を盗むことができます。","<sprite name=UI_main_icon_quest_02>Gebe den oben genannten privaten Schlüssel niemals an andere weiter.
-Jeder, der deinen privaten Schlüssel kennt, hat Zugriff auf deinen gesamten Besitz.",,"<sprite name = UI_main_icon_quest_02> ห้ามเปิดเผย Private Key ให้แก่ผู้อื่น
-ทุกคนสามารถขโมยทรัพย์สินของคุณได้หากรู้ว่า Private Key ของคุณคืออะไร","<sprite name = UI_main_icon_quest_02> Nigdy nie ujawniaj nikomu powyższego klucza prywatnego.
-Każdy może ukraść Twoje zasoby, jeśli ten klucz prywatny zostanie ujawniony.",,,"<sprite name = UI_main_icon_quest_02>Jangan pernah menunjukan private key di atas kepada orang lain.
+Jeder, der deinen privaten Schlüssel kennt, hat Zugriff auf deinen gesamten Besitz.",,"<sprite name=UI_main_icon_quest_02> ห้ามเปิดเผย Private Key ให้แก่ผู้อื่น
+ทุกคนสามารถขโมยทรัพย์สินของคุณได้หากรู้ว่า Private Key ของคุณคืออะไร","<sprite name=UI_main_icon_quest_02> Nigdy nie ujawniaj nikomu powyższego klucza prywatnego.
+Każdy może ukraść Twoje zasoby, jeśli ten klucz prywatny zostanie ujawniony.",,,"<sprite name=UI_main_icon_quest_02>Jangan pernah menunjukan private key di atas kepada orang lain.
 Siapa pun dapat mencuri aset Anda jika kunci pribadi ini terungkap.","<sprite name=UI_main_icon_quest_02>Ne divulguez jamais la clé privée ci-dessus à qui que ce soit.
 Quelqu'un pourrait voler vos actifs, si vous veniez à divulguer cette clé.",,,,"<sprite name=UI_main_icon_quest_02>切勿将上述私钥公开给任何人。
 如果此私钥被暴露，任何人都可以窃取您的资产。",
@@ -1245,7 +1245,7 @@ UI_TIPS_27,Asgard’s knights completely lost it because of the endless fighting
 UI_NEW_MENU,New Menu!,새로운 메뉴!,New Menu!,,新メニュー！,Neues Menü!,,เมนูใหม่!,Nowe menu!,,,Menu baru!,Nouveau Menu !,,,,新菜单！,
 UI_CONFIRM,Confirm,확인,Confirme,,確認,Bestätigen,,ยืนยัน,Potwierdź,,,konfirmasi,Confirmer,,,,确认,
 UI_AP_REFILL_CONFIRM_CONTENT,You still have some action points remaining. Do you really want to recharge your action points now?,아직 남아있는 행동력이 있습니다. 행동력을 충전하시겠습니까?,Your action point is remained. Are you sure to charge your action point now?,,アクションポイントが残っています。このままチャージしてもよろしいですか？,Du hast noch einige Aktionspunkte übrig. Willst du jetzt wirklich deine Energie aufladen?,,คุณยังมี action points เหลืออยู่ คุณต้องการเติม action points ตอนนี้หรือไม่?,Wciąż masz jeszcze kilka punktów akcji. Czy naprawdę chcesz teraz doładować swoje punkty akcji?,,,Anda masih memilik action point. Apakah anda yakin ingin mengisi action point sekarang ?,Il vous reste encore quelques points d'action. Voulez-vous vraiment recharger vos points d'action maintenant ?,,,,您仍有一些行动点。您真的要立即补充行动点吗？,
-UI_REQUIRE_CLEAR_STAGE,<sprite name=UI_icon_lock_01> Clear Stage {0} First!,<sprite name=UI_icon_lock_01> {0} 스테이지 클리어 시 오픈,<sprite name=UI_icon_lock_01> Fase Completada {0},,<sprite name=UI_icon_lock_01> ステージ {0} クリアで開放,<sprite name=UI_icon_lock_01> Schließe Ebene {0} zuerst ab!,,<sprite name = UI_icon_lock_01>เคลียร์ด่าน {0} ครั้งแรก!,<sprite name = UI_icon_lock_01> Przejdź napierw {0} etap!,,,<sprite name=UI_icon_lock_01> Selesaikan Stage {0} terlebih dahulu!,<sprite name=UI_icon_lock_01> Passez d'abord le niveau {0} !,,,,<sprite name=UI_icon_lock_01>清除阶段{0}首先！,
+UI_REQUIRE_CLEAR_STAGE,<sprite name=UI_icon_lock_01> Clear Stage {0} First!,<sprite name=UI_icon_lock_01> {0} 스테이지 클리어 시 오픈,<sprite name=UI_icon_lock_01> Fase Completada {0},,<sprite name=UI_icon_lock_01> ステージ {0} クリアで開放,<sprite name=UI_icon_lock_01> Schließe Ebene {0} zuerst ab!,,<sprite name=UI_icon_lock_01>เคลียร์ด่าน {0} ครั้งแรก!,<sprite name=UI_icon_lock_01> Przejdź napierw {0} etap!,,,<sprite name=UI_icon_lock_01> Selesaikan Stage {0} terlebih dahulu!,<sprite name=UI_icon_lock_01> Passez d'abord le niveau {0} !,,,,<sprite name=UI_icon_lock_01>清除阶段{0}首先！,
 UI_REMAININGTIME,"Remaining Time
 About {0}({1}/{2})","Remaining Time
 About {0}({1}/{2})","Remaning tempo
