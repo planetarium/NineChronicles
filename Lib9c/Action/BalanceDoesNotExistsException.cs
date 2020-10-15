@@ -1,11 +1,10 @@
 using Libplanet;
 using Libplanet.Assets;
 using System;
+using System.Runtime.Serialization;
 
 namespace Nekoyume.Action
 {
-    // FIXME Currency가 .NET Serializable 이 아니기 때문에 바로 직렬화 할 수 없습니다.
-    // 직렬화 가능하게 고쳐둬야 합니다.
     [Serializable]
     public class BalanceDoesNotExistsException : Exception
     {
@@ -13,6 +12,20 @@ namespace Nekoyume.Action
         {
             Address = address;
             Currency = currency;
+        }
+
+        protected BalanceDoesNotExistsException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
+        {
+            Address = (Address) info.GetValue(nameof(Address), typeof(Address));
+            Currency = (Currency) info.GetValue(nameof(Currency), typeof(Currency));
+        }
+
+        public override void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            base.GetObjectData(info, context);
+            info.AddValue(nameof(Address), Address);
+            info.AddValue(nameof(Currency), Currency);
         }
 
         public Address Address { get; }
