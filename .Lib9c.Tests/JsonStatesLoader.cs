@@ -3,12 +3,10 @@ namespace Lib9c.Tests
     using System;
     using System.Collections.Generic;
     using System.IO;
+    using System.IO.Abstractions;
     using System.Linq;
     using Bencodex;
     using Bencodex.Types;
-    using Libplanet;
-    using Zio;
-    using Zio.FileSystems;
     using JsonSerializer = System.Text.Json.JsonSerializer;
 
     public class JsonStatesLoader
@@ -20,7 +18,7 @@ namespace Lib9c.Tests
             _fileSystem = fileSystem;
         }
 
-        public static JsonStatesLoader Default => new JsonStatesLoader(new PhysicalFileSystem());
+        public static JsonStatesLoader Default => new JsonStatesLoader(new FileSystem());
 
         public Dictionary<string, IValue> Load(string jsonFilePath)
         {
@@ -29,15 +27,15 @@ namespace Lib9c.Tests
                 throw new ArgumentNullException(nameof(jsonFilePath));
             }
 
-            if (!_fileSystem.FileExists(jsonFilePath))
+            if (!_fileSystem.File.Exists(jsonFilePath))
             {
                 throw new FileNotFoundException();
             }
 
-            string rawJsonString = _fileSystem.ReadAllText(jsonFilePath);
-            Dictionary<string, string> json = JsonSerializer.Deserialize<Dictionary<string, string>>(rawJsonString);
+            string rawJsonString = _fileSystem.File.ReadAllText(jsonFilePath);
+            Dictionary<string, byte[]> json = JsonSerializer.Deserialize<Dictionary<string, byte[]>>(rawJsonString);
             var codec = new Codec();
-            return json.ToDictionary(pair => pair.Key, pair => codec.Decode(ByteUtil.ParseHex(pair.Value)));
+            return json.ToDictionary(pair => pair.Key, pair => codec.Decode(pair.Value));
         }
     }
 }
