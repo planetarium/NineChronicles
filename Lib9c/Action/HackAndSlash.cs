@@ -142,6 +142,7 @@ namespace Nekoyume.Action
             }
 
             avatarState.ValidateEquipments(equipments, context.BlockIndex);
+            avatarState.ValidateConsumable(foods, context.BlockIndex);
 
             sw.Restart();
             if (avatarState.actionPoint < stageRow.CostAP)

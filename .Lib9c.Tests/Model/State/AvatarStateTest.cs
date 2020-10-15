@@ -1,28 +1,29 @@
 namespace Lib9c.Tests.Model.State
 {
+    using System;
     using System.Collections.Generic;
-    using System.IO;
     using System.Linq;
-    using System.Runtime.Serialization.Formatters.Binary;
     using System.Security.Cryptography;
     using System.Threading.Tasks;
     using Bencodex;
     using Bencodex.Types;
     using Libplanet;
     using Libplanet.Crypto;
+    using Nekoyume;
+    using Nekoyume.Action;
+    using Nekoyume.Model.Item;
     using Nekoyume.Model.Quest;
     using Nekoyume.Model.State;
     using Xunit;
 
     public class AvatarStateTest
     {
-        private Dictionary<string, string> _sheets;
-        private TableSheets _tableSheets;
+        private readonly TableSheets _tableSheets;
 
         public AvatarStateTest()
         {
-            _sheets = TableSheetsImporter.ImportSheets();
-            _tableSheets = new TableSheets(_sheets);
+            var sheets = TableSheetsImporter.ImportSheets();
+            _tableSheets = new TableSheets(sheets);
         }
 
         [Fact]
@@ -81,7 +82,7 @@ namespace Lib9c.Tests.Model.State
             };
 
             var serialized = (Dictionary)avatarState.questList.OfType<WorldQuest>().First().Serialize();
-            serialized = serialized.SetItem("reward", new QuestReward(map).Serialize());
+            serialized = serialized.SetItem("reward", new Nekoyume.Model.Quest.QuestReward(map).Serialize());
 
             var quest = new WorldQuest(serialized);
 
@@ -97,6 +98,95 @@ namespace Lib9c.Tests.Model.State
                     306023,
                 }
             );
+        }
+
+        [Theory]
+        [InlineData(1, GameConfig.RequireCharacterLevel.CharacterConsumableSlot1)]
+        [InlineData(2, GameConfig.RequireCharacterLevel.CharacterConsumableSlot2)]
+        [InlineData(3, GameConfig.RequireCharacterLevel.CharacterConsumableSlot3)]
+        [InlineData(4, GameConfig.RequireCharacterLevel.CharacterConsumableSlot4)]
+        [InlineData(5, GameConfig.RequireCharacterLevel.CharacterConsumableSlot5)]
+        public void ValidateConsumable(int count, int level)
+        {
+            Address avatarAddress = new PrivateKey().ToAddress();
+            Address agentAddress = new PrivateKey().ToAddress();
+            var avatarState = GetNewAvatarState(avatarAddress, agentAddress);
+            avatarState.level = level;
+
+            var consumableIds = new List<Guid>();
+            var row = _tableSheets.ConsumableItemSheet.Values.First();
+            for (var i = 0; i < count; i++)
+            {
+                var id = Guid.NewGuid();
+                var consumable = ItemFactory.CreateItemUsable(row, id, 0);
+                consumableIds.Add(id);
+                avatarState.inventory.AddItem(consumable);
+            }
+
+            avatarState.ValidateConsumable(consumableIds, 0);
+        }
+
+        [Fact]
+        public void ValidateConsumableThrowRequiredBlockIndexException()
+        {
+            Address avatarAddress = new PrivateKey().ToAddress();
+            Address agentAddress = new PrivateKey().ToAddress();
+            var avatarState = GetNewAvatarState(avatarAddress, agentAddress);
+
+            var consumableIds = new List<Guid>();
+            var row = _tableSheets.ConsumableItemSheet.Values.First();
+            var id = Guid.NewGuid();
+            var consumable = ItemFactory.CreateItemUsable(row, id, 1);
+            consumableIds.Add(id);
+            avatarState.inventory.AddItem(consumable);
+            Assert.Throws<RequiredBlockIndexException>(() => avatarState.ValidateConsumable(consumableIds, 0));
+        }
+
+        [Fact]
+        public void ValidateConsumableThrowConsumableSlotOutOfRangeException()
+        {
+            Address avatarAddress = new PrivateKey().ToAddress();
+            Address agentAddress = new PrivateKey().ToAddress();
+            var avatarState = GetNewAvatarState(avatarAddress, agentAddress);
+            avatarState.level = GameConfig.RequireCharacterLevel.CharacterConsumableSlot5;
+
+            var consumableIds = new List<Guid>();
+            var row = _tableSheets.ConsumableItemSheet.Values.First();
+            for (var i = 0; i < GameConfig.ConsumableSlotCount + 1; i++)
+            {
+                var id = Guid.NewGuid();
+                var consumable = ItemFactory.CreateItemUsable(row, id, 0);
+                consumableIds.Add(id);
+                avatarState.inventory.AddItem(consumable);
+            }
+
+            Assert.Throws<ConsumableSlotOutOfRangeException>(() => avatarState.ValidateConsumable(consumableIds, 0));
+        }
+
+        [Theory]
+        [InlineData(1, GameConfig.RequireCharacterLevel.CharacterConsumableSlot1)]
+        [InlineData(2, GameConfig.RequireCharacterLevel.CharacterConsumableSlot2)]
+        [InlineData(3, GameConfig.RequireCharacterLevel.CharacterConsumableSlot3)]
+        [InlineData(4, GameConfig.RequireCharacterLevel.CharacterConsumableSlot4)]
+        [InlineData(5, GameConfig.RequireCharacterLevel.CharacterConsumableSlot5)]
+        public void ValidateConsumableSlotThrowConsumableSlotUnlockException(int count, int level)
+        {
+            Address avatarAddress = new PrivateKey().ToAddress();
+            Address agentAddress = new PrivateKey().ToAddress();
+            var avatarState = GetNewAvatarState(avatarAddress, agentAddress);
+            avatarState.level = level - 1;
+
+            var consumableIds = new List<Guid>();
+            var row = _tableSheets.ConsumableItemSheet.Values.First();
+            for (var i = 0; i < count; i++)
+            {
+                var id = Guid.NewGuid();
+                var consumable = ItemFactory.CreateItemUsable(row, id, 0);
+                consumableIds.Add(id);
+                avatarState.inventory.AddItem(consumable);
+            }
+
+            Assert.Throws<ConsumableSlotUnlockException>(() => avatarState.ValidateConsumable(consumableIds, 0));
         }
 
         private AvatarState GetNewAvatarState(Address avatarAddress, Address agentAddress)

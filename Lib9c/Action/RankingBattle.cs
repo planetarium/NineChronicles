@@ -58,6 +58,7 @@ namespace Nekoyume.Action
             }
 
             avatarState.ValidateEquipments(equipmentIds, context.BlockIndex);
+            avatarState.ValidateConsumable(consumableIds, context.BlockIndex);
 
             if (!avatarState.worldInformation.TryGetUnlockedWorldByStageClearedBlockIndex(out var world) ||
                 world.StageClearedId < GameConfig.RequireClearedStageLevel.ActionsInRankingBoard)
