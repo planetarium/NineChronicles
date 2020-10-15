@@ -170,6 +170,7 @@ namespace Nekoyume.UI
 
             AudioController.instance.PlayMusic(AudioController.MusicCode.Ranking);
 
+            // FIXME: The RankingBoard needs to be updated only once when the WeeklyArenaState starts fresh for performance.
             WeeklyArenaStateSubject.WeeklyArenaState
                 .Subscribe(state => UpdateArena())
                 .AddTo(_disposablesAtClose);
