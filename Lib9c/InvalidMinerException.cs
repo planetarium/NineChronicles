@@ -15,10 +15,8 @@ namespace Lib9c
             Miner = miner;
         }
 
-        // FIXME We should call base(info, context) here, 
-        // but InvalidBlockException doesn't have a constructor for them yet.
         public InvalidMinerException(SerializationInfo info, StreamingContext context)
-            : base(info.GetString(nameof(Message)))
+            : base(info, context)
         {
             Miner = (Address) info.GetValue(nameof(Miner), typeof(Address));
         }
