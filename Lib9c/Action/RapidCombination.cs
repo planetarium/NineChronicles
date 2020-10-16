@@ -41,6 +41,7 @@ namespace Nekoyume.Action
 
         public Address avatarAddress;
         public int slotIndex;
+
         public override IAccountStateDelta Execute(IActionContext context)
         {
             var states = context.PreviousStates;
@@ -58,35 +59,37 @@ namespace Nekoyume.Action
                     .SetState(slotAddress, MarkChanged);
             }
 
-            if (!states.TryGetAgentAvatarStates(context.Signer, avatarAddress,
-                out var agentState, out var avatarState))
+            if (!states.TryGetAgentAvatarStates(
+                context.Signer,
+                avatarAddress,
+                out var agentState,
+                out var avatarState))
             {
-                return states;
+                throw new FailedLoadStateException("Aborted as the avatar state of the signer was failed to load.");
             }
 
             var slotState = states.GetCombinationSlotState(avatarAddress, slotIndex);
             if (slotState?.Result is null)
             {
-                Log.Warning("CombinationSlot Result is null.");
-                return states;
+                throw new CombinationSlotResultNullException($"CombinationSlot Result is null. ({avatarAddress}), ({slotIndex})");
             }
-            if (slotState.UnlockBlockIndex <= context.BlockIndex)
+
+            if (!slotState.Validate(avatarState, context.BlockIndex))
             {
-                Log.Warning($"Can't use combination slot. it unlock on {slotState.UnlockBlockIndex} block.");
-                return states;
+                throw new CombinationSlotUnlockException(
+                    $"Aborted as the slot state is invalid. slot index: {slotIndex}, context block index: {context.BlockIndex}");
+            }
+
+            var diff = slotState.Result.itemUsable.RequiredBlockIndex - context.BlockIndex;
+            if (diff <= 0)
+            {
+                throw new RequiredBlockIndexException($"Already met the required block index. context block index: {context.BlockIndex}, required block index: {slotState.Result.itemUsable.RequiredBlockIndex}");
             }
 
             var gameConfigState = states.GetGameConfigState();
             if (gameConfigState is null)
             {
-                return states;
-            }
-
-            var diff = slotState.Result.itemUsable.RequiredBlockIndex - context.BlockIndex;
-            if (diff < 0)
-            {
-                Log.Information("Skip rapid combination.");
-                return states;
+                throw new FailedLoadStateException("Aborted as the GameConfigState was failed to load.");
             }
 
             var count = CalculateHourglassCount(gameConfigState, diff);
@@ -95,13 +98,13 @@ namespace Nekoyume.Action
             var hourGlass = ItemFactory.CreateMaterial(row);
             if (!avatarState.inventory.RemoveFungibleItem(hourGlass, count))
             {
-                Log.Error($"Not enough item {hourGlass} : {count}");
-                return states;
+                throw new NotEnoughMaterialException(
+                    $"Aborted as the player has no enough material ({row.Id} * {count})");
             }
 
             slotState.Update(context.BlockIndex, hourGlass, count);
             avatarState.UpdateFromRapidCombination(
-                ((CombinationConsumable.ResultModel) slotState.Result),
+                (CombinationConsumable.ResultModel) slotState.Result,
                 context.BlockIndex
             );
             return states
@@ -130,7 +133,7 @@ namespace Nekoyume.Action
             }
 
             var cost = Math.Ceiling((decimal) diff / state.HourglassPerBlock);
-            return (int) cost;
+            return Math.Max(1, (int) cost);
         }
     }
 }
