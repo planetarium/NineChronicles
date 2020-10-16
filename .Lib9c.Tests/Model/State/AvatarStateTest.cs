@@ -152,7 +152,7 @@ namespace Lib9c.Tests.Model.State
 
             var consumableIds = new List<Guid>();
             var row = _tableSheets.ConsumableItemSheet.Values.First();
-            for (var i = 0; i < GameConfig.ConsumableSlotCount + 1; i++)
+            for (var i = 0; i < 6; i++)
             {
                 var id = Guid.NewGuid();
                 var consumable = ItemFactory.CreateItemUsable(row, id, 0);
