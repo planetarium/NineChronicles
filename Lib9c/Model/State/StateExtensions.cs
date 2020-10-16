@@ -243,27 +243,6 @@ namespace Nekoyume.Model.State
                 );
         }
 
-        public static IValue Serialize(this Dictionary<HashDigest<SHA256>, int> value)
-        {
-            return new List(
-                value.Select(
-                    pair => (IValue) Dictionary.Empty
-                        .Add("item_id", pair.Key.Serialize())
-                        .Add("count", pair.Value.Serialize())
-                )
-            );
-        }
-
-        public static Dictionary<HashDigest<SHA256>, int> Deserialize(this IValue serialized)
-        {
-            return ((List)serialized)
-                .Cast<Dictionary>()
-                .ToDictionary(
-                    value => value["item_id"].ToItemId(),
-                    value => value["count"].ToInteger()
-                );
-        }
-
         #endregion
 
         #region Bencodex.Types.Dictionary Getter
