@@ -58,5 +58,10 @@ namespace Nekoyume.Model.State
         {
             info.AddValue("serialized", new Codec().Encode(Serialize()));
         }
+
+        public bool Verify(ActivateAccount action)
+        {
+            return PublicKey.Verify(Nonce, action.Signature);
+        }
     }
 }
