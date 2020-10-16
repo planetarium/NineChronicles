@@ -635,7 +635,8 @@ namespace Nekoyume.UI
             combineEquipmentCategoryButton.HasNotification.Value = HasNotification;
         }
 
-        private static void UpdateCurrentAvatarState(ICombinationPanel combinationPanel,
+        private static void UpdateCurrentAvatarState(
+            ICombinationPanel combinationPanel,
             IEnumerable<(Material material, int count)> materialInfoList)
         {
             var agentAddress = States.Instance.AgentState.address;
@@ -649,24 +650,6 @@ namespace Nekoyume.UI
                 LocalStateModifier.RemoveItem(avatarAddress, material.ItemId, count);
             }
         }
-
-        private static void UpdateCurrentAvatarState(
-            ICombinationPanel combinationPanel,
-            Guid baseItemGuid,
-            IEnumerable<Guid> otherItemGuidList)
-        {
-            var agentAddress = States.Instance.AgentState.address;
-            var avatarAddress = States.Instance.CurrentAvatarState.address;
-
-            LocalStateModifier.ModifyAgentGold(agentAddress, -combinationPanel.CostNCG);
-            LocalStateModifier.ModifyAvatarActionPoint(avatarAddress, -combinationPanel.CostAP);
-            LocalStateModifier.RemoveItem(avatarAddress, baseItemGuid);
-            foreach (var itemGuid in otherItemGuidList)
-            {
-                LocalStateModifier.RemoveItem(avatarAddress, itemGuid);
-            }
-        }
-
 
         private void CreateConsumableCombinationAction(ConsumableItemRecipeSheet.Row row, int slotIndex)
         {
@@ -689,7 +672,7 @@ namespace Nekoyume.UI
             EquipmentItemRecipeSheet.Row model,
             CombinationPanel panel)
         {
-            LocalStateModifier.ModifyCombinationSlot(
+            LocalStateModifier.ModifyCombinationSlotEquipment(
                 Game.Game.instance.TableSheets,
                 model,
                 panel,
