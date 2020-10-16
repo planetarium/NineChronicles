@@ -26,7 +26,8 @@ namespace Nekoyume
             AuthorizedMinersState authorizedMinersState = null,
             IImmutableSet<Address> activatedAccounts = null,
             bool isActivateAdminAddress = false,
-            IEnumerable<string> credits = null
+            IEnumerable<string> credits = null,
+            int maximumTransactions = 100
         )
         {
             if (!tableSheets.TryGetValue(nameof(GameConfigSheet), out var csv))
@@ -63,7 +64,7 @@ namespace Nekoyume
             {
                 initialStatesAction,
             };
-            var blockAction = new BlockPolicySource(Log.Logger).GetPolicy(5000000).BlockAction;
+            var blockAction = new BlockPolicySource(Log.Logger).GetPolicy(5000000, maximumTransactions).BlockAction;
             return
                 BlockChain<PolymorphicAction<ActionBase>>.MakeGenesisBlock(
                     actions,
