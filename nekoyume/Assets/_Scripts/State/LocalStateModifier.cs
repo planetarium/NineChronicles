@@ -716,7 +716,9 @@ namespace Nekoyume.State
 
         #endregion
 
-        public static void ModifyCombinationSlot(
+        #region Workshop
+
+        public static void ModifyCombinationSlotEquipment(
             TableSheets tableSheets,
             EquipmentItemRecipeSheet.Row row,
             CombinationPanel panel,
@@ -744,6 +746,8 @@ namespace Nekoyume.State
 
             var result = new CombinationConsumable.ResultModel
             {
+                // id: 처음 로컬 레이어를 적용할 때 id가 default면 노티가 적용되지 않기 때문에 임시로 넣습니다.
+                id = Guid.NewGuid(),
                 actionPoint = panel.CostAP,
                 gold = panel.CostNCG,
                 materials = materials,
@@ -814,9 +818,12 @@ namespace Nekoyume.State
             var blockIndex = Game.Game.instance.Agent.BlockIndex;
             var requiredBlockIndex = blockIndex + 1;
             var equipment = (Equipment) panel.baseMaterial.Model.ItemBase.Value;
+            equipment.LevelUp();
             equipment.Update(requiredBlockIndex);
             var result = new ItemEnhancement.ResultModel
             {
+                // id: 처음 로컬 레이어를 적용할 때 id가 default면 노티가 적용되지 않기 때문에 임시로 넣습니다.
+                id = Guid.NewGuid(),
                 actionPoint = panel.CostAP,
                 gold = panel.CostNCG,
                 materialItemIdList = guidList,
@@ -837,6 +844,8 @@ namespace Nekoyume.State
             slotState = modifier.Modify(slotState);
             States.Instance.SetCombinationSlotState(slotState, slotIndex);
         }
+
+        #endregion
 
         /// <summary>
         /// `States.AvatarStates`가 포함하고 있는 아바타 상태 중에 `avatarAddress`와 같은 객체와 그 키를 반환한다.

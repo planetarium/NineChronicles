@@ -271,11 +271,16 @@ namespace Nekoyume.UI
                 .ToList();
 
             UpdateCurrentAvatarState(baseEquipmentGuid, otherEquipmentGuidList);
-            CreateItemEnhancementAction(baseEquipmentGuid, otherEquipmentGuidList, Widget.Find<Combination>().selectedIndex);
+            CreateItemEnhancementAction(
+                baseEquipmentGuid,
+                otherEquipmentGuidList,
+                Find<Combination>().selectedIndex);
             RemoveMaterialsAll();
         }
 
-        private void UpdateCurrentAvatarState(Guid baseItemGuid, IEnumerable<Guid> otherItemGuidList)
+        private void UpdateCurrentAvatarState(
+            Guid baseItemGuid,
+            IEnumerable<Guid> otherItemGuidList)
         {
             var agentAddress = States.Instance.AgentState.address;
             var avatarAddress = States.Instance.CurrentAvatarState.address;
@@ -291,19 +296,21 @@ namespace Nekoyume.UI
 
         private void CreateItemEnhancementAction(
             Guid baseItemGuid,
-            List<Guid> otherItemGuidList,
+            IReadOnlyList<Guid> otherItemGuidList,
             int slotIndex)
         {
-            LocalStateModifier.ModifyCombinationSlotItemEnhancement(this, otherItemGuidList, slotIndex);
+            LocalStateModifier.ModifyCombinationSlotItemEnhancement(
+                this,
+                otherItemGuidList,
+                slotIndex);
             var msg = L10nManager.Localize("NOTIFICATION_ITEM_ENHANCEMENT_START");
             Notification.Push(MailType.Workshop, msg);
             Game.Game.instance.ActionManager
                 .ItemEnhancement(baseItemGuid, otherItemGuidList, slotIndex)
                 .Subscribe(
                     _ => { },
-                    _ => Widget.Find<ActionFailPopup>().Show("Timeout occurred during ItemEnhancement"));
+                    _ => Find<ActionFailPopup>().Show("Timeout occurred during ItemEnhancement"));
         }
-
 
         private void ShowTooltip(InventoryItemView view)
         {
