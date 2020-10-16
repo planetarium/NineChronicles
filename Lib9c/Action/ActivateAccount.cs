@@ -57,7 +57,7 @@ namespace Nekoyume.Action
             var accounts = new ActivatedAccountsState(accountsAsDict);
             var pending = new PendingActivationState(pendingAsDict);
 
-            if (pending.PublicKey.Verify(pending.Nonce, Signature))
+            if (pending.Verify(this))
             {
                 return state.SetState(
                     ActivatedAccountsState.Address,

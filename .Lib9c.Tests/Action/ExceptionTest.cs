@@ -44,6 +44,13 @@ namespace Lib9c.Tests.Action
         }
 
         [Fact]
+        public void CombinationSlotResultNullExceptionSerializable()
+        {
+            var exc = new CombinationSlotResultNullException("fot testing");
+            AssertException<CombinationSlotResultNullException>(exc);
+        }
+
+        [Fact]
         public void CombinationSlotUnlockExceptionSerializable()
         {
             var exc = new CombinationSlotUnlockException("for testing");
