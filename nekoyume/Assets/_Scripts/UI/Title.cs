@@ -12,7 +12,7 @@ namespace Nekoyume.UI
         private SettingButton settingButton = null;
 
         [SerializeField]
-        private GameObject pressToStart;
+        private GameObject pressToStart = null;
 
         private bool _ready;
         public Animator animator;
