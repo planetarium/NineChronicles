@@ -249,10 +249,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   fixedFontAsset: 0
+  fixedFontStyle: 0
   fixedFontSizeOffset: 0
   fixedSpacingOption: 0
   fontMaterialType: 0
   l10nKey: 
+  fontMaterialIndexInitialized: 0
+  fontMaterialIndex: 0
+  defaultFontStylesInitialized: 0
+  defaultFontStyles: 0
+  defaultFontSizeInitialized: 0
+  defaultFontSize: 0
+  defaultCharacterSpacingInitialized: 0
+  defaultCharacterSpacing: 0
+  defaultWordSpacingInitialized: 0
+  defaultWordSpacing: 0
+  defaultLineSpacingInitialized: 0
+  defaultLineSpacing: 0
 --- !u!1 &1150961802777084370
 GameObject:
   m_ObjectHideFlags: 0
@@ -499,10 +512,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   fixedFontAsset: 0
+  fixedFontStyle: 0
   fixedFontSizeOffset: 0
   fixedSpacingOption: 0
   fontMaterialType: 0
   l10nKey: 
+  fontMaterialIndexInitialized: 0
+  fontMaterialIndex: 0
+  defaultFontStylesInitialized: 0
+  defaultFontStyles: 0
+  defaultFontSizeInitialized: 0
+  defaultFontSize: 0
+  defaultCharacterSpacingInitialized: 0
+  defaultCharacterSpacing: 0
+  defaultWordSpacingInitialized: 0
+  defaultWordSpacing: 0
+  defaultLineSpacingInitialized: 0
+  defaultLineSpacing: 0
 --- !u!1 &4832074717375964199
 GameObject:
   m_ObjectHideFlags: 0
@@ -674,10 +700,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   fixedFontAsset: 0
+  fixedFontStyle: 0
   fixedFontSizeOffset: 0
   fixedSpacingOption: 0
   fontMaterialType: 18
   l10nKey: 
+  fontMaterialIndexInitialized: 0
+  fontMaterialIndex: 0
+  defaultFontStylesInitialized: 0
+  defaultFontStyles: 0
+  defaultFontSizeInitialized: 0
+  defaultFontSize: 0
+  defaultCharacterSpacingInitialized: 0
+  defaultCharacterSpacing: 0
+  defaultWordSpacingInitialized: 0
+  defaultWordSpacing: 0
+  defaultLineSpacingInitialized: 0
+  defaultLineSpacing: 0
 --- !u!1 &5948376250107140161
 GameObject:
   m_ObjectHideFlags: 0
@@ -772,12 +811,12 @@ MonoBehaviour:
   m_outlineColor:
     serializedVersion: 2
     rgba: 4278190080
-  m_fontSize: 18.45
+  m_fontSize: 16
   m_fontSizeBase: 18
   m_fontWeight: 400
   m_enableAutoSizing: 1
   m_fontSizeMin: 8
-  m_fontSizeMax: 32
+  m_fontSizeMax: 16
   m_fontStyle: 1
   m_textAlignment: 514
   m_characterSpacing: 0
@@ -849,10 +888,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   fixedFontAsset: 0
+  fixedFontStyle: 0
   fixedFontSizeOffset: 0
   fixedSpacingOption: 0
   fontMaterialType: 1
   l10nKey: UI_CHARACTER_INFO
+  fontMaterialIndexInitialized: 0
+  fontMaterialIndex: 0
+  defaultFontStylesInitialized: 0
+  defaultFontStyles: 0
+  defaultFontSizeInitialized: 0
+  defaultFontSize: 0
+  defaultCharacterSpacingInitialized: 0
+  defaultCharacterSpacing: 0
+  defaultWordSpacingInitialized: 0
+  defaultWordSpacing: 0
+  defaultLineSpacingInitialized: 0
+  defaultLineSpacing: 0
 --- !u!1 &6363774517245589725
 GameObject:
   m_ObjectHideFlags: 0
@@ -1196,12 +1248,6 @@ PrefabInstance:
       propertyPath: isTitleFrame
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 6487158816000491061, guid: a9f817ccaf6b243fdb7a1975b76b842a,
-        type: 3}
-      propertyPath: m_Sprite
-      value: 
-      objectReference: {fileID: 21300000, guid: b582833a048854540acc861a471bfb8d,
-        type: 3}
     - target: {fileID: 2106852222037365949, guid: a9f817ccaf6b243fdb7a1975b76b842a,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1307,16 +1353,12 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
-    - target: {fileID: 2400401590883738550, guid: a9f817ccaf6b243fdb7a1975b76b842a,
+    - target: {fileID: 6487158816000491061, guid: a9f817ccaf6b243fdb7a1975b76b842a,
         type: 3}
-      propertyPath: m_LocalScale.x
-      value: 0.7
-      objectReference: {fileID: 0}
-    - target: {fileID: 2400401590883738550, guid: a9f817ccaf6b243fdb7a1975b76b842a,
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: b582833a048854540acc861a471bfb8d,
         type: 3}
-      propertyPath: m_LocalScale.y
-      value: 0.7
-      objectReference: {fileID: 0}
     - target: {fileID: 749557080856132949, guid: a9f817ccaf6b243fdb7a1975b76b842a,
         type: 3}
       propertyPath: m_SizeDelta.x
@@ -1327,14 +1369,18 @@ PrefabInstance:
       propertyPath: m_SizeDelta.y
       value: 46
       objectReference: {fileID: 0}
+    - target: {fileID: 2400401590883738550, guid: a9f817ccaf6b243fdb7a1975b76b842a,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.7
+      objectReference: {fileID: 0}
+    - target: {fileID: 2400401590883738550, guid: a9f817ccaf6b243fdb7a1975b76b842a,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.7
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a9f817ccaf6b243fdb7a1975b76b842a, type: 3}
---- !u!224 &3381985609784529434 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 2106852222037365949, guid: a9f817ccaf6b243fdb7a1975b76b842a,
-    type: 3}
-  m_PrefabInstance: {fileID: 3734103187715983015}
-  m_PrefabAsset: {fileID: 0}
 --- !u!114 &6129156731116319013 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 7412098714008221570, guid: a9f817ccaf6b243fdb7a1975b76b842a,
@@ -1347,3 +1393,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2f07a15cae214949b1146dcb2c087562, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!224 &3381985609784529434 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 2106852222037365949, guid: a9f817ccaf6b243fdb7a1975b76b842a,
+    type: 3}
+  m_PrefabInstance: {fileID: 3734103187715983015}
+  m_PrefabAsset: {fileID: 0}
