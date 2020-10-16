@@ -1,5 +1,6 @@
 namespace Lib9c.Tests.Action
 {
+    using System.Security.Cryptography;
     using Libplanet;
     using Libplanet.Action;
 
@@ -17,6 +18,8 @@ namespace Lib9c.Tests.Action
 
         public IRandom Random { get; set; }
 
+        public HashDigest<SHA256>? PreviousStateRootHash { get; set; }
+
         public IActionContext GetUnconsumedContext()
         {
             // Unable to determine if Random has ever been consumed...
@@ -28,6 +31,7 @@ namespace Lib9c.Tests.Action
                 Rehearsal = Rehearsal,
                 PreviousStates = PreviousStates,
                 Random = Random,
+                PreviousStateRootHash = PreviousStateRootHash,
             };
         }
     }
