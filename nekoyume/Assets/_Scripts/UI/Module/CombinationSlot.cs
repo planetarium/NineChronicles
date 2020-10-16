@@ -71,24 +71,31 @@ namespace Nekoyume.UI.Module
             progressBar.gameObject.SetActive(false);
             if (unlock)
             {
-                resultView.Clear();
-                UpdateHasNotification(_blockIndex);
-                Widget.Find<BottomMenu>()?.UpdateCombinationNotification();
                 var canUse = state.Validate(States.Instance.CurrentAvatarState, blockIndex);
-                if (!(state.Result is null))
+                if (state.Result is null)
+                {
+                    resultView.Clear();
+                }
+                else
                 {
                     canUse = canUse && state.Result.itemUsable.RequiredBlockIndex <= blockIndex;
-                    if (!canUse)
+                    if (canUse)
+                    {
+                        resultView.Clear();
+                    }
+                    else
                     {
                         resultView.SetData(new Item(state.Result.itemUsable));
-                        UpdateHasNotification(_blockIndex);
                     }
 
                     progressText.text = state.Result.itemUsable.GetLocalizedName();
                 }
+
                 unlockText.gameObject.SetActive(canUse);
                 progressText.gameObject.SetActive(!canUse);
                 progressBar.gameObject.SetActive(!canUse);
+                SubscribeOnBlockIndex(blockIndex);
+                Widget.Find<BottomMenu>()?.UpdateCombinationNotification();
             }
 
             progressBar.maxValue = state.RequiredBlockIndex;
@@ -111,14 +118,22 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
-            if (!(_data.Result is CombinationConsumable.ResultModel result) || result.id == default)
+            switch (_data.Result)
             {
-                HasNotification.Value = false;
-                return;
+                case CombinationConsumable.ResultModel ccResult:
+                    if (ccResult.id == default)
+                    {
+                        HasNotification.Value = false;
+                        return;
+                    }
+                    break;
+                case ItemEnhancement.ResultModel _:
+                default:
+                    HasNotification.Value = false;
+                    return;
             }
 
             var diff = _data.Result.itemUsable.RequiredBlockIndex - blockIndex;
-
             if (diff <= 0)
             {
                 HasNotification.Value = false;
@@ -145,7 +160,8 @@ namespace Nekoyume.UI.Module
 
         private void ShowPopup()
         {
-            if (_data?.Result is null)
+            if (_data?.Result is null ||
+                _data?.Result is ItemEnhancement.ResultModel)
             {
                 return;
             }

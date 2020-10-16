@@ -233,7 +233,10 @@ namespace Nekoyume.BlockChain
                 .Timeout(ActionTimeout);
         }
 
-        public IObservable<ActionBase.ActionEvaluation<ItemEnhancement>> ItemEnhancement(Guid itemId, IEnumerable<Guid> materialIds, int slotIndex)
+        public IObservable<ActionBase.ActionEvaluation<ItemEnhancement>> ItemEnhancement(
+            Guid itemId,
+            IReadOnlyList<Guid> materialIds,
+            int slotIndex)
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
 
@@ -318,7 +321,9 @@ namespace Nekoyume.BlockChain
         }
 
         public IObservable<ActionBase.ActionEvaluation<CombinationEquipment>> CombinationEquipment(
-            int recipeId, int slotIndex, int? subRecipeId = null)
+            int recipeId,
+            int slotIndex,
+            int? subRecipeId = null)
         {
             Mixpanel.Track("Unity/Create CombinationEquipment");
 
