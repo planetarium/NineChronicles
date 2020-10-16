@@ -1,6 +1,7 @@
 namespace Lib9c.Tests
 {
     using System;
+    using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.Threading.Tasks;
     using Bencodex.Types;
@@ -288,6 +289,76 @@ namespace Lib9c.Tests
 
             // Index 12
             Assert.Equal(4104, policy.GetNextBlockDifficulty(blockChain));
+        }
+
+        [Fact]
+        public void ValidateNextBlockWithManyTransactions()
+        {
+            var adminPrivateKey = new PrivateKey();
+            var adminAddress = new Address(adminPrivateKey.PublicKey);
+            var blockPolicySource = new BlockPolicySource(Logger.None);
+            IBlockPolicy<PolymorphicAction<ActionBase>> policy = blockPolicySource.GetPolicy(3000, 10);
+            Block<PolymorphicAction<ActionBase>> genesis = MakeGenesisBlock(adminAddress, ImmutableHashSet<Address>.Empty);
+
+            using var store = new DefaultStore(null);
+            var blockChain = new BlockChain<PolymorphicAction<ActionBase>>(
+                policy,
+                store,
+                store,
+                genesis
+            );
+
+            int nonce = 0;
+            List<Transaction<PolymorphicAction<ActionBase>>> GenerateTransactions(int count)
+            {
+                var list = new List<Transaction<PolymorphicAction<ActionBase>>>();
+                for (int i = 0; i < count; i++)
+                {
+                    list.Add(Transaction<PolymorphicAction<ActionBase>>.Create(
+                        nonce++,
+                        adminPrivateKey,
+                        genesis.Hash,
+                        new PolymorphicAction<ActionBase>[] { }
+                    ));
+                }
+
+                return list;
+            }
+
+            Assert.Equal(1, blockChain.Count);
+            Block<PolymorphicAction<ActionBase>> block1 = Block<PolymorphicAction<ActionBase>>.Mine(
+                index: 1,
+                difficulty: policy.GetNextBlockDifficulty(blockChain),
+                previousTotalDifficulty: blockChain.Tip.TotalDifficulty,
+                miner: adminAddress,
+                previousHash: blockChain.Tip.Hash,
+                timestamp: DateTimeOffset.MinValue,
+                transactions: GenerateTransactions(5));
+            blockChain.Append(block1);
+            Assert.Equal(2, blockChain.Count);
+            Assert.True(blockChain.ContainsBlock(block1.Hash));
+            Block<PolymorphicAction<ActionBase>> block2 = Block<PolymorphicAction<ActionBase>>.Mine(
+                index: 2,
+                difficulty: policy.GetNextBlockDifficulty(blockChain),
+                previousTotalDifficulty: blockChain.Tip.TotalDifficulty,
+                miner: adminAddress,
+                previousHash: blockChain.Tip.Hash,
+                timestamp: DateTimeOffset.MinValue,
+                transactions: GenerateTransactions(10));
+            blockChain.Append(block2);
+            Assert.Equal(3, blockChain.Count);
+            Assert.True(blockChain.ContainsBlock(block2.Hash));
+            Block<PolymorphicAction<ActionBase>> block3 = Block<PolymorphicAction<ActionBase>>.Mine(
+                index: 3,
+                difficulty: policy.GetNextBlockDifficulty(blockChain),
+                previousTotalDifficulty: blockChain.Tip.TotalDifficulty,
+                miner: adminAddress,
+                previousHash: blockChain.Tip.Hash,
+                timestamp: DateTimeOffset.MinValue,
+                transactions: GenerateTransactions(11));
+            Assert.Throws<InvalidTxCountException>(() => blockChain.Append(block3));
+            Assert.Equal(3, blockChain.Count);
+            Assert.False(blockChain.ContainsBlock(block3.Hash));
         }
 
         private Block<PolymorphicAction<ActionBase>> MakeGenesisBlock(
