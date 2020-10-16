@@ -130,7 +130,7 @@ namespace Nekoyume.Action
             }
 
             var cost = Math.Ceiling((decimal) diff / state.HourglassPerBlock);
-            return (int) cost;
+            return Math.Max(1, (int) cost);
         }
     }
 }
