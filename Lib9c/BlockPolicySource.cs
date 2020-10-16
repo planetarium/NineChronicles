@@ -98,6 +98,8 @@ namespace Nekoyume.BlockChain
             {
                 // It can be caused during `Swarm<T>.PreloadAsync()` because it doesn't fill its 
                 // state right away...
+                // FIXME It should be removed after fix that Libplanet fills its state on IBD.
+                // See also: https://github.com/planetarium/lib9c/pull/151#discussion_r506039478
                 return true;
             }
         }
