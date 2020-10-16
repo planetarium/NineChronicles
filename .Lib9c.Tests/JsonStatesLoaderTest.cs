@@ -9,7 +9,6 @@ namespace Lib9c.Tests
     using Bencodex;
     using Bencodex.Types;
     using Libplanet;
-    using Org.BouncyCastle.Utilities.Encoders;
     using Xunit;
 
     public class JsonStatesLoaderTest
@@ -19,21 +18,9 @@ namespace Lib9c.Tests
         {
             var codec = new Codec();
             Text barValue = (Text)"bar";
-
-            byte[] Base64Encode(byte[] data)
-            {
-                var encoder = new Base64Encoder();
-                using var stream = new MemoryStream();
-                encoder.Encode(data, 0, data.Length, stream);
-                return stream.ToArray();
-            }
-
-            string Base64EncodeString(byte[] data)
-                => Encoding.UTF8.GetString(Base64Encode(data));
-
             IFileSystem fileSystem = new MockFileSystem(new Dictionary<string, MockFileData>
             {
-                { "/foo", new MockFileData($"{{\"foo\": \"{Base64EncodeString(codec.Encode(barValue))}\"}}") },
+                { "/foo", new MockFileData($"{{\"foo\": \"{Convert.ToBase64String(codec.Encode(barValue))}\"}}") },
             });
             var loader = new JsonStatesLoader(fileSystem);
             var states = loader.Load("/foo");
