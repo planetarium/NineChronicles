@@ -407,9 +407,9 @@ namespace Nekoyume.Model.State
 
         public void ValidateConsumable(List<Guid> consumableIds, long currentBlockIndex)
         {
-            for (var i = 0; i < consumableIds.Count; i++)
+            for (var slotIndex = 0; slotIndex < consumableIds.Count; slotIndex++)
             {
-                var consumableId = consumableIds[i];
+                var consumableId = consumableIds[slotIndex];
 
                 if (!inventory.TryGetNonFungibleItem(consumableId, out ItemUsable outNonFungibleItem))
                 {
@@ -424,7 +424,7 @@ namespace Nekoyume.Model.State
                 }
 
                 int requiredLevel;
-                switch (i)
+                switch (slotIndex)
                 {
                     case 0:
                         requiredLevel = GameConfig.RequireCharacterLevel.CharacterConsumableSlot1;
