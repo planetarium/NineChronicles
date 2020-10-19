@@ -18,6 +18,7 @@ namespace Nekoyume.UI
         {
             base.Awake();
             sortingGroup.sortingLayerName = "UI";
+            sortingGroup.sortingOrder = 9;
             button.OnClickAsObservable().Subscribe(_ =>
             {
                 AudioController.PlayClick();
