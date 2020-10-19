@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using Bencodex.Types;
 using Lib9c.Renderer;
@@ -122,16 +123,23 @@ namespace Nekoyume.BlockChain
 
         private void CreateAvatar()
         {
-            _renderer.EveryRender<CreateAvatar>()
+            _renderer.EveryRender<CreateAvatar2>()
                 .Where(ValidateEvaluationForAgentState)
                 .ObserveOnMainThread()
                 .Subscribe(eval =>
                 {
                     //[TentuPlay] 캐릭터 획득
                     Address agentAddress = States.Instance.AgentState.address;
+                    Address avatarAddress = agentAddress.Derive(
+                        string.Format(
+                            CultureInfo.InvariantCulture,
+                            CreateAvatar2.DeriveFormat,
+                            eval.Action.index
+                        )
+                    );
                     new TPStashEvent().PlayerCharacterGet(
                             player_uuid: agentAddress.ToHex(),
-                            character_uuid: eval.Action.avatarAddress.ToHex().Substring(0, 4),
+                            character_uuid: avatarAddress.ToHex().Substring(0, 4),
                             characterarchetype_slug: Nekoyume.GameConfig.DefaultAvatarCharacterId.ToString(), //100010 for now.
                             //-> WARRIOR, ARCHER, MAGE, ACOLYTE를 구분할 수 있는 구분자여야한다.
                             reference_entity: entity.Etc,
