@@ -244,16 +244,6 @@ namespace Nekoyume.UI.Module
 
         protected virtual bool TryAddOtherMaterial(InventoryItem viewModel, int count, out TMaterialView materialView)
         {
-            // var sameMaterial = otherMaterials.FirstOrDefault(e =>
-            // {
-            //     if (e.Model?.ItemBase.Value is null ||
-            //         viewModel?.ItemBase.Value is null)
-            //         return false;
-            //
-            //     return e.Model.ItemBase.Value is Material materialA &&
-            //            viewModel.ItemBase.Value is Material materialB &&
-            //            materialA.ItemId.Equals(materialB.ItemId);
-            // });
             var isSame = !(otherMaterial.Model?.ItemBase.Value is null)
                          && !(viewModel?.ItemBase.Value is null) &&
                          otherMaterial.Model.ItemBase.Value is Material materialA &&
