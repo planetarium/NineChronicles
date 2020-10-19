@@ -33,6 +33,9 @@ namespace Nekoyume.UI.Tween
         private bool isFrom = false;
 
         [SerializeField]
+        private bool playOnAwake = false;
+
+        [SerializeField]
         private bool playOnEnable = false;
 
         private CanvasGroup _canvasGroupCache;
@@ -49,6 +52,11 @@ namespace Nekoyume.UI.Tween
         {
             Assert.NotNull(CanvasGroup);
             Assert.AreEqual(OriginAlpha, _originAlphaCache);
+
+            if (playOnAwake)
+            {
+                PlayTween();
+            }
         }
 
         private void OnEnable()

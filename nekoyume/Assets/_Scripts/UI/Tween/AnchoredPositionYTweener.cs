@@ -33,6 +33,9 @@ namespace Nekoyume.UI.Tween
         private bool isFrom = false;
 
         [SerializeField]
+        private bool playOnAwake = false;
+
+        [SerializeField]
         private bool playOnEnable = false;
 
         private RectTransform _rectTransformCache;
@@ -50,6 +53,11 @@ namespace Nekoyume.UI.Tween
         {
             Assert.NotNull(RectTransform);
             Assert.AreEqual(OriginAnchoredPosition, _originAnchoredPositionCache);
+
+            if (playOnAwake)
+            {
+                PlayTween();
+            }
         }
 
         private void OnEnable()

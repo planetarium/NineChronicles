@@ -47,12 +47,6 @@ namespace Nekoyume.UI.Module
         private Button nextButton = null;
 
         [SerializeField]
-        private Image backgroundImage = null;
-
-        [SerializeField]
-        private Image backgroundImage2 = null;
-
-        [SerializeField]
         private Image titleImage = null;
 
         private readonly List<IDisposable> _disposablesForModel = new List<IDisposable>();
@@ -101,13 +95,12 @@ namespace Nekoyume.UI.Module
                     $"{worldRow.Id}: worldRow.StagesCount({worldRow.StagesCount}) != stageRowsCount({stageRowsCount})");
             }
 
-            var imageKey = worldRow.Id == 101 ? "99" : $"0{worldRow.Id}";
-            backgroundImage.sprite = Resources.Load<Sprite>($"UI/Textures/WorldMap/battle_UI_BG_{imageKey}");
-            backgroundImage2.sprite = Resources.Load<Sprite>($"UI/Textures/WorldMap/battle_UI_BG_{imageKey}");
+            var imageKey = worldRow.Id == 101 ? "99" : $"{worldRow.Id:D2}";
             titleImage.overrideSprite = Resources.Load<Sprite>($"UI/Textures/WorldMap/UI_bg_worldmap_{imageKey}");
             titleImage.SetNativeSize();
             var stageOffset = 0;
             var nextPageShouldHide = false;
+            var pageIndex = 1;
             foreach (var page in pages)
             {
                 page.gameObject.SetActive(false);
@@ -146,7 +139,8 @@ namespace Nekoyume.UI.Module
                     }
                 }
 
-                page.Show(stageModels, imageKey);
+                page.Show(stageModels, imageKey, pageIndex);
+                pageIndex += 1;
                 stageOffset += stageModels.Count;
                 if (stageOffset >= stageRowsCount)
                 {

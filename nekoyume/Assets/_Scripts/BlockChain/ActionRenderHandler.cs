@@ -15,7 +15,6 @@ using Nekoyume.UI;
 using UniRx;
 using Nekoyume.Model.State;
 using TentuPlay.Api;
-using QuestReward = Nekoyume.Action.QuestReward;
 using Nekoyume.Model.Quest;
 using Libplanet.Crypto;
 using Nekoyume.Game;
@@ -58,7 +57,6 @@ namespace Nekoyume.BlockChain
             Buy();
             DailyReward();
             ItemEnhancement();
-            QuestReward();
             RankingBattle();
             CombinationEquipment();
             RapidCombination();
@@ -208,14 +206,6 @@ namespace Nekoyume.BlockChain
                 }).AddTo(_disposables);
         }
 
-        private void QuestReward()
-        {
-            _renderer.EveryRender<QuestReward>()
-                .Where(ValidateEvaluationForCurrentAvatarState)
-                .ObserveOnMainThread()
-                .Subscribe(ResponseQuestReward).AddTo(_disposables);
-        }
-
         private void RankingBattle()
         {
             _renderer.EveryRender<RankingBattle>()
@@ -324,6 +314,7 @@ namespace Nekoyume.BlockChain
             var result = (CombinationConsumable.ResultModel) slot.Result;
             var avatarState = eval.OutputStates.GetAvatarState(avatarAddress);
 
+            // NOTE: 사용한 자원에 대한 레이어 벗기기.
             LocalStateModifier.ModifyAgentGold(agentAddress, result.gold);
             LocalStateModifier.ModifyAvatarActionPoint(avatarAddress, result.actionPoint);
             foreach (var pair in result.materials)
@@ -332,16 +323,18 @@ namespace Nekoyume.BlockChain
                 LocalStateModifier.AddItem(avatarAddress, pair.Key.ItemId, pair.Value, false);
             }
 
+            // NOTE: 메일 레이어 씌우기.
             LocalStateModifier.RemoveItem(avatarAddress, result.itemUsable.ItemId);
             LocalStateModifier.AddNewAttachmentMail(avatarAddress, result.id);
 
+            // NOTE: 노티 예약 걸기.
             var format = L10nManager.Localize("NOTIFICATION_COMBINATION_COMPLETE");
             UI.Notification.Reserve(
                 MailType.Workshop,
                 string.Format(format, result.itemUsable.GetLocalizedName()),
                 slot.UnlockBlockIndex,
-                result.itemUsable.ItemId
-            );
+                result.itemUsable.ItemId);
+
             AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ActionCombinationSuccess);
 
             //[TentuPlay] Equipment 합성에 사용한 골드 기록
@@ -647,14 +640,6 @@ namespace Nekoyume.BlockChain
             }
         }
 
-        private void ResponseQuestReward(ActionBase.ActionEvaluation<QuestReward> eval)
-        {
-            UpdateCurrentAvatarState(eval);
-            var format = L10nManager.Localize("NOTIFICATION_QUEST_REWARD");
-            var msg = string.Format(format, eval.Action.Result.GetContent());
-            UI.Notification.Push(MailType.System, msg);
-        }
-
         private void ResponseItemEnhancement(ActionBase.ActionEvaluation<ItemEnhancement> eval)
         {
             var agentAddress = eval.Signer;
@@ -664,6 +649,7 @@ namespace Nekoyume.BlockChain
             var itemUsable = result.itemUsable;
             var avatarState = eval.OutputStates.GetAvatarState(avatarAddress);
 
+            // NOTE: 사용한 자원에 대한 레이어 벗기기.
             LocalStateModifier.ModifyAgentGold(agentAddress, result.gold);
             LocalStateModifier.ModifyAvatarActionPoint(avatarAddress, result.actionPoint);
             LocalStateModifier.AddItem(avatarAddress, itemUsable.ItemId, false);
@@ -673,12 +659,17 @@ namespace Nekoyume.BlockChain
                 LocalStateModifier.AddItem(avatarAddress, itemId, false);
             }
 
+            // NOTE: 메일 레이어 씌우기.
             LocalStateModifier.RemoveItem(avatarAddress, itemUsable.ItemId);
             LocalStateModifier.AddNewAttachmentMail(avatarAddress, result.id);
 
+            // NOTE: 노티 예약 걸기.
             var format = L10nManager.Localize("NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE");
-            UI.Notification.Push(MailType.Workshop,
-                string.Format(format, result.itemUsable.GetLocalizedName()));
+            UI.Notification.Reserve(
+                MailType.Workshop,
+                string.Format(format, result.itemUsable.GetLocalizedName()),
+                slot.UnlockBlockIndex,
+                result.itemUsable.ItemId);
 
             //[TentuPlay] 장비강화, 골드사용
             //Local에서 변경하는 States.Instance 보다는 블락에서 꺼내온 eval.OutputStates를 사용
@@ -699,6 +690,7 @@ namespace Nekoyume.BlockChain
 
             UpdateAgentState(eval);
             UpdateCurrentAvatarState(eval);
+            UpdateCombinationSlotState(slot, eval.Action.slotIndex);
             RenderQuest(avatarAddress, avatarState.questList.completedQuestIds);
         }
 
