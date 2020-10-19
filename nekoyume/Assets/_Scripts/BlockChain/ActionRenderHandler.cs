@@ -15,7 +15,6 @@ using Nekoyume.UI;
 using UniRx;
 using Nekoyume.Model.State;
 using TentuPlay.Api;
-using QuestReward = Nekoyume.Action.QuestReward;
 using Nekoyume.Model.Quest;
 using Libplanet.Crypto;
 using Nekoyume.Game;
@@ -58,7 +57,6 @@ namespace Nekoyume.BlockChain
             Buy();
             DailyReward();
             ItemEnhancement();
-            QuestReward();
             RankingBattle();
             CombinationEquipment();
             RapidCombination();
@@ -206,14 +204,6 @@ namespace Nekoyume.BlockChain
                     LocalStateModifier.ModifyAvatarActionPoint(avatarAddress, -States.Instance.GameConfigState.ActionPointMax);
                     UpdateCurrentAvatarState(eval);
                 }).AddTo(_disposables);
-        }
-
-        private void QuestReward()
-        {
-            _renderer.EveryRender<QuestReward>()
-                .Where(ValidateEvaluationForCurrentAvatarState)
-                .ObserveOnMainThread()
-                .Subscribe(ResponseQuestReward).AddTo(_disposables);
         }
 
         private void RankingBattle()
@@ -648,14 +638,6 @@ namespace Nekoyume.BlockChain
                                 L10nManager.Localize("UI_OK"), false);
                     });
             }
-        }
-
-        private void ResponseQuestReward(ActionBase.ActionEvaluation<QuestReward> eval)
-        {
-            UpdateCurrentAvatarState(eval);
-            var format = L10nManager.Localize("NOTIFICATION_QUEST_REWARD");
-            var msg = string.Format(format, eval.Action.Result.GetContent());
-            UI.Notification.Push(MailType.System, msg);
         }
 
         private void ResponseItemEnhancement(ActionBase.ActionEvaluation<ItemEnhancement> eval)

@@ -264,23 +264,6 @@ namespace Nekoyume.BlockChain
                 .Timeout(ActionTimeout);
         }
 
-        public IObservable<ActionBase.ActionEvaluation<QuestReward>> QuestReward(int id)
-        {
-            var action = new QuestReward
-            {
-                questId = id,
-                avatarAddress = States.Instance.CurrentAvatarState.address,
-            };
-            ProcessAction(action);
-
-            return _renderer.EveryRender<QuestReward>()
-                .Where(eval => eval.Action.Id.Equals(action.Id))
-                .Take(1)
-                .Last()
-                .ObserveOnMainThread()
-                .Timeout(ActionTimeout);
-        }
-
         public IObservable<ActionBase.ActionEvaluation<RankingBattle>> RankingBattle(
             Address enemyAddress,
             List<int> costumeIds,
