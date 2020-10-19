@@ -36,7 +36,7 @@ namespace Nekoyume.UI
             !baseMaterial.IsEmpty &&
             baseMaterial.Model.ItemBase.Value is Equipment equipment &&
             equipment.level < 10 &&
-            otherMaterials.Count(e => !e.IsEmpty) > 0 &&
+            !otherMaterial.IsEmpty &&
             Find<Combination>().selectedIndex >= 0;
 
         protected override void Awake()
@@ -48,11 +48,8 @@ namespace Nekoyume.UI
 
             baseMaterial.titleText.text =
                 L10nManager.Localize("UI_ENHANCEMENT_EQUIPMENT_TO_ENHANCE");
-            foreach (var otherMaterial in otherMaterials)
-            {
-                otherMaterial.titleText.text =
-                    L10nManager.Localize("UI_ENHANCEMENT_EQUIPMENT_TO_CONSUME");
-            }
+            otherMaterial.titleText.text =
+                L10nManager.Localize("UI_ENHANCEMENT_EQUIPMENT_TO_CONSUME");
 
             message.SetActive(false);
             submitButton.SetSubmitText(L10nManager.Localize("UI_COMBINATION_ENHANCEMENT"));
@@ -87,10 +84,7 @@ namespace Nekoyume.UI
 
             baseMaterial.Unlock(false);
 
-            foreach (var otherMaterial in otherMaterials)
-            {
-                otherMaterial.Lock();
-            }
+            otherMaterial.Lock();
 
             return true;
         }
@@ -173,10 +167,7 @@ namespace Nekoyume.UI
             if (!(viewModel.ItemBase.Value is Equipment equipment))
                 throw new InvalidCastException(nameof(viewModel.ItemBase.Value));
 
-            foreach (var otherMaterial in otherMaterials)
-            {
-                otherMaterial.Unlock(false);
-            }
+            otherMaterial.Unlock(false);
 
             UpdateMessageText();
 
@@ -189,11 +180,8 @@ namespace Nekoyume.UI
             if (!base.TryRemoveBaseMaterial(view, out materialView))
                 return false;
 
-            foreach (var otherMaterial in otherMaterials)
-            {
-                otherMaterial.Clear();
-                otherMaterial.Lock();
-            }
+            otherMaterial.Clear();
+            otherMaterial.Lock();
 
             UpdateMessageText();
 
@@ -239,7 +227,7 @@ namespace Nekoyume.UI
                 throw new InvalidCastException(nameof(baseMaterial.Model.ItemBase.Value));
 
             var count = baseEquipment.GetOptionCount();
-            foreach (var otherMaterial in otherMaterials.Where(e => !e.IsLocked && !e.IsEmpty))
+            if (!otherMaterial.IsLocked && !otherMaterial.IsEmpty)
             {
                 if (!(otherMaterial.Model.ItemBase.Value is Equipment otherEquipment))
                     throw new InvalidCastException(nameof(otherMaterial.Model.ItemBase.Value));
@@ -266,14 +254,16 @@ namespace Nekoyume.UI
         {
             var baseEquipmentGuid =
                 ((Equipment) baseMaterial.Model.ItemBase.Value).ItemId;
-            var otherEquipmentGuidList = otherMaterials
-                .Select(e => ((Equipment) e.Model.ItemBase.Value).ItemId)
-                .ToList();
+            var otherEquipmentGuId = ((Equipment) otherMaterial.Model.ItemBase.Value).ItemId;
+            var otherEquipmentGuidList = new List<Guid>()
+            {
+                otherEquipmentGuId
+            };
 
             UpdateCurrentAvatarState(baseEquipmentGuid, otherEquipmentGuidList);
             CreateItemEnhancementAction(
                 baseEquipmentGuid,
-                otherEquipmentGuidList,
+                otherEquipmentGuId,
                 Find<Combination>().selectedIndex);
             RemoveMaterialsAll();
         }
@@ -296,17 +286,17 @@ namespace Nekoyume.UI
 
         private void CreateItemEnhancementAction(
             Guid baseItemGuid,
-            IReadOnlyList<Guid> otherItemGuidList,
+            Guid otherItemGuid,
             int slotIndex)
         {
             LocalStateModifier.ModifyCombinationSlotItemEnhancement(
                 this,
-                otherItemGuidList,
+                otherItemGuid,
                 slotIndex);
             var msg = L10nManager.Localize("NOTIFICATION_ITEM_ENHANCEMENT_START");
             Notification.Push(MailType.Workshop, msg);
             Game.Game.instance.ActionManager
-                .ItemEnhancement(baseItemGuid, otherItemGuidList, slotIndex)
+                .ItemEnhancement(baseItemGuid, otherItemGuid, slotIndex)
                 .Subscribe(
                     _ => { },
                     _ => Find<ActionFailPopup>().Show("Timeout occurred during ItemEnhancement"));
