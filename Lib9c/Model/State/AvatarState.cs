@@ -405,6 +405,53 @@ namespace Nekoyume.Model.State
             }
         }
 
+        public void ValidateConsumable(List<Guid> consumableIds, long currentBlockIndex)
+        {
+            for (var slotIndex = 0; slotIndex < consumableIds.Count; slotIndex++)
+            {
+                var consumableId = consumableIds[slotIndex];
+
+                if (!inventory.TryGetNonFungibleItem(consumableId, out ItemUsable outNonFungibleItem))
+                {
+                    continue;
+                }
+
+                var equipment = (Consumable) outNonFungibleItem;
+                if (equipment.RequiredBlockIndex > currentBlockIndex)
+                {
+                    throw new RequiredBlockIndexException(
+                        $"{equipment.ItemSubType} / unlock on {equipment.RequiredBlockIndex}");
+                }
+
+                int requiredLevel;
+                switch (slotIndex)
+                {
+                    case 0:
+                        requiredLevel = GameConfig.RequireCharacterLevel.CharacterConsumableSlot1;
+                        break;
+                    case 1:
+                        requiredLevel = GameConfig.RequireCharacterLevel.CharacterConsumableSlot2;
+                        break;
+                    case 2:
+                        requiredLevel = GameConfig.RequireCharacterLevel.CharacterConsumableSlot3;
+                        break;
+                    case 3:
+                        requiredLevel = GameConfig.RequireCharacterLevel.CharacterConsumableSlot4;
+                        break;
+                    case 4:
+                        requiredLevel = GameConfig.RequireCharacterLevel.CharacterConsumableSlot5;
+                        break;
+                    default:
+                        throw new ConsumableSlotOutOfRangeException();
+                }
+
+                if (level < requiredLevel)
+                {
+                    throw new ConsumableSlotUnlockException($"not enough level. required: {requiredLevel}");
+                }
+            }
+        }
+
         public void EquipCostumes(List<int> costumeIds)
         {
             // 코스튬 해제.

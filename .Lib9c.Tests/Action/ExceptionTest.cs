@@ -99,6 +99,20 @@ namespace Lib9c.Tests.Action
             AssertException<InvalidMaterialException>(exc);
         }
 
+        [Fact]
+        public void ConsumableSlotOutOfRangeExceptionSerializable()
+        {
+            var exc = new ConsumableSlotOutOfRangeException();
+            AssertException<ConsumableSlotOutOfRangeException>(exc);
+        }
+
+        [Fact]
+        public void ConsumableSlotUnlockExceptionSerializable()
+        {
+            var exc = new ConsumableSlotUnlockException("for testing");
+            AssertException<ConsumableSlotUnlockException>(exc);
+        }
+
         private static void AssertException<T>(Exception exc)
             where T : Exception
         {
