@@ -192,23 +192,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_HorizontalFit: 1
   m_VerticalFit: 1
---- !u!114 &7243373786881376832
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9137755843665004814}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 1301386320, guid: f70555f144d8491a825f0804e09c671c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_IgnoreReversedGraphics: 1
-  m_BlockingObjects: 0
-  m_BlockingMask:
-    serializedVersion: 2
-    m_Bits: 4294967295
 --- !u!1 &6394329268439697686
 GameObject:
   m_ObjectHideFlags: 0
@@ -496,6 +479,23 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &7243373786881376832
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9137755843665004814}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1301386320, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_IgnoreReversedGraphics: 1
+  m_BlockingObjects: 0
+  m_BlockingMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
 --- !u!1001 &246073521597480704
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1469,16 +1469,6 @@ PrefabInstance:
       propertyPath: m_LocalScale.z
       value: 150
       objectReference: {fileID: 0}
-    - target: {fileID: 9071687433722369604, guid: f205076a01effc14d9284a39f316de6b,
-        type: 3}
-      propertyPath: fixedTime
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 9071687433722369604, guid: f205076a01effc14d9284a39f316de6b,
-        type: 3}
-      propertyPath: m_RaycastTarget
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 4637036870672811595, guid: f205076a01effc14d9284a39f316de6b,
         type: 3}
       propertyPath: m_LocalScale.x
@@ -1552,6 +1542,16 @@ PrefabInstance:
     - target: {fileID: 5891271944967238263, guid: f205076a01effc14d9284a39f316de6b,
         type: 3}
       propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9071687433722369604, guid: f205076a01effc14d9284a39f316de6b,
+        type: 3}
+      propertyPath: fixedTime
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9071687433722369604, guid: f205076a01effc14d9284a39f316de6b,
+        type: 3}
+      propertyPath: m_RaycastTarget
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1772140604174638482, guid: f205076a01effc14d9284a39f316de6b,
@@ -2253,6 +2253,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Pivot.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6373209963055103268, guid: 8da5b5a356a9a6a45b2c021c8585e867,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 8da5b5a356a9a6a45b2c021c8585e867, type: 3}
