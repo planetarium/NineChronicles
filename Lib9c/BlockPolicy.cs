@@ -4,6 +4,7 @@ using Libplanet.Blockchain.Policies;
 using Libplanet.Blocks;
 using Libplanet.Tx;
 using System;
+using System.Linq;
 using Lib9c;
 using Libplanet;
 using Nekoyume.Model.State;
@@ -15,12 +16,14 @@ namespace Nekoyume.BlockChain
     {
         private readonly long _minimumDifficulty;
         private readonly long _difficultyBoundDivisor;
+        private readonly int _maximumTransactions;
 
         public BlockPolicy(
             IAction blockAction,
             TimeSpan blockInterval,
             long minimumDifficulty,
             int difficultyBoundDivisor,
+            int maximumTransactions,
             Func<Transaction<NCAction>, BlockChain<NCAction>, bool> doesTransactionFollowPolicy = null
         ) : base(
                 blockAction,
@@ -31,13 +34,21 @@ namespace Nekoyume.BlockChain
         {
             _minimumDifficulty = minimumDifficulty;
             _difficultyBoundDivisor = difficultyBoundDivisor;
+            _maximumTransactions = Math.Max(0, maximumTransactions);
         }
 
         public AuthorizedMinersState AuthorizedMinersState { get; set; }
 
         public override InvalidBlockException ValidateNextBlock(BlockChain<NCAction> blocks, Block<NCAction> nextBlock)
         {
-            InvalidBlockException e = ValidateMinerAuthority(nextBlock);
+            InvalidBlockException e = null;
+            if (_maximumTransactions != 0 && nextBlock.Transactions.Count() > _maximumTransactions)
+            {
+                var msg = "Number of transactions in single block must be smaller than " +
+                          $"{_maximumTransactions}, but it's {nextBlock.Transactions.Count()}";
+                e = new InvalidTxCountException(msg, _maximumTransactions, nextBlock.Transactions.Count());
+            }
+            e = e ?? ValidateMinerAuthority(nextBlock);
             return e ?? base.ValidateNextBlock(blocks, nextBlock);
         }
 
