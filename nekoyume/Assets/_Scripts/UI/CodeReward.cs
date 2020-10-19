@@ -1,82 +1,177 @@
-﻿using System.Collections.Generic;
-using Nekoyume.Game.Character;
-using Nekoyume.Game.Controller;
-using Nekoyume.L10n;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using Bencodex.Types;
+using Libplanet;
+using Libplanet.Crypto;
+using Nekoyume.Game;
 using Nekoyume.Model.Item;
-using Nekoyume.UI.Model;
+using Nekoyume.Model.State;
+using Nekoyume.TableData;
 using Nekoyume.UI.Module;
-using UniRx;
 using UnityEngine;
 
 namespace Nekoyume.UI
 {
-    public class CodeReward : Widget
+    public class CodeReward : PopupWidget
     {
-        [SerializeField] private SimpleCountableItemView[] itemViews;
-        [SerializeField] private SubmitButton submitButton;
-        [SerializeField] private TouchHandler closeTouchHandler;
-        [SerializeField] private TouchHandler openTouchHandler;
-        [SerializeField] private Animator animator;
+        [SerializeField] private Canvas sortingGroup = null;
+        [SerializeField] private CodeRewardEffector effector;
 
-        private static readonly int hashAppear = Animator.StringToHash("UICodeReward@Appear");
-        private static readonly int hashOpen = Animator.StringToHash("UICodeReward@Open");
+        private Dictionary<string, List<(ItemBase, int)>> codeRewards = new Dictionary<string, List<(ItemBase, int)>>();
 
-        public override void Initialize()
+        private const string SEALED_CODES = "SealedCodes";
+
+        [Serializable]
+        public class SealedCodes
         {
-            base.Initialize();
+            public List<string> Codes;
 
-            submitButton.SetSubmitText(
-                L10nManager.Localize("UI_RECEIVE"),
-                L10nManager.Localize("UI_RECEIVE")
-            );
-
-            submitButton.OnSubmitClick.Subscribe(_ =>
+            public SealedCodes(List<string> codes)
             {
-                AudioController.PlayClick();
-                Close();
-            }).AddTo(gameObject);
-
-            closeTouchHandler.OnClick.Subscribe(pointerEventData =>
-            {
-                if (pointerEventData.pointerCurrentRaycast.gameObject.Equals(gameObject))
-                {
-                    AudioController.PlayClick();
-                    Close();
-                }
-            }).AddTo(gameObject);
-
-            openTouchHandler.OnClick.Subscribe(pointerEventData =>
-            {
-                AudioController.PlayClick();
-                Next();
-            }).AddTo(gameObject);
-
-            animator.Play(hashAppear);
-
-            CloseWidget = null;
+                Codes = codes;
+            }
         }
 
-        public void Pop(List<(ItemBase, int)> items)
+        protected override void Awake()
         {
-            for (var i = 0; i < itemViews.Length; i++)
-            {
-                var view = itemViews[i];
-                view.gameObject.SetActive(false);
-                if (i < items.Count)
-                {
-                    var (item, count) = items[i];
-                    var countableItem = new CountableItem(item, count);
-                    view.SetData(countableItem);
-                    view.gameObject.SetActive(true);
-                }
-            }
+            base.Awake();
+            sortingGroup.sortingLayerName = "UI";
+            Show();
+        }
 
+        public override void Show(bool ignoreShowAnimation = false)
+        {
+            UpdateRewardButton();
             base.Show();
         }
 
-        private void Next()
+        private void UpdateRewardButton()
         {
-            animator.Play(hashOpen);
+            var sealedCodes = GetSealedCodes();
+            codeRewards = sealedCodes.Where(IsExistCode).ToDictionary(code => code, GetItems);
+            var button = Find<BottomMenu>().codeRewardButton;
+            if (IsNullOrEmpty(codeRewards))
+            {
+                button.Close();
+            }
+            else
+            {
+                button.Show(OnClickButton, codeRewards.Count);
+            }
+        }
+
+        private void OnClickButton()
+        {
+            if (IsNullOrEmpty(codeRewards))
+            {
+                return;
+            }
+
+            var reward = codeRewards.First();
+            if (RedeemCode(reward.Key))
+            {
+                effector.Play(reward.Value);
+                UpdateRewardButton();
+            }
+        }
+
+        private bool IsNullOrEmpty(ICollection rewards)
+        {
+            return rewards == null || rewards.Count <= 0;
+        }
+
+        private List<(ItemBase, int)> GetItems(string redeemCode)
+        {
+            var state = new RedeemCodeState((Dictionary)Game.Game.instance.Agent.GetState(Addresses.RedeemCode));
+            var privateKey = new PrivateKey(ByteUtil.ParseHex(redeemCode));
+            PublicKey publicKey = privateKey.PublicKey;
+            var reward = state.Map[publicKey];
+
+            TableSheets tableSheets = Game.Game.instance.TableSheets;
+            ItemSheet itemSheet = tableSheets.ItemSheet;
+            RedeemRewardSheet.Row row = tableSheets.RedeemRewardSheet.Values.First(r => r.Id == reward.RewardId);
+            var itemRewards = row.Rewards.Where(r => r.Type != RewardType.Gold)
+                .Select(r => (ItemFactory.CreateItem(itemSheet[r.ItemId.Value]), r.Quantity))
+                .ToList();
+
+            return itemRewards;
+        }
+
+        private bool IsExistCode(string redeemCode)
+        {
+            var state = new RedeemCodeState((Dictionary)Game.Game.instance.Agent.GetState(Addresses.RedeemCode));
+            var privateKey = new PrivateKey(ByteUtil.ParseHex(redeemCode));
+            PublicKey publicKey = privateKey.PublicKey;
+            return state.Map.ContainsKey(publicKey);
+        }
+
+        private bool IsUsed(string redeemCode)
+        {
+            var state = new RedeemCodeState((Dictionary)Game.Game.instance.Agent.GetState(Addresses.RedeemCode));
+            var privateKey = new PrivateKey(ByteUtil.ParseHex(redeemCode));
+            PublicKey publicKey = privateKey.PublicKey;
+
+            if (state.Map.ContainsKey(publicKey))
+            {
+                return state.Map[publicKey].UserAddress.HasValue;
+            }
+
+            Debug.Log($"Code doesn't exist : {redeemCode}");
+            return true;
+        }
+
+        private bool RedeemCode(string redeemCode)
+        {
+            var states = GetSealedCodes();
+            var code = states.FirstOrDefault(x => x == redeemCode);
+            if (code == null)
+            {
+                Debug.Log($"Code doesn't exist : {redeemCode}");
+                return false;
+            }
+
+            states.Remove(code);
+            var sealedCodes = new SealedCodes(states);
+            var json = JsonUtility.ToJson(sealedCodes);
+            PlayerPrefs.SetString(SEALED_CODES, json);
+            return true;
+        }
+
+        public void AddSealedCode(string redeemCode)
+        {
+            if (IsUsed(redeemCode))
+            {
+                Debug.Log($"This code already used : {redeemCode}");
+                return;
+            }
+
+            var states = GetSealedCodes();
+            if (states.Exists(x => x == redeemCode))
+            {
+                Debug.Log($"Code already exists : {redeemCode}");
+                return;
+            }
+
+            states.Add(redeemCode);
+
+            var sealedCodes = new SealedCodes(states);
+            var json = JsonUtility.ToJson(sealedCodes);
+            PlayerPrefs.SetString(SEALED_CODES, json);
+        }
+
+        private List<string> GetSealedCodes()
+        {
+            if (!PlayerPrefs.HasKey(SEALED_CODES))
+            {
+                var newStates = JsonUtility.ToJson(new SealedCodes(new List<string>{}));
+                PlayerPrefs.SetString(SEALED_CODES, newStates);
+            }
+
+            var states = PlayerPrefs.GetString(SEALED_CODES);
+            var codes = JsonUtility.FromJson<SealedCodes>(states).Codes;
+            return codes != null ? codes.ToList() : new List<string>();
         }
     }
 }

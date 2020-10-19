@@ -1,6 +1,3 @@
-using System;
-using Libplanet;
-using Libplanet.Crypto;
 using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
 using TMPro;
@@ -29,7 +26,9 @@ namespace Nekoyume.UI
 
         public void RequestRedeemCode()
         {
-            Game.Game.instance.ActionManager.RedeemCode(codeField.text.Trim());
+            var code = codeField.text.Trim();
+            Find<CodeReward>().AddSealedCode(code);
+            Game.Game.instance.ActionManager.RedeemCode(code);
             Notification.Push(MailType.System, L10nManager.Localize("NOTIFICATION_REQUEST_REDEEM_CODE"));
             OnRequested.Invoke();
             Close();
