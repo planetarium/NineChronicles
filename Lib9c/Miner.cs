@@ -21,7 +21,9 @@ namespace Nekoyume.BlockChain
 
         public Address Address { get; }
 
-        public async Task<Block<PolymorphicAction<ActionBase>>> MineBlockAsync(CancellationToken cancellationToken)
+        public async Task<Block<PolymorphicAction<ActionBase>>> MineBlockAsync(
+            int txBatchSize,
+            CancellationToken cancellationToken)
         {
             var txs = new HashSet<Transaction<PolymorphicAction<ActionBase>>>();
 
@@ -32,7 +34,8 @@ namespace Nekoyume.BlockChain
                 block = await _chain.MineBlock(
                     Address,
                     DateTimeOffset.UtcNow,
-                    cancellationToken: cancellationToken);
+                    cancellationToken: cancellationToken,
+                    txBatchSize: txBatchSize);
 
                 if (_swarm.Running)
                 {
