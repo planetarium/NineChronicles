@@ -174,7 +174,7 @@ namespace Nekoyume.BlockChain
 
             Debug.Log($"minimumDifficulty: {minimumDifficulty}");
 
-            var policy = BlockPolicySource.GetPolicy(minimumDifficulty);
+            var policy = BlockPolicySource.GetPolicy(minimumDifficulty, 100);
             PrivateKey = privateKey;
             store = LoadStore(path, storageType);
 
@@ -841,7 +841,7 @@ namespace Nekoyume.BlockChain
             var sleepInterval = new WaitForSeconds(15);
             while (true)
             {
-                var task = Task.Run(async() => await miner.MineBlockAsync(_cancellationTokenSource.Token));
+                var task = Task.Run(async() => await miner.MineBlockAsync(100, _cancellationTokenSource.Token));
                 yield return new WaitUntil(() => task.IsCompleted);
 #if UNITY_EDITOR
                 yield return sleepInterval;
