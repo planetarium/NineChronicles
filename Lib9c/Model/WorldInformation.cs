@@ -279,7 +279,7 @@ namespace Nekoyume.Model
                 return false;
             }
 
-            world = _worlds.First(e => true).Value;
+            world = _worlds.OrderBy(w => w.Key).First().Value;
             return true;
         }
 
