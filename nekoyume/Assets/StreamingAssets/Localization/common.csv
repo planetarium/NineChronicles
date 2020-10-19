@@ -493,7 +493,7 @@ UI_COMBINATION_ITEM,Combine,아이템 제작,Combinar,,アイテム製作,Kombin
 UI_COMBINATION_ERROR,Error,조합 에러,Erro,,製作エラー,Fehler,Error,ข้อผิดพลาด,Błąd,,,Error,Erreur,,,,错误,
 UI_COMBINATION_SUCCESS,Success!,조합 성공!,Sucesso!,,製作成功！,Erfolg!,¡Conseguido!,สำเร็จ!,Sukces!,,,Sukses!,Réussi !,,,,成功！,
 UI_COMBINATION_NOTIFY_FORMAT,"<size=12><color=#FFA78B>[Workshop Cat]</color></size>
-I've finished crafting {0}","<size=12><color=#FFA78B>[대장장이 고양이]</color></size>
+I've finished crafting {0}","<size=12><color=#FFA78B>[대장장이 드베르그]</color></size>
 {0} 제작을 완료하였네.","<size=12><color=#FFA78B>[Workshop Cat]</color></size>
 Eu terminei de fabricar {0}",,"<size=12><color=#FFA78B>[Workshop Cat]</color></size>
 {0} の製作が終わったぜ！","<size=12><color=#FFA78B>[Workshop Cat]</color></size>
@@ -752,7 +752,7 @@ UI_RECEIVE,Receive,받기,Receber,,受信,Erhalten,,รับ,Odbierz,,,Terima,R
 UI_RECEIVED,Received,받음,Recebido,,受信済,Erhalten,,ได้รับ,Odebrano,,,Diterima,Reçu,,,,接收,
 UI_GET_REWARDS,Receive Rewards,보상 받기,Receba as recompensas,,報酬の受けとり,Erhalte Belohnungen,,รับรางวัล,Otrzymaj nagrody,,,Terima Hadiah,Récompenses Reçues,,,,接收奖励,
 UI_ITEM_ENHANCEMENT_MAIL_FORMAT,"<size=12><color=#FFA78B>[Workshop Cat]</color></size>
-I've finished upgrading {0}","<size=12><color=#FFA78B>[Workshop Cat]</color></size>
+I've finished upgrading {0}","<size=12><color=#FFA78B>[대장장이 드베르그]</color></size>
 {0} 강화를 완료했소","<size=12><color=#FFA78B>[Workshop Cat]</color></size>
 Concluí o upgrade do {0}",,"<size=12><color=#FFA78B>[Workshop Cat]</color></size>
 {0} の強化が終わったぜ！","<size=12><color=#FFA78B>[Workshop Cat]</color></size>
@@ -763,7 +763,7 @@ Saya telah selesai meningkatkan {0}","<size=12><color=#FFA78B>[Workshop Cat]</co
 J'ai fini l'amélioration de {0}",,,,"<size=12><color=#FFA78B>[Workshop Cat]</color></size>
 我已经完成升级{0}",
 UI_SELL_CANCEL_MAIL_FORMAT,"<size=12><color=#FFA78B>[Market Cat]</color></size>
-I canceled the sales of {0}","<size=12><color=#FFA78B>[Market Cat]</color></size>
+I canceled the sales of {0}","<size=12><color=#FFA78B>[상점의 제이드]</color></size>
 {0} 판매를 취소했어!","<size=12><color=#FFA78B>[Market Cat]</color></size>
 Cancelei as vendas do {0}",,"<size=12><color=#FFA78B>[Market Cat]</color></size>
 {0} の販売をキャンセルしたわ。","<size=12><color=#FFA78B>[Market Cat]</color></size>
@@ -774,7 +774,7 @@ Saya telah membatalkan penjualan {0}","<size=12><color=#FFA78B>[Market Cat]</col
 J'ai annulé la vente de {0}",,,,"<size=12><color=#FFA78B>[Market Cat]</color></size>
 我取消了{0}",
 UI_BUYER_MAIL_FORMAT,"<size=12><color=#FFA78B>[Market Cat]</color></size>
-Purchased! {0} is yours now!","<size=12><color=#FFA78B>[Market Cat]</color></size>
+Purchased! {0} is yours now!","<size=12><color=#FFA78B>[상점의 제이드]</color></size>
 구매 완료! {0}는 이제 네거야!","<size=12><color=#FFA78B>[Market Cat]</color></size>
 Comprado! {0} agora é seu!",,"<size=12><color=#FFA78B>[Market Cat]</color></size>
 購入完了！ {0} はあなたのものよ！","<size=12><color=#FFA78B>[Market Cat]</color></size>
@@ -785,16 +785,16 @@ Terbeli! {0} milikmu sekarang!","<size=12><color=#FFA78B>[Market Cat]</color></s
 Acheté ! {0} est désormais à toi !",,,,"<size=12><color=#FFA78B>[Market Cat]</color></size>
 已购买！{0}现在是您的！",
 UI_SELLER_MAIL_FORMAT,"<size=12><color=#FFA78B>[Market Cat]</color></size>
-You earned {0}G by selling {1}","<size=12><color=#FFA78B>[Market Cat]</color></size>
-{1}을 팔아서 {0}G 를 얻었어!","<size=12><color=#FFA78B>[Market Cat]</color></size>
-Você ganhou {0} G com a venda {1}",,"<size=12><color=#FFA78B>[Market Cat]</color></size>
-{1} が {0} G で売れたわよ。","<size=12><color=#FFA78B>[Market Cat]</color></size>
-Du hast {0}G durch den Verkauf von {1} verdient.",,"<size=12><color=#FFA78B>[Market Cat]</color></size>
-คุณได้รับ {0} G จากการขาย {1} ","<size=12><color=#FFA78B>[Market Cat]</color></size>
-Zdobyłeś {0}G sprzedając {1}",,,"<size=12><color=#FFA78B>[Market Cat]</color></size>
+You earned {0} by selling {1}","<size=12><color=#FFA78B>[상점의 제이드]</color></size>
+{1}을 팔아서 {0} 를 얻었어!","<size=12><color=#FFA78B>[Market Cat]</color></size>
+Você ganhou {0} com a venda {1}",,"<size=12><color=#FFA78B>[Market Cat]</color></size>
+{1} が {0} で売れたわよ。","<size=12><color=#FFA78B>[Market Cat]</color></size>
+Du hast {0} durch den Verkauf von {1} verdient.",,"<size=12><color=#FFA78B>[Market Cat]</color></size>
+คุณได้รับ {0} จากการขาย {1} ","<size=12><color=#FFA78B>[Market Cat]</color></size>
+Zdobyłeś {0} sprzedając {1}",,,"<size=12><color=#FFA78B>[Market Cat]</color></size>
 Anda mendapatkan {0}G dari penjualan {1}","<size=12><color=#FFA78B>[Market Cat]</color></size>
-Tu as gagné {0}G en vendant {1}",,,,"<size=12><color=#FFA78B>[Market Cat]</color></size>
-您通过出售{1}",
+Tu as gagné {0} en vendant {1}",,,,"<size=12><color=#FFA78B>[Market Cat]</color></size>
+卖了{1}赚了{0}",
 UI_SELECT,Select,선택,Selecione,,選択,Auswählen,,เลือก,Wybierz,,,Pilih,Sélectionner,,,,选择,
 UI_PROCEED_DISCORD,Join user group,디스코드 채팅 이동,Junte-se ao grupo,,Discordへ移動,Benutzergruppe beitreten,,เข้าร่วมกลุ่ม,Dołącz do grupy użytkownika,,,Bergabung dengan grup pemain,Rejoindre Groupe d'Utilisateurs,,,,加入用户组,
 UI_PROCEED_DISCORD_CONTENT,Open the link to Nine Chronicles Discord channel?,나인 크로니클 디스코드 채널로 이동하시겠습니까?,Abrir o link para o canal Discord do Nine Chronicles?,,ナインクロニクルのDiscordグループへのリンクを開きますか？,Willst du den Link zum Nine Chronicles Discord Server öffnen?,,คุณต้องการไปที่ช่อง Nine Chronicle Discord หรือไม่?,Otwórz łącze do kanału Nine Chronicles Discord?,,,"
