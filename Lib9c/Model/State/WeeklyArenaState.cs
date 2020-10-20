@@ -211,26 +211,6 @@ namespace Nekoyume.Model.State
             _map[avatarAddress].Receive = true;
         }
 
-        public Address[] GetAgentAddresses(int count)
-        {
-            var sorted = _map.Values
-                .Where(i => i.Active)
-                .OrderByDescending(i => i.Score)
-                .ThenBy(i => i.CombatPoint)
-                .ToList();
-            var result = new HashSet<Address>();
-            foreach (var info in sorted)
-            {
-                result.Add(info.AgentAddress);
-                if (result.Count == count)
-                    break;
-            }
-
-#pragma warning disable LAA1002
-            return result.ToArray();
-#pragma warning restore LAA1002
-        }
-
         #region IDictionary
 
         public IEnumerator<KeyValuePair<Address, ArenaInfo>> GetEnumerator()
