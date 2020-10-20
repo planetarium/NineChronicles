@@ -37,7 +37,6 @@ namespace Nekoyume.UI
         protected override void Awake()
         {
             base.Awake();
-            sortingGroup.sortingLayerName = "UI";
             Show();
         }
 
@@ -52,19 +51,19 @@ namespace Nekoyume.UI
             var sealedCodes = GetSealedCodes();
             _codeRewards = sealedCodes.Where(IsExistCode).ToDictionary(code => code, GetItems);
             var button = Find<BottomMenu>().codeRewardButton;
-            if (!_codeRewards?.Any() ?? true)
+            if (_codeRewards.Any())
             {
-                button.Close();
+                button.Show(OnClickButton, _codeRewards.Count);
             }
             else
             {
-                button.Show(OnClickButton, _codeRewards.Count);
+                button.Close();
             }
         }
 
         private void OnClickButton()
         {
-            if (!_codeRewards?.Any() ?? true)
+            if (!_codeRewards.Any())
             {
                 return;
             }
