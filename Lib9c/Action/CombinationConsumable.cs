@@ -50,6 +50,7 @@ namespace Nekoyume.Action
             }
 
             public override IValue Serialize() =>
+#pragma warning disable LAA1002
                 new Dictionary(new Dictionary<IKey, IValue>
                 {
                     [(Text) "materials"] = materials.Serialize(),
@@ -59,6 +60,7 @@ namespace Nekoyume.Action
                     [(Text) "recipeId"] = recipeId.Serialize(),
                     [(Text) "subRecipeId"] = subRecipeId.Serialize(),
                 }.Union((Dictionary) base.Serialize()));
+#pragma warning restore LAA1002
         }
 
         public Address AvatarAddress;

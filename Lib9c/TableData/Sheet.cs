@@ -119,7 +119,9 @@ namespace Nekoyume.TableData
 
         public void Set<T>(Sheet<TKey, T> sheet, bool executePostSet = true) where T : TValue, new()
         {
+#pragma warning disable LAA1002
             foreach (var sheetRow in sheet)
+#pragma warning restore LAA1002
             {
                 AddRow(sheetRow.Key, sheetRow);
             }

@@ -33,10 +33,12 @@ namespace Nekoyume.Model.Item
         }
 
         public sealed override IValue Serialize() =>
+#pragma warning disable LAA1002
             new Dictionary(new Dictionary<IKey, IValue>()
             {
                 [(Text) "rewards"] = new List(Rewards.Select(r => r.Serialize())),
             }.Union((Dictionary) base.Serialize()));
+#pragma warning restore LAA1002
 
         protected bool Equals(Chest other)
         {

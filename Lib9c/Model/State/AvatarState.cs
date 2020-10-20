@@ -199,12 +199,16 @@ namespace Nekoyume.Model.State
             exp = player.Exp.Current;
             inventory = player.Inventory;
             worldInformation = player.worldInformation;
+#pragma warning disable LAA1002
             foreach (var pair in player.monsterMap)
+#pragma warning restore LAA1002
             {
                 monsterMap.Add(pair);
             }
 
+#pragma warning disable LAA1002
             foreach (var pair in player.eventMap)
+#pragma warning restore LAA1002
             {
                 eventMap.Add(pair);
             }
@@ -214,7 +218,9 @@ namespace Nekoyume.Model.State
                 stageMap.Add(new KeyValuePair<int, int>(stageSimulator.StageId, 1));
             }
 
+#pragma warning disable LAA1002
             foreach (var pair in stageSimulator.ItemMap)
+#pragma warning restore LAA1002
             {
                 itemMap.Add(pair);
             }
@@ -460,7 +466,9 @@ namespace Nekoyume.Model.State
                 .OfType<Costume>()
                 .Where(i => i.equipped)
                 .ToImmutableHashSet();
+#pragma warning disable LAA1002
             foreach (var costume in inventoryCostumes)
+#pragma warning restore LAA1002
             {
                 costume.equipped = false;
             }
@@ -485,7 +493,9 @@ namespace Nekoyume.Model.State
                 .OfType<Equipment>()
                 .Where(i => i.equipped)
                 .ToImmutableHashSet();
+#pragma warning disable LAA1002
             foreach (var equipment in inventoryEquipments)
+#pragma warning restore LAA1002
             {
                 equipment.Unequip();
             }
@@ -511,6 +521,7 @@ namespace Nekoyume.Model.State
         }
 
         public override IValue Serialize() =>
+#pragma warning disable LAA1002
             new Dictionary(new Dictionary<IKey, IValue>
             {
                 [(Text)"name"] = (Text)name,
@@ -541,5 +552,6 @@ namespace Nekoyume.Model.State
                 [(Text) "nonce"] = Nonce.Serialize(),
                 [(Text)"ranking_map_address"] = RankingMapAddress.Serialize(),
             }.Union((Dictionary)base.Serialize()));
+#pragma warning restore LAA1002
     }
 }

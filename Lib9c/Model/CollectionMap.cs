@@ -53,7 +53,9 @@ namespace Nekoyume.Model
 
         public bool Contains(KeyValuePair<int, int> item)
         {
+#pragma warning disable LAA1002
             return _dictionary.Contains(item);
+#pragma warning restore LAA1002
         }
 
         public void CopyTo(KeyValuePair<int, int>[] array, int arrayIndex)

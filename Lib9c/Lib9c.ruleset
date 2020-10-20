@@ -6,7 +6,7 @@
   <Rules AnalyzerId="Libplanet.Analyzers" RuleNamespace="Libplanet.Analyzers">
     <Rule Id="LAA9999" Action="Error" />
     <Rule Id="LAA1001" Action="Error" />
-    <Rule Id="LAA1002" Action="Info" />  <!----> FIXME: should be Action="Error" -->
+    <Rule Id="LAA1002" Action="Error" />
   </Rules>
 
   <Rules AnalyzerId="SonarAnalyzer" RuleNamespace="SonarAnalyzer">

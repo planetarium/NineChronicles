@@ -61,8 +61,8 @@ namespace Nekoyume.Model.Item
                 SpineResourcePath = (Text) spineResourcePath;
             }
         }
-
         public override IValue Serialize() =>
+#pragma warning disable LAA1002
             new Dictionary(new Dictionary<IKey, IValue>
             {
                 [(Text) "equipped"] = equipped.Serialize(),
@@ -71,6 +71,7 @@ namespace Nekoyume.Model.Item
                 [(Text) "set_id"] = SetId.Serialize(),
                 [(Text) "spine_resource_path"] = SpineResourcePath.Serialize(),
             }.Union((Dictionary) base.Serialize()));
+#pragma warning restore LAA1002
 
         public void Equip()
         {

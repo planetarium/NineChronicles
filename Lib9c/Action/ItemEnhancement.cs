@@ -52,6 +52,7 @@ namespace Nekoyume.Action
             }
 
             public override IValue Serialize() =>
+#pragma warning disable LAA1002
                 new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
                 {
                     [(Text) "id"] = id.Serialize(),
@@ -61,6 +62,7 @@ namespace Nekoyume.Action
                     [(Text) "gold"] = gold.Serialize(),
                     [(Text) "actionPoint"] = actionPoint.Serialize(),
                 }.Union((Bencodex.Types.Dictionary) base.Serialize()));
+#pragma warning restore LAA1002
         }
 
         public override IAccountStateDelta Execute(IActionContext context)

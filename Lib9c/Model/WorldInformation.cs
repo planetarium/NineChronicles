@@ -212,7 +212,9 @@ namespace Nekoyume.Model
 
         public IValue Serialize()
         {
+#pragma warning disable LAA1002
             return new Bencodex.Types.Dictionary(_worlds.Select(kv =>
+#pragma warning restore LAA1002
                 new KeyValuePair<IKey, IValue>(
                     (Bencodex.Types.Text) kv.Key.Serialize(),
                     (Bencodex.Types.Dictionary) kv.Value.Serialize())));

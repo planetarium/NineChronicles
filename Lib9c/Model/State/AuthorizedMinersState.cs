@@ -37,6 +37,7 @@ namespace Nekoyume.Model.State
         
         public override IValue Serialize()
         {
+#pragma warning disable LAA1002
             var values = new Dictionary<IKey, IValue>
             {
                 [(Text)nameof(Miners)] = new List(Miners.Select(m => m.Serialize())),
@@ -44,6 +45,7 @@ namespace Nekoyume.Model.State
                 [(Text)nameof(ValidUntil)] = ValidUntil.Serialize(),
             };
             return new Dictionary(values.Union((Dictionary)base.Serialize()));
+#pragma warning restore LAA1002
         }
     }
 }

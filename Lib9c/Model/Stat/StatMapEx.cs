@@ -66,9 +66,11 @@ namespace Nekoyume.Model.Stat
 
 
         public override IValue Serialize() =>
+#pragma warning disable LAA1002
             new Dictionary(new Dictionary<IKey, IValue>
             {
                 [(Text)"additionalValue"] = (Text)AdditionalValue.Serialize(),
             }.Union((Dictionary)base.Serialize()));
+#pragma warning restore LAA1002
     }
 }

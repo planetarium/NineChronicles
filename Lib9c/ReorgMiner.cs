@@ -90,7 +90,9 @@ namespace Nekoyume.BlockChain
             }
             finally
             {
+#pragma warning disable LAA1002
                 foreach (var invalidTx in invalidTxs)
+#pragma warning restore LAA1002
                 {
                     _mainChain.UnstageTransaction(invalidTx);
                     _subChain.UnstageTransaction(invalidTx);

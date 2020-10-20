@@ -43,10 +43,12 @@ namespace Nekoyume.TableData
             }
 
             public override IValue Serialize() =>
+#pragma warning disable LAA1002
                 new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
                 {
                     [(Text) "stats"] = new Bencodex.Types.List(Stats.Select(stat => stat.Serialize())),
                 }.Union((Bencodex.Types.Dictionary) base.Serialize()));
+#pragma warning restore LAA1002
 
             public new static Row Deserialize(Bencodex.Types.Dictionary serialized)
             {

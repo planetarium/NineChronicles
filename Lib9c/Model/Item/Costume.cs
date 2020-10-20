@@ -31,10 +31,12 @@ namespace Nekoyume.Model.Item
         }
 
         public override IValue Serialize() =>
+#pragma warning disable LAA1002
             new Dictionary(new Dictionary<IKey, IValue>
             {
                 [(Text) "equipped"] = equipped.Serialize(),
                 [(Text) "spine_resource_path"] = SpineResourcePath.Serialize(),
             }.Union((Dictionary) base.Serialize()));
+#pragma warning restore LAA1002
     }
 }

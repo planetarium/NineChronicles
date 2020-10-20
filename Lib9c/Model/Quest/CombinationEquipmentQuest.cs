@@ -63,7 +63,9 @@ namespace Nekoyume.Model.Quest
                 [(Text) "recipe_id"] = RecipeId.Serialize(),
                 [(Text) "stage_id"] = StageId.Serialize(),
             };
+#pragma warning disable LAA1002
             return new Dictionary(dict.Union((Dictionary) base.Serialize()));
+#pragma warning restore LAA1002
         }
     }
 }
