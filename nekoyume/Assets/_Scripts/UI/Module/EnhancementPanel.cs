@@ -16,7 +16,7 @@ namespace Nekoyume.UI.Module
         private readonly List<IDisposable> _disposablesAtShow = new List<IDisposable>();
 
         public TMaterialView baseMaterial;
-        public TMaterialView[] otherMaterials;
+        public TMaterialView otherMaterial;
         public SubmitWithCostButton submitButton;
 
         public readonly Subject<InventoryItem> OnMaterialAdd = new Subject<InventoryItem>();
@@ -47,10 +47,7 @@ namespace Nekoyume.UI.Module
                 InitMaterialView(baseMaterial);
             }
 
-            foreach (var otherMaterial in otherMaterials)
-            {
-                InitMaterialView(otherMaterial);
-            }
+            InitMaterialView(otherMaterial);
 
             OnMaterialAdd
                 .Merge(OnMaterialRemove)
@@ -142,13 +139,10 @@ namespace Nekoyume.UI.Module
                     }
                 }
 
-                foreach (var otherMaterial in otherMaterials)
+                if (otherMaterial.InventoryItemViewModel?.ItemBase.Value is ItemUsable itemUsable3)
                 {
-                    if (otherMaterial.InventoryItemViewModel?.ItemBase.Value is ItemUsable itemUsable2)
-                    {
-                        if (itemUsable.ItemId.Equals(itemUsable2.ItemId))
-                            return true;
-                    }
+                    if (itemUsable.ItemId.Equals(itemUsable3.ItemId))
+                        return true;
                 }
 
                 return false;
@@ -162,15 +156,12 @@ namespace Nekoyume.UI.Module
                     return true;
             }
 
-            foreach (var otherMaterial in otherMaterials)
-            {
-                if (!(otherMaterial.InventoryItemViewModel is null) &&
-                    otherMaterial.InventoryItemViewModel.ItemBase.Value is Material material &&
-                    inventoryItem.ItemBase.Value is Material inventoryMaterial &&
-                    material.ItemId.Equals(
-                        inventoryMaterial.ItemId))
-                    return true;
-            }
+            if (!(otherMaterial.InventoryItemViewModel is null) &&
+                otherMaterial.InventoryItemViewModel.ItemBase.Value is Material material &&
+                inventoryItem.ItemBase.Value is Material inventoryMaterial &&
+                material.ItemId.Equals(
+                    inventoryMaterial.ItemId))
+                return true;
 
             return false;
         }
@@ -253,35 +244,29 @@ namespace Nekoyume.UI.Module
 
         protected virtual bool TryAddOtherMaterial(InventoryItem viewModel, int count, out TMaterialView materialView)
         {
-            var sameMaterial = otherMaterials.FirstOrDefault(e =>
-            {
-                if (e.Model?.ItemBase.Value is null ||
-                    viewModel?.ItemBase.Value is null)
-                    return false;
+            var isSame = !(otherMaterial.Model?.ItemBase.Value is null)
+                         && !(viewModel?.ItemBase.Value is null) &&
+                         otherMaterial.Model.ItemBase.Value is Material materialA &&
+                         viewModel.ItemBase.Value is Material materialB &&
+                         materialA.ItemId.Equals(materialB.ItemId);
 
-                return e.Model.ItemBase.Value is Material materialA &&
-                       viewModel.ItemBase.Value is Material materialB &&
-                       materialA.ItemId.Equals(materialB.ItemId);
-            });
-            if (sameMaterial is null)
+            materialView = otherMaterial;
+            if (!isSame)
             {
                 // 새로 더하기.
-                var possibleMaterial = otherMaterials.FirstOrDefault(e => !e.IsLocked && e.IsEmpty);
-                if (possibleMaterial is null)
+                var canAdd = !otherMaterial.IsLocked && otherMaterial.IsEmpty;
+                if (!canAdd)
                 {
                     // 제료가 이미 가득 찼어요!
                     materialView = null;
                     return false;
                 }
 
-                possibleMaterial.Set(viewModel, count);
-                materialView = possibleMaterial;
+                otherMaterial.Set(viewModel, count);
                 return true;
             }
 
-            // 하나 증가.
-            sameMaterial.TryIncreaseCount();
-            materialView = sameMaterial;
+            otherMaterial.TryIncreaseCount();
             return true;
         }
 
@@ -339,7 +324,6 @@ namespace Nekoyume.UI.Module
                 OnMaterialCountChanged();
                 OnMaterialRemove.OnNext(inventoryItemView);
                 OnOtherMaterialRemove.OnNext(inventoryItemView);
-                ReorderOtherMaterials();
                 return true;
             }
 
@@ -376,22 +360,18 @@ namespace Nekoyume.UI.Module
 
         protected virtual bool TryRemoveOtherMaterial(TMaterialView view, out TMaterialView materialView)
         {
-            var sameMaterial = otherMaterials.FirstOrDefault(e =>
-            {
-                if (e.Model?.ItemBase.Value is null ||
-                    view.Model?.ItemBase.Value is null)
-                    return false;
+            var isSame = !(otherMaterial.Model?.ItemBase.Value is null) &&
+                         !(view.Model?.ItemBase.Value is null) &&
+                         otherMaterial.Model.ItemBase.Value.Id == view.Model.ItemBase.Value.Id;
 
-                return e.Model.ItemBase.Value.Id == view.Model.ItemBase.Value.Id;
-            });
-            if (sameMaterial is null)
+            if (!isSame)
             {
                 materialView = null;
                 return false;
             }
 
-            sameMaterial.Clear();
-            materialView = sameMaterial;
+            otherMaterial.Clear();
+            materialView = otherMaterial;
             return true;
         }
 
@@ -407,15 +387,12 @@ namespace Nekoyume.UI.Module
                 OnBaseMaterialRemove.OnNext(model);
             }
 
-            foreach (var material in otherMaterials)
-            {
-                var model = material.InventoryItemViewModel;
-                material.Clear();
-                OnMaterialAddedOrRemoved();
-                OnMaterialCountChanged();
-                OnMaterialRemove.OnNext(model);
-                OnOtherMaterialRemove.OnNext(model);
-            }
+            var otherModel = otherMaterial.InventoryItemViewModel;
+            otherMaterial.Clear();
+            OnMaterialAddedOrRemoved();
+            OnMaterialCountChanged();
+            OnMaterialRemove.OnNext(otherModel);
+            OnOtherMaterialRemove.OnNext(otherModel);
         }
 
         #endregion
@@ -444,30 +421,6 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        private void ReorderOtherMaterials()
-        {
-            for (var i = 0; i < otherMaterials.Length; i++)
-            {
-                var dstMaterial = otherMaterials[i];
-                if (!dstMaterial.IsEmpty)
-                    continue;
-
-                TMaterialView srcMaterial = null;
-                for (var j = i + 1; j < otherMaterials.Length; j++)
-                {
-                    var tempMaterial = otherMaterials[j];
-                    if (tempMaterial.IsEmpty)
-                        continue;
-
-                    srcMaterial = tempMaterial;
-                    break;
-                }
-
-                if (!TryMoveMaterial(srcMaterial, dstMaterial))
-                    break;
-            }
-        }
-
         private void OnMaterialAddedOrRemoved()
         {
             UpdateOtherMaterialsEffect();
@@ -479,8 +432,7 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
-            IsThereAnyUnlockedEmptyMaterialView =
-                otherMaterials.Any(otherMaterial => !otherMaterial.IsLocked && otherMaterial.IsEmpty);
+            IsThereAnyUnlockedEmptyMaterialView = !otherMaterial.IsLocked && otherMaterial.IsEmpty;
         }
 
         private void OnMaterialMoved()
@@ -516,37 +468,24 @@ namespace Nekoyume.UI.Module
                 }
             }
 
-            var setTwinkledOnIfEmpty = true;
-            foreach (var otherMaterial in otherMaterials)
+            if (hasBaseMaterial && baseMaterial.IsEmpty)
             {
-                if (hasBaseMaterial &&
-                    baseMaterial.IsEmpty)
-                {
-                    otherMaterial.effectImage.enabled = false;
-                    continue;
-                }
+                otherMaterial.effectImage.enabled = false;
+                return;
+            }
 
-                if (otherMaterial.IsLocked)
-                {
-                    otherMaterial.SetTwinkled(false);
-                }
-                else if (otherMaterial.IsEmpty)
-                {
-                    if (setTwinkledOnIfEmpty)
-                    {
-                        setTwinkledOnIfEmpty = false;
-                        otherMaterial.SetTwinkled(true);
-                    }
-                    else
-                    {
-                        otherMaterial.SetTwinkled(false);
-                    }
-                }
-                else
-                {
-                    otherMaterial.SetTwinkled(false);
-                    otherMaterial.effectImage.enabled = true;
-                }
+            if (otherMaterial.IsLocked)
+            {
+                otherMaterial.SetTwinkled(false);
+            }
+            else if (otherMaterial.IsEmpty)
+            {
+                otherMaterial.SetTwinkled(true);
+            }
+            else
+            {
+                otherMaterial.SetTwinkled(false);
+                otherMaterial.effectImage.enabled = true;
             }
         }
 
