@@ -13,8 +13,8 @@ using Object = UnityEngine.Object;
 
 namespace Planetarium.Nekoyume.Editor
 {
-    // todo: Costume, NPC 로직 추가
-    // todo: 사용자가 알기 쉽게 예외 상황 전부 알림 띄워주기.
+    // TODO: Costume, NPC 로직 추가
+    // TODO: 사용자가 알기 쉽게 예외 상황 전부 알림 띄워주기.
     public static class SpineEditor
     {
         private const string FindAssetFilter = "CharacterAnimator t:AnimatorController";
@@ -34,7 +34,6 @@ namespace Planetarium.Nekoyume.Editor
         private const string PlayerSpineRootPath = "Assets/AddressableAssets/Character/Player";
 
         private static readonly Vector3 Position = Vector3.zero;
-        private static readonly Vector3 LocalScale = new Vector3(.64f, .64f, 1f);
 
         /// <summary>
         /// 헤어 스타일을 결정하는 정보를 스파인이 포함하지 않기 때문에 이곳에 하드코딩해서 구분해 준다.
@@ -366,10 +365,12 @@ namespace Planetarium.Nekoyume.Editor
 
             var parentFolder = Path.GetDirectoryName(AssetDatabase.GetAssetPath(skeletonDataAsset));
             var dataPath = parentFolder + "/" + assetFolderName;
-            if (!AssetDatabase.IsValidFolder(dataPath))
+            if (AssetDatabase.IsValidFolder(dataPath))
             {
-                AssetDatabase.CreateFolder(parentFolder, assetFolderName);
+                Directory.Delete(dataPath, true);
             }
+
+            AssetDatabase.CreateFolder(parentFolder, assetFolderName);
 
             var nameField =
                 typeof(AnimationReferenceAsset).GetField(
@@ -459,7 +460,7 @@ namespace Planetarium.Nekoyume.Editor
         }
 
         // NOTE: 모든 캐릭터는 원본의 해상도를 보여주기 위해서 Vector3.one 사이즈로 스케일되어야 맞습니다.
-        // 하지만 이 프로젝트는 2D 리소스의 ppu와 카메라 사이즈가 호환되지 않아서 임의의 스케일을 설정합니다.(LocalScale)
+        // 하지만 이 프로젝트는 2D 리소스의 ppu와 카메라 사이즈가 호환되지 않아서 임의의 스케일을 설정합니다.
         // 이마저도 아트 단에서 예상하지 못한 스케일 이슈가 생기면 "300005"와 같이 예외적인 케이스가 발생합니다.
         // 앞으로 이런 예외가 많아질 것을 대비해서 별도의 함수로 뺍니다.
         private static Vector3 GetPrefabLocalScale(string prefabName)
@@ -467,7 +468,7 @@ namespace Planetarium.Nekoyume.Editor
             switch (prefabName)
             {
                 default:
-                    return LocalScale;
+                    return new Vector3(.64f, .64f, 1f);
                 case "300005":
                     return new Vector3(.8f, .8f, 1f);
             }

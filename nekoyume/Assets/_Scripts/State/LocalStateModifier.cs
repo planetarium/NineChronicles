@@ -804,7 +804,7 @@ namespace Nekoyume.State
 
         public static void ModifyCombinationSlotItemEnhancement(
             EnhanceEquipment panel,
-            IEnumerable<Guid> guidList,
+            Guid guid,
             int slotIndex
         )
         {
@@ -826,7 +826,7 @@ namespace Nekoyume.State
                 id = Guid.NewGuid(),
                 actionPoint = panel.CostAP,
                 gold = panel.CostNCG,
-                materialItemIdList = guidList,
+                materialItemIdList = new []{ guid },
                 itemUsable = equipment,
             };
             var modifier = new CombinationSlotStateModifier(result, blockIndex, requiredBlockIndex);

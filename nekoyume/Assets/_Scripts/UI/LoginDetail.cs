@@ -96,7 +96,7 @@ namespace Nekoyume.UI
             Find<GrayLoadingScreen>().Show();
 
             Game.Game.instance.ActionManager
-                .CreateAvatar(AvatarState.CreateAvatarAddress(), _selectedIndex, nickName, _hair,
+                .CreateAvatar(_selectedIndex, nickName, _hair,
                     _lens, _ear, _tail)
                 .Subscribe(eval =>
                     {

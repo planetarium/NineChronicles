@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -810,12 +811,18 @@ namespace Nekoyume.BlockChain
         private IEnumerator CoAutoPlayer()
         {
             var avatarIndex = 0;
-            var avatarAddress = AvatarState.CreateAvatarAddress();
             var dummyName = Address.ToHex().Substring(0, 8);
 
             yield return Game.Game.instance.ActionManager
-                .CreateAvatar(avatarAddress, avatarIndex, dummyName)
+                .CreateAvatar(avatarIndex, dummyName)
                 .ToYieldInstruction();
+            var avatarAddress = Address.Derive(
+                string.Format(
+                    CultureInfo.InvariantCulture,
+                    CreateAvatar2.DeriveFormat,
+                    avatarIndex
+                )
+            );
             Debug.LogFormat("Autoplay[{0}, {1}]: CreateAvatar", avatarAddress.ToHex(), dummyName);
 
             States.Instance.SelectAvatar(avatarIndex);
