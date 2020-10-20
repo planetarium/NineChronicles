@@ -57,13 +57,21 @@ namespace Nekoyume.BlockChain
                 minimumDifficulty,
                 2048,
                 maximumTransactions,
-                IsSignerAuthorized
+                DoesTransactionFollowPolicy
             );
 #endif
         }
 
         public IEnumerable<IRenderer<NCAction>> GetRenderers() =>
             new IRenderer<NCAction>[] { BlockRenderer, LoggedActionRenderer };
+
+        private bool DoesTransactionFollowPolicy(
+            Transaction<NCAction> transaction,
+            BlockChain<NCAction> blockChain
+        )
+        {
+            return transaction.Actions.Count <= 1 && IsSignerAuthorized(transaction, blockChain);
+        }
 
         private bool IsSignerAuthorized(
             Transaction<NCAction> transaction,
