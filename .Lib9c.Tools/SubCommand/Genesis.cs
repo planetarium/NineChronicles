@@ -2,6 +2,7 @@ using Cocona;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Blocks;
+using Libplanet.Crypto;
 using Nekoyume;
 using Nekoyume.Action;
 using Nekoyume.Model;
@@ -30,7 +31,9 @@ namespace Lib9c.Tools.SubCommand
             [Option('m', Description = "Config path to create AuthorizedMinersState")]
             string authorizedMinerConfigPath = null,
             [Option('c', Description = "Path of a plain text file containing names for credits.")]
-            string creditsPath = null
+            string creditsPath = null,
+            [Option("private-key", new[]{ 'p' }, Description = "Hex encoded private key for gensis block")]
+            string privateKeyHex = null
         )
         {
             Dictionary<string, string> tableSheets = Utils.ImportSheets(gameConfigDir);
@@ -61,7 +64,8 @@ namespace Lib9c.Tools.SubCommand
                 authorizedMinersState: authorizedMinersState,
                 activatedAccounts: activatedAccounts,
                 isActivateAdminAddress: activationKeyCount != 0,
-                credits: creditsPath is null ? null : File.ReadLines(creditsPath)
+                credits: creditsPath is null ? null : File.ReadLines(creditsPath),
+                privateKey: privateKeyHex is null ? null : new PrivateKey(ByteUtil.ParseHex(privateKeyHex))
             );
 
             ExportBlock(block, "genesis-block");

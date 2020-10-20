@@ -1,7 +1,5 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Linq;
-using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Assets;
@@ -27,7 +25,8 @@ namespace Nekoyume
             IImmutableSet<Address> activatedAccounts = null,
             bool isActivateAdminAddress = false,
             IEnumerable<string> credits = null,
-            int maximumTransactions = 100
+            int maximumTransactions = 100,
+            PrivateKey privateKey = null
         )
         {
             if (!tableSheets.TryGetValue(nameof(GameConfigSheet), out var csv))
@@ -38,9 +37,12 @@ namespace Nekoyume
             var redeemCodeListSheet = new RedeemCodeListSheet();
             redeemCodeListSheet.Set(tableSheets[nameof(RedeemCodeListSheet)]);
 
-            // FIXME Must use a separate key for the mainnet.
-            var minterKey = new PrivateKey();
-            var ncg = new Currency("NCG", 2, minterKey.ToAddress());
+            if (privateKey is null)
+            {
+                privateKey = new PrivateKey();
+            }
+
+            var ncg = new Currency("NCG", 2, privateKey.ToAddress());
             activatedAccounts = activatedAccounts ?? ImmutableHashSet<Address>.Empty;
             var initialStatesAction = new InitializeStates
             (
@@ -68,7 +70,7 @@ namespace Nekoyume
             return
                 BlockChain<PolymorphicAction<ActionBase>>.MakeGenesisBlock(
                     actions,
-                    privateKey: minterKey,
+                    privateKey: privateKey,
                     blockAction: blockAction);
         }
     }
