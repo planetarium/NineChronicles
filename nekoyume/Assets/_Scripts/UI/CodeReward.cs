@@ -19,7 +19,7 @@ namespace Nekoyume.UI
         [SerializeField] private Canvas sortingGroup = null;
         [SerializeField] private CodeRewardEffector effector = null;
 
-        private Dictionary<string, List<(ItemBase, int)>> codeRewards = new Dictionary<string, List<(ItemBase, int)>>();
+        private Dictionary<string, List<(ItemBase, int)>> _codeRewards = new Dictionary<string, List<(ItemBase, int)>>();
 
         private const string SEALED_CODES = "SealedCodes";
 
@@ -50,36 +50,31 @@ namespace Nekoyume.UI
         private void UpdateRewardButton()
         {
             var sealedCodes = GetSealedCodes();
-            codeRewards = sealedCodes.Where(IsExistCode).ToDictionary(code => code, GetItems);
+            _codeRewards = sealedCodes.Where(IsExistCode).ToDictionary(code => code, GetItems);
             var button = Find<BottomMenu>().codeRewardButton;
-            if (IsNullOrEmpty(codeRewards))
+            if (!_codeRewards?.Any() ?? true)
             {
                 button.Close();
             }
             else
             {
-                button.Show(OnClickButton, codeRewards.Count);
+                button.Show(OnClickButton, _codeRewards.Count);
             }
         }
 
         private void OnClickButton()
         {
-            if (IsNullOrEmpty(codeRewards))
+            if (!_codeRewards?.Any() ?? true)
             {
                 return;
             }
 
-            var reward = codeRewards.First();
+            var reward = _codeRewards.First();
             if (RedeemCode(reward.Key))
             {
                 effector.Play(reward.Value);
                 UpdateRewardButton();
             }
-        }
-
-        private bool IsNullOrEmpty(ICollection rewards)
-        {
-            return rewards == null || rewards.Count <= 0;
         }
 
         private List<(ItemBase, int)> GetItems(string redeemCode)
