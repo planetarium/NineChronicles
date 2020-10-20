@@ -4,8 +4,9 @@
   Description="Code analysis rules for Lib9c.csproj."
   ToolsVersion="10.0">
   <Rules AnalyzerId="Libplanet.Analyzers" RuleNamespace="Libplanet.Analyzers">
-    <Rule Id="LAA9999" Action="Warning" />
-    <Rule Id="LAA1001" Action="Warning" />
+    <Rule Id="LAA9999" Action="Error" />
+    <Rule Id="LAA1001" Action="Error" />
+    <Rule Id="LAA1002" Action="Info" />  <!----> FIXME: should be Action="Error" -->
   </Rules>
 
   <Rules AnalyzerId="SonarAnalyzer" RuleNamespace="SonarAnalyzer">
