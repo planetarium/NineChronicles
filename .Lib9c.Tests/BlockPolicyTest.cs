@@ -79,13 +79,13 @@ namespace Lib9c.Tests
                     new PolymorphicAction<ActionBase>[] { }
                 );
 
-            // 새로 만든 키는 활성화 유저 리스트에 없기 때문에 차단됩니다.
+            // New private key which is not in activated addresses list is blocked.
             Assert.False(policy.DoesTransactionFollowsPolicy(txByStranger, blockChain));
 
             var newActivatedPrivateKey = new PrivateKey();
             var newActivatedAddress = newActivatedPrivateKey.ToAddress();
 
-            // 관리자 계정으로 활성화 시킵니다.
+            // Activate with admin account.
             Transaction<PolymorphicAction<ActionBase>> invitationTx = blockChain.MakeTransaction(
                 adminPrivateKey,
                 new PolymorphicAction<ActionBase>[] { new AddActivatedAccount(newActivatedAddress) }
@@ -101,8 +101,36 @@ namespace Lib9c.Tests
                     new PolymorphicAction<ActionBase>[] { }
                 );
 
-            // 활성화 된 계정이기 때문에 테스트에 성공합니다.
+            // Test success because the key is activated.
             Assert.True(policy.DoesTransactionFollowsPolicy(txByNewActivated, blockChain));
+
+            var singleAction = new PolymorphicAction<ActionBase>[]
+            {
+                new RewardGold(),
+            };
+            var manyActions = new PolymorphicAction<ActionBase>[]
+            {
+                new RewardGold(),
+                new RewardGold(),
+            };
+            Transaction<PolymorphicAction<ActionBase>> txWithSingleAction =
+                Transaction<PolymorphicAction<ActionBase>>.Create(
+                    0,
+                    activatedPrivateKey,
+                    genesis.Hash,
+                    singleAction
+                );
+            Transaction<PolymorphicAction<ActionBase>> txWithManyActions =
+                Transaction<PolymorphicAction<ActionBase>>.Create(
+                    0,
+                    activatedPrivateKey,
+                    genesis.Hash,
+                    manyActions
+                );
+
+            // Transaction with more than two actions is rejected.
+            Assert.True(policy.DoesTransactionFollowsPolicy(txWithSingleAction, blockChain));
+            Assert.False(policy.DoesTransactionFollowsPolicy(txWithManyActions, blockChain));
         }
 
         [Fact]

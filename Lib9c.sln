@@ -15,6 +15,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Libplanet.Stun", ".Libplane
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Libplanet", ".Libplanet\Libplanet\Libplanet.csproj", "{5C9F5F97-367E-4F8B-A123-D9AADE786CA1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Libplanet.Analyzers", ".Libplanet\Libplanet.Analyzers\Libplanet.Analyzers.csproj", "{659722A9-132F-4B41-87BC-1B56A97A98FA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -49,9 +51,14 @@ Global
 		{5C9F5F97-367E-4F8B-A123-D9AADE786CA1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5C9F5F97-367E-4F8B-A123-D9AADE786CA1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5C9F5F97-367E-4F8B-A123-D9AADE786CA1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{659722A9-132F-4B41-87BC-1B56A97A98FA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{659722A9-132F-4B41-87BC-1B56A97A98FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{659722A9-132F-4B41-87BC-1B56A97A98FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{659722A9-132F-4B41-87BC-1B56A97A98FA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{6126D57A-F079-4B07-B1E4-531630DCCDBF} = {AFA609F0-8CAE-4494-A4E2-EABD9E95D678}
 		{5C9F5F97-367E-4F8B-A123-D9AADE786CA1} = {AFA609F0-8CAE-4494-A4E2-EABD9E95D678}
+		{659722A9-132F-4B41-87BC-1B56A97A98FA} = {AFA609F0-8CAE-4494-A4E2-EABD9E95D678}
 	EndGlobalSection
 EndGlobal
