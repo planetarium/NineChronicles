@@ -36,7 +36,7 @@ namespace Nekoyume.BlockChain
 {
     public class RPCAgent : MonoBehaviour, IAgent, IActionEvaluationHubReceiver
     {
-        private const float TxProcessInterval = 3.0f;
+        private const float TxProcessInterval = 1.0f;
         private readonly ConcurrentQueue<PolymorphicAction<ActionBase>> _queuedActions =
             new ConcurrentQueue<PolymorphicAction<ActionBase>>();
 
@@ -211,32 +211,25 @@ namespace Nekoyume.BlockChain
             {
                 yield return new WaitForSeconds(TxProcessInterval);
 
-                var actions = new List<PolymorphicAction<ActionBase>>();
-                while (_queuedActions.TryDequeue(out PolymorphicAction<ActionBase> action))
+                if (!_queuedActions.TryDequeue(out PolymorphicAction<ActionBase> action))
                 {
-                    actions.Add(action);
+                    continue;
                 }
 
-                if (actions.Any())
+                Task task = Task.Run(async () =>
                 {
-                    Task task = Task.Run(async () =>
-                    {
-                        await MakeTransaction(actions);
-                    });
-                    yield return new WaitUntil(() => task.IsCompleted);
+                    await MakeTransaction(new List<PolymorphicAction<ActionBase>> { action });
+                });
+                yield return new WaitUntil(() => task.IsCompleted);
 
-                    if (task.IsFaulted)
-                    {
-                        Debug.LogException(task.Exception);
-                        Debug.LogError(
-                            "Unexpected exception occurred. re-enqueue actions for retransmission."
-                        );
+                if (task.IsFaulted)
+                {
+                    Debug.LogException(task.Exception);
+                    Debug.LogError(
+                        $"Unexpected exception occurred. re-enqueue {action} for retransmission."
+                    );
 
-                        foreach (var action in actions)
-                        {
-                            _queuedActions.Enqueue(action);
-                        }
-                    }
+                    _queuedActions.Enqueue(action);
                 }
             }
         }
