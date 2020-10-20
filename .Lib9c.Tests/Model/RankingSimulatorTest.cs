@@ -8,6 +8,10 @@ namespace Lib9c.Tests.Model
     using Libplanet.Action;
     using Nekoyume;
     using Nekoyume.Battle;
+    using Nekoyume.Model;
+    using Nekoyume.Model.BattleStatus;
+    using Nekoyume.Model.Item;
+    using Nekoyume.Model.Stat;
     using Nekoyume.Model.State;
     using Nekoyume.TableData;
     using Xunit;
@@ -108,6 +112,60 @@ namespace Lib9c.Tests.Model
             simulator.Simulate();
 
             Assert.Equal(expected, simulator.Reward.Count());
+        }
+
+        [Fact]
+        public void ConstructorWithCostume()
+        {
+            var avatarState = new AvatarState(
+                default,
+                default,
+                0,
+                _tableSheets.GetAvatarSheets(),
+                new GameConfigState(),
+                default
+            );
+            avatarState.worldInformation.ClearStage(
+                1,
+                GameConfig.RequireClearedStageLevel.ActionsInRankingBoard,
+                1,
+                _tableSheets.WorldSheet,
+                _tableSheets.WorldUnlockSheet
+            );
+
+            var enemyAvatarState = new AvatarState(avatarState);
+
+            var row = _tableSheets.CostumeStatSheet.Values.First(r => r.StatType == StatType.ATK);
+            var costume = (Costume)ItemFactory.CreateItem(_tableSheets.ItemSheet[row.CostumeId]);
+            costume.equipped = true;
+            avatarState.inventory.AddItem(costume);
+
+            var row2 = _tableSheets.CostumeStatSheet.Values.First(r => r.StatType == StatType.DEF);
+            var enemyCostume = (Costume)ItemFactory.CreateItem(_tableSheets.ItemSheet[row2.CostumeId]);
+            enemyCostume.equipped = true;
+            enemyAvatarState.inventory.AddItem(enemyCostume);
+
+            var simulator = new RankingSimulator(
+                _random,
+                avatarState,
+                enemyAvatarState,
+                new List<Guid>(),
+                _tableSheets.GetRankingSimulatorSheets(),
+                1,
+                new ArenaInfo(avatarState, _tableSheets.CharacterSheet, false),
+                new ArenaInfo(enemyAvatarState, _tableSheets.CharacterSheet, false),
+                _tableSheets.CostumeStatSheet
+            );
+
+            var player = simulator.Player;
+            Assert.Equal(row.Stat, player.Stats.OptionalStats.ATK);
+
+            var player2 = simulator.Simulate();
+            Assert.Equal(row.Stat, player2.Stats.OptionalStats.ATK);
+
+            var e = simulator.Log.OfType<SpawnEnemyPlayer>().First();
+            var enemyPlayer = (EnemyPlayer)e.Character;
+            Assert.Equal(row2.Stat, enemyPlayer.Stats.OptionalStats.DEF);
         }
     }
 }

@@ -19,6 +19,8 @@ namespace Lib9c.Tests.Model
         {
             var row = _tableSheets.ConsumableItemSheet.Values.First();
             var consumable = (Consumable)ItemFactory.CreateItemUsable(row, default, 0);
+            var statRow = _tableSheets.CostumeStatSheet.Values.First();
+            consumable.StatsMap.AddStatValue(statRow.StatType, statRow.Stat);
             var serialized = consumable.Serialize();
             var deserialized = new Consumable((Dictionary)serialized);
 

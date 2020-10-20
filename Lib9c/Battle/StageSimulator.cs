@@ -102,6 +102,27 @@ namespace Nekoyume.Battle
             }
         }
 
+        public StageSimulator(
+            IRandom random,
+            AvatarState avatarState,
+            List<Guid> foods,
+            int worldId,
+            int stageId,
+            StageSimulatorSheets stageSimulatorSheets,
+            CostumeStatSheet costumeStatSheet
+        )
+            : this(
+                random,
+                avatarState,
+                foods,
+                worldId,
+                stageId,
+                stageSimulatorSheets
+            )
+        {
+            Player.SetCostumeStat(costumeStatSheet);
+        }
+
         public override Player Simulate()
         {
 #if TEST_LOG

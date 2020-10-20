@@ -12,6 +12,7 @@ namespace Lib9c.Tests.Action
     using Libplanet.Crypto;
     using Nekoyume;
     using Nekoyume.Action;
+    using Nekoyume.Battle;
     using Nekoyume.Model;
     using Nekoyume.Model.BattleStatus;
     using Nekoyume.Model.Item;
@@ -19,7 +20,7 @@ namespace Lib9c.Tests.Action
     using Nekoyume.TableData;
     using Xunit;
 
-    public class HackAndSlashTest
+    public class HackAndSlash2Test
     {
         private readonly TableSheets _tableSheets;
 
@@ -33,7 +34,7 @@ namespace Lib9c.Tests.Action
         private readonly WeeklyArenaState _weeklyArenaState;
         private readonly IAccountStateDelta _initialState;
 
-        public HackAndSlashTest()
+        public HackAndSlash2Test()
         {
             var sheets = TableSheetsImporter.ImportSheets();
             _tableSheets = new TableSheets(sheets);
@@ -73,7 +74,7 @@ namespace Lib9c.Tests.Action
         }
 
         [Theory]
-        [InlineData(1, 1, 1, false)]
+        [InlineData(GameConfig.RequireCharacterLevel.CharacterFullCostumeSlot, 1, 1, false)]
         [InlineData(100, 1, GameConfig.RequireClearedStageLevel.ActionsInRankingBoard, true)]
         public void Execute(int avatarLevel, int worldId, int stageId, bool contains)
         {
@@ -99,9 +100,9 @@ namespace Lib9c.Tests.Action
 
             var state = _initialState.SetState(_avatarAddress, previousAvatarState.Serialize());
 
-            var action = new HackAndSlash()
+            var action = new HackAndSlash2()
             {
-                costumes = new List<int> { costumeId },
+                costumes = new HashSet<int> { costumeId },
                 equipments = new List<Guid>(),
                 foods = new List<Guid>(),
                 worldId = worldId,
@@ -130,6 +131,13 @@ namespace Lib9c.Tests.Action
             Assert.Equal(BattleLog.Result.Win, action.Result.result);
             Assert.Equal(contains, newWeeklyState.ContainsKey(_avatarAddress));
             Assert.True(nextAvatarState.worldInformation.IsStageCleared(stageId));
+            if (contains)
+            {
+                Assert.True(
+                    newWeeklyState[_avatarAddress].CombatPoint >
+                    CPHelper.GetCP(nextAvatarState, _tableSheets.CharacterSheet)
+                );
+            }
 
             var value = nextState.GetState(_rankingMapAddress);
 
@@ -143,9 +151,9 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void ExecuteThrowInvalidRankingMapAddress()
         {
-            var action = new HackAndSlash()
+            var action = new HackAndSlash2()
             {
-                costumes = new List<int>(),
+                costumes = new HashSet<int>(),
                 equipments = new List<Guid>(),
                 foods = new List<Guid>(),
                 worldId = 1,
@@ -173,9 +181,9 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void ExecuteThrowFailedLoadStateException()
         {
-            var action = new HackAndSlash()
+            var action = new HackAndSlash2()
             {
-                costumes = new List<int>(),
+                costumes = new HashSet<int>(),
                 equipments = new List<Guid>(),
                 foods = new List<Guid>(),
                 worldId = 1,
@@ -201,9 +209,9 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void ExecuteThrowSheetRowNotFoundExceptionByWorld()
         {
-            var action = new HackAndSlash()
+            var action = new HackAndSlash2()
             {
-                costumes = new List<int>(),
+                costumes = new HashSet<int>(),
                 equipments = new List<Guid>(),
                 foods = new List<Guid>(),
                 worldId = 100,
@@ -232,9 +240,9 @@ namespace Lib9c.Tests.Action
         [InlineData(51)]
         public void ExecuteThrowSheetRowColumnException(int stageId)
         {
-            var action = new HackAndSlash()
+            var action = new HackAndSlash2()
             {
-                costumes = new List<int>(),
+                costumes = new HashSet<int>(),
                 equipments = new List<Guid>(),
                 foods = new List<Guid>(),
                 worldId = 1,
@@ -261,9 +269,9 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void ExecuteThrowSheetRowNotFoundExceptionByStage()
         {
-            var action = new HackAndSlash()
+            var action = new HackAndSlash2()
             {
-                costumes = new List<int>(),
+                costumes = new HashSet<int>(),
                 equipments = new List<Guid>(),
                 foods = new List<Guid>(),
                 worldId = 1,
@@ -293,9 +301,9 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void ExecuteThrowFailedAddWorldException()
         {
-            var action = new HackAndSlash()
+            var action = new HackAndSlash2()
             {
-                costumes = new List<int>(),
+                costumes = new HashSet<int>(),
                 equipments = new List<Guid>(),
                 foods = new List<Guid>(),
                 worldId = 1,
@@ -333,9 +341,9 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void ExecuteThrowInvalidWorldException()
         {
-            var action = new HackAndSlash()
+            var action = new HackAndSlash2()
             {
-                costumes = new List<int>(),
+                costumes = new HashSet<int>(),
                 equipments = new List<Guid>(),
                 foods = new List<Guid>(),
                 worldId = 2,
@@ -364,9 +372,9 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void ExecuteThrowInvalidStageException()
         {
-            var action = new HackAndSlash()
+            var action = new HackAndSlash2()
             {
-                costumes = new List<int>(),
+                costumes = new HashSet<int>(),
                 equipments = new List<Guid>(),
                 foods = new List<Guid>(),
                 worldId = 1,
@@ -410,9 +418,9 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void ExecuteThrowInvalidStageExceptionUnlockedWorld()
         {
-            var action = new HackAndSlash()
+            var action = new HackAndSlash2()
             {
-                costumes = new List<int>(),
+                costumes = new HashSet<int>(),
                 equipments = new List<Guid>(),
                 foods = new List<Guid>(),
                 worldId = 1,
@@ -452,9 +460,9 @@ namespace Lib9c.Tests.Action
             var equipment = ItemFactory.CreateItemUsable(equipRow, Guid.NewGuid(), 100);
             avatarState.inventory.AddItem(equipment);
 
-            var action = new HackAndSlash()
+            var action = new HackAndSlash2()
             {
-                costumes = new List<int>(),
+                costumes = new HashSet<int>(),
                 equipments = new List<Guid>()
                 {
                     equipment.ItemId,
@@ -498,9 +506,9 @@ namespace Lib9c.Tests.Action
             avatarState.inventory.AddItem(equipment);
             avatarState.level = 0;
 
-            var action = new HackAndSlash()
+            var action = new HackAndSlash2()
             {
-                costumes = new List<int>(),
+                costumes = new HashSet<int>(),
                 equipments = new List<Guid>()
                 {
                     equipment.ItemId,
@@ -538,9 +546,9 @@ namespace Lib9c.Tests.Action
                 actionPoint = 0,
             };
 
-            var action = new HackAndSlash()
+            var action = new HackAndSlash2()
             {
-                costumes = new List<int>(),
+                costumes = new HashSet<int>(),
                 equipments = new List<Guid>(),
                 foods = new List<Guid>(),
                 worldId = 1,
@@ -570,9 +578,9 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Rehearsal()
         {
-            var action = new HackAndSlash()
+            var action = new HackAndSlash2()
             {
-                costumes = new List<int>(),
+                costumes = new HashSet<int>(),
                 equipments = new List<Guid>(),
                 foods = new List<Guid>(),
                 worldId = 1,
@@ -606,9 +614,9 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void SerializeWithDotnetAPI()
         {
-            var action = new HackAndSlash()
+            var action = new HackAndSlash2()
             {
-                costumes = new List<int>(),
+                costumes = new HashSet<int>(),
                 equipments = new List<Guid>(),
                 foods = new List<Guid>(),
                 worldId = 1,
@@ -631,7 +639,7 @@ namespace Lib9c.Tests.Action
             formatter.Serialize(ms, action);
             ms.Seek(0, SeekOrigin.Begin);
 
-            var deserialized = (HackAndSlash)formatter.Deserialize(ms);
+            var deserialized = (HackAndSlash2)formatter.Deserialize(ms);
             Assert.Equal(action.PlainValue, deserialized.PlainValue);
         }
 
@@ -640,14 +648,9 @@ namespace Lib9c.Tests.Action
         {
             var guid1 = new Guid("F9168C5E-CEB2-4faa-B6BF-329BF39FA1E4");
             var guid2 = new Guid("936DA01F-9ABD-4d9d-80C7-02AF85C822A8");
-            var action = new HackAndSlash()
+            var action = new HackAndSlash2()
             {
-                costumes = new List<int>()
-                {
-                    3,
-                    2,
-                    1,
-                },
+                costumes = new HashSet<int>(new[] { 3, 2, 1 }),
                 equipments = new List<Guid>()
                 {
                     guid2,
@@ -665,7 +668,7 @@ namespace Lib9c.Tests.Action
                 RankingMapAddress = _rankingMapAddress,
             };
 
-            var deserialized = new HackAndSlash();
+            var deserialized = new HackAndSlash2();
             deserialized.LoadPlainValue(action.PlainValue);
 
             Assert.Equal(action.PlainValue, deserialized.PlainValue);
