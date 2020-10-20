@@ -43,11 +43,13 @@ namespace Nekoyume.Action
 
             public IImmutableSet<Address> StateUpdatedAddresses => _states.Keys.ToImmutableHashSet();
 
+#pragma warning disable LAA1002
             public IImmutableDictionary<Address, IImmutableSet<Currency>> UpdatedFungibleAssets =>
                 _balances.GroupBy(kv => kv.Key.Item1).ToImmutableDictionary(
                     g => g.Key,
                     g => (IImmutableSet<Currency>)g.Select(kv => kv.Key.Item2).ToImmutableHashSet()
                 );
+#pragma warning restore LAA1002
 
             public AccountStateDelta(
                 IImmutableDictionary<Address, IValue> states,
@@ -237,7 +239,9 @@ namespace Nekoyume.Action
                     ))
                 );
                 var balance = new Bencodex.Types.List(
+#pragma warning disable LAA1002
                     delta.UpdatedFungibleAssets.SelectMany(ua =>
+#pragma warning restore LAA1002
                         ua.Value.Select(c =>
                             {
                                 FungibleAssetValue b = delta.GetBalance(ua.Key, c);

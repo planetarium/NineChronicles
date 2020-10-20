@@ -39,7 +39,9 @@ namespace Nekoyume.Model.State
             {
                 [(Text)"currency"] = Currency.Serialize()
             };
+#pragma warning disable LAA1002
             return new Dictionary(values.Union((Dictionary)base.Serialize()));
+#pragma warning restore LAA1002
         }
 
         public void GetObjectData(SerializationInfo info, StreamingContext context)

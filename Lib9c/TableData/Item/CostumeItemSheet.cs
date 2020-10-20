@@ -29,10 +29,12 @@ namespace Nekoyume.TableData
                 return new Row(serialized);
             }
 
+#pragma warning disable LAA1002
             public override IValue Serialize() => new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
             {
                 [(Text) "spine_resource_path"] = (Text) SpineResourcePath,
             }.Union((Bencodex.Types.Dictionary) base.Serialize()));
+#pragma warning restore LAA1002
 
             public override void Set(IReadOnlyList<string> fields)
             {

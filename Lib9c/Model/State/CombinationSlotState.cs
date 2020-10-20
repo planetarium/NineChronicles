@@ -82,7 +82,9 @@ namespace Nekoyume.Model.State
             {
                 values.Add((Text) "result", Result.Serialize());
             }
+#pragma warning disable LAA1002
             return new Dictionary(values.Union((Dictionary) base.Serialize()));
+#pragma warning restore LAA1002
         }
     }
 }

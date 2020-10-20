@@ -31,6 +31,7 @@ namespace Nekoyume.Model.State
         }
 
         public override IValue Serialize() =>
+#pragma warning disable LAA1002
             new Dictionary(new Dictionary<IKey, IValue>
             {
                 [(Text) "products"] = new Dictionary(
@@ -39,6 +40,7 @@ namespace Nekoyume.Model.State
                             (Binary) kv.Key.Serialize(),
                             kv.Value.Serialize()))),
             }.Union((Dictionary) base.Serialize()));
+#pragma warning restore LAA1002
 
         #region Register
 

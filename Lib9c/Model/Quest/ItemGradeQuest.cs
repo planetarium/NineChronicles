@@ -62,11 +62,13 @@ namespace Nekoyume.Model.Quest
         protected override string TypeId => "itemGradeQuest";
 
         public override IValue Serialize() =>
+#pragma warning disable LAA1002
             new Dictionary(new Dictionary<IKey, IValue>
             {
                 [(Text)"grade"] = Grade.Serialize(),
                 [(Text)"itemIds"] = new List(ItemIds.OrderBy(i => i).Select(i => i.Serialize())),
             }.Union((Dictionary)base.Serialize()));
+#pragma warning restore LAA1002
 
     }
 }

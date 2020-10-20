@@ -50,7 +50,7 @@ namespace Nekoyume.TableData
             if (value.StatModifiers.Count == 0)
                 return;
 
-            var pair = value.StatModifiers.First();
+            var pair = value.StatModifiers.OrderBy(kv => kv.Key).First();
             if (row.StatModifiers.ContainsKey(pair.Key))
                 throw new Exception($"[{nameof(EquipmentItemSetEffectSheet)}]Already contained key: {pair.Key}");
             
@@ -75,6 +75,7 @@ namespace Nekoyume.TableData
             }
 
             var rows = new List<EquipmentItemSetEffectSheet.Row>();
+#pragma warning disable LAA1002
             foreach (var setInfoPair in setInfo)
             {
                 if (!sheet.TryGetValue(setInfoPair.Key, out var row))
@@ -88,7 +89,8 @@ namespace Nekoyume.TableData
                     rows.Add(row);
                 }
             }
-            
+#pragma warning restore LAA1002
+
             return rows;
         }
     }

@@ -65,12 +65,14 @@ namespace Nekoyume.Model.State
                 [(Text) "daily_arena_interval"] = DailyArenaInterval.Serialize(),
                 [(Text) "weekly_arena_interval"] = WeeklyArenaInterval.Serialize(),
             };
+#pragma warning disable LAA1002
             return new Dictionary(values.Union((Dictionary) base.Serialize()));
+#pragma warning restore LAA1002
         }
 
         public void Set(GameConfigSheet sheet)
         {
-            foreach (var row in sheet)
+            foreach (var row in sheet.OrderedList)
             {
                 Update(row);
             }

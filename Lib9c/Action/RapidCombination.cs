@@ -33,10 +33,12 @@ namespace Nekoyume.Action
             }
 
             public override IValue Serialize() =>
+#pragma warning disable LAA1002
                 new Dictionary(new Dictionary<IKey, IValue>
                 {
                     [(Text) "cost"] = cost.Serialize(),
                 }.Union((Dictionary) base.Serialize()));
+#pragma warning restore LAA1002
         }
 
         public Address avatarAddress;

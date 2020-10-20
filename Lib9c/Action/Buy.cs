@@ -48,11 +48,13 @@ namespace Nekoyume.Action
             }
 
             public override IValue Serialize() =>
+#pragma warning disable LAA1002
                 new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
                 {
                     [(Text) "shopItem"] = shopItem.Serialize(),
                     [(Text) "id"] = id.Serialize(),
                 }.Union((Bencodex.Types.Dictionary) base.Serialize()));
+#pragma warning restore LAA1002
         }
 
         [Serializable]
@@ -76,12 +78,14 @@ namespace Nekoyume.Action
             }
 
             public override IValue Serialize() =>
+#pragma warning disable LAA1002
                 new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
                 {
                     [(Text) "shopItem"] = shopItem.Serialize(),
                     [(Text) "id"] = id.Serialize(),
                     [(Text) "gold"] = gold.Serialize(),
                 }.Union((Bencodex.Types.Dictionary) base.Serialize()));
+#pragma warning restore LAA1002
         }
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal => new Dictionary<string, IValue>

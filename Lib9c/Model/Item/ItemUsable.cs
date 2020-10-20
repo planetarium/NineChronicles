@@ -114,6 +114,7 @@ namespace Nekoyume.Model.Item
         }
 
         public override IValue Serialize() =>
+#pragma warning disable LAA1002
             new Dictionary(new Dictionary<IKey, IValue>
             {
                 [(Text) "itemId"] = ItemId.Serialize(),
@@ -128,5 +129,6 @@ namespace Nekoyume.Model.Item
                     .Select(s => s.Serialize())),
                 [(Text) "requiredBlockIndex"] = RequiredBlockIndex.Serialize(),
             }.Union((Dictionary) base.Serialize()));
+#pragma warning restore LAA1002
     }
 }

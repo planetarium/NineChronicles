@@ -42,7 +42,8 @@ namespace Nekoyume.TableData
                 AttackRange = ParseDecimal(fields[7]);
                 SpineResourcePath = fields[8];
             }
-            
+
+#pragma warning disable LAA1002
             public override IValue Serialize() => new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
             {
                 [(Text) "set_id"] = (Integer) SetId,
@@ -50,6 +51,7 @@ namespace Nekoyume.TableData
                 [(Text) "attack_range"] = AttackRange.Serialize(),
                 [(Text) "spine_resource_path"] = (Text) SpineResourcePath,
             }.Union((Bencodex.Types.Dictionary) base.Serialize()));
+#pragma warning restore LAA1002
         }
         
         public EquipmentItemSheet() : base(nameof(EquipmentItemSheet))

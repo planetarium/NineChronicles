@@ -36,44 +36,6 @@ namespace Lib9c.Tests.Model.State
         }
 
         [Fact]
-        public void GetAgentAddresses()
-        {
-            var privateKey = new PrivateKey();
-            var agentAddress = privateKey.PublicKey.ToAddress();
-
-            var avatarAddress = agentAddress.Derive("avatar");
-            var characterSheet = new CharacterSheet();
-            characterSheet.Set(_sheets[nameof(CharacterSheet)]);
-
-            var avatarState = new AvatarState(
-                avatarAddress,
-                default,
-                0,
-                _tableSheets.GetAvatarSheets(),
-                new GameConfigState(),
-                default
-            );
-
-            var avatarAddress2 = agentAddress.Derive("avatar2");
-            var avatarState2 = new AvatarState(
-                avatarAddress2,
-                default,
-                0,
-                _tableSheets.GetAvatarSheets(),
-                new GameConfigState(),
-                default
-            );
-
-            var state = new WeeklyArenaState(0);
-            state.Set(avatarState, characterSheet);
-            state[avatarAddress].Activate();
-            state.Set(avatarState2, characterSheet);
-            state[avatarAddress2].Activate();
-
-            Assert.Single(state.GetAgentAddresses(2));
-        }
-
-        [Fact]
         public void Serialize()
         {
             var address = default(Address);

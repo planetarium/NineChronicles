@@ -54,9 +54,11 @@ namespace Nekoyume.Model.Quest
         }
 
         public override IValue Serialize() =>
+#pragma warning disable LAA1002
             new Dictionary(new Dictionary<IKey, IValue>
             {
                 [(Text)"monsterId"] = (Integer)MonsterId,
             }.Union((Dictionary)base.Serialize()));
+#pragma warning restore LAA1002
     }
 }

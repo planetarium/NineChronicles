@@ -55,6 +55,7 @@ namespace Nekoyume.Model.State
 
         public override IValue Serialize()
         {
+#pragma warning disable LAA1002
             return new Dictionary(new Dictionary<IKey, IValue>
             {
                 [(Text) "map"] = new Dictionary(_map.Select(kv =>
@@ -64,6 +65,7 @@ namespace Nekoyume.Model.State
                     )
                 ))
             }.Union((Dictionary) base.Serialize()));
+#pragma warning restore LAA1002
         }
     }
 

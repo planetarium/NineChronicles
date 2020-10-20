@@ -103,7 +103,9 @@ namespace Nekoyume.Model
             Skills = value.Skills;
             // 버프는 컨테이너도 옮기고,
             Buffs = new Dictionary<int, Buff.Buff>();
+#pragma warning disable LAA1002
             foreach (var pair in value.Buffs)
+#pragma warning restore LAA1002
             {
                 // 깊은 복사까지 꼭.
                 Buffs.Add(pair.Key, (Buff.Buff) pair.Value.Clone());
@@ -153,7 +155,9 @@ namespace Nekoyume.Model
         private void ReduceDurationOfBuffs()
         {
             // 자신의 기존 버프 턴 조절.
+#pragma warning disable LAA1002
             foreach (var pair in Buffs)
+#pragma warning restore LAA1002
             {
                 pair.Value.remainedDuration--;
             }
@@ -391,7 +395,9 @@ namespace Nekoyume.Model
 
         public void ReduceCooldown()
         {
+#pragma warning disable LAA1002
             if (!_skillsCooldown.Any())
+#pragma warning restore LAA1002
                 return;
 
             foreach (var key in _skillsCooldown.Keys.OrderBy(i => i))

@@ -24,12 +24,14 @@ namespace Nekoyume.Model.State
         public AgentState(Dictionary serialized)
             : base(serialized)
         {
+#pragma warning disable LAA1002
             avatarAddresses = ((Dictionary)serialized["avatarAddresses"])
                 .Where(kv => kv.Key is Binary)
                 .ToDictionary(
                     kv => BitConverter.ToInt32(((Binary)kv.Key).Value, 0),
                     kv => kv.Value.ToAddress()
                 );
+#pragma warning restore LAA1002
             unlockedOptions = serialized.ContainsKey((IKey)(Text) "unlockedOptions")
                 ? serialized["unlockedOptions"].ToHashSet(StateExtensions.ToInteger)
                 : new HashSet<int>();
@@ -41,6 +43,7 @@ namespace Nekoyume.Model.State
         }
 
         public override IValue Serialize() =>
+#pragma warning disable LAA1002
             new Dictionary(new Dictionary<IKey, IValue>
             {
                 [(Text)"avatarAddresses"] = new Dictionary(
@@ -53,5 +56,7 @@ namespace Nekoyume.Model.State
                 ),
                 [(Text)"unlockedOptions"] = unlockedOptions.Select(i => i.Serialize()).Serialize(),
             }.Union((Dictionary)base.Serialize()));
+#pragma warning restore LAA1002
+
     }
 }

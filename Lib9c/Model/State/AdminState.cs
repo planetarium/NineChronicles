@@ -34,7 +34,9 @@ namespace Nekoyume.Model.State
                 [(Text) "admin_address"] = AdminAddress.Serialize(),
                 [(Text) "valid_until"] = ValidUntil.Serialize(),
             };
+#pragma warning disable LAA1002
             return new Dictionary(values.Union((Dictionary)base.Serialize()));
+#pragma warning restore LAA1002
         }
 
     }

@@ -70,6 +70,7 @@ namespace Nekoyume.Model.State
         }
 
         public override IValue Serialize() =>
+#pragma warning disable LAA1002
             new Dictionary(new Dictionary<IKey, IValue>
             {
                 [(Text)"map"] = new Dictionary(_map.Select(kv =>
@@ -81,6 +82,7 @@ namespace Nekoyume.Model.State
                 [(Text)"resetIndex"] = ResetIndex.Serialize(),
                 [(Text)"ended"] = Ended.Serialize(),
             }.Union((Dictionary)base.Serialize()));
+#pragma warning restore LAA1002
 
         private void ResetOrderedArenaInfos()
         {
@@ -193,7 +195,9 @@ namespace Nekoyume.Model.State
 
         public void Update(WeeklyArenaState prevState, long index)
         {
+#pragma warning disable LAA1002
             var filtered = prevState.Where(i => i.Value.Active).ToList();
+#pragma warning restore LAA1002
             foreach (var kv in filtered)
             {
                 var value = new ArenaInfo(kv.Value);
@@ -205,24 +209,6 @@ namespace Nekoyume.Model.State
         public void SetReceive(Address avatarAddress)
         {
             _map[avatarAddress].Receive = true;
-        }
-
-        public Address[] GetAgentAddresses(int count)
-        {
-            var sorted = _map.Values
-                .Where(i => i.Active)
-                .OrderByDescending(i => i.Score)
-                .ThenBy(i => i.CombatPoint)
-                .ToList();
-            var result = new HashSet<Address>();
-            foreach (var info in sorted)
-            {
-                result.Add(info.AgentAddress);
-                if (result.Count == count)
-                    break;
-            }
-
-            return result.ToArray();
         }
 
         #region IDictionary
@@ -251,7 +237,9 @@ namespace Nekoyume.Model.State
 
         public bool Contains(KeyValuePair<Address, ArenaInfo> item)
         {
+#pragma warning disable LAA1002
             return _map.Contains(item);
+#pragma warning restore LAA1002
         }
 
         public void CopyTo(KeyValuePair<Address, ArenaInfo>[] array, int arrayIndex)

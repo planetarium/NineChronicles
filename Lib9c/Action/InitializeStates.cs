@@ -84,12 +84,14 @@ namespace Nekoyume.Action
             {
                 states = states.SetState(RankingState.Address, MarkChanged);
                 states = states.SetState(ShopState.Address, MarkChanged);
+#pragma warning disable LAA1002
                 states = TableSheets
                     .Aggregate(states, (current, pair) =>
                         current.SetState(Addresses.TableSheet.Derive(pair.Key), MarkChanged));
                 states = rankingState.RankingMap
                     .Aggregate(states, (current, pair) =>
                         current.SetState(pair.Key, MarkChanged));
+#pragma warning restore LAA1002
                 states = states.SetState(weeklyArenaState.address, MarkChanged);
                 states = states.SetState(GameConfigState.Address, MarkChanged);
                 states = states.SetState(RedeemCodeState.Address, MarkChanged);
@@ -114,12 +116,14 @@ namespace Nekoyume.Action
                 return states;
             }
 
+#pragma warning disable LAA1002
             states = TableSheets
                 .Aggregate(states, (current, pair) =>
                     current.SetState(Addresses.TableSheet.Derive(pair.Key), pair.Value.Serialize()));
             states = rankingState.RankingMap
                 .Aggregate(states, (current, pair) =>
                     current.SetState(pair.Key, new RankingMapState(pair.Key).Serialize()));
+#pragma warning restore LAA1002
             states = states
                 .SetState(weeklyArenaState.address, weeklyArenaState.Serialize())
                 .SetState(RankingState.Address, Ranking)
@@ -165,9 +169,11 @@ namespace Nekoyume.Action
                 .Add("ranking_state", Ranking)
                 .Add("shop_state", Shop)
                 .Add("table_sheets",
+#pragma warning disable LAA1002
                     new Bencodex.Types.Dictionary(TableSheets.Select(pair =>
                         new KeyValuePair<Bencodex.Types.IKey, Bencodex.Types.IValue>(
                             (Bencodex.Types.Text)pair.Key, (Bencodex.Types.Text)pair.Value))))
+#pragma warning restore LAA1002
                 .Add("game_config_state", GameConfig)
                 .Add("redeem_code_state", RedeemCode)
                 .Add("admin_address_state", AdminAddress)

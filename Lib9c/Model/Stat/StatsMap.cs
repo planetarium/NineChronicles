@@ -149,6 +149,7 @@ namespace Nekoyume.Model.Stat
         }
 
         public IValue Serialize() =>
+#pragma warning disable LAA1002
             new Dictionary(
                 _statMaps.Select(kv =>
                     new KeyValuePair<IKey, IValue>(
@@ -157,10 +158,13 @@ namespace Nekoyume.Model.Stat
                     )
                 )
             );
+#pragma warning restore LAA1002
 
         public void Deserialize(Dictionary serialized)
         {
+#pragma warning disable LAA1002
             foreach (KeyValuePair<IKey, IValue> kv in serialized)
+#pragma warning restore LAA1002
             {
                 _statMaps[StatTypeExtension.Deserialize((Binary)kv.Key)] =
                     new StatMapEx((Dictionary)kv.Value);
