@@ -12,12 +12,12 @@ namespace Nekoyume.UI
 {
     public class CodeRewardEffector : Widget
     {
-        [SerializeField] private TouchHandler openTouchHandler;
-        [SerializeField] private TouchHandler closeTouchHandler;
-        [SerializeField] private SubmitButton closeButton;
+        [SerializeField] private TouchHandler openTouchHandler = null;
+        [SerializeField] private TouchHandler closeTouchHandler = null;
+        [SerializeField] private SubmitButton closeButton = null;
 
         // todo : 항상 보상으로 받는 아이템이 4개인지 체크해 봐야함. 기존은 4개 였음
-        [SerializeField] private SimpleCountableItemView[] itemViews; 
+        [SerializeField] private SimpleCountableItemView[] itemViews = null; 
 
         private static readonly int AppearHash = Animator.StringToHash("UICodeReward@Appear");
         private static readonly int OpenHash = Animator.StringToHash("UICodeReward@Open");
