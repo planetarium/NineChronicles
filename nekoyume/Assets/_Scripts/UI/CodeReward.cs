@@ -91,7 +91,7 @@ namespace Nekoyume.UI
 
             TableSheets tableSheets = Game.Game.instance.TableSheets;
             ItemSheet itemSheet = tableSheets.ItemSheet;
-            RedeemRewardSheet.Row row = tableSheets.RedeemRewardSheet.Values.First(r => r.Id == reward.RewardId);
+            RedeemRewardSheet.Row row = tableSheets.RedeemRewardSheet.OrderedList.First(r => r.Id == reward.RewardId);
             var itemRewards = row.Rewards.Where(r => r.Type != RewardType.Gold)
                 .Select(r => (ItemFactory.CreateItem(itemSheet[r.ItemId.Value]), r.Quantity))
                 .ToList();
