@@ -72,9 +72,7 @@ namespace Nekoyume.Model.State
 
         public void Set(GameConfigSheet sheet)
         {
-#pragma warning disable LAA1002
-            foreach (var row in sheet)
-#pragma warning restore LAA1002
+            foreach (var row in sheet.OrderedList)
             {
                 Update(row);
             }
