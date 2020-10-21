@@ -214,7 +214,7 @@ namespace Nekoyume.State
         public void DeselectAvatar()
         {
             CurrentAvatarKey = -1;
-            LocalStateSettings.Instance.InitializeCurrentAvatarState(null);
+            LocalStateSettings.Instance?.InitializeCurrentAvatarState(null);
             UpdateCurrentAvatarState(null);
         }
 
