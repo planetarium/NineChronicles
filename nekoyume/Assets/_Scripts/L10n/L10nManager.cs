@@ -175,7 +175,7 @@ namespace Nekoyume.L10n
 
         #endregion
 
-        private static IReadOnlyDictionary<string, string> GetDictionary(LanguageType languageType)
+        public static IReadOnlyDictionary<string, string> GetDictionary(LanguageType languageType)
         {
             if (!Directory.Exists(CsvFilesRootDirectoryPath))
             {
