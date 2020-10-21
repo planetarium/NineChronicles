@@ -32,7 +32,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 4257732381764891270}
+        m_Texture: {fileID: 7251057283009558206}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _OutlineTex:
@@ -2179,7 +2179,7 @@ MonoBehaviour:
     m_GlyphIndex: 421
     m_Scale: 1
   m_AtlasTextures:
-  - {fileID: 4257732381764891270}
+  - {fileID: 7251057283009558206}
   m_AtlasTextureIndex: 0
   m_UsedGlyphRects:
   - m_X: 0
@@ -3063,7 +3063,7 @@ MonoBehaviour:
   m_FallbackFontAssetTable: []
   m_CreationSettings:
     sourceFontFileName: 
-    sourceFontFileGUID: bc2a93dd430294b56b9ca3961a85095a
+    sourceFontFileGUID: f496f0d578f7449b0b5d3d7eb1f05ca6
     pointSizeSamplingMode: 1
     pointSize: 80
     padding: 9
@@ -3106,7 +3106,7 @@ MonoBehaviour:
   boldSpacing: 7
   italicStyle: 35
   tabSize: 10
---- !u!28 &4257732381764891270
+--- !u!28 &7251057283009558206
 Texture2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

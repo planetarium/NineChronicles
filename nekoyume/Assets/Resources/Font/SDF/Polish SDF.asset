@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!28 &-2086210718667105482
+--- !u!28 &-964121549468592520
 Texture2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2117,7 +2117,7 @@ MonoBehaviour:
     m_GlyphIndex: 421
     m_Scale: 1
   m_AtlasTextures:
-  - {fileID: -2086210718667105482}
+  - {fileID: -964121549468592520}
   m_AtlasTextureIndex: 0
   m_UsedGlyphRects:
   - m_X: 0
@@ -2993,7 +2993,7 @@ MonoBehaviour:
   m_FallbackFontAssetTable: []
   m_CreationSettings:
     sourceFontFileName: 
-    sourceFontFileGUID: bc2a93dd430294b56b9ca3961a85095a
+    sourceFontFileGUID: f496f0d578f7449b0b5d3d7eb1f05ca6
     pointSizeSamplingMode: 1
     pointSize: 80
     padding: 9
@@ -3068,7 +3068,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: -2086210718667105482}
+        m_Texture: {fileID: -964121549468592520}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _OutlineTex:
