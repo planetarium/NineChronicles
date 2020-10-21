@@ -8,7 +8,7 @@ namespace _Scripts.UI
 {
     public class CriticalCutscene : HudWidget
     {
-        private const string CUTSCENE_PATH = "Character/Cutscene_1/Cutscene_";
+        private const string CUTSCENE_PATH = "Character/Cutscene/Cutscene_";
 
         public static void Show(int armorId)
         {
