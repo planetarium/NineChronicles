@@ -42,27 +42,12 @@ namespace Nekoyume.UI
             materialText.text = L10nManager.Localize("UI_COMBINATION_MATERIALS");
             submitButtonText.text = L10nManager.Localize("UI_OK");
 
-            submitButton.OnClickAsObservable().Subscribe(_ =>
-            {
-                Model.OnClickSubmit.OnNext(Model);
-                AudioController.PlayClick();
-                ItemMoveAnimation.Show(itemInformation.Model.item.Value.ItemBase.Value.GetIconSprite(),
-                    itemInformation.transform.position,
-                    Find<BottomMenu>().characterButton.transform.position,
-                    Vector2.one,
-                    false,
-                    true,
-                    1f,
-                    0.82f,
-                    ItemMoveAnimation.EndPoint.Inventory);
-                Close();
-            }).AddTo(gameObject);
+            submitButton.OnClickAsObservable().Subscribe(_ => Close()).AddTo(gameObject);
             touchHandler.OnClick.Subscribe(pointerEventData =>
             {
                 if (!pointerEventData.pointerCurrentRaycast.gameObject.Equals(gameObject))
                     return;
 
-                AudioController.PlayClick();
                 Close();
             }).AddTo(gameObject);
 
@@ -88,6 +73,23 @@ namespace Nekoyume.UI
             base.Show();
             SetData(data);
             LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform) verticalLayoutGroup.transform);
+        }
+
+        public override void Close(bool ignoreCloseAnimation = false)
+        {
+            base.Close(ignoreCloseAnimation);
+
+            Model.OnClickSubmit.OnNext(Model);
+            AudioController.PlayClick();
+            ItemMoveAnimation.Show(itemInformation.Model.item.Value.ItemBase.Value.GetIconSprite(),
+                itemInformation.transform.position,
+                Find<BottomMenu>().characterButton.transform.position,
+                Vector2.one,
+                false,
+                true,
+                1f,
+                0.82f,
+                ItemMoveAnimation.EndPoint.Inventory);
         }
 
         private void SetData(Model.CombinationResultPopup data)
