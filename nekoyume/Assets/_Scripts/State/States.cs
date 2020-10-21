@@ -226,8 +226,10 @@ namespace Nekoyume.State
             {
                 LocalStateSettings.Instance.InitializeCombinationSlotsByCurrentAvatarState(null);
                 CombinationSlotStatesSubject.OnNext(null);
-            }
 
+                return;
+            }
+            
             LocalStateSettings.Instance.InitializeCombinationSlotsByCurrentAvatarState(avatarState);
             for (var i = 0; i < avatarState.combinationSlotAddresses.Count; i++)
             {
