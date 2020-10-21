@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5b1d2f7e94e645caa286671252089fa9, type: 3}
-  m_Name: FontAssetData NotoSansCJKsc-Regular-00-ASCII(98) SDF
+  m_Name: FontAssetData ChineseSimplified SDF
   m_EditorClassIdentifier: 
   fontAsset: {fileID: 11400000, guid: c8fb8e2a40267408e887a3a22f5204d2, type: 2}
   fontMaterialDataList:
@@ -53,6 +53,7 @@ MonoBehaviour:
     material: {fileID: 2100000, guid: 24347743baa0f4d39985e7b6f9d25f8a, type: 2}
   - type: 18
     material: {fileID: 2100000, guid: 992021276e3db4153ae879a791c92de0, type: 2}
+  setFontStyleBoldToDisabledAsForced: 0
   fontSizeOffset: -3
   characterSpacingOffset: 0
   wordSpacingOffset: 0

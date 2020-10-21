@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5b1d2f7e94e645caa286671252089fa9, type: 3}
-  m_Name: FontAssetData kanit-light-00-ASCII(97) SDF
+  m_Name: FontAssetData Thai SDF
   m_EditorClassIdentifier: 
   fontAsset: {fileID: 11400000, guid: 0a19bbb2b89824ab2ab62ee5ea4fcee6, type: 2}
   fontMaterialDataList:
@@ -53,6 +53,7 @@ MonoBehaviour:
     material: {fileID: 2100000, guid: e81a07f6bc3374be7b978dea81d5a0d5, type: 2}
   - type: 18
     material: {fileID: 2100000, guid: 31b48115df31546febb551408242edba, type: 2}
+  setFontStyleBoldToDisabledAsForced: 0
   fontSizeOffset: -0.5
   characterSpacingOffset: 0
   wordSpacingOffset: 0
