@@ -1,10 +1,12 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Threading.Tasks;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Blocks;
@@ -35,18 +37,20 @@ namespace Lib9c.Tools
             out List<ActivationKey> activationKeys,
             uint countOfKeys)
         {
-            pendingActivationStates = new List<PendingActivationState>();
-            activationKeys = new List<ActivationKey>();
-
-            for (uint i = 0; i < countOfKeys; i++)
+            var ps = new ConcurrentBag<PendingActivationState>();
+            var ks = new ConcurrentBag<ActivationKey>();
+            Parallel.For(0, countOfKeys, _ =>
             {
                 var pendingKey = new PrivateKey();
                 var nonce = pendingKey.PublicKey.ToAddress().ToByteArray();
                 (ActivationKey ak, PendingActivationState s) =
                     ActivationKey.Create(pendingKey, nonce);
-                pendingActivationStates.Add(s);
-                activationKeys.Add(ak);
-            }
+                ps.Add(s);
+                ks.Add(ak);
+            });
+
+            pendingActivationStates = ps.ToList();
+            activationKeys = ks.ToList();
         }
 
         public static AuthorizedMinersState GetAuthorizedMinersState(string configPath)
