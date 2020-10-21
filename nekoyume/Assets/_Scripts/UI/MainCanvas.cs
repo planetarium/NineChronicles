@@ -246,8 +246,6 @@ namespace Nekoyume.UI
             yield return null;
             secondWidgets.Add(Widget.Create<CombinationSlotPopup>());
             yield return null;
-            secondWidgets.Add(Widget.Create<RedeemRewardPopup>());
-            yield return null;
             secondWidgets.Add(Widget.Create<LevelUpCelebratePopup>());
             yield return null;
             // 임시로 팝업보다 상단에 배치합니다.
@@ -257,6 +255,9 @@ namespace Nekoyume.UI
             yield return null;
             // 팝업이지만 하단 메뉴보다 위에 그려져야 하는 것들입니다.
             secondWidgets.Add(Widget.Create<Dialog>());
+            yield return null;
+            secondWidgets.Add(Widget.Create<CodeReward>(true));
+            yield return null;
             // 팝업이지만 하단 메뉴보다 위에 그려져야 하는 것들입니다.
             secondWidgets.Add(Widget.Create<PrologueDialog>());
             yield return null;

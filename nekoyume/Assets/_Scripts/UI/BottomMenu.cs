@@ -69,6 +69,9 @@ namespace Nekoyume.UI.Module
         public NotifiableButton settingsButton;
         public NotifiableButton combinationButton;
 
+        // 코드 보상 버튼
+        public CodeRewardButton codeRewardButton;
+
         public CanvasGroup canvasGroup;
         public VFX inventoryVFX;
         public VFX workshopVFX;

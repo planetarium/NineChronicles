@@ -804,20 +804,7 @@ namespace Nekoyume.BlockChain
             var key = "UI_REDEEM_CODE_INVALID_CODE";
             if (eval.Exception is null)
             {
-                var code = eval.Action.Code;
-                PublicKey pubKey = new PrivateKey(ByteUtil.ParseHex(code)).PublicKey;
-                RedeemCodeState redeemCodeState = eval.OutputStates.GetRedeemCodeState();
-                Reward reward = redeemCodeState.Map[pubKey];
-                TableSheets tableSheets = Game.Game.instance.TableSheets;
-                ItemSheet itemSheet = tableSheets.ItemSheet;
-                RedeemRewardSheet.Row row = tableSheets.RedeemRewardSheet.Values.First(r => r.Id == reward.RewardId);
-                List<(ItemBase, int Quantity)> itemRewards = row.Rewards
-                    .Where(r => r.Type != RewardType.Gold)
-                    .Select(r => (ItemFactory.CreateItem(itemSheet[r.ItemId.Value]), r.Quantity))
-                    .ToList();
-                Widget.Find<RedeemRewardPopup>().Pop(itemRewards, tableSheets);
-
-                key = "UI_REDEEM_CODE_SUCCESS";
+                Widget.Find<CodeReward>().Show(eval.OutputStates.GetRedeemCodeState());
                 UpdateCurrentAvatarState(eval);
             }
             else
