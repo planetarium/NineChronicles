@@ -38,7 +38,7 @@ namespace Nekoyume.BlockChain
 
         #region Actions
 
-        public IObservable<ActionBase.ActionEvaluation<CreateAvatar>> CreateAvatar(Address avatarAddress, int index,
+        public IObservable<ActionBase.ActionEvaluation<CreateAvatar2>> CreateAvatar(int index,
             string nickName, int hair = 0, int lens = 0, int ear = 0, int tail = 0)
         {
             if (States.Instance.AvatarStates.ContainsKey(index))
@@ -46,9 +46,8 @@ namespace Nekoyume.BlockChain
                 throw new Exception($"Already contains {index} in {States.Instance.AvatarStates}");
             }
 
-            var action = new CreateAvatar
+            var action = new CreateAvatar2
             {
-                avatarAddress = avatarAddress,
                 index = index,
                 hair = hair,
                 lens = lens,
@@ -58,7 +57,7 @@ namespace Nekoyume.BlockChain
             };
             ProcessAction(action);
 
-            return _renderer.EveryRender<CreateAvatar>()
+            return _renderer.EveryRender<CreateAvatar2>()
                 .SkipWhile(eval => !eval.Action.Id.Equals(action.Id))
                 .Take(1)
                 .Last()
@@ -233,30 +232,27 @@ namespace Nekoyume.BlockChain
                 .Timeout(ActionTimeout);
         }
 
-        public IObservable<ActionBase.ActionEvaluation<ItemEnhancement>> ItemEnhancement(
+        public IObservable<ActionBase.ActionEvaluation<ItemEnhancement2>> ItemEnhancement(
             Guid itemId,
-            IReadOnlyList<Guid> materialIds,
+            Guid materialId,
             int slotIndex)
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
 
             // NOTE: 장착했는지 안 했는지에 상관없이 해제 플래그를 걸어 둔다.
             LocalStateModifier.SetEquipmentEquip(avatarAddress, itemId, false, false);
-            foreach (var materialId in materialIds)
-            {
-                LocalStateModifier.SetEquipmentEquip(avatarAddress, materialId, false, false);
-            }
+            LocalStateModifier.SetEquipmentEquip(avatarAddress, materialId, false, false);
 
-            var action = new ItemEnhancement
+            var action = new ItemEnhancement2
             {
                 itemId = itemId,
-                materialIds = materialIds,
+                materialId = materialId,
                 avatarAddress = avatarAddress,
                 slotIndex = slotIndex,
             };
             ProcessAction(action);
 
-            return _renderer.EveryRender<ItemEnhancement>()
+            return _renderer.EveryRender<ItemEnhancement2>()
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .Take(1)
                 .Last()
