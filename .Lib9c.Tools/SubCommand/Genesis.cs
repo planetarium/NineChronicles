@@ -2,6 +2,7 @@ using Cocona;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Blocks;
+using Libplanet.Crypto;
 using Nekoyume;
 using Nekoyume.Action;
 using Nekoyume.Model;
@@ -17,6 +18,8 @@ namespace Lib9c.Tools.SubCommand
     {
         [Command(Description = "Create a new genesis block.")]
         public void Create(
+            [Option("private-key", new[]{ 'p' }, Description = "Hex encoded private key for gensis block")]
+            string privateKeyHex,
             [Option('g', Description = "/path/to/nekoyume-unity/nekoyume/Assets/AddressableAssets/TableCSV")]
             string gameConfigDir,
             [Option('d', Description = "/path/to/nekoyume-unity/nekoyume/Assets/StreamingAssets/GoldDistribution.csv")]
@@ -61,7 +64,8 @@ namespace Lib9c.Tools.SubCommand
                 authorizedMinersState: authorizedMinersState,
                 activatedAccounts: activatedAccounts,
                 isActivateAdminAddress: activationKeyCount != 0,
-                credits: creditsPath is null ? null : File.ReadLines(creditsPath)
+                credits: creditsPath is null ? null : File.ReadLines(creditsPath),
+                privateKey: new PrivateKey(ByteUtil.ParseHex(privateKeyHex))
             );
 
             ExportBlock(block, "genesis-block");
