@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using _Scripts.UI;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Factory;
@@ -143,6 +144,7 @@ namespace Nekoyume.Game
             if (critical)
             {
                 _player.Animator.CriticalAttack();
+                CriticalCutscene.Show(_player.GetAmorId());
             }
             else
             {

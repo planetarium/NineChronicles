@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using _Scripts.UI;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
 using Nekoyume.Helper;
@@ -39,6 +40,7 @@ namespace Nekoyume.Game.Character
         protected override Vector3 HudTextPosition => transform.TransformPoint(0f, 1.7f, 0f);
 
         public PlayerSpineController SpineController { get; private set; }
+
         public Model.Player Model => (Model.Player) CharacterModel;
 
         public bool AttackEnd => AttackEndCalled;
@@ -573,6 +575,8 @@ namespace Nekoyume.Game.Character
             UpdateHitPoint();
         }
 
+
+
         public IEnumerator CoGetExp(long exp)
         {
             if (exp <= 0)
@@ -614,6 +618,11 @@ namespace Nekoyume.Game.Character
             Model.BattleStatus.Skill.SkillInfo skill, bool isLastHit,
             bool isConsiderElementalType)
         {
+            if (skill.Critical)
+            {
+                CriticalCutscene.Show(GetAmorId());
+            }
+
             ShowSpeech("PLAYER_SKILL", (int) skill.ElementalType, (int) skill.SkillCategory);
             base.ProcessAttack(target, skill, isLastHit, isConsiderElementalType);
             ShowSpeech("PLAYER_ATTACK");
@@ -623,6 +632,18 @@ namespace Nekoyume.Game.Character
         {
             ShowSpeech("PLAYER_SKILL", (int) info.ElementalType, (int) info.SkillCategory);
             yield return StartCoroutine(base.CoAnimationCast(info));
+        }
+
+        public int GetAmorId()
+        {
+            var costume = Costumes.FirstOrDefault(x => x.ItemSubType == ItemSubType.FullCostume);
+            if (costume != null)
+            {
+                return costume.Id;
+            }
+
+            var armor = (Armor) Equipments.FirstOrDefault(x => x.ItemSubType == ItemSubType.Armor);
+            return armor?.Id ?? GameConfig.DefaultAvatarArmorId;
         }
     }
 }
