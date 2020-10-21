@@ -186,6 +186,7 @@ namespace Nekoyume.Game
                     effect.StopLoop();
                     yield return new WaitForSeconds(0.1f);
                     _player.Animator.CriticalAttack();
+                    CriticalCutscene.Show(_player.GetAmorId());
                     effect.Finisher();
                     yield return new WaitUntil(() => effect.last.isStopped);
                     yield return new WaitForSeconds(0.2f);

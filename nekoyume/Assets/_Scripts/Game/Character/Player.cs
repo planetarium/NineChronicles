@@ -62,10 +62,8 @@ namespace Nekoyume.Game.Character
 
             Inventory = new Model.Item.Inventory();
 
-            touchHandler.OnClick
-                .Merge(touchHandler.OnDoubleClick)
-                .Merge(touchHandler.OnMultipleClick)
-                .Subscribe(_ =>
+            touchHandler.OnClick.Merge(touchHandler.OnDoubleClick)
+                .Merge(touchHandler.OnMultipleClick).Subscribe(_ =>
                 {
                     if (Game.instance.Stage.IsInStage || ActionCamera.instance.InPrologue)
                     {
@@ -73,8 +71,7 @@ namespace Nekoyume.Game.Character
                     }
 
                     Animator.Touch();
-                })
-                .AddTo(gameObject);
+                }).AddTo(gameObject);
 
             TargetTag = Tag.Enemy;
         }
@@ -89,7 +86,8 @@ namespace Nekoyume.Game.Character
         public void Set(AvatarState avatarState)
         {
             var tableSheets = Game.instance.TableSheets;
-            Set(new Model.Player(avatarState, tableSheets.CharacterSheet, tableSheets.CharacterLevelSheet, tableSheets.EquipmentItemSetEffectSheet));
+            Set(new Model.Player(avatarState, tableSheets.CharacterSheet,
+                tableSheets.CharacterLevelSheet, tableSheets.EquipmentItemSetEffectSheet));
         }
 
         public override void Set(Model.CharacterBase model, bool updateCurrentHP = false)
@@ -157,8 +155,7 @@ namespace Nekoyume.Game.Character
             base.InitializeHpBar();
 
             var title = Costumes.FirstOrDefault(costume =>
-                costume.ItemSubType == ItemSubType.Title &&
-                costume.equipped);
+                costume.ItemSubType == ItemSubType.Title && costume.equipped);
             HPBar.SetTitle(title);
         }
 
@@ -285,8 +282,7 @@ namespace Nekoyume.Game.Character
 
         public void EquipWeapon(Weapon weapon)
         {
-            if (IsFullCostumeEquipped ||
-                !SpineController)
+            if (IsFullCostumeEquipped || !SpineController)
             {
                 return;
             }
@@ -358,8 +354,7 @@ namespace Nekoyume.Game.Character
 
         private void UpdateEarById(int earCostumeId)
         {
-            if (IsFullCostumeEquipped ||
-                SpineController is null)
+            if (IsFullCostumeEquipped || SpineController is null)
             {
                 return;
             }
@@ -413,8 +408,7 @@ namespace Nekoyume.Game.Character
 
         private void UpdateEyeById(int eyeCostumeId)
         {
-            if (IsFullCostumeEquipped ||
-                SpineController is null)
+            if (IsFullCostumeEquipped || SpineController is null)
             {
                 return;
             }
@@ -473,8 +467,7 @@ namespace Nekoyume.Game.Character
 
         private void UpdateHairById(int hairCostumeId)
         {
-            if (IsFullCostumeEquipped ||
-                SpineController is null)
+            if (IsFullCostumeEquipped || SpineController is null)
             {
                 return;
             }
@@ -485,12 +478,10 @@ namespace Nekoyume.Game.Character
                 return;
             }
 
-            var sprites = Enumerable
-                .Range(0, SpineController.HairSlotCount)
+            var sprites = Enumerable.Range(0, SpineController.HairSlotCount)
                 .Select(index =>
                     $"{row.SpineResourcePath}_{SpineController.hairTypeIndex:00}_{index + 1:00}")
-                .Select(Resources.Load<Sprite>)
-                .ToList();
+                .Select(Resources.Load<Sprite>).ToList();
             SpineController.UpdateHair(sprites);
         }
 
@@ -537,8 +528,7 @@ namespace Nekoyume.Game.Character
 
         private void UpdateTailById(int tailCostumeId)
         {
-            if (IsFullCostumeEquipped ||
-                SpineController is null)
+            if (IsFullCostumeEquipped || SpineController is null)
             {
                 return;
             }
@@ -576,7 +566,6 @@ namespace Nekoyume.Game.Character
         }
 
 
-
         public IEnumerator CoGetExp(long exp)
         {
             if (exp <= 0)
@@ -593,10 +582,8 @@ namespace Nekoyume.Game.Character
                 //[TentuPlay] 아바타 레벨업 기록
                 new TPStashEvent().CharacterLevelUp(
                     player_uuid: Game.instance.Agent.Address.ToHex(),
-                    character_uuid: States.Instance.CurrentAvatarState.address.ToHex().Substring(0, 4),
-                    level_from: (int) level,
-                    level_to: (int) Level
-                );
+                    character_uuid: States.Instance.CurrentAvatarState.address.ToHex()
+                        .Substring(0, 4), level_from: (int) level, level_to: (int) Level);
 
                 AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ActionStatusLevelUp,
                     level);
@@ -615,14 +602,10 @@ namespace Nekoyume.Game.Character
         }
 
         protected override void ProcessAttack(CharacterBase target,
-            Model.BattleStatus.Skill.SkillInfo skill, bool isLastHit,
+            Model.BattleStatus.Skill.SkillInfo skill,
+            bool isLastHit,
             bool isConsiderElementalType)
         {
-            if (skill.Critical)
-            {
-                CriticalCutscene.Show(GetAmorId());
-            }
-
             ShowSpeech("PLAYER_SKILL", (int) skill.ElementalType, (int) skill.SkillCategory);
             base.ProcessAttack(target, skill, isLastHit, isConsiderElementalType);
             ShowSpeech("PLAYER_ATTACK");
@@ -644,6 +627,11 @@ namespace Nekoyume.Game.Character
 
             var armor = (Armor) Equipments.FirstOrDefault(x => x.ItemSubType == ItemSubType.Armor);
             return armor?.Id ?? GameConfig.DefaultAvatarArmorId;
+        }
+
+        protected override void ShowCriticalCutscene()
+        {
+            CriticalCutscene.Show(GetAmorId());
         }
     }
 }
