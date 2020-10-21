@@ -40,10 +40,25 @@ namespace Nekoyume.Action
             {
                 BigInteger amount = distribution.GetAmount(index);
                 if (amount <= 0) continue;
+
+                // We should divide by 100 for only mainnet distributions.
+                // See also: https://github.com/planetarium/lib9c/pull/170#issuecomment-713380172
+                FungibleAssetValue fav = goldCurrency * amount;
+                var testAddresses = new HashSet<Address>(
+                    new []
+                    {
+                        new Address("F9A15F870701268Bd7bBeA6502eB15F4997f32f9"),
+                        new Address("Fb90278C67f9b266eA309E6AE8463042f5461449"),
+                    }
+                );
+                if (!testAddresses.Contains(distribution.Address))
+                {
+                    fav = fav.DivRem(100, out FungibleAssetValue _);
+                }
                 states = states.TransferAsset(
                     fund,
                     distribution.Address,
-                    goldCurrency * amount
+                    fav
                 );
             }
             return states;
