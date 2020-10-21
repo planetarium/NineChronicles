@@ -146,7 +146,7 @@ namespace Nekoyume.BlockChain
 
         protected static void UpdateCombinationSlotState(CombinationSlotState state, int index)
         {
-            States.Instance.SetCombinationSlotState(state, index);
+            States.Instance.SetCombinationSlotState(state, index, true);
         }
 
         public void UpdateCurrentAvatarState(AvatarState avatarState)
