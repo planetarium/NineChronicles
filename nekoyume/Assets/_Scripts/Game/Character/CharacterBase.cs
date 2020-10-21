@@ -498,7 +498,7 @@ namespace Nekoyume.Game.Character
 
         protected virtual void ShowCriticalCutscene()
         {
-
+            // Do nothing.
         }
 
         private IEnumerator CoAnimationAttack(bool isCritical)
