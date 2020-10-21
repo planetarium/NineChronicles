@@ -195,10 +195,15 @@ namespace Nekoyume.State
         public AvatarState SelectAvatar(int index, bool initializeReactiveState = true)
         {
             if (!_avatarStates.ContainsKey(index))
+            {
                 throw new KeyNotFoundException($"{nameof(index)}({index})");
+            }
 
             CurrentAvatarKey = index;
-            UpdateCurrentAvatarState(_avatarStates[CurrentAvatarKey], initializeReactiveState);
+            var avatarState = _avatarStates[CurrentAvatarKey];
+            LocalStateSettings.Instance.InitializeCurrentAvatarState(avatarState);
+            UpdateCurrentAvatarState(avatarState, initializeReactiveState);
+            SetCombinationSlotStates(avatarState);
 
             return CurrentAvatarState;
         }
@@ -209,23 +214,42 @@ namespace Nekoyume.State
         public void DeselectAvatar()
         {
             CurrentAvatarKey = -1;
+            LocalStateSettings.Instance.InitializeCurrentAvatarState(null);
             UpdateCurrentAvatarState(null);
         }
 
-        public void SetCombinationSlotStates(AvatarState avatarState)
+        private void SetCombinationSlotStates(AvatarState avatarState)
         {
+            if (avatarState is null)
+            {
+                LocalStateSettings.Instance.InitializeCombinationSlotsByCurrentAvatarState(null);
+                CombinationSlotStatesSubject.OnNext(null);
+            }
+
+            LocalStateSettings.Instance.InitializeCombinationSlotsByCurrentAvatarState(avatarState);
             for (var i = 0; i < avatarState.combinationSlotAddresses.Count; i++)
             {
                 var slotAddress = avatarState.combinationSlotAddresses[i];
-                SetCombinationSlotState(new CombinationSlotState(
-                    (Dictionary) Game.Game.instance.Agent.GetState(slotAddress)), i);
+                var slotState = new CombinationSlotState(
+                        (Dictionary) Game.Game.instance.Agent.GetState(slotAddress));
+                SetCombinationSlotState(slotState, i);
             }
+
+            CombinationSlotStatesSubject.OnNext(CombinationSlotStates);
         }
 
-        public void SetCombinationSlotState(CombinationSlotState state, int index)
+        public void SetCombinationSlotState(
+            CombinationSlotState state,
+            int index,
+            bool invokeSubject = default)
         {
+            state = LocalStateSettings.Instance.Modify(state);
             CombinationSlotStates[index] = state;
-            CombinationSlotStatesSubject.OnNext(CombinationSlotStates);
+
+            if (invokeSubject)
+            {
+                CombinationSlotStatesSubject.OnNext(CombinationSlotStates);
+            }
         }
 
         public void SetGameConfigState(GameConfigState state)
