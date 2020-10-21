@@ -154,7 +154,7 @@ namespace Nekoyume.BlockChain
 
         private void HackAndSlash()
         {
-            _renderer.EveryRender<HackAndSlash>()
+            _renderer.EveryRender<HackAndSlash2>()
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseHackAndSlash).AddTo(_disposables);
@@ -216,7 +216,7 @@ namespace Nekoyume.BlockChain
 
         private void RankingBattle()
         {
-            _renderer.EveryRender<RankingBattle>()
+            _renderer.EveryRender<RankingBattle2>()
                 .Where(ValidateEvaluationForCurrentAvatarState)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseRankingBattle).AddTo(_disposables);
@@ -568,7 +568,7 @@ namespace Nekoyume.BlockChain
             RenderQuest(renderQuestAvatarAddress, renderQuestCompletedQuestIds);
         }
 
-        private void ResponseHackAndSlash(ActionBase.ActionEvaluation<HackAndSlash> eval)
+        private void ResponseHackAndSlash(ActionBase.ActionEvaluation<HackAndSlash2> eval)
         {
             if (eval.Exception is null)
             {
@@ -702,7 +702,7 @@ namespace Nekoyume.BlockChain
             RenderQuest(avatarAddress, avatarState.questList.completedQuestIds);
         }
 
-        private void ResponseRankingBattle(ActionBase.ActionEvaluation<RankingBattle> eval)
+        private void ResponseRankingBattle(ActionBase.ActionEvaluation<RankingBattle2> eval)
         {
             if (eval.Exception is null)
             {
