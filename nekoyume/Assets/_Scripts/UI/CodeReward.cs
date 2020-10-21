@@ -11,6 +11,7 @@ using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using Nekoyume.UI.Module;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Nekoyume.UI
 {
@@ -19,7 +20,10 @@ namespace Nekoyume.UI
         [SerializeField] private Canvas sortingGroup = null;
         [SerializeField] private CodeRewardEffector effector = null;
 
-        private Dictionary<string, List<(ItemBase, int)>> _codeRewards = new Dictionary<string, List<(ItemBase, int)>>();
+        private RedeemCodeState _state;
+
+        private Dictionary<string, List<(ItemBase, int)>> _codeRewards =
+            new Dictionary<string, List<(ItemBase, int)>>();
 
         private const string SEALED_CODES = "SealedCodes";
 
@@ -37,11 +41,14 @@ namespace Nekoyume.UI
         protected override void Awake()
         {
             base.Awake();
-            Show();
+            _state = new RedeemCodeState(
+                (Dictionary) Game.Game.instance.Agent.GetState(Addresses.RedeemCode));
+            Show(_state);
         }
 
-        public override void Show(bool ignoreShowAnimation = false)
+        public void Show(RedeemCodeState state)
         {
+            _state = state;
             UpdateRewardButton();
             base.Show();
         }
@@ -78,14 +85,14 @@ namespace Nekoyume.UI
 
         private List<(ItemBase, int)> GetItems(string redeemCode)
         {
-            var state = new RedeemCodeState((Dictionary)Game.Game.instance.Agent.GetState(Addresses.RedeemCode));
             var privateKey = new PrivateKey(ByteUtil.ParseHex(redeemCode));
             PublicKey publicKey = privateKey.PublicKey;
-            var reward = state.Map[publicKey];
+            var reward = _state.Map[publicKey];
 
             TableSheets tableSheets = Game.Game.instance.TableSheets;
             ItemSheet itemSheet = tableSheets.ItemSheet;
-            RedeemRewardSheet.Row row = tableSheets.RedeemRewardSheet.OrderedList.First(r => r.Id == reward.RewardId);
+            RedeemRewardSheet.Row row =
+                tableSheets.RedeemRewardSheet.OrderedList.First(r => r.Id == reward.RewardId);
             var itemRewards = row.Rewards.Where(r => r.Type != RewardType.Gold)
                 .Select(r => (ItemFactory.CreateItem(itemSheet[r.ItemId.Value]), r.Quantity))
                 .ToList();
@@ -95,21 +102,19 @@ namespace Nekoyume.UI
 
         private bool IsExistCode(string redeemCode)
         {
-            var state = new RedeemCodeState((Dictionary)Game.Game.instance.Agent.GetState(Addresses.RedeemCode));
             var privateKey = new PrivateKey(ByteUtil.ParseHex(redeemCode));
             PublicKey publicKey = privateKey.PublicKey;
-            return state.Map.ContainsKey(publicKey);
+            return _state.Map.ContainsKey(publicKey);
         }
 
         private bool IsUsed(string redeemCode)
         {
-            var state = new RedeemCodeState((Dictionary)Game.Game.instance.Agent.GetState(Addresses.RedeemCode));
             var privateKey = new PrivateKey(ByteUtil.ParseHex(redeemCode));
             PublicKey publicKey = privateKey.PublicKey;
 
-            if (state.Map.ContainsKey(publicKey))
+            if (_state.Map.ContainsKey(publicKey))
             {
-                return state.Map[publicKey].UserAddress.HasValue;
+                return _state.Map[publicKey].UserAddress.HasValue;
             }
 
             Debug.Log($"Code doesn't exist : {redeemCode}");
@@ -159,7 +164,7 @@ namespace Nekoyume.UI
         {
             if (!PlayerPrefs.HasKey(SEALED_CODES))
             {
-                var newStates = JsonUtility.ToJson(new SealedCodes(new List<string>{}));
+                var newStates = JsonUtility.ToJson(new SealedCodes(new List<string> { }));
                 PlayerPrefs.SetString(SEALED_CODES, newStates);
             }
 

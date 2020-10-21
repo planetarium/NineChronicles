@@ -17,7 +17,7 @@ namespace Nekoyume.UI
         [SerializeField] private SubmitButton closeButton = null;
 
         // todo : 항상 보상으로 받는 아이템이 4개인지 체크해 봐야함. 기존은 4개 였음
-        [SerializeField] private SimpleCountableItemView[] itemViews = null; 
+        [SerializeField] private SimpleCountableItemView[] itemViews = null;
 
         private static readonly int AppearHash = Animator.StringToHash("UICodeReward@Appear");
         private static readonly int OpenHash = Animator.StringToHash("UICodeReward@Open");
@@ -34,7 +34,6 @@ namespace Nekoyume.UI
 
             closeTouchHandler.OnClick.Subscribe(pointerEventData =>
             {
-                AudioController.PlayClick();
                 Close();
             }).AddTo(gameObject);
 
@@ -43,7 +42,6 @@ namespace Nekoyume.UI
 
             closeButton.OnSubmitClick.Subscribe(_ =>
             {
-                AudioController.PlayClick();
                 Close();
             }).AddTo(gameObject);
 
