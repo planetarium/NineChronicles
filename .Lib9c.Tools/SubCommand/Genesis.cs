@@ -18,6 +18,8 @@ namespace Lib9c.Tools.SubCommand
     {
         [Command(Description = "Create a new genesis block.")]
         public void Create(
+            [Option("private-key", new[]{ 'p' }, Description = "Hex encoded private key for gensis block")]
+            string privateKeyHex,
             [Option('g', Description = "/path/to/nekoyume-unity/nekoyume/Assets/AddressableAssets/TableCSV")]
             string gameConfigDir,
             [Option('d', Description = "/path/to/nekoyume-unity/nekoyume/Assets/StreamingAssets/GoldDistribution.csv")]
@@ -31,9 +33,7 @@ namespace Lib9c.Tools.SubCommand
             [Option('m', Description = "Config path to create AuthorizedMinersState")]
             string authorizedMinerConfigPath = null,
             [Option('c', Description = "Path of a plain text file containing names for credits.")]
-            string creditsPath = null,
-            [Option("private-key", new[]{ 'p' }, Description = "Hex encoded private key for gensis block")]
-            string privateKeyHex = null
+            string creditsPath = null
         )
         {
             Dictionary<string, string> tableSheets = Utils.ImportSheets(gameConfigDir);
@@ -65,7 +65,7 @@ namespace Lib9c.Tools.SubCommand
                 activatedAccounts: activatedAccounts,
                 isActivateAdminAddress: activationKeyCount != 0,
                 credits: creditsPath is null ? null : File.ReadLines(creditsPath),
-                privateKey: privateKeyHex is null ? null : new PrivateKey(ByteUtil.ParseHex(privateKeyHex))
+                privateKey: new PrivateKey(ByteUtil.ParseHex(privateKeyHex))
             );
 
             ExportBlock(block, "genesis-block");
