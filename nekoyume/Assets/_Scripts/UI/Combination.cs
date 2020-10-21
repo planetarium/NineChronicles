@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using DG.Tweening;
 using Nekoyume.EnumType;
@@ -21,7 +22,9 @@ using ToggleGroup = Nekoyume.UI.Module.ToggleGroup;
 using Nekoyume.Game.VFX;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
+using Libplanet;
 using mixpanel;
+using Nekoyume.Action;
 using Nekoyume.L10n;
 using Nekoyume.UI.Model;
 
@@ -105,7 +108,8 @@ namespace Nekoyume.UI
 
         private ToggleGroup _toggleGroup;
         private NPC _npc01;
-        private bool _lockSlotIndex;
+        // FIXME: 사용처를 잘 모르겠어요. 불필요 하면 삭제해 주세요.
+        // private bool _lockSlotIndex;
         private long _blockIndex;
         private Dictionary<int, CombinationSlotState> _states;
         private SpeechBubble _selectedSpeechBubble;
@@ -271,7 +275,7 @@ namespace Nekoyume.UI
         public void Show(int slotIndex)
         {
             selectedIndex = slotIndex;
-            _lockSlotIndex = true;
+            // _lockSlotIndex = true;
             Show();
         }
 
@@ -292,7 +296,7 @@ namespace Nekoyume.UI
 
             _npc01 = null;
 
-            _lockSlotIndex = false;
+            // _lockSlotIndex = false;
             _equipmentRecipeIdToGo = null;
 
             base.Close(ignoreCloseAnimation);
@@ -586,9 +590,18 @@ namespace Nekoyume.UI
             AnimationState = AnimationStateType.Shown;
         }
 
-        private void SubscribeSlotStates(Dictionary<int, CombinationSlotState> states)
+        private void SubscribeSlotStates(Dictionary<Address, CombinationSlotState> states)
         {
-            _states = states;
+            var avatarState = States.Instance.CurrentAvatarState;
+            if (avatarState is null)
+            {
+                return;
+            }
+
+            _states = states
+                .ToDictionary(
+                    pair => avatarState.combinationSlotAddresses.IndexOf(pair.Key),
+                    pair => pair.Value);
             ResetSelectedIndex();
         }
 
@@ -712,15 +725,20 @@ namespace Nekoyume.UI
 
         private void ResetSelectedIndex()
         {
-            if (!_lockSlotIndex && !(_states is null))
+            if (/*!_lockSlotIndex &&*/ !(_states is null))
             {
-                var pair = _states
+                var avatarAddress = States.Instance.CurrentAvatarState.address;
+                var firstPair = _states
+                    .OrderBy(pair =>
+                        avatarAddress.Derive(string.Format(
+                            CultureInfo.InvariantCulture,
+                            CombinationSlotState.DeriveFormat,
+                            pair.Key)))
                     .FirstOrDefault(i =>
                         i.Value.Validate(
                             States.Instance.CurrentAvatarState,
-                            _blockIndex
-                        ));
-                var idx = pair.Value is null ? -1 : pair.Key;
+                            _blockIndex));
+                var idx = firstPair.Value is null ? -1 : firstPair.Key;
                 selectedIndex = idx;
             }
         }
@@ -749,7 +767,7 @@ namespace Nekoyume.UI
             Find<BottomMenu>().SetIntractable(true);
             blur.gameObject.SetActive(false);
             Pop();
-            _lockSlotIndex = false;
+            // _lockSlotIndex = false;
             _selectedSpeechBubble.onGoing = false;
         }
 

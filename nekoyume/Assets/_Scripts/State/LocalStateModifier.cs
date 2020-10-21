@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Numerics;
 using System.Security.Cryptography;
@@ -726,6 +727,25 @@ namespace Nekoyume.State
             int? subRecipeId
         )
         {
+            var slotAddress = States.Instance.CurrentAvatarState.address.Derive(
+                string.Format(
+                    CultureInfo.InvariantCulture,
+                    CombinationSlotState.DeriveFormat,
+                    slotIndex
+                )
+            );
+
+            ModifyCombinationSlotEquipment(tableSheets, row, panel, slotAddress, subRecipeId);
+        }
+
+        public static void ModifyCombinationSlotEquipment(
+            TableSheets tableSheets,
+            EquipmentItemRecipeSheet.Row row,
+            CombinationPanel panel,
+            Address slotAddress,
+            int? subRecipeId
+        )
+        {
             var blockIndex = Game.Game.instance.Agent.BlockIndex;
             var requiredBlockIndex = row.RequiredBlockIndex + blockIndex;
             if (subRecipeId.HasValue)
@@ -757,11 +777,10 @@ namespace Nekoyume.State
                 itemType = ItemType.Equipment,
             };
             var modifier = new CombinationSlotBlockIndexAndResultModifier(result, blockIndex, requiredBlockIndex);
-            var slotState = States.Instance.CombinationSlotStates[slotIndex];
+            var slotState = States.Instance.CombinationSlotStates[slotAddress];
             LocalStateSettings.Instance.Set(slotState.address, modifier);
-            // NOTE: Reassignment is not required yet.
-            slotState = modifier.Modify(slotState);
-            States.Instance.SetCombinationSlotState(slotState, slotIndex, true);
+            States.Instance.CombinationSlotStates[slotAddress] = modifier.Modify(slotState);
+            CombinationSlotStatesSubject.OnNext(States.Instance.CombinationSlotStates);
         }
 
         public static void ModifyCombinationSlotConsumable(
@@ -769,6 +788,24 @@ namespace Nekoyume.State
             ICombinationPanel panel,
             ConsumableItemRecipeSheet.Row recipeRow,
             int slotIndex
+        )
+        {
+            var slotAddress = States.Instance.CurrentAvatarState.address.Derive(
+                string.Format(
+                    CultureInfo.InvariantCulture,
+                    CombinationSlotState.DeriveFormat,
+                    slotIndex
+                )
+            );
+
+            ModifyCombinationSlotConsumable(tableSheets, panel, recipeRow, slotAddress);
+        }
+
+        public static void ModifyCombinationSlotConsumable(
+            TableSheets tableSheets,
+            ICombinationPanel panel,
+            ConsumableItemRecipeSheet.Row recipeRow,
+            Address slotAddress
         )
         {
             var blockIndex = Game.Game.instance.Agent.BlockIndex;
@@ -797,17 +834,33 @@ namespace Nekoyume.State
                 itemType = ItemType.Consumable,
             };
             var modifier = new CombinationSlotBlockIndexAndResultModifier(result, blockIndex, requiredBlockIndex);
-            var slotState = States.Instance.CombinationSlotStates[slotIndex];
+            var slotState = States.Instance.CombinationSlotStates[slotAddress];
             LocalStateSettings.Instance.Set(slotState.address, modifier);
-            // NOTE: Reassignment is not required yet.
-            slotState = modifier.Modify(slotState);
-            States.Instance.SetCombinationSlotState(slotState, slotIndex, true);
+            States.Instance.CombinationSlotStates[slotAddress] = modifier.Modify(slotState);
+            CombinationSlotStatesSubject.OnNext(States.Instance.CombinationSlotStates);
         }
 
         public static void ModifyCombinationSlotItemEnhancement(
             EnhanceEquipment panel,
             Guid guid,
             int slotIndex
+        )
+        {
+            var slotAddress = States.Instance.CurrentAvatarState.address.Derive(
+                string.Format(
+                    CultureInfo.InvariantCulture,
+                    CombinationSlotState.DeriveFormat,
+                    slotIndex
+                )
+            );
+
+            ModifyCombinationSlotItemEnhancement(panel, guid, slotAddress);
+        }
+
+        public static void ModifyCombinationSlotItemEnhancement(
+            EnhanceEquipment panel,
+            Guid guid,
+            Address slotAddress
         )
         {
             if (panel.baseMaterial is null ||
@@ -832,21 +885,33 @@ namespace Nekoyume.State
                 itemUsable = equipment,
             };
             var modifier = new CombinationSlotBlockIndexAndResultModifier(result, blockIndex, requiredBlockIndex);
-            var slotState = States.Instance.CombinationSlotStates[slotIndex];
+            var slotState = States.Instance.CombinationSlotStates[slotAddress];
             LocalStateSettings.Instance.Set(slotState.address, modifier);
-            // NOTE: Reassignment is not required yet.
-            slotState = modifier.Modify(slotState);
-            States.Instance.SetCombinationSlotState(slotState, slotIndex, true);
+            States.Instance.CombinationSlotStates[slotAddress] = modifier.Modify(slotState);
+            CombinationSlotStatesSubject.OnNext(States.Instance.CombinationSlotStates);
         }
 
         public static void UnlockCombinationSlot(int slotIndex, long blockIndex)
         {
-            var slotState = States.Instance.CombinationSlotStates[slotIndex];
+            var slotAddress = States.Instance.CurrentAvatarState.address.Derive(
+                string.Format(
+                    CultureInfo.InvariantCulture,
+                    CombinationSlotState.DeriveFormat,
+                    slotIndex
+                )
+            );
+
+            UnlockCombinationSlot(slotAddress, blockIndex);
+        }
+
+        public static void UnlockCombinationSlot(Address slotAddress, long blockIndex)
+        {
+            var slotState = States.Instance.CombinationSlotStates[slotAddress];
             var modifier = new CombinationSlotBlockIndexModifier(blockIndex);
             LocalStateSettings.Instance.Set(slotState.address, modifier);
             // NOTE: Reassignment is not required yet.
-            slotState = modifier.Modify(slotState);
-            States.Instance.SetCombinationSlotState(slotState, slotIndex, true);
+            States.Instance.CombinationSlotStates[slotAddress] = modifier.Modify(slotState);
+            CombinationSlotStatesSubject.OnNext(States.Instance.CombinationSlotStates);
         }
 
         public static void ResetCombinationSlots()

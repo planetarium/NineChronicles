@@ -173,7 +173,14 @@ namespace Nekoyume.UI
                 _cost);
             var blockIndex = Game.Game.instance.Agent.BlockIndex;
             LocalStateModifier.UnlockCombinationSlot(_slotIndex, blockIndex);
-            var slotState = States.Instance.CombinationSlotStates[_slotIndex];
+            var slotAddress = States.Instance.CurrentAvatarState.address.Derive(
+                string.Format(
+                    CultureInfo.InvariantCulture,
+                    CombinationSlotState.DeriveFormat,
+                    _slotIndex
+                )
+            );
+            var slotState = States.Instance.CombinationSlotStates[slotAddress];
             var result = (CombinationConsumable.ResultModel) slotState.Result;
             LocalStateModifier.AddNewResultAttachmentMail(
                 States.Instance.CurrentAvatarState.address, result.id, blockIndex);

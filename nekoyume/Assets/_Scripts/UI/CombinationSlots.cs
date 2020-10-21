@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
+using Libplanet;
 using Nekoyume.Model.State;
+using Nekoyume.State;
 using Nekoyume.State.Subjects;
 using Nekoyume.UI.Module;
 using UniRx;
@@ -25,9 +27,18 @@ namespace Nekoyume.UI
             _blockIndex = Game.Game.instance.Agent.BlockIndex;
         }
 
-        private void SetSlots(Dictionary<int, CombinationSlotState> states)
+        private void SetSlots(Dictionary<Address, CombinationSlotState> states)
         {
-            _states = states;
+            var avatarState = States.Instance.CurrentAvatarState;
+            if (avatarState is null)
+            {
+                return;
+            }
+
+            _states = states.ToDictionary(
+                pair => avatarState.combinationSlotAddresses.IndexOf(pair.Key),
+                pair => pair.Value);
+
             UpdateSlots();
         }
 

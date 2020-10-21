@@ -312,7 +312,6 @@ namespace Nekoyume.BlockChain
 
             UpdateAgentState(eval);
             UpdateCurrentAvatarState(eval);
-            UpdateCombinationSlotState(slot, eval.Action.slotIndex);
         }
 
         private void ResponseCombinationEquipment(ActionBase.ActionEvaluation<CombinationEquipment> eval)
@@ -374,7 +373,6 @@ namespace Nekoyume.BlockChain
 
             UpdateAgentState(eval);
             UpdateCurrentAvatarState(eval);
-            UpdateCombinationSlotState(slot, eval.Action.SlotIndex);
             RenderQuest(avatarAddress, avatarState.questList.completedQuestIds);
 
             if (!(nextQuest is null))
@@ -453,7 +451,6 @@ namespace Nekoyume.BlockChain
 
             UpdateAgentState(eval);
             UpdateCurrentAvatarState(eval);
-            UpdateCombinationSlotState(slot, eval.Action.slotIndex);
             RenderQuest(avatarAddress, avatarState.questList.completedQuestIds);
         }
 
@@ -703,7 +700,6 @@ namespace Nekoyume.BlockChain
 
             UpdateAgentState(eval);
             UpdateCurrentAvatarState(eval);
-            UpdateCombinationSlotState(slot, eval.Action.slotIndex);
             RenderQuest(avatarAddress, avatarState.questList.completedQuestIds);
         }
 

@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using Bencodex.Types;
 using Libplanet;
+using Nekoyume.Action;
 using Nekoyume.Model.State;
 using Nekoyume.State.Subjects;
 using UnityEngine;
@@ -35,8 +37,8 @@ namespace Nekoyume.State
 
         public GameConfigState GameConfigState { get; private set; }
 
-        public readonly Dictionary<int, CombinationSlotState> CombinationSlotStates =
-            new Dictionary<int, CombinationSlotState>();
+        public readonly Dictionary<Address, CombinationSlotState> CombinationSlotStates =
+            new Dictionary<Address, CombinationSlotState>();
         public States()
         {
             DeselectAvatar();
@@ -229,10 +231,16 @@ namespace Nekoyume.State
             LocalStateSettings.Instance.InitializeCombinationSlotsByCurrentAvatarState(avatarState);
             for (var i = 0; i < avatarState.combinationSlotAddresses.Count; i++)
             {
-                var slotAddress = avatarState.combinationSlotAddresses[i];
+                var slotAddress = avatarState.address.Derive(
+                    string.Format(
+                        CultureInfo.InvariantCulture,
+                        CombinationSlotState.DeriveFormat,
+                        i
+                    )
+                );
                 var slotState = new CombinationSlotState(
                         (Dictionary) Game.Game.instance.Agent.GetState(slotAddress));
-                SetCombinationSlotState(slotState, i);
+                SetCombinationSlotState(slotState);
             }
 
             CombinationSlotStatesSubject.OnNext(CombinationSlotStates);
@@ -240,11 +248,10 @@ namespace Nekoyume.State
 
         public void SetCombinationSlotState(
             CombinationSlotState state,
-            int index,
             bool invokeSubject = default)
         {
             state = LocalStateSettings.Instance.Modify(state);
-            CombinationSlotStates[index] = state;
+            CombinationSlotStates[state.address] = state;
 
             if (invokeSubject)
             {
