@@ -1046,7 +1046,6 @@ GameObject:
   - component: {fileID: 4275195080103566394}
   - component: {fileID: 2243715902010438455}
   - component: {fileID: 2642473705311938642}
-  - component: {fileID: 3607138093205810841}
   m_Layer: 5
   m_Name: Blur
   m_TagString: Untagged
@@ -1112,18 +1111,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 1
 --- !u!114 &2642473705311938642
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8106827310265856708}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e2410c6e911349d6ad72dc1f01bb7559, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &3607138093205810841
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
