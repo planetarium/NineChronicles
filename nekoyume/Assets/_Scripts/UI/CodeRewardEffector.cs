@@ -56,6 +56,11 @@ namespace Nekoyume.UI
             Animator.Play(AppearHash);
         }
 
+        public void PlayRewardSfx()
+        {
+            AudioController.instance.PlaySfx(AudioController.SfxCode.Notice);
+        }
+
         private void SetItems(IReadOnlyList<(ItemBase, int)> items)
         {
             for (var i = 0; i < itemViews.Length; i++)
