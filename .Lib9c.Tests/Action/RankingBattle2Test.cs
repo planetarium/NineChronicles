@@ -112,7 +112,7 @@ namespace Lib9c.Tests.Action
                 AvatarAddress = _avatar1Address,
                 EnemyAddress = _avatar2Address,
                 WeeklyArenaAddress = _weeklyArenaAddress,
-                costumeIds = new HashSet<int> { costume.Id },
+                costumeIds = new List<int> { costume.Id },
                 equipmentIds = new List<Guid>(),
                 consumableIds = new List<Guid>(),
             };
@@ -146,7 +146,7 @@ namespace Lib9c.Tests.Action
                 AvatarAddress = _avatar1Address,
                 EnemyAddress = _avatar1Address,
                 WeeklyArenaAddress = _weeklyArenaAddress,
-                costumeIds = new HashSet<int>(),
+                costumeIds = new List<int>(),
                 equipmentIds = new List<Guid>(),
                 consumableIds = new List<Guid>(),
             };
@@ -191,7 +191,7 @@ namespace Lib9c.Tests.Action
                 AvatarAddress = avatarAddress,
                 EnemyAddress = enemyAddress,
                 WeeklyArenaAddress = _weeklyArenaAddress,
-                costumeIds = new HashSet<int>(),
+                costumeIds = new List<int>(),
                 equipmentIds = new List<Guid>(),
                 consumableIds = new List<Guid>(),
             };
@@ -226,7 +226,7 @@ namespace Lib9c.Tests.Action
                 AvatarAddress = _avatar1Address,
                 EnemyAddress = _avatar2Address,
                 WeeklyArenaAddress = _weeklyArenaAddress,
-                costumeIds = new HashSet<int>(),
+                costumeIds = new List<int>(),
                 equipmentIds = new List<Guid>(),
                 consumableIds = new List<Guid>(),
             };
@@ -258,7 +258,7 @@ namespace Lib9c.Tests.Action
                 AvatarAddress = _avatar1Address,
                 EnemyAddress = _avatar2Address,
                 WeeklyArenaAddress = _weeklyArenaAddress,
-                costumeIds = new HashSet<int>(),
+                costumeIds = new List<int>(),
                 equipmentIds = new List<Guid>(),
                 consumableIds = new List<Guid>(),
             };
@@ -304,7 +304,7 @@ namespace Lib9c.Tests.Action
                 AvatarAddress = _avatar1Address,
                 EnemyAddress = _avatar2Address,
                 WeeklyArenaAddress = _weeklyArenaAddress,
-                costumeIds = new HashSet<int>(),
+                costumeIds = new List<int>(),
                 equipmentIds = new List<Guid>(),
                 consumableIds = new List<Guid>(),
             };
@@ -345,7 +345,7 @@ namespace Lib9c.Tests.Action
                 AvatarAddress = _avatar1Address,
                 EnemyAddress = _avatar2Address,
                 WeeklyArenaAddress = _weeklyArenaAddress,
-                costumeIds = new HashSet<int>(),
+                costumeIds = new List<int>(),
                 equipmentIds = new List<Guid>(),
                 consumableIds = new List<Guid>(),
             };
@@ -370,7 +370,7 @@ namespace Lib9c.Tests.Action
                 AvatarAddress = _avatar1Address,
                 EnemyAddress = _avatar2Address,
                 WeeklyArenaAddress = _weeklyArenaAddress,
-                costumeIds = new HashSet<int>(),
+                costumeIds = new List<int>(),
                 equipmentIds = new List<Guid>(),
                 consumableIds = new List<Guid>(),
             };
