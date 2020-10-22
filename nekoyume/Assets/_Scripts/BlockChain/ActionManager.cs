@@ -104,7 +104,7 @@ namespace Nekoyume.BlockChain
 
             var action = new HackAndSlash2
             {
-                costumes = new HashSet<int>(costumes),
+                costumes = costumes,
                 equipments = equipments.Select(e => e.ItemId).ToList(),
                 foods = foods.Select(f => f.ItemId).ToList(),
                 worldId = worldId,
@@ -275,7 +275,7 @@ namespace Nekoyume.BlockChain
                 AvatarAddress = States.Instance.CurrentAvatarState.address,
                 EnemyAddress = enemyAddress,
                 WeeklyArenaAddress = weeklyArenaAddress,
-                costumeIds = new HashSet<int>(costumeIds),
+                costumeIds = costumeIds,
                 equipmentIds = equipmentIds,
                 consumableIds = consumableIds
             };
