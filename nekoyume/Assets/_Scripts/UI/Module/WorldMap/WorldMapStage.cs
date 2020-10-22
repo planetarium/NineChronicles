@@ -52,7 +52,7 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        public float bossScale = 1.4f;
+        public float bossScale = 1f;
 
         [SerializeField]
         private Image normalImage = null;
@@ -193,16 +193,16 @@ namespace Nekoyume.UI.Module
 
         private void Set(bool isBoss, string imageKey)
         {
-            normalImage.sprite = Resources.Load<Sprite>($"UI/Textures/WorldMap/bg_worldmap_{imageKey}_icon_01");
+            normalImage.sprite = Resources.Load<Sprite>($"UI/Textures/WorldMap/battle_UI_icon_01");
             normalImage.SetNativeSize();
             if (imageKey == "03")
             {
                 //같은 이미지가 사용됨
                 imageKey = "02";
             }
-            disabledImage.sprite = Resources.Load<Sprite>($"UI/Textures/WorldMap/bg_worldmap_{imageKey}_icon_02");
+            disabledImage.sprite = Resources.Load<Sprite>($"UI/Textures/WorldMap/battle_UI_icon_02");
             disabledImage.SetNativeSize();
-            selectedImage.sprite = Resources.Load<Sprite>($"UI/Textures/WorldMap/bg_worldmap_{imageKey}_icon_03");
+            selectedImage.sprite = Resources.Load<Sprite>($"UI/Textures/WorldMap/battle_UI_icon_03");
             selectedImage.SetNativeSize();
             bossImage.enabled = isBoss;
             ResetScale();
