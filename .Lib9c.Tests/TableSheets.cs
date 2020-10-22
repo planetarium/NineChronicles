@@ -120,6 +120,8 @@ namespace Lib9c.Tests
 
         public WeeklyArenaRewardSheet WeeklyArenaRewardSheet { get; internal set; }
 
+        public CostumeStatSheet CostumeStatSheet { get; private set; }
+
         public void ItemSheetInitialize()
         {
             ItemSheet = new ItemSheet();

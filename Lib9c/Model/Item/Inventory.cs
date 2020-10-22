@@ -351,31 +351,6 @@ namespace Nekoyume.Model.Item
             return false;
         }
 
-        public bool TryGetAddedItemFrom(Inventory inventory, out ItemUsable outAddedItem)
-        {
-            //FIXME TryGetNonFungibleItem 내부에서 사용되는 아이템 비교방식때문에 오동작처리됨.
-            //https://app.asana.com/0/958521740385861/1131813492738090/
-            var newItem = _items.FirstOrDefault(i => !inventory.Items.Contains(i));
-            outAddedItem = null;
-            if (newItem is null)
-            {
-                return false;
-            }
-
-            try
-            {
-                outAddedItem = (ItemUsable) newItem.item;
-            }
-            catch (InvalidCastException)
-            {
-                var item = newItem.item;
-
-                Log.Error("Item {0}: {1} is not ItemUsable.", item.ItemType, item.Id);
-            }
-
-            return !(outAddedItem is null);
-        }
-
         public bool TryGetNonFungibleItem(Guid itemId, out ItemUsable outNonFungibleItem)
         {
             foreach (var item in _items)

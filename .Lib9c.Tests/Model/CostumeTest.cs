@@ -5,11 +5,11 @@ namespace Lib9c.Tests.Model
     using Nekoyume.Model.Item;
     using Xunit;
 
-    public class ConsumableTest
+    public class CostumeTest
     {
         private readonly TableSheets _tableSheets;
 
-        public ConsumableTest()
+        public CostumeTest()
         {
             _tableSheets = new TableSheets(TableSheetsImporter.ImportSheets());
         }
@@ -17,12 +17,11 @@ namespace Lib9c.Tests.Model
         [Fact]
         public void Serialize()
         {
-            var row = _tableSheets.ConsumableItemSheet.Values.First();
-            var consumable = (Consumable)ItemFactory.CreateItemUsable(row, default, 0);
+            var row = _tableSheets.CostumeItemSheet.Values.First();
             var statRow = _tableSheets.CostumeStatSheet.Values.First();
-            consumable.StatsMap.AddStatValue(statRow.StatType, statRow.Stat);
-            var serialized = consumable.Serialize();
-            var deserialized = new Consumable((Dictionary)serialized);
+            var costume = ItemFactory.CreateCostume(row);
+            var serialized = costume.Serialize();
+            var deserialized = new Costume((Dictionary)serialized);
 
             Assert.Equal(serialized, deserialized.Serialize());
         }
