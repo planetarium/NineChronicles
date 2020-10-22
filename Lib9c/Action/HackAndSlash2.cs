@@ -7,7 +7,6 @@ using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Battle;
-using Nekoyume.Model;
 using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
@@ -16,10 +15,10 @@ using Serilog;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("hack_and_slash")]
-    public class HackAndSlash : GameAction
+    [ActionType("hack_and_slash2")]
+    public class HackAndSlash2 : GameAction
     {
-        public List<int> costumes;
+        public HashSet<int> costumes;
         public List<Guid> equipments;
         public List<Guid> foods;
         public int worldId;
@@ -46,7 +45,8 @@ namespace Nekoyume.Action
         protected override void LoadPlainValueInternal(
             IImmutableDictionary<string, IValue> plainValue)
         {
-            costumes = ((List) plainValue["costumes"]).Select(e => e.ToInteger()).ToList();
+            var costumeList = ((List) plainValue["costumes"]).Select(e => e.ToInteger()).ToList();
+            costumes = new HashSet<int>(costumeList);
             equipments = ((List) plainValue["equipments"]).Select(e => e.ToGuid()).ToList();
             foods = ((List) plainValue["foods"]).Select(e => e.ToGuid()).ToList();
             worldId = plainValue["worldId"].ToInteger();
@@ -68,7 +68,6 @@ namespace Nekoyume.Action
                 return states.SetState(ctx.Signer, MarkChanged);
             }
 
-            Log.Warning($"{nameof(HackAndSlash)} is deprecated. Please use ${nameof(HackAndSlash2)}");
             var sw = new Stopwatch();
             sw.Start();
             var started = DateTimeOffset.UtcNow;
@@ -144,6 +143,9 @@ namespace Nekoyume.Action
 
             avatarState.ValidateEquipments(equipments, context.BlockIndex);
             avatarState.ValidateConsumable(foods, context.BlockIndex);
+            avatarState.ValidateCostume(costumes);
+
+            var costumeStatSheet = states.GetSheet<CostumeStatSheet>();
 
             sw.Restart();
             if (avatarState.actionPoint < stageRow.CostAP)
@@ -156,7 +158,7 @@ namespace Nekoyume.Action
 
             avatarState.actionPoint -= stageRow.CostAP;
 
-            avatarState.EquipCostumes(new HashSet<int>(costumes));
+            avatarState.EquipCostumes(costumes);
 
             avatarState.EquipEquipments(equipments);
             sw.Stop();
@@ -170,7 +172,8 @@ namespace Nekoyume.Action
                 foods,
                 worldId,
                 stageId,
-                states.GetStageSimulatorSheets()
+                states.GetStageSimulatorSheets(),
+                costumeStatSheet
             );
 
             sw.Stop();
@@ -252,12 +255,12 @@ namespace Nekoyume.Action
                     if (weekly.ContainsKey(avatarAddress))
                     {
                         var info = weekly[avatarAddress];
-                        info.Update(avatarState, characterSheet);
+                        info.Update(avatarState, characterSheet, costumeStatSheet);
                         weekly.Update(info);
                     }
                     else
                     {
-                        weekly.Set(avatarState, characterSheet);
+                        weekly.SetV2(avatarState, characterSheet, costumeStatSheet);
                     }
 
                     sw.Stop();

@@ -168,6 +168,12 @@ namespace Nekoyume.Model.State
             Add(avatarState.address, new ArenaInfo(avatarState, characterSheet, active));
         }
 
+        private void UpdateV2(AvatarState avatarState, CharacterSheet characterSheet, CostumeStatSheet costumeStatSheet,
+            bool active = false)
+        {
+            Add(avatarState.address, new ArenaInfo(avatarState, characterSheet, costumeStatSheet, active));
+        }
+
         public void Update(ArenaInfo info)
         {
             Add(info.AvatarAddress, info);
@@ -176,6 +182,11 @@ namespace Nekoyume.Model.State
         public void Set(AvatarState avatarState, CharacterSheet characterSheet)
         {
             Update(avatarState, characterSheet);
+        }
+
+        public void SetV2(AvatarState avatarState, CharacterSheet characterSheet, CostumeStatSheet costumeStatSheet)
+        {
+            UpdateV2(avatarState, characterSheet, costumeStatSheet);
         }
 
         public void ResetCount(long ctxBlockIndex)
@@ -351,6 +362,12 @@ namespace Nekoyume.Model.State
             Score = GameConfig.ArenaScoreDefault;
         }
 
+        public ArenaInfo(AvatarState avatarState, CharacterSheet characterSheet, CostumeStatSheet costumeStatSheet, bool active)
+            : this(avatarState, characterSheet, active)
+        {
+            CombatPoint = CPHelper.GetCPV2(avatarState, characterSheet, costumeStatSheet);
+        }
+
         public ArenaInfo(Dictionary serialized)
         {
             AvatarAddress = serialized.GetAddress("avatarAddress");
@@ -405,6 +422,12 @@ namespace Nekoyume.Model.State
             CombatPoint = CPHelper.GetCP(state, characterSheet);
         }
 
+        public void Update(AvatarState state, CharacterSheet characterSheet, CostumeStatSheet costumeStatSheet)
+        {
+            ArmorId = state.GetArmorId();
+            Level = state.level;
+            CombatPoint = CPHelper.GetCPV2(state, characterSheet, costumeStatSheet);
+        }
         public int Update(AvatarState avatarState, ArenaInfo enemyInfo, BattleLog.Result result)
         {
             switch (result)

@@ -113,6 +113,13 @@ namespace Lib9c.Tests.Action
             AssertException<ConsumableSlotUnlockException>(exc);
         }
 
+        [Fact]
+        public void InvalidItemTypeExceptionSerializable()
+        {
+            var exc = new InvalidItemTypeException("for testing");
+            AssertException<InvalidItemTypeException>(exc);
+        }
+
         private static void AssertException<T>(Exception exc)
             where T : Exception
         {

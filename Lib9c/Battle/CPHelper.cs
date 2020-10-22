@@ -37,18 +37,30 @@ namespace Nekoyume.Battle
             return DecimalToInt(levelStatsCP + equipmentsCP);
         }
 
+        public static int GetCPV2(AvatarState avatarState, CharacterSheet characterSheet, CostumeStatSheet costumeStatSheet)
+        {
+            var current = GetCP(avatarState, characterSheet);
+            var costumeCP = avatarState.inventory.Costumes
+                .Where(c => c.equipped)
+                .Sum(c => GetCP(c, costumeStatSheet));
+
+            return DecimalToInt(current + costumeCP);
+        }
+
         /// <summary>
-        /// `Player`의 CP를 반환합니다.
-        /// 레벨 스탯, 그리고 장착한 장비의 스탯과 스킬을 고려합니다.
+        /// return `Player` Combat Point.
+        /// Calculate Level Stat, Equipment Stat, Equipment SKills, Costume Stat.
         /// </summary>
         /// <param name="player"></param>
+        /// <param name="costumeStatSheet"></param>
         /// <returns></returns>
-        public static int GetCP(Player player)
+        public static int GetCP(Player player, CostumeStatSheet costumeStatSheet)
         {
             var levelStatsCP = GetStatsCP(player.Stats.LevelStats, player.Level);
             var equipmentsCP = player.Equipments.Sum(GetCP);
+            var costumeCP = player.Costumes.Sum(c => GetCP(c, costumeStatSheet));
 
-            return DecimalToInt(levelStatsCP + equipmentsCP);
+            return DecimalToInt(levelStatsCP + equipmentsCP + costumeCP);
         }
 
         /// <summary>
@@ -74,6 +86,17 @@ namespace Nekoyume.Battle
             var statsCP = GetStatsCP(itemUsable.StatsMap);
             var skills = itemUsable.Skills.Concat(itemUsable.BuffSkills).ToArray();
             return DecimalToInt(statsCP * GetSkillsMultiplier(skills.Length));
+        }
+
+        public static int GetCP(Costume costume, CostumeStatSheet sheet)
+        {
+            var statsMap = new StatsMap();
+            foreach (var r in sheet.OrderedList.Where(r => r.CostumeId == costume.Id))
+            {
+                statsMap.AddStatValue(r.StatType, r.Stat);
+            }
+
+            return DecimalToInt(GetStatsCP(statsMap));
         }
 
         #endregion

@@ -51,6 +51,31 @@ namespace Nekoyume.Battle
             WeeklyArenaRewardSheet = rankingSimulatorSheets.WeeklyArenaRewardSheet;
         }
 
+        public RankingSimulator(
+            IRandom random,
+            AvatarState avatarState,
+            AvatarState enemyAvatarState,
+            List<Guid> foods,
+            RankingSimulatorSheets rankingSimulatorSheets,
+            int stageId,
+            ArenaInfo arenaInfo,
+            ArenaInfo enemyInfo,
+            CostumeStatSheet costumeStatSheet
+        ) : this(
+            random,
+            avatarState,
+            enemyAvatarState,
+            foods,
+            rankingSimulatorSheets,
+            stageId,
+            arenaInfo,
+            enemyInfo
+        )
+        {
+            Player.SetCostumeStat(costumeStatSheet);
+            _enemyPlayer.SetCostumeStat(costumeStatSheet);
+        }
+
         public override Player Simulate()
         {
 #if TEST_LOG
