@@ -102,7 +102,7 @@ namespace Lib9c.Tests.Action
 
             var action = new HackAndSlash2()
             {
-                costumes = new HashSet<int> { costumeId },
+                costumes = new List<int> { costumeId },
                 equipments = new List<Guid>(),
                 foods = new List<Guid>(),
                 worldId = worldId,
@@ -153,7 +153,7 @@ namespace Lib9c.Tests.Action
         {
             var action = new HackAndSlash2()
             {
-                costumes = new HashSet<int>(),
+                costumes = new List<int>(),
                 equipments = new List<Guid>(),
                 foods = new List<Guid>(),
                 worldId = 1,
@@ -183,7 +183,7 @@ namespace Lib9c.Tests.Action
         {
             var action = new HackAndSlash2()
             {
-                costumes = new HashSet<int>(),
+                costumes = new List<int>(),
                 equipments = new List<Guid>(),
                 foods = new List<Guid>(),
                 worldId = 1,
@@ -211,7 +211,7 @@ namespace Lib9c.Tests.Action
         {
             var action = new HackAndSlash2()
             {
-                costumes = new HashSet<int>(),
+                costumes = new List<int>(),
                 equipments = new List<Guid>(),
                 foods = new List<Guid>(),
                 worldId = 100,
@@ -242,7 +242,7 @@ namespace Lib9c.Tests.Action
         {
             var action = new HackAndSlash2()
             {
-                costumes = new HashSet<int>(),
+                costumes = new List<int>(),
                 equipments = new List<Guid>(),
                 foods = new List<Guid>(),
                 worldId = 1,
@@ -271,7 +271,7 @@ namespace Lib9c.Tests.Action
         {
             var action = new HackAndSlash2()
             {
-                costumes = new HashSet<int>(),
+                costumes = new List<int>(),
                 equipments = new List<Guid>(),
                 foods = new List<Guid>(),
                 worldId = 1,
@@ -303,7 +303,7 @@ namespace Lib9c.Tests.Action
         {
             var action = new HackAndSlash2()
             {
-                costumes = new HashSet<int>(),
+                costumes = new List<int>(),
                 equipments = new List<Guid>(),
                 foods = new List<Guid>(),
                 worldId = 1,
@@ -343,7 +343,7 @@ namespace Lib9c.Tests.Action
         {
             var action = new HackAndSlash2()
             {
-                costumes = new HashSet<int>(),
+                costumes = new List<int>(),
                 equipments = new List<Guid>(),
                 foods = new List<Guid>(),
                 worldId = 2,
@@ -374,7 +374,7 @@ namespace Lib9c.Tests.Action
         {
             var action = new HackAndSlash2()
             {
-                costumes = new HashSet<int>(),
+                costumes = new List<int>(),
                 equipments = new List<Guid>(),
                 foods = new List<Guid>(),
                 worldId = 1,
@@ -420,7 +420,7 @@ namespace Lib9c.Tests.Action
         {
             var action = new HackAndSlash2()
             {
-                costumes = new HashSet<int>(),
+                costumes = new List<int>(),
                 equipments = new List<Guid>(),
                 foods = new List<Guid>(),
                 worldId = 1,
@@ -462,7 +462,7 @@ namespace Lib9c.Tests.Action
 
             var action = new HackAndSlash2()
             {
-                costumes = new HashSet<int>(),
+                costumes = new List<int>(),
                 equipments = new List<Guid>()
                 {
                     equipment.ItemId,
@@ -508,7 +508,7 @@ namespace Lib9c.Tests.Action
 
             var action = new HackAndSlash2()
             {
-                costumes = new HashSet<int>(),
+                costumes = new List<int>(),
                 equipments = new List<Guid>()
                 {
                     equipment.ItemId,
@@ -548,7 +548,7 @@ namespace Lib9c.Tests.Action
 
             var action = new HackAndSlash2()
             {
-                costumes = new HashSet<int>(),
+                costumes = new List<int>(),
                 equipments = new List<Guid>(),
                 foods = new List<Guid>(),
                 worldId = 1,
@@ -580,7 +580,7 @@ namespace Lib9c.Tests.Action
         {
             var action = new HackAndSlash2()
             {
-                costumes = new HashSet<int>(),
+                costumes = new List<int>(),
                 equipments = new List<Guid>(),
                 foods = new List<Guid>(),
                 worldId = 1,
@@ -616,7 +616,7 @@ namespace Lib9c.Tests.Action
         {
             var action = new HackAndSlash2()
             {
-                costumes = new HashSet<int>(),
+                costumes = new List<int>(),
                 equipments = new List<Guid>(),
                 foods = new List<Guid>(),
                 worldId = 1,
@@ -650,7 +650,12 @@ namespace Lib9c.Tests.Action
             var guid2 = new Guid("936DA01F-9ABD-4d9d-80C7-02AF85C822A8");
             var action = new HackAndSlash2()
             {
-                costumes = new HashSet<int>(new[] { 3, 2, 1 }),
+                costumes = new List<int>
+                {
+                    3,
+                    2,
+                    1,
+                },
                 equipments = new List<Guid>()
                 {
                     guid2,

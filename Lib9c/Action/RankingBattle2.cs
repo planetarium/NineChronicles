@@ -25,7 +25,7 @@ namespace Nekoyume.Action
         public Address AvatarAddress;
         public Address EnemyAddress;
         public Address WeeklyArenaAddress;
-        public HashSet<int> costumeIds;
+        public List<int> costumeIds;
         public List<Guid> equipmentIds;
         public List<Guid> consumableIds;
         public BattleLog Result { get; private set; }
@@ -70,7 +70,7 @@ namespace Nekoyume.Action
 
             avatarState.EquipCostumes(new HashSet<int>(costumeIds));
             avatarState.EquipEquipments(equipmentIds);
-            avatarState.ValidateCostume(costumeIds);
+            avatarState.ValidateCostume(new HashSet<int>(costumeIds));
 
             var enemyAvatarState = states.GetAvatarState(EnemyAddress);
             if (enemyAvatarState is null)
@@ -158,10 +158,9 @@ namespace Nekoyume.Action
             AvatarAddress = plainValue["avatarAddress"].ToAddress();
             EnemyAddress = plainValue["enemyAddress"].ToAddress();
             WeeklyArenaAddress = plainValue["weeklyArenaAddress"].ToAddress();
-            var ids = ((Bencodex.Types.List) plainValue["costume_ids"])
+            costumeIds = ((Bencodex.Types.List) plainValue["costume_ids"])
                 .Select(e => e.ToInteger())
                 .ToList();
-            costumeIds = new HashSet<int>(ids);
             equipmentIds = ((Bencodex.Types.List) plainValue["equipment_ids"])
                 .Select(e => e.ToGuid())
                 .ToList();
