@@ -122,5 +122,32 @@ namespace Lib9c.Tests.Action
             });
             Assert.Equal(new Address("019101FEec7ed4f918D396827E1277DEda1e20D4"), exc2.Signer);
         }
+
+        [Fact]
+        public void ExecuteNewTable()
+        {
+            var adminAddress = new Address("399bddF9F7B6d902ea27037B907B2486C9910730");
+            var adminState = new AdminState(adminAddress, 100);
+            const string tableName = "TestTable";
+            var initStates = ImmutableDictionary<Address, IValue>.Empty
+                .Add(AdminState.Address, adminState.Serialize())
+                .Add(Addresses.TableSheet.Derive(tableName), Dictionary.Empty.Add(tableName, "Initial"));
+            var state = new State(initStates, ImmutableDictionary<(Address, Currency), FungibleAssetValue>.Empty);
+            var action = new PatchTableSheet()
+            {
+                TableName = nameof(CostumeStatSheet),
+                TableCsv = "id,costume_id,stat_type,stat\n1,40100000,ATK,100",
+            };
+
+            var nextState = action.Execute(
+                new ActionContext()
+                {
+                    PreviousStates = state,
+                    Signer = adminAddress,
+                }
+            );
+
+            Assert.NotNull(nextState.GetSheet<CostumeStatSheet>());
+        }
     }
 }

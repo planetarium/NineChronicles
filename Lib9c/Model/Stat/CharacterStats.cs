@@ -321,6 +321,12 @@ namespace Nekoyume.Model.Stat
             UpdateOptionalStats();
         }
 
+        public void SetOption(IEnumerable<StatModifier> statModifiers)
+        {
+            _optionalStatModifiers.Clear();
+            AddOption(statModifiers);
+        }
+
         private void UpdateLevelStats()
         {
             var statsData = _row.ToStats(Level);

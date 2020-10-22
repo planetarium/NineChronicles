@@ -111,7 +111,7 @@ namespace Lib9c.Tests.Model.State
                     i.ToString());
                 weeklyArenaState.Add(
                     new PrivateKey().ToAddress(),
-                    new ArenaInfo(avatarState, characterSheet, true));
+                    new ArenaInfo(avatarState, characterSheet, new CostumeStatSheet(), true));
             }
 
             var arenaInfos = weeklyArenaState.GetArenaInfos(firstRank, count);
@@ -145,7 +145,7 @@ namespace Lib9c.Tests.Model.State
                     i.ToString());
                 weeklyArenaState.Add(
                     new PrivateKey().ToAddress(),
-                    new ArenaInfo(avatarState, characterSheet, true));
+                    new ArenaInfo(avatarState, characterSheet, new CostumeStatSheet(), true));
             }
 
             Assert.Throws<ArgumentOutOfRangeException>(() =>
@@ -185,7 +185,7 @@ namespace Lib9c.Tests.Model.State
                     i.ToString());
                 weeklyArenaState.Add(
                     new PrivateKey().ToAddress(),
-                    new ArenaInfo(avatarState, characterSheet, true));
+                    new ArenaInfo(avatarState, characterSheet, new CostumeStatSheet(), true));
             }
 
             var arenaInfos = weeklyArenaState.GetArenaInfos(targetAddress, upperRange, lowerRange);

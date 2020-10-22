@@ -2,6 +2,7 @@ namespace Lib9c.Tests.Model.State
 {
     using System;
     using System.Collections.Generic;
+    using System.Collections.Immutable;
     using System.Linq;
     using System.Security.Cryptography;
     using System.Threading.Tasks;
@@ -187,6 +188,107 @@ namespace Lib9c.Tests.Model.State
             }
 
             Assert.Throws<ConsumableSlotUnlockException>(() => avatarState.ValidateConsumable(consumableIds, 0));
+        }
+
+        [Fact]
+        public void ValidateCostume()
+        {
+            Address avatarAddress = new PrivateKey().ToAddress();
+            Address agentAddress = new PrivateKey().ToAddress();
+            var avatarState = GetNewAvatarState(avatarAddress, agentAddress);
+            avatarState.level = 100;
+
+            var costumeIds = new HashSet<int>();
+            var subTypes = new[]
+            {
+                ItemSubType.FullCostume,
+                ItemSubType.HairCostume,
+                ItemSubType.EarCostume,
+                ItemSubType.EyeCostume,
+                ItemSubType.TailCostume,
+                ItemSubType.Title,
+            };
+            foreach (var subType in subTypes)
+            {
+                var row = _tableSheets.CostumeItemSheet.Values.First(r => r.ItemSubType == subType);
+                var costume = ItemFactory.CreateCostume(row);
+                costumeIds.Add(costume.Id);
+                avatarState.inventory.AddItem(costume);
+            }
+
+            avatarState.ValidateCostume(costumeIds);
+        }
+
+        [Theory]
+        [InlineData(ItemSubType.FullCostume)]
+        [InlineData(ItemSubType.HairCostume)]
+        [InlineData(ItemSubType.EarCostume)]
+        [InlineData(ItemSubType.EyeCostume)]
+        [InlineData(ItemSubType.TailCostume)]
+        [InlineData(ItemSubType.Title)]
+        public void ValidateCostumeThrowDuplicateCostumeException(ItemSubType type)
+        {
+            Address avatarAddress = new PrivateKey().ToAddress();
+            Address agentAddress = new PrivateKey().ToAddress();
+            var avatarState = GetNewAvatarState(avatarAddress, agentAddress);
+            avatarState.level = 100;
+
+            var costumeIds = new HashSet<int>();
+            var duplicateRows = _tableSheets.CostumeItemSheet.Values.Where(r => r.ItemSubType == type);
+            var row = _tableSheets.CostumeItemSheet.Values.First(r => r.ItemSubType != type);
+            var costume = ItemFactory.CreateCostume(row);
+            costumeIds.Add(costume.Id);
+            avatarState.inventory.AddItem(costume);
+
+            foreach (var duplicateRow in duplicateRows)
+            {
+                var duplicateCostume = ItemFactory.CreateCostume(duplicateRow);
+                costumeIds.Add(duplicateCostume.Id);
+                avatarState.inventory.AddItem(duplicateCostume);
+            }
+
+            Assert.Throws<DuplicateCostumeException>(() => avatarState.ValidateCostume(costumeIds));
+        }
+
+        [Fact]
+        public void ValidateCostumeThrowInvalidItemTypeException()
+        {
+            Address avatarAddress = new PrivateKey().ToAddress();
+            Address agentAddress = new PrivateKey().ToAddress();
+            var avatarState = GetNewAvatarState(avatarAddress, agentAddress);
+            avatarState.level = 100;
+
+            var row = _tableSheets.CostumeItemSheet.Values.First();
+            var costume = ItemFactory.CreateCostume(row);
+            var serialized = (Dictionary)costume.Serialize();
+            serialized = serialized.SetItem("item_sub_type", ItemSubType.Armor.Serialize());
+            var costume2 = new Costume(serialized);
+            var costumeIds = new HashSet<int> { costume2.Id };
+            avatarState.inventory.AddItem(costume2);
+
+            Assert.Throws<InvalidItemTypeException>(() => avatarState.ValidateCostume(costumeIds));
+        }
+
+        [Theory]
+        [InlineData(ItemSubType.FullCostume, GameConfig.RequireCharacterLevel.CharacterFullCostumeSlot)]
+        [InlineData(ItemSubType.HairCostume, GameConfig.RequireCharacterLevel.CharacterHairCostumeSlot)]
+        [InlineData(ItemSubType.EarCostume, GameConfig.RequireCharacterLevel.CharacterEarCostumeSlot)]
+        [InlineData(ItemSubType.EyeCostume, GameConfig.RequireCharacterLevel.CharacterEyeCostumeSlot)]
+        [InlineData(ItemSubType.TailCostume, GameConfig.RequireCharacterLevel.CharacterTailCostumeSlot)]
+        [InlineData(ItemSubType.Title, GameConfig.RequireCharacterLevel.CharacterTitleSlot)]
+        public void ValidateCostumeThrowCostumeSlotUnlockException(ItemSubType type, int level)
+        {
+            Address avatarAddress = new PrivateKey().ToAddress();
+            Address agentAddress = new PrivateKey().ToAddress();
+            var avatarState = GetNewAvatarState(avatarAddress, agentAddress);
+            avatarState.level = level - 1;
+
+            var row = _tableSheets.CostumeItemSheet.Values.First(r => r.ItemSubType == type);
+            var costume = ItemFactory.CreateCostume(row);
+            var costumeIds = new HashSet<int> { costume.Id };
+            avatarState.inventory.AddItem(costume);
+
+            Assert.Throws<CostumeSlotUnlockException>(() => avatarState.ValidateCostume(costumeIds));
         }
 
         private AvatarState GetNewAvatarState(Address avatarAddress, Address agentAddress)

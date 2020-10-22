@@ -87,79 +87,8 @@ namespace Nekoyume.Model.Item
             return new Chest(row, rewards);
         }
 
-        private static ItemBase DeserializeLegacy(Dictionary serialized)
-        {
-            var data = (Dictionary) serialized["data"];
-            var row = DeserializeRow(data);
-            switch (row)
-            {
-                case CostumeItemSheet.Row costumeRow:
-                    var costume = CreateCostume(costumeRow);
-                    if (serialized.TryGetValue((Text) "equipped", out var costumeEquipped))
-                    {
-                        costume.equipped = costumeEquipped.ToBoolean();
-                    }
-
-                    return costume;
-                // 기존체인 호환성을 위해 이전 코드를 남겨둠.
-                case MaterialItemSheet.Row materialRow:
-                    return CreateMaterial(materialRow);
-            }
-
-            var itemUsable = CreateItemUsable(
-                row,
-                serialized.GetGuid("itemId"),
-                serialized.GetLong("requiredBlockIndex")
-            );
-            if (itemUsable is null)
-            {
-                return null;
-            }
-
-            if (serialized.TryGetValue((Text) "statsMap", out var statsMap) &&
-                serialized.TryGetValue((Text) "skills", out var skills))
-            {
-                itemUsable.StatsMap.Deserialize((Dictionary) statsMap);
-                foreach (var skill in (List) skills)
-                {
-                    itemUsable.Skills.Add(SkillFactory.Deserialize((Dictionary) skill));
-                }
-            }
-
-            if (serialized.TryGetValue((Text) "buffSkills", out var buffSkills))
-            {
-                foreach (var buffSkill in (List) buffSkills)
-                {
-                    itemUsable.BuffSkills.Add(
-                        (BuffSkill) SkillFactory.Deserialize((Dictionary) buffSkill));
-                }
-            }
-
-            if (!(itemUsable is Equipment equipment))
-            {
-                return itemUsable;
-            }
-
-            if (serialized.TryGetValue((Text) "equipped", out var equipped))
-            {
-                equipment.equipped = ((Bencodex.Types.Boolean) equipped).Value;
-            }
-
-            if (serialized.TryGetValue((Text) "level", out var level))
-            {
-                equipment.level = (int) ((Integer) level).Value;
-            }
-
-            return equipment;
-        }
-
         public static ItemBase Deserialize(Dictionary serialized)
         {
-            if (serialized.TryGetValue((Text) "data", out _))
-            {
-                return DeserializeLegacy(serialized);
-            }
-
             if (serialized.TryGetValue((Text) "item_type", out var type) &&
                 serialized.TryGetValue((Text) "item_sub_type", out var subType))
             {

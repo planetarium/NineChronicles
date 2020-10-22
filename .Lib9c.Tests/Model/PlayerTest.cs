@@ -8,7 +8,9 @@ namespace Lib9c.Tests.Model
     using Nekoyume.Battle;
     using Nekoyume.Model;
     using Nekoyume.Model.BattleStatus;
+    using Nekoyume.Model.Item;
     using Nekoyume.Model.Skill;
+    using Nekoyume.Model.Stat;
     using Nekoyume.Model.State;
     using Priority_Queue;
     using Xunit;
@@ -113,6 +115,62 @@ namespace Lib9c.Tests.Model
             player.Tick();
 
             Assert.Single(simulator.Log.OfType<Dead>());
+        }
+
+        [Fact]
+        public void SetCostumeStat()
+        {
+            var row = _tableSheets.CostumeStatSheet.Values.First(r => r.StatType == StatType.ATK);
+            var costume = (Costume)ItemFactory.CreateItem(_tableSheets.ItemSheet[row.CostumeId]);
+            costume.equipped = true;
+            _avatarState.inventory.AddItem(costume);
+
+            var player = new Player(
+                _avatarState,
+                _tableSheets.CharacterSheet,
+                _tableSheets.CharacterLevelSheet,
+                _tableSheets.EquipmentItemSetEffectSheet
+            );
+            player.SetCostumeStat(_tableSheets.CostumeStatSheet);
+
+            Assert.Equal(row.Stat, player.Stats.OptionalStats.ATK);
+
+            var copy = (Player)player.Clone();
+
+            Assert.Equal(row.Stat, copy.Stats.OptionalStats.ATK);
+        }
+
+        [Fact]
+        public void LevelUp()
+        {
+            var row = _tableSheets.CostumeStatSheet.Values.First(r => r.StatType == StatType.HP);
+            var costume = (Costume)ItemFactory.CreateItem(_tableSheets.ItemSheet[row.CostumeId]);
+            costume.equipped = true;
+            _avatarState.inventory.AddItem(costume);
+
+            var player = new Player(
+                _avatarState,
+                _tableSheets.CharacterSheet,
+                _tableSheets.CharacterLevelSheet,
+                _tableSheets.EquipmentItemSetEffectSheet
+            );
+            player.SetCostumeStat(_tableSheets.CostumeStatSheet);
+
+            Assert.Equal(600, player.HP);
+            Assert.Equal(600, player.CurrentHP);
+
+            Assert.Equal(1, player.Level);
+
+            player.CurrentHP -= 10;
+
+            Assert.Equal(590, player.CurrentHP);
+
+            var requiredExp = _tableSheets.CharacterLevelSheet[1].ExpNeed;
+            player.GetExp(requiredExp);
+
+            Assert.Equal(2, player.Level);
+            Assert.Equal(612, player.HP);
+            Assert.Equal(590, player.CurrentHP);
         }
     }
 }
