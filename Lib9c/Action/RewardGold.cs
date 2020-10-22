@@ -101,14 +101,22 @@ namespace Nekoyume.Action
         {
             // 마이닝 보상
             // https://www.notion.so/planetarium/Mining-Reward-b7024ef463c24ebca40a2623027d497d
-            BigInteger defaultMiningReward = 10;
-            var countOfHalfLife = Convert.ToInt64(ctx.BlockIndex / 12614400) + 1;
-            var miningReward = defaultMiningReward / countOfHalfLife;
-            return states.TransferAsset(
-                GoldCurrencyState.Address,
-                ctx.Miner,
-                states.GetGoldCurrency() * miningReward
-            );
+            Currency currency = states.GetGoldCurrency();
+            FungibleAssetValue defaultMiningReward = currency * 10;
+            var countOfHalfLife = (int)Math.Pow(2, Convert.ToInt64((ctx.BlockIndex - 1) / 12614400));
+            FungibleAssetValue miningReward = 
+                defaultMiningReward.DivRem(countOfHalfLife, out FungibleAssetValue _);
+
+            if (miningReward >= FungibleAssetValue.Parse(currency, "1.25"))
+            {
+                states = states.TransferAsset(
+                    GoldCurrencyState.Address,
+                    ctx.Miner,
+                    miningReward
+                );
+            }
+            
+            return states;
         }
     }
 }
