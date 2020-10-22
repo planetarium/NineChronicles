@@ -22,9 +22,10 @@ namespace Lib9c.Tools.Tests
             Assert.Equal(countOfKeys, (uint)activationKeys.Count);
             Assert.Equal(activationKeys.Count, pendingActivationState.Count);
 
-            foreach (var item in activationKeys.Select(((key, index) => (key, index))))
+            var addresses = pendingActivationState.Select(p => p.address).ToImmutableHashSet();
+            foreach (var key in activationKeys)
             {
-                Assert.Equal(item.key.PendingAddress, pendingActivationState[item.index].address);
+                Assert.Contains(key.PendingAddress, addresses);
             }
         }
 
