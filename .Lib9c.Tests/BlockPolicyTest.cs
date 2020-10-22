@@ -134,6 +134,51 @@ namespace Lib9c.Tests
         }
 
         [Fact]
+        public void DoesTransactionFollowsPolicyWithAuthorizedMiners()
+        {
+            var adminPrivateKey = new PrivateKey();
+            var adminAddress = adminPrivateKey.ToAddress();
+            var authorizedMinerPrivateKey = new PrivateKey();
+
+            (ActivationKey ak, PendingActivationState ps) = ActivationKey.Create(
+                new PrivateKey(),
+                new byte[] { 0x00, 0x01 }
+            );
+
+            var blockPolicySource = new BlockPolicySource(Logger.None);
+            IBlockPolicy<PolymorphicAction<ActionBase>> policy = blockPolicySource.GetPolicy(10000, 100);
+            Block<PolymorphicAction<ActionBase>> genesis = MakeGenesisBlock(
+                adminAddress,
+                ImmutableHashSet.Create(adminAddress),
+                new AuthorizedMinersState(
+                    new[] { authorizedMinerPrivateKey.ToAddress() },
+                    5,
+                    10
+                ),
+                pendingActivations: new[] { ps }
+            );
+            using var store = new DefaultStore(null);
+            var blockChain = new BlockChain<PolymorphicAction<ActionBase>>(
+                policy,
+                store,
+                store,
+                genesis,
+                renderers: new[] { blockPolicySource.BlockRenderer }
+            );
+
+            Transaction<PolymorphicAction<ActionBase>> txFromAuthorizedMiner =
+                Transaction<PolymorphicAction<ActionBase>>.Create(
+                    0,
+                    authorizedMinerPrivateKey,
+                    genesis.Hash,
+                    new PolymorphicAction<ActionBase>[] { ak.CreateActivateAccount(new byte[] { 0x00, 0x01 }) }
+                );
+
+            // Deny tx even if contains valid activation key.
+            Assert.False(policy.DoesTransactionFollowsPolicy(txFromAuthorizedMiner, blockChain));
+        }
+
+        [Fact]
         public async Task ValidateNextBlockWithAuthorizedMinersState()
         {
             var adminPrivateKey = new PrivateKey();
@@ -393,13 +438,18 @@ namespace Lib9c.Tests
             Address adminAddress,
             IImmutableSet<Address> activatedAddresses,
             AuthorizedMinersState authorizedMinersState = null,
-            DateTimeOffset? timestamp = null
+            DateTimeOffset? timestamp = null,
+            PendingActivationState[] pendingActivations = null
         )
         {
-            var nonce = new byte[] { 0x00, 0x01, 0x02, 0x03 };
-            var privateKey = new PrivateKey();
-            (ActivationKey activationKey, PendingActivationState pendingActivation) =
-                ActivationKey.Create(privateKey, nonce);
+            if (pendingActivations is null)
+            {
+                var nonce = new byte[] { 0x00, 0x01, 0x02, 0x03 };
+                var privateKey = new PrivateKey();
+                (ActivationKey activationKey, PendingActivationState pendingActivation) =
+                    ActivationKey.Create(privateKey, nonce);
+                pendingActivations = new[] { pendingActivation };
+            }
 
             return BlockChain<PolymorphicAction<ActionBase>>.MakeGenesisBlock(
                     new PolymorphicAction<ActionBase>[]
@@ -419,7 +469,7 @@ namespace Lib9c.Tests
                                 new Currency("NCG", 2, minter: null)
                             ),
                             goldDistributions: new GoldDistribution[0],
-                            pendingActivationStates: new[] { pendingActivation },
+                            pendingActivationStates: pendingActivations,
                             authorizedMinersState: authorizedMinersState
                         ),
                     },

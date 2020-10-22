@@ -70,16 +70,24 @@ namespace Nekoyume.BlockChain
             BlockChain<NCAction> blockChain
         )
         {
-            return transaction.Actions.Count <= 1 && IsSignerAuthorized(transaction, blockChain);
+            return 
+                transaction.Actions.Count <= 1 &&
+                CheckSigner(transaction, blockChain);
         }
 
-        private bool IsSignerAuthorized(
+        private bool CheckSigner(
             Transaction<NCAction> transaction,
             BlockChain<NCAction> blockChain
         )
         {
             try
             {
+                if (blockChain.GetState(AuthorizedMinersState.Address) is Dictionary rawAms &&
+                    new AuthorizedMinersState(rawAms).Miners.Contains(transaction.Signer))
+                {
+                    return false;
+                }
+                
                 if (transaction.Actions.Count == 1 &&
                     transaction.Actions.First().InnerAction is ActivateAccount aa)
                 {
