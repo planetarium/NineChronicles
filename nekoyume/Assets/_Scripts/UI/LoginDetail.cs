@@ -12,9 +12,12 @@ using UnityEngine.UI;
 using Nekoyume.TableData;
 using Nekoyume.Model.State;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using mixpanel;
 using Nekoyume.Game;
 using Nekoyume.L10n;
+using Nekoyume.Model.Stat;
 using TentuPlay.Api;
 
 namespace Nekoyume.UI
@@ -173,6 +176,8 @@ namespace Nekoyume.UI
                     tableSheets.CharacterLevelSheet,
                     tableSheets.EquipmentItemSetEffectSheet
                 );
+                var costumeStatSheet = Game.Game.instance.TableSheets.CostumeStatSheet;
+                player.SetCostumeStat(costumeStatSheet);
             }
 
             palette.SetActive(_isCreateMode);

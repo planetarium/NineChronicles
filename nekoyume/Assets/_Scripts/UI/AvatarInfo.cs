@@ -287,13 +287,13 @@ namespace Nekoyume.UI
                 SubscribeInventoryResetItems(inventory);
 
                 var currentPlayer = game.Stage.selectedPlayer;
-                cpText.text = CPHelper.GetCP(currentPlayer.Model)
+                cpText.text = CPHelper.GetCP(currentPlayer.Model, game.TableSheets.CostumeStatSheet)
                     .ToString();
             }
             else
             {
                 inventory.gameObject.SetActive(false);
-                cpText.text = CPHelper.GetCP(avatarState, game.TableSheets.CharacterSheet)
+                cpText.text = CPHelper.GetCPV2(avatarState, game.TableSheets.CharacterSheet, game.TableSheets.CostumeStatSheet)
                     .ToString();
             }
         }
@@ -306,12 +306,29 @@ namespace Nekoyume.UI
                 .Where(item => !(item is null))
                 .ToList();
 
+            var costumeIds = costumeSlots
+                .Where(slot => !slot.IsLock && !slot.IsEmpty)
+                .Select(slot => slot.Item.Id)
+                .ToList();
+
+            var costumeStatSheet = Game.Game.instance.TableSheets.CostumeStatSheet;
+            var statModifiers = new List<StatModifier>();
+            foreach (var itemId in costumeIds)
+            {
+                statModifiers.AddRange(
+                    costumeStatSheet.OrderedList
+                        .Where(r => r.CostumeId == itemId)
+                        .Select(row => new StatModifier(row.StatType, StatModifier.OperationType.Add, (int) row.Stat))
+                );
+            }
+
             var stats = _tempStats.SetAll(
                 _tempStats.Level,
                 equipments,
                 null,
                 Game.Game.instance.TableSheets.EquipmentItemSetEffectSheet
             );
+            stats.SetOption(statModifiers);
 
             avatarStats.SetData(stats);
         }
@@ -351,7 +368,8 @@ namespace Nekoyume.UI
 
             var currentAvatarState = Game.Game.instance.States.CurrentAvatarState;
             var characterSheet = Game.Game.instance.TableSheets.CharacterSheet;
-            var prevCp = CPHelper.GetCP(currentAvatarState, characterSheet);
+            var costumeStatSheet = Game.Game.instance.TableSheets.CostumeStatSheet;
+            var prevCp = CPHelper.GetCPV2(currentAvatarState, characterSheet, costumeStatSheet);
 
             // 이미 슬롯에 아이템이 있다면 해제한다.
             if (!slot.IsEmpty)
@@ -366,7 +384,7 @@ namespace Nekoyume.UI
                 StopCoroutine(_disableCpTween);
             additionalCpArea.gameObject.SetActive(false);
 
-            var currentCp = CPHelper.GetCP(currentAvatarState, characterSheet);
+            var currentCp = CPHelper.GetCPV2(currentAvatarState, characterSheet, costumeStatSheet);
             var tweener = cpTextValueTweener.Play(prevCp, currentCp);
             if (prevCp < currentCp)
             {
@@ -384,7 +402,7 @@ namespace Nekoyume.UI
                 {
                     inventoryItem.EquippedEnabled.Value = true;
                     player.EquipCostume(costume);
-
+                    UpdateStatViews();
                     if (costume.ItemSubType == ItemSubType.Title)
                     {
                         titleText.text = costume.GetLocalizedName();
@@ -451,13 +469,14 @@ namespace Nekoyume.UI
 
             var currentAvatarState = Game.Game.instance.States.CurrentAvatarState;
             var characterSheet = Game.Game.instance.TableSheets.CharacterSheet;
-            var prevCp = CPHelper.GetCP(currentAvatarState, characterSheet);
+            var costumeStatSheet = Game.Game.instance.TableSheets.CostumeStatSheet;
+            var prevCp = CPHelper.GetCPV2(currentAvatarState, characterSheet, costumeStatSheet);
 
             var slotItem = slot.Item;
             slot.Clear();
             LocalStateItemEquipModify(slotItem, false);
 
-            var currentCp = CPHelper.GetCP(currentAvatarState, characterSheet);
+            var currentCp = CPHelper.GetCPV2(currentAvatarState, characterSheet, costumeStatSheet);
             cpTextValueTweener.Play(prevCp, currentCp);
 
             var player = considerInventoryOnly
@@ -480,6 +499,8 @@ namespace Nekoyume.UI
                     {
                         break;
                     }
+
+                    UpdateStatViews();
 
                     var armor = (Armor) _armorSlot.Item;
                     var weapon = (Weapon) _weaponSlot.Item;

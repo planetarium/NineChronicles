@@ -111,9 +111,10 @@ namespace Nekoyume.UI.Scroller
                 .Subscribe(player =>
                 {
                     characterView.SetByPlayer(player);
-                    cpText.text = CPHelper.GetCP(
+                    cpText.text = CPHelper.GetCPV2(
                         States.Instance.CurrentAvatarState,
-                        Game.Game.instance.TableSheets.CharacterSheet).ToString();
+                        Game.Game.instance.TableSheets.CharacterSheet,
+                        Game.Game.instance.TableSheets.CostumeStatSheet).ToString();
                 })
                 .AddTo(gameObject);
         }
@@ -150,9 +151,10 @@ namespace Nekoyume.UI.Scroller
             nameText.text = ArenaInfo.AvatarName;
             scoreText.text = ArenaInfo.Score.ToString();
             cpText.text = (_isCurrentUser
-                ? CPHelper.GetCP(
+                ? CPHelper.GetCPV2(
                     States.Instance.CurrentAvatarState,
-                    Game.Game.instance.TableSheets.CharacterSheet)
+                    Game.Game.instance.TableSheets.CharacterSheet,
+                    Game.Game.instance.TableSheets.CostumeStatSheet)
                 : arenaInfo.CombatPoint).ToString();
             challengeCountTextContainer.SetActive(_isCurrentUser);
             challengeButton.gameObject.SetActive(!_isCurrentUser);
