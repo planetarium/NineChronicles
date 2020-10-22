@@ -301,7 +301,14 @@ namespace Nekoyume
             var result = new Dictionary<string, string>();
             foreach (var name in tableNames)
             {
-                result[name] = Game.Game.instance.Agent.GetState(Addresses.TableSheet.Derive(name)).ToDotnetString();
+                var value = string.Empty;
+                var state = Game.Game.instance.Agent.GetState(Addresses.TableSheet.Derive(name));
+                if (!(state is null))
+                {
+                    value = state.ToDotnetString();
+                }
+
+                result[name] = value;
             }
 
             return result;

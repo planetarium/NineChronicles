@@ -43,15 +43,16 @@ namespace Nekoyume.UI
             _model = gameInstance.Stage.selectedPlayer.Model;
             var characterSheet = gameInstance.TableSheets.CharacterSheet;
             var characterId = _model.CharacterId;
+            var costumeStatSheet = gameInstance.TableSheets.CostumeStatSheet;
             if (!characterSheet.TryGetValue(characterId, out var row))
             {
                 throw new System.Exception($"CharacterId{characterId} is invaild.");
             }
             _model.Level = beforeLevel;
-            var previousCP = CPHelper.GetCP(_model);
+            var previousCP = CPHelper.GetCP(_model, costumeStatSheet);
             cpTextTweener.startValue = previousCP;
             _model.Level = afterLevel;
-            var currentCP = CPHelper.GetCP(_model);
+            var currentCP = CPHelper.GetCP(_model, costumeStatSheet);
             cpTextTweener.endValue = currentCP;
 
             levelText.text = afterLevel.ToString();

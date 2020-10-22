@@ -199,13 +199,37 @@ namespace Nekoyume.UI.Module
                     statCount++;
                 }
             }
+            else if (Model.item.Value.ItemBase.Value is Costume costume)
+            {
+                var costumeSheet = Game.Game.instance.TableSheets.CostumeStatSheet;
+                descriptionArea.commonGameObject.SetActive(false);
+                descriptionArea.dividerImageGameObject.SetActive(false);
+                descriptionArea.levelLimitGameObject.SetActive(false);
+                var statsMap = new StatsMap();
+                foreach (var row in costumeSheet.OrderedList.Where(r => r.CostumeId == costume.Id))
+                {
+                    statsMap.AddStatValue(row.StatType, row.Stat);
+                }
+
+                foreach (var statMapEx in statsMap.GetStats())
+                {
+                    AddStat(statMapEx);
+                    statCount++;
+                }
+
+                var cpEnable = statCount > 0;
+                descriptionArea.combatPowerObject.SetActive(cpEnable);
+                if (cpEnable)
+                {
+                    descriptionArea.combatPowerText.text = CPHelper.GetCP(costume, costumeSheet).ToString();
+                }
+            }
             else
             {
                 descriptionArea.levelLimitGameObject.SetActive(false);
                 descriptionArea.combatPowerObject.SetActive(false);
-
-                    descriptionArea.commonGameObject.SetActive(false);
-                    descriptionArea.dividerImageGameObject.SetActive(false);
+                descriptionArea.commonGameObject.SetActive(false);
+                descriptionArea.dividerImageGameObject.SetActive(false);
             }
 
             if (statCount <= 0)

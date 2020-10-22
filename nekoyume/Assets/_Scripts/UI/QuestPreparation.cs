@@ -188,6 +188,8 @@ namespace Nekoyume.UI
                     consumableSlot.Set(_player.Level);
                 }
 
+                var costumeStatSheet = Game.Game.instance.TableSheets.CostumeStatSheet;
+                _player.Model.SetCostumeStat(costumeStatSheet);
                 var tuples = _player.Model.Stats.GetBaseAndAdditionalStats();
                 var idx = 0;
                 foreach (var (statType, value, additionalValue) in tuples)
@@ -734,7 +736,8 @@ namespace Nekoyume.UI
                 consumables,
                 worldRow.Id,
                 stageId,
-                tableSheets.GetStageSimulatorSheets()
+                tableSheets.GetStageSimulatorSheets(),
+                tableSheets.CostumeStatSheet
             );
             simulator.Simulate();
             GoToStage(simulator.Log);
