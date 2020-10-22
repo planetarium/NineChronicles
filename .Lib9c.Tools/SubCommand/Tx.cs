@@ -74,6 +74,7 @@ namespace Lib9c.Tools.SubCommand
                     action = type switch
                     {
                         nameof(TransferAsset) => new TransferAsset(),
+                        nameof(PatchTableSheet) => new PatchTableSheet(),
                         _ => throw new CommandExitedException($"Can't determine given action type: {type}", 128),
                     };
                     action.LoadPlainValue(plainValue);
@@ -99,6 +100,40 @@ namespace Lib9c.Tools.SubCommand
             {
                 Console.WriteLine(ByteUtil.Hex(raw));
             }
+        }
+
+        [Command(Description = "Create PatchTable action and dump it.")]
+        public void PatchTable(
+            [Argument("TABLE-PATH", Description = "A table file path for patch.")]
+            string tablePath
+        )
+        {
+            var tableName = Path.GetFileName(tablePath);
+            if (tableName.EndsWith(".csv"))
+            {
+                tableName = tableName.Split(".csv")[0];
+            }
+            Console.Write("----------------\n");
+            Console.Write(tableName);
+            Console.Write("\n----------------\n");
+            var tableCsv = File.ReadAllText(tablePath);
+            Console.Write(tableCsv);
+            var action = new PatchTableSheet
+            {
+                TableName = tableName,
+                TableCsv = tableCsv
+            };
+
+            var bencoded = new List(
+                new IValue[]
+                {
+                    (Text) nameof(PatchTableSheet),
+                    action.PlainValue
+                }
+            );
+
+            byte[] raw = _codec.Encode(bencoded);
+            Console.Write(ByteUtil.Hex(raw));
         }
     }
 }
