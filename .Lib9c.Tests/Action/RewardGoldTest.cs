@@ -221,22 +221,32 @@ namespace Lib9c.Tests.Action
 
             var action = new RewardGold();
 
-            IAccountStateDelta delta;
+            void AssertMinerReward(int blockIndex, string expected)
+            {
+                ctx.BlockIndex = blockIndex;
+                IAccountStateDelta delta = action.MinerReward(ctx, _baseState);
+                Assert.Equal(FungibleAssetValue.Parse(currency, expected), delta.GetBalance(miner, currency));
+            }
 
-            // 반감기가 오기 전 마이닝 보상
-            ctx.BlockIndex = 1;
-            delta = action.MinerReward(ctx, _baseState);
-            Assert.Equal(currency * 10, delta.GetBalance(miner, currency));
+            // Before halving (10 / 2^0 = 10)
+            AssertMinerReward(0, "10");
+            AssertMinerReward(1, "10");
+            AssertMinerReward(12614400, "10");
 
-            // 첫 번째 반감기
-            ctx.BlockIndex = 12614400;
-            delta = action.MinerReward(ctx, _baseState);
-            Assert.Equal(currency * 5, delta.GetBalance(miner, currency));
+            // First halving (10 / 2^1 = 5)
+            AssertMinerReward(12614401, "5");
+            AssertMinerReward(25228800, "5");
 
-            // 두 번째 반감기
-            ctx.BlockIndex = 25228880;
-            delta = action.MinerReward(ctx, _baseState);
-            Assert.Equal(currency * 3, delta.GetBalance(miner, currency));
+            // Second halving (10 / 2^2 = 2.5)
+            AssertMinerReward(25228801, "2.5");
+            AssertMinerReward(37843200, "2.5");
+
+            // Third halving (10 / 2^3 = 1.25)
+            AssertMinerReward(37843201, "1.25");
+            AssertMinerReward(50457600, "1.25");
+
+            // Rewardless era
+            AssertMinerReward(50457601, "0");
         }
     }
 }
