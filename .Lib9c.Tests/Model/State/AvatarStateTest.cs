@@ -251,7 +251,7 @@ namespace Lib9c.Tests.Model.State
         }
 
         [Fact]
-        public void ValidateCostumeThrowArgumentOutOfRangeException()
+        public void ValidateCostumeThrowInvalidItemTypeException()
         {
             Address avatarAddress = new PrivateKey().ToAddress();
             Address agentAddress = new PrivateKey().ToAddress();
@@ -266,7 +266,7 @@ namespace Lib9c.Tests.Model.State
             var costumeIds = new HashSet<int> { costume2.Id };
             avatarState.inventory.AddItem(costume2);
 
-            Assert.Throws<ArgumentOutOfRangeException>(() => avatarState.ValidateCostume(costumeIds));
+            Assert.Throws<InvalidItemTypeException>(() => avatarState.ValidateCostume(costumeIds));
         }
 
         [Theory]

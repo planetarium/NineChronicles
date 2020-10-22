@@ -497,7 +497,8 @@ namespace Nekoyume.Model.State
                         requiredLevel = GameConfig.RequireCharacterLevel.CharacterTitleSlot;
                         break;
                     default:
-                        throw new ArgumentOutOfRangeException();
+                        throw new InvalidItemTypeException(
+                            $"Costume[id: {costumeId}] isn't expected type. [type: {costume.ItemSubType}]");
                 }
 
                 if (level < requiredLevel)
