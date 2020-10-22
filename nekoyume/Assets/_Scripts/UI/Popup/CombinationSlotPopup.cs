@@ -1,5 +1,6 @@
 using System.Globalization;
 using System.Linq;
+using Bencodex.Types;
 using Nekoyume.Action;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
@@ -79,6 +80,8 @@ namespace Nekoyume.UI
         {
             _slotIndex = slotIndex;
             var result = (CombinationConsumable.ResultModel) state.Result;
+            var chainState = new CombinationSlotState((Dictionary)Game.Game.instance.Agent.GetState(state.address));
+            var chainResult = (CombinationConsumable.ResultModel) chainState.Result;
             var subRecipeEnabled = result.subRecipeId.HasValue;
             materialPanel.gameObject.SetActive(false);
             optionView.gameObject.SetActive(false);
@@ -132,7 +135,7 @@ namespace Nekoyume.UI
                     L10nManager.Localize("UI_COMBINATION_WAITING"),
                     L10nManager.Localize("UI_RAPID_COMBINATION")
                 );
-                submitButton.SetSubmittable(result.id != default);
+                submitButton.SetSubmittable(result.id == chainResult?.id);
                 submitButton.HideHourglass();
             }
             else
@@ -148,7 +151,7 @@ namespace Nekoyume.UI
                 var count = States.Instance.CurrentAvatarState.inventory
                     .TryGetMaterial(_row.ItemId, out var glass) ? glass.count : 0;
 
-                if (result.id != default)
+                if (result.id == chainResult?.id)
                 {
                     submitButton.SetSubmitText(
                         L10nManager.Localize("UI_RAPID_COMBINATION"));
