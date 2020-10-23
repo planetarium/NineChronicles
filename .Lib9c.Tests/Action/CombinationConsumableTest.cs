@@ -70,7 +70,7 @@ namespace Lib9c.Tests.Action
             foreach (var materialInfo in row.Materials)
             {
                 var materialRow = _tableSheets.MaterialItemSheet[materialInfo.Id];
-                var material = ItemFactory.CreateItem(materialRow);
+                var material = ItemFactory.CreateItem(materialRow, _random);
                 _avatarState.inventory.AddItem(material, materialInfo.Count);
             }
 

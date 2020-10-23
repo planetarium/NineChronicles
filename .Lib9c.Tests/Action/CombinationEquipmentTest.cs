@@ -76,7 +76,7 @@ namespace Lib9c.Tests.Action
         {
             var row = _tableSheets.EquipmentItemRecipeSheet.Values.First();
             var materialRow = _tableSheets.MaterialItemSheet[row.MaterialId];
-            var material = ItemFactory.CreateItem(materialRow);
+            var material = ItemFactory.CreateItem(materialRow, _random);
             _avatarState.inventory.AddItem(material, row.MaterialCount);
 
             const int requiredStage = GameConfig.RequireClearedStageLevel.CombinationEquipmentAction;
@@ -120,14 +120,14 @@ namespace Lib9c.Tests.Action
             var row = _tableSheets.EquipmentItemRecipeSheet.Values.First(r => r.SubRecipeIds.Any());
             var subRecipeId = row.SubRecipeIds.First();
             var materialRow = _tableSheets.MaterialItemSheet[row.MaterialId];
-            var material = ItemFactory.CreateItem(materialRow);
+            var material = ItemFactory.CreateItem(materialRow, _random);
             _avatarState.inventory.AddItem(material, row.MaterialCount);
 
             var subRecipeRow = _tableSheets.EquipmentItemSubRecipeSheet.Values.First(r => r.Id == subRecipeId);
             foreach (var materialInfo in subRecipeRow.Materials)
             {
                 materialRow = _tableSheets.MaterialItemSheet[materialInfo.Id];
-                material = ItemFactory.CreateItem(materialRow);
+                material = ItemFactory.CreateItem(materialRow, _random);
                 _avatarState.inventory.AddItem(material, materialInfo.Count);
             }
 
@@ -191,14 +191,14 @@ namespace Lib9c.Tests.Action
             var row = _tableSheets.EquipmentItemRecipeSheet.Values.First(r => r.SubRecipeIds.Any());
             var subRecipeId = row.SubRecipeIds.First();
             var materialRow = _tableSheets.MaterialItemSheet[row.MaterialId];
-            var material = ItemFactory.CreateItem(materialRow);
+            var material = ItemFactory.CreateItem(materialRow, _random);
             _avatarState.inventory.AddItem(material, row.MaterialCount);
 
             var subRecipeRow = _tableSheets.EquipmentItemSubRecipeSheet.Values.First(r => r.Id == subRecipeId);
             foreach (var materialInfo in subRecipeRow.Materials)
             {
                 materialRow = _tableSheets.MaterialItemSheet[materialInfo.Id];
-                material = ItemFactory.CreateItem(materialRow);
+                material = ItemFactory.CreateItem(materialRow, _random);
                 _avatarState.inventory.AddItem(material, materialInfo.Count);
             }
 
@@ -241,7 +241,7 @@ namespace Lib9c.Tests.Action
         {
             var row = _tableSheets.EquipmentItemRecipeSheet.Values.First();
             var materialRow = _tableSheets.MaterialItemSheet[row.MaterialId];
-            var material = ItemFactory.CreateItem(materialRow);
+            var material = ItemFactory.CreateItem(materialRow, _random);
             _avatarState.inventory.AddItem(material, row.MaterialCount);
 
             const int requiredStage = GameConfig.RequireClearedStageLevel.CombinationEquipmentAction;
@@ -281,14 +281,14 @@ namespace Lib9c.Tests.Action
             var row = _tableSheets.EquipmentItemRecipeSheet.Values.First(r => r.SubRecipeIds.Any());
             var subRecipeId = row.SubRecipeIds.First();
             var materialRow = _tableSheets.MaterialItemSheet[row.MaterialId];
-            var material = ItemFactory.CreateItem(materialRow);
+            var material = ItemFactory.CreateItem(materialRow, _random);
             _avatarState.inventory.AddItem(material, row.MaterialCount);
 
             var subRecipeRow = _tableSheets.EquipmentItemSubRecipeSheet.Values.First(r => r.Id == subRecipeId);
             foreach (var materialInfo in subRecipeRow.Materials)
             {
                 materialRow = _tableSheets.MaterialItemSheet[materialInfo.Id];
-                material = ItemFactory.CreateItem(materialRow);
+                material = ItemFactory.CreateItem(materialRow, _random);
                 _avatarState.inventory.AddItem(material, materialInfo.Count);
             }
 
@@ -327,7 +327,7 @@ namespace Lib9c.Tests.Action
             const int requiredStage = GameConfig.RequireClearedStageLevel.CombinationEquipmentAction;
             var row = _tableSheets.EquipmentItemRecipeSheet.Values.First(r => r.UnlockStage > requiredStage);
             var materialRow = _tableSheets.MaterialItemSheet[row.MaterialId];
-            var material = ItemFactory.CreateItem(materialRow);
+            var material = ItemFactory.CreateItem(materialRow, _random);
             _avatarState.inventory.AddItem(material, row.MaterialCount);
 
             for (var i = 1; i < requiredStage + 1; i++)

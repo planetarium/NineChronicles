@@ -121,7 +121,7 @@ namespace Lib9c.Tests.Model
         public void SetCostumeStat()
         {
             var row = _tableSheets.CostumeStatSheet.Values.First(r => r.StatType == StatType.ATK);
-            var costume = (Costume)ItemFactory.CreateItem(_tableSheets.ItemSheet[row.CostumeId]);
+            var costume = (Costume)ItemFactory.CreateItem(_tableSheets.ItemSheet[row.CostumeId], _random);
             costume.equipped = true;
             _avatarState.inventory.AddItem(costume);
 
@@ -144,7 +144,7 @@ namespace Lib9c.Tests.Model
         public void LevelUp()
         {
             var row = _tableSheets.CostumeStatSheet.Values.First(r => r.StatType == StatType.HP);
-            var costume = (Costume)ItemFactory.CreateItem(_tableSheets.ItemSheet[row.CostumeId]);
+            var costume = (Costume)ItemFactory.CreateItem(_tableSheets.ItemSheet[row.CostumeId], _random);
             costume.equipped = true;
             _avatarState.inventory.AddItem(costume);
 

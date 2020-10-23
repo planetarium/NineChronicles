@@ -2,15 +2,15 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using Bencodex.Types;
+using Libplanet.Action;
 using Nekoyume.TableData;
-using Nekoyume.Model.Skill;
 using Nekoyume.Model.State;
 
 namespace Nekoyume.Model.Item
 {
     public static class ItemFactory
     {
-        public static ItemBase CreateItem(ItemSheet.Row row)
+        public static ItemBase CreateItem(ItemSheet.Row row, IRandom random)
         {
             switch (row)
             {
@@ -19,7 +19,7 @@ namespace Nekoyume.Model.Item
                 case MaterialItemSheet.Row materialRow:
                     return CreateMaterial(materialRow);
                 default:
-                    return CreateItemUsable(row, Guid.NewGuid(), 0);
+                    return CreateItemUsable(row, random.GenerateRandomGuid(), 0);
             }
         }
 

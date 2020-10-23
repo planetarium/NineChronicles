@@ -95,7 +95,8 @@ namespace Lib9c.Tests.Action
                 .Values
                 .First(r => r.ItemSubType == ItemSubType.FullCostume)
                 .Id;
-            var costume = ItemFactory.CreateItem(_tableSheets.ItemSheet[costumeId]);
+            var costume =
+                ItemFactory.CreateItem(_tableSheets.ItemSheet[costumeId], new ItemEnhancementTest.TestRandom());
             previousAvatarState.inventory.AddItem(costume);
 
             var state = _initialState.SetState(_avatarAddress, previousAvatarState.Serialize());

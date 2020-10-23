@@ -136,12 +136,12 @@ namespace Lib9c.Tests.Model
             var enemyAvatarState = new AvatarState(avatarState);
 
             var row = _tableSheets.CostumeStatSheet.Values.First(r => r.StatType == StatType.ATK);
-            var costume = (Costume)ItemFactory.CreateItem(_tableSheets.ItemSheet[row.CostumeId]);
+            var costume = (Costume)ItemFactory.CreateItem(_tableSheets.ItemSheet[row.CostumeId], _random);
             costume.equipped = true;
             avatarState.inventory.AddItem(costume);
 
             var row2 = _tableSheets.CostumeStatSheet.Values.First(r => r.StatType == StatType.DEF);
-            var enemyCostume = (Costume)ItemFactory.CreateItem(_tableSheets.ItemSheet[row2.CostumeId]);
+            var enemyCostume = (Costume)ItemFactory.CreateItem(_tableSheets.ItemSheet[row2.CostumeId], _random);
             enemyCostume.equipped = true;
             enemyAvatarState.inventory.AddItem(enemyCostume);
 
