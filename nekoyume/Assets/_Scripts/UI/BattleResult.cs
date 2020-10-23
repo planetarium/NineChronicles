@@ -436,13 +436,13 @@ namespace Nekoyume.UI
                     (_) => Find<ActionFailPopup>().Show("Action timeout during HackAndSlash."));
         }
 
-        public void NextStage(ActionBase.ActionEvaluation<HackAndSlash> eval)
+        public void NextStage(ActionBase.ActionEvaluation<HackAndSlash2> eval)
         {
             Debug.Log("NextStage From ResponseHackAndSlash");
             StartCoroutine(CoGoToNextStageClose(eval));
         }
 
-        private IEnumerator CoGoToNextStageClose(ActionBase.ActionEvaluation<HackAndSlash> eval)
+        private IEnumerator CoGoToNextStageClose(ActionBase.ActionEvaluation<HackAndSlash2> eval)
         {
             yield return StartCoroutine(Find<StageLoadingScreen>().CoClose());
             yield return StartCoroutine(CoFadeOut());
