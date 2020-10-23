@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using DG.Tweening;
 using Nekoyume.Game.Controller;
+using Nekoyume.Helper;
+using Nekoyume.L10n;
 using Nekoyume.TableData;
 using TMPro;
 using UniRx;
@@ -151,18 +153,25 @@ namespace Nekoyume.UI.Module
                     normalImage.enabled = true;
                     disabledImage.enabled = false;
                     selectedImage.enabled = false;
+                    buttonText.color = ColorHelper.HexToColorRGB("FFF9DD");
                     break;
                 case State.Disabled:
                     gameObject.SetActive(true);
                     normalImage.enabled = false;
                     disabledImage.enabled = true;
                     selectedImage.enabled = false;
+                    buttonText.color = ColorHelper.HexToColorRGB("666666");
                     break;
                 case State.Hidden:
                     gameObject.SetActive(false);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(value), value, null);
+            }
+
+            if (L10nManager.TryGetFontMaterial(FontMaterialType.ButtonNormal, out var fontMaterial))
+            {
+                buttonText.fontSharedMaterial = fontMaterial;
             }
 
             normalImage.SetNativeSize();
@@ -184,6 +193,12 @@ namespace Nekoyume.UI.Module
             normalImage.enabled = false;
             disabledImage.enabled = false;
             selectedImage.enabled = true;
+            buttonText.color = ColorHelper.HexToColorRGB("FFF9DD");
+
+            if (L10nManager.TryGetFontMaterial(FontMaterialType.ButtonYellow, out var fontMaterial))
+            {
+                buttonText.fontSharedMaterial = fontMaterial;
+            }
 
             _tweener = transform
                 .DOScale(1.2f, 1f)
