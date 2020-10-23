@@ -15,7 +15,6 @@ namespace Nekoyume.UI
     {
         public CombinationSlot[] slots;
         private long _blockIndex;
-        private Dictionary<int, CombinationSlotState> _states;
 
         protected override void Awake()
         {
@@ -40,38 +39,9 @@ namespace Nekoyume.UI
             UpdateSlot(state);
         }
 
-        private void SetSlots(Dictionary<Address, CombinationSlotState> states)
-        {
-            var avatarState = States.Instance.CurrentAvatarState;
-            if (avatarState is null)
-            {
-                return;
-            }
-
-            _states = states.ToDictionary(
-                pair => avatarState.combinationSlotAddresses.IndexOf(pair.Key),
-                pair => pair.Value);
-
-            UpdateSlots();
-        }
-
         private void SubscribeBlockIndex(long blockIndex)
         {
             _blockIndex = blockIndex;
-            UpdateSlots();
-        }
-
-        private void UpdateSlots()
-        {
-            if (_states is null)
-            {
-                return;
-            }
-
-            foreach (var pair in _states?.Where(pair => !(pair.Value is null)))
-            {
-                slots[pair.Key].SetData(pair.Value, _blockIndex, pair.Key);
-            }
         }
 
         private void UpdateSlot(CombinationSlotState state)
