@@ -746,7 +746,8 @@ namespace Nekoyume.State
             int? subRecipeId
         )
         {
-            var blockIndex = Game.Game.instance.Agent.BlockIndex;
+            // 레이어가 씌워진 상태에선 실제 상태가 들어오기전까지 상태업데이트를 막아두기 위해 블록높이를 추가로 설정
+            var blockIndex = Game.Game.instance.Agent.BlockIndex + 100;
             var requiredBlockIndex = row.RequiredBlockIndex + blockIndex;
             if (subRecipeId.HasValue)
             {
@@ -808,7 +809,8 @@ namespace Nekoyume.State
             Address slotAddress
         )
         {
-            var blockIndex = Game.Game.instance.Agent.BlockIndex;
+            // 레이어가 씌워진 상태에선 실제 상태가 들어오기전까지 상태업데이트를 막아두기 위해 블록높이를 추가로 설정
+            var blockIndex = Game.Game.instance.Agent.BlockIndex + 100;
             var requiredBlockIndex = blockIndex + recipeRow.RequiredBlockIndex;
             var consumableRow = tableSheets.ConsumableItemSheet.Values.First(i =>
                 i.Id == recipeRow.ResultConsumableItemId);
@@ -869,8 +871,8 @@ namespace Nekoyume.State
                 throw new ArgumentNullException(
                     $"{nameof(panel.baseMaterial)} or {nameof(panel.baseMaterial.Model)}");
             }
-
-            var blockIndex = Game.Game.instance.Agent.BlockIndex;
+            // 레이어가 씌워진 상태에선 실제 상태가 들어오기전까지 상태업데이트를 막아두기 위해 블록높이를 추가로 설정
+            var blockIndex = Game.Game.instance.Agent.BlockIndex + 100;
             var requiredBlockIndex = blockIndex + 1;
             var equipment = (Equipment) panel.baseMaterial.Model.ItemBase.Value;
             equipment.LevelUp();
