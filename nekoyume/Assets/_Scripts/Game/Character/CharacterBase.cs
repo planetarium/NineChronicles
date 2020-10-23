@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using BTAI;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
@@ -37,7 +36,6 @@ namespace Nekoyume.Game.Character
         protected abstract float RunSpeedDefault { get; }
         protected abstract Vector3 DamageTextForce { get; }
         protected abstract Vector3 HudTextPosition { get; }
-
         public string TargetTag { get; protected set; }
 
         public Guid Id => CharacterModel.Id;
@@ -496,6 +494,11 @@ namespace Nekoyume.Game.Character
             _forceQuit = true;
         }
 
+        protected virtual void ShowCriticalCutscene()
+        {
+            // Do nothing.
+        }
+
         private IEnumerator CoAnimationAttack(bool isCritical)
         {
             while (true)
@@ -504,6 +507,7 @@ namespace Nekoyume.Game.Character
                 if (isCritical)
                 {
                     Animator.CriticalAttack();
+                    ShowCriticalCutscene();
                 }
                 else
                 {
@@ -530,6 +534,7 @@ namespace Nekoyume.Game.Character
                 if (isCritical)
                 {
                     Animator.CriticalAttack();
+                    ShowCriticalCutscene();
                 }
                 else
                 {
