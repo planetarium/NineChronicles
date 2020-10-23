@@ -780,7 +780,7 @@ namespace Nekoyume.State
             var slotState = States.Instance.CombinationSlotStates[slotAddress];
             LocalStateSettings.Instance.Set(slotState.address, modifier);
             States.Instance.CombinationSlotStates[slotAddress] = modifier.Modify(slotState);
-            CombinationSlotStatesSubject.OnNext(States.Instance.CombinationSlotStates);
+            CombinationSlotStateSubject.OnNext(slotState);
         }
 
         public static void ModifyCombinationSlotConsumable(
@@ -837,7 +837,7 @@ namespace Nekoyume.State
             var slotState = States.Instance.CombinationSlotStates[slotAddress];
             LocalStateSettings.Instance.Set(slotState.address, modifier);
             States.Instance.CombinationSlotStates[slotAddress] = modifier.Modify(slotState);
-            CombinationSlotStatesSubject.OnNext(States.Instance.CombinationSlotStates);
+            CombinationSlotStateSubject.OnNext(slotState);
         }
 
         public static void ModifyCombinationSlotItemEnhancement(
@@ -888,7 +888,7 @@ namespace Nekoyume.State
             var slotState = States.Instance.CombinationSlotStates[slotAddress];
             LocalStateSettings.Instance.Set(slotState.address, modifier);
             States.Instance.CombinationSlotStates[slotAddress] = modifier.Modify(slotState);
-            CombinationSlotStatesSubject.OnNext(States.Instance.CombinationSlotStates);
+            CombinationSlotStateSubject.OnNext(slotState);
         }
 
         public static void UnlockCombinationSlot(int slotIndex, long blockIndex)
@@ -904,28 +904,24 @@ namespace Nekoyume.State
             UnlockCombinationSlot(slotAddress, blockIndex);
         }
 
-        public static void UnlockCombinationSlot(Address slotAddress, long blockIndex)
+        private static void UnlockCombinationSlot(Address slotAddress, long blockIndex)
         {
             var slotState = States.Instance.CombinationSlotStates[slotAddress];
             var modifier = new CombinationSlotBlockIndexModifier(blockIndex);
             LocalStateSettings.Instance.Set(slotState.address, modifier);
             // NOTE: Reassignment is not required yet.
             States.Instance.CombinationSlotStates[slotAddress] = modifier.Modify(slotState);
-            CombinationSlotStatesSubject.OnNext(States.Instance.CombinationSlotStates);
+            CombinationSlotStateSubject.OnNext(slotState);
         }
 
-        public static void ResetCombinationSlots()
+        public static void ResetCombinationSlot(CombinationSlotState slot)
         {
-            foreach (var address in States.Instance.CombinationSlotStates.Values
-                .Select(state => state.address))
-            {
-                LocalStateSettings.Instance
-                    .ResetCombinationSlotModifiers<CombinationSlotBlockIndexModifier>(
-                        address);
-                LocalStateSettings.Instance
-                    .ResetCombinationSlotModifiers<CombinationSlotBlockIndexAndResultModifier>(
-                        address);
-            }
+            LocalStateSettings.Instance
+                .ResetCombinationSlotModifiers<CombinationSlotBlockIndexModifier>(
+                    slot.address);
+            LocalStateSettings.Instance
+                .ResetCombinationSlotModifiers<CombinationSlotBlockIndexAndResultModifier>(
+                    slot.address);
         }
 
         #endregion

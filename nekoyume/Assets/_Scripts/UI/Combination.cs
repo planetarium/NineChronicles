@@ -22,6 +22,7 @@ using ToggleGroup = Nekoyume.UI.Module.ToggleGroup;
 using Nekoyume.Game.VFX;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
+using Bencodex.Types;
 using Libplanet;
 using mixpanel;
 using Nekoyume.Action;
@@ -189,7 +190,7 @@ namespace Nekoyume.UI
 
             blur.gameObject.SetActive(false);
 
-            CombinationSlotStatesSubject.CombinationSlotStates.Subscribe(SubscribeSlotStates)
+            CombinationSlotStateSubject.CombinationSlotState.Subscribe(_ => ResetSelectedIndex())
                 .AddTo(gameObject);
             Game.Game.instance.Agent.BlockIndexSubject.ObserveOnMainThread()
                 .Subscribe(SubscribeBlockIndex)
@@ -725,22 +726,36 @@ namespace Nekoyume.UI
 
         private void ResetSelectedIndex()
         {
-            if (/*!_lockSlotIndex &&*/ !(_states is null))
+            var avatarState = States.Instance.CurrentAvatarState;
+            var slotStates = States.Instance.CombinationSlotStates;
+            if (avatarState is null || slotStates is null)
             {
-                var avatarAddress = States.Instance.CurrentAvatarState.address;
-                var firstPair = _states
-                    .OrderBy(pair =>
-                        avatarAddress.Derive(string.Format(
-                            CultureInfo.InvariantCulture,
-                            CombinationSlotState.DeriveFormat,
-                            pair.Key)))
-                    .FirstOrDefault(i =>
-                        i.Value.Validate(
-                            States.Instance.CurrentAvatarState,
-                            _blockIndex));
-                var idx = firstPair.Value is null ? -1 : firstPair.Key;
-                selectedIndex = idx;
+                return;
             }
+            var avatarAddress = avatarState.address;
+            var idx = -1;
+            for (var i = 0; i < AvatarState.CombinationSlotCapacity; i++)
+            {
+                var address = avatarAddress.Derive(
+                    string.Format(
+                        CultureInfo.InvariantCulture,
+                        CombinationSlotState.DeriveFormat,
+                        i
+                    )
+                );
+
+                if (slotStates.ContainsKey(address))
+                {
+                    var state = slotStates[address];
+                    if (state.Validate(avatarState, _blockIndex))
+                    {
+                        idx = i;
+                        break;
+                    }
+                }
+            }
+
+            selectedIndex = idx;
         }
 
         public IEnumerator CoCombineNPCAnimation(ItemBase itemBase, System.Action action, bool isConsumable = false)

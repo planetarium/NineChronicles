@@ -1,6 +1,8 @@
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using Libplanet;
+using Nekoyume.Action;
 using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.State.Subjects;
@@ -18,13 +20,24 @@ namespace Nekoyume.UI
         protected override void Awake()
         {
             base.Awake();
-            CombinationSlotStatesSubject.CombinationSlotStates
-                .Subscribe(SetSlots)
+            CombinationSlotStateSubject.CombinationSlotState
+                .Subscribe(SetSlot)
                 .AddTo(gameObject);
             Game.Game.instance.Agent.BlockIndexSubject.ObserveOnMainThread()
                 .Subscribe(SubscribeBlockIndex)
                 .AddTo(gameObject);
             _blockIndex = Game.Game.instance.Agent.BlockIndex;
+        }
+
+        private void SetSlot(CombinationSlotState state)
+        {
+            var avatarState = States.Instance.CurrentAvatarState;
+            if (avatarState is null)
+            {
+                return;
+            }
+
+            UpdateSlot(state);
         }
 
         private void SetSlots(Dictionary<Address, CombinationSlotState> states)
@@ -58,6 +71,25 @@ namespace Nekoyume.UI
             foreach (var pair in _states?.Where(pair => !(pair.Value is null)))
             {
                 slots[pair.Key].SetData(pair.Value, _blockIndex, pair.Key);
+            }
+        }
+
+        private void UpdateSlot(CombinationSlotState state)
+        {
+            for (var i = 0; i < slots.Length; i++)
+            {
+                var slot = slots[i];
+                var address = States.Instance.CurrentAvatarState.address.Derive(
+                    string.Format(
+                        CultureInfo.InvariantCulture,
+                        CombinationSlotState.DeriveFormat,
+                        i
+                    )
+                );
+                if (address == state.address)
+                {
+                    slot.SetData(state, _blockIndex, i);
+                }
             }
         }
     }

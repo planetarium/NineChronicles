@@ -225,7 +225,6 @@ namespace Nekoyume.State
             if (avatarState is null)
             {
                 LocalStateSettings.Instance.InitializeCombinationSlotsByCurrentAvatarState(null);
-                CombinationSlotStatesSubject.OnNext(null);
 
                 return;
             }
@@ -241,24 +240,17 @@ namespace Nekoyume.State
                     )
                 );
                 var slotState = new CombinationSlotState(
-                        (Dictionary) Game.Game.instance.Agent.GetState(slotAddress));
+                    (Dictionary) Game.Game.instance.Agent.GetState(slotAddress));
                 SetCombinationSlotState(slotState);
             }
-
-            CombinationSlotStatesSubject.OnNext(CombinationSlotStates);
         }
 
-        public void SetCombinationSlotState(
-            CombinationSlotState state,
-            bool invokeSubject = default)
+        public void SetCombinationSlotState(CombinationSlotState state)
         {
             state = LocalStateSettings.Instance.Modify(state);
             CombinationSlotStates[state.address] = state;
 
-            if (invokeSubject)
-            {
-                CombinationSlotStatesSubject.OnNext(CombinationSlotStates);
-            }
+            CombinationSlotStateSubject.OnNext(state);
         }
 
         public void SetGameConfigState(GameConfigState state)
