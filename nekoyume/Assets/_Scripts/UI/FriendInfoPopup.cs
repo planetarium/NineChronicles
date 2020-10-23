@@ -163,7 +163,7 @@ namespace Nekoyume.UI
                 : title.GetLocalizedName();
             
             cpText.text = CPHelper
-                .GetCP(avatarState, game.TableSheets.CharacterSheet)
+                .GetCPV2(avatarState, game.TableSheets.CharacterSheet, game.TableSheets.CostumeStatSheet)
                 .ToString();
 
             costumeSlots.SetPlayerCostumes(playerModel, ShowTooltip, null);

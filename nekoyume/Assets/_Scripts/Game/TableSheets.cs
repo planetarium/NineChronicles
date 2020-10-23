@@ -120,6 +120,8 @@ namespace Nekoyume.Game
 
         public WeeklyArenaRewardSheet WeeklyArenaRewardSheet { get; private set; }
 
+        public CostumeStatSheet CostumeStatSheet { get; private set; }
+
         public void ItemSheetInitialize()
         {
             ItemSheet = new ItemSheet();
