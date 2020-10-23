@@ -205,13 +205,15 @@ namespace Nekoyume.UI.Scroller
             if (States.Instance.CurrentAvatarState?.address == arenaInfo.AvatarAddress)
             {
                 return CPHelper.GetCPV2(States.Instance.CurrentAvatarState,
-                    Game.Game.instance.TableSheets.CharacterSheet).ToString();
+                    Game.Game.instance.TableSheets.CharacterSheet,
+                    Game.Game.instance.TableSheets.CostumeStatSheet).ToString();
             }
             else
             {
                 var avatarState = new AvatarState(
                     (Bencodex.Types.Dictionary)Game.Game.instance.Agent.GetState(arenaInfo.AvatarAddress));
-                return CPHelper.GetCPV2(avatarState, Game.Game.instance.TableSheets.CharacterSheet).ToString();
+                return CPHelper.GetCPV2(avatarState, Game.Game.instance.TableSheets.CharacterSheet,
+                    Game.Game.instance.TableSheets.CostumeStatSheet).ToString();
             }
         }
     }
