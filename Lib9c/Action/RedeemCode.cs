@@ -84,7 +84,7 @@ namespace Nekoyume.Action
                         {
                             if (info.ItemId is int itemId)
                             {
-                                ItemBase item = ItemFactory.CreateItem(itemSheets[itemId]);
+                                ItemBase item = ItemFactory.CreateItem(itemSheets[itemId], context.Random);
                                 // We should fix count as 1 because ItemFactory.CreateItem
                                 // will create a new item every time.
                                 avatarState.inventory.AddItem(item, 1);

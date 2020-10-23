@@ -92,13 +92,15 @@ namespace Lib9c.Tests.Action
             Assert.All(itemIds, id => Assert.False(previousAvatar1State.inventory.HasItem(id)));
 
             var row = _tableSheets.CostumeStatSheet.Values.First(r => r.StatType == StatType.ATK);
-            var costume = (Costume)ItemFactory.CreateItem(_tableSheets.ItemSheet[row.CostumeId]);
+            var costume = (Costume)ItemFactory.CreateItem(
+                _tableSheets.ItemSheet[row.CostumeId], new ItemEnhancementTest.TestRandom());
             costume.equipped = true;
             var avatarState = _initialState.GetAvatarState(_avatar1Address);
             avatarState.inventory.AddItem(costume);
 
             var row2 = _tableSheets.CostumeStatSheet.Values.First(r => r.StatType == StatType.DEF);
-            var enemyCostume = (Costume)ItemFactory.CreateItem(_tableSheets.ItemSheet[row2.CostumeId]);
+            var enemyCostume = (Costume)ItemFactory.CreateItem(
+                _tableSheets.ItemSheet[row2.CostumeId], new ItemEnhancementTest.TestRandom());
             enemyCostume.equipped = true;
             var enemyAvatarState = _initialState.GetAvatarState(_avatar2Address);
             enemyAvatarState.inventory.AddItem(enemyCostume);
