@@ -1,32 +1,43 @@
 ﻿using System.Linq;
-using Nekoyume;
-using Nekoyume.UI;
+using Nekoyume.Helper;
 using Spine.Unity;
+using Spine.Unity.Modules.AttachmentTools;
 using UnityEngine;
 
 namespace Nekoyume.UI
 {
     public class CriticalCutscene : HudWidget
     {
-        private const string CUTSCENE_PATH = "Character/Cutscene/Cutscene_";
+        [SerializeField] private SkeletonAnimation skeletonAnimation;
+
+        private const string AttachmentName = "cutscene_01";
+        private const string SlotName = "cutscene";
+
+        private SkeletonAnimation SkeletonAnimation => skeletonAnimation;
 
         public static void Show(int armorId)
         {
             var cutScene = Create<CriticalCutscene>(true);
-            // LoadCutscene($"{CUTSCENE_PATH}/{armorId}");
-            var time = LoadCutscene($"{CUTSCENE_PATH}{GameConfig.DefaultAvatarArmorId}", cutScene.gameObject);
+            var time = UpdateCutscene(cutScene, armorId);
             Destroy(cutScene.gameObject, time);
         }
 
-        private static float LoadCutscene(string path, GameObject parent)
+        private static float UpdateCutscene(CriticalCutscene cutscene, int armorId)
         {
-            var origin = Resources.Load<GameObject>(path);
-            var cutscene = Instantiate(origin, parent.transform);
-            var animation = cutscene?.GetComponent<SkeletonAnimation>();
-            var time = animation ? animation.AnimationState.Tracks.First().AnimationEnd : 0.0f;
-            return time;
+            var sprite = SpriteHelper.GetCriticalCutsceneSprite(armorId);
+            var shader = Shader.Find("Sprites/Default");
+            var material = new Material(shader);
+
+            var slotIndex = cutscene.SkeletonAnimation.skeleton.FindSlotIndex(SlotName);
+            var slot = cutscene.SkeletonAnimation.skeleton.FindSlot(SlotName);
+            var attachment = slot.Attachment.GetRemappedClone(sprite, material);
+
+
+            var clonedSkin = cutscene.SkeletonAnimation.skeleton.Data.DefaultSkin.GetClone();
+            clonedSkin.SetAttachment(slotIndex, AttachmentName, attachment);
+            cutscene.SkeletonAnimation.skeleton.SetSkin(clonedSkin);
+
+            return cutscene.SkeletonAnimation.AnimationState.Tracks.First().AnimationEnd;
         }
     }
 }
-
-

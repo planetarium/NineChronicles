@@ -616,11 +616,11 @@ namespace Nekoyume.Game.Character
 
         public int GetAmorId()
         {
-            var costume = Costumes.FirstOrDefault(x => x.ItemSubType == ItemSubType.FullCostume);
-            if (costume != null)
-            {
-                return costume.Id;
-            }
+            // var costume = Costumes.FirstOrDefault(x => x.ItemSubType == ItemSubType.FullCostume);
+            // if (costume != null)
+            // {
+            //     return costume.Id;
+            // }
 
             var armor = (Armor) Equipments.FirstOrDefault(x => x.ItemSubType == ItemSubType.Armor);
             return armor?.Id ?? GameConfig.DefaultAvatarArmorId;
