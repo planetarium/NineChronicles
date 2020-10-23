@@ -79,7 +79,6 @@ namespace Nekoyume.UI
         [SerializeField]
         private ElementalCombinationPanel elementalCombinationPanel = null;
 
-
         [SerializeField]
         private SpeechBubble speechBubbleForEquipment = null;
 
@@ -706,8 +705,7 @@ namespace Nekoyume.UI
 
             var cost = string.Format(L10nManager.Localize("UI_COST_BLOCK"),
                 requiredBlockIndex);
-            _selectedSpeechBubble.onGoing = true;
-            StartCoroutine(_selectedSpeechBubble.CoShowText(cost, true));
+            StartCoroutine(_selectedSpeechBubble.CoShowText(cost, true, true));
         }
 
         private void ResetSelectedIndex()
@@ -749,8 +747,8 @@ namespace Nekoyume.UI
             Find<BottomMenu>().SetIntractable(true);
             blur.gameObject.SetActive(false);
             Pop();
+            _selectedSpeechBubble.Hide();
             _lockSlotIndex = false;
-            _selectedSpeechBubble.onGoing = false;
         }
 
         private void SetNPCAlphaZero()
