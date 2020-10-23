@@ -120,7 +120,7 @@ namespace Nekoyume.Helper
                    Resources.Load<Sprite>(TitleFrameDefaultPath);
         }
 
-        public static Sprite GetMenuIllustrate(string menuName)
+        public static Sprite GetMenuIllustration(string menuName)
         {
             Sprite result = null;
             switch (menuName)

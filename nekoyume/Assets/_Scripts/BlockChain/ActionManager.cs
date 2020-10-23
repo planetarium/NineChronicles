@@ -324,16 +324,16 @@ namespace Nekoyume.BlockChain
                 .Timeout(ActionTimeout);
         }
 
-        public IObservable<ActionBase.ActionEvaluation<RapidCombination>> RapidCombination(int slotIndex)
+        public IObservable<ActionBase.ActionEvaluation<RapidCombination2>> RapidCombination(int slotIndex)
         {
-            var action = new RapidCombination
+            var action = new RapidCombination2
             {
                 avatarAddress = States.Instance.CurrentAvatarState.address,
                 slotIndex = slotIndex
             };
             ProcessAction(action);
 
-            return _renderer.EveryRender<RapidCombination>()
+            return _renderer.EveryRender<RapidCombination2>()
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .Take(1)
                 .Last()

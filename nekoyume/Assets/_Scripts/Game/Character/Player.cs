@@ -128,7 +128,7 @@ namespace Nekoyume.Game.Character
         {
             if (SpeechBubble)
             {
-                SpeechBubble.Clear();
+                SpeechBubble.Hide();
             }
 
             ShowSpeech("PLAYER_LOSE");

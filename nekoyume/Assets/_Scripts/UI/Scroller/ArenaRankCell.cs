@@ -5,7 +5,6 @@ using Nekoyume.Helper;
 using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.UI.Module;
-using Nekoyume.UI.Tween;
 using TMPro;
 using UniRx;
 using UnityEngine;
@@ -150,12 +149,8 @@ namespace Nekoyume.UI.Scroller
             levelText.text = ArenaInfo.Level.ToString();
             nameText.text = ArenaInfo.AvatarName;
             scoreText.text = ArenaInfo.Score.ToString();
-            cpText.text = (_isCurrentUser
-                ? CPHelper.GetCPV2(
-                    States.Instance.CurrentAvatarState,
-                    Game.Game.instance.TableSheets.CharacterSheet,
-                    Game.Game.instance.TableSheets.CostumeStatSheet)
-                : arenaInfo.CombatPoint).ToString();
+            cpText.text = GetCP(arenaInfo);
+
             challengeCountTextContainer.SetActive(_isCurrentUser);
             challengeButton.gameObject.SetActive(!_isCurrentUser);
 
@@ -202,6 +197,23 @@ namespace Nekoyume.UI.Scroller
                     rankTextContainer.SetActive(true);
                     rankText.text = rank.ToString();
                     break;
+            }
+        }
+
+        private static string GetCP(ArenaInfo arenaInfo)
+        {
+            if (States.Instance.CurrentAvatarState?.address == arenaInfo.AvatarAddress)
+            {
+                return CPHelper.GetCPV2(States.Instance.CurrentAvatarState,
+                    Game.Game.instance.TableSheets.CharacterSheet,
+                    Game.Game.instance.TableSheets.CostumeStatSheet).ToString();
+            }
+            else
+            {
+                var avatarState = new AvatarState(
+                    (Bencodex.Types.Dictionary)Game.Game.instance.Agent.GetState(arenaInfo.AvatarAddress));
+                return CPHelper.GetCPV2(avatarState, Game.Game.instance.TableSheets.CharacterSheet,
+                    Game.Game.instance.TableSheets.CostumeStatSheet).ToString();
             }
         }
     }
