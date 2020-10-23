@@ -232,7 +232,7 @@ namespace Nekoyume.BlockChain
 
         private void RapidCombination()
         {
-            _renderer.EveryRender<RapidCombination>()
+            _renderer.EveryRender<RapidCombination2>()
                 .Where(ValidateEvaluationForCurrentAvatarState)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseRapidCombination).AddTo(_disposables);
@@ -276,7 +276,7 @@ namespace Nekoyume.BlockChain
             }
         }
 
-        private void ResponseRapidCombination(ActionBase.ActionEvaluation<RapidCombination> eval)
+        private void ResponseRapidCombination(ActionBase.ActionEvaluation<RapidCombination2> eval)
         {
             var avatarAddress = eval.Action.avatarAddress;
             var slot =
