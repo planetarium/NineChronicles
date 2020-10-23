@@ -2,8 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
-using _Scripts.UI;
 using BTAI;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;

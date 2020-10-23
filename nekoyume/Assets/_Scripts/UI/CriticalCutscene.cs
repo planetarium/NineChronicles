@@ -4,7 +4,7 @@ using Nekoyume.UI;
 using Spine.Unity;
 using UnityEngine;
 
-namespace _Scripts.UI
+namespace Nekoyume.UI
 {
     public class CriticalCutscene : HudWidget
     {
