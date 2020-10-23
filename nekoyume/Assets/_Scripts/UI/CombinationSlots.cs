@@ -42,6 +42,10 @@ namespace Nekoyume.UI
         private void SubscribeBlockIndex(long blockIndex)
         {
             _blockIndex = blockIndex;
+            foreach (var state in States.Instance.CombinationSlotStates.Values)
+            {
+                UpdateSlot(state);
+            }
         }
 
         private void UpdateSlot(CombinationSlotState state)
@@ -59,6 +63,7 @@ namespace Nekoyume.UI
                 if (address == state.address)
                 {
                     slot.SetData(state, _blockIndex, i);
+                    break;
                 }
             }
         }

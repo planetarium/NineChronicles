@@ -335,6 +335,7 @@ namespace Nekoyume.BlockChain
             // NOTE: 메일 레이어 씌우기.
             LocalStateModifier.RemoveItem(avatarAddress, result.itemUsable.ItemId);
             LocalStateModifier.AddNewAttachmentMail(avatarAddress, result.id);
+            LocalStateModifier.ResetCombinationSlot(slot);
 
             // NOTE: 노티 예약 걸기.
             var format = L10nManager.Localize("NOTIFICATION_COMBINATION_COMPLETE");
