@@ -65,7 +65,7 @@ namespace Nekoyume.BlockChain
                 .Timeout(ActionTimeout);
         }
 
-        public IObservable<ActionBase.ActionEvaluation<HackAndSlash>> HackAndSlash(
+        public IObservable<ActionBase.ActionEvaluation<HackAndSlash2>> HackAndSlash(
             Player player,
             int worldId,
             int stageId)
@@ -78,7 +78,7 @@ namespace Nekoyume.BlockChain
                 stageId);
         }
 
-        public IObservable<ActionBase.ActionEvaluation<HackAndSlash>> HackAndSlash(
+        public IObservable<ActionBase.ActionEvaluation<HackAndSlash2>> HackAndSlash(
             List<int> costumes,
             List<Equipment> equipments,
             List<Consumable> foods,
@@ -102,7 +102,7 @@ namespace Nekoyume.BlockChain
             equipments = equipments ?? new List<Equipment>();
             foods = foods ?? new List<Consumable>();
 
-            var action = new HackAndSlash
+            var action = new HackAndSlash2
             {
                 costumes = costumes,
                 equipments = equipments.Select(e => e.ItemId).ToList(),
@@ -120,7 +120,7 @@ namespace Nekoyume.BlockChain
                 .Concat(foods.Select(f => f.Id))
                 .ToArray();
             AnalyticsManager.Instance.Battle(itemIDs);
-            return _renderer.EveryRender<HackAndSlash>()
+            return _renderer.EveryRender<HackAndSlash2>()
                 .SkipWhile(eval => !eval.Action.Id.Equals(action.Id))
                 .Take(1)
                 .Last()
@@ -260,7 +260,7 @@ namespace Nekoyume.BlockChain
                 .Timeout(ActionTimeout);
         }
 
-        public IObservable<ActionBase.ActionEvaluation<RankingBattle>> RankingBattle(
+        public IObservable<ActionBase.ActionEvaluation<RankingBattle2>> RankingBattle(
             Address enemyAddress,
             List<int> costumeIds,
             List<Guid> equipmentIds,
@@ -270,7 +270,7 @@ namespace Nekoyume.BlockChain
             if (!ArenaHelper.TryGetThisWeekAddress(out var weeklyArenaAddress))
                 throw new NullReferenceException(nameof(weeklyArenaAddress));
 
-            var action = new RankingBattle
+            var action = new RankingBattle2
             {
                 AvatarAddress = States.Instance.CurrentAvatarState.address,
                 EnemyAddress = enemyAddress,
@@ -281,7 +281,7 @@ namespace Nekoyume.BlockChain
             };
             ProcessAction(action);
 
-            return _renderer.EveryRender<RankingBattle>()
+            return _renderer.EveryRender<RankingBattle2>()
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .Take(1)
                 .Last()

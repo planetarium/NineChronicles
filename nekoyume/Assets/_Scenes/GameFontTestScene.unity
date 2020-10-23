@@ -398,12 +398,12 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_fontAsset: {fileID: 11400000, guid: 33f9c70560de54c2ea6887c3aa61946a, type: 2}
+  m_fontAsset: {fileID: 0}
   m_spriteAsset: {fileID: 0}
   m_material: {fileID: 0}
   m_sharedMaterial: {fileID: 0}
   m_isDefaultMaterial: 0
-  m_padding: 6.9375
+  m_padding: 0
   m_canvasRenderer: {fileID: 222207598}
   m_TextComponent: {fileID: 1463946176}
   m_materialReferenceIndex: 1
@@ -578,12 +578,12 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_fontAsset: {fileID: 11400000, guid: e36061fb437584e7f922e52dab8555aa, type: 2}
+  m_fontAsset: {fileID: 0}
   m_spriteAsset: {fileID: 0}
   m_material: {fileID: 0}
   m_sharedMaterial: {fileID: 0}
   m_isDefaultMaterial: 0
-  m_padding: 6.9375
+  m_padding: 0
   m_canvasRenderer: {fileID: 606609327}
   m_TextComponent: {fileID: 610856991}
   m_materialReferenceIndex: 1
@@ -607,7 +607,7 @@ GameObject:
   - component: {fileID: 610856992}
   - component: {fileID: 610856991}
   m_Layer: 5
-  m_Name: HanazomeJapaneseText
+  m_Name: JapaneseText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -699,7 +699,7 @@ MonoBehaviour:
   m_enableWordWrapping: 1
   m_wordWrappingRatios: 0.4
   m_overflowMode: 0
-  m_firstOverflowCharacterIndex: 30
+  m_firstOverflowCharacterIndex: 45
   m_linkedTextComponent: {fileID: 0}
   m_isLinkedTextComponent: 0
   m_isTextTruncated: 0
@@ -730,7 +730,7 @@ MonoBehaviour:
     linkCount: 0
     lineCount: 4
     pageCount: 1
-    materialCount: 2
+    materialCount: 1
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_spriteAnimator: {fileID: 0}
@@ -1071,7 +1071,7 @@ GameObject:
   - component: {fileID: 991251747}
   - component: {fileID: 991251746}
   m_Layer: 5
-  m_Name: PoorStoryPortugueseText
+  m_Name: PortugueseBrazilText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1277,12 +1277,12 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_fontAsset: {fileID: 11400000, guid: d6a1398936554465ca7c5a039640dbab, type: 2}
+  m_fontAsset: {fileID: 0}
   m_spriteAsset: {fileID: 0}
   m_material: {fileID: 0}
   m_sharedMaterial: {fileID: 0}
   m_isDefaultMaterial: 0
-  m_padding: 6.9375
+  m_padding: 0
   m_canvasRenderer: {fileID: 1110582308}
   m_TextComponent: {fileID: 2107877598}
   m_materialReferenceIndex: 1
@@ -1789,7 +1789,7 @@ GameObject:
   - component: {fileID: 1376341672}
   - component: {fileID: 1376341671}
   m_Layer: 5
-  m_Name: PoorStoryKoreanText
+  m_Name: KoreanText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1949,7 +1949,7 @@ GameObject:
   - component: {fileID: 1463946177}
   - component: {fileID: 1463946176}
   m_Layer: 5
-  m_Name: NotoSansCJKscRegularText
+  m_Name: ChineseSimplifiedText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2072,7 +2072,7 @@ MonoBehaviour:
     linkCount: 0
     lineCount: 3
     pageCount: 1
-    materialCount: 2
+    materialCount: 1
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_spriteAnimator: {fileID: 0}
@@ -2183,7 +2183,7 @@ GameObject:
   - component: {fileID: 1852195787}
   - component: {fileID: 1852195786}
   m_Layer: 5
-  m_Name: PoorStoryEnglishText
+  m_Name: EnglishText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2552,7 +2552,7 @@ GameObject:
   - component: {fileID: 1987414044}
   - component: {fileID: 1987414043}
   m_Layer: 5
-  m_Name: TMP SubMeshUI [PoorStory-Regular Atlas Material + PoorStory-Latin SDF Atlas]
+  m_Name: TMP SubMeshUI [English Atlas Material + PortugueseBrazil SDF Atlas]
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2626,7 +2626,7 @@ GameObject:
   - component: {fileID: 2107877599}
   - component: {fileID: 2107877598}
   m_Layer: 5
-  m_Name: KanitLightThaiText
+  m_Name: ThaiText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2750,7 +2750,7 @@ MonoBehaviour:
     linkCount: 0
     lineCount: 5
     pageCount: 1
-    materialCount: 2
+    materialCount: 1
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_spriteAnimator: {fileID: 0}

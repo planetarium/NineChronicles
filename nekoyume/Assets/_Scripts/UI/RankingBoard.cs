@@ -431,7 +431,7 @@ namespace Nekoyume.UI
             }
         }
 
-        public void GoToStage(ActionBase.ActionEvaluation<RankingBattle> eval)
+        public void GoToStage(ActionBase.ActionEvaluation<RankingBattle2> eval)
         {
             Game.Event.OnRankingBattleStart.Invoke(eval.Action.Result);
             Close();
