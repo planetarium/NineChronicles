@@ -103,7 +103,7 @@ namespace Nekoyume.UI
             titleText.text = L10nManager.Localize("UI_NEW_MENU");
             continueText.alpha = 0f;
 
-            menuImage.overrideSprite = SpriteHelper.GetMenuIllustrate(menuName);
+            menuImage.overrideSprite = SpriteHelper.GetMenuIllustration(menuName);
             menuImage.SetNativeSize();
 
             switch (menuName)
@@ -186,16 +186,23 @@ namespace Nekoyume.UI
             titleText.text = L10nManager.Localize("UI_QUEST_COMPLETED");
             continueText.alpha = 0f;
 
-            foreach (var view in questRewardViews)
-            {
-                view.Hide();
-            }
-
             menuContainer.SetActive(false);
             questRewards.SetActive(true);
             recipeCellView.Hide();
 
             _rewards = rewards;
+
+            for (var i = 0; i < questRewardViews.Length; ++i)
+            {
+                var itemView = questRewardViews[i];
+
+                if (i < (_rewards?.Count ?? 0))
+                {
+                    itemView.SetData(_rewards[i]);
+                }
+
+                itemView.Hide();
+            }
 
             AppearNPC(ignoreShowAnimation, NPCAnimation.Type.Emotion_03);
             base.Show(ignoreShowAnimation);
@@ -405,7 +412,6 @@ namespace Nekoyume.UI
 
                 if (i < (rewards?.Count ?? 0))
                 {
-                    itemView.SetData(rewards[i]);
                     itemView.Show();
                     var rectTransform = itemView.GetComponent<RectTransform>();
                     var originalScale = rectTransform.localScale;
@@ -416,10 +422,6 @@ namespace Nekoyume.UI
                     tweener.onKill = () => rectTransform.localScale = originalScale;
                     _tweeners.Add(tweener);
                     yield return _waitItemInterval;
-                }
-                else
-                {
-                    itemView.Hide();
                 }
             }
 

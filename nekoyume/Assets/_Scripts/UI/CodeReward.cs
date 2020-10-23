@@ -94,7 +94,7 @@ namespace Nekoyume.UI
             RedeemRewardSheet.Row row =
                 tableSheets.RedeemRewardSheet.OrderedList.First(r => r.Id == reward.RewardId);
             var itemRewards = row.Rewards.Where(r => r.Type != RewardType.Gold)
-                .Select(r => (ItemFactory.CreateItem(itemSheet[r.ItemId.Value]), r.Quantity))
+                .Select(r => (ItemFactory.CreateItem(itemSheet[r.ItemId.Value], new Cheat.DebugRandom()), r.Quantity))
                 .ToList();
 
             return itemRewards;
