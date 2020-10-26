@@ -806,6 +806,8 @@ namespace Nekoyume.BlockChain
             {
                 Widget.Find<CodeReward>().Show(eval.OutputStates.GetRedeemCodeState());
                 UpdateCurrentAvatarState(eval);
+
+                return;
             }
             else
             {
