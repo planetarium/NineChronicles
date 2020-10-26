@@ -108,8 +108,6 @@ namespace Nekoyume.UI
 
         private ToggleGroup _toggleGroup;
         private NPC _npc01;
-        // FIXME: 사용처를 잘 모르겠어요. 불필요 하면 삭제해 주세요.
-        // private bool _lockSlotIndex;
         private long _blockIndex;
         private Dictionary<int, CombinationSlotState> _states;
         private SpeechBubble _selectedSpeechBubble;
@@ -275,7 +273,6 @@ namespace Nekoyume.UI
         public void Show(int slotIndex)
         {
             selectedIndex = slotIndex;
-            // _lockSlotIndex = true;
             Show();
         }
 
@@ -296,7 +293,6 @@ namespace Nekoyume.UI
 
             _npc01 = null;
 
-            // _lockSlotIndex = false;
             _equipmentRecipeIdToGo = null;
 
             base.Close(ignoreCloseAnimation);
@@ -781,7 +777,6 @@ namespace Nekoyume.UI
             blur.gameObject.SetActive(false);
             Pop();
             _selectedSpeechBubble.Hide();
-            // _lockSlotIndex = false;
         }
 
         private void SetNPCAlphaZero()
