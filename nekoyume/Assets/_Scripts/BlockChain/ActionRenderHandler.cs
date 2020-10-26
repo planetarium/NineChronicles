@@ -805,6 +805,7 @@ namespace Nekoyume.BlockChain
             if (eval.Exception is null)
             {
                 Widget.Find<CodeReward>().Show(eval.OutputStates.GetRedeemCodeState());
+                key = "UI_REDEEM_CODE_SUCCESS";
                 UpdateCurrentAvatarState(eval);
             }
             else
