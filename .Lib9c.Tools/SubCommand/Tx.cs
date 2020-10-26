@@ -75,6 +75,7 @@ namespace Lib9c.Tools.SubCommand
                     {
                         nameof(TransferAsset) => new TransferAsset(),
                         nameof(PatchTableSheet) => new PatchTableSheet(),
+                        nameof(AddRedeemCode) => new AddRedeemCode(),
                         _ => throw new CommandExitedException($"Can't determine given action type: {type}", 128),
                     };
                     action.LoadPlainValue(plainValue);
@@ -134,6 +135,32 @@ namespace Lib9c.Tools.SubCommand
 
             byte[] raw = _codec.Encode(bencoded);
             Console.Write(ByteUtil.Hex(raw));
+        }
+
+        [Command(Description = "Create new transaction with AddRedeemCode action and dump it.")]
+        public void AddRedeemCode(
+            [Argument("PRIVATE-KEY", Description = "A hex-encoded private key for signing.")] string privateKey,
+            [Argument("NONCE", Description = "A nonce for new transaction.")] long nonce,
+            [Argument("TABLE-PATH", Description = "A table file path for RedeemCodeListSheet")] string tablePath,
+            [Argument("GENESIS-HASH", Description = "A hex-encoded genesis block hash.")] string genesisHash
+        )
+        {
+            var tableCsv = File.ReadAllText(tablePath);
+            var action = new AddRedeemCode
+            {
+                redeemCsv = tableCsv
+            };
+
+            Transaction<NCAction> tx = Transaction<NCAction>.Create(
+                nonce: nonce,
+                privateKey: new PrivateKey(ByteUtil.ParseHex(privateKey)),
+                genesisHash: (genesisHash is null) ? default : new HashDigest<SHA256>(ByteUtil.ParseHex(genesisHash)),
+                timestamp: default,
+                actions: new List<NCAction>{ action }
+            );
+            byte[] raw = tx.Serialize(true);
+
+            Console.WriteLine(ByteUtil.Hex(raw));
         }
     }
 }
