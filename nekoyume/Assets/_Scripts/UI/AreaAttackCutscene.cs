@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Nekoyume.UI
 {
-    public class CriticalCutscene : HudWidget
+    public class AreaAttackCutscene : HudWidget
     {
         [SerializeField] private SkeletonAnimation skeletonAnimation;
 
@@ -17,14 +17,14 @@ namespace Nekoyume.UI
 
         public static void Show(int armorId)
         {
-            var cutScene = Create<CriticalCutscene>(true);
+            var cutScene = Create<AreaAttackCutscene>(true);
             var time = UpdateCutscene(cutScene, armorId);
             Destroy(cutScene.gameObject, time);
         }
 
-        private static float UpdateCutscene(CriticalCutscene cutscene, int armorId)
+        private static float UpdateCutscene(AreaAttackCutscene cutscene, int armorId)
         {
-            var sprite = SpriteHelper.GetCriticalCutsceneSprite(armorId);
+            var sprite = SpriteHelper.GetAreaAttackCutsceneSprite(armorId);
             var shader = Shader.Find("Sprites/Default");
             var material = new Material(shader);
 

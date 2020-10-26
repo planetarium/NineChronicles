@@ -26,7 +26,7 @@ namespace Nekoyume.Helper
         private const string BuffIconPathFormat = "UI/Icons/Buff/{0}";
 
         private const string PlayerSpineTextureWeaponPathFormat = "Character/PlayerSpineTexture/Weapon/{0}";
-        private const string CriticalCutscenePath = "Character/PlayerSpineTexture/CriticalCutscene/";
+        private const string AreaAttackCutscenePath = "Character/PlayerSpineTexture/AreaAttackCutscene/";
 
         private const string RankIconPath = "UI/Textures/UI_icon_ranking_{0}";
 
@@ -103,10 +103,10 @@ namespace Nekoyume.Helper
                    Resources.Load<Sprite>(string.Format(PlayerSpineTextureWeaponPathFormat, GameConfig.DefaultAvatarWeaponId));
         }
 
-        public static Sprite GetCriticalCutsceneSprite(int id)
+        public static Sprite GetAreaAttackCutsceneSprite(int id)
         {
-            return Resources.Load<Sprite>($"{CriticalCutscenePath}{id}") ??
-                   Resources.Load<Sprite>($"{CriticalCutscenePath}{GameConfig.DefaultAvatarArmorId}");
+            return Resources.Load<Sprite>($"{AreaAttackCutscenePath}{id}") ??
+                   Resources.Load<Sprite>($"{AreaAttackCutscenePath}{GameConfig.DefaultAvatarArmorId}");
         }
 
         public static Sprite GetRankIcon(int rank)
