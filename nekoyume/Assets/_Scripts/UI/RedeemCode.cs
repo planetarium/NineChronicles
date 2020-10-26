@@ -1,3 +1,4 @@
+using System;
 using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
 using TMPro;
@@ -24,14 +25,20 @@ namespace Nekoyume.UI
             submitButtonText.text = L10nManager.Localize("UI_OK");
         }
 
+        public override void Show(bool ignoreShowAnimation = false)
+        {
+            codeField.text = string.Empty;
+            base.Show(ignoreShowAnimation);
+        }
+
         public void RequestRedeemCode()
         {
             var code = codeField.text.Trim();
+            Close();
             Find<CodeReward>().AddSealedCode(code);
             Game.Game.instance.ActionManager.RedeemCode(code);
             Notification.Push(MailType.System, L10nManager.Localize("NOTIFICATION_REQUEST_REDEEM_CODE"));
             OnRequested.Invoke();
-            Close();
         }
     }
 }
