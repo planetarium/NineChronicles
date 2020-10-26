@@ -622,14 +622,12 @@ namespace Nekoyume.Game.Character
 
         protected override void ShowCutscene()
         {
-            var armorId = GetAmorId();
-            if (Costumes.Exists(x => x.ItemSubType == ItemSubType.FullCostume) ||
-                armorId == 10255000) // todo: 발키리의 갑옷같은경우 특별한 케이스라 하드코딩으로 들어감 config같은곳에 따로 빼줘야 할 듯.
+            if (Costumes.Exists(x => x.ItemSubType == ItemSubType.FullCostume))
             {
                 return;
             }
 
-            AreaAttackCutscene.Show(armorId);
+            AreaAttackCutscene.Show(GetAmorId());
         }
     }
 }
