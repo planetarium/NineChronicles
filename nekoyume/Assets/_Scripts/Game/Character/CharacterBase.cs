@@ -494,7 +494,7 @@ namespace Nekoyume.Game.Character
             _forceQuit = true;
         }
 
-        protected virtual void ShowCriticalCutscene()
+        protected virtual void ShowCutscene()
         {
             // Do nothing.
         }
@@ -507,7 +507,6 @@ namespace Nekoyume.Game.Character
                 if (isCritical)
                 {
                     Animator.CriticalAttack();
-                    ShowCriticalCutscene();
                 }
                 else
                 {
@@ -534,7 +533,6 @@ namespace Nekoyume.Game.Character
                 if (isCritical)
                 {
                     Animator.CriticalAttack();
-                    ShowCriticalCutscene();
                 }
                 else
                 {
@@ -715,6 +713,7 @@ namespace Nekoyume.Game.Character
             var skillInfosFirst = skillInfos.First();
             var skillInfosCount = skillInfos.Count;
 
+            ShowCutscene();
             yield return StartCoroutine(CoAnimationCast(skillInfosFirst));
 
             var effectTarget = Game.instance.Stage.GetCharacter(skillInfosFirst.Target);
