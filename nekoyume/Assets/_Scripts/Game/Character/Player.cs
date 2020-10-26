@@ -616,19 +616,20 @@ namespace Nekoyume.Game.Character
 
         public int GetAmorId()
         {
-            // var costume = Costumes.FirstOrDefault(x => x.ItemSubType == ItemSubType.FullCostume);
-            // if (costume != null)
-            // {
-            //     return costume.Id;
-            // }
-
             var armor = (Armor) Equipments.FirstOrDefault(x => x.ItemSubType == ItemSubType.Armor);
             return armor?.Id ?? GameConfig.DefaultAvatarArmorId;
         }
 
         protected override void ShowCutscene()
         {
-            AreaAttackCutscene.Show(GetAmorId());
+            var armorId = GetAmorId();
+            if (Costumes.Exists(x => x.ItemSubType == ItemSubType.FullCostume) ||
+                armorId == 10255000) // todo: 발키리의 갑옷같은경우 특별한 케이스라 하드코딩으로 들어감 config같은곳에 따로 빼줘야 할 듯.
+            {
+                return;
+            }
+
+            AreaAttackCutscene.Show(armorId);
         }
     }
 }
