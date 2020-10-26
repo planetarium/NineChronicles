@@ -201,11 +201,18 @@ namespace Nekoyume.State
                 throw new KeyNotFoundException($"{nameof(index)}({index})");
             }
 
+            var isNew = CurrentAvatarKey != index;
+
             CurrentAvatarKey = index;
             var avatarState = _avatarStates[CurrentAvatarKey];
             LocalStateSettings.Instance.InitializeCurrentAvatarState(avatarState);
             UpdateCurrentAvatarState(avatarState, initializeReactiveState);
-            SetCombinationSlotStates(avatarState);
+
+            if (isNew)
+            {
+                // NOTE: 새로운 아바타를 처음 선택할 때에는 모든 워크샵 슬롯을 업데이트 합니다.
+                SetCombinationSlotStates(avatarState);
+            }
 
             return CurrentAvatarState;
         }
@@ -228,7 +235,7 @@ namespace Nekoyume.State
 
                 return;
             }
-            
+
             LocalStateSettings.Instance.InitializeCombinationSlotsByCurrentAvatarState(avatarState);
             for (var i = 0; i < avatarState.combinationSlotAddresses.Count; i++)
             {
