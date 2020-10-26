@@ -15,10 +15,15 @@ namespace Nekoyume.TableData
         {
         }
     }
-    
+
+    [Serializable]
     public class SheetRowValidateException : Exception
     {
         public SheetRowValidateException(string message) : base(message)
+        {
+        }
+
+        protected SheetRowValidateException(SerializationInfo info, StreamingContext context) : base(info, context)
         {
         }
     }
