@@ -143,7 +143,6 @@ namespace Nekoyume.Game
             if (critical)
             {
                 _player.Animator.CriticalAttack();
-                CriticalCutscene.Show(_player.GetAmorId());
             }
             else
             {
@@ -172,6 +171,7 @@ namespace Nekoyume.Game
             var pos = _player.transform.position;
             var castingEffect = Game.instance.Stage.SkillController.Get(pos, ElementalType.Fire);
             castingEffect.Play();
+            AreaAttackCutscene.Show(_player.GetAmorId());
             yield return new WaitForSeconds(0.6f);
             var effect = Game.instance.Stage.SkillController.Get<SkillAreaVFX>(_knight.gameObject, ElementalType.Fire, SkillCategory.AreaAttack, SkillTargetType.Enemies);
             effect.Play();
@@ -185,7 +185,6 @@ namespace Nekoyume.Game
                     effect.StopLoop();
                     yield return new WaitForSeconds(0.1f);
                     _player.Animator.CriticalAttack();
-                    CriticalCutscene.Show(_player.GetAmorId());
                     effect.Finisher();
                     yield return new WaitUntil(() => effect.last.isStopped);
                     yield return new WaitForSeconds(0.2f);

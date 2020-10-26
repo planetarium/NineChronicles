@@ -626,9 +626,9 @@ namespace Nekoyume.Game.Character
             return armor?.Id ?? GameConfig.DefaultAvatarArmorId;
         }
 
-        protected override void ShowCriticalCutscene()
+        protected override void ShowCutscene()
         {
-            CriticalCutscene.Show(GetAmorId());
+            AreaAttackCutscene.Show(GetAmorId());
         }
     }
 }
