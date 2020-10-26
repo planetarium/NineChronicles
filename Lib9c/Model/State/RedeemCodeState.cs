@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Crypto;
@@ -109,12 +110,23 @@ namespace Nekoyume.Model.State
     [Serializable]
     public class InvalidRedeemCodeException : KeyNotFoundException
     {
+        public InvalidRedeemCodeException()
+        {
+        }
+
+        public InvalidRedeemCodeException(SerializationInfo info, StreamingContext context) : base(info, context)
+        {
+        }
     }
 
     [Serializable]
     public class DuplicateRedeemException : InvalidOperationException
     {
         public DuplicateRedeemException(string s) : base(s)
+        {
+        }
+
+        public DuplicateRedeemException(SerializationInfo info, StreamingContext context) : base(info, context)
         {
         }
     }
