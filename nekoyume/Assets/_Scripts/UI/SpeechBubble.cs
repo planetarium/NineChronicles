@@ -1,4 +1,4 @@
-﻿using DG.Tweening;
+using DG.Tweening;
 using Nekoyume.Game;
 using System.Collections;
 using Nekoyume.L10n;
@@ -23,13 +23,13 @@ namespace Nekoyume.UI
         public float speechBreakTime;
         public float destroyTime = 4.0f;
         public bool enable;
-        public bool onGoing;
 
         private int SpeechCount { get; set; }
         private Coroutine _coroutine;
         private Sequence _tweenScale;
         private Sequence _tweenMoveBy;
         private string _defaultKey;
+        private bool _forceFixed = false;
 
         protected override void Awake()
         {
@@ -39,12 +39,8 @@ namespace Nekoyume.UI
 
         protected override void OnDisable()
         {
-            _tweenScale?.Complete();
-            _tweenScale?.Kill();
-            _tweenScale = null;
-            _tweenMoveBy?.Complete();
-            _tweenMoveBy?.Kill();
-            _tweenMoveBy = null;
+            _forceFixed = false;
+            KillTween();
             base.OnDisable();
         }
 
@@ -55,9 +51,16 @@ namespace Nekoyume.UI
             gameObject.SetActive(false);
         }
 
-        public void Clear()
+        private void KillTween()
         {
-            gameObject.SetActive(false);
+            _tweenScale?.Complete();
+            _tweenScale?.Kill();
+            _tweenScale = null;
+            _tweenMoveBy?.Complete();
+            _tweenMoveBy?.Kill();
+            _tweenMoveBy = null;
+            bubbleContainer?.DOKill();
+            textSize.transform?.DOKill();
         }
 
         public void UpdatePosition(GameObject target, Vector3 offset = new Vector3())
@@ -102,10 +105,11 @@ namespace Nekoyume.UI
                 StopCoroutine(_coroutine);
             }
 
+            KillTween();
             gameObject.SetActive(true);
         }
 
-        public IEnumerator CoShowText(bool instant = false)
+        public IEnumerator CoShowText(bool instant = false, bool forceFixed = false)
         {
             if (!enable || SpeechCount == 0)
             {
@@ -115,11 +119,11 @@ namespace Nekoyume.UI
             BeforeSpeech();
             var speech =
                 L10nManager.Localize($"{localizationKey}{Random.Range(0, SpeechCount)}");
-            _coroutine = StartCoroutine(ShowText(speech, instant));
+            _coroutine = StartCoroutine(ShowText(speech, instant, forceFixed));
             yield return _coroutine;
         }
 
-        public IEnumerator CoShowText(string speech, bool instant = false)
+        public IEnumerator CoShowText(string speech, bool instant = false, bool forceFixed = false)
         {
             if (!enable || SpeechCount == 0)
             {
@@ -127,12 +131,13 @@ namespace Nekoyume.UI
             }
 
             BeforeSpeech();
-            _coroutine = StartCoroutine(ShowText(speech, instant));
+            _coroutine = StartCoroutine(ShowText(speech, instant, forceFixed));
             yield return _coroutine;
         }
 
-        private IEnumerator ShowText(string speech, bool instant = false)
+        private IEnumerator ShowText(string speech, bool instant, bool forceFixed)
         {
+            _forceFixed = forceFixed;
             text.text = "";
             var breakTime = speechBreakTime;
             if (!string.IsNullOrEmpty(speech))
@@ -157,7 +162,7 @@ namespace Nekoyume.UI
                     _tweenScale = DOTween.Sequence();
                     _tweenScale.Append(bubbleContainer.DOScale(1.1f, 1.4f));
                     _tweenScale.Append(bubbleContainer.DOScale(1.0f, 1.4f));
-                    _tweenScale.SetLoops(3);
+                    _tweenScale.SetLoops(_forceFixed ? -1 : 3);
                     _tweenScale.Play();
                     _tweenScale.onComplete = () => _tweenScale = null;
                 }
@@ -171,7 +176,7 @@ namespace Nekoyume.UI
                         textSize.transform.DOBlendableLocalMoveBy(new Vector3(0.0f, 6.0f), 1.4f));
                     _tweenMoveBy.Append(
                         textSize.transform.DOBlendableLocalMoveBy(new Vector3(0.0f, -6.0f), 1.4f));
-                    _tweenMoveBy.SetLoops(3);
+                    _tweenMoveBy.SetLoops(_forceFixed ? -1 : 3);
                     _tweenMoveBy.Play();
                     _tweenMoveBy.onComplete = () => _tweenMoveBy = null;
                 }
@@ -200,7 +205,7 @@ namespace Nekoyume.UI
                 }
 
                 yield return new WaitForSeconds(speechWaitTime);
-                yield return new WaitWhile(() => onGoing);
+                yield return new WaitWhile(() => forceFixed);
 
                 text.text = "";
                 textSize.rectTransform.DOScale(0.0f, bubbleTweenTime).SetEase(Ease.InBack);
@@ -208,9 +213,6 @@ namespace Nekoyume.UI
             }
 
             yield return new WaitForSeconds(breakTime);
-
-            bubbleContainer.DOKill();
-            textSize.transform.DOKill();
             Hide();
         }
 
