@@ -10,7 +10,6 @@ using UnityEngine.UI;
 using Nekoyume.UI.Tween;
 using Nekoyume.Model.Quest;
 using Nekoyume.Game.Controller;
-using Nekoyume.Game;
 using Nekoyume.Game.VFX;
 using Nekoyume.Model.Stat;
 
@@ -125,6 +124,8 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
+            var combination = Widget.Find<Combination>();
+
             _initialized = true;
             _equipmentToggleGroup.OnToggledOn.Subscribe(SubscribeOnEquipmentToggledOn).AddTo(gameObject);
             _equipmentToggleGroup.RegisterToggleable(weaponTabButton);
@@ -132,6 +133,7 @@ namespace Nekoyume.UI.Module
             _equipmentToggleGroup.RegisterToggleable(beltTabButton);
             _equipmentToggleGroup.RegisterToggleable(necklaceTabButton);
             _equipmentToggleGroup.RegisterToggleable(ringTabButton);
+            _equipmentToggleGroup.DisabledFunc = () => !combination.CanHandleInputEvent;
 
             _consumableToggleGroup.OnToggledOn.Subscribe(SubscribeOnConsumableToggledOn).AddTo(gameObject);
             _consumableToggleGroup.RegisterToggleable(hpTabButton);
@@ -139,6 +141,7 @@ namespace Nekoyume.UI.Module
             _consumableToggleGroup.RegisterToggleable(criTabButton);
             _consumableToggleGroup.RegisterToggleable(hitTabButton);
             _consumableToggleGroup.RegisterToggleable(defTabButton);
+            _consumableToggleGroup.DisabledFunc = () => !combination.CanHandleInputEvent;
 
             LoadRecipes();
             _itemFilterType.Subscribe(SubScribeFilterType).AddTo(gameObject);
@@ -386,30 +389,6 @@ namespace Nekoyume.UI.Module
             scrollRect.normalizedPosition = new Vector2(0.5f, 1.0f);
         }
 
-        private void SubscribeOnEquipmentToggledOn(IToggleable toggleable)
-        {
-            if (toggleable.Name.Equals(weaponTabButton.Name))
-            {
-                _itemFilterType.SetValueAndForceNotify(ItemSubType.Weapon);
-            }
-            else if (toggleable.Name.Equals(armorTabButton.Name))
-            {
-                _itemFilterType.SetValueAndForceNotify(ItemSubType.Armor);
-            }
-            else if (toggleable.Name.Equals(beltTabButton.Name))
-            {
-                _itemFilterType.SetValueAndForceNotify(ItemSubType.Belt);
-            }
-            else if (toggleable.Name.Equals(necklaceTabButton.Name))
-            {
-                _itemFilterType.SetValueAndForceNotify(ItemSubType.Necklace);
-            }
-            else if (toggleable.Name.Equals(ringTabButton.Name))
-            {
-                _itemFilterType.SetValueAndForceNotify(ItemSubType.Ring);
-            }
-        }
-
         private static void SubscribeOnClickCellView(RecipeCellView cellView)
         {
             var combination = Widget.Find<Combination>();
@@ -512,6 +491,30 @@ namespace Nekoyume.UI.Module
         public void SetState(State state)
         {
             _state.Value = state;
+        }
+
+        private void SubscribeOnEquipmentToggledOn(IToggleable toggleable)
+        {
+            if (toggleable.Name.Equals(weaponTabButton.Name))
+            {
+                _itemFilterType.SetValueAndForceNotify(ItemSubType.Weapon);
+            }
+            else if (toggleable.Name.Equals(armorTabButton.Name))
+            {
+                _itemFilterType.SetValueAndForceNotify(ItemSubType.Armor);
+            }
+            else if (toggleable.Name.Equals(beltTabButton.Name))
+            {
+                _itemFilterType.SetValueAndForceNotify(ItemSubType.Belt);
+            }
+            else if (toggleable.Name.Equals(necklaceTabButton.Name))
+            {
+                _itemFilterType.SetValueAndForceNotify(ItemSubType.Necklace);
+            }
+            else if (toggleable.Name.Equals(ringTabButton.Name))
+            {
+                _itemFilterType.SetValueAndForceNotify(ItemSubType.Ring);
+            }
         }
 
         private void SubscribeOnConsumableToggledOn(IToggleable toggleable)
