@@ -17,7 +17,6 @@ namespace Nekoyume.UI
 {
     public class CodeReward : PopupWidget
     {
-        [SerializeField] private Canvas sortingGroup = null;
         [SerializeField] private CodeRewardEffector effector = null;
 
         private RedeemCodeState _state;
