@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using Bencodex.Types;
 using Libplanet;
+using Nekoyume.Action;
 using Nekoyume.Model.State;
 using Nekoyume.State.Subjects;
 using UnityEngine;
@@ -35,8 +37,8 @@ namespace Nekoyume.State
 
         public GameConfigState GameConfigState { get; private set; }
 
-        public readonly Dictionary<int, CombinationSlotState> CombinationSlotStates =
-            new Dictionary<int, CombinationSlotState>();
+        public readonly Dictionary<Address, CombinationSlotState> CombinationSlotStates =
+            new Dictionary<Address, CombinationSlotState>();
         public States()
         {
             DeselectAvatar();
@@ -195,10 +197,22 @@ namespace Nekoyume.State
         public AvatarState SelectAvatar(int index, bool initializeReactiveState = true)
         {
             if (!_avatarStates.ContainsKey(index))
+            {
                 throw new KeyNotFoundException($"{nameof(index)}({index})");
+            }
+
+            var isNew = CurrentAvatarKey != index;
 
             CurrentAvatarKey = index;
-            UpdateCurrentAvatarState(_avatarStates[CurrentAvatarKey], initializeReactiveState);
+            var avatarState = _avatarStates[CurrentAvatarKey];
+            LocalStateSettings.Instance.InitializeCurrentAvatarState(avatarState);
+            UpdateCurrentAvatarState(avatarState, initializeReactiveState);
+
+            if (isNew)
+            {
+                // NOTE: 새로운 아바타를 처음 선택할 때에는 모든 워크샵 슬롯을 업데이트 합니다.
+                SetCombinationSlotStates(avatarState);
+            }
 
             return CurrentAvatarState;
         }
@@ -209,23 +223,41 @@ namespace Nekoyume.State
         public void DeselectAvatar()
         {
             CurrentAvatarKey = -1;
+            LocalStateSettings.Instance?.InitializeCurrentAvatarState(null);
             UpdateCurrentAvatarState(null);
         }
 
-        public void SetCombinationSlotStates(AvatarState avatarState)
+        private void SetCombinationSlotStates(AvatarState avatarState)
         {
+            if (avatarState is null)
+            {
+                LocalStateSettings.Instance.InitializeCombinationSlotsByCurrentAvatarState(null);
+
+                return;
+            }
+
+            LocalStateSettings.Instance.InitializeCombinationSlotsByCurrentAvatarState(avatarState);
             for (var i = 0; i < avatarState.combinationSlotAddresses.Count; i++)
             {
-                var slotAddress = avatarState.combinationSlotAddresses[i];
-                SetCombinationSlotState(new CombinationSlotState(
-                    (Dictionary) Game.Game.instance.Agent.GetState(slotAddress)), i);
+                var slotAddress = avatarState.address.Derive(
+                    string.Format(
+                        CultureInfo.InvariantCulture,
+                        CombinationSlotState.DeriveFormat,
+                        i
+                    )
+                );
+                var slotState = new CombinationSlotState(
+                    (Dictionary) Game.Game.instance.Agent.GetState(slotAddress));
+                SetCombinationSlotState(slotState);
             }
         }
 
-        public void SetCombinationSlotState(CombinationSlotState state, int index)
+        public void SetCombinationSlotState(CombinationSlotState state)
         {
-            CombinationSlotStates[index] = state;
-            CombinationSlotStatesSubject.OnNext(CombinationSlotStates);
+            state = LocalStateSettings.Instance.Modify(state);
+            CombinationSlotStates[state.address] = state;
+
+            CombinationSlotStateSubject.OnNext(state);
         }
 
         public void SetGameConfigState(GameConfigState state)
