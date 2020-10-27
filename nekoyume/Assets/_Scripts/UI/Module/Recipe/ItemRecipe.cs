@@ -10,7 +10,6 @@ using UnityEngine.UI;
 using Nekoyume.UI.Tween;
 using Nekoyume.Model.Quest;
 using Nekoyume.Game.Controller;
-using Nekoyume.Game;
 using Nekoyume.Game.VFX;
 using Nekoyume.Model.Stat;
 
@@ -89,6 +88,10 @@ namespace Nekoyume.UI.Module
 
         private readonly ReactiveProperty<State> _state = new ReactiveProperty<State>(State.Equipment);
 
+        private Dictionary<string, ItemSubType> _equipmentToggleableMap;
+
+        private Dictionary<string, StatType> _consumableToggleableMap;
+
         public bool HasNotification { get; private set; }
 
         public enum State
@@ -125,6 +128,8 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
+            var combination = Widget.Find<Combination>();
+
             _initialized = true;
             _equipmentToggleGroup.OnToggledOn.Subscribe(SubscribeOnEquipmentToggledOn).AddTo(gameObject);
             _equipmentToggleGroup.RegisterToggleable(weaponTabButton);
@@ -132,6 +137,7 @@ namespace Nekoyume.UI.Module
             _equipmentToggleGroup.RegisterToggleable(beltTabButton);
             _equipmentToggleGroup.RegisterToggleable(necklaceTabButton);
             _equipmentToggleGroup.RegisterToggleable(ringTabButton);
+            _equipmentToggleGroup.DisabledFunc = () => !combination.CanHandleInputEvent;
 
             _consumableToggleGroup.OnToggledOn.Subscribe(SubscribeOnConsumableToggledOn).AddTo(gameObject);
             _consumableToggleGroup.RegisterToggleable(hpTabButton);
@@ -139,6 +145,25 @@ namespace Nekoyume.UI.Module
             _consumableToggleGroup.RegisterToggleable(criTabButton);
             _consumableToggleGroup.RegisterToggleable(hitTabButton);
             _consumableToggleGroup.RegisterToggleable(defTabButton);
+            _consumableToggleGroup.DisabledFunc = () => !combination.CanHandleInputEvent;
+
+            _equipmentToggleableMap = new Dictionary<string, ItemSubType>()
+            {
+                {weaponTabButton.Name, ItemSubType.Weapon},
+                {armorTabButton.Name, ItemSubType.Armor},
+                {beltTabButton.Name, ItemSubType.Belt},
+                {necklaceTabButton.Name, ItemSubType.Necklace},
+                {ringTabButton.Name, ItemSubType.Ring},
+            };
+
+            _consumableToggleableMap = new Dictionary<string, StatType>()
+            {
+                {hpTabButton.Name, StatType.HP},
+                {atkTabButton.Name, StatType.ATK},
+                {criTabButton.Name, StatType.CRI},
+                {hitTabButton.Name, StatType.HIT},
+                {defTabButton.Name, StatType.DEF},
+            };
 
             LoadRecipes();
             _itemFilterType.Subscribe(SubScribeFilterType).AddTo(gameObject);
@@ -386,30 +411,6 @@ namespace Nekoyume.UI.Module
             scrollRect.normalizedPosition = new Vector2(0.5f, 1.0f);
         }
 
-        private void SubscribeOnEquipmentToggledOn(IToggleable toggleable)
-        {
-            if (toggleable.Name.Equals(weaponTabButton.Name))
-            {
-                _itemFilterType.SetValueAndForceNotify(ItemSubType.Weapon);
-            }
-            else if (toggleable.Name.Equals(armorTabButton.Name))
-            {
-                _itemFilterType.SetValueAndForceNotify(ItemSubType.Armor);
-            }
-            else if (toggleable.Name.Equals(beltTabButton.Name))
-            {
-                _itemFilterType.SetValueAndForceNotify(ItemSubType.Belt);
-            }
-            else if (toggleable.Name.Equals(necklaceTabButton.Name))
-            {
-                _itemFilterType.SetValueAndForceNotify(ItemSubType.Necklace);
-            }
-            else if (toggleable.Name.Equals(ringTabButton.Name))
-            {
-                _itemFilterType.SetValueAndForceNotify(ItemSubType.Ring);
-            }
-        }
-
         private static void SubscribeOnClickCellView(RecipeCellView cellView)
         {
             var combination = Widget.Find<Combination>();
@@ -514,27 +515,19 @@ namespace Nekoyume.UI.Module
             _state.Value = state;
         }
 
+        private void SubscribeOnEquipmentToggledOn(IToggleable toggleable)
+        {
+            if (_equipmentToggleableMap.TryGetValue(toggleable.Name, out var itemType))
+            {
+                _itemFilterType.SetValueAndForceNotify(itemType);
+            }
+        }
+
         private void SubscribeOnConsumableToggledOn(IToggleable toggleable)
         {
-            if (toggleable.Name.Equals(hpTabButton.Name))
+            if (_consumableToggleableMap.TryGetValue(toggleable.Name, out var statType))
             {
-                _statFilterType.SetValueAndForceNotify(StatType.HP);
-            }
-            else if (toggleable.Name.Equals(atkTabButton.Name))
-            {
-                _statFilterType.SetValueAndForceNotify(StatType.ATK);
-            }
-            else if (toggleable.Name.Equals(criTabButton.Name))
-            {
-                _statFilterType.SetValueAndForceNotify(StatType.CRI);
-            }
-            else if (toggleable.Name.Equals(hitTabButton.Name))
-            {
-                _statFilterType.SetValueAndForceNotify(StatType.HIT);
-            }
-            else if (toggleable.Name.Equals(defTabButton.Name))
-            {
-                _statFilterType.SetValueAndForceNotify(StatType.DEF);
+                _statFilterType.SetValueAndForceNotify(statType);
             }
         }
     }
