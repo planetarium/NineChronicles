@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using DG.Tweening;
 using Nekoyume.EnumType;
@@ -21,7 +22,10 @@ using ToggleGroup = Nekoyume.UI.Module.ToggleGroup;
 using Nekoyume.Game.VFX;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
+using Bencodex.Types;
+using Libplanet;
 using mixpanel;
+using Nekoyume.Action;
 using Nekoyume.L10n;
 using Nekoyume.UI.Model;
 
@@ -104,7 +108,6 @@ namespace Nekoyume.UI
 
         private ToggleGroup _toggleGroup;
         private NPC _npc01;
-        private bool _lockSlotIndex;
         private long _blockIndex;
         private Dictionary<int, CombinationSlotState> _states;
         private SpeechBubble _selectedSpeechBubble;
@@ -184,7 +187,7 @@ namespace Nekoyume.UI
 
             blur.gameObject.SetActive(false);
 
-            CombinationSlotStatesSubject.CombinationSlotStates.Subscribe(SubscribeSlotStates)
+            CombinationSlotStateSubject.CombinationSlotState.Subscribe(_ => ResetSelectedIndex())
                 .AddTo(gameObject);
             Game.Game.instance.Agent.BlockIndexSubject.ObserveOnMainThread()
                 .Subscribe(SubscribeBlockIndex)
@@ -270,7 +273,6 @@ namespace Nekoyume.UI
         public void Show(int slotIndex)
         {
             selectedIndex = slotIndex;
-            _lockSlotIndex = true;
             Show();
         }
 
@@ -291,7 +293,6 @@ namespace Nekoyume.UI
 
             _npc01 = null;
 
-            _lockSlotIndex = false;
             _equipmentRecipeIdToGo = null;
 
             base.Close(ignoreCloseAnimation);
@@ -585,9 +586,18 @@ namespace Nekoyume.UI
             AnimationState = AnimationStateType.Shown;
         }
 
-        private void SubscribeSlotStates(Dictionary<int, CombinationSlotState> states)
+        private void SubscribeSlotStates(Dictionary<Address, CombinationSlotState> states)
         {
-            _states = states;
+            var avatarState = States.Instance.CurrentAvatarState;
+            if (avatarState is null)
+            {
+                return;
+            }
+
+            _states = states
+                .ToDictionary(
+                    pair => avatarState.combinationSlotAddresses.IndexOf(pair.Key),
+                    pair => pair.Value);
             ResetSelectedIndex();
         }
 
@@ -710,17 +720,36 @@ namespace Nekoyume.UI
 
         private void ResetSelectedIndex()
         {
-            if (!_lockSlotIndex && !(_states is null))
+            var avatarState = States.Instance.CurrentAvatarState;
+            var slotStates = States.Instance.CombinationSlotStates;
+            if (avatarState is null || slotStates is null)
             {
-                var pair = _states
-                    .FirstOrDefault(i =>
-                        i.Value.Validate(
-                            States.Instance.CurrentAvatarState,
-                            _blockIndex
-                        ));
-                var idx = pair.Value is null ? -1 : pair.Key;
-                selectedIndex = idx;
+                return;
             }
+            var avatarAddress = avatarState.address;
+            var idx = -1;
+            for (var i = 0; i < AvatarState.CombinationSlotCapacity; i++)
+            {
+                var address = avatarAddress.Derive(
+                    string.Format(
+                        CultureInfo.InvariantCulture,
+                        CombinationSlotState.DeriveFormat,
+                        i
+                    )
+                );
+
+                if (slotStates.ContainsKey(address))
+                {
+                    var state = slotStates[address];
+                    if (state.Validate(avatarState, _blockIndex))
+                    {
+                        idx = i;
+                        break;
+                    }
+                }
+            }
+
+            selectedIndex = idx;
         }
 
         public IEnumerator CoCombineNPCAnimation(ItemBase itemBase, System.Action action, bool isConsumable = false)
@@ -748,7 +777,6 @@ namespace Nekoyume.UI
             blur.gameObject.SetActive(false);
             Pop();
             _selectedSpeechBubble.Hide();
-            _lockSlotIndex = false;
         }
 
         private void SetNPCAlphaZero()

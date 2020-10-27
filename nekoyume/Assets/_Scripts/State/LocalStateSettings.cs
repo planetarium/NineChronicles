@@ -22,7 +22,7 @@ namespace Nekoyume.State
         /// <summary>
         /// 변경자 정보는 대상 주소(Address), 비휘발성 상태 변경자(NonVolatileModifiers), 휘발성 상태 변경자(VolatileModifiers)로 구성된다.
         /// </summary>
-        /// <typeparam name="T">AgentStateModifier, AvatarStateModifier</typeparam>
+        /// <typeparam name="T">AgentStateModifier 등</typeparam>
         private class ModifierInfo<T> where T : class
         {
             public readonly Address Address;
@@ -43,8 +43,11 @@ namespace Nekoyume.State
 
         private ModifierInfo<AgentGoldModifier> _agentGoldModifierInfo;
 
-        private readonly List<ModifierInfo<AvatarStateModifier>> _avatarModifierInfos =
-            new List<ModifierInfo<AvatarStateModifier>>();
+        private ModifierInfo<AvatarStateModifier> _avatarModifierInfo;
+
+        private readonly Dictionary<Address, ModifierInfo<CombinationSlotStateModifier>>
+            _combinationSlotModifierInfos =
+                new Dictionary<Address, ModifierInfo<CombinationSlotStateModifier>>();
 
         private ModifierInfo<WeeklyArenaStateModifier> _weeklyArenaModifierInfo;
 
@@ -64,49 +67,60 @@ namespace Nekoyume.State
                 throw new ArgumentNullException(nameof(agentState));
             }
 
-            var agentAddress = agentState.address;
+            var address = agentState.address;
             // 이미 초기화되어 있는 에이전트와 같을 경우.
             if (!(_agentModifierInfo is null) &&
-                _agentModifierInfo.Address.Equals(agentAddress))
+                _agentModifierInfo.Address.Equals(address))
             {
-                // _avatarModifierInfos에는 있지만, 에이전트에는 없는 것 삭제하기.
-                foreach (var info in _avatarModifierInfos
-                    .Where(info =>
-                        !agentState.avatarAddresses.Values
-                            .Any(avatarAddress => avatarAddress.Equals(info.Address)))
-                    .ToList())
-                {
-                    _avatarModifierInfos.Remove(info);
-                }
-
-                // 에이전트에는 있지만, _avatarModifierInfos에는 없는 것 추가하기.
-                foreach (var avatarAddress in agentState.avatarAddresses.Values
-                    .Where(avatarAddress =>
-                        !_avatarModifierInfos
-                            .Any(avatarModifierInfo =>
-                                avatarAddress.Equals(avatarModifierInfo.Address))))
-                {
-                    _avatarModifierInfos.Add(new ModifierInfo<AvatarStateModifier>(
-                        avatarAddress,
-                        LoadModifiers<AvatarStateModifier>(avatarAddress)));
-                }
-
                 return;
             }
 
             // _agentModifierInfo 초기화하기.
             _agentModifierInfo =
                 new ModifierInfo<AgentStateModifier>(
-                    agentAddress,
-                    LoadModifiers<AgentStateModifier>(agentAddress));
+                    address,
+                    LoadModifiers<AgentStateModifier>(address));
             _agentGoldModifierInfo = new ModifierInfo<AgentGoldModifier>(
-                agentAddress,
-                LoadModifiers<AgentGoldModifier>(agentAddress));
-            foreach (var avatarAddress in agentState.avatarAddresses.Values)
+                address,
+                LoadModifiers<AgentGoldModifier>(address));
+        }
+
+        public void InitializeCurrentAvatarState(AvatarState avatarState)
+        {
+            if (avatarState is null)
             {
-                _avatarModifierInfos.Add(new ModifierInfo<AvatarStateModifier>(
-                    avatarAddress,
-                    LoadModifiers<AvatarStateModifier>(avatarAddress)));
+                _avatarModifierInfo = null;
+                return;
+            }
+
+            var address = avatarState.address;
+            if (!(_avatarModifierInfo is null) &&
+                _avatarModifierInfo.Address.Equals(address))
+            {
+                return;
+            }
+
+            _avatarModifierInfo = new ModifierInfo<AvatarStateModifier>(
+                address,
+                LoadModifiers<AvatarStateModifier>(address));
+        }
+
+        public void InitializeCombinationSlotsByCurrentAvatarState(AvatarState avatarState)
+        {
+            if (avatarState is null)
+            {
+                _combinationSlotModifierInfos.Clear();
+                return;
+            }
+
+            foreach (var address in avatarState.combinationSlotAddresses.Where(address =>
+                !_combinationSlotModifierInfos.ContainsKey(address)))
+            {
+                _combinationSlotModifierInfos.Add(
+                    address,
+                    new ModifierInfo<CombinationSlotStateModifier>(
+                        address,
+                        LoadModifiers<CombinationSlotStateModifier>(address)));
             }
         }
 
@@ -116,6 +130,58 @@ namespace Nekoyume.State
             _weeklyArenaModifierInfo = new ModifierInfo<WeeklyArenaStateModifier>(
                 address,
                 LoadModifiers<WeeklyArenaStateModifier>(address));
+        }
+
+        #endregion
+
+        #region Set & Reset
+
+        /// <summary>
+        /// 인자로 받은 워크샵 슬롯에 대한 상태 변경자를 적용합니다.
+        /// </summary>
+        /// <param name="address"></param>
+        /// <param name="modifier"></param>
+        public void Set(Address address, CombinationSlotStateModifier modifier)
+        {
+            if (!_combinationSlotModifierInfos.ContainsKey(address))
+            {
+                return;
+            }
+
+            var modifierInfo = _combinationSlotModifierInfos[address];
+            if (!address.Equals(modifierInfo.Address))
+            {
+                return;
+            }
+
+            var modifiers = modifierInfo.VolatileModifiers;
+            if (TryGetSameTypeModifier(modifier, modifiers, out var outModifier))
+            {
+                modifiers.Remove(outModifier);
+            }
+
+            modifiers.Add(modifier);
+        }
+
+        public void ResetCombinationSlotModifiers<T>(Address address)
+            where T : CombinationSlotStateModifier
+        {
+            if (!_combinationSlotModifierInfos.ContainsKey(address))
+            {
+                return;
+            }
+
+            var modifierInfo = _combinationSlotModifierInfos[address];
+            if (!address.Equals(modifierInfo.Address))
+            {
+                return;
+            }
+
+            var modifiers = modifierInfo.VolatileModifiers;
+            if (TryGetSameTypeModifier(typeof(T), modifiers, out var outModifier))
+            {
+                modifiers.Remove(outModifier);
+            }
         }
 
         #endregion
@@ -231,8 +297,10 @@ namespace Nekoyume.State
                 return;
             }
 
-            var modifierInfo = _avatarModifierInfos
-                .FirstOrDefault(e => e.Address.Equals(avatarAddress));
+            var modifierInfo = _avatarModifierInfo?.Address.Equals(avatarAddress) ?? false
+                ? _avatarModifierInfo
+                : null;
+
             if (!(modifierInfo is null))
             {
                 var modifiers = isVolatile
@@ -331,7 +399,7 @@ namespace Nekoyume.State
         /// <typeparam name="T"></typeparam>
         private static void PostAdd<T>(
             Address address,
-            IAccumulatableStateModifier<T> modifier,
+            IStateModifier<T> modifier,
             bool isVolatile)
             where T : Model.State.State
         {
@@ -429,8 +497,10 @@ namespace Nekoyume.State
                 return;
             }
 
-            var modifierInfo = _avatarModifierInfos.FirstOrDefault(e =>
-                e.Address.Equals(avatarAddress));
+            var modifierInfo = _avatarModifierInfo?.Address.Equals(avatarAddress) ?? false
+                ? _avatarModifierInfo
+                : null;
+
             if (!(modifierInfo is null))
             {
                 var modifiers = isVolatile
@@ -605,13 +675,35 @@ namespace Nekoyume.State
         /// <returns></returns>
         public AvatarState Modify(AvatarState state)
         {
+            if (state is null ||
+                _avatarModifierInfo is null)
+            {
+                return state;
+            }
+
+            var address = state.address;
+            if (!_avatarModifierInfo.Address.Equals(address))
+            {
+                return state;
+            }
+
+            return PostModify(state, _avatarModifierInfo);
+        }
+
+        public CombinationSlotState Modify(CombinationSlotState state)
+        {
             if (state is null)
             {
                 return null;
             }
 
-            var modifierInfo = _avatarModifierInfos.FirstOrDefault(e =>
-                e.Address.Equals(state.address));
+            var address = state.address;
+            if (!_combinationSlotModifierInfos.ContainsKey(address))
+            {
+                return state;
+            }
+
+            var modifierInfo = _combinationSlotModifierInfos[address];
             return modifierInfo is null
                 ? state
                 : PostModify(state, modifierInfo);
@@ -813,7 +905,17 @@ namespace Nekoyume.State
             IEnumerable<T> modifiers,
             out T outModifier)
         {
-            var type = modifier.GetType();
+            return TryGetSameTypeModifier(
+                modifier.GetType(),
+                modifiers,
+                out outModifier);
+        }
+
+        private static bool TryGetSameTypeModifier<T>(
+            Type type,
+            IEnumerable<T> modifiers,
+            out T outModifier)
+        {
             try
             {
                 outModifier = modifiers.First(e => e.GetType() == type);
