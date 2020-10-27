@@ -288,6 +288,7 @@ namespace Nekoyume.BlockChain
                 LocalStateModifier.AddItem(avatarAddress, pair.Key.ItemId, pair.Value, false);
             }
             LocalStateModifier.RemoveAvatarItemRequiredIndex(avatarAddress, result.itemUsable.ItemId);
+            LocalStateModifier.ResetCombinationSlot(slot);
 
             AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ActionCombinationSuccess);
 
@@ -311,7 +312,7 @@ namespace Nekoyume.BlockChain
 
             UpdateAgentState(eval);
             UpdateCurrentAvatarState(eval);
-            UpdateCombinationSlotState(slot, eval.Action.slotIndex);
+            UpdateCombinationSlotState(slot);
         }
 
         private void ResponseCombinationEquipment(ActionBase.ActionEvaluation<CombinationEquipment> eval)
@@ -334,6 +335,7 @@ namespace Nekoyume.BlockChain
             // NOTE: 메일 레이어 씌우기.
             LocalStateModifier.RemoveItem(avatarAddress, result.itemUsable.ItemId);
             LocalStateModifier.AddNewAttachmentMail(avatarAddress, result.id);
+            LocalStateModifier.ResetCombinationSlot(slot);
 
             // NOTE: 노티 예약 걸기.
             var format = L10nManager.Localize("NOTIFICATION_COMBINATION_COMPLETE");
@@ -372,8 +374,8 @@ namespace Nekoyume.BlockChain
 
             UpdateAgentState(eval);
             UpdateCurrentAvatarState(eval);
-            UpdateCombinationSlotState(slot, eval.Action.SlotIndex);
             RenderQuest(avatarAddress, avatarState.questList.completedQuestIds);
+            UpdateCombinationSlotState(slot);
 
             if (!(nextQuest is null))
             {
@@ -422,6 +424,7 @@ namespace Nekoyume.BlockChain
 
             LocalStateModifier.RemoveItem(avatarAddress, itemUsable.ItemId);
             LocalStateModifier.AddNewAttachmentMail(avatarAddress, result.id);
+            LocalStateModifier.ResetCombinationSlot(slot);
 
             var format = L10nManager.Localize("NOTIFICATION_COMBINATION_COMPLETE");
             UI.Notification.Reserve(
@@ -450,7 +453,7 @@ namespace Nekoyume.BlockChain
 
             UpdateAgentState(eval);
             UpdateCurrentAvatarState(eval);
-            UpdateCombinationSlotState(slot, eval.Action.slotIndex);
+            UpdateCombinationSlotState(slot);
             RenderQuest(avatarAddress, avatarState.questList.completedQuestIds);
         }
 
@@ -580,7 +583,6 @@ namespace Nekoyume.BlockChain
                         UpdateWeeklyArenaState(eval);
                         var avatarState =
                             eval.OutputStates.GetAvatarState(eval.Action.avatarAddress);
-                        States.Instance.SetCombinationSlotStates(avatarState);
                         RenderQuest(eval.Action.avatarAddress,
                             avatarState.questList.completedQuestIds);
                     });
@@ -671,6 +673,9 @@ namespace Nekoyume.BlockChain
             LocalStateModifier.RemoveItem(avatarAddress, itemUsable.ItemId);
             LocalStateModifier.AddNewAttachmentMail(avatarAddress, result.id);
 
+            // NOTE: 워크샵 슬롯의 모든 휘발성 상태 변경자를 제거하기.
+            LocalStateModifier.ResetCombinationSlot(slot);
+
             // NOTE: 노티 예약 걸기.
             var format = L10nManager.Localize("NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE");
             UI.Notification.Reserve(
@@ -698,7 +703,7 @@ namespace Nekoyume.BlockChain
 
             UpdateAgentState(eval);
             UpdateCurrentAvatarState(eval);
-            UpdateCombinationSlotState(slot, eval.Action.slotIndex);
+            UpdateCombinationSlotState(slot);
             RenderQuest(avatarAddress, avatarState.questList.completedQuestIds);
         }
 
