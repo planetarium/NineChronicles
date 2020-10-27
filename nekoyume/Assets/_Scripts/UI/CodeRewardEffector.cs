@@ -34,7 +34,7 @@ namespace Nekoyume.UI
 
             closeTouchHandler.OnClick.Subscribe(pointerEventData =>
             {
-                Close();
+                Close(true);
             }).AddTo(gameObject);
 
             closeButton.SetSubmitText(L10nManager.Localize("UI_RECEIVE"),
@@ -42,7 +42,7 @@ namespace Nekoyume.UI
 
             closeButton.OnSubmitClick.Subscribe(_ =>
             {
-                Close();
+                Close(true);
             }).AddTo(gameObject);
 
             CloseWidget = null;
