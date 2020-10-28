@@ -225,11 +225,13 @@ namespace Nekoyume.BlockChain
                 if (task.IsFaulted)
                 {
                     Debug.LogException(task.Exception);
-                    Debug.LogError(
+                    // FIXME: Should restore this after fixing actual bug that MakeTransaction
+                    // was throwing Exception.
+                    /*Debug.LogError(
                         $"Unexpected exception occurred. re-enqueue {action} for retransmission."
                     );
 
-                    _queuedActions.Enqueue(action);
+                    _queuedActions.Enqueue(action);*/
                 }
             }
         }
