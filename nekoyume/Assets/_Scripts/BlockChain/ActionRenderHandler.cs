@@ -577,7 +577,6 @@ namespace Nekoyume.BlockChain
                 _disposableForBattleEnd =
                     Game.Game.instance.Stage.onEnterToStageEnd
                     .First()
-                    .Finally(() => _disposableForBattleEnd = null)
                     .Subscribe(_ =>
                     {
                         UpdateCurrentAvatarState(eval);
@@ -586,6 +585,7 @@ namespace Nekoyume.BlockChain
                             eval.OutputStates.GetAvatarState(eval.Action.avatarAddress);
                         RenderQuest(eval.Action.avatarAddress,
                             avatarState.questList.completedQuestIds);
+                        _disposableForBattleEnd = null;
                     });
 
                 var actionFailPopup = Widget.Find<ActionFailPopup>();
@@ -683,12 +683,12 @@ namespace Nekoyume.BlockChain
                 _disposableForBattleEnd =
                     Game.Game.instance.Stage.onEnterToStageEnd
                     .First()
-                    .Finally(() => _disposableForBattleEnd = null)
                     .Subscribe(_ =>
                     {
                         UpdateAgentState(eval);
                         UpdateCurrentAvatarState(eval);
                         UpdateWeeklyArenaState(eval);
+                        _disposableForBattleEnd = null;
                     });
 
                 var actionFailPopup = Widget.Find<ActionFailPopup>();
