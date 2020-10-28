@@ -127,21 +127,21 @@ namespace Nekoyume.Game
         private void OnStageStart(BattleLog log)
         {
             _rankingBattle = false;
-            if (_battleLog?.id != log.id)
+            if (_battleLog is null)
             {
                 _battleLog = log;
                 PlayStage(_battleLog);
             }
             else
             {
-                Debug.Log("Skip duplicated battle");
+                Debug.Log("Skip incoming battle. Battle is already simulating.");
             }
         }
 
         private void OnRankingBattleStart(BattleLog log)
         {
             _rankingBattle = true;
-            if (_battleLog?.id != log.id)
+            if (_battleLog is null)
             {
                 if (!(_battleCoroutine is null))
                 {
@@ -153,7 +153,7 @@ namespace Nekoyume.Game
             }
             else
             {
-                Debug.Log("Skip duplicated battle");
+                Debug.Log("Skip incoming battle. Battle is already simulating.");
             }
         }
 
@@ -331,6 +331,7 @@ namespace Nekoyume.Game
             }
 
             yield return StartCoroutine(CoStageEnd(log));
+            _battleLog = null;
             IsInStage = false;
         }
 
@@ -354,6 +355,7 @@ namespace Nekoyume.Game
             }
 
             yield return StartCoroutine(CoRankingBattleEnd(log));
+            _battleLog = null;
             IsInStage = false;
             _battleCoroutine = null;
         }
@@ -594,6 +596,7 @@ namespace Nekoyume.Game
 
         private IEnumerator CoRankingBattleEnd(BattleLog log)
         {
+            _onEnterToStageEnd.OnNext(this);
             var characters = GetComponentsInChildren<Character.CharacterBase>();
             yield return new WaitWhile(() => characters.Any(i => i.actions.Any()));
 
