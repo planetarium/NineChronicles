@@ -1,4 +1,3 @@
-using Nekoyume.BlockChain;
 using Nekoyume.State;
 using Nekoyume.UI;
 using UnityEditor;
@@ -13,29 +12,18 @@ namespace Planetarium.Nekoyume.Editor
         {
             PlayerPrefs.DeleteAll();
         }
-        
+
         [MenuItem("Tools/Delete Dialog PlayerPrefs Of Current AvatarState(Play Mode)", true)]
         public static bool ValidateDeleteDialogPlayerPrefsOfCurrentAvatarState()
         {
             return Application.isPlaying
                 && States.Instance.CurrentAvatarState != null;
         }
-        
+
         [MenuItem("Tools/Delete Dialog PlayerPrefs Of Current AvatarState(Play Mode)", false)]
         public static void DeleteDialogPlayerPrefsOfCurrentAvatarState()
         {
-            var index = 1;
-            while (true)
-            {
-                var key = Dialog.GetPlayerPrefsKeyOfCurrentAvatarState(index);
-                if (!PlayerPrefs.HasKey(key))
-                {
-                    break;
-                }
-
-                PlayerPrefs.DeleteKey(key);
-                index++;
-            }
+            Dialog.DeleteDialogPlayerPrefsOfCurrentAvatarState();
         }
     }
 }
