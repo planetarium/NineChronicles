@@ -23,6 +23,8 @@ namespace Nekoyume.BlockChain
 
         ActionRenderer ActionRenderer { get; }
 
+        int AppProtocolVersion { get; }
+
         void Initialize(
             CommandLineOptions options,
             PrivateKey privateKey,

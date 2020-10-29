@@ -69,6 +69,7 @@ namespace Nekoyume.BlockChain
 
         public UnityEvent OnDisconnected { get; private set; }
 
+        public int AppProtocolVersion { get; private set; }
 
         public void Initialize(
             CommandLineOptions options,
@@ -93,6 +94,10 @@ namespace Nekoyume.BlockChain
             OnDisconnected = new UnityEvent();
 
             _genesis = BlockManager.ImportBlock(options.GenesisBlockPath ?? BlockManager.GenesisBlockPath);
+            var appProtocolVersion = options.AppProtocolVersion is null
+                ? default
+                : Libplanet.Net.AppProtocolVersion.FromToken(options.AppProtocolVersion);
+            AppProtocolVersion = appProtocolVersion.Version;
         }
 
         public IValue GetState(Address address)

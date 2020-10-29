@@ -94,6 +94,7 @@ namespace Nekoyume.BlockChain
         public BlockRenderer BlockRenderer => BlockPolicySource.BlockRenderer;
 
         public ActionRenderer ActionRenderer => BlockPolicySource.ActionRenderer;
+        public int AppProtocolVersion { get; private set; }
 
         public event EventHandler BootstrapStarted;
         public event EventHandler<PreloadState> PreloadProcessed;
@@ -330,7 +331,8 @@ namespace Nekoyume.BlockChain
             var genesisBlockPath = options.GenesisBlockPath;
             var appProtocolVersion = options.AppProtocolVersion is null
                 ? default
-                : AppProtocolVersion.FromToken(options.AppProtocolVersion);
+                : Libplanet.Net.AppProtocolVersion.FromToken(options.AppProtocolVersion);
+            AppProtocolVersion = appProtocolVersion.Version;
             var trustedAppProtocolVersionSigners = options.TrustedAppProtocolVersionSigners
                 .Select(s => new PublicKey(ByteUtil.ParseHex(s)));
             var minimumDifficulty = options.MinimumDifficulty;

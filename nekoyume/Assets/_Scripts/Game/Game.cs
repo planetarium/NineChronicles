@@ -175,6 +175,7 @@ namespace Nekoyume.Game
                         );
                     });
             }
+            Widget.Find<VersionInfo>().SetVersion(Agent.AppProtocolVersion);
         }
 
         private IEnumerator CoInitializeTableSheets()

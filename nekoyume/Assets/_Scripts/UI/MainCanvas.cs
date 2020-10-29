@@ -166,6 +166,7 @@ namespace Nekoyume.UI
                 // 시스템 정보 영역.
                 Widget.Create<BlockChainMessageBoard>(true),
                 Widget.Create<Notification>(true),
+                Widget.Create<VersionInfo>(true),
             };
 
             foreach (var value in firstWidgets)
