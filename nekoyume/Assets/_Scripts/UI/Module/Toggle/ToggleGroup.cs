@@ -1,7 +1,7 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UniRx;
-using UnityEngine;
 
 namespace Nekoyume.UI.Module
 {
@@ -14,10 +14,18 @@ namespace Nekoyume.UI.Module
 
         public IEnumerable<IToggleable> Toggleables => _idAndToggleablePairs.Values;
 
+        public Func<bool> DisabledFunc = null;
+
         #region IToggleGroup
 
         public void OnToggle(IToggleable toggleable)
         {
+            var disabled = DisabledFunc?.Invoke();
+            if (disabled.HasValue && disabled.Value)
+            {
+                return;
+            }
+
             var id = toggleable.GetInstanceID();
             foreach (var pair in _idAndToggleablePairs.Where(pair => pair.Key != id && pair.Value.IsToggledOn))
             {

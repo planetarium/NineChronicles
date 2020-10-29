@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using Lib9c.Renderer;
 using Libplanet;
@@ -11,6 +12,8 @@ using Nekoyume.Model.Item;
 using Nekoyume.State;
 using UniRx;
 using mixpanel;
+using Nekoyume.UI;
+using RedeemCode = Nekoyume.Action.RedeemCode;
 
 namespace Nekoyume.BlockChain
 {
@@ -62,7 +65,19 @@ namespace Nekoyume.BlockChain
                 .Take(1)
                 .Last()
                 .ObserveOnMainThread()
-                .Timeout(ActionTimeout);
+                .Timeout(ActionTimeout)
+                .Finally(() =>
+                {
+                    var agentAddress = States.Instance.AgentState.address;
+                    var avatarAddress = agentAddress.Derive(
+                        string.Format(
+                            CultureInfo.InvariantCulture,
+                            CreateAvatar2.DeriveFormat,
+                            index
+                        )
+                    );
+                    Dialog.DeleteDialogPlayerPrefs(avatarAddress);
+                });
         }
 
         public IObservable<ActionBase.ActionEvaluation<HackAndSlash2>> HackAndSlash(

@@ -157,6 +157,7 @@ namespace Nekoyume.UI
             _toggleGroup.RegisterToggleable(combineEquipmentCategoryButton);
             _toggleGroup.RegisterToggleable(combineConsumableCategoryButton);
             _toggleGroup.RegisterToggleable(enhanceEquipmentCategoryButton);
+            _toggleGroup.DisabledFunc = () => !CanHandleInputEvent;
 
             combineEquipmentCategoryButton.SetLockCondition(GameConfig.RequireClearedStageLevel
                 .CombinationEquipmentAction);
