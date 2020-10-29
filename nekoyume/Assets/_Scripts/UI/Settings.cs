@@ -65,7 +65,7 @@ namespace Nekoyume.UI
         {
             if (!(_privateKey is null))
             {
-                addressContentInputField.text = _privateKey.ToAddress().ToHex();
+                addressContentInputField.text = _privateKey.ToAddress().ToString();
                 privateKeyContentInputField.text = ByteUtil.Hex(_privateKey.ByteArray);
             }
             else
@@ -77,7 +77,7 @@ namespace Nekoyume.UI
                 }
                 else
                 {
-                    addressContentInputField.text = Game.Game.instance.Agent.Address.ToHex();
+                    addressContentInputField.text = Game.Game.instance.Agent.Address.ToString();
                     privateKeyContentInputField.text = ByteUtil.Hex(Game.Game.instance.Agent.PrivateKey.ByteArray);
                 }
             }
