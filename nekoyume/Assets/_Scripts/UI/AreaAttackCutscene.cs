@@ -8,7 +8,7 @@ namespace Nekoyume.UI
 {
     public class AreaAttackCutscene : HudWidget
     {
-        [SerializeField] private SkeletonAnimation skeletonAnimation;
+        [SerializeField] private SkeletonAnimation skeletonAnimation = null;
 
         private const string AttachmentName = "cutscene_01";
         private const string SlotName = "cutscene";
