@@ -9,10 +9,9 @@ namespace Nekoyume.UI
     public class CodeRewardButton : Widget
     {
         [SerializeField] private Button button = null;
-        [SerializeField] private Canvas sortingGroup = null;
-        [SerializeField] private TextMeshProUGUI count;
+        [SerializeField] private TextMeshProUGUI count = null;
 
-        private System.Action effectHandler;
+        private System.Action _effectHandler;
 
         protected override void Awake()
         {
@@ -20,13 +19,13 @@ namespace Nekoyume.UI
             button.OnClickAsObservable().Subscribe(_ =>
             {
                 AudioController.PlayClick();
-                effectHandler?.Invoke();
+                _effectHandler?.Invoke();
             }).AddTo(gameObject);
         }
 
         public void Show(System.Action handler, int rewardCount)
         {
-            effectHandler = handler;
+            _effectHandler = handler;
             count.text = rewardCount.ToString();
             base.Show();
         }
