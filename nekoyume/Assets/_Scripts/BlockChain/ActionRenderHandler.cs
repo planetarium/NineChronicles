@@ -17,10 +17,6 @@ using UniRx;
 using Nekoyume.Model.State;
 using TentuPlay.Api;
 using Nekoyume.Model.Quest;
-using Libplanet.Crypto;
-using Nekoyume.Game;
-using static Nekoyume.Model.State.RedeemCodeState;
-using Nekoyume.TableData;
 
 namespace Nekoyume.BlockChain
 {
@@ -42,6 +38,8 @@ namespace Nekoyume.BlockChain
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
 
         private ActionRenderer _renderer;
+
+        private IDisposable _disposableForBattleEnd = null;
 
         public void Start(ActionRenderer renderer)
         {
@@ -288,6 +286,7 @@ namespace Nekoyume.BlockChain
                 LocalStateModifier.AddItem(avatarAddress, pair.Key.ItemId, pair.Value, false);
             }
             LocalStateModifier.RemoveAvatarItemRequiredIndex(avatarAddress, result.itemUsable.ItemId);
+            LocalStateModifier.ResetCombinationSlot(slot);
 
             AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ActionCombinationSuccess);
 
@@ -311,7 +310,7 @@ namespace Nekoyume.BlockChain
 
             UpdateAgentState(eval);
             UpdateCurrentAvatarState(eval);
-            UpdateCombinationSlotState(slot, eval.Action.slotIndex);
+            UpdateCombinationSlotState(slot);
         }
 
         private void ResponseCombinationEquipment(ActionBase.ActionEvaluation<CombinationEquipment> eval)
@@ -334,6 +333,7 @@ namespace Nekoyume.BlockChain
             // NOTE: 메일 레이어 씌우기.
             LocalStateModifier.RemoveItem(avatarAddress, result.itemUsable.ItemId);
             LocalStateModifier.AddNewAttachmentMail(avatarAddress, result.id);
+            LocalStateModifier.ResetCombinationSlot(slot);
 
             // NOTE: 노티 예약 걸기.
             var format = L10nManager.Localize("NOTIFICATION_COMBINATION_COMPLETE");
@@ -372,8 +372,8 @@ namespace Nekoyume.BlockChain
 
             UpdateAgentState(eval);
             UpdateCurrentAvatarState(eval);
-            UpdateCombinationSlotState(slot, eval.Action.SlotIndex);
             RenderQuest(avatarAddress, avatarState.questList.completedQuestIds);
+            UpdateCombinationSlotState(slot);
 
             if (!(nextQuest is null))
             {
@@ -422,6 +422,7 @@ namespace Nekoyume.BlockChain
 
             LocalStateModifier.RemoveItem(avatarAddress, itemUsable.ItemId);
             LocalStateModifier.AddNewAttachmentMail(avatarAddress, result.id);
+            LocalStateModifier.ResetCombinationSlot(slot);
 
             var format = L10nManager.Localize("NOTIFICATION_COMBINATION_COMPLETE");
             UI.Notification.Reserve(
@@ -450,7 +451,7 @@ namespace Nekoyume.BlockChain
 
             UpdateAgentState(eval);
             UpdateCurrentAvatarState(eval);
-            UpdateCombinationSlotState(slot, eval.Action.slotIndex);
+            UpdateCombinationSlotState(slot);
             RenderQuest(avatarAddress, avatarState.questList.completedQuestIds);
         }
 
@@ -572,7 +573,9 @@ namespace Nekoyume.BlockChain
         {
             if (eval.Exception is null)
             {
-                Game.Game.instance.Stage.onEnterToStageEnd
+                _disposableForBattleEnd?.Dispose();
+                _disposableForBattleEnd =
+                    Game.Game.instance.Stage.onEnterToStageEnd
                     .First()
                     .Subscribe(_ =>
                     {
@@ -580,9 +583,9 @@ namespace Nekoyume.BlockChain
                         UpdateWeeklyArenaState(eval);
                         var avatarState =
                             eval.OutputStates.GetAvatarState(eval.Action.avatarAddress);
-                        States.Instance.SetCombinationSlotStates(avatarState);
                         RenderQuest(eval.Action.avatarAddress,
                             avatarState.questList.completedQuestIds);
+                        _disposableForBattleEnd = null;
                     });
 
                 var actionFailPopup = Widget.Find<ActionFailPopup>();
@@ -619,7 +622,7 @@ namespace Nekoyume.BlockChain
                     Widget.Find<BattleResult>().Close();
                 }
 
-                Event.OnRoomEnter.Invoke(showLoadingScreen);
+                Game.Event.OnRoomEnter.Invoke(showLoadingScreen);
                 Game.Game.instance.Stage.OnRoomEnterEnd
                     .First()
                     .Subscribe(_ =>
@@ -646,60 +649,6 @@ namespace Nekoyume.BlockChain
                                 L10nManager.Localize("UI_OK"), false);
                     });
             }
-        }
-
-        private void ResponseItemEnhancement(ActionBase.ActionEvaluation<ItemEnhancement2> eval)
-        {
-            var agentAddress = eval.Signer;
-            var avatarAddress = eval.Action.avatarAddress;
-            var slot = eval.OutputStates.GetCombinationSlotState(avatarAddress, eval.Action.slotIndex);
-            var result = (ItemEnhancement.ResultModel) slot.Result;
-            var itemUsable = result.itemUsable;
-            var avatarState = eval.OutputStates.GetAvatarState(avatarAddress);
-
-            // NOTE: 사용한 자원에 대한 레이어 벗기기.
-            LocalStateModifier.ModifyAgentGold(agentAddress, result.gold);
-            LocalStateModifier.ModifyAvatarActionPoint(avatarAddress, result.actionPoint);
-            LocalStateModifier.AddItem(avatarAddress, itemUsable.ItemId, false);
-            foreach (var itemId in result.materialItemIdList)
-            {
-                // NOTE: 최종적으로 UpdateCurrentAvatarState()를 호출한다면, 그곳에서 상태를 새로 설정할 것이다.
-                LocalStateModifier.AddItem(avatarAddress, itemId, false);
-            }
-
-            // NOTE: 메일 레이어 씌우기.
-            LocalStateModifier.RemoveItem(avatarAddress, itemUsable.ItemId);
-            LocalStateModifier.AddNewAttachmentMail(avatarAddress, result.id);
-
-            // NOTE: 노티 예약 걸기.
-            var format = L10nManager.Localize("NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE");
-            UI.Notification.Reserve(
-                MailType.Workshop,
-                string.Format(format, result.itemUsable.GetLocalizedName()),
-                slot.UnlockBlockIndex,
-                result.itemUsable.ItemId);
-
-            //[TentuPlay] 장비강화, 골드사용
-            //Local에서 변경하는 States.Instance 보다는 블락에서 꺼내온 eval.OutputStates를 사용
-            if (eval.OutputStates.TryGetGoldBalance(agentAddress, GoldCurrency, out var outAgentBalance))
-            {
-                var total = outAgentBalance -
-                            new FungibleAssetValue(outAgentBalance.Currency, result.gold, 0);
-                new TPStashEvent().CharacterCurrencyUse(
-                    player_uuid: agentAddress.ToHex(),
-                    character_uuid: States.Instance.CurrentAvatarState.address.ToHex().Substring(0, 4),
-                    currency_slug: "gold",
-                    currency_quantity: (float) result.gold,
-                    currency_total_quantity: float.Parse(total.GetQuantityString()),
-                    reference_entity: entity.Items, //강화가 가능하므로 장비
-                    reference_category_slug: "item_enhancement",
-                    reference_slug: itemUsable.Id.ToString());
-            }
-
-            UpdateAgentState(eval);
-            UpdateCurrentAvatarState(eval);
-            UpdateCombinationSlotState(slot, eval.Action.slotIndex);
-            RenderQuest(avatarAddress, avatarState.questList.completedQuestIds);
         }
 
         private void ResponseRankingBattle(ActionBase.ActionEvaluation<RankingBattle2> eval)
@@ -730,9 +679,17 @@ namespace Nekoyume.BlockChain
                     );
                 }
 
-                UpdateAgentState(eval);
-                UpdateCurrentAvatarState(eval);
-                UpdateWeeklyArenaState(eval);
+                _disposableForBattleEnd?.Dispose();
+                _disposableForBattleEnd =
+                    Game.Game.instance.Stage.onEnterToStageEnd
+                    .First()
+                    .Subscribe(_ =>
+                    {
+                        UpdateAgentState(eval);
+                        UpdateCurrentAvatarState(eval);
+                        UpdateWeeklyArenaState(eval);
+                        _disposableForBattleEnd = null;
+                    });
 
                 var actionFailPopup = Widget.Find<ActionFailPopup>();
                 actionFailPopup.CloseCallback = null;
@@ -756,7 +713,7 @@ namespace Nekoyume.BlockChain
                     Widget.Find<RankingBattleResult>().Close();
                 }
 
-                Event.OnRoomEnter.Invoke(showLoadingScreen);
+                Game.Event.OnRoomEnter.Invoke(showLoadingScreen);
                 Game.Game.instance.Stage.OnRoomEnterEnd
                     .First()
                     .Subscribe(_ =>
@@ -799,12 +756,70 @@ namespace Nekoyume.BlockChain
             }
         }
 
+        private void ResponseItemEnhancement(ActionBase.ActionEvaluation<ItemEnhancement2> eval)
+        {
+            var agentAddress = eval.Signer;
+            var avatarAddress = eval.Action.avatarAddress;
+            var slot = eval.OutputStates.GetCombinationSlotState(avatarAddress, eval.Action.slotIndex);
+            var result = (ItemEnhancement.ResultModel) slot.Result;
+            var itemUsable = result.itemUsable;
+            var avatarState = eval.OutputStates.GetAvatarState(avatarAddress);
+
+            // NOTE: 사용한 자원에 대한 레이어 벗기기.
+            LocalStateModifier.ModifyAgentGold(agentAddress, result.gold);
+            LocalStateModifier.ModifyAvatarActionPoint(avatarAddress, result.actionPoint);
+            LocalStateModifier.AddItem(avatarAddress, itemUsable.ItemId, false);
+            foreach (var itemId in result.materialItemIdList)
+            {
+                // NOTE: 최종적으로 UpdateCurrentAvatarState()를 호출한다면, 그곳에서 상태를 새로 설정할 것이다.
+                LocalStateModifier.AddItem(avatarAddress, itemId, false);
+            }
+
+            // NOTE: 메일 레이어 씌우기.
+            LocalStateModifier.RemoveItem(avatarAddress, itemUsable.ItemId);
+            LocalStateModifier.AddNewAttachmentMail(avatarAddress, result.id);
+
+            // NOTE: 워크샵 슬롯의 모든 휘발성 상태 변경자를 제거하기.
+            LocalStateModifier.ResetCombinationSlot(slot);
+
+            // NOTE: 노티 예약 걸기.
+            var format = L10nManager.Localize("NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE");
+            UI.Notification.Reserve(
+                MailType.Workshop,
+                string.Format(format, result.itemUsable.GetLocalizedName()),
+                slot.UnlockBlockIndex,
+                result.itemUsable.ItemId);
+
+            //[TentuPlay] 장비강화, 골드사용
+            //Local에서 변경하는 States.Instance 보다는 블락에서 꺼내온 eval.OutputStates를 사용
+            if (eval.OutputStates.TryGetGoldBalance(agentAddress, GoldCurrency, out var outAgentBalance))
+            {
+                var total = outAgentBalance -
+                            new FungibleAssetValue(outAgentBalance.Currency, result.gold, 0);
+                new TPStashEvent().CharacterCurrencyUse(
+                    player_uuid: agentAddress.ToHex(),
+                    character_uuid: States.Instance.CurrentAvatarState.address.ToHex().Substring(0, 4),
+                    currency_slug: "gold",
+                    currency_quantity: (float) result.gold,
+                    currency_total_quantity: float.Parse(total.GetQuantityString()),
+                    reference_entity: entity.Items, //강화가 가능하므로 장비
+                    reference_category_slug: "item_enhancement",
+                    reference_slug: itemUsable.Id.ToString());
+            }
+
+            UpdateAgentState(eval);
+            UpdateCurrentAvatarState(eval);
+            UpdateCombinationSlotState(slot);
+            RenderQuest(avatarAddress, avatarState.questList.completedQuestIds);
+        }
+
         private void ResponseRedeemCode(ActionBase.ActionEvaluation<Action.RedeemCode> eval)
         {
             var key = "UI_REDEEM_CODE_INVALID_CODE";
             if (eval.Exception is null)
             {
                 Widget.Find<CodeReward>().Show(eval.OutputStates.GetRedeemCodeState());
+                key = "UI_REDEEM_CODE_SUCCESS";
                 UpdateCurrentAvatarState(eval);
             }
             else

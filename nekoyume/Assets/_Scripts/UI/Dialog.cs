@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using Libplanet;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
@@ -43,10 +44,48 @@ namespace Nekoyume.UI
 
         public override WidgetType WidgetType => WidgetType.Popup;
 
-        public static string GetPlayerPrefsKeyOfCurrentAvatarState(int dialogId)
+        public static bool TryGetPlayerPrefsKeyOfCurrentAvatarState(int dialogId, out string key)
         {
-            var addr = States.Instance.CurrentAvatarState.address.ToString();
+            if (States.Instance.CurrentAvatarState is null)
+            {
+                key = default;
+                return false;
+            }
+
+            key = GetPlayerPrefsKey(States.Instance.CurrentAvatarState.address, dialogId);
+            return true;
+        }
+
+        public static string GetPlayerPrefsKey(Address address, int dialogId)
+        {
+            var addr = address.ToString();
             return $"DIALOG_{addr}_{dialogId}";
+        }
+
+        public static void DeleteDialogPlayerPrefsOfCurrentAvatarState()
+        {
+            if (States.Instance.CurrentAvatarState is null)
+            {
+                return;
+            }
+
+            DeleteDialogPlayerPrefs(States.Instance.CurrentAvatarState.address);
+        }
+
+        public static void DeleteDialogPlayerPrefs(Address address)
+        {
+            var index = 1;
+            while (true)
+            {
+                var key = GetPlayerPrefsKey(address, index);
+                if (!PlayerPrefs.HasKey(key))
+                {
+                    break;
+                }
+
+                PlayerPrefs.DeleteKey(key);
+                index++;
+            }
         }
 
         #region Mono
@@ -61,20 +100,31 @@ namespace Nekoyume.UI
             SubmitWidget = Skip;
         }
 
+        protected override void OnDisable()
+        {
+            _coroutine = null;
+            base.OnDisable();
+        }
+
         #endregion
 
         public void Show(int dialogId)
         {
-            _playerPrefsKey = GetPlayerPrefsKeyOfCurrentAvatarState(dialogId);
-            if (PlayerPrefs.GetInt(_playerPrefsKey, 0) > 0)
+            if (!TryGetPlayerPrefsKeyOfCurrentAvatarState(dialogId, out _playerPrefsKey) ||
+                PlayerPrefs.GetInt(_playerPrefsKey, 0) > 0)
+            {
                 return;
-
-            base.Show();
+            }
 
             _dialogKey = $"DIALOG_{dialogId}_{1}_";
             _dialogIndex = 0;
             _dialogNum = L10nManager.LocalizedCount(_dialogKey);
+            if (_dialogNum <= 0)
+            {
+                return;
+            }
 
+            base.Show();
             _coroutine = StartCoroutine(CoShowText());
         }
 
@@ -107,7 +157,7 @@ namespace Nekoyume.UI
             _coroutine = StartCoroutine(CoShowText());
         }
 
-        public IEnumerator CoShowText()
+        private IEnumerator CoShowText()
         {
             var text = L10nManager.Localize($"{_dialogKey}{_dialogIndex}");
             if (string.IsNullOrEmpty(text))

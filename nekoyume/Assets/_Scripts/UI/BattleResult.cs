@@ -165,8 +165,6 @@ namespace Nekoyume.UI
 
         public void Show(Model model)
         {
-            base.Show();
-
             canvasGroup.alpha = 1f;
             SharedModel = model;
 
@@ -178,13 +176,20 @@ namespace Nekoyume.UI
                 reward.gameObject.SetActive(false);
             }
 
+            base.Show();
+
             UpdateView();
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
         {
+            StopVFX();
+
             foreach (var obj in victoryResultTexts)
+            {
                 obj.SetActive(false);
+            }
+
             stageProgressBar.Close();
             base.Close(ignoreCloseAnimation);
         }
@@ -220,8 +225,9 @@ namespace Nekoyume.UI
             StartCoroutine(EmitBattleWinVFX());
             AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ActionBattleWin);
 
-            _victoryImageAnimator.SetInteger("ClearedWave", SharedModel.ClearedWaveNumber);
             victoryImageContainer.SetActive(true);
+            _victoryImageAnimator.SetInteger("ClearedWave", SharedModel.ClearedWaveNumber);
+
             defeatImageContainer.SetActive(false);
             topArea.SetActive(true);
             defeatTextArea.root.SetActive(false);
@@ -239,8 +245,6 @@ namespace Nekoyume.UI
             AudioController.instance.PlaySfx(AudioController.SfxCode.Win);
             switch (SharedModel.ClearedWaveNumber)
             {
-                case 0:
-                    break;
                 case 1:
                     _battleWin01VFX =
                         VFXController.instance.CreateAndChase<BattleWin01VFX>(
@@ -253,7 +257,7 @@ namespace Nekoyume.UI
                             ActionCamera.instance.transform,
                             VfxBattleWinOffset);
                     break;
-                default:
+                case 3:
                     _battleWin03VFX =
                         VFXController.instance.CreateAndChase<BattleWin03VFX>(
                             ActionCamera.instance.transform,
@@ -459,7 +463,6 @@ namespace Nekoyume.UI
             var eventKey = Game.Game.instance.Stage.isExitReserved ? "Quit" : "Main";
             var eventName = $"Unity/Stage Exit {eventKey}";
             Mixpanel.Track(eventName, props);
-            StopVFX();
 
             Find<Battle>().Close();
             Game.Event.OnRoomEnter.Invoke(true);
@@ -483,8 +486,6 @@ namespace Nekoyume.UI
                 yield return null;
             }
 
-            StopVFX();
-
             canvasGroup.alpha = 0f;
         }
 
@@ -493,16 +494,19 @@ namespace Nekoyume.UI
             if (_battleWin01VFX)
             {
                 _battleWin01VFX.Stop();
+                _battleWin01VFX = null;
             }
 
             if (_battleWin02VFX)
             {
                 _battleWin02VFX.Stop();
+                _battleWin02VFX = null;
             }
 
             if (_battleWin03VFX)
             {
                 _battleWin03VFX.Stop();
+                _battleWin03VFX = null;
             }
 
             foreach (var reward in rewardsArea.rewards)
