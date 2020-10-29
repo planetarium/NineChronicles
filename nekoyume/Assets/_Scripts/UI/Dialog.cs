@@ -100,6 +100,12 @@ namespace Nekoyume.UI
             SubmitWidget = Skip;
         }
 
+        protected override void OnDisable()
+        {
+            _coroutine = null;
+            base.OnDisable();
+        }
+
         #endregion
 
         public void Show(int dialogId)
@@ -110,12 +116,15 @@ namespace Nekoyume.UI
                 return;
             }
 
-            base.Show();
-
             _dialogKey = $"DIALOG_{dialogId}_{1}_";
             _dialogIndex = 0;
             _dialogNum = L10nManager.LocalizedCount(_dialogKey);
+            if (_dialogNum <= 0)
+            {
+                return;
+            }
 
+            base.Show();
             _coroutine = StartCoroutine(CoShowText());
         }
 
