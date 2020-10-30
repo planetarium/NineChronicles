@@ -8,13 +8,13 @@ namespace Nekoyume.State.Modifiers
     public class AvatarDailyRewardReceivedIndexModifier : AvatarStateModifier
     {
         [SerializeField]
-        private long blockIndex;
+        private long blockCount;
 
-        public override bool IsEmpty => blockIndex == 0;
+        public override bool IsEmpty => blockCount == 0;
 
-        public AvatarDailyRewardReceivedIndexModifier(long blockIndex)
+        public AvatarDailyRewardReceivedIndexModifier(long blockCount)
         {
-            this.blockIndex = blockIndex;
+            this.blockCount = blockCount;
         }
 
         public override void Add(IAccumulatableStateModifier<AvatarState> modifier)
@@ -24,7 +24,7 @@ namespace Nekoyume.State.Modifiers
                 return;
             }
 
-            blockIndex += m.blockIndex;
+            blockCount += m.blockCount;
         }
 
         public override void Remove(IAccumulatableStateModifier<AvatarState> modifier)
@@ -34,7 +34,7 @@ namespace Nekoyume.State.Modifiers
                 return;
             }
 
-            blockIndex -= m.blockIndex;
+            blockCount -= m.blockCount;
         }
 
         public override AvatarState Modify(AvatarState state)
@@ -44,13 +44,13 @@ namespace Nekoyume.State.Modifiers
                 return null;
             }
 
-            state.dailyRewardReceivedIndex += blockIndex;
+            state.dailyRewardReceivedIndex += blockCount;
             return state;
         }
 
         public override string ToString()
         {
-            return $"[{nameof(AvatarDailyRewardReceivedIndexModifier)}] {nameof(blockIndex)}: {blockIndex}";
+            return $"[{nameof(AvatarDailyRewardReceivedIndexModifier)}] {nameof(blockCount)}: {blockCount}";
         }
     }
 }

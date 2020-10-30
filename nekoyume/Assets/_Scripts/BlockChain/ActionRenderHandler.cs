@@ -210,7 +210,7 @@ namespace Nekoyume.BlockChain
                         .ClearAvatarModifiers<AvatarDailyRewardReceivedIndexModifier>(
                             eval.Action.avatarAddress,
                             true);
-                    
+
                     UpdateCurrentAvatarState(eval);
 
                     if (eval.Exception is null)
