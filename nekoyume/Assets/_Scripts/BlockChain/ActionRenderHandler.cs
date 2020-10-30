@@ -17,6 +17,7 @@ using UniRx;
 using Nekoyume.Model.State;
 using TentuPlay.Api;
 using Nekoyume.Model.Quest;
+using Nekoyume.State.Modifiers;
 
 namespace Nekoyume.BlockChain
 {
@@ -205,10 +206,20 @@ namespace Nekoyume.BlockChain
                 .ObserveOnMainThread()
                 .Subscribe(eval =>
                 {
-                    var avatarAddress = eval.Action.avatarAddress;
-                    LocalStateModifier.ModifyAvatarDailyRewardReceivedIndex(avatarAddress, false);
-                    LocalStateModifier.ModifyAvatarActionPoint(avatarAddress, -States.Instance.GameConfigState.ActionPointMax);
+                    LocalStateSettings.Instance
+                        .ClearAvatarModifiers<AvatarDailyRewardReceivedIndexModifier>(
+                            eval.Action.avatarAddress,
+                            true);
+
                     UpdateCurrentAvatarState(eval);
+
+                    if (eval.Exception is null)
+                    {
+                        UI.Notification.Push(
+                            Nekoyume.Model.Mail.MailType.System,
+                            L10nManager.Localize("UI_RECEIVED_DAILY_REWARD"));
+                    }
+
                 }).AddTo(_disposables);
         }
 

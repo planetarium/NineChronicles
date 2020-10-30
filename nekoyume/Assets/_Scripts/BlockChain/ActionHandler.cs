@@ -21,7 +21,9 @@ namespace Nekoyume.BlockChain
             where T : ActionBase
         {
             if (States.Instance.AgentState is null)
+            {
                 return false;
+            }
 
             return evaluation.OutputStates.UpdatedAddresses.Contains(States.Instance.AgentState.address);
         }
