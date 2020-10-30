@@ -189,6 +189,7 @@ MonoBehaviour:
   end: 0
   duration: 0.5
   isFrom: 1
+  playOnAwake: 0
   playOnEnable: 0
 --- !u!114 &631528829869569997
 MonoBehaviour:
@@ -209,6 +210,7 @@ MonoBehaviour:
   showEase: 21
   closeEase: 20
   isFrom: 1
+  playOnAwake: 0
   playOnEnable: 0
 --- !u!114 &3368749944364440583
 MonoBehaviour:
@@ -229,6 +231,7 @@ MonoBehaviour:
   end: 0
   duration: 0.5
   isFrom: 0
+  playOnAwake: 0
   playOnEnable: 0
 --- !u!114 &9179128589029941520
 MonoBehaviour:
@@ -249,6 +252,7 @@ MonoBehaviour:
   showEase: 20
   closeEase: 21
   isFrom: 0
+  playOnAwake: 0
   playOnEnable: 0
 --- !u!1 &7229920985389256675
 GameObject:
@@ -379,7 +383,7 @@ MonoBehaviour:
   m_fontAsset: {fileID: 11400000, guid: 8a682b7747d4a664089b7b1065aa0035, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: 297785a41d7708c47a0155b152d0ac02, type: 2}
   m_fontSharedMaterials:
-  - {fileID: 2100000, guid: 528e43558d99d43a5a6e25301588d5bf, type: 2}
+  - {fileID: 0}
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
   m_fontColor32:
@@ -403,8 +407,8 @@ MonoBehaviour:
   m_outlineColor:
     serializedVersion: 2
     rgba: 4278190080
-  m_fontSize: 14
-  m_fontSizeBase: 14
+  m_fontSize: 16
+  m_fontSizeBase: 16
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 12
@@ -500,9 +504,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   fixedFontAsset: 0
+  fixedFontStyle: 0
   fixedFontSizeOffset: 0
+  fixedSpacingOption: 0
   fontMaterialType: 14
   l10nKey: 
+  fontMaterialIndexInitialized: 0
+  fontMaterialIndex: 0
+  defaultFontStylesInitialized: 0
+  defaultFontStyles: 0
+  defaultFontSizeInitialized: 0
+  defaultFontSize: 0
+  defaultCharacterSpacingInitialized: 0
+  defaultCharacterSpacing: 0
+  defaultWordSpacingInitialized: 0
+  defaultWordSpacing: 0
+  defaultLineSpacingInitialized: 0
+  defaultLineSpacing: 0
 --- !u!1 &7229920986951314875
 GameObject:
   m_ObjectHideFlags: 0
