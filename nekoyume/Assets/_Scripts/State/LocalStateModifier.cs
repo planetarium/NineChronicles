@@ -528,10 +528,10 @@ namespace Nekoyume.State
         /// 아바타의 데일리 리워드 획득 블록 인덱스를 변경한다.(휘발성)
         /// </summary>
         /// <param name="avatarAddress"></param>
-        /// <param name="blockIndex"></param>
-        public static void IncreaseAvatarDailyRewardReceivedIndex(Address avatarAddress, long blockIndex)
+        /// <param name="blockCount"></param>
+        public static void IncreaseAvatarDailyRewardReceivedIndex(Address avatarAddress, long blockCount)
         {
-            var modifier = new AvatarDailyRewardReceivedIndexModifier(blockIndex);
+            var modifier = new AvatarDailyRewardReceivedIndexModifier(blockCount);
             LocalStateSettings.Instance.Add(avatarAddress, modifier, true);
 
             if (!TryGetLoadedAvatarState(

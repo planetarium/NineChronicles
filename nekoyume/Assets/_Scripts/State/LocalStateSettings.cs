@@ -849,7 +849,8 @@ namespace Nekoyume.State
         {
             if (isVolatile)
             {
-                if (_avatarModifierInfo is null)
+                if (_avatarModifierInfo is null ||
+                    !_avatarModifierInfo.Address.Equals(avatarAddress))
                 {
                     return;
                 }
