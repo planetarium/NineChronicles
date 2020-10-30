@@ -50,6 +50,7 @@ namespace Nekoyume.UI.Module
         public ItemSubType ItemSubType => itemSubType;
         public int ItemSubTypeIndex => itemSubTypeIndex;
         public ItemBase Item { get; private set; }
+        public bool ShowUnlockTooltip { get; set; }
         public bool IsLock => lockImage.gameObject.activeSelf;
         public bool IsEmpty => Item is null;
 
@@ -143,7 +144,7 @@ namespace Nekoyume.UI.Module
                 .OnPointerEnterAsObservable()
                 .Subscribe(x =>
                 {
-                    if (!IsLock)
+                    if (!ShowUnlockTooltip || !IsLock)
                     {
                         return;
                     }
