@@ -2,8 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography;
-using Libplanet;
 using Nekoyume.Battle;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
@@ -13,7 +11,6 @@ using Nekoyume.Model.Item;
 using Nekoyume.Model.Stat;
 using Nekoyume.Model.State;
 using Nekoyume.State;
-using Nekoyume.TableData;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using Nekoyume.UI.Tween;
@@ -132,6 +129,11 @@ namespace Nekoyume.UI
                 })
                 .AddTo(gameObject);
             inventory.OnResetItems.Subscribe(SubscribeInventoryResetItems).AddTo(gameObject);
+
+            foreach (var slot in equipmentSlots)
+            {
+                slot.ShowUnlockTooltip = true;
+            }
         }
 
         public override void Show(bool ignoreShowAnimation = false)
