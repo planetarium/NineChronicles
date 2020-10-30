@@ -54,7 +54,9 @@ namespace Nekoyume.UI.Module.Common
         void ISerializationCallbackReceiver.OnAfterDeserialize()
         {
             if (slider is null)
+            {
                 throw new SerializeFieldNullException();
+            }
         }
 
         public void SetMaxValue(float value)
@@ -64,12 +66,7 @@ namespace Nekoyume.UI.Module.Common
 
         public void SetValue(float value, bool useAnimation = true)
         {
-            if (!(_tweener is null) &&
-                _tweener.IsActive() &&
-                _tweener.IsPlaying())
-            {
-                _tweener.Kill();
-            }
+            Stop();
 
             if (useAnimation)
             {
@@ -90,6 +87,7 @@ namespace Nekoyume.UI.Module.Common
                 _tweener.IsPlaying())
             {
                 _tweener.Kill();
+                _tweener = null;
             }
         }
     }

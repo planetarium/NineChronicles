@@ -1,16 +1,18 @@
+using System;
 using Nekoyume.Model.State;
 using UnityEngine;
 
 namespace Nekoyume.State.Modifiers
 {
+    [Serializable]
     public class AvatarDailyRewardReceivedIndexModifier : AvatarStateModifier
     {
         [SerializeField]
-        private int blockIndex;
+        private long blockIndex;
 
         public override bool IsEmpty => blockIndex == 0;
 
-        public AvatarDailyRewardReceivedIndexModifier(int blockIndex)
+        public AvatarDailyRewardReceivedIndexModifier(long blockIndex)
         {
             this.blockIndex = blockIndex;
         }
