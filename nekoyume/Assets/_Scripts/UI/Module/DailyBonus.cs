@@ -6,6 +6,7 @@ using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
 using Nekoyume.L10n;
 using Nekoyume.State;
+using Nekoyume.State.Subjects;
 using Nekoyume.UI.Module.Common;
 using TMPro;
 using UniRx;
@@ -45,9 +46,6 @@ namespace Nekoyume.UI.Module
         private long _rewardReceivedBlockIndex;
         private bool _isFull;
 
-        // NOTE: CoGetDailyRewardAnimation() 연출 로직이 모두 흐르지 않았을 경우를 대비해서 연출 단계를 저장하는 필드.
-        private int _coGetDailyRewardAnimationStep = 0;
-
         private static readonly int IsFull = Animator.StringToHash("IsFull");
         private static readonly int GetReward = Animator.StringToHash("GetReward");
 
@@ -55,17 +53,20 @@ namespace Nekoyume.UI.Module
 
         private void Awake()
         {
-            sliderAnimator.OnSliderChange.Subscribe(_ => OnSliderChange()).AddTo(gameObject);
-            var gameConfigState = States.Instance.GameConfigState;
-            sliderAnimator.SetMaxValue(gameConfigState.DailyRewardInterval);
+            sliderAnimator.OnSliderChange
+                .Subscribe(_ => OnSliderChange())
+                .AddTo(gameObject);
+            sliderAnimator.SetMaxValue(States.Instance.GameConfigState.DailyRewardInterval);
             sliderAnimator.SetValue(0f, false);
+
+            GameConfigStateSubject.GameConfigState
+                .Subscribe(state => sliderAnimator.SetMaxValue(state.DailyRewardInterval))
+                .AddTo(gameObject);
         }
 
         protected override void OnEnable()
         {
             base.OnEnable();
-
-            OnSliderChange();
 
             if (!(States.Instance.CurrentAvatarState is null))
             {
@@ -79,27 +80,12 @@ namespace Nekoyume.UI.Module
             ReactiveAvatarState.DailyRewardReceivedIndex
                 .Subscribe(x => SetRewardReceivedBlockIndex(x, true))
                 .AddTo(_disposables);
+
+            OnSliderChange();
         }
 
         protected override void OnDisable()
         {
-            if (_coGetDailyRewardAnimationStep > 0)
-            {
-                var avatarAddress = States.Instance.CurrentAvatarState.address;
-                switch (_coGetDailyRewardAnimationStep)
-                {
-                    case 1:
-
-                        LocalStateModifier.ModifyAvatarDailyRewardReceivedIndex(avatarAddress, true);
-                        break;
-                    case 2:
-                        LocalStateModifier.ModifyAvatarActionPoint(avatarAddress, States.Instance.GameConfigState.ActionPointMax);
-                        break;
-                }
-
-                _coGetDailyRewardAnimationStep = 0;
-            }
-
             sliderAnimator.Stop();
             _disposables.DisposeAllAndClear();
             base.OnDisable();
@@ -110,7 +96,9 @@ namespace Nekoyume.UI.Module
         private void SetBlockIndex(long blockIndex, bool useAnimation)
         {
             if (_currentBlockIndex == blockIndex)
+            {
                 return;
+            }
 
             _currentBlockIndex = blockIndex;
             UpdateSlider(useAnimation);
@@ -119,7 +107,9 @@ namespace Nekoyume.UI.Module
         private void SetRewardReceivedBlockIndex(long rewardReceivedBlockIndex, bool useAnimation)
         {
             if (_rewardReceivedBlockIndex == rewardReceivedBlockIndex)
+            {
                 return;
+            }
 
             _rewardReceivedBlockIndex = rewardReceivedBlockIndex;
             UpdateSlider(useAnimation);
@@ -129,15 +119,15 @@ namespace Nekoyume.UI.Module
         {
             var gameConfigState = States.Instance.GameConfigState;
             var endValue = Math.Min(
-                Math.Max(0, _currentBlockIndex - _rewardReceivedBlockIndex),
-                gameConfigState.DailyRewardInterval);
+                gameConfigState.DailyRewardInterval,
+                Math.Max(0, _currentBlockIndex - _rewardReceivedBlockIndex));
 
             sliderAnimator.SetValue(endValue, useAnimation);
         }
 
         private void OnSliderChange()
         {
-            text.text = $"{(int) sliderAnimator.Value} / {sliderAnimator.MaxValue}";
+            text.text = $"{(int) sliderAnimator.Value} / {(int) sliderAnimator.MaxValue}";
 
             _isFull = sliderAnimator.IsFull;
             foreach (var additiveImage in additiveImages)
@@ -170,14 +160,17 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
-            if (actionPoint.IsRemained)
+            if (actionPoint != null &&
+                actionPoint.IsRemained)
             {
                 var confirm = Widget.Find<Confirm>();
                 confirm.Show("UI_CONFIRM", "UI_AP_REFILL_CONFIRM_CONTENT");
                 confirm.CloseCallback = result =>
                 {
                     if (result == ConfirmResult.No)
+                    {
                         return;
+                    }
 
                     GetDailyReward();
                 };
@@ -190,42 +183,37 @@ namespace Nekoyume.UI.Module
 
         private void GetDailyReward()
         {
-            Notification.Push(Nekoyume.Model.Mail.MailType.System,
+            Notification.Push(
+                Nekoyume.Model.Mail.MailType.System,
                 L10nManager.Localize("UI_RECEIVING_DAILY_REWARD"));
 
-            Game.Game.instance.ActionManager.DailyReward().Subscribe(_ =>
-            {
-                Notification.Push(Nekoyume.Model.Mail.MailType.System,
-                    L10nManager.Localize("UI_RECEIVED_DAILY_REWARD"));
-            });
-
+            Game.Game.instance.ActionManager.DailyReward();
             StartCoroutine(CoGetDailyRewardAnimation());
         }
 
         private IEnumerator CoGetDailyRewardAnimation()
         {
-            _coGetDailyRewardAnimationStep = 1;
-            var avatarAddress = States.Instance.CurrentAvatarState.address;
-            LocalStateModifier.ModifyAvatarDailyRewardReceivedIndex(avatarAddress, true);
-            _coGetDailyRewardAnimationStep = 2;
+            var blockCount = Game.Game.instance.Agent.BlockIndex -
+                States.Instance.CurrentAvatarState.dailyRewardReceivedIndex + 1;
+            LocalStateModifier.IncreaseAvatarDailyRewardReceivedIndex(
+                States.Instance.CurrentAvatarState.address,
+                blockCount);
             animator.SetTrigger(GetReward);
             VFXController.instance.Create<ItemMoveVFX>(boxImageTransform.position);
 
-            if (actionPoint is null)
-                yield break;
+            if (actionPoint != null)
+            {
+                ItemMoveAnimation.Show(actionPoint.Image.sprite,
+                    boxImageTransform.position,
+                    actionPoint.Image.transform.position,
+                    Vector2.one,
+                    true,
+                    true,
+                    1f,
+                    0.8f);
 
-            ItemMoveAnimation.Show(actionPoint.Image.sprite,
-                boxImageTransform.position,
-                actionPoint.Image.transform.position,
-                Vector2.one,
-                true,
-                true,
-                1f,
-                0.8f);
-
-            yield return new WaitForSeconds(1.5f);
-            LocalStateModifier.ModifyAvatarActionPoint(avatarAddress, States.Instance.GameConfigState.ActionPointMax);
-            _coGetDailyRewardAnimationStep = 0;
+                yield return new WaitForSeconds(1.5f);
+            }
         }
     }
 }

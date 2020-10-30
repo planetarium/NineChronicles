@@ -84,7 +84,7 @@ namespace Nekoyume.UI
             string submitText, Action<ItemInformationTooltip> onSubmit, Action<ItemInformationTooltip> onClose = null,
             bool retrieve = false)
         {
-            if (item is null)
+            if (item?.ItemBase.Value is null)
             {
                 return;
             }

@@ -847,6 +847,30 @@ namespace Nekoyume.State
         public void ClearAvatarModifiers<T>(Address avatarAddress, bool isVolatile = false)
             where T : AvatarStateModifier
         {
+            if (isVolatile)
+            {
+                if (_avatarModifierInfo is null ||
+                    !_avatarModifierInfo.Address.Equals(avatarAddress))
+                {
+                    return;
+                }
+
+                while (true)
+                {
+                    if (!TryGetSameTypeModifier(
+                        typeof(T),
+                        _avatarModifierInfo.VolatileModifiers,
+                        out var modifier))
+                    {
+                        break;
+                    }
+
+                    _avatarModifierInfo.VolatileModifiers.Remove(modifier);
+                }
+
+                return;
+            }
+
             var modifiers = LoadModifiers<T>(avatarAddress);
             foreach (var modifier in modifiers)
             {
