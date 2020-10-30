@@ -35,12 +35,15 @@ namespace Nekoyume.UI.Module
 
         private void Awake()
         {
-            sliderAnimator.OnSliderChange.Subscribe(_ => OnSliderChange()).AddTo(gameObject);
+            sliderAnimator.OnSliderChange
+                .Subscribe(_ => OnSliderChange())
+                .AddTo(gameObject);
             sliderAnimator.SetMaxValue(States.Instance.GameConfigState.ActionPointMax);
-            GameConfigStateSubject.GameConfigState.ObserveOnMainThread().Subscribe(
-                state => sliderAnimator.SetMaxValue(state.ActionPointMax)
-            ).AddTo(gameObject);
             sliderAnimator.SetValue(0f, false);
+
+            GameConfigStateSubject.GameConfigState
+                .Subscribe(state => sliderAnimator.SetMaxValue(state.ActionPointMax))
+                .AddTo(gameObject);
         }
 
         protected override void OnEnable()
@@ -55,6 +58,8 @@ namespace Nekoyume.UI.Module
             ReactiveAvatarState.ActionPoint
                 .Subscribe(x => SetActionPoint(x, true))
                 .AddTo(_disposables);
+
+            OnSliderChange();
         }
 
         protected override void OnDisable()
@@ -69,7 +74,9 @@ namespace Nekoyume.UI.Module
         private void SetActionPoint(int actionPoint, bool useAnimation)
         {
             if (_currentActionPoint == actionPoint)
+            {
                 return;
+            }
 
             _currentActionPoint = actionPoint;
             sliderAnimator.SetValue(_currentActionPoint, useAnimation);
@@ -77,7 +84,7 @@ namespace Nekoyume.UI.Module
 
         private void OnSliderChange()
         {
-            text.text = $"{(int) sliderAnimator.Value} / {sliderAnimator.MaxValue}";
+            text.text = $"{(int) sliderAnimator.Value} / {(int) sliderAnimator.MaxValue}";
         }
 
         public void ShowTooltip()
