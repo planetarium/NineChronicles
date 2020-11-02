@@ -252,7 +252,6 @@ namespace Nekoyume.UI
             }
 
             var (rank, arenaInfo) = arenaInfos[0];
-            var record = arenaInfo.ArenaRecord;
             if (arenaInfo.Active)
             {
                 currentAvatarCellView.Show((rank, arenaInfo, arenaInfo));
@@ -260,13 +259,7 @@ namespace Nekoyume.UI
             else
             {
                 currentAvatarCellView.Hide();
-
-                var gold = Game.Game.instance.States.GoldBalanceState.Gold;
-                if (gold >= gold.Currency * GameConfig.ArenaActivationCostNCG)
-                {
-                    LocalStateModifier.AddWeeklyArenaInfoActivator(Game.Game.instance.TableSheets
-                        .CharacterSheet);
-                }
+                LocalStateModifier.AddWeeklyArenaInfoActivator(Game.Game.instance.TableSheets.CharacterSheet);
             }
 
             UpdateBoard(StateType.Arena);

@@ -149,6 +149,16 @@ namespace Nekoyume.UI
             questButton.OnClickAsObservable().Subscribe(_ => QuestClick(false)).AddTo(gameObject);
 
             Game.Event.OnRoomEnter.AddListener(b => Close());
+
+            foreach (var slot in equipmentSlots)
+            {
+                slot.ShowUnlockTooltip = true;
+            }
+
+            foreach (var slot in consumableSlots)
+            {
+                slot.ShowUnlockTooltip = true;
+            }
         }
 
         public override void Show(bool ignoreShowAnimation = false)
