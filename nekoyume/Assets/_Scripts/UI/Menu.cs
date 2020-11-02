@@ -123,7 +123,7 @@ namespace Nekoyume.UI
                     LocalStateModifier.ModifyAvatarActionPoint(
                         States.Instance.CurrentAvatarState.address,
                         requiredCost);
-                }, e => Find<ActionFailPopup>().Show("Action timeout during HackAndSlash."))
+                }, e => ActionRenderHandler.Instance.BackToMain(false, "ERROR_UNKNOWN"))
                 .AddTo(this);
             LocalStateModifier.ModifyAvatarActionPoint(States.Instance.CurrentAvatarState.address,
                 - requiredCost);

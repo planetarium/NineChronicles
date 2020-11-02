@@ -112,10 +112,17 @@ namespace Nekoyume.UI
                         new TPStashEvent().CharacterLogin(
                             player_uuid: States.Instance.AgentState.address.ToHex(),
                             character_uuid: States.Instance.CurrentAvatarState.address.ToHex().Substring(0, 4)
-                            );
+                        );
                     },
-                    onError: e =>
-                        Find<ActionFailPopup>().Show("Action timeout during CreateAvatar."));
+                    e =>
+                    {
+                        var errorMsg = string.Format(L10nManager.Localize("UI_ERROR_RETRY_FORMAT"),
+                            L10nManager.Localize("ERROR_UNKNOWN"));
+                        Find<Alert>()
+                            .Show(L10nManager.Localize("UI_ERROR"), errorMsg,
+                                L10nManager.Localize("UI_OK"), false);
+                        Find<GrayLoadingScreen>().Close();
+                    });
             AudioController.PlayClick();
         }
 

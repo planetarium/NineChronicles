@@ -633,32 +633,21 @@ namespace Nekoyume.BlockChain
                     Widget.Find<BattleResult>().Close();
                 }
 
-                Game.Event.OnRoomEnter.Invoke(showLoadingScreen);
-                Game.Game.instance.Stage.OnRoomEnterEnd
-                    .First()
-                    .Subscribe(_ =>
-                    {
-                        var exc = eval.Exception.InnerException;
-                        var key = "ERROR_UNKNOWN";
-                        switch (exc)
-                        {
-                            case RequiredBlockIndexException _:
-                                key = "ERROR_REQUIRE_BLOCK";
-                                break;
-                            case EquipmentSlotUnlockException _:
-                                key = "ERROR_SLOT_UNLOCK";
-                                break;
-                            case NotEnoughActionPointException _:
-                                key = "ERROR_ACTION_POINT";
-                                break;
-                        }
-                        var errorMsg = string.Format(L10nManager.Localize("UI_ERROR_RETRY_FORMAT"),
-                            L10nManager.Localize(key));
-                        Widget
-                            .Find<Alert>()
-                            .Show(L10nManager.Localize("UI_ERROR"), errorMsg,
-                                L10nManager.Localize("UI_OK"), false);
-                    });
+                var exc = eval.Exception.InnerException;
+                var key = "ERROR_UNKNOWN";
+                switch (exc)
+                {
+                    case RequiredBlockIndexException _:
+                        key = "ERROR_REQUIRE_BLOCK";
+                        break;
+                    case EquipmentSlotUnlockException _:
+                        key = "ERROR_SLOT_UNLOCK";
+                        break;
+                    case NotEnoughActionPointException _:
+                        key = "ERROR_ACTION_POINT";
+                        break;
+                }
+                BackToMain(showLoadingScreen, key);
             }
         }
 
@@ -689,6 +678,7 @@ namespace Nekoyume.BlockChain
                         reference_slug: "WeeklyArenaEntryFee"
                     );
                 }
+
 
                 _disposableForBattleEnd?.Dispose();
                 _disposableForBattleEnd =
@@ -878,6 +868,23 @@ namespace Nekoyume.BlockChain
                     LocalStateModifier.RemoveItem(avatarAddress, materialRow.Value.ItemId, reward.Value);
                 }
             }
+        }
+
+        public void BackToMain(bool showLoadingScreen, string key)
+        {
+            Game.Event.OnRoomEnter.Invoke(showLoadingScreen);
+            Game.Game.instance.Stage.OnRoomEnterEnd
+                .First()
+                .Subscribe(_ =>
+                {
+                    var errorMsg = string.Format(L10nManager.Localize("UI_ERROR_RETRY_FORMAT"),
+                        L10nManager.Localize(key));
+                    Widget
+                        .Find<Alert>()
+                        .Show(L10nManager.Localize("UI_ERROR"), errorMsg,
+                            L10nManager.Localize("UI_OK"), false);
+                });
+
         }
     }
 }
