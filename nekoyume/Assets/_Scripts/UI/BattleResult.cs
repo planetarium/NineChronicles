@@ -437,7 +437,7 @@ namespace Nekoyume.UI
                     worldId,
                     stageId)
                 .Subscribe(_ => { },
-                    (_) => ActionRenderHandler.Instance.BackToMain(false));
+                    (_) => ActionRenderHandler.Instance.BackToMain(false, "ERROR_UNKNOWN"));
         }
 
         public void NextStage(ActionBase.ActionEvaluation<HackAndSlash2> eval)

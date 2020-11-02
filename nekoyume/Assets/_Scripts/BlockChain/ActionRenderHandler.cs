@@ -633,7 +633,21 @@ namespace Nekoyume.BlockChain
                     Widget.Find<BattleResult>().Close();
                 }
 
-                BackToMain(showLoadingScreen);
+                var exc = eval.Exception.InnerException;
+                var key = "ERROR_UNKNOWN";
+                switch (exc)
+                {
+                    case RequiredBlockIndexException _:
+                        key = "ERROR_REQUIRE_BLOCK";
+                        break;
+                    case EquipmentSlotUnlockException _:
+                        key = "ERROR_SLOT_UNLOCK";
+                        break;
+                    case NotEnoughActionPointException _:
+                        key = "ERROR_ACTION_POINT";
+                        break;
+                }
+                BackToMain(showLoadingScreen, key);
             }
         }
 
@@ -664,6 +678,7 @@ namespace Nekoyume.BlockChain
                         reference_slug: "WeeklyArenaEntryFee"
                     );
                 }
+
 
                 _disposableForBattleEnd?.Dispose();
                 _disposableForBattleEnd =
@@ -855,7 +870,7 @@ namespace Nekoyume.BlockChain
             }
         }
 
-        public void BackToMain(bool showLoadingScreen)
+        public void BackToMain(bool showLoadingScreen, string key)
         {
             Game.Event.OnRoomEnter.Invoke(showLoadingScreen);
             Game.Game.instance.Stage.OnRoomEnterEnd
@@ -863,7 +878,7 @@ namespace Nekoyume.BlockChain
                 .Subscribe(_ =>
                 {
                     var errorMsg = string.Format(L10nManager.Localize("UI_ERROR_RETRY_FORMAT"),
-                        L10nManager.Localize("ERROR_UNKNOWN"));
+                        L10nManager.Localize(key));
                     Widget
                         .Find<Alert>()
                         .Show(L10nManager.Localize("UI_ERROR"), errorMsg,

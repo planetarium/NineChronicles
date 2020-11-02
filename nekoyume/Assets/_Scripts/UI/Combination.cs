@@ -673,7 +673,7 @@ namespace Nekoyume.UI
             Game.Game.instance.ActionManager.CombinationConsumable(row.Id, slotIndex)
                 .Subscribe(
                     _ => { },
-                    _ => ActionRenderHandler.Instance.BackToMain(false));
+                    _ => ActionRenderHandler.Instance.BackToMain(false, "ERROR_UNKNOWN"));
         }
 
         private void CreateCombinationEquipmentAction(

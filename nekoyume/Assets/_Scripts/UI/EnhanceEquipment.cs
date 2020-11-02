@@ -300,7 +300,7 @@ namespace Nekoyume.UI
                 .ItemEnhancement(baseItemGuid, otherItemGuid, slotIndex)
                 .Subscribe(
                     _ => { },
-                    _ => ActionRenderHandler.Instance.BackToMain(false));
+                    _ => ActionRenderHandler.Instance.BackToMain(false, "ERROR_UNKNOWN"));
         }
 
         private void ShowTooltip(InventoryItemView view)
