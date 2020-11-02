@@ -5,6 +5,7 @@ using System.Linq;
 using System.Numerics;
 using Libplanet.Assets;
 using Nekoyume.Action;
+using Nekoyume.BlockChain;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
@@ -299,7 +300,7 @@ namespace Nekoyume.UI
                 .ItemEnhancement(baseItemGuid, otherItemGuid, slotIndex)
                 .Subscribe(
                     _ => { },
-                    _ => Find<ActionFailPopup>().Show("Timeout occurred during ItemEnhancement"));
+                    _ => ActionRenderHandler.Instance.BackToMain(false));
         }
 
         private void ShowTooltip(InventoryItemView view)
