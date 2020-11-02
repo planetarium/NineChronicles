@@ -134,6 +134,11 @@ namespace Nekoyume.UI
             {
                 slot.ShowUnlockTooltip = true;
             }
+
+            foreach (var slot in costumeSlots)
+            {
+                slot.ShowUnlockTooltip = true;
+            }
         }
 
         public override void Show(bool ignoreShowAnimation = false)
