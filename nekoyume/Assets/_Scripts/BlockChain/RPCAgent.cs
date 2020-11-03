@@ -50,6 +50,8 @@ namespace Nekoyume.BlockChain
 
         private Block<PolymorphicAction<ActionBase>> _genesis;
 
+        private DateTimeOffset _lastTipChangedAt;
+
         // Rendering logs will be recorded in NineChronicles.Standalone
         public BlockPolicySource BlockPolicySource { get; } = new BlockPolicySource(Logger.None);
 
@@ -83,6 +85,7 @@ namespace Nekoyume.BlockChain
                 options.RpcServerPort,
                 ChannelCredentials.Insecure
             );
+            _lastTipChangedAt = DateTimeOffset.UtcNow;
             _hub = StreamingHubClient.Connect<IActionEvaluationHub, IActionEvaluationHubReceiver>(_channel, this);
             _service = MagicOnionClient.Create<IBlockChainService>(_channel);
 
@@ -98,6 +101,7 @@ namespace Nekoyume.BlockChain
                 ? default
                 : Libplanet.Net.AppProtocolVersion.FromToken(options.AppProtocolVersion);
             AppProtocolVersion = appProtocolVersion.Version;
+            StartCoroutine(CoCheckLastTipChangedAt());
         }
 
         public IValue GetState(Address address)
@@ -291,6 +295,7 @@ namespace Nekoyume.BlockChain
         {
             BlockIndex = index;
             BlockIndexSubject.OnNext(index);
+            _lastTipChangedAt = DateTimeOffset.UtcNow;
         }
 
         private async void RegisterDisconnectEvent(IActionEvaluationHub hub)
@@ -337,6 +342,22 @@ namespace Nekoyume.BlockChain
             }
 
             Debug.Log($"{message} (code: {code})");
+        }
+
+        private IEnumerator CoCheckLastTipChangedAt()
+        {
+            while (true)
+            {
+                var now = DateTimeOffset.UtcNow;
+                var diff = now - _lastTipChangedAt;
+                if (diff.TotalSeconds >= 300)
+                {
+                    Widget.Find<BlockFailPopup>().Show(BlockIndex);
+                    break;
+                }
+
+                yield return new WaitForSeconds(15f);
+            }
         }
     }
 }
