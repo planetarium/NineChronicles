@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Libplanet;
 using Nekoyume.Action;
+using Nekoyume.Battle;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
@@ -75,8 +76,10 @@ namespace Nekoyume.UI
 
         private readonly List<IDisposable> _disposablesAtClose = new List<IDisposable>();
 
-        private HashSet<Nekoyume.Model.State.RankingInfo> _rankingInfos =
-            new HashSet<Nekoyume.Model.State.RankingInfo>();
+        private List<Nekoyume.Model.State.RankingInfo> _rankingInfos =
+            new List<Nekoyume.Model.State.RankingInfo>();
+
+        private List<(int rank, ArenaInfo arenaInfo)> _weeklyCachedInfo = new List<(int rank, ArenaInfo arenaInfo)>();
 
         protected override void Awake()
         {
@@ -133,6 +136,8 @@ namespace Nekoyume.UI
 
             CloseWidget = null;
             SubmitWidget = null;
+            UpdateWeeklyCache(States.Instance.WeeklyArenaState);
+            SetRankingInfos(States.Instance.RankingMapStates);
         }
 
         protected override void OnCompleteOfShowAnimationInternal()
@@ -169,14 +174,6 @@ namespace Nekoyume.UI
             _npc.gameObject.SetActive(false);
 
             AudioController.instance.PlayMusic(AudioController.MusicCode.Ranking);
-
-            // FIXME: The RankingBoard needs to be updated only once when the WeeklyArenaState starts fresh for performance.
-            WeeklyArenaStateSubject.WeeklyArenaState
-                .Subscribe(state => UpdateArena())
-                .AddTo(_disposablesAtClose);
-            RankingMapStatesSubject.RankingMapStates
-                .Subscribe(SetRankingInfos)
-                .AddTo(_disposablesAtClose);
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
@@ -241,9 +238,7 @@ namespace Nekoyume.UI
                 return;
             }
 
-            var arenaInfos = weeklyArenaState
-                .GetArenaInfos(avatarAddress.Value, 0, 0);
-            if (arenaInfos.Count == 0)
+            if (!_weeklyCachedInfo.Any())
             {
                 currentAvatarCellView.Hide();
 
@@ -251,7 +246,7 @@ namespace Nekoyume.UI
                 return;
             }
 
-            var (rank, arenaInfo) = arenaInfos[0];
+            var (rank, arenaInfo) = _weeklyCachedInfo[0];
             if (arenaInfo.Active)
             {
                 currentAvatarCellView.Show((rank, arenaInfo, arenaInfo));
@@ -285,8 +280,7 @@ namespace Nekoyume.UI
                 {
                     currentAvatarCellView.Hide();
 
-                    arenaRankScroll.Show(weeklyArenaState
-                        .GetArenaInfos(1, 100)
+                    arenaRankScroll.Show(_weeklyCachedInfo
                         .Select(tuple => new ArenaRankCell.ViewModel
                         {
                             rank = tuple.rank,
@@ -319,8 +313,7 @@ namespace Nekoyume.UI
                     currentAvatarArenaInfo,
                     currentAvatarArenaInfo));
 
-                arenaRankScroll.Show(weeklyArenaState
-                    .GetArenaInfos(1, 100)
+                arenaRankScroll.Show(_weeklyCachedInfo
                     .Select(tuple => new ArenaRankCell.ViewModel
                     {
                         rank = tuple.rank,
@@ -333,28 +326,29 @@ namespace Nekoyume.UI
                 arenaRankScroll.Hide();
 
                 var states = States.Instance;
-                var rankingState = states.RankingMapStates;
-                if (rankingState is null)
+                if (!_rankingInfos.Any())
                 {
                     expRankScroll.ClearData();
                     expRankScroll.Show();
                     return;
                 }
 
-                SetRankingInfos(rankingState);
-
                 var rank = 1;
-                var rankingInfos = _rankingInfos
-                    .OrderByDescending(c => c.Exp)
-                    .ThenBy(c => c.StageClearedBlockIndex)
-                    .ToList();
+                List<Nekoyume.Model.State.RankingInfo> rankingInfos;
                 var gameConfigState = states.GameConfigState;
                 if (stateType == StateType.Filtered)
                 {
                     var currentBlockIndex = Game.Game.instance.Agent.BlockIndex;
-                    rankingInfos = rankingInfos
+                    rankingInfos = _rankingInfos
                         .Where(context =>
                             currentBlockIndex - context.UpdatedAt <= gameConfigState.DailyRewardInterval)
+                        .Take(100)
+                        .ToList();
+                }
+                else
+                {
+                    rankingInfos = _rankingInfos
+                        .Take(100)
                         .ToList();
                 }
 
@@ -438,7 +432,29 @@ namespace Nekoyume.UI
                 rankingInfos.UnionWith(pair.Value.GetRankingInfos(null));
             }
 
-            _rankingInfos = rankingInfos;
+            _rankingInfos = rankingInfos
+                .OrderByDescending(c => c.Exp)
+                .ThenBy(c => c.StageClearedBlockIndex)
+                .ToList();
+        }
+
+        private void UpdateWeeklyCache(WeeklyArenaState state)
+        {
+            if (!_weeklyCachedInfo.Any())
+            {
+                var infos = state.GetArenaInfos(1, 100);
+                var tableSheets = Game.Game.instance.TableSheets;
+                foreach (var info in infos)
+                {
+                    var arenaInfo = info.arenaInfo;
+                    var avatarState = new AvatarState(
+                        (Bencodex.Types.Dictionary)Game.Game.instance.Agent.GetState(arenaInfo.AvatarAddress));
+                    arenaInfo.Update(avatarState, tableSheets.CharacterSheet, tableSheets.CostumeStatSheet);
+                }
+
+                _weeklyCachedInfo = infos;
+                UpdateArena();
+            }
         }
     }
 }
