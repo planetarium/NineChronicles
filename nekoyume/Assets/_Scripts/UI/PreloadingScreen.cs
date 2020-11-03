@@ -1,4 +1,4 @@
-using Nekoyume.UI.Module;
+using Nekoyume.Game.Factory;
 
 namespace Nekoyume.UI
 {
@@ -22,7 +22,16 @@ namespace Nekoyume.UI
 
         public override void Close(bool ignoreCloseAnimation = false)
         {
-            Find<Synopsis>().Show();
+            if (!GameConfig.IsEditor)
+            {
+                Find<Synopsis>().Show();
+            }
+            else
+            {
+                PlayerFactory.Create();
+                Game.Event.OnNestEnter.Invoke();
+                Find<Login>().Show();
+            }
             base.Close(ignoreCloseAnimation);
             indicator.Close();
         }
