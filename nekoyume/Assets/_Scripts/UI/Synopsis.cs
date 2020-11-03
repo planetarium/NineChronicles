@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Linq;
 using DG.Tweening;
@@ -66,13 +66,18 @@ namespace Nekoyume.UI
             [Tooltip("대사가 전부 나온 뒤 기다리는 시간")]
             public float scriptsEndTerm;
         }
+
+        [SerializeField]
+        private GameObject skipButton = null;
+
         public SynopsisScene[] scripts;
         [Tooltip("대사가 사라질때 걸리는 시간")]
         public float textFadeOutTime = 0.5f;
+        public bool prolgueEnd;
 
         private int _part1EndIndex = 4;
-        public bool prolgueEnd;
         private bool skipSynopsis;
+        private bool skipAll;
 
         protected override void Awake()
         {
@@ -95,11 +100,10 @@ namespace Nekoyume.UI
             SubmitWidget = Skip;
         }
 
-        private IEnumerator StartSynopsis()
+        private IEnumerator StartSynopsis(bool skipPrologue)
         {
             var delayedTime = 0f;
 
-            var skipPrologue = States.Instance.AgentState.avatarAddresses.Any();
             var startIndex = 0;
             if (!skipPrologue && prolgueEnd)
             {
@@ -107,6 +111,12 @@ namespace Nekoyume.UI
             }
             for (var index = startIndex; index < scripts.Length; index++)
             {
+                if (skipAll)
+                {
+                    End();
+                    yield break;
+                }
+
                 var script = scripts[index];
                 if (index == _part1EndIndex && !skipPrologue)
                 {
@@ -331,7 +341,9 @@ namespace Nekoyume.UI
             base.Show(ignoreShowAnimation);
             Mixpanel.Track("Unity/Synopsis Start");
             AudioController.instance.PlayMusic(AudioController.MusicCode.Prologue);
-            StartCoroutine(StartSynopsis());
+            var skipPrologue = States.Instance.AgentState.avatarAddresses.Any();
+            skipButton.SetActive(skipPrologue);
+            StartCoroutine(StartSynopsis(skipPrologue));
         }
 
         public void End()
@@ -346,6 +358,12 @@ namespace Nekoyume.UI
         public void Skip()
         {
             skipSynopsis = true;
+        }
+
+        public void SkipAll()
+        {
+            skipAll = true;
+            Skip();
         }
     }
 }
