@@ -24,6 +24,12 @@ namespace Nekoyume.UI
                 L10nManager.Localize("UI_OK"), false);
             _index = idx;
             StartCoroutine(CoCheckBlockIndex());
+#if UNITY_EDITOR
+            CloseCallback = UnityEditor.EditorApplication.ExitPlaymode;
+#else
+            CloseCallback = () => Application.Quit(21);
+#endif
+
         }
 
         private IEnumerator CoCheckBlockIndex()
