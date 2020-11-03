@@ -5522,6 +5522,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0bcc6564e5629944ebbbb690b6cccb5c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  skipButton: {fileID: 6854950839080009778}
   scripts:
   - image: {fileID: 7147274849312675217}
     hasSkeletonAnimation: 0
@@ -7891,7 +7892,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 80980713864035891}
-        m_MethodName: Skip
+        m_MethodName: SkipAll
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
