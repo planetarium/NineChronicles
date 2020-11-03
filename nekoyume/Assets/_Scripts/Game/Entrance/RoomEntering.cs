@@ -53,6 +53,8 @@ namespace Nekoyume.Game.Entrance
 
             yield return new WaitForSeconds(1.0f);
             Widget.Find<LoadingScreen>().Close();
+            Widget.Find<StageLoadingScreen>().Close();
+            Widget.Find<UI.Battle>().Close();
 
             if (player)
             {
