@@ -442,15 +442,17 @@ namespace Nekoyume.UI
         {
             if (!_weeklyCachedInfo.Any())
             {
-                var infos = state.GetArenaInfos(1, 3);
+                // FIXME: 탑3 만 얻어 와야 합니다. state.GetArenaInfos(1, 3);
+                var infos = state.GetArenaInfos();
 
-                if (States.Instance.CurrentAvatarState != null)
-                {
-                    var currentAvatarAddress = States.Instance.CurrentAvatarState.address;
-                    var infos2 = state.GetArenaInfos(currentAvatarAddress, 20, 20);
-                    infos.AddRange(infos2);
-                    infos = infos.OrderBy(tuple => tuple.rank).ToList();
-                }
+                // FIXME: 위에서 탑3 만 얻어 오면 아래 주석을 열어야 합니다.
+                // if (States.Instance.CurrentAvatarState != null)
+                // {
+                //     var currentAvatarAddress = States.Instance.CurrentAvatarState.address;
+                //     var infos2 = state.GetArenaInfos(currentAvatarAddress, 20, 20);
+                //     infos.AddRange(infos2);
+                //     infos = infos.OrderBy(tuple => tuple.rank).ToList();
+                // }
 
                 var tableSheets = Game.Game.instance.TableSheets;
                 foreach (var info in infos)
