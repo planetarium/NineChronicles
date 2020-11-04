@@ -66,8 +66,9 @@ namespace Nekoyume.Game.Entrance
             {
                 Widget.Find<BattleResult>().Close();
             }
-            yield return new WaitForSeconds(1.0f);
+            player.DisableHUD();
             Widget.Find<LoadingScreen>().Close();
+            yield return new WaitForSeconds(1.0f);
 
             if (player)
             {
