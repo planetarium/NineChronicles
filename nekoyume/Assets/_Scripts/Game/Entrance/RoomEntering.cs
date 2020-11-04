@@ -25,6 +25,7 @@ namespace Nekoyume.Game.Entrance
 
             Widget.Find<BottomMenu>().Close(true);
 
+            stage.ClearBattle();
             stage.stageId = 0;
             stage.LoadBackground("room");
             stage.roomAnimator.Play("EnteringRoom");
@@ -38,6 +39,8 @@ namespace Nekoyume.Game.Entrance
             var roomPosition = stage.roomPosition;
 
             var player = stage.GetPlayer(roomPosition - new Vector2(3.0f, 0.0f));
+            player.DisableHUD();
+            player.StopAllCoroutines();
             player.StartRun();
             if (player.Costumes.Any(value => value.Id == 40100002))
             {
@@ -51,17 +54,29 @@ namespace Nekoyume.Game.Entrance
             ActionCamera.instance.SetPosition(0f, 0f);
             ActionCamera.instance.Idle();
 
-            yield return new WaitForSeconds(1.0f);
-            Widget.Find<LoadingScreen>().Close();
             var stageLoadingScreen = Widget.Find<StageLoadingScreen>();
             if (stageLoadingScreen.IsActive())
+            {
                 stageLoadingScreen.Close();
+            }
             var battle = Widget.Find<UI.Battle>();
             if (battle.IsActive())
-                Widget.Find<UI.Battle>().Close();
+            {
+                battle.Close(true);
+            }
             var battleResult = Widget.Find<BattleResult>();
             if (battleResult.IsActive())
-                Widget.Find<BattleResult>().Close();
+            {
+                battleResult.Close();
+            }
+
+            var loadingScreen = Widget.Find<LoadingScreen>();
+            if (loadingScreen.IsActive())
+            {
+                loadingScreen.Close();
+            }
+            ActionRenderHandler.Instance.Pending = false;
+            yield return new WaitForSeconds(1.0f);
 
             if (player)
             {
