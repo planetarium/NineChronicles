@@ -129,6 +129,11 @@ namespace Nekoyume.Game
             _rankingBattle = false;
             if (_battleLog is null)
             {
+                if (!(_battleCoroutine is null))
+                {
+                    StopCoroutine(_battleCoroutine);
+                    objectPool.ReleaseAll();
+                }
                 _battleLog = log;
                 PlayStage(_battleLog);
             }
@@ -281,7 +286,7 @@ namespace Nekoyume.Game
         {
             if (log?.Count > 0)
             {
-                StartCoroutine(CoPlayStage(log));
+                _battleCoroutine = StartCoroutine(CoPlayStage(log));
             }
         }
 
@@ -331,8 +336,7 @@ namespace Nekoyume.Game
             }
 
             yield return StartCoroutine(CoStageEnd(log));
-            _battleLog = null;
-            IsInStage = false;
+            ClearBattle();
         }
 
         private IEnumerator CoPlayRankingBattle(BattleLog log)
@@ -355,8 +359,17 @@ namespace Nekoyume.Game
             }
 
             yield return StartCoroutine(CoRankingBattleEnd(log));
+            ClearBattle();
+        }
+
+        public void ClearBattle()
+        {
             _battleLog = null;
             IsInStage = false;
+            if (!(_battleCoroutine is null))
+            {
+                StopCoroutine(_battleCoroutine);
+            }
             _battleCoroutine = null;
         }
 
