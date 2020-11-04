@@ -39,6 +39,7 @@ namespace Nekoyume.Game.Entrance
             var roomPosition = stage.roomPosition;
 
             var player = stage.GetPlayer(roomPosition - new Vector2(3.0f, 0.0f));
+            player.DisableHUD();
             player.StopAllCoroutines();
             player.StartRun();
             if (player.Costumes.Any(value => value.Id == 40100002))
@@ -68,7 +69,6 @@ namespace Nekoyume.Game.Entrance
             {
                 battleResult.Close();
             }
-            player.DisableHUD();
 
             var loadingScreen = Widget.Find<LoadingScreen>();
             if (loadingScreen.IsActive())

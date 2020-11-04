@@ -132,6 +132,7 @@ namespace Nekoyume.Game
                 if (!(_battleCoroutine is null))
                 {
                     StopCoroutine(_battleCoroutine);
+                    _battleCoroutine = null;
                     objectPool.ReleaseAll();
                 }
                 _battleLog = log;
@@ -151,6 +152,7 @@ namespace Nekoyume.Game
                 if (!(_battleCoroutine is null))
                 {
                     StopCoroutine(_battleCoroutine);
+                    _battleCoroutine = null;
                     objectPool.ReleaseAll();
                 }
                 _battleLog = log;
@@ -369,8 +371,8 @@ namespace Nekoyume.Game
             if (!(_battleCoroutine is null))
             {
                 StopCoroutine(_battleCoroutine);
+                _battleCoroutine = null;
             }
-            _battleCoroutine = null;
         }
 
         private static IEnumerator CoDialog(int worldStage)
