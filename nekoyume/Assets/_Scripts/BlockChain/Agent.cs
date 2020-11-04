@@ -55,6 +55,7 @@ namespace Nekoyume.BlockChain
         public static readonly string DefaultStoragePath = StorePath.GetDefaultStoragePath();
 
         public Subject<long> BlockIndexSubject { get; } = new Subject<long>();
+        public Subject<HashDigest<SHA256>> BlockHashSubject { get; } = new Subject<HashDigest<SHA256>>();
 
         private static IEnumerator _miner;
         private static IEnumerator _txProcessor;
@@ -783,6 +784,7 @@ namespace Nekoyume.BlockChain
 
             lastTenBlocks.Enqueue((blocks.Tip, DateTimeOffset.UtcNow));
             TipChanged?.Invoke(null, newTip.Index);
+            BlockHashSubject.OnNext(newTip.Hash);
         }
 
         private IEnumerator CoTxProcessor()
