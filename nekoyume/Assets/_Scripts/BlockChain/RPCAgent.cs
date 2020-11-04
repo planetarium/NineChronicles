@@ -291,10 +291,12 @@ namespace Nekoyume.BlockChain
             }
         }
 
-        public void OnTipChanged(long index)
+        public void OnRenderBlock(byte[] oldTip, byte[] newTip)
         {
-            BlockIndex = index;
-            BlockIndexSubject.OnNext(index);
+            var oldTipHeader = BlockHeader.Deserialize(oldTip);
+            var newTipHeader = BlockHeader.Deserialize(newTip);
+            BlockIndex = newTipHeader.Index;
+            BlockIndexSubject.OnNext(BlockIndex);
             _lastTipChangedAt = DateTimeOffset.UtcNow;
         }
 
