@@ -51,6 +51,21 @@ namespace Nekoyume.Game.Entrance
             ActionCamera.instance.SetPosition(0f, 0f);
             ActionCamera.instance.Idle();
 
+            var stageLoadingScreen = Widget.Find<StageLoadingScreen>();
+            if (stageLoadingScreen.IsActive())
+            {
+                stageLoadingScreen.Close();
+            }
+            var battle = Widget.Find<UI.Battle>();
+            if (battle.IsActive())
+            {
+                Widget.Find<UI.Battle>().Close();
+            }
+            var battleResult = Widget.Find<BattleResult>();
+            if (battleResult.IsActive())
+            {
+                Widget.Find<BattleResult>().Close();
+            }
             yield return new WaitForSeconds(1.0f);
             Widget.Find<LoadingScreen>().Close();
 
