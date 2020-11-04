@@ -1,4 +1,5 @@
 using System;
+using System.Security.Cryptography;
 using Bencodex.Types;
 using Lib9c.Renderer;
 using Libplanet;
@@ -24,6 +25,8 @@ namespace Nekoyume.BlockChain
         ActionRenderer ActionRenderer { get; }
 
         int AppProtocolVersion { get; }
+
+        Subject<HashDigest<SHA256>> BlockHashSubject { get; }
 
         void Initialize(
             CommandLineOptions options,
