@@ -40,7 +40,16 @@ namespace Nekoyume.BlockChain
                 .Subscribe(onNext: eval =>
                 {
                     // NOTE: 잘 들어오는지 확인하기 위해서 당분간 로그를 남깁니다.(2020.11.02)
-                    Debug.Log($"Action unrender: {nameof(RewardGold)}");
+                    try
+                    {
+                        var goldBalanceState = GetGoldBalanceState(eval);
+                        Debug.Log($"Action unrender: {nameof(RewardGold)} | gold: {goldBalanceState.Gold}");
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.Log($"Action unrender: {nameof(RewardGold)} | failed to get GoldBalanceState");
+                    }
+
                     UpdateAgentState(eval);
                 })
                 .AddTo(_disposables);
