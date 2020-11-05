@@ -650,9 +650,7 @@ namespace Nekoyume.Game
             var battle = Widget.Find<UI.Battle>();
             if (_rankingBattle)
             {
-                battle.Show();
-                battle.ComboText.Close();
-                battle.StageProgressBar.Close();
+                battle.ShowInArena();
             }
             else
             {
