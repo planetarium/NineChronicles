@@ -114,11 +114,11 @@ namespace Lib9c.Tools.SubCommand
             {
                 tableName = tableName.Split(".csv")[0];
             }
-            Console.Write("----------------\n");
-            Console.Write(tableName);
-            Console.Write("\n----------------\n");
+            Console.Error.Write("----------------\n");
+            Console.Error.Write(tableName);
+            Console.Error.Write("\n----------------\n");
             var tableCsv = File.ReadAllText(tablePath);
-            Console.Write(tableCsv);
+            Console.Error.Write(tableCsv);
             var action = new PatchTableSheet
             {
                 TableName = tableName,
@@ -134,7 +134,7 @@ namespace Lib9c.Tools.SubCommand
             );
 
             byte[] raw = _codec.Encode(bencoded);
-            Console.Write(ByteUtil.Hex(raw));
+            Console.WriteLine(ByteUtil.Hex(raw));
         }
 
         [Command(Description = "Create new transaction with AddRedeemCode action and dump it.")]
