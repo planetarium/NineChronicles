@@ -45,6 +45,8 @@ namespace Nekoyume.Game.Character
         private bool IsFullCostumeEquipped =>
             Costumes.Any(costume => costume.ItemSubType == ItemSubType.FullCostume);
 
+        public override string TargetTag => Tag.Enemy;
+
         #region Mono
 
         protected override void Awake()
@@ -69,8 +71,6 @@ namespace Nekoyume.Game.Character
 
                     Animator.Touch();
                 }).AddTo(gameObject);
-
-            TargetTag = Tag.Enemy;
         }
 
         private void OnDestroy()

@@ -10,6 +10,8 @@ namespace Nekoyume.Game.Character
         protected override bool CanRun =>
             !TargetInAttackRange(_player) && !_player.TargetInAttackRange(this);
 
+        public override string TargetTag => Tag.Player;
+
         public override void UpdateHpBar()
         {
             base.UpdateHpBar();
