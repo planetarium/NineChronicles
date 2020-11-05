@@ -168,9 +168,8 @@ namespace Nekoyume.UI.Scroller
                     characterView.SetByPlayer(player);
                 }
 
-                rank = 1;
                 challengeCountText.text =
-                    $"<color=orange>{ArenaInfo.DailyChallengeCount}</color>/{GameConfig.ArenaChallengeCountMax}";
+                    $"<color=orange>{currentAvatarArenaInfo.DailyChallengeCount}</color>/{GameConfig.ArenaChallengeCountMax}";
             }
             else
             {
