@@ -25,6 +25,8 @@ namespace Nekoyume.Game.Character
 
         private CharacterSpineController SpineController { get; set; }
 
+        public override string TargetTag => Tag.Player;
+
         #region Mono
 
         protected override void Awake()

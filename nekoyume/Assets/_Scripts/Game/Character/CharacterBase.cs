@@ -36,7 +36,7 @@ namespace Nekoyume.Game.Character
         protected abstract float RunSpeedDefault { get; }
         protected abstract Vector3 DamageTextForce { get; }
         protected abstract Vector3 HudTextPosition { get; }
-        public string TargetTag { get; protected set; }
+        public virtual string TargetTag { get; protected set; }
 
         public Guid Id => CharacterModel.Id;
         public SizeType SizeType => CharacterModel.SizeType;
