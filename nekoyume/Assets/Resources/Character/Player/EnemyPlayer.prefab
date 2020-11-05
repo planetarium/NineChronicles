@@ -89,6 +89,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   attackPoint: {fileID: 1339136423157052646}
+  sortingGroup: {fileID: 0}
   EXP: 0
   touchHandler: {fileID: 8697454501930479228}
 --- !u!1 &1339136423157052646
