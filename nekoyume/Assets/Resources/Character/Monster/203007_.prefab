@@ -146,7 +146,7 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 5.073116, y: 4.61, z: 0}
+  m_Size: {x: 5.073116, y: 4.61, z: 1}
   m_Center: {x: 0.29413226, y: 2.1799998, z: 0}
 --- !u!114 &4308986800901421203
 MonoBehaviour:
@@ -162,34 +162,34 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   statesAndAnimations:
   - stateName: Appear
-    animation: {fileID: 11400000, guid: 377f21b382ca1424782bc1ee289bd757, type: 2}
+    animation: {fileID: 0}
   - stateName: Standing
-    animation: {fileID: 11400000, guid: 377f21b382ca1424782bc1ee289bd757, type: 2}
+    animation: {fileID: 0}
   - stateName: StandingToIdle
-    animation: {fileID: 11400000, guid: 377f21b382ca1424782bc1ee289bd757, type: 2}
+    animation: {fileID: 0}
   - stateName: Idle
-    animation: {fileID: 11400000, guid: 377f21b382ca1424782bc1ee289bd757, type: 2}
+    animation: {fileID: 0}
   - stateName: Touch
-    animation: {fileID: 11400000, guid: d8c5f9efe42d64eea8f116cb1be41f78, type: 2}
+    animation: {fileID: 0}
   - stateName: Run
-    animation: {fileID: 11400000, guid: fdc06a7d5966142da938c866fa9b4949, type: 2}
+    animation: {fileID: 0}
   - stateName: Attack
-    animation: {fileID: 11400000, guid: d8c5f9efe42d64eea8f116cb1be41f78, type: 2}
+    animation: {fileID: 0}
   - stateName: Casting
-    animation: {fileID: 11400000, guid: eaa344621076c457e95b1218f7465394, type: 2}
+    animation: {fileID: 0}
   - stateName: CastingAttack
-    animation: {fileID: 11400000, guid: d8c5f9efe42d64eea8f116cb1be41f78, type: 2}
+    animation: {fileID: 0}
   - stateName: CriticalAttack
-    animation: {fileID: 11400000, guid: d8c5f9efe42d64eea8f116cb1be41f78, type: 2}
+    animation: {fileID: 0}
   - stateName: Hit
-    animation: {fileID: 11400000, guid: 5dcd4e65cde8a4d95afb891c2e014904, type: 2}
+    animation: {fileID: 0}
   - stateName: Die
-    animation: {fileID: 11400000, guid: 32ca4b75505c64d1c81ec634f7fbb872, type: 2}
+    animation: {fileID: 0}
   - stateName: Win
-    animation: {fileID: 11400000, guid: 377f21b382ca1424782bc1ee289bd757, type: 2}
+    animation: {fileID: 0}
   - stateName: Disappear
-    animation: {fileID: 11400000, guid: 377f21b382ca1424782bc1ee289bd757, type: 2}
+    animation: {fileID: 0}
   - stateName: Greeting
-    animation: {fileID: 11400000, guid: 377f21b382ca1424782bc1ee289bd757, type: 2}
+    animation: {fileID: 0}
   - stateName: Emotion
-    animation: {fileID: 11400000, guid: 377f21b382ca1424782bc1ee289bd757, type: 2}
+    animation: {fileID: 0}
