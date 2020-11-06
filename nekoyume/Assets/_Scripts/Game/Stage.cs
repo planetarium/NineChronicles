@@ -370,15 +370,11 @@ namespace Nekoyume.Game
 
         private IEnumerator CheckPosition(BattleLog log)
         {
-            var characters = GetComponentsInChildren<Character.CharacterBase>();
-
-            while (characters.Any())
+            var player = GetPlayer();
+            while (player.isActiveAndEnabled)
             {
-                if (characters.Any(character =>
-                    Mathf.Abs(character.transform.position.x) > 16f))
+                if (Mathf.Abs(player.transform.localPosition.x) >= 16f)
                 {
-                    StopCoroutine(_battleCoroutine);
-                    _battleCoroutine = null;
                     yield return StartCoroutine(CoRankingBattleEnd(log));
                     ClearBattle();
                     _positionCheckCoroutine = null;
