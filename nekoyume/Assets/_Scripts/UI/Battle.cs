@@ -60,6 +60,7 @@ namespace Nekoyume.UI
             stageTitle.Close();
             comboText.Close();
             stageProgressBar.Close();
+            guidedQuest.Hide(true);
             base.Show(ignoreShowAnimation);
         }
 
