@@ -87,6 +87,8 @@ namespace Nekoyume.Game
 
         private List<int> prevFood;
 
+        private Coroutine _positionCheckCoroutine = null;
+
         #region Events
 
         private readonly ISubject<Stage> _onEnterToStageEnd = new Subject<Stage>();
@@ -355,13 +357,36 @@ namespace Nekoyume.Game
             IsInStage = true;
             yield return StartCoroutine(CoRankingBattleEnter(log));
             Widget.Find<ArenaBattleLoadingScreen>().Close();
+            _positionCheckCoroutine = StartCoroutine(CheckPosition(log));
             foreach (var e in log)
             {
                 yield return StartCoroutine(e.CoExecute(this));
             }
-
+            StopCoroutine(_positionCheckCoroutine);
+            _positionCheckCoroutine = null;
             yield return StartCoroutine(CoRankingBattleEnd(log));
             ClearBattle();
+        }
+
+        private IEnumerator CheckPosition(BattleLog log)
+        {
+            var characters = GetComponentsInChildren<Character.CharacterBase>();
+
+            while (characters.Any())
+            {
+                if (characters.Any(character =>
+                    Mathf.Abs(character.transform.position.x) > 16f))
+                {
+                    StopCoroutine(_battleCoroutine);
+                    _battleCoroutine = null;
+                    yield return StartCoroutine(CoRankingBattleEnd(log));
+                    ClearBattle();
+                    _positionCheckCoroutine = null;
+                    yield break;
+                }
+
+                yield return new WaitForSeconds(1f);
+            }
         }
 
         public void ClearBattle()
@@ -613,7 +638,8 @@ namespace Nekoyume.Game
         {
             _onEnterToStageEnd.OnNext(this);
             var characters = GetComponentsInChildren<Character.CharacterBase>();
-            yield return new WaitWhile(() => characters.Any(i => i.actions.Any()));
+            yield return new WaitWhile(() =>
+                characters.Any(i => i.actions.Any()));
 
             Boss = null;
             var playerCharacter = log.result == BattleLog.Result.Win
