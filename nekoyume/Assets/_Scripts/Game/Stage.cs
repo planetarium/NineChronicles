@@ -373,7 +373,7 @@ namespace Nekoyume.Game
             var player = GetPlayer();
             while (player.isActiveAndEnabled)
             {
-                if (Mathf.Abs(player.transform.localPosition.x) >= 16f)
+                if (player.transform.localPosition.x >= 16f)
                 {
                     yield return StartCoroutine(CoRankingBattleEnd(log));
                     ClearBattle();
