@@ -67,6 +67,7 @@ namespace Nekoyume.Game
         private BattleResult.Model _battleResultModel;
         private bool _rankingBattle;
         private Coroutine _battleCoroutine;
+        private Coroutine _coExecuteCoroutine = null;
 
         public List<GameObject> ReleaseWhiteList { get; private set; } = new List<GameObject>();
         public SkillController SkillController { get; private set; }
@@ -362,9 +363,9 @@ namespace Nekoyume.Game
             {
                 yield return StartCoroutine(e.CoExecute(this));
             }
-            yield return StartCoroutine(CoRankingBattleEnd(log));
             StopCoroutine(_positionCheckCoroutine);
             _positionCheckCoroutine = null;
+            yield return StartCoroutine(CoRankingBattleEnd(log));
             ClearBattle();
         }
 
@@ -375,9 +376,9 @@ namespace Nekoyume.Game
             {
                 if (player.transform.localPosition.x >= 16f)
                 {
+                    _positionCheckCoroutine = null;
                     yield return StartCoroutine(CoRankingBattleEnd(log, true));
                     ClearBattle();
-                    _positionCheckCoroutine = null;
                     StopAllCoroutines();
                 }
 
