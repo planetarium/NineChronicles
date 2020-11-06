@@ -211,7 +211,7 @@ namespace Lib9c.Tests.Model.State
             foreach (var subType in subTypes)
             {
                 var row = _tableSheets.CostumeItemSheet.Values.First(r => r.ItemSubType == subType);
-                var costume = ItemFactory.CreateCostume(row);
+                var costume = ItemFactory.CreateCostume(row, default);
                 costumeIds.Add(costume.Id);
                 avatarState.inventory.AddItem(costume);
             }
@@ -236,13 +236,13 @@ namespace Lib9c.Tests.Model.State
             var costumeIds = new HashSet<int>();
             var duplicateRows = _tableSheets.CostumeItemSheet.Values.Where(r => r.ItemSubType == type);
             var row = _tableSheets.CostumeItemSheet.Values.First(r => r.ItemSubType != type);
-            var costume = ItemFactory.CreateCostume(row);
+            var costume = ItemFactory.CreateCostume(row, default);
             costumeIds.Add(costume.Id);
             avatarState.inventory.AddItem(costume);
 
             foreach (var duplicateRow in duplicateRows)
             {
-                var duplicateCostume = ItemFactory.CreateCostume(duplicateRow);
+                var duplicateCostume = ItemFactory.CreateCostume(duplicateRow, default);
                 costumeIds.Add(duplicateCostume.Id);
                 avatarState.inventory.AddItem(duplicateCostume);
             }
@@ -259,7 +259,7 @@ namespace Lib9c.Tests.Model.State
             avatarState.level = 100;
 
             var row = _tableSheets.CostumeItemSheet.Values.First();
-            var costume = ItemFactory.CreateCostume(row);
+            var costume = ItemFactory.CreateCostume(row, default);
             var serialized = (Dictionary)costume.Serialize();
             serialized = serialized.SetItem("item_sub_type", ItemSubType.Armor.Serialize());
             var costume2 = new Costume(serialized);
@@ -284,7 +284,7 @@ namespace Lib9c.Tests.Model.State
             avatarState.level = level - 1;
 
             var row = _tableSheets.CostumeItemSheet.Values.First(r => r.ItemSubType == type);
-            var costume = ItemFactory.CreateCostume(row);
+            var costume = ItemFactory.CreateCostume(row, default);
             var costumeIds = new HashSet<int> { costume.Id };
             avatarState.inventory.AddItem(costume);
 
