@@ -3,14 +3,17 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Bencodex.Types;
 using Libplanet;
 using Libplanet.Crypto;
 using mixpanel;
+using Nekoyume.Action;
 using Nekoyume.BlockChain;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
+using Nekoyume.Model.State;
 using Nekoyume.Pattern;
 using Nekoyume.State;
 using Nekoyume.TableData;
@@ -139,6 +142,7 @@ namespace Nekoyume.Game
             yield return new WaitUntil(() => agentInitialized);
             // NOTE: Create ActionManager after Agent initialized.
             ActionManager = new ActionManager(Agent);
+            yield return StartCoroutine(CoSyncTableSheets());
             // UI 초기화 2차.
             yield return StartCoroutine(MainCanvas.instance.InitializeSecond());
             Stage.Initialize();
@@ -417,6 +421,33 @@ namespace Nekoyume.Game
             };
 
             confirm.Show("UI_CONFIRM_RESET_KEYSTORE_TITLE", "UI_CONFIRM_RESET_KEYSTORE_CONTENT");
+        }
+
+        private IEnumerator CoSyncTableSheets()
+        {
+            yield return null;
+            var request =
+                Resources.LoadAsync<AddressableAssetsContainer>(AddressableAssetsContainerPath);
+            yield return request;
+            if (!(request.asset is AddressableAssetsContainer addressableAssetsContainer))
+            {
+                throw new FailedToLoadResourceException<AddressableAssetsContainer>(
+                    AddressableAssetsContainerPath);
+            }
+
+            List<TextAsset> csvAssets = addressableAssetsContainer.tableCsvAssets;
+            var csv = new Dictionary<string, string>();
+            foreach (var asset in csvAssets)
+            {
+                if (Agent.GetState(Addresses.TableSheet.Derive(asset.name)) is Text tableCsv)
+                {
+                    var table = tableCsv.ToDotnetString();
+                    csv[asset.name] = table;
+                }
+
+                yield return null;
+            }
+            TableSheets = new TableSheets(csv);
         }
     }
 }
