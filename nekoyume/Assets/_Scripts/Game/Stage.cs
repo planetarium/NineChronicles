@@ -362,9 +362,9 @@ namespace Nekoyume.Game
             {
                 yield return StartCoroutine(e.CoExecute(this));
             }
+            yield return StartCoroutine(CoRankingBattleEnd(log));
             StopCoroutine(_positionCheckCoroutine);
             _positionCheckCoroutine = null;
-            yield return StartCoroutine(CoRankingBattleEnd(log));
             ClearBattle();
         }
 
@@ -378,7 +378,7 @@ namespace Nekoyume.Game
                     yield return StartCoroutine(CoRankingBattleEnd(log, true));
                     ClearBattle();
                     _positionCheckCoroutine = null;
-                    yield break;
+                    StopAllCoroutines();
                 }
 
                 yield return new WaitForSeconds(1f);
@@ -635,7 +635,7 @@ namespace Nekoyume.Game
             _onEnterToStageEnd.OnNext(this);
             var characters = GetComponentsInChildren<Character.CharacterBase>();
 
-            if (forceQuit)
+            if (!forceQuit)
             {
                 yield return new WaitWhile(() =>
                     characters.Any(i => i.actions.Any()));
