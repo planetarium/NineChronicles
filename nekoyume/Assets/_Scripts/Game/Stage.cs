@@ -375,7 +375,7 @@ namespace Nekoyume.Game
             {
                 if (player.transform.localPosition.x >= 16f)
                 {
-                    yield return StartCoroutine(CoRankingBattleEnd(log));
+                    yield return StartCoroutine(CoRankingBattleEnd(log, true));
                     ClearBattle();
                     _positionCheckCoroutine = null;
                     yield break;
@@ -630,12 +630,16 @@ namespace Nekoyume.Game
             }
         }
 
-        private IEnumerator CoRankingBattleEnd(BattleLog log)
+        private IEnumerator CoRankingBattleEnd(BattleLog log, bool forceQuit = false)
         {
             _onEnterToStageEnd.OnNext(this);
             var characters = GetComponentsInChildren<Character.CharacterBase>();
-            yield return new WaitWhile(() =>
-                characters.Any(i => i.actions.Any()));
+
+            if (forceQuit)
+            {
+                yield return new WaitWhile(() =>
+                    characters.Any(i => i.actions.Any()));
+            }
 
             Boss = null;
             var playerCharacter = log.result == BattleLog.Result.Win
