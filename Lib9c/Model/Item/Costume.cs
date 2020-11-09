@@ -13,9 +13,12 @@ namespace Nekoyume.Model.Item
         public bool equipped = false;
         public string SpineResourcePath { get; }
 
-        public Costume(CostumeItemSheet.Row data) : base(data)
+        public Guid ItemId { get; }
+
+        public Costume(CostumeItemSheet.Row data, Guid id) : base(data)
         {
             SpineResourcePath = data.SpineResourcePath;
+            ItemId = id;
         }
 
         public Costume(Dictionary serialized) : base(serialized)
@@ -28,6 +31,8 @@ namespace Nekoyume.Model.Item
             {
                 SpineResourcePath = (Text) spineResourcePath;
             }
+
+            ItemId = serialized["item_id"].ToGuid();
         }
 
         public override IValue Serialize() =>
@@ -36,6 +41,7 @@ namespace Nekoyume.Model.Item
             {
                 [(Text) "equipped"] = equipped.Serialize(),
                 [(Text) "spine_resource_path"] = SpineResourcePath.Serialize(),
+                [(Text) "item_id"] = ItemId.Serialize(),
             }.Union((Dictionary) base.Serialize()));
 #pragma warning restore LAA1002
     }

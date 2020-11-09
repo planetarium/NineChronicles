@@ -3,7 +3,6 @@ namespace Lib9c.Tests.Action
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.Linq;
-    using Bencodex.Types;
     using Libplanet;
     using Libplanet.Action;
     using Libplanet.Assets;
@@ -93,6 +92,7 @@ namespace Lib9c.Tests.Action
                 PreviousStates = initialState,
                 Rehearsal = false,
                 Signer = _agentAddress,
+                Random = new ItemEnhancementTest.TestRandom(),
             });
 
             // Check target avatar & agent
@@ -102,6 +102,9 @@ namespace Lib9c.Tests.Action
             HashSet<int> expectedItems = new[] { 100000, 40100000 }.ToHashSet();
             Assert.Subset(nextAvatarState.inventory.Items.Select(i => i.item.Id).ToHashSet(), expectedItems);
             Assert.Equal(goldState.Currency * 100, nextState.GetBalance(_agentAddress, goldState.Currency));
+            Assert.True(nextAvatarState.inventory.TryGetCostume(40100000, out var item));
+            var costume = (Costume)item.item;
+            Assert.NotEqual(default, costume.ItemId);
 
             // Check the code redeemed properly
             RedeemCodeState nextRedeemCodeState = nextState.GetRedeemCodeState();
