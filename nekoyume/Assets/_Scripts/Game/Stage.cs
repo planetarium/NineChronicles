@@ -67,6 +67,7 @@ namespace Nekoyume.Game
         private BattleResult.Model _battleResultModel;
         private bool _rankingBattle;
         private Coroutine _battleCoroutine;
+        private Coroutine _coExecuteCoroutine = null;
 
         public List<GameObject> ReleaseWhiteList { get; private set; } = new List<GameObject>();
         public SkillController SkillController { get; private set; }
@@ -86,6 +87,8 @@ namespace Nekoyume.Game
         private Character.Player _stageRunningPlayer = null;
 
         private List<int> prevFood;
+
+        private Coroutine _positionCheckCoroutine = null;
 
         #region Events
 
@@ -355,13 +358,43 @@ namespace Nekoyume.Game
             IsInStage = true;
             yield return StartCoroutine(CoRankingBattleEnter(log));
             Widget.Find<ArenaBattleLoadingScreen>().Close();
+            _positionCheckCoroutine = StartCoroutine(CheckPosition(log));
             foreach (var e in log)
             {
                 yield return StartCoroutine(e.CoExecute(this));
             }
-
+            StopCoroutine(_positionCheckCoroutine);
+            _positionCheckCoroutine = null;
             yield return StartCoroutine(CoRankingBattleEnd(log));
             ClearBattle();
+        }
+
+        private IEnumerator CheckPosition(BattleLog log)
+        {
+            var player = GetPlayer();
+            while (player.isActiveAndEnabled)
+            {
+                if (player.transform.localPosition.x >= 16f)
+                {
+                    _positionCheckCoroutine = null;
+
+                    if (log.FirstOrDefault(e => e is GetReward) is GetReward getReward)
+                    {
+                        var rewards = getReward.Rewards;
+                        foreach (var item in rewards)
+                        {
+                            var countableItem = new CountableItem(item, 1);
+                            _battleResultModel.AddReward(countableItem);
+                        }
+                    }
+
+                    yield return StartCoroutine(CoRankingBattleEnd(log, true));
+                    ClearBattle();
+                    StopAllCoroutines();
+                }
+
+                yield return new WaitForSeconds(1f);
+            }
         }
 
         public void ClearBattle()
@@ -609,11 +642,16 @@ namespace Nekoyume.Game
             }
         }
 
-        private IEnumerator CoRankingBattleEnd(BattleLog log)
+        private IEnumerator CoRankingBattleEnd(BattleLog log, bool forceQuit = false)
         {
             _onEnterToStageEnd.OnNext(this);
             var characters = GetComponentsInChildren<Character.CharacterBase>();
-            yield return new WaitWhile(() => characters.Any(i => i.actions.Any()));
+
+            if (!forceQuit)
+            {
+                yield return new WaitWhile(() =>
+                    characters.Any(i => i.actions.Any()));
+            }
 
             Boss = null;
             var playerCharacter = log.result == BattleLog.Result.Win
