@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using Bencodex.Types;
@@ -12,6 +13,7 @@ using Libplanet.Blockchain.Policies;
 using Libplanet.Blocks;
 using Libplanet.RocksDBStore;
 using Libplanet.Store;
+using Libplanet.Store.Trie;
 using Nekoyume.BlockChain;
 using Serilog;
 using Serilog.Events;
@@ -54,7 +56,10 @@ namespace Lib9c.Benchmarks
 
             DateTimeOffset started = DateTimeOffset.UtcNow;
             Block<NCAction> genesis = store.GetBlock<NCAction>(gHash);
-            var chain = new BlockChain<NCAction>(policy, store, store, genesis);
+            IKeyValueStore stateRootKeyValueStore = new RocksDBKeyValueStore(Path.Combine(storePath, "state_hashes")),
+                stateKeyValueStore = new RocksDBKeyValueStore(Path.Combine(storePath, "states"));
+            IStateStore stateStore = new TrieStateStore(stateKeyValueStore, stateRootKeyValueStore);
+            var chain = new BlockChain<NCAction>(policy, store, stateStore, genesis);
             long height = chain.Tip.Index;
             var blockHashes = limit < 0
                 ? chain.BlockHashes.SkipWhile((_, i) => i < height + limit).ToArray()
