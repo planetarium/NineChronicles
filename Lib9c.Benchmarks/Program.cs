@@ -1,12 +1,17 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Security.Cryptography;
+using Bencodex.Types;
 using Libplanet;
+using Libplanet.Action;
 using Libplanet.Assets;
 using Libplanet.Blockchain;
 using Libplanet.Blockchain.Policies;
 using Libplanet.Blocks;
 using Libplanet.RocksDBStore;
+using Libplanet.Store;
 using Nekoyume.BlockChain;
 using Serilog;
 using Serilog.Events;
@@ -72,9 +77,11 @@ namespace Lib9c.Benchmarks
                     blockHash,
                     block.Transactions.Count()
                 );
+
+                IEnumerable<ActionEvaluation> blockEvals;
                 if (block.Index > 0)
                 {
-                    block.Evaluate(
+                    blockEvals = block.Evaluate(
                         DateTimeOffset.UtcNow,
                         address => chain.GetState(address, blockHash),
                         (address, currency) => chain.GetBalance(address, currency, blockHash)
@@ -82,12 +89,13 @@ namespace Lib9c.Benchmarks
                 }
                 else
                 {
-                    block.Evaluate(
+                    blockEvals = block.Evaluate(
                         DateTimeOffset.UtcNow,
                         _ => null,
                         ((_, currency) => new FungibleAssetValue(currency))
                     );
                 }
+                SetStates(chain.Id, store, block, blockEvals.ToArray(), buildStateReferences: true);
                 txs += block.Transactions.LongCount();
                 actions += block.Transactions.Sum(tx => tx.Actions.LongCount()) + 1;
             }
@@ -101,5 +109,88 @@ namespace Lib9c.Benchmarks
             Console.WriteLine("Average per action\t{0}", execActions / actions);
             Console.WriteLine("Total elapsed\t{0}", ended - started);
         }
+
+        // Copied from BlockChain<T>.SetStates().
+        private static void SetStates(
+            Guid chainId,
+            IStateStore stateStore,
+            Block<NCAction> block,
+            IReadOnlyList<ActionEvaluation> actionEvaluations,
+            bool buildStateReferences
+        )
+        {
+            IImmutableSet<Address> stateUpdatedAddresses = actionEvaluations
+                .SelectMany(a => a.OutputStates.StateUpdatedAddresses)
+                .ToImmutableHashSet();
+            IImmutableSet<(Address, Currency)> updatedFungibleAssets = actionEvaluations
+                .SelectMany(a => a.OutputStates.UpdatedFungibleAssets
+                    .SelectMany(kv => kv.Value.Select(c => (kv.Key, c))))
+                .ToImmutableHashSet();
+
+            if (!stateStore.ContainsBlockStates(block.Hash))
+            {
+                var totalDelta = GetTotalDelta(actionEvaluations, ToStateKey, ToFungibleAssetKey);
+                stateStore.SetStates(block, totalDelta);
+            }
+
+            if (buildStateReferences && stateStore is IBlockStatesStore blockStatesStore)
+            {
+                IImmutableSet<string> stateUpdatedKeys = stateUpdatedAddresses
+                    .Select(ToStateKey)
+                    .ToImmutableHashSet();
+                IImmutableSet<string> assetUpdatedKeys = updatedFungibleAssets
+                    .Select(ToFungibleAssetKey)
+                    .ToImmutableHashSet();
+                IImmutableSet<string> updatedKeys = stateUpdatedKeys.Union(assetUpdatedKeys);
+                blockStatesStore.StoreStateReference(chainId, updatedKeys, block.Hash, block.Index);
+            }
+        }
+
+        // Copied from ActionEvaluationsExtensions.GetTotalDelta().
+        private static ImmutableDictionary<string, IValue> GetTotalDelta(
+            IReadOnlyList<ActionEvaluation> actionEvaluations,
+            Func<Address, string> toStateKey,
+            Func<(Address, Currency), string> toFungibleAssetKey)
+        {
+            IImmutableSet<Address> stateUpdatedAddresses = actionEvaluations
+                .SelectMany(a => a.OutputStates.StateUpdatedAddresses)
+                .ToImmutableHashSet();
+            IImmutableSet<(Address, Currency)> updatedFungibleAssets = actionEvaluations
+                .SelectMany(a => a.OutputStates.UpdatedFungibleAssets
+                    .SelectMany(kv => kv.Value.Select(c => (kv.Key, c))))
+                .ToImmutableHashSet();
+
+            IAccountStateDelta lastStates = actionEvaluations.Count > 0
+                ? actionEvaluations[actionEvaluations.Count - 1].OutputStates
+                : null;
+            ImmutableDictionary<string, IValue> totalDelta =
+                stateUpdatedAddresses.ToImmutableDictionary(
+                    toStateKey,
+                    a => lastStates?.GetState(a)
+                ).SetItems(
+                    updatedFungibleAssets.Select(pair =>
+                        new KeyValuePair<string, IValue>(
+                            toFungibleAssetKey(pair),
+                            new Bencodex.Types.Integer(
+                                lastStates?.GetBalance(pair.Item1, pair.Item2).RawValue ?? 0
+                            )
+                        )
+                    )
+                );
+
+            return totalDelta;
+        }
+
+        // Copied from KeyConverters.ToStateKey().
+        private static string ToStateKey(Address address) => address.ToHex().ToLowerInvariant();
+
+        // Copied from KeyConverters.ToFungibleAssetKey().
+        private static string ToFungibleAssetKey(Address address, Currency currency) =>
+            "_" + address.ToHex().ToLowerInvariant() +
+            "_" + ByteUtil.Hex(currency.Hash.ByteArray).ToLowerInvariant();
+
+        // Copied from KeyConverters.ToFungibleAssetKey().
+        private static string ToFungibleAssetKey((Address, Currency) pair) =>
+            ToFungibleAssetKey(pair.Item1, pair.Item2);
     }
 }
