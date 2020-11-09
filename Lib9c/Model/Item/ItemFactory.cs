@@ -15,7 +15,7 @@ namespace Nekoyume.Model.Item
             switch (row)
             {
                 case CostumeItemSheet.Row costumeRow:
-                    return CreateCostume(costumeRow);
+                    return CreateCostume(costumeRow, random.GenerateRandomGuid());
                 case MaterialItemSheet.Row materialRow:
                     return CreateMaterial(materialRow);
                 default:
@@ -23,9 +23,9 @@ namespace Nekoyume.Model.Item
             }
         }
 
-        public static Costume CreateCostume(CostumeItemSheet.Row row)
+        public static Costume CreateCostume(CostumeItemSheet.Row row, Guid id)
         {
-            return new Costume(row);
+            return new Costume(row, id);
         }
 
         public static Material CreateMaterial(MaterialItemSheet sheet, int itemId)
