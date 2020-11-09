@@ -377,6 +377,17 @@ namespace Nekoyume.Game
                 if (player.transform.localPosition.x >= 16f)
                 {
                     _positionCheckCoroutine = null;
+
+                    if (log.FirstOrDefault(e => e is GetReward) is GetReward getReward)
+                    {
+                        var rewards = getReward.Rewards;
+                        foreach (var item in rewards)
+                        {
+                            var countableItem = new CountableItem(item, 1);
+                            _battleResultModel.AddReward(countableItem);
+                        }
+                    }
+
                     yield return StartCoroutine(CoRankingBattleEnd(log, true));
                     ClearBattle();
                     StopAllCoroutines();
