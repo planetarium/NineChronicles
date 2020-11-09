@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using Libplanet;
 using Nekoyume.Action;
@@ -451,7 +452,7 @@ namespace Nekoyume.UI
                 var currentAvatarAddress = States.Instance.CurrentAvatarState.address;
                 var infos2 = state.GetArenaInfos(currentAvatarAddress, 20, 20);
                 infos.AddRange(infos2);
-                infos = infos.OrderBy(tuple => tuple.rank).ToList();
+                infos = infos.ToImmutableHashSet().OrderBy(tuple => tuple.rank).ToList();
             }
 
             _weeklyCachedInfo = infos;
