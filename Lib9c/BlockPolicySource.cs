@@ -26,6 +26,8 @@ namespace Nekoyume.BlockChain
 {
     public class BlockPolicySource
     {
+        public const int DifficultyBoundDivisor = 2048;
+
         private readonly TimeSpan _blockInterval = TimeSpan.FromSeconds(8);
 
         public readonly ActionRenderer ActionRenderer = new ActionRenderer();
@@ -55,7 +57,7 @@ namespace Nekoyume.BlockChain
                 new RewardGold(),
                 _blockInterval,
                 minimumDifficulty,
-                2048,
+                DifficultyBoundDivisor,
                 maximumTransactions,
                 DoesTransactionFollowPolicy
             );
