@@ -156,6 +156,10 @@ namespace Nekoyume.UI
             stage.LoadBackground("ranking");
             _player = stage.GetPlayer();
             _player.gameObject.SetActive(false);
+            if (_weeklyCachedInfo.Count < 4)
+            {
+                UpdateWeeklyCache(States.Instance.WeeklyArenaState);
+            }
 
             _state.SetValueAndForceNotify(stateType);
 
