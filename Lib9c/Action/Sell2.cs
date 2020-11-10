@@ -82,41 +82,32 @@ namespace Nekoyume.Action
             Log.Debug("Execute Sell; seller: {SellerAvatarAddress}", sellerAvatarAddress);
             
             // 인벤토리에서 판매할 아이템을 선택하고 수량을 조절한다.
-            if (avatarState.inventory.TryGetNonFungibleItem<ItemUsable>(itemId, out var nonFungibleItem))
+            if (avatarState.inventory.TryGetNonFungibleItem<Equipment>(itemId, out var equipment))
             {
-                if (nonFungibleItem.RequiredBlockIndex > context.BlockIndex)
+                if (equipment.RequiredBlockIndex > context.BlockIndex)
                 {
                     throw new RequiredBlockIndexException(
-                        $"Aborted as the equipment to enhance ({itemId}) is not available yet; it will be available at the block #{nonFungibleItem.RequiredBlockIndex}."
+                        $"Aborted as the equipment to enhance ({itemId}) is not available yet; it will be available at the block #{equipment.RequiredBlockIndex}."
                     );
                 }
 
-                avatarState.inventory.RemoveNonFungibleItem(nonFungibleItem);
-                if (nonFungibleItem is Equipment equipment)
-                {
-                    equipment.equipped = false;
-                }
-
-                var productId = context.Random.GenerateRandomGuid();
-
+                avatarState.inventory.RemoveNonFungibleItem(equipment);
+                equipment.equipped = false;
                 shopState.Register(new ShopItem(
                     ctx.Signer,
                     sellerAvatarAddress,
-                    productId,
+                    context.Random.GenerateRandomGuid(),
                     price,
-                    nonFungibleItem));
+                    equipment));
             }
             else if (avatarState.inventory.TryGetNonFungibleItem<Costume>(itemId, out var costume))
             {
                 avatarState.inventory.RemoveNonFungibleItem(costume.ItemId);
                 costume.equipped = false;
-
-                var productId = context.Random.GenerateRandomGuid();
-
                 shopState.Register(new ShopItem(
                     ctx.Signer,
                     sellerAvatarAddress,
-                    productId,
+                    context.Random.GenerateRandomGuid(),
                     price,
                     costume));
             }
