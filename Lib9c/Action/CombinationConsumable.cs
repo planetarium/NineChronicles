@@ -125,8 +125,7 @@ namespace Nekoyume.Action
             var started = DateTimeOffset.UtcNow;
             Log.Debug("Combination exec started.");
 
-            if (!states.TryGetAgentAvatarStates(ctx.Signer, AvatarAddress, out AgentState agentState,
-                out AvatarState avatarState))
+            if (!states.TryGetAvatarState(ctx.Signer, AvatarAddress, out AvatarState avatarState))
             {
                 throw new FailedLoadStateException("Aborted as the avatar state of the signer was failed to load.");
             }

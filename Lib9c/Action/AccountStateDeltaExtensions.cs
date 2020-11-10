@@ -148,6 +148,17 @@ namespace Nekoyume.Action
             }
         }
 
+        public static bool TryGetAvatarState(
+            this IAccountStateDelta states,
+            Address agentAddress,
+            Address avatarAddress,
+            out AvatarState avatarState
+        )
+        {
+            avatarState = states.GetAvatarState(avatarAddress);
+            return !(avatarState is null) && avatarState.agentAddress == agentAddress;
+        }
+
         public static bool TryGetAgentAvatarStates(
             this IAccountStateDelta states,
             Address agentAddress,
