@@ -243,7 +243,6 @@ namespace Nekoyume.Model.Item
         }
 
         // FIXME: 삭제되어야 합니다. 코스튬에 ItemId가 더해지면서 NonFungible이 되었습니다.
-        [Obsolete("삭제될 메소드입니다.")]
         public bool TryGetCostume(int id, out Costume outCostume)
         {
             foreach (var item in _items)
