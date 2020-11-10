@@ -885,6 +885,7 @@ namespace Nekoyume.BlockChain
                             L10nManager.Localize("UI_OK"), false);
                 });
 
+            MainCanvas.instance.InitWidgetInMain();
         }
     }
 }

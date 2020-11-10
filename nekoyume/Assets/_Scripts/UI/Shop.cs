@@ -200,7 +200,7 @@ namespace Nekoyume.UI
 
             base.Close(ignoreCloseAnimation);
 
-            _npc.gameObject.SetActive(false);
+            _npc?.gameObject.SetActive(false);
         }
 
         #endregion

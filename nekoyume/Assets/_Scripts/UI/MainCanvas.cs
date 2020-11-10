@@ -339,5 +339,23 @@ namespace Nekoyume.UI
 
             UpdateLayers();
         }
+
+        public void InitWidgetInMain()
+        {
+            var layer = widgetLayer.root.transform;
+            for(int i = 0; i < layer.childCount; ++i)
+            {
+                var child = layer.GetChild(i);
+                var widget = child.GetComponent<Widget>();
+                if (widget is Status || widget is Menu)
+                {
+                    widget.Show();
+                }
+                else
+                {
+                    widget.Close();
+                }
+            }
+        }
     }
 }
