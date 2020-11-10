@@ -131,7 +131,6 @@ namespace Nekoyume.Action
             }
 
             return states
-                .SetState(ctx.Signer, agentState.Serialize())
                 .SetState(WeeklyArenaAddress, weeklyArenaState.Serialize())
                 .SetState(AvatarAddress, avatarState.Serialize());
         }

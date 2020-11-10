@@ -245,7 +245,6 @@ namespace Nekoyume.Action
             var ended = DateTimeOffset.UtcNow;
             Log.Debug("Combination Total Executed Time: {Elapsed}", ended - started);
             return states
-                .SetState(ctx.Signer, agentState.Serialize())
                 .SetState(slotAddress, slotState.Serialize());
         }
 

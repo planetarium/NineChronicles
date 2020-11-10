@@ -259,7 +259,7 @@ namespace Nekoyume.Action
             Log.Debug("Buy Set ShopState: {Elapsed}", sw.Elapsed);
             Log.Debug("Buy Total Executed Time: {Elapsed}", ended - started);
 
-            return states.SetState(ctx.Signer, buyerAgentState.Serialize());
+            return states;
         }
     }
 }
