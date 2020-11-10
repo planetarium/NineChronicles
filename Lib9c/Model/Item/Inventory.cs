@@ -125,8 +125,6 @@ namespace Nekoyume.Model.Item
             {
                 case ItemType.Consumable:
                 case ItemType.Equipment:
-                    AddNonFungibleItem(itemBase);
-                    break;
                 case ItemType.Costume:
                     AddNonFungibleItem(itemBase);
                     break;

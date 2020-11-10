@@ -91,7 +91,7 @@ namespace Nekoyume.Action
                     );
                 }
 
-                avatarState.inventory.RemoveNonFungibleItem(equipment);
+                avatarState.inventory.RemoveNonFungibleItem(itemId);
                 equipment.equipped = false;
                 shopState.Register(new ShopItem(
                     ctx.Signer,
@@ -102,7 +102,7 @@ namespace Nekoyume.Action
             }
             else if (avatarState.inventory.TryGetNonFungibleItem<Costume>(itemId, out var costume))
             {
-                avatarState.inventory.RemoveNonFungibleItem(costume.ItemId);
+                avatarState.inventory.RemoveNonFungibleItem(itemId);
                 costume.equipped = false;
                 shopState.Register(new ShopItem(
                     ctx.Signer,
