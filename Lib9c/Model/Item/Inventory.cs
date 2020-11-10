@@ -194,7 +194,7 @@ namespace Nekoyume.Model.Item
 
         public bool RemoveNonFungibleItem(INonFungibleItem nonFungibleItem)
         {
-            return TryGetNonFungibleItem(nonFungibleItem.ItemId, out Item item) && _items.Remove(item);
+            return RemoveNonFungibleItem(nonFungibleItem.ItemId);
         }
 
         public bool RemoveNonFungibleItem(Guid itemId)
@@ -210,8 +210,6 @@ namespace Nekoyume.Model.Item
         {
             switch (itemBase)
             {
-                case Costume costume:
-                    return TryGetCostume(costume.Id, out outFungibleItem);
                 case Material material:
                     return TryGetMaterial(material.ItemId, out outFungibleItem);
                 default:
@@ -224,68 +222,6 @@ namespace Nekoyume.Model.Item
         {
             outFungibleItem = _items.FirstOrDefault(i => i.item.Id == id);
             return !(outFungibleItem is null);
-        }
-
-        public bool TryGetCostume(int id, out Item outCostume)
-        {
-            foreach (var item in _items)
-            {
-                if (!(item.item is Costume costume) ||
-                    costume.Id != id)
-                {
-                    continue;
-                }
-
-                outCostume = item;
-                return true;
-            }
-
-            outCostume = null;
-            return false;
-        }
-        
-        public bool TryGetCostume(Guid itemGuid, out Item outItem)
-        {
-            foreach (var item in _items)
-            {
-                if (!(item.item is Costume costume))
-                {
-                    continue;
-                }
-
-                if (costume.ItemId != itemGuid)
-                {
-                    continue;
-                }
-
-                outItem = item;
-                return true;
-            }
-
-            outItem = null;
-            return false;
-        }
-        
-        public bool TryGetCostume(Guid itemGuid, out Costume outCostume)
-        {
-            foreach (var item in _items)
-            {
-                if (!(item.item is Costume costume))
-                {
-                    continue;
-                }
-
-                if (costume.ItemId != itemGuid)
-                {
-                    continue;
-                }
-
-                outCostume = costume;
-                return true;
-            }
-
-            outCostume = null;
-            return false;
         }
 
         public bool TryGetMaterial(HashDigest<SHA256> itemId, out Item outMaterial)
@@ -306,90 +242,49 @@ namespace Nekoyume.Model.Item
             return false;
         }
 
-        public bool TryGetNonFungibleItem(ItemUsable itemUsable, out ItemUsable outNonFungibleItem)
+        // FIXME: 삭제되어야 합니다. 코스튬에 ItemId가 더해지면서 NonFungible이 되었습니다.
+        [Obsolete("삭제될 메소드입니다.")]
+        public bool TryGetCostume(int id, out Costume outCostume)
         {
             foreach (var item in _items)
             {
-                if (!(item.item is ItemUsable nonFungibleItem))
+                if (!(item.item is Costume costume) ||
+                    !costume.Id.Equals(id))
                 {
                     continue;
                 }
 
-                if (nonFungibleItem.ItemId != itemUsable.ItemId)
-                {
-                    continue;
-                }
-
-                outNonFungibleItem = nonFungibleItem;
+                outCostume = costume;
                 return true;
             }
 
-            outNonFungibleItem = null;
+            outCostume = null;
             return false;
         }
 
-        public bool TryGetNonFungibleItemFromLast(out ItemUsable outNonFungibleItem)
-        {
-            foreach (var item in Enumerable.Reverse(_items))
-            {
-                if (!(item.item is ItemUsable nonFungibleItem))
-                {
-                    continue;
-                }
-
-                outNonFungibleItem = nonFungibleItem;
-                return true;
-            }
-
-            outNonFungibleItem = null;
-            return false;
-        }
-
-        public bool TryGetNonFungibleItem(Guid itemId, out Item outNonFungibleItem)
+        public bool TryGetNonFungibleItem(Guid itemId, out Item outInventoryItem)
         {
             foreach (var item in _items)
             {
-                switch (item.item)
-                {
-                    case ItemUsable itemUsable when itemUsable.ItemId != itemId:
-                        continue;
-                    case ItemUsable _:
-                        outNonFungibleItem = item;
-                        return true;
-                    case Costume costume when costume.ItemId != itemId:
-                        continue;
-                    case Costume _:
-                        outNonFungibleItem = item;
-                        return true;
-                }
-            }
-            
-            outNonFungibleItem = null;
-            return false;
-        }
-
-        public bool TryGetNonFungibleItem(Guid itemId, out ItemUsable outNonFungibleItem)
-        {
-            foreach (var item in _items)
-            {
-                if (!(item.item is ItemUsable nonFungibleItem))
+                if (!(item.item is INonFungibleItem nonFungibleItem) ||
+                    !nonFungibleItem.ItemId.Equals(itemId))
                 {
                     continue;
                 }
 
-                if (nonFungibleItem.ItemId != itemId)
-                {
-                    continue;
-                }
-
-                outNonFungibleItem = nonFungibleItem;
+                outInventoryItem = item;
                 return true;
             }
 
-            outNonFungibleItem = null;
+            outInventoryItem = null;
             return false;
         }
-        
+
+        public bool TryGetNonFungibleItem<T>(T nonFungibleItem, out T outNonFungibleItem) where T : INonFungibleItem
+        {
+            return TryGetNonFungibleItem(nonFungibleItem.ItemId, out outNonFungibleItem);
+        }
+
         public bool TryGetNonFungibleItem<T>(Guid itemId, out T outNonFungibleItem) where T : INonFungibleItem
         {
             foreach (var item in _items)

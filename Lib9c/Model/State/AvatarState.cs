@@ -463,12 +463,11 @@ namespace Nekoyume.Model.State
             var subTypes = new List<ItemSubType>();
             foreach (var costumeId in costumeIds.OrderBy(i => i))
             {
-                if (!inventory.TryGetCostume(costumeId, out var item))
+                if (!inventory.TryGetCostume(costumeId, out var costume))
                 {
                     continue;
                 }
 
-                var costume = (Costume) item.item;
                 if (subTypes.Contains(costume.ItemSubType))
                 {
                     throw new DuplicateCostumeException($"can't equip duplicate costume type : {costume.ItemSubType}");
@@ -526,12 +525,12 @@ namespace Nekoyume.Model.State
             // 코스튬 장착.
             foreach (var costumeId in costumeIds.OrderBy(i => i))
             {
-                if (!inventory.TryGetCostume(costumeId, out var outItem))
+                if (!inventory.TryGetCostume(costumeId, out var costume))
                 {
                     continue;
                 }
 
-                ((Costume) outItem.item).equipped = true;
+                costume.equipped = true;
             }
         }
 
