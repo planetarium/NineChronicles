@@ -61,7 +61,7 @@ namespace Lib9c.Benchmarks
             IStateStore stateStore = new TrieStateStore(stateKeyValueStore, stateRootKeyValueStore);
             var chain = new BlockChain<NCAction>(policy, store, stateStore, genesis);
             long height = chain.Tip.Index;
-            var blockHashes = limit < 0
+            HashDigest<SHA256>[] blockHashes = limit < 0
                 ? chain.BlockHashes.SkipWhile((_, i) => i < height + limit).ToArray()
                 : chain.BlockHashes.Take(limit).ToArray();
             Console.Error.WriteLine(
@@ -70,16 +70,16 @@ namespace Lib9c.Benchmarks
                 blockHashes[0],
                 blockHashes.Last()
             );
+            Block<NCAction>[] blocks = blockHashes.Select(h => chain[h]).ToArray();
             DateTimeOffset blocksLoaded = DateTimeOffset.UtcNow;
             long txs = 0;
             long actions = 0;
-            foreach (HashDigest<SHA256> blockHash in blockHashes)
+            foreach (Block<NCAction> block in blocks)
             {
-                Block<NCAction> block = chain[blockHash];
                 Console.Error.WriteLine(
                     "Block #{0} {1}; {2} txs",
                     block.Index,
-                    blockHash,
+                    block.Hash,
                     block.Transactions.Count()
                 );
 
@@ -88,8 +88,8 @@ namespace Lib9c.Benchmarks
                 {
                     blockEvals = block.Evaluate(
                         DateTimeOffset.UtcNow,
-                        address => chain.GetState(address, blockHash),
-                        (address, currency) => chain.GetBalance(address, currency, blockHash)
+                        address => chain.GetState(address, block.Hash),
+                        (address, currency) => chain.GetBalance(address, currency, block.Hash)
                     );
                 }
                 else
