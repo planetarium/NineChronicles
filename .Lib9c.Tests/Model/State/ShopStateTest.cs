@@ -33,9 +33,8 @@ namespace Lib9c.Tests.Model.State
                 agentAddress,
                 avatarAddress,
                 productId,
-                itemUsable,
-                price
-            );
+                price,
+                itemUsable);
 
             shopState.Register(shopItem);
             var serialized = (Dictionary)shopState.Serialize();
@@ -67,9 +66,8 @@ namespace Lib9c.Tests.Model.State
                 agentAddress,
                 avatarAddress,
                 productId,
-                itemUsable,
-                price
-            );
+                price,
+                itemUsable);
 
             shopState.Register(shopItem);
 
@@ -99,9 +97,8 @@ namespace Lib9c.Tests.Model.State
                 agentAddress,
                 avatarAddress,
                 productId,
-                itemUsable,
-                price
-            );
+                price,
+                itemUsable);
 
             shopState.Register(shopItem);
 
@@ -129,9 +126,8 @@ namespace Lib9c.Tests.Model.State
                 agentAddress,
                 avatarAddress,
                 productId,
-                itemUsable,
-                price
-            );
+                price,
+                itemUsable);
 
             shopState.Register(shopItem);
             shopState.Unregister(shopItem);
@@ -163,9 +159,8 @@ namespace Lib9c.Tests.Model.State
                 agentAddress,
                 avatarAddress,
                 productId,
-                itemUsable,
-                price
-            );
+                price,
+                itemUsable);
 
             shopState.Register(shopItem);
 
@@ -201,9 +196,8 @@ namespace Lib9c.Tests.Model.State
                 agentAddress,
                 avatarAddress,
                 productId,
-                itemUsable,
-                price
-            );
+                price,
+                itemUsable);
 
             shopState.Register(shopItem);
 

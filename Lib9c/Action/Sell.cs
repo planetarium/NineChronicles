@@ -108,9 +108,8 @@ namespace Nekoyume.Action
                 ctx.Signer,
                 sellerAvatarAddress,
                 productId,
-                nonFungibleItem,
-                price
-            ));
+                price,
+                nonFungibleItem));
 
             sw.Stop();
             Log.Debug("Sell Get Register Item: {Elapsed}", sw.Elapsed);

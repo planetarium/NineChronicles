@@ -69,8 +69,8 @@ namespace Lib9c.Tests.Action
                 _agentAddress,
                 _avatarAddress,
                 Guid.NewGuid(),
-                equipment,
-                new FungibleAssetValue(goldCurrencyState.Currency, 100, 0)));
+                new FungibleAssetValue(goldCurrencyState.Currency, 100, 0),
+                equipment));
 
             _initialState = _initialState
                 .SetState(GoldCurrencyState.Address, goldCurrencyState.Serialize())
