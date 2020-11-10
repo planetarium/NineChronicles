@@ -71,6 +71,11 @@ namespace Lib9c.Tests.Action
                 0);
             _avatarState.inventory.AddItem(equipment);
 
+            var costume = ItemFactory.CreateCostume(
+                _tableSheets.CostumeItemSheet.First,
+                Guid.NewGuid());
+            _avatarState.inventory.AddItem(costume);
+
             _initialState = _initialState
                 .SetState(GoldCurrencyState.Address, goldCurrencyState.Serialize())
                 .SetState(Addresses.Shop, shopState.Serialize())
@@ -90,35 +95,47 @@ namespace Lib9c.Tests.Action
             var equipment = avatarState.inventory.Equipments.FirstOrDefault();
             Assert.NotNull(equipment);
 
-            var currencyState = _initialState.GetGoldCurrency();
+            var costume = avatarState.inventory.Costumes.FirstOrDefault();
+            Assert.NotNull(costume);
+
+            var items = new INonFungibleItem[] { equipment, costume };
+
+            var previousStates = _initialState;
+            var currencyState = previousStates.GetGoldCurrency();
             var price = new FungibleAssetValue(currencyState, 100, 0);
-            var sellAction = new Sell
+
+            foreach (var nonFungibleItem in items)
             {
-                itemId = equipment.ItemId,
-                price = price,
-                sellerAvatarAddress = _avatarAddress,
-            };
-            var nextState = sellAction.Execute(new ActionContext
-            {
-                BlockIndex = 0,
-                PreviousStates = _initialState,
-                Rehearsal = false,
-                Signer = _agentAddress,
-                Random = new ItemEnhancementTest.TestRandom(),
-            });
+                var sellAction = new Sell2
+                {
+                    itemId = nonFungibleItem.ItemId,
+                    price = price,
+                    sellerAvatarAddress = _avatarAddress,
+                };
+                var nextState = sellAction.Execute(new ActionContext
+                {
+                    BlockIndex = 0,
+                    PreviousStates = previousStates,
+                    Rehearsal = false,
+                    Signer = _agentAddress,
+                    Random = new ItemEnhancementTest.TestRandom(),
+                });
 
-            var nextAvatarState = nextState.GetAvatarState(_avatarAddress);
-            Assert.Empty(nextAvatarState.inventory.Equipments);
+                var nextAvatarState = nextState.GetAvatarState(_avatarAddress);
+                Assert.Empty(nextAvatarState.inventory.Equipments);
 
-            var nextShopState = nextState.GetShopState();
-            Assert.Single(nextShopState.Products);
+                var nextShopState = nextState.GetShopState();
+                Assert.Single(nextShopState.Products);
 
-            var (_, shopItem) = nextShopState.Products.FirstOrDefault();
-            Assert.NotNull(shopItem);
-            Assert.Equal(equipment.ItemId, shopItem.ItemUsable.ItemId);
-            Assert.Equal(price, shopItem.Price);
-            Assert.Equal(_agentAddress, shopItem.SellerAgentAddress);
-            Assert.Equal(_avatarAddress, shopItem.SellerAvatarAddress);
+                var (_, shopItem) = nextShopState.Products.FirstOrDefault();
+                Assert.NotNull(shopItem);
+                Assert.Equal(nonFungibleItem.ItemId, shopItem.ItemUsable.ItemId);
+                Assert.Equal(price, shopItem.Price);
+                Assert.Equal(_agentAddress, shopItem.SellerAgentAddress);
+                Assert.Equal(_avatarAddress, shopItem.SellerAvatarAddress);
+
+                previousStates = nextState;
+            }
         }
 
         [Fact]
