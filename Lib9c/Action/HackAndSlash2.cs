@@ -72,11 +72,7 @@ namespace Nekoyume.Action
             var started = DateTimeOffset.UtcNow;
             Log.Debug("HAS exec started.");
 
-            if (!states.TryGetAgentAvatarStates(
-                ctx.Signer,
-                avatarAddress,
-                out AgentState agentState,
-                out AvatarState avatarState))
+            if (!states.TryGetAvatarState(ctx.Signer, avatarAddress, out AvatarState avatarState))
             {
                 throw new FailedLoadStateException("Aborted as the avatar state of the signer was failed to load.");
             }
@@ -278,7 +274,7 @@ namespace Nekoyume.Action
 
             var ended = DateTimeOffset.UtcNow;
             Log.Debug("HAS Total Executed Time: {Elapsed}", ended - started);
-            return states.SetState(ctx.Signer, agentState.Serialize());
+            return states;
         }
     }
 }

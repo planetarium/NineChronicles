@@ -148,6 +148,41 @@ namespace Nekoyume.Action
             }
         }
 
+        public static bool TryGetAvatarState(
+            this IAccountStateDelta states,
+            Address agentAddress,
+            Address avatarAddress,
+            out AvatarState avatarState
+        )
+        {
+            avatarState = null;
+            var value = states.GetState(avatarAddress);
+            if (value is null)
+            {
+                return false;
+            }
+
+            try
+            {
+                var serializedAvatar = (Dictionary) value;
+                if (serializedAvatar["agentAddress"].ToAddress() != agentAddress)
+                {
+                    return false;
+                }
+
+                avatarState = new AvatarState(serializedAvatar);
+                return true;
+            }
+            catch (InvalidCastException)
+            {
+                return false;
+            }
+            catch (KeyNotFoundException)
+            {
+                return false;
+            }
+        }
+
         public static bool TryGetAgentAvatarStates(
             this IAccountStateDelta states,
             Address agentAddress,

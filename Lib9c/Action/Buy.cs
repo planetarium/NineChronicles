@@ -132,7 +132,7 @@ namespace Nekoyume.Action
             var started = DateTimeOffset.UtcNow;
             Log.Debug("Buy exec started.");
 
-            if (!states.TryGetAgentAvatarStates(ctx.Signer, buyerAvatarAddress, out var buyerAgentState, out var buyerAvatarState))
+            if (!states.TryGetAvatarState(ctx.Signer, buyerAvatarAddress, out var buyerAvatarState))
             {
                 throw new FailedLoadStateException("Aborted as the avatar state of the buyer was failed to load.");
             }
@@ -168,7 +168,7 @@ namespace Nekoyume.Action
             Log.Debug($"Buy Get Item: {sw.Elapsed}");
             sw.Restart();
 
-            if (!states.TryGetAgentAvatarStates(sellerAgentAddress, sellerAvatarAddress, out var sellerAgentState, out var sellerAvatarState))
+            if (!states.TryGetAvatarState(sellerAgentAddress, sellerAvatarAddress, out var sellerAvatarState))
             {
                 throw new FailedLoadStateException(
                     $"Aborted as the seller agent/avatar was failed to load from {sellerAgentAddress}/{sellerAvatarAddress}."
@@ -259,7 +259,7 @@ namespace Nekoyume.Action
             Log.Debug("Buy Set ShopState: {Elapsed}", sw.Elapsed);
             Log.Debug("Buy Total Executed Time: {Elapsed}", ended - started);
 
-            return states.SetState(ctx.Signer, buyerAgentState.Serialize());
+            return states;
         }
     }
 }

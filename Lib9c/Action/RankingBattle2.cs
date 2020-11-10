@@ -48,11 +48,7 @@ namespace Nekoyume.Action
                 throw new InvalidAddressException("Aborted as the signer tried to battle for themselves.");
             }
 
-            if (!states.TryGetAgentAvatarStates(
-                ctx.Signer,
-                AvatarAddress,
-                out var agentState,
-                out var avatarState))
+            if (!states.TryGetAvatarState(ctx.Signer, AvatarAddress, out var avatarState))
             {
                 throw new FailedLoadStateException("Aborted as the avatar state of the signer was failed to load.");
             }
@@ -131,7 +127,6 @@ namespace Nekoyume.Action
             }
 
             return states
-                .SetState(ctx.Signer, agentState.Serialize())
                 .SetState(WeeklyArenaAddress, weeklyArenaState.Serialize())
                 .SetState(AvatarAddress, avatarState.Serialize());
         }
