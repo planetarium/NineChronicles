@@ -155,8 +155,32 @@ namespace Nekoyume.Action
             out AvatarState avatarState
         )
         {
-            avatarState = states.GetAvatarState(avatarAddress);
-            return !(avatarState is null) && avatarState.agentAddress == agentAddress;
+            avatarState = null;
+            var value = states.GetState(avatarAddress);
+            if (value is null)
+            {
+                return false;
+            }
+
+            try
+            {
+                var serializedAvatar = (Dictionary) value;
+                if (serializedAvatar["agentAddress"].ToAddress() != agentAddress)
+                {
+                    return false;
+                }
+
+                avatarState = new AvatarState(serializedAvatar);
+                return true;
+            }
+            catch (InvalidCastException)
+            {
+                return false;
+            }
+            catch (KeyNotFoundException)
+            {
+                return false;
+            }
         }
 
         public static bool TryGetAgentAvatarStates(
