@@ -242,7 +242,7 @@ namespace Nekoyume.Model.Item
             return false;
         }
 
-        // FIXME: 삭제되어야 합니다. 코스튬에 ItemId가 더해지면서 NonFungible이 되었습니다.
+        // FIXME: It must be deleted. As ItemId was added to the costume, it became NonFungible.
         public bool TryGetCostume(int id, out Costume outCostume)
         {
             foreach (var item in _items)
