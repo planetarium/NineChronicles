@@ -372,7 +372,6 @@ namespace Nekoyume.Game.Character
                 return;
 
             var character = other.gameObject.GetComponent<CharacterBase>();
-            Debug.LogWarning("stay");
             if (!character)
                 return;
 
@@ -385,7 +384,6 @@ namespace Nekoyume.Game.Character
                 return;
 
             var character = other.gameObject.GetComponent<CharacterBase>();
-            Debug.LogWarning("stay");
             if (!character)
                 return;
 
