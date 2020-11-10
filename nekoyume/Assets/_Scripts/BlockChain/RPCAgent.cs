@@ -53,6 +53,8 @@ namespace Nekoyume.BlockChain
 
         private DateTimeOffset _lastTipChangedAt;
 
+        private int _retryCount = 10;
+
         // Rendering logs will be recorded in NineChronicles.Standalone
         public BlockPolicySource BlockPolicySource { get; } = new BlockPolicySource(Logger.None);
 
@@ -312,7 +314,18 @@ namespace Nekoyume.BlockChain
             }
             finally
             {
-                OnDisconnected?.Invoke();
+                if (_retryCount > 0)
+                {
+                    Debug.Log($"Retry rpc connection. (count: {_retryCount})");
+                    await Task.Delay(2000);
+                    _hub = StreamingHubClient.Connect<IActionEvaluationHub, IActionEvaluationHubReceiver>(_channel, this);
+                    RegisterDisconnectEvent(_hub);
+                    _retryCount -= 1;
+                }
+                else
+                {
+                    OnDisconnected?.Invoke();
+                }
             }
         }
 
