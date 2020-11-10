@@ -15,10 +15,10 @@ namespace Nekoyume.Model.Item
 
         public Guid ItemId { get; }
 
-        public Costume(CostumeItemSheet.Row data, Guid id) : base(data)
+        public Costume(CostumeItemSheet.Row data, Guid itemId) : base(data)
         {
             SpineResourcePath = data.SpineResourcePath;
-            ItemId = id;
+            ItemId = itemId;
         }
 
         public Costume(Dictionary serialized) : base(serialized)

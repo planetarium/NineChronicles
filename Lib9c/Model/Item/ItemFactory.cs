@@ -23,9 +23,9 @@ namespace Nekoyume.Model.Item
             }
         }
 
-        public static Costume CreateCostume(CostumeItemSheet.Row row, Guid id)
+        public static Costume CreateCostume(CostumeItemSheet.Row row, Guid itemId)
         {
-            return new Costume(row, id);
+            return new Costume(row, itemId);
         }
 
         public static Material CreateMaterial(MaterialItemSheet sheet, int itemId)

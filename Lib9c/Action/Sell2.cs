@@ -82,7 +82,7 @@ namespace Nekoyume.Action
             Log.Debug("Execute Sell; seller: {SellerAvatarAddress}", sellerAvatarAddress);
             
             // 인벤토리에서 판매할 아이템을 선택하고 수량을 조절한다.
-            if (avatarState.inventory.TryGetNonFungibleItem(itemId, out ItemUsable nonFungibleItem))
+            if (avatarState.inventory.TryGetNonFungibleItem<ItemUsable>(itemId, out var nonFungibleItem))
             {
                 if (nonFungibleItem.RequiredBlockIndex > context.BlockIndex)
                 {
@@ -106,7 +106,7 @@ namespace Nekoyume.Action
                     price,
                     nonFungibleItem));
             }
-            else if (avatarState.inventory.TryGetCostume(itemId, out Costume costume))
+            else if (avatarState.inventory.TryGetNonFungibleItem<Costume>(itemId, out var costume))
             {
                 avatarState.inventory.RemoveNonFungibleItem(costume.ItemId);
                 costume.equipped = false;
