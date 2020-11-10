@@ -8,7 +8,7 @@ using Nekoyume.TableData;
 namespace Nekoyume.Model.Item
 {
     [Serializable]
-    public class Costume : ItemBase
+    public class Costume : ItemBase, INonFungibleItem
     {
         public bool equipped = false;
         public string SpineResourcePath { get; }
