@@ -169,6 +169,13 @@ namespace Nekoyume.Game.Character
                 new Vector3(HitPointLocalOffset.x + CharacterModel.attackRange, 0f);
         }
 
+        public override float CalculateRange(CharacterBase target)
+        {
+            var attackRangeStartPosition = gameObject.transform.position.x + HitPointLocalOffset.x;
+            var targetHitPosition = target.transform.position.x + target.HitPointLocalOffset.x;
+            return targetHitPosition - attackRangeStartPosition;
+        }
+
         #endregion
 
         #region Costumes
