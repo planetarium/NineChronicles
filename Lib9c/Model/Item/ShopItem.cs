@@ -69,7 +69,17 @@ namespace Nekoyume.Model.Item
                 [(Text)"itemUsable"] = ItemUsable?.Serialize(),
                 [(Text)"costume"] = Costume?.Serialize(),
             });
-
+        
+        public IValue SerializeBackup1() =>
+            new Dictionary(new Dictionary<IKey, IValue>
+            {
+                [(Text)"sellerAgentAddress"] = SellerAgentAddress.Serialize(),
+                [(Text)"sellerAvatarAddress"] = SellerAvatarAddress.Serialize(),
+                [(Text)"productId"] = ProductId.Serialize(),
+                [(Text)"itemUsable"] = ItemUsable.Serialize(),
+                [(Text)"price"] = Price.Serialize(),
+            });
+      
         protected bool Equals(ShopItem other)
         {
             return ProductId.Equals(other.ProductId);
