@@ -30,7 +30,7 @@ namespace Nekoyume.Model.Item
             ItemUsable = itemUsable;
             Costume = null;
         }
-
+        
         public ShopItem(Address sellerAgentAddress,
             Address sellerAvatarAddress,
             Guid productId,
@@ -58,16 +58,6 @@ namespace Nekoyume.Model.Item
                 ? (Costume) ItemFactory.Deserialize((Dictionary) serialized["costume"])
                 : null;
         }
-        
-        public IValue SerializeBackup1() =>
-            new Dictionary(new Dictionary<IKey, IValue>
-            {
-                [(Text)"sellerAgentAddress"] = SellerAgentAddress.Serialize(),
-                [(Text)"sellerAvatarAddress"] = SellerAvatarAddress.Serialize(),
-                [(Text)"productId"] = ProductId.Serialize(),
-                [(Text)"itemUsable"] = ItemUsable.Serialize(),
-                [(Text)"price"] = Price.Serialize(),
-            });
 
         public IValue Serialize() =>
             new Dictionary(new Dictionary<IKey, IValue>
