@@ -148,6 +148,7 @@ namespace Nekoyume.UI
             {
                 // 스크린 영역. 로딩창류.
                 Widget.Create<GrayLoadingScreen>(),
+                Widget.Create<BlockSyncLoadingScreen>(),
                 Widget.Create<StageLoadingScreen>(),
                 Widget.Create<LoadingScreen>(),
                 Widget.Create<PreloadingScreen>(),
