@@ -30,7 +30,7 @@ namespace Nekoyume.Model.Item
             ItemUsable = itemUsable;
             Costume = null;
         }
-        
+
         public ShopItem(Address sellerAgentAddress,
             Address sellerAvatarAddress,
             Guid productId,
@@ -59,27 +59,40 @@ namespace Nekoyume.Model.Item
                 : null;
         }
 
-        public IValue Serialize() =>
-            new Dictionary(new Dictionary<IKey, IValue>
+        public IValue Serialize()
+        {
+            var innerDictionary = new Dictionary<IKey, IValue>
             {
-                [(Text)"sellerAgentAddress"] = SellerAgentAddress.Serialize(),
-                [(Text)"sellerAvatarAddress"] = SellerAvatarAddress.Serialize(),
-                [(Text)"productId"] = ProductId.Serialize(),
-                [(Text)"price"] = Price.Serialize(),
-                [(Text)"itemUsable"] = ItemUsable?.Serialize(),
-                [(Text)"costume"] = Costume?.Serialize(),
-            });
-        
+                [(Text) "sellerAgentAddress"] = SellerAgentAddress.Serialize(),
+                [(Text) "sellerAvatarAddress"] = SellerAvatarAddress.Serialize(),
+                [(Text) "productId"] = ProductId.Serialize(),
+                [(Text) "price"] = Price.Serialize(),
+            };
+
+            if (ItemUsable != null)
+            {
+                innerDictionary.Add((Text) "itemUsable", ItemUsable.Serialize());
+            }
+
+            if (Costume != null)
+            {
+                innerDictionary.Add((Text) "costume", Costume.Serialize());
+            }
+
+            return new Dictionary(innerDictionary);
+        }
+
+
         public IValue SerializeBackup1() =>
             new Dictionary(new Dictionary<IKey, IValue>
             {
-                [(Text)"sellerAgentAddress"] = SellerAgentAddress.Serialize(),
-                [(Text)"sellerAvatarAddress"] = SellerAvatarAddress.Serialize(),
-                [(Text)"productId"] = ProductId.Serialize(),
-                [(Text)"itemUsable"] = ItemUsable.Serialize(),
-                [(Text)"price"] = Price.Serialize(),
+                [(Text) "sellerAgentAddress"] = SellerAgentAddress.Serialize(),
+                [(Text) "sellerAvatarAddress"] = SellerAvatarAddress.Serialize(),
+                [(Text) "productId"] = ProductId.Serialize(),
+                [(Text) "itemUsable"] = ItemUsable.Serialize(),
+                [(Text) "price"] = Price.Serialize(),
             });
-      
+
         protected bool Equals(ShopItem other)
         {
             return ProductId.Equals(other.ProductId);
@@ -90,7 +103,7 @@ namespace Nekoyume.Model.Item
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != GetType()) return false;
-            return Equals((ShopItem)obj);
+            return Equals((ShopItem) obj);
         }
 
         public override int GetHashCode()

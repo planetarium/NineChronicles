@@ -20,7 +20,7 @@
         }
 
         [Fact]
-        public void Test()
+        public void SerializeBackup1()
         {
             var agentAddress = new PrivateKey().ToAddress();
             var avatarAddress = new PrivateKey().ToAddress();
@@ -32,7 +32,6 @@
             });
             var itemUsable = new Weapon(weaponRow, Guid.NewGuid(), 0);
             var row = _tableSheets.CostumeItemSheet.Values.First();
-            var costume = ItemFactory.CreateCostume(row, default);
 
             var price = new FungibleAssetValue(new Currency("NCG", 2, minter: null));
             var shopItem = new ShopItem(
@@ -44,10 +43,8 @@
 
             var beforeSerialized = shopItem.SerializeBackup1();
             var beforeDeserialized = new ShopItem((Dictionary)beforeSerialized);
-
             var serialized = shopItem.Serialize();
             var deserialized = new ShopItem((Dictionary)serialized);
-
             Assert.Equal(beforeSerialized, serialized);
             Assert.Equal(beforeDeserialized, deserialized);
         }
