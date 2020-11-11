@@ -104,6 +104,7 @@ namespace Lib9c.Tests.Action
             var currencyState = previousStates.GetGoldCurrency();
             var price = new FungibleAssetValue(currencyState, 100, 0);
 
+            var productCount = 0;
             foreach (var nonFungibleItem in items)
             {
                 var sellAction = new Sell2
@@ -112,6 +113,7 @@ namespace Lib9c.Tests.Action
                     price = price,
                     sellerAvatarAddress = _avatarAddress,
                 };
+
                 var nextState = sellAction.Execute(new ActionContext
                 {
                     BlockIndex = 0,
@@ -121,15 +123,32 @@ namespace Lib9c.Tests.Action
                     Random = new ItemEnhancementTest.TestRandom(),
                 });
 
+                productCount++;
+
                 var nextAvatarState = nextState.GetAvatarState(_avatarAddress);
                 Assert.Empty(nextAvatarState.inventory.Equipments);
 
                 var nextShopState = nextState.GetShopState();
-                Assert.Single(nextShopState.Products);
 
-                var (_, shopItem) = nextShopState.Products.FirstOrDefault();
-                Assert.NotNull(shopItem);
-                Assert.Equal(nonFungibleItem.ItemId, shopItem.ItemUsable.ItemId);
+                Assert.Equal(productCount, nextShopState.Products.Count);
+
+                var products = nextShopState.Products.Values;
+                Assert.NotNull(products);
+
+                var shopItem = nonFungibleItem is Costume ?
+                    products.First(x => x.Costume != null) :
+                    products.First(x => x.ItemUsable != null);
+
+                if (shopItem.ItemUsable != null)
+                {
+                    Assert.Equal(nonFungibleItem.ItemId, shopItem.ItemUsable.ItemId);
+                }
+
+                if (shopItem.Costume != null)
+                {
+                    Assert.Equal(nonFungibleItem.ItemId, shopItem.Costume.ItemId);
+                }
+
                 Assert.Equal(price, shopItem.Price);
                 Assert.Equal(_agentAddress, shopItem.SellerAgentAddress);
                 Assert.Equal(_avatarAddress, shopItem.SellerAvatarAddress);
