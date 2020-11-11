@@ -53,8 +53,6 @@ namespace Nekoyume.BlockChain
 
         private DateTimeOffset _lastTipChangedAt;
 
-        private int _retryCount = 10;
-
         // Rendering logs will be recorded in NineChronicles.Standalone
         public BlockPolicySource BlockPolicySource { get; } = new BlockPolicySource(Logger.None);
 
@@ -314,19 +312,39 @@ namespace Nekoyume.BlockChain
             }
             finally
             {
-                if (_retryCount > 0)
+                RetryRpc();
+            }
+        }
+
+        private async void RetryRpc()
+        {
+            var retryCount = 10;
+            Debug.Log($"Retry rpc connection. (count: {retryCount})");
+            while (retryCount > 0)
+            {
+                await Task.Delay(5000);
+                _hub = StreamingHubClient.Connect<IActionEvaluationHub, IActionEvaluationHubReceiver>(_channel, this);
+                try
                 {
-                    Debug.Log($"Retry rpc connection. (count: {_retryCount})");
-                    await Task.Delay(2000);
-                    _hub = StreamingHubClient.Connect<IActionEvaluationHub, IActionEvaluationHubReceiver>(_channel, this);
+                    Debug.Log($"Trying to join hub...");
+                    await _hub.JoinAsync();
+                    Debug.Log($"Join complete! Registering disconnect event...");
                     RegisterDisconnectEvent(_hub);
-                    _retryCount -= 1;
+                    return;
                 }
-                else
+                catch (RpcException re)
                 {
-                    OnDisconnected?.Invoke();
+                    Debug.LogWarning($"RpcException occurred. Retrying... {re}");
+                    retryCount--;
+                }
+                catch (Exception e)
+                {
+                    Debug.LogWarning($"Unexpected error occurred during rpc connection. {e}");
+                    break;
                 }
             }
+
+            OnDisconnected?.Invoke();
         }
 
         public void OnReorged(byte[] oldTip, byte[] newTip, byte[] branchpoint)
