@@ -18,8 +18,6 @@ namespace Nekoyume.Action
     [ActionType("buy3")]
     public class Buy3 : GameAction
     {
-        public const int TaxRate = 8;
-
         public Address buyerAvatarAddress;
         public Address sellerAgentAddress;
         public Address sellerAvatarAddress;
