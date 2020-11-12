@@ -129,7 +129,10 @@ namespace Nekoyume.Model.Mail
 
         public void CleanUp()
         {
-            _mails = _mails.OrderByDescending(m => m.blockIndex).Take(30).ToList();
+            if (_mails.Count > 30)
+            {
+                _mails = _mails.OrderByDescending(m => m.blockIndex).Take(30).ToList();
+            }
         }
 
         public IValue Serialize() => new List(_mails
