@@ -74,6 +74,10 @@ namespace Nekoyume.BlockChain
 
         public UnityEvent OnDisconnected { get; private set; }
 
+        public UnityEvent WhenRetryStarted { get; private set; }
+
+        public UnityEvent WhenRetryEnded { get; private set; }
+
         public int AppProtocolVersion { get; private set; }
 
         public void Initialize(
@@ -98,6 +102,8 @@ namespace Nekoyume.BlockChain
             StartCoroutine(CoJoin(callback));
 
             OnDisconnected = new UnityEvent();
+            WhenRetryStarted = new UnityEvent();
+            WhenRetryEnded = new UnityEvent();
 
             _genesis = BlockManager.ImportBlock(options.GenesisBlockPath ?? BlockManager.GenesisBlockPath);
             var appProtocolVersion = options.AppProtocolVersion is null
@@ -320,6 +326,7 @@ namespace Nekoyume.BlockChain
         {
             var retryCount = 10;
             Debug.Log($"Retry rpc connection. (count: {retryCount})");
+            WhenRetryStarted.Invoke();
             while (retryCount > 0)
             {
                 await Task.Delay(5000);
@@ -371,6 +378,17 @@ namespace Nekoyume.BlockChain
             }
 
             Debug.Log($"{message} (code: {code})");
+        }
+
+        public void OnPreloadStart()
+        {
+            Debug.Log($"On Preload Start");
+        }
+
+        public void OnPreloadEnd()
+        {
+            Debug.Log($"On Preload End");
+            WhenRetryEnded.Invoke();
         }
 
         private IEnumerator CoCheckLastTipChangedAt()
