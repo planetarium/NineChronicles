@@ -2,7 +2,6 @@ namespace Lib9c.Tests.Model.State
 {
     using System;
     using System.Collections.Generic;
-    using System.Collections.Immutable;
     using System.Linq;
     using System.Security.Cryptography;
     using System.Threading.Tasks;
@@ -13,6 +12,7 @@ namespace Lib9c.Tests.Model.State
     using Nekoyume;
     using Nekoyume.Action;
     using Nekoyume.Model.Item;
+    using Nekoyume.Model.Mail;
     using Nekoyume.Model.Quest;
     using Nekoyume.Model.State;
     using Xunit;
@@ -289,6 +289,56 @@ namespace Lib9c.Tests.Model.State
             avatarState.inventory.AddItem(costume);
 
             Assert.Throws<CostumeSlotUnlockException>(() => avatarState.ValidateCostume(costumeIds));
+        }
+
+        [Fact]
+        public void UpdateV2()
+        {
+            Address avatarAddress = new PrivateKey().ToAddress();
+            Address agentAddress = new PrivateKey().ToAddress();
+            var avatarState = GetNewAvatarState(avatarAddress, agentAddress);
+            var result = new CombinationConsumable.ResultModel()
+            {
+                id = default,
+                gold = 0,
+                actionPoint = 0,
+                recipeId = 1,
+                materials = new Dictionary<Material, int>(),
+                itemUsable = null,
+            };
+            for (var i = 0; i < 100; i++)
+            {
+                var mail = new CombinationMail(result, i, default, 0);
+                avatarState.UpdateV2(mail);
+            }
+
+            Assert.Equal(30, avatarState.mailBox.Count);
+            Assert.DoesNotContain(avatarState.mailBox, m => m.blockIndex < 30);
+        }
+
+        [Fact]
+        public void CleanUpMail()
+        {
+            var result = new CombinationConsumable.ResultModel()
+            {
+                id = default,
+                gold = 0,
+                actionPoint = 0,
+                recipeId = 1,
+                materials = new Dictionary<Material, int>(),
+                itemUsable = null,
+            };
+            var mailBox = new MailBox();
+            for (var i = 0; i < 100; i++)
+            {
+                var mail = new CombinationMail(result, i, default, 0);
+                mailBox.Add(mail);
+            }
+
+            mailBox.CleanUp();
+
+            Assert.Equal(30, mailBox.Count);
+            Assert.DoesNotContain(mailBox, m => m.blockIndex < 30);
         }
 
         private AvatarState GetNewAvatarState(Address avatarAddress, Address agentAddress)

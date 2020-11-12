@@ -95,7 +95,7 @@ namespace Nekoyume.Model.Mail
     [Serializable]
     public class MailBox : IEnumerable<Mail>, IState
     {
-        private readonly List<Mail> _mails = new List<Mail>();
+        private List<Mail> _mails = new List<Mail>();
 
         public int Count => _mails.Count;
 
@@ -125,6 +125,14 @@ namespace Nekoyume.Model.Mail
         public void Add(Mail mail)
         {
             _mails.Add(mail);
+        }
+
+        public void CleanUp()
+        {
+            if (_mails.Count > 30)
+            {
+                _mails = _mails.OrderByDescending(m => m.blockIndex).Take(30).ToList();
+            }
         }
 
         public IValue Serialize() => new List(_mails
