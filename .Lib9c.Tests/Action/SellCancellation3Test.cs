@@ -135,7 +135,7 @@
                     Assert.False(avatarState.inventory.TryGetNonFungibleItem<Costume>(
                         shopItem.Costume.ItemId, out var _));
 
-                    var sellCancellationAction = new SellCancellation
+                    var sellCancellationAction = new SellCancellation3
                     {
                         productId = shopItem.ProductId,
                         sellerAvatarAddress = _avatarAddress,
