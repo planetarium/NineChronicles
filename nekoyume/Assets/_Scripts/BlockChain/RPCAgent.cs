@@ -341,7 +341,7 @@ namespace Nekoyume.BlockChain
                 }
                 catch (RpcException re)
                 {
-                    Debug.LogWarning($"RpcException occurred. Retrying... {re}");
+                    Debug.LogWarning($"RpcException occurred. Retrying... {retryCount}");
                     retryCount--;
                 }
                 catch (Exception e)
