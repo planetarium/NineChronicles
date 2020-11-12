@@ -80,7 +80,7 @@ namespace Nekoyume.BlockChain
                 });
         }
 
-        public IObservable<ActionBase.ActionEvaluation<HackAndSlash2>> HackAndSlash(
+        public IObservable<ActionBase.ActionEvaluation<HackAndSlash3>> HackAndSlash(
             Player player,
             int worldId,
             int stageId)
@@ -93,7 +93,7 @@ namespace Nekoyume.BlockChain
                 stageId);
         }
 
-        public IObservable<ActionBase.ActionEvaluation<HackAndSlash2>> HackAndSlash(
+        public IObservable<ActionBase.ActionEvaluation<HackAndSlash3>> HackAndSlash(
             List<int> costumes,
             List<Equipment> equipments,
             List<Consumable> foods,
@@ -117,7 +117,7 @@ namespace Nekoyume.BlockChain
             equipments = equipments ?? new List<Equipment>();
             foods = foods ?? new List<Consumable>();
 
-            var action = new HackAndSlash2
+            var action = new HackAndSlash3
             {
                 costumes = costumes,
                 equipments = equipments.Select(e => e.ItemId).ToList(),
@@ -135,7 +135,7 @@ namespace Nekoyume.BlockChain
                 .Concat(foods.Select(f => f.Id))
                 .ToArray();
             AnalyticsManager.Instance.Battle(itemIDs);
-            return _renderer.EveryRender<HackAndSlash2>()
+            return _renderer.EveryRender<HackAndSlash3>()
                 .SkipWhile(eval => !eval.Action.Id.Equals(action.Id))
                 .Take(1)
                 .Last()
@@ -143,12 +143,12 @@ namespace Nekoyume.BlockChain
                 .Timeout(ActionTimeout);
         }
 
-        public IObservable<ActionBase.ActionEvaluation<CombinationConsumable>> CombinationConsumable(
+        public IObservable<ActionBase.ActionEvaluation<CombinationConsumable2>> CombinationConsumable(
             int recipeId, int slotIndex)
         {
             AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ActionCombination);
 
-            var action = new CombinationConsumable
+            var action = new CombinationConsumable2
             {
                 recipeId = recipeId,
                 AvatarAddress = States.Instance.CurrentAvatarState.address,
@@ -156,7 +156,7 @@ namespace Nekoyume.BlockChain
             };
             ProcessAction(action);
 
-            return _renderer.EveryRender<CombinationConsumable>()
+            return _renderer.EveryRender<CombinationConsumable2>()
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .Take(1)
                 .Last()
@@ -187,18 +187,18 @@ namespace Nekoyume.BlockChain
                 .Timeout(ActionTimeout); // Last() is for completion
         }
 
-        public IObservable<ActionBase.ActionEvaluation<SellCancellation>> SellCancellation(
+        public IObservable<ActionBase.ActionEvaluation<SellCancellation2>> SellCancellation(
             Address sellerAvatarAddress,
             Guid productId)
         {
-            var action = new SellCancellation
+            var action = new SellCancellation2
             {
                 productId = productId,
                 sellerAvatarAddress = sellerAvatarAddress,
             };
             ProcessAction(action);
 
-            return _renderer.EveryRender<SellCancellation>()
+            return _renderer.EveryRender<SellCancellation2>()
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .Take(1)
                 .Last()
@@ -206,10 +206,10 @@ namespace Nekoyume.BlockChain
                 .Timeout(ActionTimeout); // Last() is for completion
         }
 
-        public IObservable<ActionBase.ActionEvaluation<Buy>> Buy(Address sellerAgentAddress,
+        public IObservable<ActionBase.ActionEvaluation<Buy2>> Buy(Address sellerAgentAddress,
             Address sellerAvatarAddress, Guid productId)
         {
-            var action = new Buy
+            var action = new Buy2
             {
                 buyerAvatarAddress = States.Instance.CurrentAvatarState.address,
                 sellerAgentAddress = sellerAgentAddress,
@@ -218,7 +218,7 @@ namespace Nekoyume.BlockChain
             };
             ProcessAction(action);
 
-            return _renderer.EveryRender<Buy>()
+            return _renderer.EveryRender<Buy2>()
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .Take(1)
                 .Last()
@@ -247,7 +247,7 @@ namespace Nekoyume.BlockChain
                 .Timeout(ActionTimeout);
         }
 
-        public IObservable<ActionBase.ActionEvaluation<ItemEnhancement2>> ItemEnhancement(
+        public IObservable<ActionBase.ActionEvaluation<ItemEnhancement3>> ItemEnhancement(
             Guid itemId,
             Guid materialId,
             int slotIndex)
@@ -258,7 +258,7 @@ namespace Nekoyume.BlockChain
             LocalStateModifier.SetEquipmentEquip(avatarAddress, itemId, false, false);
             LocalStateModifier.SetEquipmentEquip(avatarAddress, materialId, false, false);
 
-            var action = new ItemEnhancement2
+            var action = new ItemEnhancement3
             {
                 itemId = itemId,
                 materialId = materialId,
@@ -267,7 +267,7 @@ namespace Nekoyume.BlockChain
             };
             ProcessAction(action);
 
-            return _renderer.EveryRender<ItemEnhancement2>()
+            return _renderer.EveryRender<ItemEnhancement3>()
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .Take(1)
                 .Last()
@@ -314,7 +314,7 @@ namespace Nekoyume.BlockChain
             ProcessAction(action);
         }
 
-        public IObservable<ActionBase.ActionEvaluation<CombinationEquipment>> CombinationEquipment(
+        public IObservable<ActionBase.ActionEvaluation<CombinationEquipment2>> CombinationEquipment(
             int recipeId,
             int slotIndex,
             int? subRecipeId = null)
@@ -322,7 +322,7 @@ namespace Nekoyume.BlockChain
             Mixpanel.Track("Unity/Create CombinationEquipment");
 
             // 결과 주소도 고정되게 바꿔야함
-            var action = new CombinationEquipment
+            var action = new CombinationEquipment2
             {
                 AvatarAddress = States.Instance.CurrentAvatarState.address,
                 RecipeId = recipeId,
@@ -331,7 +331,7 @@ namespace Nekoyume.BlockChain
             };
             ProcessAction(action);
 
-            return _renderer.EveryRender<CombinationEquipment>()
+            return _renderer.EveryRender<CombinationEquipment2>()
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .Take(1)
                 .Last()
