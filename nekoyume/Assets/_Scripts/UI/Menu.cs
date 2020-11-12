@@ -123,7 +123,7 @@ namespace Nekoyume.UI
                     LocalStateModifier.ModifyAvatarActionPoint(
                         States.Instance.CurrentAvatarState.address,
                         requiredCost);
-                }, e => ActionRenderHandler.Instance.BackToMain(false, "ERROR_UNKNOWN"))
+                }, e => ActionRenderHandler.BackToMain(false, e))
                 .AddTo(this);
             LocalStateModifier.ModifyAvatarActionPoint(States.Instance.CurrentAvatarState.address,
                 - requiredCost);
