@@ -153,7 +153,7 @@ namespace Nekoyume.BlockChain
 
         private void HackAndSlash()
         {
-            _renderer.EveryRender<HackAndSlash2>()
+            _renderer.EveryRender<HackAndSlash3>()
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseHackAndSlash).AddTo(_disposables);
@@ -161,7 +161,7 @@ namespace Nekoyume.BlockChain
 
         private void CombinationConsumable()
         {
-            _renderer.EveryRender<CombinationConsumable>()
+            _renderer.EveryRender<CombinationConsumable2>()
                 .Where(ValidateEvaluationForCurrentAvatarState)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseCombinationConsumable).AddTo(_disposables);
@@ -177,7 +177,7 @@ namespace Nekoyume.BlockChain
 
         private void SellCancellation()
         {
-            _renderer.EveryRender<SellCancellation>()
+            _renderer.EveryRender<SellCancellation2>()
                 .Where(ValidateEvaluationForCurrentAvatarState)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseSellCancellation).AddTo(_disposables);
@@ -185,7 +185,7 @@ namespace Nekoyume.BlockChain
 
         private void Buy()
         {
-            _renderer.EveryRender<Buy>()
+            _renderer.EveryRender<Buy2>()
                 .Where(ValidateEvaluationForAgentState)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseBuy).AddTo(_disposables);
@@ -193,7 +193,7 @@ namespace Nekoyume.BlockChain
 
         private void ItemEnhancement()
         {
-            _renderer.EveryRender<ItemEnhancement2>()
+            _renderer.EveryRender<ItemEnhancement3>()
                 .Where(ValidateEvaluationForCurrentAvatarState)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseItemEnhancement).AddTo(_disposables);
@@ -233,7 +233,7 @@ namespace Nekoyume.BlockChain
 
         private void CombinationEquipment()
         {
-            _renderer.EveryRender<CombinationEquipment>()
+            _renderer.EveryRender<CombinationEquipment2>()
                 .Where(ValidateEvaluationForCurrentAvatarState)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseCombinationEquipment).AddTo(_disposables);
@@ -324,7 +324,7 @@ namespace Nekoyume.BlockChain
             UpdateCombinationSlotState(slot);
         }
 
-        private void ResponseCombinationEquipment(ActionBase.ActionEvaluation<CombinationEquipment> eval)
+        private void ResponseCombinationEquipment(ActionBase.ActionEvaluation<CombinationEquipment2> eval)
         {
             var agentAddress = eval.Signer;
             var avatarAddress = eval.Action.AvatarAddress;
@@ -414,7 +414,7 @@ namespace Nekoyume.BlockChain
             }
         }
 
-        private void ResponseCombinationConsumable(ActionBase.ActionEvaluation<CombinationConsumable> eval)
+        private void ResponseCombinationConsumable(ActionBase.ActionEvaluation<CombinationConsumable2> eval)
         {
             var agentAddress = eval.Signer;
             var avatarAddress = eval.Action.AvatarAddress;
@@ -483,7 +483,7 @@ namespace Nekoyume.BlockChain
             }
         }
 
-        private void ResponseSellCancellation(ActionBase.ActionEvaluation<SellCancellation> eval)
+        private void ResponseSellCancellation(ActionBase.ActionEvaluation<SellCancellation2> eval)
         {
             var avatarAddress = eval.Action.sellerAvatarAddress;
             var result = eval.Action.result;
@@ -496,7 +496,7 @@ namespace Nekoyume.BlockChain
             UpdateCurrentAvatarState(eval);
         }
 
-        private void ResponseBuy(ActionBase.ActionEvaluation<Buy> eval)
+        private void ResponseBuy(ActionBase.ActionEvaluation<Buy2> eval)
         {
             var buyerAvatarAddress = eval.Action.buyerAvatarAddress;
             var price = eval.Action.sellerResult.shopItem.Price;
@@ -580,7 +580,7 @@ namespace Nekoyume.BlockChain
             RenderQuest(renderQuestAvatarAddress, renderQuestCompletedQuestIds);
         }
 
-        private void ResponseHackAndSlash(ActionBase.ActionEvaluation<HackAndSlash2> eval)
+        private void ResponseHackAndSlash(ActionBase.ActionEvaluation<HackAndSlash3> eval)
         {
             if (eval.Exception is null)
             {
@@ -757,7 +757,7 @@ namespace Nekoyume.BlockChain
             }
         }
 
-        private void ResponseItemEnhancement(ActionBase.ActionEvaluation<ItemEnhancement2> eval)
+        private void ResponseItemEnhancement(ActionBase.ActionEvaluation<ItemEnhancement3> eval)
         {
             var agentAddress = eval.Signer;
             var avatarAddress = eval.Action.avatarAddress;
