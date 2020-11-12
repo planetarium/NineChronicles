@@ -178,6 +178,22 @@ namespace Nekoyume.Game
                             "UI_QUIT"
                         );
                     });
+
+                rpcAgent.WhenRetryStarted
+                    .AsObservable()
+                    .ObserveOnMainThread()
+                    .Subscribe(_ =>
+                    {
+                        Widget.Find<BlockSyncLoadingScreen>().Show();
+                    });
+
+                rpcAgent.WhenRetryEnded
+                    .AsObservable()
+                    .ObserveOnMainThread()
+                    .Subscribe(_ =>
+                    {
+                        Widget.Find<BlockSyncLoadingScreen>().Close();
+                    });
             }
             Widget.Find<VersionInfo>().SetVersion(Agent.AppProtocolVersion);
         }
