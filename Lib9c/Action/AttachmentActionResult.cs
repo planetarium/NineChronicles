@@ -23,6 +23,7 @@ namespace Nekoyume.Action
             };
 
         public ItemUsable itemUsable;
+        public Costume costume; 
 
         protected abstract string TypeId { get; }
 
@@ -36,14 +37,37 @@ namespace Nekoyume.Action
             }
         }
 
-        protected AttachmentActionResult(Bencodex.Types.Dictionary serialized)
+        protected AttachmentActionResult(Dictionary serialized)
         {
-            itemUsable = (ItemUsable) ItemFactory.Deserialize(
-                (Bencodex.Types.Dictionary) serialized["itemUsable"]
-            );
+            itemUsable = serialized.ContainsKey("itemUsable")
+               ? (ItemUsable) ItemFactory.Deserialize((Dictionary) serialized["itemUsable"])
+               : null;
+            costume = serialized.ContainsKey("costume")
+                ? (Costume) ItemFactory.Deserialize((Dictionary) serialized["costume"])
+                : null;
         }
 
-        public virtual IValue Serialize() =>
+        public virtual IValue Serialize()
+        {
+            var innerDictionary = new Dictionary<IKey, IValue>
+            {
+                [(Text) "typeId"] = (Text) TypeId, 
+            };
+            
+            if (itemUsable != null)
+            {
+                innerDictionary.Add((Text) "itemUsable", itemUsable.Serialize());
+            }
+
+            if (costume != null)
+            {
+                innerDictionary.Add((Text) "costume", costume.Serialize());
+            }
+            
+            return new Dictionary(innerDictionary);
+        }
+        
+        public virtual IValue SerializeBackup1() =>
             new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
             {
                 [(Text) "typeId"] = (Text) TypeId,

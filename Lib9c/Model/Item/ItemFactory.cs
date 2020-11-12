@@ -51,8 +51,7 @@ namespace Nekoyume.Model.Item
             {
                 // Consumable
                 case ItemSubType.Food:
-                    return new Consumable((ConsumableItemSheet.Row) itemRow, id,
-                        requiredBlockIndex);
+                    return new Consumable((ConsumableItemSheet.Row) itemRow, id, requiredBlockIndex);
                 // Equipment
                 case ItemSubType.Weapon:
                     equipment = new Weapon((EquipmentItemSheet.Row) itemRow, id, requiredBlockIndex);

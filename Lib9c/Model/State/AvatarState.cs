@@ -316,6 +316,12 @@ namespace Nekoyume.Model.State
 
             UpdateCompletedQuest();
         }
+        
+        public void UpdateFromAddCostume(Costume costume, bool canceled)
+        {
+            var pair = inventory.AddItem(costume);
+            itemMap.Add(pair);
+        }
 
         public void UpdateFromQuestReward(Quest.Quest quest, MaterialItemSheet materialItemSheet)
         {
