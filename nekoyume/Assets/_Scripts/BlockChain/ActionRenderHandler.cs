@@ -18,6 +18,7 @@ using Nekoyume.Model.State;
 using TentuPlay.Api;
 using Nekoyume.Model.Quest;
 using Nekoyume.State.Modifiers;
+using UnityEngine;
 
 namespace Nekoyume.BlockChain
 {
@@ -137,14 +138,14 @@ namespace Nekoyume.BlockChain
                         )
                     );
                     new TPStashEvent().PlayerCharacterGet(
-                            player_uuid: agentAddress.ToHex(),
-                            character_uuid: avatarAddress.ToHex().Substring(0, 4),
-                            characterarchetype_slug: Nekoyume.GameConfig.DefaultAvatarCharacterId.ToString(), //100010 for now.
-                            //-> WARRIOR, ARCHER, MAGE, ACOLYTE를 구분할 수 있는 구분자여야한다.
-                            reference_entity: entity.Etc,
-                            reference_category_slug: null,
-                            reference_slug: null
-                        );
+                        player_uuid: agentAddress.ToHex(),
+                        character_uuid: avatarAddress.ToHex().Substring(0, 4),
+                        characterarchetype_slug: Nekoyume.GameConfig.DefaultAvatarCharacterId.ToString(), //100010 for now.
+                        //-> WARRIOR, ARCHER, MAGE, ACOLYTE를 구분할 수 있는 구분자여야한다.
+                        reference_entity: entity.Etc,
+                        reference_category_slug: null,
+                        reference_slug: null
+                    );
 
                     UpdateAgentState(eval);
                     UpdateAvatarState(eval, eval.Action.index);
@@ -317,7 +318,7 @@ namespace Nekoyume.BlockChain
                 reference_entity: entity.Items,
                 reference_category_slug: "consumables_rapid_combination",
                 reference_slug: slot.Result.itemUsable.Id.ToString()
-                );
+            );
 
             UpdateAgentState(eval);
             UpdateCurrentAvatarState(eval);
@@ -587,17 +588,17 @@ namespace Nekoyume.BlockChain
                 _disposableForBattleEnd?.Dispose();
                 _disposableForBattleEnd =
                     Game.Game.instance.Stage.onEnterToStageEnd
-                    .First()
-                    .Subscribe(_ =>
-                    {
-                        UpdateCurrentAvatarState(eval);
-                        UpdateWeeklyArenaState(eval);
-                        var avatarState =
-                            eval.OutputStates.GetAvatarState(eval.Action.avatarAddress);
-                        RenderQuest(eval.Action.avatarAddress,
-                            avatarState.questList.completedQuestIds);
-                        _disposableForBattleEnd = null;
-                    });
+                        .First()
+                        .Subscribe(_ =>
+                        {
+                            UpdateCurrentAvatarState(eval);
+                            UpdateWeeklyArenaState(eval);
+                            var avatarState =
+                                eval.OutputStates.GetAvatarState(eval.Action.avatarAddress);
+                            RenderQuest(eval.Action.avatarAddress,
+                                avatarState.questList.completedQuestIds);
+                            _disposableForBattleEnd = null;
+                        });
 
                 var actionFailPopup = Widget.Find<ActionFailPopup>();
                 actionFailPopup.CloseCallback = null;
@@ -634,20 +635,7 @@ namespace Nekoyume.BlockChain
                 }
 
                 var exc = eval.Exception.InnerException;
-                var key = "ERROR_UNKNOWN";
-                switch (exc)
-                {
-                    case RequiredBlockIndexException _:
-                        key = "ERROR_REQUIRE_BLOCK";
-                        break;
-                    case EquipmentSlotUnlockException _:
-                        key = "ERROR_SLOT_UNLOCK";
-                        break;
-                    case NotEnoughActionPointException _:
-                        key = "ERROR_ACTION_POINT";
-                        break;
-                }
-                BackToMain(showLoadingScreen, key);
+                BackToMain(showLoadingScreen, exc);
             }
         }
 
@@ -683,14 +671,14 @@ namespace Nekoyume.BlockChain
                 _disposableForBattleEnd?.Dispose();
                 _disposableForBattleEnd =
                     Game.Game.instance.Stage.onEnterToStageEnd
-                    .First()
-                    .Subscribe(_ =>
-                    {
-                        UpdateAgentState(eval);
-                        UpdateCurrentAvatarState(eval);
-                        UpdateWeeklyArenaState(eval);
-                        _disposableForBattleEnd = null;
-                    });
+                        .First()
+                        .Subscribe(_ =>
+                        {
+                            UpdateAgentState(eval);
+                            UpdateCurrentAvatarState(eval);
+                            UpdateWeeklyArenaState(eval);
+                            _disposableForBattleEnd = null;
+                        });
 
                 var actionFailPopup = Widget.Find<ActionFailPopup>();
                 actionFailPopup.CloseCallback = null;
@@ -714,46 +702,7 @@ namespace Nekoyume.BlockChain
                     Widget.Find<RankingBattleResult>().Close();
                 }
 
-                Game.Event.OnRoomEnter.Invoke(showLoadingScreen);
-                Game.Game.instance.Stage.OnRoomEnterEnd
-                    .First()
-                    .Subscribe(_ =>
-                    {
-                        var exc = eval.Exception.InnerException;
-                        var key = "ERROR_UNKNOWN";
-                        switch (exc)
-                        {
-                            case InvalidAddressException _:
-                                key = "ERROR_INVALID_ADDRESS";
-                                break;
-                            case FailedLoadStateException _:
-                                key = "ERROR_FAILED_LOAD_STATE";
-                                break;
-                            case NotEnoughClearedStageLevelException _:
-                                key = "ERROR_NOT_ENOUGH_CLEARED_STAGE_LEVEL";
-                                break;
-                            case WeeklyArenaStateAlreadyEndedException _:
-                                key = "ERROR_WEEKLY_ARENA_STATE_ALREADY_ENDED";
-                                break;
-                            case WeeklyArenaStateNotContainsAvatarAddressException _:
-                                key = "ERROR_WEEKLY_ARENA_STATE_NOT_CONTAINS_AVATAR_ADDRESS";
-                                break;
-                            case NotEnoughWeeklyArenaChallengeCountException _:
-                                key = "ERROR_NOT_ENOUGH_WEEKLY_ARENA_CHALLENGE_COUNT";
-                                break;
-                            case NotEnoughFungibleAssetValueException _:
-                                key = "ERROR_NOT_ENOUGH_FUNGIBLE_ASSET_VALUE";
-                                break;
-                        }
-                        var errorMsg = string.Format(
-                            L10nManager.Localize("UI_ERROR_RETRY_FORMAT"),
-                            L10nManager.Localize(key));
-                        Widget.Find<Alert>().Show(
-                            L10nManager.Localize("UI_ERROR"),
-                            errorMsg,
-                            L10nManager.Localize("UI_OK"),
-                            false);
-                    });
+                BackToMain(showLoadingScreen, eval.Exception.InnerException);
             }
         }
 
@@ -870,22 +819,78 @@ namespace Nekoyume.BlockChain
             }
         }
 
-        public void BackToMain(bool showLoadingScreen, string key)
+        public static void BackToMain(bool showLoadingScreen, Exception exc)
         {
             Game.Event.OnRoomEnter.Invoke(showLoadingScreen);
             Game.Game.instance.Stage.OnRoomEnterEnd
                 .First()
                 .Subscribe(_ =>
                 {
-                    var errorMsg = string.Format(L10nManager.Localize("UI_ERROR_RETRY_FORMAT"),
-                        L10nManager.Localize(key));
-                    Widget
-                        .Find<Alert>()
-                        .Show(L10nManager.Localize("UI_ERROR"), errorMsg,
-                            L10nManager.Localize("UI_OK"), false);
+                    PopupError(exc);
                 });
 
             MainCanvas.instance.InitWidgetInMain();
+        }
+
+        public static void PopupError(Exception exc)
+        {
+            Debug.LogException(exc);
+            var key = "ERROR_UNKNOWN";
+            var code = "99";
+            switch (exc)
+            {
+                case TimeoutException _:
+                    key = "ERROR_NETWORK";
+                    code = "00";
+                    break;
+                case RequiredBlockIndexException _:
+                    key = "ERROR_REQUIRE_BLOCK";
+                    code = "01";
+                    break;
+                case EquipmentSlotUnlockException _:
+                    key = "ERROR_SLOT_UNLOCK";
+                    code = "02";
+                    break;
+                case NotEnoughActionPointException _:
+                    key = "ERROR_ACTION_POINT";
+                    code = "03";
+                    break;
+                case InvalidAddressException _:
+                    key = "ERROR_INVALID_ADDRESS";
+                    code = "04";
+                    break;
+                case FailedLoadStateException _:
+                    key = "ERROR_FAILED_LOAD_STATE";
+                    code = "05";
+                    break;
+                case NotEnoughClearedStageLevelException _:
+                    key = "ERROR_NoOT_ENOUGH_CLEARED_STAGE_LEVEL";
+                    code = "06";
+                    break;
+                case WeeklyArenaStateAlreadyEndedException _:
+                    key = "ERROR_WEEKLY_ARENA_STATE_ALREADY_ENDED";
+                    code = "07";
+                    break;
+                case WeeklyArenaStateNotContainsAvatarAddressException _:
+                    key = "ERROR_WEEKLY_ARENA_STATE_NOT_CONTAINS_AVATAR_ADDRESS";
+                    code = "08";
+                    break;
+                case NotEnoughWeeklyArenaChallengeCountException _:
+                    key = "ERROR_NOT_ENOUGH_WEEKLY_ARENA_CHALLENGE_COUNT";
+                    code = "09";
+                    break;
+                case NotEnoughFungibleAssetValueException _:
+                    key = "ERROR_NOT_ENOUGH_FUNGIBLE_ASSET_VALUE";
+                    code = "10";
+                    break;
+            }
+
+            var errorMsg = string.Format(L10nManager.Localize("UI_ERROR_RETRY_FORMAT"),
+                L10nManager.Localize(key), code);
+            Widget
+                .Find<Alert>()
+                .Show(L10nManager.Localize("UI_ERROR"), errorMsg,
+                    L10nManager.Localize("UI_OK"), false);
         }
     }
 }

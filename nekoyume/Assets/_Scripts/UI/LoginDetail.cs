@@ -9,15 +9,11 @@ using System.Text.RegularExpressions;
 using Nekoyume.UI.Module;
 using TMPro;
 using UnityEngine.UI;
-using Nekoyume.TableData;
 using Nekoyume.Model.State;
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using mixpanel;
 using Nekoyume.Game;
 using Nekoyume.L10n;
-using Nekoyume.Model.Stat;
 using TentuPlay.Api;
 
 namespace Nekoyume.UI
@@ -116,11 +112,7 @@ namespace Nekoyume.UI
                     },
                     e =>
                     {
-                        var errorMsg = string.Format(L10nManager.Localize("UI_ERROR_RETRY_FORMAT"),
-                            L10nManager.Localize("ERROR_UNKNOWN"));
-                        Find<Alert>()
-                            .Show(L10nManager.Localize("UI_ERROR"), errorMsg,
-                                L10nManager.Localize("UI_OK"), false);
+                        ActionRenderHandler.PopupError(e);
                         Find<GrayLoadingScreen>().Close();
                     });
             AudioController.PlayClick();
