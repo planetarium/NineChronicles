@@ -94,8 +94,8 @@ namespace Lib9c.Tests.Action
                 _sellerAgentAddress,
                 _sellerAvatarAddress,
                 Guid.NewGuid(),
-                equipment,
-                new FungibleAssetValue(_goldCurrencyState.Currency, 100, 0)));
+                new FungibleAssetValue(_goldCurrencyState.Currency, 100, 0),
+                equipment));
 
             var result = new CombinationConsumable.ResultModel()
             {
