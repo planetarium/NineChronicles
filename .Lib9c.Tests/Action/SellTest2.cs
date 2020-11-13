@@ -1,4 +1,4 @@
-namespace Lib9c.Tests.Action
+﻿namespace Lib9c.Tests.Action
 {
     using System;
     using System.Linq;
@@ -15,7 +15,7 @@ namespace Lib9c.Tests.Action
     using Xunit;
     using Xunit.Abstractions;
 
-    public class SellTest
+    public class SellTest2
     {
         private readonly Address _agentAddress;
         private readonly Address _avatarAddress;
@@ -24,7 +24,7 @@ namespace Lib9c.Tests.Action
         private readonly TableSheets _tableSheets;
         private IAccountStateDelta _initialState;
 
-        public SellTest(ITestOutputHelper outputHelper)
+        public SellTest2(ITestOutputHelper outputHelper)
         {
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Verbose()
@@ -71,6 +71,11 @@ namespace Lib9c.Tests.Action
                 0);
             _avatarState.inventory.AddItem(equipment);
 
+            var costume = ItemFactory.CreateCostume(
+                _tableSheets.CostumeItemSheet.First,
+                Guid.NewGuid());
+            _avatarState.inventory.AddItem(costume);
+
             _initialState = _initialState
                 .SetState(GoldCurrencyState.Address, goldCurrencyState.Serialize())
                 .SetState(Addresses.Shop, shopState.Serialize())
@@ -90,35 +95,66 @@ namespace Lib9c.Tests.Action
             var equipment = avatarState.inventory.Equipments.FirstOrDefault();
             Assert.NotNull(equipment);
 
-            var currencyState = _initialState.GetGoldCurrency();
+            var costume = avatarState.inventory.Costumes.FirstOrDefault();
+            Assert.NotNull(costume);
+
+            var items = new INonFungibleItem[] { equipment, costume };
+
+            var previousStates = _initialState;
+            var currencyState = previousStates.GetGoldCurrency();
             var price = new FungibleAssetValue(currencyState, 100, 0);
-            var sellAction = new Sell
+
+            var productCount = 0;
+            foreach (var nonFungibleItem in items)
             {
-                itemId = equipment.ItemId,
-                price = price,
-                sellerAvatarAddress = _avatarAddress,
-            };
-            var nextState = sellAction.Execute(new ActionContext
-            {
-                BlockIndex = 0,
-                PreviousStates = _initialState,
-                Rehearsal = false,
-                Signer = _agentAddress,
-                Random = new ItemEnhancementTest.TestRandom(),
-            });
+                var sellAction = new Sell2
+                {
+                    itemId = nonFungibleItem.ItemId,
+                    price = price,
+                    sellerAvatarAddress = _avatarAddress,
+                };
 
-            var nextAvatarState = nextState.GetAvatarState(_avatarAddress);
-            Assert.Empty(nextAvatarState.inventory.Equipments);
+                var nextState = sellAction.Execute(new ActionContext
+                {
+                    BlockIndex = 0,
+                    PreviousStates = previousStates,
+                    Rehearsal = false,
+                    Signer = _agentAddress,
+                    Random = new ItemEnhancementTest.TestRandom(),
+                });
 
-            var nextShopState = nextState.GetShopState();
-            Assert.Single(nextShopState.Products);
+                productCount++;
 
-            var (_, shopItem) = nextShopState.Products.FirstOrDefault();
-            Assert.NotNull(shopItem);
-            Assert.Equal(equipment.ItemId, shopItem.ItemUsable.ItemId);
-            Assert.Equal(price, shopItem.Price);
-            Assert.Equal(_agentAddress, shopItem.SellerAgentAddress);
-            Assert.Equal(_avatarAddress, shopItem.SellerAvatarAddress);
+                var nextAvatarState = nextState.GetAvatarState(_avatarAddress);
+                Assert.Empty(nextAvatarState.inventory.Equipments);
+
+                var nextShopState = nextState.GetShopState();
+
+                Assert.Equal(productCount, nextShopState.Products.Count);
+
+                var products = nextShopState.Products.Values;
+                Assert.NotNull(products);
+
+                var shopItem = nonFungibleItem is Costume ?
+                    products.First(x => x.Costume != null) :
+                    products.First(x => x.ItemUsable != null);
+
+                if (shopItem.ItemUsable != null)
+                {
+                    Assert.Equal(nonFungibleItem.ItemId, shopItem.ItemUsable.ItemId);
+                }
+
+                if (shopItem.Costume != null)
+                {
+                    Assert.Equal(nonFungibleItem.ItemId, shopItem.Costume.ItemId);
+                }
+
+                Assert.Equal(price, shopItem.Price);
+                Assert.Equal(_agentAddress, shopItem.SellerAgentAddress);
+                Assert.Equal(_avatarAddress, shopItem.SellerAvatarAddress);
+
+                previousStates = nextState;
+            }
         }
 
         [Fact]
