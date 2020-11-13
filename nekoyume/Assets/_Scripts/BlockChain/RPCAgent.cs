@@ -110,7 +110,6 @@ namespace Nekoyume.BlockChain
                 ? default
                 : Libplanet.Net.AppProtocolVersion.FromToken(options.AppProtocolVersion);
             AppProtocolVersion = appProtocolVersion.Version;
-            StartCoroutine(CoCheckLastTipChangedAt());
         }
 
         public IValue GetState(Address address)
@@ -389,22 +388,6 @@ namespace Nekoyume.BlockChain
         {
             Debug.Log($"On Preload End");
             WhenRetryEnded.Invoke();
-        }
-
-        private IEnumerator CoCheckLastTipChangedAt()
-        {
-            while (true)
-            {
-                var now = DateTimeOffset.UtcNow;
-                var diff = now - _lastTipChangedAt;
-                if (diff.TotalSeconds >= 300)
-                {
-                    Widget.Find<BlockFailPopup>().Show(BlockIndex);
-                    break;
-                }
-
-                yield return new WaitForSeconds(15f);
-            }
         }
     }
 }
