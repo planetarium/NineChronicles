@@ -14,7 +14,7 @@ using Serilog;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("sell_cancellation2")]
+    [ActionType("sell_cancellation3")]
     public class SellCancellation3 : GameAction
     {
         public Guid productId;
