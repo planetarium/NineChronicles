@@ -107,11 +107,11 @@ namespace Lib9c.Benchmarks
 
             DateTimeOffset ended = DateTimeOffset.UtcNow;
             Console.WriteLine("Loading blocks\t{0}", blocksLoaded - started);
-            TimeSpan execActions = ended - blocksLoaded;
-            Console.WriteLine("Executing actions\t{0}", execActions);
-            Console.WriteLine("Average per block\t{0}", execActions / blockHashes.Length);
-            Console.WriteLine("Average per tx\t{0}", execActions / txs);
-            Console.WriteLine("Average per action\t{0}", execActions / actions);
+            long execActionsTotalMilliseconds = (long) (ended - blocksLoaded).TotalMilliseconds;
+            Console.WriteLine("Executing actions\t{0}ms", execActionsTotalMilliseconds);
+            Console.WriteLine("Average per block\t{0}ms", execActionsTotalMilliseconds / blockHashes.Length);
+            Console.WriteLine("Average per tx\t{0}ms", execActionsTotalMilliseconds / txs);
+            Console.WriteLine("Average per action\t{0}ms", execActionsTotalMilliseconds / actions);
             Console.WriteLine("Total elapsed\t{0}", ended - started);
         }
 
