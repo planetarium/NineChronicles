@@ -221,7 +221,7 @@ namespace Nekoyume.UI.Module
         private void UpdateViewWithFilteredPageIndex(
             IReadOnlyDictionary<int, List<ShopItem>> models)
         {
-            var count = models.Count;
+            var count = models?.Count ?? 0;
             UpdateViewWithItems(count > _filteredPageIndex
                 ? models[_filteredPageIndex]
                 : new List<ShopItem>());
