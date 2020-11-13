@@ -126,7 +126,7 @@ namespace Nekoyume.Action
                 );
             }
 
-            var tax = shopItem.Price.DivRem(100, out _) * TaxRate;
+            var tax = shopItem.Price.DivRem(100, out _) * Buy.TaxRate;
             var taxedPrice = shopItem.Price - tax;
 
             // 세금을 송금한다.
