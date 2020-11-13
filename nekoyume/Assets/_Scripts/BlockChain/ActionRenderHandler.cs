@@ -5,6 +5,7 @@ using System.Linq;
 using Bencodex.Types;
 using Lib9c.Renderer;
 using Libplanet;
+using Libplanet.Action;
 using Libplanet.Assets;
 using Nekoyume.Action;
 using Nekoyume.L10n;
@@ -18,6 +19,7 @@ using Nekoyume.Model.State;
 using TentuPlay.Api;
 using Nekoyume.Model.Quest;
 using Nekoyume.State.Modifiers;
+using Nekoyume.TableData;
 using UnityEngine;
 
 namespace Nekoyume.BlockChain
@@ -882,6 +884,54 @@ namespace Nekoyume.BlockChain
                 case NotEnoughFungibleAssetValueException _:
                     key = "ERROR_NOT_ENOUGH_FUNGIBLE_ASSET_VALUE";
                     code = "10";
+                    break;
+                case SheetRowNotFoundException _:
+                    code = "11";
+                    break;
+                case SheetRowColumnException _:
+                    code = "12";
+                    break;
+                case InvalidWorldException _:
+                    code = "13";
+                    break;
+                case InvalidStageException _:
+                    code = "14";
+                    break;
+                case ConsumableSlotOutOfRangeException _:
+                    code = "14";
+                    break;
+                case ConsumableSlotUnlockException _:
+                    code = "15";
+                    break;
+                case DuplicateCostumeException _:
+                    code = "16";
+                    break;
+                case InvalidItemTypeException _:
+                    code = "17";
+                    break;
+                case CostumeSlotUnlockException _:
+                    code = "18";
+                    break;
+                case NotEnoughMaterialException _:
+                    code = "19";
+                    break;
+                case ItemDoesNotExistException _:
+                    code = "20";
+                    break;
+                case InsufficientBalanceException _:
+                    code = "21";
+                    break;
+                case FailedToUnregisterInShopStateException _:
+                    code = "22";
+                    break;
+                case InvalidPriceException _:
+                    code = "23";
+                    break;
+                case ShopStateAlreadyContainsException _:
+                    code = "24";
+                    break;
+                case CombinationSlotResultNullException _:
+                    code = "25";
                     break;
             }
 
