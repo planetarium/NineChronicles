@@ -168,11 +168,11 @@ namespace Nekoyume.UI.Module
             sortFilter.SetValueWithoutNotify(0);
             SharedModel.sortFilter = 0;
 
-            ShopStateSubject.AgentProducts
+            ReactiveShopState.AgentProducts
                 .Subscribe(SharedModel.ResetAgentProducts)
                 .AddTo(_disposablesAtOnEnable);
 
-            ShopStateSubject.ItemSubTypeProducts
+            ReactiveShopState.ItemSubTypeProducts
                 .Subscribe(SharedModel.ResetItemSubTypeProducts)
                 .AddTo(_disposablesAtOnEnable);
         }
