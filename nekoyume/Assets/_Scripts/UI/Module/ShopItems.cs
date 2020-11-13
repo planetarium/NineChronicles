@@ -6,6 +6,7 @@ using Nekoyume.Game.Controller;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.State;
+using Nekoyume.State.Subjects;
 using TMPro;
 using UniRx;
 using UnityEngine;
@@ -167,11 +168,11 @@ namespace Nekoyume.UI.Module
             sortFilter.SetValueWithoutNotify(0);
             SharedModel.sortFilter = 0;
 
-            ReactiveShopState.AgentProducts
+            ShopStateSubject.AgentProducts
                 .Subscribe(SharedModel.ResetAgentProducts)
                 .AddTo(_disposablesAtOnEnable);
 
-            ReactiveShopState.ItemSubTypeProducts
+            ShopStateSubject.ItemSubTypeProducts
                 .Subscribe(SharedModel.ResetItemSubTypeProducts)
                 .AddTo(_disposablesAtOnEnable);
         }

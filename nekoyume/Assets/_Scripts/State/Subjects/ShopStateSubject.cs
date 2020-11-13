@@ -8,27 +8,27 @@ using Nekoyume.Model.State;
 using Nekoyume.UI.Module;
 using UniRx;
 
-namespace Nekoyume.State
+namespace Nekoyume.State.Subjects
 {
     /// <summary>
     /// ShopState가 포함하는 값의 변화를 각각의 ReactiveProperty<T> 필드를 통해 외부에 변화를 알린다.
     /// </summary>
-    public static class ReactiveShopState
+    public static class ShopStateSubject
     {
-        public static readonly ReactiveProperty<Dictionary<
+        public static readonly Subject<Dictionary<
                 Address, Dictionary<
                     ShopItems.ItemSubTypeFilter, Dictionary<
                         ShopItems.SortFilter, Dictionary<int, List<ShopItem>>>>>>
             AgentProducts =
-                new ReactiveProperty<Dictionary<
+                new Subject<Dictionary<
                     Address, Dictionary<
                         ShopItems.ItemSubTypeFilter,
                         Dictionary<ShopItems.SortFilter, Dictionary<int, List<ShopItem>>>>>>();
 
-        public static readonly ReactiveProperty<IReadOnlyDictionary<
+        public static readonly Subject<IReadOnlyDictionary<
                 ShopItems.ItemSubTypeFilter, Dictionary<
                     ShopItems.SortFilter, Dictionary<int, List<ShopItem>>>>>
-            ItemSubTypeProducts = new ReactiveProperty<IReadOnlyDictionary<
+            ItemSubTypeProducts = new Subject<IReadOnlyDictionary<
                 ShopItems.ItemSubTypeFilter, Dictionary<
                     ShopItems.SortFilter, Dictionary<int, List<ShopItem>>>>>();
 
@@ -66,15 +66,15 @@ namespace Nekoyume.State
                         GetGroupedShopItemsByItemSubTypeFilter(pair.Value));
                 }
 
-                AgentProducts.Value = filteredAgentProducts;
+                AgentProducts.OnNext(filteredAgentProducts);
             }
 
             // ItemSubTypeProducts.
             {
                 var agentAddress = States.Instance.AgentState.address;
-                ItemSubTypeProducts.Value = GetGroupedShopItemsByItemSubTypeFilter(products
+                ItemSubTypeProducts.OnNext(GetGroupedShopItemsByItemSubTypeFilter(products
                     .Where(product => !product.SellerAgentAddress.Equals(agentAddress))
-                    .ToList());
+                    .ToList()));
             }
         }
 

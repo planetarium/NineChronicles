@@ -75,7 +75,7 @@ namespace Nekoyume.State
             }
 
             ShopState = state;
-            ReactiveShopState.Initialize(ShopState);
+            ShopStateSubject.Initialize(ShopState);
         }
 
         public void SetWeeklyArenaState(WeeklyArenaState state)
