@@ -486,7 +486,7 @@ namespace Nekoyume.UI
                     }
 
                     Game.Game.instance.ActionManager.Sell(
-                        (ItemUsable) data.Item.Value.ItemBase.Value,
+                        data.Item.Value.ItemBase.Value,
                         data.Price.Value);
                     ResponseSell();
 
