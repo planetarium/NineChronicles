@@ -81,7 +81,7 @@ namespace Nekoyume.State
         private static Dictionary<
                 ShopItems.ItemSubTypeFilter, Dictionary<
                     ShopItems.SortFilter, Dictionary<int, List<ShopItem>>>>
-            GetGroupedShopItemsByItemSubTypeFilter(List<ShopItem> shopItems)
+            GetGroupedShopItemsByItemSubTypeFilter(IReadOnlyCollection<ShopItem> shopItems)
         {
             var weapons = new List<ShopItem>();
             var armors = new List<ShopItem>();
@@ -89,29 +89,37 @@ namespace Nekoyume.State
             var necklaces = new List<ShopItem>();
             var rings = new List<ShopItem>();
             var foods = new List<ShopItem>();
+            var costumes = new List<ShopItem>();
 
             foreach (var shopItem in shopItems)
             {
-                switch (shopItem.ItemUsable.ItemSubType)
+                if (shopItem.ItemUsable != null)
                 {
-                    case ItemSubType.Weapon:
-                        weapons.Add(shopItem);
-                        break;
-                    case ItemSubType.Armor:
-                        armors.Add(shopItem);
-                        break;
-                    case ItemSubType.Belt:
-                        belts.Add(shopItem);
-                        break;
-                    case ItemSubType.Necklace:
-                        necklaces.Add(shopItem);
-                        break;
-                    case ItemSubType.Ring:
-                        rings.Add(shopItem);
-                        break;
-                    case ItemSubType.Food:
-                        foods.Add(shopItem);
-                        break;
+                    switch (shopItem.ItemUsable.ItemSubType)
+                    {
+                        case ItemSubType.Weapon:
+                            weapons.Add(shopItem);
+                            break;
+                        case ItemSubType.Armor:
+                            armors.Add(shopItem);
+                            break;
+                        case ItemSubType.Belt:
+                            belts.Add(shopItem);
+                            break;
+                        case ItemSubType.Necklace:
+                            necklaces.Add(shopItem);
+                            break;
+                        case ItemSubType.Ring:
+                            rings.Add(shopItem);
+                            break;
+                        case ItemSubType.Food:
+                            foods.Add(shopItem);
+                            break;
+                    }
+                }
+                else if (shopItem.Costume != null)
+                {
+                    costumes.Add(shopItem);
                 }
             }
 
@@ -122,7 +130,8 @@ namespace Nekoyume.State
                 belts,
                 necklaces,
                 rings,
-                foods);
+                foods,
+                costumes);
         }
 
         private static Dictionary<
@@ -135,7 +144,8 @@ namespace Nekoyume.State
                 IReadOnlyCollection<ShopItem> belts,
                 IReadOnlyCollection<ShopItem> necklaces,
                 IReadOnlyCollection<ShopItem> rings,
-                IReadOnlyCollection<ShopItem> foods)
+                IReadOnlyCollection<ShopItem> foods,
+                IReadOnlyCollection<ShopItem> costumes)
         {
             return new Dictionary<
                 ShopItems.ItemSubTypeFilter, Dictionary<
@@ -148,25 +158,23 @@ namespace Nekoyume.State
                 {ShopItems.ItemSubTypeFilter.Necklace, GetGroupedShopItemsBySortFilter(necklaces)},
                 {ShopItems.ItemSubTypeFilter.Ring, GetGroupedShopItemsBySortFilter(rings)},
                 {ShopItems.ItemSubTypeFilter.Food, GetGroupedShopItemsBySortFilter(foods)},
+                {ShopItems.ItemSubTypeFilter.Costume, GetGroupedShopItemsBySortFilter(costumes)},
             };
         }
 
         private static Dictionary<ShopItems.SortFilter, Dictionary<int, List<ShopItem>>>
             GetGroupedShopItemsBySortFilter(IReadOnlyCollection<ShopItem> shopItems)
         {
+
             return new Dictionary<ShopItems.SortFilter, Dictionary<int, List<ShopItem>>>
             {
                 {
                     ShopItems.SortFilter.Class,
-                    GetGroupedShopItemsByPage(shopItems
-                        .OrderByDescending(shopItem => shopItem.ItemUsable.Grade)
-                        .ToList())
+                    GetGroupedShopItemsByPage(SortedShopItem(shopItems, SORT_TYPE.Grade))
                 },
                 {
                     ShopItems.SortFilter.CP,
-                    GetGroupedShopItemsByPage(shopItems
-                        .OrderByDescending(shopItem => CPHelper.GetCP(shopItem.ItemUsable))
-                        .ToList())
+                    GetGroupedShopItemsByPage(SortedShopItem(shopItems, SORT_TYPE.Cp))
                 },
                 {
                     ShopItems.SortFilter.Price,
@@ -175,6 +183,49 @@ namespace Nekoyume.State
                         .ToList())
                 },
             };
+        }
+
+        private enum SORT_TYPE
+        {
+            None = 0,
+            Grade = 1,
+            Cp = 2,
+        }
+
+        private static List<ShopItem> SortedShopItem(IEnumerable<ShopItem> shopItems, SORT_TYPE type)
+        {
+            var result = new List<ShopItem>();
+            result.AddRange(shopItems.Where(shopItem => shopItem.Costume != null)
+                .OrderByDescending(shopItem => GetTypeValue(shopItem.Costume, type)));
+            result.AddRange(shopItems.Where(shopItem => shopItem.ItemUsable != null)
+                .OrderByDescending(shopItem => GetTypeValue(shopItem.ItemUsable, type)));
+            return result;
+        }
+
+        private static int GetTypeValue(ItemBase item, SORT_TYPE type)
+        {
+            switch (type)
+            {
+                case SORT_TYPE.Grade:
+                    return item.Grade;
+                case SORT_TYPE.Cp:
+                    switch (item)
+                    {
+                        case ItemUsable itemUsable:
+                            return CPHelper.GetCP(itemUsable);
+                        case Costume costume:
+                        {
+                            var costumeSheet = Game.Game.instance.TableSheets.CostumeStatSheet;
+                            return CPHelper.GetCP(costume, costumeSheet);
+                        }
+                    }
+                    break;
+                case SORT_TYPE.None:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(type), type, null);
+            }
+            throw new ArgumentOutOfRangeException(nameof(type), type, null);
         }
 
         private static Dictionary<int, List<ShopItem>> GetGroupedShopItemsByPage(
