@@ -116,7 +116,7 @@
             An exception that had risen during evaluation.
             </summary>
         </member>
-        <member name="M:Libplanet.Action.ActionEvaluation.EvaluateActionsGradually(Libplanet.HashDigest{System.Security.Cryptography.SHA256},System.Int64,System.Nullable{Libplanet.Tx.TxId},Libplanet.Action.IAccountStateDelta,Libplanet.Address,Libplanet.Address,System.Byte[],System.Collections.Immutable.IImmutableList{Libplanet.Action.IAction},System.Boolean)">
+        <member name="M:Libplanet.Action.ActionEvaluation.EvaluateActionsGradually(Libplanet.HashDigest{System.Security.Cryptography.SHA256},System.Int64,System.Nullable{Libplanet.Tx.TxId},Libplanet.Action.IAccountStateDelta,Libplanet.Address,Libplanet.Address,System.Byte[],System.Collections.Immutable.IImmutableList{Libplanet.Action.IAction},System.Boolean,Libplanet.Store.Trie.ITrie)">
             <summary>
             Executes the <paramref name="actions"/> step by step, and emits
             <see cref="T:Libplanet.Action.ActionEvaluation"/> for each step.
@@ -139,6 +139,8 @@
             <param name="rehearsal">Pass <c>true</c> if it is intended
             to be dry-run (i.e., the returned result will be never used).
             The default value is <c>false</c>.</param>
+            <param name="previousBlockStatesTrie">The trie to contain states at previous block.
+            </param>
             <returns>Enumerates <see cref="T:Libplanet.Action.ActionEvaluation"/>s for each one in
             <paramref name="actions"/>.  The order is the same to the <paramref name="actions"/>.
             Note that each <see cref="P:Libplanet.Action.IActionContext.Random"/> object
@@ -577,6 +579,10 @@
             <para>For more on determinism in general, please read also <a
             href="https://tendermint.com/docs/spec/abci/abci.html#determinism"
             >Tendermint ABCI's docs on determinism</a>.</para>
+            <para>Lastly, you can conduct static analysis on your code
+            using <a href="https://git.io/JTmby">Libplanet.Analyzers</a>.
+            The analyzer can be enabled by adding its NuGet package into
+            your project as a dependency.</para>
             </remarks>
             <seealso cref="T:Libplanet.Action.IActionContext"/>
         </member>
@@ -633,6 +639,13 @@
             </summary>
             <returns>A random object that shares interface mostly equivalent
             to <see cref="T:System.Random"/>.</returns>
+        </member>
+        <member name="P:Libplanet.Action.IActionContext.PreviousStateRootHash">
+            <summary>
+            A state root hash at the <see cref="P:Libplanet.Action.IActionContext.PreviousStates"/>.  It can cause file I/O interrupt.
+            It will be return null if the implementation or your chain didn't support
+            the state root hash feature.
+            </summary>
         </member>
         <member name="M:Libplanet.Action.IActionContext.GetUnconsumedContext">
             <summary>
@@ -1954,7 +1967,7 @@
             <returns>The next <see cref="P:Libplanet.Tx.Transaction`1.Nonce"/> value of the
             <paramref name="address"/>.</returns>
         </member>
-        <member name="M:Libplanet.Blockchain.BlockChain`1.MineBlock(Libplanet.Address,System.DateTimeOffset,System.Boolean,System.Threading.CancellationToken)">
+        <member name="M:Libplanet.Blockchain.BlockChain`1.MineBlock(Libplanet.Address,System.DateTimeOffset,System.Boolean,System.Int32,System.Threading.CancellationToken)">
             <summary>
             Mines a next <see cref="T:Libplanet.Blocks.Block`1"/> using staged <see cref="T:Libplanet.Tx.Transaction`1"/>s,
             and then <see cref="M:Libplanet.Blockchain.BlockChain`1.Append(Libplanet.Blocks.Block{`0},System.Nullable{Libplanet.Blockchain.StateCompleterSet{`0}})"/> it to the chain
@@ -1964,6 +1977,8 @@
             <param name="currentTime">The <see cref="T:System.DateTimeOffset"/> when mining started.</param>
             <param name="append">Whether to <see cref="M:Libplanet.Blockchain.BlockChain`1.Append(Libplanet.Blocks.Block{`0},System.Nullable{Libplanet.Blockchain.StateCompleterSet{`0}})"/>
             the mined block.  Turned on by default.</param>
+            <param name="txBatchSize">The number to limit the count of transactions that will
+            be contained in the block.  <see cref="F:System.Int32.MaxValue"/> by default.</param>
             <param name="cancellationToken">
             A cancellation token used to propagate notification that this
             operation should be canceled.
@@ -1971,8 +1986,10 @@
             <returns>An awaitable task with a <see cref="T:Libplanet.Blocks.Block`1"/> that is mined.</returns>
             <exception cref="T:System.OperationCanceledException">Thrown when
             <see cref="P:Libplanet.Blockchain.BlockChain`1.Tip"/> is changed while mining.</exception>
+            <exception cref="T:System.ArgumentOutOfRangeException">Thrown when
+            <paramref name="txBatchSize"/> is negative.</exception>
         </member>
-        <member name="M:Libplanet.Blockchain.BlockChain`1.MineBlock(Libplanet.Address,System.Boolean,System.Threading.CancellationToken)">
+        <member name="M:Libplanet.Blockchain.BlockChain`1.MineBlock(Libplanet.Address,System.Boolean,System.Int32,System.Threading.CancellationToken)">
             <summary>
             Mines a next <see cref="T:Libplanet.Blocks.Block`1"/> using staged <see cref="T:Libplanet.Tx.Transaction`1"/>s,
             and then <see cref="M:Libplanet.Blockchain.BlockChain`1.Append(Libplanet.Blocks.Block{`0},System.Nullable{Libplanet.Blockchain.StateCompleterSet{`0}})"/> it to the chain
@@ -1981,6 +1998,8 @@
             <param name="miner">The <see cref="T:Libplanet.Address"/> of miner that mined the block.</param>
             <param name="append">Whether to <see cref="M:Libplanet.Blockchain.BlockChain`1.Append(Libplanet.Blocks.Block{`0},System.Nullable{Libplanet.Blockchain.StateCompleterSet{`0}})"/>
             the mined block.  Turned on by default.</param>
+            <param name="txBatchSize">The number to limit the count of transactions that will
+            be contained in the block.  <see cref="F:System.Int32.MaxValue"/> by default.</param>
             <param name="cancellationToken">
             A cancellation token used to propagate notification that this
             operation should be canceled.
@@ -1988,6 +2007,8 @@
             <returns>An awaitable task with a <see cref="T:Libplanet.Blocks.Block`1"/> that is mined.</returns>
             <exception cref="T:System.OperationCanceledException">Thrown when
             <see cref="P:Libplanet.Blockchain.BlockChain`1.Tip"/> is changed while mining.</exception>
+            <exception cref="T:System.ArgumentOutOfRangeException">Thrown when
+            <paramref name="txBatchSize"/> is negative.</exception>
         </member>
         <member name="M:Libplanet.Blockchain.BlockChain`1.MakeTransaction(Libplanet.Crypto.PrivateKey,System.Collections.Generic.IEnumerable{`0},System.Collections.Immutable.IImmutableSet{Libplanet.Address},System.Nullable{System.DateTimeOffset})">
             <summary>
@@ -2006,22 +2027,24 @@
             <paramref name="privateKey"/>.</returns>
             <seealso cref="M:Libplanet.Tx.Transaction`1.Create(System.Int64,Libplanet.Crypto.PrivateKey,System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}},System.Collections.Generic.IEnumerable{`0},System.Collections.Immutable.IImmutableSet{Libplanet.Address},System.Nullable{System.DateTimeOffset})" />
         </member>
-        <member name="M:Libplanet.Blockchain.BlockChain`1.RenderBlocks(System.Int64,System.Nullable{Libplanet.Blockchain.StateCompleterSet{`0}})">
+        <member name="M:Libplanet.Blockchain.BlockChain`1.RenderActionsInBlocks(System.Int64,Libplanet.Blockchain.Renderers.IActionRenderer{`0},System.Nullable{Libplanet.Blockchain.StateCompleterSet{`0}})">
             <summary>
             Render actions from block index of <paramref name="offset"/>.
             </summary>
             <param name="offset">Index of the block to start rendering from.</param>
+            <param name="renderer">The renderer to render actions.</param>
             <param name="stateCompleters">The strategy to complement incomplete block states.
             <see cref="F:Libplanet.Blockchain.StateCompleterSet`1.Recalculate"/> by default.</param>
             <returns>The number of actions rendered.</returns>
         </member>
-        <member name="M:Libplanet.Blockchain.BlockChain`1.RenderBlock(System.Collections.Generic.IReadOnlyList{Libplanet.Action.ActionEvaluation},Libplanet.Blocks.Block{`0},System.Nullable{Libplanet.Blockchain.StateCompleterSet{`0}})">
+        <member name="M:Libplanet.Blockchain.BlockChain`1.RenderActions(System.Collections.Generic.IReadOnlyList{Libplanet.Action.ActionEvaluation},Libplanet.Blocks.Block{`0},Libplanet.Blockchain.Renderers.IActionRenderer{`0},System.Nullable{Libplanet.Blockchain.StateCompleterSet{`0}})">
             <summary>
             Render actions of the given <paramref name="block"/>.
             </summary>
             <param name="evaluations"><see cref="T:Libplanet.Action.ActionEvaluation"/>s of the block.  If it is
             <c>null</c>, evaluate actions of the <paramref name="block"/> again.</param>
             <param name="block"><see cref="T:Libplanet.Blocks.Block`1"/> to render actions.</param>
+            <param name="renderer">The renderer to render actions.</param>
             <param name="stateCompleters">The strategy to complement incomplete block states.
             <see cref="F:Libplanet.Blockchain.StateCompleterSet`1.Recalculate"/> by default.</param>
             <returns>The number of actions rendered.</returns>
@@ -2981,6 +3004,11 @@
             The <see cref="P:Libplanet.Store.Trie.ITrie.Hash"/> of the states on the block.
             </summary>
             <seealso cref="P:Libplanet.Store.Trie.ITrie.Hash"/>
+        </member>
+        <member name="P:Libplanet.Blocks.Block`1.Header">
+            <summary>
+            The <see cref="T:Libplanet.Blocks.BlockHeader"/> of the block.
+            </summary>
         </member>
         <member name="M:Libplanet.Blocks.Block`1.Mine(System.Int64,System.Int64,System.Numerics.BigInteger,Libplanet.Address,System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}},System.DateTimeOffset,System.Collections.Generic.IEnumerable{Libplanet.Tx.Transaction{`0}},System.Threading.CancellationToken)">
             <summary>
@@ -4635,6 +4663,21 @@
             <returns>An async enumerable that yields pairs of a fetched block and its source
             peer.  It terminates when all demands are satisfied.</returns>
         </member>
+        <member name="T:Libplanet.Net.BlockDemand">
+            <summary>
+            Struct represents <see cref="T:Libplanet.Net.Swarm`1"/>'s block demand status.
+            </summary>
+        </member>
+        <member name="F:Libplanet.Net.BlockDemand.Header">
+            <summary>
+            The <see cref="T:Libplanet.Blocks.BlockHeader"/> of the block to request.
+            </summary>
+        </member>
+        <member name="F:Libplanet.Net.BlockDemand.Peer">
+            <summary>
+            The <see cref="T:Libplanet.Net.BoundPeer"/> to request block hash from.
+            </summary>
+        </member>
         <member name="T:Libplanet.Net.BlockDownloadState">
             <summary>
             Indicates a progress of downloading blocks.
@@ -5197,6 +5240,13 @@
             <summary>
             The <see cref="T:Libplanet.Blockchain.BlockChain`1"/> instance this <see cref="T:Libplanet.Net.Swarm`1"/> instance
             synchronizes with.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.Swarm`1.BlockDemand">
+            <summary>
+            Information of <see cref="T:Libplanet.Net.Swarm`1"/>'s demand for new blocks.
+            It is null when the <see cref="T:Libplanet.Net.Swarm`1"/> does not have any block to demand.
+            <seealso cref="P:Libplanet.Net.Swarm`1.BlockDemand"/>
             </summary>
         </member>
         <member name="M:Libplanet.Net.Swarm`1.WaitForRunningAsync">
@@ -6166,6 +6216,12 @@
             <returns>All keys in an arbitrary order.  The order might be vary for each call.
             </returns>
         </member>
+        <member name="T:Libplanet.Store.Trie.ITrie">
+            <summary>
+            An interface for <see href="https://en.wikipedia.org/wiki/Merkle_tree">Merkle Tree</see>.
+            </summary>
+            <seealso cref="T:Libplanet.Store.Trie.MerkleTrie"/>
+        </member>
         <member name="P:Libplanet.Store.Trie.ITrie.Hash">
             <summary>
             The state root hash of the trie.
@@ -6178,6 +6234,9 @@
             </summary>
             <param name="key">An index to look with <see cref="M:Libplanet.Store.Trie.ITrie.TryGet(System.Byte[],Bencodex.Types.IValue@)"/> after.</param>
             <param name="value">The value to store.</param>
+            <exception cref="T:System.ArgumentNullException">Thrown when the given
+            <paramref name="value"/> is <c>null</c>.</exception>
+            <returns>Returns new updated <see cref="T:Libplanet.Store.Trie.ITrie"/>.</returns>
         </member>
         <member name="M:Libplanet.Store.Trie.ITrie.TryGet(System.Byte[],Bencodex.Types.IValue@)">
             <summary>
@@ -6196,6 +6255,24 @@
             <param name="rehearsal">Whether to store nodes.</param>
             <returns>Returns new committed <see cref="T:Libplanet.Store.Trie.ITrie"/>.</returns>
         </member>
+        <member name="T:Libplanet.Store.Trie.MerkleTrie">
+            <summary>
+            An <see cref="T:Libplanet.Store.Trie.ITrie"/> implementation implemented
+            <see href="https://eth.wiki/fundamentals/patricia-tree">Merkle Patricia Trie</see>.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Store.Trie.MerkleTrie.#ctor(Libplanet.Store.Trie.IKeyValueStore,Libplanet.HashDigest{System.Security.Cryptography.SHA256},System.Boolean)">
+            <summary>
+            An <see cref="T:Libplanet.Store.Trie.ITrie"/> implementation.
+            </summary>
+            <param name="keyValueStore">The <see cref="T:Libplanet.Store.Trie.IKeyValueStore"/> storage to store
+            nodes.</param>
+            <param name="rootHash">The root <see cref="P:Libplanet.Store.Trie.ITrie.Hash"/> of
+            <see cref="T:Libplanet.Store.Trie.MerkleTrie"/>.</param>
+            <param name="secure">Whether to use <see cref="T:Libplanet.Store.Trie.MerkleTrie"/> in
+            secure mode.  If it is turned on, <see cref="T:Libplanet.Store.Trie.MerkleTrie"/> internally stores hashed keys
+            instead of bare keys.  <see cref="M:Libplanet.Hashcash.Hash(System.Byte[])" /> is used to hash them.</param>
+        </member>
         <member name="M:Libplanet.Store.Trie.MerkleTrie.#ctor(Libplanet.Store.Trie.IKeyValueStore,Libplanet.Store.Trie.Nodes.INode,System.Boolean)">
             <summary>
             An <see cref="T:Libplanet.Store.Trie.ITrie"/> implementation.
@@ -6204,7 +6281,7 @@
             nodes.</param>
             <param name="root">The root node of <see cref="T:Libplanet.Store.Trie.MerkleTrie"/>. If it is <c>null</c>,
             it will be treated like empty trie.</param>
-            <param name="secure">The flag to determine to use <see cref="T:Libplanet.Store.Trie.MerkleTrie"/> in secure
+            <param name="secure">Whether to use <see cref="T:Libplanet.Store.Trie.MerkleTrie"/> in secure
             mode. If it is true, <see cref="T:Libplanet.Store.Trie.MerkleTrie"/> will stores the value with the hashed
             result from the given key as the key. It will hash with
             <see cref="M:Libplanet.Hashcash.Hash(System.Byte[])"/>.</param>
@@ -6226,10 +6303,40 @@
             <param name="nodeHash">The hash of node to get.</param>
             <returns>The node corresponding to <paramref name="nodeHash"/>.</returns>
         </member>
+        <member name="T:Libplanet.Store.Trie.MerkleTrieExtensions">
+            <summary>
+            An extension class to provide some convenient methods to deal with <see cref="T:Libplanet.Store.Trie.MerkleTrie"/>.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Store.Trie.MerkleTrieExtensions.DifferentNodes(Libplanet.Store.Trie.MerkleTrie,Libplanet.Store.Trie.MerkleTrie)">
+            <summary>
+            Compares two given tries and gets different value nodes (leaf node).
+            </summary>
+            <param name="origin">A trie to compare.</param>
+            <param name="other">An other trie to compare.</param>
+            <returns><see cref="T:System.Linq.IGrouping`2"/>s,
+            mapping path to tuple having the hash of the value is contained and the value.</returns>
+        </member>
+        <member name="M:Libplanet.Store.Trie.MerkleTrieExtensions.ListAllStates(Libplanet.Store.Trie.MerkleTrie)">
+            <summary>
+            Lists the all states key and the all states in the given <paramref name="merkleTrie"/>.
+            </summary>
+            <param name="merkleTrie">A trie to discover.</param>
+            <returns>All state keys and the all states.</returns>
+        </member>
         <member name="T:Libplanet.Store.Trie.Nodes.HashNode">
             <summary>
             <see cref="T:Libplanet.HashDigest`1"/>'s wrapper class, used in <see cref="T:Libplanet.Store.Trie.ITrie"/> interface.
             </summary>
+        </member>
+        <member name="T:Libplanet.Store.Trie.Nodes.INode">
+            <summary>
+            A constituent unit of <see cref="T:Libplanet.Store.Trie.MerkleTrie"/>.
+            </summary>
+            <seealso cref="T:Libplanet.Store.Trie.Nodes.FullNode"/>
+            <seealso cref="T:Libplanet.Store.Trie.Nodes.ShortNode"/>
+            <seealso cref="T:Libplanet.Store.Trie.Nodes.ValueNode"/>
+            <seealso cref="T:Libplanet.Store.Trie.Nodes.HashNode"/>
         </member>
         <member name="T:Libplanet.Store.Trie.Nodes.ValueNode">
             <summary>
@@ -6241,7 +6348,7 @@
             An <see cref="T:Libplanet.Store.IStateStore"/> implementation. It stores states with <see cref="T:Libplanet.Store.Trie.MerkleTrie"/>.
             </summary>
         </member>
-        <member name="M:Libplanet.Store.TrieStateStore.#ctor(Libplanet.Store.Trie.IKeyValueStore,Libplanet.Store.Trie.IKeyValueStore)">
+        <member name="M:Libplanet.Store.TrieStateStore.#ctor(Libplanet.Store.Trie.IKeyValueStore,Libplanet.Store.Trie.IKeyValueStore,System.Boolean)">
             <summary>
             Creates a new <see cref="T:Libplanet.Store.TrieStateStore"/>.
             </summary>
@@ -6249,6 +6356,8 @@
             <see cref="T:Libplanet.Store.Trie.MerkleTrie"/> in internal.</param>
             <param name="stateHashKeyValueStore">The storage to store state hash corresponding to
             block hash.</param>
+            <param name="secure">Whether to use <see cref="T:Libplanet.Store.Trie.MerkleTrie"/> in secure mode.
+            <seealso cref="M:Libplanet.Store.Trie.MerkleTrie.#ctor(Libplanet.Store.Trie.IKeyValueStore,Libplanet.Store.Trie.Nodes.INode,System.Boolean)"/>.</param>
         </member>
         <member name="M:Libplanet.Store.TrieStateStore.SetStates``1(Libplanet.Blocks.Block{``0},System.Collections.Immutable.IImmutableDictionary{System.String,Bencodex.Types.IValue})">
             <inheritdoc/>
@@ -6590,6 +6699,11 @@
             <see cref="T:Libplanet.Tx.Transaction`1"/> is made from.
             This can be <c>null</c> iff the transaction is contained
             in the genesis block.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Tx.Transaction`1.BytesLength">
+            <summary>
+            The bytes length in its serialized format.
             </summary>
         </member>
         <member name="M:Libplanet.Tx.Transaction`1.Deserialize(System.Byte[])">
