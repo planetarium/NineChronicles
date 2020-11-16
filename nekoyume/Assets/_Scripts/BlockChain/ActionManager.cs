@@ -164,29 +164,17 @@ namespace Nekoyume.BlockChain
                 .Timeout(ActionTimeout);
         }
 
-        public IObservable<ActionBase.ActionEvaluation<Sell2>> Sell<T>(T item, FungibleAssetValue price)
+        public IObservable<ActionBase.ActionEvaluation<Sell2>> Sell(INonFungibleItem item, FungibleAssetValue price)
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
 
             // NOTE: 장착했는지 안 했는지에 상관없이 해제 플래그를 걸어 둔다.
-
-            Guid itemId;
-            switch (item)
-            {
-                case ItemUsable itemUsable:
-                    itemId = itemUsable.ItemId;
-                    break;
-                case Costume costume:
-                    itemId = costume.ItemId;
-                    break;
-            }
-
-            LocalStateModifier.SetEquipmentEquip(avatarAddress, itemId, false, false);
+            LocalStateModifier.SetEquipmentEquip(avatarAddress, item.ItemId, false, false);
 
             var action = new Sell2
             {
                 sellerAvatarAddress = avatarAddress,
-                itemId = itemId,
+                itemId = item.ItemId,
                 price = price
             };
             ProcessAction(action);
