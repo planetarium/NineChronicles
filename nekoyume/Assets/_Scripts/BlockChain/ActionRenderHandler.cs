@@ -126,7 +126,7 @@ namespace Nekoyume.BlockChain
         private void CreateAvatar()
         {
             _renderer.EveryRender<CreateAvatar2>()
-                .Where(ValidateEvaluationForAgentState)
+                .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(eval =>
                 {
@@ -165,7 +165,7 @@ namespace Nekoyume.BlockChain
         private void CombinationConsumable()
         {
             _renderer.EveryRender<CombinationConsumable2>()
-                .Where(ValidateEvaluationForCurrentAvatarState)
+                .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseCombinationConsumable).AddTo(_disposables);
         }
@@ -173,7 +173,7 @@ namespace Nekoyume.BlockChain
         private void Sell()
         {
             _renderer.EveryRender<Sell>()
-                .Where(ValidateEvaluationForCurrentAvatarState)
+                .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseSell).AddTo(_disposables);
         }
@@ -181,7 +181,7 @@ namespace Nekoyume.BlockChain
         private void SellCancellation()
         {
             _renderer.EveryRender<SellCancellation2>()
-                .Where(ValidateEvaluationForCurrentAvatarState)
+                .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseSellCancellation).AddTo(_disposables);
         }
@@ -189,7 +189,7 @@ namespace Nekoyume.BlockChain
         private void Buy()
         {
             _renderer.EveryRender<Buy2>()
-                .Where(ValidateEvaluationForAgentState)
+                .Where(HasUpdatedAssetsForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseBuy).AddTo(_disposables);
         }
@@ -197,7 +197,7 @@ namespace Nekoyume.BlockChain
         private void ItemEnhancement()
         {
             _renderer.EveryRender<ItemEnhancement3>()
-                .Where(ValidateEvaluationForCurrentAvatarState)
+                .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseItemEnhancement).AddTo(_disposables);
         }
@@ -205,7 +205,7 @@ namespace Nekoyume.BlockChain
         private void DailyReward()
         {
             _renderer.EveryRender<DailyReward>()
-                .Where(ValidateEvaluationForCurrentAvatarState)
+                .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(eval =>
                 {
@@ -229,7 +229,7 @@ namespace Nekoyume.BlockChain
         private void RankingBattle()
         {
             _renderer.EveryRender<RankingBattle2>()
-                .Where(ValidateEvaluationForCurrentAvatarState)
+                .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseRankingBattle).AddTo(_disposables);
         }
@@ -237,7 +237,7 @@ namespace Nekoyume.BlockChain
         private void CombinationEquipment()
         {
             _renderer.EveryRender<CombinationEquipment2>()
-                .Where(ValidateEvaluationForCurrentAvatarState)
+                .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseCombinationEquipment).AddTo(_disposables);
         }
@@ -245,7 +245,7 @@ namespace Nekoyume.BlockChain
         private void RapidCombination()
         {
             _renderer.EveryRender<RapidCombination2>()
-                .Where(ValidateEvaluationForCurrentAvatarState)
+                .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseRapidCombination).AddTo(_disposables);
         }
@@ -268,7 +268,7 @@ namespace Nekoyume.BlockChain
         private void ChargeActionPoint()
         {
             _renderer.EveryRender<ChargeActionPoint>()
-                .Where(ValidateEvaluationForCurrentAvatarState)
+                .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseChargeActionPoint).AddTo(_disposables);
         }
