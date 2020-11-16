@@ -21,6 +21,7 @@ using Libplanet.Tx;
 using MagicOnion.Client;
 using Nekoyume.Action;
 using Nekoyume.Helper;
+using Nekoyume.L10n;
 using Nekoyume.Model.State;
 using Nekoyume.Shared.Hubs;
 using Nekoyume.Shared.Services;
@@ -365,18 +366,31 @@ namespace Nekoyume.BlockChain
 
         public void OnException(int code, string message)
         {
+            var key = "ERROR_UNHANDLED";
+            var errorCode = "100";
             switch (code)
             {
                 case (int)RPCException.NetworkException:
-                    Widget.Find<SystemPopup>().Show("UI_ERROR", "ERROR_NETWORK");
-                    break;
-
-                default:
-                    Widget.Find<SystemPopup>().Show("UI_ERROR", "ERROR_UNHANDLED");
+                    key = "ERROR_NETWORK";
+                    errorCode = "101";
                     break;
             }
 
+            var errorMsg = string.Format(L10nManager.Localize("UI_ERROR_RETRY_FORMAT"),
+                L10nManager.Localize(key), errorCode);
+
             Debug.Log($"{message} (code: {code})");
+            Game.Event.OnRoomEnter.Invoke(true);
+            Game.Game.instance.Stage.OnRoomEnterEnd
+                .First()
+                .Subscribe(_ =>
+                {
+                    Widget
+                        .Find<Alert>()
+                        .Show(L10nManager.Localize("UI_ERROR"), errorMsg,
+                            L10nManager.Localize("UI_OK"), false);
+                });
+
         }
 
         public void OnPreloadStart()
