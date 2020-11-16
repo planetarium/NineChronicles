@@ -49,8 +49,6 @@ namespace Nekoyume.BlockChain
         {
             _renderer = renderer;
 
-            Shop();
-            Ranking();
             RewardGold();
             CreateAvatar();
             HackAndSlash();
@@ -66,30 +64,11 @@ namespace Nekoyume.BlockChain
             GameConfig();
             RedeemCode();
             ChargeActionPoint();
-            WeeklyArena();
         }
 
         public void Stop()
         {
             _disposables.DisposeAllAndClear();
-        }
-
-        private void Shop()
-        {
-            _renderer.EveryRender(ShopState.Address)
-                .ObserveOnMainThread()
-                .Subscribe(UpdateShopState).AddTo(_disposables);
-        }
-
-        private void Ranking()
-        {
-            var state = new RankingState((Dictionary)Game.Game.instance.Agent.GetState(Addresses.Ranking));
-            foreach (var address in state.RankingMap.Keys)
-            {
-                _renderer.EveryRender(address)
-                    .ObserveOnMainThread()
-                    .Subscribe(eval => UpdateRankingMapState(eval, address)).AddTo(_disposables);
-            }
         }
 
         private void RewardGold()
@@ -271,21 +250,6 @@ namespace Nekoyume.BlockChain
                 .Where(ValidateEvaluationForCurrentAvatarState)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseChargeActionPoint).AddTo(_disposables);
-        }
-        private void WeeklyArena()
-        {
-            var blockIndex = Game.Game.instance.Agent.BlockIndex;
-            if (ArenaHelper.TryGetThisWeekAddress(blockIndex, out var thisWeekAddress))
-            {
-                _renderer.EveryRender(thisWeekAddress)
-                    .ObserveOnMainThread()
-                    .Subscribe(UpdateWeeklyArenaState).AddTo(_disposables);
-
-                var nextWeekAddress = ArenaHelper.GetNextWeekAddress(blockIndex);
-                _renderer.EveryRender(nextWeekAddress)
-                    .ObserveOnMainThread()
-                    .Subscribe(UpdateWeeklyArenaState).AddTo(_disposables);
-            }
         }
 
         private void ResponseRapidCombination(ActionBase.ActionEvaluation<RapidCombination2> eval)
