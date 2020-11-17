@@ -35,6 +35,7 @@ namespace Nekoyume.BlockChain
             RewardGold();
             Buy();
             Sell();
+            ItemEnhancement();
         }
 
         public void Stop()
@@ -83,7 +84,16 @@ namespace Nekoyume.BlockChain
                 .AddTo(_disposables);
         }
 
-        private void ResponseUnrenderBuy(ActionBase.ActionEvaluation<Buy> eval)
+        private void ItemEnhancement()
+        {
+            _renderer.EveryUnrender<ItemEnhancement3>()
+                .Where(ValidateEvaluationForCurrentAgent)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseUnrenderItemEnhancement)
+                .AddTo(_disposables);
+        }
+        
+        private void ResponseUnrenderBuy(ActionBase.ActionEvaluation<Buy3> eval)
         {
             var buyerAvatarAddress = eval.Action.buyerAvatarAddress;
             var price = eval.Action.sellerResult.shopItem.Price;
