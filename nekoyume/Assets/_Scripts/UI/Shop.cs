@@ -584,7 +584,7 @@ namespace Nekoyume.UI
             var item = SharedModel.ItemCountAndPricePopup.Value.Item.Value;
             SharedModel.ItemCountAndPricePopup.Value.Item.Value = null;
 
-            if (!(item.ItemBase.Value is ItemUsable) && !(item.ItemBase.Value is Costume))
+            if (!(item.ItemBase.Value is INonFungibleItem nonFungibleItem))
             {
                 return;
             }
