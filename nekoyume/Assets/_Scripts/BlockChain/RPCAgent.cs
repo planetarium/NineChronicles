@@ -220,6 +220,7 @@ namespace Nekoyume.BlockChain
             ActionRenderHandler.Instance.Start(ActionRenderer);
             ActionUnrenderHandler.Instance.Start(ActionRenderer);
 
+            UpdateSubscribeAddresses();
             callback(true);
         }
 
@@ -337,6 +338,7 @@ namespace Nekoyume.BlockChain
                     await _hub.JoinAsync();
                     Debug.Log($"Join complete! Registering disconnect event...");
                     RegisterDisconnectEvent(_hub);
+                    UpdateSubscribeAddresses();
                     return;
                 }
                 catch (RpcException re)
@@ -402,6 +404,14 @@ namespace Nekoyume.BlockChain
         {
             Debug.Log($"On Preload End");
             WhenRetryEnded.Invoke();
+        }
+
+        public void UpdateSubscribeAddresses()
+        {
+            var addresses =
+                States.Instance.AgentState.avatarAddresses.Values.Append(Address).ToArray();
+            Debug.Log($"Subscribing addresses: {string.Join(", ", addresses)}");
+            _service.SetAddressesToSubscribe(addresses.Select(addr => addr.ToByteArray()));
         }
     }
 }
