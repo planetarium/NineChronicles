@@ -26,7 +26,12 @@ namespace Nekoyume.UI.Module
             Necklace,
             Ring,
             Food,
-            Costume,
+            FullCostume,
+            HairCostume,
+            EarCostume,
+            EyeCostume,
+            TailCostume,
+            Title,
         }
 
         public enum SortFilter
@@ -93,9 +98,17 @@ namespace Nekoyume.UI.Module
                     ItemSubTypeFilter.Necklace,
                     ItemSubTypeFilter.Ring,
                     ItemSubTypeFilter.Food,
-                    ItemSubTypeFilter.Costume,
+                    ItemSubTypeFilter.FullCostume,
+                    ItemSubTypeFilter.HairCostume,
+                    ItemSubTypeFilter.EarCostume,
+                    ItemSubTypeFilter.EyeCostume,
+                    ItemSubTypeFilter.TailCostume,
+                    ItemSubTypeFilter.Title,
                 }
-                .Select(GetTypeFilterToString)
+                .Select(type => type == ItemSubTypeFilter.All
+                    ? L10nManager.Localize("ALL")
+                    : ((ItemSubType) Enum.Parse(typeof(ItemSubType), type.ToString()))
+                    .GetLocalizedString())
                 .ToList());
             itemSubTypeFilter.onValueChanged.AsObservable()
                 .Select(index =>
@@ -340,20 +353,6 @@ namespace Nekoyume.UI.Module
                 case Shop.StateType.Sell:
                     UpdateViewWithFilteredPageIndex(SharedModel.AgentProducts.Value);
                     break;
-            }
-        }
-
-        private string GetTypeFilterToString(ItemSubTypeFilter typeFilter)
-        {
-            switch (typeFilter)
-            {
-                case ItemSubTypeFilter.All:
-                    return L10nManager.Localize("ALL");
-                case ItemSubTypeFilter.Costume:
-                    return L10nManager.Localize("UI_COSTUME");
-                default:
-                    return ((ItemSubType) Enum.Parse(typeof(ItemSubType), typeFilter.ToString()))
-                        .GetLocalizedString();
             }
         }
     }

@@ -96,7 +96,12 @@ namespace Nekoyume.State
             var necklaces = new List<ShopItem>();
             var rings = new List<ShopItem>();
             var foods = new List<ShopItem>();
-            var costumes = new List<ShopItem>();
+            var fullCostumes = new List<ShopItem>();
+            var hairCostumes = new List<ShopItem>();
+            var earCostumes = new List<ShopItem>();
+            var eyeCostumes = new List<ShopItem>();
+            var tailCostumes = new List<ShopItem>();
+            var titles = new List<ShopItem>();
 
             foreach (var shopItem in shopItems)
             {
@@ -126,7 +131,27 @@ namespace Nekoyume.State
                 }
                 else if (shopItem.Costume != null)
                 {
-                    costumes.Add(shopItem);
+                    switch (shopItem.Costume.ItemSubType)
+                    {
+                        case ItemSubType.FullCostume:
+                            fullCostumes.Add(shopItem);
+                            break;
+                        case ItemSubType.HairCostume:
+                            hairCostumes.Add(shopItem);
+                            break;
+                        case ItemSubType.EarCostume:
+                            earCostumes.Add(shopItem);
+                            break;
+                        case ItemSubType.EyeCostume:
+                            eyeCostumes.Add(shopItem);
+                            break;
+                        case ItemSubType.TailCostume:
+                            tailCostumes.Add(shopItem);
+                            break;
+                        case ItemSubType.Title:
+                            titles.Add(shopItem);
+                            break;
+                    }
                 }
             }
 
@@ -138,7 +163,12 @@ namespace Nekoyume.State
                 necklaces,
                 rings,
                 foods,
-                costumes);
+                fullCostumes,
+                hairCostumes,
+                earCostumes,
+                eyeCostumes,
+                tailCostumes,
+                titles);
         }
 
         private static Dictionary<
@@ -152,7 +182,12 @@ namespace Nekoyume.State
                 IReadOnlyCollection<ShopItem> necklaces,
                 IReadOnlyCollection<ShopItem> rings,
                 IReadOnlyCollection<ShopItem> foods,
-                IReadOnlyCollection<ShopItem> costumes)
+                IReadOnlyCollection<ShopItem> fullCostumes,
+                IReadOnlyCollection<ShopItem> hairCostumes,
+                IReadOnlyCollection<ShopItem> earCostumes,
+                IReadOnlyCollection<ShopItem> eyeCostumes,
+                IReadOnlyCollection<ShopItem> tailCostumes,
+                IReadOnlyCollection<ShopItem> titles)
         {
             return new Dictionary<
                 ShopItems.ItemSubTypeFilter, Dictionary<
@@ -165,7 +200,12 @@ namespace Nekoyume.State
                 {ShopItems.ItemSubTypeFilter.Necklace, GetGroupedShopItemsBySortFilter(necklaces)},
                 {ShopItems.ItemSubTypeFilter.Ring, GetGroupedShopItemsBySortFilter(rings)},
                 {ShopItems.ItemSubTypeFilter.Food, GetGroupedShopItemsBySortFilter(foods)},
-                {ShopItems.ItemSubTypeFilter.Costume, GetGroupedShopItemsBySortFilter(costumes)},
+                {ShopItems.ItemSubTypeFilter.FullCostume, GetGroupedShopItemsBySortFilter(fullCostumes)},
+                {ShopItems.ItemSubTypeFilter.HairCostume, GetGroupedShopItemsBySortFilter(hairCostumes)},
+                {ShopItems.ItemSubTypeFilter.EarCostume, GetGroupedShopItemsBySortFilter(earCostumes)},
+                {ShopItems.ItemSubTypeFilter.EyeCostume, GetGroupedShopItemsBySortFilter(eyeCostumes)},
+                {ShopItems.ItemSubTypeFilter.TailCostume, GetGroupedShopItemsBySortFilter(tailCostumes)},
+                {ShopItems.ItemSubTypeFilter.Title, GetGroupedShopItemsBySortFilter(titles)},
             };
         }
 
