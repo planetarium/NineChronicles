@@ -170,11 +170,11 @@ namespace Nekoyume.State
             {
                 {
                     ShopItems.SortFilter.Class,
-                    GetGroupedShopItemsByPage(SortedShopItem(shopItems, SORT_TYPE.Grade))
+                    GetGroupedShopItemsByPage(GetSortedShopItems(shopItems, SortType.Grade))
                 },
                 {
                     ShopItems.SortFilter.CP,
-                    GetGroupedShopItemsByPage(SortedShopItem(shopItems, SORT_TYPE.Cp))
+                    GetGroupedShopItemsByPage(GetSortedShopItems(shopItems, SortType.Cp))
                 },
                 {
                     ShopItems.SortFilter.Price,
@@ -185,14 +185,14 @@ namespace Nekoyume.State
             };
         }
 
-        private enum SORT_TYPE
+        private enum SortType
         {
             None = 0,
             Grade = 1,
             Cp = 2,
         }
 
-        private static List<ShopItem> SortedShopItem(IEnumerable<ShopItem> shopItems, SORT_TYPE type)
+        private static List<ShopItem> GetSortedShopItems(IEnumerable<ShopItem> shopItems, SortType type)
         {
             var result = new List<ShopItem>();
             result.AddRange(shopItems.Where(shopItem => shopItem.Costume != null)
@@ -202,13 +202,13 @@ namespace Nekoyume.State
             return result;
         }
 
-        private static int GetTypeValue(ItemBase item, SORT_TYPE type)
+        private static int GetTypeValue(ItemBase item, SortType type)
         {
             switch (type)
             {
-                case SORT_TYPE.Grade:
+                case SortType.Grade:
                     return item.Grade;
-                case SORT_TYPE.Cp:
+                case SortType.Cp:
                     switch (item)
                     {
                         case ItemUsable itemUsable:
@@ -220,7 +220,7 @@ namespace Nekoyume.State
                         }
                     }
                     break;
-                case SORT_TYPE.None:
+                case SortType.None:
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(type), type, null);
