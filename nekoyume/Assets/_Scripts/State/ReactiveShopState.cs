@@ -15,6 +15,13 @@ namespace Nekoyume.State
     /// </summary>
     public static class ReactiveShopState
     {
+        private enum SortType
+        {
+            None = 0,
+            Grade = 1,
+            Cp = 2,
+        }
+
         public static readonly ReactiveProperty<Dictionary<
                 Address, Dictionary<
                     ShopItems.ItemSubTypeFilter, Dictionary<
@@ -183,13 +190,6 @@ namespace Nekoyume.State
                         .ToList())
                 },
             };
-        }
-
-        private enum SortType
-        {
-            None = 0,
-            Grade = 1,
-            Cp = 2,
         }
 
         private static List<ShopItem> GetSortedShopItems(IEnumerable<ShopItem> shopItems, SortType type)
