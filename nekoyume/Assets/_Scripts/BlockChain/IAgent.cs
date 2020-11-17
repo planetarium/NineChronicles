@@ -28,6 +28,8 @@ namespace Nekoyume.BlockChain
 
         Subject<HashDigest<SHA256>> BlockHashSubject { get; }
 
+        HashDigest<SHA256> BlockHash { get; }
+
         void Initialize(
             CommandLineOptions options,
             PrivateKey privateKey,

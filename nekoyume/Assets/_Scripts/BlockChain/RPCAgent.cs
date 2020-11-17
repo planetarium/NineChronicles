@@ -81,6 +81,8 @@ namespace Nekoyume.BlockChain
 
         public int AppProtocolVersion { get; private set; }
 
+        public HashDigest<SHA256> BlockHash { get; private set; }
+
         public void Initialize(
             CommandLineOptions options,
             PrivateKey privateKey,
@@ -306,7 +308,8 @@ namespace Nekoyume.BlockChain
             var newTipHeader = BlockHeader.Deserialize(newTip);
             BlockIndex = newTipHeader.Index;
             BlockIndexSubject.OnNext(BlockIndex);
-            BlockHashSubject.OnNext(new HashDigest<SHA256>(newTipHeader.Hash));
+            BlockHash = new HashDigest<SHA256>(newTipHeader.Hash);
+            BlockHashSubject.OnNext(BlockHash);
             _lastTipChangedAt = DateTimeOffset.UtcNow;
         }
 

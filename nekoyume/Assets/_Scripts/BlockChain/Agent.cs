@@ -96,6 +96,7 @@ namespace Nekoyume.BlockChain
 
         public ActionRenderer ActionRenderer => BlockPolicySource.ActionRenderer;
         public int AppProtocolVersion { get; private set; }
+        public HashDigest<SHA256> BlockHash => blocks.Tip.Hash;
 
         public event EventHandler BootstrapStarted;
         public event EventHandler<PreloadState> PreloadProcessed;
