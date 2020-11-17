@@ -877,7 +877,7 @@ namespace Nekoyume.State
                 return;
             }
 
-            if (item is not Equipment equipment)
+            if (!(item is Equipment equipment))
             {
                 return;
             }
