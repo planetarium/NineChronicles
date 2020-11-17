@@ -408,8 +408,7 @@ namespace Nekoyume.BlockChain
 
         public void UpdateSubscribeAddresses()
         {
-            var addresses =
-                States.Instance.AgentState.avatarAddresses.Values.Append(Address).ToArray();
+            var addresses = new List<Address> { Address };
             Debug.Log($"Subscribing addresses: {string.Join(", ", addresses)}");
             _service.SetAddressesToSubscribe(addresses.Select(addr => addr.ToByteArray()));
         }
