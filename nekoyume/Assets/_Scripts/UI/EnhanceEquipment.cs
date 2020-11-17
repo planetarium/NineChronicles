@@ -291,7 +291,7 @@ namespace Nekoyume.UI
             int slotIndex)
         {
             LocalStateModifier.ModifyCombinationSlotItemEnhancement(
-                this,
+                baseItemGuid,
                 otherItemGuid,
                 slotIndex);
             var msg = L10nManager.Localize("NOTIFICATION_ITEM_ENHANCEMENT_START");

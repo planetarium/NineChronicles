@@ -5,6 +5,7 @@ using Lib9c.Renderer;
 using Libplanet;
 using Nekoyume.Action;
 using Nekoyume.State;
+using Nekoyume.UI;
 using UniRx;
 using UnityEngine;
 
@@ -135,6 +136,44 @@ namespace Nekoyume.BlockChain
 
             LocalStateModifier.RemoveItem(avatarAddress, itemId);
             UpdateCurrentAvatarState(eval);
+        }
+
+        private void ResponseUnrenderItemEnhancement(ActionBase.ActionEvaluation<ItemEnhancement3> eval)
+        {
+            var agentAddress = eval.Signer;
+            var avatarAddress = eval.Action.avatarAddress;
+            var slot = eval.OutputStates.GetCombinationSlotState(avatarAddress, eval.Action.slotIndex);
+            var result = (ItemEnhancement.ResultModel)slot.Result;
+            var itemUsable = result.itemUsable;
+            var avatarState = eval.OutputStates.GetAvatarState(avatarAddress);
+
+            // NOTE: 사용한 자원에 대한 레이어 다시 추가하기.
+            LocalStateModifier.ModifyAgentGold(agentAddress, -result.gold);
+            LocalStateModifier.ModifyAvatarActionPoint(avatarAddress, -result.actionPoint);
+            LocalStateModifier.RemoveItem(avatarAddress, itemUsable.ItemId);
+            foreach (var itemId in result.materialItemIdList)
+            {
+                // NOTE: 최종적으로 UpdateCurrentAvatarState()를 호출한다면, 그곳에서 상태를 새로 설정할 것이다.
+                LocalStateModifier.RemoveItem(avatarAddress, itemId);
+            }
+
+            // NOTE: 메일 레이어 다시 없애기.
+            LocalStateModifier.AddItem(avatarAddress, itemUsable.ItemId, false);
+            LocalStateModifier.RemoveNewAttachmentMail(avatarAddress, result.id);
+
+            // NOTE: 워크샵 슬롯의 모든 휘발성 상태 변경자를 다시 추가하기.
+            LocalStateModifier.ResetCombinationSlot(slot);
+
+            var otherItemId = result.materialItemIdList.First();
+            LocalStateModifier.ModifyCombinationSlotItemEnhancement(
+                itemUsable.ItemId,
+                otherItemId,
+                eval.Action.slotIndex);
+
+            UpdateAgentState(eval);
+            UpdateCurrentAvatarState(eval);
+            UpdateCombinationSlotState(slot);
+            UnrenderQuest(avatarAddress, avatarState.questList.completedQuestIds);
         }
 
         public void UnrenderQuest(Address avatarAddress, IEnumerable<int> ids)
