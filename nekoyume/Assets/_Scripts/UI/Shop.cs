@@ -589,9 +589,7 @@ namespace Nekoyume.UI
                 return;
             }
 
-            var nonFungibleItem = (INonFungibleItem)item.ItemBase.Value;
             LocalStateModifier.RemoveItem(avatarAddress, nonFungibleItem.ItemId);
-
             AudioController.instance.PlaySfx(AudioController.SfxCode.InputItem);
             var format = L10nManager.Localize("NOTIFICATION_SELL_START");
             Notification.Push(MailType.Auction,
