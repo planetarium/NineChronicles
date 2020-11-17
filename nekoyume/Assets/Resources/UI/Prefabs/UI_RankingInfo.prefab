@@ -179,7 +179,7 @@ GameObject:
   - component: {fileID: 2942686448877497171}
   - component: {fileID: 4029512300160500859}
   m_Layer: 5
-  m_Name: Text (1)
+  m_Name: WinCountText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -367,7 +367,7 @@ GameObject:
   - component: {fileID: 1312322150612621745}
   - component: {fileID: 1550764922759962556}
   m_Layer: 5
-  m_Name: Text
+  m_Name: RemainTimeText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -667,7 +667,7 @@ GameObject:
   - component: {fileID: 3799052707672828526}
   - component: {fileID: 9192172528088273030}
   m_Layer: 5
-  m_Name: Text
+  m_Name: WinText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -857,7 +857,7 @@ GameObject:
   - component: {fileID: 249523086183799962}
   - component: {fileID: 5861259593219434310}
   m_Layer: 5
-  m_Name: Text (1)
+  m_Name: LoseCountText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1045,7 +1045,7 @@ GameObject:
   - component: {fileID: 6912356932123764444}
   - component: {fileID: 217301369520273655}
   m_Layer: 5
-  m_Name: Text
+  m_Name: LoseText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
