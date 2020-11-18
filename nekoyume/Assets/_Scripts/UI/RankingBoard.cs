@@ -199,7 +199,11 @@ namespace Nekoyume.UI
             AudioController.instance.PlayMusic(AudioController.MusicCode.Ranking);
 
             WeeklyArenaStateSubject.WeeklyArenaState
-                .Subscribe(UpdateWeeklyCache)
+                .Subscribe(state =>
+                {
+                    UpdateWeeklyCache(state);
+                    UpdateArena();
+                })
                 .AddTo(_disposablesFromShow);
         }
 
