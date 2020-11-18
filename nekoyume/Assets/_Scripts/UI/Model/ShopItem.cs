@@ -18,8 +18,7 @@ namespace Nekoyume.UI.Model
         public ShopItemView View;
 
         public ShopItem(Nekoyume.Model.Item.ShopItem item)
-            : this(item.SellerAgentAddress, item.SellerAvatarAddress, item.Price, item.ProductId,
-                item.ItemUsable ?? (ItemBase)item.Costume)
+            : this(item.SellerAgentAddress, item.SellerAvatarAddress, item.Price, item.ProductId, item.ItemUsable)
         {
         }
 

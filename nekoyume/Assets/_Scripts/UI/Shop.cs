@@ -489,7 +489,7 @@ namespace Nekoyume.UI
                     }
 
                     Game.Game.instance.ActionManager.Sell(
-                        (INonFungibleItem)data.Item.Value.ItemBase.Value,
+                        (ItemUsable) data.Item.Value.ItemBase.Value,
                         data.Price.Value);
                     ResponseSell();
 
@@ -540,7 +540,8 @@ namespace Nekoyume.UI
 
         private static bool DimmedFuncForSell(InventoryItem inventoryItem)
         {
-            return inventoryItem.ItemBase.Value.ItemType == ItemType.Material;
+            return inventoryItem.ItemBase.Value.ItemType == ItemType.Costume ||
+                   inventoryItem.ItemBase.Value.ItemType == ItemType.Material;
         }
 
         private static bool EquippedFuncForSell(InventoryItem inventoryItem)
@@ -587,12 +588,13 @@ namespace Nekoyume.UI
             var item = SharedModel.ItemCountAndPricePopup.Value.Item.Value;
             SharedModel.ItemCountAndPricePopup.Value.Item.Value = null;
 
-            if (!(item.ItemBase.Value is INonFungibleItem nonFungibleItem))
+            if (!(item.ItemBase.Value is ItemUsable itemUsable))
             {
                 return;
             }
 
-            LocalStateModifier.RemoveItem(avatarAddress, nonFungibleItem.ItemId);
+            LocalStateModifier.RemoveItem(avatarAddress, itemUsable.ItemId);
+
             AudioController.instance.PlaySfx(AudioController.SfxCode.InputItem);
             var format = L10nManager.Localize("NOTIFICATION_SELL_START");
             Notification.Push(MailType.Auction,
