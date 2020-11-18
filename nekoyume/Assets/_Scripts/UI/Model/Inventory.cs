@@ -122,6 +122,12 @@ namespace Nekoyume.UI.Model
                     break;
                 case ItemType.Costume:
                     var costume = (Costume) itemBase;
+                    if (TryGetCostume(costume, out inventoryItem))
+                    {
+                        inventoryItem.Count.Value += count;
+                        break;
+                    }
+
                     inventoryItem = CreateInventoryItem(itemBase, count);
                     inventoryItem.EquippedEnabled.Value = costume.equipped;
                     Costumes.Add(inventoryItem);

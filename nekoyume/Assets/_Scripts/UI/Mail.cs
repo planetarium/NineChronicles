@@ -4,7 +4,6 @@ using System.Globalization;
 using System.Linq;
 using Nekoyume.Action;
 using Nekoyume.L10n;
-using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.State;
 using Nekoyume.UI.Model;
@@ -181,8 +180,7 @@ namespace Nekoyume.UI
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             var attachment = (CombinationConsumable.ResultModel) mail.attachment;
-            var itemBase = attachment.itemUsable ?? (ItemBase)attachment.costume;
-            var nonFungibleItem = attachment.itemUsable ?? (INonFungibleItem)attachment.costume;
+            var item = attachment.itemUsable;
             var popup = Find<CombinationResultPopup>();
             var materialItems = attachment.materials
                 .Select(pair => new {pair, item = pair.Key})
@@ -192,19 +190,19 @@ namespace Nekoyume.UI
                     t.pair.Value,
                     t.pair.Value))
                 .ToList();
-            var model = new UI.Model.CombinationResultPopup(new CountableItem(itemBase, 1))
+            var model = new UI.Model.CombinationResultPopup(new CountableItem(item, 1))
             {
                 isSuccess = true,
                 materialItems = materialItems
             };
             model.OnClickSubmit.Subscribe(_ =>
             {
-                LocalStateModifier.AddItem(avatarAddress, nonFungibleItem.ItemId, false);
+                LocalStateModifier.AddItem(avatarAddress, item.ItemId, false);
                 LocalStateModifier.RemoveNewAttachmentMail(avatarAddress, mail.id, false);
                 LocalStateModifier.RemoveAttachmentResult(avatarAddress, mail.id);
                 LocalStateModifier.ModifyAvatarItemRequiredIndex(
                     avatarAddress,
-                    nonFungibleItem.ItemId,
+                    item.ItemId,
                     Game.Game.instance.Agent.BlockIndex);
             });
             popup.Pop(model);
@@ -214,8 +212,7 @@ namespace Nekoyume.UI
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             var attachment = (SellCancellation.Result) mail.attachment;
-            var itemBase = attachment.itemUsable ?? (ItemBase)attachment.costume;
-            var nonFungibleItem = attachment.itemUsable ?? (INonFungibleItem)attachment.costume;
+            var item = attachment.itemUsable;
             //TODO 관련 기획이 끝나면 별도 UI를 생성
             var popup = Find<ItemCountAndPricePopup>();
             var model = new UI.Model.ItemCountAndPricePopup();
@@ -224,17 +221,17 @@ namespace Nekoyume.UI
             model.PriceInteractable.Value = false;
             model.Price.Value = attachment.shopItem.Price;
             model.CountEnabled.Value = false;
-            model.Item.Value = new CountEditableItem(itemBase, 1, 1, 1);
+            model.Item.Value = new CountEditableItem(item, 1, 1, 1);
             model.OnClickSubmit.Subscribe(_ =>
             {
-                LocalStateModifier.AddItem(avatarAddress, nonFungibleItem.ItemId, false);
+                LocalStateModifier.AddItem(avatarAddress, item.ItemId, false);
                 LocalStateModifier.RemoveNewAttachmentMail(avatarAddress, mail.id);
                 popup.Close();
             }).AddTo(gameObject);
             model.OnClickCancel.Subscribe(_ =>
             {
                 //TODO 재판매 처리추가되야함\
-                LocalStateModifier.AddItem(avatarAddress, nonFungibleItem.ItemId, false);
+                LocalStateModifier.AddItem(avatarAddress, item.ItemId, false);
                 LocalStateModifier.RemoveNewAttachmentMail(avatarAddress, mail.id);
                 popup.Close();
             }).AddTo(gameObject);
@@ -245,17 +242,16 @@ namespace Nekoyume.UI
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             var attachment = (Buy.BuyerResult) buyerMail.attachment;
-            var itemBase = attachment.itemUsable ?? (ItemBase)attachment.costume;
-            var nonFungibleItem = attachment.itemUsable ?? (INonFungibleItem)attachment.costume;
+            var item = attachment.itemUsable;
             var popup = Find<CombinationResultPopup>();
-            var model = new UI.Model.CombinationResultPopup(new CountableItem(itemBase, 1))
+            var model = new UI.Model.CombinationResultPopup(new CountableItem(item, 1))
             {
                 isSuccess = true,
                 materialItems = new List<CombinationMaterial>()
             };
             model.OnClickSubmit.Subscribe(_ =>
             {
-                LocalStateModifier.AddItem(avatarAddress, nonFungibleItem.ItemId, false);
+                LocalStateModifier.AddItem(avatarAddress, item.ItemId, false);
                 LocalStateModifier.RemoveNewAttachmentMail(avatarAddress, buyerMail.id);
             }).AddTo(gameObject);
             popup.Pop(model);
@@ -277,16 +273,15 @@ namespace Nekoyume.UI
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             var attachment = (ItemEnhancement.ResultModel) itemEnhanceMail.attachment;
             var popup = Find<CombinationResultPopup>();
-            var itemBase = attachment.itemUsable ?? (ItemBase)attachment.costume;
-            var nonFungibleItem = attachment.itemUsable ?? (INonFungibleItem)attachment.costume;
-            var model = new UI.Model.CombinationResultPopup(new CountableItem(itemBase, 1))
+            var item = attachment.itemUsable;
+            var model = new UI.Model.CombinationResultPopup(new CountableItem(item, 1))
             {
                 isSuccess = true,
                 materialItems = new List<CombinationMaterial>()
             };
             model.OnClickSubmit.Subscribe(_ =>
             {
-                LocalStateModifier.AddItem(avatarAddress, nonFungibleItem.ItemId, false);
+                LocalStateModifier.AddItem(avatarAddress, item.ItemId, false);
                 LocalStateModifier.RemoveNewAttachmentMail(avatarAddress, itemEnhanceMail.id);
             });
             popup.Pop(model);

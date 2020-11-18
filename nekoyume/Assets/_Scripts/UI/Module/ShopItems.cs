@@ -27,12 +27,6 @@ namespace Nekoyume.UI.Module
             Necklace,
             Ring,
             Food,
-            FullCostume,
-            HairCostume,
-            EarCostume,
-            EyeCostume,
-            TailCostume,
-            Title,
         }
 
         public enum SortFilter
@@ -99,12 +93,6 @@ namespace Nekoyume.UI.Module
                     ItemSubTypeFilter.Necklace,
                     ItemSubTypeFilter.Ring,
                     ItemSubTypeFilter.Food,
-                    ItemSubTypeFilter.FullCostume,
-                    ItemSubTypeFilter.HairCostume,
-                    ItemSubTypeFilter.EarCostume,
-                    ItemSubTypeFilter.EyeCostume,
-                    ItemSubTypeFilter.TailCostume,
-                    ItemSubTypeFilter.Title,
                 }
                 .Select(type => type == ItemSubTypeFilter.All
                     ? L10nManager.Localize("ALL")

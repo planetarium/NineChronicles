@@ -26,7 +26,7 @@ namespace Nekoyume.UI
                 case BuyerMail buyerMail:
                     return string.Format(
                         L10nManager.Localize("UI_BUYER_MAIL_FORMAT"),
-                        GetLocalizedNonColoredName(buyerMail.attachment.itemUsable ?? (ItemBase)buyerMail.attachment.costume)
+                        GetLocalizedNonColoredName(buyerMail.attachment.itemUsable)
                     );
                 case CombinationMail combinationMail:
                     return string.Format(
@@ -41,7 +41,7 @@ namespace Nekoyume.UI
                 case SellCancelMail sellCancelMail:
                     return string.Format(
                         L10nManager.Localize("UI_SELL_CANCEL_MAIL_FORMAT"),
-                        GetLocalizedNonColoredName(sellCancelMail.attachment.itemUsable ?? (ItemBase)sellCancelMail.attachment.costume)
+                        GetLocalizedNonColoredName(sellCancelMail.attachment.itemUsable)
                     );
                 case SellerMail sellerMail:
                     var attachment = sellerMail.attachment;
@@ -49,7 +49,7 @@ namespace Nekoyume.UI
                         throw new InvalidCastException($"({nameof(Buy.SellerResult)}){nameof(attachment)}");
 
                     var format = L10nManager.Localize("UI_SELLER_MAIL_FORMAT");
-                    return string.Format(format, sellerResult.gold, GetLocalizedNonColoredName(attachment.itemUsable ?? (ItemBase)attachment.costume));
+                    return string.Format(format, sellerResult.gold, GetLocalizedNonColoredName(attachment.itemUsable));
                 default:
                     throw new NotSupportedException(
                         $"Given mail[{mail}] doesn't support {nameof(ToInfo)}() method."
