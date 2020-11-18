@@ -33,6 +33,16 @@ namespace Nekoyume.BlockChain
             _agent.EnqueueAction(gameAction);
         }
 
+        private void HandleException(Guid actionId, Exception e)
+        {
+            if (e is TimeoutException)
+            {
+                throw new ActionTimeoutException(e.Message, actionId);
+            }
+
+            throw e;
+        }
+
         public ActionManager(IAgent agent)
         {
             _agent = agent;
@@ -66,6 +76,7 @@ namespace Nekoyume.BlockChain
                 .Last()
                 .ObserveOnMainThread()
                 .Timeout(ActionTimeout)
+                .DoOnError(e => HandleException(action.Id, e))
                 .Finally(() =>
                 {
                     var agentAddress = States.Instance.AgentState.address;
@@ -140,7 +151,8 @@ namespace Nekoyume.BlockChain
                 .Take(1)
                 .Last()
                 .ObserveOnMainThread()
-                .Timeout(ActionTimeout);
+                .Timeout(ActionTimeout)
+                .DoOnError(e => HandleException(action.Id, e));
         }
 
         public IObservable<ActionBase.ActionEvaluation<CombinationConsumable2>> CombinationConsumable(
@@ -161,7 +173,8 @@ namespace Nekoyume.BlockChain
                 .Take(1)
                 .Last()
                 .ObserveOnMainThread()
-                .Timeout(ActionTimeout);
+                .Timeout(ActionTimeout)
+                .DoOnError(e => HandleException(action.Id, e));
         }
 
         public IObservable<ActionBase.ActionEvaluation<Sell>> Sell(ItemUsable itemUsable, FungibleAssetValue price)
@@ -184,7 +197,8 @@ namespace Nekoyume.BlockChain
                 .Take(1)
                 .Last()
                 .ObserveOnMainThread()
-                .Timeout(ActionTimeout); // Last() is for completion
+                .Timeout(ActionTimeout)
+                .DoOnError(e => HandleException(action.Id, e)); // Last() is for completion
         }
 
         public IObservable<ActionBase.ActionEvaluation<SellCancellation2>> SellCancellation(
@@ -203,7 +217,8 @@ namespace Nekoyume.BlockChain
                 .Take(1)
                 .Last()
                 .ObserveOnMainThread()
-                .Timeout(ActionTimeout); // Last() is for completion
+                .Timeout(ActionTimeout)
+                .DoOnError(e => HandleException(action.Id, e)); // Last() is for completion
         }
 
         public IObservable<ActionBase.ActionEvaluation<Buy2>> Buy(Address sellerAgentAddress,
@@ -223,7 +238,8 @@ namespace Nekoyume.BlockChain
                 .Take(1)
                 .Last()
                 .ObserveOnMainThread()
-                .Timeout(ActionTimeout); // Last() is for completion
+                .Timeout(ActionTimeout)
+                .DoOnError(e => HandleException(action.Id, e)); // Last() is for completion
         }
 
         public IObservable<ActionBase.ActionEvaluation<DailyReward>> DailyReward()
@@ -244,7 +260,8 @@ namespace Nekoyume.BlockChain
                 .Take(1)
                 .Last()
                 .ObserveOnMainThread()
-                .Timeout(ActionTimeout);
+                .Timeout(ActionTimeout)
+                .DoOnError(e => HandleException(action.Id, e));
         }
 
         public IObservable<ActionBase.ActionEvaluation<ItemEnhancement3>> ItemEnhancement(
@@ -272,7 +289,8 @@ namespace Nekoyume.BlockChain
                 .Take(1)
                 .Last()
                 .ObserveOnMainThread()
-                .Timeout(ActionTimeout);
+                .Timeout(ActionTimeout)
+                .DoOnError(e => HandleException(action.Id, e));
         }
 
         public IObservable<ActionBase.ActionEvaluation<RankingBattle2>> RankingBattle(
@@ -301,7 +319,8 @@ namespace Nekoyume.BlockChain
                 .Take(1)
                 .Last()
                 .ObserveOnMainThread()
-                .Timeout(ActionTimeout);
+                .Timeout(ActionTimeout)
+                .DoOnError(e => HandleException(action.Id, e));
         }
 
         public void PatchTableSheet(string tableName, string tableCsv)
@@ -336,7 +355,8 @@ namespace Nekoyume.BlockChain
                 .Take(1)
                 .Last()
                 .ObserveOnMainThread()
-                .Timeout(ActionTimeout);
+                .Timeout(ActionTimeout)
+                .DoOnError(e => HandleException(action.Id, e));
         }
 
         public IObservable<ActionBase.ActionEvaluation<RapidCombination2>> RapidCombination(int slotIndex)
@@ -353,7 +373,8 @@ namespace Nekoyume.BlockChain
                 .Take(1)
                 .Last()
                 .ObserveOnMainThread()
-                .Timeout(ActionTimeout);
+                .Timeout(ActionTimeout)
+                .DoOnError(e => HandleException(action.Id, e));
         }
 
         public IObservable<ActionBase.ActionEvaluation<RedeemCode>> RedeemCode(string code)
@@ -369,7 +390,8 @@ namespace Nekoyume.BlockChain
                 .Take(1)
                 .Last()
                 .ObserveOnMainThread()
-                .Timeout(ActionTimeout);
+                .Timeout(ActionTimeout)
+                .DoOnError(e => HandleException(action.Id, e));
         }
 
         public IObservable<ActionBase.ActionEvaluation<ChargeActionPoint>> ChargeActionPoint()
@@ -385,7 +407,8 @@ namespace Nekoyume.BlockChain
                 .Take(1)
                 .Last()
                 .ObserveOnMainThread()
-                .Timeout(ActionTimeout);
+                .Timeout(ActionTimeout)
+                .DoOnError(e => HandleException(action.Id, e));
         }
 
 
