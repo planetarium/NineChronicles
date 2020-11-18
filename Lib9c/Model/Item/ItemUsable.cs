@@ -11,7 +11,7 @@ namespace Nekoyume.Model.Item
 {
     // todo: 소모품과 장비가 함께 쓰기에는 장비 위주의 모델이 된 느낌. 아이템 정리하면서 정리를 흐음..
     [Serializable]
-    public abstract class ItemUsable : ItemBase
+    public abstract class ItemUsable : ItemBase, INonFungibleItem
     {
         public Guid ItemId { get; }
         public StatsMap StatsMap { get; }

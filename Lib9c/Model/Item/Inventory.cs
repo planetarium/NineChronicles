@@ -29,12 +29,6 @@ namespace Nekoyume.Model.Item
                 this.count = count;
             }
 
-            public Item(ItemUsable itemUsable, int count = 1)
-            {
-                item = itemUsable;
-                this.count = count;
-            }
-
             public Item(Bencodex.Types.Dictionary serialized)
             {
                 item = ItemFactory.Deserialize(
@@ -131,9 +125,9 @@ namespace Nekoyume.Model.Item
             {
                 case ItemType.Consumable:
                 case ItemType.Equipment:
-                    AddNonFungibleItem((ItemUsable) itemBase);
-                    break;
                 case ItemType.Costume:
+                    AddNonFungibleItem(itemBase);
+                    break;
                 case ItemType.Material:
                     AddFungibleItem(itemBase, count);
                     break;
@@ -157,7 +151,7 @@ namespace Nekoyume.Model.Item
             return fungibleItem;
         }
 
-        private Item AddNonFungibleItem(ItemUsable itemBase)
+        private Item AddNonFungibleItem(ItemBase itemBase)
         {
             var nonFungibleItem = new Item(itemBase);
             _items.Add(nonFungibleItem);
@@ -172,30 +166,11 @@ namespace Nekoyume.Model.Item
         {
             switch (itemBase)
             {
-                case Costume costume:
-                    return RemoveCostume(costume.Id, count);
                 case Material material:
                     return RemoveMaterial(material.ItemId, count);
                 default:
                     return false;
             }
-        }
-
-        public bool RemoveCostume(int id, int count = 1)
-        {
-            if (!TryGetCostume(id, out var item) ||
-                item.count < count)
-            {
-                return false;
-            }
-
-            item.count -= count;
-            if (item.count == 0)
-            {
-                _items.Remove(item);
-            }
-
-            return true;
         }
 
         public bool RemoveMaterial(HashDigest<SHA256> id, int count = 1)
@@ -215,14 +190,14 @@ namespace Nekoyume.Model.Item
             return true;
         }
 
-        public bool RemoveNonFungibleItem(ItemUsable itemUsable)
+        public bool RemoveNonFungibleItem(INonFungibleItem nonFungibleItem)
         {
-            return TryGetNonFungibleItem(itemUsable, out Item item) && _items.Remove(item);
+            return RemoveNonFungibleItem(nonFungibleItem.ItemId);
         }
 
-        public bool RemoveNonFungibleItem(Guid itemGuid)
+        public bool RemoveNonFungibleItem(Guid itemId)
         {
-            return TryGetNonFungibleItem(itemGuid, out Item item) && _items.Remove(item);
+            return TryGetNonFungibleItem(itemId, out Item item) && _items.Remove(item);
         }
 
         #endregion
@@ -233,8 +208,6 @@ namespace Nekoyume.Model.Item
         {
             switch (itemBase)
             {
-                case Costume costume:
-                    return TryGetCostume(costume.Id, out outFungibleItem);
                 case Material material:
                     return TryGetMaterial(material.ItemId, out outFungibleItem);
                 default:
@@ -247,24 +220,6 @@ namespace Nekoyume.Model.Item
         {
             outFungibleItem = _items.FirstOrDefault(i => i.item.Id == id);
             return !(outFungibleItem is null);
-        }
-
-        public bool TryGetCostume(int id, out Item outCostume)
-        {
-            foreach (var item in _items)
-            {
-                if (!(item.item is Costume costume) ||
-                    costume.Id != id)
-                {
-                    continue;
-                }
-
-                outCostume = item;
-                return true;
-            }
-
-            outCostume = null;
-            return false;
         }
 
         public bool TryGetMaterial(HashDigest<SHA256> itemId, out Item outMaterial)
@@ -285,77 +240,53 @@ namespace Nekoyume.Model.Item
             return false;
         }
 
-        public bool TryGetNonFungibleItem(ItemUsable itemUsable, out ItemUsable outNonFungibleItem)
+        // FIXME: It must be deleted. As ItemId was added to the costume, it became NonFungible.
+        public bool TryGetCostume(int id, out Costume outCostume)
         {
             foreach (var item in _items)
             {
-                if (!(item.item is ItemUsable nonFungibleItem))
+                if (!(item.item is Costume costume) ||
+                    !costume.Id.Equals(id))
                 {
                     continue;
                 }
 
-                if (nonFungibleItem.ItemId != itemUsable.ItemId)
-                {
-                    continue;
-                }
-
-                outNonFungibleItem = nonFungibleItem;
+                outCostume = costume;
                 return true;
             }
 
-            outNonFungibleItem = null;
+            outCostume = null;
             return false;
         }
 
-        public bool TryGetNonFungibleItemFromLast(out ItemUsable outNonFungibleItem)
-        {
-            foreach (var item in Enumerable.Reverse(_items))
-            {
-                if (!(item.item is ItemUsable nonFungibleItem))
-                {
-                    continue;
-                }
-
-                outNonFungibleItem = nonFungibleItem;
-                return true;
-            }
-
-            outNonFungibleItem = null;
-            return false;
-        }
-
-        public bool TryGetNonFungibleItem(ItemUsable itemUsable, out Item outNonFungibleItem)
-        {
-            return TryGetNonFungibleItem(itemUsable.ItemId, out outNonFungibleItem);
-        }
-
-        public bool TryGetNonFungibleItem(Guid itemGuid, out Item outNonFungibleItem)
+        public bool TryGetNonFungibleItem(Guid itemId, out Item outInventoryItem)
         {
             foreach (var item in _items)
             {
-                if (!(item.item is ItemUsable nonFungibleItem))
+                if (!(item.item is INonFungibleItem nonFungibleItem) ||
+                    !nonFungibleItem.ItemId.Equals(itemId))
                 {
                     continue;
                 }
 
-                if (nonFungibleItem.ItemId != itemGuid)
-                {
-                    continue;
-                }
-
-                outNonFungibleItem = item;
+                outInventoryItem = item;
                 return true;
             }
 
-            outNonFungibleItem = null;
+            outInventoryItem = null;
             return false;
         }
 
-        public bool TryGetNonFungibleItem(Guid itemId, out ItemUsable outNonFungibleItem)
+        public bool TryGetNonFungibleItem<T>(T nonFungibleItem, out T outNonFungibleItem) where T : INonFungibleItem
+        {
+            return TryGetNonFungibleItem(nonFungibleItem.ItemId, out outNonFungibleItem);
+        }
+
+        public bool TryGetNonFungibleItem<T>(Guid itemId, out T outNonFungibleItem) where T : INonFungibleItem
         {
             foreach (var item in _items)
             {
-                if (!(item.item is ItemUsable nonFungibleItem))
+                if (!(item.item is T nonFungibleItem))
                 {
                     continue;
                 }
@@ -369,7 +300,7 @@ namespace Nekoyume.Model.Item
                 return true;
             }
 
-            outNonFungibleItem = null;
+            outNonFungibleItem = default;
             return false;
         }
 

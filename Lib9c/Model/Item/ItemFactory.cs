@@ -23,9 +23,9 @@ namespace Nekoyume.Model.Item
             }
         }
 
-        public static Costume CreateCostume(CostumeItemSheet.Row row, Guid id)
+        public static Costume CreateCostume(CostumeItemSheet.Row row, Guid itemId)
         {
-            return new Costume(row, id);
+            return new Costume(row, itemId);
         }
 
         public static Material CreateMaterial(MaterialItemSheet sheet, int itemId)
@@ -51,8 +51,7 @@ namespace Nekoyume.Model.Item
             {
                 // Consumable
                 case ItemSubType.Food:
-                    return new Consumable((ConsumableItemSheet.Row) itemRow, id,
-                        requiredBlockIndex);
+                    return new Consumable((ConsumableItemSheet.Row) itemRow, id, requiredBlockIndex);
                 // Equipment
                 case ItemSubType.Weapon:
                     equipment = new Weapon((EquipmentItemSheet.Row) itemRow, id, requiredBlockIndex);

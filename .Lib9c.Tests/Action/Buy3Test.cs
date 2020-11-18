@@ -1,4 +1,4 @@
-namespace Lib9c.Tests.Action
+﻿namespace Lib9c.Tests.Action
 {
     using System;
     using System.Linq;
@@ -15,7 +15,7 @@ namespace Lib9c.Tests.Action
     using Xunit;
     using Xunit.Abstractions;
 
-    public class BuyTest
+    public class Buy3Test
     {
         private readonly Address _sellerAgentAddress;
         private readonly Address _sellerAvatarAddress;
@@ -26,7 +26,7 @@ namespace Lib9c.Tests.Action
         private readonly GoldCurrencyState _goldCurrencyState;
         private IAccountStateDelta _initialState;
 
-        public BuyTest(ITestOutputHelper outputHelper)
+        public Buy3Test(ITestOutputHelper outputHelper)
         {
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Verbose()
@@ -87,6 +87,11 @@ namespace Lib9c.Tests.Action
                 _tableSheets.EquipmentItemSheet.First,
                 Guid.NewGuid(),
                 0);
+
+            var costume = ItemFactory.CreateCostume(
+                _tableSheets.CostumeItemSheet.First,
+                Guid.NewGuid());
+
             var shopState = new ShopState();
             shopState.Register(new ShopItem(
                 _sellerAgentAddress,
@@ -94,6 +99,13 @@ namespace Lib9c.Tests.Action
                 Guid.NewGuid(),
                 new FungibleAssetValue(_goldCurrencyState.Currency, 100, 0),
                 equipment));
+
+            shopState.Register(new ShopItem(
+                _sellerAgentAddress,
+                _sellerAvatarAddress,
+                Guid.NewGuid(),
+                new FungibleAssetValue(_goldCurrencyState.Currency, 100, 0),
+                costume));
 
             _initialState = _initialState
                 .SetState(GoldCurrencyState.Address, _goldCurrencyState.Serialize())
@@ -109,50 +121,57 @@ namespace Lib9c.Tests.Action
         public void Execute()
         {
             var shopState = _initialState.GetShopState();
-            Assert.NotEmpty(shopState.Products);
+            Assert.Equal(2, shopState.Products.Count);
+            Assert.NotNull(shopState.Products);
 
-            var (productId, shopItem) = shopState.Products.FirstOrDefault();
-            Assert.NotNull(shopItem);
-
-            var tax = shopItem.Price.DivRem(100, out _) * Buy.TaxRate;
-            var taxedPrice = shopItem.Price - tax;
-
-            var buyAction = new Buy
+            foreach (var (productId, shopItem) in shopState.Products)
             {
-                buyerAvatarAddress = _buyerAvatarAddress,
-                productId = productId,
-                sellerAgentAddress = _sellerAgentAddress,
-                sellerAvatarAddress = _sellerAvatarAddress,
-            };
-            var nextState = buyAction.Execute(new ActionContext()
-            {
-                BlockIndex = 0,
-                PreviousStates = _initialState,
-                Random = new ItemEnhancementTest.TestRandom(),
-                Rehearsal = false,
-                Signer = _buyerAgentAddress,
-            });
+                var tax = shopItem.Price.DivRem(100, out _) * Buy.TaxRate;
+                var taxedPrice = shopItem.Price - tax;
 
-            var nextShopState = nextState.GetShopState();
-            Assert.Empty(nextShopState.Products);
+                var buyAction = new Buy3
+                {
+                    buyerAvatarAddress = _buyerAvatarAddress,
+                    productId = productId,
+                    sellerAgentAddress = _sellerAgentAddress,
+                    sellerAvatarAddress = _sellerAvatarAddress,
+                };
+                var nextState = buyAction.Execute(new ActionContext()
+                {
+                    BlockIndex = 0,
+                    PreviousStates = _initialState,
+                    Random = new ItemEnhancementTest.TestRandom(),
+                    Rehearsal = false,
+                    Signer = _buyerAgentAddress,
+                });
 
-            var nextBuyerAvatarState = nextState.GetAvatarState(_buyerAvatarAddress);
-            Assert.True(
-                nextBuyerAvatarState.inventory.TryGetNonFungibleItem(shopItem.ItemUsable.ItemId, out ItemUsable _));
+                var nextBuyerAvatarState = nextState.GetAvatarState(_buyerAvatarAddress);
+                if (shopItem.ItemUsable != null)
+                {
+                    Assert.True(nextBuyerAvatarState.inventory.TryGetNonFungibleItem<ItemUsable>(
+                        shopItem.ItemUsable.ItemId, out _));
+                }
 
-            var goldCurrencyState = nextState.GetGoldCurrency();
-            var goldCurrencyGold = nextState.GetBalance(Addresses.GoldCurrency, goldCurrencyState);
-            Assert.Equal(tax, goldCurrencyGold);
-            var sellerGold = nextState.GetBalance(_sellerAgentAddress, goldCurrencyState);
-            Assert.Equal(taxedPrice, sellerGold);
-            var buyerGold = nextState.GetBalance(_buyerAgentAddress, goldCurrencyState);
-            Assert.Equal(new FungibleAssetValue(goldCurrencyState, 0, 0), buyerGold);
+                if (shopItem.Costume != null)
+                {
+                    Assert.True(nextBuyerAvatarState.inventory.TryGetNonFungibleItem<Costume>(
+                        shopItem.Costume.ItemId, out _));
+                }
+
+                var goldCurrencyState = nextState.GetGoldCurrency();
+                var goldCurrencyGold = nextState.GetBalance(Addresses.GoldCurrency, goldCurrencyState);
+                Assert.Equal(tax, goldCurrencyGold);
+                var sellerGold = nextState.GetBalance(_sellerAgentAddress, goldCurrencyState);
+                Assert.Equal(taxedPrice, sellerGold);
+                var buyerGold = nextState.GetBalance(_buyerAgentAddress, goldCurrencyState);
+                Assert.Equal(new FungibleAssetValue(goldCurrencyState, 0, 0), buyerGold);
+            }
         }
 
         [Fact]
         public void ExecuteThrowInvalidAddressException()
         {
-            var action = new Buy
+            var action = new Buy3
             {
                 buyerAvatarAddress = _buyerAvatarAddress,
                 productId = default,
@@ -173,7 +192,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void ExecuteThrowFailedLoadStateException()
         {
-            var action = new Buy
+            var action = new Buy3
             {
                 buyerAvatarAddress = _buyerAvatarAddress,
                 productId = default,
@@ -204,7 +223,7 @@ namespace Lib9c.Tests.Action
             };
             _initialState = _initialState.SetState(_buyerAvatarAddress, avatarState.Serialize());
 
-            var action = new Buy
+            var action = new Buy3
             {
                 buyerAvatarAddress = _buyerAvatarAddress,
                 productId = default,
@@ -225,7 +244,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void ExecuteThrowItemDoesNotExistException()
         {
-            var action = new Buy
+            var action = new Buy3
             {
                 buyerAvatarAddress = _buyerAvatarAddress,
                 productId = default,
@@ -255,7 +274,7 @@ namespace Lib9c.Tests.Action
             var balance = _initialState.GetBalance(_buyerAgentAddress, _goldCurrencyState.Currency);
             _initialState = _initialState.BurnAsset(_buyerAgentAddress, balance);
 
-            var action = new Buy
+            var action = new Buy3
             {
                 buyerAvatarAddress = _buyerAvatarAddress,
                 productId = productId,

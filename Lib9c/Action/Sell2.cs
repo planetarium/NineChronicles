@@ -14,8 +14,8 @@ using Serilog;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("sell")]
-    public class Sell : GameAction
+    [ActionType("sell2")]
+    public class Sell2 : GameAction
     {
         public Address sellerAvatarAddress;
         public Guid itemId;
@@ -80,36 +80,42 @@ namespace Nekoyume.Action
             sw.Restart();
 
             Log.Debug("Execute Sell; seller: {SellerAvatarAddress}", sellerAvatarAddress);
-
+            
             // 인벤토리에서 판매할 아이템을 선택하고 수량을 조절한다.
-            if (!avatarState.inventory.TryGetNonFungibleItem(itemId, out ItemUsable nonFungibleItem))
+            if (avatarState.inventory.TryGetNonFungibleItem<Equipment>(itemId, out var equipment))
+            {
+                if (equipment.RequiredBlockIndex > context.BlockIndex)
+                {
+                    throw new RequiredBlockIndexException(
+                        $"Aborted as the equipment to enhance ({itemId}) is not available yet; it will be available at the block #{equipment.RequiredBlockIndex}."
+                    );
+                }
+
+                avatarState.inventory.RemoveNonFungibleItem(itemId);
+                equipment.equipped = false;
+                shopState.Register(new ShopItem(
+                    ctx.Signer,
+                    sellerAvatarAddress,
+                    context.Random.GenerateRandomGuid(),
+                    price,
+                    equipment));
+            }
+            else if (avatarState.inventory.TryGetNonFungibleItem<Costume>(itemId, out var costume))
+            {
+                avatarState.inventory.RemoveNonFungibleItem(itemId);
+                costume.equipped = false;
+                shopState.Register(new ShopItem(
+                    ctx.Signer,
+                    sellerAvatarAddress,
+                    context.Random.GenerateRandomGuid(),
+                    price,
+                    costume));
+            }
+            else
             {
                 throw new ItemDoesNotExistException(
-                    $"Aborted as the NonFungibleItem ({itemId}) was failed to load from avatar's inventory."
-                );
+                    $"Aborted as the NonFungibleItem ({itemId}) was failed to load from avatar's inventory.");
             }
-
-            if (nonFungibleItem.RequiredBlockIndex > context.BlockIndex)
-            {
-                throw new RequiredBlockIndexException(
-                    $"Aborted as the equipment to enhance ({itemId}) is not available yet; it will be available at the block #{nonFungibleItem.RequiredBlockIndex}."
-                );
-            }
-
-            avatarState.inventory.RemoveNonFungibleItem(nonFungibleItem);
-            if (nonFungibleItem is Equipment equipment)
-            {
-                equipment.equipped = false;
-            }
-
-            var productId = context.Random.GenerateRandomGuid();
-
-            shopState.Register(new ShopItem(
-                ctx.Signer,
-                sellerAvatarAddress,
-                productId,
-                price,
-                nonFungibleItem));
 
             sw.Stop();
             Log.Debug("Sell Get Register Item: {Elapsed}", sw.Elapsed);

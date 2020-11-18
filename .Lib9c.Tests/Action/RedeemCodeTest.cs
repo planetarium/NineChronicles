@@ -102,8 +102,7 @@ namespace Lib9c.Tests.Action
             HashSet<int> expectedItems = new[] { 100000, 40100000 }.ToHashSet();
             Assert.Subset(nextAvatarState.inventory.Items.Select(i => i.item.Id).ToHashSet(), expectedItems);
             Assert.Equal(goldState.Currency * 100, nextState.GetBalance(_agentAddress, goldState.Currency));
-            Assert.True(nextAvatarState.inventory.TryGetCostume(40100000, out var item));
-            var costume = (Costume)item.item;
+            Assert.True(nextAvatarState.inventory.TryGetCostume(40100000, out var costume));
             Assert.NotEqual(default, costume.ItemId);
 
             // Check the code redeemed properly

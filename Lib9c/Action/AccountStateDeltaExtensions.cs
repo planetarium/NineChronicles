@@ -199,13 +199,8 @@ namespace Nekoyume.Action
             }
             if (!agentState.avatarAddresses.ContainsValue(avatarAddress))
             {
-                Log.Error(
-                    "The avatar {0} does not belong to the agent {1}.",
-                    avatarAddress.ToHex(),
-                    agentAddress.ToHex()
-                );
-
-                return false;
+                throw new AgentStateNotContainsAvatarAddressException(
+                    $"The avatar {avatarAddress.ToHex()} does not belong to the agent {agentAddress.ToHex()}.");
             }
 
             avatarState = states.GetAvatarState(avatarAddress);
