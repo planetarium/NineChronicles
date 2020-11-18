@@ -78,7 +78,10 @@ namespace Nekoyume.UI
         private List<Nekoyume.Model.State.RankingInfo> _rankingInfos =
             new List<Nekoyume.Model.State.RankingInfo>();
 
-        private List<(int rank, ArenaInfo arenaInfo)> _weeklyCachedInfo = new List<(int rank, ArenaInfo arenaInfo)>();
+        private List<(int rank, ArenaInfo arenaInfo)> _weeklyCachedInfo =
+            new List<(int rank, ArenaInfo arenaInfo)>();
+
+        private readonly List<IDisposable> _disposablesFromShow = new List<IDisposable>();
 
         protected override void Awake()
         {
@@ -135,7 +138,6 @@ namespace Nekoyume.UI
 
             CloseWidget = null;
             SubmitWidget = null;
-            WeeklyArenaStateSubject.WeeklyArenaState.Subscribe(UpdateWeeklyCache).AddTo(gameObject);
             SetRankingInfos(States.Instance.RankingMapStates);
         }
 
@@ -195,10 +197,20 @@ namespace Nekoyume.UI
             _npc.gameObject.SetActive(false);
 
             AudioController.instance.PlayMusic(AudioController.MusicCode.Ranking);
+
+            WeeklyArenaStateSubject.WeeklyArenaState
+                .Subscribe(state =>
+                {
+                    UpdateWeeklyCache(state);
+                    UpdateArena();
+                })
+                .AddTo(_disposablesFromShow);
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
         {
+            _disposablesFromShow.DisposeAllAndClear();
+
             Find<BottomMenu>()?.Close();
 
             base.Close(ignoreCloseAnimation);
