@@ -6,13 +6,19 @@ on:
     - 9c-main
     - master
     tags: ['*']
+  pull_request:
+    branches:
+      - 9c-alpha-*
+      - 9c-beta-*
+      - 9c-main
+      - master
 
 name: Pack
 
 jobs:
   build-unity:
     name: Build Unity
-    runs-on: self-hosted 
+    runs-on: ubuntu-18.04
     steps:
     - uses: actions/checkout@v2
       with:

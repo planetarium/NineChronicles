@@ -55,7 +55,7 @@ namespace Nekoyume.BlockChain
         public static readonly string DefaultStoragePath = StorePath.GetDefaultStoragePath();
 
         public Subject<long> BlockIndexSubject { get; } = new Subject<long>();
-        public Subject<HashDigest<SHA256>> BlockHashSubject { get; } = new Subject<HashDigest<SHA256>>();
+        public Subject<HashDigest<SHA256>> BlockTipHashSubject { get; } = new Subject<HashDigest<SHA256>>();
 
         private static IEnumerator _miner;
         private static IEnumerator _txProcessor;
@@ -96,6 +96,7 @@ namespace Nekoyume.BlockChain
 
         public ActionRenderer ActionRenderer => BlockPolicySource.ActionRenderer;
         public int AppProtocolVersion { get; private set; }
+        public HashDigest<SHA256> BlockTipHash => blocks.Tip.Hash;
 
         public event EventHandler BootstrapStarted;
         public event EventHandler<PreloadState> PreloadProcessed;
@@ -305,7 +306,9 @@ namespace Nekoyume.BlockChain
 
         protected void OnDestroy()
         {
+            BlockRenderHandler.Instance.Stop();
             ActionRenderHandler.Instance.Stop();
+            ActionUnrenderHandler.Instance.Stop();
             Dispose();
         }
 
@@ -416,6 +419,7 @@ namespace Nekoyume.BlockChain
                     throw new FailedToInstantiateStateException<WeeklyArenaState>();
 
                 // 그리고 모든 액션에 대한 랜더와 언랜더를 핸들링하기 시작한다.
+                BlockRenderHandler.Instance.Start(BlockRenderer);
                 ActionRenderHandler.Instance.Start(ActionRenderer);
                 ActionUnrenderHandler.Instance.Start(ActionRenderer);
 
@@ -784,7 +788,7 @@ namespace Nekoyume.BlockChain
 
             lastTenBlocks.Enqueue((blocks.Tip, DateTimeOffset.UtcNow));
             TipChanged?.Invoke(null, newTip.Index);
-            BlockHashSubject.OnNext(newTip.Hash);
+            BlockTipHashSubject.OnNext(newTip.Hash);
         }
 
         private IEnumerator CoTxProcessor()

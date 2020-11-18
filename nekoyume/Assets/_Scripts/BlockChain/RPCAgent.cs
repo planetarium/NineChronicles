@@ -63,7 +63,7 @@ namespace Nekoyume.BlockChain
 
         public Subject<long> BlockIndexSubject { get; } = new Subject<long>();
 
-        public Subject<HashDigest<SHA256>> BlockHashSubject { get; } = new Subject<HashDigest<SHA256>>();
+        public Subject<HashDigest<SHA256>> BlockTipHashSubject { get; } = new Subject<HashDigest<SHA256>>();
 
         public long BlockIndex { get; private set; }
 
@@ -80,6 +80,8 @@ namespace Nekoyume.BlockChain
         public UnityEvent WhenRetryEnded { get; private set; }
 
         public int AppProtocolVersion { get; private set; }
+
+        public HashDigest<SHA256> BlockTipHash { get; private set; }
 
         public void Initialize(
             CommandLineOptions options,
@@ -141,6 +143,10 @@ namespace Nekoyume.BlockChain
 
         private async void OnDestroy()
         {
+            BlockRenderHandler.Instance.Stop();
+            ActionRenderHandler.Instance.Stop();
+            ActionUnrenderHandler.Instance.Stop();
+
             StopAllCoroutines();
             if (!(_hub is null))
             {
@@ -217,9 +223,11 @@ namespace Nekoyume.BlockChain
             ActionRenderHandler.Instance.GoldCurrency = goldCurrency;
 
             // 그리고 모든 액션에 대한 랜더와 언랜더를 핸들링하기 시작한다.
+            BlockRenderHandler.Instance.Start(BlockRenderer);
             ActionRenderHandler.Instance.Start(ActionRenderer);
             ActionUnrenderHandler.Instance.Start(ActionRenderer);
 
+            UpdateSubscribeAddresses();
             callback(true);
         }
 
@@ -306,8 +314,10 @@ namespace Nekoyume.BlockChain
             var newTipHeader = BlockHeader.Deserialize(newTip);
             BlockIndex = newTipHeader.Index;
             BlockIndexSubject.OnNext(BlockIndex);
-            BlockHashSubject.OnNext(new HashDigest<SHA256>(newTipHeader.Hash));
+            BlockTipHash = new HashDigest<SHA256>(newTipHeader.Hash);
+            BlockTipHashSubject.OnNext(BlockTipHash);
             _lastTipChangedAt = DateTimeOffset.UtcNow;
+            BlockRenderer.RenderBlock(null, null);
         }
 
         private async void RegisterDisconnectEvent(IActionEvaluationHub hub)
@@ -337,6 +347,7 @@ namespace Nekoyume.BlockChain
                     await _hub.JoinAsync();
                     Debug.Log($"Join complete! Registering disconnect event...");
                     RegisterDisconnectEvent(_hub);
+                    UpdateSubscribeAddresses();
                     return;
                 }
                 catch (RpcException re)
@@ -402,6 +413,13 @@ namespace Nekoyume.BlockChain
         {
             Debug.Log($"On Preload End");
             WhenRetryEnded.Invoke();
+        }
+
+        public void UpdateSubscribeAddresses()
+        {
+            var addresses = new List<Address> { Address };
+            Debug.Log($"Subscribing addresses: {string.Join(", ", addresses)}");
+            _service.SetAddressesToSubscribe(addresses.Select(addr => addr.ToByteArray()));
         }
     }
 }
