@@ -159,16 +159,17 @@ namespace Nekoyume.BlockChain
 
         private void SellCancellation()
         {
-            _renderer.EveryRender<SellCancellation2>()
-                .Where(ValidateEvaluationForCurrentAgent)
+            _renderer.EveryRender<SellCancellation3>()
+                .Where(ValidateEvaluationForCurrentAvatarState)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseSellCancellation).AddTo(_disposables);
         }
 
         private void Buy()
         {
-            _renderer.EveryRender<Buy2>()
-                .Where(HasUpdatedAssetsForCurrentAgent)
+            _renderer.EveryRender<Buy3>()
+                .Where(ValidateEvaluationForAgentState)
+
                 .ObserveOnMainThread()
                 .Subscribe(ResponseBuy).AddTo(_disposables);
         }
@@ -444,26 +445,34 @@ namespace Nekoyume.BlockChain
                 LocalStateModifier.AddItem(avatarAddress, itemId, false);
                 var format = L10nManager.Localize("NOTIFICATION_SELL_COMPLETE");
                 var shopState = new ShopState((Dictionary) eval.OutputStates.GetState(ShopState.Address));
-                var shopItem = shopState.Products.Values.First(r => r.ItemUsable.ItemId == itemId);
-                UI.Notification.Push(MailType.Auction, string.Format(format, shopItem.ItemUsable.GetLocalizedName()));
+
+                var shopItem = shopState.Products.Values.First(r =>
+                {
+                    var nonFungibleItem = r.ItemUsable ?? (INonFungibleItem)r.Costume;
+                    return nonFungibleItem.ItemId == itemId;
+                });
+
+                var itemBase = shopItem.ItemUsable ?? (ItemBase) shopItem.Costume;
+                UI.Notification.Push(MailType.Auction, string.Format(format, itemBase.GetLocalizedName()));
                 UpdateCurrentAvatarState(eval);
             }
         }
 
-        private void ResponseSellCancellation(ActionBase.ActionEvaluation<SellCancellation2> eval)
+        private void ResponseSellCancellation(ActionBase.ActionEvaluation<SellCancellation3> eval)
         {
             var avatarAddress = eval.Action.sellerAvatarAddress;
             var result = eval.Action.result;
-            var itemId = result.itemUsable.ItemId;
+            var nonFungibleItem = result.itemUsable ?? (INonFungibleItem) result.costume;
+            var itemBase = result.itemUsable ?? (ItemBase) result.costume;
 
-            LocalStateModifier.RemoveItem(avatarAddress, itemId);
+            LocalStateModifier.RemoveItem(avatarAddress, nonFungibleItem.ItemId);
             LocalStateModifier.AddNewAttachmentMail(avatarAddress, result.id);
             var format = L10nManager.Localize("NOTIFICATION_SELL_CANCEL_COMPLETE");
-            UI.Notification.Push(MailType.Auction, string.Format(format, eval.Action.result.itemUsable.GetLocalizedName()));
+            UI.Notification.Push(MailType.Auction, string.Format(format, itemBase.GetLocalizedName()));
             UpdateCurrentAvatarState(eval);
         }
 
-        private void ResponseBuy(ActionBase.ActionEvaluation<Buy2> eval)
+        private void ResponseBuy(ActionBase.ActionEvaluation<Buy3> eval)
         {
             var buyerAvatarAddress = eval.Action.buyerAvatarAddress;
             var price = eval.Action.sellerResult.shopItem.Price;
@@ -474,15 +483,16 @@ namespace Nekoyume.BlockChain
             {
                 var buyerAgentAddress = States.Instance.AgentState.address;
                 var result = eval.Action.buyerResult;
-                var itemId = result.itemUsable.ItemId;
+                var nonFungibleItem = result.itemUsable ?? (INonFungibleItem) result.costume;
+                var itemBase = result.itemUsable ?? (ItemBase) result.costume;
                 var buyerAvatar = eval.OutputStates.GetAvatarState(buyerAvatarAddress);
 
                 LocalStateModifier.ModifyAgentGold(buyerAgentAddress, price);
-                LocalStateModifier.RemoveItem(buyerAvatarAddress, itemId);
+                LocalStateModifier.RemoveItem(buyerAvatarAddress, nonFungibleItem.ItemId);
                 LocalStateModifier.AddNewAttachmentMail(buyerAvatarAddress, result.id);
 
                 var format = L10nManager.Localize("NOTIFICATION_BUY_BUYER_COMPLETE");
-                UI.Notification.Push(MailType.Auction, string.Format(format, eval.Action.buyerResult.itemUsable.GetLocalizedName()));
+                UI.Notification.Push(MailType.Auction, string.Format(format, itemBase.GetLocalizedName()));
 
                 //[TentuPlay] 아이템 구입, 골드 사용
                 //Local에서 변경하는 States.Instance 보다는 블락에서 꺼내온 eval.OutputStates를 사용
@@ -497,7 +507,7 @@ namespace Nekoyume.BlockChain
                         currency_total_quantity: float.Parse(total.GetQuantityString()),
                         reference_entity: entity.Trades,
                         reference_category_slug: "buy",
-                        reference_slug: result.itemUsable.Id.ToString() //아이템 품번
+                        reference_slug: itemBase.Id.ToString() //아이템 품번
                     );
                 }
 
@@ -509,7 +519,7 @@ namespace Nekoyume.BlockChain
                 var sellerAvatarAddress = eval.Action.sellerAvatarAddress;
                 var sellerAgentAddress = eval.Action.sellerAgentAddress;
                 var result = eval.Action.sellerResult;
-                var itemId = result.itemUsable.ItemId;
+                var itemBase = result.itemUsable ?? (ItemBase) result.costume;
                 var gold = result.gold;
                 var sellerAvatar = eval.OutputStates.GetAvatarState(sellerAvatarAddress);
 
@@ -521,7 +531,7 @@ namespace Nekoyume.BlockChain
                     new AvatarState(
                             (Bencodex.Types.Dictionary) eval.OutputStates.GetState(eval.Action.buyerAvatarAddress))
                         .NameWithHash;
-                UI.Notification.Push(MailType.Auction, string.Format(format, buyerName, result.itemUsable.GetLocalizedName()));
+                UI.Notification.Push(MailType.Auction, string.Format(format, buyerName, itemBase.GetLocalizedName()));
 
                 //[TentuPlay] 아이템 판매완료, 골드 증가
                 //Local에서 변경하는 States.Instance 보다는 블락에서 꺼내온 eval.OutputStates를 사용
@@ -535,7 +545,7 @@ namespace Nekoyume.BlockChain
                     currency_total_quantity: float.Parse(total.GetQuantityString()),
                     reference_entity: entity.Trades,
                     reference_category_slug: "sell",
-                    reference_slug: result.itemUsable.Id.ToString() //아이템 품번
+                    reference_slug: itemBase.Id.ToString() //아이템 품번
                 );
 
                 renderQuestAvatarAddress = sellerAvatarAddress;
