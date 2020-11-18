@@ -77,6 +77,7 @@ namespace Nekoyume.Action
                 states = states.SetState(nextWeekly.address, nextWeekly.Serialize());
             }
 
+            // Beginning block of a new weekly arena.
             if (ctx.BlockIndex % gameConfigState.WeeklyArenaInterval == 0 && index > 0)
             {
                 var prevWeekly = states.GetWeeklyArenaState(index - 1);
@@ -104,7 +105,7 @@ namespace Nekoyume.Action
             Currency currency = states.GetGoldCurrency();
             FungibleAssetValue defaultMiningReward = currency * 10;
             var countOfHalfLife = (int)Math.Pow(2, Convert.ToInt64((ctx.BlockIndex - 1) / 12614400));
-            FungibleAssetValue miningReward = 
+            FungibleAssetValue miningReward =
                 defaultMiningReward.DivRem(countOfHalfLife, out FungibleAssetValue _);
 
             if (miningReward >= FungibleAssetValue.Parse(currency, "1.25"))
@@ -115,7 +116,7 @@ namespace Nekoyume.Action
                     miningReward
                 );
             }
-            
+
             return states;
         }
     }

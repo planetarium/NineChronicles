@@ -394,7 +394,7 @@ namespace Nekoyume.Model.State
             AvatarName = prevInfo.AvatarName;
             CombatPoint = prevInfo.CombatPoint;
             Score = 1000;
-            DailyChallengeCount = 5;
+            DailyChallengeCount = GameConfig.ArenaChallengeCountMax;
             Active = false;
             ArenaRecord = new Record();
         }
@@ -462,7 +462,7 @@ namespace Nekoyume.Model.State
 
         public void ResetCount()
         {
-            DailyChallengeCount = 5;
+            DailyChallengeCount = GameConfig.ArenaChallengeCountMax;
         }
 
         public int GetRewardCount()
