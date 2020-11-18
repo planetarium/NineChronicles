@@ -141,6 +141,10 @@ namespace Nekoyume.BlockChain
 
         private async void OnDestroy()
         {
+            BlockRenderHandler.Instance.Stop();
+            ActionRenderHandler.Instance.Stop();
+            ActionUnrenderHandler.Instance.Stop();
+
             StopAllCoroutines();
             if (!(_hub is null))
             {
@@ -217,6 +221,7 @@ namespace Nekoyume.BlockChain
             ActionRenderHandler.Instance.GoldCurrency = goldCurrency;
 
             // 그리고 모든 액션에 대한 랜더와 언랜더를 핸들링하기 시작한다.
+            BlockRenderHandler.Instance.Start(BlockRenderer);
             ActionRenderHandler.Instance.Start(ActionRenderer);
             ActionUnrenderHandler.Instance.Start(ActionRenderer);
 
@@ -309,6 +314,7 @@ namespace Nekoyume.BlockChain
             BlockIndexSubject.OnNext(BlockIndex);
             BlockHashSubject.OnNext(new HashDigest<SHA256>(newTipHeader.Hash));
             _lastTipChangedAt = DateTimeOffset.UtcNow;
+            BlockRenderer.RenderBlock(null, null);
         }
 
         private async void RegisterDisconnectEvent(IActionEvaluationHub hub)
