@@ -307,6 +307,7 @@ namespace Nekoyume.BlockChain
         {
             BlockRenderHandler.Instance.Stop();
             ActionRenderHandler.Instance.Stop();
+            ActionUnrenderHandler.Instance.Stop();
             Dispose();
         }
 
