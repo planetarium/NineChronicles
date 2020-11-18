@@ -395,6 +395,11 @@ namespace Nekoyume.UI
             if (!submitButton.interactable)
                 yield break;
 
+            if (Find<Menu>().IsActive())
+            {
+                yield break;
+            }
+
             var isNext = !SharedModel.ShouldRepeat;
 
             closeButton.interactable = false;
@@ -448,6 +453,11 @@ namespace Nekoyume.UI
 
         private IEnumerator CoGoToNextStageClose(ActionBase.ActionEvaluation<HackAndSlash3> eval)
         {
+            if (Find<Menu>().IsActive())
+            {
+                yield break;
+            }
+
             yield return StartCoroutine(Find<StageLoadingScreen>().CoClose());
             yield return StartCoroutine(CoFadeOut());
             Game.Event.OnStageStart.Invoke(eval.Action.Result);
