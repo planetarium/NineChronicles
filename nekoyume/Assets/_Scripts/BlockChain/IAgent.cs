@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Security.Cryptography;
 using Bencodex.Types;
 using Lib9c.Renderer;
@@ -30,6 +31,8 @@ namespace Nekoyume.BlockChain
         Subject<HashDigest<SHA256>> BlockTipHashSubject { get; }
 
         HashDigest<SHA256> BlockTipHash { get; }
+
+        ConcurrentDictionary<Guid, TxId> Transactions { get; }
 
         void Initialize(
             CommandLineOptions options,

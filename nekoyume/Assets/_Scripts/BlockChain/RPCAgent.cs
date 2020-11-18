@@ -83,6 +83,9 @@ namespace Nekoyume.BlockChain
 
         public HashDigest<SHA256> BlockTipHash { get; private set; }
 
+        public ConcurrentDictionary<Guid, TxId> Transactions { get; }
+            = new ConcurrentDictionary<Guid, TxId>();
+
         public void Initialize(
             CommandLineOptions options,
             PrivateKey privateKey,
@@ -273,6 +276,12 @@ namespace Nekoyume.BlockChain
                     actions
                 );
             await _service.PutTransaction(tx.Serialize(true));
+
+            foreach (var action in actions)
+            {
+                var ga = (GameAction) action.InnerAction;
+                Transactions.TryAdd(ga.Id, tx.Id);
+            }
         }
 
         private async Task<long> GetNonceAsync()
@@ -291,6 +300,14 @@ namespace Nekoyume.BlockChain
                 decompressed.Seek(0, SeekOrigin.Begin);
                 var ev = (ActionEvaluation<ActionBase>)formatter.Deserialize(decompressed);
                 ActionRenderer.ActionRenderSubject.OnNext(ev);
+                if (ev.Action is GameAction ga)
+                {
+                    if (!Transactions.TryRemove(ga.Id, out _))
+                    {
+                        Debug.Log("Failed to remove transaction that has " +
+                                  $"action of {ga.Id}. Reorg may have occurred.");
+                    }
+                }
             }
         }
 
