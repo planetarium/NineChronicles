@@ -421,5 +421,10 @@ namespace Nekoyume.BlockChain
             Debug.Log($"Subscribing addresses: {string.Join(", ", addresses)}");
             _service.SetAddressesToSubscribe(addresses.Select(addr => addr.ToByteArray()));
         }
+
+        public bool IsTransactionStaged(TxId id)
+        {
+            return _service.IsTransactionStaged(id.ToByteArray()).ResponseAsync.Result;
+        }
     }
 }

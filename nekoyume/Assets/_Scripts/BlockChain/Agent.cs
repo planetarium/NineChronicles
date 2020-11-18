@@ -288,6 +288,11 @@ namespace Nekoyume.BlockChain
             return blocks.GetState(address);
         }
 
+        public bool IsTransactionStaged(TxId txid)
+        {
+            return blocks.GetStagedTransactionIds().Contains(txid);
+        }
+
         public FungibleAssetValue GetBalance(Address address, Currency currency) =>
             blocks.GetBalance(address, currency);
 

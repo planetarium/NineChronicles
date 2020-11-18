@@ -4,6 +4,7 @@ using Bencodex.Types;
 using Lib9c.Renderer;
 using Libplanet;
 using Libplanet.Crypto;
+using Libplanet.Tx;
 using Nekoyume.Action;
 using Nekoyume.Helper;
 using UniRx;
@@ -40,5 +41,6 @@ namespace Nekoyume.BlockChain
 
         IValue GetState(Address address);
 
+        bool IsTransactionStaged(TxId txid);
     }
 }
