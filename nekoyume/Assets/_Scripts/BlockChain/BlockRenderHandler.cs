@@ -4,7 +4,6 @@ using Lib9c.Renderer;
 using Nekoyume.Model.State;
 using Nekoyume.State;
 using UniRx;
-using UnityEngine;
 
 namespace Nekoyume.BlockChain
 {
@@ -26,7 +25,6 @@ namespace Nekoyume.BlockChain
 
         public void Start(BlockRenderer blockRenderer)
         {
-            Debug.LogWarning($"{nameof(BlockRenderHandler)}.Start() called.");
             Stop();
             _blockRenderer = blockRenderer;
 
@@ -44,7 +42,6 @@ namespace Nekoyume.BlockChain
                 .ObserveOnMainThread()
                 .Subscribe(_ =>
                 {
-                    Debug.LogWarning($"{nameof(BlockRenderHandler)}.UpdateWeeklyArenaState() subscribed.");
                     var doNothing = true;
                     var agent = Game.Game.instance.Agent;
                     var gameConfigState = States.Instance.GameConfigState;
