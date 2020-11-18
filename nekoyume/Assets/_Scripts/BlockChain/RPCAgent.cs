@@ -63,7 +63,7 @@ namespace Nekoyume.BlockChain
 
         public Subject<long> BlockIndexSubject { get; } = new Subject<long>();
 
-        public Subject<HashDigest<SHA256>> BlockHashSubject { get; } = new Subject<HashDigest<SHA256>>();
+        public Subject<HashDigest<SHA256>> BlockTipHashSubject { get; } = new Subject<HashDigest<SHA256>>();
 
         public long BlockIndex { get; private set; }
 
@@ -80,6 +80,8 @@ namespace Nekoyume.BlockChain
         public UnityEvent WhenRetryEnded { get; private set; }
 
         public int AppProtocolVersion { get; private set; }
+
+        public HashDigest<SHA256> BlockTipHash { get; private set; }
 
         public void Initialize(
             CommandLineOptions options,
@@ -312,7 +314,8 @@ namespace Nekoyume.BlockChain
             var newTipHeader = BlockHeader.Deserialize(newTip);
             BlockIndex = newTipHeader.Index;
             BlockIndexSubject.OnNext(BlockIndex);
-            BlockHashSubject.OnNext(new HashDigest<SHA256>(newTipHeader.Hash));
+            BlockTipHash = new HashDigest<SHA256>(newTipHeader.Hash);
+            BlockTipHashSubject.OnNext(BlockTipHash);
             _lastTipChangedAt = DateTimeOffset.UtcNow;
             BlockRenderer.RenderBlock(null, null);
         }
