@@ -21,6 +21,7 @@ using Libplanet.Tx;
 using MagicOnion.Client;
 using Nekoyume.Action;
 using Nekoyume.Helper;
+using Nekoyume.L10n;
 using Nekoyume.Model.State;
 using Nekoyume.Shared.Hubs;
 using Nekoyume.Shared.Services;
@@ -110,7 +111,6 @@ namespace Nekoyume.BlockChain
                 ? default
                 : Libplanet.Net.AppProtocolVersion.FromToken(options.AppProtocolVersion);
             AppProtocolVersion = appProtocolVersion.Version;
-            StartCoroutine(CoCheckLastTipChangedAt());
         }
 
         public IValue GetState(Address address)
@@ -220,6 +220,7 @@ namespace Nekoyume.BlockChain
             ActionRenderHandler.Instance.Start(ActionRenderer);
             ActionUnrenderHandler.Instance.Start(ActionRenderer);
 
+            UpdateSubscribeAddresses();
             callback(true);
         }
 
@@ -337,6 +338,7 @@ namespace Nekoyume.BlockChain
                     await _hub.JoinAsync();
                     Debug.Log($"Join complete! Registering disconnect event...");
                     RegisterDisconnectEvent(_hub);
+                    UpdateSubscribeAddresses();
                     return;
                 }
                 catch (RpcException re)
@@ -366,18 +368,31 @@ namespace Nekoyume.BlockChain
 
         public void OnException(int code, string message)
         {
+            var key = "ERROR_UNHANDLED";
+            var errorCode = "100";
             switch (code)
             {
                 case (int)RPCException.NetworkException:
-                    Widget.Find<SystemPopup>().Show("UI_ERROR", "ERROR_NETWORK");
-                    break;
-
-                default:
-                    Widget.Find<SystemPopup>().Show("UI_ERROR", "ERROR_UNHANDLED");
+                    key = "ERROR_NETWORK";
+                    errorCode = "101";
                     break;
             }
 
+            var errorMsg = string.Format(L10nManager.Localize("UI_ERROR_RETRY_FORMAT"),
+                L10nManager.Localize(key), errorCode);
+
             Debug.Log($"{message} (code: {code})");
+            Game.Event.OnRoomEnter.Invoke(true);
+            Game.Game.instance.Stage.OnRoomEnterEnd
+                .First()
+                .Subscribe(_ =>
+                {
+                    Widget
+                        .Find<Alert>()
+                        .Show(L10nManager.Localize("UI_ERROR"), errorMsg,
+                            L10nManager.Localize("UI_OK"), false);
+                });
+
         }
 
         public void OnPreloadStart()
@@ -391,20 +406,11 @@ namespace Nekoyume.BlockChain
             WhenRetryEnded.Invoke();
         }
 
-        private IEnumerator CoCheckLastTipChangedAt()
+        public void UpdateSubscribeAddresses()
         {
-            while (true)
-            {
-                var now = DateTimeOffset.UtcNow;
-                var diff = now - _lastTipChangedAt;
-                if (diff.TotalSeconds >= 300)
-                {
-                    Widget.Find<BlockFailPopup>().Show(BlockIndex);
-                    break;
-                }
-
-                yield return new WaitForSeconds(15f);
-            }
+            var addresses = new List<Address> { Address };
+            Debug.Log($"Subscribing addresses: {string.Join(", ", addresses)}");
+            _service.SetAddressesToSubscribe(addresses.Select(addr => addr.ToByteArray()));
         }
     }
 }

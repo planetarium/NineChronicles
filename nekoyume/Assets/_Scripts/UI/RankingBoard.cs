@@ -75,8 +75,6 @@ namespace Nekoyume.UI
         private readonly ReactiveProperty<StateType> _state =
             new ReactiveProperty<StateType>(StateType.Arena);
 
-        private readonly List<IDisposable> _disposablesAtClose = new List<IDisposable>();
-
         private List<Nekoyume.Model.State.RankingInfo> _rankingInfos =
             new List<Nekoyume.Model.State.RankingInfo>();
 
@@ -151,6 +149,24 @@ namespace Nekoyume.UI
 
         public void Show(StateType stateType = StateType.Arena)
         {
+            var agent = Game.Game.instance.Agent;
+            var gameConfigState = States.Instance.GameConfigState;
+            var weeklyArenaIndex = (int) agent.BlockIndex / gameConfigState.WeeklyArenaInterval;
+            var weeklyArenaAddress = WeeklyArenaState.DeriveAddress(weeklyArenaIndex);
+            var weeklyArenaState =
+                new WeeklyArenaState(
+                    (Bencodex.Types.Dictionary) agent.GetState(weeklyArenaAddress));
+            States.Instance.SetWeeklyArenaState(weeklyArenaState);
+
+            for (var i = 0; i < RankingState.RankingMapCapacity; ++i)
+            {
+                var rankingMapAddress = RankingState.Derive(i);
+                var rankingMapState = agent.GetState(rankingMapAddress) is Bencodex.Types.Dictionary serialized
+                    ? new RankingMapState(serialized)
+                    : new RankingMapState(rankingMapAddress);
+                States.Instance.SetRankingMapStates(rankingMapState);
+            }
+
             base.Show();
 
             var stage = Game.Game.instance.Stage;
@@ -183,9 +199,6 @@ namespace Nekoyume.UI
 
         public override void Close(bool ignoreCloseAnimation = false)
         {
-            // Cancel Subscriptions.
-            _disposablesAtClose.DisposeAllAndClear();
-
             Find<BottomMenu>()?.Close();
 
             base.Close(ignoreCloseAnimation);

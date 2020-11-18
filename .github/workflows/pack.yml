@@ -3,8 +3,15 @@ on:
     branches:
     - 9c-alpha-*
     - 9c-beta-*
+    - 9c-main
     - master
     tags: ['*']
+  pull_request:
+    branches:
+      - 9c-alpha-*
+      - 9c-beta-*
+      - 9c-main
+      - master
 
 name: Pack
 
@@ -13,9 +20,10 @@ jobs:
     name: Build Unity
     runs-on: ubuntu-18.04
     steps:
-    - uses: actions/checkout@master
+    - uses: actions/checkout@v2
       with:
         submodules: true
+        clean: false
     - uses: docker://gableroux/unity3d:2019.1.0f2
       env:
         ULF: ${{ secrets.ULF }}

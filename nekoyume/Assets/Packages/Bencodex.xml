@@ -63,68 +63,6 @@
             but for <c cref="T:System.Byte">Byte</c> arrays instead of
             Unicode <c cref="T:System.String">String</c>s.</summary>
         </member>
-        <member name="T:Bencodex.Misc.ByteChunkQueue">
-            <summary>A special-purpose queue for internal use, which accepts
-            inserting a chunk of <c cref="T:System.Byte">Byte</c>s into and
-            removing the number of <c cref="T:System.Byte">Byte</c>s from.
-            <para>For example, if <c>foo</c>, <c>bar</c>, and <c>baz</c> were
-            <c cref="M:Bencodex.Misc.ByteChunkQueue.Append(System.Byte[])">Push</c>ed into a queue, the first
-            <c cref="M:Bencodex.Misc.ByteChunkQueue.Pop(System.Int64)">Pop(5)</c> returns <c>fooba</c> and the second
-            <c cref="M:Bencodex.Misc.ByteChunkQueue.Pop(System.Int64)">Pop(5)</c> returns <c>rbaz</c>.</para>
-            </summary>
-        </member>
-        <member name="M:Bencodex.Misc.ByteChunkQueue.#ctor">
-            <summary>Creates a new empty queue.</summary>
-        </member>
-        <member name="P:Bencodex.Misc.ByteChunkQueue.ByteLength">
-            <summary>The total size of <c cref="T:System.Byte">Byte</c>s that
-            the queue contains.</summary>
-        </member>
-        <member name="P:Bencodex.Misc.ByteChunkQueue.Empty">
-            <summary>Whether the queue is empty or not.</summary>
-        </member>
-        <member name="P:Bencodex.Misc.ByteChunkQueue.FirstByte">
-            <summary>A first <c cref="T:System.Byte">Byte</c> in the queue,
-            unless it's empty.  If the queue is empty, it is <c>null</c>.
-            </summary>
-        </member>
-        <member name="M:Bencodex.Misc.ByteChunkQueue.Append(System.Byte[])">
-            <summary>Insert an array of <c cref="T:System.Byte">Byte</c>s chunk
-            into the end of the queue.</summary>
-            <param name="chunk">A chunk of <c cref="T:System.Byte">Byte</c>s to
-            insert.</param>
-        </member>
-        <member name="M:Bencodex.Misc.ByteChunkQueue.Pop(System.Int64)">
-            <summary>Fetches the specified size (<paramref name="byteSize"/>)
-            of leading <c cref="T:System.Byte">Byte</c>s and removes them from
-            the queue.</summary>
-            <param name="byteSize">The length of <c cref="T:System.Byte">Byte</c>s
-            to request.</param>
-            <returns>An array of <c cref="T:System.Byte">Byte</c>s.  Its size is
-            probably the requested <paramref name="byteSize"/>, but also may be
-            less than that if there's not enough <c cref="T:System.Byte">Byte</c>s
-            left.</returns>
-            <exception cref="T:System.ArgumentException">Thrown when a requested
-            <paramref name="byteSize"/> is negative or zero.</exception>
-        </member>
-        <member name="M:Bencodex.Misc.ByteChunkQueue.StartsWith(System.Byte[])">
-            <summary>Tests whether the queue shares the same leading
-            <c cref="T:System.Byte">Byte</c>s with the given
-            <paramref name="prefix"/>.</summary>
-            <param name="prefix">An array of <c cref="T:System.Byte">Byte</c>s to
-            test if it's appeared in the queue at first.</param>
-            <returns>A <c>true</c> if the given <paramref name="prefix"/> is
-            appeared in the queue at first, or <c>false</c>.</returns>
-        </member>
-        <member name="M:Bencodex.Misc.ByteChunkQueue.IndexOf(System.Byte)">
-            <summary>Determines the position of the given
-            <paramref name="element"/> is appeared first in the queue.</summary>
-            <param name="element">A <c cref="T:System.Byte">Byte</c> to look
-            up.</param>
-            <returns>A zero-indexed offset the given <paramref name="element"/>
-            is appeared in the queue.  It could be <c>-1</c> if
-            <paramref name="element"/> does not exist in the queue.</returns>
-        </member>
         <member name="T:Bencodex.Misc.CompositeComparer`2">
             <summary>Compose given two comparers into one comparer.</summary>
             <typeparam name="TA">An element type of the first comparer.</typeparam>
@@ -157,6 +95,14 @@
             representation of the value.</returns>
             <seealso cref="M:Bencodex.Codec.Encode(Bencodex.Types.IValue)"/>
             <seealso cref="M:Bencodex.Codec.Encode(Bencodex.Types.IValue,System.IO.Stream)"/>
+        </member>
+        <member name="M:Bencodex.Types.IValue.EncodeToStream(System.IO.Stream)">
+            <summary>Writes the encoded value into <paramref name="stream"/>.
+            </summary>
+            <param name="stream">A stream to write the encoded value.</param>
+            <seealso cref="M:Bencodex.Codec.Encode(Bencodex.Types.IValue)"/>
+            <seealso cref="M:Bencodex.Codec.Encode(Bencodex.Types.IValue,System.IO.Stream)"/>
+            <seealso cref="M:Bencodex.Types.IValue.EncodeIntoChunks"/>
         </member>
         <member name="T:Bencodex.Types.Null">
             <summary>Represents a Bencodex null value (i.e., <c>n</c>).</summary>

@@ -5,6 +5,7 @@ using System.Linq;
 using Bencodex.Types;
 using Lib9c.Renderer;
 using Libplanet;
+using Libplanet.Action;
 using Libplanet.Assets;
 using Nekoyume.Action;
 using Nekoyume.L10n;
@@ -18,6 +19,7 @@ using Nekoyume.Model.State;
 using TentuPlay.Api;
 using Nekoyume.Model.Quest;
 using Nekoyume.State.Modifiers;
+using Nekoyume.TableData;
 using UnityEngine;
 
 namespace Nekoyume.BlockChain
@@ -47,8 +49,6 @@ namespace Nekoyume.BlockChain
         {
             _renderer = renderer;
 
-            Shop();
-            Ranking();
             RewardGold();
             CreateAvatar();
             HackAndSlash();
@@ -64,30 +64,11 @@ namespace Nekoyume.BlockChain
             GameConfig();
             RedeemCode();
             ChargeActionPoint();
-            WeeklyArena();
         }
 
         public void Stop()
         {
             _disposables.DisposeAllAndClear();
-        }
-
-        private void Shop()
-        {
-            _renderer.EveryRender(ShopState.Address)
-                .ObserveOnMainThread()
-                .Subscribe(UpdateShopState).AddTo(_disposables);
-        }
-
-        private void Ranking()
-        {
-            var state = new RankingState((Dictionary)Game.Game.instance.Agent.GetState(Addresses.Ranking));
-            foreach (var address in state.RankingMap.Keys)
-            {
-                _renderer.EveryRender(address)
-                    .ObserveOnMainThread()
-                    .Subscribe(eval => UpdateRankingMapState(eval, address)).AddTo(_disposables);
-            }
         }
 
         private void RewardGold()
@@ -124,7 +105,7 @@ namespace Nekoyume.BlockChain
         private void CreateAvatar()
         {
             _renderer.EveryRender<CreateAvatar2>()
-                .Where(ValidateEvaluationForAgentState)
+                .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(eval =>
                 {
@@ -163,7 +144,7 @@ namespace Nekoyume.BlockChain
         private void CombinationConsumable()
         {
             _renderer.EveryRender<CombinationConsumable2>()
-                .Where(ValidateEvaluationForCurrentAvatarState)
+                .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseCombinationConsumable).AddTo(_disposables);
         }
@@ -171,7 +152,7 @@ namespace Nekoyume.BlockChain
         private void Sell()
         {
             _renderer.EveryRender<Sell>()
-                .Where(ValidateEvaluationForCurrentAvatarState)
+                .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseSell).AddTo(_disposables);
         }
@@ -188,6 +169,7 @@ namespace Nekoyume.BlockChain
         {
             _renderer.EveryRender<Buy3>()
                 .Where(ValidateEvaluationForAgentState)
+
                 .ObserveOnMainThread()
                 .Subscribe(ResponseBuy).AddTo(_disposables);
         }
@@ -195,7 +177,7 @@ namespace Nekoyume.BlockChain
         private void ItemEnhancement()
         {
             _renderer.EveryRender<ItemEnhancement3>()
-                .Where(ValidateEvaluationForCurrentAvatarState)
+                .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseItemEnhancement).AddTo(_disposables);
         }
@@ -203,7 +185,7 @@ namespace Nekoyume.BlockChain
         private void DailyReward()
         {
             _renderer.EveryRender<DailyReward>()
-                .Where(ValidateEvaluationForCurrentAvatarState)
+                .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(eval =>
                 {
@@ -227,7 +209,7 @@ namespace Nekoyume.BlockChain
         private void RankingBattle()
         {
             _renderer.EveryRender<RankingBattle2>()
-                .Where(ValidateEvaluationForCurrentAvatarState)
+                .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseRankingBattle).AddTo(_disposables);
         }
@@ -235,7 +217,7 @@ namespace Nekoyume.BlockChain
         private void CombinationEquipment()
         {
             _renderer.EveryRender<CombinationEquipment2>()
-                .Where(ValidateEvaluationForCurrentAvatarState)
+                .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseCombinationEquipment).AddTo(_disposables);
         }
@@ -243,7 +225,7 @@ namespace Nekoyume.BlockChain
         private void RapidCombination()
         {
             _renderer.EveryRender<RapidCombination2>()
-                .Where(ValidateEvaluationForCurrentAvatarState)
+                .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseRapidCombination).AddTo(_disposables);
         }
@@ -266,24 +248,9 @@ namespace Nekoyume.BlockChain
         private void ChargeActionPoint()
         {
             _renderer.EveryRender<ChargeActionPoint>()
-                .Where(ValidateEvaluationForCurrentAvatarState)
+                .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseChargeActionPoint).AddTo(_disposables);
-        }
-        private void WeeklyArena()
-        {
-            var blockIndex = Game.Game.instance.Agent.BlockIndex;
-            if (ArenaHelper.TryGetThisWeekAddress(blockIndex, out var thisWeekAddress))
-            {
-                _renderer.EveryRender(thisWeekAddress)
-                    .ObserveOnMainThread()
-                    .Subscribe(UpdateWeeklyArenaState).AddTo(_disposables);
-
-                var nextWeekAddress = ArenaHelper.GetNextWeekAddress(blockIndex);
-                _renderer.EveryRender(nextWeekAddress)
-                    .ObserveOnMainThread()
-                    .Subscribe(UpdateWeeklyArenaState).AddTo(_disposables);
-            }
         }
 
         private void ResponseRapidCombination(ActionBase.ActionEvaluation<RapidCombination2> eval)
@@ -891,6 +858,54 @@ namespace Nekoyume.BlockChain
                 case NotEnoughFungibleAssetValueException _:
                     key = "ERROR_NOT_ENOUGH_FUNGIBLE_ASSET_VALUE";
                     code = "10";
+                    break;
+                case SheetRowNotFoundException _:
+                    code = "11";
+                    break;
+                case SheetRowColumnException _:
+                    code = "12";
+                    break;
+                case InvalidWorldException _:
+                    code = "13";
+                    break;
+                case InvalidStageException _:
+                    code = "14";
+                    break;
+                case ConsumableSlotOutOfRangeException _:
+                    code = "14";
+                    break;
+                case ConsumableSlotUnlockException _:
+                    code = "15";
+                    break;
+                case DuplicateCostumeException _:
+                    code = "16";
+                    break;
+                case InvalidItemTypeException _:
+                    code = "17";
+                    break;
+                case CostumeSlotUnlockException _:
+                    code = "18";
+                    break;
+                case NotEnoughMaterialException _:
+                    code = "19";
+                    break;
+                case ItemDoesNotExistException _:
+                    code = "20";
+                    break;
+                case InsufficientBalanceException _:
+                    code = "21";
+                    break;
+                case FailedToUnregisterInShopStateException _:
+                    code = "22";
+                    break;
+                case InvalidPriceException _:
+                    code = "23";
+                    break;
+                case ShopStateAlreadyContainsException _:
+                    code = "24";
+                    break;
+                case CombinationSlotResultNullException _:
+                    code = "25";
                     break;
             }
 
