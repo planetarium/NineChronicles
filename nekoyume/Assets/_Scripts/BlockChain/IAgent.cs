@@ -26,9 +26,9 @@ namespace Nekoyume.BlockChain
 
         int AppProtocolVersion { get; }
 
-        Subject<HashDigest<SHA256>> BlockHashSubject { get; }
+        Subject<HashDigest<SHA256>> BlockTipHashSubject { get; }
 
-        HashDigest<SHA256> BlockHash { get; }
+        HashDigest<SHA256> BlockTipHash { get; }
 
         void Initialize(
             CommandLineOptions options,

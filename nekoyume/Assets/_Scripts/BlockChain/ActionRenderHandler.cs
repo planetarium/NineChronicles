@@ -800,7 +800,7 @@ namespace Nekoyume.BlockChain
 
         public static void PopupError(Exception exc)
         {
-            var msg = $"Agent Address: {Game.Game.instance.Agent.Address}. #{Game.Game.instance.Agent.BlockHash}";
+            var msg = $"Agent Address: {Game.Game.instance.Agent.Address}. #{Game.Game.instance.Agent.BlockTipHash}";
             var exception = new Exception(msg, exc);
             Debug.LogException(exception);
             var key = "ERROR_UNKNOWN";
