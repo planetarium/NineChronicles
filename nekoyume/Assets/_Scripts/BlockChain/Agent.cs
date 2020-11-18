@@ -55,6 +55,7 @@ namespace Nekoyume.BlockChain
         public static readonly string DefaultStoragePath = StorePath.GetDefaultStoragePath();
 
         public Subject<long> BlockIndexSubject { get; } = new Subject<long>();
+        public Subject<HashDigest<SHA256>> BlockHashSubject { get; } = new Subject<HashDigest<SHA256>>();
 
         private static IEnumerator _miner;
         private static IEnumerator _txProcessor;
@@ -94,6 +95,7 @@ namespace Nekoyume.BlockChain
         public BlockRenderer BlockRenderer => BlockPolicySource.BlockRenderer;
 
         public ActionRenderer ActionRenderer => BlockPolicySource.ActionRenderer;
+        public int AppProtocolVersion { get; private set; }
 
         public event EventHandler BootstrapStarted;
         public event EventHandler<PreloadState> PreloadProcessed;
@@ -330,7 +332,8 @@ namespace Nekoyume.BlockChain
             var genesisBlockPath = options.GenesisBlockPath;
             var appProtocolVersion = options.AppProtocolVersion is null
                 ? default
-                : AppProtocolVersion.FromToken(options.AppProtocolVersion);
+                : Libplanet.Net.AppProtocolVersion.FromToken(options.AppProtocolVersion);
+            AppProtocolVersion = appProtocolVersion.Version;
             var trustedAppProtocolVersionSigners = options.TrustedAppProtocolVersionSigners
                 .Select(s => new PublicKey(ByteUtil.ParseHex(s)));
             var minimumDifficulty = options.MinimumDifficulty;
@@ -781,6 +784,7 @@ namespace Nekoyume.BlockChain
 
             lastTenBlocks.Enqueue((blocks.Tip, DateTimeOffset.UtcNow));
             TipChanged?.Invoke(null, newTip.Index);
+            BlockHashSubject.OnNext(newTip.Hash);
         }
 
         private IEnumerator CoTxProcessor()

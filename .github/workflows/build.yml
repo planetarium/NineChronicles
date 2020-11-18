@@ -1,12 +1,11 @@
 on:
-  push: []
-  pull_request: []
+  [push, pull_request]
 name: Build
 
 jobs:
   build_9c:
     name: build_lib9c
-    runs-on: ubuntu-18.04
+    runs-on: self-hosted 
     steps:
     - uses: actions/checkout@master
       if: github.event_name != 'pull_request'

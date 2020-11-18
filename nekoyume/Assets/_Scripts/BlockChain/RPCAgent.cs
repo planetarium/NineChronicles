@@ -6,6 +6,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Bencodex;
 using Bencodex.Types;
@@ -20,6 +21,7 @@ using Libplanet.Tx;
 using MagicOnion.Client;
 using Nekoyume.Action;
 using Nekoyume.Helper;
+using Nekoyume.L10n;
 using Nekoyume.Model.State;
 using Nekoyume.Shared.Hubs;
 using Nekoyume.Shared.Services;
@@ -50,6 +52,8 @@ namespace Nekoyume.BlockChain
 
         private Block<PolymorphicAction<ActionBase>> _genesis;
 
+        private DateTimeOffset _lastTipChangedAt;
+
         // Rendering logs will be recorded in NineChronicles.Standalone
         public BlockPolicySource BlockPolicySource { get; } = new BlockPolicySource(Logger.None);
 
@@ -58,6 +62,8 @@ namespace Nekoyume.BlockChain
         public ActionRenderer ActionRenderer => BlockPolicySource.ActionRenderer;
 
         public Subject<long> BlockIndexSubject { get; } = new Subject<long>();
+
+        public Subject<HashDigest<SHA256>> BlockHashSubject { get; } = new Subject<HashDigest<SHA256>>();
 
         public long BlockIndex { get; private set; }
 
@@ -69,6 +75,11 @@ namespace Nekoyume.BlockChain
 
         public UnityEvent OnDisconnected { get; private set; }
 
+        public UnityEvent WhenRetryStarted { get; private set; }
+
+        public UnityEvent WhenRetryEnded { get; private set; }
+
+        public int AppProtocolVersion { get; private set; }
 
         public void Initialize(
             CommandLineOptions options,
@@ -82,6 +93,7 @@ namespace Nekoyume.BlockChain
                 options.RpcServerPort,
                 ChannelCredentials.Insecure
             );
+            _lastTipChangedAt = DateTimeOffset.UtcNow;
             _hub = StreamingHubClient.Connect<IActionEvaluationHub, IActionEvaluationHubReceiver>(_channel, this);
             _service = MagicOnionClient.Create<IBlockChainService>(_channel);
 
@@ -91,8 +103,14 @@ namespace Nekoyume.BlockChain
             StartCoroutine(CoJoin(callback));
 
             OnDisconnected = new UnityEvent();
+            WhenRetryStarted = new UnityEvent();
+            WhenRetryEnded = new UnityEvent();
 
             _genesis = BlockManager.ImportBlock(options.GenesisBlockPath ?? BlockManager.GenesisBlockPath);
+            var appProtocolVersion = options.AppProtocolVersion is null
+                ? default
+                : Libplanet.Net.AppProtocolVersion.FromToken(options.AppProtocolVersion);
+            AppProtocolVersion = appProtocolVersion.Version;
         }
 
         public IValue GetState(Address address)
@@ -225,11 +243,13 @@ namespace Nekoyume.BlockChain
                 if (task.IsFaulted)
                 {
                     Debug.LogException(task.Exception);
-                    Debug.LogError(
+                    // FIXME: Should restore this after fixing actual bug that MakeTransaction
+                    // was throwing Exception.
+                    /*Debug.LogError(
                         $"Unexpected exception occurred. re-enqueue {action} for retransmission."
                     );
 
-                    _queuedActions.Enqueue(action);
+                    _queuedActions.Enqueue(action);*/
                 }
             }
         }
@@ -286,6 +306,8 @@ namespace Nekoyume.BlockChain
             var newTipHeader = BlockHeader.Deserialize(newTip);
             BlockIndex = newTipHeader.Index;
             BlockIndexSubject.OnNext(BlockIndex);
+            BlockHashSubject.OnNext(new HashDigest<SHA256>(newTipHeader.Hash));
+            _lastTipChangedAt = DateTimeOffset.UtcNow;
         }
 
         private async void RegisterDisconnectEvent(IActionEvaluationHub hub)
@@ -296,42 +318,90 @@ namespace Nekoyume.BlockChain
             }
             finally
             {
-                OnDisconnected?.Invoke();
+                RetryRpc();
             }
+        }
+
+        private async void RetryRpc()
+        {
+            var retryCount = 10;
+            Debug.Log($"Retry rpc connection. (count: {retryCount})");
+            WhenRetryStarted.Invoke();
+            while (retryCount > 0)
+            {
+                await Task.Delay(5000);
+                _hub = StreamingHubClient.Connect<IActionEvaluationHub, IActionEvaluationHubReceiver>(_channel, this);
+                try
+                {
+                    Debug.Log($"Trying to join hub...");
+                    await _hub.JoinAsync();
+                    Debug.Log($"Join complete! Registering disconnect event...");
+                    RegisterDisconnectEvent(_hub);
+                    return;
+                }
+                catch (RpcException re)
+                {
+                    Debug.LogWarning($"RpcException occurred. Retrying... {retryCount}\n{re}");
+                    retryCount--;
+                }
+                catch (Exception e)
+                {
+                    Debug.LogWarning($"Unexpected error occurred during rpc connection. {e}");
+                    break;
+                }
+            }
+
+            OnDisconnected?.Invoke();
         }
 
         public void OnReorged(byte[] oldTip, byte[] newTip, byte[] branchpoint)
         {
-            BlockRenderer.RenderReorg(
-                Block<PolymorphicAction<ActionBase>>.Deserialize(oldTip),
-                Block<PolymorphicAction<ActionBase>>.Deserialize(newTip),
-                Block<PolymorphicAction<ActionBase>>.Deserialize(branchpoint)
-            );
+            BlockRenderer.RenderReorg(null, null, null);
         }
 
         public void OnReorgEnd(byte[] oldTip, byte[] newTip, byte[] branchpoint)
         {
-            BlockRenderer.RenderReorgEnd(
-                Block<PolymorphicAction<ActionBase>>.Deserialize(oldTip),
-                Block<PolymorphicAction<ActionBase>>.Deserialize(newTip),
-                Block<PolymorphicAction<ActionBase>>.Deserialize(branchpoint)
-            );
+            BlockRenderer.RenderReorgEnd(null, null, null);
         }
 
         public void OnException(int code, string message)
         {
+            var key = "ERROR_UNHANDLED";
+            var errorCode = "100";
             switch (code)
             {
                 case (int)RPCException.NetworkException:
-                    Widget.Find<SystemPopup>().Show("UI_ERROR", "ERROR_NETWORK");
-                    break;
-
-                default:
-                    Widget.Find<SystemPopup>().Show("UI_ERROR", "ERROR_UNHANDLED");
+                    key = "ERROR_NETWORK";
+                    errorCode = "101";
                     break;
             }
 
+            var errorMsg = string.Format(L10nManager.Localize("UI_ERROR_RETRY_FORMAT"),
+                L10nManager.Localize(key), errorCode);
+
             Debug.Log($"{message} (code: {code})");
+            Game.Event.OnRoomEnter.Invoke(true);
+            Game.Game.instance.Stage.OnRoomEnterEnd
+                .First()
+                .Subscribe(_ =>
+                {
+                    Widget
+                        .Find<Alert>()
+                        .Show(L10nManager.Localize("UI_ERROR"), errorMsg,
+                            L10nManager.Localize("UI_OK"), false);
+                });
+
+        }
+
+        public void OnPreloadStart()
+        {
+            Debug.Log($"On Preload Start");
+        }
+
+        public void OnPreloadEnd()
+        {
+            Debug.Log($"On Preload End");
+            WhenRetryEnded.Invoke();
         }
     }
 }

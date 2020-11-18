@@ -26,6 +26,7 @@ using Bencodex.Types;
 using Libplanet;
 using mixpanel;
 using Nekoyume.Action;
+using Nekoyume.BlockChain;
 using Nekoyume.L10n;
 using Nekoyume.UI.Model;
 
@@ -672,7 +673,7 @@ namespace Nekoyume.UI
             Game.Game.instance.ActionManager.CombinationConsumable(row.Id, slotIndex)
                 .Subscribe(
                     _ => { },
-                    _ => Find<ActionFailPopup>().Show("Timeout occurred during Combination"));
+                    e => ActionRenderHandler.BackToMain(false, e));
         }
 
         private void CreateCombinationEquipmentAction(

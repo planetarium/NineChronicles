@@ -67,7 +67,6 @@ namespace Nekoyume.Game
         private BattleResult.Model _battleResultModel;
         private bool _rankingBattle;
         private Coroutine _battleCoroutine;
-        private Coroutine _coExecuteCoroutine = null;
 
         public List<GameObject> ReleaseWhiteList { get; private set; } = new List<GameObject>();
         public SkillController SkillController { get; private set; }
@@ -377,6 +376,17 @@ namespace Nekoyume.Game
                 if (player.transform.localPosition.x >= 16f)
                 {
                     _positionCheckCoroutine = null;
+
+                    if (log.FirstOrDefault(e => e is GetReward) is GetReward getReward)
+                    {
+                        var rewards = getReward.Rewards;
+                        foreach (var item in rewards)
+                        {
+                            var countableItem = new CountableItem(item, 1);
+                            _battleResultModel.AddReward(countableItem);
+                        }
+                    }
+
                     yield return StartCoroutine(CoRankingBattleEnd(log, true));
                     ClearBattle();
                     StopAllCoroutines();

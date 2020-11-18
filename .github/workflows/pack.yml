@@ -3,6 +3,7 @@ on:
     branches:
     - 9c-alpha-*
     - 9c-beta-*
+    - 9c-main
     - master
     tags: ['*']
 
@@ -11,11 +12,12 @@ name: Pack
 jobs:
   build-unity:
     name: Build Unity
-    runs-on: ubuntu-18.04
+    runs-on: self-hosted 
     steps:
-    - uses: actions/checkout@master
+    - uses: actions/checkout@v2
       with:
         submodules: true
+        clean: false
     - uses: docker://gableroux/unity3d:2019.1.0f2
       env:
         ULF: ${{ secrets.ULF }}

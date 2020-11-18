@@ -168,15 +168,14 @@ namespace Nekoyume.UI.Scroller
                     characterView.SetByPlayer(player);
                 }
 
-                rank = 1;
                 challengeCountText.text =
-                    $"<color=orange>{ArenaInfo.DailyChallengeCount}</color>/{GameConfig.ArenaChallengeCountMax}";
+                    $"<color=orange>{currentAvatarArenaInfo.DailyChallengeCount}</color>/{GameConfig.ArenaChallengeCountMax}";
             }
             else
             {
-                characterView.SetByAvatarAddress(ArenaInfo.AvatarAddress);
+                //FIXME 현재 코스튬대응이 안되있음 lib9c쪽과 함께 고쳐야함
+                characterView.SetByArmorId(arenaInfo.ArmorId);
                 challengeButton.SetSubmittable(!(currentAvatarArenaInfo is null) &&
-                                               currentAvatarArenaInfo.Active &&
                                                currentAvatarArenaInfo.DailyChallengeCount > 0);
             }
         }
@@ -208,13 +207,8 @@ namespace Nekoyume.UI.Scroller
                     Game.Game.instance.TableSheets.CharacterSheet,
                     Game.Game.instance.TableSheets.CostumeStatSheet).ToString();
             }
-            else
-            {
-                var avatarState = new AvatarState(
-                    (Bencodex.Types.Dictionary)Game.Game.instance.Agent.GetState(arenaInfo.AvatarAddress));
-                return CPHelper.GetCPV2(avatarState, Game.Game.instance.TableSheets.CharacterSheet,
-                    Game.Game.instance.TableSheets.CostumeStatSheet).ToString();
-            }
+
+            return arenaInfo.CombatPoint.ToString();
         }
     }
 }
