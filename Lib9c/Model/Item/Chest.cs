@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using Bencodex.Types;
 using Libplanet;
 using Nekoyume.Model.State;
@@ -30,6 +31,10 @@ namespace Nekoyume.Model.Item
                 Rewards = new List<RedeemRewardSheet.RewardInfo>();
                 ItemId = Hashcash.Hash(Serialize().EncodeIntoChunks().SelectMany(b => b).ToArray());
             }
+        }
+
+        public Chest(SerializationInfo info, StreamingContext context) : base(info, context)
+        {
         }
 
         public sealed override IValue Serialize() =>
