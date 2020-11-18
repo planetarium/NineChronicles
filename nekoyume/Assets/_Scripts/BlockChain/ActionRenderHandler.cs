@@ -45,6 +45,10 @@ namespace Nekoyume.BlockChain
 
         private IDisposable _disposableForBattleEnd = null;
 
+        private ActionRenderHandler()
+        {
+        }
+
         public void Start(ActionRenderer renderer)
         {
             _renderer = renderer;

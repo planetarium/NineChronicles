@@ -23,6 +23,10 @@ namespace Nekoyume.BlockChain
 
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
 
+        private ActionUnrenderHandler()
+        {
+        }
+
         public void Start(ActionRenderer renderer)
         {
             _renderer = renderer;
