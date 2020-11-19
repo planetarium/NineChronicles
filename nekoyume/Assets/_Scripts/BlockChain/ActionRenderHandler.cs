@@ -7,6 +7,7 @@ using Lib9c.Renderer;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Assets;
+using Libplanet.Tx;
 using Nekoyume.Action;
 using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
@@ -816,12 +817,10 @@ namespace Nekoyume.BlockChain
             Debug.LogException(exception);
             var key = "ERROR_UNKNOWN";
             var code = "99";
+            var errorMsg = string.Empty;
+
             switch (exc)
             {
-                case TimeoutException _:
-                    key = "ERROR_NETWORK";
-                    code = "00";
-                    break;
                 case RequiredBlockIndexException _:
                     key = "ERROR_REQUIRE_BLOCK";
                     code = "01";
@@ -910,10 +909,30 @@ namespace Nekoyume.BlockChain
                 case CombinationSlotResultNullException _:
                     code = "25";
                     break;
+                case ActionTimeoutException ate:
+                    key = "ERROR_NETWORK";
+                    errorMsg = "Action timeout occurred.";
+                    if (Game.Game.instance.Agent.Transactions.TryGetValue(ate.ActionId, out TxId txid)
+                        && Game.Game.instance.Agent.IsTransactionStaged(txid))
+                    {
+                        errorMsg += $" Transaction for action is still staged. (txid: {txid})";
+                        code = "26";
+                    }
+                    else
+                    {
+                        code = "27";
+                    }
+
+                    errorMsg += $"\nError Code: {code}";
+                    break;
             }
 
-            var errorMsg = string.Format(L10nManager.Localize("UI_ERROR_RETRY_FORMAT"),
-                L10nManager.Localize(key), code);
+            errorMsg = errorMsg == string.Empty
+                ? string.Format(
+                    L10nManager.Localize("UI_ERROR_RETRY_FORMAT"),
+                    L10nManager.Localize(key),
+                    code)
+                : errorMsg;
             Widget
                 .Find<Alert>()
                 .Show(L10nManager.Localize("UI_ERROR"), errorMsg,
