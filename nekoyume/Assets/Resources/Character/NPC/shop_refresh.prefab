@@ -165,5 +165,5 @@ MonoBehaviour:
     animation: {fileID: 11400000, guid: 97dca9c4b7f4703418e4f9304f579c49, type: 2}
   - stateName: Click
     animation: {fileID: 11400000, guid: ee4ca5594076a634cb00316f82e41473, type: 2}
-  - stateName: Over
-    animation: {fileID: 11400000, guid: 1d85d2ee76fadea41ae283c68e4e11f5, type: 2}
+  - stateName: Idle
+    animation: {fileID: 11400000, guid: efa2e72d1fadc8249a1e9fe0d31654b1, type: 2}
