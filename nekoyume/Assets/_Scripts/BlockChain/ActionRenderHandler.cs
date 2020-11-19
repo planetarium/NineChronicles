@@ -194,8 +194,7 @@ namespace Nekoyume.BlockChain
                 {
                     LocalStateSettings.Instance
                         .ClearAvatarModifiers<AvatarDailyRewardReceivedIndexModifier>(
-                            eval.Action.avatarAddress,
-                            true);
+                            eval.Action.avatarAddress);
 
                     UpdateCurrentAvatarState(eval);
 
