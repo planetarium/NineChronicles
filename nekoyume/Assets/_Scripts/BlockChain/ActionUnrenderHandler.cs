@@ -94,7 +94,7 @@ namespace Nekoyume.BlockChain
                 .AddTo(_disposables);
         }
         
-        private void ResponseUnrenderBuy(ActionBase.ActionEvaluation<Buy3> eval)
+        private void ResponseUnrenderBuy(ActionBase.ActionEvaluation<Buy> eval)
         {
             var buyerAvatarAddress = eval.Action.buyerAvatarAddress;
             var price = eval.Action.sellerResult.shopItem.Price;
