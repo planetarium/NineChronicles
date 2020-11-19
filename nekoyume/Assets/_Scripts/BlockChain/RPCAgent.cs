@@ -137,6 +137,12 @@ namespace Nekoyume.BlockChain
                 serialized.ElementAt(1).ToBigInteger());
         }
 
+        public void SendException(Exception exc)
+        {
+            var (key, code, message) = ErrorCode.GetErrorCode(exc);
+            _service.PutException(code, message);
+        }
+
         public void EnqueueAction(GameAction action)
         {
             _queuedActions.Enqueue(action);
