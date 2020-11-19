@@ -2,11 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Numerics;
+using System.Security.Cryptography;
+using System.Text;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Assets;
+using LruCacheNet;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using Serilog;
@@ -15,6 +17,9 @@ namespace Nekoyume.Action
 {
     public static class AccountStateDeltaExtensions
     {
+        private const int SheetsCacheSize = 100;
+        private static readonly LruCache<string, ISheet> SheetsCache = new LruCache<string, ISheet>(SheetsCacheSize);
+
         public static IAccountStateDelta MarkBalanceChanged(
             this IAccountStateDelta states,
             Currency currency,
@@ -331,11 +336,27 @@ namespace Nekoyume.Action
 
         public static T GetSheet<T>(this IAccountStateDelta states) where T : ISheet, new()
         {
+            var address = Addresses.GetSheetAddress<T>();
+
             try
             {
                 var csv = GetSheetCsv<T>(states);
+                byte[] hash;
+                using (var sha256 = SHA256.Create())
+                {
+                    hash = sha256.ComputeHash(Encoding.UTF8.GetBytes(csv));
+                }
+
+                var cacheKey = address.ToHex() + ByteUtil.Hex(hash);
+
+                if (SheetsCache.TryGetValue(cacheKey, out ISheet cached))
+                {
+                    return (T)cached;
+                }
+
                 var sheet = new T();
                 sheet.Set(csv);
+                SheetsCache.AddOrUpdate(cacheKey, sheet);
                 return sheet;
             }
             catch (Exception e)
