@@ -357,6 +357,7 @@ namespace Nekoyume.BlockChain
             while (retryCount > 0)
             {
                 await Task.Delay(5000);
+                StreamingHubClientRegistry<IActionEvaluationHub, IActionEvaluationHubReceiver>.Register(null);
                 _hub = StreamingHubClient.Connect<IActionEvaluationHub, IActionEvaluationHubReceiver>(_channel, this);
                 try
                 {
