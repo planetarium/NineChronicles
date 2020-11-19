@@ -44,6 +44,8 @@ namespace Nekoyume.BlockChain
 
         IValue GetState(Address address);
 
+        void SendException(Exception exc);
+
         bool IsTransactionStaged(TxId txid);
     }
 }
