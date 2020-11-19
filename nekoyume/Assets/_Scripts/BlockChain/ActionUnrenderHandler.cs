@@ -4,6 +4,7 @@ using System.Linq;
 using Lib9c.Renderer;
 using Libplanet;
 using Nekoyume.Action;
+using Nekoyume.Model.Item;
 using Nekoyume.State;
 using Nekoyume.UI;
 using UniRx;
@@ -157,9 +158,17 @@ namespace Nekoyume.BlockChain
             var itemUsable = result.itemUsable;
             var avatarState = eval.OutputStates.GetAvatarState(avatarAddress);
 
+            if (!(itemUsable is Equipment equipment))
+            {
+                return;
+            }
+
+            var row = Game.Game.instance.TableSheets
+                .EnhancementCostSheet.Values
+                .FirstOrDefault(x => x.Grade == equipment.Grade && x.Level == equipment.level);
+
             // NOTE: 사용한 자원에 대한 레이어 다시 추가하기.
-            LocalStateModifier.ModifyAgentGold(agentAddress, -result.gold);
-            LocalStateModifier.ModifyAvatarActionPoint(avatarAddress, -result.actionPoint);
+            LocalStateModifier.ModifyAgentGold(agentAddress, -row.Cost);
             LocalStateModifier.RemoveItem(avatarAddress, itemUsable.ItemId);
             foreach (var itemId in result.materialItemIdList)
             {

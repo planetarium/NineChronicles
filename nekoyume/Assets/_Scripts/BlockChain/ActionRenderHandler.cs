@@ -685,9 +685,17 @@ namespace Nekoyume.BlockChain
             var itemUsable = result.itemUsable;
             var avatarState = eval.OutputStates.GetAvatarState(avatarAddress);
 
+            if (!(itemUsable is Equipment equipment))
+            {
+                return;
+            }
+
+            var row = Game.Game.instance.TableSheets
+                .EnhancementCostSheet.Values
+                .FirstOrDefault(x => x.Grade == equipment.Grade && x.Level == equipment.level);
+
             // NOTE: 사용한 자원에 대한 레이어 벗기기.
-            LocalStateModifier.ModifyAgentGold(agentAddress, result.gold);
-            LocalStateModifier.ModifyAvatarActionPoint(avatarAddress, result.actionPoint);
+            LocalStateModifier.ModifyAgentGold(agentAddress, row.Cost);
             LocalStateModifier.AddItem(avatarAddress, itemUsable.ItemId, false);
             foreach (var itemId in result.materialItemIdList)
             {
