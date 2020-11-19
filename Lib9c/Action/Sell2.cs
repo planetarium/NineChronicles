@@ -70,17 +70,23 @@ namespace Nekoyume.Action
                 throw new NotEnoughClearedStageLevelException(GameConfig.RequireClearedStageLevel.ActionsInShop, current);
             }
 
-            if (!states.TryGetState(ShopState.Address, out Bencodex.Types.Dictionary d))
+            Log.Debug("Sell IsStageCleared: {Elapsed}", sw.Elapsed);
+
+            sw.Restart();
+
+            if (!states.TryGetState(ShopState.Address, out Bencodex.Types.Dictionary shopStateDict))
             {
                 throw new FailedLoadStateException("Aborted as the shop state was failed to load.");
             }
-            var shopState = new ShopState(d);
-            sw.Stop();
+
             Log.Debug("Sell Get ShopState: {Elapsed}", sw.Elapsed);
             sw.Restart();
 
             Log.Debug("Execute Sell; seller: {SellerAvatarAddress}", sellerAvatarAddress);
-            
+
+            var productId = context.Random.GenerateRandomGuid();
+            ShopItem shopItem;
+
             // 인벤토리에서 판매할 아이템을 선택하고 수량을 조절한다.
             if (avatarState.inventory.TryGetNonFungibleItem<Equipment>(itemId, out var equipment))
             {
@@ -93,29 +99,36 @@ namespace Nekoyume.Action
 
                 avatarState.inventory.RemoveNonFungibleItem(itemId);
                 equipment.equipped = false;
-                shopState.Register(new ShopItem(
+                shopItem = new ShopItem(
                     ctx.Signer,
                     sellerAvatarAddress,
-                    context.Random.GenerateRandomGuid(),
+                    productId,
                     price,
-                    equipment));
+                    equipment);
             }
             else if (avatarState.inventory.TryGetNonFungibleItem<Costume>(itemId, out var costume))
             {
                 avatarState.inventory.RemoveNonFungibleItem(itemId);
                 costume.equipped = false;
-                shopState.Register(new ShopItem(
+                shopItem = new ShopItem(
                     ctx.Signer,
                     sellerAvatarAddress,
-                    context.Random.GenerateRandomGuid(),
+                    productId,
                     price,
-                    costume));
+                    costume);
             }
             else
             {
                 throw new ItemDoesNotExistException(
                     $"Aborted as the NonFungibleItem ({itemId}) was failed to load from avatar's inventory.");
             }
+
+            IValue shopItemSerialized = shopItem.Serialize();
+            IKey productIdSerialized = (IKey)productId.Serialize();
+
+            Dictionary products = (Dictionary)shopStateDict["products"];
+            products = (Dictionary)products.Add(productIdSerialized, shopItemSerialized);
+            shopStateDict = shopStateDict.SetItem("products", products);
 
             sw.Stop();
             Log.Debug("Sell Get Register Item: {Elapsed}", sw.Elapsed);
@@ -129,7 +142,7 @@ namespace Nekoyume.Action
             Log.Debug("Sell Set AvatarState: {Elapsed}", sw.Elapsed);
             sw.Restart();
 
-            states = states.SetState(ShopState.Address, shopState.Serialize());
+            states = states.SetState(ShopState.Address, shopStateDict);
             sw.Stop();
             var ended = DateTimeOffset.UtcNow;
             Log.Debug("Sell Set ShopState: {Elapsed}", sw.Elapsed);

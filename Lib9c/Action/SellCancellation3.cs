@@ -65,20 +65,27 @@ namespace Nekoyume.Action
                 return states;
             }
 
-            if (!states.TryGetState(ShopState.Address, out Bencodex.Types.Dictionary d))
+            if (!states.TryGetState(ShopState.Address, out Bencodex.Types.Dictionary shopStateDict))
             {
                 return states;
             }
-            var shopState = new ShopState(d);
             sw.Stop();
             Log.Debug($"Sell Cancel Get ShopState: {sw.Elapsed}");
             sw.Restart();
 
             // 상점에서 아이템을 빼온다.
-            if (!shopState.TryUnregister(productId, out var outUnregisteredItem))
+            Dictionary products = (Dictionary)shopStateDict["products"];
+
+            IKey productIdSerialized = (IKey)productId.Serialize();
+            if (!products.ContainsKey(productIdSerialized))
             {
                 return states;
             }
+
+            ShopItem outUnregisteredItem = new ShopItem((Dictionary)products[productIdSerialized]);
+
+            products = (Dictionary)products.Remove(productIdSerialized);
+            shopStateDict = shopStateDict.SetItem("products", products);
 
             sw.Stop();
             Log.Debug($"Sell Cancel Get Unregister Item: {sw.Elapsed}");
@@ -102,7 +109,7 @@ namespace Nekoyume.Action
             result.id = mail.id;
 
             avatarState.Update(mail);
-            
+
             if (result.itemUsable != null)
             {
                 avatarState.UpdateFromAddItem(result.itemUsable, true);
@@ -112,10 +119,10 @@ namespace Nekoyume.Action
             {
                 avatarState.UpdateFromAddCostume(result.costume, true);
             }
-            
+
             avatarState.updatedAt = ctx.BlockIndex;
             avatarState.blockIndex = ctx.BlockIndex;
-            
+
             sw.Stop();
             Log.Debug($"Sell Cancel Update AvatarState: {sw.Elapsed}");
             sw.Restart();
@@ -125,7 +132,7 @@ namespace Nekoyume.Action
             Log.Debug($"Sell Cancel Set AvatarState: {sw.Elapsed}");
             sw.Restart();
 
-            states = states.SetState(ShopState.Address, shopState.Serialize());
+            states = states.SetState(ShopState.Address, shopStateDict);
             sw.Stop();
             var ended = DateTimeOffset.UtcNow;
             Log.Debug($"Sell Cancel Set ShopState: {sw.Elapsed}");
