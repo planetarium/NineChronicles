@@ -4,7 +4,9 @@ using System.Linq;
 using Lib9c.Renderer;
 using Libplanet;
 using Nekoyume.Action;
+using Nekoyume.Model.Item;
 using Nekoyume.State;
+using Nekoyume.UI;
 using UniRx;
 using UnityEngine;
 
@@ -34,6 +36,7 @@ namespace Nekoyume.BlockChain
             RewardGold();
             Buy();
             Sell();
+            ItemEnhancement();
         }
 
         public void Stop()
@@ -82,6 +85,15 @@ namespace Nekoyume.BlockChain
                 .AddTo(_disposables);
         }
 
+        private void ItemEnhancement()
+        {
+            _renderer.EveryUnrender<ItemEnhancement3>()
+                .Where(ValidateEvaluationForCurrentAgent)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseUnrenderItemEnhancement)
+                .AddTo(_disposables);
+        }
+        
         private void ResponseUnrenderBuy(ActionBase.ActionEvaluation<Buy> eval)
         {
             var buyerAvatarAddress = eval.Action.buyerAvatarAddress;
@@ -135,6 +147,50 @@ namespace Nekoyume.BlockChain
 
             LocalStateModifier.RemoveItem(avatarAddress, itemId);
             UpdateCurrentAvatarState(eval);
+        }
+
+        private void ResponseUnrenderItemEnhancement(ActionBase.ActionEvaluation<ItemEnhancement3> eval)
+        {
+            var agentAddress = eval.Signer;
+            var avatarAddress = eval.Action.avatarAddress;
+            var slot = eval.OutputStates.GetCombinationSlotState(avatarAddress, eval.Action.slotIndex);
+            var result = (ItemEnhancement.ResultModel)slot.Result;
+            var itemUsable = result.itemUsable;
+            var avatarState = eval.OutputStates.GetAvatarState(avatarAddress);
+
+            if (!(itemUsable is Equipment equipment))
+            {
+                return;
+            }
+
+            var row = Game.Game.instance.TableSheets
+                .EnhancementCostSheet.Values
+                .FirstOrDefault(x => x.Grade == equipment.Grade && x.Level == equipment.level);
+
+            // NOTE: 사용한 자원에 대한 레이어 다시 추가하기.
+            LocalStateModifier.ModifyAgentGold(agentAddress, -row.Cost);
+            LocalStateModifier.RemoveItem(avatarAddress, itemUsable.ItemId);
+            foreach (var itemId in result.materialItemIdList)
+            {
+                // NOTE: 최종적으로 UpdateCurrentAvatarState()를 호출한다면, 그곳에서 상태를 새로 설정할 것이다.
+                LocalStateModifier.RemoveItem(avatarAddress, itemId);
+            }
+
+            // NOTE: 메일 레이어 다시 없애기.
+            LocalStateModifier.AddItem(avatarAddress, itemUsable.ItemId, false);
+            LocalStateModifier.RemoveNewAttachmentMail(avatarAddress, result.id);
+
+            // NOTE: 워크샵 슬롯의 모든 휘발성 상태 변경자를 다시 추가하기.
+            var otherItemId = result.materialItemIdList.First();
+            LocalStateModifier.ModifyCombinationSlotItemEnhancement(
+                itemUsable.ItemId,
+                otherItemId,
+                eval.Action.slotIndex);
+
+            UpdateAgentState(eval);
+            UpdateCurrentAvatarState(eval);
+            UpdateCombinationSlotState(slot);
+            UnrenderQuest(avatarAddress, avatarState.questList.completedQuestIds);
         }
 
         public void UnrenderQuest(Address avatarAddress, IEnumerable<int> ids)

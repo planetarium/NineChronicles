@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -841,7 +841,7 @@ namespace Nekoyume.State
         }
 
         public static void ModifyCombinationSlotItemEnhancement(
-            EnhanceEquipment panel,
+            Guid baseMaterialGuid,
             Guid guid,
             int slotIndex
         )
@@ -854,34 +854,48 @@ namespace Nekoyume.State
                 )
             );
 
-            ModifyCombinationSlotItemEnhancement(panel, guid, slotAddress);
+            ModifyCombinationSlotItemEnhancement(baseMaterialGuid, guid, slotAddress);
         }
 
         public static void ModifyCombinationSlotItemEnhancement(
-            EnhanceEquipment panel,
-            Guid guid,
+            Guid baseMaterialGuid,
+            Guid otherMaterialGuid,
             Address slotAddress
         )
         {
-            if (panel.baseMaterial is null ||
-                panel.baseMaterial.Model is null)
-            {
-                throw new ArgumentNullException(
-                    $"{nameof(panel.baseMaterial)} or {nameof(panel.baseMaterial.Model)}");
-            }
+            
             // 레이어가 씌워진 상태에선 실제 상태가 들어오기전까지 상태업데이트를 막아두기 위해 블록높이를 추가로 설정
             var blockIndex = Game.Game.instance.Agent.BlockIndex + 100;
             var requiredBlockIndex = blockIndex + 1;
-            var equipment = (Equipment) panel.baseMaterial.Model.ItemBase.Value;
+
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+            var avatarState = new AvatarState(
+                (Bencodex.Types.Dictionary) Game.Game.instance.Agent.GetState(avatarAddress));
+
+            if (avatarState.inventory.TryGetNonFungibleItem(baseMaterialGuid, out ItemUsable item))
+            {
+                return;
+            }
+
+            if (!(item is Equipment equipment))
+            {
+                return;
+            }
+
             equipment.LevelUp();
             equipment.Update(requiredBlockIndex);
+
+            var enhancementRow = Game.Game.instance.TableSheets
+                .EnhancementCostSheet.Values
+                .FirstOrDefault(x => x.Grade == equipment.Grade && x.Level == equipment.level);
+
             var result = new ItemEnhancement.ResultModel
             {
                 // id: 처음 로컬 레이어를 적용할 때 id가 default면 노티가 적용되지 않기 때문에 임시로 넣습니다.
                 id = Guid.NewGuid(),
-                actionPoint = panel.CostAP,
-                gold = panel.CostNCG,
-                materialItemIdList = new []{ guid },
+                actionPoint = 0,
+                gold = enhancementRow.Cost,
+                materialItemIdList = new[] { otherMaterialGuid },
                 itemUsable = equipment,
             };
             var modifier = new CombinationSlotBlockIndexAndResultModifier(result, blockIndex, requiredBlockIndex);
