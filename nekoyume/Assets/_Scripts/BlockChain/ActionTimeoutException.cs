@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.Serialization;
 
 namespace Nekoyume.BlockChain
 {
@@ -9,6 +10,19 @@ namespace Nekoyume.BlockChain
         public ActionTimeoutException(string message, Guid actionId) : base(message)
         {
             ActionId = actionId;
+        }
+
+        protected ActionTimeoutException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
+        {
+            ActionId = (Guid) info.GetValue(nameof(ActionId), typeof(Guid));
+        }
+
+        public override void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            base.GetObjectData(info, context);
+
+            info.AddValue(nameof(ActionId), ActionId);
         }
     }
 }
