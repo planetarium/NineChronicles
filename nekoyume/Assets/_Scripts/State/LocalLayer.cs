@@ -26,12 +26,12 @@ namespace Nekoyume.State
         private class ModifierInfo<T> where T : class
         {
             public readonly Address Address;
-            public readonly List<T> VolatileModifiers;
+            public readonly List<T> Modifiers;
 
             public ModifierInfo(Address address)
             {
                 Address = address;
-                VolatileModifiers = new List<T>();
+                Modifiers = new List<T>();
             }
         }
 
@@ -142,7 +142,7 @@ namespace Nekoyume.State
                 return;
             }
 
-            var modifiers = modifierInfo.VolatileModifiers;
+            var modifiers = modifierInfo.Modifiers;
             if (TryGetSameTypeModifier(modifier, modifiers, out var outModifier))
             {
                 modifiers.Remove(outModifier);
@@ -165,7 +165,7 @@ namespace Nekoyume.State
                 return;
             }
 
-            var modifiers = modifierInfo.VolatileModifiers;
+            var modifiers = modifierInfo.Modifiers;
             if (TryGetSameTypeModifier(typeof(T), modifiers, out var outModifier))
             {
                 modifiers.Remove(outModifier);
@@ -193,7 +193,7 @@ namespace Nekoyume.State
             var modifierInfo = _agentModifierInfo;
             if (agentAddress.Equals(modifierInfo.Address))
             {
-                var modifiers = modifierInfo.VolatileModifiers;
+                var modifiers = modifierInfo.Modifiers;
                 if (TryGetSameTypeModifier(modifier, modifiers, out var outModifier))
                 {
                     outModifier.Add(modifier);
@@ -219,7 +219,7 @@ namespace Nekoyume.State
 
             if (agentAddress.Equals(_agentGoldModifierInfo.Address))
             {
-                var modifiers = _agentGoldModifierInfo.VolatileModifiers;
+                var modifiers = _agentGoldModifierInfo.Modifiers;
                 if (TryGetSameTypeModifier(modifier, modifiers, out var outModifier))
                 {
                     outModifier.Add(modifier);
@@ -255,7 +255,7 @@ namespace Nekoyume.State
 
             if (!(modifierInfo is null))
             {
-                var modifiers = modifierInfo.VolatileModifiers;
+                var modifiers = modifierInfo.Modifiers;
                 if (TryGetSameTypeModifier(modifier, modifiers, out var outModifier))
                 {
                     outModifier.Add(modifier);
@@ -288,7 +288,7 @@ namespace Nekoyume.State
             var modifierInfo = _weeklyArenaModifierInfo;
             if (weeklyArenaAddress.Equals(modifierInfo.Address))
             {
-                var modifiers = modifierInfo.VolatileModifiers;
+                var modifiers = modifierInfo.Modifiers;
                 if (TryGetSameTypeModifier(modifier, modifiers, out var outModifier))
                 {
                     outModifier.Add(modifier);
@@ -324,7 +324,7 @@ namespace Nekoyume.State
             var modifierInfo = _agentModifierInfo;
             if (agentAddress.Equals(modifierInfo.Address))
             {
-                var modifiers = modifierInfo.VolatileModifiers;
+                var modifiers = modifierInfo.Modifiers;
                 if (TryGetSameTypeModifier(modifier, modifiers, out var outModifier))
                 {
                     outModifier.Remove(modifier);
@@ -367,7 +367,7 @@ namespace Nekoyume.State
 
             if (!(modifierInfo is null))
             {
-                var modifiers = modifierInfo.VolatileModifiers;
+                var modifiers = modifierInfo.Modifiers;
                 if (TryGetSameTypeModifier(modifier, modifiers, out var outModifier))
                 {
                     outModifier.Remove(modifier);
@@ -407,7 +407,7 @@ namespace Nekoyume.State
             var modifierInfo = _weeklyArenaModifierInfo;
             if (weeklyArenaAddress.Equals(modifierInfo.Address))
             {
-                var modifiers = modifierInfo.VolatileModifiers;
+                var modifiers = modifierInfo.Modifiers;
                 if (TryGetSameTypeModifier(modifier, modifiers, out var outModifier))
                 {
                     outModifier.Remove(modifier);
@@ -528,7 +528,7 @@ namespace Nekoyume.State
             where TState : Model.State.State
             where TModifier : class, IStateModifier<TState>
         {
-            foreach (var modifier in modifierInfo.VolatileModifiers)
+            foreach (var modifier in modifierInfo.Modifiers)
             {
                 state = modifier.Modify(state);
             }
@@ -557,13 +557,13 @@ namespace Nekoyume.State
             {
                 if (!TryGetSameTypeModifier(
                     typeof(T),
-                    _avatarModifierInfo.VolatileModifiers,
+                    _avatarModifierInfo.Modifiers,
                     out var modifier))
                 {
                     break;
                 }
 
-                _avatarModifierInfo.VolatileModifiers.Remove(modifier);
+                _avatarModifierInfo.Modifiers.Remove(modifier);
             }
         }
 
