@@ -25,7 +25,7 @@ namespace Nekoyume.State
     /// `ReactiveAgentState`와 `ReactiveAvatarState`를 업데이트 한다.
     /// 반복되는 로직을 모아둔다.
     /// </summary>
-    public static class LocalStateModifier
+    public static class LocalLayerModifier
     {
         #region Agent, Avatar / Currency
 

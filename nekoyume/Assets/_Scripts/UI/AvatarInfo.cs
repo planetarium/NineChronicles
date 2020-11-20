@@ -574,14 +574,14 @@ namespace Nekoyume.UI
             switch (itemBase.ItemType)
             {
                 case ItemType.Costume:
-                    LocalStateModifier.SetCostumeEquip(
+                    LocalLayerModifier.SetCostumeEquip(
                         States.Instance.CurrentAvatarState.address,
                         itemBase.Id,
                         equip);
                     break;
                 case ItemType.Equipment:
                     var equipment = (Equipment) itemBase;
-                    LocalStateModifier.SetEquipmentEquip(
+                    LocalLayerModifier.SetEquipmentEquip(
                         States.Instance.CurrentAvatarState.address,
                         equipment.ItemId,
                         equip);
@@ -727,9 +727,9 @@ namespace Nekoyume.UI
                 Notification.Push(Nekoyume.Model.Mail.MailType.System,
                     L10nManager.Localize("UI_CHARGE_AP"));
                 Game.Game.instance.ActionManager.ChargeActionPoint();
-                LocalStateModifier.RemoveItem(States.Instance.CurrentAvatarState.address,
+                LocalLayerModifier.RemoveItem(States.Instance.CurrentAvatarState.address,
                     material.ItemId, 1);
-                LocalStateModifier.ModifyAvatarActionPoint(
+                LocalLayerModifier.ModifyAvatarActionPoint(
                     States.Instance.CurrentAvatarState.address,
                     States.Instance.GameConfigState.ActionPointMax);
             }

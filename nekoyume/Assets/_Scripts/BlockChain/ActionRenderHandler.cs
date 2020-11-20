@@ -265,10 +265,10 @@ namespace Nekoyume.BlockChain
             foreach (var pair in result.cost)
             {
                 // NOTE: 최종적으로 UpdateCurrentAvatarState()를 호출한다면, 그곳에서 상태를 새로 설정할 것이다.
-                LocalStateModifier.AddItem(avatarAddress, pair.Key.ItemId, pair.Value, false);
+                LocalLayerModifier.AddItem(avatarAddress, pair.Key.ItemId, pair.Value, false);
             }
-            LocalStateModifier.RemoveAvatarItemRequiredIndex(avatarAddress, result.itemUsable.ItemId);
-            LocalStateModifier.ResetCombinationSlot(slot);
+            LocalLayerModifier.RemoveAvatarItemRequiredIndex(avatarAddress, result.itemUsable.ItemId);
+            LocalLayerModifier.ResetCombinationSlot(slot);
 
             AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ActionCombinationSuccess);
 
@@ -304,18 +304,18 @@ namespace Nekoyume.BlockChain
             var avatarState = eval.OutputStates.GetAvatarState(avatarAddress);
 
             // NOTE: 사용한 자원에 대한 레이어 벗기기.
-            LocalStateModifier.ModifyAgentGold(agentAddress, result.gold);
-            LocalStateModifier.ModifyAvatarActionPoint(avatarAddress, result.actionPoint);
+            LocalLayerModifier.ModifyAgentGold(agentAddress, result.gold);
+            LocalLayerModifier.ModifyAvatarActionPoint(avatarAddress, result.actionPoint);
             foreach (var pair in result.materials)
             {
                 // NOTE: 최종적으로 UpdateCurrentAvatarState()를 호출한다면, 그곳에서 상태를 새로 설정할 것이다.
-                LocalStateModifier.AddItem(avatarAddress, pair.Key.ItemId, pair.Value, false);
+                LocalLayerModifier.AddItem(avatarAddress, pair.Key.ItemId, pair.Value, false);
             }
 
             // NOTE: 메일 레이어 씌우기.
-            LocalStateModifier.RemoveItem(avatarAddress, result.itemUsable.ItemId);
-            LocalStateModifier.AddNewAttachmentMail(avatarAddress, result.id);
-            LocalStateModifier.ResetCombinationSlot(slot);
+            LocalLayerModifier.RemoveItem(avatarAddress, result.itemUsable.ItemId);
+            LocalLayerModifier.AddNewAttachmentMail(avatarAddress, result.id);
+            LocalLayerModifier.ResetCombinationSlot(slot);
 
             // NOTE: 노티 예약 걸기.
             var format = L10nManager.Localize("NOTIFICATION_COMBINATION_COMPLETE");
@@ -394,17 +394,17 @@ namespace Nekoyume.BlockChain
             var itemUsable = result.itemUsable;
             var avatarState = eval.OutputStates.GetAvatarState(avatarAddress);
 
-            LocalStateModifier.ModifyAgentGold(agentAddress, result.gold);
-            LocalStateModifier.ModifyAvatarActionPoint(avatarAddress, result.actionPoint);
+            LocalLayerModifier.ModifyAgentGold(agentAddress, result.gold);
+            LocalLayerModifier.ModifyAvatarActionPoint(avatarAddress, result.actionPoint);
             foreach (var pair in result.materials)
             {
                 // NOTE: 최종적으로 UpdateCurrentAvatarState()를 호출한다면, 그곳에서 상태를 새로 설정할 것이다.
-                LocalStateModifier.AddItem(avatarAddress, pair.Key.ItemId, pair.Value, false);
+                LocalLayerModifier.AddItem(avatarAddress, pair.Key.ItemId, pair.Value, false);
             }
 
-            LocalStateModifier.RemoveItem(avatarAddress, itemUsable.ItemId);
-            LocalStateModifier.AddNewAttachmentMail(avatarAddress, result.id);
-            LocalStateModifier.ResetCombinationSlot(slot);
+            LocalLayerModifier.RemoveItem(avatarAddress, itemUsable.ItemId);
+            LocalLayerModifier.AddNewAttachmentMail(avatarAddress, result.id);
+            LocalLayerModifier.ResetCombinationSlot(slot);
 
             var format = L10nManager.Localize("NOTIFICATION_COMBINATION_COMPLETE");
             UI.Notification.Reserve(
@@ -445,7 +445,7 @@ namespace Nekoyume.BlockChain
                 var itemId = eval.Action.itemId;
 
                 // NOTE: 최종적으로 UpdateCurrentAvatarState()를 호출한다면, 그곳에서 상태를 새로 설정할 것이다.
-                LocalStateModifier.AddItem(avatarAddress, itemId, false);
+                LocalLayerModifier.AddItem(avatarAddress, itemId, false);
                 var format = L10nManager.Localize("NOTIFICATION_SELL_COMPLETE");
                 var shopState = new ShopState((Dictionary) eval.OutputStates.GetState(ShopState.Address));
                 var shopItem = shopState.Products.Values.First(r => r.ItemUsable.ItemId == itemId);
@@ -460,8 +460,8 @@ namespace Nekoyume.BlockChain
             var result = eval.Action.result;
             var itemId = result.itemUsable.ItemId;
 
-            LocalStateModifier.RemoveItem(avatarAddress, itemId);
-            LocalStateModifier.AddNewAttachmentMail(avatarAddress, result.id);
+            LocalLayerModifier.RemoveItem(avatarAddress, itemId);
+            LocalLayerModifier.AddNewAttachmentMail(avatarAddress, result.id);
             var format = L10nManager.Localize("NOTIFICATION_SELL_CANCEL_COMPLETE");
             UI.Notification.Push(MailType.Auction, string.Format(format, eval.Action.result.itemUsable.GetLocalizedName()));
             UpdateCurrentAvatarState(eval);
@@ -481,9 +481,9 @@ namespace Nekoyume.BlockChain
                 var itemId = result.itemUsable.ItemId;
                 var buyerAvatar = eval.OutputStates.GetAvatarState(buyerAvatarAddress);
 
-                LocalStateModifier.ModifyAgentGold(buyerAgentAddress, price);
-                LocalStateModifier.RemoveItem(buyerAvatarAddress, itemId);
-                LocalStateModifier.AddNewAttachmentMail(buyerAvatarAddress, result.id);
+                LocalLayerModifier.ModifyAgentGold(buyerAgentAddress, price);
+                LocalLayerModifier.RemoveItem(buyerAvatarAddress, itemId);
+                LocalLayerModifier.AddNewAttachmentMail(buyerAvatarAddress, result.id);
 
                 var format = L10nManager.Localize("NOTIFICATION_BUY_BUYER_COMPLETE");
                 UI.Notification.Push(MailType.Auction, string.Format(format, eval.Action.buyerResult.itemUsable.GetLocalizedName()));
@@ -517,8 +517,8 @@ namespace Nekoyume.BlockChain
                 var gold = result.gold;
                 var sellerAvatar = eval.OutputStates.GetAvatarState(sellerAvatarAddress);
 
-                LocalStateModifier.ModifyAgentGold(sellerAgentAddress, -gold);
-                LocalStateModifier.AddNewAttachmentMail(sellerAvatarAddress, result.id);
+                LocalLayerModifier.ModifyAgentGold(sellerAgentAddress, -gold);
+                LocalLayerModifier.AddNewAttachmentMail(sellerAvatarAddress, result.id);
 
                 var format = L10nManager.Localize("NOTIFICATION_BUY_SELLER_COMPLETE");
                 var buyerName =
@@ -616,7 +616,7 @@ namespace Nekoyume.BlockChain
                 var weeklyArenaAddress = eval.Action.WeeklyArenaAddress;
                 var avatarAddress = eval.Action.AvatarAddress;
 
-                LocalStateModifier.RemoveWeeklyArenaInfoActivator(weeklyArenaAddress, avatarAddress);
+                LocalLayerModifier.RemoveWeeklyArenaInfoActivator(weeklyArenaAddress, avatarAddress);
 
                 //[TentuPlay] RankingBattle 참가비 사용 기록 // 위의 fixme 내용과 어떻게 연결되는지?
                 //Local에서 변경하는 States.Instance 보다는 블락에서 꺼내온 eval.OutputStates를 사용
@@ -695,20 +695,20 @@ namespace Nekoyume.BlockChain
                 .FirstOrDefault(x => x.Grade == equipment.Grade && x.Level == equipment.level);
 
             // NOTE: 사용한 자원에 대한 레이어 벗기기.
-            LocalStateModifier.ModifyAgentGold(agentAddress, row.Cost);
-            LocalStateModifier.AddItem(avatarAddress, itemUsable.ItemId, false);
+            LocalLayerModifier.ModifyAgentGold(agentAddress, row.Cost);
+            LocalLayerModifier.AddItem(avatarAddress, itemUsable.ItemId, false);
             foreach (var itemId in result.materialItemIdList)
             {
                 // NOTE: 최종적으로 UpdateCurrentAvatarState()를 호출한다면, 그곳에서 상태를 새로 설정할 것이다.
-                LocalStateModifier.AddItem(avatarAddress, itemId, false);
+                LocalLayerModifier.AddItem(avatarAddress, itemId, false);
             }
 
             // NOTE: 메일 레이어 씌우기.
-            LocalStateModifier.RemoveItem(avatarAddress, itemUsable.ItemId);
-            LocalStateModifier.AddNewAttachmentMail(avatarAddress, result.id);
+            LocalLayerModifier.RemoveItem(avatarAddress, itemUsable.ItemId);
+            LocalLayerModifier.AddNewAttachmentMail(avatarAddress, result.id);
 
             // NOTE: 워크샵 슬롯의 모든 휘발성 상태 변경자를 제거하기.
-            LocalStateModifier.ResetCombinationSlot(slot);
+            LocalLayerModifier.ResetCombinationSlot(slot);
 
             // NOTE: 노티 예약 걸기.
             var format = L10nManager.Localize("NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE");
@@ -765,10 +765,10 @@ namespace Nekoyume.BlockChain
         private void ResponseChargeActionPoint(ActionBase.ActionEvaluation<ChargeActionPoint> eval)
         {
             var avatarAddress = eval.Action.avatarAddress;
-            LocalStateModifier.ModifyAvatarActionPoint(avatarAddress, -States.Instance.GameConfigState.ActionPointMax);
+            LocalLayerModifier.ModifyAvatarActionPoint(avatarAddress, -States.Instance.GameConfigState.ActionPointMax);
             var row = Game.Game.instance.TableSheets.MaterialItemSheet.Values.First(r =>
                 r.ItemSubType == ItemSubType.ApStone);
-            LocalStateModifier.AddItem(avatarAddress, row.ItemId, 1);
+            LocalLayerModifier.AddItem(avatarAddress, row.ItemId, 1);
             UpdateCurrentAvatarState(eval);
         }
 
@@ -776,7 +776,7 @@ namespace Nekoyume.BlockChain
         {
             foreach (var id in ids)
             {
-                LocalStateModifier.AddReceivableQuest(avatarAddress, id);
+                LocalLayerModifier.AddReceivableQuest(avatarAddress, id);
 
                 var currentAvatarState = States.Instance.CurrentAvatarState;
                 if (currentAvatarState.address != avatarAddress)
@@ -792,7 +792,7 @@ namespace Nekoyume.BlockChain
                     var materialRow = Game.Game.instance.TableSheets.MaterialItemSheet
                         .First(pair => pair.Key == reward.Key);
 
-                    LocalStateModifier.RemoveItem(avatarAddress, materialRow.Value.ItemId, reward.Value);
+                    LocalLayerModifier.RemoveItem(avatarAddress, materialRow.Value.ItemId, reward.Value);
                 }
             }
         }

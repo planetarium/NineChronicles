@@ -401,7 +401,7 @@ namespace Nekoyume.UI
                 true,
                 animationTime,
                 middleXGap);
-            LocalStateModifier.ModifyAvatarActionPoint(States.Instance.CurrentAvatarState.address,
+            LocalLayerModifier.ModifyAvatarActionPoint(States.Instance.CurrentAvatarState.address,
                 -_requiredCost);
             yield return new WaitWhile(() => animation.IsPlaying);
             Quest(repeat);
@@ -491,7 +491,7 @@ namespace Nekoyume.UI
             }
 
             var equipment = (Equipment) itemBase;
-            LocalStateModifier.SetEquipmentEquip(
+            LocalLayerModifier.SetEquipmentEquip(
                 States.Instance.CurrentAvatarState.address,
                 equipment.ItemId,
                 equip,
@@ -667,7 +667,7 @@ namespace Nekoyume.UI
                 .Subscribe(
                     _ =>
                     {
-                        LocalStateModifier.ModifyAvatarActionPoint(
+                        LocalLayerModifier.ModifyAvatarActionPoint(
                             States.Instance.CurrentAvatarState.address, _requiredCost);
                     }, e => ActionRenderHandler.BackToMain(false, e))
                 .AddTo(this);

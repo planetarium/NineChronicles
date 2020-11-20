@@ -593,7 +593,7 @@ namespace Nekoyume.UI
                 return;
             }
 
-            LocalStateModifier.RemoveItem(avatarAddress, itemUsable.ItemId);
+            LocalLayerModifier.RemoveItem(avatarAddress, itemUsable.ItemId);
 
             AudioController.instance.PlaySfx(AudioController.SfxCode.InputItem);
             var format = L10nManager.Localize("NOTIFICATION_SELL_START");
@@ -631,7 +631,7 @@ namespace Nekoyume.UI
             var buyerAgentAddress = States.Instance.AgentState.address;
             var productId = shopItem.ProductId.Value;
 
-            LocalStateModifier.ModifyAgentGold(buyerAgentAddress, -shopItem.Price.Value);
+            LocalLayerModifier.ModifyAgentGold(buyerAgentAddress, -shopItem.Price.Value);
             try
             {
                 States.Instance.ShopState.Unregister(productId);
