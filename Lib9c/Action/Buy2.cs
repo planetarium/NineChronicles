@@ -87,22 +87,32 @@ namespace Nekoyume.Action
                 throw new NotEnoughClearedStageLevelException(GameConfig.RequireClearedStageLevel.ActionsInShop, current);
             }
 
-            if (!states.TryGetState(ShopState.Address, out Bencodex.Types.Dictionary d))
+            if (!states.TryGetState(ShopState.Address, out Bencodex.Types.Dictionary shopStateDict))
             {
                 throw new FailedLoadStateException("Aborted as the shop state was failed to load.");
             }
 
-            var shopState = new ShopState(d);
             sw.Stop();
             Log.Debug("Buy Get ShopState: {Elapsed}", sw.Elapsed);
             sw.Restart();
 
             Log.Debug("Execute Buy; buyer: {Buyer} seller: {Seller}", buyerAvatarAddress, sellerAvatarAddress);
             // 상점에서 구매할 아이템을 찾는다.
-            if (!shopState.TryGet(sellerAgentAddress, productId, out var shopItem))
+            Dictionary products = (Dictionary)shopStateDict["products"];
+
+            IKey productIdSerialized = (IKey)productId.Serialize();
+            if (!products.ContainsKey(productIdSerialized))
             {
                 throw new ItemDoesNotExistException(
-                    $"Aborted as the shop item ({productId}) was failed to get from the seller agent ({sellerAgentAddress})."
+                    $"Aborted as the shop item ({productId}) was failed to get from the shop."
+                );
+            }
+
+            ShopItem shopItem = new ShopItem((Dictionary)products[productIdSerialized]);
+            if (!shopItem.SellerAgentAddress.Equals(sellerAgentAddress))
+            {
+                throw new ItemDoesNotExistException(
+                    $"Aborted as the shop item ({productId}) of seller ({shopItem.SellerAgentAddress}) is different from ({sellerAgentAddress})."
                 );
             }
             sw.Stop();
@@ -146,7 +156,8 @@ namespace Nekoyume.Action
                 taxedPrice
             );
 
-            shopState.Unregister(shopItem);
+            products = (Dictionary)products.Remove(productIdSerialized);
+            shopStateDict = shopStateDict.SetItem("products", products);
 
             // 구매자, 판매자에게 결과 메일 전송
             buyerResult = new Buy.BuyerResult
@@ -194,7 +205,7 @@ namespace Nekoyume.Action
             Log.Debug("Buy Set Buyer AvatarState: {Elapsed}", sw.Elapsed);
             sw.Restart();
 
-            states = states.SetState(ShopState.Address, shopState.Serialize());
+            states = states.SetState(ShopState.Address, shopStateDict);
             sw.Stop();
             var ended = DateTimeOffset.UtcNow;
             Log.Debug("Buy Set ShopState: {Elapsed}", sw.Elapsed);
