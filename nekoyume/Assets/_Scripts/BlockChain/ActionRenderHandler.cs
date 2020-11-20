@@ -874,40 +874,40 @@ namespace Nekoyume.BlockChain
                     code = "14";
                     break;
                 case ConsumableSlotOutOfRangeException _:
-                    code = "14";
-                    break;
-                case ConsumableSlotUnlockException _:
                     code = "15";
                     break;
-                case DuplicateCostumeException _:
+                case ConsumableSlotUnlockException _:
                     code = "16";
                     break;
-                case InvalidItemTypeException _:
+                case DuplicateCostumeException _:
                     code = "17";
                     break;
-                case CostumeSlotUnlockException _:
+                case InvalidItemTypeException _:
                     code = "18";
                     break;
-                case NotEnoughMaterialException _:
+                case CostumeSlotUnlockException _:
                     code = "19";
                     break;
-                case ItemDoesNotExistException _:
+                case NotEnoughMaterialException _:
                     code = "20";
                     break;
-                case InsufficientBalanceException _:
+                case ItemDoesNotExistException _:
                     code = "21";
                     break;
-                case FailedToUnregisterInShopStateException _:
+                case InsufficientBalanceException _:
                     code = "22";
                     break;
-                case InvalidPriceException _:
+                case FailedToUnregisterInShopStateException _:
                     code = "23";
                     break;
-                case ShopStateAlreadyContainsException _:
+                case InvalidPriceException _:
                     code = "24";
                     break;
-                case CombinationSlotResultNullException _:
+                case ShopStateAlreadyContainsException _:
                     code = "25";
+                    break;
+                case CombinationSlotResultNullException _:
+                    code = "26";
                     break;
                 case ActionTimeoutException ate:
                     key = "ERROR_NETWORK";
@@ -916,11 +916,11 @@ namespace Nekoyume.BlockChain
                         && Game.Game.instance.Agent.IsTransactionStaged(txid))
                     {
                         errorMsg += $" Transaction for action is still staged. (txid: {txid})";
-                        code = "26";
+                        code = "27";
                     }
                     else
                     {
-                        code = "27";
+                        code = "28";
                     }
 
                     errorMsg += $"\nError Code: {code}";
