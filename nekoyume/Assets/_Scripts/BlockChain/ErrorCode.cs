@@ -17,10 +17,6 @@ namespace Nekoyume.BlockChain
             var errorMsg = String.Empty;
             switch (exc)
             {
-                case TimeoutException _:
-                    key = "ERROR_NETWORK";
-                    code = "00";
-                    break;
                 case RequiredBlockIndexException _:
                     key = "ERROR_REQUIRE_BLOCK";
                     code = "01";
