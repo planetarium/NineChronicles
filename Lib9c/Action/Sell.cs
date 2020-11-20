@@ -70,12 +70,14 @@ namespace Nekoyume.Action
                 throw new NotEnoughClearedStageLevelException(GameConfig.RequireClearedStageLevel.ActionsInShop, current);
             }
 
-            if (!states.TryGetState(ShopState.Address, out Bencodex.Types.Dictionary d))
+            Log.Debug("Sell IsStageCleared: {Elapsed}", sw.Elapsed);
+
+            sw.Restart();
+            if (!states.TryGetState(ShopState.Address, out Bencodex.Types.Dictionary shopStateDict))
             {
                 throw new FailedLoadStateException("Aborted as the shop state was failed to load.");
             }
-            var shopState = new ShopState(d);
-            sw.Stop();
+
             Log.Debug("Sell Get ShopState: {Elapsed}", sw.Elapsed);
             sw.Restart();
 
@@ -104,12 +106,19 @@ namespace Nekoyume.Action
 
             var productId = context.Random.GenerateRandomGuid();
 
-            shopState.Register(new ShopItem(
+            var shopItem = new ShopItem(
                 ctx.Signer,
                 sellerAvatarAddress,
                 productId,
                 price,
-                nonFungibleItem));
+                nonFungibleItem);
+
+            IValue shopItemSerialized = shopItem.Serialize();
+            IKey productIdSerialized = (IKey)productId.Serialize();
+
+            Dictionary products = (Dictionary)shopStateDict["products"];
+            products = (Dictionary)products.Add(productIdSerialized, shopItemSerialized);
+            shopStateDict = shopStateDict.SetItem("products", products);
 
             sw.Stop();
             Log.Debug("Sell Get Register Item: {Elapsed}", sw.Elapsed);
@@ -123,7 +132,7 @@ namespace Nekoyume.Action
             Log.Debug("Sell Set AvatarState: {Elapsed}", sw.Elapsed);
             sw.Restart();
 
-            states = states.SetState(ShopState.Address, shopState.Serialize());
+            states = states.SetState(ShopState.Address, shopStateDict);
             sw.Stop();
             var ended = DateTimeOffset.UtcNow;
             Log.Debug("Sell Set ShopState: {Elapsed}", sw.Elapsed);
