@@ -137,6 +137,12 @@ namespace Nekoyume.BlockChain
                 serialized.ElementAt(1).ToBigInteger());
         }
 
+        public void SendException(Exception exc)
+        {
+            var (key, code, message) = ErrorCode.GetErrorCode(exc);
+            _service.ReportException(code, message);
+        }
+
         public void EnqueueAction(GameAction action)
         {
             _queuedActions.Enqueue(action);
@@ -357,6 +363,7 @@ namespace Nekoyume.BlockChain
             while (retryCount > 0)
             {
                 await Task.Delay(5000);
+                StreamingHubClientRegistry<IActionEvaluationHub, IActionEvaluationHubReceiver>.Register(null);
                 _hub = StreamingHubClient.Connect<IActionEvaluationHub, IActionEvaluationHubReceiver>(_channel, this);
                 try
                 {

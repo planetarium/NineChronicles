@@ -301,6 +301,12 @@ namespace Nekoyume.BlockChain
 
         #region Mono
 
+        public void SendException(Exception exc)
+        {
+            //FIXME: Make more meaningful method
+            return;
+        }
+
         private void Awake()
         {
             ForceDotNet.Force();
