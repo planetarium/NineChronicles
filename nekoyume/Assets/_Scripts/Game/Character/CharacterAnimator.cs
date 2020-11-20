@@ -39,7 +39,7 @@ namespace Nekoyume.Game.Character
 
             HUDPosition = hud.GetWorldPosition(Target.transform) - Root.transform.position;
 
-            var heal = Skeleton.skeleton.FindBone(StringHeal);
+            var heal = Skeleton.skeleton.FindBone(StringHealBorn);
             if (heal != null)
             {
                 HealPosition = heal.GetWorldPosition(Target.transform) - Root.transform.position;
