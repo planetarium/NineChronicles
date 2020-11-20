@@ -1,9 +1,11 @@
 using System;
+using System.Collections.Concurrent;
 using System.Security.Cryptography;
 using Bencodex.Types;
 using Lib9c.Renderer;
 using Libplanet;
 using Libplanet.Crypto;
+using Libplanet.Tx;
 using Nekoyume.Action;
 using Nekoyume.Helper;
 using UniRx;
@@ -30,6 +32,8 @@ namespace Nekoyume.BlockChain
 
         HashDigest<SHA256> BlockTipHash { get; }
 
+        ConcurrentDictionary<Guid, TxId> Transactions { get; }
+
         void Initialize(
             CommandLineOptions options,
             PrivateKey privateKey,
@@ -40,5 +44,6 @@ namespace Nekoyume.BlockChain
 
         IValue GetState(Address address);
 
+        bool IsTransactionStaged(TxId txid);
     }
 }

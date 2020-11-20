@@ -98,6 +98,9 @@ namespace Nekoyume.BlockChain
         public int AppProtocolVersion { get; private set; }
         public HashDigest<SHA256> BlockTipHash => blocks.Tip.Hash;
 
+        public ConcurrentDictionary<Guid, TxId> Transactions { get; }
+            = new ConcurrentDictionary<Guid, TxId>();
+
         public event EventHandler BootstrapStarted;
         public event EventHandler<PreloadState> PreloadProcessed;
         public event EventHandler PreloadEnded;
@@ -286,6 +289,11 @@ namespace Nekoyume.BlockChain
         public IValue GetState(Address address)
         {
             return blocks.GetState(address);
+        }
+
+        public bool IsTransactionStaged(TxId txid)
+        {
+            return blocks.GetStagedTransactionIds().Contains(txid);
         }
 
         public FungibleAssetValue GetBalance(Address address, Currency currency) =>
@@ -756,6 +764,13 @@ namespace Nekoyume.BlockChain
                     .SubscribeOnMainThread()
                     .Subscribe(TipChangedHandler);
 
+                ActionRenderer.EveryRender<GameAction>()
+                    .SubscribeOnMainThread()
+                    .Subscribe(ev =>
+                    {
+                        Transactions.TryRemove(ev.Action.Id, out _);
+                    });
+
                 Debug.LogFormat(
                     "The address of this node: {0},{1},{2}",
                     ByteUtil.Hex(PrivateKey.PublicKey.Format(true)),
@@ -812,6 +827,11 @@ namespace Nekoyume.BlockChain
                 {
                     var task = Task.Run(() => MakeTransaction(actions));
                     yield return new WaitUntil(() => task.IsCompleted);
+                    foreach (var action in actions)
+                    {
+                        var ga = (GameAction) action.InnerAction;
+                        Transactions.TryAdd(ga.Id, task.Result.Id);
+                    }
                 }
             }
         }

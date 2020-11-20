@@ -33,6 +33,16 @@ namespace Nekoyume.BlockChain
             _agent.EnqueueAction(gameAction);
         }
 
+        private void HandleException(Guid actionId, Exception e)
+        {
+            if (e is TimeoutException)
+            {
+                throw new ActionTimeoutException(e.Message, actionId);
+            }
+
+            throw e;
+        }
+
         public ActionManager(IAgent agent)
         {
             _agent = agent;
@@ -66,6 +76,7 @@ namespace Nekoyume.BlockChain
                 .Last()
                 .ObserveOnMainThread()
                 .Timeout(ActionTimeout)
+                .DoOnError(e => HandleException(action.Id, e))
                 .Finally(() =>
                 {
                     var agentAddress = States.Instance.AgentState.address;
@@ -108,11 +119,6 @@ namespace Nekoyume.BlockChain
             Mixpanel.Track("Unity/Create HackAndSlash");
 
             var avatarAddress = States.Instance.CurrentAvatarState.address;
-
-            // NOTE: HAS를 할 때에만 장착 여부를 저장한다.
-            // 따라서 이때에 찌꺼기를 남기지 않기 위해서 장착에 대한 모든 로컬 상태를 비워준다.
-            LocalStateModifier.ClearEquipOrUnequipOfCostumeAndEquipment(avatarAddress, false);
-
             costumes = costumes ?? new List<int>();
             equipments = equipments ?? new List<Equipment>();
             foods = foods ?? new List<Consumable>();
@@ -140,7 +146,8 @@ namespace Nekoyume.BlockChain
                 .Take(1)
                 .Last()
                 .ObserveOnMainThread()
-                .Timeout(ActionTimeout);
+                .Timeout(ActionTimeout)
+                .DoOnError(e => HandleException(action.Id, e));
         }
 
         public IObservable<ActionBase.ActionEvaluation<CombinationConsumable2>> CombinationConsumable(
@@ -161,7 +168,8 @@ namespace Nekoyume.BlockChain
                 .Take(1)
                 .Last()
                 .ObserveOnMainThread()
-                .Timeout(ActionTimeout);
+                .Timeout(ActionTimeout)
+                .DoOnError(e => HandleException(action.Id, e));
         }
 
         public IObservable<ActionBase.ActionEvaluation<Sell>> Sell(ItemUsable itemUsable, FungibleAssetValue price)
@@ -184,7 +192,8 @@ namespace Nekoyume.BlockChain
                 .Take(1)
                 .Last()
                 .ObserveOnMainThread()
-                .Timeout(ActionTimeout); // Last() is for completion
+                .Timeout(ActionTimeout)
+                .DoOnError(e => HandleException(action.Id, e)); // Last() is for completion
         }
 
         public IObservable<ActionBase.ActionEvaluation<SellCancellation2>> SellCancellation(
@@ -203,7 +212,8 @@ namespace Nekoyume.BlockChain
                 .Take(1)
                 .Last()
                 .ObserveOnMainThread()
-                .Timeout(ActionTimeout); // Last() is for completion
+                .Timeout(ActionTimeout)
+                .DoOnError(e => HandleException(action.Id, e)); // Last() is for completion
         }
 
         public IObservable<ActionBase.ActionEvaluation<Buy2>> Buy(Address sellerAgentAddress,
@@ -223,7 +233,8 @@ namespace Nekoyume.BlockChain
                 .Take(1)
                 .Last()
                 .ObserveOnMainThread()
-                .Timeout(ActionTimeout); // Last() is for completion
+                .Timeout(ActionTimeout)
+                .DoOnError(e => HandleException(action.Id, e)); // Last() is for completion
         }
 
         public IObservable<ActionBase.ActionEvaluation<DailyReward>> DailyReward()
@@ -244,7 +255,8 @@ namespace Nekoyume.BlockChain
                 .Take(1)
                 .Last()
                 .ObserveOnMainThread()
-                .Timeout(ActionTimeout);
+                .Timeout(ActionTimeout)
+                .DoOnError(e => HandleException(action.Id, e));
         }
 
         public IObservable<ActionBase.ActionEvaluation<ItemEnhancement3>> ItemEnhancement(
@@ -272,7 +284,8 @@ namespace Nekoyume.BlockChain
                 .Take(1)
                 .Last()
                 .ObserveOnMainThread()
-                .Timeout(ActionTimeout);
+                .Timeout(ActionTimeout)
+                .DoOnError(e => HandleException(action.Id, e));
         }
 
         public IObservable<ActionBase.ActionEvaluation<RankingBattle2>> RankingBattle(
@@ -301,7 +314,8 @@ namespace Nekoyume.BlockChain
                 .Take(1)
                 .Last()
                 .ObserveOnMainThread()
-                .Timeout(ActionTimeout);
+                .Timeout(ActionTimeout)
+                .DoOnError(e => HandleException(action.Id, e));
         }
 
         public void PatchTableSheet(string tableName, string tableCsv)
@@ -336,7 +350,8 @@ namespace Nekoyume.BlockChain
                 .Take(1)
                 .Last()
                 .ObserveOnMainThread()
-                .Timeout(ActionTimeout);
+                .Timeout(ActionTimeout)
+                .DoOnError(e => HandleException(action.Id, e));
         }
 
         public IObservable<ActionBase.ActionEvaluation<RapidCombination2>> RapidCombination(int slotIndex)
@@ -353,7 +368,8 @@ namespace Nekoyume.BlockChain
                 .Take(1)
                 .Last()
                 .ObserveOnMainThread()
-                .Timeout(ActionTimeout);
+                .Timeout(ActionTimeout)
+                .DoOnError(e => HandleException(action.Id, e));
         }
 
         public IObservable<ActionBase.ActionEvaluation<RedeemCode>> RedeemCode(string code)
@@ -369,7 +385,8 @@ namespace Nekoyume.BlockChain
                 .Take(1)
                 .Last()
                 .ObserveOnMainThread()
-                .Timeout(ActionTimeout);
+                .Timeout(ActionTimeout)
+                .DoOnError(e => HandleException(action.Id, e));
         }
 
         public IObservable<ActionBase.ActionEvaluation<ChargeActionPoint>> ChargeActionPoint()
@@ -385,7 +402,8 @@ namespace Nekoyume.BlockChain
                 .Take(1)
                 .Last()
                 .ObserveOnMainThread()
-                .Timeout(ActionTimeout);
+                .Timeout(ActionTimeout)
+                .DoOnError(e => HandleException(action.Id, e));
         }
 
 
