@@ -13,14 +13,11 @@ namespace Nekoyume.State
     /// <summary>
     /// 체인이 포함하는 특정 상태에 대한 상태 변경자를 관리한다.
     /// 모든 상태 변경자는 대상 상태의 체인 내 주소를 기준으로 분류한다.
-    /// 상태 변경자는 휘발성과 비휘발성으로 구분해서 다룬다.(volatile, nonVolatile)
-    /// 휘발성은 에이전트 혹은 아바타의 주소가 새롭게 설정되는 경우 사라진다.
-    /// 비휘발성은 PlayerPrefs에 저장한다.
     /// </summary>
     public class LocalLayer
     {
         /// <summary>
-        /// 변경자 정보는 대상 주소(Address), 비휘발성 상태 변경자(NonVolatileModifiers), 휘발성 상태 변경자(VolatileModifiers)로 구성된다.
+        /// 변경자 정보는 대상 주소(Address), 상태 변경자(Modifiers)로 구성된다.
         /// </summary>
         /// <typeparam name="T">AgentStateModifier 등</typeparam>
         private class ModifierInfo<T> where T : class
