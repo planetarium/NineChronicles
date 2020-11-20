@@ -35,6 +35,9 @@ namespace Nekoyume.Model.Item
 
         public Chest(SerializationInfo info, StreamingContext context) : base(info, context)
         {
+            Rewards = (List<RedeemRewardSheet.RewardInfo>) info.GetValue(
+                nameof(Rewards),
+                typeof(List<RedeemRewardSheet.RewardInfo>));
         }
 
         public sealed override IValue Serialize() =>
