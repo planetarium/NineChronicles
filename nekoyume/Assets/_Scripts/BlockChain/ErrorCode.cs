@@ -1,10 +1,10 @@
 ﻿using System;
 using Libplanet.Action;
-using Libplanet.Tx;
 using Nekoyume.Action;
 using Nekoyume.L10n;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
+using UnityEngine;
 
 namespace Nekoyume.BlockChain
 {
@@ -115,8 +115,11 @@ namespace Nekoyume.BlockChain
                     }
                     else
                     {
+                        errorMsg += $" Transaction for action is not staged. (txid: {txId})";
                         code = "28";
                     }
+
+                    Debug.LogError($"Action timeout: (actionID: {ate.ActionId}, txID: {txId})");
 
                     errorMsg += $"\nError Code: {code}";
                     break;
