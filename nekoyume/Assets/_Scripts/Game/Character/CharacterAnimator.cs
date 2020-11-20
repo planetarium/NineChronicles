@@ -7,7 +7,7 @@ namespace Nekoyume.Game.Character
     public abstract class CharacterAnimator : SkeletonAnimator
     {
         private const string StringHUD = "HUD";
-        private const string StringHeal = "HealBorn";
+        private const string StringHealBorn = "HealBorn";
         private const float ColorTweenFrom = 0f;
         private const float ColorTweenTo = 0.6f;
         private const float ColorTweenDuration = 0.1f;
