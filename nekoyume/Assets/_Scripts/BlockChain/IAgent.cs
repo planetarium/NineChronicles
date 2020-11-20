@@ -32,8 +32,6 @@ namespace Nekoyume.BlockChain
 
         HashDigest<SHA256> BlockTipHash { get; }
 
-        ConcurrentDictionary<Guid, TxId> Transactions { get; }
-
         void Initialize(
             CommandLineOptions options,
             PrivateKey privateKey,
@@ -46,6 +44,6 @@ namespace Nekoyume.BlockChain
 
         void SendException(Exception exc);
 
-        bool IsTransactionStaged(TxId txid);
+        bool IsActionStaged(Guid actionId, out TxId txId);
     }
 }

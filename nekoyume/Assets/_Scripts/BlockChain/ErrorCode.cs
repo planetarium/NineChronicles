@@ -108,10 +108,9 @@ namespace Nekoyume.BlockChain
                 case ActionTimeoutException ate:
                     key = "ERROR_NETWORK";
                     errorMsg = "Action timeout occurred.";
-                    if (Game.Game.instance.Agent.Transactions.TryGetValue(ate.ActionId, out TxId txid)
-                        && Game.Game.instance.Agent.IsTransactionStaged(txid))
+                    if (Game.Game.instance.Agent.IsActionStaged(ate.ActionId, out var txId))
                     {
-                        errorMsg += $" Transaction for action is still staged. (txid: {txid})";
+                        errorMsg += $" Transaction for action is still staged. (txid: {txId})";
                         code = "27";
                     }
                     else
