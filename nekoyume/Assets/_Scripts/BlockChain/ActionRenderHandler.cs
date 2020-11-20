@@ -193,7 +193,7 @@ namespace Nekoyume.BlockChain
                 .ObserveOnMainThread()
                 .Subscribe(eval =>
                 {
-                    LocalStateSettings.Instance
+                    LocalLayer.Instance
                         .ClearAvatarModifiers<AvatarDailyRewardReceivedIndexModifier>(
                             eval.Action.avatarAddress);
 

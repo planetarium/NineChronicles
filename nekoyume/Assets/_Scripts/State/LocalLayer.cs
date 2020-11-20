@@ -17,7 +17,7 @@ namespace Nekoyume.State
     /// 휘발성은 에이전트 혹은 아바타의 주소가 새롭게 설정되는 경우 사라진다.
     /// 비휘발성은 PlayerPrefs에 저장한다.
     /// </summary>
-    public class LocalStateSettings
+    public class LocalLayer
     {
         /// <summary>
         /// 변경자 정보는 대상 주소(Address), 비휘발성 상태 변경자(NonVolatileModifiers), 휘발성 상태 변경자(VolatileModifiers)로 구성된다.
@@ -35,7 +35,7 @@ namespace Nekoyume.State
             }
         }
 
-        public static LocalStateSettings Instance => Game.Game.instance.LocalStateSettings;
+        public static LocalLayer Instance => Game.Game.instance.LocalLayer;
 
         private ModifierInfo<AgentStateModifier> _agentModifierInfo;
 
@@ -344,7 +344,7 @@ namespace Nekoyume.State
             if (modifier is null)
             {
                 Debug.LogWarning(
-                    $"[{nameof(LocalStateSettings)}] No found {nameof(modifier)} of {nameof(agentAddress)}");
+                    $"[{nameof(LocalLayer)}] No found {nameof(modifier)} of {nameof(agentAddress)}");
             }
         }
 
@@ -387,7 +387,7 @@ namespace Nekoyume.State
             if (modifier is null)
             {
                 Debug.LogWarning(
-                    $"[{nameof(LocalStateSettings)}] No found {nameof(modifier)} of {nameof(avatarAddress)}");
+                    $"[{nameof(LocalLayer)}] No found {nameof(modifier)} of {nameof(avatarAddress)}");
             }
         }
 
@@ -427,7 +427,7 @@ namespace Nekoyume.State
             if (modifier is null)
             {
                 Debug.LogWarning(
-                    $"[{nameof(LocalStateSettings)}] No found {nameof(modifier)} of {nameof(weeklyArenaAddress)}");
+                    $"[{nameof(LocalLayer)}] No found {nameof(modifier)} of {nameof(weeklyArenaAddress)}");
             }
         }
 

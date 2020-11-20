@@ -87,8 +87,8 @@ namespace Nekoyume.State
                 return;
             }
 
-            LocalStateSettings.Instance.InitializeWeeklyArena(state);
-            WeeklyArenaState = LocalStateSettings.Instance.Modify(state);
+            LocalLayer.Instance.InitializeWeeklyArena(state);
+            WeeklyArenaState = LocalLayer.Instance.Modify(state);
             WeeklyArenaStateSubject.OnNext(WeeklyArenaState);
         }
 
@@ -111,11 +111,11 @@ namespace Nekoyume.State
                 AgentState is null ||
                 !AgentState.address.Equals(state.address);
 
-            LocalStateSettings.Instance.InitializeAgentAndAvatars(state);
-            AgentState = LocalStateSettings.Instance.Modify(state);
+            LocalLayer.Instance.InitializeAgentAndAvatars(state);
+            AgentState = LocalLayer.Instance.Modify(state);
             if (!(balanceState is null))
             {
-                GoldBalanceState = LocalStateSettings.Instance.Modify(balanceState);
+                GoldBalanceState = LocalLayer.Instance.Modify(balanceState);
             }
             ReactiveAgentState.Initialize(AgentState, GoldBalanceState);
 
@@ -154,7 +154,7 @@ namespace Nekoyume.State
                 throw new Exception(
                     $"`AgentState` is null or not found avatar's address({state.address}) in `AgentState`");
 
-            state = LocalStateSettings.Instance.Modify(state);
+            state = LocalLayer.Instance.Modify(state);
 
             if (_avatarStates.ContainsKey(index))
             {
@@ -206,7 +206,7 @@ namespace Nekoyume.State
 
             CurrentAvatarKey = index;
             var avatarState = _avatarStates[CurrentAvatarKey];
-            LocalStateSettings.Instance.InitializeCurrentAvatarState(avatarState);
+            LocalLayer.Instance.InitializeCurrentAvatarState(avatarState);
             UpdateCurrentAvatarState(avatarState, initializeReactiveState);
 
             if (isNew)
@@ -224,7 +224,7 @@ namespace Nekoyume.State
         public void DeselectAvatar()
         {
             CurrentAvatarKey = -1;
-            LocalStateSettings.Instance?.InitializeCurrentAvatarState(null);
+            LocalLayer.Instance?.InitializeCurrentAvatarState(null);
             UpdateCurrentAvatarState(null);
         }
 
@@ -232,12 +232,12 @@ namespace Nekoyume.State
         {
             if (avatarState is null)
             {
-                LocalStateSettings.Instance.InitializeCombinationSlotsByCurrentAvatarState(null);
+                LocalLayer.Instance.InitializeCombinationSlotsByCurrentAvatarState(null);
 
                 return;
             }
 
-            LocalStateSettings.Instance.InitializeCombinationSlotsByCurrentAvatarState(avatarState);
+            LocalLayer.Instance.InitializeCombinationSlotsByCurrentAvatarState(avatarState);
             for (var i = 0; i < avatarState.combinationSlotAddresses.Count; i++)
             {
                 var slotAddress = avatarState.address.Derive(
@@ -255,7 +255,7 @@ namespace Nekoyume.State
 
         public void SetCombinationSlotState(CombinationSlotState state)
         {
-            state = LocalStateSettings.Instance.Modify(state);
+            state = LocalLayer.Instance.Modify(state);
             CombinationSlotStates[state.address] = state;
 
             CombinationSlotStateSubject.OnNext(state);
