@@ -77,6 +77,7 @@ namespace Nekoyume.Game.Character
 
         public CharacterAnimator Animator { get; protected set; }
         protected Vector3 HUDOffset => Animator.GetHUDPosition();
+        protected Vector3 HealOffset => Animator.HealPosition;
         protected bool AttackEndCalled { get; set; }
 
         private bool _forceQuit;
@@ -483,7 +484,7 @@ namespace Nekoyume.Game.Character
         private void PopUpHeal(Vector3 position, Vector3 force, string dmg, bool critical)
         {
             DamageText.Show(position, force, dmg, DamageText.TextGroupState.Heal);
-            VFXController.instance.CreateAndChase<BattleHeal01VFX>(transform, HUDOffset - new Vector3(0f, 0.4f));
+            VFXController.instance.CreateAndChase<BattleHeal01VFX>(transform, HealOffset);
         }
 
         #region Animation
