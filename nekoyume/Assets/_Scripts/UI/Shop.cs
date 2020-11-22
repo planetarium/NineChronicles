@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using DG.Tweening;
 using Libplanet.Assets;
+using mixpanel;
 using Nekoyume.BlockChain;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Character;
@@ -468,7 +469,13 @@ namespace Nekoyume.UI
                 {
                     return;
                 }
-
+                
+                var props = new Value
+                {
+                    ["Price"] = shopItem.Price.Value,
+                };
+                Mixpanel.Track("Unity/Buy", props);
+                
                 Game.Game.instance.ActionManager.Buy(
                     shopItem.SellerAgentAddress.Value,
                     shopItem.SellerAvatarAddress.Value,
