@@ -45,6 +45,8 @@ namespace Nekoyume.Game.Character
         private bool IsFullCostumeEquipped =>
             Costumes.Any(costume => costume.ItemSubType == ItemSubType.FullCostume);
 
+        public override string TargetTag => Tag.Enemy;
+
         #region Mono
 
         protected override void Awake()
@@ -69,8 +71,6 @@ namespace Nekoyume.Game.Character
 
                     Animator.Touch();
                 }).AddTo(gameObject);
-
-            TargetTag = Tag.Enemy;
         }
 
         private void OnDestroy()
@@ -167,6 +167,13 @@ namespace Nekoyume.Game.Character
             HitPointLocalOffset = new Vector3(center.x + size.x / 2, center.y - size.y / 2);
             attackPoint.transform.localPosition =
                 new Vector3(HitPointLocalOffset.x + CharacterModel.attackRange, 0f);
+        }
+
+        public override float CalculateRange(CharacterBase target)
+        {
+            var attackRangeStartPosition = gameObject.transform.position.x + HitPointLocalOffset.x;
+            var targetHitPosition = target.transform.position.x + target.HitPointLocalOffset.x;
+            return targetHitPosition - attackRangeStartPosition;
         }
 
         #endregion

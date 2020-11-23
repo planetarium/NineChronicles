@@ -67,6 +67,7 @@ namespace Nekoyume.Game
         private BattleResult.Model _battleResultModel;
         private bool _rankingBattle;
         private Coroutine _battleCoroutine;
+        private Coroutine _coExecuteCoroutine = null;
 
         public List<GameObject> ReleaseWhiteList { get; private set; } = new List<GameObject>();
         public SkillController SkillController { get; private set; }
@@ -86,6 +87,8 @@ namespace Nekoyume.Game
         private Character.Player _stageRunningPlayer = null;
 
         private List<int> prevFood;
+
+        private Coroutine _positionCheckCoroutine = null;
 
         #region Events
 
@@ -127,25 +130,32 @@ namespace Nekoyume.Game
         private void OnStageStart(BattleLog log)
         {
             _rankingBattle = false;
-            if (_battleLog?.id != log.id)
+            if (_battleLog is null)
             {
+                if (!(_battleCoroutine is null))
+                {
+                    StopCoroutine(_battleCoroutine);
+                    _battleCoroutine = null;
+                    objectPool.ReleaseAll();
+                }
                 _battleLog = log;
                 PlayStage(_battleLog);
             }
             else
             {
-                Debug.Log("Skip duplicated battle");
+                Debug.Log("Skip incoming battle. Battle is already simulating.");
             }
         }
 
         private void OnRankingBattleStart(BattleLog log)
         {
             _rankingBattle = true;
-            if (_battleLog?.id != log.id)
+            if (_battleLog is null)
             {
                 if (!(_battleCoroutine is null))
                 {
                     StopCoroutine(_battleCoroutine);
+                    _battleCoroutine = null;
                     objectPool.ReleaseAll();
                 }
                 _battleLog = log;
@@ -153,7 +163,7 @@ namespace Nekoyume.Game
             }
             else
             {
-                Debug.Log("Skip duplicated battle");
+                Debug.Log("Skip incoming battle. Battle is already simulating.");
             }
         }
 
@@ -281,7 +291,7 @@ namespace Nekoyume.Game
         {
             if (log?.Count > 0)
             {
-                StartCoroutine(CoPlayStage(log));
+                _battleCoroutine = StartCoroutine(CoPlayStage(log));
             }
         }
 
@@ -331,7 +341,7 @@ namespace Nekoyume.Game
             }
 
             yield return StartCoroutine(CoStageEnd(log));
-            IsInStage = false;
+            ClearBattle();
         }
 
         private IEnumerator CoPlayRankingBattle(BattleLog log)
@@ -348,14 +358,43 @@ namespace Nekoyume.Game
             IsInStage = true;
             yield return StartCoroutine(CoRankingBattleEnter(log));
             Widget.Find<ArenaBattleLoadingScreen>().Close();
+            _positionCheckCoroutine = StartCoroutine(CheckPosition(log));
             foreach (var e in log)
             {
                 yield return StartCoroutine(e.CoExecute(this));
             }
-
+            StopCoroutine(_positionCheckCoroutine);
+            _positionCheckCoroutine = null;
             yield return StartCoroutine(CoRankingBattleEnd(log));
+            ClearBattle();
+        }
+
+        private IEnumerator CheckPosition(BattleLog log)
+        {
+            var player = GetPlayer();
+            while (player.isActiveAndEnabled)
+            {
+                if (player.transform.localPosition.x >= 16f)
+                {
+                    _positionCheckCoroutine = null;
+                    yield return StartCoroutine(CoRankingBattleEnd(log, true));
+                    ClearBattle();
+                    StopAllCoroutines();
+                }
+
+                yield return new WaitForSeconds(1f);
+            }
+        }
+
+        public void ClearBattle()
+        {
+            _battleLog = null;
             IsInStage = false;
-            _battleCoroutine = null;
+            if (!(_battleCoroutine is null))
+            {
+                StopCoroutine(_battleCoroutine);
+                _battleCoroutine = null;
+            }
         }
 
         private static IEnumerator CoDialog(int worldStage)
@@ -592,10 +631,16 @@ namespace Nekoyume.Game
             }
         }
 
-        private IEnumerator CoRankingBattleEnd(BattleLog log)
+        private IEnumerator CoRankingBattleEnd(BattleLog log, bool forceQuit = false)
         {
+            _onEnterToStageEnd.OnNext(this);
             var characters = GetComponentsInChildren<Character.CharacterBase>();
-            yield return new WaitWhile(() => characters.Any(i => i.actions.Any()));
+
+            if (!forceQuit)
+            {
+                yield return new WaitWhile(() =>
+                    characters.Any(i => i.actions.Any()));
+            }
 
             Boss = null;
             var playerCharacter = log.result == BattleLog.Result.Win
@@ -632,9 +677,7 @@ namespace Nekoyume.Game
             var battle = Widget.Find<UI.Battle>();
             if (_rankingBattle)
             {
-                battle.Show();
-                battle.ComboText.Close();
-                battle.StageProgressBar.Close();
+                battle.ShowInArena();
             }
             else
             {

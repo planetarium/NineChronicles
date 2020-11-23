@@ -55,6 +55,15 @@ namespace Nekoyume.UI
             CloseWidget = null;
         }
 
+        public void ShowInArena(bool ignoreShowAnimation = false)
+        {
+            stageTitle.Close();
+            comboText.Close();
+            stageProgressBar.Close();
+            guidedQuest.Hide(true);
+            base.Show(ignoreShowAnimation);
+        }
+
         public void Show(int stageId, bool isRepeat, bool isExitReserved)
         {
             guidedQuest.Hide(true);

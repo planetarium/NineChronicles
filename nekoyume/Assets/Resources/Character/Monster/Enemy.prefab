@@ -59,6 +59,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   attackPoint: {fileID: 5119209969102161230}
+  sortingGroup: {fileID: 0}
 --- !u!54 &1471009175166547048
 Rigidbody:
   m_ObjectHideFlags: 0

@@ -10,6 +10,8 @@ namespace Nekoyume.Game.Character
         protected override bool CanRun =>
             !TargetInAttackRange(_player) && !_player.TargetInAttackRange(this);
 
+        public override string TargetTag => Tag.Player;
+
         public override void UpdateHpBar()
         {
             base.UpdateHpBar();
@@ -34,6 +36,13 @@ namespace Nekoyume.Game.Character
             var size = HitPointBoxCollider.size;
             HitPointLocalOffset = new Vector3(center.x - size.x / 2, center.y - size.y / 2);
             attackPoint.transform.localPosition = new Vector3(HitPointLocalOffset.x - CharacterModel.attackRange, 0f);
+        }
+
+        public override float CalculateRange(CharacterBase target)
+        {
+            var attackRangeStartPosition = gameObject.transform.position.x + HitPointLocalOffset.x;
+            var targetHitPosition = target.transform.position.x + target.HitPointLocalOffset.x;
+            return attackRangeStartPosition - targetHitPosition;
         }
 
         protected override void ExecuteRun()

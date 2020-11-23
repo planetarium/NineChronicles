@@ -1,12 +1,11 @@
 using System;
-using System.Globalization;
-using System.Numerics;
 using Libplanet.Assets;
 using Nekoyume.State;
 using Nekoyume.UI.Module.Common;
 using TMPro;
 using UniRx;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
 {
@@ -15,7 +14,17 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private TextMeshProUGUI text = null;
 
+        [SerializeField]
+        private Button onlineShopButton = null;
+
         private IDisposable _disposable;
+
+        private const string OnlineShopLink = "https://shop.nine-chronicles.com/";
+
+        protected void Awake()
+        {
+            onlineShopButton.onClick.AddListener(OnClickOnlineShopButton);
+        }
 
         protected override void OnEnable()
         {
@@ -32,6 +41,11 @@ namespace Nekoyume.UI.Module
         private void SetGold(FungibleAssetValue gold)
         {
             text.text = gold.GetQuantityString();
+        }
+
+        private void OnClickOnlineShopButton()
+        {
+            Application.OpenURL(OnlineShopLink);
         }
     }
 }

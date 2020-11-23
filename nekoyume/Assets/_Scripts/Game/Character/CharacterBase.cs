@@ -36,7 +36,7 @@ namespace Nekoyume.Game.Character
         protected abstract float RunSpeedDefault { get; }
         protected abstract Vector3 DamageTextForce { get; }
         protected abstract Vector3 HudTextPosition { get; }
-        public string TargetTag { get; protected set; }
+        public virtual string TargetTag { get; protected set; }
 
         public Guid Id => CharacterModel.Id;
         public SizeType SizeType => CharacterModel.SizeType;
@@ -95,7 +95,7 @@ namespace Nekoyume.Game.Character
         }
 
         protected BoxCollider HitPointBoxCollider { get; private set; }
-        protected Vector3 HitPointLocalOffset { get; set; }
+        public Vector3 HitPointLocalOffset { get; set; }
 
         public List<ActionParams> actions = new List<ActionParams>();
 
@@ -408,11 +408,17 @@ namespace Nekoyume.Game.Character
 
         #endregion
 
-        public bool TargetInAttackRange(CharacterBase target)
+        public virtual float CalculateRange(CharacterBase target)
         {
             var attackRangeStartPosition = gameObject.transform.position.x + HitPointLocalOffset.x;
             var targetHitPosition = target.transform.position.x + target.HitPointLocalOffset.x;
-            return AttackRange > Mathf.Abs(targetHitPosition - attackRangeStartPosition);
+            return attackRangeStartPosition - targetHitPosition;
+        }
+
+        public bool TargetInAttackRange(CharacterBase target)
+        {
+            var diff = CalculateRange(target);
+            return AttackRange > diff;
         }
 
         public void DisableHUD()
