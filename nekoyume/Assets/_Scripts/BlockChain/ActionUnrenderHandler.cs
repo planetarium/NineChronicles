@@ -69,7 +69,7 @@ namespace Nekoyume.BlockChain
 
         private void Buy()
         {
-            _renderer.EveryUnrender<Buy>()
+            _renderer.EveryUnrender<Buy3>()
                 .Where(ValidateEvaluationForAgentState)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseUnrenderBuy)
@@ -78,7 +78,7 @@ namespace Nekoyume.BlockChain
 
         private void Sell()
         {
-            _renderer.EveryUnrender<Sell>()
+            _renderer.EveryUnrender<Sell2>()
                 .Where(ValidateEvaluationForCurrentAvatarState)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseUnrenderSell)
@@ -93,8 +93,8 @@ namespace Nekoyume.BlockChain
                 .Subscribe(ResponseUnrenderItemEnhancement)
                 .AddTo(_disposables);
         }
-        
-        private void ResponseUnrenderBuy(ActionBase.ActionEvaluation<Buy> eval)
+
+        private void ResponseUnrenderBuy(ActionBase.ActionEvaluation<Buy3> eval)
         {
             var buyerAvatarAddress = eval.Action.buyerAvatarAddress;
             var price = eval.Action.sellerResult.shopItem.Price;
@@ -105,7 +105,8 @@ namespace Nekoyume.BlockChain
             {
                 var buyerAgentAddress = States.Instance.AgentState.address;
                 var result = eval.Action.buyerResult;
-                var itemId = result.itemUsable.ItemId;
+
+                var itemId = result.itemUsable?.ItemId ?? result.costume.ItemId;
                 var buyerAvatar = eval.OutputStates.GetAvatarState(buyerAvatarAddress);
 
                 LocalStateModifier.ModifyAgentGold(buyerAgentAddress, -price);
@@ -135,7 +136,7 @@ namespace Nekoyume.BlockChain
             UnrenderQuest(renderQuestAvatarAddress, renderQuestCompletedQuestIds);
         }
 
-        private void ResponseUnrenderSell(ActionBase.ActionEvaluation<Sell> eval)
+        private void ResponseUnrenderSell(ActionBase.ActionEvaluation<Sell2> eval)
         {
             if (!(eval.Exception is null))
             {

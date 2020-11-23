@@ -7,7 +7,6 @@ using Lib9c.Renderer;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Assets;
-using Libplanet.Tx;
 using Nekoyume.Action;
 using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
@@ -164,16 +163,17 @@ namespace Nekoyume.BlockChain
 
         private void SellCancellation()
         {
-            _renderer.EveryRender<SellCancellation2>()
-                .Where(ValidateEvaluationForCurrentAgent)
+            _renderer.EveryRender<SellCancellation3>()
+                .Where(ValidateEvaluationForCurrentAvatarState)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseSellCancellation).AddTo(_disposables);
         }
 
         private void Buy()
         {
-            _renderer.EveryRender<Buy2>()
-                .Where(HasUpdatedAssetsForCurrentAgent)
+            _renderer.EveryRender<Buy3>()
+                .Where(ValidateEvaluationForAgentState)
+
                 .ObserveOnMainThread()
                 .Subscribe(ResponseBuy).AddTo(_disposables);
         }
@@ -448,26 +448,34 @@ namespace Nekoyume.BlockChain
                 LocalStateModifier.AddItem(avatarAddress, itemId, false);
                 var format = L10nManager.Localize("NOTIFICATION_SELL_COMPLETE");
                 var shopState = new ShopState((Dictionary) eval.OutputStates.GetState(ShopState.Address));
-                var shopItem = shopState.Products.Values.First(r => r.ItemUsable.ItemId == itemId);
-                UI.Notification.Push(MailType.Auction, string.Format(format, shopItem.ItemUsable.GetLocalizedName()));
+
+                var shopItem = shopState.Products.Values.First(r =>
+                {
+                    var nonFungibleItem = r.ItemUsable ?? (INonFungibleItem)r.Costume;
+                    return nonFungibleItem.ItemId == itemId;
+                });
+
+                var itemBase = shopItem.ItemUsable ?? (ItemBase) shopItem.Costume;
+                UI.Notification.Push(MailType.Auction, string.Format(format, itemBase.GetLocalizedName()));
                 UpdateCurrentAvatarState(eval);
             }
         }
 
-        private void ResponseSellCancellation(ActionBase.ActionEvaluation<SellCancellation2> eval)
+        private void ResponseSellCancellation(ActionBase.ActionEvaluation<SellCancellation3> eval)
         {
             var avatarAddress = eval.Action.sellerAvatarAddress;
             var result = eval.Action.result;
-            var itemId = result.itemUsable.ItemId;
+            var nonFungibleItem = result.itemUsable ?? (INonFungibleItem) result.costume;
+            var itemBase = result.itemUsable ?? (ItemBase) result.costume;
 
-            LocalStateModifier.RemoveItem(avatarAddress, itemId);
+            LocalStateModifier.RemoveItem(avatarAddress, nonFungibleItem.ItemId);
             LocalStateModifier.AddNewAttachmentMail(avatarAddress, result.id);
             var format = L10nManager.Localize("NOTIFICATION_SELL_CANCEL_COMPLETE");
-            UI.Notification.Push(MailType.Auction, string.Format(format, eval.Action.result.itemUsable.GetLocalizedName()));
+            UI.Notification.Push(MailType.Auction, string.Format(format, itemBase.GetLocalizedName()));
             UpdateCurrentAvatarState(eval);
         }
 
-        private void ResponseBuy(ActionBase.ActionEvaluation<Buy2> eval)
+        private void ResponseBuy(ActionBase.ActionEvaluation<Buy3> eval)
         {
             var buyerAvatarAddress = eval.Action.buyerAvatarAddress;
             var price = eval.Action.sellerResult.shopItem.Price;
@@ -478,15 +486,16 @@ namespace Nekoyume.BlockChain
             {
                 var buyerAgentAddress = States.Instance.AgentState.address;
                 var result = eval.Action.buyerResult;
-                var itemId = result.itemUsable.ItemId;
+                var nonFungibleItem = result.itemUsable ?? (INonFungibleItem) result.costume;
+                var itemBase = result.itemUsable ?? (ItemBase) result.costume;
                 var buyerAvatar = eval.OutputStates.GetAvatarState(buyerAvatarAddress);
 
                 LocalStateModifier.ModifyAgentGold(buyerAgentAddress, price);
-                LocalStateModifier.RemoveItem(buyerAvatarAddress, itemId);
+                LocalStateModifier.RemoveItem(buyerAvatarAddress, nonFungibleItem.ItemId);
                 LocalStateModifier.AddNewAttachmentMail(buyerAvatarAddress, result.id);
 
                 var format = L10nManager.Localize("NOTIFICATION_BUY_BUYER_COMPLETE");
-                UI.Notification.Push(MailType.Auction, string.Format(format, eval.Action.buyerResult.itemUsable.GetLocalizedName()));
+                UI.Notification.Push(MailType.Auction, string.Format(format, itemBase.GetLocalizedName()));
 
                 //[TentuPlay] 아이템 구입, 골드 사용
                 //Local에서 변경하는 States.Instance 보다는 블락에서 꺼내온 eval.OutputStates를 사용
@@ -501,7 +510,7 @@ namespace Nekoyume.BlockChain
                         currency_total_quantity: float.Parse(total.GetQuantityString()),
                         reference_entity: entity.Trades,
                         reference_category_slug: "buy",
-                        reference_slug: result.itemUsable.Id.ToString() //아이템 품번
+                        reference_slug: itemBase.Id.ToString() //아이템 품번
                     );
                 }
 
@@ -513,7 +522,7 @@ namespace Nekoyume.BlockChain
                 var sellerAvatarAddress = eval.Action.sellerAvatarAddress;
                 var sellerAgentAddress = eval.Action.sellerAgentAddress;
                 var result = eval.Action.sellerResult;
-                var itemId = result.itemUsable.ItemId;
+                var itemBase = result.itemUsable ?? (ItemBase) result.costume;
                 var gold = result.gold;
                 var sellerAvatar = eval.OutputStates.GetAvatarState(sellerAvatarAddress);
 
@@ -525,7 +534,7 @@ namespace Nekoyume.BlockChain
                     new AvatarState(
                             (Bencodex.Types.Dictionary) eval.OutputStates.GetState(eval.Action.buyerAvatarAddress))
                         .NameWithHash;
-                UI.Notification.Push(MailType.Auction, string.Format(format, buyerName, result.itemUsable.GetLocalizedName()));
+                UI.Notification.Push(MailType.Auction, string.Format(format, buyerName, itemBase.GetLocalizedName()));
 
                 //[TentuPlay] 아이템 판매완료, 골드 증가
                 //Local에서 변경하는 States.Instance 보다는 블락에서 꺼내온 eval.OutputStates를 사용
@@ -539,7 +548,7 @@ namespace Nekoyume.BlockChain
                     currency_total_quantity: float.Parse(total.GetQuantityString()),
                     reference_entity: entity.Trades,
                     reference_category_slug: "sell",
-                    reference_slug: result.itemUsable.Id.ToString() //아이템 품번
+                    reference_slug: itemBase.Id.ToString() //아이템 품번
                 );
 
                 renderQuestAvatarAddress = sellerAvatarAddress;
@@ -804,6 +813,7 @@ namespace Nekoyume.BlockChain
                 .Subscribe(_ =>
                 {
                     PopupError(exc);
+                    Game.Game.instance.Agent.SendException(exc);
                 });
 
             MainCanvas.instance.InitWidgetInMain();
@@ -813,118 +823,8 @@ namespace Nekoyume.BlockChain
         {
             var msg = $"Agent Address: {Game.Game.instance.Agent.Address}. #{Game.Game.instance.Agent.BlockTipHash}";
             var exception = new Exception(msg, exc);
-            Debug.LogException(exception);
-            var key = "ERROR_UNKNOWN";
-            var code = "99";
-            var errorMsg = string.Empty;
-
-            switch (exc)
-            {
-                case RequiredBlockIndexException _:
-                    key = "ERROR_REQUIRE_BLOCK";
-                    code = "01";
-                    break;
-                case EquipmentSlotUnlockException _:
-                    key = "ERROR_SLOT_UNLOCK";
-                    code = "02";
-                    break;
-                case NotEnoughActionPointException _:
-                    key = "ERROR_ACTION_POINT";
-                    code = "03";
-                    break;
-                case InvalidAddressException _:
-                    key = "ERROR_INVALID_ADDRESS";
-                    code = "04";
-                    break;
-                case FailedLoadStateException _:
-                    key = "ERROR_FAILED_LOAD_STATE";
-                    code = "05";
-                    break;
-                case NotEnoughClearedStageLevelException _:
-                    key = "ERROR_NoOT_ENOUGH_CLEARED_STAGE_LEVEL";
-                    code = "06";
-                    break;
-                case WeeklyArenaStateAlreadyEndedException _:
-                    key = "ERROR_WEEKLY_ARENA_STATE_ALREADY_ENDED";
-                    code = "07";
-                    break;
-                case WeeklyArenaStateNotContainsAvatarAddressException _:
-                    key = "ERROR_WEEKLY_ARENA_STATE_NOT_CONTAINS_AVATAR_ADDRESS";
-                    code = "08";
-                    break;
-                case NotEnoughWeeklyArenaChallengeCountException _:
-                    key = "ERROR_NOT_ENOUGH_WEEKLY_ARENA_CHALLENGE_COUNT";
-                    code = "09";
-                    break;
-                case NotEnoughFungibleAssetValueException _:
-                    key = "ERROR_NOT_ENOUGH_FUNGIBLE_ASSET_VALUE";
-                    code = "10";
-                    break;
-                case SheetRowNotFoundException _:
-                    code = "11";
-                    break;
-                case SheetRowColumnException _:
-                    code = "12";
-                    break;
-                case InvalidWorldException _:
-                    code = "13";
-                    break;
-                case InvalidStageException _:
-                    code = "14";
-                    break;
-                case ConsumableSlotOutOfRangeException _:
-                    code = "14";
-                    break;
-                case ConsumableSlotUnlockException _:
-                    code = "15";
-                    break;
-                case DuplicateCostumeException _:
-                    code = "16";
-                    break;
-                case InvalidItemTypeException _:
-                    code = "17";
-                    break;
-                case CostumeSlotUnlockException _:
-                    code = "18";
-                    break;
-                case NotEnoughMaterialException _:
-                    code = "19";
-                    break;
-                case ItemDoesNotExistException _:
-                    code = "20";
-                    break;
-                case InsufficientBalanceException _:
-                    code = "21";
-                    break;
-                case FailedToUnregisterInShopStateException _:
-                    code = "22";
-                    break;
-                case InvalidPriceException _:
-                    code = "23";
-                    break;
-                case ShopStateAlreadyContainsException _:
-                    code = "24";
-                    break;
-                case CombinationSlotResultNullException _:
-                    code = "25";
-                    break;
-                case ActionTimeoutException ate:
-                    key = "ERROR_NETWORK";
-                    errorMsg = "Action timeout occurred.";
-                    if (Game.Game.instance.Agent.Transactions.TryGetValue(ate.ActionId, out TxId txid)
-                        && Game.Game.instance.Agent.IsTransactionStaged(txid))
-                    {
-                        errorMsg += $" Transaction for action is still staged. (txid: {txid})";
-                        code = "26";
-                    }
-                    else
-                    {
-                        code = "27";
-                    }
-
-                    errorMsg += $"\nError Code: {code}";
-                    break;
-            }
+            Debug.LogException(exc);
+            var (key, code, errorMsg) = ErrorCode.GetErrorCode(exc);
 
             errorMsg = errorMsg == string.Empty
                 ? string.Format(

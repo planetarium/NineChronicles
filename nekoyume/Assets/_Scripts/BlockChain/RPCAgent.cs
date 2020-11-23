@@ -42,6 +42,8 @@ namespace Nekoyume.BlockChain
         private readonly ConcurrentQueue<PolymorphicAction<ActionBase>> _queuedActions =
             new ConcurrentQueue<PolymorphicAction<ActionBase>>();
 
+        private readonly TransactionMap _transactions = new TransactionMap(20);
+
         private Channel _channel;
 
         private IActionEvaluationHub _hub;
@@ -82,9 +84,6 @@ namespace Nekoyume.BlockChain
         public int AppProtocolVersion { get; private set; }
 
         public HashDigest<SHA256> BlockTipHash { get; private set; }
-
-        public ConcurrentDictionary<Guid, TxId> Transactions { get; }
-            = new ConcurrentDictionary<Guid, TxId>();
 
         public void Initialize(
             CommandLineOptions options,
@@ -135,6 +134,12 @@ namespace Nekoyume.BlockChain
             return FungibleAssetValue.FromRawValue(
                 CurrencyExtensions.Deserialize((Bencodex.Types.Dictionary) serialized.ElementAt(0)),
                 serialized.ElementAt(1).ToBigInteger());
+        }
+
+        public void SendException(Exception exc)
+        {
+            var (key, code, message) = ErrorCode.GetErrorCode(exc);
+            _service.ReportException(code, message);
         }
 
         public void EnqueueAction(GameAction action)
@@ -280,7 +285,7 @@ namespace Nekoyume.BlockChain
             foreach (var action in actions)
             {
                 var ga = (GameAction) action.InnerAction;
-                Transactions.TryAdd(ga.Id, tx.Id);
+                _transactions.TryAdd(ga.Id, tx.Id);
             }
         }
 
@@ -300,14 +305,6 @@ namespace Nekoyume.BlockChain
                 decompressed.Seek(0, SeekOrigin.Begin);
                 var ev = (ActionEvaluation<ActionBase>)formatter.Deserialize(decompressed);
                 ActionRenderer.ActionRenderSubject.OnNext(ev);
-                if (ev.Action is GameAction ga)
-                {
-                    if (!Transactions.TryRemove(ga.Id, out _))
-                    {
-                        Debug.Log("Failed to remove transaction that has " +
-                                  $"action of {ga.Id}. Reorg may have occurred.");
-                    }
-                }
             }
         }
 
@@ -357,6 +354,7 @@ namespace Nekoyume.BlockChain
             while (retryCount > 0)
             {
                 await Task.Delay(5000);
+                StreamingHubClientRegistry<IActionEvaluationHub, IActionEvaluationHubReceiver>.Register(null);
                 _hub = StreamingHubClient.Connect<IActionEvaluationHub, IActionEvaluationHubReceiver>(_channel, this);
                 try
                 {
@@ -439,9 +437,10 @@ namespace Nekoyume.BlockChain
             _service.SetAddressesToSubscribe(addresses.Select(addr => addr.ToByteArray()));
         }
 
-        public bool IsTransactionStaged(TxId id)
+        public bool IsActionStaged(Guid actionId, out TxId txId)
         {
-            return _service.IsTransactionStaged(id.ToByteArray()).ResponseAsync.Result;
+            return _transactions.TryGetValue(actionId, out txId)
+                   && _service.IsTransactionStaged(txId.ToByteArray()).ResponseAsync.Result;
         }
     }
 }
