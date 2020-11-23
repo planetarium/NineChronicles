@@ -3,6 +3,7 @@ using Libplanet.Net;
 using System;
 using System.Globalization;
 using System.Linq;
+using Libplanet;
 using Libplanet.KeyStore;
 using Nekoyume;
 using UnityEngine;
@@ -12,32 +13,35 @@ namespace Editor
 {
     public sealed class AppProtocolVersionSignerWindow : EditorWindow
     {
-        private bool showParameters = true;
+        private bool _showParameters = true;
 
-        public string MacOSBinaryUrl = string.Empty;
+        public string macOSBinaryUrl = string.Empty;
 
-        public string WindowsBinaryUrl = string.Empty;
+        public string windowsBinaryUrl = string.Empty;
 
+        public int version;
 
-        public int Version;
+        private string _versionString = "1";
 
-        private string versionString = "1";
+        private DateTimeOffset _timestamp = DateTimeOffset.UtcNow;
 
-        private DateTimeOffset timestamp = DateTimeOffset.UtcNow;
+        private AppProtocolVersion? _appProtocolVersion;
 
-        public AppProtocolVersion? AppProtocolVersion;
+        private bool _showPrivateKey = true;
 
-        private bool showPrivateKey = true;
+        private IKeyStore _keyStore;
 
-        public IKeyStore KeyStore;
+        private Tuple<Guid, ProtectedPrivateKey>[] _privateKeys;
 
-        private Tuple<Guid, ProtectedPrivateKey>[] privateKeys;
+        private string[] _privateKeyOptions;
 
-        private string[] privateKeyOptions;
+        private int _selectedPrivateKeyIndex;
 
-        private int selectedPrivateKeyIndex = 0;
+        private bool _toggledOnTypePrivateKey;
 
-        private string privateKeyPassphrase;
+        private string _privateKey;
+
+        private string _privateKeyPassphrase;
 
         [MenuItem("Tools/Libplanet/Sign A New Version")]
         public static void Init()
@@ -53,7 +57,7 @@ namespace Editor
 
         public void OnFocus()
         {
-            if (KeyStore is null)
+            if (_keyStore is null)
             {
                 FillAttributes();
             }
@@ -63,63 +67,85 @@ namespace Editor
 
         void OnGUI()
         {
-            showPrivateKey = EditorGUILayout.Foldout(showPrivateKey, "Private Key");
-            if (showPrivateKey)
+            _showPrivateKey = EditorGUILayout.Foldout(_showPrivateKey, "Private Key");
+            if (_showPrivateKey)
             {
-                selectedPrivateKeyIndex = EditorGUILayout.Popup("Private Key", selectedPrivateKeyIndex, privateKeyOptions);
-                privateKeyPassphrase = EditorGUILayout.PasswordField("Passphrase", privateKeyPassphrase) ?? string.Empty;
-                ShowError(privateKeyPassphrase.Any() ? null : "Passphrase is empty.");
-
-                if (selectedPrivateKeyIndex == privateKeyOptions.Length - 1)
+                _selectedPrivateKeyIndex = EditorGUILayout.Popup(
+                    "Private Key",
+                    _selectedPrivateKeyIndex,
+                    _privateKeyOptions);
+                if (_selectedPrivateKeyIndex == _privateKeyOptions.Length - 1)
                 {
-                    EditorGUI.BeginDisabledGroup(!privateKeyPassphrase.Any());
+                    _toggledOnTypePrivateKey = EditorGUILayout.Toggle(
+                        "Type New Private Key",
+                        _toggledOnTypePrivateKey);
+                    if (_toggledOnTypePrivateKey)
+                    {
+                        _privateKey =
+                            EditorGUILayout.PasswordField("New Private Key", _privateKey) ??
+                            string.Empty;
+                        ShowError(_privateKey.Any() ? null : "New private key is empty.");
+                    }
+                }
+
+                _privateKeyPassphrase =
+                    EditorGUILayout.PasswordField("Passphrase", _privateKeyPassphrase) ??
+                    string.Empty;
+                ShowError(_privateKeyPassphrase.Any() ? null : "Passphrase is empty.");
+
+                if (_selectedPrivateKeyIndex == _privateKeyOptions.Length - 1)
+                {
+                    EditorGUI.BeginDisabledGroup(!_privateKeyPassphrase.Any());
                     if (GUILayout.Button("Create"))
                     {
-                        var privateKey = new PrivateKey();
-                        ProtectedPrivateKey ppk =
-                            ProtectedPrivateKey.Protect(privateKey, privateKeyPassphrase);
-                        KeyStore.Add(ppk);
+                        var privateKey = _toggledOnTypePrivateKey
+                            ? new PrivateKey(ByteUtil.ParseHex(_privateKey))
+                            : new PrivateKey();
+                        var ppk = ProtectedPrivateKey.Protect(privateKey, _privateKeyPassphrase);
+                        _keyStore.Add(ppk);
                         RefreshPrivateKeys();
-                        selectedPrivateKeyIndex = Array.IndexOf(privateKeys, privateKey);
+                        _selectedPrivateKeyIndex = Array.IndexOf(_privateKeys, privateKey);
                     }
+
                     EditorGUI.EndDisabledGroup();
                 }
             }
 
             HorizontalLine();
 
-            showParameters = EditorGUILayout.Foldout(showParameters, "Parameters");
-            if (showParameters)
+            _showParameters = EditorGUILayout.Foldout(_showParameters, "Parameters");
+            if (_showParameters)
             {
-                versionString = EditorGUILayout.TextField("Version", versionString);
+                _versionString = EditorGUILayout.TextField("Version", _versionString);
                 try
                 {
-                    Version = int.Parse(versionString, CultureInfo.InvariantCulture);
+                    version = int.Parse(_versionString, CultureInfo.InvariantCulture);
                 }
                 catch (Exception e)
                 {
                     ShowError(e.Message);
                 }
 
-                MacOSBinaryUrl = EditorGUILayout.TextField("macOS Binary URL", MacOSBinaryUrl);
-                WindowsBinaryUrl =
-                    EditorGUILayout.TextField("Windows Binary URL", WindowsBinaryUrl);
+                macOSBinaryUrl = EditorGUILayout.TextField("macOS Binary URL", macOSBinaryUrl);
+                windowsBinaryUrl =
+                    EditorGUILayout.TextField("Windows Binary URL", windowsBinaryUrl);
             }
 
             HorizontalLine();
 
             EditorGUI.BeginDisabledGroup(
-                !(privateKeyPassphrase.Any() && selectedPrivateKeyIndex < privateKeyOptions.Length - 1)
-            );
+                !(_privateKeyPassphrase.Any() &&
+                  _selectedPrivateKeyIndex < _privateKeyOptions.Length - 1));
             if (GUILayout.Button("Sign"))
             {
                 var appProtocolVersionExtra =
-                    new AppProtocolVersionExtra(MacOSBinaryUrl, WindowsBinaryUrl, timestamp);
+                    new AppProtocolVersionExtra(macOSBinaryUrl, windowsBinaryUrl, _timestamp);
 
                 PrivateKey key;
                 try
                 {
-                    key = privateKeys[selectedPrivateKeyIndex].Item2.Unprotect(privateKeyPassphrase);
+                    key = _privateKeys[_selectedPrivateKeyIndex].Item2
+                        .Unprotect(_privateKeyPassphrase);
                 }
                 catch (IncorrectPassphraseException)
                 {
@@ -128,18 +154,19 @@ namespace Editor
                         "Private key passphrase is incorrect.",
                         "Retype passphrase"
                     );
-                    privateKeyPassphrase = string.Empty;
+                    _privateKeyPassphrase = string.Empty;
                     return;
                 }
 
-                AppProtocolVersion = Libplanet.Net.AppProtocolVersion.Sign(
+                _appProtocolVersion = AppProtocolVersion.Sign(
                     key,
-                    Version,
+                    version,
                     appProtocolVersionExtra.Serialize());
             }
+
             EditorGUI.EndDisabledGroup();
 
-            if (AppProtocolVersion is Libplanet.Net.AppProtocolVersion v)
+            if (_appProtocolVersion is AppProtocolVersion v)
             {
                 GUILayout.TextArea(v.Token);
             }
@@ -147,24 +174,31 @@ namespace Editor
 
         void FillAttributes()
         {
-            KeyStore = Web3KeyStore.DefaultKeyStore;
+            _keyStore = Web3KeyStore.DefaultKeyStore;
             maxSize = new Vector2(600, 450);
-            timestamp = DateTimeOffset.UtcNow;
+            _timestamp = DateTimeOffset.UtcNow;
             titleContent = new GUIContent("Libplanet Version Signer");
         }
 
         void RefreshPrivateKeys()
         {
-            privateKeys = KeyStore.List().OrderBy(pair => pair.Item1).ToArray();
-            if (privateKeys.Any())
+            _privateKeys = _keyStore
+                .List()
+                .OrderBy(pair => pair.Item1)
+                .ToArray();
+            if (_privateKeys.Any())
             {
-                privateKeyOptions = KeyStore.List().Select(pair =>
-                    $"{pair.Item2.Address} ({pair.Item1.ToString().ToLower()})"
-                ).Append("Create a new private key:").ToArray();
+                _privateKeyOptions = _keyStore
+                    .List()
+                    .Select(pair =>
+                        $"{pair.Item2.Address} ({pair.Item1.ToString().ToLower()})"
+                    )
+                    .Append("Create a new private key:")
+                    .ToArray();
             }
             else
             {
-                privateKeyOptions = new[] { "No private key; create one first:" };
+                _privateKeyOptions = new[] {"No private key; create one first:"};
             }
         }
 
@@ -172,7 +206,7 @@ namespace Editor
         {
             if (message is null)
             {
-                return ;
+                return;
             }
 
             var style = new GUIStyle();
