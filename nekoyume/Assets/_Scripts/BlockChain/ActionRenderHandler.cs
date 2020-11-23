@@ -7,7 +7,6 @@ using Lib9c.Renderer;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Assets;
-using Libplanet.Tx;
 using Nekoyume.Action;
 using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
@@ -818,6 +817,12 @@ namespace Nekoyume.BlockChain
             Debug.LogException(exc);
             var (key, code, errorMsg) = ErrorCode.GetErrorCode(exc);
 
+            errorMsg = errorMsg == string.Empty
+                ? string.Format(
+                    L10nManager.Localize("UI_ERROR_RETRY_FORMAT"),
+                    L10nManager.Localize(key),
+                    code)
+                : errorMsg;
             Widget
                 .Find<Alert>()
                 .Show(L10nManager.Localize("UI_ERROR"), errorMsg,

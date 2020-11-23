@@ -73,6 +73,8 @@ namespace Nekoyume.BlockChain
         private readonly ConcurrentQueue<PolymorphicAction<ActionBase>> _queuedActions =
             new ConcurrentQueue<PolymorphicAction<ActionBase>>();
 
+        private readonly TransactionMap _transactions = new TransactionMap(20);
+
         protected BlockChain<PolymorphicAction<ActionBase>> blocks;
         private Swarm<PolymorphicAction<ActionBase>> _swarm;
         protected BaseStore store;
@@ -97,9 +99,6 @@ namespace Nekoyume.BlockChain
         public ActionRenderer ActionRenderer => BlockPolicySource.ActionRenderer;
         public int AppProtocolVersion { get; private set; }
         public HashDigest<SHA256> BlockTipHash => blocks.Tip.Hash;
-
-        public ConcurrentDictionary<Guid, TxId> Transactions { get; }
-            = new ConcurrentDictionary<Guid, TxId>();
 
         public event EventHandler BootstrapStarted;
         public event EventHandler<PreloadState> PreloadProcessed;
@@ -291,9 +290,10 @@ namespace Nekoyume.BlockChain
             return blocks.GetState(address);
         }
 
-        public bool IsTransactionStaged(TxId txid)
+        public bool IsActionStaged(Guid actionId, out TxId txId)
         {
-            return blocks.GetStagedTransactionIds().Contains(txid);
+            return _transactions.TryGetValue(actionId, out txId)
+                   && blocks.GetStagedTransactionIds().Contains(txId);
         }
 
         public FungibleAssetValue GetBalance(Address address, Currency currency) =>
@@ -770,13 +770,6 @@ namespace Nekoyume.BlockChain
                     .SubscribeOnMainThread()
                     .Subscribe(TipChangedHandler);
 
-                ActionRenderer.EveryRender<GameAction>()
-                    .SubscribeOnMainThread()
-                    .Subscribe(ev =>
-                    {
-                        Transactions.TryRemove(ev.Action.Id, out _);
-                    });
-
                 Debug.LogFormat(
                     "The address of this node: {0},{1},{2}",
                     ByteUtil.Hex(PrivateKey.PublicKey.Format(true)),
@@ -836,7 +829,7 @@ namespace Nekoyume.BlockChain
                     foreach (var action in actions)
                     {
                         var ga = (GameAction) action.InnerAction;
-                        Transactions.TryAdd(ga.Id, task.Result.Id);
+                        _transactions.TryAdd(ga.Id, task.Result.Id);
                     }
                 }
             }
