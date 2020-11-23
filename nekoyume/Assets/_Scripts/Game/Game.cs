@@ -3,17 +3,22 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Amazon;
+using Amazon.CloudWatchLogs;
+using Amazon.CloudWatchLogs.Model;
+using Bencodex.Types;
 using Libplanet;
 using Libplanet.Crypto;
 using mixpanel;
+using Nekoyume.Action;
 using Nekoyume.BlockChain;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
+using Nekoyume.Model.State;
 using Nekoyume.Pattern;
 using Nekoyume.State;
-using Nekoyume.TableData;
 using Nekoyume.UI;
 using UniRx;
 using UnityEngine;
@@ -58,6 +63,10 @@ namespace Nekoyume.Game
 
         private CommandLineOptions _options;
 
+        private AmazonCloudWatchLogsClient _logsClient;
+
+        private string _msg;
+
         private static readonly string CommandLineOptionsJsonPath =
             Path.Combine(Application.streamingAssetsPath, "clo.json");
 
@@ -99,6 +108,11 @@ namespace Nekoyume.Game
             States = new States();
             LocalStateSettings = new LocalStateSettings();
             MainCanvas.instance.InitializeTitle();
+
+            //FIXME load from secret.
+            _logsClient = new AmazonCloudWatchLogsClient("AKIAUU3S3PEZBXS5TFMA",
+                "xIuMHa6zwiaPc54m3iVAC5uLn+TonyPsO7qpFpYx", RegionEndpoint.APNortheast2);
+            Application.logMessageReceived += UploadLog;
         }
 
         private IEnumerator Start()
@@ -139,6 +153,7 @@ namespace Nekoyume.Game
             yield return new WaitUntil(() => agentInitialized);
             // NOTE: Create ActionManager after Agent initialized.
             ActionManager = new ActionManager(Agent);
+            yield return StartCoroutine(CoSyncTableSheets());
             // UI 초기화 2차.
             yield return StartCoroutine(MainCanvas.instance.InitializeSecond());
             Stage.Initialize();
@@ -163,18 +178,23 @@ namespace Nekoyume.Game
 
             if (Agent is RPCAgent rpcAgent)
             {
-                rpcAgent.OnDisconnected
+                rpcAgent.WhenRetryStarted
                     .AsObservable()
                     .ObserveOnMainThread()
                     .Subscribe(_ =>
                     {
-                        Widget.Find<SystemPopup>().Show(
-                            "UI_ERROR",
-                            "UI_ERROR_RPC_CONNECTION",
-                            "UI_QUIT"
-                        );
+                        Widget.Find<BlockSyncLoadingScreen>().Show();
+                    });
+
+                rpcAgent.WhenRetryEnded
+                    .AsObservable()
+                    .ObserveOnMainThread()
+                    .Subscribe(_ =>
+                    {
+                        Widget.Find<BlockSyncLoadingScreen>().Close();
                     });
             }
+            Widget.Find<VersionInfo>().SetVersion(Agent.AppProtocolVersion);
         }
 
         private IEnumerator CoInitializeTableSheets()
@@ -253,6 +273,7 @@ namespace Nekoyume.Game
                 Mixpanel.Track("Unity/Player Quit");
                 Mixpanel.Flush();
             }
+            _logsClient.Dispose();
         }
 
         public static void Quit()
@@ -416,6 +437,115 @@ namespace Nekoyume.Game
             };
 
             confirm.Show("UI_CONFIRM_RESET_KEYSTORE_TITLE", "UI_CONFIRM_RESET_KEYSTORE_CONTENT");
+        }
+
+        private IEnumerator CoSyncTableSheets()
+        {
+            yield return null;
+            var request =
+                Resources.LoadAsync<AddressableAssetsContainer>(AddressableAssetsContainerPath);
+            yield return request;
+            if (!(request.asset is AddressableAssetsContainer addressableAssetsContainer))
+            {
+                throw new FailedToLoadResourceException<AddressableAssetsContainer>(
+                    AddressableAssetsContainerPath);
+            }
+
+            List<TextAsset> csvAssets = addressableAssetsContainer.tableCsvAssets;
+            var csv = new Dictionary<string, string>();
+            foreach (var asset in csvAssets)
+            {
+                if (Agent.GetState(Addresses.TableSheet.Derive(asset.name)) is Text tableCsv)
+                {
+                    var table = tableCsv.ToDotnetString();
+                    csv[asset.name] = table;
+                }
+
+                yield return null;
+            }
+            TableSheets = new TableSheets(csv);
+        }
+
+        private void UploadLog(string logString, string stackTrace, LogType type)
+        {
+            // Avoid NRE
+            if (Agent.PrivateKey == default)
+            {
+                _msg += logString + "\n";
+                if (!string.IsNullOrEmpty(stackTrace))
+                {
+                    _msg += stackTrace + "\n";
+                }
+            }
+            else
+            {
+                var groupName = string.Empty;
+                var streamName = Agent.Address.ToString();
+                try
+                {
+                    groupName = DateTime.UtcNow.Date.ToString("yyyy-MM-dd");
+                    var req = new CreateLogGroupRequest(groupName);
+                    _logsClient.CreateLogGroup(req);
+                }
+                catch (ResourceAlreadyExistsException)
+                {
+                }
+
+                try
+                {
+                    var req = new CreateLogStreamRequest(groupName, streamName);
+                    _logsClient.CreateLogStream(req);
+                }
+                catch (Exception)
+                {
+                    // ignored
+                }
+
+                PutLog(groupName, streamName, GetMessage(logString, stackTrace));
+            }
+        }
+
+        private void PutLog(string groupName, string streamName, string msg)
+        {
+            try
+            {
+                var resp = _logsClient.DescribeLogStreams(new DescribeLogStreamsRequest(groupName));
+                var token = resp.LogStreams.FirstOrDefault(s => s.LogStreamName == streamName)?.UploadSequenceToken;
+                var ie = new InputLogEvent
+                {
+                    Message = msg,
+                    Timestamp = DateTime.Now
+                };
+                var request = new PutLogEventsRequest(groupName, streamName, new List<InputLogEvent> {ie});
+                if (!string.IsNullOrEmpty(token))
+                {
+                    request.SequenceToken = token;
+                }
+                _logsClient.PutLogEvents(request);
+            }
+            catch (Exception e)
+            {
+                // ignored
+            }
+        }
+
+        private string GetMessage(string logString, string stackTrace)
+        {
+            var msg = string.Empty;
+            if (!string.IsNullOrEmpty(_msg))
+            {
+                msg = _msg;
+                _msg = string.Empty;
+                return msg;
+            }
+
+            msg += logString + "\n";
+            if (!string.IsNullOrEmpty(stackTrace))
+            {
+                msg += stackTrace;
+            }
+
+            return msg;
         }
     }
 }

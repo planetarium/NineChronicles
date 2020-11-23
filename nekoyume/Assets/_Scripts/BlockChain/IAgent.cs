@@ -1,8 +1,11 @@
 using System;
+using System.Collections.Concurrent;
+using System.Security.Cryptography;
 using Bencodex.Types;
 using Lib9c.Renderer;
 using Libplanet;
 using Libplanet.Crypto;
+using Libplanet.Tx;
 using Nekoyume.Action;
 using Nekoyume.Helper;
 using UniRx;
@@ -23,6 +26,12 @@ namespace Nekoyume.BlockChain
 
         ActionRenderer ActionRenderer { get; }
 
+        int AppProtocolVersion { get; }
+
+        Subject<HashDigest<SHA256>> BlockTipHashSubject { get; }
+
+        HashDigest<SHA256> BlockTipHash { get; }
+
         void Initialize(
             CommandLineOptions options,
             PrivateKey privateKey,
@@ -33,5 +42,8 @@ namespace Nekoyume.BlockChain
 
         IValue GetState(Address address);
 
+        void SendException(Exception exc);
+
+        bool IsActionStaged(Guid actionId, out TxId txId);
     }
 }

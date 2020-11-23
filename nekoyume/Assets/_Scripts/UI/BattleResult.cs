@@ -395,6 +395,11 @@ namespace Nekoyume.UI
             if (!submitButton.interactable)
                 yield break;
 
+            if (Find<Menu>().IsActive())
+            {
+                yield break;
+            }
+
             var isNext = !SharedModel.ShouldRepeat;
 
             closeButton.interactable = false;
@@ -437,17 +442,22 @@ namespace Nekoyume.UI
                     worldId,
                     stageId)
                 .Subscribe(_ => { },
-                    (_) => Find<ActionFailPopup>().Show("Action timeout during HackAndSlash."));
+                    e => ActionRenderHandler.BackToMain(false, e));
         }
 
-        public void NextStage(ActionBase.ActionEvaluation<HackAndSlash2> eval)
+        public void NextStage(ActionBase.ActionEvaluation<HackAndSlash3> eval)
         {
             Debug.Log("NextStage From ResponseHackAndSlash");
             StartCoroutine(CoGoToNextStageClose(eval));
         }
 
-        private IEnumerator CoGoToNextStageClose(ActionBase.ActionEvaluation<HackAndSlash2> eval)
+        private IEnumerator CoGoToNextStageClose(ActionBase.ActionEvaluation<HackAndSlash3> eval)
         {
+            if (Find<Menu>().IsActive())
+            {
+                yield break;
+            }
+
             yield return StartCoroutine(Find<StageLoadingScreen>().CoClose());
             yield return StartCoroutine(CoFadeOut());
             Game.Event.OnStageStart.Invoke(eval.Action.Result);

@@ -7,6 +7,7 @@ namespace Nekoyume.Game.Character
     public abstract class CharacterAnimator : SkeletonAnimator
     {
         private const string StringHUD = "HUD";
+        private const string StringHealBorn = "HealBorn";
         private const float ColorTweenFrom = 0f;
         private const float ColorTweenTo = 0.6f;
         private const float ColorTweenDuration = 0.1f;
@@ -16,6 +17,7 @@ namespace Nekoyume.Game.Character
         private static readonly int PrologueSpeed = Animator.StringToHash("PrologueSpeed");
 
         private Vector3 HUDPosition { get; set; }
+        public Vector3 HealPosition { get; private set; }
 
         protected CharacterAnimator(CharacterBase root) : base(root.gameObject)
         {
@@ -36,6 +38,16 @@ namespace Nekoyume.Game.Character
             }
 
             HUDPosition = hud.GetWorldPosition(Target.transform) - Root.transform.position;
+
+            var heal = Skeleton.skeleton.FindBone(StringHealBorn);
+            if (heal != null)
+            {
+                HealPosition = heal.GetWorldPosition(Target.transform) - Root.transform.position;
+            }
+            else
+            {
+                HealPosition = hud.GetWorldPosition(Target.transform) - Root.transform.position;
+            }
         }
 
         public Vector3 GetHUDPosition()

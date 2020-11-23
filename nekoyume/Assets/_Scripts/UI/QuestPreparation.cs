@@ -669,7 +669,7 @@ namespace Nekoyume.UI
                     {
                         LocalStateModifier.ModifyAvatarActionPoint(
                             States.Instance.CurrentAvatarState.address, _requiredCost);
-                    }, e => Find<ActionFailPopup>().Show("Action timeout during HackAndSlash."))
+                    }, e => ActionRenderHandler.BackToMain(false, e))
                 .AddTo(this);
             Mixpanel.Track("Unity/Waiting Block");
         }

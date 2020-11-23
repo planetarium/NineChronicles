@@ -55,6 +55,7 @@ namespace Nekoyume.BlockChain
         public static readonly string DefaultStoragePath = StorePath.GetDefaultStoragePath();
 
         public Subject<long> BlockIndexSubject { get; } = new Subject<long>();
+        public Subject<HashDigest<SHA256>> BlockTipHashSubject { get; } = new Subject<HashDigest<SHA256>>();
 
         private static IEnumerator _miner;
         private static IEnumerator _txProcessor;
@@ -71,6 +72,8 @@ namespace Nekoyume.BlockChain
 
         private readonly ConcurrentQueue<PolymorphicAction<ActionBase>> _queuedActions =
             new ConcurrentQueue<PolymorphicAction<ActionBase>>();
+
+        private readonly TransactionMap _transactions = new TransactionMap(20);
 
         protected BlockChain<PolymorphicAction<ActionBase>> blocks;
         private Swarm<PolymorphicAction<ActionBase>> _swarm;
@@ -94,6 +97,8 @@ namespace Nekoyume.BlockChain
         public BlockRenderer BlockRenderer => BlockPolicySource.BlockRenderer;
 
         public ActionRenderer ActionRenderer => BlockPolicySource.ActionRenderer;
+        public int AppProtocolVersion { get; private set; }
+        public HashDigest<SHA256> BlockTipHash => blocks.Tip.Hash;
 
         public event EventHandler BootstrapStarted;
         public event EventHandler<PreloadState> PreloadProcessed;
@@ -285,10 +290,22 @@ namespace Nekoyume.BlockChain
             return blocks.GetState(address);
         }
 
+        public bool IsActionStaged(Guid actionId, out TxId txId)
+        {
+            return _transactions.TryGetValue(actionId, out txId)
+                   && blocks.GetStagedTransactionIds().Contains(txId);
+        }
+
         public FungibleAssetValue GetBalance(Address address, Currency currency) =>
             blocks.GetBalance(address, currency);
 
         #region Mono
+
+        public void SendException(Exception exc)
+        {
+            //FIXME: Make more meaningful method
+            return;
+        }
 
         private void Awake()
         {
@@ -303,7 +320,9 @@ namespace Nekoyume.BlockChain
 
         protected void OnDestroy()
         {
+            BlockRenderHandler.Instance.Stop();
             ActionRenderHandler.Instance.Stop();
+            ActionUnrenderHandler.Instance.Stop();
             Dispose();
         }
 
@@ -330,7 +349,8 @@ namespace Nekoyume.BlockChain
             var genesisBlockPath = options.GenesisBlockPath;
             var appProtocolVersion = options.AppProtocolVersion is null
                 ? default
-                : AppProtocolVersion.FromToken(options.AppProtocolVersion);
+                : Libplanet.Net.AppProtocolVersion.FromToken(options.AppProtocolVersion);
+            AppProtocolVersion = appProtocolVersion.Version;
             var trustedAppProtocolVersionSigners = options.TrustedAppProtocolVersionSigners
                 .Select(s => new PublicKey(ByteUtil.ParseHex(s)));
             var minimumDifficulty = options.MinimumDifficulty;
@@ -413,6 +433,7 @@ namespace Nekoyume.BlockChain
                     throw new FailedToInstantiateStateException<WeeklyArenaState>();
 
                 // 그리고 모든 액션에 대한 랜더와 언랜더를 핸들링하기 시작한다.
+                BlockRenderHandler.Instance.Start(BlockRenderer);
                 ActionRenderHandler.Instance.Start(ActionRenderer);
                 ActionUnrenderHandler.Instance.Start(ActionRenderer);
 
@@ -781,6 +802,7 @@ namespace Nekoyume.BlockChain
 
             lastTenBlocks.Enqueue((blocks.Tip, DateTimeOffset.UtcNow));
             TipChanged?.Invoke(null, newTip.Index);
+            BlockTipHashSubject.OnNext(newTip.Hash);
         }
 
         private IEnumerator CoTxProcessor()
@@ -804,6 +826,11 @@ namespace Nekoyume.BlockChain
                 {
                     var task = Task.Run(() => MakeTransaction(actions));
                     yield return new WaitUntil(() => task.IsCompleted);
+                    foreach (var action in actions)
+                    {
+                        var ga = (GameAction) action.InnerAction;
+                        _transactions.TryAdd(ga.Id, task.Result.Id);
+                    }
                 }
             }
         }

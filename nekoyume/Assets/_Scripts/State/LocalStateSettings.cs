@@ -26,13 +26,11 @@ namespace Nekoyume.State
         private class ModifierInfo<T> where T : class
         {
             public readonly Address Address;
-            public readonly List<T> NonVolatileModifiers;
             public readonly List<T> VolatileModifiers;
 
-            public ModifierInfo(Address address, List<T> nonVolatileModifiers)
+            public ModifierInfo(Address address)
             {
                 Address = address;
-                NonVolatileModifiers = nonVolatileModifiers;
                 VolatileModifiers = new List<T>();
             }
         }
@@ -77,12 +75,8 @@ namespace Nekoyume.State
 
             // _agentModifierInfo 초기화하기.
             _agentModifierInfo =
-                new ModifierInfo<AgentStateModifier>(
-                    address,
-                    LoadModifiers<AgentStateModifier>(address));
-            _agentGoldModifierInfo = new ModifierInfo<AgentGoldModifier>(
-                address,
-                LoadModifiers<AgentGoldModifier>(address));
+                new ModifierInfo<AgentStateModifier>(address);
+            _agentGoldModifierInfo = new ModifierInfo<AgentGoldModifier>(address);
         }
 
         public void InitializeCurrentAvatarState(AvatarState avatarState)
@@ -100,9 +94,7 @@ namespace Nekoyume.State
                 return;
             }
 
-            _avatarModifierInfo = new ModifierInfo<AvatarStateModifier>(
-                address,
-                LoadModifiers<AvatarStateModifier>(address));
+            _avatarModifierInfo = new ModifierInfo<AvatarStateModifier>(address);
         }
 
         public void InitializeCombinationSlotsByCurrentAvatarState(AvatarState avatarState)
@@ -118,18 +110,14 @@ namespace Nekoyume.State
             {
                 _combinationSlotModifierInfos.Add(
                     address,
-                    new ModifierInfo<CombinationSlotStateModifier>(
-                        address,
-                        LoadModifiers<CombinationSlotStateModifier>(address)));
+                    new ModifierInfo<CombinationSlotStateModifier>(address));
             }
         }
 
         public void InitializeWeeklyArena(WeeklyArenaState weeklyArenaState)
         {
             var address = weeklyArenaState.address;
-            _weeklyArenaModifierInfo = new ModifierInfo<WeeklyArenaStateModifier>(
-                address,
-                LoadModifiers<WeeklyArenaStateModifier>(address));
+            _weeklyArenaModifierInfo = new ModifierInfo<WeeklyArenaStateModifier>(address);
         }
 
         #endregion
@@ -193,8 +181,7 @@ namespace Nekoyume.State
         /// </summary>
         /// <param name="agentAddress"></param>
         /// <param name="modifier"></param>
-        /// <param name="isVolatile"></param>
-        public void Add(Address agentAddress, AgentStateModifier modifier, bool isVolatile = false)
+        public void Add(Address agentAddress, AgentStateModifier modifier)
         {
             // FIXME: 다른 Add() 오버로드와 겹치는 로직이 아주 많음.
             if (modifier is null ||
@@ -206,9 +193,7 @@ namespace Nekoyume.State
             var modifierInfo = _agentModifierInfo;
             if (agentAddress.Equals(modifierInfo.Address))
             {
-                var modifiers = isVolatile
-                    ? modifierInfo.VolatileModifiers
-                    : modifierInfo.NonVolatileModifiers;
+                var modifiers = modifierInfo.VolatileModifiers;
                 if (TryGetSameTypeModifier(modifier, modifiers, out var outModifier))
                 {
                     outModifier.Add(modifier);
@@ -216,30 +201,15 @@ namespace Nekoyume.State
                     {
                         modifiers.Remove(outModifier);
                     }
-
-                    modifier = outModifier;
                 }
                 else
                 {
                     modifiers.Add(modifier);
                 }
             }
-            else if (!isVolatile)
-            {
-                if (TryLoadModifier<AgentStateModifier>(
-                    agentAddress,
-                    modifier.GetType(),
-                    out var outModifier))
-                {
-                    outModifier.Add(modifier);
-                    modifier = outModifier;
-                }
-            }
-
-            PostAdd(agentAddress, modifier, isVolatile);
         }
 
-        public void Add(Address agentAddress, AgentGoldModifier modifier, bool isVolatile = false)
+        public void Add(Address agentAddress, AgentGoldModifier modifier)
         {
             // FIXME: 다른 Add() 오버로드와 겹치는 로직이 아주 많음.
             if (modifier is null || modifier.IsEmpty)
@@ -249,9 +219,7 @@ namespace Nekoyume.State
 
             if (agentAddress.Equals(_agentGoldModifierInfo.Address))
             {
-                var modifiers = isVolatile
-                    ? _agentGoldModifierInfo.VolatileModifiers
-                    : _agentGoldModifierInfo.NonVolatileModifiers;
+                var modifiers = _agentGoldModifierInfo.VolatileModifiers;
                 if (TryGetSameTypeModifier(modifier, modifiers, out var outModifier))
                 {
                     outModifier.Add(modifier);
@@ -259,24 +227,12 @@ namespace Nekoyume.State
                     {
                         modifiers.Remove(outModifier);
                     }
-
-                    modifier = outModifier;
                 }
                 else
                 {
                     modifiers.Add(modifier);
                 }
             }
-            else if (!isVolatile)
-            {
-                if (TryLoadModifier<AgentGoldModifier>(agentAddress, modifier.GetType(), out var outModifier))
-                {
-                    outModifier.Add(modifier);
-                    modifier = outModifier;
-                }
-            }
-
-            PostAdd(agentAddress, modifier, isVolatile);
         }
 
         /// <summary>
@@ -284,11 +240,7 @@ namespace Nekoyume.State
         /// </summary>
         /// <param name="avatarAddress"></param>
         /// <param name="modifier"></param>
-        /// <param name="isVolatile"></param>
-        public void Add(
-            Address avatarAddress,
-            AvatarStateModifier modifier,
-            bool isVolatile = false)
+        public void Add(Address avatarAddress, AvatarStateModifier modifier)
         {
             // FIXME: 다른 Add() 오버로드와 겹치는 로직이 아주 많음.
             if (modifier is null ||
@@ -303,9 +255,7 @@ namespace Nekoyume.State
 
             if (!(modifierInfo is null))
             {
-                var modifiers = isVolatile
-                    ? modifierInfo.VolatileModifiers
-                    : modifierInfo.NonVolatileModifiers;
+                var modifiers = modifierInfo.VolatileModifiers;
                 if (TryGetSameTypeModifier(modifier, modifiers, out var outModifier))
                 {
                     outModifier.Add(modifier);
@@ -313,27 +263,12 @@ namespace Nekoyume.State
                     {
                         modifiers.Remove(outModifier);
                     }
-
-                    modifier = outModifier;
                 }
                 else
                 {
                     modifiers.Add(modifier);
                 }
             }
-            else if (!isVolatile)
-            {
-                if (TryLoadModifier<AvatarStateModifier>(
-                    avatarAddress,
-                    modifier.GetType(),
-                    out var outModifier))
-                {
-                    outModifier.Add(modifier);
-                    modifier = outModifier;
-                }
-            }
-
-            PostAdd(avatarAddress, modifier, isVolatile);
         }
 
         /// <summary>
@@ -341,11 +276,7 @@ namespace Nekoyume.State
         /// </summary>
         /// <param name="weeklyArenaAddress"></param>
         /// <param name="modifier"></param>
-        /// <param name="isVolatile"></param>
-        public void Add(
-            Address weeklyArenaAddress,
-            WeeklyArenaStateModifier modifier,
-            bool isVolatile = false)
+        public void Add(Address weeklyArenaAddress, WeeklyArenaStateModifier modifier)
         {
             // FIXME: 다른 Add() 오버로드와 겹치는 로직이 아주 많음.
             if (modifier is null ||
@@ -357,9 +288,7 @@ namespace Nekoyume.State
             var modifierInfo = _weeklyArenaModifierInfo;
             if (weeklyArenaAddress.Equals(modifierInfo.Address))
             {
-                var modifiers = isVolatile
-                    ? modifierInfo.VolatileModifiers
-                    : modifierInfo.NonVolatileModifiers;
+                var modifiers = modifierInfo.VolatileModifiers;
                 if (TryGetSameTypeModifier(modifier, modifiers, out var outModifier))
                 {
                     outModifier.Add(modifier);
@@ -367,48 +296,12 @@ namespace Nekoyume.State
                     {
                         modifiers.Remove(outModifier);
                     }
-
-                    modifier = outModifier;
                 }
                 else
                 {
                     modifiers.Add(modifier);
                 }
             }
-            else if (!isVolatile)
-            {
-                if (TryLoadModifier<WeeklyArenaStateModifier>(
-                    weeklyArenaAddress,
-                    modifier.GetType(),
-                    out var outModifier))
-                {
-                    outModifier.Add(modifier);
-                    modifier = outModifier;
-                }
-            }
-
-            PostAdd(weeklyArenaAddress, modifier, isVolatile);
-        }
-
-        /// <summary>
-        /// `Add` 메서드 이후에 호출한다.
-        /// </summary>
-        /// <param name="address"></param>
-        /// <param name="modifier"></param>
-        /// <param name="isVolatile"></param>
-        /// <typeparam name="T"></typeparam>
-        private static void PostAdd<T>(
-            Address address,
-            IStateModifier<T> modifier,
-            bool isVolatile)
-            where T : Model.State.State
-        {
-            if (isVolatile)
-            {
-                return;
-            }
-
-            SaveModifier(address, modifier);
         }
 
         #endregion
@@ -420,11 +313,7 @@ namespace Nekoyume.State
         /// </summary>
         /// <param name="agentAddress"></param>
         /// <param name="modifier"></param>
-        /// <param name="isVolatile"></param>
-        public void Remove(
-            Address agentAddress,
-            AgentStateModifier modifier,
-            bool isVolatile = false)
+        public void Remove(Address agentAddress, AgentStateModifier modifier)
         {
             if (modifier is null ||
                 modifier.IsEmpty)
@@ -435,9 +324,7 @@ namespace Nekoyume.State
             var modifierInfo = _agentModifierInfo;
             if (agentAddress.Equals(modifierInfo.Address))
             {
-                var modifiers = isVolatile
-                    ? modifierInfo.VolatileModifiers
-                    : modifierInfo.NonVolatileModifiers;
+                var modifiers = modifierInfo.VolatileModifiers;
                 if (TryGetSameTypeModifier(modifier, modifiers, out var outModifier))
                 {
                     outModifier.Remove(modifier);
@@ -446,21 +333,6 @@ namespace Nekoyume.State
                         modifiers.Remove(outModifier);
                     }
 
-                    modifier = outModifier;
-                }
-                else
-                {
-                    modifier = null;
-                }
-            }
-            else if (!isVolatile)
-            {
-                if (TryLoadModifier<AgentStateModifier>(
-                    agentAddress,
-                    modifier.GetType(),
-                    out var outModifier))
-                {
-                    outModifier.Remove(modifier);
                     modifier = outModifier;
                 }
                 else
@@ -473,11 +345,7 @@ namespace Nekoyume.State
             {
                 Debug.LogWarning(
                     $"[{nameof(LocalStateSettings)}] No found {nameof(modifier)} of {nameof(agentAddress)}");
-
-                return;
             }
-
-            PostRemove(agentAddress, modifier, isVolatile);
         }
 
         /// <summary>
@@ -485,11 +353,7 @@ namespace Nekoyume.State
         /// </summary>
         /// <param name="avatarAddress"></param>
         /// <param name="modifier"></param>
-        /// <param name="isVolatile"></param>
-        public void Remove(
-            Address avatarAddress,
-            AvatarStateModifier modifier,
-            bool isVolatile = false)
+        public void Remove(Address avatarAddress, AvatarStateModifier modifier)
         {
             if (modifier is null ||
                 modifier.IsEmpty)
@@ -503,9 +367,7 @@ namespace Nekoyume.State
 
             if (!(modifierInfo is null))
             {
-                var modifiers = isVolatile
-                    ? modifierInfo.VolatileModifiers
-                    : modifierInfo.NonVolatileModifiers;
+                var modifiers = modifierInfo.VolatileModifiers;
                 if (TryGetSameTypeModifier(modifier, modifiers, out var outModifier))
                 {
                     outModifier.Remove(modifier);
@@ -514,21 +376,6 @@ namespace Nekoyume.State
                         modifiers.Remove(outModifier);
                     }
 
-                    modifier = outModifier;
-                }
-                else
-                {
-                    modifier = null;
-                }
-            }
-            else if (!isVolatile)
-            {
-                if (TryLoadModifier<AvatarStateModifier>(
-                    avatarAddress,
-                    modifier.GetType(),
-                    out var outModifier))
-                {
-                    outModifier.Remove(modifier);
                     modifier = outModifier;
                 }
                 else
@@ -541,11 +388,7 @@ namespace Nekoyume.State
             {
                 Debug.LogWarning(
                     $"[{nameof(LocalStateSettings)}] No found {nameof(modifier)} of {nameof(avatarAddress)}");
-
-                return;
             }
-
-            PostRemove(avatarAddress, modifier, isVolatile);
         }
 
         /// <summary>
@@ -553,11 +396,7 @@ namespace Nekoyume.State
         /// </summary>
         /// <param name="weeklyArenaAddress"></param>
         /// <param name="modifier"></param>
-        /// <param name="isVolatile"></param>
-        public void Remove(
-            Address weeklyArenaAddress,
-            WeeklyArenaStateModifier modifier,
-            bool isVolatile = false)
+        public void Remove(Address weeklyArenaAddress, WeeklyArenaStateModifier modifier)
         {
             if (modifier is null ||
                 modifier.IsEmpty)
@@ -568,9 +407,7 @@ namespace Nekoyume.State
             var modifierInfo = _weeklyArenaModifierInfo;
             if (weeklyArenaAddress.Equals(modifierInfo.Address))
             {
-                var modifiers = isVolatile
-                    ? modifierInfo.VolatileModifiers
-                    : modifierInfo.NonVolatileModifiers;
+                var modifiers = modifierInfo.VolatileModifiers;
                 if (TryGetSameTypeModifier(modifier, modifiers, out var outModifier))
                 {
                     outModifier.Remove(modifier);
@@ -586,52 +423,12 @@ namespace Nekoyume.State
                     modifier = null;
                 }
             }
-            else if (!isVolatile)
-            {
-                if (TryLoadModifier<WeeklyArenaStateModifier>(
-                    weeklyArenaAddress,
-                    modifier.GetType(),
-                    out var outModifier))
-                {
-                    outModifier.Remove(modifier);
-                    modifier = outModifier;
-                }
-                else
-                {
-                    modifier = null;
-                }
-            }
 
             if (modifier is null)
             {
                 Debug.LogWarning(
                     $"[{nameof(LocalStateSettings)}] No found {nameof(modifier)} of {nameof(weeklyArenaAddress)}");
-
-                return;
             }
-
-            PostRemove(weeklyArenaAddress, modifier, isVolatile);
-        }
-
-        /// <summary>
-        /// `Remove` 메서드 이후에 호출한다.
-        /// </summary>
-        /// <param name="address"></param>
-        /// <param name="modifier"></param>
-        /// <param name="isVolatile"></param>
-        /// <typeparam name="T"></typeparam>
-        private static void PostRemove<T>(
-            Address address,
-            IAccumulatableStateModifier<T> modifier,
-            bool isVolatile)
-            where T : Model.State.State
-        {
-            if (isVolatile)
-            {
-                return;
-            }
-
-            SaveModifier(address, modifier);
         }
 
         #endregion
@@ -731,109 +528,12 @@ namespace Nekoyume.State
             where TState : Model.State.State
             where TModifier : class, IStateModifier<TState>
         {
-            foreach (var modifier in modifierInfo.NonVolatileModifiers)
-            {
-                // NOTE: Reassignment is not required yet.
-                state = modifier.Modify(state);
-                if (!modifier.dirty)
-                {
-                    continue;
-                }
-
-                SaveModifier(state.address, modifier);
-                modifier.dirty = false;
-            }
-
             foreach (var modifier in modifierInfo.VolatileModifiers)
             {
-                // NOTE: Reassignment is not required yet.
                 state = modifier.Modify(state);
             }
 
             return state;
-        }
-
-        #endregion
-
-        #region Save & Load
-
-        /// <summary>
-        /// 인자로 받은 상태 변경자를 `PlayerPrefs`에 저장한다.
-        /// </summary>
-        /// <param name="address"></param>
-        /// <param name="modifier"></param>
-        /// <typeparam name="T"></typeparam>
-        private static void SaveModifier<T>(
-            Address address,
-            IStateModifier<T> modifier)
-            where T : Model.State.State
-        {
-            var key = GetKey(address, modifier);
-            if (modifier.IsEmpty)
-            {
-                PlayerPrefs.DeleteKey(key);
-                return;
-            }
-
-            var json = JsonUtility.ToJson(modifier);
-            PlayerPrefs.SetString(key, json);
-        }
-
-        private static List<T> LoadModifiers<T>(Address address) where T : class
-        {
-            var baseType = typeof(T);
-            var modifiers = new List<T>();
-
-            var types = Assembly
-                .GetExecutingAssembly()
-                .GetTypes()
-                .Where(e => e.IsInheritsFrom(baseType));
-            foreach (var type in types)
-            {
-                if (!TryLoadModifier<T>(address, type, out var outModifier))
-                {
-                    continue;
-                }
-
-                modifiers.Add(outModifier);
-            }
-
-            return modifiers;
-        }
-
-        /// <summary>
-        /// `address`와 `typeOfModifier`에 해당하는 `T`형 상태 변경자를 반환한다.
-        /// </summary>
-        /// <param name="address"></param>
-        /// <param name="typeOfModifier"></param>
-        /// <param name="outModifier"></param>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
-        private static bool TryLoadModifier<T>(
-            Address address,
-            Type typeOfModifier,
-            out T outModifier)
-            where T : class
-        {
-            var key = GetKey(address, typeOfModifier);
-            if (!PlayerPrefs.HasKey(key))
-            {
-                outModifier = null;
-                return false;
-            }
-
-            var json = PlayerPrefs.GetString(key);
-
-            try
-            {
-                outModifier = (T) JsonUtility.FromJson(json, typeOfModifier);
-                return true;
-            }
-            catch (InvalidCastException)
-            {
-                outModifier = null;
-                return false;
-            }
         }
 
         #endregion
@@ -844,74 +544,27 @@ namespace Nekoyume.State
         /// `T`형 상태 변경자를 모두 제거한다.
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        public void ClearAvatarModifiers<T>(Address avatarAddress, bool isVolatile = false)
+        public void ClearAvatarModifiers<T>(Address avatarAddress)
             where T : AvatarStateModifier
         {
-            if (isVolatile)
+            if (_avatarModifierInfo is null ||
+                !_avatarModifierInfo.Address.Equals(avatarAddress))
             {
-                if (_avatarModifierInfo is null ||
-                    !_avatarModifierInfo.Address.Equals(avatarAddress))
-                {
-                    return;
-                }
-
-                while (true)
-                {
-                    if (!TryGetSameTypeModifier(
-                        typeof(T),
-                        _avatarModifierInfo.VolatileModifiers,
-                        out var modifier))
-                    {
-                        break;
-                    }
-
-                    _avatarModifierInfo.VolatileModifiers.Remove(modifier);
-                }
-
                 return;
             }
 
-            var modifiers = LoadModifiers<T>(avatarAddress);
-            foreach (var modifier in modifiers)
+            while (true)
             {
-                Remove(avatarAddress, modifier, isVolatile);
+                if (!TryGetSameTypeModifier(
+                    typeof(T),
+                    _avatarModifierInfo.VolatileModifiers,
+                    out var modifier))
+                {
+                    break;
+                }
+
+                _avatarModifierInfo.VolatileModifiers.Remove(modifier);
             }
-        }
-
-        #endregion
-
-        #region Key
-
-        /// <summary>
-        /// 상태 변경자가 저장되는 키를 반환한다.
-        /// </summary>
-        /// <param name="address"></param>
-        /// <param name="modifier"></param>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
-        private static string GetKey<T>(
-            Address address,
-            IStateModifier<T> modifier)
-            where T : Model.State.State
-        {
-            return GetKey(address, modifier.GetType());
-        }
-
-        /// <summary>
-        /// 상태 변경자가 저장되는 키를 반환한다.
-        /// </summary>
-        /// <param name="address"></param>
-        /// <param name="typeOfModifier"></param>
-        /// <returns></returns>
-        private static string GetKey(Address address, Type typeOfModifier)
-        {
-            var format = $"{nameof(LocalStateSettings)}_{{0}}_{{1}}";
-            var name = typeOfModifier.Name;
-            var key = string.Format(
-                format,
-                address.ToHex(),
-                name);
-            return key;
         }
 
         #endregion

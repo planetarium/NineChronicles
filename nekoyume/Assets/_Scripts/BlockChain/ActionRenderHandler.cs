@@ -5,6 +5,7 @@ using System.Linq;
 using Bencodex.Types;
 using Lib9c.Renderer;
 using Libplanet;
+using Libplanet.Action;
 using Libplanet.Assets;
 using Nekoyume.Action;
 using Nekoyume.L10n;
@@ -18,6 +19,8 @@ using Nekoyume.Model.State;
 using TentuPlay.Api;
 using Nekoyume.Model.Quest;
 using Nekoyume.State.Modifiers;
+using Nekoyume.TableData;
+using UnityEngine;
 
 namespace Nekoyume.BlockChain
 {
@@ -42,12 +45,14 @@ namespace Nekoyume.BlockChain
 
         private IDisposable _disposableForBattleEnd = null;
 
+        private ActionRenderHandler()
+        {
+        }
+
         public void Start(ActionRenderer renderer)
         {
             _renderer = renderer;
 
-            Shop();
-            Ranking();
             RewardGold();
             CreateAvatar();
             HackAndSlash();
@@ -63,30 +68,11 @@ namespace Nekoyume.BlockChain
             GameConfig();
             RedeemCode();
             ChargeActionPoint();
-            WeeklyArena();
         }
 
         public void Stop()
         {
             _disposables.DisposeAllAndClear();
-        }
-
-        private void Shop()
-        {
-            _renderer.EveryRender(ShopState.Address)
-                .ObserveOnMainThread()
-                .Subscribe(UpdateShopState).AddTo(_disposables);
-        }
-
-        private void Ranking()
-        {
-            var state = new RankingState((Dictionary)Game.Game.instance.Agent.GetState(Addresses.Ranking));
-            foreach (var address in state.RankingMap.Keys)
-            {
-                _renderer.EveryRender(address)
-                    .ObserveOnMainThread()
-                    .Subscribe(eval => UpdateRankingMapState(eval, address)).AddTo(_disposables);
-            }
         }
 
         private void RewardGold()
@@ -123,7 +109,7 @@ namespace Nekoyume.BlockChain
         private void CreateAvatar()
         {
             _renderer.EveryRender<CreateAvatar2>()
-                .Where(ValidateEvaluationForAgentState)
+                .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(eval =>
                 {
@@ -137,14 +123,14 @@ namespace Nekoyume.BlockChain
                         )
                     );
                     new TPStashEvent().PlayerCharacterGet(
-                            player_uuid: agentAddress.ToHex(),
-                            character_uuid: avatarAddress.ToHex().Substring(0, 4),
-                            characterarchetype_slug: Nekoyume.GameConfig.DefaultAvatarCharacterId.ToString(), //100010 for now.
-                            //-> WARRIOR, ARCHER, MAGE, ACOLYTE를 구분할 수 있는 구분자여야한다.
-                            reference_entity: entity.Etc,
-                            reference_category_slug: null,
-                            reference_slug: null
-                        );
+                        player_uuid: agentAddress.ToHex(),
+                        character_uuid: avatarAddress.ToHex().Substring(0, 4),
+                        characterarchetype_slug: Nekoyume.GameConfig.DefaultAvatarCharacterId.ToString(), //100010 for now.
+                        //-> WARRIOR, ARCHER, MAGE, ACOLYTE를 구분할 수 있는 구분자여야한다.
+                        reference_entity: entity.Etc,
+                        reference_category_slug: null,
+                        reference_slug: null
+                    );
 
                     UpdateAgentState(eval);
                     UpdateAvatarState(eval, eval.Action.index);
@@ -153,7 +139,7 @@ namespace Nekoyume.BlockChain
 
         private void HackAndSlash()
         {
-            _renderer.EveryRender<HackAndSlash2>()
+            _renderer.EveryRender<HackAndSlash3>()
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseHackAndSlash).AddTo(_disposables);
@@ -161,8 +147,8 @@ namespace Nekoyume.BlockChain
 
         private void CombinationConsumable()
         {
-            _renderer.EveryRender<CombinationConsumable>()
-                .Where(ValidateEvaluationForCurrentAvatarState)
+            _renderer.EveryRender<CombinationConsumable2>()
+                .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseCombinationConsumable).AddTo(_disposables);
         }
@@ -170,14 +156,14 @@ namespace Nekoyume.BlockChain
         private void Sell()
         {
             _renderer.EveryRender<Sell>()
-                .Where(ValidateEvaluationForCurrentAvatarState)
+                .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseSell).AddTo(_disposables);
         }
 
         private void SellCancellation()
         {
-            _renderer.EveryRender<SellCancellation>()
+            _renderer.EveryRender<SellCancellation3>()
                 .Where(ValidateEvaluationForCurrentAvatarState)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseSellCancellation).AddTo(_disposables);
@@ -185,16 +171,17 @@ namespace Nekoyume.BlockChain
 
         private void Buy()
         {
-            _renderer.EveryRender<Buy>()
+            _renderer.EveryRender<Buy3>()
                 .Where(ValidateEvaluationForAgentState)
+
                 .ObserveOnMainThread()
                 .Subscribe(ResponseBuy).AddTo(_disposables);
         }
 
         private void ItemEnhancement()
         {
-            _renderer.EveryRender<ItemEnhancement2>()
-                .Where(ValidateEvaluationForCurrentAvatarState)
+            _renderer.EveryRender<ItemEnhancement3>()
+                .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseItemEnhancement).AddTo(_disposables);
         }
@@ -202,14 +189,13 @@ namespace Nekoyume.BlockChain
         private void DailyReward()
         {
             _renderer.EveryRender<DailyReward>()
-                .Where(ValidateEvaluationForCurrentAvatarState)
+                .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(eval =>
                 {
                     LocalStateSettings.Instance
                         .ClearAvatarModifiers<AvatarDailyRewardReceivedIndexModifier>(
-                            eval.Action.avatarAddress,
-                            true);
+                            eval.Action.avatarAddress);
 
                     UpdateCurrentAvatarState(eval);
 
@@ -226,15 +212,15 @@ namespace Nekoyume.BlockChain
         private void RankingBattle()
         {
             _renderer.EveryRender<RankingBattle2>()
-                .Where(ValidateEvaluationForCurrentAvatarState)
+                .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseRankingBattle).AddTo(_disposables);
         }
 
         private void CombinationEquipment()
         {
-            _renderer.EveryRender<CombinationEquipment>()
-                .Where(ValidateEvaluationForCurrentAvatarState)
+            _renderer.EveryRender<CombinationEquipment2>()
+                .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseCombinationEquipment).AddTo(_disposables);
         }
@@ -242,7 +228,7 @@ namespace Nekoyume.BlockChain
         private void RapidCombination()
         {
             _renderer.EveryRender<RapidCombination2>()
-                .Where(ValidateEvaluationForCurrentAvatarState)
+                .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseRapidCombination).AddTo(_disposables);
         }
@@ -265,24 +251,9 @@ namespace Nekoyume.BlockChain
         private void ChargeActionPoint()
         {
             _renderer.EveryRender<ChargeActionPoint>()
-                .Where(ValidateEvaluationForCurrentAvatarState)
+                .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseChargeActionPoint).AddTo(_disposables);
-        }
-        private void WeeklyArena()
-        {
-            var blockIndex = Game.Game.instance.Agent.BlockIndex;
-            if (ArenaHelper.TryGetThisWeekAddress(blockIndex, out var thisWeekAddress))
-            {
-                _renderer.EveryRender(thisWeekAddress)
-                    .ObserveOnMainThread()
-                    .Subscribe(UpdateWeeklyArenaState).AddTo(_disposables);
-
-                var nextWeekAddress = ArenaHelper.GetNextWeekAddress(blockIndex);
-                _renderer.EveryRender(nextWeekAddress)
-                    .ObserveOnMainThread()
-                    .Subscribe(UpdateWeeklyArenaState).AddTo(_disposables);
-            }
         }
 
         private void ResponseRapidCombination(ActionBase.ActionEvaluation<RapidCombination2> eval)
@@ -317,14 +288,14 @@ namespace Nekoyume.BlockChain
                 reference_entity: entity.Items,
                 reference_category_slug: "consumables_rapid_combination",
                 reference_slug: slot.Result.itemUsable.Id.ToString()
-                );
+            );
 
             UpdateAgentState(eval);
             UpdateCurrentAvatarState(eval);
             UpdateCombinationSlotState(slot);
         }
 
-        private void ResponseCombinationEquipment(ActionBase.ActionEvaluation<CombinationEquipment> eval)
+        private void ResponseCombinationEquipment(ActionBase.ActionEvaluation<CombinationEquipment2> eval)
         {
             var agentAddress = eval.Signer;
             var avatarAddress = eval.Action.AvatarAddress;
@@ -414,7 +385,7 @@ namespace Nekoyume.BlockChain
             }
         }
 
-        private void ResponseCombinationConsumable(ActionBase.ActionEvaluation<CombinationConsumable> eval)
+        private void ResponseCombinationConsumable(ActionBase.ActionEvaluation<CombinationConsumable2> eval)
         {
             var agentAddress = eval.Signer;
             var avatarAddress = eval.Action.AvatarAddress;
@@ -477,26 +448,34 @@ namespace Nekoyume.BlockChain
                 LocalStateModifier.AddItem(avatarAddress, itemId, false);
                 var format = L10nManager.Localize("NOTIFICATION_SELL_COMPLETE");
                 var shopState = new ShopState((Dictionary) eval.OutputStates.GetState(ShopState.Address));
-                var shopItem = shopState.Products.Values.First(r => r.ItemUsable.ItemId == itemId);
-                UI.Notification.Push(MailType.Auction, string.Format(format, shopItem.ItemUsable.GetLocalizedName()));
+
+                var shopItem = shopState.Products.Values.First(r =>
+                {
+                    var nonFungibleItem = r.ItemUsable ?? (INonFungibleItem)r.Costume;
+                    return nonFungibleItem.ItemId == itemId;
+                });
+
+                var itemBase = shopItem.ItemUsable ?? (ItemBase) shopItem.Costume;
+                UI.Notification.Push(MailType.Auction, string.Format(format, itemBase.GetLocalizedName()));
                 UpdateCurrentAvatarState(eval);
             }
         }
 
-        private void ResponseSellCancellation(ActionBase.ActionEvaluation<SellCancellation> eval)
+        private void ResponseSellCancellation(ActionBase.ActionEvaluation<SellCancellation3> eval)
         {
             var avatarAddress = eval.Action.sellerAvatarAddress;
             var result = eval.Action.result;
-            var itemId = result.itemUsable.ItemId;
+            var nonFungibleItem = result.itemUsable ?? (INonFungibleItem) result.costume;
+            var itemBase = result.itemUsable ?? (ItemBase) result.costume;
 
-            LocalStateModifier.RemoveItem(avatarAddress, itemId);
+            LocalStateModifier.RemoveItem(avatarAddress, nonFungibleItem.ItemId);
             LocalStateModifier.AddNewAttachmentMail(avatarAddress, result.id);
             var format = L10nManager.Localize("NOTIFICATION_SELL_CANCEL_COMPLETE");
-            UI.Notification.Push(MailType.Auction, string.Format(format, eval.Action.result.itemUsable.GetLocalizedName()));
+            UI.Notification.Push(MailType.Auction, string.Format(format, itemBase.GetLocalizedName()));
             UpdateCurrentAvatarState(eval);
         }
 
-        private void ResponseBuy(ActionBase.ActionEvaluation<Buy> eval)
+        private void ResponseBuy(ActionBase.ActionEvaluation<Buy3> eval)
         {
             var buyerAvatarAddress = eval.Action.buyerAvatarAddress;
             var price = eval.Action.sellerResult.shopItem.Price;
@@ -507,15 +486,16 @@ namespace Nekoyume.BlockChain
             {
                 var buyerAgentAddress = States.Instance.AgentState.address;
                 var result = eval.Action.buyerResult;
-                var itemId = result.itemUsable.ItemId;
+                var nonFungibleItem = result.itemUsable ?? (INonFungibleItem) result.costume;
+                var itemBase = result.itemUsable ?? (ItemBase) result.costume;
                 var buyerAvatar = eval.OutputStates.GetAvatarState(buyerAvatarAddress);
 
                 LocalStateModifier.ModifyAgentGold(buyerAgentAddress, price);
-                LocalStateModifier.RemoveItem(buyerAvatarAddress, itemId);
+                LocalStateModifier.RemoveItem(buyerAvatarAddress, nonFungibleItem.ItemId);
                 LocalStateModifier.AddNewAttachmentMail(buyerAvatarAddress, result.id);
 
                 var format = L10nManager.Localize("NOTIFICATION_BUY_BUYER_COMPLETE");
-                UI.Notification.Push(MailType.Auction, string.Format(format, eval.Action.buyerResult.itemUsable.GetLocalizedName()));
+                UI.Notification.Push(MailType.Auction, string.Format(format, itemBase.GetLocalizedName()));
 
                 //[TentuPlay] 아이템 구입, 골드 사용
                 //Local에서 변경하는 States.Instance 보다는 블락에서 꺼내온 eval.OutputStates를 사용
@@ -530,7 +510,7 @@ namespace Nekoyume.BlockChain
                         currency_total_quantity: float.Parse(total.GetQuantityString()),
                         reference_entity: entity.Trades,
                         reference_category_slug: "buy",
-                        reference_slug: result.itemUsable.Id.ToString() //아이템 품번
+                        reference_slug: itemBase.Id.ToString() //아이템 품번
                     );
                 }
 
@@ -542,7 +522,7 @@ namespace Nekoyume.BlockChain
                 var sellerAvatarAddress = eval.Action.sellerAvatarAddress;
                 var sellerAgentAddress = eval.Action.sellerAgentAddress;
                 var result = eval.Action.sellerResult;
-                var itemId = result.itemUsable.ItemId;
+                var itemBase = result.itemUsable ?? (ItemBase) result.costume;
                 var gold = result.gold;
                 var sellerAvatar = eval.OutputStates.GetAvatarState(sellerAvatarAddress);
 
@@ -554,7 +534,7 @@ namespace Nekoyume.BlockChain
                     new AvatarState(
                             (Bencodex.Types.Dictionary) eval.OutputStates.GetState(eval.Action.buyerAvatarAddress))
                         .NameWithHash;
-                UI.Notification.Push(MailType.Auction, string.Format(format, buyerName, result.itemUsable.GetLocalizedName()));
+                UI.Notification.Push(MailType.Auction, string.Format(format, buyerName, itemBase.GetLocalizedName()));
 
                 //[TentuPlay] 아이템 판매완료, 골드 증가
                 //Local에서 변경하는 States.Instance 보다는 블락에서 꺼내온 eval.OutputStates를 사용
@@ -568,7 +548,7 @@ namespace Nekoyume.BlockChain
                     currency_total_quantity: float.Parse(total.GetQuantityString()),
                     reference_entity: entity.Trades,
                     reference_category_slug: "sell",
-                    reference_slug: result.itemUsable.Id.ToString() //아이템 품번
+                    reference_slug: itemBase.Id.ToString() //아이템 품번
                 );
 
                 renderQuestAvatarAddress = sellerAvatarAddress;
@@ -580,24 +560,24 @@ namespace Nekoyume.BlockChain
             RenderQuest(renderQuestAvatarAddress, renderQuestCompletedQuestIds);
         }
 
-        private void ResponseHackAndSlash(ActionBase.ActionEvaluation<HackAndSlash2> eval)
+        private void ResponseHackAndSlash(ActionBase.ActionEvaluation<HackAndSlash3> eval)
         {
             if (eval.Exception is null)
             {
                 _disposableForBattleEnd?.Dispose();
                 _disposableForBattleEnd =
                     Game.Game.instance.Stage.onEnterToStageEnd
-                    .First()
-                    .Subscribe(_ =>
-                    {
-                        UpdateCurrentAvatarState(eval);
-                        UpdateWeeklyArenaState(eval);
-                        var avatarState =
-                            eval.OutputStates.GetAvatarState(eval.Action.avatarAddress);
-                        RenderQuest(eval.Action.avatarAddress,
-                            avatarState.questList.completedQuestIds);
-                        _disposableForBattleEnd = null;
-                    });
+                        .First()
+                        .Subscribe(_ =>
+                        {
+                            UpdateCurrentAvatarState(eval);
+                            UpdateWeeklyArenaState(eval);
+                            var avatarState =
+                                eval.OutputStates.GetAvatarState(eval.Action.avatarAddress);
+                            RenderQuest(eval.Action.avatarAddress,
+                                avatarState.questList.completedQuestIds);
+                            _disposableForBattleEnd = null;
+                        });
 
                 var actionFailPopup = Widget.Find<ActionFailPopup>();
                 actionFailPopup.CloseCallback = null;
@@ -633,32 +613,8 @@ namespace Nekoyume.BlockChain
                     Widget.Find<BattleResult>().Close();
                 }
 
-                Game.Event.OnRoomEnter.Invoke(showLoadingScreen);
-                Game.Game.instance.Stage.OnRoomEnterEnd
-                    .First()
-                    .Subscribe(_ =>
-                    {
-                        var exc = eval.Exception.InnerException;
-                        var key = "ERROR_UNKNOWN";
-                        switch (exc)
-                        {
-                            case RequiredBlockIndexException _:
-                                key = "ERROR_REQUIRE_BLOCK";
-                                break;
-                            case EquipmentSlotUnlockException _:
-                                key = "ERROR_SLOT_UNLOCK";
-                                break;
-                            case NotEnoughActionPointException _:
-                                key = "ERROR_ACTION_POINT";
-                                break;
-                        }
-                        var errorMsg = string.Format(L10nManager.Localize("UI_ERROR_RETRY_FORMAT"),
-                            L10nManager.Localize(key));
-                        Widget
-                            .Find<Alert>()
-                            .Show(L10nManager.Localize("UI_ERROR"), errorMsg,
-                                L10nManager.Localize("UI_OK"), false);
-                    });
+                var exc = eval.Exception.InnerException;
+                BackToMain(showLoadingScreen, exc);
             }
         }
 
@@ -693,14 +649,14 @@ namespace Nekoyume.BlockChain
                 _disposableForBattleEnd?.Dispose();
                 _disposableForBattleEnd =
                     Game.Game.instance.Stage.onEnterToStageEnd
-                    .First()
-                    .Subscribe(_ =>
-                    {
-                        UpdateAgentState(eval);
-                        UpdateCurrentAvatarState(eval);
-                        UpdateWeeklyArenaState(eval);
-                        _disposableForBattleEnd = null;
-                    });
+                        .First()
+                        .Subscribe(_ =>
+                        {
+                            UpdateAgentState(eval);
+                            UpdateCurrentAvatarState(eval);
+                            UpdateWeeklyArenaState(eval);
+                            _disposableForBattleEnd = null;
+                        });
 
                 var actionFailPopup = Widget.Find<ActionFailPopup>();
                 actionFailPopup.CloseCallback = null;
@@ -724,50 +680,11 @@ namespace Nekoyume.BlockChain
                     Widget.Find<RankingBattleResult>().Close();
                 }
 
-                Game.Event.OnRoomEnter.Invoke(showLoadingScreen);
-                Game.Game.instance.Stage.OnRoomEnterEnd
-                    .First()
-                    .Subscribe(_ =>
-                    {
-                        var exc = eval.Exception.InnerException;
-                        var key = "ERROR_UNKNOWN";
-                        switch (exc)
-                        {
-                            case InvalidAddressException _:
-                                key = "ERROR_INVALID_ADDRESS";
-                                break;
-                            case FailedLoadStateException _:
-                                key = "ERROR_FAILED_LOAD_STATE";
-                                break;
-                            case NotEnoughClearedStageLevelException _:
-                                key = "ERROR_NOT_ENOUGH_CLEARED_STAGE_LEVEL";
-                                break;
-                            case WeeklyArenaStateAlreadyEndedException _:
-                                key = "ERROR_WEEKLY_ARENA_STATE_ALREADY_ENDED";
-                                break;
-                            case WeeklyArenaStateNotContainsAvatarAddressException _:
-                                key = "ERROR_WEEKLY_ARENA_STATE_NOT_CONTAINS_AVATAR_ADDRESS";
-                                break;
-                            case NotEnoughWeeklyArenaChallengeCountException _:
-                                key = "ERROR_NOT_ENOUGH_WEEKLY_ARENA_CHALLENGE_COUNT";
-                                break;
-                            case NotEnoughFungibleAssetValueException _:
-                                key = "ERROR_NOT_ENOUGH_FUNGIBLE_ASSET_VALUE";
-                                break;
-                        }
-                        var errorMsg = string.Format(
-                            L10nManager.Localize("UI_ERROR_RETRY_FORMAT"),
-                            L10nManager.Localize(key));
-                        Widget.Find<Alert>().Show(
-                            L10nManager.Localize("UI_ERROR"),
-                            errorMsg,
-                            L10nManager.Localize("UI_OK"),
-                            false);
-                    });
+                BackToMain(showLoadingScreen, eval.Exception.InnerException);
             }
         }
 
-        private void ResponseItemEnhancement(ActionBase.ActionEvaluation<ItemEnhancement2> eval)
+        private void ResponseItemEnhancement(ActionBase.ActionEvaluation<ItemEnhancement3> eval)
         {
             var agentAddress = eval.Signer;
             var avatarAddress = eval.Action.avatarAddress;
@@ -776,9 +693,17 @@ namespace Nekoyume.BlockChain
             var itemUsable = result.itemUsable;
             var avatarState = eval.OutputStates.GetAvatarState(avatarAddress);
 
+            if (!(itemUsable is Equipment equipment))
+            {
+                return;
+            }
+
+            var row = Game.Game.instance.TableSheets
+                .EnhancementCostSheet.Values
+                .FirstOrDefault(x => x.Grade == equipment.Grade && x.Level == equipment.level);
+
             // NOTE: 사용한 자원에 대한 레이어 벗기기.
-            LocalStateModifier.ModifyAgentGold(agentAddress, result.gold);
-            LocalStateModifier.ModifyAvatarActionPoint(avatarAddress, result.actionPoint);
+            LocalStateModifier.ModifyAgentGold(agentAddress, row.Cost);
             LocalStateModifier.AddItem(avatarAddress, itemUsable.ItemId, false);
             foreach (var itemId in result.materialItemIdList)
             {
@@ -878,6 +803,39 @@ namespace Nekoyume.BlockChain
                     LocalStateModifier.RemoveItem(avatarAddress, materialRow.Value.ItemId, reward.Value);
                 }
             }
+        }
+
+        public static void BackToMain(bool showLoadingScreen, Exception exc)
+        {
+            Game.Event.OnRoomEnter.Invoke(showLoadingScreen);
+            Game.Game.instance.Stage.OnRoomEnterEnd
+                .First()
+                .Subscribe(_ =>
+                {
+                    PopupError(exc);
+                    Game.Game.instance.Agent.SendException(exc);
+                });
+
+            MainCanvas.instance.InitWidgetInMain();
+        }
+
+        public static void PopupError(Exception exc)
+        {
+            var msg = $"Agent Address: {Game.Game.instance.Agent.Address}. #{Game.Game.instance.Agent.BlockTipHash}";
+            var exception = new Exception(msg, exc);
+            Debug.LogException(exc);
+            var (key, code, errorMsg) = ErrorCode.GetErrorCode(exc);
+
+            errorMsg = errorMsg == string.Empty
+                ? string.Format(
+                    L10nManager.Localize("UI_ERROR_RETRY_FORMAT"),
+                    L10nManager.Localize(key),
+                    code)
+                : errorMsg;
+            Widget
+                .Find<Alert>()
+                .Show(L10nManager.Localize("UI_ERROR"), errorMsg,
+                    L10nManager.Localize("UI_OK"), false);
         }
     }
 }

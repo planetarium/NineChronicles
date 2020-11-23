@@ -6,6 +6,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Bencodex;
 using Bencodex.Types;
@@ -20,6 +21,7 @@ using Libplanet.Tx;
 using MagicOnion.Client;
 using Nekoyume.Action;
 using Nekoyume.Helper;
+using Nekoyume.L10n;
 using Nekoyume.Model.State;
 using Nekoyume.Shared.Hubs;
 using Nekoyume.Shared.Services;
@@ -40,6 +42,8 @@ namespace Nekoyume.BlockChain
         private readonly ConcurrentQueue<PolymorphicAction<ActionBase>> _queuedActions =
             new ConcurrentQueue<PolymorphicAction<ActionBase>>();
 
+        private readonly TransactionMap _transactions = new TransactionMap(20);
+
         private Channel _channel;
 
         private IActionEvaluationHub _hub;
@@ -50,6 +54,8 @@ namespace Nekoyume.BlockChain
 
         private Block<PolymorphicAction<ActionBase>> _genesis;
 
+        private DateTimeOffset _lastTipChangedAt;
+
         // Rendering logs will be recorded in NineChronicles.Standalone
         public BlockPolicySource BlockPolicySource { get; } = new BlockPolicySource(Logger.None);
 
@@ -58,6 +64,8 @@ namespace Nekoyume.BlockChain
         public ActionRenderer ActionRenderer => BlockPolicySource.ActionRenderer;
 
         public Subject<long> BlockIndexSubject { get; } = new Subject<long>();
+
+        public Subject<HashDigest<SHA256>> BlockTipHashSubject { get; } = new Subject<HashDigest<SHA256>>();
 
         public long BlockIndex { get; private set; }
 
@@ -69,6 +77,13 @@ namespace Nekoyume.BlockChain
 
         public UnityEvent OnDisconnected { get; private set; }
 
+        public UnityEvent WhenRetryStarted { get; private set; }
+
+        public UnityEvent WhenRetryEnded { get; private set; }
+
+        public int AppProtocolVersion { get; private set; }
+
+        public HashDigest<SHA256> BlockTipHash { get; private set; }
 
         public void Initialize(
             CommandLineOptions options,
@@ -82,6 +97,7 @@ namespace Nekoyume.BlockChain
                 options.RpcServerPort,
                 ChannelCredentials.Insecure
             );
+            _lastTipChangedAt = DateTimeOffset.UtcNow;
             _hub = StreamingHubClient.Connect<IActionEvaluationHub, IActionEvaluationHubReceiver>(_channel, this);
             _service = MagicOnionClient.Create<IBlockChainService>(_channel);
 
@@ -91,8 +107,14 @@ namespace Nekoyume.BlockChain
             StartCoroutine(CoJoin(callback));
 
             OnDisconnected = new UnityEvent();
+            WhenRetryStarted = new UnityEvent();
+            WhenRetryEnded = new UnityEvent();
 
             _genesis = BlockManager.ImportBlock(options.GenesisBlockPath ?? BlockManager.GenesisBlockPath);
+            var appProtocolVersion = options.AppProtocolVersion is null
+                ? default
+                : Libplanet.Net.AppProtocolVersion.FromToken(options.AppProtocolVersion);
+            AppProtocolVersion = appProtocolVersion.Version;
         }
 
         public IValue GetState(Address address)
@@ -114,6 +136,12 @@ namespace Nekoyume.BlockChain
                 serialized.ElementAt(1).ToBigInteger());
         }
 
+        public void SendException(Exception exc)
+        {
+            var (key, code, message) = ErrorCode.GetErrorCode(exc);
+            _service.ReportException(code, message);
+        }
+
         public void EnqueueAction(GameAction action)
         {
             _queuedActions.Enqueue(action);
@@ -123,6 +151,10 @@ namespace Nekoyume.BlockChain
 
         private async void OnDestroy()
         {
+            BlockRenderHandler.Instance.Stop();
+            ActionRenderHandler.Instance.Stop();
+            ActionUnrenderHandler.Instance.Stop();
+
             StopAllCoroutines();
             if (!(_hub is null))
             {
@@ -199,9 +231,11 @@ namespace Nekoyume.BlockChain
             ActionRenderHandler.Instance.GoldCurrency = goldCurrency;
 
             // 그리고 모든 액션에 대한 랜더와 언랜더를 핸들링하기 시작한다.
+            BlockRenderHandler.Instance.Start(BlockRenderer);
             ActionRenderHandler.Instance.Start(ActionRenderer);
             ActionUnrenderHandler.Instance.Start(ActionRenderer);
 
+            UpdateSubscribeAddresses();
             callback(true);
         }
 
@@ -225,11 +259,13 @@ namespace Nekoyume.BlockChain
                 if (task.IsFaulted)
                 {
                     Debug.LogException(task.Exception);
-                    Debug.LogError(
+                    // FIXME: Should restore this after fixing actual bug that MakeTransaction
+                    // was throwing Exception.
+                    /*Debug.LogError(
                         $"Unexpected exception occurred. re-enqueue {action} for retransmission."
                     );
 
-                    _queuedActions.Enqueue(action);
+                    _queuedActions.Enqueue(action);*/
                 }
             }
         }
@@ -245,6 +281,12 @@ namespace Nekoyume.BlockChain
                     actions
                 );
             await _service.PutTransaction(tx.Serialize(true));
+
+            foreach (var action in actions)
+            {
+                var ga = (GameAction) action.InnerAction;
+                _transactions.TryAdd(ga.Id, tx.Id);
+            }
         }
 
         private async Task<long> GetNonceAsync()
@@ -286,6 +328,10 @@ namespace Nekoyume.BlockChain
             var newTipHeader = BlockHeader.Deserialize(newTip);
             BlockIndex = newTipHeader.Index;
             BlockIndexSubject.OnNext(BlockIndex);
+            BlockTipHash = new HashDigest<SHA256>(newTipHeader.Hash);
+            BlockTipHashSubject.OnNext(BlockTipHash);
+            _lastTipChangedAt = DateTimeOffset.UtcNow;
+            BlockRenderer.RenderBlock(null, null);
         }
 
         private async void RegisterDisconnectEvent(IActionEvaluationHub hub)
@@ -296,42 +342,105 @@ namespace Nekoyume.BlockChain
             }
             finally
             {
-                OnDisconnected?.Invoke();
+                RetryRpc();
             }
+        }
+
+        private async void RetryRpc()
+        {
+            var retryCount = 10;
+            Debug.Log($"Retry rpc connection. (count: {retryCount})");
+            WhenRetryStarted.Invoke();
+            while (retryCount > 0)
+            {
+                await Task.Delay(5000);
+                StreamingHubClientRegistry<IActionEvaluationHub, IActionEvaluationHubReceiver>.Register(null);
+                _hub = StreamingHubClient.Connect<IActionEvaluationHub, IActionEvaluationHubReceiver>(_channel, this);
+                try
+                {
+                    Debug.Log($"Trying to join hub...");
+                    await _hub.JoinAsync();
+                    Debug.Log($"Join complete! Registering disconnect event...");
+                    RegisterDisconnectEvent(_hub);
+                    UpdateSubscribeAddresses();
+                    return;
+                }
+                catch (RpcException re)
+                {
+                    Debug.LogWarning($"RpcException occurred. Retrying... {retryCount}\n{re}");
+                    retryCount--;
+                }
+                catch (Exception e)
+                {
+                    Debug.LogWarning($"Unexpected error occurred during rpc connection. {e}");
+                    break;
+                }
+            }
+
+            OnDisconnected?.Invoke();
         }
 
         public void OnReorged(byte[] oldTip, byte[] newTip, byte[] branchpoint)
         {
-            BlockRenderer.RenderReorg(
-                Block<PolymorphicAction<ActionBase>>.Deserialize(oldTip),
-                Block<PolymorphicAction<ActionBase>>.Deserialize(newTip),
-                Block<PolymorphicAction<ActionBase>>.Deserialize(branchpoint)
-            );
+            BlockRenderer.RenderReorg(null, null, null);
         }
 
         public void OnReorgEnd(byte[] oldTip, byte[] newTip, byte[] branchpoint)
         {
-            BlockRenderer.RenderReorgEnd(
-                Block<PolymorphicAction<ActionBase>>.Deserialize(oldTip),
-                Block<PolymorphicAction<ActionBase>>.Deserialize(newTip),
-                Block<PolymorphicAction<ActionBase>>.Deserialize(branchpoint)
-            );
+            BlockRenderer.RenderReorgEnd(null, null, null);
         }
 
         public void OnException(int code, string message)
         {
+            var key = "ERROR_UNHANDLED";
+            var errorCode = "100";
             switch (code)
             {
                 case (int)RPCException.NetworkException:
-                    Widget.Find<SystemPopup>().Show("UI_ERROR", "ERROR_NETWORK");
-                    break;
-
-                default:
-                    Widget.Find<SystemPopup>().Show("UI_ERROR", "ERROR_UNHANDLED");
+                    key = "ERROR_NETWORK";
+                    errorCode = "101";
                     break;
             }
 
+            var errorMsg = string.Format(L10nManager.Localize("UI_ERROR_RETRY_FORMAT"),
+                L10nManager.Localize(key), errorCode);
+
             Debug.Log($"{message} (code: {code})");
+            Game.Event.OnRoomEnter.Invoke(true);
+            Game.Game.instance.Stage.OnRoomEnterEnd
+                .First()
+                .Subscribe(_ =>
+                {
+                    Widget
+                        .Find<Alert>()
+                        .Show(L10nManager.Localize("UI_ERROR"), errorMsg,
+                            L10nManager.Localize("UI_OK"), false);
+                });
+
+        }
+
+        public void OnPreloadStart()
+        {
+            Debug.Log($"On Preload Start");
+        }
+
+        public void OnPreloadEnd()
+        {
+            Debug.Log($"On Preload End");
+            WhenRetryEnded.Invoke();
+        }
+
+        public void UpdateSubscribeAddresses()
+        {
+            var addresses = new List<Address> { Address };
+            Debug.Log($"Subscribing addresses: {string.Join(", ", addresses)}");
+            _service.SetAddressesToSubscribe(addresses.Select(addr => addr.ToByteArray()));
+        }
+
+        public bool IsActionStaged(Guid actionId, out TxId txId)
+        {
+            return _transactions.TryGetValue(actionId, out txId)
+                   && _service.IsTransactionStaged(txId.ToByteArray()).ResponseAsync.Result;
         }
     }
 }

@@ -153,7 +153,7 @@ namespace Nekoyume.UI
         {
             _disposablesAtShow.DisposeAllAndClear();
             Find<BottomMenu>().Close(true);
-            base.Close(ignoreCloseAnimation);
+            base.Close(true);
         }
 
         private void ShowWorld(int worldId)

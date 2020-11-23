@@ -9,15 +9,11 @@ using System.Text.RegularExpressions;
 using Nekoyume.UI.Module;
 using TMPro;
 using UnityEngine.UI;
-using Nekoyume.TableData;
 using Nekoyume.Model.State;
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using mixpanel;
 using Nekoyume.Game;
 using Nekoyume.L10n;
-using Nekoyume.Model.Stat;
 using TentuPlay.Api;
 
 namespace Nekoyume.UI
@@ -112,10 +108,13 @@ namespace Nekoyume.UI
                         new TPStashEvent().CharacterLogin(
                             player_uuid: States.Instance.AgentState.address.ToHex(),
                             character_uuid: States.Instance.CurrentAvatarState.address.ToHex().Substring(0, 4)
-                            );
+                        );
                     },
-                    onError: e =>
-                        Find<ActionFailPopup>().Show("Action timeout during CreateAvatar."));
+                    e =>
+                    {
+                        ActionRenderHandler.PopupError(e);
+                        Find<GrayLoadingScreen>().Close();
+                    });
             AudioController.PlayClick();
         }
 

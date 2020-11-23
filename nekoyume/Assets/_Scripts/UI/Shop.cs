@@ -2,6 +2,8 @@ using System;
 using System.Linq;
 using DG.Tweening;
 using Libplanet.Assets;
+using mixpanel;
+using Nekoyume.BlockChain;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
@@ -145,6 +147,8 @@ namespace Nekoyume.UI
         public override void Show(bool ignoreShowAnimation = false)
         {
             Game.Game.instance.Stage.GetPlayer().gameObject.SetActive(false);
+            States.Instance.SetShopState(new ShopState(
+                (Bencodex.Types.Dictionary) Game.Game.instance.Agent.GetState(Addresses.Shop)));
 
             base.Show(ignoreShowAnimation);
 
@@ -200,7 +204,7 @@ namespace Nekoyume.UI
 
             base.Close(ignoreCloseAnimation);
 
-            _npc.gameObject.SetActive(false);
+            _npc?.gameObject.SetActive(false);
         }
 
         #endregion
@@ -466,6 +470,12 @@ namespace Nekoyume.UI
                     return;
                 }
 
+                var props = new Value
+                {
+                    ["Price"] = shopItem.Price.Value.GetQuantityString(),
+                };
+                Mixpanel.Track("Unity/Buy", props);
+
                 Game.Game.instance.ActionManager.Buy(
                     shopItem.SellerAgentAddress.Value,
                     shopItem.SellerAvatarAddress.Value,
@@ -486,7 +496,7 @@ namespace Nekoyume.UI
                     }
 
                     Game.Game.instance.ActionManager.Sell(
-                        (ItemUsable) data.Item.Value.ItemBase.Value,
+                        (INonFungibleItem)data.Item.Value.ItemBase.Value,
                         data.Price.Value);
                     ResponseSell();
 
@@ -537,8 +547,7 @@ namespace Nekoyume.UI
 
         private static bool DimmedFuncForSell(InventoryItem inventoryItem)
         {
-            return inventoryItem.ItemBase.Value.ItemType == ItemType.Costume ||
-                   inventoryItem.ItemBase.Value.ItemType == ItemType.Material;
+            return inventoryItem.ItemBase.Value.ItemType == ItemType.Material;
         }
 
         private static bool EquippedFuncForSell(InventoryItem inventoryItem)
@@ -585,13 +594,12 @@ namespace Nekoyume.UI
             var item = SharedModel.ItemCountAndPricePopup.Value.Item.Value;
             SharedModel.ItemCountAndPricePopup.Value.Item.Value = null;
 
-            if (!(item.ItemBase.Value is ItemUsable itemUsable))
+            if (!(item.ItemBase.Value is INonFungibleItem nonFungibleItem))
             {
                 return;
             }
 
-            LocalStateModifier.RemoveItem(avatarAddress, itemUsable.ItemId);
-
+            LocalStateModifier.RemoveItem(avatarAddress, nonFungibleItem.ItemId);
             AudioController.instance.PlaySfx(AudioController.SfxCode.InputItem);
             var format = L10nManager.Localize("NOTIFICATION_SELL_START");
             Notification.Push(MailType.Auction,

@@ -6,6 +6,7 @@ using Nekoyume.Game.Controller;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.State;
+using Nekoyume.State.Subjects;
 using TMPro;
 using UniRx;
 using UnityEngine;
@@ -26,6 +27,12 @@ namespace Nekoyume.UI.Module
             Necklace,
             Ring,
             Food,
+            FullCostume,
+            HairCostume,
+            EarCostume,
+            EyeCostume,
+            TailCostume,
+            Title,
         }
 
         public enum SortFilter
@@ -92,6 +99,12 @@ namespace Nekoyume.UI.Module
                     ItemSubTypeFilter.Necklace,
                     ItemSubTypeFilter.Ring,
                     ItemSubTypeFilter.Food,
+                    ItemSubTypeFilter.FullCostume,
+                    ItemSubTypeFilter.HairCostume,
+                    ItemSubTypeFilter.EarCostume,
+                    ItemSubTypeFilter.EyeCostume,
+                    ItemSubTypeFilter.TailCostume,
+                    ItemSubTypeFilter.Title,
                 }
                 .Select(type => type == ItemSubTypeFilter.All
                     ? L10nManager.Localize("ALL")
@@ -220,7 +233,7 @@ namespace Nekoyume.UI.Module
         private void UpdateViewWithFilteredPageIndex(
             IReadOnlyDictionary<int, List<ShopItem>> models)
         {
-            var count = models.Count;
+            var count = models?.Count ?? 0;
             UpdateViewWithItems(count > _filteredPageIndex
                 ? models[_filteredPageIndex]
                 : new List<ShopItem>());

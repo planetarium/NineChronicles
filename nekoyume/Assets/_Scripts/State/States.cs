@@ -39,6 +39,7 @@ namespace Nekoyume.State
 
         public readonly Dictionary<Address, CombinationSlotState> CombinationSlotStates =
             new Dictionary<Address, CombinationSlotState>();
+
         public States()
         {
             DeselectAvatar();

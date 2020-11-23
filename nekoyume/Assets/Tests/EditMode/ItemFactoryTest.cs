@@ -185,46 +185,6 @@ namespace Tests.EditMode
         }
 
         [Test]
-        public void SerializeCostume([Values(true, false)] bool equip)
-        {
-            var row = _tableSheets.CostumeItemSheet.Values.First();
-            var costume = ItemFactory.CreateCostume(row);
-            Assert.IsNotNull(costume);
-            costume.equipped = equip;
-            var serialized = (Dictionary) costume.Serialize();
-            Assert.IsFalse(serialized.ContainsKey((IKey)(Text) "data"));
-            Assert.IsTrue(serialized.ContainsKey((IKey)(Text) "id"));
-            Assert.IsTrue(serialized.ContainsKey((IKey)(Text) "item_type"));
-            Assert.IsTrue(serialized.ContainsKey((IKey)(Text) "item_sub_type"));
-            Assert.IsTrue(serialized.ContainsKey((IKey)(Text) "grade"));
-            Assert.IsTrue(serialized.ContainsKey((IKey)(Text) "elemental_type"));
-            Assert.IsTrue(serialized.ContainsKey((IKey)(Text) "equipped"));
-            Assert.IsTrue(serialized.ContainsKey((IKey)(Text) "spine_resource_path"));
-            var deserialize = ItemFactory.Deserialize(serialized);
-            Assert.AreEqual(costume, deserialize);
-        }
-
-        [Test]
-        public void SerializeCostumeLegacy([Values(true, false)] bool equip)
-        {
-            var row = _tableSheets.CostumeItemSheet.Values.First();
-            var costume = ItemFactory.CreateCostume(row);
-            costume.equipped = equip;
-            Assert.IsNotNull(costume);
-            var serialized = (Dictionary) costume.Serialize();
-            var legacy = new Dictionary(
-                Dictionary.Empty
-                    .Add("data", row.Serialize())
-                    .Add("equipped", costume.equipped.Serialize())
-            );
-            Assert.IsTrue(legacy.ContainsKey((IKey)(Text) "data"));
-            Assert.IsTrue(legacy.ContainsKey((IKey)(Text) "equipped"));
-            var deserialize = ItemFactory.Deserialize(legacy);
-            Assert.AreEqual(costume, deserialize);
-            Assert.AreEqual(costume, ItemFactory.Deserialize(serialized));
-        }
-
-        [Test]
         public void SerializeChest()
         {
             var row = _tableSheets.MaterialItemSheet.Values.First(r => r.ItemSubType == ItemSubType.Chest);
