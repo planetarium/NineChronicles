@@ -180,7 +180,7 @@ namespace Nekoyume.BlockChain
 
         private void ItemEnhancement()
         {
-            _renderer.EveryRender<ItemEnhancement3>()
+            _renderer.EveryRender<ItemEnhancement4>()
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseItemEnhancement).AddTo(_disposables);
@@ -684,7 +684,7 @@ namespace Nekoyume.BlockChain
             }
         }
 
-        private void ResponseItemEnhancement(ActionBase.ActionEvaluation<ItemEnhancement3> eval)
+        private void ResponseItemEnhancement(ActionBase.ActionEvaluation<ItemEnhancement4> eval)
         {
             var agentAddress = eval.Signer;
             var avatarAddress = eval.Action.avatarAddress;
@@ -693,17 +693,8 @@ namespace Nekoyume.BlockChain
             var itemUsable = result.itemUsable;
             var avatarState = eval.OutputStates.GetAvatarState(avatarAddress);
 
-            if (!(itemUsable is Equipment equipment))
-            {
-                return;
-            }
-
-            var row = Game.Game.instance.TableSheets
-                .EnhancementCostSheet.Values
-                .FirstOrDefault(x => x.Grade == equipment.Grade && x.Level == equipment.level);
-
             // NOTE: 사용한 자원에 대한 레이어 벗기기.
-            LocalStateModifier.ModifyAgentGold(agentAddress, row.Cost);
+            LocalStateModifier.ModifyAgentGold(agentAddress, result.gold);
             LocalStateModifier.AddItem(avatarAddress, itemUsable.ItemId, false);
             foreach (var itemId in result.materialItemIdList)
             {
