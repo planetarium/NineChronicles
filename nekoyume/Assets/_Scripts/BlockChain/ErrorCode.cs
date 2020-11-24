@@ -70,40 +70,40 @@ namespace Nekoyume.BlockChain
                     code = "14";
                     break;
                 case ConsumableSlotOutOfRangeException _:
-                    code = "15";
+                    code = "28";
                     break;
                 case ConsumableSlotUnlockException _:
-                    code = "16";
+                    code = "15";
                     break;
                 case DuplicateCostumeException _:
-                    code = "17";
+                    code = "16";
                     break;
                 case InvalidItemTypeException _:
-                    code = "18";
+                    code = "17";
                     break;
                 case CostumeSlotUnlockException _:
-                    code = "19";
+                    code = "18";
                     break;
                 case NotEnoughMaterialException _:
-                    code = "20";
+                    code = "19";
                     break;
                 case ItemDoesNotExistException _:
-                    code = "21";
+                    code = "20";
                     break;
                 case InsufficientBalanceException _:
-                    code = "22";
+                    code = "21";
                     break;
                 case FailedToUnregisterInShopStateException _:
-                    code = "23";
+                    code = "22";
                     break;
                 case InvalidPriceException _:
-                    code = "24";
+                    code = "23";
                     break;
                 case ShopStateAlreadyContainsException _:
-                    code = "25";
+                    code = "24";
                     break;
                 case CombinationSlotResultNullException _:
-                    code = "26";
+                    code = "25";
                     break;
                 case ActionTimeoutException ate:
                     key = "ERROR_NETWORK";
@@ -111,15 +111,15 @@ namespace Nekoyume.BlockChain
                     if (Game.Game.instance.Agent.IsActionStaged(ate.ActionId, out var txId))
                     {
                         errorMsg += $" Transaction for action is still staged. (txid: {txId})";
-                        code = "27";
+                        code = "26";
                     }
                     else
                     {
                         errorMsg += $" Transaction for action is not staged. (txid: {txId})";
-                        code = "28";
+                        code = "27";
                     }
 
-                    Debug.LogError($"Action timeout: (actionID: {ate.ActionId}, txID: {txId})");
+                    Debug.LogError($"Action timeout: (actionID: {ate.ActionId}, txID: {txId}, code: {code})");
 
                     errorMsg += $"\nError Code: {code}";
                     break;
