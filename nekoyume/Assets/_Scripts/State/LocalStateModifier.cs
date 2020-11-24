@@ -849,7 +849,7 @@ namespace Nekoyume.State
             var avatarState = new AvatarState(
                 (Bencodex.Types.Dictionary) Game.Game.instance.Agent.GetState(avatarAddress));
 
-            if (avatarState.inventory.TryGetNonFungibleItem(baseMaterialGuid, out ItemUsable item))
+            if (!avatarState.inventory.TryGetNonFungibleItem(baseMaterialGuid, out ItemUsable item))
             {
                 return;
             }
@@ -875,6 +875,7 @@ namespace Nekoyume.State
                 materialItemIdList = new[] { otherMaterialGuid },
                 itemUsable = equipment,
             };
+            
             var modifier = new CombinationSlotBlockIndexAndResultModifier(result, blockIndex, requiredBlockIndex);
             var slotState = States.Instance.CombinationSlotStates[slotAddress];
             LocalStateSettings.Instance.Set(slotState.address, modifier);
