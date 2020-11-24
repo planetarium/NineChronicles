@@ -259,7 +259,7 @@ namespace Nekoyume.BlockChain
                 .DoOnError(e => HandleException(action.Id, e));
         }
 
-        public IObservable<ActionBase.ActionEvaluation<ItemEnhancement3>> ItemEnhancement(
+        public IObservable<ActionBase.ActionEvaluation<ItemEnhancement4>> ItemEnhancement(
             Guid itemId,
             Guid materialId,
             int slotIndex)
@@ -270,7 +270,7 @@ namespace Nekoyume.BlockChain
             LocalStateModifier.SetEquipmentEquip(avatarAddress, itemId, false, false);
             LocalStateModifier.SetEquipmentEquip(avatarAddress, materialId, false, false);
 
-            var action = new ItemEnhancement3
+            var action = new ItemEnhancement4
             {
                 itemId = itemId,
                 materialId = materialId,
@@ -279,7 +279,7 @@ namespace Nekoyume.BlockChain
             };
             ProcessAction(action);
 
-            return _renderer.EveryRender<ItemEnhancement3>()
+            return _renderer.EveryRender<ItemEnhancement4>()
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .Take(1)
                 .Last()
