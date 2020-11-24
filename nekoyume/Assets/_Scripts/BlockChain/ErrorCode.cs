@@ -123,6 +123,10 @@ namespace Nekoyume.BlockChain
 
                     errorMsg += $"\nError Code: {code}";
                     break;
+                case UnableToRenderWhenSyncingBlocksException _:
+                    code = "28";
+                    key = "ERROR_CANNOT_TO_RENDER_WHEN_SYNCING_BLOCKS";
+                    break;
             }
 
             errorMsg = errorMsg == string.Empty
