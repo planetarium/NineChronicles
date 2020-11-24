@@ -1,3 +1,4 @@
+using System;
 using Libplanet.Action;
 using Libplanet.Blockchain;
 using Libplanet.Blockchain.Policies;
@@ -23,6 +24,10 @@ namespace Lib9c
         {
             return blocks.Tip is null ? 0 : 1;
         }
+
+        public int MaxTransactionsPerBlock { get; } = int.MaxValue;
+
+        public int GetMaxBlockBytes(long index) => int.MaxValue;
 
         public bool DoesTransactionFollowsPolicy(
             Transaction<PolymorphicAction<ActionBase>> transaction,

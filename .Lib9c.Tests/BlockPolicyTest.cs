@@ -429,7 +429,7 @@ namespace Lib9c.Tests
                 previousHash: blockChain.Tip.Hash,
                 timestamp: DateTimeOffset.MinValue,
                 transactions: GenerateTransactions(11));
-            Assert.Throws<InvalidTxCountException>(() => blockChain.Append(block3));
+            Assert.Throws<BlockExceedingTransactionsException>(() => blockChain.Append(block3));
             Assert.Equal(3, blockChain.Count);
             Assert.False(blockChain.ContainsBlock(block3.Hash));
         }

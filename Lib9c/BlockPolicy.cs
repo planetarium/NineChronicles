@@ -16,41 +16,37 @@ namespace Nekoyume.BlockChain
     {
         private readonly long _minimumDifficulty;
         private readonly long _difficultyBoundDivisor;
-        private readonly int _maximumTransactions;
 
         public BlockPolicy(
             IAction blockAction,
             TimeSpan blockInterval,
             long minimumDifficulty,
             int difficultyBoundDivisor,
-            int maximumTransactions,
+            int maxTransactionsPerBlock,
+            int maxBlockBytes,
+            int maxGenesisBytes,
             Func<Transaction<NCAction>, BlockChain<NCAction>, bool> doesTransactionFollowPolicy = null
         ) : base(
-                blockAction,
-                blockInterval,
-                minimumDifficulty,
-                difficultyBoundDivisor,
-                doesTransactionFollowPolicy)
+                blockAction: blockAction,
+                blockInterval: blockInterval,
+                minimumDifficulty: minimumDifficulty,
+                difficultyBoundDivisor: difficultyBoundDivisor,
+                maxTransactionsPerBlock: maxTransactionsPerBlock,
+                maxBlockBytes: maxBlockBytes,
+                maxGenesisBytes: maxGenesisBytes,
+                doesTransactionFollowPolicy: doesTransactionFollowPolicy)
         {
             _minimumDifficulty = minimumDifficulty;
             _difficultyBoundDivisor = difficultyBoundDivisor;
-            _maximumTransactions = Math.Max(0, maximumTransactions);
         }
 
         public AuthorizedMinersState AuthorizedMinersState { get; set; }
 
-        public override InvalidBlockException ValidateNextBlock(BlockChain<NCAction> blocks, Block<NCAction> nextBlock)
-        {
-            InvalidBlockException e = null;
-            if (_maximumTransactions != 0 && nextBlock.Transactions.Count() > _maximumTransactions)
-            {
-                var msg = "Number of transactions in single block must be smaller than " +
-                          $"{_maximumTransactions}, but it's {nextBlock.Transactions.Count()}";
-                e = new InvalidTxCountException(msg, _maximumTransactions, nextBlock.Transactions.Count());
-            }
-            e = e ?? ValidateMinerAuthority(nextBlock);
-            return e ?? base.ValidateNextBlock(blocks, nextBlock);
-        }
+        public override InvalidBlockException ValidateNextBlock(
+            BlockChain<NCAction> blocks,
+            Block<NCAction> nextBlock
+        ) =>
+            ValidateMinerAuthority(nextBlock) ?? base.ValidateNextBlock(blocks, nextBlock);
 
         public override long GetNextBlockDifficulty(BlockChain<NCAction> blocks)
         {
