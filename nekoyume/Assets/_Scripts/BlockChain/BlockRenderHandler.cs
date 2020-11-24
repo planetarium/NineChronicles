@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Lib9c.Renderer;
+using Nekoyume.L10n;
 using Nekoyume.Model.State;
 using Nekoyume.State;
 using UniRx;
@@ -28,12 +29,25 @@ namespace Nekoyume.BlockChain
             Stop();
             _blockRenderer = blockRenderer;
 
+            Reorg();
             UpdateWeeklyArenaState();
         }
 
         public void Stop()
         {
             _disposables.DisposeAllAndClear();
+        }
+
+        private void Reorg()
+        {
+            _blockRenderer.ReorgSubject
+                .ObserveOnMainThread()
+                .Subscribe(_ =>
+                {
+                    var msg = L10nManager.Localize("ERROR_REORG_OCCURRED");
+                    UI.Notification.Push(Model.Mail.MailType.System, msg);
+                })
+                .AddTo(_disposables);
         }
 
         private void UpdateWeeklyArenaState()
