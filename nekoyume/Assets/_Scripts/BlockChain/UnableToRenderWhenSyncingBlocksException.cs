@@ -4,17 +4,17 @@ using System.Runtime.Serialization;
 namespace Nekoyume.BlockChain
 {
     [Serializable]
-    public class CannotToRenderWhenSyncingBlocksException : Exception
+    public class UnableToRenderWhenSyncingBlocksException : Exception
     {
-        public CannotToRenderWhenSyncingBlocksException() : base()
+        public UnableToRenderWhenSyncingBlocksException() : base()
         {
         }
 
-        public CannotToRenderWhenSyncingBlocksException(string message) : base(message)
+        public UnableToRenderWhenSyncingBlocksException(string message) : base(message)
         {
         }
 
-        public CannotToRenderWhenSyncingBlocksException(
+        public UnableToRenderWhenSyncingBlocksException(
             SerializationInfo info,
             StreamingContext context)
             : base(info, context)

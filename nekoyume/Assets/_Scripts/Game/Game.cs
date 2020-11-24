@@ -249,7 +249,7 @@ namespace Nekoyume.Game
 
             ActionRenderHandler.BackToMain(
                 showLoadingScreen,
-                new CannotToRenderWhenSyncingBlocksException());
+                new UnableToRenderWhenSyncingBlocksException());
         }
 
         private void QuitWithAgentConnectionError(Unit unit)
