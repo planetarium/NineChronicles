@@ -35,7 +35,7 @@ namespace Nekoyume.UI
             public bool ShouldExit;
             public bool ShouldRepeat;
             public int ClearedWaveNumber;
-            public int actionPoint;
+            public int ActionPoint;
 
             public IReadOnlyList<CountableItem> Rewards => _rewards;
 
@@ -169,7 +169,7 @@ namespace Nekoyume.UI
             SharedModel = model;
 
             worldStageId.text = $"{SharedModel.WorldName} {SharedModel.StageID}";
-            actionPoint.SetActionPoint(model.actionPoint);
+            actionPoint.SetActionPoint(model.ActionPoint);
 
             foreach (var reward in rewardsArea.rewards)
             {
