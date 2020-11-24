@@ -112,7 +112,9 @@ namespace Nekoyume.Game
             //FIXME load from secret.
             _logsClient = new AmazonCloudWatchLogsClient("AKIAUU3S3PEZBXS5TFMA",
                 "xIuMHa6zwiaPc54m3iVAC5uLn+TonyPsO7qpFpYx", RegionEndpoint.APNortheast2);
+#if !UNITY_EDITOR
             Application.logMessageReceived += UploadLog;
+#endif
         }
 
         private IEnumerator Start()
