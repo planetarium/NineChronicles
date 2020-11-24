@@ -190,25 +190,64 @@ namespace Nekoyume.Game
             rpcAgent.WhenRetryEnded
                 .AsObservable()
                 .ObserveOnMainThread()
-                .Subscribe(_ =>
-                {
-                    Widget.Find<BlockSyncLoadingScreen>().Close();
-                })
+                .Subscribe(OnRPCAgentRetryEnded)
                 .AddTo(gameObject);
 
             rpcAgent.OnDisconnected
                 .AsObservable()
                 .ObserveOnMainThread()
-                .Subscribe(_ =>
-                {
-                    Widget.Find<BlockSyncLoadingScreen>().Close();
-                    QuitWithAgentConnectionError();
-                })
+                .Subscribe(QuitWithAgentConnectionError)
                 .AddTo(gameObject);
         }
 
-        private void QuitWithAgentConnectionError()
+        private void OnRPCAgentRetryEnded(Unit unit)
         {
+            var showLoadingScreen = false;
+            var widget = (Widget) Widget.Find<BlockSyncLoadingScreen>();
+            if (widget.IsActive())
+            {
+                widget.Close();
+            }
+
+            widget = Widget.Find<StageLoadingScreen>();
+            if (widget.IsActive())
+            {
+                widget.Close();
+            }
+
+            widget = Widget.Find<BattleResult>();
+            if (Widget.Find<BattleResult>().IsActive())
+            {
+                showLoadingScreen = true;
+                widget.Close();
+            }
+
+            widget = Widget.Find<ArenaBattleLoadingScreen>();
+            if (widget.IsActive())
+            {
+                widget.Close();
+            }
+
+            widget = Widget.Find<RankingBattleResult>();
+            if (widget.IsActive())
+            {
+                showLoadingScreen = true;
+                widget.Close();
+            }
+
+            ActionRenderHandler.BackToMain(
+                showLoadingScreen,
+                new CannotToRenderWhenSyncingBlocksException());
+        }
+
+        private void QuitWithAgentConnectionError(Unit unit)
+        {
+            var screen = Widget.Find<BlockSyncLoadingScreen>();
+            if (screen.IsActive())
+            {
+                screen.Close();
+            }
+
             // FIXME 콜백 인자를 구조화 하면 타입 쿼리 없앨 수 있을 것 같네요.
             if (Agent is Agent _)
             {
@@ -284,7 +323,7 @@ namespace Nekoyume.Game
             }
             else
             {
-                QuitWithAgentConnectionError();
+                QuitWithAgentConnectionError(default);
             }
         }
 
