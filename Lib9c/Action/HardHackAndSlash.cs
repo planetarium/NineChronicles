@@ -8,6 +8,7 @@ using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Battle;
 using Nekoyume.Model.BattleStatus;
+using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using Serilog;
@@ -132,6 +133,27 @@ namespace Nekoyume.Action
                 );
             }
             
+            sw.Restart();
+            var hardStageSheet = states.GetSheet<HardStageSheet>();
+            if (!hardStageSheet.TryGetValue(stageId, out var hardStageSheetRow))
+            {
+                throw new SheetRowNotFoundException("HardStageSheet", stageId);
+            }
+            
+            foreach (var equipmentId in equipments)
+            {
+                if (avatarState.inventory.TryGetNonFungibleItem(equipmentId, out ItemUsable itemUsable))
+                {
+                    var elementalType = ((Equipment) itemUsable).ElementalType;
+                    if (!hardStageSheetRow.ElementalTypes.Exists(x => x == elementalType))
+                    {
+                        throw new InvalidWorldException($"ElementalType of {equipmentId} does not match.");
+                    }
+                }
+            }
+            sw.Stop();
+            Log.Debug("HHAS Check Equipments ElementalType: {Elapsed}", sw.Elapsed);
+
             avatarState.ValidateEquipments(equipments, context.BlockIndex);
             avatarState.ValidateConsumable(foods, context.BlockIndex);
             avatarState.ValidateCostume(new HashSet<int>(costumes));

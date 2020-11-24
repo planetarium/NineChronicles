@@ -72,8 +72,8 @@
         }
 
         [Theory]
-        [InlineData(GameConfig.RequireCharacterLevel.CharacterFullCostumeSlot, 1, 1, false)]
-        [InlineData(100, 1, GameConfig.RequireClearedStageLevel.ActionsInRankingBoard, true)]
+        [InlineData(200, 101, 10003, true)]
+        // [InlineData(200, 101, 10001, true)]
         public void Execute(int avatarLevel, int worldId, int stageId, bool contains)
         {
             Assert.True(_tableSheets.WorldSheet.TryGetValue(worldId, out var worldRow));
