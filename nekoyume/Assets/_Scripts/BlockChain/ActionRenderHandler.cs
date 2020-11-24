@@ -798,6 +798,8 @@ namespace Nekoyume.BlockChain
 
         public static void BackToMain(bool showLoadingScreen, Exception exc)
         {
+            Debug.LogException(exc);
+
             if (DoNotUsePopupError(exc, out var key, out var code, out var errorMsg))
             {
                 return;
@@ -808,7 +810,6 @@ namespace Nekoyume.BlockChain
                 .First()
                 .Subscribe(_ =>
                 {
-                    Debug.LogException(exc);
                     PopupError(key, code, errorMsg);
                     Game.Game.instance.Agent.SendException(exc);
                 });
@@ -818,12 +819,13 @@ namespace Nekoyume.BlockChain
 
         public static void PopupError(Exception exc)
         {
+            Debug.LogException(exc);
+
             if (DoNotUsePopupError(exc, out var key, out var code, out var errorMsg))
             {
                 return;
             }
 
-            Debug.LogException(exc);
             PopupError(key, code, errorMsg);
         }
 
@@ -845,10 +847,8 @@ namespace Nekoyume.BlockChain
             return false;
         }
 
-        public static void PopupError(string key, string code, string errorMsg)
+        private static void PopupError(string key, string code, string errorMsg)
         {
-            var msg = $"Agent Address: {Game.Game.instance.Agent.Address}. #{Game.Game.instance.Agent.BlockTipHash}";
-
             errorMsg = errorMsg == string.Empty
                 ? string.Format(
                     L10nManager.Localize("UI_ERROR_RETRY_FORMAT"),
