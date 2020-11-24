@@ -174,7 +174,7 @@ def latest_version() -> int:
         )
         prefixes = (
             p[:-len(S3_OBJECT_DELIMITER)] if p.endswith(S3_OBJECT_DELIMITER) else p
-            for d in resp['CommonPrefixes']
+            for d in resp.get('CommonPrefixes', [])
             for p in (d['Prefix'],)
         )
         matches = map(S3_OBJECT_PATTERN.match, prefixes)
