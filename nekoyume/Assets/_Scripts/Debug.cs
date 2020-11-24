@@ -1,118 +1,102 @@
 #if !UNITY_EDITOR
 
-using UnityEngine;
 using System;
 
 namespace Nekoyume
 {
-    /// 
+    ///
     /// It overrides UnityEngine.Debug to mute debug messages completely on a platform-specific basis.
-    /// 
+    ///
     /// Putting this inside of 'Plugins' foloder is ok.
-    /// 
+    ///
     /// Important:
     ///     Other preprocessor directives than 'UNITY_EDITOR' does not correctly work.
-    /// 
+    ///
     /// Note:
-    ///     [Conditional] attribute indicates to compilers that a method call or attribute should be 
+    ///     [Conditional] attribute indicates to compilers that a method call or attribute should be
     ///     ignored unless a specified conditional compilation symbol is defined.
-    /// 
-    /// See Also: 
+    ///
+    /// See Also:
     ///     http://msdn.microsoft.com/en-us/library/system.diagnostics.conditionalattribute.aspx
-    /// 
+    ///
     /// 2012.11. @kimsama
-    /// 
+    ///
     public static class Debug
     {
         public static bool isDebugBuild => UnityEngine.Debug.isDebugBuild;
 
+        public static string InsertTimestamp(string message)
+        {
+            return $"[{DateTime.Now:yyyy-M-d HH:mm:ss}] {message}";
+        }
+
         [System.Diagnostics.Conditional("DEBUG_USE")]
         public static void Log(object message)
         {
-            UnityEngine.Debug.Log(message);
+            UnityEngine.Debug.Log(InsertTimestamp(message.ToString()));
         }
 
         [System.Diagnostics.Conditional("DEBUG_USE")]
         public static void Log(object message, UnityEngine.Object context)
         {
-            UnityEngine.Debug.Log(message, context);
+            UnityEngine.Debug.Log(InsertTimestamp(message.ToString()), context);
         }
 
         [System.Diagnostics.Conditional("DEBUG_USE")]
         public static void LogFormat(string format, params object[] args)
         {
             // LogFormat() in itself expands an array when it takes only one array.
-            UnityEngine.Debug.LogFormat(format, args);
+            UnityEngine.Debug.Log(InsertTimestamp(string.Format(format, args)));
         }
-        
+
         [System.Diagnostics.Conditional("DEBUG_USE")]
         public static void LogWarning(object message)
         {
-            UnityEngine.Debug.LogWarning(message.ToString());
+            UnityEngine.Debug.LogWarning(InsertTimestamp(message.ToString()));
         }
 
         [System.Diagnostics.Conditional("DEBUG_USE")]
         public static void LogWarning(object message, UnityEngine.Object context)
         {
-            UnityEngine.Debug.LogWarning(message.ToString(), context);
+            UnityEngine.Debug.LogWarning(InsertTimestamp(message.ToString()), context);
         }
 
         [System.Diagnostics.Conditional("DEBUG_USE")]
         public static void LogWarningFormat(string format, params object[] args)
         {
             // LogWarningFormat() in itself expands an array when it takes only one array.
-            UnityEngine.Debug.LogWarningFormat(format, args);
+            UnityEngine.Debug.LogWarningFormat(InsertTimestamp(string.Format(format, args)));
         }
 
         [System.Diagnostics.Conditional("DEBUG_USE")]
         public static void LogError(object message)
         {
-            UnityEngine.Debug.LogError(message);
+            UnityEngine.Debug.LogError(InsertTimestamp(message.ToString()));
         }
 
         [System.Diagnostics.Conditional("DEBUG_USE")]
         public static void LogError(object message, UnityEngine.Object context)
         {
-            UnityEngine.Debug.LogError(message, context);
+            UnityEngine.Debug.LogError(InsertTimestamp(message.ToString()), context);
         }
 
         [System.Diagnostics.Conditional("DEBUG_USE")]
         public static void LogErrorFormat(string format, params object[] args)
         {
             // LogErrorFormat() in itself expands an array when it takes only one array.
-            UnityEngine.Debug.LogErrorFormat(format, args);
+            UnityEngine.Debug.LogErrorFormat(InsertTimestamp(string.Format(format, args)));
         }
 
         [System.Diagnostics.Conditional("DEBUG_USE")]
         public static void LogException(Exception exception)
         {
-            UnityEngine.Debug.LogException(exception);
+            UnityEngine.Debug.LogError(InsertTimestamp(exception.Message));
         }
 
         [System.Diagnostics.Conditional("DEBUG_USE")]
         public static void LogException(Exception exception, UnityEngine.Object context)
         {
-            UnityEngine.Debug.LogException(exception, context);
-        }
-
-        [System.Diagnostics.Conditional("DEBUG_USE")]
-        public static void DrawLine(Vector3 start, Vector3 end, Color color = default(Color), float duration = 0.0f,
-            bool depthTest = true)
-        {
-            UnityEngine.Debug.DrawLine(start, end, color, duration, depthTest);
-        }
-
-        [System.Diagnostics.Conditional("DEBUG_USE")]
-        public static void DrawRay(Vector3 start, Vector3 dir, Color color = default(Color), float duration = 0.0f,
-            bool depthTest = true)
-        {
-            UnityEngine.Debug.DrawRay(start, dir, color, duration, depthTest);
-        }
-
-        [System.Diagnostics.Conditional("DEBUG_USE")]
-        public static void Assert(bool condition)
-        {
-            if (!condition) throw new Exception();
+            UnityEngine.Debug.LogError(InsertTimestamp(exception.Message), context);
         }
     }
 }
