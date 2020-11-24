@@ -233,18 +233,18 @@ namespace Nekoyume.Game
                 return;
             }
 
-            if (!rpcAgent.Connected)
+            if (rpcAgent.Connected)
             {
-                Widget.Find<SystemPopup>().Show(
-                    "UI_ERROR",
-                    "UI_ERROR_RPC_CONNECTION",
-                    "UI_QUIT"
-                );
-
+                // 무슨 상황이지?
+                Debug.Log($"{nameof(QuitWithAgentConnectionError)}() called. But {nameof(RPCAgent)}.Connected is {rpcAgent.Connected}.");
                 return;
             }
 
-            
+            Widget.Find<SystemPopup>().Show(
+                "UI_ERROR",
+                "UI_ERROR_RPC_CONNECTION",
+                "UI_QUIT"
+            );
         }
 
         private IEnumerator CoInitializeTableSheets()
