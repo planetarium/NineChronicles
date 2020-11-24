@@ -204,6 +204,7 @@ namespace Nekoyume.Game
 
         private void OnRPCAgentRetryEnded(Unit unit)
         {
+            var needToBackToMain = false;
             var showLoadingScreen = false;
             var widget = (Widget) Widget.Find<BlockSyncLoadingScreen>();
             if (widget.IsActive())
@@ -214,12 +215,14 @@ namespace Nekoyume.Game
             widget = Widget.Find<StageLoadingScreen>();
             if (widget.IsActive())
             {
+                needToBackToMain = true;
                 widget.Close();
             }
 
             widget = Widget.Find<BattleResult>();
             if (Widget.Find<BattleResult>().IsActive())
             {
+                needToBackToMain = true;
                 showLoadingScreen = true;
                 widget.Close();
             }
@@ -227,14 +230,21 @@ namespace Nekoyume.Game
             widget = Widget.Find<ArenaBattleLoadingScreen>();
             if (widget.IsActive())
             {
+                needToBackToMain = true;
                 widget.Close();
             }
 
             widget = Widget.Find<RankingBattleResult>();
             if (widget.IsActive())
             {
+                needToBackToMain = true;
                 showLoadingScreen = true;
                 widget.Close();
+            }
+
+            if (!needToBackToMain)
+            {
+                return;
             }
 
             ActionRenderHandler.BackToMain(
