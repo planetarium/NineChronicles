@@ -24,6 +24,9 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private RectTransform tooltipArea = null;
 
+        [SerializeField]
+        private bool syncWithAvatarState = true;
+
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
         private int _currentActionPoint;
 
@@ -49,6 +52,9 @@ namespace Nekoyume.UI.Module
         protected override void OnEnable()
         {
             base.OnEnable();
+
+            if (!syncWithAvatarState)
+                return;
 
             if (!(States.Instance.CurrentAvatarState is null))
             {
