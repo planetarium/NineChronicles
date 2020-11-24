@@ -489,7 +489,7 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        private void UpdateSubmittable()
+        public void UpdateSubmittable()
         {
             submitButton.SetSubmittable(IsSubmittable);
         }
