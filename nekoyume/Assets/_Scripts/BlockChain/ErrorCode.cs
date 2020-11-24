@@ -111,12 +111,12 @@ namespace Nekoyume.BlockChain
                     if (Game.Game.instance.Agent.IsActionStaged(ate.ActionId, out var txId))
                     {
                         errorMsg += $" Transaction for action is still staged. (txid: {txId})";
-                        code = "27";
+                        code = "30";
                     }
                     else
                     {
                         errorMsg += $" Transaction for action is not staged. (txid: {txId})";
-                        code = "28";
+                        code = "31";
                     }
 
                     Debug.LogError($"Action timeout: (actionID: {ate.ActionId}, txID: {txId})");
