@@ -99,6 +99,7 @@ namespace Nekoyume.Game
             if (_options.RpcClient)
             {
                 Agent = GetComponent<RPCAgent>();
+                SubscribeRPCAgent();
             }
             else
             {
@@ -157,7 +158,6 @@ namespace Nekoyume.Game
             // UI 초기화 2차.
             yield return StartCoroutine(MainCanvas.instance.InitializeSecond());
             Stage.Initialize();
-            yield return null;
 
             Observable.EveryUpdate()
                 .Where(_ => Input.GetMouseButtonUp(0))
@@ -165,27 +165,86 @@ namespace Nekoyume.Game
                 .Subscribe(PlayMouseOnClickVFX)
                 .AddTo(gameObject);
 
-            ShowNext(agentInitializeSucceed);
 
-            if (Agent is RPCAgent rpcAgent)
-            {
-                rpcAgent.WhenRetryStarted
-                    .AsObservable()
-                    .ObserveOnMainThread()
-                    .Subscribe(_ =>
-                    {
-                        Widget.Find<BlockSyncLoadingScreen>().Show();
-                    });
-
-                rpcAgent.WhenRetryEnded
-                    .AsObservable()
-                    .ObserveOnMainThread()
-                    .Subscribe(_ =>
-                    {
-                        Widget.Find<BlockSyncLoadingScreen>().Close();
-                    });
-            }
             Widget.Find<VersionInfo>().SetVersion(Agent.AppProtocolVersion);
+
+            ShowNext(agentInitializeSucceed);
+        }
+
+        private void SubscribeRPCAgent()
+        {
+            if (!(Agent is RPCAgent rpcAgent))
+            {
+                return;
+            }
+
+            rpcAgent.WhenRetryStarted
+                .AsObservable()
+                .ObserveOnMainThread()
+                .Subscribe(_ =>
+                {
+                    Widget.Find<BlockSyncLoadingScreen>().Show();
+                })
+                .AddTo(gameObject);
+
+            rpcAgent.WhenRetryEnded
+                .AsObservable()
+                .ObserveOnMainThread()
+                .Subscribe(_ =>
+                {
+                    Widget.Find<BlockSyncLoadingScreen>().Close();
+                })
+                .AddTo(gameObject);
+
+            rpcAgent.OnDisconnected
+                .AsObservable()
+                .ObserveOnMainThread()
+                .Subscribe(_ =>
+                {
+                    Widget.Find<BlockSyncLoadingScreen>().Close();
+                    QuitWithAgentConnectionError();
+                })
+                .AddTo(gameObject);
+        }
+
+        private void QuitWithAgentConnectionError()
+        {
+            // FIXME 콜백 인자를 구조화 하면 타입 쿼리 없앨 수 있을 것 같네요.
+            if (Agent is Agent _)
+            {
+                var errorMsg = string.Format(L10nManager.Localize("UI_ERROR_FORMAT"),
+                    L10nManager.Localize("BLOCK_DOWNLOAD_FAIL"));
+
+                Widget.Find<SystemPopup>().Show(
+                    L10nManager.Localize("UI_ERROR"),
+                    errorMsg,
+                    L10nManager.Localize("UI_QUIT"),
+                    false
+                );
+
+                return;
+            }
+
+            if (!(Agent is RPCAgent rpcAgent))
+            {
+                // FIXME: 최신 버전이 뭔지는 Agent.EncounrtedHighestVersion 속성에 들어있으니, 그걸 UI에서 표시해줘야 할 듯?
+                // AppProtocolVersion? newVersion = _agent is Agent agent ? agent.EncounteredHighestVersion : null;
+                Widget.Find<UpdatePopup>().Show();
+                return;
+            }
+
+            if (!rpcAgent.Connected)
+            {
+                Widget.Find<SystemPopup>().Show(
+                    "UI_ERROR",
+                    "UI_ERROR_RPC_CONNECTION",
+                    "UI_QUIT"
+                );
+
+                return;
+            }
+
+            
         }
 
         private IEnumerator CoInitializeTableSheets()
@@ -225,33 +284,7 @@ namespace Nekoyume.Game
             }
             else
             {
-                // FIXME 콜백 인자를 구조화 하면 타입 쿼리 없앨 수 있을 것 같네요.
-                if (Agent is Agent agent && agent.BlockDownloadFailed)
-                {
-                    var errorMsg = string.Format(L10nManager.Localize("UI_ERROR_FORMAT"),
-                        L10nManager.Localize("BLOCK_DOWNLOAD_FAIL"));
-
-                    Widget.Find<SystemPopup>().Show(
-                        L10nManager.Localize("UI_ERROR"),
-                        errorMsg,
-                        L10nManager.Localize("UI_QUIT"),
-                        false
-                    );
-                }
-                else if (Agent is RPCAgent rpcAgent && !rpcAgent.Connected)
-                {
-                    Widget.Find<SystemPopup>().Show(
-                        "UI_ERROR",
-                        "UI_ERROR_RPC_CONNECTION",
-                        "UI_QUIT"
-                    );
-                }
-                else
-                {
-                    // FIXME: 최신 버전이 뭔지는 Agent.EncounrtedHighestVersion 속성에 들어있으니, 그걸 UI에서 표시해줘야 할 듯?
-                    // AppProtocolVersion? newVersion = _agent is Agent agent ? agent.EncounteredHighestVersion : null;
-                    Widget.Find<UpdatePopup>().Show();
-                }
+                QuitWithAgentConnectionError();
             }
         }
 

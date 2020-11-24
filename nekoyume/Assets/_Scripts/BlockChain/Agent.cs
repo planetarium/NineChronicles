@@ -108,7 +108,6 @@ namespace Nekoyume.BlockChain
         public static event Action<bool> OnHasOwnTx;
 
         private bool SyncSucceed { get; set; }
-        public bool BlockDownloadFailed { get; private set; }
         public AppProtocolVersion EncounteredHighestVersion { get; private set; }
 
         private static TelemetryClient _telemetryClient;

@@ -324,7 +324,8 @@ namespace Nekoyume.BlockChain
 
         public void OnRenderBlock(byte[] oldTip, byte[] newTip)
         {
-            var oldTipHeader = BlockHeader.Deserialize(oldTip);
+            // NOTE: Not used.
+            // var oldTipHeader = BlockHeader.Deserialize(oldTip);
             var newTipHeader = BlockHeader.Deserialize(newTip);
             BlockIndex = newTipHeader.Index;
             BlockIndexSubject.OnNext(BlockIndex);
@@ -377,6 +378,7 @@ namespace Nekoyume.BlockChain
                 }
             }
 
+            Connected = false;
             OnDisconnected?.Invoke();
         }
 
