@@ -72,7 +72,7 @@
         }
 
         [Theory]
-        [InlineData(200, 101, 10003, true)]
+        [InlineData(200, 101, 10010, true)]
         // [InlineData(200, 101, 10001, true)]
         public void Execute(int avatarLevel, int worldId, int stageId, bool contains)
         {
@@ -99,6 +99,8 @@
 
             var equipmentRow = _tableSheets.EquipmentItemSheet.Values.First();
             var equipment = ItemFactory.CreateItemUsable(equipmentRow, default, 0);
+            previousAvatarState.inventory.AddItem(equipment);
+
             var result = new CombinationConsumable.ResultModel()
             {
                 id = default,
@@ -119,7 +121,7 @@
             var action = new HardHackAndSlash()
             {
                 costumes = new List<int> { costumeId },
-                equipments = new List<Guid>(),
+                equipments = new List<Guid>() { equipment.ItemId },
                 foods = new List<Guid>(),
                 worldId = worldId,
                 stageId = stageId,
