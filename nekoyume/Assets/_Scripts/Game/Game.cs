@@ -222,34 +222,35 @@ namespace Nekoyume.Game
                 widget.Close();
             }
 
-            widget = Widget.Find<StageLoadingScreen>();
-            if (widget.IsActive())
+            if (Widget.Find<LoadingScreen>())
             {
-                needToBackToMain = true;
-                widget.Close();
-            }
+                Widget.Find<LoadingScreen>().Close();
+                widget = Widget.Find<QuestPreparation>();
+                if (widget.IsActive())
+                {
+                    widget.Close();
+                    needToBackToMain = true;
+                }
 
-            widget = Widget.Find<BattleResult>();
-            if (Widget.Find<BattleResult>().IsActive())
+                widget = Widget.Find<Menu>();
+                if (widget.IsActive())
+                {
+                    widget.Close();
+                    needToBackToMain = true;
+                }
+            }
+            else if (Widget.Find<StageLoadingScreen>().IsActive() &&
+                     Widget.Find<BattleResult>().IsActive())
             {
+                Widget.Find<StageLoadingScreen>().Close();
+                Widget.Find<BattleResult>().Close();
                 needToBackToMain = true;
                 showLoadingScreen = true;
-                widget.Close();
             }
-
-            widget = Widget.Find<ArenaBattleLoadingScreen>();
-            if (widget.IsActive())
+            else if (Widget.Find<ArenaBattleLoadingScreen>().IsActive())
             {
+                Widget.Find<ArenaBattleLoadingScreen>().Close();
                 needToBackToMain = true;
-                widget.Close();
-            }
-
-            widget = Widget.Find<RankingBattleResult>();
-            if (widget.IsActive())
-            {
-                needToBackToMain = true;
-                showLoadingScreen = true;
-                widget.Close();
             }
 
             if (!needToBackToMain)
