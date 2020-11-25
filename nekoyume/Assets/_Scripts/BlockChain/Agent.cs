@@ -140,8 +140,6 @@ namespace Nekoyume.BlockChain
                 return;
             }
 
-            disposed = false;
-
             InitAgent(callback, privateKey, options);
         }
 
