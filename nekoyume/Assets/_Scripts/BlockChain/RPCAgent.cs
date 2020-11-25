@@ -75,11 +75,15 @@ namespace Nekoyume.BlockChain
 
         public bool Connected { get; private set; }
 
-        public UnityEvent OnDisconnected { get; private set; }
+        public readonly Subject<RPCAgent> OnDisconnected = new Subject<RPCAgent>();
 
-        public UnityEvent WhenRetryStarted { get; private set; }
+        public readonly Subject<RPCAgent> OnRetryStarted = new Subject<RPCAgent>();
 
-        public UnityEvent WhenRetryEnded { get; private set; }
+        public readonly Subject<RPCAgent> OnRetryEnded = new Subject<RPCAgent>();
+
+        public readonly Subject<RPCAgent> OnPreloadStarted = new Subject<RPCAgent>();
+
+        public readonly Subject<RPCAgent> OnPreloadEnded = new Subject<RPCAgent>();
 
         public int AppProtocolVersion { get; private set; }
 
@@ -101,20 +105,15 @@ namespace Nekoyume.BlockChain
             _hub = StreamingHubClient.Connect<IActionEvaluationHub, IActionEvaluationHubReceiver>(_channel, this);
             _service = MagicOnionClient.Create<IBlockChainService>(_channel);
 
-            RegisterDisconnectEvent(_hub);
-
-            StartCoroutine(CoTxProcessor());
-            StartCoroutine(CoJoin(callback));
-
-            OnDisconnected = new UnityEvent();
-            WhenRetryStarted = new UnityEvent();
-            WhenRetryEnded = new UnityEvent();
-
             _genesis = BlockManager.ImportBlock(options.GenesisBlockPath ?? BlockManager.GenesisBlockPath);
             var appProtocolVersion = options.AppProtocolVersion is null
                 ? default
                 : Libplanet.Net.AppProtocolVersion.FromToken(options.AppProtocolVersion);
             AppProtocolVersion = appProtocolVersion.Version;
+
+            RegisterDisconnectEvent(_hub);
+            StartCoroutine(CoTxProcessor());
+            StartCoroutine(CoJoin(callback));
         }
 
         public IValue GetState(Address address)
@@ -179,7 +178,7 @@ namespace Nekoyume.BlockChain
 
             if (t.IsFaulted)
             {
-                callback(false);
+                callback?.Invoke(false);
                 yield break;
             }
 
@@ -236,7 +235,7 @@ namespace Nekoyume.BlockChain
             ActionUnrenderHandler.Instance.Start(ActionRenderer);
 
             UpdateSubscribeAddresses();
-            callback(true);
+            callback?.Invoke(true);
         }
 
         private IEnumerator CoTxProcessor()
@@ -347,9 +346,9 @@ namespace Nekoyume.BlockChain
 
         private async void RetryRpc()
         {
+            OnRetryStarted.OnNext(this);
             var retryCount = 10;
             Debug.Log($"Retry rpc connection. (count: {retryCount})");
-            WhenRetryStarted.Invoke();
             while (retryCount > 0)
             {
                 await Task.Delay(5000);
@@ -362,6 +361,7 @@ namespace Nekoyume.BlockChain
                     Debug.Log($"Join complete! Registering disconnect event...");
                     RegisterDisconnectEvent(_hub);
                     UpdateSubscribeAddresses();
+                    OnRetryEnded.OnNext(this);
                     return;
                 }
                 catch (RpcException re)
@@ -377,7 +377,7 @@ namespace Nekoyume.BlockChain
             }
 
             Connected = false;
-            OnDisconnected?.Invoke();
+            OnDisconnected.OnNext(this);
         }
 
         public void OnReorged(byte[] oldTip, byte[] newTip, byte[] branchpoint)
@@ -421,13 +421,14 @@ namespace Nekoyume.BlockChain
 
         public void OnPreloadStart()
         {
+            OnPreloadStarted.OnNext(this);
             Debug.Log($"On Preload Start");
         }
 
         public void OnPreloadEnd()
         {
+            OnPreloadEnded.OnNext(this);
             Debug.Log($"On Preload End");
-            WhenRetryEnded.Invoke();
         }
 
         public void UpdateSubscribeAddresses()
