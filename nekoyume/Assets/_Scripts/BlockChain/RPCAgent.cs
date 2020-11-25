@@ -369,6 +369,11 @@ namespace Nekoyume.BlockChain
                     Debug.LogWarning($"RpcException occurred. Retrying... {retryCount}\n{re}");
                     retryCount--;
                 }
+                catch (ObjectDisposedException ode)
+                {
+                    Debug.LogWarning($"ObjectDisposedException occurred. Retrying... {retryCount}\n{ode}");
+                    retryCount--;
+                }
                 catch (Exception e)
                 {
                     Debug.LogWarning($"Unexpected error occurred during rpc connection. {e}");
