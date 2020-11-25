@@ -125,7 +125,7 @@ namespace Nekoyume.BlockChain
                     break;
                 case UnableToRenderWhenSyncingBlocksException _:
                     code = "28";
-                    key = "ERROR_CANNOT_TO_RENDER_WHEN_SYNCING_BLOCKS";
+                    key = "ERROR_UNABLE_TO_RENDER_WHEN_SYNCING_BLOCKS";
                     break;
             }
 
