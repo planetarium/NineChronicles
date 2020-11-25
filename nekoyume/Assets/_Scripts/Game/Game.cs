@@ -188,7 +188,9 @@ namespace Nekoyume.Game
 
             // NOTE: RPCAgent가 허브에 조인을 재시도하는 것과 프리로드를 끝마쳤을 때를 구독합니다.
             rpcAgent.OnRetryEnded
-                .Merge(rpcAgent.OnPreloadEnded)
+                .Zip(rpcAgent.OnPreloadEnded, (agent, agent1) => agent)
+                .First()
+                .Repeat()
                 .ObserveOnMainThread()
                 .Subscribe(OnRPCAgentRetryAndPreloadEnded)
                 .AddTo(gameObject);
