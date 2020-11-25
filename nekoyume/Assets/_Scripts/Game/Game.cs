@@ -228,14 +228,14 @@ namespace Nekoyume.Game
                 widget = Widget.Find<QuestPreparation>();
                 if (widget.IsActive())
                 {
-                    widget.Close();
+                    widget.Close(true);
                     needToBackToMain = true;
                 }
 
                 widget = Widget.Find<Menu>();
                 if (widget.IsActive())
                 {
-                    widget.Close();
+                    widget.Close(true);
                     needToBackToMain = true;
                 }
             }
@@ -243,7 +243,7 @@ namespace Nekoyume.Game
                      Widget.Find<BattleResult>().IsActive())
             {
                 Widget.Find<StageLoadingScreen>().Close();
-                Widget.Find<BattleResult>().Close();
+                Widget.Find<BattleResult>().Close(true);
                 needToBackToMain = true;
                 showLoadingScreen = true;
             }
