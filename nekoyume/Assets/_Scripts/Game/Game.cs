@@ -148,6 +148,7 @@ namespace Nekoyume.Game
                 CoLogin(
                     succeed =>
                     {
+                        Debug.Log($"Agent initialized. {succeed}");
                         agentInitialized = true;
                         agentInitializeSucceed = succeed;
                     }
@@ -180,66 +181,78 @@ namespace Nekoyume.Game
                 return;
             }
 
-            rpcAgent.WhenRetryStarted
-                .AsObservable()
+            rpcAgent.OnRetryStarted
                 .ObserveOnMainThread()
-                .Subscribe(_ =>
-                {
-                    Widget.Find<BlockSyncLoadingScreen>().Show();
-                })
+                .Subscribe(OnRPCAgentRetryStarted)
                 .AddTo(gameObject);
 
-            rpcAgent.WhenRetryEnded
-                .AsObservable()
+            // NOTE: RPCAgent가 허브에 조인을 재시도하는 것과 프리로드를 끝마쳤을 때를 구독합니다.
+            rpcAgent.OnRetryEnded
+                .Zip(rpcAgent.OnPreloadEnded, (agent, agent1) => agent)
+                .First()
+                .Repeat()
                 .ObserveOnMainThread()
-                .Subscribe(OnRPCAgentRetryEnded)
+                .Subscribe(OnRPCAgentRetryAndPreloadEnded)
                 .AddTo(gameObject);
 
             rpcAgent.OnDisconnected
-                .AsObservable()
                 .ObserveOnMainThread()
                 .Subscribe(QuitWithAgentConnectionError)
                 .AddTo(gameObject);
         }
 
-        private void OnRPCAgentRetryEnded(Unit unit)
+        private static void OnRPCAgentRetryStarted(RPCAgent rpcAgent)
         {
+            Widget.Find<BlockSyncLoadingScreen>().Show();
+        }
+
+        private static void OnRPCAgentRetryAndPreloadEnded(RPCAgent rpcAgent)
+        {
+            var widget = (Widget) Widget.Find<Title>();
+            if (widget.IsActive())
+            {
+                // NOTE: 타이틀 화면에서 리트라이와 프리로드가 완료된 상황입니다.
+                // FIXME: 이 경우에는 메인 로비가 아니라 기존 초기화 로직이 흐르도록 처리해야 합니다.
+                return;
+            }
+
             var needToBackToMain = false;
             var showLoadingScreen = false;
-            var widget = (Widget) Widget.Find<BlockSyncLoadingScreen>();
+            widget = Widget.Find<BlockSyncLoadingScreen>();
             if (widget.IsActive())
             {
                 widget.Close();
             }
 
-            widget = Widget.Find<StageLoadingScreen>();
-            if (widget.IsActive())
+            if (Widget.Find<LoadingScreen>())
             {
-                needToBackToMain = true;
-                widget.Close();
-            }
+                Widget.Find<LoadingScreen>().Close();
+                widget = Widget.Find<QuestPreparation>();
+                if (widget.IsActive())
+                {
+                    widget.Close(true);
+                    needToBackToMain = true;
+                }
 
-            widget = Widget.Find<BattleResult>();
-            if (Widget.Find<BattleResult>().IsActive())
-            {
-                needToBackToMain = true;
-                showLoadingScreen = true;
-                widget.Close();
+                widget = Widget.Find<Menu>();
+                if (widget.IsActive())
+                {
+                    widget.Close(true);
+                    needToBackToMain = true;
+                }
             }
-
-            widget = Widget.Find<ArenaBattleLoadingScreen>();
-            if (widget.IsActive())
+            else if (Widget.Find<StageLoadingScreen>().IsActive() &&
+                     Widget.Find<BattleResult>().IsActive())
             {
-                needToBackToMain = true;
-                widget.Close();
-            }
-
-            widget = Widget.Find<RankingBattleResult>();
-            if (widget.IsActive())
-            {
+                Widget.Find<StageLoadingScreen>().Close();
+                Widget.Find<BattleResult>().Close(true);
                 needToBackToMain = true;
                 showLoadingScreen = true;
-                widget.Close();
+            }
+            else if (Widget.Find<ArenaBattleLoadingScreen>().IsActive())
+            {
+                Widget.Find<ArenaBattleLoadingScreen>().Close();
+                needToBackToMain = true;
             }
 
             if (!needToBackToMain)
@@ -252,7 +265,7 @@ namespace Nekoyume.Game
                 new UnableToRenderWhenSyncingBlocksException());
         }
 
-        private void QuitWithAgentConnectionError(Unit unit)
+        private void QuitWithAgentConnectionError(RPCAgent rpcAgent)
         {
             var screen = Widget.Find<BlockSyncLoadingScreen>();
             if (screen.IsActive())
@@ -276,7 +289,7 @@ namespace Nekoyume.Game
                 return;
             }
 
-            if (!(Agent is RPCAgent rpcAgent))
+            if (rpcAgent is null)
             {
                 // FIXME: 최신 버전이 뭔지는 Agent.EncounrtedHighestVersion 속성에 들어있으니, 그걸 UI에서 표시해줘야 할 듯?
                 // AppProtocolVersion? newVersion = _agent is Agent agent ? agent.EncounteredHighestVersion : null;
@@ -335,7 +348,7 @@ namespace Nekoyume.Game
             }
             else
             {
-                QuitWithAgentConnectionError(default);
+                QuitWithAgentConnectionError(null);
             }
         }
 
