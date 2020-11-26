@@ -224,7 +224,7 @@ namespace Nekoyume.Game
                 widget.Close();
             }
 
-            if (Widget.Find<LoadingScreen>())
+            if (Widget.Find<LoadingScreen>().IsActive())
             {
                 Widget.Find<LoadingScreen>().Close();
                 widget = Widget.Find<QuestPreparation>();
@@ -241,11 +241,15 @@ namespace Nekoyume.Game
                     needToBackToMain = true;
                 }
             }
-            else if (Widget.Find<StageLoadingScreen>().IsActive() &&
-                     Widget.Find<BattleResult>().IsActive())
+            else if (Widget.Find<StageLoadingScreen>().IsActive())
             {
                 Widget.Find<StageLoadingScreen>().Close();
-                Widget.Find<BattleResult>().Close(true);
+
+                if (Widget.Find<BattleResult>().IsActive())
+                {
+                    Widget.Find<BattleResult>().Close(true);
+                }
+                
                 needToBackToMain = true;
                 showLoadingScreen = true;
             }

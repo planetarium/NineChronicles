@@ -67,8 +67,10 @@ namespace Nekoyume.UI
 
         private void UpdateRewardButton()
         {
-            _codeRewards = GetSealedCodes().ToDictionary(sealedCode => sealedCode,
-                sealedCode => GetItems(State, sealedCode));
+            _codeRewards = GetSealedCodes()
+                .Where(sealedCode => !string.IsNullOrEmpty(sealedCode))
+                .ToDictionary(sealedCode => sealedCode,
+                    sealedCode => GetItems(State, sealedCode));
 
             var button = Find<BottomMenu>().codeRewardButton;
             if (_codeRewards.Any())
