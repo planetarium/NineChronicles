@@ -589,6 +589,12 @@ namespace Nekoyume.BlockChain
                     {
                         Widget.Find<QuestPreparation>().GoToStage(eval.Action.Result);
                     }
+                    // todo : hardHackAndSlash 쪽으로 옮겨가야하는 코드
+                    else if (Widget.Find<MimisbrunnrPreparation>().IsActive())
+                    {
+                        Widget.Find<MimisbrunnrPreparation>().GoToStage(eval.Action.Result);
+                    }
+                    //
                     else if (Widget.Find<Menu>().IsActive())
                     {
                         Widget.Find<Menu>().GoToStage(eval.Action.Result);
@@ -810,7 +816,7 @@ namespace Nekoyume.BlockChain
             Game.Game.instance.Stage.OnRoomEnterEnd
                 .First()
                 .Subscribe(_ => PopupError(key, code, errorMsg));
-            
+
             MainCanvas.instance.InitWidgetInMain();
         }
 

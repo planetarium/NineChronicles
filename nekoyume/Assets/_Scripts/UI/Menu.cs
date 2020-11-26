@@ -25,6 +25,7 @@ namespace Nekoyume.UI
 
         private const string FirstOpenRankingKeyFormat = "Nekoyume.UI.Menu.FirstOpenRankingKey_{0}";
         private const string FirstOpenQuestKeyFormat = "Nekoyume.UI.Menu.FirstOpenQuestKey_{0}";
+        private const string firstOpenHardStageKeyFormat = "Nekoyume.UI.Menu.FirstOpenHardStageKey_{0}";
 
         [SerializeField]
         private MainMenu btnQuest = null;
@@ -37,6 +38,9 @@ namespace Nekoyume.UI
 
         [SerializeField]
         private MainMenu btnRanking = null;
+
+        [SerializeField]
+        private MainMenu btnMimisbrunnr = null;
 
         [SerializeField]
         private SpeechBubble[] speechBubbles = null;
@@ -54,7 +58,11 @@ namespace Nekoyume.UI
         private GameObject questExclamationMark = null;
 
         [SerializeField]
+        private GameObject hardStageExclamationMark = null;
+
+        [SerializeField]
         private GuidedQuest guidedQuest = null;
+
 
         private Coroutine _coLazyClose;
 
@@ -162,12 +170,14 @@ namespace Nekoyume.UI
             btnCombination.Update();
             btnShop.Update();
             btnRanking.Update();
+            btnMimisbrunnr.Update();
 
             var addressHax = ReactiveAvatarState.Address.Value.ToHex();
             var firstOpenCombinationKey = string.Format(FirstOpenCombinationKeyFormat, addressHax);
             var firstOpenShopKey = string.Format(FirstOpenShopKeyFormat, addressHax);
             var firstOpenRankingKey = string.Format(FirstOpenRankingKeyFormat, addressHax);
             var firstOpenQuestKey = string.Format(FirstOpenQuestKeyFormat, addressHax);
+            var firstOpenHardStageKey = string.Format(firstOpenHardStageKeyFormat, addressHax);
 
             var combination = Find<Combination>();
             var hasNotificationOnCombination = combination.HasNotification;
@@ -197,6 +207,11 @@ namespace Nekoyume.UI
                 (btnQuest.IsUnlocked &&
                  PlayerPrefs.GetInt(firstOpenQuestKey, 0) == 0) ||
                 hasNotificationInWorldmap);
+
+            questExclamationMark.gameObject.SetActive(
+                (btnMimisbrunnr.IsUnlocked &&
+                 PlayerPrefs.GetInt(firstOpenHardStageKey, 0) == 0) ||
+                hasNotificationInWorldmap);
         }
 
         private void HideButtons()
@@ -205,6 +220,7 @@ namespace Nekoyume.UI
             btnCombination.gameObject.SetActive(false);
             btnShop.gameObject.SetActive(false);
             btnRanking.gameObject.SetActive(false);
+            btnMimisbrunnr.gameObject.SetActive(false);
         }
 
         public void ShowWorld()
@@ -310,6 +326,47 @@ namespace Nekoyume.UI
             Close();
             Find<RankingBoard>().Show();
             AudioController.PlayClick();
+        }
+
+        public void MimisbrunnrClick()
+        {
+            if (!btnMimisbrunnr.IsUnlocked)
+            {
+                btnMimisbrunnr.JingleTheCat();
+                return;
+            }
+
+            if (questExclamationMark.gameObject.activeSelf)
+            {
+                var addressHax = ReactiveAvatarState.Address.Value.ToHex();
+                var key = string.Format(firstOpenHardStageKeyFormat, addressHax);
+                PlayerPrefs.SetInt(key, 1);
+            }
+
+            Mixpanel.Track("Unity/Enter Dungeon");
+            _coLazyClose = StartCoroutine(CoLazyClose());
+            AudioController.PlayClick();
+            AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ClickHardBattle);
+
+            var stageInfo = Find<UI.StageInformation>();
+            var worldId = 101;
+
+            var SharedViewModel = new WorldMap.ViewModel
+            {
+                WorldInformation = States.Instance.CurrentAvatarState.worldInformation,
+            };
+
+            if (!SharedViewModel.WorldInformation.TryGetWorld(worldId, out var world))
+            {
+                throw new ArgumentException(nameof(worldId));
+            }
+
+            SharedViewModel.SelectedWorldId.SetValueAndForceNotify(world.Id);
+            SharedViewModel.SelectedStageId.SetValueAndForceNotify(world.GetNextStageId());
+            Game.Game.instance.TableSheets.WorldSheet.TryGetValue(world.Id, out var worldRow, true);
+            stageInfo.Show(SharedViewModel, worldRow, StageInformation.StageType.Mimisbrunnr);
+            var status = Find<Status>();
+            status.Close(true);
         }
 
         public void UpdateGuideQuest(AvatarState avatarState)

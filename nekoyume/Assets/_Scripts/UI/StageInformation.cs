@@ -12,10 +12,18 @@ using TMPro;
 using UniRx;
 using UnityEngine;
 
+// normal    : Menu -> WorldMap -> StageInformation -> QuestPreparation
+// hard      : Menu -------------> StageInformation -> HardStagePreparation
 namespace Nekoyume.UI
 {
     public class StageInformation : Widget
     {
+        public enum StageType
+        {
+            None,
+            Quest,
+            Mimisbrunnr,
+        }
         [SerializeField]
         private HelpButton stageHelpButton = null;
         [SerializeField]
@@ -38,7 +46,7 @@ namespace Nekoyume.UI
         private GameObject buttonNotification = null;
 
         private WorldMap.ViewModel _sharedViewModel;
-
+        private StageType _stageType = StageType.None;
 
         public override void Initialize()
         {
@@ -75,7 +83,7 @@ namespace Nekoyume.UI
                 .AddTo(gameObject);
         }
 
-        public void Show(WorldMap.ViewModel viewModel, WorldSheet.Row worldRow)
+        public void Show(WorldMap.ViewModel viewModel, WorldSheet.Row worldRow, StageType stageType)
         {
             _sharedViewModel = viewModel;
             _sharedViewModel.SelectedStageId
@@ -94,16 +102,10 @@ namespace Nekoyume.UI
             {
                 stageHelpButton.Hide();
             }
-            var bottomMenu = Find<BottomMenu>();
-            bottomMenu.Show(
-                UINavigator.NavigationType.None,
-                null,
-                true,
-                BottomMenu.ToggleableType.WorldMap);
-            bottomMenu.worldMapButton.OnClick
-                .Subscribe(_ => BackToWorldMap())
-                .AddTo(gameObject);
-            bottomMenu.ToggleGroup?.SetToggledOffAll();
+
+            _stageType = stageType;
+            SetBottomMenu(stageType);
+
             world.Set(worldRow);
             var questStageId = Game.Game.instance.States
                 .CurrentAvatarState.questList
@@ -112,6 +114,7 @@ namespace Nekoyume.UI
                 .OrderBy(x => x.Goal)
                 .FirstOrDefault()?
                 .Goal ?? -1;
+
             world.ShowByStageId(_sharedViewModel.SelectedStageId.Value, questStageId);
             if (worldModel.IsUnlocked)
             {
@@ -125,9 +128,34 @@ namespace Nekoyume.UI
             base.Show();
         }
 
+        private void SetBottomMenu(StageType stageType)
+        {
+            var bottomMenu = Find<BottomMenu>();
+            switch (stageType)
+            {
+                case StageType.Quest:
+                    bottomMenu.Show(
+                        UINavigator.NavigationType.None,
+                        null,
+                        true,
+                        BottomMenu.ToggleableType.WorldMap);
+
+                    bottomMenu.worldMapButton.OnClick
+                        .Subscribe(_ => BackToWorldMap())
+                        .AddTo(gameObject);
+                    bottomMenu.ToggleGroup?.SetToggledOffAll();
+                    break;
+                case StageType.Mimisbrunnr:
+                    bottomMenu.Show(UINavigator.NavigationType.Back, SubscribeBackButtonClick, false);
+                    break;
+            }
+        }
+
         private void SubscribeBackButtonClick(BottomMenu bottomMenu)
         {
-            BackToWorldMap();
+            var stageInfo = Find<UI.StageInformation>();
+            stageInfo.Close();
+            Game.Event.OnRoomEnter.Invoke(true);
         }
 
         private void BackToWorldMap()
@@ -194,8 +222,19 @@ namespace Nekoyume.UI
         private void GoToQuestPreparation()
         {
             Close();
-            Find<WorldMap>().Close(true);
-            Find<QuestPreparation>().Show();
+
+            switch (_stageType)
+            {
+                case StageType.Quest:
+                    Find<WorldMap>().Close(true);
+                    Find<QuestPreparation>().Show();
+                    break;
+
+                case StageType.Mimisbrunnr:
+                    Find<MimisbrunnrPreparation>().Show();
+                    Find<MimisbrunnrPreparation>().StageId = _sharedViewModel.SelectedStageId.Value;
+                    break;
+            }
         }
 
         private void LockWorld()
