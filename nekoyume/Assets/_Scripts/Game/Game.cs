@@ -602,11 +602,11 @@ namespace Nekoyume.Game
             }
         }
 
-        private void PutLog(string groupName, string streamName, string msg)
+        private async void PutLog(string groupName, string streamName, string msg)
         {
             try
             {
-                var resp = _logsClient.DescribeLogStreams(new DescribeLogStreamsRequest(groupName));
+                var resp = await _logsClient.DescribeLogStreamsAsync(new DescribeLogStreamsRequest(groupName));
                 var token = resp.LogStreams.FirstOrDefault(s => s.LogStreamName == streamName)?.UploadSequenceToken;
                 var ie = new InputLogEvent
                 {
@@ -618,7 +618,7 @@ namespace Nekoyume.Game
                 {
                     request.SequenceToken = token;
                 }
-                _logsClient.PutLogEvents(request);
+                await _logsClient.PutLogEventsAsync(request);
             }
             catch (Exception e)
             {
