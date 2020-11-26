@@ -799,6 +799,7 @@ namespace Nekoyume.BlockChain
         public static void BackToMain(bool showLoadingScreen, Exception exc)
         {
             Debug.LogException(exc);
+            Game.Game.instance.Agent.SendException(exc);
 
             if (DoNotUsePopupError(exc, out var key, out var code, out var errorMsg))
             {
@@ -808,18 +809,15 @@ namespace Nekoyume.BlockChain
             Game.Event.OnRoomEnter.Invoke(showLoadingScreen);
             Game.Game.instance.Stage.OnRoomEnterEnd
                 .First()
-                .Subscribe(_ =>
-                {
-                    PopupError(key, code, errorMsg);
-                    Game.Game.instance.Agent.SendException(exc);
-                });
-
+                .Subscribe(_ => PopupError(key, code, errorMsg));
+            
             MainCanvas.instance.InitWidgetInMain();
         }
 
         public static void PopupError(Exception exc)
         {
             Debug.LogException(exc);
+            Game.Game.instance.Agent.SendException(exc);
 
             if (DoNotUsePopupError(exc, out var key, out var code, out var errorMsg))
             {
