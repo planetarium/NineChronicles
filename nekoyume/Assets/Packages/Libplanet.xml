@@ -980,7 +980,7 @@
             is stored in the <see cref="P:System.Exception.InnerException"/> property.</para>
             </summary>
         </member>
-        <member name="M:Libplanet.Action.UnexpectedlyTerminatedActionException.#ctor(System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}},System.Nullable{System.Int64},System.Nullable{Libplanet.Tx.TxId},Libplanet.Action.IAction,System.String,System.Exception)">
+        <member name="M:Libplanet.Action.UnexpectedlyTerminatedActionException.#ctor(System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}},System.Nullable{System.Int64},System.Nullable{Libplanet.Tx.TxId},System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}},Libplanet.Action.IAction,System.String,System.Exception)">
             <summary>
             Creates a new <see cref="T:Libplanet.Action.UnexpectedlyTerminatedActionException"/> object.
             </summary>
@@ -996,6 +996,9 @@
             a <see cref="P:Libplanet.Blockchain.Policies.IBlockPolicy`1.BlockAction"/>.
             </param>
             <param name="action">The <see cref="T:Libplanet.Action.IAction"/> object which threw an exception.</param>
+            <param name="previousStateRootHash">The <see cref="P:Libplanet.Store.Trie.ITrie.Hash"/> of states until
+            previous action execution.  This can be null on rehearsal mode or if the chain which
+            executed the action, was not using <see cref="T:Libplanet.Store.TrieStateStore"/>.</param>
             <param name="message">Specifies a <see cref="P:System.Exception.Message"/>.</param>
             <param name="innerException">The actual exception that the <see cref="P:Libplanet.Action.UnexpectedlyTerminatedActionException.Action"/> threw.
             </param>
@@ -1909,9 +1912,14 @@
             are required for action execution and rendering.
             <see cref="F:Libplanet.Blockchain.StateCompleterSet`1.Recalculate"/> by default.
             </param>
-            <exception cref="T:Libplanet.Blocks.InvalidBlockException">Thrown when the given
-            <paramref name="block"/> is invalid, in itself or according to
-            the <see cref="P:Libplanet.Blockchain.BlockChain`1.Policy"/>.</exception>
+            <exception cref="T:Libplanet.Blocks.InvalidBlockBytesLengthException">Thrown when the given <paramref
+            name="block"/> is too long in bytes (according to <see
+            cref="M:Libplanet.Blockchain.Policies.IBlockPolicy`1.GetMaxBlockBytes(System.Int64)"/>).</exception>
+            <exception cref="T:Libplanet.Blocks.BlockExceedingTransactionsException">Thrown when the given <paramref
+            name="block"/> has too many transactions (according to <see
+            cref="P:Libplanet.Blockchain.Policies.IBlockPolicy`1.MaxTransactionsPerBlock"/>).</exception>
+            <exception cref="T:Libplanet.Blocks.InvalidBlockException">Thrown when the given <paramref name="block"/>
+            is invalid, in itself or according to the <see cref="P:Libplanet.Blockchain.BlockChain`1.Policy"/>.</exception>
             <exception cref="T:Libplanet.Tx.InvalidTxNonceException">Thrown when the
             <see cref="P:Libplanet.Tx.Transaction`1.Nonce"/> is different from
             <see cref="M:Libplanet.Blockchain.BlockChain`1.GetNextTxNonce(Libplanet.Address)"/> result of the
@@ -1931,9 +1939,14 @@
             are required for action execution and rendering.
             <see cref="F:Libplanet.Blockchain.StateCompleterSet`1.Recalculate"/> by default.
             </param>
-            <exception cref="T:Libplanet.Blocks.InvalidBlockException">Thrown when the given
-            <paramref name="block"/> is invalid, in itself or according to
-            the <see cref="P:Libplanet.Blockchain.BlockChain`1.Policy"/>.</exception>
+            <exception cref="T:Libplanet.Blocks.InvalidBlockBytesLengthException">Thrown when the given <paramref
+            name="block"/> is too long in bytes (according to <see
+            cref="M:Libplanet.Blockchain.Policies.IBlockPolicy`1.GetMaxBlockBytes(System.Int64)"/>).</exception>
+            <exception cref="T:Libplanet.Blocks.BlockExceedingTransactionsException">Thrown when the given <paramref
+            name="block"/> has too many transactions (according to <see
+            cref="P:Libplanet.Blockchain.Policies.IBlockPolicy`1.MaxTransactionsPerBlock"/>).</exception>
+            <exception cref="T:Libplanet.Blocks.InvalidBlockException">Thrown when the given <paramref name="block"/>
+            is invalid, in itself or according to the <see cref="P:Libplanet.Blockchain.BlockChain`1.Policy"/>.</exception>
             <exception cref="T:Libplanet.Tx.InvalidTxNonceException">Thrown when the
             <see cref="P:Libplanet.Tx.Transaction`1.Nonce"/> is different from
             <see cref="M:Libplanet.Blockchain.BlockChain`1.GetNextTxNonce(Libplanet.Address)"/> result of the
@@ -1967,7 +1980,7 @@
             <returns>The next <see cref="P:Libplanet.Tx.Transaction`1.Nonce"/> value of the
             <paramref name="address"/>.</returns>
         </member>
-        <member name="M:Libplanet.Blockchain.BlockChain`1.MineBlock(Libplanet.Address,System.DateTimeOffset,System.Boolean,System.Int32,System.Threading.CancellationToken)">
+        <member name="M:Libplanet.Blockchain.BlockChain`1.MineBlock(Libplanet.Address,System.DateTimeOffset,System.Boolean,System.Nullable{System.Int32},System.Threading.CancellationToken)">
             <summary>
             Mines a next <see cref="T:Libplanet.Blocks.Block`1"/> using staged <see cref="T:Libplanet.Tx.Transaction`1"/>s,
             and then <see cref="M:Libplanet.Blockchain.BlockChain`1.Append(Libplanet.Blocks.Block{`0},System.Nullable{Libplanet.Blockchain.StateCompleterSet{`0}})"/> it to the chain
@@ -1977,8 +1990,13 @@
             <param name="currentTime">The <see cref="T:System.DateTimeOffset"/> when mining started.</param>
             <param name="append">Whether to <see cref="M:Libplanet.Blockchain.BlockChain`1.Append(Libplanet.Blocks.Block{`0},System.Nullable{Libplanet.Blockchain.StateCompleterSet{`0}})"/>
             the mined block.  Turned on by default.</param>
-            <param name="txBatchSize">The number to limit the count of transactions that will
-            be contained in the block.  <see cref="F:System.Int32.MaxValue"/> by default.</param>
+            <param name="maxTransactions">The maximum number of transactions that a block can
+            accept.  This value must be greater than 0, and less than or equal to
+            <see cref="P:Libplanet.Blockchain.BlockChain`1.Policy"/>.<see cref="P:Libplanet.Blockchain.Policies.IBlockPolicy`1.MaxTransactionsPerBlock"/>.
+            Zero and negative values are treated as 1. If it is omitted or more than
+            <see cref="P:Libplanet.Blockchain.BlockChain`1.Policy"/>.<see cref="P:Libplanet.Blockchain.Policies.IBlockPolicy`1.MaxTransactionsPerBlock"/>, it will be
+            treated as <see cref="P:Libplanet.Blockchain.BlockChain`1.Policy"/>.<see cref="P:Libplanet.Blockchain.Policies.IBlockPolicy`1.MaxTransactionsPerBlock"/>.
+            </param>
             <param name="cancellationToken">
             A cancellation token used to propagate notification that this
             operation should be canceled.
@@ -1986,10 +2004,8 @@
             <returns>An awaitable task with a <see cref="T:Libplanet.Blocks.Block`1"/> that is mined.</returns>
             <exception cref="T:System.OperationCanceledException">Thrown when
             <see cref="P:Libplanet.Blockchain.BlockChain`1.Tip"/> is changed while mining.</exception>
-            <exception cref="T:System.ArgumentOutOfRangeException">Thrown when
-            <paramref name="txBatchSize"/> is negative.</exception>
         </member>
-        <member name="M:Libplanet.Blockchain.BlockChain`1.MineBlock(Libplanet.Address,System.Boolean,System.Int32,System.Threading.CancellationToken)">
+        <member name="M:Libplanet.Blockchain.BlockChain`1.MineBlock(Libplanet.Address,System.Boolean,System.Nullable{System.Int32},System.Threading.CancellationToken)">
             <summary>
             Mines a next <see cref="T:Libplanet.Blocks.Block`1"/> using staged <see cref="T:Libplanet.Tx.Transaction`1"/>s,
             and then <see cref="M:Libplanet.Blockchain.BlockChain`1.Append(Libplanet.Blocks.Block{`0},System.Nullable{Libplanet.Blockchain.StateCompleterSet{`0}})"/> it to the chain
@@ -1998,8 +2014,13 @@
             <param name="miner">The <see cref="T:Libplanet.Address"/> of miner that mined the block.</param>
             <param name="append">Whether to <see cref="M:Libplanet.Blockchain.BlockChain`1.Append(Libplanet.Blocks.Block{`0},System.Nullable{Libplanet.Blockchain.StateCompleterSet{`0}})"/>
             the mined block.  Turned on by default.</param>
-            <param name="txBatchSize">The number to limit the count of transactions that will
-            be contained in the block.  <see cref="F:System.Int32.MaxValue"/> by default.</param>
+            <param name="maxTransactions">The maximum number of transactions that a block can
+            accept.  This value must be greater than 0, and less than or equal to
+            <see cref="P:Libplanet.Blockchain.BlockChain`1.Policy"/>.<see cref="P:Libplanet.Blockchain.Policies.IBlockPolicy`1.MaxTransactionsPerBlock"/>.
+            Zero and negative values are treated as 1. If it is omitted or more than
+            <see cref="P:Libplanet.Blockchain.BlockChain`1.Policy"/>.<see cref="P:Libplanet.Blockchain.Policies.IBlockPolicy`1.MaxTransactionsPerBlock"/>, it will be
+            treated as <see cref="P:Libplanet.Blockchain.BlockChain`1.Policy"/>.<see cref="P:Libplanet.Blockchain.Policies.IBlockPolicy`1.MaxTransactionsPerBlock"/>.
+            </param>
             <param name="cancellationToken">
             A cancellation token used to propagate notification that this
             operation should be canceled.
@@ -2007,8 +2028,6 @@
             <returns>An awaitable task with a <see cref="T:Libplanet.Blocks.Block`1"/> that is mined.</returns>
             <exception cref="T:System.OperationCanceledException">Thrown when
             <see cref="P:Libplanet.Blockchain.BlockChain`1.Tip"/> is changed while mining.</exception>
-            <exception cref="T:System.ArgumentOutOfRangeException">Thrown when
-            <paramref name="txBatchSize"/> is negative.</exception>
         </member>
         <member name="M:Libplanet.Blockchain.BlockChain`1.MakeTransaction(Libplanet.Crypto.PrivateKey,System.Collections.Generic.IEnumerable{`0},System.Collections.Immutable.IImmutableSet{Libplanet.Address},System.Nullable{System.DateTimeOffset})">
             <summary>
@@ -2026,6 +2045,12 @@
             <returns>A created new <see cref="T:Libplanet.Tx.Transaction`1"/> signed by the given
             <paramref name="privateKey"/>.</returns>
             <seealso cref="M:Libplanet.Tx.Transaction`1.Create(System.Int64,Libplanet.Crypto.PrivateKey,System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}},System.Collections.Generic.IEnumerable{`0},System.Collections.Immutable.IImmutableSet{Libplanet.Address},System.Nullable{System.DateTimeOffset})" />
+        </member>
+        <member name="M:Libplanet.Blockchain.BlockChain`1.GetStagedTransactionIds">
+            <summary>
+            Lists all staged <see cref="T:Libplanet.Tx.TxId"/>s.
+            </summary>
+            <returns><see cref="T:System.Collections.Immutable.IImmutableSet`1"/> of staged transactions.</returns>
         </member>
         <member name="M:Libplanet.Blockchain.BlockChain`1.RenderActionsInBlocks(System.Int64,Libplanet.Blockchain.Renderers.IActionRenderer{`0},System.Nullable{Libplanet.Blockchain.StateCompleterSet{`0}})">
             <summary>
@@ -2146,7 +2171,7 @@
             <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> type.  It should match
             to <see cref="T:Libplanet.Blocks.Block`1"/>'s type parameter.</typeparam>
         </member>
-        <member name="M:Libplanet.Blockchain.Policies.BlockPolicy`1.#ctor(Libplanet.Action.IAction,System.Int32,System.Int64,System.Int32,System.Func{Libplanet.Tx.Transaction{`0},Libplanet.Blockchain.BlockChain{`0},System.Boolean})">
+        <member name="M:Libplanet.Blockchain.Policies.BlockPolicy`1.#ctor(Libplanet.Action.IAction,System.Int32,System.Int64,System.Int32,System.Int32,System.Int32,System.Int32,System.Func{Libplanet.Tx.Transaction{`0},Libplanet.Blockchain.BlockChain{`0},System.Boolean})">
             <summary>
             Creates a <see cref="T:Libplanet.Blockchain.Policies.BlockPolicy`1"/> with configuring
             <see cref="P:Libplanet.Blockchain.Policies.BlockPolicy`1.BlockInterval"/> in milliseconds,
@@ -2163,11 +2188,17 @@
             <see cref="P:Libplanet.Blockchain.Policies.BlockPolicy`1.MinimumDifficulty"/>. 1024 by default.</param>
             <param name="difficultyBoundDivisor">Configures
             <see cref="P:Libplanet.Blockchain.Policies.BlockPolicy`1.DifficultyBoundDivisor"/>. 128 by default.</param>
+            <param name="maxTransactionsPerBlock">Configures <see cref="P:Libplanet.Blockchain.Policies.BlockPolicy`1.MaxTransactionsPerBlock"/>.
+            100 by default.</param>
+            <param name="maxBlockBytes">Configures <see cref="M:Libplanet.Blockchain.Policies.BlockPolicy`1.GetMaxBlockBytes(System.Int64)"/> where
+            the block is not a genesis.  100 KiB by default.</param>
+            <param name="maxGenesisBytes">Configures <see cref="M:Libplanet.Blockchain.Policies.BlockPolicy`1.GetMaxBlockBytes(System.Int64)"/> where
+            the block is a genesis.  1 MiB by default.</param>
             <param name="doesTransactionFollowPolicy">
             A predicate that determines if the transaction follows the block policy.
             </param>
         </member>
-        <member name="M:Libplanet.Blockchain.Policies.BlockPolicy`1.#ctor(Libplanet.Action.IAction,System.TimeSpan,System.Int64,System.Int32,System.Func{Libplanet.Tx.Transaction{`0},Libplanet.Blockchain.BlockChain{`0},System.Boolean})">
+        <member name="M:Libplanet.Blockchain.Policies.BlockPolicy`1.#ctor(Libplanet.Action.IAction,System.TimeSpan,System.Int64,System.Int32,System.Int32,System.Int32,System.Int32,System.Func{Libplanet.Tx.Transaction{`0},Libplanet.Blockchain.BlockChain{`0},System.Boolean})">
             <summary>
             Creates a <see cref="T:Libplanet.Blockchain.Policies.BlockPolicy`1"/> with configuring
             <see cref="P:Libplanet.Blockchain.Policies.BlockPolicy`1.BlockInterval"/>, <see cref="P:Libplanet.Blockchain.Policies.BlockPolicy`1.MinimumDifficulty"/> and
@@ -2181,12 +2212,21 @@
             <see cref="P:Libplanet.Blockchain.Policies.BlockPolicy`1.MinimumDifficulty"/>.</param>
             <param name="difficultyBoundDivisor">Configures
             <see cref="P:Libplanet.Blockchain.Policies.BlockPolicy`1.DifficultyBoundDivisor"/>.</param>
+            <param name="maxTransactionsPerBlock">Configures <see cref="P:Libplanet.Blockchain.Policies.BlockPolicy`1.MaxTransactionsPerBlock"/>.
+            </param>
+            <param name="maxBlockBytes">Configures <see cref="M:Libplanet.Blockchain.Policies.BlockPolicy`1.GetMaxBlockBytes(System.Int64)"/> where
+            the block is not a genesis.</param>
+            <param name="maxGenesisBytes">Configures <see cref="M:Libplanet.Blockchain.Policies.BlockPolicy`1.GetMaxBlockBytes(System.Int64)"/> where
+            the block is a genesis.</param>
             <param name="doesTransactionFollowPolicy">
             A predicate that determines if the transaction follows the block policy.
             </param>
         </member>
         <member name="P:Libplanet.Blockchain.Policies.BlockPolicy`1.BlockAction">
             <inheritdoc/>
+        </member>
+        <member name="P:Libplanet.Blockchain.Policies.BlockPolicy`1.MaxTransactionsPerBlock">
+            <inheritdoc cref="P:Libplanet.Blockchain.Policies.IBlockPolicy`1.MaxTransactionsPerBlock"/>
         </member>
         <member name="P:Libplanet.Blockchain.Policies.BlockPolicy`1.BlockInterval">
             <summary>
@@ -2224,6 +2264,14 @@
             A block action to execute and be rendered for every block.
             </summary>
         </member>
+        <member name="P:Libplanet.Blockchain.Policies.IBlockPolicy`1.MaxTransactionsPerBlock">
+            <summary>
+            The maximum number of <see cref="P:Libplanet.Blocks.Block`1.Transactions"/> that a <see cref="T:Libplanet.Blocks.Block`1"/>
+            can accept.  This value must not be negative and must be deterministic (i.e., must not
+            change after an object is once instantiated).
+            </summary>
+            <remarks>If the value is less then 1, it's treated as 1.</remarks>
+        </member>
         <member name="M:Libplanet.Blockchain.Policies.IBlockPolicy`1.DoesTransactionFollowsPolicy(Libplanet.Tx.Transaction{`0},Libplanet.Blockchain.BlockChain{`0})">
             <summary>
             A predicate that determines if the transaction follows the block policy.
@@ -2259,6 +2307,18 @@
             followed by a new <see cref="T:Libplanet.Blocks.Block`1"/> to be mined.</param>
             <returns>A right <see cref="P:Libplanet.Blocks.Block`1.Difficulty"/>
             for a new <see cref="T:Libplanet.Blocks.Block`1"/> to be mined.</returns>
+        </member>
+        <member name="M:Libplanet.Blockchain.Policies.IBlockPolicy`1.GetMaxBlockBytes(System.Int64)">
+            <summary>
+            Gets the maximum length of a <see cref="T:Libplanet.Blocks.Block`1"/> in bytes.  It can vary depending on
+            a given <paramref name="index"/>, but should be deterministic; for the same
+            <paramref name="index"/>, the same value must be returned.
+            </summary>
+            <param name="index">An <see cref="P:Libplanet.Blocks.Block`1.Index"/> of a block to mine or receive.
+            </param>
+            <returns>The maximum length of a <see cref="T:Libplanet.Blocks.Block`1"/> in bytes to accept.</returns>
+            <remarks>If it returns less then 1, it is treated as 1, because there is no block
+            taking 0 bytes or negative length of bytes.</remarks>
         </member>
         <member name="T:Libplanet.Blockchain.Renderers.AnonymousActionRenderer`1">
             <summary>
@@ -3005,6 +3065,11 @@
             </summary>
             <seealso cref="P:Libplanet.Store.Trie.ITrie.Hash"/>
         </member>
+        <member name="P:Libplanet.Blocks.Block`1.BytesLength">
+            <summary>
+            The bytes length in its serialized format.
+            </summary>
+        </member>
         <member name="P:Libplanet.Blocks.Block`1.Header">
             <summary>
             The <see cref="T:Libplanet.Blocks.BlockHeader"/> of the block.
@@ -3041,7 +3106,7 @@
             <returns>A decoded <see cref="T:Libplanet.Blocks.Block`1"/> object.</returns>
             <seealso cref="M:Libplanet.Blocks.Block`1.Serialize"/>
         </member>
-        <member name="M:Libplanet.Blocks.Block`1.EvaluateActionsPerTx(Libplanet.Action.AccountStateGetter,Libplanet.Action.AccountBalanceGetter)">
+        <member name="M:Libplanet.Blocks.Block`1.EvaluateActionsPerTx(Libplanet.Action.AccountStateGetter,Libplanet.Action.AccountBalanceGetter,Libplanet.Store.Trie.ITrie)">
             <summary>
             Executes every <see cref="T:Libplanet.Action.IAction"/> in the
             <see cref="P:Libplanet.Blocks.Block`1.Transactions"/> step by step, and emits a pair of
@@ -3056,6 +3121,8 @@
             get previous account balance.
             A <c>null</c> value, which is default, means a constant function that returns zero.
             </param>
+            <param name="previousBlockStatesTrie">The trie to contain states at previous block.
+            </param>
             <returns>Enumerates pair of a transaction, and
             <see cref="T:Libplanet.Action.ActionEvaluation"/> for each action.
             The order of pairs are the same to
@@ -3067,7 +3134,7 @@
             a unconsumed state.
             </returns>
         </member>
-        <member name="M:Libplanet.Blocks.Block`1.Evaluate(System.DateTimeOffset,Libplanet.Action.AccountStateGetter,Libplanet.Action.AccountBalanceGetter)">
+        <member name="M:Libplanet.Blocks.Block`1.Evaluate(System.DateTimeOffset,Libplanet.Action.AccountStateGetter,Libplanet.Action.AccountBalanceGetter,Libplanet.Store.Trie.ITrie)">
             <summary>
             Executes every <see cref="T:Libplanet.Action.IAction"/> in the
             <see cref="P:Libplanet.Blocks.Block`1.Transactions"/> and gets result states of each step of
@@ -3089,6 +3156,8 @@
             get previous account balance.
             A <c>null</c> value, which is default, means a constant function that returns zero.
             This affects the execution of <see cref="P:Libplanet.Tx.Transaction`1.Actions"/>.
+            </param>
+            <param name="previousBlockStatesTrie">The trie to contain states at previous block.
             </param>
             <returns>An <see cref="T:Libplanet.Action.ActionEvaluation"/> for each
             <see cref="T:Libplanet.Action.IAction"/>.</returns>
@@ -3173,6 +3242,24 @@
             <returns><see cref="T:Bencodex.Types.Dictionary"/> representation of
             <see cref="T:Libplanet.Blocks.BlockDigest"/>.</returns>
         </member>
+        <member name="T:Libplanet.Blocks.BlockExceedingTransactionsException">
+            <summary>
+            The exception that is thrown when a <see cref="T:Libplanet.Blocks.Block`1"/> has too many
+            <see cref="P:Libplanet.Blocks.Block`1.Transactions"/> (i.e., more than the number specified by
+            <see cref="P:Libplanet.Blockchain.Policies.IBlockPolicy`1.MaxTransactionsPerBlock"/>).
+            </summary>
+        </member>
+        <member name="P:Libplanet.Blocks.BlockExceedingTransactionsException.ActualTransactions">
+            <summary>
+            The actual number of transactions in the block.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Blocks.BlockExceedingTransactionsException.MaxTransactionsPerBlock">
+            <summary>
+            The maximum allowed number of transactions per block.
+            </summary>
+            <seealso cref="P:Libplanet.Blockchain.Policies.IBlockPolicy`1.MaxTransactionsPerBlock"/>
+        </member>
         <member name="T:Libplanet.Blocks.BlockHeader">
             <summary>
             Block header containing information about <see cref="T:Libplanet.Blocks.Block`1"/>s except transactions.
@@ -3230,6 +3317,47 @@
             </summary>
             <returns><see cref="T:Bencodex.Types.Dictionary"/> representation of
             <see cref="T:Libplanet.Blocks.BlockHeader"/>.</returns>
+        </member>
+        <member name="T:Libplanet.Blocks.InvalidBlockBytesLengthException">
+            <summary>
+            The exception that is thrown when a <see cref="T:Libplanet.Blocks.Block`1"/>'s
+            <see cref="P:Libplanet.Blocks.Block`1.BytesLength"/> (i.e., the length of bytes in its serialized format)
+            is too long.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Blocks.InvalidBlockBytesLengthException.#ctor(System.Int32,System.Int32,System.String)">
+            <summary>
+            Initializes a new instance of <see cref="T:Libplanet.Blocks.InvalidBlockBytesLengthException"/> class.
+            </summary>
+            <param name="blockBytesLength">The invalid <see cref="T:Libplanet.Blocks.Block`1"/>'s
+            <see cref="P:Libplanet.Blocks.Block`1.BytesLength"/>.  It is automatically included to the
+            <see cref="P:System.Exception.Message"/> string.</param>
+            <param name="maxBlockBytesLength">The maximum allowed length of bytes.  It is
+            automatically included to the <see cref="P:System.Exception.Message"/> string.</param>
+            <param name="message">The message that describes the error.</param>
+        </member>
+        <member name="P:Libplanet.Blocks.InvalidBlockBytesLengthException.BlockBytesLength">
+            <summary>
+            The bytes length of the actual block.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Blocks.InvalidBlockBytesLengthException.MaxBlockBytesLength">
+            <summary>
+            The maximum allowed length of a block in bytes.
+            </summary>
+            <seealso cref="M:Libplanet.Blockchain.Policies.IBlockPolicy`1.GetMaxBlockBytes(System.Int64)"/>
+        </member>
+        <member name="T:Libplanet.Blocks.InvalidBlockException">
+            <summary>
+            Serves as the base class for exceptions related <see cref="T:Libplanet.Blocks.Block`1"/>s' integrity and
+            validity.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Blocks.InvalidBlockException.#ctor(System.String)">
+            <inheritdoc cref="M:System.Exception.#ctor(System.String)"/>
+        </member>
+        <member name="M:Libplanet.Blocks.InvalidBlockException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <inheritdoc cref="M:System.Exception.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)"/>
         </member>
         <member name="T:Libplanet.Blocks.InvalidBlockStateRootHashException">
             <summary>
@@ -6827,7 +6955,7 @@
             <a href="https://bencodex.org/">Bencodex</a>
             representation of this <see cref="T:Libplanet.Tx.Transaction`1"/>.</returns>
         </member>
-        <member name="M:Libplanet.Tx.Transaction`1.EvaluateActionsGradually(Libplanet.HashDigest{System.Security.Cryptography.SHA256},System.Int64,Libplanet.Action.IAccountStateDelta,Libplanet.Address,System.Boolean)">
+        <member name="M:Libplanet.Tx.Transaction`1.EvaluateActionsGradually(Libplanet.HashDigest{System.Security.Cryptography.SHA256},System.Int64,Libplanet.Action.IAccountStateDelta,Libplanet.Address,System.Boolean,Libplanet.Store.Trie.ITrie)">
             <summary>
             Executes the <see cref="P:Libplanet.Tx.Transaction`1.Actions"/> step by step, and emits
             <see cref="T:Libplanet.Action.ActionEvaluation"/> for each step.
@@ -6850,6 +6978,8 @@
             <param name="rehearsal">Pass <c>true</c> if it is intended
             to be dry-run (i.e., the returned result will be never used).
             The default value is <c>false</c>.</param>
+            <param name="previousBlockStatesTrie">The trie to contain states at previous block.
+            </param>
             <returns>Enumerates <see cref="T:Libplanet.Action.ActionEvaluation"/>s for each one in
             <see cref="P:Libplanet.Tx.Transaction`1.Actions"/>.
             The order is the same to the <see cref="P:Libplanet.Tx.Transaction`1.Actions"/>.
