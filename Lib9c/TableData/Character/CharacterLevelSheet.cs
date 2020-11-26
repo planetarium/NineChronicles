@@ -22,7 +22,7 @@ namespace Nekoyume.TableData
                 ExpNeed = TryParseLong(fields[2], out var expNeed) ? expNeed : 0L;
             }
         }
-        
+
         public CharacterLevelSheet() : base(nameof(CharacterLevelSheet))
         {
         }
@@ -38,6 +38,21 @@ namespace Nekoyume.TableData
             }
 
             return 0;
+        }
+
+        public bool TryGetLevel(long exp, out int level)
+        {
+            foreach (var row in OrderedList)
+            {
+                if (row.Exp + row.ExpNeed > exp)
+                {
+                    level = row.Key;
+                    return true;
+                }
+            }
+
+            level = default;
+            return false;
         }
     }
 }

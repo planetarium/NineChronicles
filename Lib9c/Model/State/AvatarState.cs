@@ -322,7 +322,7 @@ namespace Nekoyume.Model.State
 
             UpdateCompletedQuest();
         }
-        
+
         public void UpdateFromAddCostume(Costume costume, bool canceled)
         {
             var pair = inventory.AddItem(costume);
