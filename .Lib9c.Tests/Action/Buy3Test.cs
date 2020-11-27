@@ -87,6 +87,11 @@
                 _tableSheets.EquipmentItemSheet.First,
                 Guid.NewGuid(),
                 0);
+            
+            var consumable = ItemFactory.CreateItemUsable(
+                _tableSheets.ConsumableItemSheet.First,
+                Guid.NewGuid(),
+                0);
 
             var costume = ItemFactory.CreateCostume(
                 _tableSheets.CostumeItemSheet.First,
@@ -99,6 +104,13 @@
                 Guid.NewGuid(),
                 new FungibleAssetValue(_goldCurrencyState.Currency, 100, 0),
                 equipment));
+            
+            shopState.Register(new ShopItem(
+                _sellerAgentAddress,
+                _sellerAvatarAddress,
+                Guid.NewGuid(),
+                new FungibleAssetValue(_goldCurrencyState.Currency, 100, 0),
+                consumable));
 
             shopState.Register(new ShopItem(
                 _sellerAgentAddress,
