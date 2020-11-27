@@ -28,6 +28,12 @@ namespace Nekoyume.BlockChain
     {
         public const int DifficultyBoundDivisor = 2048;
 
+        // Note: The heaviest block of 9c-main (except for the genesis) weighs 58,408 B (58 KiB).
+        public const int MaxBlockBytes = 1024 * 100; // 100 KiB
+
+        // Note: The genesis block of 9c-main net weighs 11,085,640 B (11 MiB).
+        public const int MaxGenesisBytes = 1024 * 1024 * 15; // 15 MiB
+
         private readonly TimeSpan _blockInterval = TimeSpan.FromSeconds(8);
 
         public readonly ActionRenderer ActionRenderer = new ActionRenderer();
@@ -55,11 +61,13 @@ namespace Nekoyume.BlockChain
 #else
             return new BlockPolicy(
                 new RewardGold(),
-                _blockInterval,
-                minimumDifficulty,
-                DifficultyBoundDivisor,
-                maximumTransactions,
-                DoesTransactionFollowPolicy
+                blockInterval: _blockInterval,
+                minimumDifficulty: minimumDifficulty,
+                difficultyBoundDivisor: DifficultyBoundDivisor,
+                maxTransactionsPerBlock: maximumTransactions,
+                maxBlockBytes: MaxBlockBytes,
+                maxGenesisBytes: MaxGenesisBytes,
+                doesTransactionFollowPolicy: DoesTransactionFollowPolicy
             );
 #endif
         }
