@@ -122,7 +122,11 @@ namespace Nekoyume.Game
 
         public CostumeStatSheet CostumeStatSheet { get; private set; }
 
-        public void ItemSheetInitialize()
+        public MimisbrunnrSheet MimisbrunnrSheet { get; private set; }
+
+        //todo : 테이블 시트트
+
+       public void ItemSheetInitialize()
         {
             ItemSheet = new ItemSheet();
             ItemSheet.Set(ConsumableItemSheet, false);

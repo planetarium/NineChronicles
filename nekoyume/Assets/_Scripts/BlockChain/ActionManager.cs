@@ -91,6 +91,65 @@ namespace Nekoyume.BlockChain
                 });
         }
 
+        public IObservable<ActionBase.ActionEvaluation<Mimisbrunnr>> Mimisbrunnr(
+            Player player,
+            int worldId,
+            int stageId)
+        {
+            return Mimisbrunnr(
+                player.Costumes.Select(costume => costume.Id).ToList(),
+                player.Equipments,
+                null,
+                worldId,
+                stageId);
+        }
+
+        public IObservable<ActionBase.ActionEvaluation<Mimisbrunnr>> Mimisbrunnr(
+            List<int> costumes,
+            List<Equipment> equipments,
+            List<Consumable> foods,
+            int worldId,
+            int stageId)
+        {
+            if (!ArenaHelper.TryGetThisWeekAddress(out var weeklyArenaAddress))
+            {
+                throw new NullReferenceException(nameof(weeklyArenaAddress));
+            }
+
+            Mixpanel.Track("Unity/Create Mimisbrunnr");
+
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+            costumes = costumes ?? new List<int>();
+            equipments = equipments ?? new List<Equipment>();
+            foods = foods ?? new List<Consumable>();
+
+            var action = new Mimisbrunnr
+            {
+                costumes = costumes,
+                equipments = equipments.Select(e => e.ItemId).ToList(),
+                foods = foods.Select(f => f.ItemId).ToList(),
+                worldId = worldId,
+                stageId = stageId,
+                avatarAddress = avatarAddress,
+                WeeklyArenaAddress = weeklyArenaAddress,
+                RankingMapAddress = States.Instance.CurrentAvatarState.RankingMapAddress,
+            };
+            ProcessAction(action);
+
+            var itemIDs = equipments
+                .Select(e => e.Id)
+                .Concat(foods.Select(f => f.Id))
+                .ToArray();
+            AnalyticsManager.Instance.Battle(itemIDs);
+            return _renderer.EveryRender<Mimisbrunnr>()
+                .SkipWhile(eval => !eval.Action.Id.Equals(action.Id))
+                .Take(1)
+                .Last()
+                .ObserveOnMainThread()
+                .Timeout(ActionTimeout)
+                .DoOnError(e => HandleException(action.Id, e));
+        }
+
         public IObservable<ActionBase.ActionEvaluation<HackAndSlash3>> HackAndSlash(
             Player player,
             int worldId,

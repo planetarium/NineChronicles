@@ -668,7 +668,7 @@ namespace Nekoyume.UI
             _stage.repeatStage = repeat;
             ActionRenderHandler.Instance.Pending = true;
             Game.Game.instance.ActionManager
-                .HackAndSlash(
+                .Mimisbrunnr(
                     costumes.Select(i => i.Id).ToList(),
                     equipments,
                     consumables,

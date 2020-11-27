@@ -464,6 +464,24 @@ namespace Nekoyume.UI
             Close();
         }
 
+        public void NextMimisbrunnrStage(ActionBase.ActionEvaluation<Mimisbrunnr> eval)
+        {
+            Debug.Log("NextStage From ResponseHackAndSlash");
+            StartCoroutine(CoGoToNextMimisbrunnrStageClose(eval));
+        }
+        private IEnumerator CoGoToNextMimisbrunnrStageClose(ActionBase.ActionEvaluation<Mimisbrunnr> eval)
+        {
+            if (Find<Menu>().IsActive())
+            {
+                yield break;
+            }
+
+            yield return StartCoroutine(Find<StageLoadingScreen>().CoClose());
+            yield return StartCoroutine(CoFadeOut());
+            Game.Event.OnStageStart.Invoke(eval.Action.Result);
+            Close();
+        }
+
         public void GoToMain()
         {
             var props = new Value

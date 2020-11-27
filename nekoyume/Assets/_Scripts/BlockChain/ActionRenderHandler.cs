@@ -56,6 +56,7 @@ namespace Nekoyume.BlockChain
             RewardGold();
             CreateAvatar();
             HackAndSlash();
+            Mimisbrunnr();
             CombinationConsumable();
             Sell();
             SellCancellation();
@@ -143,6 +144,15 @@ namespace Nekoyume.BlockChain
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseHackAndSlash).AddTo(_disposables);
+
+        }
+
+        private void Mimisbrunnr()
+        {
+            _renderer.EveryRender<Mimisbrunnr>()
+                .Where(ValidateEvaluationForCurrentAgent)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseMimisbrunnr).AddTo(_disposables);
         }
 
         private void CombinationConsumable()
@@ -589,12 +599,6 @@ namespace Nekoyume.BlockChain
                     {
                         Widget.Find<QuestPreparation>().GoToStage(eval.Action.Result);
                     }
-                    // todo : hardHackAndSlash 쪽으로 옮겨가야하는 코드
-                    else if (Widget.Find<MimisbrunnrPreparation>().IsActive())
-                    {
-                        Widget.Find<MimisbrunnrPreparation>().GoToStage(eval.Action.Result);
-                    }
-                    //
                     else if (Widget.Find<Menu>().IsActive())
                     {
                         Widget.Find<Menu>().GoToStage(eval.Action.Result);
@@ -604,6 +608,64 @@ namespace Nekoyume.BlockChain
                          Widget.Find<BattleResult>().IsActive())
                 {
                     Widget.Find<BattleResult>().NextStage(eval);
+                }
+            }
+            else
+            {
+                var showLoadingScreen = false;
+                if (Widget.Find<StageLoadingScreen>().IsActive())
+                {
+                    Widget.Find<StageLoadingScreen>().Close();
+                }
+                if (Widget.Find<BattleResult>().IsActive())
+                {
+                    showLoadingScreen = true;
+                    Widget.Find<BattleResult>().Close();
+                }
+
+                var exc = eval.Exception.InnerException;
+                BackToMain(showLoadingScreen, exc);
+            }
+        }
+
+        private void ResponseMimisbrunnr(ActionBase.ActionEvaluation<Mimisbrunnr> eval)
+        {
+            if (eval.Exception is null)
+            {
+                _disposableForBattleEnd?.Dispose();
+                _disposableForBattleEnd =
+                    Game.Game.instance.Stage.onEnterToStageEnd
+                        .First()
+                        .Subscribe(_ =>
+                        {
+                            UpdateCurrentAvatarState(eval);
+                            UpdateWeeklyArenaState(eval);
+                            var avatarState =
+                                eval.OutputStates.GetAvatarState(eval.Action.avatarAddress);
+                            RenderQuest(eval.Action.avatarAddress,
+                                avatarState.questList.completedQuestIds);
+                            _disposableForBattleEnd = null;
+                        });
+
+                var actionFailPopup = Widget.Find<ActionFailPopup>();
+                actionFailPopup.CloseCallback = null;
+                actionFailPopup.Close();
+
+                if (Widget.Find<LoadingScreen>().IsActive())
+                {
+                    if (Widget.Find<MimisbrunnrPreparation>().IsActive())
+                    {
+                        Widget.Find<MimisbrunnrPreparation>().GoToStage(eval.Action.Result);
+                    }
+                    else if (Widget.Find<Menu>().IsActive())
+                    {
+                        Widget.Find<Menu>().GoToStage(eval.Action.Result);
+                    }
+                }
+                else if (Widget.Find<StageLoadingScreen>().IsActive() &&
+                         Widget.Find<BattleResult>().IsActive())
+                {
+                    Widget.Find<BattleResult>().NextMimisbrunnrStage(eval);
                 }
             }
             else
