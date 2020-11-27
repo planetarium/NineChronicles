@@ -16,8 +16,8 @@ using Serilog;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("hard_hack_and_slash")]
-    public class HardHackAndSlash : GameAction
+    [ActionType("mimisbrunnr")]
+    public class Mimisbrunnr : GameAction
     {
         public List<int> costumes;
         public List<Guid> equipments;
@@ -69,7 +69,7 @@ namespace Nekoyume.Action
             var sw = new Stopwatch();
             sw.Start();
             var started = DateTimeOffset.UtcNow;
-            Log.Debug("HHAS exec started.");
+            Log.Debug("Mimisbrunnr exec started.");
 
             if (!states.TryGetAvatarState(ctx.Signer, avatarAddress, out AvatarState avatarState))
             {
@@ -77,7 +77,7 @@ namespace Nekoyume.Action
             }
             
             sw.Stop();
-            Log.Debug("HHAS Get AgentAvatarStates: {Elapsed}", sw.Elapsed);
+            Log.Debug("Mimisbrunnr Get AgentAvatarStates: {Elapsed}", sw.Elapsed);
             
             sw.Restart();
 
@@ -134,10 +134,10 @@ namespace Nekoyume.Action
             }
             
             sw.Restart();
-            var hardStageSheet = states.GetSheet<HardStageSheet>();
-            if (!hardStageSheet.TryGetValue(stageId, out var hardStageSheetRow))
+            var mimisbrunnrSheet = states.GetSheet<MimisbrunnrSheet>();
+            if (!mimisbrunnrSheet.TryGetValue(stageId, out var mimisbrunnrSheetRow))
             {
-                throw new SheetRowNotFoundException("HardStageSheet", stageId);
+                throw new SheetRowNotFoundException("MimisbrunnrSheet", stageId);
             }
             
             foreach (var equipmentId in equipments)
@@ -145,14 +145,14 @@ namespace Nekoyume.Action
                 if (avatarState.inventory.TryGetNonFungibleItem(equipmentId, out ItemUsable itemUsable))
                 {
                     var elementalType = ((Equipment) itemUsable).ElementalType;
-                    if (!hardStageSheetRow.ElementalTypes.Exists(x => x == elementalType))
+                    if (!mimisbrunnrSheetRow.ElementalTypes.Exists(x => x == elementalType))
                     {
                         throw new InvalidWorldException($"ElementalType of {equipmentId} does not match.");
                     }
                 }
             }
             sw.Stop();
-            Log.Debug("HHAS Check Equipments ElementalType: {Elapsed}", sw.Elapsed);
+            Log.Debug("Mimisbrunnr Check Equipments ElementalType: {Elapsed}", sw.Elapsed);
 
             avatarState.ValidateEquipments(equipments, context.BlockIndex);
             avatarState.ValidateConsumable(foods, context.BlockIndex);
@@ -170,7 +170,7 @@ namespace Nekoyume.Action
             avatarState.EquipCostumes(new HashSet<int>(costumes));
             avatarState.EquipEquipments(equipments);
             sw.Stop();
-            Log.Debug("HHAS Unequip items: {Elapsed}", sw.Elapsed);
+            Log.Debug("Mimisbrunnr Unequip items: {Elapsed}", sw.Elapsed);
             
             sw.Restart();
             var costumeStatSheet = states.GetSheet<CostumeStatSheet>();
@@ -184,15 +184,15 @@ namespace Nekoyume.Action
                 costumeStatSheet
             );
             sw.Stop();
-            Log.Debug("HHAS Initialize Simulator: {Elapsed}", sw.Elapsed);
+            Log.Debug("Mimisbrunnr Initialize Simulator: {Elapsed}", sw.Elapsed);
             
             sw.Restart();
             simulator.Simulate();
             sw.Stop();
-            Log.Debug("HHAS Simulator.Simulate(): {Elapsed}", sw.Elapsed);
+            Log.Debug("Mimisbrunnr Simulator.Simulate(): {Elapsed}", sw.Elapsed);
             
             Log.Debug(
-                "Execute HackAndSlash({AvatarAddress}); worldId: {WorldId}, stageId: {StageId}, result: {Result}, " +
+                "Execute Mimisbrunnr({AvatarAddress}); worldId: {WorldId}, stageId: {StageId}, result: {Result}, " +
                 "clearWave: {ClearWave}, totalWave: {TotalWave}",
                 avatarAddress,
                 worldId,
@@ -215,7 +215,7 @@ namespace Nekoyume.Action
                 );
             }
             sw.Stop();
-            Log.Debug("HHAS ClearStage: {Elapsed}", sw.Elapsed);
+            Log.Debug("Mimisbrunnr ClearStage: {Elapsed}", sw.Elapsed);
             
             sw.Restart();
             avatarState.Update(simulator);
@@ -228,7 +228,7 @@ namespace Nekoyume.Action
             states = states.SetState(avatarAddress, avatarState.Serialize());
 
             sw.Stop();
-            Log.Debug("HHAS Set AvatarState: {Elapsed}", sw.Elapsed);
+            Log.Debug("Mimisbrunnr Set AvatarState: {Elapsed}", sw.Elapsed);
             
             sw.Restart();
             if (states.TryGetState(RankingMapAddress, out Dictionary d) && simulator.Log.IsClear)
@@ -237,19 +237,19 @@ namespace Nekoyume.Action
                 ranking.Update(avatarState);
 
                 sw.Stop();
-                Log.Debug("HHAS Update RankingState: {Elapsed}", sw.Elapsed);
+                Log.Debug("Mimisbrunnr Update RankingState: {Elapsed}", sw.Elapsed);
                 sw.Restart();
 
                 var serialized = ranking.Serialize();
 
                 sw.Stop();
-                Log.Debug("HHAS Serialize RankingState: {Elapsed}", sw.Elapsed);
+                Log.Debug("Mimisbrunnr Serialize RankingState: {Elapsed}", sw.Elapsed);
                 sw.Restart();
                 states = states.SetState(RankingMapAddress, serialized);
             }
 
             sw.Stop();
-            Log.Debug("HHAS Set RankingState: {Elapsed}", sw.Elapsed);
+            Log.Debug("Mimisbrunnr Set RankingState: {Elapsed}", sw.Elapsed);
             
             sw.Restart();
             if (simulator.Log.stageId >= GameConfig.RequireClearedStageLevel.ActionsInRankingBoard &&
@@ -272,12 +272,12 @@ namespace Nekoyume.Action
                     }
 
                     sw.Stop();
-                    Log.Debug("HHAS Update WeeklyArenaState: {Elapsed}", sw.Elapsed);
+                    Log.Debug("Mimisbrunnr Update WeeklyArenaState: {Elapsed}", sw.Elapsed);
 
                     sw.Restart();
                     var weeklySerialized = weekly.Serialize();
                     sw.Stop();
-                    Log.Debug("HHAS Serialize RankingState: {Elapsed}", sw.Elapsed);
+                    Log.Debug("Mimisbrunnr Serialize RankingState: {Elapsed}", sw.Elapsed);
 
                     states = states.SetState(weekly.address, weeklySerialized);
                 }
@@ -286,7 +286,7 @@ namespace Nekoyume.Action
             Result = simulator.Log;
 
             var ended = DateTimeOffset.UtcNow;
-            Log.Debug("HHAS Total Executed Time: {Elapsed}", ended - started);
+            Log.Debug("Mimisbrunnr Total Executed Time: {Elapsed}", ended - started);
             return states;
         }
     }

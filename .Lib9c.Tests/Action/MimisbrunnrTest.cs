@@ -18,7 +18,7 @@
     using Nekoyume.TableData;
     using Xunit;
 
-    public class HardHackAndSlashTest
+    public class MimisbrunnrTest
     {
         private readonly TableSheets _tableSheets;
 
@@ -32,7 +32,7 @@
         private readonly WeeklyArenaState _weeklyArenaState;
         private readonly IAccountStateDelta _initialState;
 
-        public HardHackAndSlashTest()
+        public MimisbrunnrTest()
         {
             var sheets = TableSheetsImporter.ImportSheets();
             _tableSheets = new TableSheets(sheets);
@@ -118,7 +118,7 @@
 
             var state = _initialState.SetState(_avatarAddress, previousAvatarState.Serialize());
 
-            var action = new HardHackAndSlash()
+            var action = new Mimisbrunnr()
             {
                 costumes = new List<int> { costumeId },
                 equipments = new List<Guid>() { equipment.ItemId },

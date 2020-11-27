@@ -6,7 +6,7 @@ using static Nekoyume.TableData.TableExtensions;
 namespace Nekoyume.TableData
 {
     [Serializable]
-    public class HardStageSheet : Sheet<int, HardStageSheet.Row>
+    public class MimisbrunnrSheet : Sheet<int, MimisbrunnrSheet.Row>
     {
         [Serializable]
         public class Row : SheetRow<int>
@@ -30,7 +30,7 @@ namespace Nekoyume.TableData
             }
         }
         
-        public HardStageSheet() : base(nameof(HardStageSheet))
+        public MimisbrunnrSheet() : base(nameof(MimisbrunnrSheet))
         {
         }
     }

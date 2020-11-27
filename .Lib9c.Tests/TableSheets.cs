@@ -44,7 +44,7 @@ namespace Lib9c.Tests
 
         public StageSheet StageSheet { get; private set; }
 
-        public HardStageSheet HardStageSheet { get; private set; }
+        public MimisbrunnrSheet MimisbrunnrSheet { get; private set; }
 
         public CharacterSheet CharacterSheet { get; private set; }
 
