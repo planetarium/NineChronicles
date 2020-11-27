@@ -79,7 +79,7 @@ namespace Nekoyume.UI
             }
 
             submitButton.OnSubmitClick
-                .Subscribe(_ => GoToQuestPreparation())
+                .Subscribe(_ => GoToPreparation())
                 .AddTo(gameObject);
         }
 
@@ -219,7 +219,7 @@ namespace Nekoyume.UI
             buttonNotification.SetActive(stageId == Find<WorldMap>().StageIdToNotify);
         }
 
-        private void GoToQuestPreparation()
+        private void GoToPreparation()
         {
             Close();
 
@@ -231,8 +231,8 @@ namespace Nekoyume.UI
                     break;
 
                 case StageType.Mimisbrunnr:
-                    Find<MimisbrunnrPreparation>().Show();
                     Find<MimisbrunnrPreparation>().StageId = _sharedViewModel.SelectedStageId.Value;
+                    Find<MimisbrunnrPreparation>().Show();
                     break;
             }
         }

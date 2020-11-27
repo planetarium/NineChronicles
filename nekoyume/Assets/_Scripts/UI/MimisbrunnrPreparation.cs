@@ -20,6 +20,9 @@ using UnityEngine;
 using UnityEngine.UI;
 using mixpanel;
 using Nekoyume.L10n;
+using Nekoyume.Model.Elemental;
+using Nekoyume.Model.Mail;
+using Nekoyume.TableData;
 
 namespace Nekoyume.UI
 {
@@ -44,7 +47,7 @@ namespace Nekoyume.UI
         private EquipmentSlots equipmentSlots = null;
 
         [SerializeField]
-        private Button questButton = null;
+        private Button startButton = null;
 
         [SerializeField]
         private GameObject equipSlotGlow = null;
@@ -86,7 +89,7 @@ namespace Nekoyume.UI
 
         private const int WorldId = 101;
 
-        private readonly IntReactiveProperty _stageId = new IntReactiveProperty();
+        private readonly IntReactiveProperty _stageId = new IntReactiveProperty(10001);
 
         private int _requiredCost;
 
@@ -107,7 +110,7 @@ namespace Nekoyume.UI
         // 행동력이 0일 경우 퀘스트 버튼이 비활성화되므로 임시 방편으로 행동력도 비교함.
         public override bool CanHandleInputEvent =>
             base.CanHandleInputEvent &&
-            (questButton.interactable ||
+            (startButton.interactable ||
             ReactiveAvatarState.ActionPoint.Value == 0);
 
         #region override
@@ -150,7 +153,7 @@ namespace Nekoyume.UI
 
             _stageId.Subscribe(SubscribeStage).AddTo(gameObject);
 
-            questButton.OnClickAsObservable().Subscribe(_ => QuestClick(false)).AddTo(gameObject);
+            startButton.OnClickAsObservable().Subscribe(_ => BattleClick(false)).AddTo(gameObject);
 
             Game.Event.OnRoomEnter.AddListener(b => Close());
 
@@ -227,7 +230,7 @@ namespace Nekoyume.UI
             ReactiveAvatarState.ActionPoint.Subscribe(SubscribeActionPoint).AddTo(_disposables);
             _tempStats = _player.Model.Stats.Clone() as CharacterStats;
             inventory.SharedModel.UpdateEquipmentNotification();
-            questButton.gameObject.SetActive(true);
+            startButton.gameObject.SetActive(true);
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
@@ -307,6 +310,19 @@ namespace Nekoyume.UI
                 return;
             }
 
+            foreach (var slot in equipmentSlots)
+            {
+                if (slot.Item != null)
+                {
+                    slot.SetDim(!IsExistElementalType(slot.Item.ElementalType));
+                }
+            }
+
+            inventory.SharedModel.DimmedFunc.Value = inventoryItem =>
+                inventoryItem.ItemBase.Value.ItemType == ItemType.Costume ||
+                inventoryItem.ItemBase.Value.ItemType == ItemType.Material ||
+                !IsExistElementalType(inventoryItem.ItemBase.Value.ElementalType);
+
             inventory.SharedModel.EquippedEnabledFunc.SetValueAndForceNotify(inventoryItem =>
             {
                 if (inventoryItem.ItemBase.Value.ItemType == ItemType.Costume &&
@@ -353,6 +369,8 @@ namespace Nekoyume.UI
             {
                 WorldInformation = States.Instance.CurrentAvatarState.worldInformation
             };
+            SharedViewModel.SelectedWorldId.SetValueAndForceNotify(WorldId);
+            SharedViewModel.SelectedStageId.SetValueAndForceNotify(_stageId.Value);
 
             Game.Game.instance.TableSheets.WorldSheet.TryGetValue(WorldId, out var worldRow, true);
             stageInfo.Show(SharedViewModel, worldRow, StageInformation.StageType.Mimisbrunnr);
@@ -361,7 +379,7 @@ namespace Nekoyume.UI
 
         private void SubscribeReadyToQuest(bool ready)
         {
-            questButton.interactable = ready;
+            startButton.interactable = ready;
             requiredPointText.color = ready ? Color.white : Color.red;
             foreach (var particle in particles)
             {
@@ -394,16 +412,22 @@ namespace Nekoyume.UI
 
         #endregion
 
-        private void QuestClick(bool repeat)
+        private void BattleClick(bool repeat)
         {
-            questButton.interactable = false;
-            StartCoroutine(CoQuestClick(repeat));
+            if (equipmentSlots.Where(x => x.Item != null)
+                .Any(x => !IsExistElementalType(x.Item.ElementalType)))
+            {
+                Notification.Push(MailType.System,
+                    "'해당 장비로는 시작할 수 없습니다.' 이런식의 다국어 문구가 필요!");
+                return;
+            }
+
+            startButton.interactable = false;
+            StartCoroutine(CoBattleClick(repeat));
         }
 
-        private IEnumerator CoQuestClick(bool repeat)
+        private IEnumerator CoBattleClick(bool repeat)
         {
-            // 스테이지 체크해서 하드모드일경우 다른방식으로  ㄱㄱ
-
             var animation = ItemMoveAnimation.Show(actionPointImage.sprite,
                 actionPointImage.transform.position,
                 buttonStarImageTransform.position,
@@ -415,7 +439,7 @@ namespace Nekoyume.UI
             LocalStateModifier.ModifyAvatarActionPoint(States.Instance.CurrentAvatarState.address,
                 -_requiredCost);
             yield return new WaitWhile(() => animation.IsPlaying);
-            Quest(repeat);
+            Battle(repeat);
             AudioController.PlayClick();
             AnalyticsManager.Instance.BattleEntrance(repeat);
         }
@@ -460,6 +484,7 @@ namespace Nekoyume.UI
 
             inventoryItem.EquippedEnabled.Value = true;
             slot.Set(itemBase, ShowTooltip, Unequip);
+            slot.SetDim(!IsExistElementalType(slot.Item.ElementalType));
             LocalStateItemEquipModify(slot.Item, true);
             HideGlowEquipSlot();
             PostEquipOrUnequip(slot);
@@ -643,12 +668,12 @@ namespace Nekoyume.UI
             }
         }
 
-        private void Quest(bool repeat)
+        private void Battle(bool repeat)
         {
             Find<BottomMenu>().Close(true);
             Find<LoadingScreen>().Show();
 
-            questButton.gameObject.SetActive(false);
+            startButton.gameObject.SetActive(false);
             _player.StartRun();
             ActionCamera.instance.ChaseX(_player.transform);
 
@@ -710,7 +735,7 @@ namespace Nekoyume.UI
 
             Find<LoadingScreen>().Show();
 
-            questButton.gameObject.SetActive(false);
+            startButton.gameObject.SetActive(false);
             _player.StartRun();
             ActionCamera.instance.ChaseX(_player.transform);
 
@@ -762,6 +787,18 @@ namespace Nekoyume.UI
             );
             simulator.Simulate();
             GoToStage(simulator.Log);
+        }
+
+        private bool IsExistElementalType(ElementalType elementalType)
+        {
+            var mimisbrunnrSheet = Game.Game.instance.TableSheets.MimisbrunnrSheet;
+            if (!mimisbrunnrSheet.TryGetValue(_stageId.Value, out var mimisbrunnrSheetRow))
+            {
+                throw new KeyNotFoundException(
+                    $"mimisbrunnrSheet.TryGetValue() {nameof(_stageId)}({_stageId})");
+            }
+
+            return mimisbrunnrSheetRow.ElementalTypes.Exists(x => x == elementalType);
         }
     }
 }
