@@ -70,7 +70,7 @@
                 Guid.NewGuid(),
                 0);
             _avatarState.inventory.AddItem(equipment);
-            
+
             var consumable = ItemFactory.CreateItemUsable(
                 _tableSheets.ConsumableItemSheet.First,
                 Guid.NewGuid(),
@@ -100,7 +100,7 @@
 
             var equipment = avatarState.inventory.Equipments.FirstOrDefault();
             Assert.NotNull(equipment);
-            
+
             var consumable = avatarState.inventory.Consumables.FirstOrDefault();
             Assert.NotNull(equipment);
 
@@ -147,16 +147,6 @@
                 var shopItem = nonFungibleItem is Costume ?
                     products.First(x => x.Costume != null) :
                     products.First(x => x.ItemUsable != null);
-
-                if (shopItem.ItemUsable != null)
-                {
-                    Assert.Equal(nonFungibleItem.ItemId, shopItem.ItemUsable.ItemId);
-                }
-
-                if (shopItem.Costume != null)
-                {
-                    Assert.Equal(nonFungibleItem.ItemId, shopItem.Costume.ItemId);
-                }
 
                 Assert.Equal(price, shopItem.Price);
                 Assert.Equal(_agentAddress, shopItem.SellerAgentAddress);
