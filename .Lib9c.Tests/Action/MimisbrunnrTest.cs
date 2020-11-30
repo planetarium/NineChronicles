@@ -118,7 +118,7 @@
 
             var state = _initialState.SetState(_avatarAddress, previousAvatarState.Serialize());
 
-            var action = new Mimisbrunnr()
+            var action = new MimisbrunnrBattle()
             {
                 costumes = new List<int> { costumeId },
                 equipments = new List<Guid>() { equipment.ItemId },

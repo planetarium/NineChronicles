@@ -16,8 +16,8 @@ using Serilog;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("mimisbrunnr")]
-    public class Mimisbrunnr : GameAction
+    [ActionType("mimisbrunnr_battle")]
+    public class MimisbrunnrBattle : GameAction
     {
         public List<int> costumes;
         public List<Guid> equipments;
