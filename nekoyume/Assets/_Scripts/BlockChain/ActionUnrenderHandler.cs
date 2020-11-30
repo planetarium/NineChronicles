@@ -78,7 +78,7 @@ namespace Nekoyume.BlockChain
 
         private void Sell()
         {
-            _renderer.EveryUnrender<Sell2>()
+            _renderer.EveryUnrender<Sell3>()
                 .Where(ValidateEvaluationForCurrentAvatarState)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseUnrenderSell)
@@ -136,7 +136,7 @@ namespace Nekoyume.BlockChain
             UnrenderQuest(renderQuestAvatarAddress, renderQuestCompletedQuestIds);
         }
 
-        private void ResponseUnrenderSell(ActionBase.ActionEvaluation<Sell2> eval)
+        private void ResponseUnrenderSell(ActionBase.ActionEvaluation<Sell3> eval)
         {
             if (!(eval.Exception is null))
             {
