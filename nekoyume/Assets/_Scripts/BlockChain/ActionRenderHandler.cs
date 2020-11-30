@@ -799,6 +799,7 @@ namespace Nekoyume.BlockChain
         public static void BackToMain(bool showLoadingScreen, Exception exc)
         {
             Debug.LogException(exc);
+            Game.Game.instance.Agent.SendException(exc);
 
             if (DoNotUsePopupError(exc, out var key, out var code, out var errorMsg))
             {
@@ -808,18 +809,15 @@ namespace Nekoyume.BlockChain
             Game.Event.OnRoomEnter.Invoke(showLoadingScreen);
             Game.Game.instance.Stage.OnRoomEnterEnd
                 .First()
-                .Subscribe(_ =>
-                {
-                    PopupError(key, code, errorMsg);
-                    Game.Game.instance.Agent.SendException(exc);
-                });
-
+                .Subscribe(_ => PopupError(key, code, errorMsg));
+            
             MainCanvas.instance.InitWidgetInMain();
         }
 
         public static void PopupError(Exception exc)
         {
             Debug.LogException(exc);
+            Game.Game.instance.Agent.SendException(exc);
 
             if (DoNotUsePopupError(exc, out var key, out var code, out var errorMsg))
             {
@@ -839,7 +837,7 @@ namespace Nekoyume.BlockChain
             {
                 // NOTE: `ActionTimeoutException` 이지만 아직 해당 액션이 스테이지 되어 있을 경우(27)에는 무시합니다.
                 // 이 경우 `Game.Game.Instance.Agent`에서 블록 싱크를 시도하며 결과적으로 싱크에 성공하거나 `Disconnected`가 됩니다.
-                // 싱크에 성공할 경우에는 `CannotToRenderWhenSyncingBlocksException` 예외로 다시 들어옵니다.
+                // 싱크에 성공할 경우에는 `UnableToRenderWhenSyncingBlocksException` 예외로 다시 들어옵니다.
                 // `Disconnected`가 될 경우에는 이 `BackToMain`이 호출되지 않고 `Game.Game.Instance.QuitWithAgentConnectionError()`가 호출됩니다.
                 return true;
             }
