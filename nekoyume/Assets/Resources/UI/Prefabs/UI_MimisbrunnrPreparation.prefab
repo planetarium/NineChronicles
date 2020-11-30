@@ -1335,7 +1335,7 @@ MonoBehaviour:
   - {fileID: 8017180984453882486}
   equipmentTitleText: {fileID: 9069013289754000527}
   equipmentSlots: {fileID: 7883566207052153685}
-  questButton: {fileID: 1779052520742067736}
+  startButton: {fileID: 1779052520742067736}
   equipSlotGlow: {fileID: 6387715629849393821}
   requiredPointText: {fileID: 9045627835537736917}
   particles:
@@ -1838,7 +1838,7 @@ GameObject:
   - component: {fileID: 1779052520742067736}
   - component: {fileID: 7296473641982930867}
   m_Layer: 5
-  m_Name: QuestButton
+  m_Name: StartButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6110,31 +6110,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: UI_start_01
       objectReference: {fileID: 0}
-    - target: {fileID: 3465076794079010485, guid: c22db27a2a4b5b647a11215b31b3390a,
-        type: 3}
-      propertyPath: scalingMode
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3465076794079010485, guid: c22db27a2a4b5b647a11215b31b3390a,
-        type: 3}
-      propertyPath: playOnAwake
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5158831303715442741, guid: c22db27a2a4b5b647a11215b31b3390a,
-        type: 3}
-      propertyPath: m_SortingLayerID
-      value: 555532309
-      objectReference: {fileID: 0}
-    - target: {fileID: 5158831303715442741, guid: c22db27a2a4b5b647a11215b31b3390a,
-        type: 3}
-      propertyPath: m_SortingLayer
-      value: 7
-      objectReference: {fileID: 0}
-    - target: {fileID: 5158831303715442741, guid: c22db27a2a4b5b647a11215b31b3390a,
-        type: 3}
-      propertyPath: m_SortingOrder
-      value: -8
-      objectReference: {fileID: 0}
     - target: {fileID: 411883241907555437, guid: c22db27a2a4b5b647a11215b31b3390a,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -6199,6 +6174,31 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalScale.y
       value: 1.6
+      objectReference: {fileID: 0}
+    - target: {fileID: 5158831303715442741, guid: c22db27a2a4b5b647a11215b31b3390a,
+        type: 3}
+      propertyPath: m_SortingLayerID
+      value: 555532309
+      objectReference: {fileID: 0}
+    - target: {fileID: 5158831303715442741, guid: c22db27a2a4b5b647a11215b31b3390a,
+        type: 3}
+      propertyPath: m_SortingLayer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 5158831303715442741, guid: c22db27a2a4b5b647a11215b31b3390a,
+        type: 3}
+      propertyPath: m_SortingOrder
+      value: -8
+      objectReference: {fileID: 0}
+    - target: {fileID: 3465076794079010485, guid: c22db27a2a4b5b647a11215b31b3390a,
+        type: 3}
+      propertyPath: scalingMode
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3465076794079010485, guid: c22db27a2a4b5b647a11215b31b3390a,
+        type: 3}
+      propertyPath: playOnAwake
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c22db27a2a4b5b647a11215b31b3390a, type: 3}
@@ -6975,16 +6975,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Inventory
       objectReference: {fileID: 0}
-    - target: {fileID: 6721517094651527619, guid: a30f6d5b592354710aaf714b378249c2,
-        type: 3}
-      propertyPath: cellInterval
-      value: -0.36571428
-      objectReference: {fileID: 0}
-    - target: {fileID: 6721517094651527619, guid: a30f6d5b592354710aaf714b378249c2,
-        type: 3}
-      propertyPath: scrollOffset
-      value: -0.36571428
-      objectReference: {fileID: 0}
     - target: {fileID: 224435345013165254, guid: a30f6d5b592354710aaf714b378249c2,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -7089,6 +7079,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Pivot.y
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6721517094651527619, guid: a30f6d5b592354710aaf714b378249c2,
+        type: 3}
+      propertyPath: cellInterval
+      value: -0.36571428
+      objectReference: {fileID: 0}
+    - target: {fileID: 6721517094651527619, guid: a30f6d5b592354710aaf714b378249c2,
+        type: 3}
+      propertyPath: scrollOffset
+      value: -0.36571428
       objectReference: {fileID: 0}
     - target: {fileID: 7573102957057421784, guid: a30f6d5b592354710aaf714b378249c2,
         type: 3}
