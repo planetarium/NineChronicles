@@ -18,7 +18,7 @@
     using Nekoyume.TableData;
     using Xunit;
 
-    public class MimisbrunnrTest
+    public class MimisbrunnrBttleTest
     {
         private readonly TableSheets _tableSheets;
 
@@ -32,7 +32,7 @@
         private readonly WeeklyArenaState _weeklyArenaState;
         private readonly IAccountStateDelta _initialState;
 
-        public MimisbrunnrTest()
+        public MimisbrunnrBttleTest()
         {
             var sheets = TableSheetsImporter.ImportSheets();
             _tableSheets = new TableSheets(sheets);
@@ -73,7 +73,6 @@
 
         [Theory]
         [InlineData(200, 101, 10010, true)]
-        // [InlineData(200, 101, 10001, true)]
         public void Execute(int avatarLevel, int worldId, int stageId, bool contains)
         {
             Assert.True(_tableSheets.WorldSheet.TryGetValue(worldId, out var worldRow));
@@ -97,9 +96,24 @@
                 ItemFactory.CreateItem(_tableSheets.ItemSheet[costumeId], new ItemEnhancementTest.TestRandom());
             previousAvatarState.inventory.AddItem(costume);
 
+            var mimisbrunnrSheet = _tableSheets.MimisbrunnrSheet;
+            if (!mimisbrunnrSheet.TryGetValue(stageId, out var mimisbrunnrSheetRow))
+            {
+                throw new SheetRowNotFoundException("MimisbrunnrSheet", stageId);
+            }
+
             var equipmentRow = _tableSheets.EquipmentItemSheet.Values.First();
             var equipment = ItemFactory.CreateItemUsable(equipmentRow, default, 0);
             previousAvatarState.inventory.AddItem(equipment);
+
+            foreach (var equipmentId in previousAvatarState.inventory.Equipments)
+            {
+                if (previousAvatarState.inventory.TryGetNonFungibleItem(equipmentId, out ItemUsable itemUsable))
+                {
+                    var elementalType = ((Equipment)itemUsable).ElementalType;
+                    Assert.True(mimisbrunnrSheetRow.ElementalTypes.Exists(x => x == elementalType));
+                }
+            }
 
             var result = new CombinationConsumable.ResultModel()
             {
