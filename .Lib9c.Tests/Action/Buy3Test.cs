@@ -17,6 +17,8 @@
 
     public class Buy3Test
     {
+        private const long ProductPrice = 100;
+
         private readonly Address _sellerAgentAddress;
         private readonly Address _sellerAvatarAddress;
         private readonly Address _buyerAgentAddress;
@@ -102,21 +104,21 @@
                 _sellerAgentAddress,
                 _sellerAvatarAddress,
                 Guid.NewGuid(),
-                new FungibleAssetValue(_goldCurrencyState.Currency, 100, 0),
+                new FungibleAssetValue(_goldCurrencyState.Currency, ProductPrice, 0),
                 equipment));
 
             shopState.Register(new ShopItem(
                 _sellerAgentAddress,
                 _sellerAvatarAddress,
                 Guid.NewGuid(),
-                new FungibleAssetValue(_goldCurrencyState.Currency, 100, 0),
+                new FungibleAssetValue(_goldCurrencyState.Currency, ProductPrice, 0),
                 consumable));
 
             shopState.Register(new ShopItem(
                 _sellerAgentAddress,
                 _sellerAvatarAddress,
                 Guid.NewGuid(),
-                new FungibleAssetValue(_goldCurrencyState.Currency, 100, 0),
+                new FungibleAssetValue(_goldCurrencyState.Currency, ProductPrice, 0),
                 costume));
 
             _initialState = _initialState
@@ -126,7 +128,9 @@
                 .SetState(_sellerAvatarAddress, sellerAvatarState.Serialize())
                 .SetState(_buyerAgentAddress, buyerAgentState.Serialize())
                 .SetState(_buyerAvatarAddress, _buyerAvatarState.Serialize())
-                .MintAsset(_buyerAgentAddress, _goldCurrencyState.Currency * 300);
+                .MintAsset(_buyerAgentAddress, shopState.Products
+                    .Select(pair => pair.Value.Price)
+                    .Aggregate((totalPrice, next) => totalPrice + next));
         }
 
         [Fact]

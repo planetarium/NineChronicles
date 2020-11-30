@@ -17,6 +17,8 @@
 
     public class Sell3Test
     {
+        private const long ProductPrice = 100;
+
         private readonly Address _agentAddress;
         private readonly Address _avatarAddress;
         private readonly Currency _currency;
@@ -111,7 +113,7 @@
 
             var previousStates = _initialState;
             var currencyState = previousStates.GetGoldCurrency();
-            var price = new FungibleAssetValue(currencyState, 100, 0);
+            var price = new FungibleAssetValue(currencyState, ProductPrice, 0);
 
             var productCount = 0;
             foreach (var nonFungibleItem in items)

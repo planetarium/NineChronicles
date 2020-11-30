@@ -103,7 +103,7 @@ namespace Nekoyume.Action
                     : new ShopItem(ctx.Signer, sellerAvatarAddress, productId, price, itemUsable);
             }
 
-            // 인벤토리에서 판매할 아이템을 선택하고 수량을 조절한다.
+            // Select an item to sell from the inventory and adjust the quantity.
             if (avatarState.inventory.TryGetNonFungibleItem<Equipment>(itemId, out var equipment))
             {
                 CheckRequiredBlockIndex(equipment);
