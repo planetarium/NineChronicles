@@ -91,20 +91,7 @@ namespace Nekoyume.BlockChain
                 });
         }
 
-        public IObservable<ActionBase.ActionEvaluation<Mimisbrunnr>> Mimisbrunnr(
-            Player player,
-            int worldId,
-            int stageId)
-        {
-            return Mimisbrunnr(
-                player.Costumes.Select(costume => costume.Id).ToList(),
-                player.Equipments,
-                null,
-                worldId,
-                stageId);
-        }
-
-        public IObservable<ActionBase.ActionEvaluation<Mimisbrunnr>> Mimisbrunnr(
+        public IObservable<ActionBase.ActionEvaluation<MimisbrunnrBattle>> MimisbrunnrBattle(
             List<int> costumes,
             List<Equipment> equipments,
             List<Consumable> foods,
@@ -123,7 +110,7 @@ namespace Nekoyume.BlockChain
             equipments = equipments ?? new List<Equipment>();
             foods = foods ?? new List<Consumable>();
 
-            var action = new Mimisbrunnr
+            var action = new MimisbrunnrBattle
             {
                 costumes = costumes,
                 equipments = equipments.Select(e => e.ItemId).ToList(),
@@ -141,7 +128,7 @@ namespace Nekoyume.BlockChain
                 .Concat(foods.Select(f => f.Id))
                 .ToArray();
             AnalyticsManager.Instance.Battle(itemIDs);
-            return _renderer.EveryRender<Mimisbrunnr>()
+            return _renderer.EveryRender<MimisbrunnrBattle>()
                 .SkipWhile(eval => !eval.Action.Id.Equals(action.Id))
                 .Take(1)
                 .Last()

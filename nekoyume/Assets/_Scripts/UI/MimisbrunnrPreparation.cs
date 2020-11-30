@@ -693,7 +693,7 @@ namespace Nekoyume.UI
             _stage.repeatStage = repeat;
             ActionRenderHandler.Instance.Pending = true;
             Game.Game.instance.ActionManager
-                .Mimisbrunnr(
+                .MimisbrunnrBattle(
                     costumes.Select(i => i.Id).ToList(),
                     equipments,
                     consumables,

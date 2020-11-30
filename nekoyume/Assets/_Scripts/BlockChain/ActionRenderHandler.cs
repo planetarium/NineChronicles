@@ -56,7 +56,7 @@ namespace Nekoyume.BlockChain
             RewardGold();
             CreateAvatar();
             HackAndSlash();
-            Mimisbrunnr();
+            MimisbrunnrBattle();
             CombinationConsumable();
             Sell();
             SellCancellation();
@@ -147,9 +147,9 @@ namespace Nekoyume.BlockChain
 
         }
 
-        private void Mimisbrunnr()
+        private void MimisbrunnrBattle()
         {
-            _renderer.EveryRender<Mimisbrunnr>()
+            _renderer.EveryRender<MimisbrunnrBattle>()
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseMimisbrunnr).AddTo(_disposables);
@@ -628,7 +628,7 @@ namespace Nekoyume.BlockChain
             }
         }
 
-        private void ResponseMimisbrunnr(ActionBase.ActionEvaluation<Mimisbrunnr> eval)
+        private void ResponseMimisbrunnr(ActionBase.ActionEvaluation<MimisbrunnrBattle> eval)
         {
             if (eval.Exception is null)
             {

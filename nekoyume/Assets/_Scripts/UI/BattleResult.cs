@@ -464,12 +464,12 @@ namespace Nekoyume.UI
             Close();
         }
 
-        public void NextMimisbrunnrStage(ActionBase.ActionEvaluation<Mimisbrunnr> eval)
+        public void NextMimisbrunnrStage(ActionBase.ActionEvaluation<MimisbrunnrBattle> eval)
         {
             Debug.Log("NextStage From ResponseHackAndSlash");
             StartCoroutine(CoGoToNextMimisbrunnrStageClose(eval));
         }
-        private IEnumerator CoGoToNextMimisbrunnrStageClose(ActionBase.ActionEvaluation<Mimisbrunnr> eval)
+        private IEnumerator CoGoToNextMimisbrunnrStageClose(ActionBase.ActionEvaluation<MimisbrunnrBattle> eval)
         {
             if (Find<Menu>().IsActive())
             {
