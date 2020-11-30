@@ -88,6 +88,7 @@ namespace Nekoyume
             public const int ItemEnhancementAction = IsEditor ? 1 : 9;
             public const int ActionsInShop = IsEditor ? 1 : 17;
             public const int ActionsInRankingBoard = IsEditor ? 1 : 25;
+            public const int ActionsInMimisbrunnr = 100;
 
             #endregion
 
@@ -103,6 +104,7 @@ namespace Nekoyume
             public const int UIBottomMenuMail = CombinationEquipmentAction;
             public const int UIBottomMenuChat = IsEditor ? 1 : 7;
             public const int UIBottomMenuQuest = 1;
+            public const int UIBottomMenuMimisbrunnr = ActionsInMimisbrunnr;
 
             #endregion
         }
