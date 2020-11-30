@@ -16,8 +16,6 @@ namespace Nekoyume.Battle
 {
     public class StageSimulator : Simulator
     {
-        public const long StartBlockIndexToUseSimulatorV2 = 230000;
-
         private readonly List<Wave> _waves;
         private readonly List<ItemBase> _waveRewards;
         public CollectionMap ItemMap = new CollectionMap();

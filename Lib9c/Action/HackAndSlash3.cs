@@ -175,14 +175,7 @@ namespace Nekoyume.Action
             Log.Debug("HAS Initialize Simulator: {Elapsed}", sw.Elapsed);
 
             sw.Restart();
-            if (ctx.BlockIndex >= StageSimulator.StartBlockIndexToUseSimulatorV2)
-            {
-                simulator.SimulateV2();
-            }
-            else
-            {
-                simulator.Simulate();
-            }
+            simulator.Simulate();
             sw.Stop();
             Log.Debug("HAS Simulator.Simulate(): {Elapsed}", sw.Elapsed);
 
