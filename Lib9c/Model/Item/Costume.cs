@@ -44,29 +44,5 @@ namespace Nekoyume.Model.Item
                 [(Text) "item_id"] = ItemId.Serialize(),
             }.Union((Dictionary) base.Serialize()));
 #pragma warning restore LAA1002
-
-        protected bool Equals(Costume other)
-        {
-            return base.Equals(other) && equipped == other.equipped && ItemId.Equals(other.ItemId);
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
-            return Equals((Costume) obj);
-        }
-
-        public override int GetHashCode()
-        {
-            unchecked
-            {
-                int hashCode = base.GetHashCode();
-                hashCode = (hashCode * 397) ^ equipped.GetHashCode();
-                hashCode = (hashCode * 397) ^ ItemId.GetHashCode();
-                return hashCode;
-            }
-        }
     }
 }
