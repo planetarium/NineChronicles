@@ -139,7 +139,7 @@ namespace Nekoyume.UI.Module
                     }
                 }
 
-                page.Show(stageModels, imageKey, pageIndex);
+                page.Show(stageModels, imageKey, worldRow.Id == 101 ? 1 : pageIndex);
                 pageIndex += 1;
                 stageOffset += stageModels.Count;
                 if (stageOffset >= stageRowsCount)
