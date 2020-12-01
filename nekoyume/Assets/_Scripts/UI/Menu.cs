@@ -12,6 +12,7 @@ using UniRx;
 using UnityEngine;
 using Random = UnityEngine.Random;
 using mixpanel;
+using Nekoyume.L10n;
 using Nekoyume.Model.State;
 
 namespace Nekoyume.UI
@@ -358,7 +359,10 @@ namespace Nekoyume.UI
 
             if (!SharedViewModel.WorldInformation.TryGetWorld(worldId, out var world))
             {
-                throw new ArgumentException(nameof(worldId));
+                var unlockConditionString = string.Format(
+                    L10nManager.Localize("UI_STAGE_LOCK_FORMAT"),
+                    100);
+                return;
             }
 
             SharedViewModel.SelectedWorldId.SetValueAndForceNotify(world.Id);

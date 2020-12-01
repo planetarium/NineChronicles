@@ -178,7 +178,7 @@ namespace Nekoyume.UI
 
             Mixpanel.Track("Unity/Click Stage");
             _stage = Game.Game.instance.Stage;
-            _stage.LoadBackground("dungeon");
+            _stage.LoadBackground("dungeon_02");
             _player = _stage.GetPlayer(_stage.questPreparationPosition);
             if (_player is null)
             {
