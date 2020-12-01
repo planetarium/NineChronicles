@@ -85,6 +85,10 @@ namespace Nekoyume.Model.Item
         private readonly List<Item> _items = new List<Item>();
 
         public IReadOnlyList<Item> Items => _items;
+        
+        public IEnumerable<Consumable> Consumables => _items
+            .Select(item => item.item)
+            .OfType<Consumable>();
 
         public IEnumerable<Costume> Costumes => _items
             .Select(item => item.item)
