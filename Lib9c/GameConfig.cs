@@ -98,6 +98,7 @@ namespace Nekoyume
             public const int UIMainMenuCombination = CombinationEquipmentAction;
             public const int UIMainMenuShop = ActionsInShop;
             public const int UIMainMenuRankingBoard = ActionsInRankingBoard;
+            public const int UIMainMenuMimisbrunnr = ActionsInMimisbrunnr;
 
             public const int UIBottomMenuInBattle = 1;
             public const int UIBottomMenuCharacter = 1;
