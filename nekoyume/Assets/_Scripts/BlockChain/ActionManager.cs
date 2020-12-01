@@ -172,14 +172,14 @@ namespace Nekoyume.BlockChain
                 .DoOnError(e => HandleException(action.Id, e));
         }
 
-        public IObservable<ActionBase.ActionEvaluation<Sell2>> Sell(INonFungibleItem item, FungibleAssetValue price)
+        public IObservable<ActionBase.ActionEvaluation<Sell3>> Sell(INonFungibleItem item, FungibleAssetValue price)
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
 
             // NOTE: 장착했는지 안 했는지에 상관없이 해제 플래그를 걸어 둔다.
             LocalStateModifier.SetEquipmentEquip(avatarAddress, item.ItemId, false, false);
 
-            var action = new Sell2
+            var action = new Sell3
             {
                 sellerAvatarAddress = avatarAddress,
                 itemId = item.ItemId,
@@ -187,7 +187,7 @@ namespace Nekoyume.BlockChain
             };
             ProcessAction(action);
 
-            return _renderer.EveryRender<Sell2>()
+            return _renderer.EveryRender<Sell3>()
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .Take(1)
                 .Last()
