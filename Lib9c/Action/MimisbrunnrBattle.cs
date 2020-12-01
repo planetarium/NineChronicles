@@ -147,7 +147,8 @@ namespace Nekoyume.Action
                     var elementalType = ((Equipment) itemUsable).ElementalType;
                     if (!mimisbrunnrSheetRow.ElementalTypes.Exists(x => x == elementalType))
                     {
-                        throw new InvalidWorldException($"ElementalType of {equipmentId} does not match.");
+                        throw new InvalidElementalException(
+                            $"ElementalType of {equipmentId} does not match.");
                     }
                 }
             }
