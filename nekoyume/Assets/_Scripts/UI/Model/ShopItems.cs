@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Libplanet;
+using Nekoyume.Model.Item;
 using Nekoyume.State;
 using Nekoyume.UI.Module;
 using UniRx;
@@ -284,5 +285,27 @@ namespace Nekoyume.UI.Model
         }
 
         #endregion
+
+        public bool TryGetShopItemFromAgentProducts(Guid itemId, out ShopItem shopItem)
+        {
+            shopItem = AgentProducts.Value.Values
+                .SelectMany(list => list)
+                .Where(item => item.ItemBase.Value is INonFungibleItem)
+                .FirstOrDefault(item =>
+                    ((INonFungibleItem) item.ItemBase.Value).ItemId.Equals(itemId));
+
+            return !(shopItem is null);
+        }
+
+        public bool TryGetShopItemFromItemSubTypeProducts(Guid itemId, out ShopItem shopItem)
+        {
+            shopItem = ItemSubTypeProducts.Value.Values
+                .SelectMany(list => list)
+                .Where(item => item.ItemBase.Value is INonFungibleItem)
+                .FirstOrDefault(item =>
+                    ((INonFungibleItem) item.ItemBase.Value).ItemId.Equals(itemId));
+
+            return !(shopItem is null);
+        }
     }
 }
