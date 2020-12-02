@@ -76,7 +76,7 @@ namespace Lib9c.Tests.Action
 
         [Theory]
         [InlineData(GameConfig.RequireCharacterLevel.CharacterFullCostumeSlot, 1, 1, false)]
-        [InlineData(100, 1, GameConfig.RequireClearedStageLevel.ActionsInRankingBoard, true)]
+        [InlineData(200, 1, GameConfig.RequireClearedStageLevel.ActionsInRankingBoard, true)]
         public void Execute(int avatarLevel, int worldId, int stageId, bool contains)
         {
             Assert.True(_tableSheets.WorldSheet.TryGetValue(worldId, out var worldRow));
@@ -98,10 +98,35 @@ namespace Lib9c.Tests.Action
                 .Id;
             var costume =
                 ItemFactory.CreateItem(_tableSheets.ItemSheet[costumeId], new ItemEnhancementTest.TestRandom());
-            previousAvatarState.inventory.AddItem(costume);
 
-            var equipmentRow = _tableSheets.EquipmentItemSheet.Values.First();
-            var equipment = ItemFactory.CreateItemUsable(equipmentRow, default, 0);
+            var weaponId = _tableSheets
+                .EquipmentItemSheet
+                .Values
+                .Where(r => r.ItemSubType == ItemSubType.Weapon)
+                .OrderBy(r => r.Stat.ValueAsInt)
+                .Last()
+                .Id;
+            var weapon =
+                ItemFactory.CreateItem(_tableSheets.EquipmentItemSheet[weaponId], new ItemEnhancementTest.TestRandom())
+                as Equipment;
+
+            var armorId = _tableSheets
+                .EquipmentItemSheet
+                .Values
+                .Where(r => r.ItemSubType == ItemSubType.Armor)
+                .OrderBy(r => r.Stat.ValueAsInt)
+                .Last()
+                .Id;
+            var armor =
+                ItemFactory.CreateItem(_tableSheets.EquipmentItemSheet[armorId], new ItemEnhancementTest.TestRandom())
+                as Equipment;
+
+            previousAvatarState.inventory.AddItem(costume);
+            previousAvatarState.inventory.AddItem(armor);
+            previousAvatarState.inventory.AddItem(weapon);
+
+            var mailEquipmentRow = _tableSheets.EquipmentItemSheet.Values.First();
+            var mailEquipment = ItemFactory.CreateItemUsable(mailEquipmentRow, default, 0);
             var result = new CombinationConsumable.ResultModel
             {
                 id = default,
@@ -109,7 +134,7 @@ namespace Lib9c.Tests.Action
                 actionPoint = 0,
                 recipeId = 1,
                 materials = new Dictionary<Material, int>(),
-                itemUsable = equipment,
+                itemUsable = mailEquipment,
             };
             for (var i = 0; i < 100; i++)
             {
@@ -122,7 +147,7 @@ namespace Lib9c.Tests.Action
             var action = new HackAndSlash4
             {
                 costumes = new List<int> { costumeId },
-                equipments = new List<Guid>(),
+                equipments = new List<Guid> { weapon.ItemId, armor.ItemId },
                 foods = new List<Guid>(),
                 worldId = worldId,
                 stageId = stageId,
@@ -173,10 +198,12 @@ namespace Lib9c.Tests.Action
         {
             var previousAvatarState = _initialState.GetAvatarState(_avatarAddress);
             var maxLevel = _tableSheets.CharacterLevelSheet.Max(row => row.Value.Level);
-            var neededExp = _tableSheets.CharacterLevelSheet[maxLevel]?.ExpNeed ?? 100;
+            var expRow = _tableSheets.CharacterLevelSheet[maxLevel];
+            var maxLevelExp = expRow.Exp;
+            var requiredExp = expRow.ExpNeed;
 
             previousAvatarState.level = maxLevel;
-            previousAvatarState.exp = neededExp - 1;
+            previousAvatarState.exp = maxLevelExp + requiredExp - 1;
 
             var stageId = _tableSheets.StageSheet
                 .FirstOrDefault(row =>
@@ -218,8 +245,8 @@ namespace Lib9c.Tests.Action
             });
 
             var nextAvatarState = nextState.GetAvatarState(_avatarAddress);
-            Assert.Equal(nextAvatarState.exp, neededExp - 1);
-            Assert.Equal(nextAvatarState.level, previousAvatarState.level);
+            Assert.Equal(maxLevelExp + requiredExp - 1, nextAvatarState.exp);
+            Assert.Equal(previousAvatarState.level, nextAvatarState.level);
         }
     }
 }
