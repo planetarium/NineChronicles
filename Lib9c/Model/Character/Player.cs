@@ -140,7 +140,7 @@ namespace Nekoyume.Model
             GameConfig.DefaultAvatarCharacterId,
             level)
         {
-            Exp.Current = 0;
+            Exp.Current = characterLevelSheet[level].Exp;
             Inventory = new Inventory();
             worldInformation = null;
             weapon = null;
@@ -310,6 +310,7 @@ namespace Nekoyume.Model
                 return;
             }
 
+            Level = newLevel;
             if (Level < newLevel)
             {
                 eventMap?.Add(new KeyValuePair<int, int>((int) QuestEventType.Level, newLevel - Level));

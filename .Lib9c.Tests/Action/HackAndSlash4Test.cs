@@ -167,5 +167,59 @@ namespace Lib9c.Tests.Action
             Assert.Equal(info.AgentAddress, _agentAddress);
             Assert.Equal(info.AvatarAddress, _avatarAddress);
         }
+
+        [Fact]
+        public void MaxLevelTest()
+        {
+            var previousAvatarState = _initialState.GetAvatarState(_avatarAddress);
+            var maxLevel = _tableSheets.CharacterLevelSheet.Max(row => row.Value.Level);
+            var neededExp = _tableSheets.CharacterLevelSheet[maxLevel]?.ExpNeed ?? 100;
+
+            previousAvatarState.level = maxLevel;
+            previousAvatarState.exp = neededExp - 1;
+
+            var stageId = _tableSheets.StageSheet
+                .FirstOrDefault(row =>
+                (previousAvatarState.level - row.Value.Id) <= StageRewardExpHelper.DifferLowerLimit ||
+                (previousAvatarState.level - row.Value.Id) > StageRewardExpHelper.DifferUpperLimit)
+                .Value.Id;
+            var worldRow = _tableSheets.WorldSheet
+                .FirstOrDefault(row => stageId >= row.Value.StageBegin &&
+                stageId <= row.Value.StageEnd);
+            var worldId = worldRow.Value.Id;
+
+            previousAvatarState.worldInformation = new WorldInformation(
+                0,
+                _tableSheets.WorldSheet,
+                Math.Max(_tableSheets.StageSheet.First?.Id ?? 1, stageId));
+
+            var state = _initialState.SetState(_avatarAddress, previousAvatarState.Serialize());
+
+            var action = new HackAndSlash4
+            {
+                costumes = new List<int>(),
+                equipments = new List<Guid>(),
+                foods = new List<Guid>(),
+                worldId = worldId,
+                stageId = stageId,
+                avatarAddress = _avatarAddress,
+                WeeklyArenaAddress = _weeklyArenaState.address,
+                RankingMapAddress = _rankingMapAddress,
+            };
+
+            Assert.Null(action.Result);
+
+            var nextState = action.Execute(new ActionContext
+            {
+                PreviousStates = state,
+                Signer = _agentAddress,
+                Random = new ItemEnhancementTest.TestRandom(),
+                Rehearsal = false,
+            });
+
+            var nextAvatarState = nextState.GetAvatarState(_avatarAddress);
+            Assert.Equal(nextAvatarState.exp, neededExp - 1);
+            Assert.Equal(nextAvatarState.level, previousAvatarState.level);
+        }
     }
 }
