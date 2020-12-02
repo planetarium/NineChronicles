@@ -204,6 +204,27 @@ namespace Nekoyume.Model.Item
             return TryGetNonFungibleItem(itemId, out Item item) && _items.Remove(item);
         }
 
+        public bool LegacyRemoveNonFungibleItem(Costume costume)
+        {
+            return LegacyRemoveNonFungibleItem(costume.ItemId);
+        }
+
+        public bool LegacyRemoveNonFungibleItem(Guid itemId)
+        {
+            var isRemoved = TryGetNonFungibleItem(itemId, out Item item);
+            if (!isRemoved) return false;
+
+            foreach (var element in _items)
+            {
+                if (element.item.Id == item.item.Id)
+                {
+                    _items.Remove(element);
+                    break;
+                }
+            }
+            return true;            
+        }
+
         #endregion
 
         #region Try Get
