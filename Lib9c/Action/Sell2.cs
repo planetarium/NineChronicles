@@ -108,7 +108,7 @@ namespace Nekoyume.Action
             }
             else if (avatarState.inventory.TryGetNonFungibleItem<Costume>(itemId, out var costume))
             {
-                avatarState.inventory.RemoveNonFungibleItem(itemId);
+                avatarState.inventory.LegacyRemoveNonFungibleItem(itemId);
                 costume.equipped = false;
                 shopItem = new ShopItem(
                     ctx.Signer,
