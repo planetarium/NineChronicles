@@ -36,6 +36,7 @@ namespace Nekoyume.BlockChain
             RewardGold();
             Buy();
             Sell();
+            SellCancellation();
             ItemEnhancement();
         }
 
@@ -72,7 +73,7 @@ namespace Nekoyume.BlockChain
             _renderer.EveryUnrender<Buy3>()
                 .Where(ValidateEvaluationForAgentState)
                 .ObserveOnMainThread()
-                .Subscribe(ResponseUnrenderBuy)
+                .Subscribe(ResponseBuy)
                 .AddTo(_disposables);
         }
 
@@ -81,7 +82,16 @@ namespace Nekoyume.BlockChain
             _renderer.EveryUnrender<Sell3>()
                 .Where(ValidateEvaluationForCurrentAvatarState)
                 .ObserveOnMainThread()
-                .Subscribe(ResponseUnrenderSell)
+                .Subscribe(ResponseSell)
+                .AddTo(_disposables);
+        }
+
+        private void SellCancellation()
+        {
+            _renderer.EveryUnrender<SellCancellation3>()
+                .Where(ValidateEvaluationForCurrentAvatarState)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseSellCancellation)
                 .AddTo(_disposables);
         }
 
@@ -94,8 +104,13 @@ namespace Nekoyume.BlockChain
                 .AddTo(_disposables);
         }
 
-        private void ResponseUnrenderBuy(ActionBase.ActionEvaluation<Buy3> eval)
+        private void ResponseBuy(ActionBase.ActionEvaluation<Buy3> eval)
         {
+            if (!(eval.Exception is null))
+            {
+                return;
+            }
+
             var buyerAvatarAddress = eval.Action.buyerAvatarAddress;
             var price = eval.Action.sellerResult.shopItem.Price;
             Address renderQuestAvatarAddress;
@@ -136,7 +151,7 @@ namespace Nekoyume.BlockChain
             UnrenderQuest(renderQuestAvatarAddress, renderQuestCompletedQuestIds);
         }
 
-        private void ResponseUnrenderSell(ActionBase.ActionEvaluation<Sell3> eval)
+        private void ResponseSell(ActionBase.ActionEvaluation<Sell3> eval)
         {
             if (!(eval.Exception is null))
             {
@@ -147,6 +162,22 @@ namespace Nekoyume.BlockChain
             var itemId = eval.Action.itemId;
 
             LocalStateModifier.RemoveItem(avatarAddress, itemId);
+            UpdateCurrentAvatarState(eval);
+        }
+
+        private void ResponseSellCancellation(ActionBase.ActionEvaluation<SellCancellation3> eval)
+        {
+            if (!(eval.Exception is null))
+            {
+                return;
+            }
+
+            var result = eval.Action.result;
+            var nonFungibleItem = result.itemUsable ?? (INonFungibleItem) result.costume;
+            var avatarAddress = eval.Action.sellerAvatarAddress;
+            var itemId = nonFungibleItem.ItemId;
+
+            LocalStateModifier.AddItem(avatarAddress, itemId);
             UpdateCurrentAvatarState(eval);
         }
 
