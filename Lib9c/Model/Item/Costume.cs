@@ -14,6 +14,7 @@ namespace Nekoyume.Model.Item
         public string SpineResourcePath { get; }
 
         public Guid ItemId { get; }
+        public bool Equipped => equipped;
 
         public Costume(CostumeItemSheet.Row data, Guid itemId) : base(data)
         {

@@ -17,6 +17,7 @@ namespace Nekoyume.Model.Item
         public int SetId { get; }
         public string SpineResourcePath { get; }
         public StatType UniqueStatType => Stat.Type;
+        public bool Equipped => equipped;
 
         public decimal GetIncrementAmountOfEnhancement()
         {
