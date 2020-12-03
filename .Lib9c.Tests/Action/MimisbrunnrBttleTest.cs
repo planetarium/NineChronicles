@@ -12,6 +12,7 @@
     using Nekoyume.Battle;
     using Nekoyume.Model;
     using Nekoyume.Model.BattleStatus;
+    using Nekoyume.Model.Elemental;
     using Nekoyume.Model.Item;
     using Nekoyume.Model.Mail;
     using Nekoyume.Model.State;
@@ -72,7 +73,7 @@
         }
 
         [Theory]
-        [InlineData(200, 101, 10010, true)]
+        [InlineData(200, 10001, 10000006, true)]
         public void Execute(int avatarLevel, int worldId, int stageId, bool contains)
         {
             Assert.True(_tableSheets.WorldSheet.TryGetValue(worldId, out var worldRow));
@@ -102,7 +103,8 @@
                 throw new SheetRowNotFoundException("MimisbrunnrSheet", stageId);
             }
 
-            var equipmentRow = _tableSheets.EquipmentItemSheet.Values.First();
+            var equipmentRow =
+                _tableSheets.EquipmentItemSheet.Values.First(x => x.ElementalType == ElementalType.Fire);
             var equipment = ItemFactory.CreateItemUsable(equipmentRow, default, 0);
             previousAvatarState.inventory.AddItem(equipment);
 
