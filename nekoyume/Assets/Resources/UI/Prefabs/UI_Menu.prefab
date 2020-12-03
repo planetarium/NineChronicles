@@ -552,7 +552,7 @@ MonoBehaviour:
   combinationExclamationMark: {fileID: 7862048930005791176}
   rankingExclamationMark: {fileID: 4703759712893064232}
   questExclamationMark: {fileID: 7029768199667457463}
-  hardStageExclamationMark: {fileID: 1776930382303862003}
+  mimisbrunnrExclamationMark: {fileID: 1776930382303862003}
   guidedQuest: {fileID: 5555585240277224902}
 --- !u!95 &2578250583497771604
 Animator:
@@ -5680,6 +5680,11 @@ PrefabInstance:
       propertyPath: m_SortingOrder
       value: 32
       objectReference: {fileID: 0}
+    - target: {fileID: 3428458573755058012, guid: 87db98ffdd7e08e44884bf327739f13a,
+        type: 3}
+      propertyPath: m_SortingOrder
+      value: 32
+      objectReference: {fileID: 0}
     - target: {fileID: 3992591076653017612, guid: 87db98ffdd7e08e44884bf327739f13a,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -5694,11 +5699,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalPosition.z
       value: 0.168
-      objectReference: {fileID: 0}
-    - target: {fileID: 3428458573755058012, guid: 87db98ffdd7e08e44884bf327739f13a,
-        type: 3}
-      propertyPath: m_SortingOrder
-      value: 32
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 87db98ffdd7e08e44884bf327739f13a, type: 3}
@@ -6258,26 +6258,6 @@ PrefabInstance:
       propertyPath: m_SizeDelta.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4762379095402810024, guid: 53746e77bf093f04ab7301d07111ce65,
-        type: 3}
-      propertyPath: m_textInfo.characterCount
-      value: 6
-      objectReference: {fileID: 0}
-    - target: {fileID: 4762379095402810024, guid: 53746e77bf093f04ab7301d07111ce65,
-        type: 3}
-      propertyPath: m_textInfo.wordCount
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4762379095402810024, guid: 53746e77bf093f04ab7301d07111ce65,
-        type: 3}
-      propertyPath: m_textInfo.lineCount
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4762379095402810024, guid: 53746e77bf093f04ab7301d07111ce65,
-        type: 3}
-      propertyPath: m_textInfo.pageCount
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 2793420628978180384, guid: 53746e77bf093f04ab7301d07111ce65,
         type: 3}
       propertyPath: m_LocalScale.x
@@ -6327,6 +6307,26 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Pivot.y
       value: 0.27896324
+      objectReference: {fileID: 0}
+    - target: {fileID: 4762379095402810024, guid: 53746e77bf093f04ab7301d07111ce65,
+        type: 3}
+      propertyPath: m_textInfo.characterCount
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 4762379095402810024, guid: 53746e77bf093f04ab7301d07111ce65,
+        type: 3}
+      propertyPath: m_textInfo.wordCount
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4762379095402810024, guid: 53746e77bf093f04ab7301d07111ce65,
+        type: 3}
+      propertyPath: m_textInfo.lineCount
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4762379095402810024, guid: 53746e77bf093f04ab7301d07111ce65,
+        type: 3}
+      propertyPath: m_textInfo.pageCount
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 53746e77bf093f04ab7301d07111ce65, type: 3}
@@ -6704,16 +6704,6 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 5335768216256539767, guid: 7720bef8fb54c3843b4ae167b871a72c,
-        type: 3}
-      propertyPath: m_Enabled
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5335768216256539767, guid: 7720bef8fb54c3843b4ae167b871a72c,
-        type: 3}
-      propertyPath: m_SortingOrder
-      value: 33
-      objectReference: {fileID: 0}
     - target: {fileID: 1061202668307491497, guid: 7720bef8fb54c3843b4ae167b871a72c,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -6763,6 +6753,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalRotation.z
       value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5335768216256539767, guid: 7720bef8fb54c3843b4ae167b871a72c,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5335768216256539767, guid: 7720bef8fb54c3843b4ae167b871a72c,
+        type: 3}
+      propertyPath: m_SortingOrder
+      value: 33
       objectReference: {fileID: 0}
     - target: {fileID: 5258304901263940623, guid: 7720bef8fb54c3843b4ae167b871a72c,
         type: 3}

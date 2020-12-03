@@ -26,7 +26,7 @@ namespace Nekoyume.UI
 
         private const string FirstOpenRankingKeyFormat = "Nekoyume.UI.Menu.FirstOpenRankingKey_{0}";
         private const string FirstOpenQuestKeyFormat = "Nekoyume.UI.Menu.FirstOpenQuestKey_{0}";
-        private const string firstOpenHardStageKeyFormat = "Nekoyume.UI.Menu.FirstOpenHardStageKey_{0}";
+        private const string firstOpenMimisbrunnrKeyFormat = "Nekoyume.UI.Menu.FirstOpenMimisbrunnrKeyKey_{0}";
 
         [SerializeField]
         private MainMenu btnQuest = null;
@@ -59,7 +59,7 @@ namespace Nekoyume.UI
         private GameObject questExclamationMark = null;
 
         [SerializeField]
-        private GameObject hardStageExclamationMark = null;
+        private GameObject mimisbrunnrExclamationMark = null;
 
         [SerializeField]
         private GuidedQuest guidedQuest = null;
@@ -178,7 +178,7 @@ namespace Nekoyume.UI
             var firstOpenShopKey = string.Format(FirstOpenShopKeyFormat, addressHax);
             var firstOpenRankingKey = string.Format(FirstOpenRankingKeyFormat, addressHax);
             var firstOpenQuestKey = string.Format(FirstOpenQuestKeyFormat, addressHax);
-            var firstOpenHardStageKey = string.Format(firstOpenHardStageKeyFormat, addressHax);
+            var firstOpenMimisbrunnrKey = string.Format(firstOpenMimisbrunnrKeyFormat, addressHax);
 
             var combination = Find<Combination>();
             var hasNotificationOnCombination = combination.HasNotification;
@@ -209,9 +209,9 @@ namespace Nekoyume.UI
                  PlayerPrefs.GetInt(firstOpenQuestKey, 0) == 0) ||
                 hasNotificationInWorldmap);
 
-            questExclamationMark.gameObject.SetActive(
+            mimisbrunnrExclamationMark.gameObject.SetActive(
                 (btnMimisbrunnr.IsUnlocked &&
-                 PlayerPrefs.GetInt(firstOpenHardStageKey, 0) == 0) ||
+                 PlayerPrefs.GetInt(firstOpenMimisbrunnrKey, 0) == 0) ||
                 hasNotificationInWorldmap);
         }
 
@@ -337,10 +337,10 @@ namespace Nekoyume.UI
                 return;
             }
 
-            if (questExclamationMark.gameObject.activeSelf)
+            if (mimisbrunnrExclamationMark.gameObject.activeSelf)
             {
                 var addressHax = ReactiveAvatarState.Address.Value.ToHex();
-                var key = string.Format(firstOpenHardStageKeyFormat, addressHax);
+                var key = string.Format(firstOpenMimisbrunnrKeyFormat, addressHax);
                 PlayerPrefs.SetInt(key, 1);
             }
 
@@ -350,14 +350,13 @@ namespace Nekoyume.UI
             AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ClickHardBattle);
 
             var stageInfo = Find<UI.StageInformation>();
-            var worldId = 101;
 
             var SharedViewModel = new WorldMap.ViewModel
             {
                 WorldInformation = States.Instance.CurrentAvatarState.worldInformation,
             };
 
-            if (!SharedViewModel.WorldInformation.TryGetWorld(worldId, out var world))
+            if (!SharedViewModel.WorldInformation.TryGetWorld(GameConfig.MimisbrunnrWorldId, out var world))
             {
                 var unlockConditionString = string.Format(
                     L10nManager.Localize("UI_STAGE_LOCK_FORMAT"),

@@ -87,9 +87,7 @@ namespace Nekoyume.UI
 
         private EquipmentSlot _weaponSlot;
 
-        private const int WorldId = 101;
-
-        private readonly IntReactiveProperty _stageId = new IntReactiveProperty(10001);
+        private readonly IntReactiveProperty _stageId = new IntReactiveProperty(GameConfig.MimisbrunnrWorldId);
 
         private int _requiredCost;
 
@@ -369,10 +367,10 @@ namespace Nekoyume.UI
             {
                 WorldInformation = States.Instance.CurrentAvatarState.worldInformation
             };
-            SharedViewModel.SelectedWorldId.SetValueAndForceNotify(WorldId);
+            SharedViewModel.SelectedWorldId.SetValueAndForceNotify(GameConfig.MimisbrunnrWorldId);
             SharedViewModel.SelectedStageId.SetValueAndForceNotify(_stageId.Value);
 
-            Game.Game.instance.TableSheets.WorldSheet.TryGetValue(WorldId, out var worldRow, true);
+            Game.Game.instance.TableSheets.WorldSheet.TryGetValue(GameConfig.MimisbrunnrWorldId, out var worldRow, true);
             stageInfo.Show(SharedViewModel, worldRow, StageInformation.StageType.Mimisbrunnr);
             gameObject.SetActive(false);
         }
@@ -697,7 +695,7 @@ namespace Nekoyume.UI
                     costumes.Select(i => i.Id).ToList(),
                     equipments,
                     consumables,
-                    WorldId,
+                    GameConfig.MimisbrunnrWorldId,
                     _stageId.Value
                 )
                 .Subscribe(

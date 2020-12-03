@@ -12,8 +12,6 @@ using TMPro;
 using UniRx;
 using UnityEngine;
 
-// normal    : Menu -> WorldMap -> StageInformation -> QuestPreparation
-// hard      : Menu -------------> StageInformation -> HardStagePreparation
 namespace Nekoyume.UI
 {
     public class StageInformation : Widget
@@ -177,7 +175,7 @@ namespace Nekoyume.UI
 
             var stageWaveSheet = Game.Game.instance.TableSheets.StageWaveSheet;
             stageWaveSheet.TryGetValue(stageId, out var stageWaveRow, true);
-            titleText.text = $"Stage {stageWaveRow.StageId}";
+            titleText.text = $"Stage {GetStageIdString(stageWaveRow.StageId)}";
 
             var monsterCount = stageWaveRow.TotalMonsterIds.Count;
             for (var i = 0; i < monstersAreaCharacterViews.Count; i++)
@@ -245,6 +243,11 @@ namespace Nekoyume.UI
         private void UnlockWorld(int openedStageId = -1, int selectedStageId = -1)
         {
             world.Set(openedStageId, selectedStageId);
+        }
+
+        public static string GetStageIdString(int stageId)
+        {
+            return stageId > 10000000 ? $"Extra {stageId % 10000000}" : stageId.ToString();
         }
     }
 }
