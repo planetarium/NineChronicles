@@ -94,7 +94,7 @@ namespace Nekoyume.BlockChain
                             // FIXME: Sometimes `States.Instance.CurrentAvatarState` is null.
                             character_uuid: States.Instance.CurrentAvatarState?.address.ToHex().Substring(0, 4) ?? string.Empty,
                             currency_slug: "gold",
-                            currency_quantity: float.Parse((balance - ReactiveAgentState.Gold.Value).GetQuantityString()),
+                            currency_quantity: float.Parse((balance - States.Instance.GoldBalanceState.Gold).GetQuantityString()),
                             currency_total_quantity: float.Parse(balance.GetQuantityString()),
                             reference_entity: entity.Bonuses,
                             reference_category_slug: "reward_gold",
@@ -501,7 +501,10 @@ namespace Nekoyume.BlockChain
                     var itemBase = result.itemUsable ?? (ItemBase) result.costume;
                     var buyerAvatar = eval.OutputStates.GetAvatarState(buyerAvatarAddress);
 
+                    // 골드 처리.
                     LocalStateModifier.ModifyAgentGold(buyerAgentAddress, price);
+
+                    // 메일 처리.
                     LocalStateModifier.RemoveItem(buyerAvatarAddress, nonFungibleItem.ItemId);
                     LocalStateModifier.AddNewAttachmentMail(buyerAvatarAddress, result.id);
 
@@ -828,7 +831,7 @@ namespace Nekoyume.BlockChain
             Game.Game.instance.Stage.OnRoomEnterEnd
                 .First()
                 .Subscribe(_ => PopupError(key, code, errorMsg));
-            
+
             MainCanvas.instance.InitWidgetInMain();
         }
 
