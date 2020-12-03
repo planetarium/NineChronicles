@@ -9,7 +9,7 @@ using Nekoyume.TableData;
 namespace Nekoyume.Model.Item
 {
     [Serializable]
-    public class Equipment : ItemUsable
+    public class Equipment : ItemUsable, IEquippableItem
     {
         public bool equipped = false;
         public int level;
