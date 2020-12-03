@@ -52,9 +52,8 @@ namespace Nekoyume.State
                 return;
             }
 
-            // NOTE: Reassignment is not required yet.
             state = modifier.Modify(state);
-            ReactiveAgentState.Gold.SetValueAndForceNotify(state.Gold);
+            States.Instance.SetGoldBalanceState(state);
         }
 
         public static void ModifyAgentGold(Address agentAddress, BigInteger gold)
@@ -840,7 +839,7 @@ namespace Nekoyume.State
             Address slotAddress
         )
         {
-            
+
             // 레이어가 씌워진 상태에선 실제 상태가 들어오기전까지 상태업데이트를 막아두기 위해 블록높이를 추가로 설정
             var blockIndex = Game.Game.instance.Agent.BlockIndex + 100;
             var requiredBlockIndex = blockIndex + 1;
@@ -875,7 +874,7 @@ namespace Nekoyume.State
                 materialItemIdList = new[] { otherMaterialGuid },
                 itemUsable = equipment,
             };
-            
+
             var modifier = new CombinationSlotBlockIndexAndResultModifier(result, blockIndex, requiredBlockIndex);
             var slotState = States.Instance.CombinationSlotStates[slotAddress];
             LocalStateSettings.Instance.Set(slotState.address, modifier);

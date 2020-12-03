@@ -66,15 +66,14 @@ namespace Nekoyume.BlockChain
         {
             Debug.LogFormat("Called UpdateAgentState<{0}>. Updated Addresses : `{1}`", evaluation.Action,
                 string.Join(",", evaluation.OutputStates.UpdatedAddresses));
-            var state = GetAgentState(evaluation);
+            UpdateAgentState(GetAgentState(evaluation));
             try
             {
-                var balanceState = GetGoldBalanceState(evaluation);
-                UpdateAgentState(state, balanceState);
+                UpdateGoldBalanceState(GetGoldBalanceState(evaluation));
             }
             catch (BalanceDoesNotExistsException)
             {
-                UpdateAgentState(state, null);
+                UpdateGoldBalanceState(null);
             }
         }
 
@@ -136,9 +135,14 @@ namespace Nekoyume.BlockChain
             }
         }
 
-        private static void UpdateAgentState(AgentState state, GoldBalanceState balanceState)
+        private static void UpdateAgentState(AgentState state)
         {
-            States.Instance.SetAgentState(state, balanceState);
+            States.Instance.SetAgentState(state);
+        }
+
+        private static void UpdateGoldBalanceState(GoldBalanceState goldBalanceState)
+        {
+            States.Instance.SetGoldBalanceState(goldBalanceState);
         }
 
         private void UpdateAvatarState(AvatarState avatarState, int index)
