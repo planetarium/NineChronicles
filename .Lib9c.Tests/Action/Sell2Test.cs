@@ -15,7 +15,7 @@
     using Xunit;
     using Xunit.Abstractions;
 
-    public class SellTest2
+    public class Sell2Test
     {
         private readonly Address _agentAddress;
         private readonly Address _avatarAddress;
@@ -24,7 +24,7 @@
         private readonly TableSheets _tableSheets;
         private IAccountStateDelta _initialState;
 
-        public SellTest2(ITestOutputHelper outputHelper)
+        public Sell2Test(ITestOutputHelper outputHelper)
         {
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Verbose()

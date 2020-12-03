@@ -1,6 +1,7 @@
 ﻿namespace Lib9c.Tests.Action
 {
     using System;
+    using System.Linq;
     using Libplanet;
     using Libplanet.Action;
     using Libplanet.Assets;
@@ -64,6 +65,11 @@
                 Guid.NewGuid(),
                 0);
 
+            var consumable = ItemFactory.CreateItemUsable(
+                tableSheets.ConsumableItemSheet.First,
+                Guid.NewGuid(),
+                0);
+
             var costume = ItemFactory.CreateCostume(
                 tableSheets.CostumeItemSheet.First,
                 Guid.NewGuid());
@@ -75,6 +81,13 @@
                 Guid.NewGuid(),
                 new FungibleAssetValue(goldCurrencyState.Currency, 100, 0),
                 equipment));
+
+            shopState.Register(new ShopItem(
+                _agentAddress,
+                _avatarAddress,
+                Guid.NewGuid(),
+                new FungibleAssetValue(goldCurrencyState.Currency, 100, 0),
+                consumable));
 
             shopState.Register(new ShopItem(
                 _agentAddress,
@@ -94,11 +107,11 @@
         public void Execute()
         {
             var shopState = _initialState.GetShopState();
-            Assert.Equal(2, shopState.Products.Count);
-
-            var shopItems = shopState.Products.Values;
+            var productsCount = shopState.Products.Count;
+            var shopItems = shopState.Products.Values.ToList();
             Assert.NotNull(shopItems);
-            var avatarState = _initialState.GetAvatarState(_avatarAddress);
+            var previousStates = _initialState;
+            var avatarState = previousStates.GetAvatarState(_avatarAddress);
 
             foreach (var shopItem in shopItems)
             {
@@ -115,19 +128,21 @@
                     var nextState = sellCancellationAction.Execute(new ActionContext
                     {
                         BlockIndex = 0,
-                        PreviousStates = _initialState,
+                        PreviousStates = previousStates,
                         Random = new ItemEnhancementTest.TestRandom(),
                         Rehearsal = false,
                         Signer = _agentAddress,
                     });
+                    productsCount--;
 
                     var nextShopState = nextState.GetShopState();
-                    var items = nextShopState.Products.Values;
-                    Assert.DoesNotContain(items, x => x.ItemUsable != null);
+                    Assert.Equal(productsCount, nextShopState.Products.Count);
 
                     var nextAvatarState = nextState.GetAvatarState(_avatarAddress);
                     Assert.True(nextAvatarState.inventory.TryGetNonFungibleItem<ItemUsable>(
                         shopItem.ItemUsable.ItemId, out _));
+
+                    previousStates = nextState;
                 }
 
                 if (shopItem.Costume != null)
@@ -143,19 +158,21 @@
                     var nextState = sellCancellationAction.Execute(new ActionContext
                     {
                         BlockIndex = 0,
-                        PreviousStates = _initialState,
+                        PreviousStates = previousStates,
                         Random = new ItemEnhancementTest.TestRandom(),
                         Rehearsal = false,
                         Signer = _agentAddress,
                     });
+                    productsCount--;
 
                     var nextShopState = nextState.GetShopState();
-                    var items = nextShopState.Products.Values;
-                    Assert.DoesNotContain(items, x => x.Costume != null);
+                    Assert.Equal(productsCount, nextShopState.Products.Count);
 
                     var nextAvatarState = nextState.GetAvatarState(_avatarAddress);
                     Assert.True(nextAvatarState.inventory.TryGetNonFungibleItem<Costume>(
                         shopItem.Costume.ItemId, out _));
+
+                    previousStates = nextState;
                 }
             }
         }

@@ -17,6 +17,8 @@
 
     public class Buy3Test
     {
+        private const long ProductPrice = 100;
+
         private readonly Address _sellerAgentAddress;
         private readonly Address _sellerAvatarAddress;
         private readonly Address _buyerAgentAddress;
@@ -88,6 +90,11 @@
                 Guid.NewGuid(),
                 0);
 
+            var consumable = ItemFactory.CreateItemUsable(
+                _tableSheets.ConsumableItemSheet.First,
+                Guid.NewGuid(),
+                0);
+
             var costume = ItemFactory.CreateCostume(
                 _tableSheets.CostumeItemSheet.First,
                 Guid.NewGuid());
@@ -97,14 +104,21 @@
                 _sellerAgentAddress,
                 _sellerAvatarAddress,
                 Guid.NewGuid(),
-                new FungibleAssetValue(_goldCurrencyState.Currency, 100, 0),
+                new FungibleAssetValue(_goldCurrencyState.Currency, ProductPrice, 0),
                 equipment));
 
             shopState.Register(new ShopItem(
                 _sellerAgentAddress,
                 _sellerAvatarAddress,
                 Guid.NewGuid(),
-                new FungibleAssetValue(_goldCurrencyState.Currency, 100, 0),
+                new FungibleAssetValue(_goldCurrencyState.Currency, ProductPrice, 0),
+                consumable));
+
+            shopState.Register(new ShopItem(
+                _sellerAgentAddress,
+                _sellerAvatarAddress,
+                Guid.NewGuid(),
+                new FungibleAssetValue(_goldCurrencyState.Currency, ProductPrice, 0),
                 costume));
 
             _initialState = _initialState
@@ -114,18 +128,25 @@
                 .SetState(_sellerAvatarAddress, sellerAvatarState.Serialize())
                 .SetState(_buyerAgentAddress, buyerAgentState.Serialize())
                 .SetState(_buyerAvatarAddress, _buyerAvatarState.Serialize())
-                .MintAsset(_buyerAgentAddress, _goldCurrencyState.Currency * 100);
+                .MintAsset(_buyerAgentAddress, shopState.Products
+                    .Select(pair => pair.Value.Price)
+                    .Aggregate((totalPrice, next) => totalPrice + next));
         }
 
         [Fact]
         public void Execute()
         {
-            var shopState = _initialState.GetShopState();
-            Assert.Equal(2, shopState.Products.Count);
+            var previousStates = _initialState;
+            var goldCurrencyState = previousStates.GetGoldCurrency();
+            var shopState = previousStates.GetShopState();
+            Assert.Equal(3, shopState.Products.Count);
             Assert.NotNull(shopState.Products);
 
+            var buyerGold = previousStates.GetBalance(_buyerAgentAddress, goldCurrencyState);
+            var loopCount = 0;
             foreach (var (productId, shopItem) in shopState.Products)
             {
+                loopCount++;
                 var tax = shopItem.Price.DivRem(100, out _) * Buy.TaxRate;
                 var taxedPrice = shopItem.Price - tax;
 
@@ -139,7 +160,7 @@
                 var nextState = buyAction.Execute(new ActionContext()
                 {
                     BlockIndex = 0,
-                    PreviousStates = _initialState,
+                    PreviousStates = previousStates,
                     Random = new ItemEnhancementTest.TestRandom(),
                     Rehearsal = false,
                     Signer = _buyerAgentAddress,
@@ -158,13 +179,14 @@
                         shopItem.Costume.ItemId, out _));
                 }
 
-                var goldCurrencyState = nextState.GetGoldCurrency();
-                var goldCurrencyGold = nextState.GetBalance(Addresses.GoldCurrency, goldCurrencyState);
-                Assert.Equal(tax, goldCurrencyGold);
-                var sellerGold = nextState.GetBalance(_sellerAgentAddress, goldCurrencyState);
-                Assert.Equal(taxedPrice, sellerGold);
-                var buyerGold = nextState.GetBalance(_buyerAgentAddress, goldCurrencyState);
-                Assert.Equal(new FungibleAssetValue(goldCurrencyState, 0, 0), buyerGold);
+                var nextGoldCurrencyGold = nextState.GetBalance(Addresses.GoldCurrency, goldCurrencyState);
+                Assert.Equal(tax * loopCount, nextGoldCurrencyGold);
+                var nextSellerGold = nextState.GetBalance(_sellerAgentAddress, goldCurrencyState);
+                Assert.Equal(taxedPrice * loopCount, nextSellerGold);
+                var nextBuyerGold = nextState.GetBalance(_buyerAgentAddress, goldCurrencyState);
+                Assert.Equal(buyerGold - shopItem.Price * loopCount, nextBuyerGold);
+
+                previousStates = nextState;
             }
         }
 

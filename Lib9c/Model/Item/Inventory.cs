@@ -85,6 +85,10 @@ namespace Nekoyume.Model.Item
         private readonly List<Item> _items = new List<Item>();
 
         public IReadOnlyList<Item> Items => _items;
+        
+        public IEnumerable<Consumable> Consumables => _items
+            .Select(item => item.item)
+            .OfType<Consumable>();
 
         public IEnumerable<Costume> Costumes => _items
             .Select(item => item.item)
@@ -198,6 +202,27 @@ namespace Nekoyume.Model.Item
         public bool RemoveNonFungibleItem(Guid itemId)
         {
             return TryGetNonFungibleItem(itemId, out Item item) && _items.Remove(item);
+        }
+
+        public bool LegacyRemoveNonFungibleItem(Costume costume)
+        {
+            return LegacyRemoveNonFungibleItem(costume.ItemId);
+        }
+
+        public bool LegacyRemoveNonFungibleItem(Guid itemId)
+        {
+            var isRemoved = TryGetNonFungibleItem(itemId, out Item item);
+            if (!isRemoved) return false;
+
+            foreach (var element in _items)
+            {
+                if (element.item.Id == item.item.Id)
+                {
+                    _items.Remove(element);
+                    break;
+                }
+            }
+            return true;            
         }
 
         #endregion

@@ -14,8 +14,8 @@ using Serilog;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("sell2")]
-    public class Sell2 : GameAction
+    [ActionType("sell3")]
+    public class Sell3 : GameAction
     {
         public Address sellerAvatarAddress;
         public Guid itemId;
@@ -87,35 +87,39 @@ namespace Nekoyume.Action
             var productId = context.Random.GenerateRandomGuid();
             ShopItem shopItem;
 
-            // 인벤토리에서 판매할 아이템을 선택하고 수량을 조절한다.
+            void CheckRequiredBlockIndex(ItemUsable itemUsable)
+            {
+                if (itemUsable.RequiredBlockIndex > context.BlockIndex)
+                {
+                    throw new RequiredBlockIndexException($"Aborted as the itemUsable to enhance ({itemId}) is not available yet; it will be available at the block #{itemUsable.RequiredBlockIndex}.");
+                }
+            }
+
+            ShopItem PopShopItemFromInventory(ItemUsable itemUsable, Costume costume)
+            {
+                avatarState.inventory.RemoveNonFungibleItem(itemId);
+                return itemUsable is null
+                    ? new ShopItem(ctx.Signer, sellerAvatarAddress, productId, price, costume)
+                    : new ShopItem(ctx.Signer, sellerAvatarAddress, productId, price, itemUsable);
+            }
+
+            // Select an item to sell from the inventory and adjust the quantity.
             if (avatarState.inventory.TryGetNonFungibleItem<Equipment>(itemId, out var equipment))
             {
-                if (equipment.RequiredBlockIndex > context.BlockIndex)
-                {
-                    throw new RequiredBlockIndexException(
-                        $"Aborted as the equipment to enhance ({itemId}) is not available yet; it will be available at the block #{equipment.RequiredBlockIndex}."
-                    );
-                }
-
-                avatarState.inventory.RemoveNonFungibleItem(itemId);
+                CheckRequiredBlockIndex(equipment);
                 equipment.equipped = false;
-                shopItem = new ShopItem(
-                    ctx.Signer,
-                    sellerAvatarAddress,
-                    productId,
-                    price,
-                    equipment);
+                shopItem = PopShopItemFromInventory(equipment, null);
+            }
+            else if (avatarState.inventory.TryGetNonFungibleItem<Consumable>(itemId, out var consumable))
+            {
+                CheckRequiredBlockIndex(consumable);
+                avatarState.inventory.RemoveNonFungibleItem(itemId);
+                shopItem = PopShopItemFromInventory(consumable, null);
             }
             else if (avatarState.inventory.TryGetNonFungibleItem<Costume>(itemId, out var costume))
             {
-                avatarState.inventory.LegacyRemoveNonFungibleItem(itemId);
                 costume.equipped = false;
-                shopItem = new ShopItem(
-                    ctx.Signer,
-                    sellerAvatarAddress,
-                    productId,
-                    price,
-                    costume);
+                shopItem = PopShopItemFromInventory(null, costume);
             }
             else
             {
