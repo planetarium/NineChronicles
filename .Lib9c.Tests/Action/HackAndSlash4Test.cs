@@ -91,39 +91,57 @@ namespace Lib9c.Tests.Action
                 _tableSheets.WorldSheet,
                 Math.Max(_tableSheets.StageSheet.First?.Id ?? 1, stageId - 1));
 
-            var costumeId = _tableSheets
+            List<int> costumes = new List<int>();
+            if (avatarLevel >= GameConfig.RequireCharacterLevel.CharacterFullCostumeSlot)
+            {
+                var costumeId = _tableSheets
                 .CostumeItemSheet
                 .Values
                 .First(r => r.ItemSubType == ItemSubType.FullCostume)
                 .Id;
-            var costume =
-                ItemFactory.CreateItem(_tableSheets.ItemSheet[costumeId], new ItemEnhancementTest.TestRandom());
+                costumes.Add(costumeId);
 
-            var weaponId = _tableSheets
+                var costume = ItemFactory.CreateItem(_tableSheets.ItemSheet[costumeId], new ItemEnhancementTest.TestRandom());
+                previousAvatarState.inventory.AddItem(costume);
+            }
+
+            List<Guid> equipments = new List<Guid>();
+
+            if (avatarLevel >= GameConfig.RequireCharacterLevel.CharacterEquipmentSlotWeapon)
+            {
+                var weaponId = _tableSheets
                 .EquipmentItemSheet
                 .Values
                 .Where(r => r.ItemSubType == ItemSubType.Weapon)
                 .OrderBy(r => r.Stat.ValueAsInt)
                 .Last()
                 .Id;
-            var weapon =
-                ItemFactory.CreateItem(_tableSheets.EquipmentItemSheet[weaponId], new ItemEnhancementTest.TestRandom())
-                as Equipment;
 
-            var armorId = _tableSheets
+                var weapon = ItemFactory.CreateItem(
+                    _tableSheets.EquipmentItemSheet[weaponId],
+                    new ItemEnhancementTest.TestRandom())
+                    as Equipment;
+                equipments.Add(weapon.ItemId);
+                previousAvatarState.inventory.AddItem(weapon);
+            }
+
+            if (avatarLevel >= GameConfig.RequireCharacterLevel.CharacterEquipmentSlotArmor)
+            {
+                var armorId = _tableSheets
                 .EquipmentItemSheet
                 .Values
                 .Where(r => r.ItemSubType == ItemSubType.Armor)
                 .OrderBy(r => r.Stat.ValueAsInt)
                 .Last()
                 .Id;
-            var armor =
-                ItemFactory.CreateItem(_tableSheets.EquipmentItemSheet[armorId], new ItemEnhancementTest.TestRandom())
-                as Equipment;
 
-            previousAvatarState.inventory.AddItem(costume);
-            previousAvatarState.inventory.AddItem(armor);
-            previousAvatarState.inventory.AddItem(weapon);
+                var armor = ItemFactory.CreateItem(
+                    _tableSheets.EquipmentItemSheet[armorId],
+                    new ItemEnhancementTest.TestRandom())
+                    as Equipment;
+                equipments.Add(armor.ItemId);
+                previousAvatarState.inventory.AddItem(armor);
+            }
 
             var mailEquipmentRow = _tableSheets.EquipmentItemSheet.Values.First();
             var mailEquipment = ItemFactory.CreateItemUsable(mailEquipmentRow, default, 0);
@@ -146,8 +164,8 @@ namespace Lib9c.Tests.Action
 
             var action = new HackAndSlash4
             {
-                costumes = new List<int> { costumeId },
-                equipments = new List<Guid> { weapon.ItemId, armor.ItemId },
+                costumes = costumes,
+                equipments = equipments,
                 foods = new List<Guid>(),
                 worldId = worldId,
                 stageId = stageId,
