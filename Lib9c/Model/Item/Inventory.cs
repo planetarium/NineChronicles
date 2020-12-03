@@ -338,7 +338,7 @@ namespace Nekoyume.Model.Item
             return _items.Exists(item => item.item.Id == id && item.count >= count);
         }
 
-        public bool HasItem(HashDigest<SHA256> id, int count = 1)
+        public bool HasItem(HashDigest<SHA256> itemId, int count = 1)
         {
             return _items.Exists(item =>
             {
@@ -347,7 +347,7 @@ namespace Nekoyume.Model.Item
                     return false;
                 }
 
-                return material.ItemId.Equals(id) && item.count >= count;
+                return material.ItemId.Equals(itemId) && item.count >= count;
             });
         }
 
