@@ -11,6 +11,7 @@ namespace Nekoyume.Model.Item
     [Serializable]
     public class Equipment : ItemUsable, IEquippableItem
     {
+        // FIXME: Do not use anymore please!
         public bool equipped = false;
         public int level;
         public DecimalStat Stat { get; }

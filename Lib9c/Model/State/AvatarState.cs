@@ -560,6 +560,7 @@ namespace Nekoyume.Model.State
             foreach (var costume in inventoryCostumes)
 #pragma warning restore LAA1002
             {
+                // FIXME: Use `costume.Unequip()` 
                 costume.equipped = false;
             }
 
@@ -571,6 +572,7 @@ namespace Nekoyume.Model.State
                     continue;
                 }
 
+                // FIXME: Use `costume.Unequip()` 
                 costume.equipped = true;
             }
         }

@@ -10,6 +10,7 @@ namespace Nekoyume.Model.Item
     [Serializable]
     public class Costume : ItemBase, INonFungibleItem, IEquippableItem
     {
+        // FIXME: Do not use anymore please!
         public bool equipped = false;
         public string SpineResourcePath { get; }
 
