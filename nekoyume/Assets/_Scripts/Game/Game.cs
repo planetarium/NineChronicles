@@ -115,7 +115,7 @@ namespace Nekoyume.Game
             var c = new CognitoAWSCredentials("ap-northeast-2:6fea0e84-a609-4774-a407-c63de9dbea7b",
                 RegionEndpoint.APNortheast2);
             _logsClient = new AmazonCloudWatchLogsClient(c, RegionEndpoint.APNortheast2);
-            Application.logMessageReceived += UploadLog;
+            Application.logMessageReceivedThreaded += UploadLog;
 #endif
         }
 
@@ -559,7 +559,7 @@ namespace Nekoyume.Game
             TableSheets = new TableSheets(csv);
         }
 
-        private void UploadLog(string logString, string stackTrace, LogType type)
+        private async void UploadLog(string logString, string stackTrace, LogType type)
         {
             // Avoid NRE
             if (Agent.PrivateKey == default)
@@ -578,7 +578,7 @@ namespace Nekoyume.Game
                 {
                     groupName = DateTime.UtcNow.Date.ToString("yyyy-MM-dd");
                     var req = new CreateLogGroupRequest(groupName);
-                    _logsClient.CreateLogGroup(req);
+                    await _logsClient.CreateLogGroupAsync(req);
                 }
                 catch (ResourceAlreadyExistsException)
                 {
@@ -591,9 +591,9 @@ namespace Nekoyume.Game
                 try
                 {
                     var req = new CreateLogStreamRequest(groupName, streamName);
-                    _logsClient.CreateLogStream(req);
+                    await _logsClient.CreateLogStreamAsync(req);
                 }
-                catch (Exception)
+                catch (ResourceAlreadyExistsException)
                 {
                     // ignored
                 }
@@ -606,12 +606,16 @@ namespace Nekoyume.Game
         {
             try
             {
-                var resp = await _logsClient.DescribeLogStreamsAsync(new DescribeLogStreamsRequest(groupName));
+                var req = new DescribeLogStreamsRequest(groupName)
+                {
+                    LogStreamNamePrefix = streamName
+                };
+                var resp = await _logsClient.DescribeLogStreamsAsync(req);
                 var token = resp.LogStreams.FirstOrDefault(s => s.LogStreamName == streamName)?.UploadSequenceToken;
                 var ie = new InputLogEvent
                 {
                     Message = msg,
-                    Timestamp = DateTime.Now
+                    Timestamp = DateTime.UtcNow
                 };
                 var request = new PutLogEventsRequest(groupName, streamName, new List<InputLogEvent> {ie});
                 if (!string.IsNullOrEmpty(token))
