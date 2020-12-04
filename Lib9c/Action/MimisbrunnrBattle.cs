@@ -62,7 +62,7 @@ namespace Nekoyume.Action
             {
                 states = states.SetState(RankingMapAddress, MarkChanged);
                 states = states.SetState(avatarAddress, MarkChanged);
-                states = states.SetState(RankingMapAddress, MarkChanged);
+                states = states.SetState(WeeklyArenaAddress, MarkChanged);
                 return states.SetState(ctx.Signer, MarkChanged);
             }
             
