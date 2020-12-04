@@ -2,6 +2,7 @@ namespace Lib9c.Tests.Model.State
 {
     using System;
     using System.Collections.Generic;
+    using System.Collections.Immutable;
     using System.Linq;
     using System.Security.Cryptography;
     using System.Threading.Tasks;
@@ -339,6 +340,31 @@ namespace Lib9c.Tests.Model.State
 
             Assert.Equal(30, mailBox.Count);
             Assert.DoesNotContain(mailBox, m => m.blockIndex < 30);
+        }
+
+        [Fact]
+        public void EquipItems()
+        {
+            var avatarState = GetNewAvatarState(new PrivateKey().ToAddress(), new PrivateKey().ToAddress());
+            avatarState.inventory.AddItem(EquipmentTest.CreateFirstEquipment(_tableSheets));
+            avatarState.inventory.AddItem(CostumeTest.CreateFirstCostume(_tableSheets));
+
+            var equippableItems = avatarState.inventory.Items
+                .Select(item => item.item)
+                .OfType<IEquippableItem>()
+                .ToImmutableHashSet();
+            foreach (var equippableItem in equippableItems)
+            {
+                Assert.False(equippableItem.Equipped);
+            }
+
+            avatarState.EquipItems(equippableItems.OfType<INonFungibleItem>()
+                .Select(nonFungibleItem => nonFungibleItem.ItemId));
+
+            foreach (var equippableItem in equippableItems)
+            {
+                Assert.True(equippableItem.Equipped);
+            }
         }
 
         private AvatarState GetNewAvatarState(Address avatarAddress, Address agentAddress)

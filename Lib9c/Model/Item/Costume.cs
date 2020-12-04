@@ -8,12 +8,14 @@ using Nekoyume.TableData;
 namespace Nekoyume.Model.Item
 {
     [Serializable]
-    public class Costume : ItemBase, INonFungibleItem
+    public class Costume : ItemBase, INonFungibleItem, IEquippableItem
     {
+        // FIXME: Do not use anymore please!
         public bool equipped = false;
         public string SpineResourcePath { get; }
 
         public Guid ItemId { get; }
+        public bool Equipped => equipped;
 
         public Costume(CostumeItemSheet.Row data, Guid itemId) : base(data)
         {
@@ -67,6 +69,16 @@ namespace Nekoyume.Model.Item
                 hashCode = (hashCode * 397) ^ ItemId.GetHashCode();
                 return hashCode;
             }
+        }
+
+        public void Equip()
+        {
+            equipped = true;
+        }
+
+        public void Unequip()
+        {
+            equipped = false;
         }
     }
 }
