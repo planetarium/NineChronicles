@@ -83,10 +83,11 @@
 
             var previousAvatarState = _initialState.GetAvatarState(_avatarAddress);
             previousAvatarState.level = avatarLevel;
+            var clearStageid = Math.Max(_tableSheets.StageSheet.First?.Id ?? 1, stageId - 1);
             previousAvatarState.worldInformation = new WorldInformation(
                 0,
                 _tableSheets.WorldSheet,
-                Math.Max(_tableSheets.StageSheet.First?.Id ?? 1, stageId - 1));
+                clearStageid);
 
             var costumeId = _tableSheets
                 .CostumeItemSheet
@@ -181,6 +182,80 @@
 
             Assert.Equal(info.AgentAddress, _agentAddress);
             Assert.Equal(info.AvatarAddress, _avatarAddress);
+        }
+
+        [Fact]
+        public void ExecuteThrowInvalidStageException()
+        {
+            var stageId = 10000002;
+            var worldId = 10001;
+            var previousAvatarState = _initialState.GetAvatarState(_avatarAddress);
+
+            previousAvatarState.worldInformation = new WorldInformation(
+                0,
+                _tableSheets.WorldSheet,
+                100
+            );
+
+            previousAvatarState.worldInformation.ClearStage(
+                2,
+                100,
+                0,
+                _tableSheets.WorldSheet,
+                _tableSheets.WorldUnlockSheet);
+
+            var previousState = _initialState.SetState(
+                _avatarAddress,
+                previousAvatarState.Serialize());
+
+            var costumeId = _tableSheets
+                .CostumeItemSheet
+                .Values
+                .First(r => r.ItemSubType == ItemSubType.FullCostume)
+                .Id;
+
+            var equipmentRow =
+                _tableSheets.EquipmentItemSheet.Values.First(x => x.ElementalType == ElementalType.Fire);
+            var equipment = ItemFactory.CreateItemUsable(equipmentRow, default, 0);
+            previousAvatarState.inventory.AddItem(equipment);
+
+            var mimisbrunnrSheet = _tableSheets.MimisbrunnrSheet;
+            if (!mimisbrunnrSheet.TryGetValue(stageId, out var mimisbrunnrSheetRow))
+            {
+                throw new SheetRowNotFoundException("MimisbrunnrSheet", stageId);
+            }
+
+            foreach (var equipmentId in previousAvatarState.inventory.Equipments)
+            {
+                if (previousAvatarState.inventory.TryGetNonFungibleItem(equipmentId, out ItemUsable itemUsable))
+                {
+                    var elementalType = ((Equipment)itemUsable).ElementalType;
+                    Assert.True(mimisbrunnrSheetRow.ElementalTypes.Exists(x => x == elementalType));
+                }
+            }
+
+            var action = new MimisbrunnrBattle()
+            {
+                costumes = new List<int> { costumeId },
+                equipments = new List<Guid>() { equipment.ItemId },
+                foods = new List<Guid>(),
+                worldId = worldId,
+                stageId = stageId,
+                avatarAddress = _avatarAddress,
+                WeeklyArenaAddress = _weeklyArenaState.address,
+                RankingMapAddress = _rankingMapAddress,
+            };
+
+            Assert.Throws<InvalidStageException>(() =>
+            {
+                action.Execute(new ActionContext()
+                {
+                    PreviousStates = previousState,
+                    Signer = _agentAddress,
+                    Random = new ItemEnhancementTest.TestRandom(),
+                    Rehearsal = false,
+                });
+            });
         }
     }
 }
