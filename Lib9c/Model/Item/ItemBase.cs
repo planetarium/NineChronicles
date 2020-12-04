@@ -1,4 +1,6 @@
 using System;
+using System.Runtime.Serialization;
+using Bencodex;
 using Bencodex.Types;
 using Nekoyume.Model.Elemental;
 using Nekoyume.Model.State;
@@ -9,6 +11,8 @@ namespace Nekoyume.Model.Item
     [Serializable]
     public abstract class ItemBase : IState
     {
+        protected static readonly Codec Codec = new Codec();
+        
         public int Id { get; }
         public int Grade { get; }
         public ItemType ItemType { get; }
@@ -45,6 +49,21 @@ namespace Nekoyume.Model.Item
             {
                 ElementalType = elementalType.ToEnum<ElementalType>();
             }
+        }
+
+        protected ItemBase(SerializationInfo info, StreamingContext _)
+            : this((Dictionary) Codec.Decode((byte[]) info.GetValue("serialized", typeof(byte[]))))
+        {
+        }
+        
+        public void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            if (info == null)
+            {
+                throw new ArgumentNullException(nameof(info));
+            }
+            
+            info.AddValue("serialized", Codec.Encode(Serialize()));
         }
 
         protected bool Equals(ItemBase other)

@@ -14,8 +14,6 @@ namespace Nekoyume.Model.Item
     [Serializable]
     public class Material : ItemBase, ISerializable
     {
-        private static Codec _codec = new Codec();
-
         public HashDigest<SHA256> ItemId { get; protected set; }
 
         public Material(MaterialItemSheet.Row data) : base(data)
@@ -32,7 +30,7 @@ namespace Nekoyume.Model.Item
         }
 
         protected Material(SerializationInfo info, StreamingContext _)
-            : this((Dictionary) _codec.Decode((byte[]) info.GetValue("serialized", typeof(byte[]))))
+            : this((Dictionary) Codec.Decode((byte[]) info.GetValue("serialized", typeof(byte[]))))
         {
         }
 
@@ -55,11 +53,6 @@ namespace Nekoyume.Model.Item
             {
                 return (base.GetHashCode() * 397) ^ ItemId.GetHashCode();
             }
-        }
-
-        public void GetObjectData(SerializationInfo info, StreamingContext context)
-        {
-            info.AddValue("serialized", _codec.Encode(Serialize()));
         }
 
         public override IValue Serialize() =>

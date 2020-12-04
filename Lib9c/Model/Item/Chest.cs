@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
+using System.Security.Permissions;
 using Bencodex.Types;
 using Libplanet;
 using Nekoyume.Model.State;
@@ -33,11 +34,9 @@ namespace Nekoyume.Model.Item
             }
         }
 
-        public Chest(SerializationInfo info, StreamingContext context) : base(info, context)
+        public Chest(SerializationInfo info, StreamingContext _)
+            : this((Dictionary) Codec.Decode((byte[]) info.GetValue("serialized", typeof(byte[]))))
         {
-            Rewards = (List<RedeemRewardSheet.RewardInfo>) info.GetValue(
-                nameof(Rewards),
-                typeof(List<RedeemRewardSheet.RewardInfo>));
         }
 
         public sealed override IValue Serialize() =>
