@@ -519,6 +519,35 @@ namespace Nekoyume.Model.State
             }
         }
 
+        public void EquipItems(IEnumerable<Guid> itemIds)
+        {
+            // Unequip items already equipped.
+            var equippableItems = inventory.Items
+                .Select(item => item.item)
+                .OfType<IEquippableItem>()
+                .Where(equippableItem => equippableItem.Equipped)
+                .ToImmutableHashSet();
+#pragma warning disable LAA1002
+            foreach (var equippableItem in equippableItems)
+#pragma warning restore LAA1002
+            {
+                equippableItem.Unequip();
+            }
+            
+            // Equip items.
+            foreach (var itemId in itemIds)
+            {
+                if (!inventory.TryGetNonFungibleItem(itemId, out var inventoryItem) ||
+                    !(inventoryItem.item is IEquippableItem equippableItem))
+                {
+                    continue;
+                }
+
+                equippableItem.Equip();
+            }
+        }
+
+        // FIXME: Use `EquipItems(IEnumerable<Guid>)` instead of this.
         public void EquipCostumes(HashSet<int> costumeIds)
         {
             // 코스튬 해제.
@@ -546,6 +575,7 @@ namespace Nekoyume.Model.State
             }
         }
 
+        // FIXME: Use `EquipItems(IEnumerable<Guid>)` instead of this.
         public void EquipEquipments(List<Guid> equipmentIds)
         {
             // 장비 해제.
