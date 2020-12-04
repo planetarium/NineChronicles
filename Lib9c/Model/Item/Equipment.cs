@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using Bencodex.Types;
 using Nekoyume.Model.Stat;
 using Nekoyume.Model.State;
@@ -63,6 +64,12 @@ namespace Nekoyume.Model.Item
                 SpineResourcePath = (Text) spineResourcePath;
             }
         }
+        
+        protected Equipment(SerializationInfo info, StreamingContext _)
+            : this((Dictionary) Codec.Decode((byte[]) info.GetValue("serialized", typeof(byte[]))))
+        {
+        }
+        
         public override IValue Serialize() =>
 #pragma warning disable LAA1002
             new Dictionary(new Dictionary<IKey, IValue>

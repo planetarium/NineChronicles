@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
+using Bencodex;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Assets;
@@ -10,6 +12,8 @@ namespace Nekoyume.Model.Item
     [Serializable]
     public class ShopItem
     {
+        protected static readonly Codec Codec = new Codec();
+        
         public readonly Address SellerAgentAddress;
         public readonly Address SellerAvatarAddress;
         public readonly Guid ProductId;
@@ -57,6 +61,21 @@ namespace Nekoyume.Model.Item
             Costume = serialized.ContainsKey("costume")
                 ? (Costume) ItemFactory.Deserialize((Dictionary) serialized["costume"])
                 : null;
+        }
+        
+        protected ShopItem(SerializationInfo info, StreamingContext _)
+            : this((Dictionary) Codec.Decode((byte[]) info.GetValue("serialized", typeof(byte[]))))
+        {
+        }
+        
+        public void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            if (info == null)
+            {
+                throw new ArgumentNullException(nameof(info));
+            }
+            
+            info.AddValue("serialized", Codec.Encode(Serialize()));
         }
 
         public IValue Serialize()

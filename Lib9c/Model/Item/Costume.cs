@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using Bencodex.Types;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
@@ -35,6 +36,11 @@ namespace Nekoyume.Model.Item
             }
 
             ItemId = serialized["item_id"].ToGuid();
+        }
+        
+        protected Costume(SerializationInfo info, StreamingContext _)
+            : this((Dictionary) Codec.Decode((byte[]) info.GetValue("serialized", typeof(byte[]))))
+        {
         }
 
         public override IValue Serialize() =>
