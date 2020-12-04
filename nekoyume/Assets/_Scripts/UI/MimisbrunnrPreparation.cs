@@ -416,7 +416,7 @@ namespace Nekoyume.UI
                 .Any(x => !IsExistElementalType(x.Item.ElementalType)))
             {
                 Notification.Push(MailType.System,
-                    "'해당 장비로는 시작할 수 없습니다.' 이런식의 다국어 문구가 필요!");
+                    L10nManager.Localize("UI_MIMISBRUNNR_START_FAIELD"));
                 return;
             }
 
