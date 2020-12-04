@@ -168,7 +168,7 @@ namespace Nekoyume.UI
             canvasGroup.alpha = 1f;
             SharedModel = model;
 
-            worldStageId.text = $"{SharedModel.WorldName} {SharedModel.StageID}";
+            worldStageId.text = $"{SharedModel.WorldName} {StageInformation.GetStageIdString(SharedModel.StageID)}";
             actionPoint.SetActionPoint(model.ActionPoint);
 
             foreach (var reward in rewardsArea.rewards)
