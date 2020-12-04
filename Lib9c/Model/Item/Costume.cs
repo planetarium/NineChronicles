@@ -68,5 +68,15 @@ namespace Nekoyume.Model.Item
                 return hashCode;
             }
         }
+        
+        public void Equip()
+        {
+            equipped = true;
+        }
+
+        public void Unequip()
+        {
+            equipped = false;
+        }
     }
 }
