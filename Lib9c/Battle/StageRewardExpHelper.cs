@@ -45,6 +45,11 @@ namespace Nekoyume.Battle
 
         public static int GetExp(int characterLevel, int stageNumber)
         {
+            if (stageNumber >= GameConfig.MimisbrunnrWorldId)
+            {
+                return 0;
+            }
+                
             var differ = characterLevel - stageNumber;
             if (differ <= DifferLowerLimit)
             {
