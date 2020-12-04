@@ -344,7 +344,7 @@ namespace Nekoyume.UI
                 PlayerPrefs.SetInt(key, 1);
             }
 
-            Mixpanel.Track("Unity/Enter Dungeon");
+            Mixpanel.Track("Unity/Enter Mimisbrunnr");
             _coLazyClose = StartCoroutine(CoLazyClose());
             AudioController.PlayClick();
             AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ClickHardBattle);
