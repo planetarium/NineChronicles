@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using Bencodex.Types;
 using Nekoyume.Model.Stat;
 using Nekoyume.Model.State;
@@ -9,14 +10,16 @@ using Nekoyume.TableData;
 namespace Nekoyume.Model.Item
 {
     [Serializable]
-    public class Equipment : ItemUsable
+    public class Equipment : ItemUsable, IEquippableItem
     {
+        // FIXME: Do not use anymore please!
         public bool equipped = false;
         public int level;
         public DecimalStat Stat { get; }
         public int SetId { get; }
         public string SpineResourcePath { get; }
         public StatType UniqueStatType => Stat.Type;
+        public bool Equipped => equipped;
 
         public decimal GetIncrementAmountOfEnhancement()
         {
@@ -61,6 +64,12 @@ namespace Nekoyume.Model.Item
                 SpineResourcePath = (Text) spineResourcePath;
             }
         }
+        
+        protected Equipment(SerializationInfo info, StreamingContext _)
+            : this((Dictionary) Codec.Decode((byte[]) info.GetValue("serialized", typeof(byte[]))))
+        {
+        }
+        
         public override IValue Serialize() =>
 #pragma warning disable LAA1002
             new Dictionary(new Dictionary<IKey, IValue>
