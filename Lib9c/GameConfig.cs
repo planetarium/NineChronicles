@@ -40,6 +40,8 @@ namespace Nekoyume
         public const int ArenaScoreDefault = 1000;
         public const int ArenaChallengeCountMax = 5;
 
+        public const int HardStageBeginId = 101;
+
         #endregion
 
         #region system or contents unlock

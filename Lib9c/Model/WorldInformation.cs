@@ -334,7 +334,25 @@ namespace Nekoyume.Model
         public bool TryGetLastClearedStageId(out int stageId)
         {
             stageId = default;
-            var clearedStages = _worlds.Values.Where(world => world.IsStageCleared);
+            var clearedStages = _worlds.Values
+                .Where(world => world.IsStageCleared &&
+                world.Id < GameConfig.HardStageBeginId);
+
+            if (clearedStages.Any())
+            {
+                stageId = clearedStages.Max(world => world.StageClearedId);
+                return true;
+            }
+
+            return false;
+        }
+
+        public bool TryGetLastClearedHardStageId(out int stageId)
+        {
+            stageId = default;
+            var clearedStages = _worlds.Values
+                .Where(world => world.IsStageCleared &&
+                world.Id >= GameConfig.HardStageBeginId);
 
             if (clearedStages.Any())
             {
