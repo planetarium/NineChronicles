@@ -85,7 +85,7 @@ namespace Nekoyume.Model.Item
         private readonly List<Item> _items = new List<Item>();
 
         public IReadOnlyList<Item> Items => _items;
-        
+
         public IEnumerable<Consumable> Consumables => _items
             .Select(item => item.item)
             .OfType<Consumable>();
@@ -222,7 +222,7 @@ namespace Nekoyume.Model.Item
                     break;
                 }
             }
-            return true;            
+            return true;
         }
 
         #endregion
@@ -338,7 +338,7 @@ namespace Nekoyume.Model.Item
             return _items.Exists(item => item.item.Id == id && item.count >= count);
         }
 
-        public bool HasItem(HashDigest<SHA256> id, int count = 1)
+        public bool HasItem(HashDigest<SHA256> itemId, int count = 1)
         {
             return _items.Exists(item =>
             {
@@ -347,12 +347,14 @@ namespace Nekoyume.Model.Item
                     return false;
                 }
 
-                return material.ItemId.Equals(id) && item.count >= count;
+                return material.ItemId.Equals(itemId) && item.count >= count;
             });
         }
 
-        public bool HasItem(Guid itemId) =>
-            _items.Select(i => i.item).OfType<ItemUsable>().Any(i => i.ItemId == itemId);
+        public bool HasItem(Guid itemId) => _items
+            .Select(i => i.item)
+            .OfType<INonFungibleItem>()
+            .Any(i => i.ItemId.Equals(itemId));
 
         #endregion
 

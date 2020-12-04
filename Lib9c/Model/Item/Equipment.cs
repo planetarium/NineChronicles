@@ -10,14 +10,16 @@ using Nekoyume.TableData;
 namespace Nekoyume.Model.Item
 {
     [Serializable]
-    public class Equipment : ItemUsable
+    public class Equipment : ItemUsable, IEquippableItem
     {
+        // FIXME: Do not use anymore please!
         public bool equipped = false;
         public int level;
         public DecimalStat Stat { get; }
         public int SetId { get; }
         public string SpineResourcePath { get; }
         public StatType UniqueStatType => Stat.Type;
+        public bool Equipped => equipped;
 
         public decimal GetIncrementAmountOfEnhancement()
         {
