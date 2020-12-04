@@ -26,12 +26,13 @@
         private readonly Address _agentAddress;
 
         private readonly Address _avatarAddress;
-        private readonly AvatarState _avatarState;
 
         private readonly Address _rankingMapAddress;
 
         private readonly WeeklyArenaState _weeklyArenaState;
         private readonly IAccountStateDelta _initialState;
+
+        private int _index = 0;
 
         public MimisbrunnrBttleTest()
         {
@@ -44,7 +45,7 @@
 
             _avatarAddress = _agentAddress.Derive("avatar");
             _rankingMapAddress = _avatarAddress.Derive("ranking_map");
-            _avatarState = new AvatarState(
+            var avatarState = new AvatarState(
                 _avatarAddress,
                 _agentAddress,
                 0,
@@ -62,7 +63,7 @@
             _initialState = new State()
                 .SetState(_weeklyArenaState.address, _weeklyArenaState.Serialize())
                 .SetState(_agentAddress, agentState.Serialize())
-                .SetState(_avatarAddress, _avatarState.Serialize())
+                .SetState(_avatarAddress, avatarState.Serialize())
                 .SetState(_rankingMapAddress, new RankingMapState(_rankingMapAddress).Serialize());
 
             foreach (var (key, value) in sheets)
@@ -73,7 +74,8 @@
         }
 
         [Theory]
-        [InlineData(200, 10001, 10000006, true)]
+        [InlineData(200, 10001, 10000001, true)]
+        [InlineData(200, 10001, 10000002, true)]
         public void Execute(int avatarLevel, int worldId, int stageId, bool contains)
         {
             Assert.True(_tableSheets.WorldSheet.TryGetValue(worldId, out var worldRow));
@@ -88,6 +90,13 @@
                 0,
                 _tableSheets.WorldSheet,
                 clearStageid);
+
+            previousAvatarState.worldInformation.ClearStage(
+                2,
+                100,
+                0,
+                _tableSheets.WorldSheet,
+                _tableSheets.WorldUnlockSheet);
 
             var costumeId = _tableSheets
                 .CostumeItemSheet
@@ -137,7 +146,7 @@
 
             var action = new MimisbrunnrBattle()
             {
-                costumes = new List<int> { costumeId },
+                costumes = new List<Guid> { ((Costume)costume).ItemId },
                 equipments = new List<Guid>() { equipment.ItemId },
                 foods = new List<Guid>(),
                 worldId = worldId,
@@ -158,7 +167,8 @@
             });
 
             var nextAvatarState = nextState.GetAvatarState(_avatarAddress);
-            var newWeeklyState = nextState.GetWeeklyArenaState(0);
+            var newWeeklyState = nextState.GetWeeklyArenaState(_index);
+            _index++;
 
             Assert.NotNull(action.Result);
 
@@ -208,11 +218,9 @@
                 _avatarAddress,
                 previousAvatarState.Serialize());
 
-            var costumeId = _tableSheets
-                .CostumeItemSheet
-                .Values
-                .First(r => r.ItemSubType == ItemSubType.FullCostume)
-                .Id;
+            var costumeRow =
+                _tableSheets.CostumeItemSheet.Values.First(x => x.ItemSubType == ItemSubType.FullCostume);
+            var costume = ItemFactory.CreateCostume(costumeRow, default);
 
             var equipmentRow =
                 _tableSheets.EquipmentItemSheet.Values.First(x => x.ElementalType == ElementalType.Fire);
@@ -236,7 +244,7 @@
 
             var action = new MimisbrunnrBattle()
             {
-                costumes = new List<int> { costumeId },
+                costumes = new List<Guid> { costume.ItemId },
                 equipments = new List<Guid>() { equipment.ItemId },
                 foods = new List<Guid>(),
                 worldId = worldId,

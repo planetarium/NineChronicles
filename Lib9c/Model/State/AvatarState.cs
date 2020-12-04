@@ -469,7 +469,57 @@ namespace Nekoyume.Model.State
                 }
             }
         }
+        
+        public void ValidateCostume(IEnumerable<Guid> costumeIds)
+        {
+            var subTypes = new List<ItemSubType>();
+            foreach (var costumeId in costumeIds)
+            {
+                if (!inventory.TryGetNonFungibleItem<Costume>(costumeId, out var costume))
+                {
+                    continue;
+                }
 
+                if (subTypes.Contains(costume.ItemSubType))
+                {
+                    throw new DuplicateCostumeException($"can't equip duplicate costume type : {costume.ItemSubType}");
+                }
+                
+                subTypes.Add(costume.ItemSubType);
+       
+                int requiredLevel;
+                switch (costume.ItemSubType)
+                {
+                    case ItemSubType.FullCostume:
+                        requiredLevel = GameConfig.RequireCharacterLevel.CharacterFullCostumeSlot;
+                        break;
+                    case ItemSubType.HairCostume:
+                        requiredLevel = GameConfig.RequireCharacterLevel.CharacterHairCostumeSlot;
+                        break;
+                    case ItemSubType.EarCostume:
+                        requiredLevel = GameConfig.RequireCharacterLevel.CharacterEarCostumeSlot;
+                        break;
+                    case ItemSubType.EyeCostume:
+                        requiredLevel = GameConfig.RequireCharacterLevel.CharacterEyeCostumeSlot;
+                        break;
+                    case ItemSubType.TailCostume:
+                        requiredLevel = GameConfig.RequireCharacterLevel.CharacterTailCostumeSlot;
+                        break;
+                    case ItemSubType.Title:
+                        requiredLevel = GameConfig.RequireCharacterLevel.CharacterTitleSlot;
+                        break;
+                    default:
+                        throw new InvalidItemTypeException(
+                            $"Costume[id: {costumeId}] isn't expected type. [type: {costume.ItemSubType}]");
+                }
+
+                if (level < requiredLevel)
+                {
+                    throw new CostumeSlotUnlockException($"not enough level. required: {requiredLevel}");
+                }
+            }
+        }
+        
         public void ValidateCostume(HashSet<int> costumeIds)
         {
             var subTypes = new List<ItemSubType>();
@@ -543,6 +593,33 @@ namespace Nekoyume.Model.State
                 }
 
                 costume.equipped = true;
+            }
+        }
+        
+        public void EquipCostumes(IEnumerable<Guid> costumeIds)
+        {
+            // 코스튬 해제.
+            var inventoryCostumes = inventory.Items
+                .Select(i => i.item)
+                .OfType<Costume>()
+                .Where(i => i.equipped)
+                .ToImmutableHashSet();
+#pragma warning disable LAA1002
+            foreach (var costume in inventoryCostumes)
+#pragma warning restore LAA1002
+            {
+                costume.Unequip();
+            }
+
+            // 코스튬 장착.
+            foreach (var costumeId in costumeIds)
+            {
+                if (!inventory.TryGetNonFungibleItem<Costume>(costumeId, out var costume))
+                {
+                    continue;
+                }
+
+                costume.Equip();
             }
         }
 

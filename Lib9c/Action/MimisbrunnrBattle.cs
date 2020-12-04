@@ -19,7 +19,7 @@ namespace Nekoyume.Action
     [ActionType("mimisbrunnr_battle")]
     public class MimisbrunnrBattle : GameAction
     {
-        public List<int> costumes;
+        public List<Guid> costumes;
         public List<Guid> equipments;
         public List<Guid> foods;
         public int worldId;
@@ -44,7 +44,7 @@ namespace Nekoyume.Action
 
         protected override void LoadPlainValueInternal(IImmutableDictionary<string, IValue> plainValue)
         {
-            costumes =  ((List) plainValue["costumes"]).Select(e => e.ToInteger()).ToList();
+            costumes =  ((List) plainValue["costumes"]).Select(e => e.ToGuid()).ToList();
             equipments = ((List) plainValue["equipments"]).Select(e => e.ToGuid()).ToList();
             foods = ((List) plainValue["foods"]).Select(e => e.ToGuid()).ToList();
             worldId = plainValue["worldId"].ToInteger();
@@ -62,8 +62,7 @@ namespace Nekoyume.Action
             {
                 states = states.SetState(RankingMapAddress, MarkChanged);
                 states = states.SetState(avatarAddress, MarkChanged);
-                states = states.SetState(WeeklyArenaAddress, MarkChanged);
-                return states.SetState(ctx.Signer, MarkChanged);
+                return states.SetState(WeeklyArenaAddress, MarkChanged);
             }
             
             var sw = new Stopwatch();
@@ -157,7 +156,7 @@ namespace Nekoyume.Action
 
             avatarState.ValidateEquipments(equipments, context.BlockIndex);
             avatarState.ValidateConsumable(foods, context.BlockIndex);
-            avatarState.ValidateCostume(new HashSet<int>(costumes));
+            avatarState.ValidateCostume(costumes);
             
             sw.Restart();
             if (avatarState.actionPoint < stageRow.CostAP)
@@ -168,7 +167,7 @@ namespace Nekoyume.Action
                 );
             }
             avatarState.actionPoint -= stageRow.CostAP;
-            avatarState.EquipCostumes(new HashSet<int>(costumes));
+            avatarState.EquipCostumes(costumes);
             avatarState.EquipEquipments(equipments);
             sw.Stop();
             Log.Debug("Mimisbrunnr Unequip items: {Elapsed}", sw.Elapsed);
