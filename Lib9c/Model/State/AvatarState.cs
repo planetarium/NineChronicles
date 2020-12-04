@@ -627,33 +627,6 @@ namespace Nekoyume.Model.State
             }
         }
         
-        public void EquipCostumes(IEnumerable<Guid> costumeIds)
-        {
-            // 코스튬 해제.
-            var inventoryCostumes = inventory.Items
-                .Select(i => i.item)
-                .OfType<Costume>()
-                .Where(i => i.equipped)
-                .ToImmutableHashSet();
-#pragma warning disable LAA1002
-            foreach (var costume in inventoryCostumes)
-#pragma warning restore LAA1002
-            {
-                costume.Unequip();
-            }
-
-            // 코스튬 장착.
-            foreach (var costumeId in costumeIds)
-            {
-                if (!inventory.TryGetNonFungibleItem<Costume>(costumeId, out var costume))
-                {
-                    continue;
-                }
-
-                costume.Equip();
-            }
-        }
-
         // FIXME: Use `EquipItems(IEnumerable<Guid>)` instead of this.
         public void EquipEquipments(List<Guid> equipmentIds)
         {

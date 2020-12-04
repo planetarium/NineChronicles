@@ -167,8 +167,8 @@ namespace Nekoyume.Action
                 );
             }
             avatarState.actionPoint -= stageRow.CostAP;
-            avatarState.EquipCostumes(costumes);
-            avatarState.EquipEquipments(equipments);
+            avatarState.EquipItems(costumes);
+            avatarState.EquipItems(equipments);
             sw.Stop();
             Log.Debug("Mimisbrunnr Unequip items: {Elapsed}", sw.Elapsed);
             

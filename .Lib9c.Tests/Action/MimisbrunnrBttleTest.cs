@@ -32,8 +32,6 @@
         private readonly WeeklyArenaState _weeklyArenaState;
         private readonly IAccountStateDelta _initialState;
 
-        private int _index = 0;
-
         public MimisbrunnrBttleTest()
         {
             var sheets = TableSheetsImporter.ImportSheets();
@@ -54,7 +52,7 @@
                 _rankingMapAddress
             )
             {
-                level = 100,
+                level = 400,
             };
             agentState.avatarAddresses.Add(0, _avatarAddress);
 
@@ -74,9 +72,9 @@
         }
 
         [Theory]
-        [InlineData(200, 10001, 10000001, true)]
-        [InlineData(200, 10001, 10000002, true)]
-        public void Execute(int avatarLevel, int worldId, int stageId, bool contains)
+        [InlineData(200, 10001, 10000001)]
+        [InlineData(400, 10001, 10000020)]
+        public void Execute(int avatarLevel, int worldId, int stageId)
         {
             Assert.True(_tableSheets.WorldSheet.TryGetValue(worldId, out var worldRow));
             Assert.True(stageId >= worldRow.StageBegin);
@@ -167,31 +165,23 @@
             });
 
             var nextAvatarState = nextState.GetAvatarState(_avatarAddress);
-            var newWeeklyState = nextState.GetWeeklyArenaState(_index);
-            _index++;
-
+            var newWeeklyState = nextState.GetWeeklyArenaState(0);
             Assert.NotNull(action.Result);
-
-            Assert.NotEmpty(action.Result.OfType<GetReward>());
+            var reward = action.Result.OfType<GetReward>();
+            Assert.NotEmpty(reward);
             Assert.Equal(BattleLog.Result.Win, action.Result.result);
-            Assert.Equal(contains, newWeeklyState.ContainsKey(_avatarAddress));
             Assert.True(nextAvatarState.worldInformation.IsStageCleared(stageId));
             Assert.Equal(30, nextAvatarState.mailBox.Count);
-            if (contains)
-            {
-                Assert.True(
-                    newWeeklyState[_avatarAddress].CombatPoint >
-                    CPHelper.GetCP(nextAvatarState, _tableSheets.CharacterSheet)
-                );
-            }
 
             var value = nextState.GetState(_rankingMapAddress);
+            if (value != null)
+            {
+                var rankingMapState = new RankingMapState((Dictionary)value);
+                var info = rankingMapState.GetRankingInfos(null).First();
 
-            var rankingMapState = new RankingMapState((Dictionary)value);
-            var info = rankingMapState.GetRankingInfos(null).First();
-
-            Assert.Equal(info.AgentAddress, _agentAddress);
-            Assert.Equal(info.AvatarAddress, _avatarAddress);
+                Assert.Equal(info.AgentAddress, _agentAddress);
+                Assert.Equal(info.AvatarAddress, _avatarAddress);
+            }
         }
 
         [Fact]
