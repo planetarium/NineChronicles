@@ -438,6 +438,14 @@ namespace Nekoyume.BlockChain
         public void UpdateSubscribeAddresses()
         {
             var addresses = new List<Address> { Address };
+
+            var currentAvatarState = States.Instance.CurrentAvatarState;
+            if (!(currentAvatarState is null))
+            {
+                var slotAddresses = currentAvatarState.combinationSlotAddresses.ToArray();
+                addresses.AddRange(slotAddresses);
+            }
+
             Debug.Log($"Subscribing addresses: {string.Join(", ", addresses)}");
             _service.SetAddressesToSubscribe(addresses.Select(addr => addr.ToByteArray()));
         }

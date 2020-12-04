@@ -459,13 +459,16 @@ namespace Nekoyume.UI
 
         private void SubscribeItemPopupSubmit(Model.ItemCountAndPricePopup data)
         {
+            if (!(data.Item.Value.ItemBase.Value is INonFungibleItem nonFungibleItem))
+            {
+                return;
+            }
+
             if (SharedModel.State.Value == StateType.Buy)
             {
-                var shopItem = shopItems.SharedModel.ItemSubTypeProducts.Value.Values
-                    .SelectMany(list => list)
-                    .FirstOrDefault(i =>
-                        i.ItemBase.Value.Equals(data.Item.Value.ItemBase.Value));
-                if (shopItem is null)
+                if (!shopItems.SharedModel.TryGetShopItemFromItemSubTypeProducts(
+                    nonFungibleItem.ItemId,
+                    out var shopItem))
                 {
                     return;
                 }
@@ -484,11 +487,9 @@ namespace Nekoyume.UI
             }
             else
             {
-                var shopItem = shopItems.SharedModel.AgentProducts.Value.Values
-                    .SelectMany(list => list)
-                    .FirstOrDefault(i =>
-                        i.ItemBase.Value.Equals(data.Item.Value.ItemBase.Value));
-                if (shopItem is null)
+                if (!shopItems.SharedModel.TryGetShopItemFromAgentProducts(
+                    nonFungibleItem.ItemId,
+                    out var shopItem))
                 {
                     if (data.Price.Value.Sign * data.Price.Value.MajorUnit < Model.Shop.MinimumPrice)
                     {
@@ -504,7 +505,8 @@ namespace Nekoyume.UI
                 }
 
                 Game.Game.instance.ActionManager.SellCancellation(
-                    shopItem.SellerAvatarAddress.Value, shopItem.ProductId.Value);
+                    shopItem.SellerAvatarAddress.Value,
+                    shopItem.ProductId.Value);
                 ResponseSellCancellation(shopItem);
             }
         }

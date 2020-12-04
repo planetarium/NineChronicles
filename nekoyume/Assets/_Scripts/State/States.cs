@@ -4,6 +4,7 @@ using System.Globalization;
 using Bencodex.Types;
 using Libplanet;
 using Nekoyume.Action;
+using Nekoyume.BlockChain;
 using Nekoyume.Model.State;
 using Nekoyume.State.Subjects;
 using UnityEngine;
@@ -213,6 +214,11 @@ namespace Nekoyume.State
             {
                 // NOTE: 새로운 아바타를 처음 선택할 때에는 모든 워크샵 슬롯을 업데이트 합니다.
                 SetCombinationSlotStates(avatarState);
+            }
+
+            if (Game.Game.instance.Agent is RPCAgent agent)
+            {
+                agent.UpdateSubscribeAddresses();
             }
 
             return CurrentAvatarState;
