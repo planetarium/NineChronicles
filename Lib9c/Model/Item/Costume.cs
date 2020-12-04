@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using Bencodex.Types;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
@@ -8,12 +9,14 @@ using Nekoyume.TableData;
 namespace Nekoyume.Model.Item
 {
     [Serializable]
-    public class Costume : ItemBase, INonFungibleItem
+    public class Costume : ItemBase, INonFungibleItem, IEquippableItem
     {
+        // FIXME: Do not use anymore please!
         public bool equipped = false;
         public string SpineResourcePath { get; }
 
         public Guid ItemId { get; }
+        public bool Equipped => equipped;
 
         public Costume(CostumeItemSheet.Row data, Guid itemId) : base(data)
         {
@@ -33,6 +36,11 @@ namespace Nekoyume.Model.Item
             }
 
             ItemId = serialized["item_id"].ToGuid();
+        }
+        
+        protected Costume(SerializationInfo info, StreamingContext _)
+            : this((Dictionary) Codec.Decode((byte[]) info.GetValue("serialized", typeof(byte[]))))
+        {
         }
 
         public override IValue Serialize() =>
@@ -68,7 +76,7 @@ namespace Nekoyume.Model.Item
                 return hashCode;
             }
         }
-        
+
         public void Equip()
         {
             equipped = true;

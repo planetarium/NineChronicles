@@ -15,6 +15,14 @@ namespace Lib9c.Tests.Model
             _tableSheets = new TableSheets(TableSheetsImporter.ImportSheets());
         }
 
+        public static Costume CreateFirstCostume(TableSheets tableSheets, Guid guid = default)
+        {
+            var row = tableSheets.CostumeItemSheet.First;
+            Assert.NotNull(row);
+
+            return new Costume(row, guid == default ? Guid.NewGuid() : guid);
+        }
+
         [Fact]
         public void Serialize()
         {

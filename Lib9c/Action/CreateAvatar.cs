@@ -191,7 +191,7 @@ namespace Nekoyume.Action
                 avatarState.inventory.AddItem(ItemFactory.CreateCostume(row, random.GenerateRandomGuid()));
             }
 
-            foreach (var row in materialItemSheet.OrderedList)
+            foreach (var row in materialItemSheet.OrderedList.Where(row => row.ItemSubType != ItemSubType.Chest))
             {
                 avatarState.inventory.AddItem(ItemFactory.CreateMaterial(row), 10);
             }
