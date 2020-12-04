@@ -92,7 +92,7 @@ namespace Nekoyume.BlockChain
         }
 
         public IObservable<ActionBase.ActionEvaluation<MimisbrunnrBattle>> MimisbrunnrBattle(
-            List<int> costumes,
+            List<Costume> costumes,
             List<Equipment> equipments,
             List<Consumable> foods,
             int worldId,
@@ -106,13 +106,13 @@ namespace Nekoyume.BlockChain
             Mixpanel.Track("Unity/Create Mimisbrunnr");
 
             var avatarAddress = States.Instance.CurrentAvatarState.address;
-            costumes = costumes ?? new List<int>();
+            costumes = costumes ?? new List<Costume>();
             equipments = equipments ?? new List<Equipment>();
             foods = foods ?? new List<Consumable>();
 
             var action = new MimisbrunnrBattle
             {
-                costumes = costumes,
+                costumes = costumes.Select(e => e.ItemId).ToList(),
                 equipments = equipments.Select(e => e.ItemId).ToList(),
                 foods = foods.Select(f => f.ItemId).ToList(),
                 worldId = worldId,

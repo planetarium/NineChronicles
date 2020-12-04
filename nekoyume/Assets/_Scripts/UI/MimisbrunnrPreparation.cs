@@ -692,7 +692,7 @@ namespace Nekoyume.UI
             ActionRenderHandler.Instance.Pending = true;
             Game.Game.instance.ActionManager
                 .MimisbrunnrBattle(
-                    costumes.Select(i => i.Id).ToList(),
+                    costumes,
                     equipments,
                     consumables,
                     GameConfig.MimisbrunnrWorldId,
