@@ -161,7 +161,7 @@
                 {
                     BlockIndex = 0,
                     PreviousStates = previousStates,
-                    Random = new ItemEnhancementTest.TestRandom(),
+                    Random = new TestRandom(),
                     Rehearsal = false,
                     Signer = _buyerAgentAddress,
                 });
@@ -205,7 +205,7 @@
                 {
                     BlockIndex = 0,
                     PreviousStates = new State(),
-                    Random = new ItemEnhancementTest.TestRandom(),
+                    Random = new TestRandom(),
                     Signer = _buyerAgentAddress,
                 })
             );
@@ -226,7 +226,7 @@
                 {
                     BlockIndex = 0,
                     PreviousStates = new State(),
-                    Random = new ItemEnhancementTest.TestRandom(),
+                    Random = new TestRandom(),
                     Signer = _buyerAgentAddress,
                 })
             );
@@ -257,7 +257,7 @@
                 {
                     BlockIndex = 0,
                     PreviousStates = _initialState,
-                    Random = new ItemEnhancementTest.TestRandom(),
+                    Random = new TestRandom(),
                     Signer = _buyerAgentAddress,
                 })
             );
@@ -278,7 +278,7 @@
                 {
                     BlockIndex = 0,
                     PreviousStates = _initialState,
-                    Random = new ItemEnhancementTest.TestRandom(),
+                    Random = new TestRandom(),
                     Signer = _buyerAgentAddress,
                 })
             );
@@ -308,7 +308,7 @@
                 {
                     BlockIndex = 0,
                     PreviousStates = _initialState,
-                    Random = new ItemEnhancementTest.TestRandom(),
+                    Random = new TestRandom(),
                     Signer = _buyerAgentAddress,
                 })
             );

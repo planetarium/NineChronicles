@@ -18,7 +18,7 @@ namespace Lib9c.Tests.Model
         {
             _materialItemSheet = new MaterialItemSheet();
             _materialItemSheet.Set(TableSheetsImporter.ImportSheets()[nameof(MaterialItemSheet)]);
-            _random = new ItemEnhancementTest.TestRandom();
+            _random = new TestRandom();
         }
 
         [Fact]

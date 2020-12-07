@@ -128,7 +128,7 @@ namespace Lib9c.Tests.Action
             {
                 BlockIndex = 0,
                 PreviousStates = _initialState,
-                Random = new ItemEnhancementTest.TestRandom(),
+                Random = new TestRandom(),
                 Rehearsal = false,
                 Signer = _buyerAgentAddress,
             });
@@ -164,7 +164,7 @@ namespace Lib9c.Tests.Action
                 {
                     BlockIndex = 0,
                     PreviousStates = new State(),
-                    Random = new ItemEnhancementTest.TestRandom(),
+                    Random = new TestRandom(),
                     Signer = _buyerAgentAddress,
                 })
             );
@@ -185,7 +185,7 @@ namespace Lib9c.Tests.Action
                 {
                     BlockIndex = 0,
                     PreviousStates = new State(),
-                    Random = new ItemEnhancementTest.TestRandom(),
+                    Random = new TestRandom(),
                     Signer = _buyerAgentAddress,
                 })
             );
@@ -216,7 +216,7 @@ namespace Lib9c.Tests.Action
                 {
                     BlockIndex = 0,
                     PreviousStates = _initialState,
-                    Random = new ItemEnhancementTest.TestRandom(),
+                    Random = new TestRandom(),
                     Signer = _buyerAgentAddress,
                 })
             );
@@ -237,7 +237,7 @@ namespace Lib9c.Tests.Action
                 {
                     BlockIndex = 0,
                     PreviousStates = _initialState,
-                    Random = new ItemEnhancementTest.TestRandom(),
+                    Random = new TestRandom(),
                     Signer = _buyerAgentAddress,
                 })
             );
@@ -267,7 +267,7 @@ namespace Lib9c.Tests.Action
                 {
                     BlockIndex = 0,
                     PreviousStates = _initialState,
-                    Random = new ItemEnhancementTest.TestRandom(),
+                    Random = new TestRandom(),
                     Signer = _buyerAgentAddress,
                 })
             );

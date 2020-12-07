@@ -102,7 +102,7 @@
                 .First(r => r.ItemSubType == ItemSubType.FullCostume)
                 .Id;
             var costume =
-                ItemFactory.CreateItem(_tableSheets.ItemSheet[costumeId], new ItemEnhancementTest.TestRandom());
+                ItemFactory.CreateItem(_tableSheets.ItemSheet[costumeId], new TestRandom());
             previousAvatarState.inventory.AddItem(costume);
 
             var mimisbrunnrSheet = _tableSheets.MimisbrunnrSheet;
@@ -160,7 +160,7 @@
             {
                 PreviousStates = state,
                 Signer = _agentAddress,
-                Random = new ItemEnhancementTest.TestRandom(),
+                Random = new TestRandom(),
                 Rehearsal = false,
             });
 
@@ -250,7 +250,7 @@
                 {
                     PreviousStates = previousState,
                     Signer = _agentAddress,
-                    Random = new ItemEnhancementTest.TestRandom(),
+                    Random = new TestRandom(),
                     Rehearsal = false,
                 });
             });
