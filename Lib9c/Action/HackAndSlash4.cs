@@ -18,7 +18,7 @@ namespace Nekoyume.Action
     [ActionType("hack_and_slash4")]
     public class HackAndSlash4 : GameAction
     {
-        public List<int> costumes;
+        public List<Guid> costumes;
         public List<Guid> equipments;
         public List<Guid> foods;
         public int worldId;
@@ -45,7 +45,7 @@ namespace Nekoyume.Action
         protected override void LoadPlainValueInternal(
             IImmutableDictionary<string, IValue> plainValue)
         {
-            costumes =  ((List) plainValue["costumes"]).Select(e => e.ToInteger()).ToList();
+            costumes =  ((List) plainValue["costumes"]).Select(e => e.ToGuid()).ToList();
             equipments = ((List) plainValue["equipments"]).Select(e => e.ToGuid()).ToList();
             foods = ((List) plainValue["foods"]).Select(e => e.ToGuid()).ToList();
             worldId = plainValue["worldId"].ToInteger();
@@ -138,7 +138,7 @@ namespace Nekoyume.Action
 
             avatarState.ValidateEquipments(equipments, context.BlockIndex);
             avatarState.ValidateConsumable(foods, context.BlockIndex);
-            avatarState.ValidateCostume(new HashSet<int>(costumes));
+            avatarState.ValidateCostume(costumes);
 
             var costumeStatSheet = states.GetSheet<CostumeStatSheet>();
 
@@ -153,9 +153,8 @@ namespace Nekoyume.Action
 
             avatarState.actionPoint -= stageRow.CostAP;
 
-            avatarState.EquipCostumes(new HashSet<int>(costumes));
-
-            avatarState.EquipEquipments(equipments);
+            var items = equipments.Concat(costumes);
+            avatarState.EquipItems(items);
             sw.Stop();
             Log.Debug("HAS Unequip items: {Elapsed}", sw.Elapsed);
 
