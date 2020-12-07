@@ -160,8 +160,7 @@ namespace Nekoyume.UI.Module
 
         private void ShowPopup()
         {
-            if (_data?.Result is null ||
-                _data?.Result is ItemEnhancement.ResultModel)
+            if (!(_data?.Result is CombinationConsumable.ResultModel))
             {
                 return;
             }
