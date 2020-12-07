@@ -144,5 +144,126 @@ namespace Lib9c.Tests.Action.Scenario
             avatarState = nextState.GetAvatarState(_avatarAddress);
             Assert.True(avatarState.worldInformation.IsWorldUnlocked(worldIdToUnlock));
         }
+
+        [Theory]
+        [InlineData(400, 2, 80, 10001, 10000001)]
+        [InlineData(400, 2, 81, 10001, 10000001)]
+        public void UnlockWorldByMimisbrunnrBttleAfterPatchTable(
+            int avatarLevel,
+            int worldIdToClear,
+            int stageIdToClear,
+            int worldIdToUnlock,
+            int stageIdToUnlock)
+        {
+            Assert.True(_tableSheets.CharacterLevelSheet.ContainsKey(avatarLevel));
+            Assert.True(_tableSheets.WorldSheet.ContainsKey(worldIdToClear));
+            Assert.True(_tableSheets.StageSheet.ContainsKey(stageIdToClear));
+            Assert.True(_tableSheets.WorldSheet.ContainsKey(worldIdToUnlock));
+            Assert.False(_tableSheets.WorldUnlockSheet.TryGetUnlockedInformation(
+                worldIdToClear,
+                stageIdToClear,
+                out _));
+
+            var avatarState = _initialState.GetAvatarState(_avatarAddress);
+            avatarState.level = avatarLevel;
+
+            avatarState.worldInformation = new WorldInformation(0, _tableSheets.WorldSheet, stageIdToClear);
+            Assert.True(avatarState.worldInformation.IsWorldUnlocked(worldIdToClear));
+            Assert.False(avatarState.worldInformation.IsWorldUnlocked(worldIdToUnlock));
+
+            var nextState = _initialState.SetState(_avatarAddress, avatarState.Serialize());
+            var hackAndSlash = new HackAndSlash3
+            {
+                worldId = worldIdToClear,
+                stageId = stageIdToClear,
+                avatarAddress = _avatarAddress,
+                costumes = new List<int>(),
+                equipments = new List<Guid>(),
+                foods = new List<Guid>(),
+                WeeklyArenaAddress = _weeklyArenaState.address,
+                RankingMapAddress = _rankingMapAddress,
+            };
+            nextState = hackAndSlash.Execute(new ActionContext
+            {
+                PreviousStates = nextState,
+                Signer = _agentAddress,
+                Random = new TestRandom(),
+                Rehearsal = false,
+            });
+            Assert.True(hackAndSlash.Result.IsClear);
+
+            var mimisbrunnrBattle = new MimisbrunnrBattle()
+            {
+                worldId = worldIdToUnlock,
+                stageId = stageIdToUnlock,
+                avatarAddress = _avatarAddress,
+                costumes = new List<Guid>(),
+                equipments = new List<Guid>(),
+                foods = new List<Guid>(),
+                WeeklyArenaAddress = _weeklyArenaState.address,
+                RankingMapAddress = _rankingMapAddress,
+            };
+
+            Assert.Null(mimisbrunnrBattle.Result);
+
+            Assert.Throws<InvalidWorldException>(() =>
+            {
+                mimisbrunnrBattle.Execute(new ActionContext
+                {
+                    PreviousStates = nextState,
+                    Signer = _agentAddress,
+                    Random = new TestRandom(),
+                    Rehearsal = false,
+                });
+            });
+
+            avatarState = nextState.GetAvatarState(_avatarAddress);
+            Assert.True(avatarState.worldInformation.IsStageCleared(stageIdToClear));
+            Assert.False(avatarState.worldInformation.IsWorldUnlocked(worldIdToUnlock));
+
+            var tableCsv = _initialState.GetSheetCsv<WorldUnlockSheet>();
+            var newTable = new StringBuilder(tableCsv).Replace("4,2,100,10001", "4,2,80,10001").ToString();
+
+            var patchTableSheet = new PatchTableSheet
+            {
+                TableName = nameof(WorldUnlockSheet),
+                TableCsv = newTable,
+            };
+
+            nextState = patchTableSheet.Execute(new ActionContext
+            {
+                PreviousStates = nextState,
+                Signer = AdminState.Address,
+                Random = new TestRandom(),
+                Rehearsal = false,
+            });
+
+            var nextTableCsv = nextState.GetSheetCsv<WorldUnlockSheet>();
+            Assert.Equal(nextTableCsv, newTable);
+
+            nextState = hackAndSlash.Execute(new ActionContext
+            {
+                PreviousStates = nextState,
+                Signer = _agentAddress,
+                Random = new TestRandom(),
+                Rehearsal = false,
+            });
+
+            avatarState = nextState.GetAvatarState(_avatarAddress);
+            Assert.True(hackAndSlash.Result.IsClear);
+            Assert.True(avatarState.worldInformation.IsWorldUnlocked(worldIdToUnlock));
+
+            nextState = mimisbrunnrBattle.Execute(new ActionContext
+            {
+                PreviousStates = nextState,
+                Signer = _agentAddress,
+                Random = new TestRandom(),
+                Rehearsal = false,
+            });
+
+            avatarState = nextState.GetAvatarState(_avatarAddress);
+            Assert.True(mimisbrunnrBattle.Result.IsClear);
+            Assert.True(avatarState.worldInformation.IsWorldUnlocked(worldIdToUnlock));
+        }
     }
 }
