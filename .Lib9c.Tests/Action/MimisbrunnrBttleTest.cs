@@ -9,7 +9,6 @@
     using Libplanet.Crypto;
     using Nekoyume;
     using Nekoyume.Action;
-    using Nekoyume.Battle;
     using Nekoyume.Model;
     using Nekoyume.Model.BattleStatus;
     using Nekoyume.Model.Elemental;
@@ -252,6 +251,156 @@
                     Signer = _agentAddress,
                     Random = new TestRandom(),
                     Rehearsal = false,
+                });
+            });
+        }
+
+        [Fact]
+        public void ExecuteThrowFailedLoadStateException()
+        {
+            var action = new MimisbrunnrBattle()
+            {
+                costumes = new List<Guid>(),
+                equipments = new List<Guid>(),
+                foods = new List<Guid>(),
+                worldId = 10001,
+                stageId = 10000002,
+                avatarAddress = _avatarAddress,
+                WeeklyArenaAddress = _weeklyArenaState.address,
+                RankingMapAddress = _rankingMapAddress,
+            };
+
+            Assert.Throws<FailedLoadStateException>(() =>
+            {
+                action.Execute(new ActionContext()
+                {
+                    PreviousStates = new State(),
+                    Signer = _agentAddress,
+                });
+            });
+        }
+
+        [Fact]
+        public void ExecuteThrowInvalidRankingMapAddress()
+        {
+            var action = new MimisbrunnrBattle()
+            {
+                costumes = new List<Guid>(),
+                equipments = new List<Guid>(),
+                foods = new List<Guid>(),
+                worldId = 10001,
+                stageId = 10000002,
+                avatarAddress = _avatarAddress,
+                WeeklyArenaAddress = _weeklyArenaState.address,
+                RankingMapAddress = default,
+            };
+
+            Assert.Null(action.Result);
+
+            Assert.Throws<InvalidAddressException>(() =>
+            {
+                action.Execute(new ActionContext()
+                {
+                    PreviousStates = _initialState,
+                    Signer = _agentAddress,
+                });
+            });
+        }
+
+        [Fact]
+        public void ExecuteThrowSheetRowNotFound()
+        {
+            var action = new MimisbrunnrBattle()
+            {
+                costumes = new List<Guid>(),
+                equipments = new List<Guid>(),
+                foods = new List<Guid>(),
+                worldId = 10011,
+                stageId = 10000002,
+                avatarAddress = _avatarAddress,
+                WeeklyArenaAddress = _weeklyArenaState.address,
+                RankingMapAddress = _rankingMapAddress,
+            };
+
+            Assert.Null(action.Result);
+
+            Assert.Throws<SheetRowNotFoundException>(() =>
+            {
+                action.Execute(new ActionContext()
+                {
+                    PreviousStates = _initialState,
+                    Signer = _agentAddress,
+                });
+            });
+        }
+
+        [Fact]
+        public void ExecuteThrowSheetRowColumn()
+        {
+            var action = new MimisbrunnrBattle()
+            {
+                costumes = new List<Guid>(),
+                equipments = new List<Guid>(),
+                foods = new List<Guid>(),
+                worldId = 10001,
+                stageId = 10000022,
+                avatarAddress = _avatarAddress,
+                WeeklyArenaAddress = _weeklyArenaState.address,
+                RankingMapAddress = _rankingMapAddress,
+            };
+
+            Assert.Null(action.Result);
+
+            Assert.Throws<SheetRowColumnException>(() =>
+            {
+                action.Execute(new ActionContext()
+                {
+                    PreviousStates = _initialState,
+                    Signer = _agentAddress,
+                });
+            });
+        }
+
+        [Fact]
+        public void ExecuteThrowNotEnoughActionPoint()
+        {
+            var previousAvatarState = _initialState.GetAvatarState(_avatarAddress);
+            previousAvatarState.actionPoint = 0;
+
+            previousAvatarState.worldInformation = new WorldInformation(
+                0,
+                _tableSheets.WorldSheet,
+                100);
+
+            previousAvatarState.worldInformation.ClearStage(
+                2,
+                100,
+                0,
+                _tableSheets.WorldSheet,
+                _tableSheets.WorldUnlockSheet);
+
+            var action = new MimisbrunnrBattle()
+            {
+                costumes = new List<Guid>(),
+                equipments = new List<Guid>(),
+                foods = new List<Guid>(),
+                worldId = 10001,
+                stageId = 10000001,
+                avatarAddress = _avatarAddress,
+                WeeklyArenaAddress = _weeklyArenaState.address,
+                RankingMapAddress = _rankingMapAddress,
+            };
+
+            Assert.Null(action.Result);
+            var state = _initialState;
+            state = state.SetState(_avatarAddress, previousAvatarState.Serialize());
+            Assert.Throws<NotEnoughActionPointException>(() =>
+            {
+                action.Execute(new ActionContext()
+                {
+                    PreviousStates = state,
+                    Signer = _agentAddress,
+                    Random = new TestRandom(),
                 });
             });
         }
