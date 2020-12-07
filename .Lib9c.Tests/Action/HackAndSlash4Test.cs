@@ -91,7 +91,7 @@ namespace Lib9c.Tests.Action
                 _tableSheets.WorldSheet,
                 Math.Max(_tableSheets.StageSheet.First?.Id ?? 1, stageId - 1));
 
-            List<int> costumes = new List<int>();
+            List<Guid> costumes = new List<Guid>();
             if (avatarLevel >= GameConfig.RequireCharacterLevel.CharacterFullCostumeSlot)
             {
                 var costumeId = _tableSheets
@@ -99,10 +99,11 @@ namespace Lib9c.Tests.Action
                 .Values
                 .First(r => r.ItemSubType == ItemSubType.FullCostume)
                 .Id;
-                costumes.Add(costumeId);
 
-                var costume = ItemFactory.CreateItem(_tableSheets.ItemSheet[costumeId], new ItemEnhancementTest.TestRandom());
+                var costume = (Costume)ItemFactory.CreateItem(
+                    _tableSheets.ItemSheet[costumeId], new ItemEnhancementTest.TestRandom());
                 previousAvatarState.inventory.AddItem(costume);
+                costumes.Add(costume.ItemId);
             }
 
             List<Guid> equipments = new List<Guid>();
@@ -242,7 +243,7 @@ namespace Lib9c.Tests.Action
 
             var action = new HackAndSlash4
             {
-                costumes = new List<int>(),
+                costumes = new List<Guid>(),
                 equipments = new List<Guid>(),
                 foods = new List<Guid>(),
                 worldId = worldId,
