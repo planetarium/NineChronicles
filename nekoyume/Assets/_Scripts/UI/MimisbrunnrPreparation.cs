@@ -525,7 +525,7 @@ namespace Nekoyume.UI
             }
 
             var equipment = (Equipment) itemBase;
-            LocalStateModifier.SetEquipmentEquip(
+            LocalStateModifier.SetItemEquip(
                 States.Instance.CurrentAvatarState.address,
                 equipment.ItemId,
                 equip,
