@@ -147,7 +147,6 @@ namespace Lib9c.Tests.Action.Scenario
 
         [Theory]
         [InlineData(400, 2, 80, 10001, 10000001)]
-        [InlineData(400, 2, 81, 10001, 10000001)]
         public void UnlockWorldByMimisbrunnrBttleAfterPatchTable(
             int avatarLevel,
             int worldIdToClear,
