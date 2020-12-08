@@ -12,6 +12,7 @@ using UniRx;
 using UnityEngine;
 using Random = UnityEngine.Random;
 using mixpanel;
+using Nekoyume.L10n;
 using Nekoyume.Model.State;
 
 namespace Nekoyume.UI
@@ -25,6 +26,7 @@ namespace Nekoyume.UI
 
         private const string FirstOpenRankingKeyFormat = "Nekoyume.UI.Menu.FirstOpenRankingKey_{0}";
         private const string FirstOpenQuestKeyFormat = "Nekoyume.UI.Menu.FirstOpenQuestKey_{0}";
+        private const string firstOpenMimisbrunnrKeyFormat = "Nekoyume.UI.Menu.FirstOpenMimisbrunnrKeyKey_{0}";
 
         [SerializeField]
         private MainMenu btnQuest = null;
@@ -37,6 +39,9 @@ namespace Nekoyume.UI
 
         [SerializeField]
         private MainMenu btnRanking = null;
+
+        [SerializeField]
+        private MainMenu btnMimisbrunnr = null;
 
         [SerializeField]
         private SpeechBubble[] speechBubbles = null;
@@ -54,7 +59,11 @@ namespace Nekoyume.UI
         private GameObject questExclamationMark = null;
 
         [SerializeField]
+        private GameObject mimisbrunnrExclamationMark = null;
+
+        [SerializeField]
         private GuidedQuest guidedQuest = null;
+
 
         private Coroutine _coLazyClose;
 
@@ -162,12 +171,14 @@ namespace Nekoyume.UI
             btnCombination.Update();
             btnShop.Update();
             btnRanking.Update();
+            btnMimisbrunnr.Update();
 
             var addressHax = ReactiveAvatarState.Address.Value.ToHex();
             var firstOpenCombinationKey = string.Format(FirstOpenCombinationKeyFormat, addressHax);
             var firstOpenShopKey = string.Format(FirstOpenShopKeyFormat, addressHax);
             var firstOpenRankingKey = string.Format(FirstOpenRankingKeyFormat, addressHax);
             var firstOpenQuestKey = string.Format(FirstOpenQuestKeyFormat, addressHax);
+            var firstOpenMimisbrunnrKey = string.Format(firstOpenMimisbrunnrKeyFormat, addressHax);
 
             var combination = Find<Combination>();
             var hasNotificationOnCombination = combination.HasNotification;
@@ -197,6 +208,11 @@ namespace Nekoyume.UI
                 (btnQuest.IsUnlocked &&
                  PlayerPrefs.GetInt(firstOpenQuestKey, 0) == 0) ||
                 hasNotificationInWorldmap);
+
+            mimisbrunnrExclamationMark.gameObject.SetActive(
+                (btnMimisbrunnr.IsUnlocked &&
+                 PlayerPrefs.GetInt(firstOpenMimisbrunnrKey, 0) == 0) ||
+                hasNotificationInWorldmap);
         }
 
         private void HideButtons()
@@ -205,6 +221,7 @@ namespace Nekoyume.UI
             btnCombination.gameObject.SetActive(false);
             btnShop.gameObject.SetActive(false);
             btnRanking.gameObject.SetActive(false);
+            btnMimisbrunnr.gameObject.SetActive(false);
         }
 
         public void ShowWorld()
@@ -310,6 +327,49 @@ namespace Nekoyume.UI
             Close();
             Find<RankingBoard>().Show();
             AudioController.PlayClick();
+        }
+
+        public void MimisbrunnrClick()
+        {
+            if (!btnMimisbrunnr.IsUnlocked)
+            {
+                btnMimisbrunnr.JingleTheCat();
+                return;
+            }
+
+            if (mimisbrunnrExclamationMark.gameObject.activeSelf)
+            {
+                var addressHax = ReactiveAvatarState.Address.Value.ToHex();
+                var key = string.Format(firstOpenMimisbrunnrKeyFormat, addressHax);
+                PlayerPrefs.SetInt(key, 1);
+            }
+
+            Mixpanel.Track("Unity/Enter Mimisbrunnr");
+            _coLazyClose = StartCoroutine(CoLazyClose());
+            AudioController.PlayClick();
+            AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ClickHardBattle);
+
+            var stageInfo = Find<UI.StageInformation>();
+
+            var SharedViewModel = new WorldMap.ViewModel
+            {
+                WorldInformation = States.Instance.CurrentAvatarState.worldInformation,
+            };
+
+            if (!SharedViewModel.WorldInformation.TryGetWorld(GameConfig.MimisbrunnrWorldId, out var world))
+            {
+                var unlockConditionString = string.Format(
+                    L10nManager.Localize("UI_STAGE_LOCK_FORMAT"),
+                    100);
+                return;
+            }
+
+            SharedViewModel.SelectedWorldId.SetValueAndForceNotify(world.Id);
+            SharedViewModel.SelectedStageId.SetValueAndForceNotify(world.GetNextStageId());
+            Game.Game.instance.TableSheets.WorldSheet.TryGetValue(world.Id, out var worldRow, true);
+            stageInfo.Show(SharedViewModel, worldRow, StageInformation.StageType.Mimisbrunnr);
+            var status = Find<Status>();
+            status.Close(true);
         }
 
         public void UpdateGuideQuest(AvatarState avatarState)
