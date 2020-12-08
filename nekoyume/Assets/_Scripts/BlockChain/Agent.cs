@@ -764,7 +764,7 @@ namespace Nekoyume.BlockChain
                 await _swarm.WaitForRunningAsync();
 
                 BlockRenderer.EveryBlock()
-                    .SubscribeOnMainThread()
+                    .ObserveOnMainThread()
                     .Subscribe(TipChangedHandler);
 
                 Debug.LogFormat(
