@@ -113,26 +113,23 @@ namespace Nekoyume.Action
             {
                 // NOTE: Add new World from WorldSheet
                 worldInformation.AddAndUnlockNewWorld(worldRow, ctx.BlockIndex, worldSheet);
+                if (!worldInformation.TryGetWorld(worldId, out world))
+                {
+                    // Do nothing.
+                }
             }
             
             if (!world.IsUnlocked)
             {
-                if (worldInformation.TryGetWorld(AlfheimId, out var alfheim))
+                var worldUnlockSheetRow = worldUnlockSheet.OrderedList.FirstOrDefault(row => row.WorldIdToUnlock == worldId);
+                if (!(worldUnlockSheetRow is null) &&
+                    worldInformation.IsWorldUnlocked(worldUnlockSheetRow.WorldId) &&
+                    worldInformation.IsStageCleared(worldUnlockSheetRow.StageId))
                 {
-                    if (alfheim.IsStageCleared)
+                    worldInformation.UnlockWorld(worldId, ctx.BlockIndex, worldSheet);
+                    if (!worldInformation.TryGetWorld(worldId, out world))
                     {
-                        avatarState.worldInformation.ClearStage(
-                            AlfheimId,
-                            alfheim.StageClearedId,
-                            ctx.BlockIndex,
-                            worldSheet,
-                            worldUnlockSheet);
-                
-                        if (!worldInformation.TryGetWorld(worldId, out world))
-                        {
-                            // NOTE: Add new World from WorldSheet
-                            worldInformation.AddAndUnlockNewWorld(worldRow, ctx.BlockIndex, worldSheet);
-                        }
+                        // Do nothing.
                     }
                 }
             }
