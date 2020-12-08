@@ -17,6 +17,7 @@ namespace Nekoyume
             "http://explorer.libplanet.io/9c-beta/account/?{0}";
 
         public const float PlayerSpeechBreakTime = 2f;
+        public const int MimisbrunnrStartStageId = 10000001;
 
         //TODO 온체인으로 옮겨야함.
         // re: 그렇네요. 가장 확인된 방법은 테이블로 빼는 방법이네요.
@@ -88,6 +89,7 @@ namespace Nekoyume
             public const int ItemEnhancementAction = IsEditor ? 1 : 9;
             public const int ActionsInShop = IsEditor ? 1 : 17;
             public const int ActionsInRankingBoard = IsEditor ? 1 : 25;
+            public const int ActionsInMimisbrunnr = 100;
 
             #endregion
 
@@ -97,12 +99,14 @@ namespace Nekoyume
             public const int UIMainMenuCombination = CombinationEquipmentAction;
             public const int UIMainMenuShop = ActionsInShop;
             public const int UIMainMenuRankingBoard = ActionsInRankingBoard;
+            public const int UIMainMenuMimisbrunnr = ActionsInMimisbrunnr;
 
             public const int UIBottomMenuInBattle = 1;
             public const int UIBottomMenuCharacter = 1;
             public const int UIBottomMenuMail = CombinationEquipmentAction;
             public const int UIBottomMenuChat = IsEditor ? 1 : 7;
             public const int UIBottomMenuQuest = 1;
+            public const int UIBottomMenuMimisbrunnr = ActionsInMimisbrunnr;
 
             #endregion
         }

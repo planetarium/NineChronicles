@@ -413,7 +413,7 @@ namespace Nekoyume.Model
         /// <param name="unlockedAt"></param>
         /// <param name="worldSheet"></param>
         /// <exception cref="FailedToUnlockWorldException"></exception>
-        private void UnlockWorld(int worldId, long unlockedAt, WorldSheet worldSheet)
+        public void UnlockWorld(int worldId, long unlockedAt, WorldSheet worldSheet)
         {
             World world;
             if (_worlds.ContainsKey(worldId))

@@ -97,7 +97,7 @@ namespace Lib9c.Tests.Action
                 .First(r => r.ItemSubType == ItemSubType.FullCostume)
                 .Id;
             var costume =
-                ItemFactory.CreateItem(_tableSheets.ItemSheet[costumeId], new ItemEnhancementTest.TestRandom());
+                ItemFactory.CreateItem(_tableSheets.ItemSheet[costumeId], new TestRandom());
             previousAvatarState.inventory.AddItem(costume);
 
             var equipmentRow = _tableSheets.EquipmentItemSheet.Values.First();
@@ -137,7 +137,7 @@ namespace Lib9c.Tests.Action
             {
                 PreviousStates = state,
                 Signer = _agentAddress,
-                Random = new ItemEnhancementTest.TestRandom(),
+                Random = new TestRandom(),
                 Rehearsal = false,
             });
 

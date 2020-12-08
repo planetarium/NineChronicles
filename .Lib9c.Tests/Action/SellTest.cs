@@ -104,7 +104,7 @@ namespace Lib9c.Tests.Action
                 PreviousStates = _initialState,
                 Rehearsal = false,
                 Signer = _agentAddress,
-                Random = new ItemEnhancementTest.TestRandom(),
+                Random = new TestRandom(),
             });
 
             var nextAvatarState = nextState.GetAvatarState(_avatarAddress);

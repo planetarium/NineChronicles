@@ -158,8 +158,11 @@ namespace Nekoyume.Battle
                     {
                         if (i == 0)
                         {
-                            Player.GetExp((int) (Exp * 0.3m), true);
                             Result = BattleLog.Result.Lose;
+                            if (StageId < GameConfig.MimisbrunnrStartStageId)
+                            {
+                                Player.GetExp((int) (Exp * 0.3m), true);
+                            }
                         }
                         else
                         {
@@ -203,7 +206,10 @@ namespace Nekoyume.Battle
                         if (i == 0)
                         {
                             Result = BattleLog.Result.Lose;
-                            Player.GetExp((int) (Exp * 0.3m), true);
+                            if (StageId < GameConfig.MimisbrunnrStartStageId)
+                            {
+                                Player.GetExp((int) (Exp * 0.3m), true);
+                            }
                         }
                         else
                         {
@@ -230,7 +236,10 @@ namespace Nekoyume.Battle
                         switch (WaveNumber)
                         {
                             case 1:
-                                Player.GetExp(Exp, true);
+                                if (StageId < GameConfig.MimisbrunnrStartStageId)
+                                {
+                                    Player.GetExp(Exp, true);
+                                }
                                 break;
                             case 2:
                             {

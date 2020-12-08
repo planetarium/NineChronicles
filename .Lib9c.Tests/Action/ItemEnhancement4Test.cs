@@ -30,7 +30,7 @@ namespace Lib9c.Tests.Action
         public ItemEnhancement4Test()
         {
             var sheets = TableSheetsImporter.ImportSheets();
-            _random = new ItemEnhancementTest.TestRandom();
+            _random = new TestRandom();
             _tableSheets = new TableSheets(sheets);
             var privateKey = new PrivateKey();
             _agentAddress = privateKey.PublicKey.ToAddress();
