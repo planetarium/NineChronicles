@@ -9,7 +9,7 @@ using UnityEngine;
 namespace Nekoyume.State.Modifiers
 {
     [Serializable]
-    public class AvatarInventoryEquipmentEquippedModifier : AvatarStateModifier
+    public class AvatarInventoryItemEquippedModifier : AvatarStateModifier
     {
         [Serializable]
         public class InnerDictionary : JsonConvertibleDictionary<JsonConvertibleGuid, bool>
@@ -21,7 +21,7 @@ namespace Nekoyume.State.Modifiers
 
         public override bool IsEmpty => dictionary.Count == 0;
 
-        public AvatarInventoryEquipmentEquippedModifier(Guid itemId, bool equipped)
+        public AvatarInventoryItemEquippedModifier(Guid itemId, bool equipped)
         {
             dictionary = new InnerDictionary();
             dictionary.Value.Add(new JsonConvertibleGuid(itemId), equipped);
@@ -29,7 +29,7 @@ namespace Nekoyume.State.Modifiers
 
         public override void Add(IAccumulatableStateModifier<AvatarState> modifier)
         {
-            if (!(modifier is AvatarInventoryEquipmentEquippedModifier m))
+            if (!(modifier is AvatarInventoryItemEquippedModifier m))
             {
                 return;
             }
@@ -42,7 +42,7 @@ namespace Nekoyume.State.Modifiers
 
         public override void Remove(IAccumulatableStateModifier<AvatarState> modifier)
         {
-            if (!(modifier is AvatarInventoryEquipmentEquippedModifier m))
+            if (!(modifier is AvatarInventoryItemEquippedModifier m))
             {
                 return;
             }
@@ -65,21 +65,30 @@ namespace Nekoyume.State.Modifiers
             }
 
             var shouldRemoveKeys = new List<JsonConvertibleGuid>();
-            var equipments = state.inventory.Items
+            var nonFungibleItems = state.inventory.Items
                 .Select(inventoryItem => inventoryItem.item)
-                .OfType<Equipment>()
+                .OfType<INonFungibleItem>()
                 .ToArray();
 
             foreach (var pair in dictionary.Value)
             {
-                var equipment = equipments.FirstOrDefault(item => item.ItemId.Equals(pair.Key.Value));
-                if (equipment is null)
+                var nonFungibleItem = nonFungibleItems
+                    .FirstOrDefault(item => item.ItemId.Equals(pair.Key.Value));
+                if (nonFungibleItem is null ||
+                    !(nonFungibleItem is IEquippableItem equippableItem))
                 {
                     shouldRemoveKeys.Add(pair.Key);
                 }
                 else
                 {
-                    equipment.equipped = pair.Value;
+                    if (pair.Value)
+                    {
+                        equippableItem.Equip();
+                    }
+                    else
+                    {
+                        equippableItem.Unequip();
+                    }
                 }
             }
 

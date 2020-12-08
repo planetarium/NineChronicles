@@ -177,7 +177,7 @@ namespace Nekoyume.BlockChain
             var avatarAddress = States.Instance.CurrentAvatarState.address;
 
             // NOTE: 장착했는지 안 했는지에 상관없이 해제 플래그를 걸어 둔다.
-            LocalStateModifier.SetEquipmentEquip(avatarAddress, item.ItemId, false, false);
+            LocalStateModifier.SetItemEquip(avatarAddress, item.ItemId, false, false);
 
             var action = new Sell3
             {
@@ -267,8 +267,8 @@ namespace Nekoyume.BlockChain
             var avatarAddress = States.Instance.CurrentAvatarState.address;
 
             // NOTE: 장착했는지 안 했는지에 상관없이 해제 플래그를 걸어 둔다.
-            LocalStateModifier.SetEquipmentEquip(avatarAddress, itemId, false, false);
-            LocalStateModifier.SetEquipmentEquip(avatarAddress, materialId, false, false);
+            LocalStateModifier.SetItemEquip(avatarAddress, itemId, false, false);
+            LocalStateModifier.SetItemEquip(avatarAddress, materialId, false, false);
 
             var action = new ItemEnhancement4
             {
