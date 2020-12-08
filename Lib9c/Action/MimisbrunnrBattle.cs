@@ -27,6 +27,8 @@ namespace Nekoyume.Action
         public Address avatarAddress;
         public Address WeeklyArenaAddress;
         public Address RankingMapAddress;
+        
+        private const int AlfheimId = 2;
         public BattleLog Result { get; private set; }
         
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
@@ -86,6 +88,7 @@ namespace Nekoyume.Action
             }
             
             var worldSheet = states.GetSheet<WorldSheet>();
+            var worldUnlockSheet = states.GetSheet<WorldUnlockSheet>();
             if (!worldSheet.TryGetValue(worldId, out var worldRow, false))
             {
                 throw new SheetRowNotFoundException(nameof(WorldSheet), worldId);
@@ -114,9 +117,31 @@ namespace Nekoyume.Action
             
             if (!world.IsUnlocked)
             {
-                throw new InvalidWorldException($"{worldId} is locked.");
+                if (worldInformation.TryGetWorld(AlfheimId, out var alfheim))
+                {
+                    if (alfheim.IsStageCleared)
+                    {
+                        avatarState.worldInformation.ClearStage(
+                            AlfheimId,
+                            alfheim.StageClearedId,
+                            ctx.BlockIndex,
+                            worldSheet,
+                            worldUnlockSheet);
+                
+                        if (!worldInformation.TryGetWorld(worldId, out world))
+                        {
+                            // NOTE: Add new World from WorldSheet
+                            worldInformation.AddAndUnlockNewWorld(worldRow, ctx.BlockIndex, worldSheet);
+                        }
+                    }
+                }
             }
             
+            if (!world.IsUnlocked)
+            {
+                throw new InvalidWorldException($"{worldId} is locked.");
+            }
+         
             if (world.StageBegin != worldRow.StageBegin ||
                 world.StageEnd != worldRow.StageEnd)
             {
@@ -205,7 +230,6 @@ namespace Nekoyume.Action
             sw.Restart();
             if (simulator.Log.IsClear)
             {
-                var worldUnlockSheet = states.GetSheet<WorldUnlockSheet>();
                 simulator.Player.worldInformation.ClearStage(
                     worldId,
                     stageId,

@@ -71,9 +71,9 @@
         }
 
         [Theory]
-        [InlineData(200, 10001, 10000001)]
-        [InlineData(400, 10001, 10000020)]
-        public void Execute(int avatarLevel, int worldId, int stageId)
+        [InlineData(200, 10001, 10000001, 140)]
+        [InlineData(400, 10001, 10000001, 100)]
+        public void Execute(int avatarLevel, int worldId, int stageId, int clearStageId)
         {
             Assert.True(_tableSheets.WorldSheet.TryGetValue(worldId, out var worldRow));
             Assert.True(stageId >= worldRow.StageBegin);
@@ -82,18 +82,10 @@
 
             var previousAvatarState = _initialState.GetAvatarState(_avatarAddress);
             previousAvatarState.level = avatarLevel;
-            var clearStageid = Math.Max(_tableSheets.StageSheet.First?.Id ?? 1, stageId - 1);
             previousAvatarState.worldInformation = new WorldInformation(
                 0,
                 _tableSheets.WorldSheet,
-                clearStageid);
-
-            previousAvatarState.worldInformation.ClearStage(
-                2,
-                100,
-                0,
-                _tableSheets.WorldSheet,
-                _tableSheets.WorldUnlockSheet);
+                clearStageId);
 
             var costumeId = _tableSheets
                 .CostumeItemSheet
@@ -401,6 +393,91 @@
                     PreviousStates = state,
                     Signer = _agentAddress,
                     Random = new TestRandom(),
+                });
+            });
+        }
+
+        [Theory]
+        [InlineData(400, 10001, 10000001, 99)]
+        public void ExecuteThrowInvalidWorld(int avatarLevel, int worldId, int stageId, int clearStageId)
+        {
+            Assert.True(_tableSheets.WorldSheet.TryGetValue(worldId, out var worldRow));
+            Assert.True(stageId >= worldRow.StageBegin);
+            Assert.True(stageId <= worldRow.StageEnd);
+            Assert.True(_tableSheets.StageSheet.TryGetValue(stageId, out _));
+
+            var previousAvatarState = _initialState.GetAvatarState(_avatarAddress);
+            previousAvatarState.level = avatarLevel;
+            previousAvatarState.worldInformation = new WorldInformation(
+                0,
+                _tableSheets.WorldSheet,
+                clearStageId);
+
+            var costumeId = _tableSheets
+                .CostumeItemSheet
+                .Values
+                .First(r => r.ItemSubType == ItemSubType.FullCostume)
+                .Id;
+            var costume =
+                ItemFactory.CreateItem(_tableSheets.ItemSheet[costumeId], new TestRandom());
+            previousAvatarState.inventory.AddItem(costume);
+
+            var mimisbrunnrSheet = _tableSheets.MimisbrunnrSheet;
+            if (!mimisbrunnrSheet.TryGetValue(stageId, out var mimisbrunnrSheetRow))
+            {
+                throw new SheetRowNotFoundException("MimisbrunnrSheet", stageId);
+            }
+
+            var equipmentRow =
+                _tableSheets.EquipmentItemSheet.Values.First(x => x.ElementalType == ElementalType.Fire);
+            var equipment = ItemFactory.CreateItemUsable(equipmentRow, default, 0);
+            previousAvatarState.inventory.AddItem(equipment);
+
+            foreach (var equipmentId in previousAvatarState.inventory.Equipments)
+            {
+                if (previousAvatarState.inventory.TryGetNonFungibleItem(equipmentId, out ItemUsable itemUsable))
+                {
+                    var elementalType = ((Equipment)itemUsable).ElementalType;
+                    Assert.True(mimisbrunnrSheetRow.ElementalTypes.Exists(x => x == elementalType));
+                }
+            }
+
+            var result = new CombinationConsumable.ResultModel()
+            {
+                id = default,
+                gold = 0,
+                actionPoint = 0,
+                recipeId = 1,
+                materials = new Dictionary<Material, int>(),
+                itemUsable = equipment,
+            };
+            for (var i = 0; i < 100; i++)
+            {
+                var mail = new CombinationMail(result, i, default, 0);
+                previousAvatarState.Update(mail);
+            }
+
+            var state = _initialState.SetState(_avatarAddress, previousAvatarState.Serialize());
+
+            var action = new MimisbrunnrBattle()
+            {
+                costumes = new List<Guid> { ((Costume)costume).ItemId },
+                equipments = new List<Guid>() { equipment.ItemId },
+                foods = new List<Guid>(),
+                worldId = worldId,
+                stageId = stageId,
+                avatarAddress = _avatarAddress,
+                WeeklyArenaAddress = _weeklyArenaState.address,
+                RankingMapAddress = _rankingMapAddress,
+            };
+
+            Assert.Null(action.Result);
+
+            Assert.Throws<InvalidWorldException>(() =>
+            {
+                action.Execute(new ActionContext()
+                {
+                    PreviousStates = state, Signer = _agentAddress, Random = new TestRandom(), Rehearsal = false,
                 });
             });
         }
