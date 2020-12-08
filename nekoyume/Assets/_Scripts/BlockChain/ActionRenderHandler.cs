@@ -828,7 +828,7 @@ namespace Nekoyume.BlockChain
             Game.Game.instance.Stage.OnRoomEnterEnd
                 .First()
                 .Subscribe(_ => PopupError(key, code, errorMsg));
-            
+
             MainCanvas.instance.InitWidgetInMain();
         }
 
