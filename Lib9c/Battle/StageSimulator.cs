@@ -159,7 +159,7 @@ namespace Nekoyume.Battle
                         if (i == 0)
                         {
                             Result = BattleLog.Result.Lose;
-                            if (StageId < GameConfig.MimisbrunnrWorldId)
+                            if (StageId < GameConfig.MimisbrunnrStartStageId)
                             {
                                 Player.GetExp((int) (Exp * 0.3m), true);
                             }
@@ -206,7 +206,7 @@ namespace Nekoyume.Battle
                         if (i == 0)
                         {
                             Result = BattleLog.Result.Lose;
-                            if (StageId < GameConfig.MimisbrunnrWorldId)
+                            if (StageId < GameConfig.MimisbrunnrStartStageId)
                             {
                                 Player.GetExp((int) (Exp * 0.3m), true);
                             }
@@ -236,7 +236,7 @@ namespace Nekoyume.Battle
                         switch (WaveNumber)
                         {
                             case 1:
-                                if (StageId < GameConfig.MimisbrunnrWorldId)
+                                if (StageId < GameConfig.MimisbrunnrStartStageId)
                                 {
                                     Player.GetExp(Exp, true);
                                 }
