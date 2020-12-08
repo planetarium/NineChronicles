@@ -404,6 +404,11 @@ namespace Nekoyume.BlockChain
                     key = "ERROR_NETWORK";
                     errorCode = "101";
                     break;
+
+                case (int)RPCException.InvalidRenderException:
+                    key = "ERROR_INVALID_RENDER";
+                    errorCode = "102";
+                    break;
             }
 
             var errorMsg = string.Format(L10nManager.Localize("UI_ERROR_RETRY_FORMAT"),
