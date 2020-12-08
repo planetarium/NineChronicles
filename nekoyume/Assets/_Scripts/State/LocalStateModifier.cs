@@ -20,22 +20,17 @@ using Nekoyume.UI.Module;
 namespace Nekoyume.State
 {
     /// <summary>
-    /// `LocalStateSettings`의 `Add`와 `Remove`함수를 사용하는 정적 클래스이다.
-    /// `States.AgentState`와 `States.AvatarStates`, `States.CurrentAvatarState`를 업데이트 한다.
-    /// `ReactiveAgentState`와 `ReactiveAvatarState`를 업데이트 한다.
-    /// 반복되는 로직을 모아둔다.
+    /// This is a static class that collects the patterns of using the `Add` and `Remove` functions of `LocalStateSettings`.
     /// </summary>
     public static class LocalStateModifier
     {
         #region Agent, Avatar / Currency
 
         /// <summary>
-        /// 에이전트의 골드를 증가시킨다.(휘발성)
+        /// Modify the agent's gold.
         /// </summary>
         /// <param name="agentAddress"></param>
-        /// <param name="gold">더할 NCG. 음수일 경우 감소시킨다.</param>
-        // FIXME: 이름이 헷갈리니 IncrementAgentGold() 정도로 이름을 바꾸는 게 좋겠습니다.
-        // (현재는 이름만 보면 더하는 게 아니라 그냥 덮어씌우는 것처럼 여겨짐.)
+        /// <param name="gold"></param>
         public static void ModifyAgentGold(Address agentAddress, FungibleAssetValue gold)
         {
             if (gold.Sign == 0)
@@ -52,7 +47,6 @@ namespace Nekoyume.State
                 return;
             }
 
-            // NOTE: Reassignment is not required yet.
             state = modifier.Modify(state);
             ReactiveAgentState.Gold.SetValueAndForceNotify(state.Gold);
         }
@@ -71,12 +65,10 @@ namespace Nekoyume.State
         }
 
         /// <summary>
-        /// 아바타의 행동력을 증가시킨다.(휘발성)
+        /// Modify the avatar's action point.
         /// </summary>
         /// <param name="avatarAddress"></param>
-        /// <param name="actionPoint">더할 행동력. 음수일 경우 감소시킨다.</param>
-        // FIXME: 이름이 헷갈리니 IncrementAvatarActionPoint() 정도로 이름을 바꾸는 게 좋겠습니다.
-        // (현재는 이름만 보면 더하는 게 아니라 그냥 덮어씌우는 것처럼 여겨짐.)
+        /// <param name="actionPoint"></param>
         public static void ModifyAvatarActionPoint(Address avatarAddress, int actionPoint)
         {
             if (actionPoint is 0)
@@ -97,7 +89,6 @@ namespace Nekoyume.State
                 return;
             }
 
-            // NOTE: Reassignment is not required yet.
             outAvatarState = modifier.Modify(outAvatarState);
 
             if (!isCurrentAvatarState)
@@ -112,12 +103,6 @@ namespace Nekoyume.State
 
         #region Avatar / AddItem
 
-        /// <summary>
-        /// (휘발성)
-        /// </summary>
-        /// <param name="avatarAddress"></param>
-        /// <param name="guid"></param>
-        /// <param name="resetState"></param>
         public static void AddItem(Address avatarAddress, Guid guid, bool resetState = true)
         {
             var modifier = new AvatarInventoryNonFungibleItemRemover(guid);
@@ -131,13 +116,6 @@ namespace Nekoyume.State
             TryResetLoadedAvatarState(avatarAddress, out _, out _);
         }
 
-        /// <summary>
-        /// (휘발성)
-        /// </summary>
-        /// <param name="avatarAddress"></param>
-        /// <param name="id"></param>
-        /// <param name="count"></param>
-        /// <param name="resetState"></param>
         public static void AddItem(
             Address avatarAddress,
             HashDigest<SHA256> id,
@@ -160,12 +138,6 @@ namespace Nekoyume.State
             TryResetLoadedAvatarState(avatarAddress, out _, out _);
         }
 
-        /// <summary>
-        /// (휘발성)
-        /// </summary>
-        /// <param name="avatarAddress"></param>
-        /// <param name="idAndCountDictionary"></param>
-        /// <param name="resetState"></param>
         public static void AddItem(
             Address avatarAddress,
             Dictionary<HashDigest<SHA256>, int> idAndCountDictionary,
@@ -186,11 +158,6 @@ namespace Nekoyume.State
 
         #region Avatar / RemoveItem
 
-        /// <summary>
-        /// (휘발성)
-        /// </summary>
-        /// <param name="avatarAddress"></param>
-        /// <param name="guid"></param>
         public static void RemoveItem(Address avatarAddress, Guid guid)
         {
             var modifier = new AvatarInventoryNonFungibleItemRemover(guid);
@@ -198,12 +165,6 @@ namespace Nekoyume.State
             RemoveItemInternal(avatarAddress, modifier);
         }
 
-        /// <summary>
-        /// (휘발성)
-        /// </summary>
-        /// <param name="avatarAddress"></param>
-        /// <param name="id"></param>
-        /// <param name="count"></param>
         public static void RemoveItem(Address avatarAddress, HashDigest<SHA256> id, int count)
         {
             if (count is 0)
@@ -216,11 +177,6 @@ namespace Nekoyume.State
             RemoveItemInternal(avatarAddress, modifier);
         }
 
-        /// <summary>
-        /// (휘발성)
-        /// </summary>
-        /// <param name="avatarAddress"></param>
-        /// <param name="idAndCountDictionary"></param>
         public static void RemoveItem(
             Address avatarAddress,
             Dictionary<HashDigest<SHA256>, int> idAndCountDictionary)
@@ -242,7 +198,6 @@ namespace Nekoyume.State
                 return;
             }
 
-            // NOTE: Reassignment is not required yet.
             outAvatarState = modifier.Modify(outAvatarState);
 
             if (!isCurrentAvatarState)
@@ -258,7 +213,7 @@ namespace Nekoyume.State
         #region Avatar / Mail
 
         /// <summary>
-        /// `avatarAddress`에 해당하는 아바타 상태의 `MailBox` 안에 `AttachmentMail` 리스트 중, `guid`를 보상으로 갖고 있는 메일을 신규 처리한다.(비휘발성)
+        /// Turns into a state where you can receive specific mail.
         /// </summary>
         /// <param name="avatarAddress"></param>
         /// <param name="mailId"></param>
@@ -277,7 +232,6 @@ namespace Nekoyume.State
                 return;
             }
 
-            // NOTE: Reassignment is not required yet.
             outAvatarState = modifier.Modify(outAvatarState);
 
             if (!isCurrentAvatarState)
@@ -307,7 +261,6 @@ namespace Nekoyume.State
                 return;
             }
 
-            // NOTE: Reassignment is not required yet.
             outAvatarState = modifier.Modify(outAvatarState);
 
             if (!isCurrentAvatarState)
@@ -319,7 +272,7 @@ namespace Nekoyume.State
         }
 
         /// <summary>
-        /// `AddNewAttachmentMail()` 메서드 로직을 회귀한다.(비휘발성)
+        /// Regress the logic of the `AddNewAttachmentMail()` method.
         /// </summary>
         /// <param name="avatarAddress"></param>
         /// <param name="mailId"></param>
@@ -367,7 +320,7 @@ namespace Nekoyume.State
         #region Avatar / Quest
 
         /// <summary>
-        /// `avatarAddress`에 해당하는 아바타 상태의 `QuestList` 안의 퀘스트 중, 매개변수의 `id`를 가진 퀘스트를 신규 처리한다.(비휘발성)
+        /// Changes to a state where you can receive quests.
         /// </summary>
         /// <param name="avatarAddress"></param>
         /// <param name="id"></param>
@@ -386,7 +339,6 @@ namespace Nekoyume.State
                 return;
             }
 
-            // NOTE: Reassignment is not required yet.
             outAvatarState = modifier.Modify(outAvatarState);
 
             if (!isCurrentAvatarState)
@@ -398,7 +350,7 @@ namespace Nekoyume.State
         }
 
         /// <summary>
-        /// `avatarAddress`에 해당하는 아바타 상태의 `QuestList` 안의 퀘스트 중, 매개변수의 `id`를 가진 퀘스트의 신규 처리를 회귀한다.(비휘발성)
+        /// Regress the logic of the `AddReceivableQuest()` method.
         /// </summary>
         /// <param name="avatarAddress"></param>
         /// <param name="id"></param>
@@ -424,59 +376,19 @@ namespace Nekoyume.State
         #region Avatar
 
         /// <summary>
-        /// `avatarAddress`에 해당하는 아바타 상태의 `Inventory` 안의 `Costume` 중,
-        /// 매개변수의 `id`를 가진 `Costume`의 `equipped`를 매개변수 `equip`으로 설정한다.(비휘발성)
-        /// </summary>
-        /// <param name="avatarAddress"></param>
-        /// <param name="id"></param>
-        /// <param name="equip"></param>
-        /// <param name="resetState"></param>
-        public static void SetCostumeEquip(
-            Address avatarAddress,
-            int id,
-            bool equip,
-            bool resetState = true)
-        {
-            var modifier = new AvatarInventoryCostumeEquippedModifier(id, equip);
-            LocalStateSettings.Instance.Add(avatarAddress, modifier);
-
-            if (!TryGetLoadedAvatarState(
-                avatarAddress,
-                out var outAvatarState,
-                out _,
-                out var isCurrentAvatarState)
-            )
-            {
-                return;
-            }
-
-            // NOTE: Reassignment is not required yet.
-            outAvatarState = modifier.Modify(outAvatarState);
-
-            if (!resetState ||
-                !isCurrentAvatarState)
-            {
-                return;
-            }
-
-            ReactiveAvatarState.Inventory.SetValueAndForceNotify(outAvatarState.inventory);
-        }
-
-        /// <summary>
-        /// `avatarAddress`에 해당하는 아바타 상태의 `Inventory` 안의 `Equipment` 중,
-        /// 매개변수의 `itemId`를 가진 `Equipment`의 `equipped`를 매개변수 `equip`으로 설정한다.(비휘발성)
+        /// Change the equipment's mounting status.
         /// </summary>
         /// <param name="avatarAddress"></param>
         /// <param name="itemId"></param>
         /// <param name="equip"></param>
         /// <param name="resetState"></param>
-        public static void SetEquipmentEquip(
+        public static void SetItemEquip(
             Address avatarAddress,
             Guid itemId,
             bool equip,
             bool resetState = true)
         {
-            var modifier = new AvatarInventoryEquipmentEquippedModifier(itemId, equip);
+            var modifier = new AvatarInventoryItemEquippedModifier(itemId, equip);
             LocalStateSettings.Instance.Add(avatarAddress, modifier);
 
             if (!TryGetLoadedAvatarState(
@@ -489,7 +401,6 @@ namespace Nekoyume.State
                 return;
             }
 
-            // NOTE: Reassignment is not required yet.
             outAvatarState = modifier.Modify(outAvatarState);
 
             if (!resetState ||
@@ -502,7 +413,7 @@ namespace Nekoyume.State
         }
 
         /// <summary>
-        /// 아바타의 데일리 리워드 획득 블록 인덱스를 변경한다.(휘발성)
+        /// Change the daily reward acquisition block index of the avatar.
         /// </summary>
         /// <param name="avatarAddress"></param>
         /// <param name="blockCount"></param>
@@ -526,7 +437,6 @@ namespace Nekoyume.State
                 return;
             }
 
-            // NOTE: Reassignment is not required yet.
             outAvatarState = modifier.Modify(outAvatarState);
             ReactiveAvatarState.DailyRewardReceivedIndex.SetValueAndForceNotify(
                 outAvatarState.dailyRewardReceivedIndex);
@@ -551,7 +461,6 @@ namespace Nekoyume.State
                 return;
             }
 
-            // NOTE: Reassignment is not required yet.
             outAvatarState = modifier.Modify(outAvatarState);
 
             if (!isCurrentAvatarState)
@@ -595,7 +504,6 @@ namespace Nekoyume.State
                 return;
             }
 
-            // NOTE: Reassignment is not required yet.
             outAvatarState = modifier.Modify(outAvatarState);
 
             if (!isCurrentAvatarState)
@@ -641,10 +549,10 @@ namespace Nekoyume.State
         #region WeeklyArena
 
         /// <summary>
-        /// 현재 바라보고 있는 주간 아레나 상태가 포함하고 있는 `ArenaInfo` 중 현재 아바타 상태의 주소에 해당하는 것을 활성화 시킨다.(휘발)
+        /// Activates the one corresponding to the address of the current avatar state among the `ArenaInfo` included in the weekly arena state you are viewing.
         /// </summary>
         /// <param name="characterSheet"></param>
-        /// <param name="addArenaInfoIfNotContained">주간 아레나 상태에 현재 아바타 정보가 없으면 넣어준다.</param>
+        /// <param name="addArenaInfoIfNotContained"></param>
         public static void AddWeeklyArenaInfoActivator(
             CharacterSheet characterSheet,
             bool addArenaInfoIfNotContained = true)
@@ -662,13 +570,12 @@ namespace Nekoyume.State
 
             var modifier = new WeeklyArenaInfoActivator(avatarAddress);
             LocalStateSettings.Instance.Add(weeklyArenaAddress, modifier);
-            // NOTE: Reassignment is not required yet.
             weeklyArenaState = modifier.Modify(weeklyArenaState);
             WeeklyArenaStateSubject.WeeklyArenaState.OnNext(weeklyArenaState);
         }
 
         /// <summary>
-        /// `AddWeeklyArenaInfoActivator()` 메서드 로직을 회귀한다.(휘발)
+        /// Regress the logic of the `AddWeeklyArenaInfoActivator()` method.
         /// </summary>
         /// <param name="weeklyArenaAddress"></param>
         /// <param name="avatarAddress"></param>
@@ -685,7 +592,6 @@ namespace Nekoyume.State
                 return;
             }
 
-            // NOTE: Reassignment is not required yet.
             state = modifier.Modify(state);
             WeeklyArenaStateSubject.WeeklyArenaState.OnNext(state);
         }
@@ -721,7 +627,7 @@ namespace Nekoyume.State
             int? subRecipeId
         )
         {
-            // 레이어가 씌워진 상태에선 실제 상태가 들어오기전까지 상태업데이트를 막아두기 위해 블록높이를 추가로 설정
+            // When the layer is covered, additionally set the block height to prevent state updates until the actual state comes in.
             var blockIndex = Game.Game.instance.Agent.BlockIndex + 100;
             var requiredBlockIndex = row.RequiredBlockIndex + blockIndex;
             if (subRecipeId.HasValue)
@@ -742,7 +648,7 @@ namespace Nekoyume.State
 
             var result = new CombinationConsumable.ResultModel
             {
-                // id: 처음 로컬 레이어를 적용할 때 id가 default면 노티가 적용되지 않기 때문에 임시로 넣습니다.
+                // id: When applying the local layer for the first time, if the id is the default, the notification is not applied.
                 id = Guid.NewGuid(),
                 actionPoint = panel.CostAP,
                 gold = panel.CostNCG,
@@ -784,7 +690,7 @@ namespace Nekoyume.State
             Address slotAddress
         )
         {
-            // 레이어가 씌워진 상태에선 실제 상태가 들어오기전까지 상태업데이트를 막아두기 위해 블록높이를 추가로 설정
+            // When the layer is covered, additionally set the block height to prevent state updates until the actual state comes in.
             var blockIndex = Game.Game.instance.Agent.BlockIndex + 100;
             var requiredBlockIndex = blockIndex + recipeRow.RequiredBlockIndex;
             var consumableRow = tableSheets.ConsumableItemSheet.Values.First(i =>
@@ -840,8 +746,8 @@ namespace Nekoyume.State
             Address slotAddress
         )
         {
-            
-            // 레이어가 씌워진 상태에선 실제 상태가 들어오기전까지 상태업데이트를 막아두기 위해 블록높이를 추가로 설정
+
+            // When the layer is covered, additionally set the block height to prevent state updates until the actual state comes in.
             var blockIndex = Game.Game.instance.Agent.BlockIndex + 100;
             var requiredBlockIndex = blockIndex + 1;
 
@@ -868,14 +774,14 @@ namespace Nekoyume.State
 
             var result = new ItemEnhancement.ResultModel
             {
-                // id: 처음 로컬 레이어를 적용할 때 id가 default면 노티가 적용되지 않기 때문에 임시로 넣습니다.
+                // id: When applying the local layer for the first time, if the id is the default, the notification is not applied.
                 id = Guid.NewGuid(),
                 actionPoint = 0,
                 gold = enhancementRow.Cost,
                 materialItemIdList = new[] { otherMaterialGuid },
                 itemUsable = equipment,
             };
-            
+
             var modifier = new CombinationSlotBlockIndexAndResultModifier(result, blockIndex, requiredBlockIndex);
             var slotState = States.Instance.CombinationSlotStates[slotAddress];
             LocalStateSettings.Instance.Set(slotState.address, modifier);
@@ -901,7 +807,6 @@ namespace Nekoyume.State
             var slotState = States.Instance.CombinationSlotStates[slotAddress];
             var modifier = new CombinationSlotBlockIndexModifier(blockIndex);
             LocalStateSettings.Instance.Set(slotState.address, modifier);
-            // NOTE: Reassignment is not required yet.
             States.Instance.CombinationSlotStates[slotAddress] = modifier.Modify(slotState);
             CombinationSlotStateSubject.OnNext(slotState);
         }
@@ -919,7 +824,7 @@ namespace Nekoyume.State
         #endregion
 
         /// <summary>
-        /// `States.AvatarStates`가 포함하고 있는 아바타 상태 중에 `avatarAddress`와 같은 객체와 그 키를 반환한다.
+        /// Returns the same object as `avatarAddress` and its key among the avatar states included in `States.AvatarStates`.
         /// </summary>
         /// <param name="avatarAddress"></param>
         /// <param name="outAvatarState"></param>
@@ -962,9 +867,8 @@ namespace Nekoyume.State
         }
 
         /// <summary>
-        /// `States.AddOrReplaceAvatarState(address, key, initializeReactiveState)`함수를 사용해서
-        /// 이미 로드되어 있는 아바타 상태를 새로 할당한다.
-        /// 따라서 이 함수를 사용한 후에 `ReactiveAvatarState`를 추가로 갱신할 필요가 없다.
+        /// Use the `States.AddOrReplaceAvatarState(address, key, initializeReactiveState)` function to newly allocate the already loaded avatar state.
+        /// Therefore, there is no need to additionally update `ReactiveAvatarState` after using this function.
         /// </summary>
         /// <param name="avatarAddress"></param>
         /// <param name="outAvatarState"></param>

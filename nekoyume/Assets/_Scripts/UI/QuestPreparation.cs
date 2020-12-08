@@ -485,15 +485,14 @@ namespace Nekoyume.UI
 
         private static void LocalStateItemEquipModify(ItemBase itemBase, bool equip)
         {
-            if (itemBase.ItemType != ItemType.Equipment)
+            if (!(itemBase is INonFungibleItem nonFungibleItem))
             {
                 return;
             }
 
-            var equipment = (Equipment) itemBase;
-            LocalStateModifier.SetEquipmentEquip(
+            LocalStateModifier.SetItemEquip(
                 States.Instance.CurrentAvatarState.address,
-                equipment.ItemId,
+                nonFungibleItem.ItemId,
                 equip,
                 false);
         }
