@@ -17,6 +17,7 @@ namespace Nekoyume
             "http://explorer.libplanet.io/9c-beta/account/?{0}";
 
         public const float PlayerSpeechBreakTime = 2f;
+        public const int MimisbrunnrWorldId = 10001;
         public const int MimisbrunnrStartStageId = 10000001;
 
         //TODO 온체인으로 옮겨야함.
