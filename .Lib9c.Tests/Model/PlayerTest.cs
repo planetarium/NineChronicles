@@ -23,7 +23,7 @@ namespace Lib9c.Tests.Model
 
         public PlayerTest()
         {
-            _random = new ItemEnhancementTest.TestRandom();
+            _random = new TestRandom();
             _tableSheets = new TableSheets(TableSheetsImporter.ImportSheets());
             _avatarState = new AvatarState(
                 default,

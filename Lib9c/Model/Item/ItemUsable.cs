@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using Bencodex.Types;
 using Nekoyume.Model.Skill;
 using Nekoyume.Model.Stat;
@@ -78,6 +79,11 @@ namespace Nekoyume.Model.Item
             {
                 RequiredBlockIndex = requiredBlockIndex.ToLong();
             }
+        }
+        
+        protected ItemUsable(SerializationInfo info, StreamingContext _)
+            : this((Dictionary) Codec.Decode((byte[]) info.GetValue("serialized", typeof(byte[]))))
+        {
         }
 
         protected bool Equals(ItemUsable other)

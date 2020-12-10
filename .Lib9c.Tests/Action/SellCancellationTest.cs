@@ -102,7 +102,7 @@ namespace Lib9c.Tests.Action
             {
                 BlockIndex = 0,
                 PreviousStates = _initialState,
-                Random = new ItemEnhancementTest.TestRandom(),
+                Random = new TestRandom(),
                 Rehearsal = false,
                 Signer = _agentAddress,
             });

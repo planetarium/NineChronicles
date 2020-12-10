@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.Serialization;
 using Bencodex.Types;
 using Nekoyume.TableData;
 
@@ -12,6 +13,11 @@ namespace Nekoyume.Model.Item
         }
 
         public Ring(Dictionary serialized) : base(serialized)
+        {
+        }
+        
+        protected Ring(SerializationInfo info, StreamingContext _)
+            : this((Dictionary) Codec.Decode((byte[]) info.GetValue("serialized", typeof(byte[]))))
         {
         }
     }

@@ -35,7 +35,7 @@ namespace Lib9c.Tests.Action
                 )
             );
             _sheets = TableSheetsImporter.ImportSheets();
-            _random = new ItemEnhancementTest.TestRandom();
+            _random = new TestRandom();
             _tableSheets = new TableSheets(_sheets);
 
             var agentState = new AgentState(_agentAddress);

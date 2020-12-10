@@ -1,52 +1,101 @@
 ﻿namespace Lib9c.Tests.Model.Item
 {
     using System;
-    using System.Linq;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Runtime.Serialization.Formatters.Binary;
     using Bencodex.Types;
     using Libplanet;
     using Libplanet.Assets;
     using Libplanet.Crypto;
     using Nekoyume.Model.Item;
-    using Nekoyume.TableData;
     using Xunit;
 
     public class ShopItemTest
     {
-        private readonly TableSheets _tableSheets;
+        private static readonly Currency Currency;
+        private static readonly TableSheets TableSheets;
 
-        public ShopItemTest()
+        static ShopItemTest()
         {
-            _tableSheets = new TableSheets(TableSheetsImporter.ImportSheets());
+            Currency = new Currency("NCG", 2, minters: null);
+            TableSheets = new TableSheets(TableSheetsImporter.ImportSheets());
         }
 
+        public static IEnumerable<object[]> GetShopItems() => new List<object[]>
+        {
+            new object[]
+            {
+                GetShopItemWithFirstCostume(),
+                GetShopItemWithFirstEquipment(),
+            },
+        };
+
+        [Theory]
+        [MemberData(nameof(GetShopItems))]
+        public void Serialize(params ShopItem[] shopItems)
+        {
+            foreach (var shopItem in shopItems)
+            {
+                var serialized = shopItem.Serialize();
+                var deserialized = new ShopItem((Bencodex.Types.Dictionary)serialized);
+
+                Assert.Equal(shopItem, deserialized);
+            }
+        }
+
+        [Theory]
+        [MemberData(nameof(GetShopItems))]
+        public void SerializeWithDotNetAPI(params ShopItem[] shopItems)
+        {
+            foreach (var shopItem in shopItems)
+            {
+                var formatter = new BinaryFormatter();
+                using var ms = new MemoryStream();
+                formatter.Serialize(ms, shopItem);
+                ms.Seek(0, SeekOrigin.Begin);
+
+                var deserialized = (ShopItem)formatter.Deserialize(ms);
+
+                Assert.Equal(shopItem, deserialized);
+            }
+        }
+
+        // NOTE: `SerializeBackup1()` only tests with `ShopItem` containing `Equipment`.
         [Fact]
         public void SerializeBackup1()
         {
-            var agentAddress = new PrivateKey().ToAddress();
-            var avatarAddress = new PrivateKey().ToAddress();
-            var productId = Guid.NewGuid();
-            var weaponRow = new EquipmentItemSheet.Row();
-            weaponRow.Set(new[]
-            {
-                "10100000", "Weapon", "0", "Normal", "0", "ATK", "1", "2", "10100000",
-            });
-            var itemUsable = new Weapon(weaponRow, Guid.NewGuid(), 0);
-            var row = _tableSheets.CostumeItemSheet.Values.First();
-
-            var price = new FungibleAssetValue(new Currency("NCG", 2, minter: null));
-            var shopItem = new ShopItem(
-                agentAddress,
-                avatarAddress,
-                productId,
-                price,
-                itemUsable);
-
-            var beforeSerialized = shopItem.SerializeBackup1();
-            var beforeDeserialized = new ShopItem((Dictionary)beforeSerialized);
+            var shopItem = GetShopItemWithFirstEquipment();
+            var serializedBackup1 = shopItem.SerializeBackup1();
+            var deserializedBackup1 = new ShopItem((Dictionary)serializedBackup1);
             var serialized = shopItem.Serialize();
             var deserialized = new ShopItem((Dictionary)serialized);
-            Assert.Equal(beforeSerialized, serialized);
-            Assert.Equal(beforeDeserialized, deserialized);
+            Assert.Equal(serializedBackup1, serialized);
+            Assert.Equal(deserializedBackup1, deserialized);
+        }
+
+        private static ShopItem GetShopItemWithFirstCostume()
+        {
+            var costumeRow = TableSheets.CostumeItemSheet.First;
+            var costume = new Costume(costumeRow, Guid.NewGuid());
+            return new ShopItem(
+                new PrivateKey().ToAddress(),
+                new PrivateKey().ToAddress(),
+                Guid.NewGuid(),
+                new FungibleAssetValue(Currency, 100, 0),
+                costume);
+        }
+
+        private static ShopItem GetShopItemWithFirstEquipment()
+        {
+            var equipmentRow = TableSheets.EquipmentItemSheet.First;
+            var equipment = new Equipment(equipmentRow, Guid.NewGuid(), 0);
+            return new ShopItem(
+                new PrivateKey().ToAddress(),
+                new PrivateKey().ToAddress(),
+                Guid.NewGuid(),
+                new FungibleAssetValue(Currency, 100, 0),
+                equipment);
         }
     }
 }

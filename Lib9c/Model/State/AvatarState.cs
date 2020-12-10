@@ -469,7 +469,57 @@ namespace Nekoyume.Model.State
                 }
             }
         }
+        
+        public void ValidateCostume(IEnumerable<Guid> costumeIds)
+        {
+            var subTypes = new List<ItemSubType>();
+            foreach (var costumeId in costumeIds)
+            {
+                if (!inventory.TryGetNonFungibleItem<Costume>(costumeId, out var costume))
+                {
+                    continue;
+                }
 
+                if (subTypes.Contains(costume.ItemSubType))
+                {
+                    throw new DuplicateCostumeException($"can't equip duplicate costume type : {costume.ItemSubType}");
+                }
+                
+                subTypes.Add(costume.ItemSubType);
+       
+                int requiredLevel;
+                switch (costume.ItemSubType)
+                {
+                    case ItemSubType.FullCostume:
+                        requiredLevel = GameConfig.RequireCharacterLevel.CharacterFullCostumeSlot;
+                        break;
+                    case ItemSubType.HairCostume:
+                        requiredLevel = GameConfig.RequireCharacterLevel.CharacterHairCostumeSlot;
+                        break;
+                    case ItemSubType.EarCostume:
+                        requiredLevel = GameConfig.RequireCharacterLevel.CharacterEarCostumeSlot;
+                        break;
+                    case ItemSubType.EyeCostume:
+                        requiredLevel = GameConfig.RequireCharacterLevel.CharacterEyeCostumeSlot;
+                        break;
+                    case ItemSubType.TailCostume:
+                        requiredLevel = GameConfig.RequireCharacterLevel.CharacterTailCostumeSlot;
+                        break;
+                    case ItemSubType.Title:
+                        requiredLevel = GameConfig.RequireCharacterLevel.CharacterTitleSlot;
+                        break;
+                    default:
+                        throw new InvalidItemTypeException(
+                            $"Costume[id: {costumeId}] isn't expected type. [type: {costume.ItemSubType}]");
+                }
+
+                if (level < requiredLevel)
+                {
+                    throw new CostumeSlotUnlockException($"not enough level. required: {requiredLevel}");
+                }
+            }
+        }
+        
         public void ValidateCostume(HashSet<int> costumeIds)
         {
             var subTypes = new List<ItemSubType>();
@@ -519,6 +569,35 @@ namespace Nekoyume.Model.State
             }
         }
 
+        public void EquipItems(IEnumerable<Guid> itemIds)
+        {
+            // Unequip items already equipped.
+            var equippableItems = inventory.Items
+                .Select(item => item.item)
+                .OfType<IEquippableItem>()
+                .Where(equippableItem => equippableItem.Equipped)
+                .ToImmutableHashSet();
+#pragma warning disable LAA1002
+            foreach (var equippableItem in equippableItems)
+#pragma warning restore LAA1002
+            {
+                equippableItem.Unequip();
+            }
+            
+            // Equip items.
+            foreach (var itemId in itemIds)
+            {
+                if (!inventory.TryGetNonFungibleItem(itemId, out var inventoryItem) ||
+                    !(inventoryItem.item is IEquippableItem equippableItem))
+                {
+                    continue;
+                }
+
+                equippableItem.Equip();
+            }
+        }
+
+        // FIXME: Use `EquipItems(IEnumerable<Guid>)` instead of this.
         public void EquipCostumes(HashSet<int> costumeIds)
         {
             // 코스튬 해제.
@@ -531,6 +610,7 @@ namespace Nekoyume.Model.State
             foreach (var costume in inventoryCostumes)
 #pragma warning restore LAA1002
             {
+                // FIXME: Use `costume.Unequip()` 
                 costume.equipped = false;
             }
 
@@ -542,10 +622,12 @@ namespace Nekoyume.Model.State
                     continue;
                 }
 
+                // FIXME: Use `costume.Unequip()` 
                 costume.equipped = true;
             }
         }
-
+        
+        // FIXME: Use `EquipItems(IEnumerable<Guid>)` instead of this.
         public void EquipEquipments(List<Guid> equipmentIds)
         {
             // 장비 해제.

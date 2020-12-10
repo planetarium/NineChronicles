@@ -138,7 +138,7 @@ namespace Lib9c.Tests.Action
             {
                 PreviousStates = previousState,
                 Signer = _agent1Address,
-                Random = new ItemEnhancementTest.TestRandom(),
+                Random = new TestRandom(),
                 Rehearsal = false,
             });
 
@@ -172,7 +172,7 @@ namespace Lib9c.Tests.Action
                 {
                     PreviousStates = _initialState,
                     Signer = _agent1Address,
-                    Random = new ItemEnhancementTest.TestRandom(),
+                    Random = new TestRandom(),
                     Rehearsal = false,
                 });
             });
@@ -217,7 +217,7 @@ namespace Lib9c.Tests.Action
                 {
                     PreviousStates = _initialState,
                     Signer = signer,
-                    Random = new ItemEnhancementTest.TestRandom(),
+                    Random = new TestRandom(),
                     Rehearsal = false,
                 });
             });
@@ -252,7 +252,7 @@ namespace Lib9c.Tests.Action
                 {
                     PreviousStates = previousState,
                     Signer = _agent1Address,
-                    Random = new ItemEnhancementTest.TestRandom(),
+                    Random = new TestRandom(),
                     Rehearsal = false,
                 });
             });
@@ -284,7 +284,7 @@ namespace Lib9c.Tests.Action
                 {
                     PreviousStates = previousState,
                     Signer = _agent1Address,
-                    Random = new ItemEnhancementTest.TestRandom(),
+                    Random = new TestRandom(),
                     Rehearsal = false,
                 });
             });
@@ -330,7 +330,7 @@ namespace Lib9c.Tests.Action
                 {
                     PreviousStates = previousState,
                     Signer = _agent1Address,
-                    Random = new ItemEnhancementTest.TestRandom(),
+                    Random = new TestRandom(),
                     Rehearsal = false,
                 });
             });
@@ -371,7 +371,7 @@ namespace Lib9c.Tests.Action
                 {
                     PreviousStates = previousState,
                     Signer = _agent1Address,
-                    Random = new ItemEnhancementTest.TestRandom(),
+                    Random = new TestRandom(),
                     Rehearsal = false,
                 });
             });
@@ -417,7 +417,7 @@ namespace Lib9c.Tests.Action
                 {
                     PreviousStates = previousState,
                     Signer = _agent1Address,
-                    Random = new ItemEnhancementTest.TestRandom(),
+                    Random = new TestRandom(),
                     Rehearsal = false,
                 });
             });

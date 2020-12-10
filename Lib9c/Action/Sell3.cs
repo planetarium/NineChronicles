@@ -107,6 +107,7 @@ namespace Nekoyume.Action
             if (avatarState.inventory.TryGetNonFungibleItem<Equipment>(itemId, out var equipment))
             {
                 CheckRequiredBlockIndex(equipment);
+                // FIXME: Use `equipment.Unequip()` 
                 equipment.equipped = false;
                 shopItem = PopShopItemFromInventory(equipment, null);
             }
@@ -118,6 +119,7 @@ namespace Nekoyume.Action
             }
             else if (avatarState.inventory.TryGetNonFungibleItem<Costume>(itemId, out var costume))
             {
+                // FIXME: Use `costume.Unequip()`
                 costume.equipped = false;
                 shopItem = PopShopItemFromInventory(null, costume);
             }

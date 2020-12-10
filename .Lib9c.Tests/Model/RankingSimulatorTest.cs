@@ -24,7 +24,7 @@ namespace Lib9c.Tests.Model
         public RankingSimulatorTest()
         {
             _tableSheets = new TableSheets(TableSheetsImporter.ImportSheets());
-            _random = new ItemEnhancementTest.TestRandom();
+            _random = new TestRandom();
         }
 
         [Theory]
