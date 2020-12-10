@@ -80,10 +80,11 @@ namespace Nekoyume.UI
         public void Pop(CombinationSlotState state, int slotIndex)
         {
             _slotIndex = slotIndex;
-            var result = (CombinationConsumable.ResultModel) state.Result;
+            CombinationConsumable.ResultModel result;
             CombinationConsumable.ResultModel chainResult;
             try
             {
+                result = (CombinationConsumable.ResultModel) state.Result;
                 var chainState = new CombinationSlotState((Dictionary)Game.Game.instance.Agent.GetState(state.address));
                 chainResult = (CombinationConsumable.ResultModel) chainState.Result;
             }
