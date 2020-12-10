@@ -224,9 +224,18 @@ namespace Nekoyume.Model
             TryGetWorld(worldId, out var world)
             && world.IsUnlocked;
 
-        public bool IsStageCleared(int stageId) =>
-            TryGetLastClearedStageId(out var clearedStageId)
-            && stageId <= clearedStageId;
+        public bool IsStageCleared(int stageId)
+        {
+            int clearedStageId;
+            if (stageId >= GameConfig.MimisbrunnrStartStageId
+                ? TryGetLastClearedMimisbrunnrStageId(out clearedStageId)
+                : TryGetLastClearedStageId(out clearedStageId))
+            {
+                return stageId <= clearedStageId;
+            }
+
+            return false;
+        }
 
         public bool TryAddWorld(WorldSheet.Row worldRow, out World world)
         {
@@ -327,32 +336,33 @@ namespace Nekoyume.Model
         }
 
         /// <summary>
-        /// Get stage id of the most recent cleared.
+        /// Get stage id of the most recent cleared.(ignore mimisbrunnr)
         /// </summary>
         /// <param name="stageId"></param>
         /// <returns></returns>
         public bool TryGetLastClearedStageId(out int stageId)
         {
-            stageId = default;
             var clearedStages = _worlds.Values
-                .Where(world => world.IsStageCleared &&
-                world.Id < GameConfig.HardStageBeginId);
+                .Where(world => world.Id < GameConfig.MimisbrunnrWorldId &&
+                                world.IsStageCleared)
+                .ToList();
 
             if (clearedStages.Any())
             {
                 stageId = clearedStages.Max(world => world.StageClearedId);
                 return true;
             }
-
+            
+            stageId = default;
             return false;
         }
 
-        public bool TryGetLastClearedHardStageId(out int stageId)
+        public bool TryGetLastClearedMimisbrunnrStageId(out int stageId)
         {
-            stageId = default;
             var clearedStages = _worlds.Values
-                .Where(world => world.IsStageCleared &&
-                world.Id >= GameConfig.HardStageBeginId);
+                .Where(world => world.Id == GameConfig.MimisbrunnrWorldId &&
+                                world.IsStageCleared)
+                .ToList();
 
             if (clearedStages.Any())
             {
@@ -360,6 +370,7 @@ namespace Nekoyume.Model
                 return true;
             }
 
+            stageId = default;
             return false;
         }
 
