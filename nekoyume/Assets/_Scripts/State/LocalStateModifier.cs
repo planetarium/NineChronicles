@@ -48,7 +48,7 @@ namespace Nekoyume.State
             }
 
             state = modifier.Modify(state);
-            ReactiveAgentState.Gold.SetValueAndForceNotify(state.Gold);
+            States.Instance.SetGoldBalanceState(state);
         }
 
         public static void ModifyAgentGold(Address agentAddress, BigInteger gold)

@@ -99,8 +99,7 @@ namespace Nekoyume.State
         /// 최초로 할당하거나 기존과 다른 주소의 에이전트를 할당하면, 모든 아바타 상태를 새롭게 할당된다.
         /// </summary>
         /// <param name="state"></param>
-        /// <param name="balanceState"></param>
-        public void SetAgentState(AgentState state, GoldBalanceState balanceState)
+        public void SetAgentState(AgentState state)
         {
             if (state is null)
             {
@@ -114,19 +113,28 @@ namespace Nekoyume.State
 
             LocalStateSettings.Instance.InitializeAgentAndAvatars(state);
             AgentState = LocalStateSettings.Instance.Modify(state);
-            if (!(balanceState is null))
-            {
-                GoldBalanceState = LocalStateSettings.Instance.Modify(balanceState);
-            }
-            ReactiveAgentState.Initialize(AgentState, GoldBalanceState);
 
             if (!getAllOfAvatarStates)
+            {
                 return;
+            }
 
             foreach (var pair in AgentState.avatarAddresses)
             {
                 AddOrReplaceAvatarState(pair.Value, pair.Key);
             }
+        }
+
+        public void SetGoldBalanceState(GoldBalanceState goldBalanceState)
+        {
+            if (goldBalanceState is null)
+            {
+                Debug.LogWarning($"[{nameof(States)}.{nameof(SetGoldBalanceState)}] {nameof(goldBalanceState)} is null.");
+                return;
+            }
+
+            GoldBalanceState = LocalStateSettings.Instance.Modify(goldBalanceState);
+            AgentStateSubject.Gold.OnNext(GoldBalanceState.Gold);
         }
 
         public AvatarState AddOrReplaceAvatarState(Address avatarAddress, int index, bool initializeReactiveState = true)
