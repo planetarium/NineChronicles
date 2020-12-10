@@ -220,6 +220,8 @@ namespace Nekoyume.UI
             yield return null;
             secondWidgets.Add(Widget.Create<RankingBoard>());
             yield return null;
+            secondWidgets.Add(Widget.Create<MimisbrunnrPreparation>());
+            yield return null;
 
             // 모듈류.
             secondWidgets.Add(Widget.Create<Mail>());

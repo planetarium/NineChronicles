@@ -91,6 +91,52 @@ namespace Nekoyume.BlockChain
                 });
         }
 
+        public IObservable<ActionBase.ActionEvaluation<MimisbrunnrBattle>> MimisbrunnrBattle(
+            List<Costume> costumes,
+            List<Equipment> equipments,
+            List<Consumable> foods,
+            int worldId,
+            int stageId)
+        {
+            if (!ArenaHelper.TryGetThisWeekAddress(out var weeklyArenaAddress))
+            {
+                throw new NullReferenceException(nameof(weeklyArenaAddress));
+            }
+
+            Mixpanel.Track("Unity/Create Mimisbrunnr");
+
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+            costumes = costumes ?? new List<Costume>();
+            equipments = equipments ?? new List<Equipment>();
+            foods = foods ?? new List<Consumable>();
+
+            var action = new MimisbrunnrBattle
+            {
+                costumes = costumes.Select(e => e.ItemId).ToList(),
+                equipments = equipments.Select(e => e.ItemId).ToList(),
+                foods = foods.Select(f => f.ItemId).ToList(),
+                worldId = worldId,
+                stageId = stageId,
+                avatarAddress = avatarAddress,
+                WeeklyArenaAddress = weeklyArenaAddress,
+                RankingMapAddress = States.Instance.CurrentAvatarState.RankingMapAddress,
+            };
+            ProcessAction(action);
+
+            var itemIDs = equipments
+                .Select(e => e.Id)
+                .Concat(foods.Select(f => f.Id))
+                .ToArray();
+            AnalyticsManager.Instance.Battle(itemIDs);
+            return _renderer.EveryRender<MimisbrunnrBattle>()
+                .SkipWhile(eval => !eval.Action.Id.Equals(action.Id))
+                .Take(1)
+                .Last()
+                .ObserveOnMainThread()
+                .Timeout(ActionTimeout)
+                .DoOnError(e => HandleException(action.Id, e));
+        }
+
         public IObservable<ActionBase.ActionEvaluation<HackAndSlash3>> HackAndSlash(
             Player player,
             int worldId,
@@ -177,7 +223,7 @@ namespace Nekoyume.BlockChain
             var avatarAddress = States.Instance.CurrentAvatarState.address;
 
             // NOTE: 장착했는지 안 했는지에 상관없이 해제 플래그를 걸어 둔다.
-            LocalStateModifier.SetEquipmentEquip(avatarAddress, item.ItemId, false, false);
+            LocalStateModifier.SetItemEquip(avatarAddress, item.ItemId, false, false);
 
             var action = new Sell3
             {
@@ -267,8 +313,8 @@ namespace Nekoyume.BlockChain
             var avatarAddress = States.Instance.CurrentAvatarState.address;
 
             // NOTE: 장착했는지 안 했는지에 상관없이 해제 플래그를 걸어 둔다.
-            LocalStateModifier.SetEquipmentEquip(avatarAddress, itemId, false, false);
-            LocalStateModifier.SetEquipmentEquip(avatarAddress, materialId, false, false);
+            LocalStateModifier.SetItemEquip(avatarAddress, itemId, false, false);
+            LocalStateModifier.SetItemEquip(avatarAddress, materialId, false, false);
 
             var action = new ItemEnhancement4
             {

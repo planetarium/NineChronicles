@@ -17,6 +17,7 @@ namespace Nekoyume.UI.Module
         Ranking,
         Shop,
         Quest,
+        Mimisbrunnr,
     }
 
     public class MainMenu : MonoBehaviour
@@ -62,6 +63,9 @@ namespace Nekoyume.UI.Module
                     break;
                 case MenuType.Quest:
                     _requireStage = GameConfig.RequireClearedStageLevel.UIMainMenuStage;
+                    break;
+                case MenuType.Mimisbrunnr:
+                    _requireStage = GameConfig.RequireClearedStageLevel.UIBottomMenuMimisbrunnr;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();

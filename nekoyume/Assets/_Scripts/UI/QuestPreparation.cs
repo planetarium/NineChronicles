@@ -171,7 +171,7 @@ namespace Nekoyume.UI
 
             Mixpanel.Track("Unity/Click Stage");
             _stage = Game.Game.instance.Stage;
-            _stage.LoadBackground("dungeon");
+            _stage.LoadBackground("dungeon_01");
             _player = _stage.GetPlayer(_stage.questPreparationPosition);
             if (_player is null)
             {
@@ -485,15 +485,14 @@ namespace Nekoyume.UI
 
         private static void LocalStateItemEquipModify(ItemBase itemBase, bool equip)
         {
-            if (itemBase.ItemType != ItemType.Equipment)
+            if (!(itemBase is INonFungibleItem nonFungibleItem))
             {
                 return;
             }
 
-            var equipment = (Equipment) itemBase;
-            LocalStateModifier.SetEquipmentEquip(
+            LocalStateModifier.SetItemEquip(
                 States.Instance.CurrentAvatarState.address,
-                equipment.ItemId,
+                nonFungibleItem.ItemId,
                 equip,
                 false);
         }

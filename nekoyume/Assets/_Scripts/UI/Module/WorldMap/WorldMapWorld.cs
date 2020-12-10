@@ -95,7 +95,7 @@ namespace Nekoyume.UI.Module
                     $"{worldRow.Id}: worldRow.StagesCount({worldRow.StagesCount}) != stageRowsCount({stageRowsCount})");
             }
 
-            var imageKey = worldRow.Id == 101 ? "99" : $"{worldRow.Id:D2}";
+            var imageKey = worldRow.Id == GameConfig.MimisbrunnrWorldId ? "99" : $"{worldRow.Id:D2}";
             titleImage.overrideSprite = Resources.Load<Sprite>($"UI/Textures/WorldMap/UI_bg_worldmap_{imageKey}");
             titleImage.SetNativeSize();
             var stageOffset = 0;
@@ -139,7 +139,7 @@ namespace Nekoyume.UI.Module
                     }
                 }
 
-                page.Show(stageModels, imageKey, pageIndex);
+                page.Show(stageModels, imageKey, worldRow.Id == GameConfig.MimisbrunnrWorldId ? 1 : pageIndex);
                 pageIndex += 1;
                 stageOffset += stageModels.Count;
                 if (stageOffset >= stageRowsCount)

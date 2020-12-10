@@ -571,22 +571,15 @@ namespace Nekoyume.UI
 
         private void LocalStateItemEquipModify(ItemBase itemBase, bool equip)
         {
-            switch (itemBase.ItemType)
+            if (!(itemBase is INonFungibleItem nonFungibleItem))
             {
-                case ItemType.Costume:
-                    LocalStateModifier.SetCostumeEquip(
-                        States.Instance.CurrentAvatarState.address,
-                        itemBase.Id,
-                        equip);
-                    break;
-                case ItemType.Equipment:
-                    var equipment = (Equipment) itemBase;
-                    LocalStateModifier.SetEquipmentEquip(
-                        States.Instance.CurrentAvatarState.address,
-                        equipment.ItemId,
-                        equip);
-                    break;
+                return;
             }
+
+            LocalStateModifier.SetItemEquip(
+                States.Instance.CurrentAvatarState.address,
+                nonFungibleItem.ItemId,
+                equip);
         }
 
         private bool TryToFindSlotAlreadyEquip(ItemBase item, out EquipmentSlot slot)
