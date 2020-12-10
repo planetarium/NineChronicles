@@ -73,6 +73,8 @@ namespace Nekoyume.UI
         private Coroutine _constraintsPlayerToUI;
         private Coroutine _disableCpTween;
 
+        public readonly ReactiveProperty<bool> IsTweenEnd = new ReactiveProperty<bool>(true);
+
         #region Override
 
         public override void Initialize()
@@ -146,12 +148,26 @@ namespace Nekoyume.UI
             var currentAvatarState = Game.Game.instance.States.CurrentAvatarState;
             _isShownFromMenu = Find<Menu>().gameObject.activeSelf;
             _isShownFromBattle = Find<Battle>().gameObject.activeSelf;
+            IsTweenEnd.Value = false;
             Show(currentAvatarState, ignoreShowAnimation);
+        }
+
+        protected override void OnTweenComplete()
+        {
+            base.OnTweenComplete();
+            IsTweenEnd.Value = true;
         }
 
         protected override void OnTweenReverseComplete()
         {
             ReturnPlayer();
+            IsTweenEnd.Value = true;
+        }
+
+        public override void Close(bool ignoreCloseAnimation = false)
+        {
+            base.Close(ignoreCloseAnimation);
+            IsTweenEnd.Value = false;
         }
 
         #endregion
