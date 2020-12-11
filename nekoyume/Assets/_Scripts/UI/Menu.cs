@@ -13,6 +13,7 @@ using UnityEngine;
 using Random = UnityEngine.Random;
 using mixpanel;
 using Nekoyume.L10n;
+using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
 
 namespace Nekoyume.UI
@@ -337,6 +338,17 @@ namespace Nekoyume.UI
                 return;
             }
 
+            var SharedViewModel = new WorldMap.ViewModel
+            {
+                WorldInformation = States.Instance.CurrentAvatarState.worldInformation,
+            };
+
+            if (!SharedViewModel.WorldInformation.TryGetWorld(GameConfig.MimisbrunnrWorldId, out var world))
+            {
+                Notification.Push(MailType.System, L10nManager.Localize("ERROR_WORLD_DOES_NOT_EXIST"));
+                return;
+            }
+
             if (mimisbrunnrExclamationMark.gameObject.activeSelf)
             {
                 var addressHax = ReactiveAvatarState.Address.Value.ToHex();
@@ -349,24 +361,10 @@ namespace Nekoyume.UI
             AudioController.PlayClick();
             AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ClickHardBattle);
 
-            var stageInfo = Find<UI.StageInformation>();
-
-            var SharedViewModel = new WorldMap.ViewModel
-            {
-                WorldInformation = States.Instance.CurrentAvatarState.worldInformation,
-            };
-
-            if (!SharedViewModel.WorldInformation.TryGetWorld(GameConfig.MimisbrunnrWorldId, out var world))
-            {
-                var unlockConditionString = string.Format(
-                    L10nManager.Localize("UI_STAGE_LOCK_FORMAT"),
-                    100);
-                return;
-            }
-
             SharedViewModel.SelectedWorldId.SetValueAndForceNotify(world.Id);
             SharedViewModel.SelectedStageId.SetValueAndForceNotify(world.GetNextStageId());
             Game.Game.instance.TableSheets.WorldSheet.TryGetValue(world.Id, out var worldRow, true);
+            var stageInfo = Find<UI.StageInformation>();
             stageInfo.Show(SharedViewModel, worldRow, StageInformation.StageType.Mimisbrunnr);
             var status = Find<Status>();
             status.Close(true);
