@@ -338,16 +338,46 @@ namespace Nekoyume.UI
                 return;
             }
 
-            var SharedViewModel = new WorldMap.ViewModel
-            {
-                WorldInformation = States.Instance.CurrentAvatarState.worldInformation,
-            };
-
-            if (!SharedViewModel.WorldInformation.TryGetWorld(GameConfig.MimisbrunnrWorldId, out var world))
+            const int worldId = GameConfig.MimisbrunnrWorldId;
+            var worldSheet = Game.Game.instance.TableSheets.WorldSheet;
+            var worldRow =
+                worldSheet.OrderedList.FirstOrDefault(
+                    row => row.Id == worldId);
+            if (worldRow is null)
             {
                 Notification.Push(MailType.System, L10nManager.Localize("ERROR_WORLD_DOES_NOT_EXIST"));
                 return;
             }
+
+            var wi = States.Instance.CurrentAvatarState.worldInformation;
+            if (!wi.TryGetWorld(worldId, out var world))
+            {
+                if (!wi.TryAddWorld(worldRow, out world))
+                {
+                    // Do nothing.
+                    return;
+                }
+
+                var worldUnlockSheetRow = Game.Game.instance.TableSheets.WorldUnlockSheet.OrderedList
+                    .FirstOrDefault(row => row.WorldIdToUnlock == worldId);
+                if (!(worldUnlockSheetRow is null) &&
+                    wi.IsWorldUnlocked(worldUnlockSheetRow.WorldId) &&
+                    wi.IsStageCleared(worldUnlockSheetRow.StageId))
+                {
+                    wi.UnlockWorld(worldId, Game.Game.instance.Agent.BlockIndex, worldSheet);
+                }
+            }
+
+            if (!world.IsUnlocked)
+            {
+                // Do nothing.
+                return;
+            }
+
+            var SharedViewModel = new WorldMap.ViewModel
+            {
+                WorldInformation = wi,
+            };
 
             if (mimisbrunnrExclamationMark.gameObject.activeSelf)
             {
@@ -363,7 +393,6 @@ namespace Nekoyume.UI
 
             SharedViewModel.SelectedWorldId.SetValueAndForceNotify(world.Id);
             SharedViewModel.SelectedStageId.SetValueAndForceNotify(world.GetNextStageId());
-            Game.Game.instance.TableSheets.WorldSheet.TryGetValue(world.Id, out var worldRow, true);
             var stageInfo = Find<UI.StageInformation>();
             stageInfo.Show(SharedViewModel, worldRow, StageInformation.StageType.Mimisbrunnr);
             var status = Find<Status>();
