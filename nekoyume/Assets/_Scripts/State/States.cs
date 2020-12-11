@@ -133,7 +133,7 @@ namespace Nekoyume.State
                 return;
             }
 
-            GoldBalanceState = LocalStateSettings.Instance.Modify(goldBalanceState);
+            GoldBalanceState = LocalLayer.Instance.Modify(goldBalanceState);
             AgentStateSubject.Gold.OnNext(GoldBalanceState.Gold);
         }
 

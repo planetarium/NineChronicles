@@ -227,25 +227,15 @@ namespace Nekoyume.UI
             model.Item.Value = new CountEditableItem(itemBase, 1, 1, 1);
             model.OnClickSubmit.Subscribe(_ =>
             {
-<<<<<<< HEAD
-                LocalLayerModifier.AddItem(avatarAddress, item.ItemId, false);
+                LocalLayerModifier.AddItem(avatarAddress, nonFungibleItem.ItemId, false);
                 LocalLayerModifier.RemoveNewAttachmentMail(avatarAddress, mail.id);
-=======
-                LocalStateModifier.AddItem(avatarAddress, nonFungibleItem.ItemId, false);
-                LocalStateModifier.RemoveNewAttachmentMail(avatarAddress, mail.id);
->>>>>>> 1a4ca41b4243d4b93517a051dcc855dafa9c5418
                 popup.Close();
             }).AddTo(gameObject);
             model.OnClickCancel.Subscribe(_ =>
             {
                 //TODO 재판매 처리추가되야함\
-<<<<<<< HEAD
-                LocalLayerModifier.AddItem(avatarAddress, item.ItemId, false);
+                LocalLayerModifier.AddItem(avatarAddress, nonFungibleItem.ItemId, false);
                 LocalLayerModifier.RemoveNewAttachmentMail(avatarAddress, mail.id);
-=======
-                LocalStateModifier.AddItem(avatarAddress, nonFungibleItem.ItemId, false);
-                LocalStateModifier.RemoveNewAttachmentMail(avatarAddress, mail.id);
->>>>>>> 1a4ca41b4243d4b93517a051dcc855dafa9c5418
                 popup.Close();
             }).AddTo(gameObject);
             popup.Pop(model);
@@ -265,13 +255,8 @@ namespace Nekoyume.UI
             };
             model.OnClickSubmit.Subscribe(_ =>
             {
-<<<<<<< HEAD
-                LocalLayerModifier.AddItem(avatarAddress, item.ItemId, false);
+                LocalLayerModifier.AddItem(avatarAddress, nonFungibleItem.ItemId, false);
                 LocalLayerModifier.RemoveNewAttachmentMail(avatarAddress, buyerMail.id);
-=======
-                LocalStateModifier.AddItem(avatarAddress, nonFungibleItem.ItemId, false);
-                LocalStateModifier.RemoveNewAttachmentMail(avatarAddress, buyerMail.id);
->>>>>>> 1a4ca41b4243d4b93517a051dcc855dafa9c5418
             }).AddTo(gameObject);
             popup.Pop(model);
         }
@@ -301,13 +286,8 @@ namespace Nekoyume.UI
             };
             model.OnClickSubmit.Subscribe(_ =>
             {
-<<<<<<< HEAD
-                LocalLayerModifier.AddItem(avatarAddress, item.ItemId, false);
+                LocalLayerModifier.AddItem(avatarAddress, nonFungibleItem.ItemId, false);
                 LocalLayerModifier.RemoveNewAttachmentMail(avatarAddress, itemEnhanceMail.id);
-=======
-                LocalStateModifier.AddItem(avatarAddress, nonFungibleItem.ItemId, false);
-                LocalStateModifier.RemoveNewAttachmentMail(avatarAddress, itemEnhanceMail.id);
->>>>>>> 1a4ca41b4243d4b93517a051dcc855dafa9c5418
             });
             popup.Pop(model);
         }
