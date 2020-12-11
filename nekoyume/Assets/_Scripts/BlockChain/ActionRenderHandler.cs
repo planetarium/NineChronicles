@@ -219,7 +219,7 @@ namespace Nekoyume.BlockChain
 
         private void CombinationEquipment()
         {
-            _renderer.EveryRender<CombinationEquipment2>()
+            _renderer.EveryRender<CombinationEquipment3>()
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseCombinationEquipment).AddTo(_disposables);
@@ -295,7 +295,7 @@ namespace Nekoyume.BlockChain
             UpdateCombinationSlotState(slot);
         }
 
-        private void ResponseCombinationEquipment(ActionBase.ActionEvaluation<CombinationEquipment2> eval)
+        private void ResponseCombinationEquipment(ActionBase.ActionEvaluation<CombinationEquipment3> eval)
         {
             if (eval.Exception is null)
             {
