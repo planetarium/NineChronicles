@@ -57,7 +57,7 @@ namespace Lib9c.Tools.SubCommand
             [Argument("NONCE", Description = "A nonce for new transaction.")] long nonce,
             [Argument("TIMESTAMP", Description = "A datetime for new transaction.")] string timestamp = null,
             [Argument("GENESIS-HASH", Description = "A hex-encoded genesis block hash.")] string genesisHash = null,
-            [Option("action", new[] { 'a' }, Description = "Hex-encoded actions.")] string[] actions = null,
+            [Option("action", new[] { 'a' }, Description = "Hex-encoded actions or a path of the file contained it.")] string[] actions = null,
             [Option("bytes", new[] { 'b' }, Description = "Print raw bytes instead of hexadecimal.  No trailing LF appended.")] bool bytes = false
         )
         {
@@ -66,6 +66,11 @@ namespace Lib9c.Tools.SubCommand
             {
                 parsedActions = actions.Select(a =>
                 {
+                    if (File.Exists(a))
+                    {
+                        a = File.ReadAllText(a);
+                    }
+                    
                     var bencoded = (List)_codec.Decode(ByteUtil.ParseHex(a));
                     string type = (Text) bencoded[0];
                     Dictionary plainValue = (Dictionary)bencoded[1];
