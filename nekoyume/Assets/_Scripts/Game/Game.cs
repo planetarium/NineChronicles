@@ -572,11 +572,10 @@ namespace Nekoyume.Game
             }
             else
             {
-                var groupName = string.Empty;
+                const string groupName = "9c-player-logs";
                 var streamName = Agent.Address.ToString();
                 try
                 {
-                    groupName = DateTime.UtcNow.Date.ToString("yyyy-MM-dd");
                     var req = new CreateLogGroupRequest(groupName);
                     await _logsClient.CreateLogGroupAsync(req);
                 }
