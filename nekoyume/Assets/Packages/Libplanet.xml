@@ -2440,6 +2440,292 @@
         <member name="M:Libplanet.Blockchain.Renderers.AnonymousRenderer`1.RenderReorgEnd(Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0})">
             <inheritdoc cref="M:Libplanet.Blockchain.Renderers.IRenderer`1.RenderReorgEnd(Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0})"/>
         </member>
+        <member name="T:Libplanet.Blockchain.Renderers.Debug.InvalidRenderException`1">
+            <summary>
+            Exception thrown by <see cref="T:Libplanet.Blockchain.Renderers.Debug.ValidatingActionRenderer`1"/>.
+            </summary>
+            <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> type.  It should match to
+            <see cref="T:Libplanet.Blockchain.Renderers.Debug.ValidatingActionRenderer`1"/>'s type parameter.</typeparam>
+        </member>
+        <member name="M:Libplanet.Blockchain.Renderers.Debug.InvalidRenderException`1.#ctor(System.Collections.Generic.IReadOnlyList{Libplanet.Blockchain.Renderers.Debug.RenderRecord{`0}},System.String)">
+            <summary>
+            Creates a new <see cref="T:Libplanet.Blockchain.Renderers.Debug.ValidatingActionRenderer`1"/> instance.
+            </summary>
+            <param name="records">Recorded render events.</param>
+            <param name="message">The exception message string.</param>
+        </member>
+        <member name="P:Libplanet.Blockchain.Renderers.Debug.InvalidRenderException`1.Records">
+            <summary>
+            Recorded render events.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Blockchain.Renderers.Debug.InvalidRenderException`1.Message">
+            <inheritdoc cref="P:System.Exception.Message"/>
+        </member>
+        <member name="T:Libplanet.Blockchain.Renderers.Debug.RecordingActionRenderer`1">
+            <summary>
+            Records every render events.
+            </summary>
+            <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> type.  It should match to
+            <see cref="T:Libplanet.Blockchain.BlockChain`1"/>'s type parameter.</typeparam>
+        </member>
+        <member name="M:Libplanet.Blockchain.Renderers.Debug.RecordingActionRenderer`1.#ctor">
+            <summary>
+            Creates a new <see cref="T:Libplanet.Blockchain.Renderers.Debug.RecordingActionRenderer`1"/> instance.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Blockchain.Renderers.Debug.RecordingActionRenderer`1.Records">
+            <summary>
+            The list of recorded render events.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Blockchain.Renderers.Debug.RecordingActionRenderer`1.ResetRecords">
+            <summary>
+            Empties the render event <see cref="P:Libplanet.Blockchain.Renderers.Debug.RecordingActionRenderer`1.Records"/>.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Blockchain.Renderers.Debug.RecordingActionRenderer`1.RenderAction(Libplanet.Action.IAction,Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)">
+            <inheritdoc cref="M:Libplanet.Blockchain.Renderers.IActionRenderer`1.RenderAction(Libplanet.Action.IAction,Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)"/>
+        </member>
+        <member name="M:Libplanet.Blockchain.Renderers.Debug.RecordingActionRenderer`1.RenderActionError(Libplanet.Action.IAction,Libplanet.Action.IActionContext,System.Exception)">
+            <inheritdoc cref="M:Libplanet.Blockchain.Renderers.IActionRenderer`1.RenderActionError(Libplanet.Action.IAction,Libplanet.Action.IActionContext,System.Exception)"/>
+        </member>
+        <member name="M:Libplanet.Blockchain.Renderers.Debug.RecordingActionRenderer`1.UnrenderAction(Libplanet.Action.IAction,Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)">
+            <inheritdoc cref="M:Libplanet.Blockchain.Renderers.IActionRenderer`1.UnrenderAction(Libplanet.Action.IAction,Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)"/>
+        </member>
+        <member name="M:Libplanet.Blockchain.Renderers.Debug.RecordingActionRenderer`1.UnrenderActionError(Libplanet.Action.IAction,Libplanet.Action.IActionContext,System.Exception)">
+            <inheritdoc cref="M:Libplanet.Blockchain.Renderers.IActionRenderer`1.UnrenderActionError(Libplanet.Action.IAction,Libplanet.Action.IActionContext,System.Exception)"/>
+        </member>
+        <member name="M:Libplanet.Blockchain.Renderers.Debug.RecordingActionRenderer`1.RenderBlock(Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0})">
+            <inheritdoc cref="M:Libplanet.Blockchain.Renderers.IRenderer`1.RenderBlock(Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0})"/>
+        </member>
+        <member name="M:Libplanet.Blockchain.Renderers.Debug.RecordingActionRenderer`1.RenderBlockEnd(Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0})">
+            <inheritdoc cref="M:Libplanet.Blockchain.Renderers.IActionRenderer`1.RenderBlockEnd(Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0})"/>
+        </member>
+        <member name="M:Libplanet.Blockchain.Renderers.Debug.RecordingActionRenderer`1.RenderReorg(Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0})">
+            <inheritdoc cref="M:Libplanet.Blockchain.Renderers.IRenderer`1.RenderReorg(Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0})"/>
+        </member>
+        <member name="M:Libplanet.Blockchain.Renderers.Debug.RecordingActionRenderer`1.RenderReorgEnd(Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0})">
+            <inheritdoc cref="M:Libplanet.Blockchain.Renderers.IRenderer`1.RenderReorgEnd(Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0})"/>
+        </member>
+        <member name="T:Libplanet.Blockchain.Renderers.Debug.RenderRecord`1">
+            <summary>
+            A render event represented by <see cref="T:Libplanet.Blockchain.Renderers.Debug.RecordingActionRenderer`1"/>.
+            </summary>
+            <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> type.  It should match to
+            <see cref="T:Libplanet.Blockchain.BlockChain`1"/>'s type parameter.</typeparam>
+        </member>
+        <member name="P:Libplanet.Blockchain.Renderers.Debug.RenderRecord`1.Index">
+            <summary>
+            The ordinal number of the render event.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Blockchain.Renderers.Debug.RenderRecord`1.StackTrace">
+            <summary>
+            The stack trace of the render event.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Blockchain.Renderers.Debug.RenderRecord`1.ToString">
+            <inheritdoc cref="M:System.Object.ToString"/>
+        </member>
+        <member name="T:Libplanet.Blockchain.Renderers.Debug.RenderRecord`1.ActionBase">
+            <summary>
+            Represents an action render/unrender event.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Blockchain.Renderers.Debug.RenderRecord`1.ActionBase.Action">
+            <summary>
+            The rendered action.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Blockchain.Renderers.Debug.RenderRecord`1.ActionBase.Context">
+            <summary>
+            The action evaluation context.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Blockchain.Renderers.Debug.RenderRecord`1.ActionBase.Render">
+            <summary>
+            Whether it is not an unrender event, but a render event.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Blockchain.Renderers.Debug.RenderRecord`1.ActionBase.Unrender">
+            <summary>
+            Whether it is a render event, but an unrender event.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Blockchain.Renderers.Debug.RenderRecord`1.ActionBase.ToString">
+            <inheritdoc cref="M:Libplanet.Blockchain.Renderers.Debug.RenderRecord`1.ToString"/>
+        </member>
+        <member name="T:Libplanet.Blockchain.Renderers.Debug.RenderRecord`1.ActionSuccess">
+            <summary>
+            Represents a succeeded action render/unrender event.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Blockchain.Renderers.Debug.RenderRecord`1.ActionSuccess.#ctor(System.Int64,System.String,Libplanet.Action.IAction,Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta,System.Boolean)">
+            <summary>
+            Creates a succeeded action render/unrender event record.
+            </summary>
+            <param name="index">The ordinal number of the render event.</param>
+            <param name="stackTrace">The stack trace of the render event.</param>
+            <param name="action">The rendered action.</param>
+            <param name="context">The action evaluation context.</param>
+            <param name="nextStates">The resulting states after the action is evaluated.</param>
+            <param name="unrender">Whether it is an unrender event.</param>
+        </member>
+        <member name="P:Libplanet.Blockchain.Renderers.Debug.RenderRecord`1.ActionSuccess.NextStates">
+            <summary>
+            The resulting states after the action is evaluated.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Blockchain.Renderers.Debug.RenderRecord`1.ActionSuccess.ToString">
+            <inheritdoc cref="M:Libplanet.Blockchain.Renderers.Debug.RenderRecord`1.ToString"/>
+        </member>
+        <member name="T:Libplanet.Blockchain.Renderers.Debug.RenderRecord`1.ActionError">
+            <summary>
+            Represents a failed action render/unrender event.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Blockchain.Renderers.Debug.RenderRecord`1.ActionError.#ctor(System.Int64,System.String,Libplanet.Action.IAction,Libplanet.Action.IActionContext,System.Exception,System.Boolean)">
+            <summary>
+            Creates a failed action render/unrender event record.
+            </summary>
+            <param name="index">The ordinal number of the render event.</param>
+            <param name="stackTrace">The stack trace of the render event.</param>
+            <param name="action">The rendered action.</param>
+            <param name="context">The action evaluation context.</param>
+            <param name="exception">The exception thrown by the action.</param>
+            <param name="unrender">Whether it is an unrender event.</param>
+        </member>
+        <member name="P:Libplanet.Blockchain.Renderers.Debug.RenderRecord`1.ActionError.Exception">
+            <summary>
+            The exception thrown by the action.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Blockchain.Renderers.Debug.RenderRecord`1.ActionError.ToString">
+            <inheritdoc cref="M:Libplanet.Blockchain.Renderers.Debug.RenderRecord`1.ToString"/>
+        </member>
+        <member name="T:Libplanet.Blockchain.Renderers.Debug.RenderRecord`1.BlockBase">
+            <summary>
+            Represents a block/reorg event.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Blockchain.Renderers.Debug.RenderRecord`1.BlockBase.OldTip">
+            <summary>
+            The tip before update.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Blockchain.Renderers.Debug.RenderRecord`1.BlockBase.NewTip">
+            <summary>
+            The tip after update.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Blockchain.Renderers.Debug.RenderRecord`1.BlockBase.Begin">
+            <summary>
+            Whether it is not an <c>End</c> event.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Blockchain.Renderers.Debug.RenderRecord`1.BlockBase.End">
+            <summary>
+            Whether it is an <c>End</c> event.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Blockchain.Renderers.Debug.RenderRecord`1.BlockBase.ToString">
+            <inheritdoc cref="M:Libplanet.Blockchain.Renderers.Debug.RenderRecord`1.ToString"/>
+        </member>
+        <member name="T:Libplanet.Blockchain.Renderers.Debug.RenderRecord`1.Block">
+            <summary>
+            Represents a block event.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Blockchain.Renderers.Debug.RenderRecord`1.Block.#ctor(System.Int64,System.String,Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0},System.Boolean)">
+            <summary>
+            Creates a block event record.
+            </summary>
+            <param name="index">The ordinal number of the render event.</param>
+            <param name="stackTrace">The stack trace of the render event.</param>
+            <param name="oldTip">The tip before update.</param>
+            <param name="newTip">The tip after update.</param>
+            <param name="end">Whether it is an <c>End</c> event.</param>
+        </member>
+        <member name="M:Libplanet.Blockchain.Renderers.Debug.RenderRecord`1.Block.ToString">
+            <inheritdoc cref="M:Libplanet.Blockchain.Renderers.Debug.RenderRecord`1.ToString"/>
+        </member>
+        <member name="T:Libplanet.Blockchain.Renderers.Debug.RenderRecord`1.Reorg">
+            <summary>
+            Represents a reorg event.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Blockchain.Renderers.Debug.RenderRecord`1.Reorg.#ctor(System.Int64,System.String,Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0},System.Boolean)">
+            <summary>
+            Creates a reorg event record.
+            </summary>
+            <param name="index">The ordinal number of the render event.</param>
+            <param name="stackTrace">The stack trace of the render event.</param>
+            <param name="oldTip">The tip before update.</param>
+            <param name="newTip">The tip after update.</param>
+            <param name="branchpoint">The topmost common ancestor between
+            <paramref name="oldTip"/> and <paramref name="newTip"/>.</param>
+            <param name="end">Whether it is an <c>End</c> event.</param>
+        </member>
+        <member name="P:Libplanet.Blockchain.Renderers.Debug.RenderRecord`1.Reorg.Branchpoint">
+            <summary>
+            The topmost common ancestor between <see cref="P:Libplanet.Blockchain.Renderers.Debug.RenderRecord`1.BlockBase.OldTip"/>
+            and <see cref="P:Libplanet.Blockchain.Renderers.Debug.RenderRecord`1.BlockBase.NewTip"/>.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Blockchain.Renderers.Debug.RenderRecord`1.Reorg.ToString">
+            <inheritdoc cref="M:Libplanet.Blockchain.Renderers.Debug.RenderRecord`1.ToString"/>
+        </member>
+        <member name="T:Libplanet.Blockchain.Renderers.Debug.ValidatingActionRenderer`1">
+            <summary>
+            Validates if rendering events are in the correct order according to the documented automata
+            (see also the docs for <see cref="T:Libplanet.Blockchain.Renderers.IRenderer`1"/> and <see cref="T:Libplanet.Blockchain.Renderers.IActionRenderer`1"/>)
+            using profiling-guided analysis.
+            </summary>
+            <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> type.  It should match to
+            <see cref="T:Libplanet.Blockchain.BlockChain`1"/>'s type parameter.</typeparam>
+        </member>
+        <member name="M:Libplanet.Blockchain.Renderers.Debug.ValidatingActionRenderer`1.#ctor(System.Action{Libplanet.Blockchain.Renderers.Debug.InvalidRenderException{`0}})">
+            <summary>
+            Creates a new <see cref="T:Libplanet.Blockchain.Renderers.Debug.ValidatingActionRenderer`1"/> instance.
+            </summary>
+            <param name="onError">An optional event handler which is triggered when invalid
+            render events occur.</param>
+        </member>
+        <member name="P:Libplanet.Blockchain.Renderers.Debug.ValidatingActionRenderer`1.BlockChain">
+            <summary>
+            The chain that publishes the render events.  More stricter validations are conducted
+            if it's configured.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Blockchain.Renderers.Debug.ValidatingActionRenderer`1.RenderReorg(Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0})">
+            <inheritdoc cref="M:Libplanet.Blockchain.Renderers.IRenderer`1.RenderReorg(Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0})"/>
+        </member>
+        <member name="M:Libplanet.Blockchain.Renderers.Debug.ValidatingActionRenderer`1.UnrenderAction(Libplanet.Action.IAction,Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)">
+            <inheritdoc
+            cref="M:Libplanet.Blockchain.Renderers.IActionRenderer`1.UnrenderAction(Libplanet.Action.IAction,Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)"/>
+        </member>
+        <member name="M:Libplanet.Blockchain.Renderers.Debug.ValidatingActionRenderer`1.UnrenderActionError(Libplanet.Action.IAction,Libplanet.Action.IActionContext,System.Exception)">
+            <inheritdoc
+            cref="M:Libplanet.Blockchain.Renderers.IActionRenderer`1.UnrenderActionError(Libplanet.Action.IAction,Libplanet.Action.IActionContext,System.Exception)"/>
+        </member>
+        <member name="M:Libplanet.Blockchain.Renderers.Debug.ValidatingActionRenderer`1.RenderBlock(Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0})">
+            <inheritdoc cref="M:Libplanet.Blockchain.Renderers.IRenderer`1.RenderBlock(Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0})"/>
+        </member>
+        <member name="M:Libplanet.Blockchain.Renderers.Debug.ValidatingActionRenderer`1.RenderAction(Libplanet.Action.IAction,Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)">
+            <inheritdoc
+            cref="M:Libplanet.Blockchain.Renderers.IActionRenderer`1.RenderAction(Libplanet.Action.IAction,Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)"/>
+        </member>
+        <member name="M:Libplanet.Blockchain.Renderers.Debug.ValidatingActionRenderer`1.RenderActionError(Libplanet.Action.IAction,Libplanet.Action.IActionContext,System.Exception)">
+            <inheritdoc
+            cref="M:Libplanet.Blockchain.Renderers.IActionRenderer`1.RenderActionError(Libplanet.Action.IAction,Libplanet.Action.IActionContext,System.Exception)"/>
+        </member>
+        <member name="M:Libplanet.Blockchain.Renderers.Debug.ValidatingActionRenderer`1.RenderBlockEnd(Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0})">
+            <inheritdoc cref="M:Libplanet.Blockchain.Renderers.IActionRenderer`1.RenderBlockEnd(Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0})"/>
+        </member>
+        <member name="M:Libplanet.Blockchain.Renderers.Debug.ValidatingActionRenderer`1.RenderReorgEnd(Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0})">
+            <inheritdoc cref="M:Libplanet.Blockchain.Renderers.IRenderer`1.RenderReorgEnd(Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0})"/>
+        </member>
         <member name="T:Libplanet.Blockchain.Renderers.DelayedActionRenderer`1">
             <summary>
             An <see cref="T:Libplanet.Blockchain.Renderers.IActionRenderer`1"/> version of <see cref="T:Libplanet.Blockchain.Renderers.DelayedRenderer`1"/>.
@@ -3176,13 +3462,9 @@
             <exception cref="T:Libplanet.Blocks.InvalidBlockNonceException">Thrown when
             the <see cref="P:Libplanet.Blocks.Block`1.Nonce"/> does not satisfy its
             <see cref="P:Libplanet.Blocks.Block`1.Difficulty"/> level.</exception>
-            <exception cref="T:Libplanet.Tx.InvalidTxSignatureException">Thrown when its
-            <see cref="P:Libplanet.Tx.Transaction`1.Signature"/> is invalid or not signed by
-            the account who corresponds to its
-            <see cref="P:Libplanet.Tx.Transaction`1.PublicKey"/>.</exception>
-            <exception cref="T:Libplanet.Tx.InvalidTxPublicKeyException">Thrown when its
-            <see cref="P:Libplanet.Tx.Transaction`1.Signer"/> is not derived from its
-            <see cref="P:Libplanet.Tx.Transaction`1.PublicKey"/>.</exception>
+            <exception cref="T:Libplanet.Blocks.InvalidBlockTxHashException">Thrown when
+            the <see cref="P:Libplanet.Blocks.Block`1.TxHash" /> does not match with its
+            <see cref="P:Libplanet.Blocks.Block`1.Transactions"/>.</exception>
             <exception cref="T:Libplanet.Tx.InvalidTxUpdatedAddressesException">Thrown when
             any <see cref="T:Libplanet.Action.IAction"/> of <see cref="P:Libplanet.Blocks.Block`1.Transactions"/> tries
             to update the states of <see cref="T:Libplanet.Address"/>es not included
@@ -3383,6 +3665,25 @@
         <member name="P:Libplanet.Blocks.InvalidBlockStateRootHashException.ExpectedStateRootHash">
             <summary>
             The hash recorded as <see cref="P:Libplanet.Blocks.Block`1.StateRootHash"/>>.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Blocks.InvalidBlockTxHashException.#ctor(System.String,System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}},System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}})">
+            <summary>
+            Initializes a new instance of <see cref="T:Libplanet.Blocks.InvalidBlockTxHashException"/> class.
+            </summary>
+            <param name="blockTxHash">The hash digest of <see cref="P:Libplanet.Blocks.Block`1.TxHash"/>.</param>
+            <param name="calculatedTxHash">The calculated hash digest from
+            <see cref="P:Libplanet.Blocks.Block`1.Transactions"/>.</param>
+            <param name="message">The message that describes the error.</param>
+        </member>
+        <member name="P:Libplanet.Blocks.InvalidBlockTxHashException.BlockTxHash">
+            <summary>
+            The hash digest from actual block.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Blocks.InvalidBlockTxHashException.CalculatedTxHash">
+            <summary>
+            The calculated hash digest from transactions in the block.
             </summary>
         </member>
         <member name="T:Libplanet.Blocks.InvalidGenesisBlockException">
@@ -4806,6 +5107,12 @@
             The <see cref="T:Libplanet.Net.BoundPeer"/> to request block hash from.
             </summary>
         </member>
+        <member name="F:Libplanet.Net.BlockDemand.Timestamp">
+            <summary>
+            The <see cref="T:System.DateTimeOffset"/> when
+            the corresponding block information was received.
+            </summary>
+        </member>
         <member name="T:Libplanet.Net.BlockDownloadState">
             <summary>
             Indicates a progress of downloading blocks.
@@ -4953,6 +5260,143 @@
             <see cref="T:Libplanet.Net.Swarm`1" /> is trying to connect to.
             </summary>
         </member>
+        <member name="T:Libplanet.Net.ITransport">
+            <summary>
+            An interface to handle peer-to-peer networking, including <see cref="T:Libplanet.Net.Messages.Message"/> exchanging
+            and <see cref="T:Libplanet.Net.Peer"/> managing.
+            </summary>
+        </member>
+        <member name="E:Libplanet.Net.ITransport.ProcessMessageHandler">
+            <summary>
+            The <see cref="T:System.EventHandler"/> invoked when a message that is not
+            a reply is received. To handle reply, please use <see cref=
+            "M:Libplanet.Net.ITransport.SendMessageWithReplyAsync(Libplanet.Net.BoundPeer,Libplanet.Net.Messages.Message,System.Nullable{System.TimeSpan},System.Threading.CancellationToken)"/>.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.ITransport.AsPeer">
+            <summary>
+            <see cref="T:Libplanet.Net.Peer"/> representation of <see cref="T:Libplanet.Net.ITransport"/>.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.ITransport.Peers">
+            <summary>
+            List of all <see cref="T:Libplanet.Net.Peer"/>s in the routing table.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.ITransport.LastMessageTimestamp">
+            <summary>
+            The <see cref="T:System.DateTimeOffset"/> of the last message was received.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Net.ITransport.StartAsync(System.Threading.CancellationToken)">
+            <summary>
+            Initiates transport layer.
+            </summary>
+            <param name="cancellationToken">
+            A cancellation token used to propagate notification that this
+            operation should be canceled.</param>
+            <returns>An awaitable task without value.</returns>
+        </member>
+        <member name="M:Libplanet.Net.ITransport.RunAsync(System.Threading.CancellationToken)">
+            <summary>
+            Starts running transport layer. To <see cref="M:Libplanet.Net.ITransport.RunAsync(System.Threading.CancellationToken)"/>, you should call
+            <see cref="M:Libplanet.Net.ITransport.StartAsync(System.Threading.CancellationToken)"/> first.
+            </summary>
+            <param name="cancellationToken">
+            A cancellation token used to propagate notification that this
+            operation should be canceled.</param>
+            <returns>An awaitable task without value.</returns>
+        </member>
+        <member name="M:Libplanet.Net.ITransport.StopAsync(System.TimeSpan,System.Threading.CancellationToken)">
+            <summary>
+            Stops running transport layer.
+            </summary>
+            <param name="waitFor">The <see cref="T:System.TimeSpan"/> of delay
+            before actual stopping.</param>
+            <param name="cancellationToken">
+            A cancellation token used to propagate notification that this
+            operation should be canceled.</param>
+            <returns>An awaitable task without value.</returns>
+        </member>
+        <member name="M:Libplanet.Net.ITransport.BootstrapAsync(System.Collections.Generic.IEnumerable{Libplanet.Net.BoundPeer},System.Nullable{System.TimeSpan},System.Nullable{System.TimeSpan},System.Int32,System.Threading.CancellationToken)">
+            <summary>
+            Conducts peer discovery for given <paramref name="bootstrapPeers"/>.
+            </summary>
+            <param name="bootstrapPeers">A <see cref="T:System.Collections.Generic.IEnumerable`1"/> of <see cref="T:Libplanet.Net.Peer"/>s
+            to bootstrap.</param>
+            <param name="pingSeedTimeout">A timeout of waiting for the reply of <see cref="T:Libplanet.Net.Messages.Ping"/>
+            message sent to seed <see cref="T:Libplanet.Net.Peer"/>.
+            If <c>null</c> is given, the task never halts by itself
+            even no any response was given from the the target seed.</param>
+            <param name="findNeighborsTimeout">A timeout of waiting for the reply of
+            <see cref="T:Libplanet.Net.Messages.FindNeighbors"/> message sent to seed <see cref="T:Libplanet.Net.Peer"/>.
+            If <c>null</c> is given, task never halts by itself
+            even the target seed gives no any response.</param>
+            <param name="depth">Recursive operation depth to search peers from network.</param>
+            <param name="cancellationToken">
+            A cancellation token used to propagate notification that this
+            operation should be canceled.</param>
+            <returns>An awaitable task without value.</returns>
+        </member>
+        <member name="M:Libplanet.Net.ITransport.SendMessageAsync(Libplanet.Net.BoundPeer,Libplanet.Net.Messages.Message,System.Threading.CancellationToken)">
+            <summary>
+            Sends the <paramref name="message"/> to given <paramref name="peer"/>.
+            </summary>
+            <param name="peer">A <see cref="T:Libplanet.Net.Peer"/> to send message to.</param>
+            <param name="message">A <see cref="T:Libplanet.Net.Messages.Message"/> to send.</param>
+            <param name="cancellationToken">
+            A cancellation token used to propagate notification that this
+            operation should be canceled.</param>
+            <returns>An awaitable task without value.</returns>
+        </member>
+        <member name="M:Libplanet.Net.ITransport.SendMessageWithReplyAsync(Libplanet.Net.BoundPeer,Libplanet.Net.Messages.Message,System.Nullable{System.TimeSpan},System.Threading.CancellationToken)">
+            <summary>
+            Sends the <paramref name="message"/>
+            to given <paramref name="peer"/> and waits for its single reply.
+            </summary>
+            <param name="peer">A <see cref="T:Libplanet.Net.Peer"/> to send message to.</param>
+            <param name="message">A <see cref="T:Libplanet.Net.Messages.Message"/> to send.</param>
+            <param name="timeout">A timeout of waiting for the reply of the message.</param>
+            <param name="cancellationToken">
+            A cancellation token used to propagate notification that this
+            operation should be canceled.</param>
+            <returns>The replies of the <paramref name="message"/>
+            sent by <paramref name="peer"/>.</returns>
+        </member>
+        <member name="M:Libplanet.Net.ITransport.SendMessageWithReplyAsync(Libplanet.Net.BoundPeer,Libplanet.Net.Messages.Message,System.Nullable{System.TimeSpan},System.Int32,System.Threading.CancellationToken)">
+            <summary>
+            Sends the <paramref name="message"/>
+            to given <paramref name="peer"/> and waits for its multiple replies.
+            </summary>
+            <param name="peer">A <see cref="T:Libplanet.Net.Peer"/> to send message to.</param>
+            <param name="message">A <see cref="T:Libplanet.Net.Messages.Message"/> to send.</param>
+            <param name="timeout">A timeout of waiting for the reply of the message.</param>
+            <param name="expectedResponses">The number of expected replies for the message.</param>
+            <param name="cancellationToken">
+            A cancellation token used to propagate notification that this
+            operation should be canceled.</param>
+            <returns>The replies of the <paramref name="message"/>
+            sent by <paramref name="peer"/>.</returns>
+        </member>
+        <member name="M:Libplanet.Net.ITransport.BroadcastMessage(System.Nullable{Libplanet.Address},Libplanet.Net.Messages.Message)">
+            <summary>
+            Broadcasts the <paramref name="message"/> to peers selected from the routing table.
+            </summary>
+            <param name="except">An <see cref="T:Libplanet.Address"/> to exclude from broadcasting.
+            If <c>null</c> is given, no peers will be excluded.</param>
+            <param name="message">A <see cref="T:Libplanet.Net.Messages.Message"/> to broadcast.</param>
+        </member>
+        <member name="M:Libplanet.Net.ITransport.ReplyMessage(Libplanet.Net.Messages.Message)">
+            <summary>
+            Replies message.
+            </summary>
+            <remarks>
+            The <see cref="P:Libplanet.Net.Messages.Message.Identity"/> of the given <paramref name="message"/> must be
+            matched to <see cref="P:Libplanet.Net.Messages.Message.Identity"/> of a message corresponding to the given
+            <paramref name="message"/>.
+            </remarks>
+            <param name="message">A <see cref="T:Libplanet.Net.Messages.Message"/> to reply.</param>
+        </member>
         <member name="P:Libplanet.Net.Messages.BlockHashes.StartIndex">
             <summary>
             The block index of the first hash in <see cref="P:Libplanet.Net.Messages.BlockHashes.Hashes"/>.
@@ -4962,6 +5406,21 @@
         <member name="P:Libplanet.Net.Messages.BlockHashes.Hashes">
             <summary>
             The continuous block hashes, from the lowest index to the highest index.
+            </summary>
+        </member>
+        <member name="T:Libplanet.Net.Messages.Message">
+            <summary>
+            Serves as the base class for messages used in <see cref="T:Libplanet.Net.ITransport"/>.
+            </summary>
+        </member>
+        <member name="F:Libplanet.Net.Messages.Message.CommonFrames">
+            <summary>
+            The number of frames that all messages commonly contain.
+            </summary>
+        </member>
+        <member name="T:Libplanet.Net.Messages.Message.MessageType">
+            <summary>
+            <c>Enum</c> represents the type of the <see cref="T:Libplanet.Net.Messages.Message"/>.
             </summary>
         </member>
         <member name="F:Libplanet.Net.Messages.Message.MessageType.Ping">
@@ -5084,11 +5543,82 @@
             Frame containing signature of the <see cref="T:Libplanet.Net.Messages.Message"/>.
             </summary>
         </member>
+        <member name="P:Libplanet.Net.Messages.Message.Identity">
+            <summary>
+            <c>byte[]</c>-typed identity of the message.
+            If a message B is the reply of the message A,
+            B's identity must be set to A's identity.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.Messages.Message.Version">
+            <summary>
+            <see cref="T:Libplanet.Net.AppProtocolVersion"/>-typed version of the
+            <see cref="P:Libplanet.Net.Messages.Message.Remote"/>'s transport layer.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.Messages.Message.Remote">
+            <summary>
+            The sender <see cref="T:Libplanet.Net.Peer"/> of the message.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Net.Messages.Message.Parse(NetMQ.NetMQMessage,System.Boolean,Libplanet.Net.AppProtocolVersion,System.Collections.Immutable.IImmutableSet{Libplanet.Crypto.PublicKey},Libplanet.Net.DifferentAppProtocolVersionEncountered)">
+            <summary>
+            Casts given <see cref="T:NetMQ.NetMQMessage"/>-typed <paramref name="raw"/> into
+            <see cref="T:Libplanet.Net.Messages.Message"/> and checks its validity.
+            <seealso cref="M:Libplanet.Net.Messages.Message.ToNetMQMessage(Libplanet.Crypto.PrivateKey,Libplanet.Net.Peer,Libplanet.Net.AppProtocolVersion)"/>
+            </summary>
+            <param name="raw">A <see cref="T:NetMQ.NetMQMessage"/> to parse.</param>
+            <param name="reply">A flag to express whether the target is a reply of other message.
+            </param>
+            <param name="localVersion">The <see cref="T:Libplanet.Net.AppProtocolVersion"/>-typed version of the
+            local transport layer. <seealso cref="T:Libplanet.Net.ITransport"/></param>
+            <param name="trustedAppProtocolVersionSigners"><see cref="T:Libplanet.Crypto.PublicKey"/>s of parties
+            to trust <see cref="T:Libplanet.Net.AppProtocolVersion"/>s they signed.  To trust any party, pass
+            <c>null</c>.</param>
+            <param name="differentAppProtocolVersionEncountered">A delegate called back when a peer
+            with one different from <paramref name="localVersion"/>, and their version is
+            signed by a trusted party (i.e., <paramref name="trustedAppProtocolVersionSigners"/>).
+            If this callback returns <c>false</c>, an encountered peer is ignored.  If this callback
+            is omitted, all peers with different <see cref="T:Libplanet.Net.AppProtocolVersion"/>s are ignored.
+            </param>
+            <returns>A <see cref="T:Libplanet.Net.Messages.Message"/> parsed from <paramref name="raw"/>.</returns>
+            <exception cref="T:System.ArgumentException">Thrown when empty <paramref name="raw"/> is given.
+            </exception>
+            <exception cref="T:Libplanet.Net.DifferentAppProtocolVersionException">Thrown when
+            <paramref name="localVersion"/> does not match with given <paramref name="raw"/>'s
+            <see cref="P:Libplanet.Net.Messages.Message.Version"/>, and their version is signed by a trusted party
+            (i.e., <paramref name="trustedAppProtocolVersionSigners"/>), and
+            <paramref name="differentAppProtocolVersionEncountered"/> is <c>null</c> or its
+            return value is <c>false</c>.</exception>
+            <exception cref="T:Libplanet.Net.InvalidMessageException">Thrown when given <paramref name="raw"/>'s
+            signer is invalid.</exception>
+        </member>
+        <member name="M:Libplanet.Net.Messages.Message.ToNetMQMessage(Libplanet.Crypto.PrivateKey,Libplanet.Net.Peer,Libplanet.Net.AppProtocolVersion)">
+            <summary>
+            Casts the message to <see cref="T:NetMQ.NetMQMessage"/> with given <paramref name="key"/>,
+            <paramref name="peer"/> and <paramref name="version"/>.
+            </summary>
+            <param name="key">A <see cref="T:Libplanet.Crypto.PrivateKey"/> to sign message.</param>
+            <param name="peer"><see cref="T:Libplanet.Net.Peer"/>-typed representation of the
+            sender's transport layer.
+            <seealso cref="P:Libplanet.Net.ITransport.AsPeer"/></param>
+            <param name="version"><see cref="T:Libplanet.Net.AppProtocolVersion"/>-typed version of the
+            transport layer.</param>
+            <returns>A <see cref="T:NetMQ.NetMQMessage"/> containing the signed <see cref="T:Libplanet.Net.Messages.Message"/>.
+            </returns>
+            <exception cref="T:System.ArgumentNullException">Thrown when <paramref name="peer"/> is
+            <c>null</c>.</exception>
+        </member>
         <member name="P:Libplanet.Net.Messages.RecentStates.StateReferences">
             <summary>
             State references of all available accounts.  Each value has a list of
             state references in ascending order; the closest to the genesis block
             goes first, and the closest to the tip goes last.
+            </summary>
+        </member>
+        <member name="T:Libplanet.Net.NetMQTransport">
+            <summary>
+            Implementation of <see cref="T:Libplanet.Net.ITransport"/> interface using NetMQ.
             </summary>
         </member>
         <member name="F:Libplanet.Net.NetMQTransport._differentAppProtocolVersionEncountered">
@@ -5097,16 +5627,142 @@
             <see cref="T:Libplanet.Net.Peer" /> is discovered.
             </summary>
         </member>
-        <member name="E:Libplanet.Net.NetMQTransport.ProcessMessageHandler">
+        <member name="M:Libplanet.Net.NetMQTransport.#ctor(Libplanet.Crypto.PrivateKey,Libplanet.Net.AppProtocolVersion,System.Collections.Immutable.IImmutableSet{Libplanet.Crypto.PublicKey},System.Nullable{System.Int32},System.Nullable{System.Int32},System.Int32,System.String,System.Nullable{System.Int32},System.Collections.Generic.IEnumerable{Libplanet.Net.IceServer},Libplanet.Net.DifferentAppProtocolVersionEncountered,Serilog.ILogger)">
             <summary>
-            The <see cref="T:System.EventHandler" /> triggered when a <see cref="T:Libplanet.Net.Messages.Message"/> is
-            received and needs processing.
+            Creates <see cref="T:Libplanet.Net.NetMQTransport"/> instance.
             </summary>
+            <param name="privateKey"><see cref="T:Libplanet.Crypto.PrivateKey"/> of the transport layer.</param>
+            <param name="appProtocolVersion"><see cref="T:Libplanet.Net.AppProtocolVersion"/>-typed
+            version of the transport layer.</param>
+            <param name="trustedAppProtocolVersionSigners"><see cref="T:Libplanet.Crypto.PublicKey"/>s of parties
+            to trust <see cref="T:Libplanet.Net.AppProtocolVersion"/>s they signed.  To trust any party, pass
+            <c>null</c>.</param>
+            <param name="tableSize">The number of buckets in Kademlia-based routing table.</param>
+            <param name="bucketSize">The size of bucket in Kademlia-based routing table.</param>
+            <param name="workers">The number of background workers (i.e., threads).</param>
+            <param name="host">A hostname to be a part of a public endpoint, that peers use when
+            they connect to this node.  Note that this is not a hostname to listen to;
+            <see cref="T:Libplanet.Net.NetMQTransport"/> always listens to 0.0.0.0 &amp; ::/0.</param>
+            <param name="listenPort">A port number to listen to.</param>
+            <param name="iceServers">
+            <a href="https://en.wikipedia.org/wiki/Interactive_Connectivity_Establishment">ICE</a>
+            servers to use for TURN/STUN.  Purposes to traverse NAT.</param>
+            <param name="differentAppProtocolVersionEncountered">A delegate called back when a peer
+            with one different from <paramref name="appProtocolVersion"/>, and their version is
+            signed by a trusted party (i.e., <paramref name="trustedAppProtocolVersionSigners"/>).
+            If this callback returns <c>false</c>, an encountered peer is ignored.  If this callback
+            is omitted, all peers with different <see cref="T:Libplanet.Net.AppProtocolVersion"/>s are ignored.
+            </param>
+            <param name="logger"><see cref="P:Serilog.Log.Logger"/> for logging.</param>
+            <exception cref="T:System.ArgumentException">Thrown when both <paramref name="host"/> and
+            <paramref name="iceServers"/> are <c>null</c>.</exception>
+        </member>
+        <member name="E:Libplanet.Net.NetMQTransport.ProcessMessageHandler">
+            <inheritdoc />
+        </member>
+        <member name="P:Libplanet.Net.NetMQTransport.AsPeer">
+            <inheritdoc cref="P:Libplanet.Net.ITransport.AsPeer"/>
+        </member>
+        <member name="P:Libplanet.Net.NetMQTransport.Peers">
+            <inheritdoc />
+        </member>
+        <member name="P:Libplanet.Net.NetMQTransport.LastMessageTimestamp">
+            <inheritdoc cref="P:Libplanet.Net.ITransport.LastMessageTimestamp"/>
         </member>
         <member name="P:Libplanet.Net.NetMQTransport.Running">
             <summary>
             Whether this <see cref="T:Libplanet.Net.NetMQTransport"/> instance is running.
             </summary>
+            <returns>Boolean value indicates whether the instance is running.</returns>
+        </member>
+        <member name="M:Libplanet.Net.NetMQTransport.StartAsync(System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:Libplanet.Net.NetMQTransport.RunAsync(System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:Libplanet.Net.NetMQTransport.StopAsync(System.TimeSpan,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:Libplanet.Net.NetMQTransport.BootstrapAsync(System.Collections.Generic.IEnumerable{Libplanet.Net.BoundPeer},System.Nullable{System.TimeSpan},System.Nullable{System.TimeSpan},System.Int32,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:Libplanet.Net.NetMQTransport.AddPeersAsync(System.Collections.Generic.IEnumerable{Libplanet.Net.Peer},System.Nullable{System.TimeSpan},System.Threading.CancellationToken)">
+            <summary>
+            Adds given <paramref name="peers"/> to routing table by sending <see cref="T:Libplanet.Net.Messages.Ping"/>.
+            </summary>
+            <param name="peers">The peers to add.</param>
+            <param name="timeout">A timeout of waiting for the reply of <see cref="T:Libplanet.Net.Messages.Ping"/>
+            message sent to <paramref name="peers"/>.
+            If <c>null</c> is given, task never halts by itself
+            even the target peer gives no any response.</param>
+            <param name="cancellationToken">
+            A cancellation token used to propagate notification that this
+            operation should be canceled.</param>
+            <returns>An awaitable task without value.</returns>
+            <exception cref="T:System.ArgumentNullException">
+            Thrown when <see cref="P:Libplanet.Net.NetMQTransport.Protocol"/> is <c>null</c>.
+            </exception>
+        </member>
+        <member name="M:Libplanet.Net.NetMQTransport.FindSpecificPeerAsync(Libplanet.Address,System.Int32,System.Nullable{System.TimeSpan},System.Threading.CancellationToken)">
+            <summary>
+            Finds a <see cref="T:Libplanet.Net.Peer"/> whose address value matches <paramref name="target"/>.
+            </summary>
+            <param name="target"><see cref="T:Libplanet.Address"/> to find.</param>
+            <param name="depth">Recursive operation depth to search the peer from network.</param>
+            <param name="timeout">A timeout of waiting for the reply of messages.
+            If <c>null</c> is given, task never halts by itself even the message gives
+            no any response.</param>
+            <param name="cancellationToken">
+            A cancellation token used to propagate notification that this
+            operation should be canceled.</param>
+            <returns><see cref="T:Libplanet.Net.Peer"/> match with given <paramref name="target"/> if it exists.
+            Otherwise, return <c>null</c> if fails to find.</returns>
+        </member>
+        <member name="M:Libplanet.Net.NetMQTransport.Trace">
+            <summary>
+            Visualizes Kademlia-based routing table status.
+            </summary>
+            <remarks>Will be outdated.</remarks>
+            <returns><see cref="T:System.String"/> representation of the routing table.</returns>
+        </member>
+        <member name="M:Libplanet.Net.NetMQTransport.Dispose">
+            <inheritdoc />
+        </member>
+        <member name="M:Libplanet.Net.NetMQTransport.WaitForRunningAsync">
+            <summary>
+            Waits until this <see cref="T:Libplanet.Net.NetMQTransport"/> instance gets started to run.
+            </summary>
+            <seealso cref="M:Libplanet.Net.Swarm`1.WaitForRunningAsync"/>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> completed when <see cref="P:Libplanet.Net.NetMQTransport.Running"/>
+            property becomes <c>true</c>.</returns>
+        </member>
+        <member name="M:Libplanet.Net.NetMQTransport.SendMessageAsync(Libplanet.Net.BoundPeer,Libplanet.Net.Messages.Message,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:Libplanet.Net.NetMQTransport.SendMessageWithReplyAsync(Libplanet.Net.BoundPeer,Libplanet.Net.Messages.Message,System.Nullable{System.TimeSpan},System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:Libplanet.Net.NetMQTransport.SendMessageWithReplyAsync(Libplanet.Net.BoundPeer,Libplanet.Net.Messages.Message,System.Nullable{System.TimeSpan},System.Int32,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:Libplanet.Net.NetMQTransport.BroadcastMessage(System.Nullable{Libplanet.Address},Libplanet.Net.Messages.Message)">
+            <inheritdoc />
+        </member>
+        <member name="M:Libplanet.Net.NetMQTransport.ReplyMessage(Libplanet.Net.Messages.Message)">
+            <inheritdoc />
+        </member>
+        <member name="M:Libplanet.Net.NetMQTransport.CheckAllPeersAsync(System.Nullable{System.TimeSpan},System.Threading.CancellationToken)">
+            <summary>
+            Refreshes all peers in routing table.
+            </summary>
+            <param name="timeout">A timeout of waiting for the reply of messages.
+            If <c>null</c> is given, the task never halts by itself
+            even no any response was given from the the target peer.</param>
+            <param name="cancellationToken">
+            A cancellation token used to propagate notification that this
+            operation should be canceled.</param>
+            <returns>An awaitable task without value.</returns>
         </member>
         <member name="T:Libplanet.Net.Peer">
             <summary>
@@ -5381,6 +6037,7 @@
             <summary>
             Waits until this <see cref="T:Libplanet.Net.Swarm`1"/> instance gets started to run.
             </summary>
+            <seealso cref="M:Libplanet.Net.NetMQTransport.WaitForRunningAsync"/>
             <returns>A <see cref="T:System.Threading.Tasks.Task"/> completed when <see cref="P:Libplanet.Net.NetMQTransport.Running"/>
             property becomes <c>true</c>.</returns>
         </member>
@@ -5607,6 +6264,11 @@
         <member name="P:Libplanet.Net.SwarmOptions.BlockDownloadTimeout">
             <summary>
             The timeout used to block download in preloading.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.SwarmOptions.BlockDemandLifespan">
+            <summary>
+            The lifespan of block demand.
             </summary>
         </member>
         <member name="T:Libplanet.Nonce">

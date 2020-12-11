@@ -191,9 +191,9 @@ namespace Nekoyume.BlockChain
             States.Instance.SetAgentState(
                 GetState(Address) is Bencodex.Types.Dictionary agentDict
                     ? new AgentState(agentDict)
-                    : new AgentState(Address),
-                new GoldBalanceState(Address, GetBalance(Address, goldCurrency))
-            );
+                    : new AgentState(Address));
+            States.Instance.SetGoldBalanceState(
+                new GoldBalanceState(Address, GetBalance(Address, goldCurrency)));
 
             // 랭킹의 상태를 한 번 동기화 한다.
             for (var i = 0; i < RankingState.RankingMapCapacity; ++i)
@@ -403,6 +403,11 @@ namespace Nekoyume.BlockChain
                 case (int)RPCException.NetworkException:
                     key = "ERROR_NETWORK";
                     errorCode = "101";
+                    break;
+
+                case (int)RPCException.InvalidRenderException:
+                    key = "ERROR_INVALID_RENDER";
+                    errorCode = "102";
                     break;
             }
 

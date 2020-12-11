@@ -223,7 +223,7 @@ namespace Nekoyume.BlockChain
             var avatarAddress = States.Instance.CurrentAvatarState.address;
 
             // NOTE: 장착했는지 안 했는지에 상관없이 해제 플래그를 걸어 둔다.
-            LocalStateModifier.SetItemEquip(avatarAddress, item.ItemId, false, false);
+            LocalLayerModifier.SetItemEquip(avatarAddress, item.ItemId, false, false);
 
             var action = new Sell3
             {
@@ -287,8 +287,8 @@ namespace Nekoyume.BlockChain
         {
             // NOTE: 이곳에서 하는 것이 바람직 하지만, 연출 타이밍을 위해 밖에서 한다.
             // var avatarAddress = States.Instance.CurrentAvatarState.address;
-            // LocalStateModifier.ModifyAvatarDailyRewardReceivedIndex(avatarAddress, true);
-            // LocalStateModifier.ModifyAvatarActionPoint(avatarAddress, GameConfig.ActionPointMax);
+            // LocalLayerModifier.ModifyAvatarDailyRewardReceivedIndex(avatarAddress, true);
+            // LocalLayerModifier.ModifyAvatarActionPoint(avatarAddress, GameConfig.ActionPointMax);
 
             var action = new DailyReward
             {
@@ -313,8 +313,8 @@ namespace Nekoyume.BlockChain
             var avatarAddress = States.Instance.CurrentAvatarState.address;
 
             // NOTE: 장착했는지 안 했는지에 상관없이 해제 플래그를 걸어 둔다.
-            LocalStateModifier.SetItemEquip(avatarAddress, itemId, false, false);
-            LocalStateModifier.SetItemEquip(avatarAddress, materialId, false, false);
+            LocalLayerModifier.SetItemEquip(avatarAddress, itemId, false, false);
+            LocalLayerModifier.SetItemEquip(avatarAddress, materialId, false, false);
 
             var action = new ItemEnhancement4
             {
@@ -374,7 +374,7 @@ namespace Nekoyume.BlockChain
             ProcessAction(action);
         }
 
-        public IObservable<ActionBase.ActionEvaluation<CombinationEquipment2>> CombinationEquipment(
+        public IObservable<ActionBase.ActionEvaluation<CombinationEquipment3>> CombinationEquipment(
             int recipeId,
             int slotIndex,
             int? subRecipeId = null)
@@ -382,7 +382,7 @@ namespace Nekoyume.BlockChain
             Mixpanel.Track("Unity/Create CombinationEquipment");
 
             // 결과 주소도 고정되게 바꿔야함
-            var action = new CombinationEquipment2
+            var action = new CombinationEquipment3
             {
                 AvatarAddress = States.Instance.CurrentAvatarState.address,
                 RecipeId = recipeId,
@@ -391,7 +391,7 @@ namespace Nekoyume.BlockChain
             };
             ProcessAction(action);
 
-            return _renderer.EveryRender<CombinationEquipment2>()
+            return _renderer.EveryRender<CombinationEquipment3>()
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .Take(1)
                 .Last()

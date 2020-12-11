@@ -36,6 +36,7 @@ namespace Nekoyume.BlockChain
             RewardGold();
             Buy();
             Sell();
+            SellCancellation();
             ItemEnhancement();
         }
 
@@ -72,7 +73,7 @@ namespace Nekoyume.BlockChain
             _renderer.EveryUnrender<Buy3>()
                 .Where(ValidateEvaluationForAgentState)
                 .ObserveOnMainThread()
-                .Subscribe(ResponseUnrenderBuy)
+                .Subscribe(ResponseBuy)
                 .AddTo(_disposables);
         }
 
@@ -81,7 +82,16 @@ namespace Nekoyume.BlockChain
             _renderer.EveryUnrender<Sell3>()
                 .Where(ValidateEvaluationForCurrentAvatarState)
                 .ObserveOnMainThread()
-                .Subscribe(ResponseUnrenderSell)
+                .Subscribe(ResponseSell)
+                .AddTo(_disposables);
+        }
+
+        private void SellCancellation()
+        {
+            _renderer.EveryUnrender<SellCancellation3>()
+                .Where(ValidateEvaluationForCurrentAvatarState)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseSellCancellation)
                 .AddTo(_disposables);
         }
 
@@ -94,8 +104,13 @@ namespace Nekoyume.BlockChain
                 .AddTo(_disposables);
         }
 
-        private void ResponseUnrenderBuy(ActionBase.ActionEvaluation<Buy3> eval)
+        private void ResponseBuy(ActionBase.ActionEvaluation<Buy3> eval)
         {
+            if (!(eval.Exception is null))
+            {
+                return;
+            }
+
             var buyerAvatarAddress = eval.Action.buyerAvatarAddress;
             var price = eval.Action.sellerResult.shopItem.Price;
             Address renderQuestAvatarAddress;
@@ -109,9 +124,9 @@ namespace Nekoyume.BlockChain
                 var itemId = result.itemUsable?.ItemId ?? result.costume.ItemId;
                 var buyerAvatar = eval.OutputStates.GetAvatarState(buyerAvatarAddress);
 
-                LocalStateModifier.ModifyAgentGold(buyerAgentAddress, -price);
-                LocalStateModifier.AddItem(buyerAvatarAddress, itemId);
-                LocalStateModifier.RemoveNewAttachmentMail(buyerAvatarAddress, result.id);
+                LocalLayerModifier.ModifyAgentGold(buyerAgentAddress, -price);
+                LocalLayerModifier.AddItem(buyerAvatarAddress, itemId);
+                LocalLayerModifier.RemoveNewAttachmentMail(buyerAvatarAddress, result.id);
 
                 renderQuestAvatarAddress = buyerAvatarAddress;
                 renderQuestCompletedQuestIds = buyerAvatar.questList.completedQuestIds;
@@ -124,8 +139,8 @@ namespace Nekoyume.BlockChain
                 var gold = result.gold;
                 var sellerAvatar = eval.OutputStates.GetAvatarState(sellerAvatarAddress);
 
-                LocalStateModifier.ModifyAgentGold(sellerAgentAddress, gold);
-                LocalStateModifier.RemoveNewAttachmentMail(sellerAvatarAddress, result.id);
+                LocalLayerModifier.ModifyAgentGold(sellerAgentAddress, gold);
+                LocalLayerModifier.RemoveNewAttachmentMail(sellerAvatarAddress, result.id);
 
                 renderQuestAvatarAddress = sellerAvatarAddress;
                 renderQuestCompletedQuestIds = sellerAvatar.questList.completedQuestIds;
@@ -136,7 +151,7 @@ namespace Nekoyume.BlockChain
             UnrenderQuest(renderQuestAvatarAddress, renderQuestCompletedQuestIds);
         }
 
-        private void ResponseUnrenderSell(ActionBase.ActionEvaluation<Sell3> eval)
+        private void ResponseSell(ActionBase.ActionEvaluation<Sell3> eval)
         {
             if (!(eval.Exception is null))
             {
@@ -146,7 +161,23 @@ namespace Nekoyume.BlockChain
             var avatarAddress = eval.Action.sellerAvatarAddress;
             var itemId = eval.Action.itemId;
 
-            LocalStateModifier.RemoveItem(avatarAddress, itemId);
+            LocalLayerModifier.RemoveItem(avatarAddress, itemId);
+            UpdateCurrentAvatarState(eval);
+        }
+
+        private void ResponseSellCancellation(ActionBase.ActionEvaluation<SellCancellation3> eval)
+        {
+            if (!(eval.Exception is null))
+            {
+                return;
+            }
+
+            var result = eval.Action.result;
+            var nonFungibleItem = result.itemUsable ?? (INonFungibleItem) result.costume;
+            var avatarAddress = eval.Action.sellerAvatarAddress;
+            var itemId = nonFungibleItem.ItemId;
+
+            LocalLayerModifier.AddItem(avatarAddress, itemId);
             UpdateCurrentAvatarState(eval);
         }
 
@@ -160,21 +191,21 @@ namespace Nekoyume.BlockChain
             var avatarState = eval.OutputStates.GetAvatarState(avatarAddress);
 
             // NOTE: 사용한 자원에 대한 레이어 다시 추가하기.
-            LocalStateModifier.ModifyAgentGold(agentAddress, -result.gold);
-            LocalStateModifier.RemoveItem(avatarAddress, itemUsable.ItemId);
+            LocalLayerModifier.ModifyAgentGold(agentAddress, -result.gold);
+            LocalLayerModifier.RemoveItem(avatarAddress, itemUsable.ItemId);
             foreach (var itemId in result.materialItemIdList)
             {
                 // NOTE: 최종적으로 UpdateCurrentAvatarState()를 호출한다면, 그곳에서 상태를 새로 설정할 것이다.
-                LocalStateModifier.RemoveItem(avatarAddress, itemId);
+                LocalLayerModifier.RemoveItem(avatarAddress, itemId);
             }
 
             // NOTE: 메일 레이어 다시 없애기.
-            LocalStateModifier.AddItem(avatarAddress, itemUsable.ItemId, false);
-            LocalStateModifier.RemoveNewAttachmentMail(avatarAddress, result.id);
+            LocalLayerModifier.AddItem(avatarAddress, itemUsable.ItemId, false);
+            LocalLayerModifier.RemoveNewAttachmentMail(avatarAddress, result.id);
 
             // NOTE: 워크샵 슬롯의 모든 휘발성 상태 변경자를 다시 추가하기.
             var otherItemId = result.materialItemIdList.First();
-            LocalStateModifier.ModifyCombinationSlotItemEnhancement(
+            LocalLayerModifier.ModifyCombinationSlotItemEnhancement(
                 itemUsable.ItemId,
                 otherItemId,
                 eval.Action.slotIndex);
@@ -189,7 +220,7 @@ namespace Nekoyume.BlockChain
         {
             foreach (var id in ids)
             {
-                LocalStateModifier.RemoveReceivableQuest(avatarAddress, id);
+                LocalLayerModifier.RemoveReceivableQuest(avatarAddress, id);
 
                 var currentAvatarState = States.Instance.CurrentAvatarState;
                 if (currentAvatarState.address != avatarAddress)

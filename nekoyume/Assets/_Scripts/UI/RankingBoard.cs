@@ -284,7 +284,7 @@ namespace Nekoyume.UI
             else
             {
                 currentAvatarCellView.Hide();
-                LocalStateModifier.AddWeeklyArenaInfoActivator(Game.Game.instance.TableSheets.CharacterSheet);
+                LocalLayerModifier.AddWeeklyArenaInfoActivator(Game.Game.instance.TableSheets.CharacterSheet);
             }
 
             UpdateBoard(StateType.Arena);
