@@ -100,7 +100,7 @@ namespace Lib9c.Benchmarks
                         ((_, currency) => new FungibleAssetValue(currency))
                     );
                 }
-                SetStates(chain.Id, store, block, blockEvals.ToArray(), buildStateReferences: true);
+                SetStates(chain.Id, stateStore, block, blockEvals.ToArray(), buildStateReferences: true);
                 txs += block.Transactions.LongCount();
                 actions += block.Transactions.Sum(tx => tx.Actions.LongCount()) + 1;
             }
@@ -136,18 +136,6 @@ namespace Lib9c.Benchmarks
             {
                 var totalDelta = GetTotalDelta(actionEvaluations, ToStateKey, ToFungibleAssetKey);
                 stateStore.SetStates(block, totalDelta);
-            }
-
-            if (buildStateReferences && stateStore is IBlockStatesStore blockStatesStore)
-            {
-                IImmutableSet<string> stateUpdatedKeys = stateUpdatedAddresses
-                    .Select(ToStateKey)
-                    .ToImmutableHashSet();
-                IImmutableSet<string> assetUpdatedKeys = updatedFungibleAssets
-                    .Select(ToFungibleAssetKey)
-                    .ToImmutableHashSet();
-                IImmutableSet<string> updatedKeys = stateUpdatedKeys.Union(assetUpdatedKeys);
-                blockStatesStore.StoreStateReference(chainId, updatedKeys, block.Hash, block.Index);
             }
         }
 
