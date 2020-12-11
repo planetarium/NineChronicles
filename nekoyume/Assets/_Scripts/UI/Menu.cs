@@ -120,12 +120,12 @@ namespace Nekoyume.UI
                 .HackAndSlash(player, worldId, stageId)
                 .Subscribe(_ =>
                 {
-                    LocalStateModifier.ModifyAvatarActionPoint(
+                    LocalLayerModifier.ModifyAvatarActionPoint(
                         States.Instance.CurrentAvatarState.address,
                         requiredCost);
                 }, e => ActionRenderHandler.BackToMain(false, e))
                 .AddTo(this);
-            LocalStateModifier.ModifyAvatarActionPoint(States.Instance.CurrentAvatarState.address,
+            LocalLayerModifier.ModifyAvatarActionPoint(States.Instance.CurrentAvatarState.address,
                 - requiredCost);
             var props = new Value
             {

@@ -44,7 +44,7 @@ namespace Nekoyume.Game
 
         public States States { get; private set; }
 
-        public LocalStateSettings LocalStateSettings { get; private set; }
+        public LocalLayer LocalLayer { get; private set; }
 
         public IAgent Agent { get; private set; }
 
@@ -108,7 +108,7 @@ namespace Nekoyume.Game
             }
 
             States = new States();
-            LocalStateSettings = new LocalStateSettings();
+            LocalLayer = new LocalLayer();
             MainCanvas.instance.InitializeTitle();
 
 #if !UNITY_EDITOR

@@ -326,14 +326,14 @@ namespace Nekoyume.UI
                 var materialRow = Game.Game.instance.TableSheets.MaterialItemSheet
                     .First(pair => pair.Key == reward.Key);
 
-                LocalStateModifier.AddItem(
+                LocalLayerModifier.AddItem(
                     avatarAddress,
                     materialRow.Value.ItemId,
                     reward.Value,
                     false);
             }
 
-            LocalStateModifier.RemoveReceivableQuest(avatarAddress, questId);
+            LocalLayerModifier.RemoveReceivableQuest(avatarAddress, questId);
         }
 
         private void AppearNPC(bool ignoreShowAnimation, NPCAnimation.Type animationType)

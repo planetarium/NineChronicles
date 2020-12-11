@@ -592,7 +592,7 @@ namespace Nekoyume.UI
                 return;
             }
 
-            LocalStateModifier.SetItemEquip(
+            LocalLayerModifier.SetItemEquip(
                 States.Instance.CurrentAvatarState.address,
                 nonFungibleItem.ItemId,
                 equip);
@@ -736,9 +736,9 @@ namespace Nekoyume.UI
                 Notification.Push(Nekoyume.Model.Mail.MailType.System,
                     L10nManager.Localize("UI_CHARGE_AP"));
                 Game.Game.instance.ActionManager.ChargeActionPoint();
-                LocalStateModifier.RemoveItem(States.Instance.CurrentAvatarState.address,
+                LocalLayerModifier.RemoveItem(States.Instance.CurrentAvatarState.address,
                     material.ItemId, 1);
-                LocalStateModifier.ModifyAvatarActionPoint(
+                LocalLayerModifier.ModifyAvatarActionPoint(
                     States.Instance.CurrentAvatarState.address,
                     States.Instance.GameConfigState.ActionPointMax);
             }

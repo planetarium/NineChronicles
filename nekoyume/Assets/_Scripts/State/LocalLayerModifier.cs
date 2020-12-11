@@ -22,7 +22,7 @@ namespace Nekoyume.State
     /// <summary>
     /// This is a static class that collects the patterns of using the `Add` and `Remove` functions of `LocalStateSettings`.
     /// </summary>
-    public static class LocalStateModifier
+    public static class LocalLayerModifier
     {
         #region Agent, Avatar / Currency
 
@@ -39,7 +39,7 @@ namespace Nekoyume.State
             }
 
             var modifier = new AgentGoldModifier(gold);
-            LocalStateSettings.Instance.Add(agentAddress, modifier);
+            LocalLayer.Instance.Add(agentAddress, modifier);
 
             var state = States.Instance.GoldBalanceState;
             if (state is null || !state.address.Equals(agentAddress))
@@ -77,7 +77,7 @@ namespace Nekoyume.State
             }
 
             var modifier = new AvatarActionPointModifier(actionPoint);
-            LocalStateSettings.Instance.Add(avatarAddress, modifier);
+            LocalLayer.Instance.Add(avatarAddress, modifier);
 
             if (!TryGetLoadedAvatarState(
                 avatarAddress,
@@ -106,7 +106,7 @@ namespace Nekoyume.State
         public static void AddItem(Address avatarAddress, Guid guid, bool resetState = true)
         {
             var modifier = new AvatarInventoryNonFungibleItemRemover(guid);
-            LocalStateSettings.Instance.Remove(avatarAddress, modifier);
+            LocalLayer.Instance.Remove(avatarAddress, modifier);
 
             if (!resetState)
             {
@@ -128,7 +128,7 @@ namespace Nekoyume.State
             }
 
             var modifier = new AvatarInventoryFungibleItemRemover(id, count);
-            LocalStateSettings.Instance.Remove(avatarAddress, modifier);
+            LocalLayer.Instance.Remove(avatarAddress, modifier);
 
             if (!resetState)
             {
@@ -144,7 +144,7 @@ namespace Nekoyume.State
             bool resetState = true)
         {
             var modifier = new AvatarInventoryFungibleItemRemover(idAndCountDictionary);
-            LocalStateSettings.Instance.Remove(avatarAddress, modifier);
+            LocalLayer.Instance.Remove(avatarAddress, modifier);
 
             if (!resetState)
             {
@@ -161,7 +161,7 @@ namespace Nekoyume.State
         public static void RemoveItem(Address avatarAddress, Guid guid)
         {
             var modifier = new AvatarInventoryNonFungibleItemRemover(guid);
-            LocalStateSettings.Instance.Add(avatarAddress, modifier);
+            LocalLayer.Instance.Add(avatarAddress, modifier);
             RemoveItemInternal(avatarAddress, modifier);
         }
 
@@ -173,7 +173,7 @@ namespace Nekoyume.State
             }
 
             var modifier = new AvatarInventoryFungibleItemRemover(id, count);
-            LocalStateSettings.Instance.Add(avatarAddress, modifier);
+            LocalLayer.Instance.Add(avatarAddress, modifier);
             RemoveItemInternal(avatarAddress, modifier);
         }
 
@@ -182,7 +182,7 @@ namespace Nekoyume.State
             Dictionary<HashDigest<SHA256>, int> idAndCountDictionary)
         {
             var modifier = new AvatarInventoryFungibleItemRemover(idAndCountDictionary);
-            LocalStateSettings.Instance.Add(avatarAddress, modifier);
+            LocalLayer.Instance.Add(avatarAddress, modifier);
             RemoveItemInternal(avatarAddress, modifier);
         }
 
@@ -220,7 +220,7 @@ namespace Nekoyume.State
         public static void AddNewAttachmentMail(Address avatarAddress, Guid mailId)
         {
             var modifier = new AvatarAttachmentMailNewSetter(mailId);
-            LocalStateSettings.Instance.Add(avatarAddress, modifier);
+            LocalLayer.Instance.Add(avatarAddress, modifier);
 
             if (!TryGetLoadedAvatarState(
                 avatarAddress,
@@ -249,7 +249,7 @@ namespace Nekoyume.State
         )
         {
             var modifier = new AvatarAttachmentMailResultSetter(blockIndex, mailId);
-            LocalStateSettings.Instance.Add(avatarAddress, modifier);
+            LocalLayer.Instance.Add(avatarAddress, modifier);
 
             if (!TryGetLoadedAvatarState(
                 avatarAddress,
@@ -283,7 +283,7 @@ namespace Nekoyume.State
             bool resetState = true)
         {
             var modifier = new AvatarAttachmentMailNewSetter(mailId);
-            LocalStateSettings.Instance.Remove(avatarAddress, modifier);
+            LocalLayer.Instance.Remove(avatarAddress, modifier);
 
             if (!resetState)
             {
@@ -302,7 +302,7 @@ namespace Nekoyume.State
             bool resetState = true)
         {
             var resultModifier = new AvatarAttachmentMailResultSetter(mailId);
-            LocalStateSettings.Instance.Remove(avatarAddress, resultModifier);
+            LocalLayer.Instance.Remove(avatarAddress, resultModifier);
 
             if (!resetState)
             {
@@ -327,7 +327,7 @@ namespace Nekoyume.State
         public static void AddReceivableQuest(Address avatarAddress, int id)
         {
             var modifier = new AvatarQuestIsReceivableSetter(id);
-            LocalStateSettings.Instance.Add(avatarAddress, modifier);
+            LocalLayer.Instance.Add(avatarAddress, modifier);
 
             if (!TryGetLoadedAvatarState(
                 avatarAddress,
@@ -361,7 +361,7 @@ namespace Nekoyume.State
             bool resetState = true)
         {
             var modifier = new AvatarQuestIsReceivableSetter(id);
-            LocalStateSettings.Instance.Remove(avatarAddress, modifier);
+            LocalLayer.Instance.Remove(avatarAddress, modifier);
 
             if (!resetState)
             {
@@ -389,7 +389,7 @@ namespace Nekoyume.State
             bool resetState = true)
         {
             var modifier = new AvatarInventoryItemEquippedModifier(itemId, equip);
-            LocalStateSettings.Instance.Add(avatarAddress, modifier);
+            LocalLayer.Instance.Add(avatarAddress, modifier);
 
             if (!TryGetLoadedAvatarState(
                 avatarAddress,
@@ -420,7 +420,7 @@ namespace Nekoyume.State
         public static void IncreaseAvatarDailyRewardReceivedIndex(Address avatarAddress, long blockCount)
         {
             var modifier = new AvatarDailyRewardReceivedIndexModifier(blockCount);
-            LocalStateSettings.Instance.Add(avatarAddress, modifier);
+            LocalLayer.Instance.Add(avatarAddress, modifier);
 
             if (!TryGetLoadedAvatarState(
                 avatarAddress,
@@ -449,7 +449,7 @@ namespace Nekoyume.State
         )
         {
             var modifier = new AvatarItemRequiredIndexModifier(blockIndex, itemId);
-            LocalStateSettings.Instance.Add(avatarAddress, modifier);
+            LocalLayer.Instance.Add(avatarAddress, modifier);
 
             if (!TryGetLoadedAvatarState(
                 avatarAddress,
@@ -475,7 +475,7 @@ namespace Nekoyume.State
         public static void RemoveAvatarItemRequiredIndex(Address avatarAddress, Guid itemId)
         {
             var modifier = new AvatarItemRequiredIndexModifier(itemId);
-            LocalStateSettings.Instance.Remove(avatarAddress, modifier);
+            LocalLayer.Instance.Remove(avatarAddress, modifier);
         }
 
         public static void AddMaterial(Address avatarAddress, HashDigest<SHA256> itemId, int count, bool resetState)
@@ -492,7 +492,7 @@ namespace Nekoyume.State
                 }
             );
 
-            LocalStateSettings.Instance.Add(avatarAddress, modifier);
+            LocalLayer.Instance.Add(avatarAddress, modifier);
 
             if (!TryGetLoadedAvatarState(
                 avatarAddress,
@@ -534,7 +534,7 @@ namespace Nekoyume.State
                 }
             );
 
-            LocalStateSettings.Instance.Remove(avatarAddress, modifier);
+            LocalLayer.Instance.Remove(avatarAddress, modifier);
 
             if (!resetState)
             {
@@ -569,7 +569,7 @@ namespace Nekoyume.State
             }
 
             var modifier = new WeeklyArenaInfoActivator(avatarAddress);
-            LocalStateSettings.Instance.Add(weeklyArenaAddress, modifier);
+            LocalLayer.Instance.Add(weeklyArenaAddress, modifier);
             weeklyArenaState = modifier.Modify(weeklyArenaState);
             WeeklyArenaStateSubject.WeeklyArenaState.OnNext(weeklyArenaState);
         }
@@ -584,7 +584,7 @@ namespace Nekoyume.State
             Address avatarAddress)
         {
             var modifier = new WeeklyArenaInfoActivator(avatarAddress);
-            LocalStateSettings.Instance.Remove(weeklyArenaAddress, modifier);
+            LocalLayer.Instance.Remove(weeklyArenaAddress, modifier);
 
             var state = States.Instance.WeeklyArenaState;
             if (!state.address.Equals(weeklyArenaAddress))
@@ -660,7 +660,7 @@ namespace Nekoyume.State
             };
             var modifier = new CombinationSlotBlockIndexAndResultModifier(result, blockIndex, requiredBlockIndex);
             var slotState = States.Instance.CombinationSlotStates[slotAddress];
-            LocalStateSettings.Instance.Set(slotState.address, modifier);
+            LocalLayer.Instance.Set(slotState.address, modifier);
             States.Instance.CombinationSlotStates[slotAddress] = modifier.Modify(slotState);
             CombinationSlotStateSubject.OnNext(slotState);
         }
@@ -718,7 +718,7 @@ namespace Nekoyume.State
             };
             var modifier = new CombinationSlotBlockIndexAndResultModifier(result, blockIndex, requiredBlockIndex);
             var slotState = States.Instance.CombinationSlotStates[slotAddress];
-            LocalStateSettings.Instance.Set(slotState.address, modifier);
+            LocalLayer.Instance.Set(slotState.address, modifier);
             States.Instance.CombinationSlotStates[slotAddress] = modifier.Modify(slotState);
             CombinationSlotStateSubject.OnNext(slotState);
         }
@@ -784,7 +784,7 @@ namespace Nekoyume.State
 
             var modifier = new CombinationSlotBlockIndexAndResultModifier(result, blockIndex, requiredBlockIndex);
             var slotState = States.Instance.CombinationSlotStates[slotAddress];
-            LocalStateSettings.Instance.Set(slotState.address, modifier);
+            LocalLayer.Instance.Set(slotState.address, modifier);
             States.Instance.CombinationSlotStates[slotAddress] = modifier.Modify(slotState);
             CombinationSlotStateSubject.OnNext(slotState);
         }
@@ -806,17 +806,17 @@ namespace Nekoyume.State
         {
             var slotState = States.Instance.CombinationSlotStates[slotAddress];
             var modifier = new CombinationSlotBlockIndexModifier(blockIndex);
-            LocalStateSettings.Instance.Set(slotState.address, modifier);
+            LocalLayer.Instance.Set(slotState.address, modifier);
             States.Instance.CombinationSlotStates[slotAddress] = modifier.Modify(slotState);
             CombinationSlotStateSubject.OnNext(slotState);
         }
 
         public static void ResetCombinationSlot(CombinationSlotState slot)
         {
-            LocalStateSettings.Instance
+            LocalLayer.Instance
                 .ResetCombinationSlotModifiers<CombinationSlotBlockIndexModifier>(
                     slot.address);
-            LocalStateSettings.Instance
+            LocalLayer.Instance
                 .ResetCombinationSlotModifiers<CombinationSlotBlockIndexAndResultModifier>(
                     slot.address);
         }
