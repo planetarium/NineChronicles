@@ -71,8 +71,8 @@
         }
 
         [Theory]
-        [InlineData(200, 10001, 10000001, 140)]
-        [InlineData(400, 10001, 10000001, 100)]
+        [InlineData(200, GameConfig.MimisbrunnrWorldId, GameConfig.MimisbrunnrStartStageId, 140)]
+        [InlineData(400, GameConfig.MimisbrunnrWorldId, GameConfig.MimisbrunnrStartStageId, 100)]
         public void Execute(int avatarLevel, int worldId, int stageId, int clearStageId)
         {
             Assert.True(_tableSheets.WorldSheet.TryGetValue(worldId, out var worldRow));
@@ -478,6 +478,49 @@
                 action.Execute(new ActionContext()
                 {
                     PreviousStates = state, Signer = _agentAddress, Random = new TestRandom(), Rehearsal = false,
+                });
+            });
+        }
+
+        /// <summary>
+        /// void ExecuteThrowFailedAddWorldExceptionWhenDoesNotMimisbrunnr(int).
+        /// </summary>
+        /// <param name="alreadyClearedStageId">Less than stageId condition to unlock the mimisbrunnr world in `WorldUnlockSheet`.</param>
+        [Theory]
+        [InlineData(1)]
+        [InlineData(99)]
+        public void ExecuteThrowFailedAddWorldExceptionWhenDoesNotMimisbrunnr(int alreadyClearedStageId)
+        {
+            const int worldId = GameConfig.MimisbrunnrWorldId;
+            const int stageId = GameConfig.MimisbrunnrStartStageId;
+            var worldSheetCsv = _initialState.GetSheetCsv<WorldSheet>();
+            worldSheetCsv = worldSheetCsv.Replace($"{worldId},", $"_{worldId},");
+            var worldSheet = new WorldSheet();
+            worldSheet.Set(worldSheetCsv);
+            var avatarState = _initialState.GetAvatarState(_avatarAddress);
+            avatarState.worldInformation = new WorldInformation(0, worldSheet, alreadyClearedStageId);
+            var nextState = _initialState.SetState(_avatarAddress, avatarState.Serialize());
+
+            var action = new MimisbrunnrBattle
+            {
+                costumes = new List<Guid>(),
+                equipments = new List<Guid>(),
+                foods = new List<Guid>(),
+                worldId = worldId,
+                stageId = stageId,
+                avatarAddress = _avatarAddress,
+                WeeklyArenaAddress = _weeklyArenaState.address,
+                RankingMapAddress = _rankingMapAddress,
+            };
+
+            Assert.Null(action.Result);
+
+            Assert.Throws<FailedAddWorldException>(() =>
+            {
+                action.Execute(new ActionContext
+                {
+                    PreviousStates = nextState,
+                    Signer = _agentAddress,
                 });
             });
         }
