@@ -98,6 +98,10 @@ namespace Nekoyume.UI
             tabButtons[2].Init("UI_SHOP");
             tabButtons[3].Init("SYSTEM");
             ReactiveAvatarState.MailBox?.Subscribe(SetList).AddTo(gameObject);
+            Game.Game.instance.Agent.BlockIndexSubject
+                .ObserveOnMainThread()
+                .Subscribe(UpdateMailList)
+                .AddTo(gameObject);
 
             emptyText.text = L10nManager.Localize(emptyTextL10nKey);
         }
@@ -128,6 +132,51 @@ namespace Nekoyume.UI
 
         #endregion
 
+        public void ChangeState(int state)
+        {
+            tabState = (MailTabState)state;
+
+            for (var i = 0; i < tabButtons.Length; ++i)
+            {
+                tabButtons[i].ChangeColor(i == state);
+            }
+
+            var blockIndex = Game.Game.instance.Agent.BlockIndex;
+            UpdateMailList(blockIndex);
+        }
+
+        private IEnumerable<Nekoyume.Model.Mail.Mail> GetAvailableMailList(long blockIndex, MailTabState state)
+        {
+            bool predicate(Nekoyume.Model.Mail.Mail mail)
+            {
+                if (state == MailTabState.All)
+                {
+                    return true;
+                }
+
+                return mail.MailType == (MailType) state;
+            }
+
+            return MailBox?.Where(mail =>
+                mail.requiredBlockIndex <= blockIndex)
+                .Where(predicate)
+                .OrderByDescending(mail => mail.New);
+        }
+
+        private void UpdateMailList(long blockIndex)
+        {
+            var list = GetAvailableMailList(blockIndex, tabState);
+
+            if (list is null)
+            {
+                return;
+            }
+
+            scroll.UpdateData(list, true);
+            emptyImage.SetActive(list.Count() == 0);
+            UpdateTabs();
+        }
+
         public void UpdateTabs()
         {
             var blockIndex = Game.Game.instance.Agent.BlockIndex;
@@ -137,33 +186,11 @@ namespace Nekoyume.UI
 
             for (var i = 1; i < tabButtons.Length; ++i)
             {
-                tabButtons[i].hasNotificationImage.enabled = MailBox
-                    .Any(mail =>
-                        mail.MailType == (MailType) i && mail.New &&
-                        mail.requiredBlockIndex <= blockIndex);
+                var list = GetAvailableMailList(blockIndex, (MailTabState) i);
+                var recent = list?.FirstOrDefault();
+                tabButtons[i].hasNotificationImage.enabled = recent is null ?
+                    false : recent.New;
             }
-        }
-
-        public void ChangeState(int state)
-        {
-            tabState = (MailTabState) state;
-
-            for (var i = 0; i < tabButtons.Length; ++i)
-            {
-                tabButtons[i].ChangeColor(i == state);
-            }
-
-            var list = MailBox
-                .Where(mail => mail.requiredBlockIndex <= Game.Game.instance.Agent.BlockIndex)
-                .OrderByDescending(mail => mail.New)
-                .ToList();
-            if (state > 0)
-            {
-                list = list.FindAll(mail => mail.MailType == (MailType) state);
-            }
-
-            scroll.UpdateData(list, true);
-            emptyImage.SetActive(list.Count == 0);
         }
 
         private void SetList(MailBox mailBox)
