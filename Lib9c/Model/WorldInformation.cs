@@ -435,6 +435,40 @@ namespace Nekoyume.Model
             }
         }
 
+        public void AddAndUnlockMimisbrunnrWorld(
+            WorldSheet.Row worldRow,
+            long unlockedAt,
+            WorldSheet worldSheet,
+            WorldUnlockSheet worldUnlockSheet)
+        {
+            var succeed = false;
+            var worldId = worldRow.Id;
+            if (worldId == GameConfig.MimisbrunnrWorldId)
+            {
+                var unlockRow = worldUnlockSheet.OrderedList.FirstOrDefault(row => row.WorldIdToUnlock == worldId);
+                if (!(unlockRow is null) &&
+                    IsStageCleared(unlockRow.StageId))
+                {
+                    succeed = true;
+                }
+            }
+            else if (IsStageCleared(worldRow.StageBegin - 1))
+            {
+                succeed = true;
+            }
+
+            if (succeed)
+            {
+                var world = new World(worldRow);
+                _worlds.Add(worldId, world);
+                UnlockWorld(worldId, unlockedAt, worldSheet);
+            }
+            else
+            {
+                throw new FailedAddWorldException($"Failed to add {worldId} world to WorldInformation.");
+            }
+        }
+
         /// <summary>
         /// Unlock a specific world.
         /// </summary>

@@ -112,7 +112,7 @@ namespace Nekoyume.Action
             if (!worldInformation.TryGetWorld(worldId, out var world))
             {
                 // NOTE: Add new World from WorldSheet
-                worldInformation.AddAndUnlockNewWorld(worldRow, ctx.BlockIndex, worldSheet);
+                worldInformation.AddAndUnlockMimisbrunnrWorld(worldRow, ctx.BlockIndex, worldSheet, worldUnlockSheet);
                 if (!worldInformation.TryGetWorld(worldId, out world))
                 {
                     // Do nothing.
