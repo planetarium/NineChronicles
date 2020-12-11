@@ -1,6 +1,6 @@
 using System;
 using Libplanet.Assets;
-using Nekoyume.State;
+using Nekoyume.State.Subjects;
 using Nekoyume.UI.Module.Common;
 using TMPro;
 using UniRx;
@@ -29,7 +29,7 @@ namespace Nekoyume.UI.Module
         protected override void OnEnable()
         {
             base.OnEnable();
-            _disposable = ReactiveAgentState.Gold.Subscribe(SetGold);
+            _disposable = AgentStateSubject.Gold.Subscribe(SetGold);
         }
 
         protected override void OnDisable()

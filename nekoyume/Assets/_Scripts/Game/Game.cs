@@ -3,6 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Amazon;
+using Amazon.CloudWatchLogs;
+using Amazon.CloudWatchLogs.Model;
+using Amazon.CognitoIdentity;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Crypto;
@@ -16,7 +20,6 @@ using Nekoyume.L10n;
 using Nekoyume.Model.State;
 using Nekoyume.Pattern;
 using Nekoyume.State;
-using Nekoyume.TableData;
 using Nekoyume.UI;
 using UniRx;
 using UnityEngine;
@@ -61,6 +64,10 @@ namespace Nekoyume.Game
 
         private CommandLineOptions _options;
 
+        private AmazonCloudWatchLogsClient _logsClient;
+
+        private string _msg;
+
         private static readonly string CommandLineOptionsJsonPath =
             Path.Combine(Application.streamingAssetsPath, "clo.json");
 
@@ -93,6 +100,7 @@ namespace Nekoyume.Game
             if (_options.RpcClient)
             {
                 Agent = GetComponent<RPCAgent>();
+                SubscribeRPCAgent();
             }
             else
             {
@@ -102,6 +110,13 @@ namespace Nekoyume.Game
             States = new States();
             LocalLayer = new LocalLayer();
             MainCanvas.instance.InitializeTitle();
+
+#if !UNITY_EDITOR
+            var c = new CognitoAWSCredentials("ap-northeast-2:6fea0e84-a609-4774-a407-c63de9dbea7b",
+                RegionEndpoint.APNortheast2);
+            _logsClient = new AmazonCloudWatchLogsClient(c, RegionEndpoint.APNortheast2);
+            Application.logMessageReceivedThreaded += UploadLog;
+#endif
         }
 
         private IEnumerator Start()
@@ -134,6 +149,7 @@ namespace Nekoyume.Game
                 CoLogin(
                     succeed =>
                     {
+                        Debug.Log($"Agent initialized. {succeed}");
                         agentInitialized = true;
                         agentInitializeSucceed = succeed;
                     }
@@ -146,7 +162,6 @@ namespace Nekoyume.Game
             // UI 초기화 2차.
             yield return StartCoroutine(MainCanvas.instance.InitializeSecond());
             Stage.Initialize();
-            yield return null;
 
             Observable.EveryUpdate()
                 .Where(_ => Input.GetMouseButtonUp(0))
@@ -154,36 +169,151 @@ namespace Nekoyume.Game
                 .Subscribe(PlayMouseOnClickVFX)
                 .AddTo(gameObject);
 
-            ShowNext(agentInitializeSucceed);
 
-            Agent.BlockRenderer
-                .ReorgSubject
-                .ObserveOnMainThread()
-                .Subscribe(_ =>
-                {
-                    var msg = L10nManager.Localize("ERROR_REORG_OCCURRED");
-                    UI.Notification.Push(Model.Mail.MailType.System, msg);
-                });
-
-            if (Agent is RPCAgent rpcAgent)
-            {
-                rpcAgent.WhenRetryStarted
-                    .AsObservable()
-                    .ObserveOnMainThread()
-                    .Subscribe(_ =>
-                    {
-                        Widget.Find<BlockSyncLoadingScreen>().Show();
-                    });
-
-                rpcAgent.WhenRetryEnded
-                    .AsObservable()
-                    .ObserveOnMainThread()
-                    .Subscribe(_ =>
-                    {
-                        Widget.Find<BlockSyncLoadingScreen>().Close();
-                    });
-            }
             Widget.Find<VersionInfo>().SetVersion(Agent.AppProtocolVersion);
+
+            ShowNext(agentInitializeSucceed);
+        }
+
+        private void SubscribeRPCAgent()
+        {
+            if (!(Agent is RPCAgent rpcAgent))
+            {
+                return;
+            }
+
+            rpcAgent.OnRetryStarted
+                .ObserveOnMainThread()
+                .Subscribe(OnRPCAgentRetryStarted)
+                .AddTo(gameObject);
+
+            // NOTE: RPCAgent가 허브에 조인을 재시도하는 것과 프리로드를 끝마쳤을 때를 구독합니다.
+            rpcAgent.OnRetryEnded
+                .Zip(rpcAgent.OnPreloadEnded, (agent, agent1) => agent)
+                .First()
+                .Repeat()
+                .ObserveOnMainThread()
+                .Subscribe(OnRPCAgentRetryAndPreloadEnded)
+                .AddTo(gameObject);
+
+            rpcAgent.OnDisconnected
+                .ObserveOnMainThread()
+                .Subscribe(QuitWithAgentConnectionError)
+                .AddTo(gameObject);
+        }
+
+        private static void OnRPCAgentRetryStarted(RPCAgent rpcAgent)
+        {
+            Widget.Find<BlockSyncLoadingScreen>().Show();
+        }
+
+        private static void OnRPCAgentRetryAndPreloadEnded(RPCAgent rpcAgent)
+        {
+            var widget = (Widget) Widget.Find<Title>();
+            if (widget.IsActive())
+            {
+                // NOTE: 타이틀 화면에서 리트라이와 프리로드가 완료된 상황입니다.
+                // FIXME: 이 경우에는 메인 로비가 아니라 기존 초기화 로직이 흐르도록 처리해야 합니다.
+                return;
+            }
+
+            var needToBackToMain = false;
+            var showLoadingScreen = false;
+            widget = Widget.Find<BlockSyncLoadingScreen>();
+            if (widget.IsActive())
+            {
+                widget.Close();
+            }
+
+            if (Widget.Find<LoadingScreen>().IsActive())
+            {
+                Widget.Find<LoadingScreen>().Close();
+                widget = Widget.Find<QuestPreparation>();
+                if (widget.IsActive())
+                {
+                    widget.Close(true);
+                    needToBackToMain = true;
+                }
+
+                widget = Widget.Find<Menu>();
+                if (widget.IsActive())
+                {
+                    widget.Close(true);
+                    needToBackToMain = true;
+                }
+            }
+            else if (Widget.Find<StageLoadingScreen>().IsActive())
+            {
+                Widget.Find<StageLoadingScreen>().Close();
+
+                if (Widget.Find<BattleResult>().IsActive())
+                {
+                    Widget.Find<BattleResult>().Close(true);
+                }
+                
+                needToBackToMain = true;
+                showLoadingScreen = true;
+            }
+            else if (Widget.Find<ArenaBattleLoadingScreen>().IsActive())
+            {
+                Widget.Find<ArenaBattleLoadingScreen>().Close();
+                needToBackToMain = true;
+            }
+
+            if (!needToBackToMain)
+            {
+                return;
+            }
+
+            ActionRenderHandler.BackToMain(
+                showLoadingScreen,
+                new UnableToRenderWhenSyncingBlocksException());
+        }
+
+        private void QuitWithAgentConnectionError(RPCAgent rpcAgent)
+        {
+            var screen = Widget.Find<BlockSyncLoadingScreen>();
+            if (screen.IsActive())
+            {
+                screen.Close();
+            }
+
+            // FIXME 콜백 인자를 구조화 하면 타입 쿼리 없앨 수 있을 것 같네요.
+            if (Agent is Agent _)
+            {
+                var errorMsg = string.Format(L10nManager.Localize("UI_ERROR_FORMAT"),
+                    L10nManager.Localize("BLOCK_DOWNLOAD_FAIL"));
+
+                Widget.Find<SystemPopup>().Show(
+                    L10nManager.Localize("UI_ERROR"),
+                    errorMsg,
+                    L10nManager.Localize("UI_QUIT"),
+                    false
+                );
+
+                return;
+            }
+
+            if (rpcAgent is null)
+            {
+                // FIXME: 최신 버전이 뭔지는 Agent.EncounrtedHighestVersion 속성에 들어있으니, 그걸 UI에서 표시해줘야 할 듯?
+                // AppProtocolVersion? newVersion = _agent is Agent agent ? agent.EncounteredHighestVersion : null;
+                Widget.Find<UpdatePopup>().Show();
+                return;
+            }
+
+            if (rpcAgent.Connected)
+            {
+                // 무슨 상황이지?
+                Debug.Log($"{nameof(QuitWithAgentConnectionError)}() called. But {nameof(RPCAgent)}.Connected is {rpcAgent.Connected}.");
+                return;
+            }
+
+            Widget.Find<SystemPopup>().Show(
+                "UI_ERROR",
+                "UI_ERROR_RPC_CONNECTION",
+                "UI_QUIT"
+            );
         }
 
         private IEnumerator CoInitializeTableSheets()
@@ -223,33 +353,7 @@ namespace Nekoyume.Game
             }
             else
             {
-                // FIXME 콜백 인자를 구조화 하면 타입 쿼리 없앨 수 있을 것 같네요.
-                if (Agent is Agent agent && agent.BlockDownloadFailed)
-                {
-                    var errorMsg = string.Format(L10nManager.Localize("UI_ERROR_FORMAT"),
-                        L10nManager.Localize("BLOCK_DOWNLOAD_FAIL"));
-
-                    Widget.Find<SystemPopup>().Show(
-                        L10nManager.Localize("UI_ERROR"),
-                        errorMsg,
-                        L10nManager.Localize("UI_QUIT"),
-                        false
-                    );
-                }
-                else if (Agent is RPCAgent rpcAgent && !rpcAgent.Connected)
-                {
-                    Widget.Find<SystemPopup>().Show(
-                        "UI_ERROR",
-                        "UI_ERROR_RPC_CONNECTION",
-                        "UI_QUIT"
-                    );
-                }
-                else
-                {
-                    // FIXME: 최신 버전이 뭔지는 Agent.EncounrtedHighestVersion 속성에 들어있으니, 그걸 UI에서 표시해줘야 할 듯?
-                    // AppProtocolVersion? newVersion = _agent is Agent agent ? agent.EncounteredHighestVersion : null;
-                    Widget.Find<UpdatePopup>().Show();
-                }
+                QuitWithAgentConnectionError(null);
             }
         }
 
@@ -262,6 +366,7 @@ namespace Nekoyume.Game
                 Mixpanel.Track("Unity/Player Quit");
                 Mixpanel.Flush();
             }
+            _logsClient?.Dispose();
         }
 
         public static void Quit()
@@ -452,6 +557,96 @@ namespace Nekoyume.Game
                 yield return null;
             }
             TableSheets = new TableSheets(csv);
+        }
+
+        private async void UploadLog(string logString, string stackTrace, LogType type)
+        {
+            // Avoid NRE
+            if (Agent.PrivateKey == default)
+            {
+                _msg += logString + "\n";
+                if (!string.IsNullOrEmpty(stackTrace))
+                {
+                    _msg += stackTrace + "\n";
+                }
+            }
+            else
+            {
+                var groupName = string.Empty;
+                var streamName = Agent.Address.ToString();
+                try
+                {
+                    groupName = DateTime.UtcNow.Date.ToString("yyyy-MM-dd");
+                    var req = new CreateLogGroupRequest(groupName);
+                    await _logsClient.CreateLogGroupAsync(req);
+                }
+                catch (ResourceAlreadyExistsException)
+                {
+                }
+                catch (ObjectDisposedException)
+                {
+                    return;
+                }
+
+                try
+                {
+                    var req = new CreateLogStreamRequest(groupName, streamName);
+                    await _logsClient.CreateLogStreamAsync(req);
+                }
+                catch (ResourceAlreadyExistsException)
+                {
+                    // ignored
+                }
+
+                PutLog(groupName, streamName, GetMessage(logString, stackTrace));
+            }
+        }
+
+        private async void PutLog(string groupName, string streamName, string msg)
+        {
+            try
+            {
+                var req = new DescribeLogStreamsRequest(groupName)
+                {
+                    LogStreamNamePrefix = streamName
+                };
+                var resp = await _logsClient.DescribeLogStreamsAsync(req);
+                var token = resp.LogStreams.FirstOrDefault(s => s.LogStreamName == streamName)?.UploadSequenceToken;
+                var ie = new InputLogEvent
+                {
+                    Message = msg,
+                    Timestamp = DateTime.UtcNow
+                };
+                var request = new PutLogEventsRequest(groupName, streamName, new List<InputLogEvent> {ie});
+                if (!string.IsNullOrEmpty(token))
+                {
+                    request.SequenceToken = token;
+                }
+                await _logsClient.PutLogEventsAsync(request);
+            }
+            catch (Exception e)
+            {
+                // ignored
+            }
+        }
+
+        private string GetMessage(string logString, string stackTrace)
+        {
+            var msg = string.Empty;
+            if (!string.IsNullOrEmpty(_msg))
+            {
+                msg = _msg;
+                _msg = string.Empty;
+                return msg;
+            }
+
+            msg += logString + "\n";
+            if (!string.IsNullOrEmpty(stackTrace))
+            {
+                msg += stackTrace;
+            }
+
+            return msg;
         }
     }
 }

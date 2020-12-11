@@ -752,6 +752,7 @@ namespace Nekoyume.UI
             }
 
             selectedIndex = idx;
+            _enhanceEquipment.UpdateSubmittable();
         }
 
         public IEnumerator CoCombineNPCAnimation(ItemBase itemBase, System.Action action, bool isConsumable = false)

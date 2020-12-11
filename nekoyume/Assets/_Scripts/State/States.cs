@@ -4,6 +4,7 @@ using System.Globalization;
 using Bencodex.Types;
 using Libplanet;
 using Nekoyume.Action;
+using Nekoyume.BlockChain;
 using Nekoyume.Model.State;
 using Nekoyume.State.Subjects;
 using UnityEngine;
@@ -98,8 +99,7 @@ namespace Nekoyume.State
         /// 최초로 할당하거나 기존과 다른 주소의 에이전트를 할당하면, 모든 아바타 상태를 새롭게 할당된다.
         /// </summary>
         /// <param name="state"></param>
-        /// <param name="balanceState"></param>
-        public void SetAgentState(AgentState state, GoldBalanceState balanceState)
+        public void SetAgentState(AgentState state)
         {
             if (state is null)
             {
@@ -113,19 +113,28 @@ namespace Nekoyume.State
 
             LocalLayer.Instance.InitializeAgentAndAvatars(state);
             AgentState = LocalLayer.Instance.Modify(state);
-            if (!(balanceState is null))
-            {
-                GoldBalanceState = LocalLayer.Instance.Modify(balanceState);
-            }
-            ReactiveAgentState.Initialize(AgentState, GoldBalanceState);
 
             if (!getAllOfAvatarStates)
+            {
                 return;
+            }
 
             foreach (var pair in AgentState.avatarAddresses)
             {
                 AddOrReplaceAvatarState(pair.Value, pair.Key);
             }
+        }
+
+        public void SetGoldBalanceState(GoldBalanceState goldBalanceState)
+        {
+            if (goldBalanceState is null)
+            {
+                Debug.LogWarning($"[{nameof(States)}.{nameof(SetGoldBalanceState)}] {nameof(goldBalanceState)} is null.");
+                return;
+            }
+
+            GoldBalanceState = LocalStateSettings.Instance.Modify(goldBalanceState);
+            AgentStateSubject.Gold.OnNext(GoldBalanceState.Gold);
         }
 
         public AvatarState AddOrReplaceAvatarState(Address avatarAddress, int index, bool initializeReactiveState = true)
@@ -213,6 +222,11 @@ namespace Nekoyume.State
             {
                 // NOTE: 새로운 아바타를 처음 선택할 때에는 모든 워크샵 슬롯을 업데이트 합니다.
                 SetCombinationSlotStates(avatarState);
+            }
+
+            if (Game.Game.instance.Agent is RPCAgent agent)
+            {
+                agent.UpdateSubscribeAddresses();
             }
 
             return CurrentAvatarState;

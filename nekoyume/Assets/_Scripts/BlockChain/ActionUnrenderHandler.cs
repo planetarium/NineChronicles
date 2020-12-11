@@ -36,6 +36,7 @@ namespace Nekoyume.BlockChain
             RewardGold();
             Buy();
             Sell();
+            SellCancellation();
             ItemEnhancement();
         }
 
@@ -59,7 +60,7 @@ namespace Nekoyume.BlockChain
                     }
                     catch (Exception e)
                     {
-                        Debug.Log($"Action unrender: {nameof(RewardGold)} | failed to get GoldBalanceState");
+                        Debug.Log($"Action unrender: {nameof(RewardGold)} | {e}");
                     }
 
                     UpdateAgentState(eval);
@@ -69,33 +70,47 @@ namespace Nekoyume.BlockChain
 
         private void Buy()
         {
-            _renderer.EveryUnrender<Buy>()
+            _renderer.EveryUnrender<Buy3>()
                 .Where(ValidateEvaluationForAgentState)
                 .ObserveOnMainThread()
-                .Subscribe(ResponseUnrenderBuy)
+                .Subscribe(ResponseBuy)
                 .AddTo(_disposables);
         }
 
         private void Sell()
         {
-            _renderer.EveryUnrender<Sell>()
+            _renderer.EveryUnrender<Sell3>()
                 .Where(ValidateEvaluationForCurrentAvatarState)
                 .ObserveOnMainThread()
-                .Subscribe(ResponseUnrenderSell)
+                .Subscribe(ResponseSell)
+                .AddTo(_disposables);
+        }
+
+        private void SellCancellation()
+        {
+            _renderer.EveryUnrender<SellCancellation3>()
+                .Where(ValidateEvaluationForCurrentAvatarState)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseSellCancellation)
                 .AddTo(_disposables);
         }
 
         private void ItemEnhancement()
         {
-            _renderer.EveryUnrender<ItemEnhancement3>()
+            _renderer.EveryUnrender<ItemEnhancement4>()
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseUnrenderItemEnhancement)
                 .AddTo(_disposables);
         }
-        
-        private void ResponseUnrenderBuy(ActionBase.ActionEvaluation<Buy> eval)
+
+        private void ResponseBuy(ActionBase.ActionEvaluation<Buy3> eval)
         {
+            if (!(eval.Exception is null))
+            {
+                return;
+            }
+
             var buyerAvatarAddress = eval.Action.buyerAvatarAddress;
             var price = eval.Action.sellerResult.shopItem.Price;
             Address renderQuestAvatarAddress;
@@ -105,7 +120,8 @@ namespace Nekoyume.BlockChain
             {
                 var buyerAgentAddress = States.Instance.AgentState.address;
                 var result = eval.Action.buyerResult;
-                var itemId = result.itemUsable.ItemId;
+
+                var itemId = result.itemUsable?.ItemId ?? result.costume.ItemId;
                 var buyerAvatar = eval.OutputStates.GetAvatarState(buyerAvatarAddress);
 
                 LocalLayerModifier.ModifyAgentGold(buyerAgentAddress, -price);
@@ -135,7 +151,7 @@ namespace Nekoyume.BlockChain
             UnrenderQuest(renderQuestAvatarAddress, renderQuestCompletedQuestIds);
         }
 
-        private void ResponseUnrenderSell(ActionBase.ActionEvaluation<Sell> eval)
+        private void ResponseSell(ActionBase.ActionEvaluation<Sell3> eval)
         {
             if (!(eval.Exception is null))
             {
@@ -149,7 +165,23 @@ namespace Nekoyume.BlockChain
             UpdateCurrentAvatarState(eval);
         }
 
-        private void ResponseUnrenderItemEnhancement(ActionBase.ActionEvaluation<ItemEnhancement3> eval)
+        private void ResponseSellCancellation(ActionBase.ActionEvaluation<SellCancellation3> eval)
+        {
+            if (!(eval.Exception is null))
+            {
+                return;
+            }
+
+            var result = eval.Action.result;
+            var nonFungibleItem = result.itemUsable ?? (INonFungibleItem) result.costume;
+            var avatarAddress = eval.Action.sellerAvatarAddress;
+            var itemId = nonFungibleItem.ItemId;
+
+            LocalLayerModifier.AddItem(avatarAddress, itemId);
+            UpdateCurrentAvatarState(eval);
+        }
+
+        private void ResponseUnrenderItemEnhancement(ActionBase.ActionEvaluation<ItemEnhancement4> eval)
         {
             var agentAddress = eval.Signer;
             var avatarAddress = eval.Action.avatarAddress;
@@ -158,17 +190,8 @@ namespace Nekoyume.BlockChain
             var itemUsable = result.itemUsable;
             var avatarState = eval.OutputStates.GetAvatarState(avatarAddress);
 
-            if (!(itemUsable is Equipment equipment))
-            {
-                return;
-            }
-
-            var row = Game.Game.instance.TableSheets
-                .EnhancementCostSheet.Values
-                .FirstOrDefault(x => x.Grade == equipment.Grade && x.Level == equipment.level);
-
             // NOTE: 사용한 자원에 대한 레이어 다시 추가하기.
-            LocalLayerModifier.ModifyAgentGold(agentAddress, -row.Cost);
+            LocalLayerModifier.ModifyAgentGold(agentAddress, -result.gold);
             LocalLayerModifier.RemoveItem(avatarAddress, itemUsable.ItemId);
             foreach (var itemId in result.materialItemIdList)
             {

@@ -42,6 +42,8 @@ namespace Nekoyume.BlockChain
         private readonly ConcurrentQueue<PolymorphicAction<ActionBase>> _queuedActions =
             new ConcurrentQueue<PolymorphicAction<ActionBase>>();
 
+        private readonly TransactionMap _transactions = new TransactionMap(20);
+
         private Channel _channel;
 
         private IActionEvaluationHub _hub;
@@ -73,18 +75,19 @@ namespace Nekoyume.BlockChain
 
         public bool Connected { get; private set; }
 
-        public UnityEvent OnDisconnected { get; private set; }
+        public readonly Subject<RPCAgent> OnDisconnected = new Subject<RPCAgent>();
 
-        public UnityEvent WhenRetryStarted { get; private set; }
+        public readonly Subject<RPCAgent> OnRetryStarted = new Subject<RPCAgent>();
 
-        public UnityEvent WhenRetryEnded { get; private set; }
+        public readonly Subject<RPCAgent> OnRetryEnded = new Subject<RPCAgent>();
+
+        public readonly Subject<RPCAgent> OnPreloadStarted = new Subject<RPCAgent>();
+
+        public readonly Subject<RPCAgent> OnPreloadEnded = new Subject<RPCAgent>();
 
         public int AppProtocolVersion { get; private set; }
 
         public HashDigest<SHA256> BlockTipHash { get; private set; }
-
-        public ConcurrentDictionary<Guid, TxId> Transactions { get; }
-            = new ConcurrentDictionary<Guid, TxId>();
 
         public void Initialize(
             CommandLineOptions options,
@@ -102,20 +105,15 @@ namespace Nekoyume.BlockChain
             _hub = StreamingHubClient.Connect<IActionEvaluationHub, IActionEvaluationHubReceiver>(_channel, this);
             _service = MagicOnionClient.Create<IBlockChainService>(_channel);
 
-            RegisterDisconnectEvent(_hub);
-
-            StartCoroutine(CoTxProcessor());
-            StartCoroutine(CoJoin(callback));
-
-            OnDisconnected = new UnityEvent();
-            WhenRetryStarted = new UnityEvent();
-            WhenRetryEnded = new UnityEvent();
-
             _genesis = BlockManager.ImportBlock(options.GenesisBlockPath ?? BlockManager.GenesisBlockPath);
             var appProtocolVersion = options.AppProtocolVersion is null
                 ? default
                 : Libplanet.Net.AppProtocolVersion.FromToken(options.AppProtocolVersion);
             AppProtocolVersion = appProtocolVersion.Version;
+
+            RegisterDisconnectEvent(_hub);
+            StartCoroutine(CoTxProcessor());
+            StartCoroutine(CoJoin(callback));
         }
 
         public IValue GetState(Address address)
@@ -135,6 +133,12 @@ namespace Nekoyume.BlockChain
             return FungibleAssetValue.FromRawValue(
                 CurrencyExtensions.Deserialize((Bencodex.Types.Dictionary) serialized.ElementAt(0)),
                 serialized.ElementAt(1).ToBigInteger());
+        }
+
+        public void SendException(Exception exc)
+        {
+            var (key, code, message) = ErrorCode.GetErrorCode(exc);
+            _service.ReportException(code, message);
         }
 
         public void EnqueueAction(GameAction action)
@@ -174,7 +178,7 @@ namespace Nekoyume.BlockChain
 
             if (t.IsFaulted)
             {
-                callback(false);
+                callback?.Invoke(false);
                 yield break;
             }
 
@@ -187,9 +191,9 @@ namespace Nekoyume.BlockChain
             States.Instance.SetAgentState(
                 GetState(Address) is Bencodex.Types.Dictionary agentDict
                     ? new AgentState(agentDict)
-                    : new AgentState(Address),
-                new GoldBalanceState(Address, GetBalance(Address, goldCurrency))
-            );
+                    : new AgentState(Address));
+            States.Instance.SetGoldBalanceState(
+                new GoldBalanceState(Address, GetBalance(Address, goldCurrency)));
 
             // 랭킹의 상태를 한 번 동기화 한다.
             for (var i = 0; i < RankingState.RankingMapCapacity; ++i)
@@ -231,7 +235,7 @@ namespace Nekoyume.BlockChain
             ActionUnrenderHandler.Instance.Start(ActionRenderer);
 
             UpdateSubscribeAddresses();
-            callback(true);
+            callback?.Invoke(true);
         }
 
         private IEnumerator CoTxProcessor()
@@ -280,7 +284,7 @@ namespace Nekoyume.BlockChain
             foreach (var action in actions)
             {
                 var ga = (GameAction) action.InnerAction;
-                Transactions.TryAdd(ga.Id, tx.Id);
+                _transactions.TryAdd(ga.Id, tx.Id);
             }
         }
 
@@ -300,14 +304,6 @@ namespace Nekoyume.BlockChain
                 decompressed.Seek(0, SeekOrigin.Begin);
                 var ev = (ActionEvaluation<ActionBase>)formatter.Deserialize(decompressed);
                 ActionRenderer.ActionRenderSubject.OnNext(ev);
-                if (ev.Action is GameAction ga)
-                {
-                    if (!Transactions.TryRemove(ga.Id, out _))
-                    {
-                        Debug.Log("Failed to remove transaction that has " +
-                                  $"action of {ga.Id}. Reorg may have occurred.");
-                    }
-                }
             }
         }
 
@@ -327,7 +323,6 @@ namespace Nekoyume.BlockChain
 
         public void OnRenderBlock(byte[] oldTip, byte[] newTip)
         {
-            var oldTipHeader = BlockHeader.Deserialize(oldTip);
             var newTipHeader = BlockHeader.Deserialize(newTip);
             BlockIndex = newTipHeader.Index;
             BlockIndexSubject.OnNext(BlockIndex);
@@ -351,9 +346,9 @@ namespace Nekoyume.BlockChain
 
         private async void RetryRpc()
         {
+            OnRetryStarted.OnNext(this);
             var retryCount = 10;
             Debug.Log($"Retry rpc connection. (count: {retryCount})");
-            WhenRetryStarted.Invoke();
             while (retryCount > 0)
             {
                 await Task.Delay(5000);
@@ -365,11 +360,17 @@ namespace Nekoyume.BlockChain
                     Debug.Log($"Join complete! Registering disconnect event...");
                     RegisterDisconnectEvent(_hub);
                     UpdateSubscribeAddresses();
+                    OnRetryEnded.OnNext(this);
                     return;
                 }
                 catch (RpcException re)
                 {
-                    Debug.LogWarning($"RpcException occurred. Retrying... {retryCount}");
+                    Debug.LogWarning($"RpcException occurred. Retrying... {retryCount}\n{re}");
+                    retryCount--;
+                }
+                catch (ObjectDisposedException ode)
+                {
+                    Debug.LogWarning($"ObjectDisposedException occurred. Retrying... {retryCount}\n{ode}");
                     retryCount--;
                 }
                 catch (Exception e)
@@ -379,7 +380,8 @@ namespace Nekoyume.BlockChain
                 }
             }
 
-            OnDisconnected?.Invoke();
+            Connected = false;
+            OnDisconnected.OnNext(this);
         }
 
         public void OnReorged(byte[] oldTip, byte[] newTip, byte[] branchpoint)
@@ -402,6 +404,11 @@ namespace Nekoyume.BlockChain
                     key = "ERROR_NETWORK";
                     errorCode = "101";
                     break;
+
+                case (int)RPCException.InvalidRenderException:
+                    key = "ERROR_INVALID_RENDER";
+                    errorCode = "102";
+                    break;
             }
 
             var errorMsg = string.Format(L10nManager.Localize("UI_ERROR_RETRY_FORMAT"),
@@ -423,25 +430,35 @@ namespace Nekoyume.BlockChain
 
         public void OnPreloadStart()
         {
+            OnPreloadStarted.OnNext(this);
             Debug.Log($"On Preload Start");
         }
 
         public void OnPreloadEnd()
         {
+            OnPreloadEnded.OnNext(this);
             Debug.Log($"On Preload End");
-            WhenRetryEnded.Invoke();
         }
 
         public void UpdateSubscribeAddresses()
         {
             var addresses = new List<Address> { Address };
+
+            var currentAvatarState = States.Instance.CurrentAvatarState;
+            if (!(currentAvatarState is null))
+            {
+                var slotAddresses = currentAvatarState.combinationSlotAddresses.ToArray();
+                addresses.AddRange(slotAddresses);
+            }
+
             Debug.Log($"Subscribing addresses: {string.Join(", ", addresses)}");
             _service.SetAddressesToSubscribe(addresses.Select(addr => addr.ToByteArray()));
         }
 
-        public bool IsTransactionStaged(TxId id)
+        public bool IsActionStaged(Guid actionId, out TxId txId)
         {
-            return _service.IsTransactionStaged(id.ToByteArray()).ResponseAsync.Result;
+            return _transactions.TryGetValue(actionId, out txId)
+                   && _service.IsTransactionStaged(txId.ToByteArray()).ResponseAsync.Result;
         }
     }
 }

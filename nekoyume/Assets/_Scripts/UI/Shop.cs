@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using DG.Tweening;
 using Libplanet.Assets;
+using mixpanel;
 using Nekoyume.BlockChain;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Character;
@@ -458,16 +459,25 @@ namespace Nekoyume.UI
 
         private void SubscribeItemPopupSubmit(Model.ItemCountAndPricePopup data)
         {
+            if (!(data.Item.Value.ItemBase.Value is INonFungibleItem nonFungibleItem))
+            {
+                return;
+            }
+
             if (SharedModel.State.Value == StateType.Buy)
             {
-                var shopItem = shopItems.SharedModel.ItemSubTypeProducts.Value.Values
-                    .SelectMany(list => list)
-                    .FirstOrDefault(i =>
-                        i.ItemBase.Value.Equals(data.Item.Value.ItemBase.Value));
-                if (shopItem is null)
+                if (!shopItems.SharedModel.TryGetShopItemFromItemSubTypeProducts(
+                    nonFungibleItem.ItemId,
+                    out var shopItem))
                 {
                     return;
                 }
+
+                var props = new Value
+                {
+                    ["Price"] = shopItem.Price.Value.GetQuantityString(),
+                };
+                Mixpanel.Track("Unity/Buy", props);
 
                 Game.Game.instance.ActionManager.Buy(
                     shopItem.SellerAgentAddress.Value,
@@ -477,11 +487,9 @@ namespace Nekoyume.UI
             }
             else
             {
-                var shopItem = shopItems.SharedModel.AgentProducts.Value.Values
-                    .SelectMany(list => list)
-                    .FirstOrDefault(i =>
-                        i.ItemBase.Value.Equals(data.Item.Value.ItemBase.Value));
-                if (shopItem is null)
+                if (!shopItems.SharedModel.TryGetShopItemFromAgentProducts(
+                    nonFungibleItem.ItemId,
+                    out var shopItem))
                 {
                     if (data.Price.Value.Sign * data.Price.Value.MajorUnit < Model.Shop.MinimumPrice)
                     {
@@ -489,7 +497,7 @@ namespace Nekoyume.UI
                     }
 
                     Game.Game.instance.ActionManager.Sell(
-                        (ItemUsable) data.Item.Value.ItemBase.Value,
+                        (INonFungibleItem)data.Item.Value.ItemBase.Value,
                         data.Price.Value);
                     ResponseSell();
 
@@ -497,7 +505,8 @@ namespace Nekoyume.UI
                 }
 
                 Game.Game.instance.ActionManager.SellCancellation(
-                    shopItem.SellerAvatarAddress.Value, shopItem.ProductId.Value);
+                    shopItem.SellerAvatarAddress.Value,
+                    shopItem.ProductId.Value);
                 ResponseSellCancellation(shopItem);
             }
         }
@@ -540,8 +549,7 @@ namespace Nekoyume.UI
 
         private static bool DimmedFuncForSell(InventoryItem inventoryItem)
         {
-            return inventoryItem.ItemBase.Value.ItemType == ItemType.Costume ||
-                   inventoryItem.ItemBase.Value.ItemType == ItemType.Material;
+            return inventoryItem.ItemBase.Value.ItemType == ItemType.Material;
         }
 
         private static bool EquippedFuncForSell(InventoryItem inventoryItem)
@@ -559,9 +567,8 @@ namespace Nekoyume.UI
 
         private static bool ButtonEnabledFuncForBuy(CountableItem inventoryItem)
         {
-            FungibleAssetValue gold = ReactiveAgentState.Gold.Value;
             return inventoryItem is ShopItem shopItem &&
-                   gold >= shopItem.Price.Value;
+                   States.Instance.GoldBalanceState.Gold >= shopItem.Price.Value;
         }
 
         private static bool ButtonEnabledFuncForSell(CountableItem inventoryItem)
@@ -588,13 +595,12 @@ namespace Nekoyume.UI
             var item = SharedModel.ItemCountAndPricePopup.Value.Item.Value;
             SharedModel.ItemCountAndPricePopup.Value.Item.Value = null;
 
-            if (!(item.ItemBase.Value is ItemUsable itemUsable))
+            if (!(item.ItemBase.Value is INonFungibleItem nonFungibleItem))
             {
                 return;
             }
 
-            LocalLayerModifier.RemoveItem(avatarAddress, itemUsable.ItemId);
-
+            LocalLayerModifier.RemoveItem(avatarAddress, nonFungibleItem.ItemId);
             AudioController.instance.PlaySfx(AudioController.SfxCode.InputItem);
             var format = L10nManager.Localize("NOTIFICATION_SELL_START");
             Notification.Push(MailType.Auction,

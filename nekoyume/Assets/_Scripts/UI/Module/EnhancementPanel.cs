@@ -443,7 +443,7 @@ namespace Nekoyume.UI.Module
         private void OnMaterialCountChanged()
         {
             CostNCG = GetCostNCG();
-            SubscribeNCG(ReactiveAgentState.Gold.Value.MajorUnit);
+            SubscribeNCG(States.Instance.GoldBalanceState.Gold.MajorUnit);
             CostAP = GetCostAP();
             SubscribeActionPoint(ReactiveAvatarState.ActionPoint.Value);
             UpdateSubmittable();
@@ -489,7 +489,7 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        private void UpdateSubmittable()
+        public void UpdateSubmittable()
         {
             submitButton.SetSubmittable(IsSubmittable);
         }

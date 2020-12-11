@@ -67,7 +67,6 @@ namespace Nekoyume.Game
         private BattleResult.Model _battleResultModel;
         private bool _rankingBattle;
         private Coroutine _battleCoroutine;
-        private Coroutine _coExecuteCoroutine = null;
 
         public List<GameObject> ReleaseWhiteList { get; private set; } = new List<GameObject>();
         public SkillController SkillController { get; private set; }
@@ -562,7 +561,7 @@ namespace Nekoyume.Game
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             var avatarState = new AvatarState(
                 (Bencodex.Types.Dictionary) Game.instance.Agent.GetState(avatarAddress));
-            _battleResultModel.actionPoint = avatarState.actionPoint;
+            _battleResultModel.ActionPoint = avatarState.actionPoint;
             _battleResultModel.State = log.result;
             Game.instance.TableSheets.WorldSheet.TryGetValue(log.worldId, out var world);
             _battleResultModel.WorldName = world?.GetLocalizedName();

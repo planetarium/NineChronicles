@@ -73,6 +73,8 @@ namespace Nekoyume.UI
         private Coroutine _constraintsPlayerToUI;
         private Coroutine _disableCpTween;
 
+        public readonly ReactiveProperty<bool> IsTweenEnd = new ReactiveProperty<bool>(true);
+
         #region Override
 
         public override void Initialize()
@@ -146,12 +148,26 @@ namespace Nekoyume.UI
             var currentAvatarState = Game.Game.instance.States.CurrentAvatarState;
             _isShownFromMenu = Find<Menu>().gameObject.activeSelf;
             _isShownFromBattle = Find<Battle>().gameObject.activeSelf;
+            IsTweenEnd.Value = false;
             Show(currentAvatarState, ignoreShowAnimation);
+        }
+
+        protected override void OnTweenComplete()
+        {
+            base.OnTweenComplete();
+            IsTweenEnd.Value = true;
         }
 
         protected override void OnTweenReverseComplete()
         {
             ReturnPlayer();
+            IsTweenEnd.Value = true;
+        }
+
+        public override void Close(bool ignoreCloseAnimation = false)
+        {
+            base.Close(ignoreCloseAnimation);
+            IsTweenEnd.Value = false;
         }
 
         #endregion
@@ -571,22 +587,15 @@ namespace Nekoyume.UI
 
         private void LocalStateItemEquipModify(ItemBase itemBase, bool equip)
         {
-            switch (itemBase.ItemType)
+            if (!(itemBase is INonFungibleItem nonFungibleItem))
             {
-                case ItemType.Costume:
-                    LocalLayerModifier.SetCostumeEquip(
-                        States.Instance.CurrentAvatarState.address,
-                        itemBase.Id,
-                        equip);
-                    break;
-                case ItemType.Equipment:
-                    var equipment = (Equipment) itemBase;
-                    LocalLayerModifier.SetEquipmentEquip(
-                        States.Instance.CurrentAvatarState.address,
-                        equipment.ItemId,
-                        equip);
-                    break;
+                return;
             }
+
+            LocalLayerModifier.SetItemEquip(
+                States.Instance.CurrentAvatarState.address,
+                nonFungibleItem.ItemId,
+                equip);
         }
 
         private bool TryToFindSlotAlreadyEquip(ItemBase item, out EquipmentSlot slot)

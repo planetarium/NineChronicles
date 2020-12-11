@@ -1,3 +1,4 @@
+using System;
 using System.Globalization;
 using System.Linq;
 using Bencodex.Types;
@@ -79,9 +80,18 @@ namespace Nekoyume.UI
         public void Pop(CombinationSlotState state, int slotIndex)
         {
             _slotIndex = slotIndex;
-            var result = (CombinationConsumable.ResultModel) state.Result;
-            var chainState = new CombinationSlotState((Dictionary)Game.Game.instance.Agent.GetState(state.address));
-            var chainResult = (CombinationConsumable.ResultModel) chainState.Result;
+            CombinationConsumable.ResultModel result;
+            CombinationConsumable.ResultModel chainResult;
+            try
+            {
+                result = (CombinationConsumable.ResultModel) state.Result;
+                var chainState = new CombinationSlotState((Dictionary)Game.Game.instance.Agent.GetState(state.address));
+                chainResult = (CombinationConsumable.ResultModel) chainState.Result;
+            }
+            catch (InvalidCastException)
+            {
+                return;
+            }
             var subRecipeEnabled = result.subRecipeId.HasValue;
             materialPanel.gameObject.SetActive(false);
             optionView.gameObject.SetActive(false);
