@@ -414,7 +414,7 @@ namespace Nekoyume.UI
             requiredPointText.color = ready ? Color.white : Color.red;
         }
 
-        private void SubscribeIsEableButton(int point)
+        private void SubscribeIsEnabledButton(int point)
         {
             _buttonEnabled.Value = point >= _requiredCost;
 
