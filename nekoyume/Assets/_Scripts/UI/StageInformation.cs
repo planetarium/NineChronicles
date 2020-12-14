@@ -247,7 +247,7 @@ namespace Nekoyume.UI
 
         public static string GetStageIdString(int stageId)
         {
-            return stageId > 10000000 ? $"Extra {stageId % 10000000}" : stageId.ToString();
+            return stageId > 10000000 ? $"Fire {stageId % 10000000}" : stageId.ToString();
         }
     }
 }
