@@ -19,6 +19,7 @@ using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 using mixpanel;
+using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Elemental;
 using Nekoyume.Model.Mail;
@@ -28,6 +29,10 @@ namespace Nekoyume.UI
 {
     public class MimisbrunnrPreparation : Widget
     {
+        private static readonly Color StartbuttonOriginColor = Color.white;
+        private static readonly Color RequiredPointOriginColor = ColorHelper.HexToColorRGB("FFF3D4");
+        private static readonly Color DimmedColor = ColorHelper.HexToColorRGB("848484");
+
         [SerializeField]
         private Module.Inventory inventory = null;
 
@@ -48,6 +53,9 @@ namespace Nekoyume.UI
 
         [SerializeField]
         private Button startButton = null;
+
+        [SerializeField]
+        private SpriteRenderer[] startButtonImages = null;
 
         [SerializeField]
         private GameObject equipSlotGlow = null;
@@ -94,6 +102,7 @@ namespace Nekoyume.UI
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
 
         private readonly ReactiveProperty<bool> _buttonEnabled = new ReactiveProperty<bool>();
+        private readonly ReactiveProperty<bool> _reddeningActionPoint = new ReactiveProperty<bool>();
 
         private CharacterStats _tempStats;
 
@@ -224,8 +233,9 @@ namespace Nekoyume.UI
                 BottomMenu.ToggleableType.Chat,
                 BottomMenu.ToggleableType.IllustratedBook);
 
-            _buttonEnabled.Subscribe(SubscribeReadyToQuest).AddTo(_disposables);
-            ReactiveAvatarState.ActionPoint.Subscribe(SubscribeActionPoint).AddTo(_disposables);
+            _buttonEnabled.Subscribe(SubscribeReadyToButton).AddTo(_disposables);
+            _reddeningActionPoint.Subscribe(SubscribeReadyToText).AddTo(_disposables);
+            ReactiveAvatarState.ActionPoint.Subscribe(SubscribeIsEnabledButton).AddTo(_disposables);
             _tempStats = _player.Model.Stats.Clone() as CharacterStats;
             inventory.SharedModel.UpdateEquipmentNotification();
             startButton.gameObject.SetActive(true);
@@ -322,6 +332,8 @@ namespace Nekoyume.UI
                     }
                 }
             }
+            _buttonEnabled.Value = equipmentSlots.Where(x => x.Item != null)
+                .All(x => IsExistElementalType(x.Item.ElementalType));
 
             inventory.SharedModel.DimmedFunc.Value = inventoryItem =>
                 inventoryItem.ItemBase.Value.ItemType == ItemType.Costume ||
@@ -382,13 +394,31 @@ namespace Nekoyume.UI
             gameObject.SetActive(false);
         }
 
-        private void SubscribeReadyToQuest(bool ready)
+        private void SubscribeReadyToButton(bool ready)
         {
-            startButton.interactable = ready;
-            requiredPointText.color = ready ? Color.white : Color.red;
+            if (_reddeningActionPoint.Value)
+            {
+                SetButtonState(false);
+            }
+            else
+            {
+                SetButtonState(ready);
+                requiredPointText.color = ready ? RequiredPointOriginColor : DimmedColor;
+            }
+        }
+
+        private void SetButtonState(bool value)
+        {
+            startButton.interactable = value;
+
+            foreach (var image in startButtonImages)
+            {
+                image.color = value ? StartbuttonOriginColor : DimmedColor;
+            }
+
             foreach (var particle in particles)
             {
-                if (ready)
+                if (value)
                 {
                     particle.Play();
                 }
@@ -399,9 +429,22 @@ namespace Nekoyume.UI
             }
         }
 
-        private void SubscribeActionPoint(int point)
+        private void SubscribeReadyToText(bool ready)
+        {
+            requiredPointText.color = ready ? Color.red : Color.white;
+        }
+
+        private void SubscribeIsEnabledButton(int point)
         {
             _buttonEnabled.Value = point >= _requiredCost;
+
+            if(!_reddeningActionPoint.Value && equipmentSlots.Where(x => x.Item != null)
+                .Any(x => !IsExistElementalType(x.Item.ElementalType)))
+            {
+                _buttonEnabled.Value = false;
+            }
+
+            _reddeningActionPoint.Value = point < _requiredCost;
         }
 
         private void SubscribeStage(int stageId)
@@ -570,6 +613,8 @@ namespace Nekoyume.UI
                 : AudioController.SfxCode.Equipment);
             inventory.SharedModel.UpdateEquipmentNotification();
             Find<BottomMenu>().UpdateInventoryNotification();
+            _buttonEnabled.Value = equipmentSlots.Where(x => x.Item != null)
+                .All(x => IsExistElementalType(x.Item.ElementalType));
         }
 
         private bool TryToFindSlotAlreadyEquip(ItemBase item, out EquipmentSlot slot)
