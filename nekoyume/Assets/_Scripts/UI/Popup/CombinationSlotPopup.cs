@@ -80,10 +80,11 @@ namespace Nekoyume.UI
         public void Pop(CombinationSlotState state, int slotIndex)
         {
             _slotIndex = slotIndex;
-            var result = (CombinationConsumable.ResultModel) state.Result;
+            CombinationConsumable.ResultModel result;
             CombinationConsumable.ResultModel chainResult;
             try
             {
+                result = (CombinationConsumable.ResultModel) state.Result;
                 var chainState = new CombinationSlotState((Dictionary)Game.Game.instance.Agent.GetState(state.address));
                 chainResult = (CombinationConsumable.ResultModel) chainState.Result;
             }
@@ -181,10 +182,10 @@ namespace Nekoyume.UI
 
         private void RapidCombination()
         {
-            LocalStateModifier.RemoveItem(States.Instance.CurrentAvatarState.address, _row.ItemId,
+            LocalLayerModifier.RemoveItem(States.Instance.CurrentAvatarState.address, _row.ItemId,
                 _cost);
             var blockIndex = Game.Game.instance.Agent.BlockIndex;
-            LocalStateModifier.UnlockCombinationSlot(_slotIndex, blockIndex);
+            LocalLayerModifier.UnlockCombinationSlot(_slotIndex, blockIndex);
             var slotAddress = States.Instance.CurrentAvatarState.address.Derive(
                 string.Format(
                     CultureInfo.InvariantCulture,
@@ -194,7 +195,7 @@ namespace Nekoyume.UI
             );
             var slotState = States.Instance.CombinationSlotStates[slotAddress];
             var result = (CombinationConsumable.ResultModel) slotState.Result;
-            LocalStateModifier.AddNewResultAttachmentMail(
+            LocalLayerModifier.AddNewResultAttachmentMail(
                 States.Instance.CurrentAvatarState.address, result.id, blockIndex);
             var format = L10nManager.Localize("NOTIFICATION_COMBINATION_COMPLETE");
             Notification.Push(

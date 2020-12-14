@@ -123,6 +123,7 @@ namespace Nekoyume.UI.Module
             mailButton.SetWidgetType<Mail>();
             questButton.SetWidgetType<Quest>();
             characterButton.SetWidgetType<AvatarInfo>();
+            Find<AvatarInfo>().IsTweenEnd.Subscribe(x => characterButton.SetInteractable(x, true));
             settingsButton.SetWidgetType<Settings>();
             chatButton.SetWidgetType<Confirm>();
             combinationButton.SetWidgetType<CombinationSlots>();

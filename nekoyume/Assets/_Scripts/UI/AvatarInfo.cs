@@ -73,6 +73,8 @@ namespace Nekoyume.UI
         private Coroutine _constraintsPlayerToUI;
         private Coroutine _disableCpTween;
 
+        public readonly ReactiveProperty<bool> IsTweenEnd = new ReactiveProperty<bool>(true);
+
         #region Override
 
         public override void Initialize()
@@ -146,12 +148,26 @@ namespace Nekoyume.UI
             var currentAvatarState = Game.Game.instance.States.CurrentAvatarState;
             _isShownFromMenu = Find<Menu>().gameObject.activeSelf;
             _isShownFromBattle = Find<Battle>().gameObject.activeSelf;
+            IsTweenEnd.Value = false;
             Show(currentAvatarState, ignoreShowAnimation);
+        }
+
+        protected override void OnTweenComplete()
+        {
+            base.OnTweenComplete();
+            IsTweenEnd.Value = true;
         }
 
         protected override void OnTweenReverseComplete()
         {
             ReturnPlayer();
+            IsTweenEnd.Value = true;
+        }
+
+        public override void Close(bool ignoreCloseAnimation = false)
+        {
+            base.Close(ignoreCloseAnimation);
+            IsTweenEnd.Value = false;
         }
 
         #endregion
@@ -576,7 +592,7 @@ namespace Nekoyume.UI
                 return;
             }
 
-            LocalStateModifier.SetItemEquip(
+            LocalLayerModifier.SetItemEquip(
                 States.Instance.CurrentAvatarState.address,
                 nonFungibleItem.ItemId,
                 equip);
@@ -720,9 +736,9 @@ namespace Nekoyume.UI
                 Notification.Push(Nekoyume.Model.Mail.MailType.System,
                     L10nManager.Localize("UI_CHARGE_AP"));
                 Game.Game.instance.ActionManager.ChargeActionPoint();
-                LocalStateModifier.RemoveItem(States.Instance.CurrentAvatarState.address,
+                LocalLayerModifier.RemoveItem(States.Instance.CurrentAvatarState.address,
                     material.ItemId, 1);
-                LocalStateModifier.ModifyAvatarActionPoint(
+                LocalLayerModifier.ModifyAvatarActionPoint(
                     States.Instance.CurrentAvatarState.address,
                     States.Instance.GameConfigState.ActionPointMax);
             }
