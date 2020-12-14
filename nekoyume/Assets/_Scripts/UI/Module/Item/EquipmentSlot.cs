@@ -230,6 +230,7 @@ namespace Nekoyume.UI.Module
 
         public void SetDim(bool isDim)
         {
+            gradeImage.color = isDim ? DimmedColor : OriginColor;
             enhancementText.color = isDim ? DimmedColor : OriginColor;
             itemImage.color = isDim ? DimmedColor : OriginColor;
         }
