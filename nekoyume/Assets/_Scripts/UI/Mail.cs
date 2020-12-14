@@ -173,20 +173,24 @@ namespace Nekoyume.UI
             }
 
             scroll.UpdateData(list, true);
-            emptyImage.SetActive(list.Count() == 0);
-            UpdateTabs();
+            emptyImage.SetActive(list.Any());
+            UpdateTabs(blockIndex);
         }
 
-        public void UpdateTabs()
+        public void UpdateTabs(long? blockIndex = null)
         {
-            var blockIndex = Game.Game.instance.Agent.BlockIndex;
+            if (blockIndex is null)
+            {
+                blockIndex = Game.Game.instance.Agent.BlockIndex;
+            }
+
             // 전체 탭
             tabButtons[0].hasNotificationImage.enabled = MailBox
                 .Any(mail => mail.New && mail.requiredBlockIndex <= blockIndex);
 
             for (var i = 1; i < tabButtons.Length; ++i)
             {
-                var list = GetAvailableMailList(blockIndex, (MailTabState) i);
+                var list = GetAvailableMailList(blockIndex.Value, (MailTabState) i);
                 var recent = list?.FirstOrDefault();
                 tabButtons[i].hasNotificationImage.enabled = recent is null ?
                     false : recent.New;
