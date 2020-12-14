@@ -24,6 +24,7 @@ namespace Nekoyume.Manager
             public const string ClickMainShop = "click_main_shop";
             public const string ClickMainCombination = "click_main_combination";
             public const string ClickMainBattle = "click_main_battle";
+            public const string ClickHardBattle = "click_hard_battle";
             public const string ClickBattleBattleEntrance = "click_battle_battle_entrance";
             public const string ClickBattleContinuousBattle = "click_battle_continuous_battle";
             public const string ClickBattleEquipment = "click_battle_equipment";

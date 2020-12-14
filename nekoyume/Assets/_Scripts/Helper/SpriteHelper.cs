@@ -137,6 +137,11 @@ namespace Nekoyume.Helper
                     result = Resources.Load<Sprite>(
                         string.Format(MenuIllustratePathFormat, "UI_bg_shop"));
                     break;
+
+                case nameof(MimisbrunnrPreparation):
+                    result = Resources.Load<Sprite>(
+                        string.Format(MenuIllustratePathFormat, "UI_bg_mimisbrunnr"));
+                    break;
             }
 
             return result ? result : Resources.Load<Sprite>(MenuIllustrateDefaultPath);

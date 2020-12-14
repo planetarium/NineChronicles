@@ -122,6 +122,8 @@ namespace Nekoyume.Game
 
         public CostumeStatSheet CostumeStatSheet { get; private set; }
 
+        public MimisbrunnrSheet MimisbrunnrSheet { get; private set; }
+
         public void ItemSheetInitialize()
         {
             ItemSheet = new ItemSheet();
