@@ -259,6 +259,11 @@ namespace Nekoyume.Game
                 Widget.Find<ArenaBattleLoadingScreen>().Close();
                 needToBackToMain = true;
             }
+            else if (Widget.Find<MimisbrunnrPreparation>().IsActive())
+            {
+                Widget.Find<MimisbrunnrPreparation>().Close(true);
+                needToBackToMain = true;
+            }
 
             if (!needToBackToMain)
             {
