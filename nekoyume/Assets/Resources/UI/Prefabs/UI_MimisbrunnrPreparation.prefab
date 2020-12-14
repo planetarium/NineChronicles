@@ -1369,6 +1369,10 @@ MonoBehaviour:
   equipmentTitleText: {fileID: 9069013289754000527}
   equipmentSlots: {fileID: 7883566207052153685}
   startButton: {fileID: 1779052520742067736}
+  startButtonImages:
+  - {fileID: 4332338032039602764}
+  - {fileID: 4398706455694271661}
+  - {fileID: 8453130264637745303}
   equipSlotGlow: {fileID: 6387715629849393821}
   requiredPointText: {fileID: 9045627835537736917}
   particles:
@@ -6373,6 +6377,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: UI_start_01
+      objectReference: {fileID: 0}
+    - target: {fileID: 4769718830276478023, guid: c22db27a2a4b5b647a11215b31b3390a,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 411883241907555437, guid: c22db27a2a4b5b647a11215b31b3390a,
         type: 3}
