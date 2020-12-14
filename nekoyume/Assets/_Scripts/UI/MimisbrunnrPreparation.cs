@@ -235,7 +235,7 @@ namespace Nekoyume.UI
 
             _buttonEnabled.Subscribe(SubscribeReadyToButton).AddTo(_disposables);
             _reddeningText.Subscribe(SubscribeReadyToText).AddTo(_disposables);
-            ReactiveAvatarState.ActionPoint.Subscribe(SubscribeIsEableButton).AddTo(_disposables);
+            ReactiveAvatarState.ActionPoint.Subscribe(SubscribeIsEnabledButton).AddTo(_disposables);
             _tempStats = _player.Model.Stats.Clone() as CharacterStats;
             inventory.SharedModel.UpdateEquipmentNotification();
             startButton.gameObject.SetActive(true);
