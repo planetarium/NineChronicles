@@ -312,21 +312,14 @@ namespace Nekoyume.UI
             {
                 if (slot.Item != null)
                 {
-                    if (slot.Item.ItemType == ItemType.Equipment)
-                    {
-                        slot.SetDim(!IsExistElementalType(slot.Item.ElementalType));
-                    }
-                    else
-                    {
-                        slot.SetDim(false);
-                    }
+                    slot.SetDim(!IsExistElementalType(slot.Item.ElementalType));
                 }
             }
 
             inventory.SharedModel.DimmedFunc.Value = inventoryItem =>
                 inventoryItem.ItemBase.Value.ItemType == ItemType.Costume ||
                 inventoryItem.ItemBase.Value.ItemType == ItemType.Material ||
-                (inventoryItem.ItemBase.Value.ItemType == ItemType.Equipment && !IsExistElementalType(inventoryItem.ItemBase.Value.ElementalType));
+                !IsExistElementalType(inventoryItem.ItemBase.Value.ElementalType);
 
             inventory.SharedModel.EquippedEnabledFunc.SetValueAndForceNotify(inventoryItem =>
             {
@@ -489,16 +482,7 @@ namespace Nekoyume.UI
 
             inventoryItem.EquippedEnabled.Value = true;
             slot.Set(itemBase, ShowTooltip, Unequip);
-
-            if (slot.Item.ItemType == ItemType.Equipment)
-            {
-                slot.SetDim(!IsExistElementalType(slot.Item.ElementalType));
-            }
-            else
-            {
-                slot.SetDim(false);
-            }
-
+            slot.SetDim(!IsExistElementalType(slot.Item.ElementalType));
             LocalStateItemEquipModify(slot.Item, true);
             HideGlowEquipSlot();
             PostEquipOrUnequip(slot);
