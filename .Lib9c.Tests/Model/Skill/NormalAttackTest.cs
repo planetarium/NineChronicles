@@ -45,7 +45,7 @@ namespace Lib9c.Tests.Model.Skill
             Assert.NotNull(worldRow);
 
             var simulator = new StageSimulator(
-                new ItemEnhancementTest.TestRandom(),
+                new TestRandom(),
                 avatarState,
                 null,
                 worldRow.Id,

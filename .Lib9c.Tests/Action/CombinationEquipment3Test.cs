@@ -41,7 +41,7 @@ namespace Lib9c.Tests.Action
                 )
             );
             var sheets = TableSheetsImporter.ImportSheets();
-            _random = new ItemEnhancementTest.TestRandom();
+            _random = new TestRandom();
             _tableSheets = new TableSheets(sheets);
             var agentState = new AgentState(_agentAddress);
             agentState.avatarAddresses[0] = _avatarAddress;
@@ -198,7 +198,7 @@ namespace Lib9c.Tests.Action
             {
                 PreviousStates = _initialState,
                 Signer = _agentAddress,
-                Random = new ItemEnhancementTest.TestRandom(),
+                Random = new TestRandom(),
             }));
         }
 

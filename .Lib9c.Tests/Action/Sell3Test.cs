@@ -131,7 +131,7 @@
                     PreviousStates = previousStates,
                     Rehearsal = false,
                     Signer = _agentAddress,
-                    Random = new ItemEnhancementTest.TestRandom(),
+                    Random = new TestRandom(),
                 });
 
                 productCount++;

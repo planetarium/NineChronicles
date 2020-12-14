@@ -48,7 +48,7 @@ namespace Lib9c.Tests.Action
             var apStone =
                 ItemFactory.CreateItem(
                     _tableSheets.MaterialItemSheet.Values.First(r => r.ItemSubType == ItemSubType.ApStone),
-                    new ItemEnhancementTest.TestRandom());
+                    new TestRandom());
             avatarState.inventory.AddItem(apStone);
 
             Assert.Equal(0, avatarState.actionPoint);
@@ -72,7 +72,7 @@ namespace Lib9c.Tests.Action
             {
                 PreviousStates = state,
                 Signer = agentAddress,
-                Random = new ItemEnhancementTest.TestRandom(),
+                Random = new TestRandom(),
                 Rehearsal = false,
             });
 

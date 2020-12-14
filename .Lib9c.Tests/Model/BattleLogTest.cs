@@ -18,7 +18,7 @@ namespace Lib9c.Tests.Model
         public BattleLogTest()
         {
             _tableSheets = new TableSheets(TableSheetsImporter.ImportSheets());
-            _random = new ItemEnhancementTest.TestRandom();
+            _random = new TestRandom();
         }
 
         [Fact]

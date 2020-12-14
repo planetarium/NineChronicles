@@ -95,7 +95,7 @@ namespace Lib9c.Tests.Action
                 .First(r => r.ItemSubType == ItemSubType.FullCostume)
                 .Id;
             var costume =
-                ItemFactory.CreateItem(_tableSheets.ItemSheet[costumeId], new ItemEnhancementTest.TestRandom());
+                ItemFactory.CreateItem(_tableSheets.ItemSheet[costumeId], new TestRandom());
             previousAvatarState.inventory.AddItem(costume);
 
             var state = _initialState.SetState(_avatarAddress, previousAvatarState.Serialize());
@@ -118,7 +118,7 @@ namespace Lib9c.Tests.Action
             {
                 PreviousStates = state,
                 Signer = _agentAddress,
-                Random = new ItemEnhancementTest.TestRandom(),
+                Random = new TestRandom(),
                 Rehearsal = false,
             });
 
@@ -163,7 +163,7 @@ namespace Lib9c.Tests.Action
                 {
                     PreviousStates = _initialState,
                     Signer = _agentAddress,
-                    Random = new ItemEnhancementTest.TestRandom(),
+                    Random = new TestRandom(),
                     Rehearsal = false,
                 })
             );
@@ -191,7 +191,7 @@ namespace Lib9c.Tests.Action
             {
                 PreviousStates = new State(),
                 Signer = _agentAddress,
-                Random = new ItemEnhancementTest.TestRandom(),
+                Random = new TestRandom(),
             }));
 
             Assert.Null(action.Result);
@@ -220,7 +220,7 @@ namespace Lib9c.Tests.Action
             {
                 PreviousStates = _initialState,
                 Signer = _agentAddress,
-                Random = new ItemEnhancementTest.TestRandom(),
+                Random = new TestRandom(),
             }));
 
             Assert.Null(action.Result);
@@ -251,7 +251,7 @@ namespace Lib9c.Tests.Action
             {
                 PreviousStates = _initialState,
                 Signer = _agentAddress,
-                Random = new ItemEnhancementTest.TestRandom(),
+                Random = new TestRandom(),
             }));
 
             Assert.Null(action.Result);
@@ -283,7 +283,7 @@ namespace Lib9c.Tests.Action
             {
                 PreviousStates = state,
                 Signer = _agentAddress,
-                Random = new ItemEnhancementTest.TestRandom(),
+                Random = new TestRandom(),
             }));
 
             Assert.Null(action.Result);
@@ -323,7 +323,7 @@ namespace Lib9c.Tests.Action
             {
                 PreviousStates = state,
                 Signer = _agentAddress,
-                Random = new ItemEnhancementTest.TestRandom(),
+                Random = new TestRandom(),
             }));
 
             Assert.Null(action.Result);
@@ -354,7 +354,7 @@ namespace Lib9c.Tests.Action
             {
                 PreviousStates = _initialState,
                 Signer = _agentAddress,
-                Random = new ItemEnhancementTest.TestRandom(),
+                Random = new TestRandom(),
             }));
 
             Assert.Null(action.Result);
@@ -400,7 +400,7 @@ namespace Lib9c.Tests.Action
             {
                 PreviousStates = state,
                 Signer = _agentAddress,
-                Random = new ItemEnhancementTest.TestRandom(),
+                Random = new TestRandom(),
             }));
 
             Assert.Null(action.Result);
@@ -432,7 +432,7 @@ namespace Lib9c.Tests.Action
             {
                 PreviousStates = _initialState,
                 Signer = _agentAddress,
-                Random = new ItemEnhancementTest.TestRandom(),
+                Random = new TestRandom(),
             }));
 
             Assert.Null(action.Result);
@@ -477,7 +477,7 @@ namespace Lib9c.Tests.Action
             {
                 PreviousStates = state,
                 Signer = _agentAddress,
-                Random = new ItemEnhancementTest.TestRandom(),
+                Random = new TestRandom(),
             }));
 
             Assert.Null(action.Result);
@@ -523,7 +523,7 @@ namespace Lib9c.Tests.Action
             {
                 PreviousStates = state,
                 Signer = _agentAddress,
-                Random = new ItemEnhancementTest.TestRandom(),
+                Random = new TestRandom(),
             }));
 
             Assert.Null(action.Result);
@@ -560,7 +560,7 @@ namespace Lib9c.Tests.Action
             {
                 PreviousStates = state,
                 Signer = _agentAddress,
-                Random = new ItemEnhancementTest.TestRandom(),
+                Random = new TestRandom(),
             }));
 
             Assert.Null(action.Result);
@@ -623,7 +623,7 @@ namespace Lib9c.Tests.Action
             {
                 PreviousStates = _initialState,
                 Signer = _agentAddress,
-                Random = new ItemEnhancementTest.TestRandom(),
+                Random = new TestRandom(),
                 Rehearsal = false,
             });
 

@@ -93,14 +93,14 @@ namespace Lib9c.Tests.Action
 
             var row = _tableSheets.CostumeStatSheet.Values.First(r => r.StatType == StatType.ATK);
             var costume = (Costume)ItemFactory.CreateItem(
-                _tableSheets.ItemSheet[row.CostumeId], new ItemEnhancementTest.TestRandom());
+                _tableSheets.ItemSheet[row.CostumeId], new TestRandom());
             costume.equipped = true;
             var avatarState = _initialState.GetAvatarState(_avatar1Address);
             avatarState.inventory.AddItem(costume);
 
             var row2 = _tableSheets.CostumeStatSheet.Values.First(r => r.StatType == StatType.DEF);
             var enemyCostume = (Costume)ItemFactory.CreateItem(
-                _tableSheets.ItemSheet[row2.CostumeId], new ItemEnhancementTest.TestRandom());
+                _tableSheets.ItemSheet[row2.CostumeId], new TestRandom());
             enemyCostume.equipped = true;
             var enemyAvatarState = _initialState.GetAvatarState(_avatar2Address);
             enemyAvatarState.inventory.AddItem(enemyCostume);
@@ -125,7 +125,7 @@ namespace Lib9c.Tests.Action
             {
                 PreviousStates = previousState,
                 Signer = _agent1Address,
-                Random = new ItemEnhancementTest.TestRandom(),
+                Random = new TestRandom(),
                 Rehearsal = false,
             });
 
@@ -159,7 +159,7 @@ namespace Lib9c.Tests.Action
                 {
                     PreviousStates = _initialState,
                     Signer = _agent1Address,
-                    Random = new ItemEnhancementTest.TestRandom(),
+                    Random = new TestRandom(),
                     Rehearsal = false,
                 });
             });
@@ -204,7 +204,7 @@ namespace Lib9c.Tests.Action
                 {
                     PreviousStates = _initialState,
                     Signer = signer,
-                    Random = new ItemEnhancementTest.TestRandom(),
+                    Random = new TestRandom(),
                     Rehearsal = false,
                 });
             });
@@ -239,7 +239,7 @@ namespace Lib9c.Tests.Action
                 {
                     PreviousStates = previousState,
                     Signer = _agent1Address,
-                    Random = new ItemEnhancementTest.TestRandom(),
+                    Random = new TestRandom(),
                     Rehearsal = false,
                 });
             });
@@ -271,7 +271,7 @@ namespace Lib9c.Tests.Action
                 {
                     PreviousStates = previousState,
                     Signer = _agent1Address,
-                    Random = new ItemEnhancementTest.TestRandom(),
+                    Random = new TestRandom(),
                     Rehearsal = false,
                 });
             });
@@ -317,7 +317,7 @@ namespace Lib9c.Tests.Action
                 {
                     PreviousStates = previousState,
                     Signer = _agent1Address,
-                    Random = new ItemEnhancementTest.TestRandom(),
+                    Random = new TestRandom(),
                     Rehearsal = false,
                 });
             });
@@ -358,7 +358,7 @@ namespace Lib9c.Tests.Action
                 {
                     PreviousStates = previousState,
                     Signer = _agent1Address,
-                    Random = new ItemEnhancementTest.TestRandom(),
+                    Random = new TestRandom(),
                     Rehearsal = false,
                 });
             });
@@ -380,7 +380,7 @@ namespace Lib9c.Tests.Action
             {
                 PreviousStates = _initialState,
                 Signer = _agent1Address,
-                Random = new ItemEnhancementTest.TestRandom(),
+                Random = new TestRandom(),
                 Rehearsal = false,
             });
 

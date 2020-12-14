@@ -116,7 +116,7 @@ namespace Lib9c.Tests.Model
 
         private static WeightedSelector<int> GetSelector()
         {
-            var selector = new WeightedSelector<int>(new ItemEnhancementTest.TestRandom());
+            var selector = new WeightedSelector<int>(new TestRandom());
             selector.Add(1, 0.48m);
             selector.Add(2, 0.38m);
             selector.Add(3, 0.09m);

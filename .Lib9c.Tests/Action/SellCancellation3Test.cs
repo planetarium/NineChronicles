@@ -129,7 +129,7 @@
                     {
                         BlockIndex = 0,
                         PreviousStates = previousStates,
-                        Random = new ItemEnhancementTest.TestRandom(),
+                        Random = new TestRandom(),
                         Rehearsal = false,
                         Signer = _agentAddress,
                     });
@@ -159,7 +159,7 @@
                     {
                         BlockIndex = 0,
                         PreviousStates = previousStates,
-                        Random = new ItemEnhancementTest.TestRandom(),
+                        Random = new TestRandom(),
                         Rehearsal = false,
                         Signer = _agentAddress,
                     });

@@ -224,9 +224,18 @@ namespace Nekoyume.Model
             TryGetWorld(worldId, out var world)
             && world.IsUnlocked;
 
-        public bool IsStageCleared(int stageId) =>
-            TryGetLastClearedStageId(out var clearedStageId)
-            && stageId <= clearedStageId;
+        public bool IsStageCleared(int stageId)
+        {
+            int clearedStageId;
+            if (stageId >= GameConfig.MimisbrunnrStartStageId
+                ? TryGetLastClearedMimisbrunnrStageId(out clearedStageId)
+                : TryGetLastClearedStageId(out clearedStageId))
+            {
+                return stageId <= clearedStageId;
+            }
+
+            return false;
+        }
 
         public bool TryAddWorld(WorldSheet.Row worldRow, out World world)
         {
@@ -327,14 +336,33 @@ namespace Nekoyume.Model
         }
 
         /// <summary>
-        /// Get stage id of the most recent cleared.
+        /// Get stage id of the most recent cleared.(ignore mimisbrunnr)
         /// </summary>
         /// <param name="stageId"></param>
         /// <returns></returns>
         public bool TryGetLastClearedStageId(out int stageId)
         {
+            var clearedStages = _worlds.Values
+                .Where(world => world.Id < GameConfig.MimisbrunnrWorldId &&
+                                world.IsStageCleared)
+                .ToList();
+
+            if (clearedStages.Any())
+            {
+                stageId = clearedStages.Max(world => world.StageClearedId);
+                return true;
+            }
+            
             stageId = default;
-            var clearedStages = _worlds.Values.Where(world => world.IsStageCleared);
+            return false;
+        }
+
+        public bool TryGetLastClearedMimisbrunnrStageId(out int stageId)
+        {
+            var clearedStages = _worlds.Values
+                .Where(world => world.Id == GameConfig.MimisbrunnrWorldId &&
+                                world.IsStageCleared)
+                .ToList();
 
             if (clearedStages.Any())
             {
@@ -342,6 +370,7 @@ namespace Nekoyume.Model
                 return true;
             }
 
+            stageId = default;
             return false;
         }
 
@@ -406,6 +435,40 @@ namespace Nekoyume.Model
             }
         }
 
+        public void AddAndUnlockMimisbrunnrWorld(
+            WorldSheet.Row worldRow,
+            long unlockedAt,
+            WorldSheet worldSheet,
+            WorldUnlockSheet worldUnlockSheet)
+        {
+            var succeed = false;
+            var worldId = worldRow.Id;
+            if (worldId == GameConfig.MimisbrunnrWorldId)
+            {
+                var unlockRow = worldUnlockSheet.OrderedList.FirstOrDefault(row => row.WorldIdToUnlock == worldId);
+                if (!(unlockRow is null) &&
+                    IsStageCleared(unlockRow.StageId))
+                {
+                    succeed = true;
+                }
+            }
+            else if (IsStageCleared(worldRow.StageBegin - 1))
+            {
+                succeed = true;
+            }
+
+            if (succeed)
+            {
+                var world = new World(worldRow);
+                _worlds.Add(worldId, world);
+                UnlockWorld(worldId, unlockedAt, worldSheet);
+            }
+            else
+            {
+                throw new FailedAddWorldException($"Failed to add {worldId} world to WorldInformation.");
+            }
+        }
+
         /// <summary>
         /// Unlock a specific world.
         /// </summary>
@@ -413,7 +476,7 @@ namespace Nekoyume.Model
         /// <param name="unlockedAt"></param>
         /// <param name="worldSheet"></param>
         /// <exception cref="FailedToUnlockWorldException"></exception>
-        private void UnlockWorld(int worldId, long unlockedAt, WorldSheet worldSheet)
+        public void UnlockWorld(int worldId, long unlockedAt, WorldSheet worldSheet)
         {
             World world;
             if (_worlds.ContainsKey(worldId))
