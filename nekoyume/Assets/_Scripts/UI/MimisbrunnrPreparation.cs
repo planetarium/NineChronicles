@@ -102,7 +102,7 @@ namespace Nekoyume.UI
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
 
         private readonly ReactiveProperty<bool> _buttonEnabled = new ReactiveProperty<bool>();
-        private readonly ReactiveProperty<bool> _reddeningText = new ReactiveProperty<bool>(true);
+        private readonly ReactiveProperty<bool> _reddeningActionPoint = new ReactiveProperty<bool>();
 
         private CharacterStats _tempStats;
 
@@ -234,7 +234,7 @@ namespace Nekoyume.UI
                 BottomMenu.ToggleableType.IllustratedBook);
 
             _buttonEnabled.Subscribe(SubscribeReadyToButton).AddTo(_disposables);
-            _reddeningText.Subscribe(SubscribeReadyToText).AddTo(_disposables);
+            _reddeningActionPoint.Subscribe(SubscribeReadyToText).AddTo(_disposables);
             ReactiveAvatarState.ActionPoint.Subscribe(SubscribeIsEnabledButton).AddTo(_disposables);
             _tempStats = _player.Model.Stats.Clone() as CharacterStats;
             inventory.SharedModel.UpdateEquipmentNotification();
@@ -389,16 +389,29 @@ namespace Nekoyume.UI
 
         private void SubscribeReadyToButton(bool ready)
         {
+            if (_reddeningActionPoint.Value)
+            {
+                SetButtonState(false);
+            }
+            else
+            {
+                SetButtonState(ready);
+                requiredPointText.color = ready ? RequiredPointOriginColor : DimmedColor;
+            }
+        }
+
+        private void SetButtonState(bool value)
+        {
+            startButton.interactable = value;
+
             foreach (var image in startButtonImages)
             {
-                image.color = ready ? StartbuttonOriginColor : DimmedColor;
+                image.color = value ? StartbuttonOriginColor : DimmedColor;
             }
-            requiredPointText.color = ready ? RequiredPointOriginColor : DimmedColor;
 
-            startButton.interactable = ready;
             foreach (var particle in particles)
             {
-                if (ready)
+                if (value)
                 {
                     particle.Play();
                 }
@@ -411,20 +424,20 @@ namespace Nekoyume.UI
 
         private void SubscribeReadyToText(bool ready)
         {
-            requiredPointText.color = ready ? Color.white : Color.red;
+            requiredPointText.color = ready ? Color.red : Color.white;
         }
 
         private void SubscribeIsEnabledButton(int point)
         {
             _buttonEnabled.Value = point >= _requiredCost;
 
-            if(equipmentSlots.Where(x => x.Item != null)
+            if(!_reddeningActionPoint.Value && equipmentSlots.Where(x => x.Item != null)
                 .Any(x => !IsExistElementalType(x.Item.ElementalType)))
             {
                 _buttonEnabled.Value = false;
             }
 
-            _reddeningText.Value = point >= _requiredCost;
+            _reddeningActionPoint.Value = point < _requiredCost;
         }
 
         private void SubscribeStage(int stageId)
