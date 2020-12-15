@@ -526,7 +526,7 @@
         }
 
         [Fact]
-        public void ExecuteInvalidEquipmentException()
+        public void ExecuteEquippableItemValidation()
         {
             var avatarState = _initialState.GetAvatarState(_avatarAddress);
             avatarState.worldInformation = new WorldInformation(
@@ -536,7 +536,7 @@
 
             var costumeId = _tableSheets
                 .CostumeItemSheet
-                .Values
+                .OrderedList
                 .First(r => r.ItemSubType == ItemSubType.FullCostume)
                 .Id;
             var costume =
@@ -544,9 +544,10 @@
             avatarState.inventory.AddItem(costume);
 
             var equipmentRow =
-                _tableSheets.EquipmentItemSheet.Values.First(x => x.ElementalType == ElementalType.Fire);
+                _tableSheets.EquipmentItemSheet.OrderedList.First(x => x.ElementalType == ElementalType.Fire);
             var equipment = ItemFactory.CreateItemUsable(equipmentRow, default, 0);
-            var nextAvatarState = _initialState.SetState(_avatarAddress, avatarState.Serialize());
+            avatarState.inventory.AddItem(equipment);
+            var nextState = _initialState.SetState(_avatarAddress, avatarState.Serialize());
 
             var action = new MimisbrunnrBattle()
             {
@@ -560,14 +561,22 @@
                 RankingMapAddress = _rankingMapAddress,
             };
 
-            Assert.Throws<InvalidEquipmentException>(() =>
+            Assert.Null(action.Result);
+
+            action.Execute(new ActionContext
             {
-                action.Execute(new ActionContext
-                {
-                    PreviousStates = nextAvatarState,
-                    Signer = _agentAddress,
-                });
+                PreviousStates = nextState,
+                Signer = _agentAddress,
+                Rehearsal = false,
+                Random = new TestRandom(),
             });
+
+            var spawnPlayer = action.Result.FirstOrDefault(e => e is SpawnPlayer);
+            Assert.NotNull(spawnPlayer);
+            Assert.True(spawnPlayer.Character is Player p);
+            var player = (Player)spawnPlayer.Character;
+            Assert.Equal(player.Costumes.First().ItemId, ((Costume)costume).ItemId);
+            Assert.Equal(player.Equipments.First().ItemId, equipment.ItemId);
         }
     }
 }
