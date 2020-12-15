@@ -120,6 +120,9 @@ namespace Nekoyume.UI
                 case nameof(Shop):
                     menuText.text = L10nManager.Localize("UI_SHOP");
                     break;
+                case nameof(MimisbrunnrPreparation):
+                    menuText.text = L10nManager.Localize("UI_MIMISBRUNNR");
+                    break;
             }
 
             menuContainer.SetActive(true);

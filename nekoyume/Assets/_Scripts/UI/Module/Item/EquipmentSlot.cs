@@ -1,4 +1,5 @@
 using System;
+using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.UI.AnimatedGraphics;
@@ -17,6 +18,9 @@ namespace Nekoyume.UI.Module
     [RequireComponent(typeof(RectTransform))]
     public class EquipmentSlot : MonoBehaviour
     {
+        private static readonly Color OriginColor = Color.white;
+        private static readonly Color DimmedColor = ColorHelper.HexToColorRGB("848484");
+
         [SerializeField]
         private Image gradeImage = null;
 
@@ -222,6 +226,13 @@ namespace Nekoyume.UI.Module
             {
                 Unlock();
             }
+        }
+
+        public void SetDim(bool isDim)
+        {
+            gradeImage.color = isDim ? DimmedColor : OriginColor;
+            enhancementText.color = isDim ? DimmedColor : OriginColor;
+            itemImage.color = isDim ? DimmedColor : OriginColor;
         }
 
         public void Clear()

@@ -168,7 +168,7 @@ namespace Nekoyume.UI
             canvasGroup.alpha = 1f;
             SharedModel = model;
 
-            worldStageId.text = $"{SharedModel.WorldName} {SharedModel.StageID}";
+            worldStageId.text = $"{SharedModel.WorldName} {StageInformation.GetStageIdString(SharedModel.StageID)}";
             actionPoint.SetActionPoint(model.ActionPoint);
 
             foreach (var reward in rewardsArea.rewards)
@@ -452,6 +452,24 @@ namespace Nekoyume.UI
         }
 
         private IEnumerator CoGoToNextStageClose(ActionBase.ActionEvaluation<HackAndSlash3> eval)
+        {
+            if (Find<Menu>().IsActive())
+            {
+                yield break;
+            }
+
+            yield return StartCoroutine(Find<StageLoadingScreen>().CoClose());
+            yield return StartCoroutine(CoFadeOut());
+            Game.Event.OnStageStart.Invoke(eval.Action.Result);
+            Close();
+        }
+
+        public void NextMimisbrunnrStage(ActionBase.ActionEvaluation<MimisbrunnrBattle> eval)
+        {
+            Debug.Log("NextStage From ResponseHackAndSlash");
+            StartCoroutine(CoGoToNextMimisbrunnrStageClose(eval));
+        }
+        private IEnumerator CoGoToNextMimisbrunnrStageClose(ActionBase.ActionEvaluation<MimisbrunnrBattle> eval)
         {
             if (Find<Menu>().IsActive())
             {

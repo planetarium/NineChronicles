@@ -91,6 +91,52 @@ namespace Nekoyume.BlockChain
                 });
         }
 
+        public IObservable<ActionBase.ActionEvaluation<MimisbrunnrBattle>> MimisbrunnrBattle(
+            List<Costume> costumes,
+            List<Equipment> equipments,
+            List<Consumable> foods,
+            int worldId,
+            int stageId)
+        {
+            if (!ArenaHelper.TryGetThisWeekAddress(out var weeklyArenaAddress))
+            {
+                throw new NullReferenceException(nameof(weeklyArenaAddress));
+            }
+
+            Mixpanel.Track("Unity/Create Mimisbrunnr");
+
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+            costumes = costumes ?? new List<Costume>();
+            equipments = equipments ?? new List<Equipment>();
+            foods = foods ?? new List<Consumable>();
+
+            var action = new MimisbrunnrBattle
+            {
+                costumes = costumes.Select(e => e.ItemId).ToList(),
+                equipments = equipments.Select(e => e.ItemId).ToList(),
+                foods = foods.Select(f => f.ItemId).ToList(),
+                worldId = worldId,
+                stageId = stageId,
+                avatarAddress = avatarAddress,
+                WeeklyArenaAddress = weeklyArenaAddress,
+                RankingMapAddress = States.Instance.CurrentAvatarState.RankingMapAddress,
+            };
+            ProcessAction(action);
+
+            var itemIDs = equipments
+                .Select(e => e.Id)
+                .Concat(foods.Select(f => f.Id))
+                .ToArray();
+            AnalyticsManager.Instance.Battle(itemIDs);
+            return _renderer.EveryRender<MimisbrunnrBattle>()
+                .SkipWhile(eval => !eval.Action.Id.Equals(action.Id))
+                .Take(1)
+                .Last()
+                .ObserveOnMainThread()
+                .Timeout(ActionTimeout)
+                .DoOnError(e => HandleException(action.Id, e));
+        }
+
         public IObservable<ActionBase.ActionEvaluation<HackAndSlash3>> HackAndSlash(
             Player player,
             int worldId,
