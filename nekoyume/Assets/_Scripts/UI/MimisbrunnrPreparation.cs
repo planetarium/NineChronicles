@@ -114,11 +114,14 @@ namespace Nekoyume.UI
         }
 
         // NOTE: questButton을 클릭한 후에 esc키를 눌러서 월드맵으로 벗어나는 것을 막는다.
-        // 행동력이 0일 경우 퀘스트 버튼이 비활성화되므로 임시 방편으로 행동력도 비교함.
+        // 행동력이 _requiredCost 미만일 경우 퀘스트 버튼이 비활성화되므로 임시 방편으로 행동력도 비교함.
         public override bool CanHandleInputEvent =>
             base.CanHandleInputEvent &&
-            (startButton.interactable ||
-            ReactiveAvatarState.ActionPoint.Value == 0);
+            (startButton.interactable || !EnoughToPlay);
+
+        private bool EnoughToPlay =>
+            States.Instance.CurrentAvatarState.actionPoint >= _requiredCost &&
+            CheckEquipmentElementalType();
 
         #region override
 
@@ -436,14 +439,7 @@ namespace Nekoyume.UI
 
         private void SubscribeIsEnabledButton(int point)
         {
-            _buttonEnabled.Value = point >= _requiredCost;
-
-            if(!_reddeningActionPoint.Value && equipmentSlots.Where(x => x.Item != null)
-                .Any(x => !IsExistElementalType(x.Item.ElementalType)))
-            {
-                _buttonEnabled.Value = false;
-            }
-
+            _buttonEnabled.Value = EnoughToPlay;
             _reddeningActionPoint.Value = point < _requiredCost;
         }
 
@@ -462,11 +458,12 @@ namespace Nekoyume.UI
 
         private void BattleClick(bool repeat)
         {
-            if (equipmentSlots.Where(x => x.Item != null)
-                .Any(x => !IsExistElementalType(x.Item.ElementalType)))
+            if (!CheckEquipmentElementalType())
             {
-                Notification.Push(MailType.System,
+                Notification.Push(
+                    MailType.System,
                     L10nManager.Localize("UI_MIMISBRUNNR_START_FAIELD"));
+
                 return;
             }
 
@@ -846,6 +843,13 @@ namespace Nekoyume.UI
             );
             simulator.Simulate();
             GoToStage(simulator.Log);
+        }
+
+        private bool CheckEquipmentElementalType()
+        {
+            return equipmentSlots
+                .Where(x => x.Item != null)
+                .All(x => IsExistElementalType(x.Item.ElementalType));
         }
 
         private bool IsExistElementalType(ElementalType elementalType)
