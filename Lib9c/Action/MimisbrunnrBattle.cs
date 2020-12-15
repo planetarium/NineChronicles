@@ -193,6 +193,16 @@ namespace Nekoyume.Action
             equippableItem.AddRange(costumes);
             equippableItem.AddRange(equipments);
             avatarState.EquipItems(equippableItem);
+            
+            var equippableItemstems = avatarState.inventory.Items.Select(i => i.item)
+                .OfType<IEquippableItem>()
+                .Where(x => x.Equipped).ToList();
+            if (equippableItem.Count != equippableItemstems.Count)
+            {
+                throw new InvalidEquipmentException(
+                    "The equipment taken and worn does not match."
+                );
+            }
             sw.Stop();
             Log.Debug("Mimisbrunnr Unequip items: {Elapsed}", sw.Elapsed);
             

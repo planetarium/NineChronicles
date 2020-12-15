@@ -524,5 +524,50 @@
                 });
             });
         }
+
+        [Fact]
+        public void ExecuteInvalidEquipmentException()
+        {
+            var avatarState = _initialState.GetAvatarState(_avatarAddress);
+            avatarState.worldInformation = new WorldInformation(
+                0,
+                _tableSheets.WorldSheet,
+                140);
+
+            var costumeId = _tableSheets
+                .CostumeItemSheet
+                .Values
+                .First(r => r.ItemSubType == ItemSubType.FullCostume)
+                .Id;
+            var costume =
+                ItemFactory.CreateItem(_tableSheets.ItemSheet[costumeId], new TestRandom());
+            avatarState.inventory.AddItem(costume);
+
+            var equipmentRow =
+                _tableSheets.EquipmentItemSheet.Values.First(x => x.ElementalType == ElementalType.Fire);
+            var equipment = ItemFactory.CreateItemUsable(equipmentRow, default, 0);
+            var nextAvatarState = _initialState.SetState(_avatarAddress, avatarState.Serialize());
+
+            var action = new MimisbrunnrBattle()
+            {
+                costumes = new List<Guid> { ((Costume)costume).ItemId },
+                equipments = new List<Guid>() { equipment.ItemId },
+                foods = new List<Guid>(),
+                worldId = GameConfig.MimisbrunnrWorldId,
+                stageId = GameConfig.MimisbrunnrStartStageId,
+                avatarAddress = _avatarAddress,
+                WeeklyArenaAddress = _weeklyArenaState.address,
+                RankingMapAddress = _rankingMapAddress,
+            };
+
+            Assert.Throws<InvalidEquipmentException>(() =>
+            {
+                action.Execute(new ActionContext
+                {
+                    PreviousStates = nextAvatarState,
+                    Signer = _agentAddress,
+                });
+            });
+        }
     }
 }
