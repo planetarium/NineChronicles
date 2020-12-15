@@ -64,7 +64,6 @@ jobs:
           npm install --global strip-json-comments-cli
           dotnet tool install \
             --global \
-            --version 0.9.0-dev.20200402054713 \
             Libplanet.Tools
             
           targetPlatform=${{ matrix.targetPlatform }}
