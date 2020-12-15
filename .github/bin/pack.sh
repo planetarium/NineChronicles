@@ -22,6 +22,7 @@ fi
 # shellcheck disable=SC1090
 . "$venv_dir/bin/activate"
 
+"$venv_dir/bin/pip" install wheel
 "$venv_dir/bin/pip" install -r "$script_dir/requirements.txt"
 "$venv_dir/bin/python3" "$script_dir/pack.py" "$@"
 exit $?
