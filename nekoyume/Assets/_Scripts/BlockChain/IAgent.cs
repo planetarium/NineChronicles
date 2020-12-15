@@ -4,6 +4,7 @@ using System.Security.Cryptography;
 using Bencodex.Types;
 using Lib9c.Renderer;
 using Libplanet;
+using Libplanet.Assets;
 using Libplanet.Crypto;
 using Libplanet.Tx;
 using Nekoyume.Action;
@@ -45,5 +46,7 @@ namespace Nekoyume.BlockChain
         void SendException(Exception exc);
 
         bool IsActionStaged(Guid actionId, out TxId txId);
+
+        FungibleAssetValue GetBalance(Address address, Currency currency);
     }
 }
