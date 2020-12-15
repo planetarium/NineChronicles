@@ -47,7 +47,6 @@ namespace Nekoyume.State
                 return;
             }
 
-            state = modifier.Modify(state);
             States.Instance.SetGoldBalanceState(state);
         }
 
