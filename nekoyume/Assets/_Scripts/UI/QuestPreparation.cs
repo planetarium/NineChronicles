@@ -93,18 +93,18 @@ namespace Nekoyume.UI
 
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
 
-        private readonly ReactiveProperty<bool> _buttonEnabled = new ReactiveProperty<bool>();
-
         private CharacterStats _tempStats;
 
         private bool _reset = true;
 
         // NOTE: questButton을 클릭한 후에 esc키를 눌러서 월드맵으로 벗어나는 것을 막는다.
-        // 행동력이 0일 경우 퀘스트 버튼이 비활성화되므로 임시 방편으로 행동력도 비교함.
+        // 행동력이 _requiredCost 미만일 경우 퀘스트 버튼이 비활성화되므로 임시 방편으로 행동력도 비교함.
         public override bool CanHandleInputEvent =>
             base.CanHandleInputEvent &&
-            (questButton.interactable ||
-            ReactiveAvatarState.ActionPoint.Value == 0);
+            (questButton.interactable || !EnoughToPlay);
+
+        private bool EnoughToPlay =>
+            States.Instance.CurrentAvatarState.actionPoint >= _requiredCost;
 
         #region override
 
@@ -222,8 +222,10 @@ namespace Nekoyume.UI
                 BottomMenu.ToggleableType.Quest,
                 BottomMenu.ToggleableType.Chat,
                 BottomMenu.ToggleableType.IllustratedBook);
-            _buttonEnabled.Subscribe(SubscribeReadyToQuest).AddTo(_disposables);
-            ReactiveAvatarState.ActionPoint.Subscribe(SubscribeActionPoint).AddTo(_disposables);
+
+            ReactiveAvatarState.ActionPoint
+                .Subscribe(_ => ReadyToQuest(EnoughToPlay))
+                .AddTo(_disposables);
             _tempStats = _player.Model.Stats.Clone() as CharacterStats;
             inventory.SharedModel.UpdateEquipmentNotification();
             questButton.gameObject.SetActive(true);
@@ -350,7 +352,7 @@ namespace Nekoyume.UI
             gameObject.SetActive(false);
         }
 
-        private void SubscribeReadyToQuest(bool ready)
+        private void ReadyToQuest(bool ready)
         {
             questButton.interactable = ready;
             requiredPointText.color = ready ? Color.white : Color.red;
@@ -365,11 +367,6 @@ namespace Nekoyume.UI
                     particle.Stop();
                 }
             }
-        }
-
-        private void SubscribeActionPoint(int point)
-        {
-            _buttonEnabled.Value = point >= _requiredCost;
         }
 
         private void SubscribeStage(int stageId)
