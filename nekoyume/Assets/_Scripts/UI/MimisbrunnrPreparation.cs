@@ -29,8 +29,8 @@ namespace Nekoyume.UI
 {
     public class MimisbrunnrPreparation : Widget
     {
-        private static readonly Color StartbuttonOriginColor = Color.white;
-        private static readonly Color RequiredPointOriginColor = ColorHelper.HexToColorRGB("FFF3D4");
+        private static readonly Color BattleStartButtonOriginColor = Color.white;
+        private static readonly Color RequiredActionPointOriginColor = ColorHelper.HexToColorRGB("FFF3D4");
         private static readonly Color DimmedColor = ColorHelper.HexToColorRGB("848484");
 
         [SerializeField]
@@ -101,9 +101,6 @@ namespace Nekoyume.UI
 
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
 
-        private readonly ReactiveProperty<bool> _buttonEnabled = new ReactiveProperty<bool>();
-        private readonly ReactiveProperty<bool> _reddeningActionPoint = new ReactiveProperty<bool>();
-
         private CharacterStats _tempStats;
 
         private bool _reset = true;
@@ -117,11 +114,12 @@ namespace Nekoyume.UI
         // 행동력이 _requiredCost 미만일 경우 퀘스트 버튼이 비활성화되므로 임시 방편으로 행동력도 비교함.
         public override bool CanHandleInputEvent =>
             base.CanHandleInputEvent &&
-            (startButton.interactable || !EnoughToPlay);
+            (startButton.interactable || !CanStartBattle);
 
-        private bool EnoughToPlay =>
-            States.Instance.CurrentAvatarState.actionPoint >= _requiredCost &&
-            CheckEquipmentElementalType();
+        private bool EnoughActionPoint =>
+            States.Instance.CurrentAvatarState.actionPoint >= _requiredCost;
+
+        private bool CanStartBattle => EnoughActionPoint && CheckEquipmentElementalType();
 
         #region override
 
@@ -236,9 +234,9 @@ namespace Nekoyume.UI
                 BottomMenu.ToggleableType.Chat,
                 BottomMenu.ToggleableType.IllustratedBook);
 
-            _buttonEnabled.Subscribe(SubscribeReadyToButton).AddTo(_disposables);
-            _reddeningActionPoint.Subscribe(SubscribeReadyToText).AddTo(_disposables);
-            ReactiveAvatarState.ActionPoint.Subscribe(SubscribeActionPoint).AddTo(_disposables);
+            ReactiveAvatarState.ActionPoint
+                .Subscribe(_ => UpdateBattleStartButton())
+                .AddTo(_disposables);
             _tempStats = _player.Model.Stats.Clone() as CharacterStats;
             inventory.SharedModel.UpdateEquipmentNotification();
             startButton.gameObject.SetActive(true);
@@ -335,8 +333,8 @@ namespace Nekoyume.UI
                     }
                 }
             }
-            _buttonEnabled.Value = equipmentSlots.Where(x => x.Item != null)
-                .All(x => IsExistElementalType(x.Item.ElementalType));
+
+            UpdateBattleStartButton();
 
             inventory.SharedModel.DimmedFunc.Value = inventoryItem =>
                 inventoryItem.ItemBase.Value.ItemType == ItemType.Costume ||
@@ -397,50 +395,55 @@ namespace Nekoyume.UI
             gameObject.SetActive(false);
         }
 
-        private void SubscribeReadyToButton(bool ready)
+        private void UpdateBattleStartButton()
         {
-            if (_reddeningActionPoint.Value)
+            if (EnoughActionPoint)
             {
-                SetButtonState(false);
+                if (CheckEquipmentElementalType())
+                {
+                    SetBattleStartButton(true);
+                    requiredPointText.color = RequiredActionPointOriginColor;
+                }
+                else
+                {
+                    SetBattleStartButton(false);
+                    requiredPointText.color = DimmedColor;
+                }
             }
             else
             {
-                SetButtonState(ready);
-                requiredPointText.color = ready ? RequiredPointOriginColor : DimmedColor;
+                SetBattleStartButton(false);
+                requiredPointText.color = Color.red;
             }
         }
 
-        private void SetButtonState(bool value)
+        private void SetBattleStartButton(bool interactable)
         {
-            startButton.interactable = value;
-
-            foreach (var image in startButtonImages)
+            startButton.interactable = interactable;
+            if (interactable)
             {
-                image.color = value ? StartbuttonOriginColor : DimmedColor;
-            }
+                foreach (var image in startButtonImages)
+                {
+                    image.color = BattleStartButtonOriginColor;
+                }
 
-            foreach (var particle in particles)
-            {
-                if (value)
+                foreach (var particle in particles)
                 {
                     particle.Play();
                 }
-                else
+            }
+            else
+            {
+                foreach (var image in startButtonImages)
+                {
+                    image.color = DimmedColor;
+                }
+
+                foreach (var particle in particles)
                 {
                     particle.Stop();
                 }
             }
-        }
-
-        private void SubscribeReadyToText(bool ready)
-        {
-            requiredPointText.color = ready ? Color.red : Color.white;
-        }
-
-        private void SubscribeActionPoint(int actionPoint)
-        {
-            _buttonEnabled.Value = EnoughToPlay;
-            _reddeningActionPoint.Value = actionPoint < _requiredCost;
         }
 
         private void SubscribeStage(int stageId)
@@ -481,7 +484,8 @@ namespace Nekoyume.UI
                 true,
                 animationTime,
                 middleXGap);
-            LocalLayerModifier.ModifyAvatarActionPoint(States.Instance.CurrentAvatarState.address,
+            LocalLayerModifier.ModifyAvatarActionPoint(
+                States.Instance.CurrentAvatarState.address,
                 -_requiredCost);
             yield return new WaitWhile(() => animation.IsPlaying);
             Battle(repeat);
@@ -610,8 +614,7 @@ namespace Nekoyume.UI
                 : AudioController.SfxCode.Equipment);
             inventory.SharedModel.UpdateEquipmentNotification();
             Find<BottomMenu>().UpdateInventoryNotification();
-            _buttonEnabled.Value = equipmentSlots.Where(x => x.Item != null)
-                .All(x => IsExistElementalType(x.Item.ElementalType));
+            UpdateBattleStartButton();
         }
 
         private bool TryToFindSlotAlreadyEquip(ItemBase item, out EquipmentSlot slot)
@@ -760,7 +763,8 @@ namespace Nekoyume.UI
                     _ =>
                     {
                         LocalLayerModifier.ModifyAvatarActionPoint(
-                            States.Instance.CurrentAvatarState.address, _requiredCost);
+                            States.Instance.CurrentAvatarState.address,
+                            _requiredCost);
                     }, e => ActionRenderHandler.BackToMain(false, e))
                 .AddTo(this);
             Mixpanel.Track("Unity/Waiting Block");
