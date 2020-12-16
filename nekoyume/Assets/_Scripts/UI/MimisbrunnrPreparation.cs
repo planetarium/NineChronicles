@@ -238,7 +238,7 @@ namespace Nekoyume.UI
                 .Subscribe(_ => UpdateBattleStartButton())
                 .AddTo(_disposables);
             _tempStats = _player.Model.Stats.Clone() as CharacterStats;
-            inventory.SharedModel.UpdateEquipmentNotification();
+            inventory.SharedModel.UpdateEquipmentNotification(GetElementalTypes());
             startButton.gameObject.SetActive(true);
         }
 
@@ -352,7 +352,7 @@ namespace Nekoyume.UI
                 return TryToFindSlotAlreadyEquip(inventoryItem.ItemBase.Value, out _);
             });
 
-            inventory.SharedModel.UpdateEquipmentNotification();
+            inventory.SharedModel.UpdateEquipmentNotification(GetElementalTypes());
         }
 
         private void SubscribeInventorySelectedItem(InventoryItemView view)
@@ -607,7 +607,7 @@ namespace Nekoyume.UI
             AudioController.instance.PlaySfx(slot.ItemSubType == ItemSubType.Food
                 ? AudioController.SfxCode.ChainMail2
                 : AudioController.SfxCode.Equipment);
-            inventory.SharedModel.UpdateEquipmentNotification();
+            inventory.SharedModel.UpdateEquipmentNotification(GetElementalTypes());
             Find<BottomMenu>().UpdateInventoryNotification();
             UpdateBattleStartButton();
         }
@@ -861,6 +861,18 @@ namespace Nekoyume.UI
             }
 
             return mimisbrunnrSheetRow.ElementalTypes.Exists(x => x == elementalType);
+        }
+
+        private List<ElementalType> GetElementalTypes()
+        {
+            var mimisbrunnrSheet = Game.Game.instance.TableSheets.MimisbrunnrSheet;
+            if (!mimisbrunnrSheet.TryGetValue(_stageId.Value, out var mimisbrunnrSheetRow))
+            {
+                throw new KeyNotFoundException(
+                    $"mimisbrunnrSheet.TryGetValue() {nameof(_stageId)}({_stageId})");
+            }
+
+            return mimisbrunnrSheetRow.ElementalTypes;
         }
     }
 }
