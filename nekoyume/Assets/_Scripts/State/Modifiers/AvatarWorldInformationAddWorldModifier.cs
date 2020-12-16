@@ -52,28 +52,32 @@ namespace Nekoyume.State.Modifiers
             var worldSheet = Game.Game.instance.TableSheets.WorldSheet;
             foreach (var worldId in _worldIds)
             {
-                var worldRow = worldSheet.OrderedList.FirstOrDefault(row => row.Id == worldId);
-                if (worldRow is null)
+                if (wi.TryGetWorld(worldId, out _))
                 {
-                    Notification.Push(MailType.System, L10nManager.Localize("ERROR_WORLD_DOES_NOT_EXIST"));
                     continue;
                 }
 
-                if (!wi.TryGetWorld(worldId, out var world))
+                var worldRow = worldSheet.OrderedList.FirstOrDefault(row => row.Id == worldId);
+                if (worldRow is null)
                 {
-                    if (!wi.TryAddWorld(worldRow, out world))
-                    {
-                        continue;
-                    }
+                    Notification.Push(MailType.System,
+                        L10nManager.Localize("ERROR_WORLD_DOES_NOT_EXIST"));
+                    continue;
+                }
 
-                    var worldUnlockSheetRow = Game.Game.instance.TableSheets.WorldUnlockSheet.OrderedList
-                        .FirstOrDefault(row => row.WorldIdToUnlock == worldId);
-                    if (!(worldUnlockSheetRow is null) &&
-                        wi.IsWorldUnlocked(worldUnlockSheetRow.WorldId) &&
-                        wi.IsStageCleared(worldUnlockSheetRow.StageId))
-                    {
-                        wi.UnlockWorld(worldId, Game.Game.instance.Agent.BlockIndex, worldSheet);
-                    }
+                if (!wi.TryAddWorld(worldRow, out _))
+                {
+                    continue;
+                }
+
+                var worldUnlockSheetRow = Game.Game.instance.TableSheets.WorldUnlockSheet
+                    .OrderedList
+                    .FirstOrDefault(row => row.WorldIdToUnlock == worldId);
+                if (!(worldUnlockSheetRow is null) &&
+                    wi.IsWorldUnlocked(worldUnlockSheetRow.WorldId) &&
+                    wi.IsStageCleared(worldUnlockSheetRow.StageId))
+                {
+                    wi.UnlockWorld(worldId, Game.Game.instance.Agent.BlockIndex, worldSheet);
                 }
             }
 
