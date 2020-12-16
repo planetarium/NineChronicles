@@ -399,16 +399,7 @@ namespace Nekoyume.UI
         {
             if (EnoughActionPoint)
             {
-                if (CheckEquipmentElementalType())
-                {
-                    SetBattleStartButton(true);
-                    requiredPointText.color = RequiredActionPointOriginColor;
-                }
-                else
-                {
-                    SetBattleStartButton(false);
-                    requiredPointText.color = DimmedColor;
-                }
+                SetBattleStartButton(CheckEquipmentElementalType());
             }
             else
             {
@@ -422,6 +413,8 @@ namespace Nekoyume.UI
             startButton.interactable = interactable;
             if (interactable)
             {
+                requiredPointText.color = RequiredActionPointOriginColor;
+
                 foreach (var image in startButtonImages)
                 {
                     image.color = BattleStartButtonOriginColor;
@@ -434,6 +427,8 @@ namespace Nekoyume.UI
             }
             else
             {
+                requiredPointText.color = DimmedColor;
+
                 foreach (var image in startButtonImages)
                 {
                     image.color = DimmedColor;
