@@ -544,6 +544,17 @@ namespace Nekoyume.State
             TryResetLoadedAvatarState(avatarAddress, out _, out _);
         }
 
+        public static void AddWorld(Address avatarAddress, int worldId)
+        {
+            var modifier = new AvatarWorldInformationAddWorldModifier(worldId);
+            if (avatarAddress.Equals(States.Instance.CurrentAvatarState.address))
+            {
+                modifier.Modify(States.Instance.CurrentAvatarState);
+            }
+
+            LocalLayer.Instance.Add(avatarAddress, modifier);
+        }
+
         #endregion
 
         #region WeeklyArena

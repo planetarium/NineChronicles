@@ -352,19 +352,14 @@ namespace Nekoyume.UI
             var wi = States.Instance.CurrentAvatarState.worldInformation;
             if (!wi.TryGetWorld(worldId, out var world))
             {
-                if (!wi.TryAddWorld(worldRow, out world))
+                LocalLayerModifier.AddWorld(
+                    States.Instance.CurrentAvatarState.address,
+                    worldId);
+
+                if (!wi.TryGetWorld(worldId, out world))
                 {
                     // Do nothing.
                     return;
-                }
-
-                var worldUnlockSheetRow = Game.Game.instance.TableSheets.WorldUnlockSheet.OrderedList
-                    .FirstOrDefault(row => row.WorldIdToUnlock == worldId);
-                if (!(worldUnlockSheetRow is null) &&
-                    wi.IsWorldUnlocked(worldUnlockSheetRow.WorldId) &&
-                    wi.IsStageCleared(worldUnlockSheetRow.StageId))
-                {
-                    wi.UnlockWorld(worldId, Game.Game.instance.Agent.BlockIndex, worldSheet);
                 }
             }
 
