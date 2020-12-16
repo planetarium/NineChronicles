@@ -238,7 +238,7 @@ namespace Nekoyume.UI
 
             _buttonEnabled.Subscribe(SubscribeReadyToButton).AddTo(_disposables);
             _reddeningActionPoint.Subscribe(SubscribeReadyToText).AddTo(_disposables);
-            ReactiveAvatarState.ActionPoint.Subscribe(SubscribeIsEnabledButton).AddTo(_disposables);
+            ReactiveAvatarState.ActionPoint.Subscribe(SubscribeActionPoint).AddTo(_disposables);
             _tempStats = _player.Model.Stats.Clone() as CharacterStats;
             inventory.SharedModel.UpdateEquipmentNotification();
             startButton.gameObject.SetActive(true);
@@ -437,10 +437,10 @@ namespace Nekoyume.UI
             requiredPointText.color = ready ? Color.red : Color.white;
         }
 
-        private void SubscribeIsEnabledButton(int point)
+        private void SubscribeActionPoint(int actionPoint)
         {
             _buttonEnabled.Value = EnoughToPlay;
-            _reddeningActionPoint.Value = point < _requiredCost;
+            _reddeningActionPoint.Value = actionPoint < _requiredCost;
         }
 
         private void SubscribeStage(int stageId)
