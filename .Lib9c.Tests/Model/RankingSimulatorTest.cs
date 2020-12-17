@@ -167,5 +167,71 @@ namespace Lib9c.Tests.Model
             var enemyPlayer = (EnemyPlayer)e.Character;
             Assert.Equal(row2.Stat, enemyPlayer.Stats.OptionalStats.DEF);
         }
+
+        [Theory]
+        [InlineData(1, 1000)]
+        [InlineData(55, 1000)]
+        [InlineData(85, 1000)]
+        [InlineData(120, 1000)]
+        [InlineData(160, 1000)]
+        [InlineData(200, 1000)]
+        public void CheckToReceiveAllRewardItems(int level, int simulationCount)
+        {
+            _tableSheets.WeeklyArenaRewardSheet = _tableSheets.WeeklyArenaRewardSheet;
+            var avatarState = new AvatarState(
+                default,
+                default,
+                0,
+                _tableSheets.GetAvatarSheets(),
+                new GameConfigState(),
+                default)
+            {
+                level = level,
+            };
+            avatarState.worldInformation.ClearStage(
+                1,
+                GameConfig.RequireClearedStageLevel.ActionsInRankingBoard,
+                1,
+                _tableSheets.WorldSheet,
+                _tableSheets.WorldUnlockSheet);
+
+            var simulator = new RankingSimulator(
+                _random,
+                avatarState,
+                avatarState,
+                new List<Guid>(),
+                _tableSheets.GetRankingSimulatorSheets(),
+                1,
+                new ArenaInfo(avatarState, _tableSheets.CharacterSheet, false),
+                new ArenaInfo(avatarState, _tableSheets.CharacterSheet, false));
+
+            var rewardIds = new HashSet<int>();
+            for (int i = 0; i < simulationCount; ++i)
+            {
+                simulator.Simulate();
+                foreach (var itemBase in simulator.Reward)
+                {
+                    if (!rewardIds.Contains(itemBase.Id))
+                    {
+                        rewardIds.Add(itemBase.Id);
+                    }
+                }
+            }
+
+            var sheets = _tableSheets.WeeklyArenaRewardSheet.OrderedList
+                .Where(x => x.Reward.RequiredLevel < level).ToList();
+            var sheetIds = new HashSet<int>();
+            foreach (var sheet in sheets.Where(sheet => !sheetIds.Contains(sheet.Reward.ItemId)))
+            {
+                sheetIds.Add(sheet.Reward.ItemId);
+            }
+
+            foreach (var id in rewardIds.TakeWhile(id => sheetIds.Count != 0).Where(id => sheetIds.Contains(id)))
+            {
+                sheetIds.Remove(id);
+            }
+
+            Assert.Empty(sheetIds);
+        }
     }
 }
