@@ -59,6 +59,13 @@ namespace Nekoyume.Action
                 throw new InvalidTransferSignerException(context.Signer, Sender, Recipient);
             }
 
+            // This works for block after 380000. Please take a look at
+            // https://github.com/planetarium/libplanet/pull/1133
+            if (context.BlockIndex > 380000 && Sender == Recipient)
+            {
+                throw new InvalidTransferRecipientException(Sender, Recipient);
+            }
+
             Currency currency = Amount.Currency;
             if (!(currency.Minters is null) &&
                 (currency.Minters.Contains(Sender) || currency.Minters.Contains(Recipient)))

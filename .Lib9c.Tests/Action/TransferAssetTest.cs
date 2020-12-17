@@ -93,6 +93,45 @@ namespace Lib9c.Tests.Action
         }
 
         [Fact]
+        public void ExecuteWithInvalidRecipient()
+        {
+            var balance = ImmutableDictionary<(Address, Currency), FungibleAssetValue>.Empty
+                .Add((_sender, _currency), _currency * 1000);
+            var prevState = new State(
+                balance: balance
+            );
+            // Should not allow TransferAsset with same sender and recipient.
+            var action = new TransferAsset(
+                sender: _sender,
+                recipient: _sender,
+                amount: _currency * 100
+            );
+
+            // No exception should be thrown when its index is less then 380000.
+            _ = action.Execute(new ActionContext()
+            {
+                PreviousStates = prevState,
+                Signer = _sender,
+                Rehearsal = false,
+                BlockIndex = 1,
+            });
+
+            var exc = Assert.Throws<InvalidTransferRecipientException>(() =>
+            {
+                _ = action.Execute(new ActionContext()
+                {
+                    PreviousStates = prevState,
+                    Signer = _sender,
+                    Rehearsal = false,
+                    BlockIndex = 380001,
+                });
+            });
+
+            Assert.Equal(exc.Sender, _sender);
+            Assert.Equal(exc.Recipient, _sender);
+        }
+
+        [Fact]
         public void ExecuteWithInsufficientBalance()
         {
             var balance = ImmutableDictionary<(Address, Currency), FungibleAssetValue>.Empty
