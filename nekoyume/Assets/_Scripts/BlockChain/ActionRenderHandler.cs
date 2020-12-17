@@ -165,7 +165,7 @@ namespace Nekoyume.BlockChain
 
         private void Sell()
         {
-            _renderer.EveryRender<Sell>()
+            _renderer.EveryRender<Sell3>()
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseSell).AddTo(_disposables);
@@ -453,7 +453,7 @@ namespace Nekoyume.BlockChain
             }
         }
 
-        private void ResponseSell(ActionBase.ActionEvaluation<Sell> eval)
+        private void ResponseSell(ActionBase.ActionEvaluation<Sell3> eval)
         {
             if (eval.Exception is null)
             {
