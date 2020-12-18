@@ -27,7 +27,7 @@ namespace Nekoyume
 
         public static string InsertTimestamp(string message)
         {
-            return $"[{DateTime.Now:yyyy-M-d HH:mm:ss}] {message}";
+            return $"[{DateTime.UtcNow:yyyy-M-d HH:mm:ss}] {message}";
         }
 
         [System.Diagnostics.Conditional("DEBUG_USE")]
