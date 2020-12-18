@@ -120,6 +120,9 @@ namespace Nekoyume.UI
                 case nameof(Shop):
                     menuText.text = L10nManager.Localize("UI_SHOP");
                     break;
+                case nameof(MimisbrunnrPreparation):
+                    menuText.text = L10nManager.Localize("UI_MIMISBRUNNR");
+                    break;
             }
 
             menuContainer.SetActive(true);
@@ -326,14 +329,14 @@ namespace Nekoyume.UI
                 var materialRow = Game.Game.instance.TableSheets.MaterialItemSheet
                     .First(pair => pair.Key == reward.Key);
 
-                LocalStateModifier.AddItem(
+                LocalLayerModifier.AddItem(
                     avatarAddress,
                     materialRow.Value.ItemId,
                     reward.Value,
                     false);
             }
 
-            LocalStateModifier.RemoveReceivableQuest(avatarAddress, questId);
+            LocalLayerModifier.RemoveReceivableQuest(avatarAddress, questId);
         }
 
         private void AppearNPC(bool ignoreShowAnimation, NPCAnimation.Type animationType)

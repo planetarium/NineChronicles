@@ -1136,6 +1136,11 @@ namespace Nekoyume.Game
                 menuNames.Add(nameof(RankingBoard));
             }
 
+            if (stageId == GameConfig.RequireClearedStageLevel.UIMainMenuMimisbrunnr)
+            {
+                menuNames.Add(nameof(MimisbrunnrPreparation));
+            }
+
             var celebratesPopup = Widget.Find<CelebratesPopup>();
             foreach (var menuName in menuNames)
             {

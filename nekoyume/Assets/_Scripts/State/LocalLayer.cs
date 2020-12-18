@@ -13,29 +13,26 @@ namespace Nekoyume.State
     /// <summary>
     /// 체인이 포함하는 특정 상태에 대한 상태 변경자를 관리한다.
     /// 모든 상태 변경자는 대상 상태의 체인 내 주소를 기준으로 분류한다.
-    /// 상태 변경자는 휘발성과 비휘발성으로 구분해서 다룬다.(volatile, nonVolatile)
-    /// 휘발성은 에이전트 혹은 아바타의 주소가 새롭게 설정되는 경우 사라진다.
-    /// 비휘발성은 PlayerPrefs에 저장한다.
     /// </summary>
-    public class LocalStateSettings
+    public class LocalLayer
     {
         /// <summary>
-        /// 변경자 정보는 대상 주소(Address), 비휘발성 상태 변경자(NonVolatileModifiers), 휘발성 상태 변경자(VolatileModifiers)로 구성된다.
+        /// 변경자 정보는 대상 주소(Address), 상태 변경자(Modifiers)로 구성된다.
         /// </summary>
         /// <typeparam name="T">AgentStateModifier 등</typeparam>
         private class ModifierInfo<T> where T : class
         {
             public readonly Address Address;
-            public readonly List<T> VolatileModifiers;
+            public readonly List<T> Modifiers;
 
             public ModifierInfo(Address address)
             {
                 Address = address;
-                VolatileModifiers = new List<T>();
+                Modifiers = new List<T>();
             }
         }
 
-        public static LocalStateSettings Instance => Game.Game.instance.LocalStateSettings;
+        public static LocalLayer Instance => Game.Game.instance.LocalLayer;
 
         private ModifierInfo<AgentStateModifier> _agentModifierInfo;
 
@@ -142,7 +139,7 @@ namespace Nekoyume.State
                 return;
             }
 
-            var modifiers = modifierInfo.VolatileModifiers;
+            var modifiers = modifierInfo.Modifiers;
             if (TryGetSameTypeModifier(modifier, modifiers, out var outModifier))
             {
                 modifiers.Remove(outModifier);
@@ -165,7 +162,7 @@ namespace Nekoyume.State
                 return;
             }
 
-            var modifiers = modifierInfo.VolatileModifiers;
+            var modifiers = modifierInfo.Modifiers;
             if (TryGetSameTypeModifier(typeof(T), modifiers, out var outModifier))
             {
                 modifiers.Remove(outModifier);
@@ -193,7 +190,7 @@ namespace Nekoyume.State
             var modifierInfo = _agentModifierInfo;
             if (agentAddress.Equals(modifierInfo.Address))
             {
-                var modifiers = modifierInfo.VolatileModifiers;
+                var modifiers = modifierInfo.Modifiers;
                 if (TryGetSameTypeModifier(modifier, modifiers, out var outModifier))
                 {
                     outModifier.Add(modifier);
@@ -219,7 +216,7 @@ namespace Nekoyume.State
 
             if (agentAddress.Equals(_agentGoldModifierInfo.Address))
             {
-                var modifiers = _agentGoldModifierInfo.VolatileModifiers;
+                var modifiers = _agentGoldModifierInfo.Modifiers;
                 if (TryGetSameTypeModifier(modifier, modifiers, out var outModifier))
                 {
                     outModifier.Add(modifier);
@@ -255,7 +252,7 @@ namespace Nekoyume.State
 
             if (!(modifierInfo is null))
             {
-                var modifiers = modifierInfo.VolatileModifiers;
+                var modifiers = modifierInfo.Modifiers;
                 if (TryGetSameTypeModifier(modifier, modifiers, out var outModifier))
                 {
                     outModifier.Add(modifier);
@@ -288,7 +285,7 @@ namespace Nekoyume.State
             var modifierInfo = _weeklyArenaModifierInfo;
             if (weeklyArenaAddress.Equals(modifierInfo.Address))
             {
-                var modifiers = modifierInfo.VolatileModifiers;
+                var modifiers = modifierInfo.Modifiers;
                 if (TryGetSameTypeModifier(modifier, modifiers, out var outModifier))
                 {
                     outModifier.Add(modifier);
@@ -324,7 +321,7 @@ namespace Nekoyume.State
             var modifierInfo = _agentModifierInfo;
             if (agentAddress.Equals(modifierInfo.Address))
             {
-                var modifiers = modifierInfo.VolatileModifiers;
+                var modifiers = modifierInfo.Modifiers;
                 if (TryGetSameTypeModifier(modifier, modifiers, out var outModifier))
                 {
                     outModifier.Remove(modifier);
@@ -344,7 +341,7 @@ namespace Nekoyume.State
             if (modifier is null)
             {
                 Debug.LogWarning(
-                    $"[{nameof(LocalStateSettings)}] No found {nameof(modifier)} of {nameof(agentAddress)}");
+                    $"[{nameof(LocalLayer)}] No found {nameof(modifier)} of {nameof(agentAddress)}");
             }
         }
 
@@ -367,7 +364,7 @@ namespace Nekoyume.State
 
             if (!(modifierInfo is null))
             {
-                var modifiers = modifierInfo.VolatileModifiers;
+                var modifiers = modifierInfo.Modifiers;
                 if (TryGetSameTypeModifier(modifier, modifiers, out var outModifier))
                 {
                     outModifier.Remove(modifier);
@@ -387,7 +384,7 @@ namespace Nekoyume.State
             if (modifier is null)
             {
                 Debug.LogWarning(
-                    $"[{nameof(LocalStateSettings)}] No found {nameof(modifier)} of {nameof(avatarAddress)}");
+                    $"[{nameof(LocalLayer)}] No found {nameof(modifier)} of {nameof(avatarAddress)}");
             }
         }
 
@@ -407,7 +404,7 @@ namespace Nekoyume.State
             var modifierInfo = _weeklyArenaModifierInfo;
             if (weeklyArenaAddress.Equals(modifierInfo.Address))
             {
-                var modifiers = modifierInfo.VolatileModifiers;
+                var modifiers = modifierInfo.Modifiers;
                 if (TryGetSameTypeModifier(modifier, modifiers, out var outModifier))
                 {
                     outModifier.Remove(modifier);
@@ -427,7 +424,7 @@ namespace Nekoyume.State
             if (modifier is null)
             {
                 Debug.LogWarning(
-                    $"[{nameof(LocalStateSettings)}] No found {nameof(modifier)} of {nameof(weeklyArenaAddress)}");
+                    $"[{nameof(LocalLayer)}] No found {nameof(modifier)} of {nameof(weeklyArenaAddress)}");
             }
         }
 
@@ -528,7 +525,7 @@ namespace Nekoyume.State
             where TState : Model.State.State
             where TModifier : class, IStateModifier<TState>
         {
-            foreach (var modifier in modifierInfo.VolatileModifiers)
+            foreach (var modifier in modifierInfo.Modifiers)
             {
                 state = modifier.Modify(state);
             }
@@ -557,13 +554,13 @@ namespace Nekoyume.State
             {
                 if (!TryGetSameTypeModifier(
                     typeof(T),
-                    _avatarModifierInfo.VolatileModifiers,
+                    _avatarModifierInfo.Modifiers,
                     out var modifier))
                 {
                     break;
                 }
 
-                _avatarModifierInfo.VolatileModifiers.Remove(modifier);
+                _avatarModifierInfo.Modifiers.Remove(modifier);
             }
         }
 

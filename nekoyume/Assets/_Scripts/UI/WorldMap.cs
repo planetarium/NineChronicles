@@ -196,7 +196,7 @@ namespace Nekoyume.UI
 
             var stageInfo = Find<UI.StageInformation>();
             SharedViewModel.WorldInformation.TryGetWorld(worldId, out var world);
-            stageInfo.Show(SharedViewModel, worldRow);
+            stageInfo.Show(SharedViewModel, worldRow, StageInformation.StageType.Quest);
         }
 
         public void UpdateNotificationInfo()

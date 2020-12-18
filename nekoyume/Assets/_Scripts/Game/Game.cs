@@ -44,7 +44,7 @@ namespace Nekoyume.Game
 
         public States States { get; private set; }
 
-        public LocalStateSettings LocalStateSettings { get; private set; }
+        public LocalLayer LocalLayer { get; private set; }
 
         public IAgent Agent { get; private set; }
 
@@ -108,7 +108,7 @@ namespace Nekoyume.Game
             }
 
             States = new States();
-            LocalStateSettings = new LocalStateSettings();
+            LocalLayer = new LocalLayer();
             MainCanvas.instance.InitializeTitle();
 
 #if !UNITY_EDITOR
@@ -257,6 +257,11 @@ namespace Nekoyume.Game
             else if (Widget.Find<ArenaBattleLoadingScreen>().IsActive())
             {
                 Widget.Find<ArenaBattleLoadingScreen>().Close();
+                needToBackToMain = true;
+            }
+            else if (Widget.Find<MimisbrunnrPreparation>().IsActive())
+            {
+                Widget.Find<MimisbrunnrPreparation>().Close(true);
                 needToBackToMain = true;
             }
 
@@ -572,11 +577,10 @@ namespace Nekoyume.Game
             }
             else
             {
-                var groupName = string.Empty;
+                const string groupName = "9c-player-logs";
                 var streamName = Agent.Address.ToString();
                 try
                 {
-                    groupName = DateTime.UtcNow.Date.ToString("yyyy-MM-dd");
                     var req = new CreateLogGroupRequest(groupName);
                     await _logsClient.CreateLogGroupAsync(req);
                 }

@@ -653,18 +653,18 @@ namespace Nekoyume.UI
             var agentAddress = States.Instance.AgentState.address;
             var avatarAddress = States.Instance.CurrentAvatarState.address;
 
-            LocalStateModifier.ModifyAgentGold(agentAddress, -combinationPanel.CostNCG);
-            LocalStateModifier.ModifyAvatarActionPoint(avatarAddress, -combinationPanel.CostAP);
+            LocalLayerModifier.ModifyAgentGold(agentAddress, -combinationPanel.CostNCG);
+            LocalLayerModifier.ModifyAvatarActionPoint(avatarAddress, -combinationPanel.CostAP);
 
             foreach (var (material, count) in materialInfoList)
             {
-                LocalStateModifier.RemoveItem(avatarAddress, material.ItemId, count);
+                LocalLayerModifier.RemoveItem(avatarAddress, material.ItemId, count);
             }
         }
 
         private void CreateConsumableCombinationAction(ConsumableItemRecipeSheet.Row row, int slotIndex)
         {
-            LocalStateModifier.ModifyCombinationSlotConsumable(
+            LocalLayerModifier.ModifyCombinationSlotConsumable(
                 Game.Game.instance.TableSheets,
                 combinationPanel,
                 row,
@@ -683,7 +683,7 @@ namespace Nekoyume.UI
             EquipmentItemRecipeSheet.Row model,
             CombinationPanel panel)
         {
-            LocalStateModifier.ModifyCombinationSlotEquipment(
+            LocalLayerModifier.ModifyCombinationSlotEquipment(
                 Game.Game.instance.TableSheets,
                 model,
                 panel,

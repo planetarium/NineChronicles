@@ -276,12 +276,12 @@ namespace Nekoyume.UI
             var agentAddress = States.Instance.AgentState.address;
             var avatarAddress = States.Instance.CurrentAvatarState.address;
 
-            LocalStateModifier.ModifyAgentGold(agentAddress, CostNCG * -1);
-            LocalStateModifier.ModifyAvatarActionPoint(avatarAddress, -CostAP);
-            LocalStateModifier.RemoveItem(avatarAddress, baseItemGuid);
+            LocalLayerModifier.ModifyAgentGold(agentAddress, CostNCG * -1);
+            LocalLayerModifier.ModifyAvatarActionPoint(avatarAddress, -CostAP);
+            LocalLayerModifier.RemoveItem(avatarAddress, baseItemGuid);
             foreach (var itemGuid in otherItemGuidList)
             {
-                LocalStateModifier.RemoveItem(avatarAddress, itemGuid);
+                LocalLayerModifier.RemoveItem(avatarAddress, itemGuid);
             }
         }
 
@@ -290,7 +290,7 @@ namespace Nekoyume.UI
             Guid otherItemGuid,
             int slotIndex)
         {
-            LocalStateModifier.ModifyCombinationSlotItemEnhancement(
+            LocalLayerModifier.ModifyCombinationSlotItemEnhancement(
                 baseItemGuid,
                 otherItemGuid,
                 slotIndex);

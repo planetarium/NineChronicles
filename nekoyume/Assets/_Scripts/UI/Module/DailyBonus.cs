@@ -195,7 +195,7 @@ namespace Nekoyume.UI.Module
         {
             var blockCount = Game.Game.instance.Agent.BlockIndex -
                 States.Instance.CurrentAvatarState.dailyRewardReceivedIndex + 1;
-            LocalStateModifier.IncreaseAvatarDailyRewardReceivedIndex(
+            LocalLayerModifier.IncreaseAvatarDailyRewardReceivedIndex(
                 States.Instance.CurrentAvatarState.address,
                 blockCount);
             animator.SetTrigger(GetReward);

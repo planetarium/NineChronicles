@@ -131,7 +131,11 @@ namespace Nekoyume.UI.Module
             SharedViewModel.Selected.Subscribe(SubscribeSelect).AddTo(_disposablesForModel);
             SharedViewModel.HasNotification.SubscribeTo(hasNotificationImage).AddTo(_disposablesForModel);
             Set(SharedViewModel.hasBoss, imageKey);
-            buttonText.text = SharedViewModel.stageNumber;
+
+            if (int.TryParse(SharedViewModel.stageNumber, out var stageId))
+            {
+                buttonText.text = StageInformation.GetStageIdString(stageId);
+            }
         }
 
         public void Hide()
