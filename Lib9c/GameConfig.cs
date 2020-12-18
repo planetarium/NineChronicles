@@ -1,3 +1,6 @@
+using Nekoyume.Model.Item;
+using System.Collections.Generic;
+
 namespace Nekoyume
 {
     public static class GameConfig
@@ -113,5 +116,14 @@ namespace Nekoyume
         }
 
         #endregion
+
+        public static class MaxEquipmentSlotCount
+        {
+            public const int Weapon = 1;
+            public const int Armor = 1;
+            public const int Belt = 1;
+            public const int Necklace = 1;
+            public const int Ring = 2;
+        }
     }
 }

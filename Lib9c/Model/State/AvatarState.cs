@@ -423,6 +423,77 @@ namespace Nekoyume.Model.State
             }
         }
 
+        public void ValidateEquipmentsV2(List<Guid> equipmentIds, long blockIndex)
+        {
+            var countMap = new Dictionary<ItemSubType, int>();
+            foreach (var itemId in equipmentIds)
+            {
+                if (!inventory.TryGetNonFungibleItem(itemId, out ItemUsable outNonFungibleItem))
+                {
+                    continue;
+                }
+
+                var equipment = (Equipment)outNonFungibleItem;
+                if (equipment.RequiredBlockIndex > blockIndex)
+                {
+                    throw new RequiredBlockIndexException($"{equipment.ItemSubType} / unlock on {equipment.RequiredBlockIndex}");
+                }
+
+                var type = equipment.ItemSubType;
+                if (!countMap.ContainsKey(type))
+                {
+                    countMap[type] = 0;
+                }
+
+                countMap[type] += 1;
+
+                var requiredLevel = 0;
+                var isSlotEnough = true;
+                switch (equipment.ItemSubType)
+                {
+                    case ItemSubType.Weapon:
+                        isSlotEnough = countMap[type] > GameConfig.MaxEquipmentSlotCount.Weapon;
+                        requiredLevel = isSlotEnough ?
+                            GameConfig.RequireCharacterLevel.CharacterEquipmentSlotWeapon : int.MaxValue;
+                        break;
+                    case ItemSubType.Armor:
+                        isSlotEnough = countMap[type] > GameConfig.MaxEquipmentSlotCount.Armor;
+                        requiredLevel = isSlotEnough ?
+                            GameConfig.RequireCharacterLevel.CharacterEquipmentSlotArmor : int.MaxValue;
+                        break;
+                    case ItemSubType.Belt:
+                        isSlotEnough = countMap[type] > GameConfig.MaxEquipmentSlotCount.Belt;
+                        requiredLevel = isSlotEnough ?
+                            GameConfig.RequireCharacterLevel.CharacterEquipmentSlotBelt : int.MaxValue;
+                        break;
+                    case ItemSubType.Necklace:
+                        isSlotEnough = countMap[type] > GameConfig.MaxEquipmentSlotCount.Necklace;
+                        requiredLevel = isSlotEnough ?
+                            GameConfig.RequireCharacterLevel.CharacterEquipmentSlotNecklace : int.MaxValue;
+                        break;
+                    case ItemSubType.Ring:
+                        requiredLevel = countMap[ItemSubType.Ring] == 1
+                            ? GameConfig.RequireCharacterLevel.CharacterEquipmentSlotRing1
+                            : countMap[ItemSubType.Ring] == 2
+                                ? GameConfig.RequireCharacterLevel.CharacterEquipmentSlotRing2
+                                : int.MaxValue;
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException($"{equipment.ItemSubType} / invalid equipment type");
+                }
+
+                if (!isSlotEnough)
+                {
+                    throw new DuplicateEquipmentException($"Equipment slot of {equipment.ItemSubType} is full, but tried to equip {equipment.Id}");
+                }
+
+                if (level < requiredLevel)
+                {
+                    throw new EquipmentSlotUnlockException($"{equipment.ItemSubType} / not enough level. required: {requiredLevel}");
+                }
+            }
+        }
+
         public void ValidateConsumable(List<Guid> consumableIds, long currentBlockIndex)
         {
             for (var slotIndex = 0; slotIndex < consumableIds.Count; slotIndex++)
