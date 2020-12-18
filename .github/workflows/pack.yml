@@ -53,7 +53,7 @@ jobs:
           ULF: ${{ secrets.ULF }}
           APV_SIGNING_PRIVATE_KEY: ${{ secrets.APV_SIGNING_PRIVATE_KEY }}
         with:
-          entrypoint: scripts/build-development.sh
+          entrypoint: scripts/build-production.sh
           args: ${{ matrix.targetPlatform }}
       - name: Pack
         run: |
