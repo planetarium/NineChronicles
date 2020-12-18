@@ -4,6 +4,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using Libplanet;
 using Nekoyume.Battle;
+using Nekoyume.Model.Elemental;
 using Nekoyume.Model.Item;
 using Nekoyume.UI.Module;
 using UniRx;
@@ -544,7 +545,7 @@ namespace Nekoyume.UI.Model
 
         #endregion
 
-        public void UpdateEquipmentNotification()
+        public void UpdateEquipmentNotification(List<ElementalType> elementalTypes = null)
         {
             var currentAvatarState = Game.Game.instance.States.CurrentAvatarState;
             if (currentAvatarState is null)
@@ -567,6 +568,12 @@ namespace Nekoyume.UI.Model
             {
                 var matchedEquipments = Equipments
                     .Where(e => e.ItemBase.Value.ItemSubType == type);
+
+                if (elementalTypes != null)
+                {
+                    matchedEquipments = matchedEquipments.Where(e =>
+                        elementalTypes.Exists(x => x == e.ItemBase.Value.ElementalType));
+                }
                 var equippedEquipments =
                     matchedEquipments.Where(e => e.EquippedEnabled.Value);
                 var unequippedEquipments =
