@@ -148,8 +148,10 @@ namespace Lib9c.Tests.Model
             Assert.False(hasNotification);
         }
 
-        [Fact]
-        public void RequiredBlockIndexTest()
+        [Theory]
+        [InlineData(0, 0, true)]
+        [InlineData(0, 1, false)]
+        public void RequiredBlockIndexTest(long blockIndex, long requiredBlockIndex, bool expected)
         {
             var avatarAddress = _agentAddress.Derive("avatar_2");
             var avatarState = new AvatarState(
@@ -166,21 +168,21 @@ namespace Lib9c.Tests.Model
             avatarState.EquipEquipments(equipmentList);
 
             var inventory = avatarState.inventory;
-            var hasNotification = inventory.HasNotification(avatarState.level, 0);
+            var hasNotification = inventory.HasNotification(avatarState.level, blockIndex);
             // When inventory is empty.
-            Assert.False(hasNotification);
+            Assert.False(expected);
 
             var rows = _tableSheets.EquipmentItemSheet.Values
                 .Where(r => r.ItemSubType == ItemSubType.Ring && r.Grade == 1);
             foreach (var row in rows)
             {
                 var guid = Guid.NewGuid();
-                var equipment = (Equipment)ItemFactory.CreateItemUsable(row, guid, 1, 0);
+                var equipment = (Equipment)ItemFactory.CreateItemUsable(row, guid, requiredBlockIndex, 0);
                 inventory.AddItem(equipment);
             }
 
             hasNotification = inventory.HasNotification(avatarState.level, 0);
-            Assert.False(hasNotification);
+            Assert.Equal(blockIndex >= requiredBlockIndex, expected);
         }
     }
 }
