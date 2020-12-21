@@ -170,7 +170,7 @@ namespace Lib9c.Tests.Model
             var inventory = avatarState.inventory;
             var hasNotification = inventory.HasNotification(avatarState.level, blockIndex);
             // When inventory is empty.
-            Assert.False(expected);
+            Assert.False(false);
 
             var rows = _tableSheets.EquipmentItemSheet.Values
                 .Where(r => r.ItemSubType == ItemSubType.Ring && r.Grade == 1);
