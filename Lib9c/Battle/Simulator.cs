@@ -55,6 +55,8 @@ namespace Nekoyume.Battle
 
         public abstract Player Simulate();
 
+        public abstract Player SimulateV2();
+
         public static List<ItemBase> SetReward(
             WeightedSelector<StageSheet.RewardData> itemSelector,
             int maxCount,

@@ -141,6 +141,16 @@ namespace Nekoyume.Model
                 BT.Call(Act)
             );
         }
+        
+        public void InitAIV2()
+        {
+            SetSkill();
+
+            _root = new Root();
+            _root.OpenBranch(
+                BT.Call(ActV2)
+            );
+        }
 
         public void Tick()
         {
@@ -172,6 +182,36 @@ namespace Nekoyume.Model
         {
             // 스킬 선택.
             var selectedSkill = Skills.Select(Simulator.Random);
+
+            // 스킬 사용.
+            var usedSkill = selectedSkill.Use(
+                this,
+                Simulator.WaveTurn,
+                BuffFactory.GetBuffs(
+                    selectedSkill,
+                    Simulator.SkillBuffSheet,
+                    Simulator.BuffSheet
+                )
+            );
+
+            // 쿨다운 적용.
+            Skills.SetCooldown(selectedSkill.SkillRow.Id, selectedSkill.SkillRow.Cooldown);
+            Simulator.Log.Add(usedSkill);
+
+            foreach (var info in usedSkill.SkillInfos)
+            {
+                if (!info.Target.IsDead)
+                    continue;
+
+                var target = Targets.FirstOrDefault(i => i.Id == info.Target.Id);
+                target?.Die();
+            }
+        }
+        
+        private void UseSkillV2()
+        {
+            // 스킬 선택.
+            var selectedSkill = Skills.SelectV2(Simulator.Random);
 
             // 스킬 사용.
             var usedSkill = selectedSkill.Use(
@@ -344,6 +384,18 @@ namespace Nekoyume.Model
             }
             EndTurn();
         }
+        
+        private void ActV2()
+        {
+            if (IsAlive())
+            {
+                ReduceDurationOfBuffs();
+                ReduceSkillCooldown();
+                UseSkillV2();
+                RemoveBuffs();
+            }
+            EndTurn();
+        }
     }
 
     [Serializable]
@@ -417,62 +469,10 @@ namespace Nekoyume.Model
         {
             return PostSelect(random, GetSelectableSkills());
         }
-
-        // info: 스킬 쿨다운을 적용하는 것과 별개로, 버프에 대해서 꼼꼼하게 걸러낼 필요가 생길 때 참고하기 위해서 유닛 테스트와 함께 남깁니다.
-        public Skill.Skill Select(IRandom random, Dictionary<int, Buff.Buff> buffs, SkillBuffSheet skillBuffSheet,
-            BuffSheet buffSheet)
+        
+        public Skill.Skill SelectV2(IRandom random)
         {
-            var skills = GetSelectableSkills();
-
-            if (!(buffs is null) &&
-                !(skillBuffSheet is null) &&
-                !(buffSheet is null))
-            {
-                // 기존에 걸려 있는 버프들과 겹치지 않는 스킬만 골라내기.
-                skills = skills.Where(skill =>
-                {
-                    var skillId = skill.SkillRow.Id;
-
-                    // 버프가 없는 스킬이면 포함한다.
-                    if (!skillBuffSheet.TryGetValue(skillId, out var row))
-                        return true;
-
-                    // 이 스킬을 포함해야 하는가? 기본 네.
-                    var shouldContain = true;
-                    foreach (var buffId in row.BuffIds)
-                    {
-                        // 기존 버프 중 ID가 같은 것이 있을 경우 아니오.
-                        if (buffs.Values.Any(buff => buff.RowData.Id == buffId))
-                        {
-                            shouldContain = false;
-                            break;
-                        }
-
-                        // 버프 정보 얻어오기 실패.
-                        if (!buffSheet.TryGetValue(buffId, out var buffRow))
-                            continue;
-
-                        // 기존 버프 중 그룹 ID가 같고, ID가 크거나 같은 것이 있을 경우 아니오.
-                        if (buffs.Values.Any(buff =>
-                            buff.RowData.GroupId == buffRow.GroupId &&
-                            buff.RowData.Id >= buffRow.Id))
-                        {
-                            shouldContain = false;
-                            break;
-                        }
-                    }
-
-                    return shouldContain;
-                }).ToList();
-
-                // 기존 버프와 중복하는 것을 걷어내고 나니 사용할 스킬이 없는 경우에는 전체를 다시 고려한다.
-                if (!skills.Any())
-                {
-                    skills = GetSelectableSkills();
-                }
-            }
-
-            return PostSelect(random, skills);
+            return PostSelectV2(random, GetSelectableSkills());
         }
 
         private IEnumerable<Skill.Skill> GetSelectableSkills()
@@ -481,6 +481,21 @@ namespace Nekoyume.Model
         }
 
         private Skill.Skill PostSelect(IRandom random, IEnumerable<Skill.Skill> skills)
+        {
+            var selected = skills
+                .Select(skill => new {skill, chance = random.Next(0, 100)})
+                .Where(t => t.skill.Chance > t.chance)
+                .OrderBy(t => t.skill.SkillRow.Id)
+                .ThenBy(t => t.chance == 0 ? 1m : (decimal) t.chance / t.skill.Chance)
+                .Select(t => t.skill)
+                .ToList();
+
+            return selected.Any()
+                ? selected[random.Next(selected.Count)]
+                : throw new Exception($"[{nameof(Skills)}] There is no selected skills");
+        }
+        
+        private Skill.Skill PostSelectV2(IRandom random, IEnumerable<Skill.Skill> skills)
         {
             var selected = skills
                 .OrderBy(skill => skill.SkillRow.Id)

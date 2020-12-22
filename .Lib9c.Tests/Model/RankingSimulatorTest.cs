@@ -65,7 +65,7 @@ namespace Lib9c.Tests.Model
                 new ArenaInfo(avatarState, _tableSheets.CharacterSheet, false),
                 new ArenaInfo(avatarState, _tableSheets.CharacterSheet, false)
             );
-            simulator.Simulate();
+            simulator.SimulateV2();
 
             Assert.Equal(expected, simulator.Reward.Any());
         }
@@ -109,7 +109,7 @@ namespace Lib9c.Tests.Model
                 info,
                 new ArenaInfo(avatarState, _tableSheets.CharacterSheet, false)
             );
-            simulator.Simulate();
+            simulator.SimulateV2();
 
             Assert.Equal(expected, simulator.Reward.Count());
         }
@@ -160,7 +160,7 @@ namespace Lib9c.Tests.Model
             var player = simulator.Player;
             Assert.Equal(row.Stat, player.Stats.OptionalStats.ATK);
 
-            var player2 = simulator.Simulate();
+            var player2 = simulator.SimulateV2();
             Assert.Equal(row.Stat, player2.Stats.OptionalStats.ATK);
 
             var e = simulator.Log.OfType<SpawnEnemyPlayer>().First();
