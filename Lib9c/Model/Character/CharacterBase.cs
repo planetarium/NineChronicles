@@ -483,6 +483,7 @@ namespace Nekoyume.Model
         private Skill.Skill PostSelect(IRandom random, IEnumerable<Skill.Skill> skills)
         {
             var selected = skills
+                .OrderBy(skill => skill.SkillRow.Id)
                 .Select(skill => new {skill, chance = random.Next(0, 100)})
                 .Where(t => t.skill.Chance > t.chance)
                 .OrderBy(t => t.skill.SkillRow.Id)
