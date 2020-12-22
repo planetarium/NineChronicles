@@ -101,7 +101,7 @@ namespace Lib9c.Tests.Action
                 .Id;
 
                 var costume = (Costume)ItemFactory.CreateItem(
-                    _tableSheets.ItemSheet[costumeId], new ItemEnhancementTest.TestRandom());
+                    _tableSheets.ItemSheet[costumeId], new TestRandom());
                 previousAvatarState.inventory.AddItem(costume);
                 costumes.Add(costume.ItemId);
             }
@@ -120,7 +120,7 @@ namespace Lib9c.Tests.Action
 
                 var weapon = ItemFactory.CreateItem(
                     _tableSheets.EquipmentItemSheet[weaponId],
-                    new ItemEnhancementTest.TestRandom())
+                    new TestRandom())
                     as Equipment;
                 equipments.Add(weapon.ItemId);
                 previousAvatarState.inventory.AddItem(weapon);
@@ -138,7 +138,7 @@ namespace Lib9c.Tests.Action
 
                 var armor = ItemFactory.CreateItem(
                     _tableSheets.EquipmentItemSheet[armorId],
-                    new ItemEnhancementTest.TestRandom())
+                    new TestRandom())
                     as Equipment;
                 equipments.Add(armor.ItemId);
                 previousAvatarState.inventory.AddItem(armor);
@@ -181,7 +181,7 @@ namespace Lib9c.Tests.Action
             {
                 PreviousStates = state,
                 Signer = _agentAddress,
-                Random = new ItemEnhancementTest.TestRandom(),
+                Random = new TestRandom(),
                 Rehearsal = false,
             });
 
@@ -259,7 +259,7 @@ namespace Lib9c.Tests.Action
             {
                 PreviousStates = state,
                 Signer = _agentAddress,
-                Random = new ItemEnhancementTest.TestRandom(),
+                Random = new TestRandom(),
                 Rehearsal = false,
             });
 

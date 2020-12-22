@@ -569,55 +569,6 @@ namespace Nekoyume.Model.State
             }
         }
 
-        public void ValidateCostume(IEnumerable<Guid> costumeIds)
-        {
-            var subTypes = new List<ItemSubType>();
-            foreach (var costumeId in costumeIds.OrderBy(i => i))
-            {
-                if (!inventory.TryGetNonFungibleItem(costumeId, out Costume costume))
-                {
-                    continue;
-                }
-
-                if (subTypes.Contains(costume.ItemSubType))
-                {
-                    throw new DuplicateCostumeException($"can't equip duplicate costume type : {costume.ItemSubType}");
-                }
-                subTypes.Add(costume.ItemSubType);
-
-                int requiredLevel;
-                switch (costume.ItemSubType)
-                {
-                    case ItemSubType.FullCostume:
-                        requiredLevel = GameConfig.RequireCharacterLevel.CharacterFullCostumeSlot;
-                        break;
-                    case ItemSubType.HairCostume:
-                        requiredLevel = GameConfig.RequireCharacterLevel.CharacterHairCostumeSlot;
-                        break;
-                    case ItemSubType.EarCostume:
-                        requiredLevel = GameConfig.RequireCharacterLevel.CharacterEarCostumeSlot;
-                        break;
-                    case ItemSubType.EyeCostume:
-                        requiredLevel = GameConfig.RequireCharacterLevel.CharacterEyeCostumeSlot;
-                        break;
-                    case ItemSubType.TailCostume:
-                        requiredLevel = GameConfig.RequireCharacterLevel.CharacterTailCostumeSlot;
-                        break;
-                    case ItemSubType.Title:
-                        requiredLevel = GameConfig.RequireCharacterLevel.CharacterTitleSlot;
-                        break;
-                    default:
-                        throw new InvalidItemTypeException(
-                            $"Costume[id: {costumeId}] isn't expected type. [type: {costume.ItemSubType}]");
-                }
-
-                if (level < requiredLevel)
-                {
-                    throw new CostumeSlotUnlockException($"not enough level. required: {requiredLevel}");
-                }
-            }
-        }
-
         public void EquipItems(IEnumerable<Guid> itemIds)
         {
             // Unequip items already equipped.
