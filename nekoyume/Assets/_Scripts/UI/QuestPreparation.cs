@@ -382,10 +382,10 @@ namespace Nekoyume.UI
 
         #endregion
 
-        public void QuestClick(bool repeat)
+        private void QuestClick(bool repeat)
         {
-            questButton.interactable = false;
             StartCoroutine(CoQuestClick(repeat));
+            questButton.interactable = false;
         }
 
         private IEnumerator CoQuestClick(bool repeat)
