@@ -166,6 +166,13 @@ namespace Lib9c.Tests
         {
             List<Guid> results1 = new List<Guid>();
             List<Guid> results2 = new List<Guid>();
+            Guid[] guids = new[]
+            {
+                Guid.NewGuid(),
+                Guid.NewGuid(),
+                Guid.NewGuid(),
+            };
+
             for (int i = 0; i < 2; i++)
             {
                 List<Guid> targetResults = i == 0
@@ -173,9 +180,10 @@ namespace Lib9c.Tests
                     : results2;
 
                 SimplePriorityQueue<Guid, decimal> queue = new SimplePriorityQueue<Guid, decimal>();
-                queue.Enqueue(Guid.NewGuid(), spd);
-                queue.Enqueue(Guid.NewGuid(), spd);
-                queue.Enqueue(Guid.NewGuid(), spd);
+                for (int j = 0; j < guids.Length; j++)
+                {
+                    queue.Enqueue(guids[j], spd);
+                }
 
                 for (int j = 0; j < loopCount; j++)
                 {
