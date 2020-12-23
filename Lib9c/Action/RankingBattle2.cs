@@ -48,8 +48,8 @@ namespace Nekoyume.Action
             var started = DateTimeOffset.UtcNow;
             Log.Debug(
                 "RankingBattle exec started. costume: ({CostumeIds}), equipment: ({EquipmentIds})",
-                string.Concat(costumeIds),
-                string.Concat(equipmentIds)
+                string.Join(",", costumeIds),
+                string.Join(",", equipmentIds)
             );
 
             if (AvatarAddress.Equals(EnemyAddress))
@@ -158,8 +158,8 @@ namespace Nekoyume.Action
             sw.Stop();
             Log.Debug(
                 "RankingBattle Simulate() with equipment:({Equipment}), costume:({Costume}): {Elapsed}",
-                string.Concat(simulator.Player.Equipments.Select(r => r.ItemId)),
-                string.Concat(simulator.Player.Costumes.Select(r => r.ItemId)),
+                string.Join(",", simulator.Player.Equipments.Select(r => r.ItemId)),
+                string.Join(",", simulator.Player.Costumes.Select(r => r.ItemId)),
                 sw.Elapsed
             );
 
