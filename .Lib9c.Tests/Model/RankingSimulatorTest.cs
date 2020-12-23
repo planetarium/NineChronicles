@@ -188,12 +188,10 @@ namespace Lib9c.Tests.Model
             {
                 level = level,
             };
-            avatarState.worldInformation.ClearStage(
-                1,
-                GameConfig.RequireClearedStageLevel.ActionsInRankingBoard,
-                1,
+            avatarState.worldInformation = new WorldInformation(
+                0,
                 _tableSheets.WorldSheet,
-                _tableSheets.WorldUnlockSheet);
+                GameConfig.RequireClearedStageLevel.ActionsInRankingBoard);
 
             var simulator = new RankingSimulator(
                 _random,
