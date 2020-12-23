@@ -465,8 +465,8 @@ namespace Nekoyume.UI
                 return;
             }
 
-            startButton.interactable = false;
             StartCoroutine(CoBattleClick(repeat));
+            startButton.interactable = false;
         }
 
         private IEnumerator CoBattleClick(bool repeat)
