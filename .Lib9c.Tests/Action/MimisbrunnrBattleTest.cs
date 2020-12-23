@@ -18,7 +18,7 @@
     using Nekoyume.TableData;
     using Xunit;
 
-    public class MimisbrunnrBttleTest
+    public class MimisbrunnrBattleTest
     {
         private readonly TableSheets _tableSheets;
 
@@ -31,7 +31,7 @@
         private readonly WeeklyArenaState _weeklyArenaState;
         private readonly IAccountStateDelta _initialState;
 
-        public MimisbrunnrBttleTest()
+        public MimisbrunnrBattleTest()
         {
             var sheets = TableSheetsImporter.ImportSheets();
             _tableSheets = new TableSheets(sheets);
