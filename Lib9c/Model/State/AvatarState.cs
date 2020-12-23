@@ -243,6 +243,12 @@ namespace Nekoyume.Model.State
             mailBox.Add(mail);
             mailBox.CleanUp();
         }
+        
+        public void UpdateV3(Mail.Mail mail)
+        {
+            mailBox.Add(mail);
+            mailBox.CleanUpV2();
+        }
 
         public void Customize(int hair, int lens, int ear, int tail)
         {
