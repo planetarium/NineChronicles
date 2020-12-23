@@ -136,7 +136,7 @@ namespace Nekoyume.Action
                 );
             }
 
-            avatarState.ValidateEquipments(equipments, context.BlockIndex);
+            avatarState.ValidateEquipmentsV2(equipments, context.BlockIndex);
             avatarState.ValidateConsumable(foods, context.BlockIndex);
             avatarState.ValidateCostume(costumes);
 

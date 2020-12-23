@@ -267,5 +267,75 @@ namespace Lib9c.Tests.Action
             Assert.Equal(maxLevelExp + requiredExp - 1, nextAvatarState.exp);
             Assert.Equal(previousAvatarState.level, nextAvatarState.level);
         }
+
+        [Theory]
+        [InlineData(ItemSubType.Weapon, GameConfig.MaxEquipmentSlotCount.Weapon)]
+        public void MultipleEquipmentTest(ItemSubType type, int maxCount)
+        {
+            var previousAvatarState = _initialState.GetAvatarState(_avatarAddress);
+            var maxLevel = _tableSheets.CharacterLevelSheet.Max(row => row.Value.Level);
+            var expRow = _tableSheets.CharacterLevelSheet[maxLevel];
+            var maxLevelExp = expRow.Exp;
+
+            previousAvatarState.level = maxLevel;
+            previousAvatarState.exp = maxLevelExp;
+
+            var weaponRows = _tableSheets
+                .EquipmentItemSheet
+                .Values
+                .Where(r => r.ItemSubType == type)
+                .Take(maxCount + 1);
+
+            var equipments = new List<Guid>();
+            foreach (var row in weaponRows)
+            {
+                var equipment = ItemFactory.CreateItem(
+                    _tableSheets.EquipmentItemSheet[row.Id],
+                    new TestRandom())
+                    as Equipment;
+
+                equipments.Add(equipment.ItemId);
+                previousAvatarState.inventory.AddItem(equipment);
+            }
+
+            var state = _initialState.SetState(_avatarAddress, previousAvatarState.Serialize());
+
+            var action = new HackAndSlash4
+            {
+                costumes = new List<Guid>(),
+                equipments = equipments,
+                foods = new List<Guid>(),
+                worldId = 1,
+                stageId = 1,
+                avatarAddress = _avatarAddress,
+                WeeklyArenaAddress = _weeklyArenaState.address,
+                RankingMapAddress = _rankingMapAddress,
+            };
+
+            Assert.Null(action.Result);
+
+            var exec = Assert.Throws<DuplicateEquipmentException>(() => action.Execute(new ActionContext
+            {
+                PreviousStates = state,
+                Signer = _agentAddress,
+                Random = new TestRandom(),
+                Rehearsal = false,
+            }));
+
+            SerializeException<DuplicateEquipmentException>(exec);
+        }
+
+        private static void SerializeException<T>(Exception exec)
+            where T : Exception
+        {
+            var formatter = new BinaryFormatter();
+            using var ms = new MemoryStream();
+            formatter.Serialize(ms, exec);
+
+            ms.Seek(0, SeekOrigin.Begin);
+            var deserialized = (T)formatter.Deserialize(ms);
+
+            Assert.Equal(exec.Message, deserialized.Message);
+        }
     }
 }
