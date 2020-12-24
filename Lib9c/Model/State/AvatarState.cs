@@ -452,22 +452,22 @@ namespace Nekoyume.Model.State
                 switch (equipment.ItemSubType)
                 {
                     case ItemSubType.Weapon:
-                        isSlotEnough = countMap[type] > GameConfig.MaxEquipmentSlotCount.Weapon;
+                        isSlotEnough = countMap[type] <= GameConfig.MaxEquipmentSlotCount.Weapon;
                         requiredLevel = isSlotEnough ?
                             GameConfig.RequireCharacterLevel.CharacterEquipmentSlotWeapon : int.MaxValue;
                         break;
                     case ItemSubType.Armor:
-                        isSlotEnough = countMap[type] > GameConfig.MaxEquipmentSlotCount.Armor;
+                        isSlotEnough = countMap[type] <= GameConfig.MaxEquipmentSlotCount.Armor;
                         requiredLevel = isSlotEnough ?
                             GameConfig.RequireCharacterLevel.CharacterEquipmentSlotArmor : int.MaxValue;
                         break;
                     case ItemSubType.Belt:
-                        isSlotEnough = countMap[type] > GameConfig.MaxEquipmentSlotCount.Belt;
+                        isSlotEnough = countMap[type] <= GameConfig.MaxEquipmentSlotCount.Belt;
                         requiredLevel = isSlotEnough ?
                             GameConfig.RequireCharacterLevel.CharacterEquipmentSlotBelt : int.MaxValue;
                         break;
                     case ItemSubType.Necklace:
-                        isSlotEnough = countMap[type] > GameConfig.MaxEquipmentSlotCount.Necklace;
+                        isSlotEnough = countMap[type] <= GameConfig.MaxEquipmentSlotCount.Necklace;
                         requiredLevel = isSlotEnough ?
                             GameConfig.RequireCharacterLevel.CharacterEquipmentSlotNecklace : int.MaxValue;
                         break;
