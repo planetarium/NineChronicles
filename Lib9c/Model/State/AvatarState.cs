@@ -472,6 +472,7 @@ namespace Nekoyume.Model.State
                             GameConfig.RequireCharacterLevel.CharacterEquipmentSlotNecklace : int.MaxValue;
                         break;
                     case ItemSubType.Ring:
+                        isSlotEnough = countMap[type] <= GameConfig.MaxEquipmentSlotCount.Ring;
                         requiredLevel = countMap[ItemSubType.Ring] == 1
                             ? GameConfig.RequireCharacterLevel.CharacterEquipmentSlotRing1
                             : countMap[ItemSubType.Ring] == 2
