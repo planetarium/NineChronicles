@@ -18,7 +18,9 @@ namespace Lib9c.Tests.Action
     using Nekoyume.Model.Stat;
     using Nekoyume.Model.State;
     using Nekoyume.TableData;
+    using Serilog;
     using Xunit;
+    using Xunit.Abstractions;
 
     public class RankingBattle2Test
     {
@@ -29,7 +31,7 @@ namespace Lib9c.Tests.Action
         private readonly Address _weeklyArenaAddress;
         private IAccountStateDelta _initialState;
 
-        public RankingBattle2Test()
+        public RankingBattle2Test(ITestOutputHelper outputHelper)
         {
             _initialState = new State();
 
@@ -72,6 +74,11 @@ namespace Lib9c.Tests.Action
                 .SetState(agent2Address, agent2State.Serialize())
                 .SetState(_avatar2Address, avatar2State.Serialize())
                 .SetState(_weeklyArenaAddress, weeklyArenaState.Serialize());
+
+            Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Verbose()
+                .WriteTo.TestOutput(outputHelper)
+                .CreateLogger();
         }
 
         [Fact]
@@ -95,8 +102,7 @@ namespace Lib9c.Tests.Action
             var costume = (Costume)ItemFactory.CreateItem(
                 _tableSheets.ItemSheet[row.CostumeId], new TestRandom());
             costume.equipped = true;
-            var avatarState = _initialState.GetAvatarState(_avatar1Address);
-            avatarState.inventory.AddItem(costume);
+            previousAvatar1State.inventory.AddItem(costume);
 
             var row2 = _tableSheets.CostumeStatSheet.Values.First(r => r.StatType == StatType.DEF);
             var enemyCostume = (Costume)ItemFactory.CreateItem(
@@ -105,8 +111,8 @@ namespace Lib9c.Tests.Action
             var enemyAvatarState = _initialState.GetAvatarState(_avatar2Address);
             enemyAvatarState.inventory.AddItem(enemyCostume);
 
-            _initialState = _initialState
-                .SetState(_avatar1Address, avatarState.Serialize())
+            previousState = previousState
+                .SetState(_avatar1Address, previousAvatar1State.Serialize())
                 .SetState(_avatar2Address, enemyAvatarState.Serialize());
 
             var action = new RankingBattle2

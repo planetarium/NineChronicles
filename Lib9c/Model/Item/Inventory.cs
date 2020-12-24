@@ -358,13 +358,15 @@ namespace Nekoyume.Model.Item
 
         #endregion
 
-        public bool HasNotification(int level)
+        public bool HasNotification(int level, long blockIndex)
         {
             var availableSlots = UnlockHelper.GetAvailableEquipmentSlots(level);
 
             foreach (var (type, slotCount) in availableSlots)
             {
-                var equipments = Equipments.Where(e => e.ItemSubType == type);
+                var equipments = Equipments.Where(e =>
+                    e.ItemSubType == type &&
+                    e.RequiredBlockIndex <= blockIndex);
                 var current = equipments.Where(e => e.equipped);
                 // When an equipment slot is empty.
                 if (current.Count() < Math.Min(equipments.Count(), slotCount))
