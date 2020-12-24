@@ -415,7 +415,7 @@ namespace Lib9c.Tests.Model.State
                 }
                 else if (count > maxCount)
                 {
-                    Assert.True(e is DuplicateCostumeException);
+                    Assert.True(e is DuplicateEquipmentException);
                 }
             }
         }
