@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
 using Bencodex.Types;
@@ -43,6 +44,15 @@ namespace Nekoyume.Action
                     .MarkBalanceChanged(GoldCurrencyMock, ctx.Signer, WeeklyArenaAddress);
             }
 
+            var sw = new Stopwatch();
+            sw.Start();
+            var started = DateTimeOffset.UtcNow;
+            Log.Debug(
+                "RankingBattle exec started. costume: ({CostumeIds}), equipment: ({EquipmentIds})",
+                string.Join(",", costumeIds),
+                string.Join(",", equipmentIds)
+            );
+
             if (AvatarAddress.Equals(EnemyAddress))
             {
                 throw new InvalidAddressException("Aborted as the signer tried to battle for themselves.");
@@ -53,12 +63,25 @@ namespace Nekoyume.Action
                 throw new FailedLoadStateException("Aborted as the avatar state of the signer was failed to load.");
             }
 
+            sw.Stop();
+            Log.Debug("RankingBattle Get AgentAvatarStates: {Elapsed}", sw.Elapsed);
+            sw.Restart();
+
             var items = equipmentIds.Concat(costumeIds);
 
             avatarState.ValidateEquipmentsV2(equipmentIds, context.BlockIndex);
             avatarState.ValidateConsumable(consumableIds, context.BlockIndex);
             avatarState.ValidateCostume(costumeIds);
+
+            sw.Stop();
+            Log.Debug("RankingBattle Validate Equipments: {Elapsed}", sw.Elapsed);
+            sw.Restart();
+
             avatarState.EquipItems(items);
+
+            sw.Stop();
+            Log.Debug("RankingBattle Equip Equipments: {Elapsed}", sw.Elapsed);
+            sw.Restart();
 
             if (!avatarState.worldInformation.TryGetUnlockedWorldByStageClearedBlockIndex(out var world) ||
                 world.StageClearedId < GameConfig.RequireClearedStageLevel.ActionsInRankingBoard)
@@ -74,7 +97,15 @@ namespace Nekoyume.Action
                 throw new FailedLoadStateException($"Aborted as the avatar state of the opponent ({EnemyAddress}) was failed to load.");
             }
 
+            sw.Stop();
+            Log.Debug("RankingBattle Get Enemy AvatarState: {Elapsed}", sw.Elapsed);
+            sw.Restart();
+
             var weeklyArenaState = states.GetWeeklyArenaState(WeeklyArenaAddress);
+
+            sw.Stop();
+            Log.Debug("RankingBattle Get WeeklyArenaState ({Address}): {Elapsed}", WeeklyArenaAddress, sw.Elapsed);
+            sw.Restart();
 
             if (weeklyArenaState.Ended)
             {
@@ -105,7 +136,16 @@ namespace Nekoyume.Action
 
             Log.Debug(weeklyArenaState.address.ToHex());
 
+            sw.Stop();
+            Log.Debug("RankingBattle Validate ArenaInfo: {Elapsed}", sw.Elapsed);
+            sw.Restart();
+
             var costumeStatSheet = states.GetSheet<CostumeStatSheet>();
+
+            sw.Stop();
+            Log.Debug("RankingBattle Get CostumeStatSheet: {Elapsed}", sw.Elapsed);
+            sw.Restart();
+
             var simulator = new RankingSimulator(
                 ctx.Random,
                 avatarState,
@@ -119,16 +159,45 @@ namespace Nekoyume.Action
 
             simulator.Simulate();
 
+            sw.Stop();
+            Log.Debug(
+                "RankingBattle Simulate() with equipment:({Equipment}), costume:({Costume}): {Elapsed}",
+                string.Join(",", simulator.Player.Equipments.Select(r => r.ItemId)),
+                string.Join(",", simulator.Player.Costumes.Select(r => r.ItemId)),
+                sw.Elapsed
+            );
+
+            Log.Debug(
+                "Execute RankingBattle({AvatarAddress}); result: {Result} event count: {EventCount}",
+                AvatarAddress,
+                simulator.Log.result,
+                simulator.Log.Count
+            );
+            sw.Restart();
+
             Result = simulator.Log;
 
             foreach (var itemBase in simulator.Reward.OrderBy(i => i.Id))
             {
+                Log.Debug($"RankingBattle Add Reward Item({itemBase.Id}): {{Elapsed}}", sw.Elapsed);
                 avatarState.inventory.AddItem(itemBase);
             }
 
-            return states
-                .SetState(WeeklyArenaAddress, weeklyArenaState.Serialize())
-                .SetState(AvatarAddress, avatarState.Serialize());
+            states = states.SetState(WeeklyArenaAddress, weeklyArenaState.Serialize());
+
+            sw.Stop();
+            Log.Debug("RankingBattle Serialize WeeklyArenaState: {Elapsed}", sw.Elapsed);
+            sw.Restart();
+
+            states = states.SetState(AvatarAddress, avatarState.Serialize());
+
+            sw.Stop();
+            Log.Debug("RankingBattle Serialize AvatarState: {Elapsed}", sw.Elapsed);
+            sw.Restart();
+
+            var ended = DateTimeOffset.UtcNow;
+            Log.Debug("RankingBattle Total Executed Time: {Elapsed}", ended - started);
+            return states;
         }
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
@@ -137,13 +206,13 @@ namespace Nekoyume.Action
                 ["avatarAddress"] = AvatarAddress.Serialize(),
                 ["enemyAddress"] = EnemyAddress.Serialize(),
                 ["weeklyArenaAddress"] = WeeklyArenaAddress.Serialize(),
-                ["costume_ids"] = new Bencodex.Types.List(costumeIds
+                ["costume_ids"] = new List(costumeIds
                     .OrderBy(element => element)
                     .Select(e => e.Serialize())),
-                ["equipment_ids"] = new Bencodex.Types.List(equipmentIds
+                ["equipment_ids"] = new List(equipmentIds
                     .OrderBy(element => element)
                     .Select(e => e.Serialize())),
-                ["consumable_ids"] = new Bencodex.Types.List(consumableIds
+                ["consumable_ids"] = new List(consumableIds
                     .OrderBy(element => element)
                     .Select(e => e.Serialize())),
             }.ToImmutableDictionary();
@@ -153,13 +222,13 @@ namespace Nekoyume.Action
             AvatarAddress = plainValue["avatarAddress"].ToAddress();
             EnemyAddress = plainValue["enemyAddress"].ToAddress();
             WeeklyArenaAddress = plainValue["weeklyArenaAddress"].ToAddress();
-            costumeIds = ((Bencodex.Types.List) plainValue["costume_ids"])
+            costumeIds = ((List) plainValue["costume_ids"])
                 .Select(e => e.ToGuid())
                 .ToList();
-            equipmentIds = ((Bencodex.Types.List) plainValue["equipment_ids"])
+            equipmentIds = ((List) plainValue["equipment_ids"])
                 .Select(e => e.ToGuid())
                 .ToList();
-            consumableIds = ((Bencodex.Types.List) plainValue["consumable_ids"])
+            consumableIds = ((List) plainValue["consumable_ids"])
                 .Select(e => e.ToGuid())
                 .ToList();
         }
