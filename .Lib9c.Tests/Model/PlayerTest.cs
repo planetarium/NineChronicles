@@ -141,7 +141,7 @@ namespace Lib9c.Tests.Model
         }
 
         [Fact]
-        public void LevelUp()
+        public void GetExp()
         {
             var row = _tableSheets.CostumeStatSheet.Values.First(r => r.StatType == StatType.HP);
             var costume = (Costume)ItemFactory.CreateItem(_tableSheets.ItemSheet[row.CostumeId], _random);
@@ -171,6 +171,47 @@ namespace Lib9c.Tests.Model
             Assert.Equal(2, player.Level);
             Assert.Equal(612, player.HP);
             Assert.Equal(590, player.CurrentHP);
+        }
+
+        [Theory]
+        [InlineData(1, 1)]
+        [InlineData(2, 3)]
+        [InlineData(5, 5)]
+        public void GetExpV2(int level, int count = 1)
+        {
+            var player = new Player(
+                level,
+                _tableSheets.CharacterSheet,
+                _tableSheets.CharacterLevelSheet,
+                _tableSheets.EquipmentItemSetEffectSheet);
+
+            for (int i = 0; i < count; ++i)
+            {
+                var requiredExp = _tableSheets.CharacterLevelSheet[level].ExpNeed;
+                player.GetExpV2(requiredExp);
+
+                Assert.Equal(level + 1, player.Level);
+                ++level;
+            }
+        }
+
+        [Fact]
+        public void MaxLevelTest()
+        {
+            var maxLevel = _tableSheets.CharacterLevelSheet.Max(row => row.Value.Level);
+            var player = new Player(
+                maxLevel,
+                _tableSheets.CharacterSheet,
+                _tableSheets.CharacterLevelSheet,
+                _tableSheets.EquipmentItemSetEffectSheet);
+
+            var expRow = _tableSheets.CharacterLevelSheet[maxLevel];
+            var maxLevelExp = expRow.Exp;
+            var requiredExp = expRow.ExpNeed;
+            player.GetExpV2(requiredExp);
+
+            Assert.Equal(maxLevel, player.Level);
+            Assert.Equal(requiredExp - 1, player.Exp.Current - expRow.Exp);
         }
     }
 }

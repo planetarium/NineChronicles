@@ -76,7 +76,7 @@ namespace Nekoyume.Battle
             _enemyPlayer.SetCostumeStat(costumeStatSheet);
         }
 
-        public override Player Simulate()
+        public Player Simulate()
         {
 #if TEST_LOG
             var sb = new System.Text.StringBuilder();
@@ -113,13 +113,13 @@ namespace Nekoyume.Battle
 #endif
                     break;
                 }
-                
+
                 // 캐릭터 큐가 비어 있는 경우 break.
                 if (!Characters.TryDequeue(out var character))
                     break;
 
                 character.Tick();
-                
+
                 // 플레이어가 죽은 경우 break;
                 if (Player.IsDead)
                 {
@@ -141,7 +141,7 @@ namespace Nekoyume.Battle
                 {
                     Result = BattleLog.Result.Win;
                     Log.clearedWaveNumber = WaveNumber;
-                    
+
                     break;
                 }
 

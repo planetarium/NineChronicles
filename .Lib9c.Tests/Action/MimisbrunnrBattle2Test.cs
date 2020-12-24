@@ -18,7 +18,7 @@
     using Nekoyume.TableData;
     using Xunit;
 
-    public class MimisbrunnrBttleTest
+    public class MimisbrunnrBattle2Test
     {
         private readonly TableSheets _tableSheets;
 
@@ -31,7 +31,7 @@
         private readonly WeeklyArenaState _weeklyArenaState;
         private readonly IAccountStateDelta _initialState;
 
-        public MimisbrunnrBttleTest()
+        public MimisbrunnrBattle2Test()
         {
             var sheets = TableSheetsImporter.ImportSheets();
             _tableSheets = new TableSheets(sheets);
@@ -133,7 +133,7 @@
 
             var state = _initialState.SetState(_avatarAddress, previousAvatarState.Serialize());
 
-            var action = new MimisbrunnrBattle()
+            var action = new MimisbrunnrBattle2()
             {
                 costumes = new List<Guid> { ((Costume)costume).ItemId },
                 equipments = new List<Guid>() { equipment.ItemId },
@@ -223,7 +223,7 @@
                 }
             }
 
-            var action = new MimisbrunnrBattle()
+            var action = new MimisbrunnrBattle2()
             {
                 costumes = new List<Guid> { costume.ItemId },
                 equipments = new List<Guid>() { equipment.ItemId },
@@ -250,7 +250,7 @@
         [Fact]
         public void ExecuteThrowFailedLoadStateException()
         {
-            var action = new MimisbrunnrBattle()
+            var action = new MimisbrunnrBattle2()
             {
                 costumes = new List<Guid>(),
                 equipments = new List<Guid>(),
@@ -275,7 +275,7 @@
         [Fact]
         public void ExecuteThrowInvalidRankingMapAddress()
         {
-            var action = new MimisbrunnrBattle()
+            var action = new MimisbrunnrBattle2()
             {
                 costumes = new List<Guid>(),
                 equipments = new List<Guid>(),
@@ -302,7 +302,7 @@
         [Fact]
         public void ExecuteThrowSheetRowNotFound()
         {
-            var action = new MimisbrunnrBattle()
+            var action = new MimisbrunnrBattle2()
             {
                 costumes = new List<Guid>(),
                 equipments = new List<Guid>(),
@@ -329,7 +329,7 @@
         [Fact]
         public void ExecuteThrowSheetRowColumn()
         {
-            var action = new MimisbrunnrBattle()
+            var action = new MimisbrunnrBattle2()
             {
                 costumes = new List<Guid>(),
                 equipments = new List<Guid>(),
@@ -371,7 +371,7 @@
                 _tableSheets.WorldSheet,
                 _tableSheets.WorldUnlockSheet);
 
-            var action = new MimisbrunnrBattle()
+            var action = new MimisbrunnrBattle2()
             {
                 costumes = new List<Guid>(),
                 equipments = new List<Guid>(),
@@ -459,7 +459,7 @@
 
             var state = _initialState.SetState(_avatarAddress, previousAvatarState.Serialize());
 
-            var action = new MimisbrunnrBattle()
+            var action = new MimisbrunnrBattle2()
             {
                 costumes = new List<Guid> { ((Costume)costume).ItemId },
                 equipments = new List<Guid>() { equipment.ItemId },
@@ -501,7 +501,7 @@
             avatarState.worldInformation = new WorldInformation(0, worldSheet, alreadyClearedStageId);
             var nextState = _initialState.SetState(_avatarAddress, avatarState.Serialize());
 
-            var action = new MimisbrunnrBattle
+            var action = new MimisbrunnrBattle2
             {
                 costumes = new List<Guid>(),
                 equipments = new List<Guid>(),
@@ -549,7 +549,7 @@
             avatarState.inventory.AddItem(equipment);
             var nextState = _initialState.SetState(_avatarAddress, avatarState.Serialize());
 
-            var action = new MimisbrunnrBattle()
+            var action = new MimisbrunnrBattle2()
             {
                 costumes = new List<Guid> { ((Costume)costume).ItemId },
                 equipments = new List<Guid>() { equipment.ItemId },
