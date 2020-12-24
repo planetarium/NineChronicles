@@ -8,6 +8,7 @@ namespace Lib9c.Tests.Model.State
     using System.Threading.Tasks;
     using Bencodex;
     using Bencodex.Types;
+    using Lib9c.Tests.Action;
     using Libplanet;
     using Libplanet.Crypto;
     using Nekoyume;
@@ -364,6 +365,58 @@ namespace Lib9c.Tests.Model.State
             foreach (var equippableItem in equippableItems)
             {
                 Assert.True(equippableItem.Equipped);
+            }
+        }
+
+        [Theory]
+        [InlineData(ItemSubType.Weapon, 1, GameConfig.MaxEquipmentSlotCount.Weapon, 0, 0)]
+        [InlineData(ItemSubType.Armor, 1, GameConfig.MaxEquipmentSlotCount.Armor, 0, 1)]
+        [InlineData(ItemSubType.Belt, 2, GameConfig.MaxEquipmentSlotCount.Belt, 0, 0)]
+        [InlineData(ItemSubType.Necklace, 1, GameConfig.MaxEquipmentSlotCount.Necklace, 0, 1)]
+        [InlineData(ItemSubType.Ring, 3, GameConfig.MaxEquipmentSlotCount.Ring, 0, 0)]
+        private void ValidateEquipmentsV2(ItemSubType type, int count, int maxCount, long blockIndex, long requiredBlockIndex)
+        {
+            var avatarState = GetNewAvatarState(new PrivateKey().ToAddress(), new PrivateKey().ToAddress());
+            var maxLevel = _tableSheets.CharacterLevelSheet.Max(row => row.Value.Level);
+            var expRow = _tableSheets.CharacterLevelSheet[maxLevel];
+            var maxLevelExp = expRow.Exp;
+
+            avatarState.level = maxLevel;
+            avatarState.exp = maxLevelExp;
+
+            var weaponRows = _tableSheets
+                .EquipmentItemSheet
+                .Values
+                .Where(r => r.ItemSubType == type)
+                .Take(count);
+
+            var equipments = new List<Guid>();
+            foreach (var row in weaponRows)
+            {
+                var equipment = ItemFactory.CreateItemUsable(
+                    _tableSheets.EquipmentItemSheet[row.Id],
+                    Guid.NewGuid(),
+                    requiredBlockIndex)
+                    as Equipment;
+
+                equipments.Add(equipment.ItemId);
+                avatarState.inventory.AddItem(equipment);
+            }
+
+            try
+            {
+                avatarState.ValidateEquipmentsV2(equipments, blockIndex);
+            }
+            catch (Exception e)
+            {
+                if (blockIndex < requiredBlockIndex)
+                {
+                    Assert.True(e is RequiredBlockIndexException);
+                }
+                else if (count > maxCount)
+                {
+                    Assert.True(e is DuplicateCostumeException);
+                }
             }
         }
 

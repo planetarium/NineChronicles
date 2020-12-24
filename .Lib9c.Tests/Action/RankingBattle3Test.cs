@@ -114,7 +114,7 @@ namespace Lib9c.Tests.Action
                 AvatarAddress = _avatar1Address,
                 EnemyAddress = _avatar2Address,
                 WeeklyArenaAddress = _weeklyArenaAddress,
-                equipments = new List<Guid> { costume.ItemId },
+                costumeIds = new List<Guid> { costume.ItemId },
                 equipmentIds = new List<Guid>(),
                 consumableIds = new List<Guid>(),
             };
@@ -148,7 +148,7 @@ namespace Lib9c.Tests.Action
                 AvatarAddress = _avatar1Address,
                 EnemyAddress = _avatar1Address,
                 WeeklyArenaAddress = _weeklyArenaAddress,
-                equipments = new List<Guid>(),
+                costumeIds = new List<Guid>(),
                 equipmentIds = new List<Guid>(),
                 consumableIds = new List<Guid>(),
             };
@@ -193,7 +193,7 @@ namespace Lib9c.Tests.Action
                 AvatarAddress = avatarAddress,
                 EnemyAddress = enemyAddress,
                 WeeklyArenaAddress = _weeklyArenaAddress,
-                equipments = new List<Guid>(),
+                costumeIds = new List<Guid>(),
                 equipmentIds = new List<Guid>(),
                 consumableIds = new List<Guid>(),
             };
@@ -228,7 +228,7 @@ namespace Lib9c.Tests.Action
                 AvatarAddress = _avatar1Address,
                 EnemyAddress = _avatar2Address,
                 WeeklyArenaAddress = _weeklyArenaAddress,
-                equipments = new List<Guid>(),
+                costumeIds = new List<Guid>(),
                 equipmentIds = new List<Guid>(),
                 consumableIds = new List<Guid>(),
             };
@@ -260,7 +260,7 @@ namespace Lib9c.Tests.Action
                 AvatarAddress = _avatar1Address,
                 EnemyAddress = _avatar2Address,
                 WeeklyArenaAddress = _weeklyArenaAddress,
-                equipments = new List<Guid>(),
+                costumeIds = new List<Guid>(),
                 equipmentIds = new List<Guid>(),
                 consumableIds = new List<Guid>(),
             };
@@ -306,7 +306,7 @@ namespace Lib9c.Tests.Action
                 AvatarAddress = _avatar1Address,
                 EnemyAddress = _avatar2Address,
                 WeeklyArenaAddress = _weeklyArenaAddress,
-                equipments = new List<Guid>(),
+                costumeIds = new List<Guid>(),
                 equipmentIds = new List<Guid>(),
                 consumableIds = new List<Guid>(),
             };
@@ -347,7 +347,7 @@ namespace Lib9c.Tests.Action
                 AvatarAddress = _avatar1Address,
                 EnemyAddress = _avatar2Address,
                 WeeklyArenaAddress = _weeklyArenaAddress,
-                equipments = new List<Guid>(),
+                costumeIds = new List<Guid>(),
                 equipmentIds = new List<Guid>(),
                 consumableIds = new List<Guid>(),
             };
@@ -372,7 +372,7 @@ namespace Lib9c.Tests.Action
                 AvatarAddress = _avatar1Address,
                 EnemyAddress = _avatar2Address,
                 WeeklyArenaAddress = _weeklyArenaAddress,
-                equipments = new List<Guid>(),
+                costumeIds = new List<Guid>(),
                 equipmentIds = new List<Guid>(),
                 consumableIds = new List<Guid>(),
             };
@@ -430,7 +430,7 @@ namespace Lib9c.Tests.Action
                 AvatarAddress = _avatar1Address,
                 EnemyAddress = _avatar2Address,
                 WeeklyArenaAddress = _weeklyArenaAddress,
-                equipments = new List<Guid>(),
+                costumeIds = new List<Guid>(),
                 equipmentIds = equipments,
                 consumableIds = new List<Guid>(),
             };
