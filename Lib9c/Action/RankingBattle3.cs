@@ -25,7 +25,7 @@ namespace Nekoyume.Action
         public Address AvatarAddress;
         public Address EnemyAddress;
         public Address WeeklyArenaAddress;
-        public List<int> costumeIds;
+        public List<Guid> equipments;
         public List<Guid> equipmentIds;
         public List<Guid> consumableIds;
         public BattleLog Result { get; private set; }
@@ -53,8 +53,12 @@ namespace Nekoyume.Action
                 throw new FailedLoadStateException("Aborted as the avatar state of the signer was failed to load.");
             }
 
+            var items = equipmentIds.Concat(equipments);
+
             avatarState.ValidateEquipmentsV2(equipmentIds, context.BlockIndex);
             avatarState.ValidateConsumable(consumableIds, context.BlockIndex);
+            avatarState.ValidateCostume(equipments);
+            avatarState.EquipItems(items);
 
             if (!avatarState.worldInformation.TryGetUnlockedWorldByStageClearedBlockIndex(out var world) ||
                 world.StageClearedId < GameConfig.RequireClearedStageLevel.ActionsInRankingBoard)
@@ -63,10 +67,6 @@ namespace Nekoyume.Action
                     GameConfig.RequireClearedStageLevel.ActionsInRankingBoard,
                     world.StageClearedId);
             }
-
-            avatarState.EquipCostumes(new HashSet<int>(costumeIds));
-            avatarState.EquipEquipments(equipmentIds);
-            avatarState.ValidateCostume(new HashSet<int>(costumeIds));
 
             var enemyAvatarState = states.GetAvatarState(EnemyAddress);
             if (enemyAvatarState is null)
@@ -137,7 +137,7 @@ namespace Nekoyume.Action
                 ["avatarAddress"] = AvatarAddress.Serialize(),
                 ["enemyAddress"] = EnemyAddress.Serialize(),
                 ["weeklyArenaAddress"] = WeeklyArenaAddress.Serialize(),
-                ["costume_ids"] = new Bencodex.Types.List(costumeIds
+                ["costume_ids"] = new Bencodex.Types.List(equipments
                     .OrderBy(element => element)
                     .Select(e => e.Serialize())),
                 ["equipment_ids"] = new Bencodex.Types.List(equipmentIds
@@ -153,8 +153,8 @@ namespace Nekoyume.Action
             AvatarAddress = plainValue["avatarAddress"].ToAddress();
             EnemyAddress = plainValue["enemyAddress"].ToAddress();
             WeeklyArenaAddress = plainValue["weeklyArenaAddress"].ToAddress();
-            costumeIds = ((Bencodex.Types.List) plainValue["costume_ids"])
-                .Select(e => e.ToInteger())
+            equipments = ((Bencodex.Types.List) plainValue["costume_ids"])
+                .Select(e => e.ToGuid())
                 .ToList();
             equipmentIds = ((Bencodex.Types.List) plainValue["equipment_ids"])
                 .Select(e => e.ToGuid())
