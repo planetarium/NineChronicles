@@ -395,6 +395,10 @@ namespace Lib9c.Tests.Action
 
         [Theory]
         [InlineData(ItemSubType.Weapon, GameConfig.MaxEquipmentSlotCount.Weapon)]
+        [InlineData(ItemSubType.Armor, GameConfig.MaxEquipmentSlotCount.Armor)]
+        [InlineData(ItemSubType.Belt, GameConfig.MaxEquipmentSlotCount.Belt)]
+        [InlineData(ItemSubType.Necklace, GameConfig.MaxEquipmentSlotCount.Necklace)]
+        [InlineData(ItemSubType.Ring, GameConfig.MaxEquipmentSlotCount.Ring)]
         public void MultipleEquipmentTest(ItemSubType type, int maxCount)
         {
             var previousAvatarState = _initialState.GetAvatarState(_avatar1Address);
