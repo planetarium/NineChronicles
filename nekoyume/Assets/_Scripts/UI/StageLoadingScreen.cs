@@ -72,8 +72,9 @@ namespace Nekoyume.UI
                 position.x += ImageMargin;
                 _rects.Add(rect);
             }
-
-            var message = string.Format(L10nManager.Localize("STAGE_BLOCK_CHAIN_MINING_TX"), worldName, stageId);
+            var message = string.Format(L10nManager.Localize("STAGE_BLOCK_CHAIN_MINING_TX"),
+                worldName,
+                StageInformation.GetStageIdString(stageId));
             indicator.Show(message);
             base.Show();
             StartCoroutine(CoRun());

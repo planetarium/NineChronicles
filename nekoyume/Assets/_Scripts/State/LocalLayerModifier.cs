@@ -41,13 +41,13 @@ namespace Nekoyume.State
             var modifier = new AgentGoldModifier(gold);
             LocalLayer.Instance.Add(agentAddress, modifier);
 
-            var state = States.Instance.GoldBalanceState;
-            if (state is null || !state.address.Equals(agentAddress))
+            //FIXME Avoid LocalLayer duplicate modify gold.
+            var state = new GoldBalanceState(agentAddress, Game.Game.instance.Agent.GetBalance(agentAddress, gold.Currency));
+            if (!state.address.Equals(agentAddress))
             {
                 return;
             }
 
-            state = modifier.Modify(state);
             States.Instance.SetGoldBalanceState(state);
         }
 
@@ -542,6 +542,17 @@ namespace Nekoyume.State
             }
 
             TryResetLoadedAvatarState(avatarAddress, out _, out _);
+        }
+
+        public static void AddWorld(Address avatarAddress, int worldId)
+        {
+            var modifier = new AvatarWorldInformationAddWorldModifier(worldId);
+            if (avatarAddress.Equals(States.Instance.CurrentAvatarState.address))
+            {
+                modifier.Modify(States.Instance.CurrentAvatarState);
+            }
+
+            LocalLayer.Instance.Add(avatarAddress, modifier);
         }
 
         #endregion

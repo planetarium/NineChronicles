@@ -8,7 +8,7 @@ namespace Nekoyume.UI
 
         public void Show(int stageId)
         {
-            textStage.text = $"STAGE {stageId}";
+            textStage.text = $"STAGE {StageInformation.GetStageIdString(stageId)}";
             base.Show();
         }
     }

@@ -792,7 +792,9 @@ namespace Nekoyume.UI.Module
 
         private void UpdateInventoryNotification(Nekoyume.Model.Item.Inventory inventory)
         {
-            var hasNotification = inventory?.HasNotification(States.Instance.CurrentAvatarState.level) ?? false;
+            var blockIndex = Game.Game.instance.Agent.BlockIndex;
+            var hasNotification = inventory?.HasNotification(
+                States.Instance.CurrentAvatarState.level, blockIndex) ?? false;
             HasNotificationInCharacter.OnNext(hasNotification);
         }
     }
