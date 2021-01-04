@@ -53,8 +53,6 @@ namespace Nekoyume.Battle
             Player.Stats.EqualizeCurrentHPWithHP();
         }
 
-        public abstract Player Simulate();
-
         public static List<ItemBase> SetReward(
             WeightedSelector<StageSheet.RewardData> itemSelector,
             int maxCount,
@@ -95,6 +93,5 @@ namespace Nekoyume.Battle
             reward = reward.OrderBy(r => r.Id).ToList();
             return reward;
         }
-
     }
 }

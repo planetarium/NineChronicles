@@ -22,7 +22,7 @@ namespace Lib9c.Tests.Action
     using Xunit;
     using Xunit.Abstractions;
 
-    public class RankingBattle2Test
+    public class RankingBattle3Test
     {
         private readonly TableSheets _tableSheets;
         private readonly Address _agent1Address;
@@ -31,7 +31,7 @@ namespace Lib9c.Tests.Action
         private readonly Address _weeklyArenaAddress;
         private IAccountStateDelta _initialState;
 
-        public RankingBattle2Test(ITestOutputHelper outputHelper)
+        public RankingBattle3Test(ITestOutputHelper outputHelper)
         {
             _initialState = new State();
 
@@ -115,12 +115,12 @@ namespace Lib9c.Tests.Action
                 .SetState(_avatar1Address, previousAvatar1State.Serialize())
                 .SetState(_avatar2Address, enemyAvatarState.Serialize());
 
-            var action = new RankingBattle2
+            var action = new RankingBattle3
             {
                 AvatarAddress = _avatar1Address,
                 EnemyAddress = _avatar2Address,
                 WeeklyArenaAddress = _weeklyArenaAddress,
-                costumeIds = new List<int> { costume.Id },
+                costumeIds = new List<Guid> { costume.ItemId },
                 equipmentIds = new List<Guid>(),
                 consumableIds = new List<Guid>(),
             };
@@ -149,12 +149,12 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void ExecuteThrowInvalidAddressException()
         {
-            var action = new RankingBattle2
+            var action = new RankingBattle3
             {
                 AvatarAddress = _avatar1Address,
                 EnemyAddress = _avatar1Address,
                 WeeklyArenaAddress = _weeklyArenaAddress,
-                costumeIds = new List<int>(),
+                costumeIds = new List<Guid>(),
                 equipmentIds = new List<Guid>(),
                 consumableIds = new List<Guid>(),
             };
@@ -194,12 +194,12 @@ namespace Lib9c.Tests.Action
                     break;
             }
 
-            var action = new RankingBattle2
+            var action = new RankingBattle3
             {
                 AvatarAddress = avatarAddress,
                 EnemyAddress = enemyAddress,
                 WeeklyArenaAddress = _weeklyArenaAddress,
-                costumeIds = new List<int>(),
+                costumeIds = new List<Guid>(),
                 equipmentIds = new List<Guid>(),
                 consumableIds = new List<Guid>(),
             };
@@ -229,12 +229,12 @@ namespace Lib9c.Tests.Action
                 _avatar1Address,
                 previousAvatar1State.Serialize());
 
-            var action = new RankingBattle2
+            var action = new RankingBattle3
             {
                 AvatarAddress = _avatar1Address,
                 EnemyAddress = _avatar2Address,
                 WeeklyArenaAddress = _weeklyArenaAddress,
-                costumeIds = new List<int>(),
+                costumeIds = new List<Guid>(),
                 equipmentIds = new List<Guid>(),
                 consumableIds = new List<Guid>(),
             };
@@ -261,12 +261,12 @@ namespace Lib9c.Tests.Action
                 _weeklyArenaAddress,
                 previousWeeklyArenaState.Serialize());
 
-            var action = new RankingBattle2
+            var action = new RankingBattle3
             {
                 AvatarAddress = _avatar1Address,
                 EnemyAddress = _avatar2Address,
                 WeeklyArenaAddress = _weeklyArenaAddress,
-                costumeIds = new List<int>(),
+                costumeIds = new List<Guid>(),
                 equipmentIds = new List<Guid>(),
                 consumableIds = new List<Guid>(),
             };
@@ -307,12 +307,12 @@ namespace Lib9c.Tests.Action
                 _weeklyArenaAddress,
                 previousWeeklyArenaState.Serialize());
 
-            var action = new RankingBattle2
+            var action = new RankingBattle3
             {
                 AvatarAddress = _avatar1Address,
                 EnemyAddress = _avatar2Address,
                 WeeklyArenaAddress = _weeklyArenaAddress,
-                costumeIds = new List<int>(),
+                costumeIds = new List<Guid>(),
                 equipmentIds = new List<Guid>(),
                 consumableIds = new List<Guid>(),
             };
@@ -348,12 +348,12 @@ namespace Lib9c.Tests.Action
                 _weeklyArenaAddress,
                 previousWeeklyArenaState.Serialize());
 
-            var action = new RankingBattle2
+            var action = new RankingBattle3
             {
                 AvatarAddress = _avatar1Address,
                 EnemyAddress = _avatar2Address,
                 WeeklyArenaAddress = _weeklyArenaAddress,
-                costumeIds = new List<int>(),
+                costumeIds = new List<Guid>(),
                 equipmentIds = new List<Guid>(),
                 consumableIds = new List<Guid>(),
             };
@@ -373,12 +373,12 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void SerializeWithDotnetAPI()
         {
-            var action = new RankingBattle2
+            var action = new RankingBattle3
             {
                 AvatarAddress = _avatar1Address,
                 EnemyAddress = _avatar2Address,
                 WeeklyArenaAddress = _weeklyArenaAddress,
-                costumeIds = new List<int>(),
+                costumeIds = new List<Guid>(),
                 equipmentIds = new List<Guid>(),
                 consumableIds = new List<Guid>(),
             };
@@ -395,8 +395,65 @@ namespace Lib9c.Tests.Action
             formatter.Serialize(ms, action);
             ms.Seek(0, SeekOrigin.Begin);
 
-            var deserialized = (RankingBattle2)formatter.Deserialize(ms);
+            var deserialized = (RankingBattle3)formatter.Deserialize(ms);
             Assert.Equal(action.PlainValue, deserialized.PlainValue);
+        }
+
+        [Theory]
+        [InlineData(ItemSubType.Weapon, GameConfig.MaxEquipmentSlotCount.Weapon)]
+        [InlineData(ItemSubType.Armor, GameConfig.MaxEquipmentSlotCount.Armor)]
+        [InlineData(ItemSubType.Belt, GameConfig.MaxEquipmentSlotCount.Belt)]
+        [InlineData(ItemSubType.Necklace, GameConfig.MaxEquipmentSlotCount.Necklace)]
+        [InlineData(ItemSubType.Ring, GameConfig.MaxEquipmentSlotCount.Ring)]
+        public void MultipleEquipmentTest(ItemSubType type, int maxCount)
+        {
+            var previousAvatarState = _initialState.GetAvatarState(_avatar1Address);
+            var maxLevel = _tableSheets.CharacterLevelSheet.Max(row => row.Value.Level);
+            var expRow = _tableSheets.CharacterLevelSheet[maxLevel];
+            var maxLevelExp = expRow.Exp;
+
+            previousAvatarState.level = maxLevel;
+            previousAvatarState.exp = maxLevelExp;
+
+            var weaponRows = _tableSheets
+                .EquipmentItemSheet
+                .Values
+                .Where(r => r.ItemSubType == type)
+                .Take(maxCount + 1);
+
+            var equipments = new List<Guid>();
+            foreach (var row in weaponRows)
+            {
+                var equipment = ItemFactory.CreateItem(
+                    _tableSheets.EquipmentItemSheet[row.Id],
+                    new TestRandom())
+                    as Equipment;
+
+                equipments.Add(equipment.ItemId);
+                previousAvatarState.inventory.AddItem(equipment);
+            }
+
+            var state = _initialState.SetState(_avatar1Address, previousAvatarState.Serialize());
+
+            var action = new RankingBattle3
+            {
+                AvatarAddress = _avatar1Address,
+                EnemyAddress = _avatar2Address,
+                WeeklyArenaAddress = _weeklyArenaAddress,
+                costumeIds = new List<Guid>(),
+                equipmentIds = equipments,
+                consumableIds = new List<Guid>(),
+            };
+
+            Assert.Null(action.Result);
+
+            Assert.Throws<DuplicateEquipmentException>(() => action.Execute(new ActionContext
+            {
+                PreviousStates = state,
+                Signer = _agent1Address,
+                Random = new TestRandom(),
+                Rehearsal = false,
+            }));
         }
     }
 }
