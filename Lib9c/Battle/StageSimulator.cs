@@ -312,7 +312,7 @@ namespace Nekoyume.Battle
 
                 WaveNumber = i + 1;
                 WaveTurn = 1;
-                _waves[i].Spawn(this);
+                _waves[i].SpawnV2(this);
 #if TEST_LOG
                 sb.Clear();
                 sb.Append($"{nameof(TurnNumber)}: {TurnNumber}");
@@ -328,8 +328,11 @@ namespace Nekoyume.Battle
                     {
                         if (i == 0)
                         {
-                            Player.GetExpV2((int) (Exp * 0.3m), true);
                             Result = BattleLog.Result.Lose;
+                            if (StageId < GameConfig.MimisbrunnrStartStageId)
+                            {
+                                Player.GetExpV2((int) (Exp * 0.3m), true);
+                            }
                         }
                         else
                         {
@@ -373,7 +376,10 @@ namespace Nekoyume.Battle
                         if (i == 0)
                         {
                             Result = BattleLog.Result.Lose;
-                            Player.GetExpV2((int) (Exp * 0.3m), true);
+                            if (StageId < GameConfig.MimisbrunnrStartStageId)
+                            {
+                                Player.GetExpV2((int) (Exp * 0.3m), true);
+                            }
                         }
                         else
                         {
@@ -400,7 +406,10 @@ namespace Nekoyume.Battle
                         switch (WaveNumber)
                         {
                             case 1:
-                                Player.GetExpV2(Exp, true);
+                                if (StageId < GameConfig.MimisbrunnrStartStageId)
+                                {
+                                    Player.GetExpV2(Exp, true);
+                                }
                                 break;
                             case 2:
                             {

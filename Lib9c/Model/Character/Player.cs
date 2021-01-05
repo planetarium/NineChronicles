@@ -337,6 +337,13 @@ namespace Nekoyume.Model
             var spawn = new SpawnPlayer((CharacterBase) Clone());
             Simulator.Log.Add(spawn);
         }
+        
+        public virtual void SpawnV2()
+        {
+            InitAIV2();
+            var spawn = new SpawnPlayer((CharacterBase) Clone());
+            Simulator.Log.Add(spawn);
+        }
 
         public void Use(List<Guid> consumableIds)
         {

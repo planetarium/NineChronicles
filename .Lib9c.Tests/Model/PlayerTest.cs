@@ -49,7 +49,7 @@ namespace Lib9c.Tests.Model
             var player = simulator.Player;
             var enemy = new Enemy(player, _tableSheets.CharacterSheet.Values.First(), 1);
             player.Targets.Add(enemy);
-            player.InitAI();
+            player.InitAIV2();
             player.Tick();
 
             Assert.NotEmpty(simulator.Log);
@@ -70,7 +70,7 @@ namespace Lib9c.Tests.Model
             var player = simulator.Player;
             var enemy = new Enemy(player, _tableSheets.CharacterSheet.Values.First(), 1);
             player.Targets.Add(enemy);
-            player.InitAI();
+            player.InitAIV2();
             player.CurrentHP = -1;
 
             Assert.True(player.IsDead);
@@ -108,7 +108,7 @@ namespace Lib9c.Tests.Model
             player.Targets.Add(enemy);
             simulator.Characters = new SimplePriorityQueue<CharacterBase, decimal>();
             simulator.Characters.Enqueue(enemy, 0);
-            player.InitAI();
+            player.InitAIV2();
             player.OverrideSkill(skill);
             Assert.Single(player.Skills);
 

@@ -211,7 +211,7 @@ namespace Nekoyume.Action
             Log.Debug("Mimisbrunnr Initialize Simulator: {Elapsed}", sw.Elapsed);
             
             sw.Restart();
-            simulator.Simulate();
+            simulator.SimulateV2();
             sw.Stop();
             Log.Debug("Mimisbrunnr Simulator.Simulate(): {Elapsed}", sw.Elapsed);
             

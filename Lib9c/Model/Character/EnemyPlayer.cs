@@ -54,6 +54,13 @@ namespace Nekoyume.Model
             var spawn = new SpawnEnemyPlayer((CharacterBase) Clone());
             Simulator.Log.Add(spawn);
         }
+        
+        public override void SpawnV2()
+        {
+            InitAIV2();
+            var spawn = new SpawnEnemyPlayer((CharacterBase) Clone());
+            Simulator.Log.Add(spawn);
+        }
 
         public override object Clone()
         {
