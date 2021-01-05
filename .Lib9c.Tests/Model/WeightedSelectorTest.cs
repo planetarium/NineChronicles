@@ -114,6 +114,40 @@ namespace Lib9c.Tests.Model
             Assert.Equal(new[] { 1, 2, 3, 4 }, ordered2);
         }
 
+        [Theory]
+        [InlineData(1)]
+        [InlineData(2)]
+        public void SelectV3(int count)
+        {
+            var i = 0;
+            var result = new Dictionary<int, int>();
+            while (i < 10000)
+            {
+                var selector3 = GetSelector();
+                var ids = selector3.SelectV3(count);
+                foreach (var id in ids)
+                {
+                    if (result.ContainsKey(id))
+                    {
+                        result[id] += 1;
+                    }
+                    else
+                    {
+                        result[id] = 1;
+                    }
+                }
+
+                i++;
+            }
+
+            var ordered = result
+                .OrderByDescending(r => r.Value)
+                .Select(r => r.Key)
+                .ToArray();
+
+            Assert.Equal(new[] { 1, 2, 3, 4 }, ordered);
+        }
+
         private static WeightedSelector<int> GetSelector()
         {
             var selector = new WeightedSelector<int>(new TestRandom());
