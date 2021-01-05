@@ -15,7 +15,7 @@ namespace Lib9c.Tests.Action
     using Xunit;
     using Xunit.Abstractions;
 
-    public class CombinationEquipment3Test
+    public class CombinationEquipment4Test
     {
         private readonly Address _agentAddress;
         private readonly Address _avatarAddress;
@@ -24,7 +24,7 @@ namespace Lib9c.Tests.Action
         private readonly AvatarState _avatarState;
         private IAccountStateDelta _initialState;
 
-        public CombinationEquipment3Test(ITestOutputHelper outputHelper)
+        public CombinationEquipment4Test(ITestOutputHelper outputHelper)
         {
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Verbose()
@@ -124,7 +124,7 @@ namespace Lib9c.Tests.Action
 
             _initialState = _initialState.SetState(_avatarAddress, _avatarState.Serialize());
 
-            var action = new CombinationEquipment3()
+            var action = new CombinationEquipment4()
             {
                 AvatarAddress = _avatarAddress,
                 RecipeId = row.Id,
@@ -148,8 +148,7 @@ namespace Lib9c.Tests.Action
             var nextAvatarState = nextState.GetAvatarState(_avatarAddress);
 
             Assert.Equal(30, nextAvatarState.mailBox.Count);
-            Assert.True(slotState.Result.itemUsable.GetOptionCount() > 0);
-            Assert.True(slotState.Result.itemUsable.GetOptionCount() <= 2);
+            Assert.Equal(2, slotState.Result.itemUsable.GetOptionCount());
 
             var goldCurrencyState = nextState.GetGoldCurrency();
             var blackSmithGold = nextState.GetBalance(Addresses.Blacksmith, goldCurrencyState);
@@ -187,7 +186,7 @@ namespace Lib9c.Tests.Action
 
             _initialState = _initialState.SetState(_avatarAddress, _avatarState.Serialize());
 
-            var action = new CombinationEquipment3()
+            var action = new CombinationEquipment4()
             {
                 AvatarAddress = _avatarAddress,
                 RecipeId = row.Id,
@@ -213,7 +212,7 @@ namespace Lib9c.Tests.Action
             var i = 0;
             while (i < 10000)
             {
-                var ids = CombinationEquipment3.SelectOption(
+                var ids = CombinationEquipment4.SelectOption(
                     _tableSheets.EquipmentItemOptionSheet,
                     _tableSheets.SkillSheet,
                     subRecipe,

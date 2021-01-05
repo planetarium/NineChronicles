@@ -175,8 +175,8 @@ namespace Nekoyume.Action
             }
             sw.Stop();
             Log.Debug("Mimisbrunnr Check Equipments ElementalType: {Elapsed}", sw.Elapsed);
-
-            avatarState.ValidateEquipments(equipments, context.BlockIndex);
+            
+            avatarState.ValidateEquipmentsV2(equipments, context.BlockIndex);
             avatarState.ValidateConsumable(foods, context.BlockIndex);
             avatarState.ValidateCostume(costumes);
             
@@ -247,7 +247,7 @@ namespace Nekoyume.Action
             avatarState.UpdateQuestRewards(materialSheet);
 
             avatarState.updatedAt = ctx.BlockIndex;
-            avatarState.mailBox.CleanUp();
+            avatarState.mailBox.CleanUpV2();
             states = states.SetState(avatarAddress, avatarState.Serialize());
 
             sw.Stop();

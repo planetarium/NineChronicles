@@ -84,7 +84,7 @@ namespace Nekoyume.Battle
                 random,
                 avatarState,
                 foods,
-                worldId, 
+                worldId,
                 stageId,
                 stageSimulatorSheets
             )
@@ -123,7 +123,7 @@ namespace Nekoyume.Battle
             Player.SetCostumeStat(costumeStatSheet);
         }
 
-        public override Player Simulate()
+        public Player Simulate()
         {
 #if TEST_LOG
             var sb = new System.Text.StringBuilder();
@@ -293,7 +293,7 @@ namespace Nekoyume.Battle
             return Player;
         }
         
-        public override Player SimulateV2()
+        public Player SimulateV2()
         {
 #if TEST_LOG
             var sb = new System.Text.StringBuilder();
@@ -331,7 +331,7 @@ namespace Nekoyume.Battle
                             Result = BattleLog.Result.Lose;
                             if (StageId < GameConfig.MimisbrunnrStartStageId)
                             {
-                                Player.GetExp((int) (Exp * 0.3m), true);
+                                Player.GetExpV2((int) (Exp * 0.3m), true);
                             }
                         }
                         else
@@ -378,7 +378,7 @@ namespace Nekoyume.Battle
                             Result = BattleLog.Result.Lose;
                             if (StageId < GameConfig.MimisbrunnrStartStageId)
                             {
-                                Player.GetExp((int) (Exp * 0.3m), true);
+                                Player.GetExpV2((int) (Exp * 0.3m), true);
                             }
                         }
                         else
@@ -408,7 +408,7 @@ namespace Nekoyume.Battle
                             case 1:
                                 if (StageId < GameConfig.MimisbrunnrStartStageId)
                                 {
-                                    Player.GetExp(Exp, true);
+                                    Player.GetExpV2(Exp, true);
                                 }
                                 break;
                             case 2:
@@ -462,7 +462,7 @@ namespace Nekoyume.Battle
 #endif
             return Player;
         }
-
+        
         private void SetWave(StageSheet.Row stageRow, StageWaveSheet.Row stageWaveRow)
         {
             var enemyStatModifiers = stageRow.EnemyOptionalStatModifiers;

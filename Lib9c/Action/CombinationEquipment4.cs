@@ -19,8 +19,8 @@ using Nekoyume.TableData;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("combination_equipment3")]
-    public class CombinationEquipment3 : GameAction
+    [ActionType("combination_equipment4")]
+    public class CombinationEquipment4 : GameAction
     {
         public static readonly Address BlacksmithAddress = ItemEnhancement.BlacksmithAddress;
 
@@ -216,7 +216,7 @@ namespace Nekoyume.Action
             var mail = new CombinationMail(result, ctx.BlockIndex, ctx.Random.GenerateRandomGuid(),
                 requiredBlockIndex);
             result.id = mail.id;
-            avatarState.UpdateV2(mail);
+            avatarState.UpdateV3(mail);
             avatarState.questList.UpdateCombinationEquipmentQuest(RecipeId);
             avatarState.UpdateFromCombination(equipment);
             avatarState.UpdateQuestRewards(materialSheet);

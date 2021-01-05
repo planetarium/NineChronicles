@@ -111,6 +111,37 @@ namespace Nekoyume.Battle
 
             return result;
         }
+        
+        public IEnumerable<T> SelectV3(int count)
+        {
+            Validate(count);
+            var result = new List<T>();
+            var weight = 0m;
+            var rnd = _random.Next(1, 100001) * 0.00001m;
+            var sum = _items.Sum(i => i.Weight);
+            var ratio = 1.0m / sum;
+            while (result.Count < count)
+            {
+                foreach (var item in _items.OrderBy(i => i.Weight).ToList())
+                {
+                    weight += (item.Weight * ratio);
+
+                    if (rnd <= weight)
+                    {
+                        result.Add(item.Value);
+                        _items.Remove(item);
+                        weight = 0m;
+                    }
+
+                    if (result.Count == count)
+                    {
+                        break;
+                    }
+                }
+            }
+
+            return result;
+        }
     }
 
     public class InvalidCountException : InvalidOperationException
