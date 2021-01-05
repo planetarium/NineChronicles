@@ -857,7 +857,7 @@ namespace Nekoyume.BlockChain
                 yield return waitForSeconds;
 
                 yield return Game.Game.instance.ActionManager.HackAndSlash(
-                    new List<int>(),
+                    new List<Costume>(),
                     new List<Equipment>(),
                     new List<Consumable>(),
                     1,

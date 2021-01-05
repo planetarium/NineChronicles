@@ -403,7 +403,7 @@ namespace Nekoyume.UI
             //TODO 소모품장착
             Game.Game.instance.ActionManager.RankingBattle(
                 arenaRankCell.ArenaInfo.AvatarAddress,
-                _player.Costumes.Select(i => i.Id).ToList(),
+                _player.Costumes.Select(i => i.ItemId).ToList(),
                 _player.Equipments.Select(i => i.ItemId).ToList(),
                 new List<Guid>()
             );
@@ -448,7 +448,7 @@ namespace Nekoyume.UI
             }
         }
 
-        public void GoToStage(ActionBase.ActionEvaluation<RankingBattle2> eval)
+        public void GoToStage(ActionBase.ActionEvaluation<RankingBattle3> eval)
         {
             Game.Event.OnRankingBattleStart.Invoke(eval.Action.Result);
             Close();
