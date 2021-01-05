@@ -3,6 +3,7 @@ namespace Lib9c.Tests
     using System;
     using System.Collections.Generic;
     using System.Collections.Immutable;
+    using System.Security.Cryptography;
     using System.Threading.Tasks;
     using Bencodex.Types;
     using Libplanet;
@@ -13,6 +14,7 @@ namespace Lib9c.Tests
     using Libplanet.Blocks;
     using Libplanet.Crypto;
     using Libplanet.Store;
+    using Libplanet.Store.Trie;
     using Libplanet.Tx;
     using Nekoyume.Action;
     using Nekoyume.BlockChain;
@@ -33,10 +35,11 @@ namespace Lib9c.Tests
             Block<PolymorphicAction<ActionBase>> genesis = MakeGenesisBlock(adminAddress, ImmutableHashSet<Address>.Empty);
 
             using var store = new DefaultStore(null);
+            using var stateStore = new TrieStateStore(new DefaultKeyValueStore(null), new DefaultKeyValueStore(null));
             var blockChain = new BlockChain<PolymorphicAction<ActionBase>>(
                 policy,
                 store,
-                store,
+                stateStore,
                 genesis,
                 renderers: new[] { blockPolicySource.BlockRenderer }
             );
@@ -64,10 +67,11 @@ namespace Lib9c.Tests
                 ImmutableHashSet.Create(activatedAddress).Add(adminAddress)
             );
             using var store = new DefaultStore(null);
+            using var stateStore = new TrieStateStore(new DefaultKeyValueStore(null), new DefaultKeyValueStore(null));
             var blockChain = new BlockChain<PolymorphicAction<ActionBase>>(
                 policy,
                 store,
-                store,
+                stateStore,
                 genesis,
                 renderers: new[] { blockPolicySource.BlockRenderer }
             );
@@ -158,10 +162,11 @@ namespace Lib9c.Tests
                 pendingActivations: new[] { ps }
             );
             using var store = new DefaultStore(null);
+            using var stateStore = new TrieStateStore(new DefaultKeyValueStore(null), new DefaultKeyValueStore(null));
             var blockChain = new BlockChain<PolymorphicAction<ActionBase>>(
                 policy,
                 store,
-                store,
+                stateStore,
                 genesis,
                 renderers: new[] { blockPolicySource.BlockRenderer }
             );
@@ -222,10 +227,11 @@ namespace Lib9c.Tests
                 new AuthorizedMinersState(miners, 2, 4)
             );
             using var store = new DefaultStore(null);
+            using var stateStore = new TrieStateStore(new DefaultKeyValueStore(null), new DefaultKeyValueStore(null));
             var blockChain = new BlockChain<PolymorphicAction<ActionBase>>(
                 policy,
                 store,
-                store,
+                stateStore,
                 genesis,
                 renderers: new[] { blockPolicySource.BlockRenderer }
             );
@@ -277,10 +283,11 @@ namespace Lib9c.Tests
                 new AuthorizedMinersState(miners, 2, 6)
             );
             using var store = new DefaultStore(null);
+            using var stateStore = new TrieStateStore(new DefaultKeyValueStore(null), new DefaultKeyValueStore(null));
             var blockChain = new BlockChain<PolymorphicAction<ActionBase>>(
                 policy,
                 store,
-                store,
+                stateStore,
                 genesis,
                 renderers: new[] { blockPolicySource.BlockRenderer }
             );
@@ -374,10 +381,11 @@ namespace Lib9c.Tests
             Block<PolymorphicAction<ActionBase>> genesis = MakeGenesisBlock(adminAddress, ImmutableHashSet<Address>.Empty);
 
             using var store = new DefaultStore(null);
+            var stateStore = new NoOpStateStore();
             var blockChain = new BlockChain<PolymorphicAction<ActionBase>>(
                 policy,
                 store,
-                store,
+                stateStore,
                 genesis
             );
 
@@ -475,6 +483,24 @@ namespace Lib9c.Tests
                     },
                     timestamp: timestamp ?? DateTimeOffset.MinValue
                 );
+        }
+
+        private class NoOpStateStore : IStateStore
+        {
+            public void SetStates<T>(Block<T> block, IImmutableDictionary<string, IValue> states)
+                where T : IAction, new()
+            {
+            }
+
+            public IValue GetState(string stateKey, HashDigest<SHA256>? blockHash = null, Guid? chainId = null) =>
+                default(Null);
+
+            public bool ContainsBlockStates(HashDigest<SHA256> blockHash) => false;
+
+            public void ForkStates<T>(Guid sourceChainId, Guid destinationChainId, Block<T> branchpoint)
+                where T : IAction, new()
+            {
+            }
         }
     }
 }
