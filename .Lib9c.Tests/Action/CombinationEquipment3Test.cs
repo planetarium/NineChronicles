@@ -148,7 +148,8 @@ namespace Lib9c.Tests.Action
             var nextAvatarState = nextState.GetAvatarState(_avatarAddress);
 
             Assert.Equal(30, nextAvatarState.mailBox.Count);
-            Assert.Equal(2, slotState.Result.itemUsable.GetOptionCount());
+            Assert.True(slotState.Result.itemUsable.GetOptionCount() > 0);
+            Assert.True(slotState.Result.itemUsable.GetOptionCount() <= 2);
 
             var goldCurrencyState = nextState.GetGoldCurrency();
             var blackSmithGold = nextState.GetBalance(Addresses.Blacksmith, goldCurrencyState);

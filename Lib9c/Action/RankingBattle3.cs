@@ -7,6 +7,7 @@ using System.Numerics;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
+using Libplanet.Assets;
 using Nekoyume.Battle;
 using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.State;
@@ -16,8 +17,8 @@ using Serilog;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("ranking_battle2")]
-    public class RankingBattle2 : GameAction
+    [ActionType("ranking_battle3")]
+    public class RankingBattle3 : GameAction
     {
         public const int StageId = 999999;
         public static readonly BigInteger EntranceFee = 100;
@@ -25,7 +26,7 @@ namespace Nekoyume.Action
         public Address AvatarAddress;
         public Address EnemyAddress;
         public Address WeeklyArenaAddress;
-        public List<int> costumeIds;
+        public List<Guid> costumeIds;
         public List<Guid> equipmentIds;
         public List<Guid> consumableIds;
         public BattleLog Result { get; private set; }
@@ -66,11 +67,20 @@ namespace Nekoyume.Action
             Log.Debug("RankingBattle Get AgentAvatarStates: {Elapsed}", sw.Elapsed);
             sw.Restart();
 
-            avatarState.ValidateEquipments(equipmentIds, context.BlockIndex);
+            var items = equipmentIds.Concat(costumeIds);
+
+            avatarState.ValidateEquipmentsV2(equipmentIds, context.BlockIndex);
             avatarState.ValidateConsumable(consumableIds, context.BlockIndex);
+            avatarState.ValidateCostume(costumeIds);
 
             sw.Stop();
             Log.Debug("RankingBattle Validate Equipments: {Elapsed}", sw.Elapsed);
+            sw.Restart();
+
+            avatarState.EquipItems(items);
+
+            sw.Stop();
+            Log.Debug("RankingBattle Equip Equipments: {Elapsed}", sw.Elapsed);
             sw.Restart();
 
             if (!avatarState.worldInformation.TryGetUnlockedWorldByStageClearedBlockIndex(out var world) ||
@@ -80,14 +90,6 @@ namespace Nekoyume.Action
                     GameConfig.RequireClearedStageLevel.ActionsInRankingBoard,
                     world.StageClearedId);
             }
-
-            avatarState.EquipCostumes(new HashSet<int>(costumeIds));
-            avatarState.EquipEquipments(equipmentIds);
-            avatarState.ValidateCostume(new HashSet<int>(costumeIds));
-
-            sw.Stop();
-            Log.Debug("RankingBattle Equip Equipments: {Elapsed}", sw.Elapsed);
-            sw.Restart();
 
             var enemyAvatarState = states.GetAvatarState(EnemyAddress);
             if (enemyAvatarState is null)
@@ -131,6 +133,8 @@ namespace Nekoyume.Action
             {
                 throw new WeeklyArenaStateNotContainsAvatarAddressException(EnemyAddress);
             }
+
+            Log.Debug(weeklyArenaState.address.ToHex());
 
             sw.Stop();
             Log.Debug("RankingBattle Validate ArenaInfo: {Elapsed}", sw.Elapsed);
@@ -219,7 +223,7 @@ namespace Nekoyume.Action
             EnemyAddress = plainValue["enemyAddress"].ToAddress();
             WeeklyArenaAddress = plainValue["weeklyArenaAddress"].ToAddress();
             costumeIds = ((List) plainValue["costume_ids"])
-                .Select(e => e.ToInteger())
+                .Select(e => e.ToGuid())
                 .ToList();
             equipmentIds = ((List) plainValue["equipment_ids"])
                 .Select(e => e.ToGuid())
