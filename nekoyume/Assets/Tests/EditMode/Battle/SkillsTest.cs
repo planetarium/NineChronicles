@@ -90,7 +90,7 @@ namespace Tests.EditMode.Battle
             var skills = new Skills();
             var firstSkill = GetFirstSkill();
             skills.Add(firstSkill);
-            
+
             var selectedSkill = skills.Select(new Random());
             Assert.IsNotNull(selectedSkill);
             Assert.AreEqual(firstSkill, selectedSkill);
@@ -112,10 +112,10 @@ namespace Tests.EditMode.Battle
             skills.Add(firstSkill);
             skills.Add(firstSkill);
             skills.Add(firstSkill);
-            
+
             var selectedSkill = skills.Select(new Random());
             Assert.IsNotNull(selectedSkill);
-            
+
             skills.SetCooldown(selectedSkill.SkillRow.Id, 1);
             Assert.Throws<Exception>(() => skills.Select(new Random()));
 
@@ -124,29 +124,26 @@ namespace Tests.EditMode.Battle
             Assert.IsNotNull(selectedSkill);
         }
 
-        // todo: 이후에 버프도 고려해서 걸러내는 로직이 완성돼 적용될 때에, 버프의 groupId로 걸러내는 등 테스트가 더 자세하게 나뉘어져야 하겠어요.
         [Test]
         public void SelectWithBuffs()
         {
             var skillRow = _skillSheet.First().Value;
+            Assert.NotNull(skillRow);
             var firstSkill = SkillFactory.Get(skillRow, 100, 100);
 
             var skillBuffRow = _skillBuffSheet.First();
             skillRow = _skillSheet.Values.FirstOrDefault(row => row.Id == skillBuffRow.Value.SkillId);
             Assert.NotNull(skillRow);
             var firstBuffSkill = SkillFactory.Get(skillRow, 100, 100);
-            var buffs = BuffFactory.GetBuffs(firstBuffSkill, _tableSheets.SkillBuffSheet, _tableSheets.BuffSheet)
-                .ToDictionary(e => e.RowData.GroupId, e => e);
-
             Assert.IsFalse(firstSkill.Equals(firstBuffSkill));
 
             var skills = new Skills {firstSkill};
-            var selectedSkill = skills.Select(new Random(), null, _tableSheets.SkillBuffSheet, _tableSheets.BuffSheet);
-            Assert.IsTrue(firstSkill.Equals(selectedSkill));
+            var selectedSkill = skills.SelectV2(new Random());
+            Assert.IsTrue(selectedSkill.Equals(firstSkill));
 
             skills.Add(firstBuffSkill);
-            selectedSkill = skills.Select(new Random(), buffs, _tableSheets.SkillBuffSheet, _tableSheets.BuffSheet);
-            Assert.IsTrue(firstSkill.Equals(selectedSkill));
+            selectedSkill = skills.SelectV2(new Random());
+            Assert.IsTrue(selectedSkill.Equals(firstBuffSkill));
         }
     }
 }
