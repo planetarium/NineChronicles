@@ -98,6 +98,10 @@ namespace Nekoyume.UI
             tabButtons[2].Init("UI_SHOP");
             tabButtons[3].Init("SYSTEM");
             ReactiveAvatarState.MailBox?.Subscribe(SetList).AddTo(gameObject);
+            Game.Game.instance.Agent.BlockIndexSubject
+                .ObserveOnMainThread()
+                .Subscribe(UpdateMailList)
+                .AddTo(gameObject);
 
             emptyText.text = L10nManager.Localize(emptyTextL10nKey);
         }
@@ -128,42 +132,69 @@ namespace Nekoyume.UI
 
         #endregion
 
-        public void UpdateTabs()
-        {
-            var blockIndex = Game.Game.instance.Agent.BlockIndex;
-            // 전체 탭
-            tabButtons[0].hasNotificationImage.enabled = MailBox
-                .Any(mail => mail.New && mail.requiredBlockIndex <= blockIndex);
-
-            for (var i = 1; i < tabButtons.Length; ++i)
-            {
-                tabButtons[i].hasNotificationImage.enabled = MailBox
-                    .Any(mail =>
-                        mail.MailType == (MailType) i && mail.New &&
-                        mail.requiredBlockIndex <= blockIndex);
-            }
-        }
-
         public void ChangeState(int state)
         {
-            tabState = (MailTabState) state;
+            tabState = (MailTabState)state;
 
             for (var i = 0; i < tabButtons.Length; ++i)
             {
                 tabButtons[i].ChangeColor(i == state);
             }
 
-            var list = MailBox
-                .Where(mail => mail.requiredBlockIndex <= Game.Game.instance.Agent.BlockIndex)
-                .OrderByDescending(mail => mail.New)
-                .ToList();
-            if (state > 0)
+            var blockIndex = Game.Game.instance.Agent.BlockIndex;
+            UpdateMailList(blockIndex);
+        }
+
+        private IEnumerable<Nekoyume.Model.Mail.Mail> GetAvailableMailList(long blockIndex, MailTabState state)
+        {
+            bool predicate(Nekoyume.Model.Mail.Mail mail)
             {
-                list = list.FindAll(mail => mail.MailType == (MailType) state);
+                if (state == MailTabState.All)
+                {
+                    return true;
+                }
+
+                return mail.MailType == (MailType) state;
+            }
+
+            return MailBox?.Where(mail =>
+                mail.requiredBlockIndex <= blockIndex)
+                .Where(predicate)
+                .OrderByDescending(mail => mail.New);
+        }
+
+        private void UpdateMailList(long blockIndex)
+        {
+            var list = GetAvailableMailList(blockIndex, tabState);
+
+            if (list is null)
+            {
+                return;
             }
 
             scroll.UpdateData(list, true);
-            emptyImage.SetActive(list.Count == 0);
+            emptyImage.SetActive(!list.Any());
+            UpdateTabs(blockIndex);
+        }
+
+        public void UpdateTabs(long? blockIndex = null)
+        {
+            if (blockIndex is null)
+            {
+                blockIndex = Game.Game.instance.Agent.BlockIndex;
+            }
+
+            // 전체 탭
+            tabButtons[0].hasNotificationImage.enabled = MailBox
+                .Any(mail => mail.New && mail.requiredBlockIndex <= blockIndex);
+
+            for (var i = 1; i < tabButtons.Length; ++i)
+            {
+                var list = GetAvailableMailList(blockIndex.Value, (MailTabState) i);
+                var recent = list?.FirstOrDefault();
+                tabButtons[i].hasNotificationImage.enabled = recent is null ?
+                    false : recent.New;
+            }
         }
 
         private void SetList(MailBox mailBox)
