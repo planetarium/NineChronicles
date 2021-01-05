@@ -173,7 +173,7 @@ namespace Nekoyume.UI
             }
 
             scroll.UpdateData(list, true);
-            emptyImage.SetActive(list.Any());
+            emptyImage.SetActive(!list.Any());
             UpdateTabs(blockIndex);
         }
 
