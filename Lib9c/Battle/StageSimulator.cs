@@ -292,7 +292,7 @@ namespace Nekoyume.Battle
 #endif
             return Player;
         }
-        
+
         public Player SimulateV2()
         {
 #if TEST_LOG
@@ -462,7 +462,7 @@ namespace Nekoyume.Battle
 #endif
             return Player;
         }
-        
+
         private void SetWave(StageSheet.Row stageRow, StageWaveSheet.Row stageWaveRow)
         {
             var enemyStatModifiers = stageRow.EnemyOptionalStatModifiers;

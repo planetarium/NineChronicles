@@ -42,7 +42,7 @@ namespace Nekoyume.Action
                     .SetState(ctx.Signer, MarkChanged)
                     .MarkBalanceChanged(GoldCurrencyMock, ctx.Signer, WeeklyArenaAddress);
             }
-            
+
             var sw = new Stopwatch();
             sw.Start();
             var started = DateTimeOffset.UtcNow;
@@ -61,7 +61,7 @@ namespace Nekoyume.Action
             {
                 throw new FailedLoadStateException("Aborted as the avatar state of the signer was failed to load.");
             }
-            
+
             sw.Stop();
             Log.Debug("RankingBattle Get AgentAvatarStates: {Elapsed}", sw.Elapsed);
             sw.Restart();
@@ -89,13 +89,13 @@ namespace Nekoyume.Action
                     GameConfig.RequireClearedStageLevel.ActionsInRankingBoard,
                     world.StageClearedId);
             }
-            
+
             var enemyAvatarState = states.GetAvatarState(EnemyAddress);
             if (enemyAvatarState is null)
             {
                 throw new FailedLoadStateException($"Aborted as the avatar state of the opponent ({EnemyAddress}) was failed to load.");
             }
-            
+
             sw.Stop();
             Log.Debug("RankingBattle Get Enemy AvatarState: {Elapsed}", sw.Elapsed);
             sw.Restart();
@@ -134,7 +134,7 @@ namespace Nekoyume.Action
             }
 
             Log.Debug(weeklyArenaState.address.ToHex());
-            
+
             sw.Stop();
             Log.Debug("RankingBattle Validate ArenaInfo: {Elapsed}", sw.Elapsed);
             sw.Restart();
@@ -155,7 +155,7 @@ namespace Nekoyume.Action
                 arenaInfo,
                 weeklyArenaState[EnemyAddress],
                 costumeStatSheet);
-            
+
             simulator.SimulateV2();
 
             sw.Stop();
