@@ -110,12 +110,12 @@ namespace Lib9c.Tests
 
             var singleAction = new PolymorphicAction<ActionBase>[]
             {
-                new RewardGold(),
+                new DailyReward(),
             };
             var manyActions = new PolymorphicAction<ActionBase>[]
             {
-                new RewardGold(),
-                new RewardGold(),
+                new DailyReward(),
+                new DailyReward(),
             };
             Transaction<PolymorphicAction<ActionBase>> txWithSingleAction =
                 Transaction<PolymorphicAction<ActionBase>>.Create(
