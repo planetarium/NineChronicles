@@ -10,7 +10,6 @@ using Nekoyume.Model.State;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("reward_gold")]
     public class RewardGold : ActionBase
     {
         public override IValue PlainValue =>
