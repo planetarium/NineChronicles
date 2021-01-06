@@ -436,7 +436,7 @@ namespace Nekoyume.UI
             Mixpanel.Track(eventName, props);
             yield return Game.Game.instance.ActionManager
                 .HackAndSlash(
-                    player.Costumes.Select(i => i.Id).ToList(),
+                    player.Costumes,
                     player.Equipments,
                     new List<Consumable>(),
                     worldId,
@@ -445,13 +445,13 @@ namespace Nekoyume.UI
                     e => ActionRenderHandler.BackToMain(false, e));
         }
 
-        public void NextStage(ActionBase.ActionEvaluation<HackAndSlash3> eval)
+        public void NextStage(ActionBase.ActionEvaluation<HackAndSlash4> eval)
         {
             Debug.Log("NextStage From ResponseHackAndSlash");
             StartCoroutine(CoGoToNextStageClose(eval));
         }
 
-        private IEnumerator CoGoToNextStageClose(ActionBase.ActionEvaluation<HackAndSlash3> eval)
+        private IEnumerator CoGoToNextStageClose(ActionBase.ActionEvaluation<HackAndSlash4> eval)
         {
             if (Find<Menu>().IsActive())
             {
@@ -464,12 +464,12 @@ namespace Nekoyume.UI
             Close();
         }
 
-        public void NextMimisbrunnrStage(ActionBase.ActionEvaluation<MimisbrunnrBattle> eval)
+        public void NextMimisbrunnrStage(ActionBase.ActionEvaluation<MimisbrunnrBattle2> eval)
         {
             Debug.Log("NextStage From ResponseHackAndSlash");
             StartCoroutine(CoGoToNextMimisbrunnrStageClose(eval));
         }
-        private IEnumerator CoGoToNextMimisbrunnrStageClose(ActionBase.ActionEvaluation<MimisbrunnrBattle> eval)
+        private IEnumerator CoGoToNextMimisbrunnrStageClose(ActionBase.ActionEvaluation<MimisbrunnrBattle2> eval)
         {
             if (Find<Menu>().IsActive())
             {

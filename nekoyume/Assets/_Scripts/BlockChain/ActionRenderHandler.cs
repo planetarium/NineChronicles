@@ -140,7 +140,7 @@ namespace Nekoyume.BlockChain
 
         private void HackAndSlash()
         {
-            _renderer.EveryRender<HackAndSlash3>()
+            _renderer.EveryRender<HackAndSlash4>()
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseHackAndSlash).AddTo(_disposables);
@@ -149,7 +149,7 @@ namespace Nekoyume.BlockChain
 
         private void MimisbrunnrBattle()
         {
-            _renderer.EveryRender<MimisbrunnrBattle>()
+            _renderer.EveryRender<MimisbrunnrBattle2>()
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseMimisbrunnr).AddTo(_disposables);
@@ -157,7 +157,7 @@ namespace Nekoyume.BlockChain
 
         private void CombinationConsumable()
         {
-            _renderer.EveryRender<CombinationConsumable2>()
+            _renderer.EveryRender<CombinationConsumable3>()
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseCombinationConsumable).AddTo(_disposables);
@@ -173,7 +173,7 @@ namespace Nekoyume.BlockChain
 
         private void SellCancellation()
         {
-            _renderer.EveryRender<SellCancellation3>()
+            _renderer.EveryRender<SellCancellation4>()
                 .Where(ValidateEvaluationForCurrentAvatarState)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseSellCancellation).AddTo(_disposables);
@@ -181,7 +181,7 @@ namespace Nekoyume.BlockChain
 
         private void Buy()
         {
-            _renderer.EveryRender<Buy3>()
+            _renderer.EveryRender<Buy4>()
                 .Where(ValidateEvaluationForAgentState)
 
                 .ObserveOnMainThread()
@@ -190,7 +190,7 @@ namespace Nekoyume.BlockChain
 
         private void ItemEnhancement()
         {
-            _renderer.EveryRender<ItemEnhancement4>()
+            _renderer.EveryRender<ItemEnhancement5>()
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseItemEnhancement).AddTo(_disposables);
@@ -221,7 +221,7 @@ namespace Nekoyume.BlockChain
 
         private void RankingBattle()
         {
-            _renderer.EveryRender<RankingBattle2>()
+            _renderer.EveryRender<RankingBattle3>()
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseRankingBattle).AddTo(_disposables);
@@ -229,7 +229,7 @@ namespace Nekoyume.BlockChain
 
         private void CombinationEquipment()
         {
-            _renderer.EveryRender<CombinationEquipment3>()
+            _renderer.EveryRender<CombinationEquipment4>()
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseCombinationEquipment).AddTo(_disposables);
@@ -305,7 +305,7 @@ namespace Nekoyume.BlockChain
             UpdateCombinationSlotState(slot);
         }
 
-        private void ResponseCombinationEquipment(ActionBase.ActionEvaluation<CombinationEquipment3> eval)
+        private void ResponseCombinationEquipment(ActionBase.ActionEvaluation<CombinationEquipment4> eval)
         {
             if (eval.Exception is null)
             {
@@ -398,7 +398,7 @@ namespace Nekoyume.BlockChain
             }
         }
 
-        private void ResponseCombinationConsumable(ActionBase.ActionEvaluation<CombinationConsumable2> eval)
+        private void ResponseCombinationConsumable(ActionBase.ActionEvaluation<CombinationConsumable3> eval)
         {
             if (eval.Exception is null)
             {
@@ -477,7 +477,7 @@ namespace Nekoyume.BlockChain
             }
         }
 
-        private void ResponseSellCancellation(ActionBase.ActionEvaluation<SellCancellation3> eval)
+        private void ResponseSellCancellation(ActionBase.ActionEvaluation<SellCancellation4> eval)
         {
             if (eval.Exception is null)
             {
@@ -494,7 +494,7 @@ namespace Nekoyume.BlockChain
             }
         }
 
-        private void ResponseBuy(ActionBase.ActionEvaluation<Buy3> eval)
+        private void ResponseBuy(ActionBase.ActionEvaluation<Buy4> eval)
         {
             if (eval.Exception is null)
             {
@@ -585,7 +585,7 @@ namespace Nekoyume.BlockChain
             }
         }
 
-        private void ResponseHackAndSlash(ActionBase.ActionEvaluation<HackAndSlash3> eval)
+        private void ResponseHackAndSlash(ActionBase.ActionEvaluation<HackAndSlash4> eval)
         {
             if (eval.Exception is null)
             {
@@ -643,7 +643,7 @@ namespace Nekoyume.BlockChain
             }
         }
 
-        private void ResponseMimisbrunnr(ActionBase.ActionEvaluation<MimisbrunnrBattle> eval)
+        private void ResponseMimisbrunnr(ActionBase.ActionEvaluation<MimisbrunnrBattle2> eval)
         {
             if (eval.Exception is null)
             {
@@ -701,7 +701,7 @@ namespace Nekoyume.BlockChain
             }
         }
 
-        private void ResponseRankingBattle(ActionBase.ActionEvaluation<RankingBattle2> eval)
+        private void ResponseRankingBattle(ActionBase.ActionEvaluation<RankingBattle3> eval)
         {
             if (eval.Exception is null)
             {
@@ -767,7 +767,7 @@ namespace Nekoyume.BlockChain
             }
         }
 
-        private void ResponseItemEnhancement(ActionBase.ActionEvaluation<ItemEnhancement4> eval)
+        private void ResponseItemEnhancement(ActionBase.ActionEvaluation<ItemEnhancement5> eval)
         {
             if (eval.Exception is null)
             {

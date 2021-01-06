@@ -70,7 +70,7 @@ namespace Nekoyume.BlockChain
 
         private void Buy()
         {
-            _renderer.EveryUnrender<Buy3>()
+            _renderer.EveryUnrender<Buy4>()
                 .Where(ValidateEvaluationForAgentState)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseBuy)
@@ -88,7 +88,7 @@ namespace Nekoyume.BlockChain
 
         private void SellCancellation()
         {
-            _renderer.EveryUnrender<SellCancellation3>()
+            _renderer.EveryUnrender<SellCancellation4>()
                 .Where(ValidateEvaluationForCurrentAvatarState)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseSellCancellation)
@@ -97,14 +97,14 @@ namespace Nekoyume.BlockChain
 
         private void ItemEnhancement()
         {
-            _renderer.EveryUnrender<ItemEnhancement4>()
+            _renderer.EveryUnrender<ItemEnhancement5>()
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseUnrenderItemEnhancement)
                 .AddTo(_disposables);
         }
 
-        private void ResponseBuy(ActionBase.ActionEvaluation<Buy3> eval)
+        private void ResponseBuy(ActionBase.ActionEvaluation<Buy4> eval)
         {
             if (!(eval.Exception is null))
             {
@@ -165,7 +165,7 @@ namespace Nekoyume.BlockChain
             UpdateCurrentAvatarState(eval);
         }
 
-        private void ResponseSellCancellation(ActionBase.ActionEvaluation<SellCancellation3> eval)
+        private void ResponseSellCancellation(ActionBase.ActionEvaluation<SellCancellation4> eval)
         {
             if (!(eval.Exception is null))
             {
@@ -181,7 +181,7 @@ namespace Nekoyume.BlockChain
             UpdateCurrentAvatarState(eval);
         }
 
-        private void ResponseUnrenderItemEnhancement(ActionBase.ActionEvaluation<ItemEnhancement4> eval)
+        private void ResponseUnrenderItemEnhancement(ActionBase.ActionEvaluation<ItemEnhancement5> eval)
         {
             var agentAddress = eval.Signer;
             var avatarAddress = eval.Action.avatarAddress;
