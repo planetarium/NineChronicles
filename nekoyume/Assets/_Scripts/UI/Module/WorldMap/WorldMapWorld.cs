@@ -65,7 +65,8 @@ namespace Nekoyume.UI.Module
                 .AddTo(gameObject);
 
             horizontalScrollSnap.OnSelectionPageChangedEvent.AddListener(value =>
-                SharedViewModel.CurrentPageNumber.Value = value + 1);
+                SharedViewModel.CurrentPageNumber.Value =
+                    Mathf.Clamp(value + 1, 1, SharedViewModel.PageCount.Value));
 
             foreach (var stage in pages.SelectMany(page => page.Stages))
             {
@@ -160,9 +161,9 @@ namespace Nekoyume.UI.Module
                 .Subscribe(currentPageNumber =>
                 {
                     stagePageText.text = $"{currentPageNumber}/{SharedViewModel.PageCount.Value}";
-                    previousButton.gameObject.SetActive(currentPageNumber != 1);
+                    previousButton.gameObject.SetActive(currentPageNumber > 1);
                     nextButton.gameObject.SetActive(
-                        currentPageNumber != SharedViewModel.PageCount.Value);
+                        currentPageNumber < SharedViewModel.PageCount.Value);
                 })
                 .AddTo(_disposablesForModel);
 
