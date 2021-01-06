@@ -303,7 +303,7 @@ namespace Nekoyume.Battle
             Log.waveCount = _waves.Count;
             Log.clearedWaveNumber = 0;
             Log.newlyCleared = false;
-            Player.Spawn();
+            Player.SpawnV2();
             TurnNumber = 0;
             for (var i = 0; i < _waves.Count; i++)
             {
