@@ -184,6 +184,95 @@ namespace Lib9c.Tests
         }
 
         [Fact]
+        public void MustNotIncludeBlockActionAtTransaction()
+        {
+            var adminPrivateKey = new PrivateKey();
+            var adminAddress = adminPrivateKey.ToAddress();
+            var authorizedMinerPrivateKey = new PrivateKey();
+
+            (ActivationKey ak, PendingActivationState ps) = ActivationKey.Create(
+                new PrivateKey(),
+                new byte[] { 0x00, 0x01 }
+            );
+
+            var blockPolicySource = new BlockPolicySource(Logger.None);
+            IBlockPolicy<PolymorphicAction<ActionBase>> policy = blockPolicySource.GetPolicy(10000, 100);
+            Block<PolymorphicAction<ActionBase>> genesis = MakeGenesisBlock(
+                adminAddress,
+                ImmutableHashSet.Create(adminAddress),
+                new AuthorizedMinersState(
+                    new[] { authorizedMinerPrivateKey.ToAddress() },
+                    5,
+                    10
+                ),
+                pendingActivations: new[] { ps }
+            );
+            using var store = new DefaultStore(null);
+            using var stateStore = new TrieStateStore(new DefaultKeyValueStore(null), new DefaultKeyValueStore(null));
+            var blockChain = new BlockChain<PolymorphicAction<ActionBase>>(
+                policy,
+                store,
+                stateStore,
+                genesis,
+                renderers: new[] { blockPolicySource.BlockRenderer }
+            );
+
+            Assert.Throws<MissingActionTypeException>(() =>
+            {
+                blockChain.MakeTransaction(
+                    adminPrivateKey,
+                    new PolymorphicAction<ActionBase>[] { new RewardGold() }
+                );
+            });
+        }
+
+        [Fact]
+        public async void EarnMiningGoldWhenSuccessMining()
+        {
+            var adminPrivateKey = new PrivateKey();
+            var adminAddress = adminPrivateKey.ToAddress();
+            var authorizedMinerPrivateKey = new PrivateKey();
+
+            (ActivationKey ak, PendingActivationState ps) = ActivationKey.Create(
+                new PrivateKey(),
+                new byte[] { 0x00, 0x01 }
+            );
+
+            var blockPolicySource = new BlockPolicySource(Logger.None);
+            IBlockPolicy<PolymorphicAction<ActionBase>> policy = blockPolicySource.GetPolicy(10000, 100);
+            Block<PolymorphicAction<ActionBase>> genesis = MakeGenesisBlock(
+                adminAddress,
+                ImmutableHashSet.Create(adminAddress),
+                new AuthorizedMinersState(
+                    new[] { authorizedMinerPrivateKey.ToAddress() },
+                    5,
+                    10
+                ),
+                pendingActivations: new[] { ps }
+            );
+
+            using var store = new DefaultStore(null);
+            using var stateStore = new TrieStateStore(new DefaultKeyValueStore(null), new DefaultKeyValueStore(null));
+            var blockChain = new BlockChain<PolymorphicAction<ActionBase>>(
+                policy,
+                store,
+                stateStore,
+                genesis,
+                renderers: new[] { blockPolicySource.BlockRenderer }
+            );
+
+            blockChain.MakeTransaction(
+                adminPrivateKey,
+                new PolymorphicAction<ActionBase>[] { new DailyReward(), }
+            );
+
+            await blockChain.MineBlock(adminAddress);
+            FungibleAssetValue actualBalance = blockChain.GetBalance(adminAddress, _currency);
+            FungibleAssetValue expectedBalance = new FungibleAssetValue(_currency, 10, 0);
+            Assert.True(expectedBalance.Equals(actualBalance));
+        }
+
+        [Fact]
         public async Task ValidateNextBlockWithAuthorizedMinersState()
         {
             var adminPrivateKey = new PrivateKey();
