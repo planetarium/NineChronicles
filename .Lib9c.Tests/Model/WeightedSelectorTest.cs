@@ -67,7 +67,7 @@ namespace Lib9c.Tests.Model
             var i = 0;
             var result = new Dictionary<int, int>();
             var result2 = new Dictionary<int, int>();
-            while (i < 10000)
+            while (i < 100000)
             {
                 var selector = GetSelector();
                 var selector2 = GetSelector();

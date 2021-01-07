@@ -66,6 +66,47 @@ namespace Nekoyume.Battle
             {
                 try
                 {
+                    var data = itemSelector.SelectV2(1).First();
+                    if (materialItemSheet.TryGetValue(data.ItemId, out var itemData))
+                    {
+                        var count = random.Next(data.Min, data.Max + 1);
+                        for (var i = 0; i < count; i++)
+                        {
+                            var item = ItemFactory.CreateMaterial(itemData);
+                            if (reward.Count < maxCount)
+                            {
+                                reward.Add(item);
+                            }
+                            else
+                            {
+                                break;
+                            }
+                        }
+                    }
+                }
+                catch (ListEmptyException)
+                {
+                    break;
+                }
+            }
+
+            reward = reward.OrderBy(r => r.Id).ToList();
+            return reward;
+        }
+
+        public static List<ItemBase> SetRewardV2(
+            WeightedSelector<StageSheet.RewardData> itemSelector,
+            int maxCount,
+            IRandom random,
+            MaterialItemSheet materialItemSheet
+        )
+        {
+            var reward = new List<ItemBase>();
+
+            while (reward.Count < maxCount)
+            {
+                try
+                {
                     var data = itemSelector.SelectV3(1).First();
                     if (materialItemSheet.TryGetValue(data.ItemId, out var itemData))
                     {

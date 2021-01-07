@@ -206,7 +206,7 @@ namespace Lib9c.Tests.Model
             var rewardIds = new HashSet<int>();
             for (int i = 0; i < simulationCount; ++i)
             {
-                simulator.Simulate();
+                simulator.SimulateV2();
                 foreach (var itemBase in simulator.Reward)
                 {
                     if (!rewardIds.Contains(itemBase.Id))

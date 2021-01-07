@@ -280,7 +280,7 @@ namespace Nekoyume.Battle
             }
 
             var max = _arenaInfo.GetRewardCount();
-            _reward = SetReward(itemSelector, max, Random, MaterialItemSheet);
+            _reward = SetRewardV2(itemSelector, max, Random, MaterialItemSheet);
             var getReward = new GetReward(null, _reward);
             Log.Add(getReward);
             Log.result = Result;
