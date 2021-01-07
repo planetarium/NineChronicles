@@ -170,6 +170,7 @@ namespace Nekoyume.UI
 
             worldStageId.text = $"{SharedModel.WorldName} {StageInformation.GetStageIdString(SharedModel.StageID)}";
             actionPoint.SetActionPoint(model.ActionPoint);
+            actionPoint.SetEventTriggerEnabled(true);
 
             foreach (var reward in rewardsArea.rewards)
             {
@@ -404,6 +405,7 @@ namespace Nekoyume.UI
 
             closeButton.interactable = false;
             submitButton.interactable = false;
+            actionPoint.SetEventTriggerEnabled(false);
 
             StopCoUpdateBottomText();
             StartCoroutine(CoFadeOut());
