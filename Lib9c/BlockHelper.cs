@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using Libplanet;
@@ -26,7 +27,8 @@ namespace Nekoyume
             bool isActivateAdminAddress = false,
             IEnumerable<string> credits = null,
             int maximumTransactions = 100,
-            PrivateKey privateKey = null
+            PrivateKey privateKey = null,
+            DateTimeOffset? timestamp = null
         )
         {
             if (!tableSheets.TryGetValue(nameof(GameConfigSheet), out var csv))
@@ -71,7 +73,8 @@ namespace Nekoyume
                 BlockChain<PolymorphicAction<ActionBase>>.MakeGenesisBlock(
                     actions,
                     privateKey: privateKey,
-                    blockAction: blockAction);
+                    blockAction: blockAction,
+                    timestamp: timestamp);
         }
     }
 }

@@ -16,6 +16,7 @@ namespace Lib9c.Tests
     using Libplanet.Store;
     using Libplanet.Store.Trie;
     using Libplanet.Tx;
+    using Nekoyume;
     using Nekoyume.Action;
     using Nekoyume.BlockChain;
     using Nekoyume.Model;
@@ -25,6 +26,15 @@ namespace Lib9c.Tests
 
     public class BlockPolicyTest
     {
+        private readonly PrivateKey _privateKey;
+        private readonly Currency _currency;
+
+        public BlockPolicyTest()
+        {
+            _privateKey = new PrivateKey();
+            _currency = new Currency("NCG", 2, minter: _privateKey.ToAddress());
+        }
+
         [Fact]
         public void DoesTransactionFollowsPolicyWithEmpty()
         {
@@ -110,12 +120,12 @@ namespace Lib9c.Tests
 
             var singleAction = new PolymorphicAction<ActionBase>[]
             {
-                new RewardGold(),
+                new DailyReward(),
             };
             var manyActions = new PolymorphicAction<ActionBase>[]
             {
-                new RewardGold(),
-                new RewardGold(),
+                new DailyReward(),
+                new DailyReward(),
             };
             Transaction<PolymorphicAction<ActionBase>> txWithSingleAction =
                 Transaction<PolymorphicAction<ActionBase>>.Create(
@@ -181,6 +191,95 @@ namespace Lib9c.Tests
 
             // Deny tx even if contains valid activation key.
             Assert.False(policy.DoesTransactionFollowsPolicy(txFromAuthorizedMiner, blockChain));
+        }
+
+        [Fact]
+        public void MustNotIncludeBlockActionAtTransaction()
+        {
+            var adminPrivateKey = new PrivateKey();
+            var adminAddress = adminPrivateKey.ToAddress();
+            var authorizedMinerPrivateKey = new PrivateKey();
+
+            (ActivationKey ak, PendingActivationState ps) = ActivationKey.Create(
+                new PrivateKey(),
+                new byte[] { 0x00, 0x01 }
+            );
+
+            var blockPolicySource = new BlockPolicySource(Logger.None);
+            IBlockPolicy<PolymorphicAction<ActionBase>> policy = blockPolicySource.GetPolicy(10000, 100);
+            Block<PolymorphicAction<ActionBase>> genesis = MakeGenesisBlock(
+                adminAddress,
+                ImmutableHashSet.Create(adminAddress),
+                new AuthorizedMinersState(
+                    new[] { authorizedMinerPrivateKey.ToAddress() },
+                    5,
+                    10
+                ),
+                pendingActivations: new[] { ps }
+            );
+            using var store = new DefaultStore(null);
+            using var stateStore = new TrieStateStore(new DefaultKeyValueStore(null), new DefaultKeyValueStore(null));
+            var blockChain = new BlockChain<PolymorphicAction<ActionBase>>(
+                policy,
+                store,
+                stateStore,
+                genesis,
+                renderers: new[] { blockPolicySource.BlockRenderer }
+            );
+
+            Assert.Throws<MissingActionTypeException>(() =>
+            {
+                blockChain.MakeTransaction(
+                    adminPrivateKey,
+                    new PolymorphicAction<ActionBase>[] { new RewardGold() }
+                );
+            });
+        }
+
+        [Fact]
+        public async void EarnMiningGoldWhenSuccessMining()
+        {
+            var adminPrivateKey = new PrivateKey();
+            var adminAddress = adminPrivateKey.ToAddress();
+            var authorizedMinerPrivateKey = new PrivateKey();
+
+            (ActivationKey ak, PendingActivationState ps) = ActivationKey.Create(
+                new PrivateKey(),
+                new byte[] { 0x00, 0x01 }
+            );
+
+            var blockPolicySource = new BlockPolicySource(Logger.None);
+            IBlockPolicy<PolymorphicAction<ActionBase>> policy = blockPolicySource.GetPolicy(10000, 100);
+            Block<PolymorphicAction<ActionBase>> genesis = MakeGenesisBlock(
+                adminAddress,
+                ImmutableHashSet.Create(adminAddress),
+                new AuthorizedMinersState(
+                    new[] { authorizedMinerPrivateKey.ToAddress() },
+                    5,
+                    10
+                ),
+                pendingActivations: new[] { ps }
+            );
+
+            using var store = new DefaultStore(null);
+            using var stateStore = new TrieStateStore(new DefaultKeyValueStore(null), new DefaultKeyValueStore(null));
+            var blockChain = new BlockChain<PolymorphicAction<ActionBase>>(
+                policy,
+                store,
+                stateStore,
+                genesis,
+                renderers: new[] { blockPolicySource.BlockRenderer }
+            );
+
+            blockChain.MakeTransaction(
+                adminPrivateKey,
+                new PolymorphicAction<ActionBase>[] { new DailyReward(), }
+            );
+
+            await blockChain.MineBlock(adminAddress);
+            FungibleAssetValue actualBalance = blockChain.GetBalance(adminAddress, _currency);
+            FungibleAssetValue expectedBalance = new FungibleAssetValue(_currency, 10, 0);
+            Assert.True(expectedBalance.Equals(actualBalance));
         }
 
         [Fact]
@@ -453,36 +552,23 @@ namespace Lib9c.Tests
             if (pendingActivations is null)
             {
                 var nonce = new byte[] { 0x00, 0x01, 0x02, 0x03 };
-                var privateKey = new PrivateKey();
                 (ActivationKey activationKey, PendingActivationState pendingActivation) =
-                    ActivationKey.Create(privateKey, nonce);
+                    ActivationKey.Create(_privateKey, nonce);
                 pendingActivations = new[] { pendingActivation };
             }
 
-            return BlockChain<PolymorphicAction<ActionBase>>.MakeGenesisBlock(
-                    new PolymorphicAction<ActionBase>[]
-                    {
-                        new InitializeStates(
-                            rankingState: new RankingState(),
-                            shopState: new ShopState(),
-                            tableSheets: TableSheetsImporter.ImportSheets(),
-                            gameConfigState: new GameConfigState(),
-                            redeemCodeState: new RedeemCodeState(Dictionary.Empty
-                                .Add("address", RedeemCodeState.Address.Serialize())
-                                .Add("map", Dictionary.Empty)
-                            ),
-                            adminAddressState: new AdminState(adminAddress, 1500000),
-                            activatedAccountsState: new ActivatedAccountsState(activatedAddresses),
-                            goldCurrencyState: new GoldCurrencyState(
-                                new Currency("NCG", 2, minter: null)
-                            ),
-                            goldDistributions: new GoldDistribution[0],
-                            pendingActivationStates: pendingActivations,
-                            authorizedMinersState: authorizedMinersState
-                        ),
-                    },
-                    timestamp: timestamp ?? DateTimeOffset.MinValue
-                );
+            var sheets = TableSheetsImporter.ImportSheets();
+            return BlockHelper.MineGenesisBlock(
+                sheets,
+                new GoldDistribution[0],
+                pendingActivations,
+                new AdminState(adminAddress, 1500000),
+                authorizedMinersState: authorizedMinersState,
+                activatedAccounts: activatedAddresses,
+                isActivateAdminAddress: false,
+                credits: null,
+                privateKey: _privateKey,
+                timestamp: timestamp ?? DateTimeOffset.MinValue);
         }
 
         private class NoOpStateStore : IStateStore
