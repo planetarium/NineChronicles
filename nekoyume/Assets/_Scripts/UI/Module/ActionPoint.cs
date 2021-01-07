@@ -6,6 +6,7 @@ using Nekoyume.UI.Module.Common;
 using TMPro;
 using UniRx;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
@@ -26,6 +27,9 @@ namespace Nekoyume.UI.Module
 
         [SerializeField]
         private bool syncWithAvatarState = true;
+
+        [SerializeField]
+        private EventTrigger eventTrigger = null;
 
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
         private int _currentActionPoint;
@@ -109,6 +113,11 @@ namespace Nekoyume.UI.Module
         public void SetActionPoint(int actionPoint)
         {
             SetActionPoint(actionPoint, false);
+        }
+
+        public void SetEventTriggerEnabled(bool value)
+        {
+            eventTrigger.enabled = value;
         }
     }
 }

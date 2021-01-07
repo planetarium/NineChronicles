@@ -321,7 +321,8 @@ MonoBehaviour:
   text: {fileID: 2724828360276689814}
   image: {fileID: 339029149374476197}
   tooltipArea: {fileID: 8298632334966963583}
-  onlineShopButton: {fileID: 0}
+  syncWithAvatarState: 1
+  eventTrigger: {fileID: 4964743994697273151}
 --- !u!114 &2724828359984488558
 MonoBehaviour:
   m_ObjectHideFlags: 0
