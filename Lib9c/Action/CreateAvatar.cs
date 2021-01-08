@@ -180,9 +180,13 @@ namespace Nekoyume.Action
                     materialItemSheet: materialItemSheet,
                     equipmentItemSheet: equipmentItemSheet);
 
-                var equipmentItemOptionSheet =
-                    ctx.PreviousStates.GetSheet<EquipmentItemOptionSheet>();
                 var skillSheet = ctx.PreviousStates.GetSheet<SkillSheet>();
+
+                // Set level of equipment here.
+                var level = 2;
+
+                // Set recipeId of target equipment here.
+                var recipeId = 10110000;
 
                 // Add options here.
                 // Integer in the indexer is optionId.
@@ -198,8 +202,8 @@ namespace Nekoyume.Action
                     random: ctx.Random,
                     skillSheet: skillSheet,
                     equipmentItemSheet: equipmentItemSheet,
-                    level: 0,
-                    recipeId: 10110000,
+                    level: level,
+                    recipeId: recipeId,
                     optionRows: optionRows);
             }
 
