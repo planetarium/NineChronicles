@@ -10,6 +10,7 @@ using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Model.Item;
+using Nekoyume.Model.Stat;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using Serilog;
@@ -172,7 +173,32 @@ namespace Nekoyume.Action
             {
                 var costumeItemSheet = ctx.PreviousStates.GetSheet<CostumeItemSheet>();
                 var equipmentItemSheet = ctx.PreviousStates.GetSheet<EquipmentItemSheet>();
-                AddItemsForTest(avatarState, ctx.Random, costumeItemSheet, materialItemSheet, equipmentItemSheet);
+                AddItemsForTest(
+                    avatarState: avatarState,
+                    random: ctx.Random,
+                    costumeItemSheet: costumeItemSheet,
+                    materialItemSheet: materialItemSheet,
+                    equipmentItemSheet: equipmentItemSheet);
+
+                var equipmentItemOptionSheet =
+                    ctx.PreviousStates.GetSheet<EquipmentItemOptionSheet>();
+                var skillSheet = ctx.PreviousStates.GetSheet<SkillSheet>();
+
+                var optionRows = new List<EquipmentItemOptionSheet.Row>()
+                {
+                    equipmentItemOptionSheet[7],
+                    equipmentItemOptionSheet[9],
+                    equipmentItemOptionSheet[11],
+                };
+
+                AddCustomEquipment(
+                    avatarState: avatarState,
+                    random: ctx.Random,
+                    skillSheet: skillSheet,
+                    equipmentItemSheet: equipmentItemSheet,
+                    level: 0,
+                    recipeId: 10110000,
+                    optionRows: optionRows);
             }
 
             return avatarState;
@@ -202,6 +228,29 @@ namespace Nekoyume.Action
                 var itemId = random.GenerateRandomGuid();
                 avatarState.inventory.AddItem(ItemFactory.CreateItemUsable(row, itemId, default));
             }
+        }
+
+        private static void AddCustomEquipment(
+            AvatarState avatarState,
+            IRandom random,
+            SkillSheet skillSheet,
+            EquipmentItemSheet equipmentItemSheet,
+            int level,
+            int recipeId,
+            IEnumerable<EquipmentItemOptionSheet.Row> optionRows
+            )
+        {
+            if (!equipmentItemSheet.TryGetValue(recipeId, out var equipmentRow))
+            {
+                UnityEngine.Debug.LogWarning($"RecipeId ({recipeId}) not exists.");
+                return;
+            }
+
+            var itemId = random.GenerateRandomGuid();
+            var equipment = (Equipment)ItemFactory.CreateItemUsable(equipmentRow, itemId, 0, level);
+            CombinationEquipment.AddOption(skillSheet, equipment, optionRows, random);
+
+            avatarState.inventory.AddItem(equipment);
         }
     }
 }
