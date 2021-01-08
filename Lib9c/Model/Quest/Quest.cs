@@ -341,6 +341,11 @@ namespace Nekoyume.Model.Quest
 
         public void UpdateItemTypeCollectQuest(IEnumerable<ItemBase> items)
         {
+            if (items == null)
+            {
+                return;
+            }
+            
             foreach (var item in items.OrderBy(i => i.Id))
             {
                 var targets = _quests

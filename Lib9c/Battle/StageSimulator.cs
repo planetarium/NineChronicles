@@ -18,7 +18,7 @@ namespace Nekoyume.Battle
     {
         private readonly List<Wave> _waves;
         private readonly StageSheet.Row _stageRow;
-        private List<ItemBase> _waveRewards;
+        private List<ItemBase> _waveRewards = new List<ItemBase>();
         public CollectionMap ItemMap = new CollectionMap();
         public readonly EnemySkillSheet EnemySkillSheet;
 
