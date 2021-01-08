@@ -184,11 +184,13 @@ namespace Nekoyume.Action
                     ctx.PreviousStates.GetSheet<EquipmentItemOptionSheet>();
                 var skillSheet = ctx.PreviousStates.GetSheet<SkillSheet>();
 
+                // Add options here.
+                // Integer in the indexer is optionId.
                 var optionRows = new List<EquipmentItemOptionSheet.Row>()
                 {
-                    equipmentItemOptionSheet[7],
-                    equipmentItemOptionSheet[9],
-                    equipmentItemOptionSheet[11],
+                    //equipmentItemOptionSheet[7],
+                    //equipmentItemOptionSheet[9],
+                    //equipmentItemOptionSheet[11],
                 };
 
                 AddCustomEquipment(
