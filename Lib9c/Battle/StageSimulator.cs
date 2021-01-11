@@ -17,7 +17,7 @@ namespace Nekoyume.Battle
     public class StageSimulator : Simulator
     {
         private readonly List<Wave> _waves;
-        private List<ItemBase> _waveRewards = new List<ItemBase>();
+        private readonly List<ItemBase> _waveRewards;
         public CollectionMap ItemMap = new CollectionMap();
         public readonly EnemySkillSheet EnemySkillSheet;
 
