@@ -181,30 +181,20 @@ namespace Nekoyume.Action
                     equipmentItemSheet: equipmentItemSheet);
 
                 var skillSheet = ctx.PreviousStates.GetSheet<SkillSheet>();
-
-                // Set level of equipment here.
-                var level = 2;
-
-                // Set recipeId of target equipment here.
-                var recipeId = 10110000;
-
-                // Add options here.
-                // Integer in the indexer is optionId.
-                var optionRows = new List<EquipmentItemOptionSheet.Row>()
-                {
-                    //equipmentItemOptionSheet[7],
-                    //equipmentItemOptionSheet[9],
-                    //equipmentItemOptionSheet[11],
-                };
+                var optionSheet = ctx.PreviousStates.GetSheet<EquipmentItemOptionSheet>();
 
                 AddCustomEquipment(
                     avatarState: avatarState,
                     random: ctx.Random,
                     skillSheet: skillSheet,
                     equipmentItemSheet: equipmentItemSheet,
-                    level: level,
-                    recipeId: recipeId,
-                    optionRows: optionRows);
+                    equipmentItemOptionSheet: optionSheet,
+                    // Set level of equipment here.
+                    level: 2,
+                    // Set recipeId of target equipment here.
+                    recipeId: 10110000,
+                    // Add optionIds here.
+                    7, 9, 11);
             }
 
             return avatarState;
@@ -241,9 +231,10 @@ namespace Nekoyume.Action
             IRandom random,
             SkillSheet skillSheet,
             EquipmentItemSheet equipmentItemSheet,
+            EquipmentItemOptionSheet equipmentItemOptionSheet,
             int level,
             int recipeId,
-            IEnumerable<EquipmentItemOptionSheet.Row> optionRows
+            params int[] optionIds
             )
         {
             if (!equipmentItemSheet.TryGetValue(recipeId, out var equipmentRow))
@@ -253,6 +244,16 @@ namespace Nekoyume.Action
 
             var itemId = random.GenerateRandomGuid();
             var equipment = (Equipment)ItemFactory.CreateItemUsable(equipmentRow, itemId, 0, level);
+            var optionRows = new List<EquipmentItemOptionSheet.Row>();
+            foreach (var optionId in optionIds)
+            {
+                if (!equipmentItemOptionSheet.TryGetValue(optionId, out var optionRow))
+                {
+                    continue;
+                }
+                optionRows.Add(optionRow);
+            }
+
             CombinationEquipment.AddOption(skillSheet, equipment, optionRows, random);
 
             avatarState.inventory.AddItem(equipment);
