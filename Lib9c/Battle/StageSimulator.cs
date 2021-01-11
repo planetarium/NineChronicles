@@ -17,7 +17,6 @@ namespace Nekoyume.Battle
     public class StageSimulator : Simulator
     {
         private readonly List<Wave> _waves;
-        private readonly StageSheet.Row _stageRow;
         private List<ItemBase> _waveRewards = new List<ItemBase>();
         public CollectionMap ItemMap = new CollectionMap();
         public readonly EnemySkillSheet EnemySkillSheet;
@@ -54,7 +53,6 @@ namespace Nekoyume.Battle
             var stageSheet = stageSimulatorSheets.StageSheet;
             if (!stageSheet.TryGetValue(StageId, out var stageRow))
                 throw new SheetRowNotFoundException(nameof(stageSheet), StageId);
-            _stageRow = stageRow;
 
             var stageWaveSheet = stageSimulatorSheets.StageWaveSheet;
             if (!stageWaveSheet.TryGetValue(StageId, out var stageWaveRow))
@@ -64,6 +62,13 @@ namespace Nekoyume.Battle
             TurnLimit = stageRow.TurnLimit;
 
             SetWave(stageRow, stageWaveRow);
+            var itemSelector = SetItemSelector(stageRow, Random);	
+            _waveRewards = SetReward(	
+                itemSelector,	
+                Random.Next(stageRow.DropItemMin, stageRow.DropItemMax + 1),	
+                random,	
+                stageSimulatorSheets.MaterialItemSheet	
+            );
         }
 
         public StageSimulator(
@@ -238,13 +243,6 @@ namespace Nekoyume.Battle
                                 break;
                             case 2:
                             {
-                                var itemSelector = SetItemSelector(_stageRow, Random);
-                                _waveRewards = SetReward(
-                                    itemSelector,
-                                    Random.Next(_stageRow.DropItemMin, _stageRow.DropItemMax + 1),
-                                    Random,
-                                    MaterialItemSheet
-                                );
                                 ItemMap = Player.GetRewards(_waveRewards);
                                 var dropBox = new DropBox(null, _waveRewards);
                                 Log.Add(dropBox);
@@ -415,13 +413,6 @@ namespace Nekoyume.Battle
                                 break;
                             case 2:
                             {
-                                var itemSelector = SetItemSelector(_stageRow, Random);
-                                _waveRewards = SetRewardV2(
-                                    itemSelector,
-                                    Random.Next(_stageRow.DropItemMin, _stageRow.DropItemMax + 1),
-                                    Random,
-                                    MaterialItemSheet
-                                );
                                 ItemMap = Player.GetRewards(_waveRewards);
                                 var dropBox = new DropBox(null, _waveRewards);
                                 Log.Add(dropBox);
