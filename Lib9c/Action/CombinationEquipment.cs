@@ -235,13 +235,13 @@ namespace Nekoyume.Action
             SlotIndex = plainValue["slotIndex"].ToInteger();
         }
 
-        private static StatMap GetStat(EquipmentItemOptionSheet.Row row, IRandom random)
+        public static StatMap GetStat(EquipmentItemOptionSheet.Row row, IRandom random)
         {
             var value = random.Next(row.StatMin, row.StatMax + 1);
             return new StatMap(row.StatType, value);
         }
 
-        private static Skill GetSkill(EquipmentItemOptionSheet.Row row, SkillSheet skillSheet,
+        public static Skill GetSkill(EquipmentItemOptionSheet.Row row, SkillSheet skillSheet,
             IRandom random)
         {
             try

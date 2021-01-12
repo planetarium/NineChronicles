@@ -10,6 +10,7 @@ using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Model.Item;
+using Nekoyume.Model.Stat;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using Serilog;
@@ -172,7 +173,28 @@ namespace Nekoyume.Action
             {
                 var costumeItemSheet = ctx.PreviousStates.GetSheet<CostumeItemSheet>();
                 var equipmentItemSheet = ctx.PreviousStates.GetSheet<EquipmentItemSheet>();
-                AddItemsForTest(avatarState, ctx.Random, costumeItemSheet, materialItemSheet, equipmentItemSheet);
+                AddItemsForTest(
+                    avatarState: avatarState,
+                    random: ctx.Random,
+                    costumeItemSheet: costumeItemSheet,
+                    materialItemSheet: materialItemSheet,
+                    equipmentItemSheet: equipmentItemSheet);
+
+                var skillSheet = ctx.PreviousStates.GetSheet<SkillSheet>();
+                var optionSheet = ctx.PreviousStates.GetSheet<EquipmentItemOptionSheet>();
+
+                AddCustomEquipment(
+                    avatarState: avatarState,
+                    random: ctx.Random,
+                    skillSheet: skillSheet,
+                    equipmentItemSheet: equipmentItemSheet,
+                    equipmentItemOptionSheet: optionSheet,
+                    // Set level of equipment here.
+                    level: 2,
+                    // Set recipeId of target equipment here.
+                    recipeId: 10110000,
+                    // Add optionIds here.
+                    7, 9, 11);
             }
 
             return avatarState;
@@ -202,6 +224,69 @@ namespace Nekoyume.Action
                 var itemId = random.GenerateRandomGuid();
                 avatarState.inventory.AddItem(ItemFactory.CreateItemUsable(row, itemId, default));
             }
+        }
+
+        private static void AddCustomEquipment(
+            AvatarState avatarState,
+            IRandom random,
+            SkillSheet skillSheet,
+            EquipmentItemSheet equipmentItemSheet,
+            EquipmentItemOptionSheet equipmentItemOptionSheet,
+            int level,
+            int recipeId,
+            params int[] optionIds
+            )
+        {
+            if (!equipmentItemSheet.TryGetValue(recipeId, out var equipmentRow))
+            {
+                return;
+            }
+
+            var itemId = random.GenerateRandomGuid();
+            var equipment = (Equipment)ItemFactory.CreateItemUsable(equipmentRow, itemId, 0, level);
+            var optionRows = new List<EquipmentItemOptionSheet.Row>();
+            foreach (var optionId in optionIds)
+            {
+                if (!equipmentItemOptionSheet.TryGetValue(optionId, out var optionRow))
+                {
+                    continue;
+                }
+                optionRows.Add(optionRow);
+            }
+
+            AddOption(skillSheet, equipment, optionRows, random);
+
+            avatarState.inventory.AddItem(equipment);
+        }
+
+        private static HashSet<int> AddOption(
+            SkillSheet skillSheet,
+            Equipment equipment,
+            IEnumerable<EquipmentItemOptionSheet.Row> optionRows,
+            IRandom random)
+        {
+            var optionIds = new HashSet<int>();
+
+            foreach (var optionRow in optionRows.OrderBy(r => r.Id))
+            {
+                if (optionRow.StatType != StatType.NONE)
+                {
+                    var statMap = CombinationEquipment.GetStat(optionRow, random);
+                    equipment.StatsMap.AddStatAdditionalValue(statMap.StatType, statMap.Value);
+                }
+                else
+                {
+                    var skill = CombinationEquipment.GetSkill(optionRow, skillSheet, random);
+                    if (!(skill is null))
+                    {
+                        equipment.Skills.Add(skill);
+                    }
+                }
+
+                optionIds.Add(optionRow.Id);
+            }
+
+            return optionIds;
         }
     }
 }
