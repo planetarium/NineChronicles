@@ -50,7 +50,8 @@ namespace Lib9c.Tests.Model.Skill
                 null,
                 worldRow.Id,
                 worldRow.StageBegin,
-                tableSheets.GetStageSimulatorSheets());
+                tableSheets.GetStageSimulatorSheets(),
+                2);
             var player = new Player(avatarState, simulator);
 
             var enemyRow = tableSheets.CharacterSheet.OrderedList

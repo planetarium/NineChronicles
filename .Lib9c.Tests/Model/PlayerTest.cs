@@ -44,7 +44,8 @@ namespace Lib9c.Tests.Model
                 new List<Guid>(),
                 1,
                 1,
-                _tableSheets.GetStageSimulatorSheets()
+                _tableSheets.GetStageSimulatorSheets(),
+                2
             );
             var player = simulator.Player;
             var enemy = new Enemy(player, _tableSheets.CharacterSheet.Values.First(), 1);
@@ -65,7 +66,8 @@ namespace Lib9c.Tests.Model
                 new List<Guid>(),
                 1,
                 1,
-                _tableSheets.GetStageSimulatorSheets()
+                _tableSheets.GetStageSimulatorSheets(),
+                2
             );
             var player = simulator.Player;
             var enemy = new Enemy(player, _tableSheets.CharacterSheet.Values.First(), 1);
@@ -97,7 +99,8 @@ namespace Lib9c.Tests.Model
                 new List<Guid>(),
                 1,
                 1,
-                _tableSheets.GetStageSimulatorSheets()
+                _tableSheets.GetStageSimulatorSheets(),
+                2
             );
             var player = simulator.Player;
 
