@@ -89,13 +89,6 @@ namespace Nekoyume.Battle
         /// <summary>
         /// Do not use anymore since v100025.
         /// </summary>
-        /// <param name="random"></param>
-        /// <param name="avatarState"></param>
-        /// <param name="foods"></param>
-        /// <param name="worldId"></param>
-        /// <param name="stageId"></param>
-        /// <param name="stageSimulatorSheets"></param>
-        /// <exception cref="SheetRowNotFoundException"></exception>
         public StageSimulator(
             IRandom random,
             AvatarState avatarState,
@@ -134,7 +127,7 @@ namespace Nekoyume.Battle
             _waveRewards = SetReward(
                 itemSelector,
                 Random.Next(stageRow.DropItemMin, stageRow.DropItemMax + 1),
-                random,
+                Random,
                 stageSimulatorSheets.MaterialItemSheet
             );
         }
@@ -175,14 +168,6 @@ namespace Nekoyume.Battle
         /// <summary>
         /// Do not use anymore since v100025.
         /// </summary>
-        /// <param name="random"></param>
-        /// <param name="avatarState"></param>
-        /// <param name="foods"></param>
-        /// <param name="worldId"></param>
-        /// <param name="stageId"></param>
-        /// <param name="stageSimulatorSheets"></param>
-        /// <param name="skill"></param>
-        /// <exception cref="SheetRowNotFoundException"></exception>
         public StageSimulator(
             IRandom random,
             AvatarState avatarState,
@@ -240,13 +225,6 @@ namespace Nekoyume.Battle
         /// <summary>
         /// Do not use anymore since v100025.
         /// </summary>
-        /// <param name="random"></param>
-        /// <param name="avatarState"></param>
-        /// <param name="foods"></param>
-        /// <param name="worldId"></param>
-        /// <param name="stageId"></param>
-        /// <param name="stageSimulatorSheets"></param>
-        /// <param name="costumeStatSheet"></param>
         public StageSimulator(
             IRandom random,
             AvatarState avatarState,
