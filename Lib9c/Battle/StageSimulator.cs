@@ -34,6 +34,74 @@ namespace Nekoyume.Battle
             List<Guid> foods,
             int worldId,
             int stageId,
+            StageSimulatorSheets stageSimulatorSheets,
+            int constructorVersion
+        )
+            : base(
+                random,
+                avatarState,
+                foods,
+                stageSimulatorSheets
+            )
+        {
+            _waves = new List<Wave>();
+
+            WorldId = worldId;
+            StageId = stageId;
+            IsCleared = avatarState.worldInformation.IsStageCleared(StageId);
+            EnemySkillSheet = stageSimulatorSheets.EnemySkillSheet;
+
+            var stageSheet = stageSimulatorSheets.StageSheet;
+            if (!stageSheet.TryGetValue(StageId, out var stageRow))
+                throw new SheetRowNotFoundException(nameof(stageSheet), StageId);
+
+            var stageWaveSheet = stageSimulatorSheets.StageWaveSheet;
+            if (!stageWaveSheet.TryGetValue(StageId, out var stageWaveRow))
+                throw new SheetRowNotFoundException(nameof(stageWaveSheet), StageId);
+
+            Exp = StageRewardExpHelper.GetExp(avatarState.level, stageId);
+            TurnLimit = stageRow.TurnLimit;
+
+            SetWave(stageRow, stageWaveRow);
+            var itemSelector = SetItemSelector(stageRow, Random);
+            var maxCount = Random.Next(stageRow.DropItemMin, stageRow.DropItemMax + 1);
+            switch (constructorVersion)
+            {
+                case 1:
+                    _waveRewards = SetReward(
+                        itemSelector,
+                        maxCount,
+                        random,
+                        MaterialItemSheet
+                    );
+                    break;
+                case 2:
+                    _waveRewards = SetRewardV2(
+                        itemSelector,
+                        maxCount,
+                        Random,
+                        MaterialItemSheet
+                    );
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// Do not use anymore since v100025.
+        /// </summary>
+        /// <param name="random"></param>
+        /// <param name="avatarState"></param>
+        /// <param name="foods"></param>
+        /// <param name="worldId"></param>
+        /// <param name="stageId"></param>
+        /// <param name="stageSimulatorSheets"></param>
+        /// <exception cref="SheetRowNotFoundException"></exception>
+        public StageSimulator(
+            IRandom random,
+            AvatarState avatarState,
+            List<Guid> foods,
+            int worldId,
+            int stageId,
             StageSimulatorSheets stageSimulatorSheets
         )
             : base(
@@ -62,15 +130,59 @@ namespace Nekoyume.Battle
             TurnLimit = stageRow.TurnLimit;
 
             SetWave(stageRow, stageWaveRow);
-            var itemSelector = SetItemSelector(stageRow, Random);	
-            _waveRewards = SetReward(	
-                itemSelector,	
-                Random.Next(stageRow.DropItemMin, stageRow.DropItemMax + 1),	
-                random,	
-                stageSimulatorSheets.MaterialItemSheet	
+            var itemSelector = SetItemSelector(stageRow, Random);
+            _waveRewards = SetReward(
+                itemSelector,
+                Random.Next(stageRow.DropItemMin, stageRow.DropItemMax + 1),
+                random,
+                stageSimulatorSheets.MaterialItemSheet
             );
         }
 
+        public StageSimulator(
+            IRandom random,
+            AvatarState avatarState,
+            List<Guid> foods,
+            int worldId,
+            int stageId,
+            StageSimulatorSheets stageSimulatorSheets,
+            Model.Skill.Skill skill,
+            int constructorVersion
+        )
+            : this(
+                random,
+                avatarState,
+                foods,
+                worldId,
+                stageId,
+                stageSimulatorSheets,
+                constructorVersion
+            )
+        {
+            var stageSheet = stageSimulatorSheets.StageSheet;
+            if (!stageSheet.TryGetValue(StageId, out var stageRow))
+                throw new SheetRowNotFoundException(nameof(stageSheet), StageId);
+
+            Exp = StageRewardExpHelper.GetExp(avatarState.level, stageId);
+            TurnLimit = stageRow.TurnLimit;
+
+            if (!ReferenceEquals(skill, null))
+            {
+                Player.OverrideSkill(skill);
+            }
+        }
+
+        /// <summary>
+        /// Do not use anymore since v100025.
+        /// </summary>
+        /// <param name="random"></param>
+        /// <param name="avatarState"></param>
+        /// <param name="foods"></param>
+        /// <param name="worldId"></param>
+        /// <param name="stageId"></param>
+        /// <param name="stageSimulatorSheets"></param>
+        /// <param name="skill"></param>
+        /// <exception cref="SheetRowNotFoundException"></exception>
         public StageSimulator(
             IRandom random,
             AvatarState avatarState,
@@ -101,7 +213,40 @@ namespace Nekoyume.Battle
                 Player.OverrideSkill(skill);
             }
         }
+        
+        public StageSimulator(
+            IRandom random,
+            AvatarState avatarState,
+            List<Guid> foods,
+            int worldId,
+            int stageId,
+            StageSimulatorSheets stageSimulatorSheets,
+            CostumeStatSheet costumeStatSheet,
+            int constructorVersion
+        )
+            : this(
+                random,
+                avatarState,
+                foods,
+                worldId,
+                stageId,
+                stageSimulatorSheets,
+                constructorVersion
+            )
+        {
+            Player.SetCostumeStat(costumeStatSheet);
+        }
 
+        /// <summary>
+        /// Do not use anymore since v100025.
+        /// </summary>
+        /// <param name="random"></param>
+        /// <param name="avatarState"></param>
+        /// <param name="foods"></param>
+        /// <param name="worldId"></param>
+        /// <param name="stageId"></param>
+        /// <param name="stageSimulatorSheets"></param>
+        /// <param name="costumeStatSheet"></param>
         public StageSimulator(
             IRandom random,
             AvatarState avatarState,
@@ -123,6 +268,10 @@ namespace Nekoyume.Battle
             Player.SetCostumeStat(costumeStatSheet);
         }
 
+        /// <summary>
+        /// Do not use anymore since v100025.
+        /// </summary>
+        /// <returns></returns>
         public Player Simulate()
         {
 #if TEST_LOG
@@ -240,6 +389,7 @@ namespace Nekoyume.Battle
                                 {
                                     Player.GetExp(Exp, true);
                                 }
+
                                 break;
                             case 2:
                             {
@@ -258,6 +408,7 @@ namespace Nekoyume.Battle
                                         Log.newlyCleared = true;
                                     }
                                 }
+
                                 break;
                         }
 
@@ -410,6 +561,7 @@ namespace Nekoyume.Battle
                                 {
                                     Player.GetExpV2(Exp, true);
                                 }
+
                                 break;
                             case 2:
                             {
@@ -428,6 +580,7 @@ namespace Nekoyume.Battle
                                         Log.newlyCleared = true;
                                     }
                                 }
+
                                 break;
                         }
 
