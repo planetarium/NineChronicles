@@ -39,8 +39,8 @@ namespace Lib9c.Tests.Model
                 new List<Guid>(),
                 1,
                 1,
-                _tableSheets.GetStageSimulatorSheets()
-            );
+                _tableSheets.GetStageSimulatorSheets(),
+                2);
             Assert.False(simulator.Log.IsClear);
         }
 

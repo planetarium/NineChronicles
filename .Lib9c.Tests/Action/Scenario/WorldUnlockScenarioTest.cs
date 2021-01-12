@@ -85,6 +85,10 @@ namespace Lib9c.Tests.Action.Scenario
             Assert.True(avatarState.worldInformation.IsWorldUnlocked(worldIdToClear));
             Assert.False(avatarState.worldInformation.IsWorldUnlocked(worldIdToUnlock));
 
+            var doomfist = Doomfist.Get(_tableSheets);
+            avatarState.inventory.AddItem(doomfist);
+            doomfist.Equip();
+
             var nextState = _initialState.SetState(_avatarAddress, avatarState.Serialize());
             var hackAndSlash = new HackAndSlash3
             {

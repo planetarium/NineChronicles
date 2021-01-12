@@ -17,8 +17,7 @@ namespace Nekoyume.Battle
     public class StageSimulator : Simulator
     {
         private readonly List<Wave> _waves;
-        private readonly StageSheet.Row _stageRow;
-        private List<ItemBase> _waveRewards = new List<ItemBase>();
+        private readonly List<ItemBase> _waveRewards;
         public CollectionMap ItemMap = new CollectionMap();
         public readonly EnemySkillSheet EnemySkillSheet;
 
@@ -29,6 +28,67 @@ namespace Nekoyume.Battle
         private int TurnLimit { get; }
         public override IEnumerable<ItemBase> Reward => _waveRewards;
 
+        public StageSimulator(
+            IRandom random,
+            AvatarState avatarState,
+            List<Guid> foods,
+            int worldId,
+            int stageId,
+            StageSimulatorSheets stageSimulatorSheets,
+            int constructorVersion
+        )
+            : base(
+                random,
+                avatarState,
+                foods,
+                stageSimulatorSheets
+            )
+        {
+            _waves = new List<Wave>();
+
+            WorldId = worldId;
+            StageId = stageId;
+            IsCleared = avatarState.worldInformation.IsStageCleared(StageId);
+            EnemySkillSheet = stageSimulatorSheets.EnemySkillSheet;
+
+            var stageSheet = stageSimulatorSheets.StageSheet;
+            if (!stageSheet.TryGetValue(StageId, out var stageRow))
+                throw new SheetRowNotFoundException(nameof(stageSheet), StageId);
+
+            var stageWaveSheet = stageSimulatorSheets.StageWaveSheet;
+            if (!stageWaveSheet.TryGetValue(StageId, out var stageWaveRow))
+                throw new SheetRowNotFoundException(nameof(stageWaveSheet), StageId);
+
+            Exp = StageRewardExpHelper.GetExp(avatarState.level, stageId);
+            TurnLimit = stageRow.TurnLimit;
+
+            SetWave(stageRow, stageWaveRow);
+            var itemSelector = SetItemSelector(stageRow, Random);
+            var maxCount = Random.Next(stageRow.DropItemMin, stageRow.DropItemMax + 1);
+            switch (constructorVersion)
+            {
+                case 1:
+                    _waveRewards = SetReward(
+                        itemSelector,
+                        maxCount,
+                        random,
+                        MaterialItemSheet
+                    );
+                    break;
+                case 2:
+                    _waveRewards = SetRewardV2(
+                        itemSelector,
+                        maxCount,
+                        Random,
+                        MaterialItemSheet
+                    );
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// Do not use anymore since v100025.
+        /// </summary>
         public StageSimulator(
             IRandom random,
             AvatarState avatarState,
@@ -54,7 +114,6 @@ namespace Nekoyume.Battle
             var stageSheet = stageSimulatorSheets.StageSheet;
             if (!stageSheet.TryGetValue(StageId, out var stageRow))
                 throw new SheetRowNotFoundException(nameof(stageSheet), StageId);
-            _stageRow = stageRow;
 
             var stageWaveSheet = stageSimulatorSheets.StageWaveSheet;
             if (!stageWaveSheet.TryGetValue(StageId, out var stageWaveRow))
@@ -64,8 +123,51 @@ namespace Nekoyume.Battle
             TurnLimit = stageRow.TurnLimit;
 
             SetWave(stageRow, stageWaveRow);
+            var itemSelector = SetItemSelector(stageRow, Random);
+            _waveRewards = SetReward(
+                itemSelector,
+                Random.Next(stageRow.DropItemMin, stageRow.DropItemMax + 1),
+                Random,
+                stageSimulatorSheets.MaterialItemSheet
+            );
         }
 
+        public StageSimulator(
+            IRandom random,
+            AvatarState avatarState,
+            List<Guid> foods,
+            int worldId,
+            int stageId,
+            StageSimulatorSheets stageSimulatorSheets,
+            Model.Skill.Skill skill,
+            int constructorVersion
+        )
+            : this(
+                random,
+                avatarState,
+                foods,
+                worldId,
+                stageId,
+                stageSimulatorSheets,
+                constructorVersion
+            )
+        {
+            var stageSheet = stageSimulatorSheets.StageSheet;
+            if (!stageSheet.TryGetValue(StageId, out var stageRow))
+                throw new SheetRowNotFoundException(nameof(stageSheet), StageId);
+
+            Exp = StageRewardExpHelper.GetExp(avatarState.level, stageId);
+            TurnLimit = stageRow.TurnLimit;
+
+            if (!ReferenceEquals(skill, null))
+            {
+                Player.OverrideSkill(skill);
+            }
+        }
+
+        /// <summary>
+        /// Do not use anymore since v100025.
+        /// </summary>
         public StageSimulator(
             IRandom random,
             AvatarState avatarState,
@@ -96,7 +198,33 @@ namespace Nekoyume.Battle
                 Player.OverrideSkill(skill);
             }
         }
+        
+        public StageSimulator(
+            IRandom random,
+            AvatarState avatarState,
+            List<Guid> foods,
+            int worldId,
+            int stageId,
+            StageSimulatorSheets stageSimulatorSheets,
+            CostumeStatSheet costumeStatSheet,
+            int constructorVersion
+        )
+            : this(
+                random,
+                avatarState,
+                foods,
+                worldId,
+                stageId,
+                stageSimulatorSheets,
+                constructorVersion
+            )
+        {
+            Player.SetCostumeStat(costumeStatSheet);
+        }
 
+        /// <summary>
+        /// Do not use anymore since v100025.
+        /// </summary>
         public StageSimulator(
             IRandom random,
             AvatarState avatarState,
@@ -118,6 +246,10 @@ namespace Nekoyume.Battle
             Player.SetCostumeStat(costumeStatSheet);
         }
 
+        /// <summary>
+        /// Do not use anymore since v100025.
+        /// </summary>
+        /// <returns></returns>
         public Player Simulate()
         {
 #if TEST_LOG
@@ -235,16 +367,10 @@ namespace Nekoyume.Battle
                                 {
                                     Player.GetExp(Exp, true);
                                 }
+
                                 break;
                             case 2:
                             {
-                                var itemSelector = SetItemSelector(_stageRow, Random);
-                                _waveRewards = SetReward(
-                                    itemSelector,
-                                    Random.Next(_stageRow.DropItemMin, _stageRow.DropItemMax + 1),
-                                    Random,
-                                    MaterialItemSheet
-                                );
                                 ItemMap = Player.GetRewards(_waveRewards);
                                 var dropBox = new DropBox(null, _waveRewards);
                                 Log.Add(dropBox);
@@ -260,6 +386,7 @@ namespace Nekoyume.Battle
                                         Log.newlyCleared = true;
                                     }
                                 }
+
                                 break;
                         }
 
@@ -412,16 +539,10 @@ namespace Nekoyume.Battle
                                 {
                                     Player.GetExpV2(Exp, true);
                                 }
+
                                 break;
                             case 2:
                             {
-                                var itemSelector = SetItemSelector(_stageRow, Random);
-                                _waveRewards = SetRewardV2(
-                                    itemSelector,
-                                    Random.Next(_stageRow.DropItemMin, _stageRow.DropItemMax + 1),
-                                    Random,
-                                    MaterialItemSheet
-                                );
                                 ItemMap = Player.GetRewards(_waveRewards);
                                 var dropBox = new DropBox(null, _waveRewards);
                                 Log.Add(dropBox);
@@ -437,6 +558,7 @@ namespace Nekoyume.Battle
                                         Log.newlyCleared = true;
                                     }
                                 }
+
                                 break;
                         }
 

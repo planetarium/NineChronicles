@@ -167,8 +167,8 @@ namespace Nekoyume.Action
                 worldId,
                 stageId,
                 states.GetStageSimulatorSheets(),
-                costumeStatSheet
-            );
+                costumeStatSheet,
+                2);
 
             sw.Stop();
             Log.Debug("HAS Initialize Simulator: {Elapsed}", sw.Elapsed);

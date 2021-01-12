@@ -42,8 +42,8 @@ namespace Lib9c.Tests.Model
                 new List<Guid>(),
                 1,
                 3,
-                _tableSheets.GetStageSimulatorSheets()
-            );
+                _tableSheets.GetStageSimulatorSheets(),
+                2);
             simulator.SimulateV2();
             var filtered =
                 simulator.Log.Where(e => e.GetType() != typeof(GetReward) || e.GetType() != typeof(DropBox));
@@ -66,8 +66,8 @@ namespace Lib9c.Tests.Model
                 1,
                 1,
                 _tableSheets.GetStageSimulatorSheets(),
-                _tableSheets.CostumeStatSheet
-            );
+                _tableSheets.CostumeStatSheet,
+                2);
 
             var player = simulator.Player;
             Assert.Equal(row.Stat, player.Stats.OptionalStats.ATK);

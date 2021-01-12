@@ -205,8 +205,8 @@ namespace Nekoyume.Action
                 worldId,
                 stageId,
                 states.GetStageSimulatorSheets(),
-                costumeStatSheet
-            );
+                costumeStatSheet,
+                2);
             sw.Stop();
             Log.Debug("Mimisbrunnr Initialize Simulator: {Elapsed}", sw.Elapsed);
             
