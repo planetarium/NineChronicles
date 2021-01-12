@@ -23,7 +23,7 @@ namespace Lib9c.Tests.Action
                     : row2;
             });
             Assert.NotNull(row);
-            return (Equipment)ItemFactory.CreateItemUsable(row, Guid.NewGuid(), 0);
+            return (Equipment)ItemFactory.CreateItemUsable(row, Guid.NewGuid(), 0, 10);
         }
     }
 }
