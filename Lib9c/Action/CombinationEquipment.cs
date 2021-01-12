@@ -235,13 +235,13 @@ namespace Nekoyume.Action
             SlotIndex = plainValue["slotIndex"].ToInteger();
         }
 
-        private static StatMap GetStat(EquipmentItemOptionSheet.Row row, IRandom random)
+        public static StatMap GetStat(EquipmentItemOptionSheet.Row row, IRandom random)
         {
             var value = random.Next(row.StatMin, row.StatMax + 1);
             return new StatMap(row.StatType, value);
         }
 
-        private static Skill GetSkill(EquipmentItemOptionSheet.Row row, SkillSheet skillSheet,
+        public static Skill GetSkill(EquipmentItemOptionSheet.Row row, SkillSheet skillSheet,
             IRandom random)
         {
             try
@@ -313,36 +313,6 @@ namespace Nekoyume.Action
 
                     optionIds.Add(optionRow.Id);
                 }
-            }
-
-            return optionIds;
-        }
-
-        public static HashSet<int> AddOption(
-            SkillSheet skillSheet,
-            Equipment equipment,
-            IEnumerable<EquipmentItemOptionSheet.Row> optionRows,
-            IRandom random)
-        {
-            var optionIds = new HashSet<int>();
-
-            foreach (var optionRow in optionRows.OrderBy(r => r.Id))
-            {
-                if (optionRow.StatType != StatType.NONE)
-                {
-                    var statMap = GetStat(optionRow, random);
-                    equipment.StatsMap.AddStatAdditionalValue(statMap.StatType, statMap.Value);
-                }
-                else
-                {
-                    var skill = GetSkill(optionRow, skillSheet, random);
-                    if (!(skill is null))
-                    {
-                        equipment.Skills.Add(skill);
-                    }
-                }
-
-                optionIds.Add(optionRow.Id);
             }
 
             return optionIds;

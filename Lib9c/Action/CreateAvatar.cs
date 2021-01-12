@@ -254,9 +254,39 @@ namespace Nekoyume.Action
                 optionRows.Add(optionRow);
             }
 
-            CombinationEquipment.AddOption(skillSheet, equipment, optionRows, random);
+            AddOption(skillSheet, equipment, optionRows, random);
 
             avatarState.inventory.AddItem(equipment);
+        }
+
+        private static HashSet<int> AddOption(
+            SkillSheet skillSheet,
+            Equipment equipment,
+            IEnumerable<EquipmentItemOptionSheet.Row> optionRows,
+            IRandom random)
+        {
+            var optionIds = new HashSet<int>();
+
+            foreach (var optionRow in optionRows.OrderBy(r => r.Id))
+            {
+                if (optionRow.StatType != StatType.NONE)
+                {
+                    var statMap = CombinationEquipment.GetStat(optionRow, random);
+                    equipment.StatsMap.AddStatAdditionalValue(statMap.StatType, statMap.Value);
+                }
+                else
+                {
+                    var skill = CombinationEquipment.GetSkill(optionRow, skillSheet, random);
+                    if (!(skill is null))
+                    {
+                        equipment.Skills.Add(skill);
+                    }
+                }
+
+                optionIds.Add(optionRow.Id);
+            }
+
+            return optionIds;
         }
     }
 }
