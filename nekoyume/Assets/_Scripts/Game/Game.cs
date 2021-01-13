@@ -42,6 +42,9 @@ namespace Nekoyume.Game
         [SerializeField]
         private Prologue prologue = null;
 
+        [Range(0.01f, 1)] [Tooltip("Execute action delay")]
+        public float actionDelay = 0.5f;
+
         public States States { get; private set; }
 
         public LocalLayer LocalLayer { get; private set; }
