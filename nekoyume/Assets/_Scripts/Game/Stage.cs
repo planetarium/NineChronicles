@@ -699,9 +699,6 @@ namespace Nekoyume.Game
                 }
             }
 
-            battle.RepeatButton.gameObject.SetActive(!_rankingBattle);
-            battle.HelpButton.gameObject.SetActive(!_rankingBattle);
-
             if (!(AvatarState is null) && !ActionRenderHandler.Instance.Pending)
             {
                 ActionRenderHandler.Instance.UpdateCurrentAvatarState(AvatarState);
