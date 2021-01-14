@@ -566,6 +566,8 @@ namespace Nekoyume.Game
             Game.instance.TableSheets.WorldSheet.TryGetValue(log.worldId, out var world);
             _battleResultModel.WorldName = world?.GetLocalizedName();
             _battleResultModel.StageID = log.stageId;
+            avatarState.worldInformation.TryGetLastClearedStageId(out var lasStageId);
+            _battleResultModel.LastClearedStageId = lasStageId;
 
             if (isExitReserved)
             {
