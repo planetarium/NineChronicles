@@ -107,7 +107,7 @@ namespace Nekoyume.UI
                 bottomMenu.exitButton.SetToggleListener(this);
                 bottomMenu.exitButton.SharedModel.IsEnabled.Value = isExitReserved;
             }
-            repeatButton.gameObject.SetActive(true);
+            repeatButton.gameObject.SetActive(stageId >= 3 || world.StageClearedId >= 3);
             helpButton.gameObject.SetActive(true);
         }
 
