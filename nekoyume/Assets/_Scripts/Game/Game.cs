@@ -22,8 +22,10 @@ using Nekoyume.Pattern;
 using Nekoyume.State;
 using Nekoyume.UI;
 using UniRx;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
+using Menu = Nekoyume.UI.Menu;
 
 namespace Nekoyume.Game
 {
