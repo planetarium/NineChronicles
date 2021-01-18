@@ -519,6 +519,21 @@ namespace Nekoyume.Game
                 yield return StartCoroutine(CoGuidedQuest(log.stageId));
                 yield return new WaitForSeconds(1f);
             }
+            else
+            {
+                var enemies = GetComponentsInChildren<Character.Enemy>();
+                if (enemies.Any())
+                {
+                    foreach (var enemy in enemies)
+                    {
+                        if (enemy.isActiveAndEnabled)
+                        {
+                            enemy.Animator.Win();
+                        }
+                    }
+                    yield return new WaitForSeconds(1f);
+                }
+            }
 
             Widget.Find<UI.Battle>().Close();
 
