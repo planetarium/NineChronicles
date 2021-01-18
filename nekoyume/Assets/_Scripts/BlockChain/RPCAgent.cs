@@ -99,7 +99,11 @@ namespace Nekoyume.BlockChain
             _channel = new Channel(
                 options.RpcServerHost,
                 options.RpcServerPort,
-                ChannelCredentials.Insecure
+                ChannelCredentials.Insecure,
+                new[]
+                {
+                    new ChannelOption("grpc.max_receive_message_length", -1)
+                }
             );
             _lastTipChangedAt = DateTimeOffset.UtcNow;
             _hub = StreamingHubClient.Connect<IActionEvaluationHub, IActionEvaluationHubReceiver>(_channel, this);
