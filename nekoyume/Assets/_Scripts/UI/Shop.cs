@@ -435,6 +435,10 @@ namespace Nekoyume.UI
 
                     if (SharedModel.State.Value == StateType.Buy)
                     {
+                        if (!ButtonEnabledFuncForBuy(shopItem))
+                        {
+                            return;
+                        }
                         ShowBuyPopup(shopItem);
                     }
                     else

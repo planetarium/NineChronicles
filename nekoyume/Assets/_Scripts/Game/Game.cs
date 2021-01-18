@@ -22,14 +22,31 @@ using Nekoyume.Pattern;
 using Nekoyume.State;
 using Nekoyume.UI;
 using UniRx;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
+using Menu = Nekoyume.UI.Menu;
 
 namespace Nekoyume.Game
 {
     [RequireComponent(typeof(Agent), typeof(RPCAgent))]
     public class Game : MonoSingleton<Game>
     {
+        [Serializable]
+        public class DropItemOptions
+        {
+            [Range(0.01f, 1)] [Tooltip("Fade in duration")]
+            public float fadeInTime = 0.3f;
+            [Range(0.01f, 1)] [Tooltip("Drop duration")]
+            public float dropTime = 0.3f;
+            [Range(0.01f, 1)] [Tooltip("Animation end time")]
+            public float endDelay = 0.2f;
+            [Range(0.01f, 2)] [Tooltip("Item Scale up duration")]
+            public float scaleUpTime = 1.0f;
+            [Range(0.01f, 2)] [Tooltip("Item Scale out duration")]
+            public float scaleOutTime = 1.0f;
+        }
+
         [SerializeField]
         private Stage stage = null;
 
@@ -41,6 +58,18 @@ namespace Nekoyume.Game
 
         [SerializeField]
         private Prologue prologue = null;
+
+        [Range(0.01f, 1)] [Tooltip("Execute action delay")]
+        public float actionDelay = 0.5f;
+
+        [Range(0.01f, 3)] [Tooltip("Stage Enter delay")]
+        public float stageEnterDelay = 2.0f;
+
+        [Range(0.01f, 1)] [Tooltip("Spawn wave delay")]
+        public float spawnWaveDelay = 0.3f;
+
+        [Tooltip("DropItem options")]
+        public DropItemOptions droopItemOptions = new DropItemOptions();
 
         public States States { get; private set; }
 
@@ -250,7 +279,7 @@ namespace Nekoyume.Game
                 {
                     Widget.Find<BattleResult>().Close(true);
                 }
-                
+
                 needToBackToMain = true;
                 showLoadingScreen = true;
             }
