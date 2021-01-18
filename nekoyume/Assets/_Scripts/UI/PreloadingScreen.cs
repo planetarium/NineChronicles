@@ -1,4 +1,6 @@
 using Nekoyume.Game.Factory;
+using System.Collections.Generic;
+using UnityEngine;
 
 namespace Nekoyume.UI
 {
@@ -29,11 +31,36 @@ namespace Nekoyume.UI
             else
             {
                 PlayerFactory.Create();
-                Game.Event.OnNestEnter.Invoke();
-                Find<Login>().Show();
+
+                if (PlayerPrefs.HasKey(LoginDetail.RecentlyLoggedInAvatarKey))
+                {
+                    var index = PlayerPrefs.GetInt(LoginDetail.RecentlyLoggedInAvatarKey);
+
+                    try
+                    {
+                        State.States.Instance.SelectAvatar(index);
+                        Game.Event.OnRoomEnter.Invoke(false);
+                    }
+                    catch (KeyNotFoundException e)
+                    {
+                        Debug.LogWarning(e.Message);
+                        EnterLogin();
+                    }
+                }
+                else
+                {
+                    EnterLogin();
+                }
             }
+
             base.Close(ignoreCloseAnimation);
             indicator.Close();
+        }
+
+        private void EnterLogin()
+        {
+            Find<Login>().Show();
+            Game.Event.OnNestEnter.Invoke();
         }
     }
 }
