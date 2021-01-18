@@ -13,16 +13,13 @@ namespace Nekoyume.Game.Item
     public class DropItem : MonoBehaviour
     {
         private const float BeginningAlphaOfFade = 0f;
-        private const float DurationToFade = 0.5f;
         private const float DropJumpPower = 1f;
-        private const float DurationToDrop = 0.5f;
         private const float DurationToGet = 1f;
         private const int SortOrder = 2000;
         private const float DistanceForInactive = 0.3f;
         private const float MultiplyForLerpSpeed = 3f;
 
         private static readonly Vector3 DefaultScale = Vector3.one * 0.625f;
-        private static readonly float DelayAfterDrop = Mathf.Max(DurationToFade, DurationToDrop) + 0.2f;
         private static readonly Vector3 DropAmount = new Vector3(0.8f, 0f);
 
         private static UI.Battle _battle;
@@ -72,6 +69,7 @@ namespace Nekoyume.Game.Item
 
         private IEnumerator CoPlay()
         {
+            var game = Game.instance;
             dropItemVfx.Stop();
             var pos = transform.position;
             var color = _renderer.color;
@@ -79,16 +77,17 @@ namespace Nekoyume.Game.Item
             _renderer.color = color;
             _renderer.sortingOrder = SortOrder;
 
-            _tweenFade = _renderer.DOFade(1f, DurationToFade);
-            _sequenceDrop = transform.DOJump(pos + DropAmount, DropJumpPower, 1, DurationToDrop);
+            _tweenFade = _renderer.DOFade(1f, game.droopItemOptions.fadeInTime);
+            _sequenceDrop = transform.DOJump(pos + DropAmount, DropJumpPower, 1, game.droopItemOptions.dropTime);
 
             var scale = transform.localScale;
-            transform.DOScale(scale * 1.8f, 1.0f);
+            transform.DOScale(scale * 1.8f, game.droopItemOptions.scaleUpTime);
             yield return new WaitWhile(_sequenceDrop.IsPlaying);
             dropItemVfx.Play();
 
-            yield return new WaitForSeconds(DelayAfterDrop);
-            transform.DOScale(scale, 1.0f);
+            yield return new WaitForSeconds(
+                Mathf.Max(game.droopItemOptions.fadeInTime, game.droopItemOptions.dropTime) + game.droopItemOptions.endDelay);
+            transform.DOScale(scale, game.droopItemOptions.scaleOutTime);
 
             while (true)
             {
