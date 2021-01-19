@@ -165,6 +165,13 @@ eyebrow_03
   orig: 32, 8
   offset: 0, 0
   index: -1
+eyebrow_04
+  rotate: true
+  xy: 225, 575
+  size: 34, 8
+  orig: 34, 8
+  offset: 0, 0
+  index: -1
 face
   rotate: false
   xy: 129, 531
@@ -389,9 +396,16 @@ mouth_03
   orig: 10, 11
   offset: 0, 0
   index: -1
+mouth_04
+  rotate: false
+  xy: 163, 73
+  size: 9, 7
+  orig: 9, 7
+  offset: 0, 0
+  index: -1
 mouth_05
   rotate: true
-  xy: 225, 600
+  xy: 221, 383
   size: 9, 5
   orig: 9, 5
   offset: 0, 0

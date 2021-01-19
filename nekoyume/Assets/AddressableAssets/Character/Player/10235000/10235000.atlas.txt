@@ -89,15 +89,15 @@ effect_02
   offset: 0, 0
   index: -1
 emotion
-  rotate: false
-  xy: 321, 272
+  rotate: true
+  xy: 487, 426
   size: 9, 23
   orig: 9, 23
   offset: 0, 0
   index: -1
 eye_04
-  rotate: true
-  xy: 497, 309
+  rotate: false
+  xy: 160, 13
   size: 32, 9
   orig: 32, 9
   offset: 0, 0
@@ -125,7 +125,7 @@ eye_red_03
   index: -1
 eyebrow_01
   rotate: true
-  xy: 487, 438
+  xy: 497, 305
   size: 36, 8
   orig: 36, 8
   offset: 0, 0
@@ -142,6 +142,13 @@ eyebrow_03
   xy: 120, 14
   size: 38, 8
   orig: 38, 8
+  offset: 0, 0
+  index: -1
+eyebrow_04
+  rotate: true
+  xy: 487, 437
+  size: 37, 14
+  orig: 37, 14
   offset: 0, 0
   index: -1
 face
@@ -229,8 +236,8 @@ hand_L
   offset: 0, 0
   index: -1
 hand_L_02
-  rotate: true
-  xy: 487, 426
+  rotate: false
+  xy: 481, 360
   size: 10, 15
   orig: 10, 15
   offset: 0, 0
@@ -278,15 +285,15 @@ mouth_02
   offset: 0, 0
   index: -1
 mouth_03
-  rotate: false
-  xy: 322, 264
+  rotate: true
+  xy: 152, 2
   size: 10, 6
   orig: 10, 6
   offset: 0, 0
   index: -1
 mouth_04
   rotate: false
-  xy: 81, 2
+  xy: 481, 354
   size: 10, 4
   orig: 10, 4
   offset: 0, 0
@@ -296,6 +303,13 @@ mouth_05
   xy: 251, 349
   size: 5, 3
   orig: 5, 3
+  offset: 0, 0
+  index: -1
+mouth_06
+  rotate: true
+  xy: 193, 84
+  size: 10, 8
+  orig: 10, 8
   offset: 0, 0
   index: -1
 shadow
