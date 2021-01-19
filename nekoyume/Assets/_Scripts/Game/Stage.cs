@@ -519,6 +519,21 @@ namespace Nekoyume.Game
                 yield return StartCoroutine(CoGuidedQuest(log.stageId));
                 yield return new WaitForSeconds(1f);
             }
+            else
+            {
+                var enemies = GetComponentsInChildren<Character.Enemy>();
+                if (enemies.Any())
+                {
+                    foreach (var enemy in enemies)
+                    {
+                        if (enemy.isActiveAndEnabled)
+                        {
+                            enemy.Animator.Win();
+                        }
+                    }
+                    yield return new WaitForSeconds(1f);
+                }
+            }
 
             Widget.Find<UI.Battle>().Close();
 
@@ -566,6 +581,8 @@ namespace Nekoyume.Game
             Game.instance.TableSheets.WorldSheet.TryGetValue(log.worldId, out var world);
             _battleResultModel.WorldName = world?.GetLocalizedName();
             _battleResultModel.StageID = log.stageId;
+            avatarState.worldInformation.TryGetLastClearedStageId(out var lasStageId);
+            _battleResultModel.LastClearedStageId = lasStageId;
 
             if (isExitReserved)
             {
@@ -698,9 +715,6 @@ namespace Nekoyume.Game
                     status.ShowBattleTimer(row.TurnLimit);
                 }
             }
-
-            battle.RepeatButton.gameObject.SetActive(!_rankingBattle);
-            battle.HelpButton.gameObject.SetActive(!_rankingBattle);
 
             if (!(AvatarState is null) && !ActionRenderHandler.Instance.Pending)
             {
