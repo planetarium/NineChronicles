@@ -840,7 +840,7 @@ namespace Nekoyume.Game.Character
                 action = actions.First();
 
                 var stage = Game.instance.Stage;
-                var waitSeconds = 0.5f;
+                var waitSeconds = Game.instance.actionDelay;
 
                 foreach (var info in action.skillInfos)
                 {
