@@ -188,11 +188,11 @@ MonoBehaviour:
   - stateName: Die
     animation: {fileID: 11400000, guid: 1ad5c0b90042b1f46b1f5e9a589694ad, type: 2}
   - stateName: Win
-    animation: {fileID: 11400000, guid: 3b6717827e2da7447bf10e8d17b25c27, type: 2}
+    animation: {fileID: 11400000, guid: cabecc06b667e814588951ec1c7038b2, type: 2}
   - stateName: Win_02
-    animation: {fileID: 11400000, guid: 3b6717827e2da7447bf10e8d17b25c27, type: 2}
+    animation: {fileID: 11400000, guid: cabecc06b667e814588951ec1c7038b2, type: 2}
   - stateName: Win_03
-    animation: {fileID: 11400000, guid: 3b6717827e2da7447bf10e8d17b25c27, type: 2}
+    animation: {fileID: 11400000, guid: cabecc06b667e814588951ec1c7038b2, type: 2}
   - stateName: Greeting
     animation: {fileID: 11400000, guid: 3b6717827e2da7447bf10e8d17b25c27, type: 2}
   - stateName: Emotion
