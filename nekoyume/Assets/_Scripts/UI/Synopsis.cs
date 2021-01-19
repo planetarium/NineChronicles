@@ -13,6 +13,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using mixpanel;
 using Nekoyume.L10n;
+using System.Collections.Generic;
 
 namespace Nekoyume.UI
 {
@@ -349,8 +350,27 @@ namespace Nekoyume.UI
         public void End()
         {
             PlayerFactory.Create();
-            Game.Event.OnNestEnter.Invoke();
-            Find<Login>().Show();
+
+            if (PlayerPrefs.HasKey(LoginDetail.RecentlyLoggedInAvatarKey))
+            {
+                var index = PlayerPrefs.GetInt(LoginDetail.RecentlyLoggedInAvatarKey);
+
+                try
+                {
+                    State.States.Instance.SelectAvatar(index);
+                    Game.Event.OnRoomEnter.Invoke(false);
+                }
+                catch (KeyNotFoundException e)
+                {
+                    Debug.LogWarning(e.Message);
+                    EnterLogin();
+                }
+            }
+            else
+            {
+                EnterLogin();
+            }
+
             Mixpanel.Track("Unity/Synopsis End");
             Close();
         }
@@ -364,6 +384,11 @@ namespace Nekoyume.UI
         {
             skipAll = true;
             Skip();
+        }
+        private void EnterLogin()
+        {
+            Find<Login>().Show();
+            Game.Event.OnNestEnter.Invoke();
         }
     }
 }
