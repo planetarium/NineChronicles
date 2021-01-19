@@ -61,6 +61,8 @@ namespace Nekoyume.UI
             comboText.Close();
             stageProgressBar.Close();
             guidedQuest.Hide(true);
+            repeatButton.gameObject.SetActive(false);
+            helpButton.gameObject.SetActive(false);
             base.Show(ignoreShowAnimation);
         }
 
@@ -105,6 +107,8 @@ namespace Nekoyume.UI
                 bottomMenu.exitButton.SetToggleListener(this);
                 bottomMenu.exitButton.SharedModel.IsEnabled.Value = isExitReserved;
             }
+            repeatButton.gameObject.SetActive(stageId >= 4 || world.StageClearedId >= 4);
+            helpButton.gameObject.SetActive(true);
         }
 
         public override void Close(bool ignoreCloseAnimation = false)

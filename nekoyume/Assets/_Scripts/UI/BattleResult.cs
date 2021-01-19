@@ -36,6 +36,7 @@ namespace Nekoyume.UI
             public bool ShouldRepeat;
             public int ClearedWaveNumber;
             public int ActionPoint;
+            public int LastClearedStageId;
 
             public IReadOnlyList<CountableItem> Rewards => _rewards;
 
@@ -178,7 +179,7 @@ namespace Nekoyume.UI
             }
 
             base.Show();
-
+            closeButton.gameObject.SetActive(model.StageID >= 3 || model.LastClearedStageId >= 3);
             UpdateView();
         }
 
