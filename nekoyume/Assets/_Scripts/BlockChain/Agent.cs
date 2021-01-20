@@ -622,7 +622,12 @@ namespace Nekoyume.BlockChain
             while (true)
             {
                 Cheat.Display("Logs", _tipInfo);
-                Cheat.Display("Peers", _swarm?.TraceTable());
+                var peerStateString = string.Join("\n", _swarm.PeersStates.Select(peerState =>
+                    $"Address: {peerState.Address}\n" +
+                    $" - LastUpdated: {peerState.LastUpdated}\n" +
+                    $" - LastChecked: {peerState.LastChecked}\n" +
+                    $" - Latency: {peerState.Latency}"));
+                Cheat.Display("Peers", peerStateString);
                 StringBuilder log = new StringBuilder($"Staged Transactions : {store.IterateStagedTransactionIds().Count()}\n");
                 var count = 1;
                 foreach (var id in store.IterateStagedTransactionIds())
