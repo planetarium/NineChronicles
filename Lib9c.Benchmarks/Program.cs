@@ -39,6 +39,7 @@ namespace Lib9c.Benchmarks
             var policySource = new BlockPolicySource(logger, LogEventLevel.Verbose);
             IBlockPolicy<NCAction> policy =
                 policySource.GetPolicy(BlockPolicySource.DifficultyBoundDivisor + 1, 0);
+            IStagePolicy<NCAction> stagePolicy = new VolatileStagePolicy<NCAction>();
             var store = new RocksDBStore(storePath);
             if (!(store.GetCanonicalChainId() is Guid chainId))
             {
@@ -59,7 +60,7 @@ namespace Lib9c.Benchmarks
             IKeyValueStore stateRootKeyValueStore = new RocksDBKeyValueStore(Path.Combine(storePath, "state_hashes")),
                 stateKeyValueStore = new RocksDBKeyValueStore(Path.Combine(storePath, "states"));
             IStateStore stateStore = new TrieStateStore(stateKeyValueStore, stateRootKeyValueStore);
-            var chain = new BlockChain<NCAction>(policy, store, stateStore, genesis);
+            var chain = new BlockChain<NCAction>(policy, stagePolicy, store, stateStore, genesis);
             long height = chain.Tip.Index;
             HashDigest<SHA256>[] blockHashes = limit < 0
                 ? chain.BlockHashes.SkipWhile((_, i) => i < height + limit).ToArray()
