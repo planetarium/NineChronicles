@@ -176,13 +176,13 @@ MonoBehaviour:
   - stateName: Run
     animation: {fileID: 11400000, guid: 058fc35824d5648a08f3b440e91efa3a, type: 2}
   - stateName: Attack
-    animation: {fileID: 11400000, guid: 6333a557cee0a4a5b98463e7728afc43, type: 2}
+    animation: {fileID: 11400000, guid: e888d1460a1c77841b720a80db77b113, type: 2}
   - stateName: Casting
     animation: {fileID: 11400000, guid: 14ba6b3ba0b3843e68d2c842e39b20ec, type: 2}
   - stateName: CastingAttack
     animation: {fileID: 11400000, guid: 6333a557cee0a4a5b98463e7728afc43, type: 2}
   - stateName: CriticalAttack
-    animation: {fileID: 11400000, guid: 13573369b45364183bb3afb289f78d8d, type: 2}
+    animation: {fileID: 11400000, guid: adbf69856365e4c09ab127a98c67c51a, type: 2}
   - stateName: Hit
     animation: {fileID: 11400000, guid: 5c99b7ba0d9ca447faa830dc8eef0102, type: 2}
   - stateName: Die
