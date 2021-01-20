@@ -191,7 +191,6 @@ MonoBehaviour:
   speechBreakTime: 0
   destroyTime: 4
   enable: 0
-  onGoing: 0
 --- !u!1 &4214294061895458759
 GameObject:
   m_ObjectHideFlags: 0
@@ -286,7 +285,7 @@ MonoBehaviour:
   m_outlineColor:
     serializedVersion: 2
     rgba: 4278190080
-  m_fontSize: 14
+  m_fontSize: 16
   m_fontSizeBase: 14
   m_fontWeight: 400
   m_enableAutoSizing: 0
@@ -363,10 +362,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   fixedFontAsset: 0
+  fixedFontStyle: 0
   fixedFontSizeOffset: 0
   fixedSpacingOption: 0
   fontMaterialType: 13
   l10nKey: 
+  fontMaterialIndexInitialized: 0
+  fontMaterialIndex: 0
+  defaultFontStylesInitialized: 0
+  defaultFontStyles: 0
+  defaultFontSizeInitialized: 0
+  defaultFontSize: 0
+  defaultCharacterSpacingInitialized: 0
+  defaultCharacterSpacing: 0
+  defaultWordSpacingInitialized: 0
+  defaultWordSpacing: 0
+  defaultLineSpacingInitialized: 0
+  defaultLineSpacing: 0
 --- !u!1 &6725883643351718691
 GameObject:
   m_ObjectHideFlags: 0
@@ -478,7 +490,7 @@ MonoBehaviour:
   m_outlineColor:
     serializedVersion: 2
     rgba: 4278190080
-  m_fontSize: 14
+  m_fontSize: 16
   m_fontSizeBase: 14
   m_fontWeight: 400
   m_enableAutoSizing: 0
@@ -555,10 +567,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   fixedFontAsset: 0
+  fixedFontStyle: 0
   fixedFontSizeOffset: 0
   fixedSpacingOption: 0
   fontMaterialType: 13
   l10nKey: 
+  fontMaterialIndexInitialized: 0
+  fontMaterialIndex: 0
+  defaultFontStylesInitialized: 0
+  defaultFontStyles: 0
+  defaultFontSizeInitialized: 0
+  defaultFontSize: 0
+  defaultCharacterSpacingInitialized: 0
+  defaultCharacterSpacing: 0
+  defaultWordSpacingInitialized: 0
+  defaultWordSpacing: 0
+  defaultLineSpacingInitialized: 0
+  defaultLineSpacing: 0
 --- !u!1 &7202884831194428833
 GameObject:
   m_ObjectHideFlags: 0
