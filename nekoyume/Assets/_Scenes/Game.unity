@@ -1157,7 +1157,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 60daac9ba8603a349a49a1a220a9420a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  actionDelay: 0.5
+  actionDelay: 0.1
   stageEnterDelay: 2
   spawnWaveDelay: 0.3
   droopItemOptions:
