@@ -405,7 +405,7 @@ leg_R
   index: -1
 mouth_01
   rotate: false
-  xy: 285, 947
+  xy: 957, 901
   size: 15, 6
   orig: 15, 6
   offset: 0, 0
@@ -436,6 +436,13 @@ mouth_05
   xy: 161, 696
   size: 9, 4
   orig: 9, 4
+  offset: 0, 0
+  index: -1
+mouth_06
+  rotate: true
+  xy: 963, 909
+  size: 14, 9
+  orig: 14, 9
   offset: 0, 0
   index: -1
 shadow

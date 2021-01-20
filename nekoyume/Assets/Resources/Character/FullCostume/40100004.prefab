@@ -182,7 +182,7 @@ MonoBehaviour:
   - stateName: CastingAttack
     animation: {fileID: 11400000, guid: 2307ba4a15354a9448d18273dae14233, type: 2}
   - stateName: CriticalAttack
-    animation: {fileID: 11400000, guid: cac01b0f4209d5748a45854aa3a98929, type: 2}
+    animation: {fileID: 11400000, guid: bd2632811649fec48bbe991a6927e57a, type: 2}
   - stateName: Hit
     animation: {fileID: 11400000, guid: 46562c813bc9cc8499d77334d8fe7541, type: 2}
   - stateName: Die

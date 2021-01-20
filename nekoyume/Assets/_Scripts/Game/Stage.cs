@@ -474,7 +474,7 @@ namespace Nekoyume.Game
             var title = Widget.Find<StageTitle>();
             title.Show(stageId);
 
-            yield return new WaitForSeconds(Game.instance.stageEnterDelay);
+            yield return new WaitForSeconds(StageConfig.instance.stageEnterDelay);
 
             yield return StartCoroutine(title.CoClose());
 
@@ -518,6 +518,21 @@ namespace Nekoyume.Game
             {
                 yield return StartCoroutine(CoGuidedQuest(log.stageId));
                 yield return new WaitForSeconds(1f);
+            }
+            else
+            {
+                var enemies = GetComponentsInChildren<Character.Enemy>();
+                if (enemies.Any())
+                {
+                    foreach (var enemy in enemies)
+                    {
+                        if (enemy.isActiveAndEnabled)
+                        {
+                            enemy.Animator.Win();
+                        }
+                    }
+                    yield return new WaitForSeconds(1f);
+                }
             }
 
             Widget.Find<UI.Battle>().Close();
@@ -953,7 +968,7 @@ namespace Nekoyume.Game
 
             var characters = GetComponentsInChildren<Character.CharacterBase>();
             yield return new WaitWhile(() => characters.Any(i => i.actions.Any()));
-            yield return new WaitForSeconds(Game.instance.spawnWaveDelay);
+            yield return new WaitForSeconds(StageConfig.instance.spawnWaveDelay);
             Widget.Find<UI.Battle>().BossStatus.Close();
             Widget.Find<UI.Battle>().EnemyPlayerStatus.Close();
             var playerCharacter = GetPlayer();
