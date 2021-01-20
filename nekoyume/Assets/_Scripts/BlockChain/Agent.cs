@@ -18,6 +18,7 @@ using Libplanet;
 using Libplanet.Action;
 using Libplanet.Assets;
 using Libplanet.Blockchain;
+using Libplanet.Blockchain.Policies;
 using Libplanet.Blocks;
 using Libplanet.Crypto;
 using Libplanet.Net;
@@ -79,7 +80,6 @@ namespace Nekoyume.BlockChain
         private Swarm<PolymorphicAction<ActionBase>> _swarm;
         protected BaseStore store;
         private ImmutableList<Peer> _seedPeers;
-        private IImmutableSet<Address> _trustedPeers;
         private ImmutableList<Peer> _peerList;
 
         private static CancellationTokenSource _cancellationTokenSource;
@@ -178,6 +178,8 @@ namespace Nekoyume.BlockChain
             Debug.Log($"minimumDifficulty: {minimumDifficulty}");
 
             var policy = BlockPolicySource.GetPolicy(minimumDifficulty, 100);
+            IStagePolicy<PolymorphicAction<ActionBase>> stagePolicy =
+                new VolatileStagePolicy<PolymorphicAction<ActionBase>>();
             PrivateKey = privateKey;
             store = LoadStore(path, storageType);
 
@@ -193,6 +195,7 @@ namespace Nekoyume.BlockChain
             {
                 blocks = new BlockChain<PolymorphicAction<ActionBase>>(
                     policy,
+                    stagePolicy,
                     store,
                     (IStateStore) store,
                     genesisBlock,
@@ -239,8 +242,6 @@ namespace Nekoyume.BlockChain
             // Init SyncSucceed
             SyncSucceed = true;
 
-            // FIXME: Trusted peers should be configurable
-            _trustedPeers = _seedPeers.Select(peer => peer.Address).ToImmutableHashSet();
             _cancellationTokenSource = new CancellationTokenSource();
         }
 
@@ -621,7 +622,12 @@ namespace Nekoyume.BlockChain
             while (true)
             {
                 Cheat.Display("Logs", _tipInfo);
-                Cheat.Display("Peers", _swarm?.TraceTable());
+                var peerStateString = string.Join("\n", _swarm.PeersStates.Select(peerState =>
+                    $"Address: {peerState.Address}\n" +
+                    $" - LastUpdated: {peerState.LastUpdated}\n" +
+                    $" - LastChecked: {peerState.LastChecked}\n" +
+                    $" - Latency: {peerState.Latency}"));
+                Cheat.Display("Peers", peerStateString);
                 StringBuilder log = new StringBuilder($"Staged Transactions : {store.IterateStagedTransactionIds().Count()}\n");
                 var count = 1;
                 foreach (var id in store.IterateStagedTransactionIds())
@@ -710,7 +716,6 @@ namespace Nekoyume.BlockChain
                         new Progress<PreloadState>(state =>
                             PreloadProcessed?.Invoke(this, state)
                         ),
-                        trustedStateValidators: _trustedPeers,
                         cancellationToken: _cancellationTokenSource.Token
                     );
                 });
