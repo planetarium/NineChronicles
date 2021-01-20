@@ -46,7 +46,7 @@ namespace Nekoyume.UI
         private int _ear;
         private int _tail;
 
-        public const string RecentlyLoggedInAvatarKey = "RecentlyLoggedInAvatar";
+        public const string RecentlyLoggedInAvatarKey = "RecentlyLoggedInAvatarAddress";
         private const int HairCount = 7;
         private const int LensCount = 6;
         private const int EarCount = 10;
@@ -386,7 +386,7 @@ namespace Nekoyume.UI
 
         private void OnDidAvatarStateLoaded(AvatarState avatarState)
         {
-            PlayerPrefs.SetInt(RecentlyLoggedInAvatarKey, _selectedIndex);
+            PlayerPrefs.SetString(RecentlyLoggedInAvatarKey, avatarState.address.ToString());
             Find<Combination>().LoadRecipeVFXSkipMap();
             if (_isCreateMode)
             {
