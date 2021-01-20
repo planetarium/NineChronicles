@@ -1,5 +1,7 @@
+using Libplanet;
 using Nekoyume.Game.Factory;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Video;
 
@@ -49,17 +51,27 @@ namespace Nekoyume.UI
 
                 if (PlayerPrefs.HasKey(LoginDetail.RecentlyLoggedInAvatarKey))
                 {
-                    var index = PlayerPrefs.GetInt(LoginDetail.RecentlyLoggedInAvatarKey);
+                    var recentlyLoggedAddress = PlayerPrefs.GetString(LoginDetail.RecentlyLoggedInAvatarKey);
+                    var matchingAddress = State.States.Instance.AgentState.avatarAddresses
+                        .FirstOrDefault(pair => pair.Value.ToString().Equals(recentlyLoggedAddress));
+                    var index = matchingAddress.Equals(default(KeyValuePair<int, Address>)) ? -1 : matchingAddress.Key;
 
-                    try
+                    if (index == -1)
                     {
-                        State.States.Instance.SelectAvatar(index);
-                        Game.Event.OnRoomEnter.Invoke(false);
-                    }
-                    catch (KeyNotFoundException e)
-                    {
-                        Debug.LogWarning(e.Message);
                         EnterLogin();
+                    }
+                    else
+                    {
+                        try
+                        {
+                            State.States.Instance.SelectAvatar(index);
+                            Game.Event.OnRoomEnter.Invoke(false);
+                        }
+                        catch (KeyNotFoundException e)
+                        {
+                            Debug.LogWarning(e.Message);
+                            EnterLogin();
+                        }
                     }
                 }
                 else
