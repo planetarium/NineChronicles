@@ -1694,9 +1694,7 @@
             A class have <see cref="T:Libplanet.Blocks.Block`1"/>s, <see cref="T:Libplanet.Tx.Transaction`1"/>s, and the chain
             information.
             <para>In order to watch its state changes, implement <see cref="T:Libplanet.Blockchain.Renderers.IRenderer`1"/>
-            interface and pass it to the <see
-            cref="M:Libplanet.Blockchain.BlockChain`1.#ctor(Libplanet.Blockchain.Policies.IBlockPolicy{`0},Libplanet.Store.IStore,Libplanet.Store.IStateStore,Libplanet.Blocks.Block{`0},System.Collections.Generic.IEnumerable{Libplanet.Blockchain.Renderers.IRenderer{`0}})"
-            /> constructor.</para>
+            interface and pass it to the <see cref="M:Libplanet.Blockchain.BlockChain`1.#ctor(Libplanet.Blockchain.Policies.IBlockPolicy{`0},Libplanet.Blockchain.Policies.IStagePolicy{`0},Libplanet.Store.IStore,Libplanet.Store.IStateStore,Libplanet.Blocks.Block{`0},System.Collections.Generic.IEnumerable{Libplanet.Blockchain.Renderers.IRenderer{`0}})"/> constructor.</para>
             </summary>
             <remarks>This object is guaranteed that it has at least one block, since it takes a genesis
             block when it's instantiated.</remarks>
@@ -1724,12 +1722,13 @@
             Cached genesis block.
             </summary>
         </member>
-        <member name="M:Libplanet.Blockchain.BlockChain`1.#ctor(Libplanet.Blockchain.Policies.IBlockPolicy{`0},Libplanet.Store.IStore,Libplanet.Store.IStateStore,Libplanet.Blocks.Block{`0},System.Collections.Generic.IEnumerable{Libplanet.Blockchain.Renderers.IRenderer{`0}})">
+        <member name="M:Libplanet.Blockchain.BlockChain`1.#ctor(Libplanet.Blockchain.Policies.IBlockPolicy{`0},Libplanet.Blockchain.Policies.IStagePolicy{`0},Libplanet.Store.IStore,Libplanet.Store.IStateStore,Libplanet.Blocks.Block{`0},System.Collections.Generic.IEnumerable{Libplanet.Blockchain.Renderers.IRenderer{`0}})">
             <summary>
             Initializes a new instance of the <see cref="T:Libplanet.Blockchain.BlockChain`1"/> class.
             </summary>
             <param name="policy"><see cref="T:Libplanet.Blockchain.Policies.IBlockPolicy`1"/> to use in the
             <see cref="T:Libplanet.Blockchain.BlockChain`1"/>.</param>
+            <param name="stagePolicy">The staging policy to follow.</param>
             <param name="store"><see cref="T:Libplanet.Store.IStore"/> to store <see cref="T:Libplanet.Blocks.Block`1"/>s,
             <see cref="T:Libplanet.Tx.Transaction`1"/>s, and <see cref="T:Libplanet.Blockchain.BlockChain`1"/> information.</param>
             <param name="genesisBlock">The genesis <see cref="T:Libplanet.Blocks.Block`1"/> of
@@ -1757,7 +1756,7 @@
             <remarks>
             Since this value is immutable, renderers cannot be registered after once a <see
             cref="T:Libplanet.Blockchain.BlockChain`1"/> object is instantiated; use <c>renderers</c> option of <see cref=
-            "M:Libplanet.Blockchain.BlockChain`1.#ctor(Libplanet.Blockchain.Policies.IBlockPolicy{`0},Libplanet.Store.IStore,Libplanet.Store.IStateStore,Libplanet.Blocks.Block{`0},System.Collections.Generic.IEnumerable{Libplanet.Blockchain.Renderers.IRenderer{`0}})"/>
+            "M:Libplanet.Blockchain.BlockChain`1.#ctor(Libplanet.Blockchain.Policies.IBlockPolicy{`0},Libplanet.Blockchain.Policies.IStagePolicy{`0},Libplanet.Store.IStore,Libplanet.Store.IStateStore,Libplanet.Blocks.Block{`0},System.Collections.Generic.IEnumerable{Libplanet.Blockchain.Renderers.IRenderer{`0}})"/>
             constructor instead.
             </remarks>
         </member>
@@ -1765,6 +1764,16 @@
             <summary>
             A filtered list, from <see cref="P:Libplanet.Blockchain.BlockChain`1.Renderers"/>, which contains only <see
             cref="T:Libplanet.Blockchain.Renderers.IActionRenderer`1"/> instances.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Blockchain.BlockChain`1.Policy">
+            <summary>
+            The block and blockchain policy.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Blockchain.BlockChain`1.StagePolicy">
+            <summary>
+            The staging policy.
             </summary>
         </member>
         <member name="P:Libplanet.Blockchain.BlockChain`1.Tip">
@@ -2244,8 +2253,6 @@
         </member>
         <member name="M:Libplanet.Blockchain.Policies.BlockPolicy`1.ValidateNextBlock(Libplanet.Blockchain.BlockChain{`0},Libplanet.Blocks.Block{`0})">
             <inheritdoc/>
-            <exception cref="T:Libplanet.Blocks.InvalidBlockStateRootHashException">It will be thrown when the
-            given block has incorrect <see cref="P:Libplanet.Blocks.Block`1.StateRootHash"/>.</exception>
         </member>
         <member name="M:Libplanet.Blockchain.Policies.BlockPolicy`1.GetNextBlockDifficulty(Libplanet.Blockchain.BlockChain{`0})">
             <inheritdoc />
@@ -2319,6 +2326,107 @@
             <returns>The maximum length of a <see cref="T:Libplanet.Blocks.Block`1"/> in bytes to accept.</returns>
             <remarks>If it returns less then 1, it is treated as 1, because there is no block
             taking 0 bytes or negative length of bytes.</remarks>
+        </member>
+        <member name="T:Libplanet.Blockchain.Policies.IStagePolicy`1">
+            <summary>
+            The interface to configure a <see cref="T:Libplanet.Blockchain.BlockChain`1"/>'s strategy to deal with staged
+            transactions.
+            </summary>
+            <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> type.  It should match
+            to <see cref="T:Libplanet.Blockchain.BlockChain`1"/>'s type parameter.</typeparam>
+            <remarks>Every operation on an object implementing this must be thread-safe.</remarks>
+        </member>
+        <member name="M:Libplanet.Blockchain.Policies.IStagePolicy`1.Stage(Libplanet.Blockchain.BlockChain{`0},Libplanet.Tx.Transaction{`0})">
+            <summary>
+            Stages a <paramref name="transaction"/>.
+            </summary>
+            <param name="blockChain">The chain to stage the <paramref name="transaction"/>.
+            </param>
+            <param name="transaction">The <seealso cref="T:Libplanet.Tx.Transaction`1"/> to be staged.</param>
+            <remarks>It does not throw any exception even if the <paramref name="transaction"/> has
+            already been staged.</remarks>
+        </member>
+        <member name="M:Libplanet.Blockchain.Policies.IStagePolicy`1.Unstage(Libplanet.Blockchain.BlockChain{`0},Libplanet.Tx.TxId)">
+            <summary>
+            Removes a transaction <paramref name="id"/> from the stage.
+            </summary>
+            <param name="blockChain">The chain to unstage the <paramref name="id"/>.</param>
+            <param name="id">The <seealso cref="P:Libplanet.Tx.Transaction`1.Id"/> to remove.</param>
+            <remarks>It does not throw any exception even if the <paramref name="id"/> has never
+            been staged.</remarks>
+        </member>
+        <member name="M:Libplanet.Blockchain.Policies.IStagePolicy`1.HasStaged(Libplanet.Blockchain.BlockChain{`0},Libplanet.Tx.TxId,System.Boolean)">
+            <summary>
+            Checks if a transaction <paramref name="id"/> has staged.
+            </summary>
+            <param name="blockChain">The chain that the stage belongs to.</param>
+            <param name="id">The <see cref="P:Libplanet.Tx.Transaction`1.Id"/> to check.</param>
+            <param name="includeUnstaged">Whether to include transactions that had once staged but
+            unstaged then.</param>
+            <returns><c>true</c> if a transaction is staged.  For transactions that had once staged
+            but unstaged then, it returns <c>true</c> iff <paramref name="includeUnstaged"/> is
+            turned on; otherwise it returns <c>false</c> for those cases.  For transactions
+            that have never staged, it returns <c>false</c>.</returns>
+        </member>
+        <member name="M:Libplanet.Blockchain.Policies.IStagePolicy`1.Get(Libplanet.Blockchain.BlockChain{`0},Libplanet.Tx.TxId,System.Boolean)">
+            <summary>
+            Gets a staged <see cref="T:Libplanet.Tx.Transaction`1"/> by its <paramref name="id"/>.
+            </summary>
+            <param name="blockChain">The chain that the stage belongs to.</param>
+            <param name="id">The <see cref="P:Libplanet.Tx.Transaction`1.Id"/> to get.</param>
+            <param name="includeUnstaged">Whether to include transactions that had once staged but
+            unstaged then.</param>
+            <returns>A staged transaction if found.  If it had never staged <c>null</c> is
+            returned.</returns>
+        </member>
+        <member name="M:Libplanet.Blockchain.Policies.IStagePolicy`1.Iterate(Libplanet.Blockchain.BlockChain{`0})">
+            <summary>
+            Enumerates all staged transaction IDs.
+            </summary>
+            <param name="blockChain">The chain of the stage to enumerate.</param>
+            <returns>Staged transactions.  The earliest staged transaction goes first,
+            and the latest staged transaction goes last.</returns>
+        </member>
+        <member name="T:Libplanet.Blockchain.Policies.VolatileStagePolicy`1">
+            <summary>
+            In-memory staged transactions.
+            </summary>
+            <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> type.  It should match
+            to <see cref="T:Libplanet.Blockchain.BlockChain`1"/>'s type parameter.</typeparam>
+        </member>
+        <member name="M:Libplanet.Blockchain.Policies.VolatileStagePolicy`1.#ctor">
+            <summary>
+            Creates a new <see cref="T:Libplanet.Blockchain.Policies.VolatileStagePolicy`1"/> instance.
+            <para><see cref="P:Libplanet.Blockchain.Policies.VolatileStagePolicy`1.Lifetime"/> is configured to 3 hours.</para>
+            </summary>
+        </member>
+        <member name="M:Libplanet.Blockchain.Policies.VolatileStagePolicy`1.#ctor(System.TimeSpan)">
+            <summary>
+            Creates a new <see cref="T:Libplanet.Blockchain.Policies.VolatileStagePolicy`1"/> instance.
+            </summary>
+            <param name="lifetime">Volatilizes staged transactions older than this <paramref
+            name="lifetime"/>.  See also the <see cref="P:Libplanet.Blockchain.Policies.VolatileStagePolicy`1.Lifetime"/> property.</param>
+        </member>
+        <member name="P:Libplanet.Blockchain.Policies.VolatileStagePolicy`1.Lifetime">
+            <summary>
+            Volatilizes staged transactions older than this <see cref="P:Libplanet.Blockchain.Policies.VolatileStagePolicy`1.Lifetime"/>.
+            <para>Note that transactions older than the lifetime never cannot be staged.</para>
+            </summary>
+        </member>
+        <member name="M:Libplanet.Blockchain.Policies.VolatileStagePolicy`1.Stage(Libplanet.Blockchain.BlockChain{`0},Libplanet.Tx.Transaction{`0})">
+            <inheritdoc cref="M:Libplanet.Blockchain.Policies.IStagePolicy`1.Stage(Libplanet.Blockchain.BlockChain{`0},Libplanet.Tx.Transaction{`0})"/>
+        </member>
+        <member name="M:Libplanet.Blockchain.Policies.VolatileStagePolicy`1.Unstage(Libplanet.Blockchain.BlockChain{`0},Libplanet.Tx.TxId)">
+            <inheritdoc cref="M:Libplanet.Blockchain.Policies.IStagePolicy`1.Unstage(Libplanet.Blockchain.BlockChain{`0},Libplanet.Tx.TxId)"/>
+        </member>
+        <member name="M:Libplanet.Blockchain.Policies.VolatileStagePolicy`1.HasStaged(Libplanet.Blockchain.BlockChain{`0},Libplanet.Tx.TxId,System.Boolean)">
+            <inheritdoc cref="M:Libplanet.Blockchain.Policies.IStagePolicy`1.HasStaged(Libplanet.Blockchain.BlockChain{`0},Libplanet.Tx.TxId,System.Boolean)"/>
+        </member>
+        <member name="M:Libplanet.Blockchain.Policies.VolatileStagePolicy`1.Get(Libplanet.Blockchain.BlockChain{`0},Libplanet.Tx.TxId,System.Boolean)">
+            <inheritdoc cref="M:Libplanet.Blockchain.Policies.IStagePolicy`1.Get(Libplanet.Blockchain.BlockChain{`0},Libplanet.Tx.TxId,System.Boolean)"/>
+        </member>
+        <member name="M:Libplanet.Blockchain.Policies.VolatileStagePolicy`1.Iterate(Libplanet.Blockchain.BlockChain{`0})">
+            <inheritdoc cref="M:Libplanet.Blockchain.Policies.IStagePolicy`1.Iterate(Libplanet.Blockchain.BlockChain{`0})"/>
         </member>
         <member name="T:Libplanet.Blockchain.Renderers.AnonymousActionRenderer`1">
             <summary>
@@ -5278,11 +5386,6 @@
             <see cref="T:Libplanet.Net.Peer"/> representation of <see cref="T:Libplanet.Net.ITransport"/>.
             </summary>
         </member>
-        <member name="P:Libplanet.Net.ITransport.Peers">
-            <summary>
-            List of all <see cref="T:Libplanet.Net.Peer"/>s in the routing table.
-            </summary>
-        </member>
         <member name="P:Libplanet.Net.ITransport.LastMessageTimestamp">
             <summary>
             The <see cref="T:System.DateTimeOffset"/> of the last message was received.
@@ -5313,26 +5416,6 @@
             </summary>
             <param name="waitFor">The <see cref="T:System.TimeSpan"/> of delay
             before actual stopping.</param>
-            <param name="cancellationToken">
-            A cancellation token used to propagate notification that this
-            operation should be canceled.</param>
-            <returns>An awaitable task without value.</returns>
-        </member>
-        <member name="M:Libplanet.Net.ITransport.BootstrapAsync(System.Collections.Generic.IEnumerable{Libplanet.Net.BoundPeer},System.Nullable{System.TimeSpan},System.Nullable{System.TimeSpan},System.Int32,System.Threading.CancellationToken)">
-            <summary>
-            Conducts peer discovery for given <paramref name="bootstrapPeers"/>.
-            </summary>
-            <param name="bootstrapPeers">A <see cref="T:System.Collections.Generic.IEnumerable`1"/> of <see cref="T:Libplanet.Net.Peer"/>s
-            to bootstrap.</param>
-            <param name="pingSeedTimeout">A timeout of waiting for the reply of <see cref="T:Libplanet.Net.Messages.Ping"/>
-            message sent to seed <see cref="T:Libplanet.Net.Peer"/>.
-            If <c>null</c> is given, the task never halts by itself
-            even no any response was given from the the target seed.</param>
-            <param name="findNeighborsTimeout">A timeout of waiting for the reply of
-            <see cref="T:Libplanet.Net.Messages.FindNeighbors"/> message sent to seed <see cref="T:Libplanet.Net.Peer"/>.
-            If <c>null</c> is given, task never halts by itself
-            even the target seed gives no any response.</param>
-            <param name="depth">Recursive operation depth to search peers from network.</param>
             <param name="cancellationToken">
             A cancellation token used to propagate notification that this
             operation should be canceled.</param>
@@ -5473,17 +5556,6 @@
             Message containing nearby peers.
             </summary>
         </member>
-        <member name="F:Libplanet.Net.Messages.Message.MessageType.GetRecentStates">
-            <summary>
-            Request to query calculated states.
-            </summary>
-        </member>
-        <member name="F:Libplanet.Net.Messages.Message.MessageType.RecentStates">
-            <summary>
-            A reply to <see cref="F:Libplanet.Net.Messages.Message.MessageType.GetRecentStates"/>.
-            Contains the calculated recent states and state references.
-            </summary>
-        </member>
         <member name="F:Libplanet.Net.Messages.Message.MessageType.BlockHeaderMessage">
             <summary>
             Message containing a single <see cref="T:Libplanet.Blocks.BlockHeader"/>.
@@ -5503,17 +5575,6 @@
             <summary>
             A reply to <see cref="F:Libplanet.Net.Messages.Message.MessageType.GetChainStatus"/>.
             Contains the chain status of the peer at the moment.
-            </summary>
-        </member>
-        <member name="F:Libplanet.Net.Messages.Message.MessageType.GetBlockStates">
-            <summary>
-            Request a block's delta states.
-            </summary>
-        </member>
-        <member name="F:Libplanet.Net.Messages.Message.MessageType.BlockStates">
-            <summary>
-            A reply to <see cref="F:Libplanet.Net.Messages.Message.MessageType.GetBlockStates"/>.
-            Contains the delta states of the requested block.
             </summary>
         </member>
         <member name="F:Libplanet.Net.Messages.Message.MessageType.DifferentVersion">
@@ -5609,13 +5670,6 @@
             <exception cref="T:System.ArgumentNullException">Thrown when <paramref name="peer"/> is
             <c>null</c>.</exception>
         </member>
-        <member name="P:Libplanet.Net.Messages.RecentStates.StateReferences">
-            <summary>
-            State references of all available accounts.  Each value has a list of
-            state references in ascending order; the closest to the genesis block
-            goes first, and the closest to the tip goes last.
-            </summary>
-        </member>
         <member name="T:Libplanet.Net.NetMQTransport">
             <summary>
             Implementation of <see cref="T:Libplanet.Net.ITransport"/> interface using NetMQ.
@@ -5627,18 +5681,20 @@
             <see cref="T:Libplanet.Net.Peer" /> is discovered.
             </summary>
         </member>
-        <member name="M:Libplanet.Net.NetMQTransport.#ctor(Libplanet.Crypto.PrivateKey,Libplanet.Net.AppProtocolVersion,System.Collections.Immutable.IImmutableSet{Libplanet.Crypto.PublicKey},System.Nullable{System.Int32},System.Nullable{System.Int32},System.Int32,System.String,System.Nullable{System.Int32},System.Collections.Generic.IEnumerable{Libplanet.Net.IceServer},Libplanet.Net.DifferentAppProtocolVersionEncountered,Serilog.ILogger)">
+        <member name="M:Libplanet.Net.NetMQTransport.#ctor(Libplanet.Net.Protocols.RoutingTable,Libplanet.Crypto.PrivateKey,Libplanet.Net.AppProtocolVersion,System.Collections.Immutable.IImmutableSet{Libplanet.Crypto.PublicKey},System.Int32,System.String,System.Nullable{System.Int32},System.Collections.Generic.IEnumerable{Libplanet.Net.IceServer},Libplanet.Net.DifferentAppProtocolVersionEncountered)">
             <summary>
             Creates <see cref="T:Libplanet.Net.NetMQTransport"/> instance.
             </summary>
+            <param name="table">
+            The <see cref="T:Libplanet.Net.Protocols.RoutingTable"/> that manages <see cref="T:Libplanet.Net.Peer"/>s which are connected
+            with this <see cref="T:Libplanet.Net.Peer"/>.
+            </param>
             <param name="privateKey"><see cref="T:Libplanet.Crypto.PrivateKey"/> of the transport layer.</param>
             <param name="appProtocolVersion"><see cref="T:Libplanet.Net.AppProtocolVersion"/>-typed
             version of the transport layer.</param>
             <param name="trustedAppProtocolVersionSigners"><see cref="T:Libplanet.Crypto.PublicKey"/>s of parties
             to trust <see cref="T:Libplanet.Net.AppProtocolVersion"/>s they signed.  To trust any party, pass
             <c>null</c>.</param>
-            <param name="tableSize">The number of buckets in Kademlia-based routing table.</param>
-            <param name="bucketSize">The size of bucket in Kademlia-based routing table.</param>
             <param name="workers">The number of background workers (i.e., threads).</param>
             <param name="host">A hostname to be a part of a public endpoint, that peers use when
             they connect to this node.  Note that this is not a hostname to listen to;
@@ -5653,7 +5709,6 @@
             If this callback returns <c>false</c>, an encountered peer is ignored.  If this callback
             is omitted, all peers with different <see cref="T:Libplanet.Net.AppProtocolVersion"/>s are ignored.
             </param>
-            <param name="logger"><see cref="P:Serilog.Log.Logger"/> for logging.</param>
             <exception cref="T:System.ArgumentException">Thrown when both <paramref name="host"/> and
             <paramref name="iceServers"/> are <c>null</c>.</exception>
         </member>
@@ -5662,9 +5717,6 @@
         </member>
         <member name="P:Libplanet.Net.NetMQTransport.AsPeer">
             <inheritdoc cref="P:Libplanet.Net.ITransport.AsPeer"/>
-        </member>
-        <member name="P:Libplanet.Net.NetMQTransport.Peers">
-            <inheritdoc />
         </member>
         <member name="P:Libplanet.Net.NetMQTransport.LastMessageTimestamp">
             <inheritdoc cref="P:Libplanet.Net.ITransport.LastMessageTimestamp"/>
@@ -5683,48 +5735,6 @@
         </member>
         <member name="M:Libplanet.Net.NetMQTransport.StopAsync(System.TimeSpan,System.Threading.CancellationToken)">
             <inheritdoc />
-        </member>
-        <member name="M:Libplanet.Net.NetMQTransport.BootstrapAsync(System.Collections.Generic.IEnumerable{Libplanet.Net.BoundPeer},System.Nullable{System.TimeSpan},System.Nullable{System.TimeSpan},System.Int32,System.Threading.CancellationToken)">
-            <inheritdoc />
-        </member>
-        <member name="M:Libplanet.Net.NetMQTransport.AddPeersAsync(System.Collections.Generic.IEnumerable{Libplanet.Net.Peer},System.Nullable{System.TimeSpan},System.Threading.CancellationToken)">
-            <summary>
-            Adds given <paramref name="peers"/> to routing table by sending <see cref="T:Libplanet.Net.Messages.Ping"/>.
-            </summary>
-            <param name="peers">The peers to add.</param>
-            <param name="timeout">A timeout of waiting for the reply of <see cref="T:Libplanet.Net.Messages.Ping"/>
-            message sent to <paramref name="peers"/>.
-            If <c>null</c> is given, task never halts by itself
-            even the target peer gives no any response.</param>
-            <param name="cancellationToken">
-            A cancellation token used to propagate notification that this
-            operation should be canceled.</param>
-            <returns>An awaitable task without value.</returns>
-            <exception cref="T:System.ArgumentNullException">
-            Thrown when <see cref="P:Libplanet.Net.NetMQTransport.Protocol"/> is <c>null</c>.
-            </exception>
-        </member>
-        <member name="M:Libplanet.Net.NetMQTransport.FindSpecificPeerAsync(Libplanet.Address,System.Int32,System.Nullable{System.TimeSpan},System.Threading.CancellationToken)">
-            <summary>
-            Finds a <see cref="T:Libplanet.Net.Peer"/> whose address value matches <paramref name="target"/>.
-            </summary>
-            <param name="target"><see cref="T:Libplanet.Address"/> to find.</param>
-            <param name="depth">Recursive operation depth to search the peer from network.</param>
-            <param name="timeout">A timeout of waiting for the reply of messages.
-            If <c>null</c> is given, task never halts by itself even the message gives
-            no any response.</param>
-            <param name="cancellationToken">
-            A cancellation token used to propagate notification that this
-            operation should be canceled.</param>
-            <returns><see cref="T:Libplanet.Net.Peer"/> match with given <paramref name="target"/> if it exists.
-            Otherwise, return <c>null</c> if fails to find.</returns>
-        </member>
-        <member name="M:Libplanet.Net.NetMQTransport.Trace">
-            <summary>
-            Visualizes Kademlia-based routing table status.
-            </summary>
-            <remarks>Will be outdated.</remarks>
-            <returns><see cref="T:System.String"/> representation of the routing table.</returns>
         </member>
         <member name="M:Libplanet.Net.NetMQTransport.Dispose">
             <inheritdoc />
@@ -5751,18 +5761,6 @@
         </member>
         <member name="M:Libplanet.Net.NetMQTransport.ReplyMessage(Libplanet.Net.Messages.Message)">
             <inheritdoc />
-        </member>
-        <member name="M:Libplanet.Net.NetMQTransport.CheckAllPeersAsync(System.Nullable{System.TimeSpan},System.Threading.CancellationToken)">
-            <summary>
-            Refreshes all peers in routing table.
-            </summary>
-            <param name="timeout">A timeout of waiting for the reply of messages.
-            If <c>null</c> is given, the task never halts by itself
-            even no any response was given from the the target peer.</param>
-            <param name="cancellationToken">
-            A cancellation token used to propagate notification that this
-            operation should be canceled.</param>
-            <returns>An awaitable task without value.</returns>
         </member>
         <member name="T:Libplanet.Net.Peer">
             <summary>
@@ -5846,7 +5844,47 @@
             The current phase.
             </summary>
         </member>
-        <member name="M:Libplanet.Net.Protocols.KademliaProtocol.RefreshTableAsync(System.TimeSpan,System.Threading.CancellationToken)">
+        <member name="T:Libplanet.Net.Protocols.IProtocol">
+            <summary>
+            An interface of protocol to discover peers from the distributed network.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Net.Protocols.IProtocol.BootstrapAsync(System.Collections.Generic.IEnumerable{Libplanet.Net.BoundPeer},System.Nullable{System.TimeSpan},System.Nullable{System.TimeSpan},System.Int32,System.Threading.CancellationToken)">
+            <summary>
+            Conducts peer discovery for given <paramref name="bootstrapPeers"/>.
+            </summary>
+            <param name="bootstrapPeers">A <see cref="T:System.Collections.Generic.IEnumerable`1"/> of <see cref="T:Libplanet.Net.Peer"/>s
+            to bootstrap.</param>
+            <param name="pingSeedTimeout">A timeout of waiting for the reply of <see cref="T:Libplanet.Net.Messages.Ping"/>
+            message sent to seed <see cref="T:Libplanet.Net.Peer"/>.
+            If <c>null</c> is given, the task never halts by itself
+            even no any response was given from the the target seed.</param>
+            <param name="findNeighborsTimeout">A timeout of waiting for the reply of
+            <see cref="T:Libplanet.Net.Messages.FindNeighbors"/> message sent to seed <see cref="T:Libplanet.Net.Peer"/>.
+            If <c>null</c> is given, task never halts by itself
+            even the target seed gives no any response.</param>
+            <param name="depth">Recursive operation depth to search peers from network.</param>
+            <param name="cancellationToken">
+            A cancellation token used to propagate notification that this
+            operation should be canceled.</param>
+            <returns>An awaitable task without value.</returns>
+        </member>
+        <member name="M:Libplanet.Net.Protocols.IProtocol.AddPeersAsync(System.Collections.Generic.IEnumerable{Libplanet.Net.Peer},System.Nullable{System.TimeSpan},System.Threading.CancellationToken)">
+            <summary>
+            Tries to add given <paramref name="peers"/> to routing table
+            by sending <see cref="T:Libplanet.Net.Messages.Ping"/>.
+            </summary>
+            <param name="peers">The peers to add.</param>
+            <param name="timeout">A timeout of waiting for the reply of <see cref="T:Libplanet.Net.Messages.Ping"/>
+            message sent to <paramref name="peers"/>.
+            If <c>null</c> is given, task never halts by itself
+            even the target peer gives no any response.</param>
+            <param name="cancellationToken">
+            A cancellation token used to propagate notification that this
+            operation should be canceled.</param>
+            <returns>An awaitable task without value.</returns>
+        </member>
+        <member name="M:Libplanet.Net.Protocols.IProtocol.RefreshTableAsync(System.TimeSpan,System.Threading.CancellationToken)">
             <summary>
             Checks whether <see cref="T:Libplanet.Net.Peer"/>s in <see cref="T:Libplanet.Net.Protocols.RoutingTable"/> is online by
             sending <see cref="T:Libplanet.Net.Messages.Ping"/>.
@@ -5856,15 +5894,15 @@
             that this operation should be canceled.</param>
             <returns>An awaitable task without value.</returns>
         </member>
-        <member name="M:Libplanet.Net.Protocols.KademliaProtocol.RebuildConnectionAsync(System.Threading.CancellationToken)">
+        <member name="M:Libplanet.Net.Protocols.IProtocol.RebuildConnectionAsync(System.Threading.CancellationToken)">
             <summary>
             Reconstructs network connection between peers on network.
             </summary>
             <param name="cancellationToken">A cancellation token used to propagate notification
             that this operation should be canceled.</param>
-            <returns>>An awaitable task without value.</returns>
+            <returns>An awaitable task without value.</returns>
         </member>
-        <member name="M:Libplanet.Net.Protocols.KademliaProtocol.CheckReplacementCacheAsync(System.Threading.CancellationToken)">
+        <member name="M:Libplanet.Net.Protocols.IProtocol.CheckReplacementCacheAsync(System.Threading.CancellationToken)">
             <summary>
             Checks the <see cref="T:Libplanet.Net.Protocols.KBucket"/> in the <see cref="T:Libplanet.Net.Protocols.RoutingTable"/> and if
             there is an empty <see cref="T:Libplanet.Net.Protocols.KBucket"/>, fill it with <see cref="T:Libplanet.Net.Peer"/>s
@@ -5872,7 +5910,107 @@
             </summary>
             <param name="cancellationToken">A cancellation token used to propagate notification
             that this operation should be canceled.</param>
-            <returns>>An awaitable task without value.</returns>
+            <returns>An awaitable task without value.</returns>
+        </member>
+        <member name="T:Libplanet.Net.Protocols.Kademlia">
+            <summary>
+            Commonly used constants and static functions for Kademlia distributed hash table.
+            </summary>
+        </member>
+        <member name="F:Libplanet.Net.Protocols.Kademlia.BucketSize">
+            <summary>
+            The size of a single bucket.
+            </summary>
+        </member>
+        <member name="F:Libplanet.Net.Protocols.Kademlia.TableSize">
+            <summary>
+            The number of buckets in the table.
+            </summary>
+        </member>
+        <member name="F:Libplanet.Net.Protocols.Kademlia.FindConcurrency">
+            <summary>
+            The number of concurrency in peer discovery.
+            </summary>
+        </member>
+        <member name="F:Libplanet.Net.Protocols.Kademlia.MaxDepth">
+            <summary>
+            Depth of the peer discovery operation.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Net.Protocols.Kademlia.CalculateDistance(Libplanet.Address,Libplanet.Address)">
+            <summary>
+            Calculates xor distance between two address.
+            </summary>
+            <param name="left">First element to calculate distance.</param>
+            <param name="right">Second element to calculate distance.</param>
+            <returns>Distance between two addresses in <see cref="T:Libplanet.Address"/>.</returns>
+        </member>
+        <member name="M:Libplanet.Net.Protocols.Kademlia.CommonPrefixLength(Libplanet.Address,Libplanet.Address)">
+            <summary>
+            Calculates length of common prefix length
+            by finding the index of first bit of xor value.
+            </summary>
+            <param name="left">First element to calculate common prefix length.</param>
+            <param name="right">Second element to calculate common prefix length.</param>
+            <returns>Length of the common prefix length.</returns>
+        </member>
+        <member name="M:Libplanet.Net.Protocols.Kademlia.SortByDistance(System.Collections.Generic.IEnumerable{Libplanet.Net.BoundPeer},Libplanet.Address)">
+            <summary>
+            Sorts the element of the sequence from in ascending order of
+            the distance with <paramref name="targetAddr"/>.
+            </summary>
+            <param name="peers">A sequence of values to order.</param>
+            <param name="targetAddr">
+            <see cref="T:Libplanet.Address"/> to calculate distance of element.</param>
+            <returns>>An <see cref="T:System.Collections.Generic.IEnumerable`1"/> whose elements are sorted
+            according to the distance with <paramref name="targetAddr"/>.</returns>
+        </member>
+        <member name="T:Libplanet.Net.Protocols.KademliaProtocol">
+            <summary>
+            A Kademlia based peer discovery protocol.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Net.Protocols.KademliaProtocol.#ctor(Libplanet.Net.Protocols.RoutingTable,Libplanet.Net.ITransport,Libplanet.Address,System.Int32,System.Nullable{System.TimeSpan})">
+            <summary>
+            Creates a <see cref="T:Libplanet.Net.Protocols.KademliaProtocol"/> instance.
+            </summary>
+            <param name="table">
+            The <see cref="T:Libplanet.Net.Protocols.RoutingTable"/> where <see cref="T:Libplanet.Net.Peer"/>s are stored.</param>
+            <param name="transport"><see cref="T:Libplanet.Net.ITransport"/> to process messages.</param>
+            <param name="address">The <see cref="T:Libplanet.Address"/> of the <see cref="T:Libplanet.Net.Peer"/>
+            to be the reference point.</param>
+            <param name="findConcurrency">The number of concurrency in peer discovery.</param>
+            <param name="requestTimeout">
+            A timeout of waiting for the reply of messages.
+            If it's omitted or <c>null</c> is given, will automatically be set to 5 seconds.
+            </param>
+        </member>
+        <member name="M:Libplanet.Net.Protocols.KademliaProtocol.BootstrapAsync(System.Collections.Generic.IEnumerable{Libplanet.Net.BoundPeer},System.Nullable{System.TimeSpan},System.Nullable{System.TimeSpan},System.Int32,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:Libplanet.Net.Protocols.KademliaProtocol.AddPeersAsync(System.Collections.Generic.IEnumerable{Libplanet.Net.Peer},System.Nullable{System.TimeSpan},System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:Libplanet.Net.Protocols.KademliaProtocol.RefreshTableAsync(System.TimeSpan,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:Libplanet.Net.Protocols.KademliaProtocol.CheckAllPeersAsync(System.Nullable{System.TimeSpan},System.Threading.CancellationToken)">
+            <summary>
+            Refreshes all peers in routing table.
+            </summary>
+            <param name="timeout">A timeout of waiting for the reply of messages.
+            If <c>null</c> is given, the task never halts by itself
+            even no any response was given from the the target peer.</param>
+            <param name="cancellationToken">
+            A cancellation token used to propagate notification that this
+            operation should be canceled.</param>
+            <returns>An awaitable task without value.</returns>
+        </member>
+        <member name="M:Libplanet.Net.Protocols.KademliaProtocol.RebuildConnectionAsync(System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:Libplanet.Net.Protocols.KademliaProtocol.CheckReplacementCacheAsync(System.Threading.CancellationToken)">
+            <inheritdoc />
         </member>
         <member name="M:Libplanet.Net.Protocols.KademliaProtocol.FindSpecificPeerAsync(Libplanet.Address,System.Int32,System.Nullable{System.TimeSpan},System.Threading.CancellationToken)">
             <summary>
@@ -5898,6 +6036,18 @@
             <param name="cancellationToken">A cancellation token used to propagate notification
             that this operation should be canceled.</param>
             <returns>An awaitable task without value.</returns>
+        </member>
+        <member name="M:Libplanet.Net.Protocols.KademliaProtocol.Update(Libplanet.Net.Peer)">
+            <summary>
+            Updates routing table when receiving a message. If corresponding bucket
+            for remote peer is not full, just adds given <paramref name="rawPeer"/>.
+            Otherwise, checks aliveness of the least recently used (LRU) peer
+            and determine evict LRU peer or discard given <paramref name="rawPeer"/>.
+            </summary>
+            <param name="rawPeer"><see cref="T:Libplanet.Net.Peer"/> to update.</param>
+            <exception cref="T:System.ArgumentNullException">
+            Thrown when <paramref name="rawPeer"/> is <c>null</c>.
+            </exception>
         </member>
         <member name="M:Libplanet.Net.Protocols.KademliaProtocol.FindPeerAsync(System.Collections.Concurrent.ConcurrentBag{Libplanet.Net.BoundPeer},Libplanet.Address,Libplanet.Net.BoundPeer,System.Int32,System.Nullable{System.TimeSpan},System.Threading.CancellationToken)">
             <summary>
@@ -5944,6 +6094,79 @@
             Least recently used peer.
             </summary>
         </member>
+        <member name="T:Libplanet.Net.Protocols.RoutingTable">
+            <summary>
+            Kademlia distributed hash table.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Net.Protocols.RoutingTable.#ctor(Libplanet.Address,System.Int32,System.Int32)">
+            <summary>
+            Creates a Kademlia distributed hash table instance.
+            </summary>
+            <param name="address"><see cref="T:Libplanet.Address"/> of this peer.</param>
+            <param name="tableSize">The number of buckets in the table.</param>
+            <param name="bucketSize">The size of a single bucket.</param>
+            <exception cref="T:System.ArgumentOutOfRangeException">
+            Thrown when <paramref name="tableSize"/> or <paramref name="bucketSize"/> is
+            less then or equal to 0.</exception>
+        </member>
+        <member name="P:Libplanet.Net.Protocols.RoutingTable.TableSize">
+            <summary>
+            The number of buckets in the table.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.Protocols.RoutingTable.BucketSize">
+            <summary>
+            The size of a single bucket.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.Protocols.RoutingTable.Count">
+            <summary>
+            The number of peers in the table.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.Protocols.RoutingTable.Peers">
+            <summary>
+            An <see cref="T:System.Collections.Generic.IEnumerable`1"/> of peers in the table.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.Protocols.RoutingTable.PeerStates">
+            <summary>
+            An <see cref="T:System.Collections.Generic.IEnumerable`1"/> of <see cref="T:Libplanet.Net.PeerState"/> of peers in the table.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Net.Protocols.RoutingTable.AddPeer(Libplanet.Net.BoundPeer)">
+            <summary>
+            Adds the <paramref name="peer"/> to the table.
+            </summary>
+            <param name="peer">The <see cref="T:Libplanet.Net.BoundPeer"/> to add.</param>
+            <exception cref="T:System.ArgumentNullException">Thrown when <paramref name="peer"/> is
+            <see langword="null"/>.</exception>
+            <exception cref="T:System.ArgumentException">Thrown when <paramref name="peer"/>'s
+            <see cref="T:Libplanet.Address"/> is equal to the <see cref="T:Libplanet.Address"/> of self.</exception>
+        </member>
+        <member name="M:Libplanet.Net.Protocols.RoutingTable.Contains(Libplanet.Net.BoundPeer)">
+            <summary>
+            Determines whether the <see cref="T:Libplanet.Net.Protocols.RoutingTable"/> contains the specified key.
+            </summary>
+            <param name="peer">Key to locate in the <see cref="T:Libplanet.Net.Protocols.RoutingTable"/>.</param>
+            <returns><see langword="true"/> if the <see cref="T:Libplanet.Net.Protocols.RoutingTable" /> contains
+            an element with the specified key; otherwise, <see langword="false"/>.</returns>
+        </member>
+        <member name="M:Libplanet.Net.Protocols.RoutingTable.GetPeer(Libplanet.Address)">
+            <summary>
+            Finds a <seealso cref="T:Libplanet.Net.BoundPeer"/> whose <see cref="T:Libplanet.Address"/> matches with
+            the given <paramref name="addr"/> if it exits.
+            </summary>
+            <param name="addr">The <see cref="T:Libplanet.Address"/> to search.</param>
+            <returns>A <see cref="T:Libplanet.Net.BoundPeer"/> whose <see cref="T:Libplanet.Address"/> matches
+            the given <paramref name="addr"/>.</returns>
+        </member>
+        <member name="M:Libplanet.Net.Protocols.RoutingTable.Clear">
+            <summary>
+            Removes all peers in the table.
+            </summary>
+        </member>
         <member name="M:Libplanet.Net.Protocols.RoutingTable.Neighbors(Libplanet.Net.Peer,System.Int32,System.Boolean)">
             <summary>
             Returns <paramref name="k"/> nearest peers to given parameter peer from routing table.
@@ -5967,6 +6190,16 @@
             <param name="includeTarget">A boolean value indicates to include a peer with
             <see cref="T:Libplanet.Address"/> of <paramref name="target"/> in return value or not.</param>
             <returns>An enumerable of <see cref="T:Libplanet.Net.BoundPeer"/>.</returns>
+        </member>
+        <member name="M:Libplanet.Net.Protocols.RoutingTable.Check(Libplanet.Net.BoundPeer,System.DateTimeOffset,System.DateTimeOffset)">
+            <summary>
+            Marks <paramref name="peer"/> checked and refreshes last checked time of the peer.
+            </summary>
+            <param name="peer">The <see cref="T:Libplanet.Net.Peer"/> to check.</param>
+            <param name="start"><see cref="T:System.DateTimeOffset"/> at the beginning of the check.</param>
+            <param name="end"><see cref="T:System.DateTimeOffset"/> at the end of the check.</param>
+            <exception cref="T:System.ArgumentNullException">
+            Thrown when <paramref name="peer"/> is <see langword="null"/>.</exception>
         </member>
         <member name="T:Libplanet.Net.StateDownloadState">
             <summary>
@@ -6041,7 +6274,7 @@
             <returns>A <see cref="T:System.Threading.Tasks.Task"/> completed when <see cref="P:Libplanet.Net.NetMQTransport.Running"/>
             property becomes <c>true</c>.</returns>
         </member>
-        <member name="M:Libplanet.Net.Swarm`1.StartAsync(System.Int32,System.Int32,System.Collections.Immutable.IImmutableSet{Libplanet.Address},System.Threading.CancellationToken)">
+        <member name="M:Libplanet.Net.Swarm`1.StartAsync(System.Int32,System.Int32,System.Threading.CancellationToken)">
             <summary>
             Starts to periodically synchronize the <see cref="P:Libplanet.Net.Swarm`1.BlockChain"/>.
             </summary>
@@ -6053,13 +6286,6 @@
             <param name="millisecondsBroadcastTxInterval">
             The time period of exchange of staged transactions.
             </param>
-            <param name="trustedStateValidators">
-            If any peer in this set is reachable, <see cref="T:Libplanet.Net.Swarm`1"/> receives the latest
-            states of the major blockchain from that trusted peer, which is also calculated by
-            that peer, instead of autonomously calculating the states from scratch.
-            Note that this option is intended to be exposed to end users through a feasible user
-            interface so that they can decide whom to trust for themselves.
-            </param>
             <param name="cancellationToken">
             A cancellation token used to propagate notification that this
             operation should be canceled.
@@ -6073,10 +6299,10 @@
             a lot of calls to methods of <see cref="P:Libplanet.Blockchain.BlockChain`1.Renderers"/> in a short
             period of time.  This can lead a game startup slow.  If you want to omit rendering of
             these actions in the behind blocks use <see cref=
-            "M:Libplanet.Net.Swarm`1.PreloadAsync(System.Nullable{System.TimeSpan},System.IProgress{Libplanet.Net.PreloadState},System.Collections.Immutable.IImmutableSet{Libplanet.Address},System.Threading.CancellationToken)"
+            "M:Libplanet.Net.Swarm`1.PreloadAsync(System.Nullable{System.TimeSpan},System.IProgress{Libplanet.Net.PreloadState},System.Threading.CancellationToken)"
             /> method too.</remarks>
         </member>
-        <member name="M:Libplanet.Net.Swarm`1.StartAsync(System.TimeSpan,System.TimeSpan,System.Collections.Immutable.IImmutableSet{Libplanet.Address},System.Threading.CancellationToken)">
+        <member name="M:Libplanet.Net.Swarm`1.StartAsync(System.TimeSpan,System.TimeSpan,System.Threading.CancellationToken)">
             <summary>
             Starts to periodically synchronize the <see cref="P:Libplanet.Net.Swarm`1.BlockChain"/>.
             </summary>
@@ -6087,13 +6313,6 @@
             </param>
             <param name="broadcastTxInterval">The time period of exchange of staged transactions.
             </param>
-            <param name="trustedStateValidators">
-            If any peer in this set is reachable, <see cref="T:Libplanet.Net.Swarm`1"/> receives the latest
-            states of the major blockchain from that trusted peer, which is also calculated by
-            that peer, instead of autonomously calculating the states from scratch.
-            Note that this option is intended to be exposed to end users through a feasible user
-            interface so that they can decide whom to trust for themselves.
-            </param>
             <param name="cancellationToken">
             A cancellation token used to propagate notification that this
             operation should be canceled.
@@ -6107,7 +6326,7 @@
             a lot of calls to methods of <see cref="P:Libplanet.Blockchain.BlockChain`1.Renderers"/> in a short
             period of time.  This can lead a game startup slow.  If you want to omit rendering of
             these actions in the behind blocks use <see cref=
-            "M:Libplanet.Net.Swarm`1.PreloadAsync(System.Nullable{System.TimeSpan},System.IProgress{Libplanet.Net.PreloadState},System.Collections.Immutable.IImmutableSet{Libplanet.Address},System.Threading.CancellationToken)"
+            "M:Libplanet.Net.Swarm`1.PreloadAsync(System.Nullable{System.TimeSpan},System.IProgress{Libplanet.Net.PreloadState},System.Threading.CancellationToken)"
             /> method too.</remarks>
         </member>
         <member name="M:Libplanet.Net.Swarm`1.BootstrapAsync(System.Collections.Generic.IEnumerable{Libplanet.Net.Peer},System.Nullable{System.TimeSpan},System.Nullable{System.TimeSpan},System.Int32,System.Threading.CancellationToken)">
@@ -6140,7 +6359,7 @@
             </param>
             <returns><see cref="T:Libplanet.Net.PeerChainState"/> of the connected <see cref="P:Libplanet.Net.Swarm`1.Peers"/>.</returns>
         </member>
-        <member name="M:Libplanet.Net.Swarm`1.PreloadAsync(System.Nullable{System.TimeSpan},System.IProgress{Libplanet.Net.PreloadState},System.Collections.Immutable.IImmutableSet{Libplanet.Address},System.Threading.CancellationToken)">
+        <member name="M:Libplanet.Net.Swarm`1.PreloadAsync(System.Nullable{System.TimeSpan},System.IProgress{Libplanet.Net.PreloadState},System.Threading.CancellationToken)">
             <summary>
             Preemptively downloads blocks from registered <see cref="T:Libplanet.Net.Peer"/>s.
             </summary>
@@ -6151,13 +6370,6 @@
             </param>
             <param name="progress">
             An instance that receives progress updates for block downloads.
-            </param>
-            <param name="trustedStateValidators">
-            If any peer in this set is reachable, <see cref="T:Libplanet.Net.Swarm`1"/> receives the latest
-            states of the major blockchain from that trusted peer, which is also calculated by
-            that peer, instead of autonomously calculating the states from scratch.
-            Note that this option is intended to be exposed to end users through a feasible user
-            interface so that they can decide whom to trust for themselves.
             </param>
             <param name="cancellationToken">
             A cancellation token used to propagate notification that this
@@ -6201,40 +6413,6 @@
             <param name="cancellationToken">A cancellation token used to propagate notification
             that this operation should be canceled.</param>
             <returns>An awaitable task without value.</returns>
-        </member>
-        <member name="M:Libplanet.Net.Swarm`1.GetTrustedStateCompleterAsync(System.Collections.Immutable.IImmutableSet{Libplanet.Address},System.Nullable{System.TimeSpan},System.Nullable{Libplanet.Blockchain.StateCompleterSet{`0}},System.Threading.CancellationToken)">
-            <summary>
-            Gets state completers that complement incomplete block states by trusting
-            (i.e., download-and-reusing) states calculated by the given
-            <paramref name="trustedStateValidators"/>.  If no trustworthy states are available
-            incomplete states are complemented by recalculating
-            (i.e., <see cref="F:Libplanet.Blockchain.StateCompleterSet`1.Recalculate"/>).
-            </summary>
-            <param name="trustedStateValidators">
-            If any peer in this set is reachable and there are no block states in the current node
-            <see cref="T:Libplanet.Net.Swarm`1"/> tries to receive the needed states from that trusted peer,
-            which is also calculated by that peer.
-            <para>If it fails to find or receive trustworthy states from peers it recalculates
-            (i.e., <see cref="F:Libplanet.Blockchain.StateCompleterSet`1.Recalculate"/>) states by executing actions by
-            itself instead.</para>
-            <para>Note that this option is intended to be exposed to end users through a feasible
-            user interface so that they can decide whom to trust for themselves.</para>
-            </param>
-            <param name="dialTimeout">
-            When the <see cref="T:Libplanet.Net.Swarm`1"/> tries to dial each peer in <paramref
-            name="trustedStateValidators"/>, the dial-up is cancelled after this timeout,
-            and it tries another peer.  If <c>null</c> is given it never gives up dial-ups.
-            </param>
-            <param name="fallbackCompleterSet">
-            If no <paramref name="trustedStateValidators"/> are available or have the needed state
-            try to complete state using this <paramref name="fallbackCompleterSet"/> instead.
-            <see cref="F:Libplanet.Blockchain.StateCompleterSet`1.Recalculate"/> by default.
-            </param>
-            <param name="cancellationToken">A cancellation token to observe while waiting for
-            dial-ups.</param>
-            <returns>A set of state completers.</returns>
-            <exception cref="T:System.ArgumentNullException">Thrown when <paramref
-            name="trustedStateValidators"/> is <c>null</c>.</exception>
         </member>
         <member name="P:Libplanet.Net.SwarmOptions.MaxTimeout">
             <summary>
@@ -6438,12 +6616,6 @@
         <member name="M:Libplanet.Store.DefaultStore.ForkBlockIndexes(System.Guid,System.Guid,Libplanet.HashDigest{System.Security.Cryptography.SHA256})">
             <inheritdoc/>
         </member>
-        <member name="M:Libplanet.Store.DefaultStore.ListStateKeys(System.Guid)">
-            <inheritdoc/>
-        </member>
-        <member name="M:Libplanet.Store.DefaultStore.ListAllStateReferences(System.Guid,System.Int64,System.Int64)">
-            <inheritdoc/>
-        </member>
         <member name="M:Libplanet.Store.DefaultStore.StageTransactionIds(System.Collections.Immutable.IImmutableSet{Libplanet.Tx.TxId})">
             <inheritdoc/>
         </member>
@@ -6483,21 +6655,6 @@
         <member name="M:Libplanet.Store.DefaultStore.ContainsBlock(Libplanet.HashDigest{System.Security.Cryptography.SHA256})">
             <inheritdoc/>
         </member>
-        <member name="M:Libplanet.Store.DefaultStore.SetBlockStates(Libplanet.HashDigest{System.Security.Cryptography.SHA256},System.Collections.Immutable.IImmutableDictionary{System.String,Bencodex.Types.IValue})">
-            <inheritdoc/>
-        </member>
-        <member name="M:Libplanet.Store.DefaultStore.PruneBlockStates``1(System.Guid,Libplanet.Blocks.Block{``0})">
-            <inheritdoc/>
-        </member>
-        <member name="M:Libplanet.Store.DefaultStore.IterateStateReferences(System.Guid,System.String,System.Nullable{System.Int64},System.Nullable{System.Int64},System.Nullable{System.Int32})">
-            <inheritdoc/>
-        </member>
-        <member name="M:Libplanet.Store.DefaultStore.StoreStateReference(System.Guid,System.Collections.Immutable.IImmutableSet{System.String},Libplanet.HashDigest{System.Security.Cryptography.SHA256},System.Int64)">
-            <inheritdoc/>
-        </member>
-        <member name="M:Libplanet.Store.DefaultStore.ForkStateReferences``1(System.Guid,System.Guid,Libplanet.Blocks.Block{``0})">
-            <inheritdoc/>
-        </member>
         <member name="M:Libplanet.Store.DefaultStore.ListTxNonces(System.Guid)">
             <inheritdoc/>
         </member>
@@ -6512,165 +6669,6 @@
         </member>
         <member name="M:Libplanet.Store.DefaultStore.CountBlocks">
             <inheritdoc/>
-        </member>
-        <member name="M:Libplanet.Store.DefaultStore.DeleteBlockStates(Libplanet.HashDigest{System.Security.Cryptography.SHA256},System.Collections.Generic.IEnumerable{System.String})">
-            <summary>
-            Deletes the states with specified keys (i.e., <paramref name="stateKeys"/>)
-            updated by actions in the specified block (i.e., <paramref name="blockHash"/>).
-            </summary>
-            <param name="blockHash"><see cref="P:Libplanet.Blocks.Block`1.Hash"/> to delete states.
-            </param>
-            <param name="stateKeys">The state keys to delete which were updated by actions
-            in the specified block (i.e., <paramref name="blockHash"/>).
-            </param>
-            <seealso cref="M:Libplanet.Store.DefaultStore.GetBlockStates(Libplanet.HashDigest{System.Security.Cryptography.SHA256})"/>
-        </member>
-        <member name="T:Libplanet.Store.IBlockStatesStore">
-            <summary>
-            An interface to store block states and state references to them.
-            </summary>
-        </member>
-        <member name="M:Libplanet.Store.IBlockStatesStore.ListStateKeys(System.Guid)">
-            <summary>
-            Lists all keys that have ever had states.
-            </summary>
-            <param name="chainId">The ID of the chain to list state keys.</param>
-            <returns>All state keys in an arbitrary order.  The order might
-            be vary for each call.</returns>
-        </member>
-        <member name="M:Libplanet.Store.IBlockStatesStore.ListAllStateReferences(System.Guid,System.Int64,System.Int64)">
-            <summary>
-            Lists all accounts, that have any states, in the given <paramref name="chainId"/> and
-            their state references.
-            </summary>
-            <param name="chainId">The chain ID to look up state references.</param>
-            <param name="lowestIndex">Includes state references only made after the block
-            this argument refers to.</param>
-            <param name="highestIndex">Excludes state references made after the block
-            this argument refers to.</param>
-            <returns>A dictionary of account addresses to lists of their corresponding state
-            references.  Each list of state references is in ascending order, i.e., the block
-            closest to the genesis goes first and the block closest to the tip goes last.</returns>
-        </member>
-        <member name="M:Libplanet.Store.IBlockStatesStore.LookupStateReference(System.Guid,System.String,System.Int64)">
-            <summary>
-            Looks up a state reference, which is a block's <see cref="P:Libplanet.Blocks.Block`1.Hash"/> that contains
-            an action mutating the <paramref name="key"/>'s tate.
-            </summary>
-            <param name="chainId">The chain ID to look up a state reference.</param>
-            <param name="key">The state key to look up.</param>
-            <param name="lookupUntilBlockIndex">The index of the block to stop looking up.</param>
-            <returns>Returns a nullable tuple consisting of <see cref="P:Libplanet.Blocks.Block`1.Hash"/> and
-            <see cref="P:Libplanet.Blocks.Block`1.Index"/> of the <see cref="T:Libplanet.Blocks.Block`1"/> with the state of the
-            address.</returns>
-            <seealso>
-            <cref>
-            IBlockStatesStore.StoreStateReference(Guid,
-            IImmutableSet{string},Libplanet.HashDigest{System.Security.Cryptography.SHA256},long)
-            </cref>
-            </seealso>
-            <seealso cref=
-            "M:Libplanet.Store.IBlockStatesStore.IterateStateReferences(System.Guid,System.String,System.Nullable{System.Int64},System.Nullable{System.Int64},System.Nullable{System.Int32})"/>
-        </member>
-        <member name="M:Libplanet.Store.IBlockStatesStore.IterateStateReferences(System.Guid,System.String,System.Nullable{System.Int64},System.Nullable{System.Int64},System.Nullable{System.Int32})">
-            <summary>
-            Gets pairs of a state reference and a corresponding <see cref="P:Libplanet.Blocks.Block`1.Index"/> of
-            the requested <paramref name="key"/> in the specified <paramref name="chainId"/>.
-            </summary>
-            <param name="chainId">The chain ID.</param>
-            <param name="key">The key to get state references.</param>
-            <param name="highestIndex">The highest index of state references to get. If it is
-            <c>null</c>, it will be the highest index possible.</param>
-            <param name="lowestIndex">The lowest index of state references to get.  If it is
-            <c>null</c>, it will be the lowest index possible.</param>
-            <param name="limit">The maximum number of state references to get.  If it is
-            <c>null</c>, it does not limit the number of state references.</param>
-            <returns><em>Ordered</em> pairs of a state reference and a corresponding
-            <see cref="P:Libplanet.Blocks.Block`1.Index"/>.  The highest index (i.e., the closest to the tip) goes
-            first and the lowest index (i.e., the closest to the genesis) goes last.</returns>
-            <exception cref="T:System.ArgumentException">Thrown when the given
-            <paramref name="highestIndex"/> is less than <paramref name="lowestIndex"/>.</exception>
-            <seealso
-            cref="M:Libplanet.Store.IBlockStatesStore.StoreStateReference(System.Guid,System.Collections.Immutable.IImmutableSet{System.String},Libplanet.HashDigest{System.Security.Cryptography.SHA256},System.Int64)"/>
-        </member>
-        <member name="M:Libplanet.Store.IBlockStatesStore.StoreStateReference(System.Guid,System.Collections.Immutable.IImmutableSet{System.String},Libplanet.HashDigest{System.Security.Cryptography.SHA256},System.Int64)">
-            <summary>
-            Marks the specified <paramref name="keys"/> updated by any action in the specified block
-            (i.e., <paramref name="blockHash"/>).
-            </summary>
-            <param name="chainId">The ID of the chain to store a state reference.</param>
-            <param name="keys">The keys updated by the block.</param>
-            <param name="blockHash">The <see cref="P:Libplanet.Blocks.Block`1.Hash"/> of the block which changes
-            the <paramref name="keys"/>' states.</param>
-            <param name="blockIndex">The block index.</param>
-            <seealso cref="M:Libplanet.Store.IBlockStatesStore.IterateStateReferences(System.Guid,System.String,System.Nullable{System.Int64},System.Nullable{System.Int64},System.Nullable{System.Int32})"/>
-        </member>
-        <member name="M:Libplanet.Store.IBlockStatesStore.ForkStateReferences``1(System.Guid,System.Guid,Libplanet.Blocks.Block{``0})">
-            <summary>
-            Forks state references, which are <see cref="P:Libplanet.Blocks.Block`1.Hash"/>es that
-            have the state of the <see cref="T:Libplanet.Address"/>es, from
-            <paramref name="sourceChainId"/> to <paramref name="destinationChainId"/>.
-            <para>This method copies state references from
-            <paramref name="sourceChainId"/> to <paramref name="destinationChainId"/> and strips
-            state references after <paramref name="branchPoint"/>.</para>
-            </summary>
-            <param name="sourceChainId">The chain ID of state references to fork.</param>
-            <param name="destinationChainId">The new chain ID to have state references.</param>
-            <param name="branchPoint">The branch point <see cref="T:Libplanet.Blocks.Block`1"/>
-            to fork.</param>
-            <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> class used with
-            <paramref name="branchPoint"/>.</typeparam>
-            <exception cref="T:Libplanet.Store.ChainIdNotFoundException">Thrown when the given
-            <paramref name="sourceChainId"/> does not exist.</exception>
-            <seealso cref="M:Libplanet.Store.IBlockStatesStore.IterateStateReferences(System.Guid,System.String,System.Nullable{System.Int64},System.Nullable{System.Int64},System.Nullable{System.Int32})"/>
-            <seealso
-            cref="M:Libplanet.Store.IBlockStatesStore.StoreStateReference(System.Guid,System.Collections.Immutable.IImmutableSet{System.String},Libplanet.HashDigest{System.Security.Cryptography.SHA256},System.Int64)"/>
-        </member>
-        <member name="M:Libplanet.Store.IBlockStatesStore.GetBlockStates(Libplanet.HashDigest{System.Security.Cryptography.SHA256})">
-            <summary>
-            Gets the states updated by actions in the inquired block.
-            </summary>
-            <param name="blockHash"><see cref="P:Libplanet.Blocks.Block`1.Hash"/> to query.
-            </param>
-            <returns>The states updated by actions in the inquired block.
-            If actions definitely do not update any addresses it returns
-            an empty map.  If there is no record for the inquired block
-            (because actions in it have never been evaluated yet) it returns
-            <c>null</c> instead.
-            </returns>
-            <remarks>It does not return all states built up from the genesis
-            block nor delta, but only dirty states by actions the inquired
-            block.
-            <para>For example, if actions in the genesis block do
-            <c>a++; b++</c>, /// and actions in the second block do
-            <c>b++; c++</c>, this method /// for the second block returns
-            <c>b = 2; c = 1</c> (dirty), not
-            <c>a = 1; b = 2; c = 1</c> (all states) nor
-            <c>b = 1; c = 1</c> (delta).</para>
-            </remarks>
-            <seealso cref="M:Libplanet.Store.IBlockStatesStore.SetBlockStates(Libplanet.HashDigest{System.Security.Cryptography.SHA256},System.Collections.Immutable.IImmutableDictionary{System.String,Bencodex.Types.IValue})"/>
-        </member>
-        <member name="M:Libplanet.Store.IBlockStatesStore.SetBlockStates(Libplanet.HashDigest{System.Security.Cryptography.SHA256},System.Collections.Immutable.IImmutableDictionary{System.String,Bencodex.Types.IValue})">
-            <summary>
-            Sets the states updated by actions in the specified block
-            (i.e., <paramref name="blockHash"/>).
-            </summary>
-            <param name="blockHash"><see cref="P:Libplanet.Blocks.Block`1.Hash"/> to update states.
-            </param>
-            <param name="states">The states updated by actions in the specified block
-            (i.e., <paramref name="blockHash"/>).
-            </param>
-            <seealso cref="M:Libplanet.Store.IBlockStatesStore.GetBlockStates(Libplanet.HashDigest{System.Security.Cryptography.SHA256})"/>
-        </member>
-        <member name="M:Libplanet.Store.IBlockStatesStore.PruneBlockStates``1(System.Guid,Libplanet.Blocks.Block{``0})">
-            <summary>
-            Prunes states in blockchain <paramref name="chainId"/> with until specified block
-            <paramref name="until"/>.
-            </summary>
-            <param name="chainId">The chain ID to prune block states.</param>
-            <param name="until">The upper bound block to prune states.</param>
-            <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> class used with
-            <paramref name="until"/>.</typeparam>
         </member>
         <member name="T:Libplanet.Store.IStateStore">
             <summary>
@@ -6796,7 +6794,8 @@
             <summary>
             Iterates staged <see cref="T:Libplanet.Tx.TxId"/>s.
             </summary>
-            <returns>Staged <see cref="T:Libplanet.Tx.TxId"/>s.</returns>
+            <returns>Staged <see cref="T:Libplanet.Tx.TxId"/>s.  The earliest staged <see cref="T:Libplanet.Tx.TxId"/> goes first,
+            and the latest staged <see cref="T:Libplanet.Tx.TxId"/> goes last.</returns>
         </member>
         <member name="M:Libplanet.Store.IStore.PutTransaction``1(Libplanet.Tx.Transaction{``0})">
             <summary>
@@ -6937,6 +6936,44 @@
         </member>
         <member name="M:Libplanet.Store.StoreExtensions.NullAction.LoadPlainValue(Bencodex.Types.IValue)">
             <inheritdoc/>
+        </member>
+        <member name="T:Libplanet.Store.TrieStateStore">
+            <summary>
+            An <see cref="T:Libplanet.Store.IStateStore"/> implementation. It stores states with <see cref="T:Libplanet.Store.Trie.MerkleTrie"/>.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Store.TrieStateStore.#ctor(Libplanet.Store.Trie.IKeyValueStore,Libplanet.Store.Trie.IKeyValueStore,System.Boolean)">
+            <summary>
+            Creates a new <see cref="T:Libplanet.Store.TrieStateStore"/>.
+            </summary>
+            <param name="stateKeyValueStore">The storage to store states. It used by
+            <see cref="T:Libplanet.Store.Trie.MerkleTrie"/> in internal.</param>
+            <param name="stateHashKeyValueStore">The storage to store state hash corresponding to
+            block hash.</param>
+            <param name="secure">Whether to use <see cref="T:Libplanet.Store.Trie.MerkleTrie"/> in secure mode.
+            <seealso cref="M:Libplanet.Store.Trie.MerkleTrie.#ctor(Libplanet.Store.Trie.IKeyValueStore,Libplanet.Store.Trie.Nodes.INode,System.Boolean)"/>.</param>
+        </member>
+        <member name="M:Libplanet.Store.TrieStateStore.SetStates``1(Libplanet.Blocks.Block{``0},System.Collections.Immutable.IImmutableDictionary{System.String,Bencodex.Types.IValue})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Store.TrieStateStore.GetState(System.String,System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}},System.Nullable{System.Guid})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Store.TrieStateStore.ContainsBlockStates(Libplanet.HashDigest{System.Security.Cryptography.SHA256})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Store.TrieStateStore.ForkStates``1(System.Guid,System.Guid,Libplanet.Blocks.Block{``0})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Store.TrieStateStore.GetRootHash(Libplanet.HashDigest{System.Security.Cryptography.SHA256})">
+            <summary>
+            Gets the state hash corresponds to <paramref name="blockHash"/>.
+            </summary>
+            <param name="blockHash">The <see cref="P:Libplanet.Blocks.Block`1.Hash"/> to get state hash.</param>
+            <returns>If there is a state hash corresponds to <paramref name="blockHash"/>,
+            it will return the state hash. If not, it will return null.</returns>
+            <exception cref="T:System.Collections.Generic.KeyNotFoundException">If there are no root hashes that correspond to
+            <paramref name="blockHash"/>.</exception>
         </member>
         <member name="T:Libplanet.Store.Trie.CacheableKeyValueStore">
             <summary>
@@ -7132,44 +7169,6 @@
             <summary>
             Wrapper class.
             </summary>
-        </member>
-        <member name="T:Libplanet.Store.TrieStateStore">
-            <summary>
-            An <see cref="T:Libplanet.Store.IStateStore"/> implementation. It stores states with <see cref="T:Libplanet.Store.Trie.MerkleTrie"/>.
-            </summary>
-        </member>
-        <member name="M:Libplanet.Store.TrieStateStore.#ctor(Libplanet.Store.Trie.IKeyValueStore,Libplanet.Store.Trie.IKeyValueStore,System.Boolean)">
-            <summary>
-            Creates a new <see cref="T:Libplanet.Store.TrieStateStore"/>.
-            </summary>
-            <param name="stateKeyValueStore">The storage to store states. It used by
-            <see cref="T:Libplanet.Store.Trie.MerkleTrie"/> in internal.</param>
-            <param name="stateHashKeyValueStore">The storage to store state hash corresponding to
-            block hash.</param>
-            <param name="secure">Whether to use <see cref="T:Libplanet.Store.Trie.MerkleTrie"/> in secure mode.
-            <seealso cref="M:Libplanet.Store.Trie.MerkleTrie.#ctor(Libplanet.Store.Trie.IKeyValueStore,Libplanet.Store.Trie.Nodes.INode,System.Boolean)"/>.</param>
-        </member>
-        <member name="M:Libplanet.Store.TrieStateStore.SetStates``1(Libplanet.Blocks.Block{``0},System.Collections.Immutable.IImmutableDictionary{System.String,Bencodex.Types.IValue})">
-            <inheritdoc/>
-        </member>
-        <member name="M:Libplanet.Store.TrieStateStore.GetState(System.String,System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}},System.Nullable{System.Guid})">
-            <inheritdoc/>
-        </member>
-        <member name="M:Libplanet.Store.TrieStateStore.ContainsBlockStates(Libplanet.HashDigest{System.Security.Cryptography.SHA256})">
-            <inheritdoc/>
-        </member>
-        <member name="M:Libplanet.Store.TrieStateStore.ForkStates``1(System.Guid,System.Guid,Libplanet.Blocks.Block{``0})">
-            <inheritdoc/>
-        </member>
-        <member name="M:Libplanet.Store.TrieStateStore.GetRootHash(Libplanet.HashDigest{System.Security.Cryptography.SHA256})">
-            <summary>
-            Gets the state hash corresponds to <paramref name="blockHash"/>.
-            </summary>
-            <param name="blockHash">The <see cref="P:Libplanet.Blocks.Block`1.Hash"/> to get state hash.</param>
-            <returns>If there is a state hash corresponds to <paramref name="blockHash"/>,
-            it will return the state hash. If not, it will return null.</returns>
-            <exception cref="T:System.Collections.Generic.KeyNotFoundException">If there are no root hashes that correspond to
-            <paramref name="blockHash"/>.</exception>
         </member>
         <member name="T:Libplanet.Tx.InvalidTxException">
             <summary>
