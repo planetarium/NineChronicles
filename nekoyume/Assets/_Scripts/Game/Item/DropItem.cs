@@ -69,7 +69,7 @@ namespace Nekoyume.Game.Item
 
         private IEnumerator CoPlay()
         {
-            var game = Game.instance;
+            var stageConfig = StageConfig.instance;
             dropItemVfx.Stop();
             var pos = transform.position;
             var color = _renderer.color;
@@ -77,17 +77,17 @@ namespace Nekoyume.Game.Item
             _renderer.color = color;
             _renderer.sortingOrder = SortOrder;
 
-            _tweenFade = _renderer.DOFade(1f, game.droopItemOptions.fadeInTime);
-            _sequenceDrop = transform.DOJump(pos + DropAmount, DropJumpPower, 1, game.droopItemOptions.dropTime);
+            _tweenFade = _renderer.DOFade(1f, stageConfig.droopItemOptions.fadeInTime);
+            _sequenceDrop = transform.DOJump(pos + DropAmount, DropJumpPower, 1, stageConfig.droopItemOptions.dropTime);
 
             var scale = transform.localScale;
-            transform.DOScale(scale * 1.8f, game.droopItemOptions.scaleUpTime);
+            transform.DOScale(scale * 1.8f, stageConfig.droopItemOptions.scaleUpTime);
             yield return new WaitWhile(_sequenceDrop.IsPlaying);
             dropItemVfx.Play();
 
             yield return new WaitForSeconds(
-                Mathf.Max(game.droopItemOptions.fadeInTime, game.droopItemOptions.dropTime) + game.droopItemOptions.endDelay);
-            transform.DOScale(scale, game.droopItemOptions.scaleOutTime);
+                Mathf.Max(stageConfig.droopItemOptions.fadeInTime, stageConfig.droopItemOptions.dropTime) + stageConfig.droopItemOptions.endDelay);
+            transform.DOScale(scale, stageConfig.droopItemOptions.scaleOutTime);
 
             while (true)
             {
