@@ -172,6 +172,15 @@ MonoBehaviour:
   useSystemLanguage: 1
   languageType: 0
   prologue: {fileID: 76870001}
+  actionDelay: 0.5
+  stageEnterDelay: 2
+  spawnWaveDelay: 0.3
+  droopItemOptions:
+    fadeInTime: 0.3
+    dropTime: 0.3
+    endDelay: 0.2
+    scaleUpTime: 1
+    scaleOutTime: 1
 --- !u!114 &76869999
 MonoBehaviour:
   m_ObjectHideFlags: 0
