@@ -212,7 +212,7 @@ namespace Nekoyume.UI
         public void SetWindowed(bool value)
         {
             var settings = Nekoyume.Settings.Instance;
-            settings.isWindowed = value;
+            settings.isWindowed = !value;
             settings.ApplyCurrentResolution();
         }
 
