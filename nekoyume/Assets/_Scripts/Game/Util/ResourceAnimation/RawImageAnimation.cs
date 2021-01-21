@@ -13,7 +13,6 @@ namespace Nekoyume.Game.Util
 
         protected override void Init()
         {
-            Animation
             if (!frames.Any())
             {
                 Debug.LogError("frames list is empty. Fill in the frames.");
