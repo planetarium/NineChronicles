@@ -5,6 +5,7 @@ on:
     - 9c-beta-*
     - 9c-main
     - master
+    - development
     tags: ['*']
   pull_request:
     branches:
@@ -12,6 +13,7 @@ on:
       - 9c-beta-*
       - 9c-main
       - master
+      - development
 
 name: Pack
 
