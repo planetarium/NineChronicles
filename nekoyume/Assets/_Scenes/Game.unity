@@ -172,6 +172,15 @@ MonoBehaviour:
   useSystemLanguage: 1
   languageType: 0
   prologue: {fileID: 76870001}
+  actionDelay: 0.5
+  stageEnterDelay: 2
+  spawnWaveDelay: 0.3
+  droopItemOptions:
+    fadeInTime: 0.3
+    dropTime: 0.3
+    endDelay: 0.2
+    scaleUpTime: 1
+    scaleOutTime: 1
 --- !u!114 &76869999
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -834,6 +843,7 @@ GameObject:
   - component: {fileID: 1333831685}
   - component: {fileID: 1333831686}
   - component: {fileID: 1333831690}
+  - component: {fileID: 1333831688}
   m_Layer: 0
   m_Name: Stage
   m_TagString: Untagged
@@ -1144,6 +1154,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7178cbccce1e6b84a935da57b2ad1039, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1333831688
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1333831681}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 60daac9ba8603a349a49a1a220a9420a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  actionDelay: 0.1
+  stageEnterDelay: 2
+  spawnWaveDelay: 0.3
+  droopItemOptions:
+    fadeInTime: 0.3
+    dropTime: 0.3
+    endDelay: 0.2
+    scaleUpTime: 1
+    scaleOutTime: 1
 --- !u!114 &1333831690
 MonoBehaviour:
   m_ObjectHideFlags: 0
