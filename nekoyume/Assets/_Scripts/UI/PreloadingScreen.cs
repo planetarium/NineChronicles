@@ -1,16 +1,29 @@
+using Libplanet;
 using Nekoyume.Game.Factory;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+using UnityEngine.Video;
 
 namespace Nekoyume.UI
 {
     public class PreloadingScreen : LoadingScreen
     {
+        [SerializeField]
+        private VideoPlayer videoPlayer;
+
+        [SerializeField]
+        private VideoClip showClip;
+
+        [SerializeField]
+        private VideoClip loopClip;
 
         protected override void Awake()
         {
             base.Awake();
             indicator.Close();
+            videoPlayer.clip = showClip;
+            videoPlayer.Prepare();
         }
 
         public override void Show(bool ignoreShowAnimation = false)
@@ -20,10 +33,14 @@ namespace Nekoyume.UI
             {
                 indicator.Show(Message);
             }
+
+            videoPlayer.Play();
+            videoPlayer.loopPointReached += OnShowVideoEnded;
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
         {
+            videoPlayer.Stop();
             if (!GameConfig.IsEditor)
             {
                 Find<Synopsis>().Show();
@@ -34,17 +51,27 @@ namespace Nekoyume.UI
 
                 if (PlayerPrefs.HasKey(LoginDetail.RecentlyLoggedInAvatarKey))
                 {
-                    var index = PlayerPrefs.GetInt(LoginDetail.RecentlyLoggedInAvatarKey);
+                    var recentlyLoggedAddress = PlayerPrefs.GetString(LoginDetail.RecentlyLoggedInAvatarKey);
+                    var matchingAddress = State.States.Instance.AgentState.avatarAddresses
+                        .FirstOrDefault(pair => pair.Value.ToString().Equals(recentlyLoggedAddress));
+                    var index = matchingAddress.Equals(default(KeyValuePair<int, Address>)) ? -1 : matchingAddress.Key;
 
-                    try
+                    if (index == -1)
                     {
-                        State.States.Instance.SelectAvatar(index);
-                        Game.Event.OnRoomEnter.Invoke(false);
-                    }
-                    catch (KeyNotFoundException e)
-                    {
-                        Debug.LogWarning(e.Message);
                         EnterLogin();
+                    }
+                    else
+                    {
+                        try
+                        {
+                            State.States.Instance.SelectAvatar(index);
+                            Game.Event.OnRoomEnter.Invoke(false);
+                        }
+                        catch (KeyNotFoundException e)
+                        {
+                            Debug.LogWarning(e.Message);
+                            EnterLogin();
+                        }
                     }
                 }
                 else
@@ -61,6 +88,14 @@ namespace Nekoyume.UI
         {
             Find<Login>().Show();
             Game.Event.OnNestEnter.Invoke();
+        }
+
+        private void OnShowVideoEnded(VideoPlayer player)
+        {
+            player.loopPointReached -= OnShowVideoEnded;
+            videoPlayer.clip = loopClip;
+            player.isLooping = true;
+            videoPlayer.Play();
         }
     }
 }

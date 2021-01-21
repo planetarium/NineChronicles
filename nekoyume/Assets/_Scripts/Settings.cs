@@ -20,12 +20,12 @@ namespace Nekoyume
         public float volumeMaster;
         public float volumeMusic;
         public float volumeSfx;
-        public int resolutionIndex;
+        public int resolutionIndex = 0;
 
         public bool isVolumeMasterMuted;
         public bool isVolumeMusicMuted;
         public bool isVolumeSfxMuted;
-        public bool isWindowed;
+        public bool isWindowed = true;
 
         public class Resolution
         {
