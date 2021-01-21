@@ -110,7 +110,7 @@ namespace Nekoyume.UI
 
             volumeMasterSlider.value = settings.volumeMaster;
             volumeMasterToggle.isOn = settings.isVolumeMasterMuted;
-            windowedToggle.isOn = settings.isWindowed;
+            windowedToggle.isOn = !settings.isWindowed;
 
             base.Show(ignoreStartAnimation);
 
