@@ -172,15 +172,6 @@ MonoBehaviour:
   useSystemLanguage: 1
   languageType: 0
   prologue: {fileID: 76870001}
-  actionDelay: 0.5
-  stageEnterDelay: 2
-  spawnWaveDelay: 0.3
-  droopItemOptions:
-    fadeInTime: 0.3
-    dropTime: 0.3
-    endDelay: 0.2
-    scaleUpTime: 1
-    scaleOutTime: 1
 --- !u!114 &76869999
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1295,10 +1286,10 @@ RectTransform:
   m_Father: {fileID: 937548774}
   m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 100, y: 100}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1574399857
 MonoBehaviour:
