@@ -21,7 +21,7 @@ namespace Nekoyume.UI
         {
             base.Awake();
 
-            if(L10nManager.CurrentState == L10nManager.State.Initialized)
+            if (L10nManager.CurrentState == L10nManager.State.Initialized)
             {
                 var message = L10nManager.Localize("BLOCK_CHAIN_MINING_TX") + "...";
                 indicator.UpdateMessage(message);
