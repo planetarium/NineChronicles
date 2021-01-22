@@ -134,10 +134,10 @@ namespace Nekoyume.UI
             _layers = _layers.OrderBy(layer => layer.root.sortingOrder).ToList();
         }
 
-        public void InitializeTitle()
+        public void InitializeIntro()
         {
-            var title = Widget.Create<Title>(true);
-            title.Initialize();
+            var intro = Widget.Create<Intro>(true);
+            intro.Initialize();
 
             UpdateLayers();
         }
@@ -147,6 +147,7 @@ namespace Nekoyume.UI
             var firstWidgets = new List<Widget>
             {
                 // 스크린 영역. 로딩창류.
+                Widget.Create<Title>(),
                 Widget.Create<GrayLoadingScreen>(),
                 Widget.Create<BlockSyncLoadingScreen>(),
                 Widget.Create<StageLoadingScreen>(),

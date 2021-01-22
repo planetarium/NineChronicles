@@ -111,7 +111,7 @@ namespace Nekoyume.Game
 
             States = new States();
             LocalLayer = new LocalLayer();
-            MainCanvas.instance.InitializeTitle();
+            MainCanvas.instance.InitializeIntro();
 
 #if !UNITY_EDITOR
             var c = new CognitoAWSCredentials("ap-northeast-2:6fea0e84-a609-4774-a407-c63de9dbea7b",
@@ -136,7 +136,8 @@ namespace Nekoyume.Game
             yield return L10nManager.Initialize(LanguageTypeMapper.ISO396(_options.Language)).ToYieldInstruction();
 #endif
 
-            Widget.Find<Title>().ShowLocalizedObjects();
+            // Widget.Find<Title>().ShowLocalizedObjects();
+            // UI 초기화 1차.
             MainCanvas.instance.InitializeFirst();
             yield return Addressables.InitializeAsync();
             yield return StartCoroutine(CoInitializeTableSheets());
@@ -211,8 +212,8 @@ namespace Nekoyume.Game
 
         private static void OnRPCAgentRetryAndPreloadEnded(RPCAgent rpcAgent)
         {
-            var widget = (Widget) Widget.Find<Title>();
-            if (widget.IsActive())
+            if (Widget.Find<Intro>().IsActive() ||
+                Widget.Find<Title>().IsActive())
             {
                 // NOTE: 타이틀 화면에서 리트라이와 프리로드가 완료된 상황입니다.
                 // FIXME: 이 경우에는 메인 로비가 아니라 기존 초기화 로직이 흐르도록 처리해야 합니다.
@@ -221,7 +222,7 @@ namespace Nekoyume.Game
 
             var needToBackToMain = false;
             var showLoadingScreen = false;
-            widget = Widget.Find<BlockSyncLoadingScreen>();
+            var widget = (Widget) Widget.Find<BlockSyncLoadingScreen>();
             if (widget.IsActive())
             {
                 widget.Close();
@@ -478,10 +479,10 @@ namespace Nekoyume.Game
             }
             else
             {
-                var title = Widget.Find<Title>();
-                title.Show(_options.KeyStorePath, _options.PrivateKey);
+                var intro = Widget.Find<Intro>();
+                intro.Show(_options.KeyStorePath, _options.PrivateKey);
                 yield return new WaitUntil(() => loginPopup.Login);
-                title.Close();
+                intro.Close();
             }
 
             Agent.Initialize(
