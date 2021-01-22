@@ -147,7 +147,6 @@ namespace Nekoyume.UI
             var firstWidgets = new List<Widget>
             {
                 // 스크린 영역. 로딩창류.
-                Widget.Create<Title>(),
                 Widget.Create<GrayLoadingScreen>(),
                 Widget.Create<BlockSyncLoadingScreen>(),
                 Widget.Create<StageLoadingScreen>(),

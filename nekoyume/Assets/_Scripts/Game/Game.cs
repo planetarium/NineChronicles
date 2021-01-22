@@ -136,7 +136,6 @@ namespace Nekoyume.Game
             yield return L10nManager.Initialize(LanguageTypeMapper.ISO396(_options.Language)).ToYieldInstruction();
 #endif
 
-            // Widget.Find<Title>().ShowLocalizedObjects();
             // UI 초기화 1차.
             MainCanvas.instance.InitializeFirst();
             yield return Addressables.InitializeAsync();
@@ -212,8 +211,8 @@ namespace Nekoyume.Game
 
         private static void OnRPCAgentRetryAndPreloadEnded(RPCAgent rpcAgent)
         {
-            if (Widget.Find<Intro>().IsActive() ||
-                Widget.Find<Title>().IsActive())
+            if (Widget.Find<Intro>().IsActive()/* ||
+                Widget.Find<Title>().IsActive()*/)
             {
                 // NOTE: 타이틀 화면에서 리트라이와 프리로드가 완료된 상황입니다.
                 // FIXME: 이 경우에는 메인 로비가 아니라 기존 초기화 로직이 흐르도록 처리해야 합니다.
@@ -357,12 +356,21 @@ namespace Nekoyume.Game
             IsInitialized = true;
             if (succeed)
             {
-                Widget.Find<PreloadingScreen>().Close();
+                var intro = Widget.Find<Intro>();
+                intro.Close();
+                Widget.Find<PreloadingScreen>().Show();
+                StartCoroutine(ClosePreloadingScene(4));
             }
             else
             {
                 QuitWithAgentConnectionError(null);
             }
+        }
+
+        private IEnumerator ClosePreloadingScene(float time)
+        {
+            yield return new WaitForSeconds(time);
+            Widget.Find<PreloadingScreen>().Close();
         }
 
         #endregion
@@ -482,7 +490,6 @@ namespace Nekoyume.Game
                 var intro = Widget.Find<Intro>();
                 intro.Show(_options.KeyStorePath, _options.PrivateKey);
                 yield return new WaitUntil(() => loginPopup.Login);
-                intro.Close();
             }
 
             Agent.Initialize(
