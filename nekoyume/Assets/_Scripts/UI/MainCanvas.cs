@@ -134,10 +134,10 @@ namespace Nekoyume.UI
             _layers = _layers.OrderBy(layer => layer.root.sortingOrder).ToList();
         }
 
-        public void InitializeTitle()
+        public void InitializeIntro()
         {
-            var title = Widget.Create<Title>(true);
-            title.Initialize();
+            var intro = Widget.Create<Intro>(true);
+            intro.Initialize();
 
             UpdateLayers();
         }

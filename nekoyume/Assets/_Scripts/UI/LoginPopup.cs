@@ -320,7 +320,6 @@ namespace Nekoyume.UI
 
         public void Show(string path, string privateKeyString)
         {
-
             KeyStore = path is null ? Web3KeyStore.DefaultKeyStore : new Web3KeyStore(path);
             _privateKeyString = privateKeyString;
             //Auto login for miner, seed, launcher
