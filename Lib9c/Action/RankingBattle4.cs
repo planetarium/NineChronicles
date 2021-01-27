@@ -1,12 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
+using Libplanet.Assets;
 using Nekoyume.Battle;
 using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.State;
@@ -16,8 +16,8 @@ using Serilog;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("ranking_battle4")]
-    public class RankingBattle : GameAction
+    [ActionType("ranking_battle")]
+    public class RankingBattle4 : GameAction
     {
         public const int StageId = 999999;
         public static readonly BigInteger EntranceFee = 100;
@@ -25,7 +25,7 @@ namespace Nekoyume.Action
         public Address AvatarAddress;
         public Address EnemyAddress;
         public Address WeeklyArenaAddress;
-        public List<Guid> costumeIds;
+        public List<int> costumeIds;
         public List<Guid> equipmentIds;
         public List<Guid> consumableIds;
         public BattleLog Result { get; private set; }
@@ -43,44 +43,26 @@ namespace Nekoyume.Action
                     .MarkBalanceChanged(GoldCurrencyMock, ctx.Signer, WeeklyArenaAddress);
             }
 
-            var sw = new Stopwatch();
-            sw.Start();
-            var started = DateTimeOffset.UtcNow;
-            Log.Debug(
-                "RankingBattle exec started. costume: ({CostumeIds}), equipment: ({EquipmentIds})",
-                string.Join(",", costumeIds),
-                string.Join(",", equipmentIds)
-            );
-
+            Log.Warning($"{nameof(RankingBattle)} is deprecated. Please use ${nameof(RankingBattle2)}");
             if (AvatarAddress.Equals(EnemyAddress))
             {
                 throw new InvalidAddressException("Aborted as the signer tried to battle for themselves.");
             }
 
-            if (!states.TryGetAvatarState(ctx.Signer, AvatarAddress, out var avatarState))
+            if (!states.TryGetAgentAvatarStates(
+                ctx.Signer,
+                AvatarAddress,
+                out var agentState,
+                out var avatarState))
             {
                 throw new FailedLoadStateException("Aborted as the avatar state of the signer was failed to load.");
             }
 
-            sw.Stop();
-            Log.Debug("RankingBattle Get AgentAvatarStates: {Elapsed}", sw.Elapsed);
-            sw.Restart();
+            var costumes = new HashSet<int>(costumeIds);
 
-            var items = equipmentIds.Concat(costumeIds);
-
-            avatarState.ValidateEquipmentsV2(equipmentIds, context.BlockIndex);
+            avatarState.ValidateEquipments(equipmentIds, context.BlockIndex);
             avatarState.ValidateConsumable(consumableIds, context.BlockIndex);
-            avatarState.ValidateCostume(costumeIds);
-
-            sw.Stop();
-            Log.Debug("RankingBattle Validate Equipments: {Elapsed}", sw.Elapsed);
-            sw.Restart();
-
-            avatarState.EquipItems(items);
-
-            sw.Stop();
-            Log.Debug("RankingBattle Equip Equipments: {Elapsed}", sw.Elapsed);
-            sw.Restart();
+            avatarState.ValidateCostume(costumes);
 
             if (!avatarState.worldInformation.TryGetUnlockedWorldByStageClearedBlockIndex(out var world) ||
                 world.StageClearedId < GameConfig.RequireClearedStageLevel.ActionsInRankingBoard)
@@ -90,40 +72,25 @@ namespace Nekoyume.Action
                     world.StageClearedId);
             }
 
+            avatarState.EquipCostumes(costumes);
+            avatarState.EquipEquipments(equipmentIds);
+
             var enemyAvatarState = states.GetAvatarState(EnemyAddress);
             if (enemyAvatarState is null)
             {
                 throw new FailedLoadStateException($"Aborted as the avatar state of the opponent ({EnemyAddress}) was failed to load.");
             }
 
-            sw.Stop();
-            Log.Debug("RankingBattle Get Enemy AvatarState: {Elapsed}", sw.Elapsed);
-            sw.Restart();
-
             var weeklyArenaState = states.GetWeeklyArenaState(WeeklyArenaAddress);
-
-            sw.Stop();
-            Log.Debug("RankingBattle Get WeeklyArenaState ({Address}): {Elapsed}", WeeklyArenaAddress, sw.Elapsed);
-            sw.Restart();
 
             if (weeklyArenaState.Ended)
             {
                 throw new WeeklyArenaStateAlreadyEndedException();
             }
 
-            var costumeStatSheet = states.GetSheet<CostumeStatSheet>();
-
-            sw.Stop();
-            Log.Debug("RankingBattle Get CostumeStatSheet: {Elapsed}", sw.Elapsed);
-            sw.Restart();
-
             if (!weeklyArenaState.ContainsKey(AvatarAddress))
             {
-                var characterSheet = states.GetSheet<CharacterSheet>();
-                weeklyArenaState.SetV2(avatarState, characterSheet, costumeStatSheet);
-                sw.Stop();
-                Log.Debug("RankingBattle Set AvatarInfo: {Elapsed}", sw.Elapsed);
-                sw.Restart();
+                throw new WeeklyArenaStateNotContainsAvatarAddressException(AvatarAddress);
             }
 
             var arenaInfo = weeklyArenaState[AvatarAddress];
@@ -135,7 +102,33 @@ namespace Nekoyume.Action
 
             if (!arenaInfo.Active)
             {
-                arenaInfo.Activate();
+                FungibleAssetValue agentBalance = default;
+                try
+                {
+                    agentBalance = states.GetBalance(ctx.Signer, states.GetGoldCurrency());
+                }
+                catch (InvalidOperationException)
+                {
+                    throw new NotEnoughFungibleAssetValueException(EntranceFee, agentBalance);
+                }
+
+                if (agentBalance >= new FungibleAssetValue(agentBalance.Currency, EntranceFee, 0))
+                {
+                    states = states.TransferAsset(
+                        ctx.Signer,
+                        WeeklyArenaAddress,
+                        new FungibleAssetValue(
+                            states.GetGoldCurrency(),
+                            EntranceFee,
+                            0
+                        )
+                    );
+                    arenaInfo.Activate();
+                }
+                else
+                {
+                    throw new NotEnoughFungibleAssetValueException(EntranceFee, agentBalance);
+                }
             }
 
             if (!weeklyArenaState.ContainsKey(EnemyAddress))
@@ -145,10 +138,6 @@ namespace Nekoyume.Action
 
             Log.Debug(weeklyArenaState.address.ToHex());
 
-            sw.Stop();
-            Log.Debug("RankingBattle Validate ArenaInfo: {Elapsed}", sw.Elapsed);
-            sw.Restart();
-
             var simulator = new RankingSimulator(
                 ctx.Random,
                 avatarState,
@@ -157,50 +146,21 @@ namespace Nekoyume.Action
                 states.GetRankingSimulatorSheets(),
                 StageId,
                 arenaInfo,
-                weeklyArenaState[EnemyAddress],
-                costumeStatSheet);
+                weeklyArenaState[EnemyAddress]);
 
-            simulator.SimulateV2();
-
-            sw.Stop();
-            Log.Debug(
-                "RankingBattle Simulate() with equipment:({Equipment}), costume:({Costume}): {Elapsed}",
-                string.Join(",", simulator.Player.Equipments.Select(r => r.ItemId)),
-                string.Join(",", simulator.Player.Costumes.Select(r => r.ItemId)),
-                sw.Elapsed
-            );
-
-            Log.Debug(
-                "Execute RankingBattle({AvatarAddress}); result: {Result} event count: {EventCount}",
-                AvatarAddress,
-                simulator.Log.result,
-                simulator.Log.Count
-            );
-            sw.Restart();
+            simulator.Simulate();
 
             Result = simulator.Log;
 
             foreach (var itemBase in simulator.Reward.OrderBy(i => i.Id))
             {
-                Log.Debug($"RankingBattle Add Reward Item({itemBase.Id}): {{Elapsed}}", sw.Elapsed);
                 avatarState.inventory.AddItem(itemBase);
             }
 
-            states = states.SetState(WeeklyArenaAddress, weeklyArenaState.Serialize());
-
-            sw.Stop();
-            Log.Debug("RankingBattle Serialize WeeklyArenaState: {Elapsed}", sw.Elapsed);
-            sw.Restart();
-
-            states = states.SetState(AvatarAddress, avatarState.Serialize());
-
-            sw.Stop();
-            Log.Debug("RankingBattle Serialize AvatarState: {Elapsed}", sw.Elapsed);
-            sw.Restart();
-
-            var ended = DateTimeOffset.UtcNow;
-            Log.Debug("RankingBattle Total Executed Time: {Elapsed}", ended - started);
-            return states;
+            return states
+                .SetState(ctx.Signer, agentState.Serialize())
+                .SetState(WeeklyArenaAddress, weeklyArenaState.Serialize())
+                .SetState(AvatarAddress, avatarState.Serialize());
         }
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
@@ -209,13 +169,13 @@ namespace Nekoyume.Action
                 ["avatarAddress"] = AvatarAddress.Serialize(),
                 ["enemyAddress"] = EnemyAddress.Serialize(),
                 ["weeklyArenaAddress"] = WeeklyArenaAddress.Serialize(),
-                ["costume_ids"] = new List(costumeIds
+                ["costume_ids"] = new Bencodex.Types.List(costumeIds
                     .OrderBy(element => element)
                     .Select(e => e.Serialize())),
-                ["equipment_ids"] = new List(equipmentIds
+                ["equipment_ids"] = new Bencodex.Types.List(equipmentIds
                     .OrderBy(element => element)
                     .Select(e => e.Serialize())),
-                ["consumable_ids"] = new List(consumableIds
+                ["consumable_ids"] = new Bencodex.Types.List(consumableIds
                     .OrderBy(element => element)
                     .Select(e => e.Serialize())),
             }.ToImmutableDictionary();
@@ -225,13 +185,13 @@ namespace Nekoyume.Action
             AvatarAddress = plainValue["avatarAddress"].ToAddress();
             EnemyAddress = plainValue["enemyAddress"].ToAddress();
             WeeklyArenaAddress = plainValue["weeklyArenaAddress"].ToAddress();
-            costumeIds = ((List) plainValue["costume_ids"])
+            costumeIds = ((Bencodex.Types.List) plainValue["costume_ids"])
+                .Select(e => e.ToInteger())
+                .ToList();
+            equipmentIds = ((Bencodex.Types.List) plainValue["equipment_ids"])
                 .Select(e => e.ToGuid())
                 .ToList();
-            equipmentIds = ((List) plainValue["equipment_ids"])
-                .Select(e => e.ToGuid())
-                .ToList();
-            consumableIds = ((List) plainValue["consumable_ids"])
+            consumableIds = ((Bencodex.Types.List) plainValue["consumable_ids"])
                 .Select(e => e.ToGuid())
                 .ToList();
         }
