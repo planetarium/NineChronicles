@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 866de5792f341d54d8e3b55427645926, type: 3}
+  m_Name: ExampleShakeLibrary
+  m_EditorClassIdentifier: 
+  ShakePresets:
+  - Name: LightPos
+    xPosStrength: 2
+    yPosStrength: 2
+    RotationStrength: 0
+    ScaleStrength: 0
+  - Name: LightRot
+    xPosStrength: 0
+    yPosStrength: 0
+    RotationStrength: 15
+    ScaleStrength: 0
+  - Name: FullShake
+    xPosStrength: 3
+    yPosStrength: 3
+    RotationStrength: 20
+    ScaleStrength: 0.3
