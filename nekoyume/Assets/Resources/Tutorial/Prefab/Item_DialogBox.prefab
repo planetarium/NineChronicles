@@ -104,6 +104,7 @@ GameObject:
   - component: {fileID: 1663384627934151658}
   - component: {fileID: 4060915641596397121}
   - component: {fileID: 1877874957201169479}
+  - component: {fileID: 6251578640505393682}
   m_Layer: 0
   m_Name: Item_DialogBox
   m_TagString: Untagged
@@ -200,6 +201,18 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
+--- !u!114 &6251578640505393682
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1645245565840714868}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bc0bb2828e6f4b6f82308b85a83887c2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1933938570593556632
 GameObject:
   m_ObjectHideFlags: 0
@@ -616,7 +629,7 @@ MonoBehaviour:
   m_outlineColor:
     serializedVersion: 2
     rgba: 4278190080
-  m_fontSize: 21.1
+  m_fontSize: 24
   m_fontSizeBase: 22
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -657,10 +670,10 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_textInfo:
     textComponent: {fileID: 5111392007820844266}
-    characterCount: 55
+    characterCount: 23
     spriteCount: 0
-    spaceCount: 5
-    wordCount: 9
+    spaceCount: 1
+    wordCount: 5
     linkCount: 0
     lineCount: 2
     pageCount: 1
