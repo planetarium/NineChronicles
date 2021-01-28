@@ -80,42 +80,44 @@ namespace Nekoyume.Action
                     .SetState(Addresses.Ranking, MarkChanged)
                     .MarkBalanceChanged(GoldCurrencyMock, GoldCurrencyState.Address, context.Signer);
             }
+            
+            var addressesHex = GetSignerAndStateAddressesHex(context);
 
             if (!Regex.IsMatch(name, GameConfig.AvatarNickNamePattern))
             {
                 throw new InvalidNamePatternException(
-                    $"Aborted as the input name {name} does not follow the allowed name pattern.");
+                    $"{addressesHex}Aborted as the input name {name} does not follow the allowed name pattern.");
             }
 
             var sw = new Stopwatch();
             sw.Start();
             var started = DateTimeOffset.UtcNow;
-            Log.Debug("CreateAvatar exec started.");
+            Log.Debug("{AddressesHex}CreateAvatar exec started", addressesHex);
             AgentState existingAgentState = states.GetAgentState(ctx.Signer);
             var agentState = existingAgentState ?? new AgentState(ctx.Signer);
             var avatarState = states.GetAvatarState(avatarAddress);
             if (!(avatarState is null))
             {
                 throw new InvalidAddressException(
-                    $"Aborted as there is already an avatar at {avatarAddress}.");
+                    $"{addressesHex}Aborted as there is already an avatar at {avatarAddress}.");
             }
 
             if (!(0 <= index && index < GameConfig.SlotCount))
             {
                 throw new AvatarIndexOutOfRangeException(
-                    $"Aborted as the index is out of range #{index}.");
+                    $"{addressesHex}Aborted as the index is out of range #{index}.");
             }
 
             if (agentState.avatarAddresses.ContainsKey(index))
             {
                 throw new AvatarIndexAlreadyUsedException(
-                    $"Aborted as the signer already has an avatar at index #{index}.");
+                    $"{addressesHex}Aborted as the signer already has an avatar at index #{index}.");
             }
             sw.Stop();
-            Log.Debug("CreateAvatar Get AgentAvatarStates: {Elapsed}", sw.Elapsed);
+            Log.Debug("{AddressesHex}CreateAvatar Get AgentAvatarStates: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();
 
-            Log.Debug("Execute CreateAvatar; player: {AvatarAddress}", avatarAddress);
+            Log.Debug("{AddressesHex}Execute CreateAvatar; player: {AvatarAddress}", addressesHex, avatarAddress);
 
             agentState.avatarAddresses.Add(index, avatarAddress);
 
@@ -145,9 +147,9 @@ namespace Nekoyume.Action
             avatarState.UpdateQuestRewards(materialItemSheet);
 
             sw.Stop();
-            Log.Debug("CreateAvatar CreateAvatarState: {Elapsed}", sw.Elapsed);
+            Log.Debug("{AddressesHex}CreateAvatar CreateAvatarState: {Elapsed}", addressesHex, sw.Elapsed);
             var ended = DateTimeOffset.UtcNow;
-            Log.Debug("CreateAvatar Total Executed Time: {Elapsed}", ended - started);
+            Log.Debug("{AddressesHex}CreateAvatar Total Executed Time: {Elapsed}", addressesHex, ended - started);
             return states
                 .SetState(ctx.Signer, agentState.Serialize())
                 .SetState(Addresses.Ranking, rankingState.Serialize())
