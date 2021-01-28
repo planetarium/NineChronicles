@@ -2,19 +2,18 @@
 
 namespace Nekoyume.UI
 {
-    public class GuideArrowData
+    public class GuideArrowData : ITutorialData
     {
+        public TutorialIemType Type { get; } = TutorialIemType.Arrow;
         public GuideType GuideType { get; }
-        public Vector2 Target { get; }
+        public RectTransform Target { get; }
         public bool IsSkip { get; }
-        public System.Action Callback { get; }
 
-        public GuideArrowData(GuideType guideType, Vector2 target, bool isSkip, System.Action callback)
+        public GuideArrowData(GuideType guideType, RectTransform target, bool isSkip)
         {
             GuideType = guideType;
             Target = target;
             IsSkip = isSkip;
-            Callback = callback;
         }
     }
 }

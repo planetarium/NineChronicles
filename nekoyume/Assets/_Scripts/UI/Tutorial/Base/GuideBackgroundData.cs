@@ -2,19 +2,18 @@
 
 namespace Nekoyume.UI
 {
-    public class GuideBackgroundData
+    public class GuideBackgroundData : ITutorialData
     {
+        public TutorialIemType Type { get; } = TutorialIemType.Background;
         public bool IsExistFadeIn { get; }
         public bool IsEnableMask { get; }
-        public Vector2 Target { get; }
-        public System.Action Callback { get; }
+        public RectTransform Target { get; }
 
-        public GuideBackgroundData(bool isExistFadeIn, bool isEnableMask, Vector2 target, System.Action callback)
+        public GuideBackgroundData(bool isExistFadeIn, bool isEnableMask, RectTransform target)
         {
             IsExistFadeIn = isExistFadeIn;
             IsEnableMask = isEnableMask;
             Target = target;
-            Callback = callback;
         }
     }
 }

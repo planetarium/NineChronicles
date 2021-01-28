@@ -1,14 +1,28 @@
-﻿namespace Nekoyume.UI
-{
-    public class GuideDialogData
-    {
-        public float TargetHeight { get; }
-        public System.Action Callback { get; }
+﻿using System.Diagnostics.Tracing;
+using UnityEngine.UI;
 
-        public GuideDialogData(float targetHeight, System.Action callback)
+namespace Nekoyume.UI
+{
+    public class GuideDialogData : ITutorialData
+    {
+        public TutorialIemType Type { get; } = TutorialIemType.Dialog;
+        public DialogEmojiType EmojiType { get; }
+        public DialogCommaType CommaType { get; }
+        public string Script { get; }
+        public float TargetHeight { get; }
+        public Button Button { get; }
+
+        public GuideDialogData(DialogEmojiType emojiType,
+            DialogCommaType commaType,
+            string script,
+            float targetHeight,
+            Button button)
         {
+            EmojiType = emojiType;
+            CommaType = commaType;
+            Script = script;
             TargetHeight = targetHeight;
-            this.Callback = callback;
+            Button = button;
         }
     }
 }

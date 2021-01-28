@@ -7,8 +7,9 @@ namespace Nekoyume.UI
         None = 0,
         Square = 1,
         Circle = 2,
-        Stop = 3,
-        End = 4,
+        Outline = 3,
+        Stop = 4,
+        End = 5,
     }
 
     public class GuideTypeEqualityComparer : IEqualityComparer<GuideType>
