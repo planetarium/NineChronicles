@@ -90,5 +90,15 @@ namespace Nekoyume.Model.Item
                 .Add("item_sub_type", ItemSubType.Serialize())
                 .Add("grade", Grade.Serialize())
                 .Add("elemental_type", ElementalType.Serialize());
+
+        public override string ToString()
+        {
+            return
+                $"{nameof(Id)}: {Id}" +
+                $", {nameof(Grade)}: {Grade}" +
+                $", {nameof(ItemType)}: {ItemType}" +
+                $", {nameof(ItemSubType)}: {ItemSubType}" +
+                $", {nameof(ElementalType)}: {ElementalType}";
+        }
     }
 }
