@@ -6,6 +6,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
 using System.Linq;
 using System.Numerics;
+using System.Text;
 using Bencodex;
 using Bencodex.Types;
 using Libplanet;
@@ -273,6 +274,19 @@ namespace Nekoyume.Action
                     return (T)formatter.Deserialize(stream);
                 }
             }
+        }
+
+        protected string GetSignerAndStateAddressesHex(IActionContext ctx, params State[] states)
+        {
+            StringBuilder sb = new StringBuilder($"[{ctx.Signer.ToHex()}");
+
+            foreach (State state in states)
+            {
+                sb.Append($", {state.address}");
+            }
+
+            sb.Append("]");
+            return sb.ToString();
         }
 
         protected IAccountStateDelta LogError(IActionContext context, string message, params object[] values)
