@@ -25,7 +25,7 @@ namespace Lib9c.Tests.Model.State
             Assert.NotNull(assembly);
 
             IEnumerable<string> sheetNames = assembly.GetTypes()
-                .Where(type => type.IsClass && !type.IsAbstract && type.Name.EndsWith("Sheet"))
+                .Where(type => type.IsClass && !type.IsAbstract && typeof(ISheet).IsAssignableFrom(type))
                 .Select(type => type.Name);
             foreach (string sheetName in sheetNames)
             {
