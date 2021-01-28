@@ -67,12 +67,18 @@ namespace Nekoyume.Action
                 states = states.SetState(WeeklyArenaAddress, MarkChanged);
                 return states.SetState(ctx.Signer, MarkChanged);
             }
+            
+            var addressesHex = GetSignerAndStateAddressesHex(context);
 
-            Log.Warning($"{nameof(HackAndSlash)} is deprecated. Please use ${nameof(HackAndSlash2)}");
+            Log.Warning(
+                "{AddressesHex}{HackAndSlash} is deprecated. Please use {HackAndSlash2}",
+                addressesHex,
+                nameof(HackAndSlash),
+                nameof(HackAndSlash2));
             var sw = new Stopwatch();
             sw.Start();
             var started = DateTimeOffset.UtcNow;
-            Log.Debug("HAS exec started.");
+            Log.Debug("{AddressesHex}HAS exec started", addressesHex);
 
             if (!states.TryGetAgentAvatarStates(
                 ctx.Signer,
@@ -80,17 +86,17 @@ namespace Nekoyume.Action
                 out AgentState agentState,
                 out AvatarState avatarState))
             {
-                throw new FailedLoadStateException("Aborted as the avatar state of the signer was failed to load.");
+                throw new FailedLoadStateException($"{addressesHex}Aborted as the avatar state of the signer was failed to load.");
             }
 
             sw.Stop();
-            Log.Debug("HAS Get AgentAvatarStates: {Elapsed}", sw.Elapsed);
+            Log.Debug("{AddressesHex}HAS Get AgentAvatarStates: {Elapsed}", addressesHex, sw.Elapsed);
 
             sw.Restart();
 
             if (avatarState.RankingMapAddress != RankingMapAddress)
             {
-                throw new InvalidAddressException("Invalid ranking map address");
+                throw new InvalidAddressException($"{addressesHex}Invalid ranking map address");
             }
 
             // worldId와 stageId가 유효한지 확인합니다.
@@ -98,21 +104,21 @@ namespace Nekoyume.Action
 
             if (!worldSheet.TryGetValue(worldId, out var worldRow, false))
             {
-                throw new SheetRowNotFoundException(nameof(WorldSheet), worldId);
+                throw new SheetRowNotFoundException(addressesHex, nameof(WorldSheet), worldId);
             }
 
             if (stageId < worldRow.StageBegin ||
                 stageId > worldRow.StageEnd)
             {
                 throw new SheetRowColumnException(
-                    $"{worldId} world is not contains {worldRow.Id} stage: " +
+                    $"{addressesHex}{worldId} world is not contains {worldRow.Id} stage: " +
                     $"{worldRow.StageBegin}-{worldRow.StageEnd}");
             }
 
             var stageSheet = states.GetSheet<StageSheet>();
             if (!stageSheet.TryGetValue(stageId, out var stageRow))
             {
-                throw new SheetRowNotFoundException(nameof(StageSheet), stageId);
+                throw new SheetRowNotFoundException(addressesHex, nameof(StageSheet), stageId);
             }
 
             var worldInformation = avatarState.worldInformation;
@@ -124,7 +130,7 @@ namespace Nekoyume.Action
 
             if (!world.IsUnlocked)
             {
-                throw new InvalidWorldException($"{worldId} is locked.");
+                throw new InvalidWorldException($"{addressesHex}{worldId} is locked.");
             }
 
             if (world.StageBegin != worldRow.StageBegin ||
@@ -137,7 +143,7 @@ namespace Nekoyume.Action
                 !world.IsStageCleared && stageId != world.StageBegin)
             {
                 throw new InvalidStageException(
-                    $"Aborted as the stage ({worldId}/{stageId}) is not cleared; " +
+                    $"{addressesHex}Aborted as the stage ({worldId}/{stageId}) is not cleared; " +
                     $"cleared stage: {world.StageClearedId}"
                 );
             }
@@ -149,7 +155,7 @@ namespace Nekoyume.Action
             if (avatarState.actionPoint < stageRow.CostAP)
             {
                 throw new NotEnoughActionPointException(
-                    $"Aborted due to insufficient action point: " +
+                    $"{addressesHex}Aborted due to insufficient action point: " +
                     $"{avatarState.actionPoint} < {stageRow.CostAP}"
                 );
             }
@@ -160,7 +166,7 @@ namespace Nekoyume.Action
 
             avatarState.EquipEquipments(equipments);
             sw.Stop();
-            Log.Debug("HAS Unequip items: {Elapsed}", sw.Elapsed);
+            Log.Debug("{AddressesHex}HAS Unequip items: {Elapsed}", addressesHex, sw.Elapsed);
 
             sw.Restart();
             var characterSheet = states.GetSheet<CharacterSheet>();
@@ -174,16 +180,17 @@ namespace Nekoyume.Action
             );
 
             sw.Stop();
-            Log.Debug("HAS Initialize Simulator: {Elapsed}", sw.Elapsed);
+            Log.Debug("{AddressesHex}HAS Initialize Simulator: {Elapsed}", addressesHex, sw.Elapsed);
 
             sw.Restart();
             simulator.Simulate();
             sw.Stop();
-            Log.Debug("HAS Simulator.Simulate(): {Elapsed}", sw.Elapsed);
+            Log.Debug("{AddressesHex}HAS Simulator.Simulate(): {Elapsed}", addressesHex, sw.Elapsed);
 
             Log.Debug(
-                "Execute HackAndSlash({AvatarAddress}); worldId: {WorldId}, stageId: {StageId}, result: {Result}, " +
+                "{AddressesHex}Execute HackAndSlash({AvatarAddress}); worldId: {WorldId}, stageId: {StageId}, result: {Result}, " +
                 "clearWave: {ClearWave}, totalWave: {TotalWave}",
+                addressesHex,
                 avatarAddress,
                 worldId,
                 stageId,
@@ -206,7 +213,7 @@ namespace Nekoyume.Action
             }
 
             sw.Stop();
-            Log.Debug("HAS ClearStage: {Elapsed}", sw.Elapsed);
+            Log.Debug("{AddressesHex}HAS ClearStage: {Elapsed}", addressesHex, sw.Elapsed);
 
             sw.Restart();
             avatarState.Update(simulator);
@@ -218,7 +225,7 @@ namespace Nekoyume.Action
             states = states.SetState(avatarAddress, avatarState.Serialize());
 
             sw.Stop();
-            Log.Debug("HAS Set AvatarState: {Elapsed}", sw.Elapsed);
+            Log.Debug("{AddressesHex}HAS Set AvatarState: {Elapsed}", addressesHex, sw.Elapsed);
 
             sw.Restart();
             if (states.TryGetState(RankingMapAddress, out Dictionary d) && simulator.Log.IsClear)
@@ -227,19 +234,19 @@ namespace Nekoyume.Action
                 ranking.Update(avatarState);
 
                 sw.Stop();
-                Log.Debug("HAS Update RankingState: {Elapsed}", sw.Elapsed);
+                Log.Debug("{AddressesHex}HAS Update RankingState: {Elapsed}", addressesHex, sw.Elapsed);
                 sw.Restart();
 
                 var serialized = ranking.Serialize();
 
                 sw.Stop();
-                Log.Debug("HAS Serialize RankingState: {Elapsed}", sw.Elapsed);
+                Log.Debug("{AddressesHex}HAS Serialize RankingState: {Elapsed}", addressesHex, sw.Elapsed);
                 sw.Restart();
                 states = states.SetState(RankingMapAddress, serialized);
             }
 
             sw.Stop();
-            Log.Debug("HAS Set RankingState: {Elapsed}", sw.Elapsed);
+            Log.Debug("{AddressesHex}HAS Set RankingState: {Elapsed}", addressesHex, sw.Elapsed);
 
             sw.Restart();
             if (simulator.Log.stageId >= GameConfig.RequireClearedStageLevel.ActionsInRankingBoard &&
@@ -261,12 +268,12 @@ namespace Nekoyume.Action
                     }
 
                     sw.Stop();
-                    Log.Debug("HAS Update WeeklyArenaState: {Elapsed}", sw.Elapsed);
+                    Log.Debug("{AddressesHex}HAS Update WeeklyArenaState: {Elapsed}", addressesHex, sw.Elapsed);
 
                     sw.Restart();
                     var weeklySerialized = weekly.Serialize();
                     sw.Stop();
-                    Log.Debug("HAS Serialize RankingState: {Elapsed}", sw.Elapsed);
+                    Log.Debug("{AddressesHex}HAS Serialize RankingState: {Elapsed}", addressesHex, sw.Elapsed);
 
                     states = states.SetState(weekly.address, weeklySerialized);
                 }
@@ -275,7 +282,7 @@ namespace Nekoyume.Action
             Result = simulator.Log;
 
             var ended = DateTimeOffset.UtcNow;
-            Log.Debug("HAS Total Executed Time: {Elapsed}", ended - started);
+            Log.Debug("{AddressesHex}HAS Total Executed Time: {Elapsed}", addressesHex, ended - started);
             return states.SetState(ctx.Signer, agentState.Serialize());
         }
     }
