@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using DG.Tweening;
+using Nekoyume.Game.Controller;
 using UnityEngine;
 using RedBlueGames.Tools.TextTyper;
 
@@ -28,9 +29,12 @@ namespace Nekoyume.UI
                 transform.SetParent(d.TargetHeight > 0 ? topContainer : bottomContainer);
                 transform.localPosition = Vector3.zero;
                 ShowEmoji(d.EmojiType);
+                PlaySound(d.EmojiType);
                 textTyper.TypeText(string.Empty);
                 textTyper.PrintCompleted.RemoveAllListeners();
                 textTyper.PrintCompleted.AddListener(() => { ShowComma(d.CommaType); });
+                textTyper.CharacterPrinted.RemoveAllListeners();
+                textTyper.CharacterPrinted.AddListener(PlaySound);
                 ShowComma(DialogCommaType.None);
                 SetFade(true, fadeDuration, () =>
                 {
@@ -50,6 +54,7 @@ namespace Nekoyume.UI
 
         private void OnClick()
         {
+            AudioController.instance.PlaySfx(AudioController.SfxCode.Click);
             if (textTyper.IsSkippable())
             {
                 textTyper.Skip();
@@ -65,6 +70,22 @@ namespace Nekoyume.UI
             foreach (var emoji in emojiList)
             {
                 emoji.Animation.SetActive(emoji.Type == type);
+            }
+        }
+
+        private void PlaySound(DialogEmojiType type)
+        {
+            switch (type)
+            {
+                case DialogEmojiType.Idle:
+                    AudioController.instance.PlaySfx(AudioController.SfxCode.NPC_Common);
+                    break;
+                case DialogEmojiType.Reaction:
+                    AudioController.instance.PlaySfx(AudioController.SfxCode.NPC_Congrat);
+                    break;
+                case DialogEmojiType.Question:
+                    AudioController.instance.PlaySfx(AudioController.SfxCode.NPC_Question);
+                    break;
             }
         }
 
@@ -91,6 +112,16 @@ namespace Nekoyume.UI
         {
             canvasGroup.alpha = isIn ? 0 : 1;
             canvasGroup.DOFade(isIn ? 1 : 0, duration).OnComplete(() => action?.Invoke());
+        }
+
+        private void PlaySound(string printedCharacter)
+        {
+            if (printedCharacter == " " || printedCharacter == "\n")
+            {
+                return;
+            }
+
+            AudioController.instance.PlaySfx(AudioController.SfxCode.Typing, 0.1f);
         }
     }
 

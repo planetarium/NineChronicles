@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Nekoyume.Game.Controller;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -58,6 +59,7 @@ namespace Nekoyume.UI
                 ClearCachedImageMaterial();
                 _rectTransform.anchoredPosition  = d.Target.anchoredPosition;
                 _rectTransform.sizeDelta = d.Target.sizeDelta;
+                AudioController.instance.PlaySfx(AudioController.SfxCode.Notice);
                 if (d.GuideType == GuideType.Outline)
                 {
                     _cachedImage = d.Target.GetComponent<Image>();
