@@ -14,6 +14,7 @@ using UnityEngine.UI;
 using mixpanel;
 using Nekoyume.L10n;
 using System.Collections.Generic;
+using Libplanet;
 
 namespace Nekoyume.UI
 {
@@ -353,7 +354,10 @@ namespace Nekoyume.UI
 
             if (PlayerPrefs.HasKey(LoginDetail.RecentlyLoggedInAvatarKey))
             {
-                var index = PlayerPrefs.GetInt(LoginDetail.RecentlyLoggedInAvatarKey);
+                var recentlyLoggedAddress = PlayerPrefs.GetString(LoginDetail.RecentlyLoggedInAvatarKey);
+                var matchingAddress = State.States.Instance.AgentState.avatarAddresses
+                    .FirstOrDefault(pair => pair.Value.ToString().Equals(recentlyLoggedAddress));
+                var index = matchingAddress.Equals(default(KeyValuePair<int, Address>)) ? -1 : matchingAddress.Key;
 
                 try
                 {

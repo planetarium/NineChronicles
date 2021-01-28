@@ -24,6 +24,7 @@ using Libplanet.Crypto;
 using Libplanet.Net;
 using Libplanet.RocksDBStore;
 using Libplanet.Store;
+using Libplanet.Store.Trie;
 using Libplanet.Tx;
 using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.Extensibility;
@@ -79,6 +80,7 @@ namespace Nekoyume.BlockChain
         protected BlockChain<PolymorphicAction<ActionBase>> blocks;
         private Swarm<PolymorphicAction<ActionBase>> _swarm;
         protected BaseStore store;
+        private IStateStore _stateStore;
         private ImmutableList<Peer> _seedPeers;
         private ImmutableList<Peer> _peerList;
 
@@ -193,11 +195,14 @@ namespace Nekoyume.BlockChain
 
             try
             {
+                IKeyValueStore stateRootKeyValueStore = new RocksDBKeyValueStore(Path.Combine(path, "state_hashes")),
+                    stateKeyValueStore = new RocksDBKeyValueStore(Path.Combine(path, "states"));
+                _stateStore = new TrieStateStore(stateKeyValueStore, stateRootKeyValueStore);
                 blocks = new BlockChain<PolymorphicAction<ActionBase>>(
                     policy,
                     stagePolicy,
                     store,
-                    (IStateStore) store,
+                    _stateStore,
                     genesisBlock,
                     renderers: BlockPolicySource.GetRenderers()
                 );
@@ -265,6 +270,10 @@ namespace Nekoyume.BlockChain
                     {
                         store?.Dispose();
                         _swarm?.Dispose();
+                        if (_stateStore is IDisposable disposable)
+                        {
+                            disposable.Dispose();
+                        }
                     }
                     catch (ObjectDisposedException)
                     {

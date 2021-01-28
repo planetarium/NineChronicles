@@ -21,18 +21,21 @@ namespace Nekoyume.UI
         {
             base.Awake();
 
-            var message = L10nManager.Localize("BLOCK_CHAIN_MINING_TX") + "...";
-            indicator.UpdateMessage(message);
-            _tips = L10nManager.LocalizePattern("^UI_TIPS_[0-9]+$").Values.ToList();
-
-            var pos = transform.localPosition;
-            pos.z = -5f;
-            transform.localPosition = pos;
-
-            if (ReferenceEquals(indicator, null) ||
-                ReferenceEquals(toolTip, null))
+            if (L10nManager.CurrentState == L10nManager.State.Initialized)
             {
-                throw new SerializeFieldNullException();
+                var message = L10nManager.Localize("BLOCK_CHAIN_MINING_TX") + "...";
+                indicator.UpdateMessage(message);
+                _tips = L10nManager.LocalizePattern("^UI_TIPS_[0-9]+$").Values.ToList();
+
+                var pos = transform.localPosition;
+                pos.z = -5f;
+                transform.localPosition = pos;
+
+                if (ReferenceEquals(indicator, null) ||
+                    ReferenceEquals(toolTip, null))
+                {
+                    throw new SerializeFieldNullException();
+                }
             }
         }
 
@@ -55,7 +58,10 @@ namespace Nekoyume.UI
         {
             base.OnEnable();
 
-            toolTip.text = _tips[new System.Random().Next(0, _tips.Count)];
+            if (_tips != null)
+            {
+                toolTip.text = _tips[new System.Random().Next(0, _tips.Count)];
+            }
         }
 
         protected override void OnDisable()
