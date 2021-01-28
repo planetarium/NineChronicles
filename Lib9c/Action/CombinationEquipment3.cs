@@ -48,23 +48,25 @@ namespace Nekoyume.Action
                     .SetState(ctx.Signer, MarkChanged)
                     .MarkBalanceChanged(GoldCurrencyMock, ctx.Signer, BlacksmithAddress);
             }
+            
+            var addressesHex = GetSignerAndStateAddressesHex(context);
 
             if (!states.TryGetAgentAvatarStates(ctx.Signer, AvatarAddress, out var agentState,
                 out var avatarState))
             {
-                throw new FailedLoadStateException("Aborted as the avatar state of the signer was failed to load.");
+                throw new FailedLoadStateException($"{addressesHex}Aborted as the avatar state of the signer was failed to load.");
             }
 
             var slotState = states.GetCombinationSlotState(AvatarAddress, SlotIndex);
             if (slotState is null)
             {
-                throw new FailedLoadStateException("Aborted as the slot state is failed to load");
+                throw new FailedLoadStateException($"{addressesHex}Aborted as the slot state is failed to load");
             }
 
             if (!slotState.Validate(avatarState, ctx.BlockIndex))
             {
                 throw new CombinationSlotUnlockException(
-                    $"Aborted as the slot state is invalid: {slotState} @ {SlotIndex}");
+                    $"{addressesHex}Aborted as the slot state is invalid: {slotState} @ {SlotIndex}");
             }
 
             var recipeSheet = states.GetSheet<EquipmentItemRecipeSheet>();
@@ -74,7 +76,7 @@ namespace Nekoyume.Action
             // Validate recipe.
             if (!recipeSheet.TryGetValue(RecipeId, out var recipe))
             {
-                throw new SheetRowNotFoundException(nameof(EquipmentItemRecipeSheet), RecipeId);
+                throw new SheetRowNotFoundException(addressesHex, nameof(EquipmentItemRecipeSheet), RecipeId);
             }
 
             if (!(SubRecipeId is null))
@@ -82,7 +84,7 @@ namespace Nekoyume.Action
                 if (!recipe.SubRecipeIds.Contains((int) SubRecipeId))
                 {
                     throw new SheetRowColumnException(
-                        $"Aborted as the sub recipe {SubRecipeId} was failed to load from the sheet."
+                        $"{addressesHex}Aborted as the sub recipe {SubRecipeId} was failed to load from the sheet."
                     );
                 }
             }
@@ -91,18 +93,18 @@ namespace Nekoyume.Action
             if (!avatarState.worldInformation.IsStageCleared(recipe.UnlockStage))
             {
                 avatarState.worldInformation.TryGetLastClearedStageId(out var current);
-                throw new NotEnoughClearedStageLevelException(recipe.UnlockStage, current);
+                throw new NotEnoughClearedStageLevelException(addressesHex, recipe.UnlockStage, current);
             }
 
             if (!materialSheet.TryGetValue(recipe.MaterialId, out var material))
             {
-                throw new SheetRowNotFoundException(nameof(MaterialItemSheet), recipe.MaterialId);
+                throw new SheetRowNotFoundException(addressesHex, nameof(MaterialItemSheet), recipe.MaterialId);
             }
 
             if (!avatarState.inventory.RemoveMaterial(material.ItemId, recipe.MaterialCount))
             {
                 throw new NotEnoughMaterialException(
-                    $"Aborted as the player has no enough material ({material} * {recipe.MaterialCount})"
+                    $"{addressesHex}Aborted as the player has no enough material ({material} * {recipe.MaterialCount})"
                 );
             }
 
@@ -116,7 +118,7 @@ namespace Nekoyume.Action
             // Validate equipment id.
             if (!equipmentItemSheet.TryGetValue(recipe.ResultEquipmentId, out var equipRow))
             {
-                throw new SheetRowNotFoundException(nameof(equipmentItemSheet), recipe.ResultEquipmentId);
+                throw new SheetRowNotFoundException(addressesHex, nameof(equipmentItemSheet), recipe.ResultEquipmentId);
             }
 
             var requiredBlockIndex = ctx.BlockIndex + recipe.RequiredBlockIndex;
@@ -134,7 +136,7 @@ namespace Nekoyume.Action
                 var subId = (int) SubRecipeId;
                 if (!subSheet.TryGetValue(subId, out var subRecipe))
                 {
-                    throw new SheetRowNotFoundException(nameof(EquipmentItemSubRecipeSheet), subId);
+                    throw new SheetRowNotFoundException(addressesHex, nameof(EquipmentItemSubRecipeSheet), subId);
                 }
 
                 requiredBlockIndex += subRecipe.RequiredBlockIndex;
@@ -145,14 +147,14 @@ namespace Nekoyume.Action
                 {
                     if (!materialSheet.TryGetValue(materialInfo.Id, out var subMaterialRow))
                     {
-                        throw new SheetRowNotFoundException(nameof(MaterialItemSheet), materialInfo.Id);
+                        throw new SheetRowNotFoundException(addressesHex, nameof(MaterialItemSheet), materialInfo.Id);
                     }
 
                     if (!avatarState.inventory.RemoveMaterial(subMaterialRow.ItemId,
                         materialInfo.Count))
                     {
                         throw new NotEnoughMaterialException(
-                            $"Aborted as the player has no enough material ({subMaterialRow} * {materialInfo.Count})"
+                            $"{addressesHex}Aborted as the player has no enough material ({subMaterialRow} * {materialInfo.Count})"
                         );
                     }
 
@@ -172,14 +174,14 @@ namespace Nekoyume.Action
                 throw new InsufficientBalanceException(
                     ctx.Signer,
                     agentBalance,
-                    $"Aborted as the agent ({ctx.Signer}) has no sufficient gold: {agentBalance} < {requiredGold}"
+                    $"{addressesHex}Aborted as the agent ({ctx.Signer}) has no sufficient gold: {agentBalance} < {requiredGold}"
                 );
             }
 
             if (avatarState.actionPoint < requiredActionPoint)
             {
                 throw new NotEnoughActionPointException(
-                    $"Aborted due to insufficient action point: {avatarState.actionPoint} < {requiredActionPoint}"
+                    $"{addressesHex}Aborted due to insufficient action point: {avatarState.actionPoint} < {requiredActionPoint}"
                 );
             }
 
