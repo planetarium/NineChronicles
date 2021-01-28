@@ -15,7 +15,7 @@ namespace Nekoyume
         private const string VolumeSfxKey = "SETTINGS_VOLUME_SFX";
         private const string VolumeSfxIsMutedKey = "SETTINGS_VOLUME_SFX_ISMUTED";
         private const string ResolutionIndexKey = "SETTINGS_RESOLUTION_INDEX";
-        private const string ResolutionWindowedKey = "SETTINGS_RESOLUTION_WINDOWED";
+        private const string ResolutionWindowedKey = "SETTINGS_WINDOWED";
 
         public float volumeMaster;
         public float volumeMusic;
@@ -68,7 +68,7 @@ namespace Nekoyume
 
             resolutionIndex = PlayerPrefs.GetInt(ResolutionIndexKey, 0);
             isWindowed = PlayerPrefs.GetInt(ResolutionWindowedKey, 1) == 1 ? true : false;
-            Screen.SetResolution(Resolutions[resolutionIndex].Width, Resolutions[resolutionIndex].Height, isWindowed);
+            SetResolution();
         }
 
         public void ApplyCurrentSettings()
@@ -86,7 +86,12 @@ namespace Nekoyume
         {
             PlayerPrefs.SetInt(ResolutionIndexKey, resolutionIndex);
             PlayerPrefs.SetInt(ResolutionWindowedKey, isWindowed ? 1 : 0);
-            Screen.SetResolution(Resolutions[resolutionIndex].Width, Resolutions[resolutionIndex].Height, isWindowed);
+            SetResolution();
+        }
+
+        private void SetResolution()
+        {
+            Screen.SetResolution(Resolutions[resolutionIndex].Width, Resolutions[resolutionIndex].Height, !isWindowed);
         }
     }
 }
