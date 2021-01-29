@@ -221,7 +221,7 @@ namespace Nekoyume.BlockChain
 
         private void RankingBattle()
         {
-            _renderer.EveryRender<RankingBattle3>()
+            _renderer.EveryRender<RankingBattle>()
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseRankingBattle).AddTo(_disposables);
@@ -701,7 +701,7 @@ namespace Nekoyume.BlockChain
             }
         }
 
-        private void ResponseRankingBattle(ActionBase.ActionEvaluation<RankingBattle3> eval)
+        private void ResponseRankingBattle(ActionBase.ActionEvaluation<RankingBattle> eval)
         {
             if (eval.Exception is null)
             {
