@@ -44,6 +44,8 @@ namespace Nekoyume.Action
                 return states;
             }
 
+            var addressesHex = GetSignerAndOtherAddressesHex(context, AvatarAddress);
+
             if (!states.TryGetAvatarState(context.Signer, AvatarAddress, out AvatarState avatarState))
             {
                 return states;
@@ -62,12 +64,12 @@ namespace Nekoyume.Action
             }
             catch (InvalidRedeemCodeException)
             {
-                Log.Error("Invalid Code");
+                Log.Error("{AddressesHex}Invalid Code", addressesHex);
                 throw;
             }
             catch (DuplicateRedeemException e)
             {
-                Log.Warning(e.Message);
+                Log.Warning("{AddressesHex}{Message}", addressesHex, e.Message);
                 throw;
             }
 

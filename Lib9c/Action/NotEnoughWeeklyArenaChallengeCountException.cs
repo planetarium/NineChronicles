@@ -6,12 +6,13 @@ namespace Nekoyume.Action
     [Serializable]
     public class NotEnoughWeeklyArenaChallengeCountException : Exception
     {
+        public const string BaseMessage = "Aborted as the arena state reached the daily limit."; 
+        
         public NotEnoughWeeklyArenaChallengeCountException(string message) : base(message)
         {
         }
 
-        public NotEnoughWeeklyArenaChallengeCountException()
-            : this("Aborted as the arena state reached the daily limit.")
+        public NotEnoughWeeklyArenaChallengeCountException() : base(BaseMessage)
         {
         }
 
