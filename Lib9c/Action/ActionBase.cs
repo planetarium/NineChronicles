@@ -276,13 +276,19 @@ namespace Nekoyume.Action
             }
         }
 
-        protected string GetSignerAndStateAddressesHex(IActionContext ctx, params State[] states)
+        /// <summary>
+        /// returns "[Signer Address, AvatarState Address, ...]"
+        /// </summary>
+        /// <param name="ctx"></param>
+        /// <param name="addresses"></param>
+        /// <returns></returns>
+        protected string GetSignerAndOtherAddressesHex(IActionContext ctx, params Address[] addresses)
         {
             StringBuilder sb = new StringBuilder($"[{ctx.Signer.ToHex()}");
 
-            foreach (State state in states)
+            foreach (Address address in addresses)
             {
-                sb.Append($", {state.address}");
+                sb.Append($", {address.ToHex()}");
             }
 
             sb.Append("]");
