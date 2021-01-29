@@ -334,7 +334,7 @@ namespace Nekoyume.BlockChain
                 .DoOnError(e => HandleException(action.Id, e));
         }
 
-        public IObservable<ActionBase.ActionEvaluation<RankingBattle3>> RankingBattle(
+        public IObservable<ActionBase.ActionEvaluation<RankingBattle>> RankingBattle(
             Address enemyAddress,
             List<Guid> costumeIds,
             List<Guid> equipmentIds,
@@ -344,7 +344,7 @@ namespace Nekoyume.BlockChain
             if (!ArenaHelper.TryGetThisWeekAddress(out var weeklyArenaAddress))
                 throw new NullReferenceException(nameof(weeklyArenaAddress));
 
-            var action = new RankingBattle3
+            var action = new RankingBattle
             {
                 AvatarAddress = States.Instance.CurrentAvatarState.address,
                 EnemyAddress = enemyAddress,
@@ -355,7 +355,7 @@ namespace Nekoyume.BlockChain
             };
             ProcessAction(action);
 
-            return _renderer.EveryRender<RankingBattle3>()
+            return _renderer.EveryRender<RankingBattle>()
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .Take(1)
                 .Last()

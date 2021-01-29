@@ -18,11 +18,13 @@ using Libplanet;
 using Libplanet.Action;
 using Libplanet.Assets;
 using Libplanet.Blockchain;
+using Libplanet.Blockchain.Policies;
 using Libplanet.Blocks;
 using Libplanet.Crypto;
 using Libplanet.Net;
 using Libplanet.RocksDBStore;
 using Libplanet.Store;
+using Libplanet.Store.Trie;
 using Libplanet.Tx;
 using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.Extensibility;
@@ -78,8 +80,8 @@ namespace Nekoyume.BlockChain
         protected BlockChain<PolymorphicAction<ActionBase>> blocks;
         private Swarm<PolymorphicAction<ActionBase>> _swarm;
         protected BaseStore store;
+        private IStateStore _stateStore;
         private ImmutableList<Peer> _seedPeers;
-        private IImmutableSet<Address> _trustedPeers;
         private ImmutableList<Peer> _peerList;
 
         private static CancellationTokenSource _cancellationTokenSource;
@@ -178,6 +180,8 @@ namespace Nekoyume.BlockChain
             Debug.Log($"minimumDifficulty: {minimumDifficulty}");
 
             var policy = BlockPolicySource.GetPolicy(minimumDifficulty, 100);
+            IStagePolicy<PolymorphicAction<ActionBase>> stagePolicy =
+                new VolatileStagePolicy<PolymorphicAction<ActionBase>>();
             PrivateKey = privateKey;
             store = LoadStore(path, storageType);
 
@@ -191,10 +195,14 @@ namespace Nekoyume.BlockChain
 
             try
             {
+                IKeyValueStore stateRootKeyValueStore = new RocksDBKeyValueStore(Path.Combine(path, "state_hashes")),
+                    stateKeyValueStore = new RocksDBKeyValueStore(Path.Combine(path, "states"));
+                _stateStore = new TrieStateStore(stateKeyValueStore, stateRootKeyValueStore);
                 blocks = new BlockChain<PolymorphicAction<ActionBase>>(
                     policy,
+                    stagePolicy,
                     store,
-                    (IStateStore) store,
+                    _stateStore,
                     genesisBlock,
                     renderers: BlockPolicySource.GetRenderers()
                 );
@@ -239,8 +247,6 @@ namespace Nekoyume.BlockChain
             // Init SyncSucceed
             SyncSucceed = true;
 
-            // FIXME: Trusted peers should be configurable
-            _trustedPeers = _seedPeers.Select(peer => peer.Address).ToImmutableHashSet();
             _cancellationTokenSource = new CancellationTokenSource();
         }
 
@@ -264,6 +270,10 @@ namespace Nekoyume.BlockChain
                     {
                         store?.Dispose();
                         _swarm?.Dispose();
+                        if (_stateStore is IDisposable disposable)
+                        {
+                            disposable.Dispose();
+                        }
                     }
                     catch (ObjectDisposedException)
                     {
@@ -621,7 +631,12 @@ namespace Nekoyume.BlockChain
             while (true)
             {
                 Cheat.Display("Logs", _tipInfo);
-                Cheat.Display("Peers", _swarm?.TraceTable());
+                var peerStateString = string.Join("\n", _swarm.PeersStates.Select(peerState =>
+                    $"Address: {peerState.Address}\n" +
+                    $" - LastUpdated: {peerState.LastUpdated}\n" +
+                    $" - LastChecked: {peerState.LastChecked}\n" +
+                    $" - Latency: {peerState.Latency}"));
+                Cheat.Display("Peers", peerStateString);
                 StringBuilder log = new StringBuilder($"Staged Transactions : {store.IterateStagedTransactionIds().Count()}\n");
                 var count = 1;
                 foreach (var id in store.IterateStagedTransactionIds())
@@ -710,7 +725,6 @@ namespace Nekoyume.BlockChain
                         new Progress<PreloadState>(state =>
                             PreloadProcessed?.Invoke(this, state)
                         ),
-                        trustedStateValidators: _trustedPeers,
                         cancellationToken: _cancellationTokenSource.Token
                     );
                 });
