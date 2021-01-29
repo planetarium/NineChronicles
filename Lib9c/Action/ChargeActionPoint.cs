@@ -26,7 +26,7 @@ namespace Nekoyume.Action
                 return states.SetState(avatarAddress, MarkChanged);
             }
             
-            var addressesHex = GetSignerAndStateAddressesHex(context);
+            var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
 
             if (!states.TryGetAgentAvatarStates(context.Signer, avatarAddress, out var _, out var avatarState))
             {

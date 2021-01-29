@@ -43,7 +43,7 @@ namespace Nekoyume.Action
                     .MarkBalanceChanged(GoldCurrencyMock, ctx.Signer, WeeklyArenaAddress);
             }
 
-            var addressesHex = GetSignerAndStateAddressesHex(context);
+            var addressesHex = GetSignerAndOtherAddressesHex(context, AvatarAddress, EnemyAddress);
             
             var sw = new Stopwatch();
             sw.Start();

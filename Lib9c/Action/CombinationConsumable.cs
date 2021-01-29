@@ -120,7 +120,7 @@ namespace Nekoyume.Action
                     .SetState(slotAddress, MarkChanged);
             }
             
-            var addressesHex = GetSignerAndStateAddressesHex(context);
+            var addressesHex = GetSignerAndOtherAddressesHex(context, AvatarAddress);
 
             var sw = new Stopwatch();
             sw.Start();

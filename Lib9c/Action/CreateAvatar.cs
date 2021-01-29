@@ -76,13 +76,9 @@ namespace Nekoyume.Action
                     .MarkBalanceChanged(GoldCurrencyMock, GoldCurrencyState.Address, context.Signer);
             }
             
-            var addressesHex = GetSignerAndStateAddressesHex(context);
+            var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
 
-            Log.Warning(
-                "{AddressesHex}{CreateAvatar} is deprecated. Please use {CreateAvatar2}",
-                addressesHex,
-                nameof(CreateAvatar),
-                nameof(CreateAvatar2));
+            Log.Warning("{AddressesHex}create_avatar is deprecated. Please use create_avatar2", addressesHex);
 
             if (!Regex.IsMatch(name, GameConfig.AvatarNickNamePattern))
             {

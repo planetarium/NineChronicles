@@ -63,7 +63,7 @@ namespace Nekoyume.Action
                 return states.SetState(ShopState.Address, MarkChanged);
             }
             
-            var addressesHex = GetSignerAndStateAddressesHex(ctx);
+            var addressesHex = GetSignerAndOtherAddressesHex(context, buyerAvatarAddress, sellerAvatarAddress);
 
             if (ctx.Signer.Equals(sellerAgentAddress))
             {

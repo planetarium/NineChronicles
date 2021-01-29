@@ -27,7 +27,7 @@ namespace Nekoyume.Action
                     .SetState(GameConfigState.Address, MarkChanged);
             }
 
-            var addressesHex = GetSignerAndStateAddressesHex(context);
+            var addressesHex = GetSignerAndOtherAddressesHex(context);
 
             CheckPermission(context);
 
@@ -35,15 +35,13 @@ namespace Nekoyume.Action
             var value = sheets is null ? string.Empty : sheets.ToDotnetString();
 
             Log.Debug(
-                "{AddressesHex}[{BlockIndex}] {TableName} was patched by {Signer}\n" +
+                "{AddressesHex}{TableName} was patched\n" +
                 "before:\n" +
                 "{Value}\n" +
                 "after:\n" +
                 "{TableCsv}",
                 addressesHex,
-                ctx.BlockIndex,
                 TableName,
-                ctx.Signer.ToHex(),
                 value,
                 TableCsv
             );

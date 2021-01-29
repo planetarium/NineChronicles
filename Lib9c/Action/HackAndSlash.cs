@@ -68,13 +68,9 @@ namespace Nekoyume.Action
                 return states.SetState(ctx.Signer, MarkChanged);
             }
             
-            var addressesHex = GetSignerAndStateAddressesHex(context);
+            var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
 
-            Log.Warning(
-                "{AddressesHex}{HackAndSlash} is deprecated. Please use {HackAndSlash2}",
-                addressesHex,
-                nameof(HackAndSlash),
-                nameof(HackAndSlash2));
+            Log.Warning("{AddressesHex}hack_and_slash is deprecated. Please use hack_and_slash2", addressesHex);
             var sw = new Stopwatch();
             sw.Start();
             var started = DateTimeOffset.UtcNow;

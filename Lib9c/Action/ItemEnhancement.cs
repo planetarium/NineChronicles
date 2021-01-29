@@ -84,12 +84,9 @@ namespace Nekoyume.Action
                     .SetState(slotAddress, MarkChanged);
             }
 
-            var addressesHex = GetSignerAndStateAddressesHex(context);
+            var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
 
-            Log.Warning(
-                "{ItemEnhancement} is deprecated. Please use {ItemEnhancement2}", 
-                nameof(ItemEnhancement),
-                nameof(ItemEnhancement2));
+            Log.Warning("{AddressesHex}item_enhancement is deprecated. Please use item_enhancement2", addressesHex);
 
             var sw = new Stopwatch();
             sw.Start();

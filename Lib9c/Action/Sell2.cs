@@ -46,12 +46,12 @@ namespace Nekoyume.Action
                 return states.SetState(ctx.Signer, MarkChanged);
             }
             
-            var addressesHex = GetSignerAndStateAddressesHex(context);
+            var addressesHex = GetSignerAndOtherAddressesHex(context, sellerAvatarAddress);
             
             var sw = new Stopwatch();
             sw.Start();
             var started = DateTimeOffset.UtcNow;
-            Log.Debug("{AddressesHex}Sell exec started.");
+            Log.Debug("{AddressesHex}Sell exec started", addressesHex);
 
 
             if (price.Sign < 0)

@@ -49,7 +49,7 @@ namespace Nekoyume.Action
                     .MarkBalanceChanged(GoldCurrencyMock, ctx.Signer, BlacksmithAddress);
             }
             
-            var addressesHex = GetSignerAndStateAddressesHex(context);
+            var addressesHex = GetSignerAndOtherAddressesHex(context, AvatarAddress);
 
             if (!states.TryGetAgentAvatarStates(ctx.Signer, AvatarAddress, out var agentState,
                 out var avatarState))

@@ -81,7 +81,7 @@ namespace Nekoyume.Action
                     .MarkBalanceChanged(GoldCurrencyMock, GoldCurrencyState.Address, context.Signer);
             }
             
-            var addressesHex = GetSignerAndStateAddressesHex(context);
+            var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
 
             if (!Regex.IsMatch(name, GameConfig.AvatarNickNamePattern))
             {

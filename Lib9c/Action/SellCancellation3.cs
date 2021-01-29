@@ -42,7 +42,7 @@ namespace Nekoyume.Action
                 return states.SetState(sellerAvatarAddress, MarkChanged);
             }
 
-            var addressesHex = GetSignerAndStateAddressesHex(context);
+            var addressesHex = GetSignerAndOtherAddressesHex(context, sellerAvatarAddress);
             
             var sw = new Stopwatch();
             sw.Start();
