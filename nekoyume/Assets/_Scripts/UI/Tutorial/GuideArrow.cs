@@ -33,6 +33,7 @@ namespace Nekoyume.UI
             bool isSkip,
             System.Action callback)
         {
+            yield return new WaitForSeconds(predelay);
             _arrow.Play(_guideTypes[guideType], -1, isSkip ? 1 : 0);
             var length = _arrow.GetCurrentAnimatorStateInfo(0).length;
             yield return new WaitForSeconds(length);
@@ -57,6 +58,7 @@ namespace Nekoyume.UI
                 }
 
                 ClearCachedImageMaterial();
+                _arrow.Play(_guideTypes[GuideType.Stop]);
                 _rectTransform.anchoredPosition  = d.Target.anchoredPosition;
                 _rectTransform.sizeDelta = d.Target.sizeDelta;
                 AudioController.instance.PlaySfx(AudioController.SfxCode.Notice);
