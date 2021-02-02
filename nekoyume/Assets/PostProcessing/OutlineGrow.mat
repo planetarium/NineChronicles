@@ -9,7 +9,7 @@ Material:
   m_PrefabAsset: {fileID: 0}
   m_Name: OutlineGrow
   m_Shader: {fileID: 4800000, guid: c20308b0e23b78d4c85098af31f19cb4, type: 3}
-  m_ShaderKeywords: PIXELSNAP_ON _ISOUTLINEENABLED_ON
+  m_ShaderKeywords: ETC1_EXTERNAL_ALPHA PIXELSNAP_ON _ISOUTLINEENABLED_ON
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -74,7 +74,7 @@ Material:
     - _Metallic: 0
     - _Mode: 0
     - _OcclusionStrength: 1
-    - _OutlineSize: 2.39
+    - _OutlineSize: 1
     - _Parallax: 0.02
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
@@ -85,5 +85,5 @@ Material:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _Flip: {r: 1, g: 1, b: 1, a: 1}
-    - _OutlineColor: {r: 9.082411, g: 8.606892, b: 3.5188398, a: 0.9019608}
+    - _OutlineColor: {r: 12.828862, g: 3.753819, b: 0.42359474, a: 0.9019608}
     - _RendererColor: {r: 1, g: 1, b: 1, a: 1}
