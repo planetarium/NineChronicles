@@ -18,14 +18,11 @@ namespace Nekoyume.UI
 
         public void Play(List<ITutorialData> datas, System.Action callback = null)
         {
-            if (_isPlaying)
+            if (!Init())
             {
                 return;
             }
 
-            // Debug.Log("Play");
-            _finishRef = 0;
-            _isPlaying = true;
             button.onClick.RemoveAllListeners();
 
             foreach (var data in datas)
@@ -36,12 +33,29 @@ namespace Nekoyume.UI
             }
         }
 
-        public void Stop()
+        public void Stop(System.Action callback = null)
         {
+            if (!Init())
+            {
+                return;
+            }
+
             foreach (var item in items)
             {
-                item.Item.Stop();
+                item.Item.Stop(() => { PlayEnd(callback); });
             }
+        }
+
+        private bool Init()
+        {
+            if (_isPlaying)
+            {
+                return false;
+            }
+
+            _finishRef = 0;
+            _isPlaying = true;
+            return true;
         }
 
         private void PlayEnd(System.Action callback)

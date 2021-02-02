@@ -12,11 +12,10 @@ namespace Nekoyume.UI
     public class Preset
     {
         public int id;
+        public string content;
         public bool isExistFadeInBackground;
         public bool isEnableMask;
         public bool isSkipArrowAnimation;
-        public GuideType arrowType;
-        public DialogEmojiType emojiType;
         public DialogCommaType commaType;
     }
 }

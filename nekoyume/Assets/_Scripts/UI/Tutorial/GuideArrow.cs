@@ -29,6 +29,45 @@ namespace Nekoyume.UI
             }
         }
 
+        public override void Play<T>(T data, System.Action callback)
+        {
+            if (data is GuideArrowData d)
+            {
+                if (_coroutine != null)
+                {
+                    StopCoroutine(_coroutine);
+                }
+
+                Reset();
+                _arrow.Play(_guideTypes[GuideType.Stop]);
+
+                if (d.GuideType != GuideType.Stop)
+                {
+                    _rectTransform.anchoredPosition = d.Target.anchoredPosition;
+                    _rectTransform.sizeDelta = d.Target.sizeDelta;
+                    if (d.GuideType == GuideType.Outline)
+                    {
+                        _cachedImage = d.Target.GetComponent<Image>();
+                        _cachedImage.material = growOutline;
+                    }
+                }
+
+                AudioController.instance.PlaySfx(AudioController.SfxCode.Notice);
+                _coroutine = StartCoroutine(PlayAnimation(d.GuideType, d.IsSkip, callback));
+            }
+        }
+
+        public override void Stop(System.Action callback)
+        {
+            if (_coroutine != null)
+            {
+                StopCoroutine(_coroutine);
+            }
+
+            Reset();
+            _coroutine = StartCoroutine(PlayAnimation(GuideType.Stop, false, callback));
+        }
+
         private IEnumerator PlayAnimation(GuideType guideType,
             bool isSkip,
             System.Action callback)
@@ -40,47 +79,14 @@ namespace Nekoyume.UI
             callback?.Invoke();
         }
 
-        private void ClearCachedImageMaterial()
+        private void Reset()
         {
+            _rectTransform.anchoredPosition = Vector2.zero;
+            _rectTransform.sizeDelta = Vector2.zero;
             if (_cachedImage != null)
             {
                 _cachedImage.material = null;
             }
-        }
-
-        public override void Play<T>(T data, System.Action callback)
-        {
-            if (data is GuideArrowData d)
-            {
-                if (_coroutine != null)
-                {
-                    StopCoroutine(_coroutine);
-                }
-
-                ClearCachedImageMaterial();
-                _arrow.Play(_guideTypes[GuideType.Stop]);
-                _rectTransform.anchoredPosition  = d.Target.anchoredPosition;
-                _rectTransform.sizeDelta = d.Target.sizeDelta;
-                AudioController.instance.PlaySfx(AudioController.SfxCode.Notice);
-                if (d.GuideType == GuideType.Outline)
-                {
-                    _cachedImage = d.Target.GetComponent<Image>();
-                    _cachedImage.material = growOutline;
-                }
-
-                _coroutine = StartCoroutine(PlayAnimation(d.GuideType, d.IsSkip, callback));
-            }
-        }
-
-        public override void Stop()
-        {
-            if (_coroutine != null)
-            {
-                StopCoroutine(_coroutine);
-            }
-
-            ClearCachedImageMaterial();
-            _coroutine = StartCoroutine(PlayAnimation(GuideType.Stop, false, null));
         }
     }
 }

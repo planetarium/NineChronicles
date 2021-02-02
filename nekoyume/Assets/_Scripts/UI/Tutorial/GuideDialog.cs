@@ -38,9 +38,9 @@ namespace Nekoyume.UI
             }
         }
 
-        public override void Stop()
+        public override void Stop(System.Action callback)
         {
-            SetFade(false, fadeDuration);
+            SetFade(false, fadeDuration, callback);
         }
 
         private IEnumerator LatePlay(GuideDialogData data, System.Action callback)
@@ -124,7 +124,7 @@ namespace Nekoyume.UI
             _script = string.Empty;
         }
 
-        private void SetFade(bool isIn, float duration, System.Action action = null)
+        private void SetFade(bool isIn, float duration, System.Action action)
         {
             canvasGroup.alpha = isIn ? 0 : 1;
             canvasGroup.DOFade(isIn ? 1 : 0, duration)

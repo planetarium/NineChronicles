@@ -2,12 +2,51 @@
   "preset": [
     {
       "id" : 0,
+      "content" : "single",
       "isExistFadeInBackground": true,
       "isEnableMask": true,
       "isSkipArrowAnimation" : false,
-      "arrowType" : "Square",
-      "emojiType" : "Idle",
+      "commaType:" : "End"
+    },
+    {
+      "id" : 1,
+      "content" : "linekd_start",
+      "isExistFadeInBackground": true,
+      "isEnableMask": true,
+      "isSkipArrowAnimation" : false,
       "commaType:" : "Next"
+    },
+    {
+      "id" : 2,
+      "content" : "linekd_loop_same_target",
+      "isExistFadeInBackground": false,
+      "isEnableMask": true,
+      "isSkipArrowAnimation" : true,
+      "commaType:" : "Next"
+    },
+    {
+      "id" : 3,
+      "content" : "linekd_loop_new_target",
+      "isExistFadeInBackground": false,
+      "isEnableMask": true,
+      "isSkipArrowAnimation" : false,
+      "commaType:" : "Next"
+    },
+    {
+      "id" : 4,
+      "content" : "linekd_end_same_target",
+      "isExistFadeInBackground": false,
+      "isEnableMask": true,
+      "isSkipArrowAnimation" : true,
+      "commaType:" : "End"
+    },
+    {
+      "id" : 5,
+      "content" : "linekd_end_new_target",
+      "isExistFadeInBackground": false,
+      "isEnableMask": true,
+      "isSkipArrowAnimation" : false,
+      "commaType:" : "End"
     }
   ]
 }

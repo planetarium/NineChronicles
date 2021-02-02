@@ -28,9 +28,9 @@ namespace Nekoyume.UI
             }
         }
 
-        public override void Stop()
+        public override void Stop(System.Action callback)
         {
-            SetFade(false, fadeDuration);
+            SetFade(false, fadeDuration, callback);
         }
 
         private IEnumerator LatePlay(GuideBackgroundData data, System.Action callback)
@@ -40,7 +40,7 @@ namespace Nekoyume.UI
             SetFade(true, data.IsExistFadeIn ? fadeDuration : 0.0f, callback);
         }
 
-        private void SetFade(bool isIn, float duration, System.Action action = null)
+        private void SetFade(bool isIn, float duration, System.Action action)
         {
             background.DOKill();
             var color = background.color;
