@@ -9,14 +9,17 @@ namespace Nekoyume.UI
     {
         [SerializeField] private List<TutorialTestData> data;
         [SerializeField] private Tutorial tutorial;
+        [SerializeField] TextAsset preset;
 
         private readonly List<List<ITutorialData>> _testData = new List<List<ITutorialData>>();
         private int _testDataIndex = 0;
         private bool _isPlayingTester;
 
+
 #if UNITY_EDITOR
         private void Awake()
         {
+            GetData();
             if (tutorial == null)
             {
                 Debug.LogError("Tutorial is null!");
@@ -72,6 +75,19 @@ namespace Nekoyume.UI
             }
         }
 #endif
+
+        private void GetData()
+        {
+            var json = preset.text;
+            if (!string.IsNullOrEmpty(json))
+            {
+                var tutorialPreset = JsonUtility.FromJson<TutorialPreset>(json);
+                foreach (var i in tutorialPreset.preset)
+                {
+                    int a = i.id;
+                }
+            }
+        }
     }
 
     [Serializable]
