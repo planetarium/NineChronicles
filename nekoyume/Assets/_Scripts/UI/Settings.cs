@@ -2,6 +2,7 @@
 using UnityEngine.UI;
 using UnityEngine;
 using System.Collections.Generic;
+using System.Linq;
 using Libplanet;
 using Libplanet.Crypto;
 using Nekoyume.Helper;
@@ -29,6 +30,8 @@ namespace Nekoyume.UI
         public TextMeshProUGUI redeemCodeText;
         public Blur blur;
         public RedeemCode redeemCode;
+        public Dropdown resolutionDropdown;
+        public Toggle windowedToggle;
 
         private PrivateKey _privateKey;
 
@@ -57,8 +60,22 @@ namespace Nekoyume.UI
                 Close();
             });
             redeemCode.Close();
+
+            InitResolution();
         }
 
+
+        void InitResolution()
+        {
+            var settings = Nekoyume.Settings.Instance;
+            var options = settings.Resolutions.Select(resolution => $"{resolution.Width} x {resolution.Height}").ToList();
+            resolutionDropdown.onValueChanged.AddListener(SetResolution);
+            resolutionDropdown.AddOptions(options);
+            resolutionDropdown.value = settings.resolutionIndex;
+            resolutionDropdown.RefreshShownValue();
+
+            windowedToggle.onValueChanged.AddListener(SetWindowed);
+        }
         #endregion
 
         public override void Show(bool ignoreStartAnimation = false)
@@ -93,6 +110,7 @@ namespace Nekoyume.UI
 
             volumeMasterSlider.value = settings.volumeMaster;
             volumeMasterToggle.isOn = settings.isVolumeMasterMuted;
+            windowedToggle.isOn = settings.isWindowed;
 
             base.Show(ignoreStartAnimation);
 
@@ -120,6 +138,11 @@ namespace Nekoyume.UI
             var settings = Nekoyume.Settings.Instance;
             SetVolumeMaster(settings.volumeMaster);
             SetVolumeMasterMute(settings.isVolumeMasterMuted);
+        }
+
+        public void UpdateResolution()
+        {
+
         }
 
         public void UpdatePrivateKey(string privateKeyHex)
@@ -177,6 +200,20 @@ namespace Nekoyume.UI
         {
             var settings = Nekoyume.Settings.Instance;
             settings.isVolumeSfxMuted = value;
+        }
+
+        public void SetResolution(int index)
+        {
+            var settings = Nekoyume.Settings.Instance;
+            settings.resolutionIndex = index;
+            settings.ApplyCurrentResolution();
+        }
+
+        public void SetWindowed(bool value)
+        {
+            var settings = Nekoyume.Settings.Instance;
+            settings.isWindowed = value;
+            settings.ApplyCurrentResolution();
         }
 
         public void ResetStore()

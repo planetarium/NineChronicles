@@ -179,7 +179,8 @@ def latest_version() -> int:
         )
         matches = map(S3_OBJECT_PATTERN.match, prefixes)
         versions = (int(m.group(1)) for m in matches if m)
-        v = max(max(versions), v)
+        if versions:
+            v = max(max(versions), v)
         if not resp['IsTruncated']:
             break
         cont['ContinuationToken'] = resp['NextContinuationToken']
