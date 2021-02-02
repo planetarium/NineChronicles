@@ -10,26 +10,31 @@ namespace Nekoyume.UI
     {
         [SerializeField] private Button button;
         [SerializeField] private List<ItemContainer> items;
+        [SerializeField] private Animator animator;
         private const int ItemCount = 3;
         private int _finishRef;
         private bool _isPlaying;
 
         public Button NextButton => button;
 
-        public void Play(List<ITutorialData> datas, System.Action callback = null)
+        public void Play(List<ITutorialData> datas, int presetId, System.Action callback = null)
         {
             if (!Init())
             {
                 return;
             }
 
+            animator.SetTrigger(presetId.ToString());
             button.onClick.RemoveAllListeners();
 
             foreach (var data in datas)
             {
                 var item = items.FirstOrDefault(x => data.Type == x.Type);
                 item?.Item.gameObject.SetActive(true);
-                item?.Item.Play(data, () => { PlayEnd(callback); });
+                item?.Item.Play(data, () =>
+                {
+                    PlayEnd(callback);
+                });
             }
         }
 
@@ -66,7 +71,6 @@ namespace Nekoyume.UI
             {
                 _isPlaying = false;
                 callback?.Invoke();
-                // Debug.Log("[PlayEnd] finish");
             }
         }
     }
@@ -74,10 +78,10 @@ namespace Nekoyume.UI
     [Serializable]
     public class ItemContainer
     {
-        [SerializeField] private TutorialIemType type;
+        [SerializeField] private TutorialItemType type;
         [SerializeField] private TutorialItem item;
 
-        public TutorialIemType Type => type;
+        public TutorialItemType Type => type;
         public TutorialItem Item => item;
     }
 }

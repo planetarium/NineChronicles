@@ -2,6 +2,6 @@
 {
     public interface ITutorialData
     {
-        TutorialIemType Type { get; }
+        TutorialItemType Type { get; }
     }
 }

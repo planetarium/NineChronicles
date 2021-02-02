@@ -195,44 +195,44 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   data:
-  - type: 0
+  - Type: 0
     TargetImage: {fileID: 2168381185461298690}
-    IsExistFadeInBackground: 1
-    IsEnableMask: 0
-    ArrowType: 1
-    IsSkipArrowAnimation: 0
+    PresetId: 0
+    ArrowType: 4
     EmojiType: 1
-    CommaType: 1
-    Script: "\uCCAB\uBC88\uC9F8 \uD14C\uC2A4\uD2B8 \uC2A4\uD06C\uB9BD\uD2B8 \uC785\uB2C8\uB2E4
-      \uAC00\uB098\uB2E4\uB77C\uB9C8\uBC14\uC0AC\uC544\uC790\uCC28\uCE74\uD0C0\uD30C\uD558"
-  - type: 0
+    Script: "\uB2E8\uC77C\uD615 \uBAA9\uD45C \uC5C6\uC74C"
+  - Type: 0
     TargetImage: {fileID: 6407376557831703310}
-    IsExistFadeInBackground: 0
-    IsEnableMask: 0
+    PresetId: 1
     ArrowType: 2
-    IsSkipArrowAnimation: 0
     EmojiType: 2
-    CommaType: 1
-    Script: "\uB450\uBC88\uC9F8 \uD14C\uC2A4\uD2B8"
-  - type: 0
+    Script: "\uB2E8\uC77C\uD615 \uBAA9\uD45C \uC788\uC74C"
+  - Type: 0
     TargetImage: {fileID: 7044480527798484731}
-    IsExistFadeInBackground: 0
-    IsEnableMask: 1
-    ArrowType: 3
-    IsSkipArrowAnimation: 0
+    PresetId: 2
+    ArrowType: 4
     EmojiType: 3
-    CommaType: 2
-    Script: "\uC0C8\uBC88\uC9F8 \uD14C\uC2A4\uD2B8 \uC785\uB2C8\uB2E4\uB2E4\uB2E4\uB2E4\uB2E4"
-  - type: 1
+    Script: "\uC5F0\uACC4\uD615 \uC2DC\uC791 \uBAA9\uD45C \uC5C6\uC74C"
+  - Type: 0
     TargetImage: {fileID: 0}
-    IsExistFadeInBackground: 0
-    IsEnableMask: 0
-    ArrowType: 0
-    IsSkipArrowAnimation: 0
-    EmojiType: 0
-    CommaType: 0
-    Script: 
+    PresetId: 4
+    ArrowType: 4
+    EmojiType: 3
+    Script: "\uC5F0\uACC4 \uB8E8\uD504 \uBAA9\uD45C \uC5C6\uC74C"
+  - Type: 0
+    TargetImage: {fileID: 2168381185461298690}
+    PresetId: 6
+    ArrowType: 1
+    EmojiType: 2
+    Script: "\uC5F0\uACC4\uD615 \uB8E8\uD504 \uC0C8\uB85C\uC6B4 \uBAA9\uD45C"
+  - Type: 0
+    TargetImage: {fileID: 2168381185461298690}
+    PresetId: 8
+    ArrowType: 3
+    EmojiType: 3
+    Script: "\uC5F0\uACC4\uD615 \uB05D \uAC19\uC740 \uBAA9\uD45C"
   tutorial: {fileID: 0}
+  preset: {fileID: 4900000, guid: a9ec9b5b73874b40b5d8e320f3dd65bb, type: 3}
 --- !u!1 &6350147656977485772
 GameObject:
   m_ObjectHideFlags: 0

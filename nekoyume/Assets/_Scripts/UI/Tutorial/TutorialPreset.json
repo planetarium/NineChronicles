@@ -2,51 +2,83 @@
   "preset": [
     {
       "id" : 0,
-      "content" : "single",
+      "content" : "Single",
       "isExistFadeInBackground": true,
-      "isEnableMask": true,
+      "isEnableMask": false,
       "isSkipArrowAnimation" : false,
-      "commaType:" : "End"
+      "commaId" : 2
     },
     {
       "id" : 1,
-      "content" : "linekd_start",
+      "content" : "Single_Target",
       "isExistFadeInBackground": true,
       "isEnableMask": true,
       "isSkipArrowAnimation" : false,
-      "commaType:" : "Next"
+      "commaId" : 2
     },
     {
       "id" : 2,
-      "content" : "linekd_loop_same_target",
-      "isExistFadeInBackground": false,
-      "isEnableMask": true,
-      "isSkipArrowAnimation" : true,
-      "commaType:" : "Next"
+      "content" : "Linked_Start",
+      "isExistFadeInBackground": true,
+      "isEnableMask": false,
+      "isSkipArrowAnimation" : false,
+      "commaId" : 1
     },
     {
       "id" : 3,
-      "content" : "linekd_loop_new_target",
-      "isExistFadeInBackground": false,
+      "content" : "Linked_Start_Target",
+      "isExistFadeInBackground": true,
       "isEnableMask": true,
       "isSkipArrowAnimation" : false,
-      "commaType:" : "Next"
+      "commaId" : 1
     },
     {
       "id" : 4,
-      "content" : "linekd_end_same_target",
+      "content" : "Linked_Loop",
       "isExistFadeInBackground": false,
-      "isEnableMask": true,
+      "isEnableMask": false,
       "isSkipArrowAnimation" : true,
-      "commaType:" : "End"
+      "commaId" : 1
     },
     {
       "id" : 5,
-      "content" : "linekd_end_new_target",
+      "content" : "Linked_Loop_Same_Target",
+      "isExistFadeInBackground": false,
+      "isEnableMask": true,
+      "isSkipArrowAnimation" : true,
+      "commaId" : 1
+    },
+    {
+      "id" : 6,
+      "content" : "Linked_Loop_New_Target",
       "isExistFadeInBackground": false,
       "isEnableMask": true,
       "isSkipArrowAnimation" : false,
-      "commaType:" : "End"
+      "commaId" : 1
+    },
+    {
+      "id" : 7,
+      "content" : "Linked_End",
+      "isExistFadeInBackground": false,
+      "isEnableMask": false,
+      "isSkipArrowAnimation" : true,
+      "commaId" : 2
+    },
+    {
+      "id" : 8,
+      "content" : "Linked_End_Same_Target",
+      "isExistFadeInBackground": false,
+      "isEnableMask": true,
+      "isSkipArrowAnimation" : true,
+      "commaId" : 2
+    },
+    {
+      "id" : 9,
+      "content" : "Linked_End_New_Target",
+      "isExistFadeInBackground": false,
+      "isEnableMask": true,
+      "isSkipArrowAnimation" : false,
+      "commaId" : 2
     }
   ]
 }

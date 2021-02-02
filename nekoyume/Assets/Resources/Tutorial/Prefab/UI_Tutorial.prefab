@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 6744442424251077906}
   - component: {fileID: 6275506572555224754}
   - component: {fileID: 2256788778384709714}
+  - component: {fileID: 4927431873330913612}
   m_Layer: 5
   m_Name: UI_Tutorial
   m_TagString: Untagged
@@ -61,6 +62,7 @@ MonoBehaviour:
     item: {fileID: 2194209291036392922}
   - type: 3
     item: {fileID: 7187191535903708824}
+  animator: {fileID: 4927431873330913612}
 --- !u!222 &6744442424251077906
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -143,6 +145,25 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
+--- !u!95 &4927431873330913612
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1907849136098932}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 9eb4d1d710fc33c4aa24b760606e845c, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &3274034110448157011
 GameObject:
   m_ObjectHideFlags: 0
@@ -289,7 +310,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a821f310c63b472d84beff6200b2bb9a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  preDelay: 0
+  predelay: 0
   fadeDuration: 1
   fadeCurve:
     serializedVersion: 2
@@ -534,26 +555,6 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4697928661786513789, guid: b65257444a4d144508ffcea19cddd073,
-        type: 3}
-      propertyPath: m_AnchorMin.y
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4697928661786513789, guid: b65257444a4d144508ffcea19cddd073,
-        type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4697928661786513789, guid: b65257444a4d144508ffcea19cddd073,
-        type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 143
-      objectReference: {fileID: 0}
-    - target: {fileID: 4697928661786513789, guid: b65257444a4d144508ffcea19cddd073,
-        type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: -36
-      objectReference: {fileID: 0}
     - target: {fileID: 3942733183846350849, guid: b65257444a4d144508ffcea19cddd073,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -714,6 +715,26 @@ PrefabInstance:
       propertyPath: bottomContainer
       value: 
       objectReference: {fileID: 8356828295376709094}
+    - target: {fileID: 4697928661786513789, guid: b65257444a4d144508ffcea19cddd073,
+        type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4697928661786513789, guid: b65257444a4d144508ffcea19cddd073,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4697928661786513789, guid: b65257444a4d144508ffcea19cddd073,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 143
+      objectReference: {fileID: 0}
+    - target: {fileID: 4697928661786513789, guid: b65257444a4d144508ffcea19cddd073,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -36
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b65257444a4d144508ffcea19cddd073, type: 3}
 --- !u!224 &273452704016942219 stripped

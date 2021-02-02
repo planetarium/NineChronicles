@@ -5,7 +5,7 @@ namespace Nekoyume.UI
 {
     public class GuideDialogData : ITutorialData
     {
-        public TutorialIemType Type { get; } = TutorialIemType.Dialog;
+        public TutorialItemType Type { get; } = TutorialItemType.Dialog;
         public DialogEmojiType EmojiType { get; }
         public DialogCommaType CommaType { get; }
         public string Script { get; }

@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text.Json.Serialization;
 using Nekoyume.Game.Controller;
 using UnityEngine;
 
@@ -11,7 +13,8 @@ namespace Nekoyume.UI
         [SerializeField] private Tutorial tutorial;
         [SerializeField] TextAsset preset;
 
-        private readonly List<List<ITutorialData>> _testData = new List<List<ITutorialData>>();
+        private readonly List<TutorialData> _testData = new List<TutorialData>();
+        private readonly List<Preset> _preset = new List<Preset>();
         private int _testDataIndex = 0;
         private bool _isPlayingTester;
 
@@ -19,7 +22,7 @@ namespace Nekoyume.UI
 #if UNITY_EDITOR
         private void Awake()
         {
-            GetData();
+            GetPreset();
             if (tutorial == null)
             {
                 Debug.LogError("Tutorial is null!");
@@ -31,16 +34,24 @@ namespace Nekoyume.UI
             foreach (var d in data)
             {
                 var list = new List<ITutorialData>();
-                if (d.type == DataType.Play)
+                if (d.Type == DataType.Play)
                 {
-                    list.Add(new GuideBackgroundData(d.IsExistFadeInBackground, d.IsEnableMask,
+                    var preset = _preset.First(x => x.id == d.PresetId);
+                    if (preset == null)
+                    {
+                        Debug.LogError($"Preset is not exist. ID : {d.PresetId}");
+                        return;
+                    }
+
+                    list.Add(new GuideBackgroundData(preset.isExistFadeInBackground, preset.isEnableMask,
                         d.TargetImage));
-                    list.Add(new GuideArrowData(d.ArrowType, d.TargetImage, d.IsSkipArrowAnimation));
-                    list.Add(new GuideDialogData(d.EmojiType, d.CommaType, d.Script,
-                        d.TargetImage.anchoredPosition.y, tutorial.NextButton));
+                    list.Add(new GuideArrowData(d.ArrowType, d.TargetImage, preset.isSkipArrowAnimation));
+                    list.Add(new GuideDialogData(d.EmojiType,
+                        (DialogCommaType)preset.commaId, d.Script,
+                        d.TargetImage? d.TargetImage.anchoredPosition.y : 0, tutorial.NextButton));
                 }
 
-                _testData.Add(list);
+                _testData.Add(new TutorialData(list, d.PresetId));
             }
         }
 
@@ -54,10 +65,10 @@ namespace Nekoyume.UI
                 }
 
                 var list = _testData[_testDataIndex];
-                if (list.Count > 0)
+                if (list.data.Count > 0)
                 {
                     _isPlayingTester = true;
-                    tutorial.Play(list, () =>
+                    tutorial.Play(list.data, list.presetId, () =>
                     {
                         _isPlayingTester = false;
                     });
@@ -76,35 +87,43 @@ namespace Nekoyume.UI
         }
 #endif
 
-        private void GetData()
+        private void GetPreset()
         {
             var json = preset.text;
             if (!string.IsNullOrEmpty(json))
             {
                 var tutorialPreset = JsonUtility.FromJson<TutorialPreset>(json);
-                foreach (var i in tutorialPreset.preset)
-                {
-                    int a = i.id;
-                }
+                _preset.AddRange(tutorialPreset.preset);
             }
         }
     }
 
+    public class TutorialData
+    {
+        public List<ITutorialData> data;
+        public int presetId;
+
+        public TutorialData(List<ITutorialData> data, int presetId)
+        {
+            this.data = data;
+            this.presetId = presetId;
+        }
+    }
+
+
     [Serializable]
     public class TutorialTestData
     {
-        public DataType type;
+        public DataType Type;
         public RectTransform TargetImage;
-        // bg
-        public bool IsExistFadeInBackground;
-        public bool IsEnableMask;
-        // arrow
+        public int PresetId;
         public GuideType ArrowType;
-        public bool IsSkipArrowAnimation;
-        // dialog
         public DialogEmojiType EmojiType;
-        public DialogCommaType CommaType;
         public string Script;
+    }
+
+    public class StringEnumConverter
+    {
     }
 
 

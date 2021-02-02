@@ -16,6 +16,6 @@ namespace Nekoyume.UI
         public bool isExistFadeInBackground;
         public bool isEnableMask;
         public bool isSkipArrowAnimation;
-        public DialogCommaType commaType;
+        public int commaId;
     }
 }
