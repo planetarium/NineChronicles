@@ -419,6 +419,18 @@ namespace Nekoyume.UI
         {
             base.OnCompleteOfShowAnimationInternal();
             Find<Dialog>().Show(1);
+
+            var tutorialController = Game.Game.instance.Stage.TutorialController;
+            var tutorialProgress = tutorialController.GetTutorialProgress();
+            if (tutorialProgress <= 0)
+            {
+                tutorialController.Play(1);
+            }
+            else if (tutorialProgress == 1)
+            {
+                tutorialController.Play(2);
+            }
+
             StartCoroutine(CoHelpPopup());
         }
 

@@ -1,7 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.L10n;
+using Nekoyume.State;
 using UnityEngine;
 
 namespace Nekoyume.UI
@@ -58,14 +59,14 @@ namespace Nekoyume.UI
             return !string.IsNullOrEmpty(data) ? JsonUtility.FromJson<T>(data) : new T();
         }
 
-        public void Play(int index)
+        public void Play(int id)
         {
             if (!_tutorial.isActiveAndEnabled)
             {
                 _tutorial.Show();
             }
 
-            var scenario = _scenario.FirstOrDefault(x => x.id == index);
+            var scenario = _scenario.FirstOrDefault(x => x.id == id);
             if (scenario != null)
             {
                 var viewData = GetTutorialData(scenario.data);
@@ -74,10 +75,10 @@ namespace Nekoyume.UI
                     PlayAction(scenario.data.actionType);
                     Play(scenario.nextId);
                 });
+                SaveTutorialProgress(id);
             }
             else
             {
-                // todo : 여기서 playerprefs save
                 _tutorial.Stop();
             }
         }
@@ -106,6 +107,24 @@ namespace Nekoyume.UI
                 new GuideDialogData(data.emojiType, (DialogCommaType) preset.commaId, script,
                     target, _tutorial.NextButton)
             };
+        }
+
+        public int GetTutorialProgress()
+        {
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+
+            var prefsKey = $"TUTORIAL_PROGRESS_{avatarAddress}";
+            var progress = PlayerPrefs.GetInt(prefsKey, 0);
+            return progress;
+        }
+
+        private void SaveTutorialProgress(int id)
+        {
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+
+            var prefsKey = $"TUTORIAL_PROGRESS_{avatarAddress}";
+            PlayerPrefs.SetInt(prefsKey, id);
+            Debug.LogError($"save {id}");
         }
     }
 }

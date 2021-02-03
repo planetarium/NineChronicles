@@ -1,4 +1,5 @@
 using Nekoyume.Pattern;
+using Nekoyume.State;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,6 +18,9 @@ namespace Nekoyume.UI
         private static List<TutorialModel> _sharedViewModelsCache = null;
 
         private TutorialModel _currentViewModel = null;
+
+
+        private int _currentId = 0;
 
         private int _currentIndex = -1;
 
@@ -61,8 +65,9 @@ namespace Nekoyume.UI
             return null;
         }
 
-        public void SetTutorialId(int id)
+        private void SetTutorialId(int id)
         {
+            _currentId = id;
             _currentViewModel = SharedViewModels.Find(x => x.id.Equals(id));
             if (_currentViewModel is null)
             {
@@ -87,6 +92,41 @@ namespace Nekoyume.UI
 
             var page = _currentViewModel.pages[_currentIndex];
             return page;
+        }
+
+        public void Play(int id)
+        {
+            if (_currentId != id)
+            {
+                _currentIndex = -1;
+                SetTutorialId(id);
+            }
+
+            if (_currentViewModel.pages.Length <= _currentIndex + 1)
+            {
+                return;
+            }
+
+            _currentIndex++;
+            SaveTutorialProgress();
+            Debug.LogError($"tutorial play id : {_currentId}, index : {_currentIndex}");
+        }
+
+        public int GetTutorialProgress()
+        {
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+
+            var prefsKey = $"TUTORIAL_PROGRESS_{avatarAddress}";
+            var progress = PlayerPrefs.GetInt(prefsKey, 0);
+            return progress;
+        }
+
+        private void SaveTutorialProgress()
+        {
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+
+            var prefsKey = $"TUTORIAL_PROGRESS_{avatarAddress}";
+            PlayerPrefs.SetInt(prefsKey, _currentId);
         }
     }
 }
