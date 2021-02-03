@@ -40,3 +40,10 @@ jobs:
           @${{ github.actor }} Libplanet 어셈블리 파일들의 버전이 Lib9c가 참조하는 버전보다 오래되었습니다.
           Lib9c 서브모듈 안에 있는 Libplanet 서브모듈을 `dotnet build` 명령으로 빌드하고 새 어셈블리를 복사하세요.
       if: failure() && github.event_name == 'pull_request'
+  build_installer:
+    runs-on: windows-latest
+    name: build installer
+    steps:
+      - uses: actions/checkout@v2.3.4
+      - run: dotnet publish tools/Updater/Updater/Updater.csproj -r win-x64 --self-contained
+      - run: ISCC tools/installer/installer.iss
