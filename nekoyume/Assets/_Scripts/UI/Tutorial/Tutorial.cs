@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -141,10 +141,10 @@ namespace Nekoyume.UI
     [Serializable]
     public class ItemContainer
     {
-        [SerializeField] private TutorialIemType type;
+        [SerializeField] private TutorialItemType type;
         [SerializeField] private TutorialItem item;
 
-        public TutorialIemType Type => type;
+        public TutorialItemType Type => type;
         public TutorialItem Item => item;
     }
 }

@@ -1,26 +1,26 @@
-﻿using System.Diagnostics.Tracing;
+using System.Diagnostics.Tracing;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
     public class GuideDialogData : ITutorialData
     {
-        public TutorialIemType Type { get; } = TutorialIemType.Dialog;
+        public TutorialItemType Type { get; } = TutorialItemType.Dialog;
         public DialogEmojiType EmojiType { get; }
         public DialogCommaType CommaType { get; }
-        public string Script { get; }
+        public string ScriptL10nKey { get; }
         public float TargetHeight { get; }
         public Button Button { get; }
 
         public GuideDialogData(DialogEmojiType emojiType,
             DialogCommaType commaType,
-            string script,
+            string scriptL10nKey,
             float targetHeight,
             Button button)
         {
             EmojiType = emojiType;
             CommaType = commaType;
-            Script = script;
+            ScriptL10nKey = scriptL10nKey;
             TargetHeight = targetHeight;
             Button = button;
         }

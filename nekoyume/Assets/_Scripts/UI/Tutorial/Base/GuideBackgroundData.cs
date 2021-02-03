@@ -4,7 +4,7 @@ namespace Nekoyume.UI
 {
     public class GuideBackgroundData : ITutorialData
     {
-        public TutorialIemType Type { get; } = TutorialIemType.Background;
+        public TutorialItemType Type { get; } = TutorialItemType.Background;
         public bool IsExistFadeIn { get; }
         public bool IsEnableMask { get; }
         public RectTransform Target { get; }

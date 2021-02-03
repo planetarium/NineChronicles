@@ -65,6 +65,9 @@ namespace Nekoyume.UI
         [SerializeField]
         private CanvasLayer developmentLayer = default;
 
+        [SerializeField]
+        private CanvasLayer tutorialMaskLayer = default;
+
         private List<CanvasLayer> _layers;
 
         public RectTransform RectTransform { get; private set; }
@@ -96,6 +99,8 @@ namespace Nekoyume.UI
                     return systemInfoLayer;
                 case WidgetType.Development:
                     return developmentLayer;
+                case WidgetType.TutorialMask:
+                    return tutorialMaskLayer;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(widgetType), widgetType, null);
             }

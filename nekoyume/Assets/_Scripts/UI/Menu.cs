@@ -15,6 +15,8 @@ using mixpanel;
 using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
+using System.Collections.Generic;
+using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
@@ -65,6 +67,8 @@ namespace Nekoyume.UI
         [SerializeField]
         private GuidedQuest guidedQuest = null;
 
+        [SerializeField]
+        private Tutorial tutorial = null;
 
         private Coroutine _coLazyClose;
 
@@ -83,6 +87,9 @@ namespace Nekoyume.UI
             guidedQuest.OnClickCombinationEquipmentQuestCell
                 .Subscribe(_ => GoToCombinationEquipmentRecipe())
                 .AddTo(gameObject);
+
+            var layerRoot = MainCanvas.instance.GetLayerRootTransform(EnumType.WidgetType.TutorialMask);
+            tutorial = layerRoot.GetComponentInChildren<Tutorial>();
         }
 
         // TODO: QuestPreparation.Quest(bool repeat) 와 로직이 흡사하기 때문에 정리할 여지가 있습니다.
@@ -401,6 +408,25 @@ namespace Nekoyume.UI
 
         public override void Show(bool ignoreShowAnimation = false)
         {
+            TutorialDispenser.instance.SetTutorialId(1);
+            var pageModel = TutorialDispenser.instance.GetNextTutorialData();
+
+            if (!(pageModel is null))
+            {
+                var questTransform = btnShop.transform as RectTransform;
+
+                var list = new List<ITutorialData>()
+                {
+                    new GuideBackgroundData(true, true, questTransform),
+                    new GuideArrowData(pageModel.guideType, questTransform, false),
+                    new GuideDialogData(pageModel.dialogEmojiType, DialogCommaType.Next,
+                        pageModel.contentL10nKey,
+                        questTransform.anchoredPosition.y, btnShop.GetComponent<Button>())
+                };
+                tutorial.Play(list, () => tutorial.Stop());
+            }
+
+
             if (!(_coLazyClose is null))
             {
                 StopCoroutine(_coLazyClose);

@@ -1,6 +1,6 @@
-﻿namespace Nekoyume.UI
+namespace Nekoyume.UI
 {
-    public enum TutorialIemType
+    public enum TutorialItemType
     {
         None = 0,
         Arrow = 1,

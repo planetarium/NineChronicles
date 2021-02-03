@@ -1,13 +1,42 @@
 {
-    "tutorials" :
+    "tutorialModels" :
     [
 	{
 	    "id": 1,
+	    "pageType": 0,
 	    "pages":
 	    [
 		{
-		    "type": 2,
-		    "content": "여정을 시작하자! <b>여기</b>를 클릭해줘."
+		    "dialogEmojiType": 2,
+		    "guideType": 1,
+		    "contentL10nKey": "TUTORIAL_01_001"
+		}
+	    ]
+	},
+	{
+	    "id": 2,
+	    "pageType": 1,
+	    "pages":
+	    [
+		{
+		    
+		}
+	    ]
+	},
+	{
+	    "id": 3,
+	    "pageType": 0,
+	    "pages":
+	    [
+		{
+		    "dialogEmojiType": 2,
+		    "guideType": 1,
+		    "contentL10nKey": "TUTORIAL_02_001"
+		},
+		{
+		    "dialogEmojiType": 2,
+		    "guideType": 1,
+		    "contentL10nKey": "TUTORIAL_02_002"
 		}
 	    ]
 	}

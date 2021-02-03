@@ -1,9 +1,10 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using DG.Tweening;
 using Nekoyume.Game.Controller;
 using UnityEngine;
 using RedBlueGames.Tools.TextTyper;
+using Nekoyume.L10n;
 
 namespace Nekoyume.UI
 {
@@ -38,7 +39,10 @@ namespace Nekoyume.UI
                 ShowComma(DialogCommaType.None);
                 SetFade(true, fadeDuration, () =>
                 {
-                    _script = d.Script;
+                    var l10nKey = d.ScriptL10nKey;
+                    _script = L10nManager.TryLocalize(l10nKey, out var script) ?
+                        script : $"!!{d.ScriptL10nKey}";
+
                     Typing();
 
                     d.Button.onClick.AddListener(OnClick);
