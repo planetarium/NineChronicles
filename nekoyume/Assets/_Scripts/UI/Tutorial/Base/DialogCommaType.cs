@@ -1,4 +1,6 @@
-﻿namespace Nekoyume.UI
+﻿using System;
+
+namespace Nekoyume.UI
 {
     public enum DialogCommaType
     {

@@ -29,24 +29,6 @@ namespace Nekoyume.UI
             }
         }
 
-        private IEnumerator PlayAnimation(GuideType guideType,
-            bool isSkip,
-            System.Action callback)
-        {
-            _arrow.Play(_guideTypes[guideType], -1, isSkip ? 1 : 0);
-            var length = _arrow.GetCurrentAnimatorStateInfo(0).length;
-            yield return new WaitForSeconds(length);
-            callback?.Invoke();
-        }
-
-        private void ClearCachedImageMaterial()
-        {
-            if (_cachedImage != null)
-            {
-                _cachedImage.material = null;
-            }
-        }
-
         public override void Play<T>(T data, System.Action callback)
         {
             if (data is GuideArrowData d)
@@ -56,29 +38,55 @@ namespace Nekoyume.UI
                     StopCoroutine(_coroutine);
                 }
 
-                ClearCachedImageMaterial();
-                _rectTransform.anchoredPosition  = d.Target.anchoredPosition;
-                _rectTransform.sizeDelta = d.Target.sizeDelta;
-                AudioController.instance.PlaySfx(AudioController.SfxCode.Notice);
-                if (d.GuideType == GuideType.Outline)
+                Reset();
+                _arrow.Play(_guideTypes[GuideType.Stop]);
+
+                if (d.GuideType != GuideType.Stop)
                 {
-                    _cachedImage = d.Target.GetComponent<Image>();
-                    _cachedImage.material = growOutline;
+                    _rectTransform.anchoredPosition = d.Target.anchoredPosition;
+                    _rectTransform.sizeDelta = d.Target.sizeDelta;
+                    if (d.GuideType == GuideType.Outline)
+                    {
+                        _cachedImage = d.Target.GetComponent<Image>();
+                        _cachedImage.material = growOutline;
+                    }
                 }
 
+                AudioController.instance.PlaySfx(AudioController.SfxCode.Notice);
                 _coroutine = StartCoroutine(PlayAnimation(d.GuideType, d.IsSkip, callback));
             }
         }
 
-        public override void Stop()
+        public override void Stop(System.Action callback)
         {
             if (_coroutine != null)
             {
                 StopCoroutine(_coroutine);
             }
 
-            ClearCachedImageMaterial();
-            _coroutine = StartCoroutine(PlayAnimation(GuideType.Stop, false, null));
+            Reset();
+            _coroutine = StartCoroutine(PlayAnimation(GuideType.Stop, false, callback));
+        }
+
+        private IEnumerator PlayAnimation(GuideType guideType,
+            bool isSkip,
+            System.Action callback)
+        {
+            yield return new WaitForSeconds(predelay);
+            _arrow.Play(_guideTypes[guideType], -1, isSkip ? 1 : 0);
+            var length = _arrow.GetCurrentAnimatorStateInfo(0).length;
+            yield return new WaitForSeconds(length);
+            callback?.Invoke();
+        }
+
+        private void Reset()
+        {
+            _rectTransform.anchoredPosition = Vector2.zero;
+            _rectTransform.sizeDelta = Vector2.zero;
+            if (_cachedImage != null)
+            {
+                _cachedImage.material = null;
+            }
         }
     }
 }

@@ -1,15 +1,19 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
 using Nekoyume.Game.Controller;
 using UnityEngine;
 using RedBlueGames.Tools.TextTyper;
 using Nekoyume.L10n;
+using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
     public class GuideDialog : TutorialItem
     {
+        [SerializeField] private float fadeDuration = 1.0f;
+        [SerializeField] private AnimationCurve fadeCurve = new AnimationCurve(new Keyframe(0, 0), new Keyframe(1, 1));
         [SerializeField] private Transform topContainer;
         [SerializeField] private Transform bottomContainer;
         [SerializeField] private TextTyper textTyper;
@@ -17,43 +21,53 @@ namespace Nekoyume.UI
         [SerializeField] private List<Emoji> emojiList;
         [SerializeField] private List<Comma> commaList;
 
-        [SerializeField] private float fadeDuration = 1.0f;
-
         private string _script = string.Empty;
 
         private System.Action _callback;
+        private Coroutine _coroutine;
+        private Button _button;
 
         public override void Play<T>(T data, System.Action callback)
         {
             if (data is GuideDialogData d)
             {
-                transform.SetParent(d.TargetHeight > 0 ? topContainer : bottomContainer);
-                transform.localPosition = Vector3.zero;
-                ShowEmoji(d.EmojiType);
-                PlaySound(d.EmojiType);
-                textTyper.TypeText(string.Empty);
-                textTyper.PrintCompleted.RemoveAllListeners();
-                textTyper.PrintCompleted.AddListener(() => { ShowComma(d.CommaType); });
-                textTyper.CharacterPrinted.RemoveAllListeners();
-                textTyper.CharacterPrinted.AddListener(PlaySound);
-                ShowComma(DialogCommaType.None);
-                SetFade(true, fadeDuration, () =>
+                if (_coroutine != null)
                 {
-                    var l10nKey = d.ScriptL10nKey;
-                    _script = L10nManager.TryLocalize(l10nKey, out var script) ?
-                        script : $"!!{d.ScriptL10nKey}";
-
-                    Typing();
-
-                    d.Button.onClick.AddListener(OnClick);
-                    _callback = callback;
-                });
+                    StopCoroutine(_coroutine);
+                }
+                _coroutine = StartCoroutine(LatePlay(d, callback));
             }
         }
 
-        public override void Stop()
+        public override void Stop(System.Action callback)
         {
-            SetFade(false, fadeDuration);
+            SetFade(false, fadeDuration, callback);
+        }
+
+        private IEnumerator LatePlay(GuideDialogData data, System.Action callback)
+        {
+            yield return new WaitForSeconds(predelay);
+            transform.SetParent(data.TargetHeight > 0 ? topContainer : bottomContainer);
+            transform.localPosition = Vector3.zero;
+            ShowEmoji(data.EmojiType);
+            PlaySound(data.EmojiType);
+            textTyper.TypeText(string.Empty);
+            textTyper.PrintCompleted.RemoveAllListeners();
+            textTyper.PrintCompleted.AddListener(() => { ShowComma(data.CommaType); });
+            textTyper.CharacterPrinted.RemoveAllListeners();
+            textTyper.CharacterPrinted.AddListener(PlaySound);
+            ShowComma(DialogCommaType.None);
+            SetFade(true, fadeDuration, () =>
+            {
+                var l10nKey = data.ScriptL10nKey;
+                _script = L10nManager.TryLocalize(l10nKey, out var script) ?
+                    script : $"!!{data.ScriptL10nKey}";
+                Typing();
+
+                _button = data.Button;
+                _button.onClick.AddListener(OnClick);
+                _callback = callback;
+            });
         }
 
         private void OnClick()
@@ -65,6 +79,7 @@ namespace Nekoyume.UI
             }
             else
             {
+                _button?.onClick.RemoveAllListeners();
                 _callback?.Invoke();
             }
         }
@@ -112,10 +127,12 @@ namespace Nekoyume.UI
             _script = string.Empty;
         }
 
-        private void SetFade(bool isIn, float duration, System.Action action = null)
+        private void SetFade(bool isIn, float duration, System.Action action)
         {
             canvasGroup.alpha = isIn ? 0 : 1;
-            canvasGroup.DOFade(isIn ? 1 : 0, duration).OnComplete(() => action?.Invoke());
+            canvasGroup.DOFade(isIn ? 1 : 0, duration)
+                .SetEase(fadeCurve)
+                .OnComplete(() => action?.Invoke());
         }
 
         private void PlaySound(string printedCharacter)
