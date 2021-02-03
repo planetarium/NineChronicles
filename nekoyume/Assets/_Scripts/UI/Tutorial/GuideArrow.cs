@@ -41,6 +41,11 @@ namespace Nekoyume.UI
                 Reset();
                 _arrow.Play(_guideTypes[GuideType.Stop]);
 
+                if (d.Target == null)
+                {
+                    d.GuideType = GuideType.Stop;
+                }
+
                 if (d.GuideType != GuideType.Stop)
                 {
                     _rectTransform.anchoredPosition = d.Target.anchoredPosition;

@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Nekoyume.UI
 {
+    [Serializable]
     public enum GuideType
     {
         None = 0,

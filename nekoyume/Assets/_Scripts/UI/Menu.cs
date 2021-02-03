@@ -67,9 +67,6 @@ namespace Nekoyume.UI
         [SerializeField]
         private GuidedQuest guidedQuest = null;
 
-        [SerializeField]
-        private Tutorial tutorial = null;
-
         private Coroutine _coLazyClose;
 
         protected override void Awake()
@@ -87,9 +84,6 @@ namespace Nekoyume.UI
             guidedQuest.OnClickCombinationEquipmentQuestCell
                 .Subscribe(_ => GoToCombinationEquipmentRecipe())
                 .AddTo(gameObject);
-
-            var layerRoot = MainCanvas.instance.GetLayerRootTransform(EnumType.WidgetType.TutorialMask);
-            tutorial = layerRoot.GetComponentInChildren<Tutorial>();
         }
 
         // TODO: QuestPreparation.Quest(bool repeat) 와 로직이 흡사하기 때문에 정리할 여지가 있습니다.
@@ -408,25 +402,6 @@ namespace Nekoyume.UI
 
         public override void Show(bool ignoreShowAnimation = false)
         {
-            TutorialDispenser.instance.SetTutorialId(1);
-            var pageModel = TutorialDispenser.instance.GetNextTutorialData();
-
-            if (!(pageModel is null))
-            {
-                var questTransform = btnShop.transform as RectTransform;
-
-                var list = new List<ITutorialData>()
-                {
-                    new GuideBackgroundData(true, true, questTransform),
-                    new GuideArrowData(pageModel.guideType, questTransform, false),
-                    new GuideDialogData(pageModel.dialogEmojiType, DialogCommaType.Next,
-                        pageModel.contentL10nKey,
-                        questTransform.anchoredPosition.y, btnShop.GetComponent<Button>())
-                };
-                tutorial.Play(list, () => tutorial.Stop());
-            }
-
-
             if (!(_coLazyClose is null))
             {
                 StopCoroutine(_coLazyClose);
@@ -510,5 +485,22 @@ namespace Nekoyume.UI
                 bubble.Hide();
             }
         }
+
+#if UNITY_EDITOR
+        public void LateUpdate()
+        {
+            if (Input.GetKeyDown(KeyCode.Alpha1))
+            {
+                var controller = Game.Game.instance.Stage.TutorialController;
+                controller.Play(1);
+            }
+
+            if (Input.GetKeyDown(KeyCode.Alpha2))
+            {
+                var controller = Game.Game.instance.Stage.TutorialController;
+                controller.Play(2);
+            }
+        }
+#endif
     }
 }

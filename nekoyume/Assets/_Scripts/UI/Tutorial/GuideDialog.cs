@@ -5,7 +5,6 @@ using DG.Tweening;
 using Nekoyume.Game.Controller;
 using UnityEngine;
 using RedBlueGames.Tools.TextTyper;
-using Nekoyume.L10n;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI
@@ -47,7 +46,8 @@ namespace Nekoyume.UI
         private IEnumerator LatePlay(GuideDialogData data, System.Action callback)
         {
             yield return new WaitForSeconds(predelay);
-            transform.SetParent(data.TargetHeight > 0 ? topContainer : bottomContainer);
+            var height = data.Target ? data.Target.anchoredPosition.y : 0;
+            transform.SetParent(height > 0 ? topContainer : bottomContainer);
             transform.localPosition = Vector3.zero;
             ShowEmoji(data.EmojiType);
             PlaySound(data.EmojiType);
@@ -59,9 +59,7 @@ namespace Nekoyume.UI
             ShowComma(DialogCommaType.None);
             SetFade(true, fadeDuration, () =>
             {
-                var l10nKey = data.ScriptL10nKey;
-                _script = L10nManager.TryLocalize(l10nKey, out var script) ?
-                    script : $"!!{data.ScriptL10nKey}";
+                _script = data.Script;
                 Typing();
 
                 _button = data.Button;

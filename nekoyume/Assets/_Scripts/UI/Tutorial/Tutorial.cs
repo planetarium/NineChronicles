@@ -1,13 +1,16 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Nekoyume.EnumType;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
-    public class Tutorial : MonoBehaviour
+    public class Tutorial : Widget
     {
+        public override WidgetType WidgetType => WidgetType.TutorialMask;
+
         [SerializeField] private Button button;
         [SerializeField] private List<ItemContainer> items;
         [SerializeField] private Animator animator;

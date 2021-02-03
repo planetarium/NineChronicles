@@ -1,13 +1,15 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Nekoyume.UI
 {
+    [Serializable]
     public enum DialogEmojiType
     {
-        None = 0,
-        Idle = 1,
-        Reaction = 2,
-        Question = 3,
+        None,
+        Idle,
+        Reaction,
+        Question,
     }
 
     public class DialogEmojiTypeEqualityComparer : IEqualityComparer<DialogEmojiType>

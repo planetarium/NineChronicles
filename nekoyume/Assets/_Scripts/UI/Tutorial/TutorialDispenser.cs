@@ -39,9 +39,10 @@ namespace Nekoyume.UI
         {
             public int presetId;
             public string contentL10nKey;
-            public string eventMessage;
             public DialogEmojiType dialogEmojiType;
             public GuideType guideType;
+            public TutorialActionType actionType;
+            public TutorialTargetType targetType;
         }
 
         private static List<TutorialModel> LoadTutorialData()

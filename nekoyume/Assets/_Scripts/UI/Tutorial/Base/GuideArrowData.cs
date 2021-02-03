@@ -5,7 +5,7 @@ namespace Nekoyume.UI
     public class GuideArrowData : ITutorialData
     {
         public TutorialItemType Type { get; } = TutorialItemType.Arrow;
-        public GuideType GuideType { get; }
+        public GuideType GuideType { get; set; }
         public RectTransform Target { get; }
         public bool IsSkip { get; }
 

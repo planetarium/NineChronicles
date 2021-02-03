@@ -1,0 +1,40 @@
+{
+  "scenario": [
+    {
+      "id": 1,
+      "nextId": 0,
+      "data": {
+        "presetId": 0,
+        "targetType": "None",
+        "actionType": "None",
+        "emojiType": "Idle",
+        "guideType": "Square",
+        "scriptKey": "TUTORIAL_01_001"
+      }
+    },
+    {
+      "id": 2,
+      "nextId": 3,
+      "data": {
+        "presetId": 0,
+        "targetType": "None",
+        "actionType": "None",
+        "emojiType": "Reaction",
+        "guideType": "Square",
+        "scriptKey": "TUTORIAL_02_001"
+      }
+    },
+    {
+      "id": 3,
+      "nextId": 0,
+      "data": {
+        "presetId": 0,
+        "targetType": "HackAndSlashButton",
+        "actionType": "QuestClick",
+        "emojiType": "Question",
+        "guideType": "Square",
+        "scriptKey": "TUTORIAL_02_002"
+      }
+    }
+  ]
+}

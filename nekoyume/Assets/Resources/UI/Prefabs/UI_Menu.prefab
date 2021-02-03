@@ -537,6 +537,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ded8021858983437eab04b38bf769d43, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  tutorialTargets:
+  - type: 1
+    rectTransform: {fileID: 224386849675439830}
+  - type: 2
+    rectTransform: {fileID: 224715911739947860}
+  tutorialActions: 01000000
   btnQuest: {fileID: 7983721594100104734}
   btnCombination: {fileID: 4877393150678171673}
   btnShop: {fileID: 3450333501486923500}
