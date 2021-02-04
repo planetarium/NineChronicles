@@ -69,6 +69,9 @@ namespace Nekoyume.UI
 
         private Coroutine _coLazyClose;
 
+        public SpriteRenderer combinationSpriteRenderer;
+        public SpriteRenderer hasSpriteRenderer;
+
         protected override void Awake()
         {
             base.Awake();
