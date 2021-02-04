@@ -79,7 +79,7 @@ namespace Nekoyume.UI
             }
             else
             {
-                _tutorial.Stop();
+                _tutorial.Stop(() => _tutorial.gameObject.SetActive(false));
             }
         }
 
