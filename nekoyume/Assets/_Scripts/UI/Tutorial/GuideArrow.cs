@@ -49,10 +49,8 @@ namespace Nekoyume.UI
                 if (d.guideType != GuideType.Stop)
                 {
                     Vector3 position = d.target.position;
-                    position = new Vector3(
-                        position.x + d.targetPositionOffset.x,
-                        position.y + d.targetPositionOffset.y,
-                        position.z);
+                    position = new Vector3(position.x + d.targetPositionOffset.x,
+                        position.y + d.targetPositionOffset.y, position.z);
                     _rectTransform.position = position;
 
                     Vector2 sizeDelta = d.target.sizeDelta + d.targetSizeOffset;
@@ -65,7 +63,6 @@ namespace Nekoyume.UI
                     }
                 }
 
-                AudioController.instance.PlaySfx(AudioController.SfxCode.GuideArrow);
                 _coroutine = StartCoroutine(PlayAnimation(d.guideType, d.isSkip, callback));
             }
         }
@@ -81,9 +78,7 @@ namespace Nekoyume.UI
             _coroutine = StartCoroutine(PlayAnimation(GuideType.Stop, false, callback));
         }
 
-        private IEnumerator PlayAnimation(GuideType guideType,
-            bool isSkip,
-            System.Action callback)
+        private IEnumerator PlayAnimation(GuideType guideType, bool isSkip, System.Action callback)
         {
             yield return new WaitForSeconds(predelay);
             _arrow.Play(_guideTypes[guideType], -1, isSkip ? 1 : 0);
@@ -100,6 +95,11 @@ namespace Nekoyume.UI
             {
                 _cachedImage.material = null;
             }
+        }
+
+        public void PlaySfx()
+        {
+            AudioController.instance.PlaySfx(AudioController.SfxCode.GuideArrow);
         }
     }
 }
