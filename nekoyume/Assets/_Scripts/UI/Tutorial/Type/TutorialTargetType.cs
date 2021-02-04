@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Nekoyume.L10n;
 
 namespace Nekoyume.UI
 {

@@ -1,6 +1,6 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using Nekoyume.L10n;
 using Nekoyume.State;
 using UnityEngine;
@@ -56,7 +56,7 @@ namespace Nekoyume.UI
         private T GetData<T>(string path) where T : new()
         {
             var data = Resources.Load<TextAsset>(path)?.text;
-            return !string.IsNullOrEmpty(data) ? JsonUtility.FromJson<T>(data) : new T();
+            return !string.IsNullOrEmpty(data) ? JsonSerializer.Deserialize<T>(data) : new T();
         }
 
         public void Play(int id)

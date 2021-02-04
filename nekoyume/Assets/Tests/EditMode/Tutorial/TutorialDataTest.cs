@@ -1,7 +1,6 @@
-using System.Collections.Generic;
+using System.Text.Json;
 using Nekoyume.UI;
 using NUnit.Framework;
-using UnityEngine;
 
 namespace Tests.EditMode.Tutorial
 {
@@ -11,8 +10,8 @@ namespace Tests.EditMode.Tutorial
         public void ScenarioDataSerialize()
         {
             ScenarioData data = MakeScenarioData();
-            string json = JsonUtility.ToJson(data);
-            ScenarioData fromJsonData = JsonUtility.FromJson<ScenarioData>(json);
+            string json = JsonSerializer.Serialize(data);
+            ScenarioData fromJsonData = JsonSerializer.Deserialize<ScenarioData>(json);
             Assert.AreEqual(data, fromJsonData);
         }
 
@@ -20,8 +19,8 @@ namespace Tests.EditMode.Tutorial
         public void ScenarioSerialize()
         {
             Scenario data = MakeScenario();
-            string json = JsonUtility.ToJson(data);
-            Scenario fromJsonData = JsonUtility.FromJson<Scenario>(json);
+            string json = JsonSerializer.Serialize(data);
+            Scenario fromJsonData = JsonSerializer.Deserialize<Scenario>(json);
             Assert.AreEqual(data, fromJsonData);
         }
 
@@ -29,10 +28,10 @@ namespace Tests.EditMode.Tutorial
         public void TutorialScenarioSerialize()
         {
             TutorialScenario data = MakeTutorialScenario(3);
-            string json = JsonUtility.ToJson(data);
-            TutorialScenario fromJsonData = JsonUtility.FromJson<TutorialScenario>(json);
-            Assert.AreEqual(data.scenario.Count, fromJsonData.scenario.Count);
-            int count = data.scenario.Count;
+            string json = JsonSerializer.Serialize(data);
+            TutorialScenario fromJsonData = JsonSerializer.Deserialize<TutorialScenario>(json);
+            Assert.AreEqual(data.scenario.Length, fromJsonData.scenario.Length);
+            int count = data.scenario.Length;
             for (int i = 0; i < count; i++)
             {
                 Assert.AreEqual(data.scenario[i], fromJsonData.scenario[i]);
@@ -64,10 +63,10 @@ namespace Tests.EditMode.Tutorial
 
         private TutorialScenario MakeTutorialScenario(int count)
         {
-            List<Scenario> scenarioArray = new List<Scenario>(count);
+            Scenario[] scenarioArray = new Scenario[count];
             for (int i = 0; i < count; i++)
             {
-                scenarioArray.Add(MakeScenario());
+                scenarioArray[i] = MakeScenario();
             }
 
             return new TutorialScenario

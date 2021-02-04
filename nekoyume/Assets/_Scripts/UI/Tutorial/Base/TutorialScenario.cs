@@ -1,20 +1,22 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace Nekoyume.UI
 {
     [Serializable]
     public class TutorialScenario
     {
-        public List<Scenario> scenario;
+        public Scenario[] scenario { get; set; }
     }
 
     [Serializable]
     public class Scenario
     {
-        public int id;
-        public int nextId;
-        public ScenarioData data;
+        public int id { get; set; }
+
+        public int nextId { get; set; }
+
+        public ScenarioData data { get; set; }
 
         protected bool Equals(Scenario other)
         {
@@ -46,12 +48,21 @@ namespace Nekoyume.UI
     [Serializable]
     public class ScenarioData
     {
-        public int presetId;
-        public TutorialTargetType targetType;
-        public TutorialActionType actionType;
-        public GuideType guideType;
-        public DialogEmojiType emojiType;
-        public string scriptKey;
+        public int presetId { get; set; }
+
+        [JsonConverter(typeof(JsonStringEnumConverter))]
+        public TutorialTargetType targetType { get; set; }
+
+        [JsonConverter(typeof(JsonStringEnumConverter))]
+        public TutorialActionType actionType { get; set; }
+
+        [JsonConverter(typeof(JsonStringEnumConverter))]
+        public GuideType guideType { get; set; }
+
+        [JsonConverter(typeof(JsonStringEnumConverter))]
+        public DialogEmojiType emojiType { get; set; }
+
+        public string scriptKey { get; set; }
 
         protected bool Equals(ScenarioData other)
         {
