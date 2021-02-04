@@ -512,7 +512,7 @@
       "data": {
         "presetId": 3,
         "targetType": "None",
-        "actionType": "None",
+        "actionType": "TutorialActionClickFirstInventoryCellView",
         "emojiType": "Idle",
         "guideType": "Square",
         "scriptKey": "TUTORIAL_02_021"
@@ -524,7 +524,7 @@
       "data": {
         "presetId": 6,
         "targetType": "None",
-        "actionType": "None",
+        "actionType": "TutorialActionClickItemInformationTooltipSubmitButton",
         "emojiType": "Idle",
         "guideType": "Square",
         "scriptKey": "TUTORIAL_02_022"
@@ -560,7 +560,7 @@
       "data": {
         "presetId": 9,
         "targetType": "None",
-        "actionType": "None",
+        "actionType": "TutorialActionCloseAvatarInfoWidget",
         "emojiType": "Idle",
         "guideType": "None",
         "scriptKey": "TUTORIAL_02_025"
