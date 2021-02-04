@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   CurvePresets:
   - Name: CrazyFlip
-    timeOffsetPerChar: 0.043
+    timeOffsetPerChar: 0.098
     xPosCurve:
       serializedVersion: 2
       m_Curve:
@@ -151,8 +151,8 @@ MonoBehaviour:
       m_PostInfinity: 1
       m_RotationOrder: 4
     scaleMultiplier: 1
-  - Name: SlowSine
-    timeOffsetPerChar: 0.058
+  - Name: Preparing for crafting
+    timeOffsetPerChar: 0.108
     xPosCurve:
       serializedVersion: 2
       m_Curve: []
@@ -165,7 +165,7 @@ MonoBehaviour:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 0
+        value: -0.14852701
         inSlope: 3.7978075
         outSlope: 3.7978075
         tangentMode: 0
@@ -174,7 +174,7 @@ MonoBehaviour:
         outWeight: 0.060301617
       - serializedVersion: 3
         time: 0.25
-        value: 1
+        value: -0.014934625
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -183,7 +183,7 @@ MonoBehaviour:
         outWeight: 0.33333334
       - serializedVersion: 3
         time: 0.75
-        value: -1
+        value: -0.2821194
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -192,7 +192,7 @@ MonoBehaviour:
         outWeight: 0
       - serializedVersion: 3
         time: 1
-        value: 0
+        value: -0.14852701
         inSlope: 4.5849752
         outSlope: 4.5849752
         tangentMode: 0
@@ -202,14 +202,14 @@ MonoBehaviour:
       m_PreInfinity: 1
       m_PostInfinity: 1
       m_RotationOrder: 4
-    yPosMultiplier: 8.3
+    yPosMultiplier: 4
     rotationCurve:
       serializedVersion: 2
       m_Curve: []
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    rotationMultiplier: 0
+    rotationMultiplier: 7.2
     scaleCurve:
       serializedVersion: 2
       m_Curve: []
@@ -218,14 +218,14 @@ MonoBehaviour:
       m_RotationOrder: 4
     scaleMultiplier: 0
   - Name: Bounce
-    timeOffsetPerChar: 0.009
+    timeOffsetPerChar: 0.051
     xPosCurve:
       serializedVersion: 2
       m_Curve: []
       m_PreInfinity: 0
       m_PostInfinity: 0
       m_RotationOrder: 0
-    xPosMultiplier: 0
+    xPosMultiplier: 3.97
     yPosCurve:
       serializedVersion: 2
       m_Curve:
@@ -277,14 +277,14 @@ MonoBehaviour:
       m_PreInfinity: 1
       m_PostInfinity: 1
       m_RotationOrder: 4
-    yPosMultiplier: 10
+    yPosMultiplier: 3.93
     rotationCurve:
       serializedVersion: 2
       m_Curve: []
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    rotationMultiplier: 0
+    rotationMultiplier: 16.5
     scaleCurve:
       serializedVersion: 2
       m_Curve:
@@ -354,4 +354,4 @@ MonoBehaviour:
       m_PreInfinity: 1
       m_PostInfinity: 1
       m_RotationOrder: 4
-    scaleMultiplier: 1
+    scaleMultiplier: 3.35

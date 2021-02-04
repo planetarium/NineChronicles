@@ -418,8 +418,12 @@ namespace Nekoyume.UI
         protected override void OnCompleteOfShowAnimationInternal()
         {
             base.OnCompleteOfShowAnimationInternal();
-            Find<Dialog>().Show(1);
+            Find<Dialog>().Show(1, PlayTutorial);
+            StartCoroutine(CoHelpPopup());
+        }
 
+        private void PlayTutorial()
+        {
             var tutorialController = Game.Game.instance.Stage.TutorialController;
             var tutorialProgress = tutorialController.GetTutorialProgress();
             if (tutorialProgress <= 0)
@@ -430,8 +434,6 @@ namespace Nekoyume.UI
             {
                 tutorialController.Play(2);
             }
-
-            StartCoroutine(CoHelpPopup());
         }
 
         private IEnumerator CoHelpPopup()
