@@ -65,7 +65,7 @@ namespace Nekoyume.UI
                     }
                 }
 
-                AudioController.instance.PlaySfx(AudioController.SfxCode.Notice);
+                AudioController.instance.PlaySfx(AudioController.SfxCode.GuideArrow);
                 _coroutine = StartCoroutine(PlayAnimation(d.guideType, d.isSkip, callback));
             }
         }
