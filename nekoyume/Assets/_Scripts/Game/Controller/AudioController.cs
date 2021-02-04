@@ -94,6 +94,7 @@ namespace Nekoyume.Game.Controller
             public const string NPC_Common = "sfx_npc_common";
             public const string NPC_Congrat = "sfx_npc_congrat";
             public const string NPC_Question = "sfx_npc_question";
+            public const string GuideArrow = "sfx_guide_arrow";
         }
 
         private enum State
