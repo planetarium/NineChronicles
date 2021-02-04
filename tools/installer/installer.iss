@@ -49,6 +49,29 @@ Name: "{userstartup}\{#MyAppName}"; Filename: "{app}\{#GameExeName}"; Tasks: Reg
 var
   UUID: String;
 
+function GenerateUUID(): String;
+var
+  UUIDLib: Variant;
+begin
+  UUIDLib := CreateOleObject('Scriptlet.TypeLib');
+  result := Copy(UUIDLib.GUID(), 2, 36)
+end;
+
+function UseUUID(): String;
+var
+  UUIDPath: String;
+  LoadedUUID: AnsiString;
+begin
+  UUIDPath := Format('%s\planetarium\.installer_mixpanel_uuid', [ExpandConstant('{localappdata}')]);
+  if (FileExists(UUIDPath)) and LoadStringFromFile(UUIDPath, LoadedUUID) then
+  begin
+    Result := LoadedUUID;
+  end else begin
+    Result := GenerateUUID();
+    SaveStringToFile(UUIDPath, Result, False);
+  end
+end;
+
 procedure MixpanelTrack(Event, UUID: String);
 var
   WinHttpReq: Variant;
@@ -64,51 +87,38 @@ begin
   end;
 end;
 
-function GenerateUUID(): String;
-var
-  UUIDLib: Variant;
-begin
-  UUIDLib := CreateOleObject('Scriptlet.TypeLib');
-  result := Copy(UUIDLib.GUID(), 2, 36)
-end;
-
 procedure CurStepChanged(CurStep: TSetupStep);
 var
-  UUIDPath: String;
+  UUID: String;
 begin
-  Log('UUID: ' + UUID);
-
   if CurStep = ssInstall then
   begin
+    UUID := UseUUID();
     Log('Install: Request Mixpanel.');
+    Log('UUID: ' + UUID);
     MixpanelTrack('Installer/Start', UUID);
-  end;  
+  end;
 
   if CurStep = ssPostInstall then
-  begin                     
+  begin
+    UUID := UseUUID();
     Log('PostInstall: Request Mixpanel.');
+    Log('UUID: ' + UUID);
     MixpanelTrack('Installer/End', UUID);
-    UUIDPath := Format('%s%s%s%s', [AddBackslash(WizardDirValue()), AddBackslash('resources'), AddBackslash('app'), '.installer_mixpanel_uuid']);
-    SaveStringToFile(UUIDPath, UUID, False);
   end;
 end;
 
 procedure CurUninstallStepChanged(CurUninstallStep: TUninstallStep);
+var
+  UUID: String;
 begin
-  (* FIXME: how to get the Installer UUID Path *)
-  Log('UUID: ' + UUID);
-
   if CurUninstallStep = usUninstall then
-  begin      
+  begin
+    UUID := UseUUID();
     Log('UnInstall: Request Mixpanel.');
+    Log('UUID: ' + UUID);
     MixpanelTrack('Installer/Uninstall', UUID);
   end;
-end;
-
-function InitializeSetup(): Boolean;
-begin
-  UUID := GenerateUUID();
-  Result := True;
 end;
 
 [Run]
@@ -132,8 +142,8 @@ Filename: {app}\Nine Chronicles Updater.exe; \
 Filename: "{app}\{#GameExeName}"; Flags: nowait postinstall skipifsilent
 
 
-[InstallDelete] 
-Type: filesandordirs; Name: "{%TEMP}\.net\Nine Chronicles"  
+[InstallDelete]
+Type: filesandordirs; Name: "{%TEMP}\.net\Nine Chronicles"
 Type: filesandordirs; Name: "{%TEMP}\.net\Nine Chronicles Updater"
 
 [UninstallRun]
@@ -141,5 +151,5 @@ Filename: "{cmd}"; Parameters: "/C ""taskkill /im ""{#MyAppName}.exe"""" /f /t"
 
 [UninstallDelete]
 Type: filesandordirs; Name: "{app}"
-Type: filesandordirs; Name: "{%TEMP}\.net\Nine Chronicles"  
+Type: filesandordirs; Name: "{%TEMP}\.net\Nine Chronicles"
 Type: filesandordirs; Name: "{%TEMP}\.net\Nine Chronicles Updater"
