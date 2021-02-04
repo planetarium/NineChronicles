@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using DG.Tweening;
 using Nekoyume.Game.Controller;
 using UnityEngine;
@@ -26,6 +27,9 @@ namespace Nekoyume.UI
         private Coroutine _coroutine;
         private Button _button;
 
+        private readonly int PlayHash = Animator.StringToHash("Play");
+        private readonly int StopHash = Animator.StringToHash("Stop");
+
         public override void Play<T>(T data, System.Action callback)
         {
             if (data is GuideDialogData d)
@@ -47,7 +51,8 @@ namespace Nekoyume.UI
         {
             yield return new WaitForSeconds(predelay);
             var height = data.target ? data.target.anchoredPosition.y : 0;
-            transform.SetParent(height > 0 ? topContainer : bottomContainer);
+
+            transform.SetParent(height < 0 ? topContainer : bottomContainer);
             transform.localPosition = Vector3.zero;
             ShowEmoji(data.emojiType);
             PlaySound(data.emojiType);
@@ -60,8 +65,8 @@ namespace Nekoyume.UI
             SetFade(true, fadeDuration, () =>
             {
                 _script = data.script;
+                PlayEmojiAnimation(PlayHash);
                 Typing();
-
                 _button = data.button;
                 _button.onClick.AddListener(OnClick);
                 _callback = callback;
@@ -78,6 +83,7 @@ namespace Nekoyume.UI
             else
             {
                 _button?.onClick.RemoveAllListeners();
+                PlayEmojiAnimation(StopHash);
                 _callback?.Invoke();
             }
         }
@@ -87,6 +93,15 @@ namespace Nekoyume.UI
             foreach (var emoji in emojiList)
             {
                 emoji.Animation.SetActive(emoji.Type == type);
+            }
+        }
+
+        private void PlayEmojiAnimation(int hash)
+        {
+            foreach (var emoji in emojiList.Where(emoji => emoji.Animation.activeSelf))
+            {
+                emoji.Animation.GetComponent<Animator>().SetTrigger(hash);
+                return;
             }
         }
 
