@@ -124,7 +124,7 @@ namespace Nekoyume.UI
 
             var prefsKey = $"TUTORIAL_PROGRESS_{avatarAddress}";
             PlayerPrefs.SetInt(prefsKey, id);
-            Debug.LogError($"save {id}");
+            Debug.LogWarning($"Saved tutorial progress : {id}");
         }
     }
 }
