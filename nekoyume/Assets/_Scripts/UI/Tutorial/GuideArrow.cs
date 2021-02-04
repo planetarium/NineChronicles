@@ -48,7 +48,7 @@ namespace Nekoyume.UI
 
                 if (d.guideType != GuideType.Stop)
                 {
-                    _rectTransform.anchoredPosition = d.target.anchoredPosition;
+                    _rectTransform.position = d.target.position;
                     _rectTransform.sizeDelta = d.target.sizeDelta;
                     if (d.guideType == GuideType.Outline)
                     {
@@ -86,7 +86,7 @@ namespace Nekoyume.UI
 
         private void Reset()
         {
-            _rectTransform.anchoredPosition = Vector2.zero;
+            _rectTransform.position = Vector2.zero;
             _rectTransform.sizeDelta = Vector2.zero;
             if (_cachedImage != null)
             {
