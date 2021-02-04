@@ -177,5 +177,8 @@ namespace Nekoyume.UI
             }
             cpText.transform.parent.gameObject.SetActive(isEquipment);
         }
+
+        public void TutorialActionClickCombinationResultPopupSubmitButton() =>
+            Model.OnClickSubmit.OnNext(Model);
     }
 }
