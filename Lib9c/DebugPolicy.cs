@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Libplanet.Action;
 using Libplanet.Blockchain;
 using Libplanet.Blockchain.Policies;
@@ -10,6 +11,8 @@ namespace Lib9c
 {
     public class DebugPolicy : IBlockPolicy<PolymorphicAction<ActionBase>>
     {
+        public IComparer<IBlockExcerpt> CanonicalChainComparer { get; } = new TotalDifficultyComparer();
+
         public IAction BlockAction { get; } = new RewardGold();
 
         public InvalidBlockException ValidateNextBlock(
