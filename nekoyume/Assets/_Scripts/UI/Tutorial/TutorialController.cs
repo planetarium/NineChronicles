@@ -83,6 +83,11 @@ namespace Nekoyume.UI
             }
         }
 
+        public void Stop()
+        {
+            _tutorial.ForceStop(() => _tutorial.gameObject.SetActive(false));
+        }
+
         private void PlayAction(TutorialActionType actionType)
         {
             if (_actions.ContainsKey(actionType))

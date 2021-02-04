@@ -54,6 +54,16 @@ namespace Nekoyume.UI
             }
         }
 
+        public void ForceStop(System.Action callback = null)
+        {
+            _finishRef = 0;
+            _isPlaying = true;
+            foreach (var item in items)
+            {
+                item.Item.Stop(() => { PlayEnd(callback); });
+            }
+        }
+
         private bool Init()
         {
             if (_isPlaying)
