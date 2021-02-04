@@ -1225,6 +1225,8 @@ GameObject:
   - component: {fileID: 2187491042436185871}
   - component: {fileID: 6888471728550160247}
   - component: {fileID: 1992935582547569063}
+  - component: {fileID: 2012888191992483578}
+  - component: {fileID: 1739547388853600644}
   m_Layer: 5
   m_Name: Text (TMP) - ing
   m_TagString: Untagged
@@ -1403,6 +1405,48 @@ MonoBehaviour:
   defaultWordSpacing: 0
   defaultLineSpacingInitialized: 0
   defaultLineSpacing: 0
+--- !u!114 &2012888191992483578
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5811263677079446093}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 40868536fcc3c2c458788a1cd1298e8f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  shakeLibrary: {fileID: 11400000, guid: 9a6156b25fcccac4e97ef1c8d23def06, type: 2}
+  curveLibrary: {fileID: 11400000, guid: 1807857dbc33603469f5046b18ae0aae, type: 2}
+  useUnscaledTime: 0
+  printCompleted:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  characterPrinted:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: RedBlueGames.Tools.TextTyper.TextTyper+CharacterPrintedEvent, TextTyper,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+--- !u!114 &1739547388853600644
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5811263677079446093}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 25949e0d00539a240bdf6993052f9936, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  firstCharToAnimate: -10
+  lastCharToAnimate: 60
+  playOnAwake: 1
+  curveLibrary: {fileID: 11400000, guid: 1807857dbc33603469f5046b18ae0aae, type: 2}
+  curvePresetKey: Preparing for crafting
 --- !u!1 &6565755886105151160
 GameObject:
   m_ObjectHideFlags: 0
