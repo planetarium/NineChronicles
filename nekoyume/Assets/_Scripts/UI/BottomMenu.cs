@@ -387,9 +387,14 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
-            HasNotificationInMail.OnNext(mailBox.Any(i =>
-                i.New && i.requiredBlockIndex <= _blockIndex));
-            OnReceivedTutorialEquipment();
+            var hasNotification = mailBox.Any(i =>
+                i.New && i.requiredBlockIndex <= _blockIndex);
+            HasNotificationInMail.OnNext(hasNotification);
+
+            if (hasNotification)
+            {
+                OnReceivedTutorialEquipment();
+            }
         }
 
         private void SubscribeBlockIndex(long blockIndex)
@@ -398,9 +403,13 @@ namespace Nekoyume.UI.Module
             var mailBox = Find<Mail>().MailBox;
             if (!(mailBox is null))
             {
-                HasNotificationInMail.OnNext(mailBox.Any(i =>
-                    i.New && i.requiredBlockIndex <= _blockIndex));
-                OnReceivedTutorialEquipment();
+                var hasNotification = mailBox.Any(i =>
+                    i.New && i.requiredBlockIndex <= _blockIndex);
+                HasNotificationInMail.OnNext(hasNotification);
+                if (hasNotification)
+                {
+                    OnReceivedTutorialEquipment();
+                }
             }
 
             UpdateCombinationNotification();
@@ -410,10 +419,10 @@ namespace Nekoyume.UI.Module
         {
             var tutorialController = Game.Game.instance.Stage.TutorialController;
             var tutorialProgress = tutorialController.GetTutorialProgress();
-            if (tutorialProgress >= 14 && tutorialProgress < 38)
+            if (tutorialProgress >= 14 && tutorialProgress < 37)
             {
                 Debug.LogError("skip");
-                tutorialController.Play(38);
+                tutorialController.Play(37);
             }
         }
 
