@@ -412,6 +412,7 @@ namespace Nekoyume.UI.Module
             var tutorialProgress = tutorialController.GetTutorialProgress();
             if (tutorialProgress >= 14 && tutorialProgress < 38)
             {
+                Debug.LogError("skip");
                 tutorialController.Play(38);
             }
         }

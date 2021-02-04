@@ -248,6 +248,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1cc186a4b67a495192fd7c211d9eaece, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  predelay: 0.15
   growOutline: {fileID: 2100000, guid: 1bb1ada3321b2ff41933f4d3108af669, type: 2}
 --- !u!1 &2319846390515767408
 GameObject:
