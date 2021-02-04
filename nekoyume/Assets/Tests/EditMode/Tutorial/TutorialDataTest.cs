@@ -7,6 +7,29 @@ namespace Tests.EditMode.Tutorial
     public class TutorialDataTest
     {
         [Test]
+        public void PresetSerialize()
+        {
+            Preset data = MakePreset();
+            string json = JsonSerializer.Serialize(data);
+            Preset fromJsonData = JsonSerializer.Deserialize<Preset>(json);
+            Assert.AreEqual(data, fromJsonData);
+        }
+
+        [Test]
+        public void TutorialPresetSerialize()
+        {
+            TutorialPreset data = MakeTutorialPreset(3);
+            string json = JsonSerializer.Serialize(data);
+            TutorialPreset fromJsonData = JsonSerializer.Deserialize<TutorialPreset>(json);
+            Assert.AreEqual(data.preset.Length, fromJsonData.preset.Length);
+            int count = data.preset.Length;
+            for (int i = 0; i < count; i++)
+            {
+                Assert.AreEqual(data.preset[i], fromJsonData.preset[i]);
+            }
+        }
+
+        [Test]
         public void ScenarioDataSerialize()
         {
             ScenarioData data = MakeScenarioData();
@@ -38,40 +61,67 @@ namespace Tests.EditMode.Tutorial
             }
         }
 
-        private ScenarioData MakeScenarioData()
+        private static Preset MakePreset()
         {
-            return new ScenarioData
+            return new Preset
             {
-                actionType = TutorialActionType.QuestClick,
-                emojiType = DialogEmojiType.Idle,
-                guideType = GuideType.Circle,
-                presetId = 1,
-                scriptKey = "",
-                targetType = TutorialTargetType.CombinationButton,
+                id = default,
+                commaId = default,
+                content = "",
+                isEnableMask = default,
+                isExistFadeInBackground = default,
+                isSkipArrowAnimation = default,
             };
         }
 
-        private Scenario MakeScenario()
+        private static TutorialPreset MakeTutorialPreset(int count)
+        {
+            Preset[] preset = new Preset[count];
+            for (int i = 0; i < count; i++)
+            {
+                preset[i] = MakePreset();
+            }
+
+            return new TutorialPreset
+            {
+                preset = preset,
+            };
+        }
+
+        private static ScenarioData MakeScenarioData()
+        {
+            return new ScenarioData
+            {
+                actionType = default,
+                emojiType = default,
+                guideType = default,
+                presetId = default,
+                scriptKey = "",
+                targetType = default,
+            };
+        }
+
+        private static Scenario MakeScenario()
         {
             return new Scenario
             {
                 data = MakeScenarioData(),
-                id = 1,
-                nextId = 2,
+                id = default,
+                nextId = default,
             };
         }
 
-        private TutorialScenario MakeTutorialScenario(int count)
+        private static TutorialScenario MakeTutorialScenario(int count)
         {
-            Scenario[] scenarioArray = new Scenario[count];
+            Scenario[] scenario = new Scenario[count];
             for (int i = 0; i < count; i++)
             {
-                scenarioArray[i] = MakeScenario();
+                scenario[i] = MakeScenario();
             }
 
             return new TutorialScenario
             {
-                scenario = scenarioArray,
+                scenario = scenario,
             };
         }
     }
