@@ -1,10 +1,13 @@
+using System;
+
 namespace Nekoyume.UI
 {
+    [Serializable]
     public enum TutorialItemType
     {
         None = 0,
-        Arrow = 1,
-        Background = 2,
-        Dialog = 3,
+        Arrow,
+        Background,
+        Dialog,
     }
 }

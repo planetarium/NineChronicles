@@ -1,19 +1,26 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace Nekoyume.UI
 {
+    [Serializable]
     public class GuideBackgroundData : ITutorialData
     {
-        public TutorialItemType Type { get; } = TutorialItemType.Background;
-        public bool IsExistFadeIn { get; }
-        public bool IsEnableMask { get; }
-        public RectTransform Target { get; }
+        public TutorialItemType type = TutorialItemType.Background;
+
+        public bool isExistFadeIn;
+
+        public bool isEnableMask;
+
+        public RectTransform target;
+
+        public TutorialItemType Type => type;
 
         public GuideBackgroundData(bool isExistFadeIn, bool isEnableMask, RectTransform target)
         {
-            IsExistFadeIn = isExistFadeIn;
-            IsEnableMask = isEnableMask;
-            Target = target;
+            this.isExistFadeIn = isExistFadeIn;
+            this.isEnableMask = isEnableMask;
+            this.target = target;
         }
     }
 }

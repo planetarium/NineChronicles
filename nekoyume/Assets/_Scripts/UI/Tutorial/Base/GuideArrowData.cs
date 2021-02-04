@@ -1,19 +1,26 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace Nekoyume.UI
 {
+    [Serializable]
     public class GuideArrowData : ITutorialData
     {
-        public TutorialItemType Type { get; } = TutorialItemType.Arrow;
-        public GuideType GuideType { get; set; }
-        public RectTransform Target { get; }
-        public bool IsSkip { get; }
+        public TutorialItemType type = TutorialItemType.Arrow;
+
+        public GuideType guideType;
+
+        public RectTransform target;
+
+        public bool isSkip;
+
+        public TutorialItemType Type => type;
 
         public GuideArrowData(GuideType guideType, RectTransform target, bool isSkip)
         {
-            GuideType = guideType;
-            Target = target;
-            IsSkip = isSkip;
+            this.guideType = guideType;
+            this.target = target;
+            this.isSkip = isSkip;
         }
     }
 }

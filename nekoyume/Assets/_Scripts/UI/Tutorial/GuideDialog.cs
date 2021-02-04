@@ -46,23 +46,23 @@ namespace Nekoyume.UI
         private IEnumerator LatePlay(GuideDialogData data, System.Action callback)
         {
             yield return new WaitForSeconds(predelay);
-            var height = data.Target ? data.Target.anchoredPosition.y : 0;
+            var height = data.target ? data.target.anchoredPosition.y : 0;
             transform.SetParent(height > 0 ? topContainer : bottomContainer);
             transform.localPosition = Vector3.zero;
-            ShowEmoji(data.EmojiType);
-            PlaySound(data.EmojiType);
+            ShowEmoji(data.emojiType);
+            PlaySound(data.emojiType);
             textTyper.TypeText(string.Empty);
             textTyper.PrintCompleted.RemoveAllListeners();
-            textTyper.PrintCompleted.AddListener(() => { ShowComma(data.CommaType); });
+            textTyper.PrintCompleted.AddListener(() => { ShowComma(data.commaType); });
             textTyper.CharacterPrinted.RemoveAllListeners();
             textTyper.CharacterPrinted.AddListener(PlaySound);
             ShowComma(DialogCommaType.None);
             SetFade(true, fadeDuration, () =>
             {
-                _script = data.Script;
+                _script = data.script;
                 Typing();
 
-                _button = data.Button;
+                _button = data.button;
                 _button.onClick.AddListener(OnClick);
                 _callback = callback;
             });

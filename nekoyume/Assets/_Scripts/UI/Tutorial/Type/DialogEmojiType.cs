@@ -6,7 +6,7 @@ namespace Nekoyume.UI
     [Serializable]
     public enum DialogEmojiType
     {
-        None,
+        None = 0,
         Idle,
         Reaction,
         Question,
