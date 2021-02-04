@@ -7,8 +7,13 @@ namespace Nekoyume.UI
     public enum TutorialActionType
     {
         None = 0,
-        QuestClick,
-        CombinationClick,
+        TutorialActionHackAndSlash,
+        TutorialActionCombinationClick,
+        TutorialActionClickFirstRecipeCellView,
+        TutorialActionClickCombinationSubmitButton,
+        TutorialActionClickBottomMenuWorkShopButton,
+        TutorialActionClickBottomMenuMailButton,
+        TutorialActionClickFirstMailSubmitButton,
     }
 
     public class TutorialActionTypeComparer : IEqualityComparer<TutorialActionType>

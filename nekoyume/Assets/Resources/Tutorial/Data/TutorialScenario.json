@@ -8,7 +8,7 @@
         "targetType": "HackAndSlashButton",
         "targetPositionOffset": { "x": 0, "y": 0 },
         "targetSizeOffset": { "x": 0, "y": 0 },
-        "actionType": "QuestClick",
+        "actionType": "TutorialActionHackAndSlash",
         "emojiType": "Reaction",
         "guideType": "Square",
         "scriptKey": "TUTORIAL_01_001"
@@ -56,7 +56,7 @@
       "data": {
         "presetId": 0,
         "targetType": "CombinationButton",
-        "actionType": "CombinationClick",
+        "actionType": "TutorialActionCombinationClick",
         "emojiType": "Idle",
         "guideType": "Square",
         "scriptKey": "TUTORIAL_02_004"
@@ -92,7 +92,7 @@
       "data": {
         "presetId": 0,
         "targetType": "None",
-        "actionType": "None",
+        "actionType": "TutorialActionClickFirstRecipeCellView",
         "emojiType": "Idle",
         "guideType": "Square",
         "scriptKey": "TUTORIAL_02_007"
@@ -116,7 +116,7 @@
       "data": {
         "presetId": 0,
         "targetType": "None",
-        "actionType": "None",
+        "actionType": "TutorialActionClickFirstRecipeCellView",
         "emojiType": "Idle",
         "guideType": "Square",
         "scriptKey": "TUTORIAL_02_009"
@@ -128,7 +128,7 @@
       "data": {
         "presetId": 0,
         "targetType": "None",
-        "actionType": "None",
+        "actionType": "TutorialActionClickCombinationSubmitButton",
         "emojiType": "Idle",
         "guideType": "Square",
         "scriptKey": "TUTORIAL_02_010"
@@ -152,7 +152,7 @@
       "data": {
         "presetId": 0,
         "targetType": "None",
-        "actionType": "None",
+        "actionType": "TutorialActionClickBottomMenuWorkShopButton",
         "emojiType": "Question",
         "guideType": "Square",
         "scriptKey": "TUTORIAL_02_012"
@@ -452,7 +452,7 @@
       "data": {
         "presetId": 0,
         "targetType": "None",
-        "actionType": "None",
+        "actionType": "TutorialActionClickBottomMenuMailButton",
         "emojiType": "Idle",
         "guideType": "Square",
         "scriptKey": "TUTORIAL_02_016"
@@ -464,7 +464,7 @@
       "data": {
         "presetId": 0,
         "targetType": "None",
-        "actionType": "None",
+        "actionType": "TutorialActionClickFirstMailSubmitButton",
         "emojiType": "Idle",
         "guideType": "Square",
         "scriptKey": "TUTORIAL_02_017"

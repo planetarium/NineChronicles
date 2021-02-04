@@ -29,7 +29,7 @@ namespace Nekoyume.UI
 
         private const string FirstOpenRankingKeyFormat = "Nekoyume.UI.Menu.FirstOpenRankingKey_{0}";
         private const string FirstOpenQuestKeyFormat = "Nekoyume.UI.Menu.FirstOpenQuestKey_{0}";
-        private const string firstOpenMimisbrunnrKeyFormat = "Nekoyume.UI.Menu.FirstOpenMimisbrunnrKeyKey_{0}";
+        private const string FirstOpenMimisbrunnrKeyFormat = "Nekoyume.UI.Menu.FirstOpenMimisbrunnrKeyKey_{0}";
 
         [SerializeField]
         private MainMenu btnQuest = null;
@@ -145,6 +145,8 @@ namespace Nekoyume.UI
             Mixpanel.Track("Unity/Click Guided Quest Enter Dungeon", props);
         }
 
+        public void HackAndSlashFromTutorial() => HackAndSlash();
+
         public void GoToStage(BattleLog battleLog)
         {
             Game.Event.OnStageStart.Invoke(battleLog);
@@ -180,7 +182,7 @@ namespace Nekoyume.UI
             var firstOpenShopKey = string.Format(FirstOpenShopKeyFormat, addressHax);
             var firstOpenRankingKey = string.Format(FirstOpenRankingKeyFormat, addressHax);
             var firstOpenQuestKey = string.Format(FirstOpenQuestKeyFormat, addressHax);
-            var firstOpenMimisbrunnrKey = string.Format(firstOpenMimisbrunnrKeyFormat, addressHax);
+            var firstOpenMimisbrunnrKey = string.Format(FirstOpenMimisbrunnrKeyFormat, addressHax);
 
             var combination = Find<Combination>();
             var hasNotificationOnCombination = combination.HasNotification;
@@ -291,6 +293,8 @@ namespace Nekoyume.UI
             });
         }
 
+        public void CombinationClickFromTutorial() => CombinationClick(-1);
+
         private void CombinationClickInternal(System.Action showAction)
         {
             if (showAction is null)
@@ -378,7 +382,7 @@ namespace Nekoyume.UI
             if (mimisbrunnrExclamationMark.gameObject.activeSelf)
             {
                 var addressHax = ReactiveAvatarState.Address.Value.ToHex();
-                var key = string.Format(firstOpenMimisbrunnrKeyFormat, addressHax);
+                var key = string.Format(FirstOpenMimisbrunnrKeyFormat, addressHax);
                 PlayerPrefs.SetInt(key, 1);
             }
 
