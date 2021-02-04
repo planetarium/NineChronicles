@@ -8,7 +8,7 @@
         "targetType": "HackAndSlashButton",
         "targetPositionOffset": { "x": 0, "y": 0 },
         "targetSizeOffset": { "x": 0, "y": 0 },
-        "actionType": "TutorialActionHackAndSlash",
+        "actionType": "QuestClick",
         "emojiType": "Reaction",
         "guideType": "Outline",
         "scriptKey": "TUTORIAL_01_001"
@@ -30,7 +30,7 @@
       "id": 3,
       "nextId": 4,
       "data": {
-        "presetId": 0,
+        "presetId": 4,
         "targetType": "None",
         "actionType": "None",
         "emojiType": "Reaction",
@@ -56,7 +56,7 @@
       "data": {
         "presetId": 3,
         "targetType": "CombinationButton",
-        "actionType": "TutorialActionCombinationClick",
+        "actionType": "CombinationClick",
         "emojiType": "Idle",
         "guideType": "Square",
         "scriptKey": "TUTORIAL_02_004"
@@ -90,9 +90,9 @@
       "id": 8,
       "nextId": 9,
       "data": {
-        "presetId": 0,
+        "presetId": 9,
         "targetType": "None",
-        "actionType": "TutorialActionClickFirstRecipeCellView",
+        "actionType": "None",
         "emojiType": "Idle",
         "guideType": "None",
         "scriptKey": "TUTORIAL_02_007"
@@ -102,7 +102,7 @@
       "id": 9,
       "nextId": 10,
       "data": {
-        "presetId": 0,
+        "presetId": 4,
         "targetType": "None",
         "actionType": "None",
         "emojiType": "Reaction",
@@ -114,9 +114,9 @@
       "id": 10,
       "nextId": 11,
       "data": {
-        "presetId": 0,
+        "presetId": 9,
         "targetType": "None",
-        "actionType": "TutorialActionClickFirstRecipeCellView",
+        "actionType": "None",
         "emojiType": "Idle",
         "guideType": "None",
         "scriptKey": "TUTORIAL_02_009"
@@ -126,9 +126,9 @@
       "id": 11,
       "nextId": 12,
       "data": {
-        "presetId": 0,
+        "presetId": 9,
         "targetType": "None",
-        "actionType": "TutorialActionClickCombinationSubmitButton",
+        "actionType": "None",
         "emojiType": "Idle",
         "guideType": "Square",
         "scriptKey": "TUTORIAL_02_010"
@@ -138,7 +138,7 @@
       "id": 12,
       "nextId": 13,
       "data": {
-        "presetId": 0,
+        "presetId": 4,
         "targetType": "None",
         "actionType": "None",
         "emojiType": "Reaction",
@@ -150,9 +150,9 @@
       "id": 13,
       "nextId": 14,
       "data": {
-        "presetId": 0,
+        "presetId": 9,
         "targetType": "None",
-        "actionType": "TutorialActionClickBottomMenuWorkShopButton",
+        "actionType": "None",
         "emojiType": "Question",
         "guideType": "None",
         "scriptKey": "TUTORIAL_02_012"
@@ -162,7 +162,7 @@
       "id": 14,
       "nextId": 15,
       "data": {
-        "presetId": 0,
+        "presetId": 2,
         "targetType": "None",
         "actionType": "None",
         "emojiType": "Idle",
@@ -174,7 +174,7 @@
       "id": 15,
       "nextId": 16,
       "data": {
-        "presetId": 0,
+        "presetId": 4,
         "targetType": "None",
         "actionType": "None",
         "emojiType": "Idle",
@@ -186,7 +186,7 @@
       "id": 16,
       "nextId": 17,
       "data": {
-        "presetId": 0,
+        "presetId": 4,
         "targetType": "None",
         "actionType": "None",
         "emojiType": "Idle",
@@ -198,7 +198,7 @@
       "id": 17,
       "nextId": 18,
       "data": {
-        "presetId": 0,
+        "presetId": 4,
         "targetType": "None",
         "actionType": "None",
         "emojiType": "Reaction",
@@ -210,7 +210,7 @@
       "id": 18,
       "nextId": 19,
       "data": {
-        "presetId": 0,
+        "presetId": 4,
         "targetType": "None",
         "actionType": "None",
         "emojiType": "Reaction",
@@ -222,7 +222,7 @@
       "id": 19,
       "nextId": 20,
       "data": {
-        "presetId": 0,
+        "presetId": 4,
         "targetType": "None",
         "actionType": "None",
         "emojiType": "Question",
@@ -234,7 +234,7 @@
       "id": 20,
       "nextId": 21,
       "data": {
-        "presetId": 0,
+        "presetId": 4,
         "targetType": "None",
         "actionType": "None",
         "emojiType": "Reaction",
@@ -246,7 +246,7 @@
       "id": 21,
       "nextId": 22,
       "data": {
-        "presetId": 0,
+        "presetId": 4,
         "targetType": "None",
         "actionType": "None",
         "emojiType": "Question",
@@ -258,7 +258,7 @@
       "id": 22,
       "nextId": 23,
       "data": {
-        "presetId": 0,
+        "presetId": 4,
         "targetType": "None",
         "actionType": "None",
         "emojiType": "Idle",
@@ -270,7 +270,7 @@
       "id": 23,
       "nextId": 24,
       "data": {
-        "presetId": 0,
+        "presetId": 4,
         "targetType": "None",
         "actionType": "None",
         "emojiType": "Question",
@@ -282,7 +282,7 @@
       "id": 24,
       "nextId": 15,
       "data": {
-        "presetId": 0,
+        "presetId": 4,
         "targetType": "None",
         "actionType": "None",
         "emojiType": "Reaction",
@@ -294,7 +294,7 @@
       "id": 25,
       "nextId": 26,
       "data": {
-        "presetId": 0,
+        "presetId": 2,
         "targetType": "None",
         "actionType": "None",
         "emojiType": "Reaction",
@@ -306,7 +306,7 @@
       "id": 26,
       "nextId": 27,
       "data": {
-        "presetId": 0,
+        "presetId": 4,
         "targetType": "None",
         "actionType": "None",
         "emojiType": "Idle",
@@ -318,7 +318,7 @@
       "id": 27,
       "nextId": 28,
       "data": {
-        "presetId": 0,
+        "presetId": 4,
         "targetType": "None",
         "actionType": "None",
         "emojiType": "Idle",
@@ -330,7 +330,7 @@
       "id": 28,
       "nextId": 29,
       "data": {
-        "presetId": 0,
+        "presetId": 4,
         "targetType": "None",
         "actionType": "None",
         "emojiType": "Idle",
@@ -342,7 +342,7 @@
       "id": 29,
       "nextId": 30,
       "data": {
-        "presetId": 0,
+        "presetId": 4,
         "targetType": "None",
         "actionType": "None",
         "emojiType": "Question",
@@ -354,7 +354,7 @@
       "id": 30,
       "nextId": 31,
       "data": {
-        "presetId": 0,
+        "presetId": 4,
         "targetType": "None",
         "actionType": "None",
         "emojiType": "Question",
@@ -366,7 +366,7 @@
       "id": 31,
       "nextId": 32,
       "data": {
-        "presetId": 0,
+        "presetId": 4,
         "targetType": "None",
         "actionType": "None",
         "emojiType": "Idle",
@@ -378,7 +378,7 @@
       "id": 32,
       "nextId": 33,
       "data": {
-        "presetId": 0,
+        "presetId": 4,
         "targetType": "None",
         "actionType": "None",
         "emojiType": "Idle",
@@ -390,7 +390,7 @@
       "id": 33,
       "nextId": 34,
       "data": {
-        "presetId": 0,
+        "presetId": 4,
         "targetType": "None",
         "actionType": "None",
         "emojiType": "Idle",
@@ -402,7 +402,7 @@
       "id": 34,
       "nextId": 35,
       "data": {
-        "presetId": 0,
+        "presetId": 4,
         "targetType": "None",
         "actionType": "None",
         "emojiType": "Idle",
@@ -414,7 +414,7 @@
       "id": 35,
       "nextId": 36,
       "data": {
-        "presetId": 0,
+        "presetId": 4,
         "targetType": "None",
         "actionType": "None",
         "emojiType": "Reaction",
@@ -426,7 +426,7 @@
       "id": 36,
       "nextId": 26,
       "data": {
-        "presetId": 0,
+        "presetId": 4,
         "targetType": "None",
         "actionType": "None",
         "emojiType": "Idle",
@@ -438,7 +438,7 @@
       "id": 37,
       "nextId": 38,
       "data": {
-        "presetId": 0,
+        "presetId": 2,
         "targetType": "None",
         "actionType": "None",
         "emojiType": "Reaction",
@@ -450,9 +450,9 @@
       "id": 38,
       "nextId": 0,
       "data": {
-        "presetId": 0,
+        "presetId": 9,
         "targetType": "None",
-        "actionType": "TutorialActionClickBottomMenuMailButton",
+        "actionType": "None",
         "emojiType": "Idle",
         "guideType": "Square",
         "scriptKey": "TUTORIAL_02_016"
@@ -462,9 +462,9 @@
       "id": 39,
       "nextId": 40,
       "data": {
-        "presetId": 0,
+        "presetId": 3,
         "targetType": "None",
-        "actionType": "TutorialActionClickFirstCombinationMailSubmitButton",
+        "actionType": "None",
         "emojiType": "Idle",
         "guideType": "Square",
         "scriptKey": "TUTORIAL_02_017"
@@ -474,7 +474,7 @@
       "id": 40,
       "nextId": 41,
       "data": {
-        "presetId": 0,
+        "presetId": 4,
         "targetType": "None",
         "actionType": "None",
         "emojiType": "Reaction",
@@ -486,7 +486,7 @@
       "id": 41,
       "nextId": 42,
       "data": {
-        "presetId": 0,
+        "presetId": 4,
         "targetType": "None",
         "actionType": "None",
         "emojiType": "Question",
@@ -498,7 +498,7 @@
       "id": 42,
       "nextId": 0,
       "data": {
-        "presetId": 0,
+        "presetId": 9,
         "targetType": "None",
         "actionType": "None",
         "emojiType": "Reaction",
@@ -510,7 +510,7 @@
       "id": 43,
       "nextId": 44,
       "data": {
-        "presetId": 0,
+        "presetId": 3,
         "targetType": "None",
         "actionType": "None",
         "emojiType": "Idle",
@@ -522,7 +522,7 @@
       "id": 44,
       "nextId": 45,
       "data": {
-        "presetId": 0,
+        "presetId": 6,
         "targetType": "None",
         "actionType": "None",
         "emojiType": "Idle",
@@ -534,7 +534,7 @@
       "id": 45,
       "nextId": 46,
       "data": {
-        "presetId": 0,
+        "presetId": 4,
         "targetType": "None",
         "actionType": "None",
         "emojiType": "Reaction",
@@ -546,7 +546,7 @@
       "id": 46,
       "nextId": 47,
       "data": {
-        "presetId": 0,
+        "presetId": 4,
         "targetType": "None",
         "actionType": "None",
         "emojiType": "Idle",
@@ -558,7 +558,7 @@
       "id": 47,
       "nextId": 0,
       "data": {
-        "presetId": 0,
+        "presetId": 9,
         "targetType": "None",
         "actionType": "None",
         "emojiType": "Idle",
@@ -570,7 +570,7 @@
       "id": 48,
       "nextId": 0,
       "data": {
-        "presetId": 0,
+        "presetId": 1,
         "targetType": "None",
         "actionType": "None",
         "emojiType": "Idle",
@@ -582,7 +582,7 @@
       "id": 49,
       "nextId": 0,
       "data": {
-        "presetId": 0,
+        "presetId": 1,
         "targetType": "None",
         "actionType": "None",
         "emojiType": "Reaction",
