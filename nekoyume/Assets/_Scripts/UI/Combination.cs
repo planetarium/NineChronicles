@@ -917,5 +917,11 @@ namespace Nekoyume.UI
             }
             StartCoroutine(CoCombineNPCAnimation(itemBase, panel.SubscribeOnClickSubmit, isConsumable));
         }
+
+        public void TutorialActionClickFirstRecipeCellView() =>
+            itemRecipe.OnClickCellViewFromTutorial();
+
+        public void TutorialActionClickCombinationSubmitButton() =>
+            OnCombinationSubmit(combinationPanel);
     }
 }

@@ -83,6 +83,11 @@ namespace Nekoyume.UI
             }
         }
 
+        public void Stop()
+        {
+            _tutorial.ForceStop(() => _tutorial.gameObject.SetActive(false));
+        }
+
         private void PlayAction(TutorialActionType actionType)
         {
             if (_actions.ContainsKey(actionType))
@@ -104,7 +109,8 @@ namespace Nekoyume.UI
                 new GuideBackgroundData(
                     preset.isExistFadeInBackground,
                     preset.isEnableMask,
-                    target),
+                    target,
+                    _tutorial.NextButton),
                 new GuideArrowData(
                     data.guideType,
                     target,

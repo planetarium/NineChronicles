@@ -411,6 +411,16 @@ namespace Nekoyume.UI.Module
             scrollRect.normalizedPosition = new Vector2(0.5f, 1.0f);
         }
 
+        public void OnClickCellViewFromTutorial()
+        {
+            if (cellViews.Length == 0)
+            {
+                return;
+            }
+
+            SubscribeOnClickCellView(cellViews[0]);
+        }
+
         private static void SubscribeOnClickCellView(RecipeCellView cellView)
         {
             var combination = Widget.Find<Combination>();
