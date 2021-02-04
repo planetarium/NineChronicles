@@ -14,6 +14,8 @@ namespace Nekoyume.UI
         private Coroutine _coroutine;
         private Image _cachedImage;
 
+        private const float _revision = 1.3f;
+
         private readonly Dictionary<GuideType, int> _guideTypes =
             new Dictionary<GuideType, int>(new GuideTypeEqualityComparer());
 
@@ -49,7 +51,7 @@ namespace Nekoyume.UI
                 if (d.guideType != GuideType.Stop)
                 {
                     _rectTransform.position = d.target.position;
-                    _rectTransform.sizeDelta = d.target.sizeDelta;
+                    _rectTransform.sizeDelta = d.target.sizeDelta * _revision;
                     if (d.guideType == GuideType.Outline)
                     {
                         _cachedImage = d.target.GetComponent<Image>();

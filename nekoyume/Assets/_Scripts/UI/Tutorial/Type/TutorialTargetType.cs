@@ -4,17 +4,27 @@ using System.Collections.Generic;
 namespace Nekoyume.UI
 {
     [Serializable]
-    public enum TutorialTargetType
+    public enum TutorialTargetType // 순서 유지해줘야됨
     {
         None = 0,
-        HackAndSlashButton, // 확인
-        CombinationButton, // 확인
-        CombineEquipmentCategoryButton, // 확인
-        CombineEquipmentCategory,//
-        WeaponTabButton,// 좀더 키워야됨
+        HackAndSlashButton,
+        CombinationButton,
+        CombineEquipmentCategoryButton,
+        CombineEquipmentCategory, // size 안맞음
+        WeaponTabButton,
         CombinationSlotsButton,
-        MailButton,// 확인
-        SubmitWithCostButton, //
+        MailButton,
+        CombineWithCostButton, // 좌표가 안맞음
+        EquipmentRecipeCellView, //
+        InventoryFirstCell, //
+        InventoryEquipWeapon, //
+        CharacterButton, //
+        BackButton, //
+        ItemEquipButton, // 사이즈큼
+        MailReceiveButton, //
+        CombinationSlots, //
+        GuidedQuestButton, // 좌표 안맞음
+        CombinationResultPopupButton// 좌표 안맞음
     }
 
     public class TutorialTargetTypeComparer : IEqualityComparer<TutorialTargetType>

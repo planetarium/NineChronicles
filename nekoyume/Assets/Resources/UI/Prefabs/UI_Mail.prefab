@@ -285,6 +285,7 @@ RectTransform:
   m_Children:
   - {fileID: 4364758916145869865}
   - {fileID: 8311521217272690045}
+  - {fileID: 7340195859638737167}
   m_Father: {fileID: 3104326235381396197}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1462,6 +1463,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dab29f4cce30f4a4c8061e9e1af33e3c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  tutorialTargets:
+  - type: 15
+    rectTransform: {fileID: 7340195859638737167}
+  tutorialActions: 
   xTweener: {fileID: 1537710529618283008}
   tabState: 0
   scroll: {fileID: 6371732826344056819}
@@ -3743,6 +3748,41 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!1 &7349853377331229763
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7340195859638737167}
+  m_Layer: 5
+  m_Name: MailReciveButtonDummy
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &7340195859638737167
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7349853377331229763}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 6192936696093948539}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 170, y: 125.600006}
+  m_SizeDelta: {x: 100, y: 40}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &8105441182902836345
 GameObject:
   m_ObjectHideFlags: 0
@@ -4011,8 +4051,8 @@ MonoBehaviour:
     textComponent: {fileID: 3042454381435730380}
     characterCount: 12
     spriteCount: 0
-    spaceCount: 1
-    wordCount: 2
+    spaceCount: 4
+    wordCount: 4
     linkCount: 0
     lineCount: 1
     pageCount: 1
@@ -4434,6 +4474,11 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
+    - target: {fileID: 8333806674666052705, guid: 087d608eb50946b409525e83801de9d2,
+        type: 3}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 2100000, guid: 3d234b369f44823448c5c1656261a989, type: 2}
     - target: {fileID: 1531019149702684459, guid: 087d608eb50946b409525e83801de9d2,
         type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
@@ -4444,11 +4489,6 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
       value: Close
       objectReference: {fileID: 0}
-    - target: {fileID: 8333806674666052705, guid: 087d608eb50946b409525e83801de9d2,
-        type: 3}
-      propertyPath: m_Material
-      value: 
-      objectReference: {fileID: 2100000, guid: 3d234b369f44823448c5c1656261a989, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 087d608eb50946b409525e83801de9d2, type: 3}
 --- !u!114 &7872133382900380743 stripped
