@@ -101,11 +101,22 @@ namespace Nekoyume.UI
 
             return new List<ITutorialData>()
             {
-                new GuideBackgroundData(preset.isExistFadeInBackground, preset.isEnableMask,
+                new GuideBackgroundData(
+                    preset.isExistFadeInBackground,
+                    preset.isEnableMask,
                     target),
-                new GuideArrowData(data.guideType, target, preset.isSkipArrowAnimation),
-                new GuideDialogData(data.emojiType, (DialogCommaType) preset.commaId, script,
-                    target, _tutorial.NextButton)
+                new GuideArrowData(
+                    data.guideType,
+                    target,
+                    data.targetPositionOffset,
+                    data.targetSizeOffset,
+                    preset.isSkipArrowAnimation),
+                new GuideDialogData(
+                    data.emojiType,
+                    (DialogCommaType) preset.commaId,
+                    script,
+                    target,
+                    _tutorial.NextButton)
             };
         }
 

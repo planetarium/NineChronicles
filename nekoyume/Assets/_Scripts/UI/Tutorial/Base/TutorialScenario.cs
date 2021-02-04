@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text.Json.Serialization;
+using UnityEngine;
 
 namespace Nekoyume.UI
 {
@@ -53,6 +54,10 @@ namespace Nekoyume.UI
         [JsonConverter(typeof(JsonStringEnumConverter))]
         public TutorialTargetType targetType { get; set; }
 
+        public Vector2 targetPositionOffset { get; set; }
+
+        public Vector2 targetSizeOffset { get; set; }
+
         [JsonConverter(typeof(JsonStringEnumConverter))]
         public TutorialActionType actionType { get; set; }
 
@@ -68,6 +73,8 @@ namespace Nekoyume.UI
         {
             return presetId == other.presetId &&
                    targetType == other.targetType &&
+                   targetPositionOffset == other.targetPositionOffset &&
+                   targetSizeOffset == other.targetSizeOffset &&
                    actionType == other.actionType &&
                    guideType == other.guideType &&
                    emojiType == other.emojiType &&
@@ -88,6 +95,8 @@ namespace Nekoyume.UI
             {
                 int hashCode = presetId;
                 hashCode = (hashCode * 397) ^ (int) targetType;
+                hashCode = (hashCode * 397) ^ targetPositionOffset.GetHashCode();
+                hashCode = (hashCode * 397) ^ targetSizeOffset.GetHashCode();
                 hashCode = (hashCode * 397) ^ (int) actionType;
                 hashCode = (hashCode * 397) ^ (int) guideType;
                 hashCode = (hashCode * 397) ^ (int) emojiType;
