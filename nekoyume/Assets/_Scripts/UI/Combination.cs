@@ -300,17 +300,6 @@ namespace Nekoyume.UI
             base.Close(ignoreCloseAnimation);
         }
 
-        protected override void OnCompleteOfShowAnimationInternal()
-        {
-            var tutorialController = Game.Game.instance.Stage.TutorialController;
-            var tutorialProgress = tutorialController.GetTutorialProgress();
-
-            if (tutorialProgress == 5)
-            {
-                tutorialController.Play(6);
-            }
-        }
-
         protected override void OnCompleteOfCloseAnimationInternal()
         {
             if (State.Value == StateType.CombinationConfirm)
@@ -392,9 +381,9 @@ namespace Nekoyume.UI
                     Mixpanel.Track("Unity/Combine Equipment");
 
                     tutorialProgress = tutorialController.GetTutorialProgress();
-                    if (tutorialProgress == 7)
+                    if (tutorialProgress == 4)
                     {
-                        tutorialController.Play(8);
+                        tutorialController.Play(5);
                     }
 
                     _selectedSpeechBubble = speechBubbleForEquipment;
