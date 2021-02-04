@@ -15,7 +15,7 @@ namespace Nekoyume.UI
         TutorialActionClickBottomMenuMailButton,
         TutorialActionClickBottomMenuCharacterButton,
         TutorialActionClickBottomMenuBackButton,
-        TutorialActionClickFirstMailSubmitButton,
+        TutorialActionClickFirstCombinationMailSubmitButton,
     }
 
     public class TutorialActionTypeComparer : IEqualityComparer<TutorialActionType>
