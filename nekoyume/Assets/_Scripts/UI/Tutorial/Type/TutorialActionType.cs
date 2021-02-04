@@ -13,6 +13,8 @@ namespace Nekoyume.UI
         TutorialActionClickCombinationSubmitButton,
         TutorialActionClickBottomMenuWorkShopButton,
         TutorialActionClickBottomMenuMailButton,
+        TutorialActionClickBottomMenuCharacterButton,
+        TutorialActionClickBottomMenuBackButton,
         TutorialActionClickFirstMailSubmitButton,
     }
 
