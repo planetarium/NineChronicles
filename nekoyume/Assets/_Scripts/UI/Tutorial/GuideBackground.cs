@@ -38,11 +38,22 @@ namespace Nekoyume.UI
         private IEnumerator LatePlay(GuideBackgroundData data, System.Action callback)
         {
             yield return new WaitForSeconds(predelay);
-            SetMask(data.isEnableMask, data.target);
-            SetFade(true, data.isExistFadeIn ? fadeDuration : 0.0f, callback);
+            SetFade(true, data.isExistFadeIn ? fadeDuration : 0.0f);
+
+            mask.rectTransform.position = data.target ? data.target.position : Vector3.zero;
+            mask.alpha = data.isEnableMask ? alpha : 0.0f;
+            float time = 0f;
+            float tick = maskDuration / 60.0f;
+            while (mask.alpha < alpha - 0.01f)
+            {
+                time += tick;
+                mask.alpha = maskCurve.Evaluate(time) * alpha;
+                yield return null;
+            }
+            callback?.Invoke();
         }
 
-        private void SetFade(bool isIn, float duration, System.Action action)
+        private void SetFade(bool isIn, float duration, System.Action callback = null)
         {
             background.DOKill();
             var color = background.color;
@@ -50,16 +61,7 @@ namespace Nekoyume.UI
             background.color = color;
             background.DOFade(isIn ? alpha : 0.0f, duration)
                 .SetEase(fadeCurve)
-                .OnComplete(() => action?.Invoke());
-        }
-
-        private void SetMask(bool isEnable, RectTransform target)
-        {
-            mask.alpha = isEnable ? alpha : 0.0f;
-            if (isEnable)
-            {
-                mask.rectTransform.position = target? target.position : Vector3.zero;
-            }
+                .OnComplete(() => callback?.Invoke());
         }
     }
 }

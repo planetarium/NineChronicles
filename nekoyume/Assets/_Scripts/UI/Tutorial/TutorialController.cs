@@ -104,7 +104,8 @@ namespace Nekoyume.UI
                 new GuideBackgroundData(
                     preset.isExistFadeInBackground,
                     preset.isEnableMask,
-                    target),
+                    target,
+                    _tutorial.NextButton),
                 new GuideArrowData(
                     data.guideType,
                     target,

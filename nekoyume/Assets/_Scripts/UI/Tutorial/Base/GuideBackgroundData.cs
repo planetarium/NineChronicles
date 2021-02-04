@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
@@ -13,17 +14,20 @@ namespace Nekoyume.UI
         public bool isEnableMask;
 
         public RectTransform target;
+        public Button button;
 
         public TutorialItemType Type => type;
 
         public GuideBackgroundData(
             bool isExistFadeIn,
             bool isEnableMask,
-            RectTransform target)
+            RectTransform target,
+            Button button)
         {
             this.isExistFadeIn = isExistFadeIn;
             this.isEnableMask = isEnableMask;
             this.target = target;
+            this.button = button;
         }
     }
 }
