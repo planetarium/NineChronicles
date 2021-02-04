@@ -7,7 +7,7 @@ namespace Nekoyume.UI
     public enum TutorialActionType
     {
         None = 0,
-        QuestClick = 1,
+        QuestClick,
     }
 
     public class TutorialActionTypeComparer : IEqualityComparer<TutorialActionType>

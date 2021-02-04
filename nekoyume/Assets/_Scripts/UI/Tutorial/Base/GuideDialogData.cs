@@ -1,29 +1,38 @@
-using System.Diagnostics.Tracing;
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
+    [Serializable]
     public class GuideDialogData : ITutorialData
     {
-        public TutorialItemType Type { get; } = TutorialItemType.Dialog;
-        public DialogEmojiType EmojiType { get; }
-        public DialogCommaType CommaType { get; }
-        public string Script { get; }
-        public RectTransform Target { get; }
-        public Button Button { get; }
+        public TutorialItemType type = TutorialItemType.Dialog;
 
-        public GuideDialogData(DialogEmojiType emojiType,
+        public DialogEmojiType emojiType;
+
+        public DialogCommaType commaType;
+
+        public string script;
+
+        public RectTransform target;
+
+        public Button button;
+
+        public TutorialItemType Type => type;
+
+        public GuideDialogData(
+            DialogEmojiType emojiType,
             DialogCommaType commaType,
             string script,
             RectTransform target,
             Button button)
         {
-            EmojiType = emojiType;
-            CommaType = commaType;
-            Script = script;
-            Target = target;
-            Button = button;
+            this.emojiType = emojiType;
+            this.commaType = commaType;
+            this.script = script;
+            this.target = target;
+            this.button = button;
         }
     }
 }

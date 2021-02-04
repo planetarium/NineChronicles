@@ -41,24 +41,24 @@ namespace Nekoyume.UI
                 Reset();
                 _arrow.Play(_guideTypes[GuideType.Stop]);
 
-                if (d.Target == null)
+                if (d.target == null)
                 {
-                    d.GuideType = GuideType.Stop;
+                    d.guideType = GuideType.Stop;
                 }
 
-                if (d.GuideType != GuideType.Stop)
+                if (d.guideType != GuideType.Stop)
                 {
-                    _rectTransform.anchoredPosition = d.Target.anchoredPosition;
-                    _rectTransform.sizeDelta = d.Target.sizeDelta;
-                    if (d.GuideType == GuideType.Outline)
+                    _rectTransform.anchoredPosition = d.target.anchoredPosition;
+                    _rectTransform.sizeDelta = d.target.sizeDelta;
+                    if (d.guideType == GuideType.Outline)
                     {
-                        _cachedImage = d.Target.GetComponent<Image>();
+                        _cachedImage = d.target.GetComponent<Image>();
                         _cachedImage.material = growOutline;
                     }
                 }
 
                 AudioController.instance.PlaySfx(AudioController.SfxCode.Notice);
-                _coroutine = StartCoroutine(PlayAnimation(d.GuideType, d.IsSkip, callback));
+                _coroutine = StartCoroutine(PlayAnimation(d.guideType, d.isSkip, callback));
             }
         }
 

@@ -36,8 +36,8 @@ namespace Nekoyume.UI
         private IEnumerator LatePlay(GuideBackgroundData data, System.Action callback)
         {
             yield return new WaitForSeconds(predelay);
-            SetMask(data.IsEnableMask, data.Target);
-            SetFade(true, data.IsExistFadeIn ? fadeDuration : 0.0f, callback);
+            SetMask(data.isEnableMask, data.target);
+            SetFade(true, data.isExistFadeIn ? fadeDuration : 0.0f, callback);
         }
 
         private void SetFade(bool isIn, float duration, System.Action action)

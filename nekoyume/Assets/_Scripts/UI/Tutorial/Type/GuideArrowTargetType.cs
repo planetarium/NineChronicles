@@ -1,9 +1,12 @@
+using System;
+
 namespace Nekoyume.UI
 {
+    [Serializable]
     public enum GuideArrowTargetType
     {
         None = 0,
-        Quest = 1,
-        WorkShop = 2,
+        Quest,
+        WorkShop,
     }
 }
