@@ -5,9 +5,9 @@
       "nextId": 0,
       "data": {
         "presetId": 0,
-        "targetType": "None",
-        "actionType": "None",
-        "emojiType": "Idle",
+        "targetType": "HackAndSlashButton",
+        "actionType": "QuestClick",
+        "emojiType": "Reaction",
         "guideType": "Square",
         "scriptKey": "TUTORIAL_01_001"
       }
@@ -20,20 +20,320 @@
         "targetType": "None",
         "actionType": "None",
         "emojiType": "Reaction",
-        "guideType": "Square",
+        "guideType": "None",
         "scriptKey": "TUTORIAL_02_001"
       }
     },
     {
       "id": 3,
+      "nextId": 4,
+      "data": {
+        "presetId": 0,
+        "targetType": "None",
+        "actionType": "None",
+        "emojiType": "Reaction",
+        "guideType": "None",
+        "scriptKey": "TUTORIAL_02_002"
+      }
+    },
+    {
+      "id": 4,
+      "nextId": 5,
+      "data": {
+        "presetId": 0,
+        "targetType": "None",
+        "actionType": "None",
+        "emojiType": "Question",
+        "guideType": "Square",
+        "scriptKey": "TUTORIAL_02_003"
+      }
+    },
+    {
+      "id": 5,
       "nextId": 0,
       "data": {
         "presetId": 0,
-        "targetType": "HackAndSlashButton",
-        "actionType": "QuestClick",
+        "targetType": "CombinationButton",
+        "actionType": "CombinationClick",
+        "emojiType": "Idle",
+        "guideType": "Square",
+        "scriptKey": "TUTORIAL_02_004"
+      }
+    },
+    {
+      "id": 6,
+      "nextId": 7,
+      "data": {
+        "presetId": 0,
+        "targetType": "None",
+        "actionType": "None",
+        "emojiType": "Question",
+        "guideType": "None",
+        "scriptKey": "TUTORIAL_02_005"
+      }
+    },
+    {
+      "id": 7,
+      "nextId": 0,
+      "data": {
+        "presetId": 0,
+        "targetType": "None",
+        "actionType": "None",
+        "emojiType": "Idle",
+        "guideType": "None",
+        "scriptKey": "TUTORIAL_02_006"
+      }
+    },
+    {
+      "id": 8,
+      "nextId": 9,
+      "data": {
+        "presetId": 0,
+        "targetType": "None",
+        "actionType": "None",
+        "emojiType": "Idle",
+        "guideType": "Square",
+        "scriptKey": "TUTORIAL_02_007"
+      }
+    },
+    {
+      "id": 9,
+      "nextId": 10,
+      "data": {
+        "presetId": 0,
+        "targetType": "None",
+        "actionType": "None",
+        "emojiType": "Reaction",
+        "guideType": "None",
+        "scriptKey": "TUTORIAL_02_008"
+      }
+    },
+    {
+      "id": 10,
+      "nextId": 0,
+      "data": {
+        "presetId": 0,
+        "targetType": "None",
+        "actionType": "None",
+        "emojiType": "Idle",
+        "guideType": "Square",
+        "scriptKey": "TUTORIAL_02_009"
+      }
+    },
+    {
+      "id": 11,
+      "nextId": 0,
+      "data": {
+        "presetId": 0,
+        "targetType": "None",
+        "actionType": "None",
+        "emojiType": "Idle",
+        "guideType": "Square",
+        "scriptKey": "TUTORIAL_02_010"
+      }
+    },
+    {
+      "id": 12,
+      "nextId": 13,
+      "data": {
+        "presetId": 0,
+        "targetType": "None",
+        "actionType": "None",
+        "emojiType": "Reaction",
+        "guideType": "None",
+        "scriptKey": "TUTORIAL_02_011"
+      }
+    },
+    {
+      "id": 13,
+      "nextId": 0,
+      "data": {
+        "presetId": 0,
+        "targetType": "None",
+        "actionType": "None",
         "emojiType": "Question",
         "guideType": "Square",
-        "scriptKey": "TUTORIAL_02_002"
+        "scriptKey": "TUTORIAL_02_012"
+      }
+    },
+    {
+      "id": 14,
+      "nextId": 15,
+      "data": {
+        "presetId": 0,
+        "targetType": "None",
+        "actionType": "None",
+        "emojiType": "Idle",
+        "guideType": "Square",
+        "scriptKey": "TUTORIAL_02_013"
+      }
+    },
+    {
+      "id": 15,
+      "nextId": 16,
+      "data": {
+        "presetId": 0,
+        "targetType": "None",
+        "actionType": "None",
+        "emojiType": "Reaction",
+        "guideType": "Square",
+        "scriptKey": "TUTORIAL_02_014"
+      }
+    },
+    {
+      "id": 16,
+      "nextId": 17,
+      "data": {
+        "presetId": 0,
+        "targetType": "None",
+        "actionType": "None",
+        "emojiType": "Reaction",
+        "guideType": "Square",
+        "scriptKey": "TUTORIAL_02_015"
+      }
+    },
+    {
+      "id": 17,
+      "nextId": 0,
+      "data": {
+        "presetId": 0,
+        "targetType": "None",
+        "actionType": "None",
+        "emojiType": "Idle",
+        "guideType": "Square",
+        "scriptKey": "TUTORIAL_02_016"
+      }
+    },
+    {
+      "id": 18,
+      "nextId": 19,
+      "data": {
+        "presetId": 0,
+        "targetType": "None",
+        "actionType": "None",
+        "emojiType": "Idle",
+        "guideType": "Square",
+        "scriptKey": "TUTORIAL_02_017"
+      }
+    },
+    {
+      "id": 19,
+      "nextId": 20,
+      "data": {
+        "presetId": 0,
+        "targetType": "None",
+        "actionType": "None",
+        "emojiType": "Reaction",
+        "guideType": "None",
+        "scriptKey": "TUTORIAL_02_018"
+      }
+    },
+    {
+      "id": 20,
+      "nextId": 21,
+      "data": {
+        "presetId": 0,
+        "targetType": "None",
+        "actionType": "None",
+        "emojiType": "Question",
+        "guideType": "Square",
+        "scriptKey": "TUTORIAL_02_019"
+      }
+    },
+    {
+      "id": 21,
+      "nextId": 0,
+      "data": {
+        "presetId": 0,
+        "targetType": "None",
+        "actionType": "None",
+        "emojiType": "Reaction",
+        "guideType": "Square",
+        "scriptKey": "TUTORIAL_02_020"
+      }
+    },
+    {
+      "id": 22,
+      "nextId": 23,
+      "data": {
+        "presetId": 0,
+        "targetType": "None",
+        "actionType": "None",
+        "emojiType": "Idle",
+        "guideType": "Square",
+        "scriptKey": "TUTORIAL_02_021"
+      }
+    },
+    {
+      "id": 23,
+      "nextId": 24,
+      "data": {
+        "presetId": 0,
+        "targetType": "None",
+        "actionType": "None",
+        "emojiType": "Idle",
+        "guideType": "Square",
+        "scriptKey": "TUTORIAL_02_022"
+      }
+    },
+    {
+      "id": 24,
+      "nextId": 25,
+      "data": {
+        "presetId": 0,
+        "targetType": "None",
+        "actionType": "None",
+        "emojiType": "Reaction",
+        "guideType": "None",
+        "scriptKey": "TUTORIAL_02_023"
+      }
+    },
+    {
+      "id": 25,
+      "nextId": 26,
+      "data": {
+        "presetId": 0,
+        "targetType": "None",
+        "actionType": "None",
+        "emojiType": "Idle",
+        "guideType": "None",
+        "scriptKey": "TUTORIAL_02_024"
+      }
+    },
+    {
+      "id": 26,
+      "nextId": 0,
+      "data": {
+        "presetId": 0,
+        "targetType": "None",
+        "actionType": "None",
+        "emojiType": "Idle",
+        "guideType": "None",
+        "scriptKey": "TUTORIAL_02_025"
+      }
+    },
+    {
+      "id": 27,
+      "nextId": 0,
+      "data": {
+        "presetId": 0,
+        "targetType": "None",
+        "actionType": "None",
+        "emojiType": "Idle",
+        "guideType": "Square",
+        "scriptKey": "TUTORIAL_02_026"
+      }
+    },
+    {
+      "id": 28,
+      "nextId": 0,
+      "data": {
+        "presetId": 0,
+        "targetType": "None",
+        "actionType": "None",
+        "emojiType": "Reaction",
+        "guideType": "Square",
+        "scriptKey": "TUTORIAL_02_027"
       }
     }
   ]

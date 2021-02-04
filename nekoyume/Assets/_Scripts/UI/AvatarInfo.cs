@@ -150,6 +150,23 @@ namespace Nekoyume.UI
             _isShownFromBattle = Find<Battle>().gameObject.activeSelf;
             IsTweenEnd.Value = false;
             Show(currentAvatarState, ignoreShowAnimation);
+
+            var tutorialController = Game.Game.instance.Stage.TutorialController;
+            var tutorialProgress = tutorialController.GetTutorialProgress();
+            if (tutorialProgress == 21)
+            {
+                tutorialController.Play(22);
+            }
+        }
+
+        protected override void OnCompleteOfCloseAnimationInternal()
+        {
+            var tutorialController = Game.Game.instance.Stage.TutorialController;
+            var tutorialProgress = tutorialController.GetTutorialProgress();
+            if (tutorialProgress == 26)
+            {
+                tutorialController.Play(27);
+            }
         }
 
         protected override void OnTweenComplete()

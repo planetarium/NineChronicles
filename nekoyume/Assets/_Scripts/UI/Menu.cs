@@ -426,13 +426,17 @@ namespace Nekoyume.UI
         {
             var tutorialController = Game.Game.instance.Stage.TutorialController;
             var tutorialProgress = tutorialController.GetTutorialProgress();
-            if (tutorialProgress <= 0)
+            if (tutorialProgress == 0)
             {
                 tutorialController.Play(1);
             }
             else if (tutorialProgress == 1)
             {
                 tutorialController.Play(2);
+            }
+            else if (tutorialProgress == 27)
+            {
+                tutorialController.Play(28);
             }
         }
 

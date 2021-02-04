@@ -28,6 +28,18 @@ namespace Nekoyume.UI
             _blockIndex = Game.Game.instance.Agent.BlockIndex;
         }
 
+        public override void Show(bool ignoreShowAnimation = false)
+        {
+            base.Show(ignoreShowAnimation);
+
+            var tutorialController = Game.Game.instance.Stage.TutorialController;
+            var tutorialProgress = tutorialController.GetTutorialProgress();
+            if (tutorialProgress == 13)
+            {
+                tutorialController.Play(14);
+            }
+        }
+
         private void SetSlot(CombinationSlotState state)
         {
             var avatarState = States.Instance.CurrentAvatarState;

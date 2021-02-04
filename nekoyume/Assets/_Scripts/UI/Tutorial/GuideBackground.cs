@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using Coffee.UISoftMask;
 using DG.Tweening;
 using UnityEngine;
@@ -56,7 +56,7 @@ namespace Nekoyume.UI
             mask.alpha = isEnable ? alpha : 0.0f;
             if (isEnable)
             {
-                mask.rectTransform.position = target? target.position : Vector2.zero;
+                mask.rectTransform.position = target? target.position : Vector3.zero;
             }
         }
     }

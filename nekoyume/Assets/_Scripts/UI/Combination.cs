@@ -300,6 +300,17 @@ namespace Nekoyume.UI
             base.Close(ignoreCloseAnimation);
         }
 
+        protected override void OnCompleteOfShowAnimationInternal()
+        {
+            var tutorialController = Game.Game.instance.Stage.TutorialController;
+            var tutorialProgress = tutorialController.GetTutorialProgress();
+
+            if (tutorialProgress == 5)
+            {
+                tutorialController.Play(6);
+            }
+        }
+
         protected override void OnCompleteOfCloseAnimationInternal()
         {
             if (State.Value == StateType.CombinationConfirm)
@@ -360,6 +371,9 @@ namespace Nekoyume.UI
             selectionArea.root.SetActive(value == StateType.SelectMenu);
             leftArea.SetActive(value != StateType.SelectMenu);
 
+            var tutorialController = Game.Game.instance.Stage.TutorialController;
+            var tutorialProgress = 0;
+
             switch (value)
             {
                 case StateType.SelectMenu:
@@ -376,6 +390,13 @@ namespace Nekoyume.UI
                     break;
                 case StateType.CombineEquipment:
                     Mixpanel.Track("Unity/Combine Equipment");
+
+                    tutorialProgress = tutorialController.GetTutorialProgress();
+                    if (tutorialProgress == 7)
+                    {
+                        tutorialController.Play(8);
+                    }
+
                     _selectedSpeechBubble = speechBubbleForEquipment;
                     speechBubbleForUpgrade.gameObject.SetActive(false);
 
@@ -586,6 +607,13 @@ namespace Nekoyume.UI
         public void OnTweenRecipeCompleted()
         {
             AnimationState = AnimationStateType.Shown;
+
+            var tutorialController = Game.Game.instance.Stage.TutorialController;
+            var tutorialProgress = tutorialController.GetTutorialProgress();
+            if (tutorialProgress == 10)
+            {
+                tutorialController.Play(11);
+            }
         }
 
         private void SubscribeSlotStates(Dictionary<Address, CombinationSlotState> states)

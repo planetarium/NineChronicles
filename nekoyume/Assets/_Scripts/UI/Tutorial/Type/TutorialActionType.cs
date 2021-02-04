@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace Nekoyume.UI
@@ -8,6 +8,7 @@ namespace Nekoyume.UI
     {
         None = 0,
         QuestClick,
+        CombinationClick,
     }
 
     public class TutorialActionTypeComparer : IEqualityComparer<TutorialActionType>
