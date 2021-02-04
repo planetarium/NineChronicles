@@ -381,9 +381,9 @@ namespace Nekoyume.UI
                     Mixpanel.Track("Unity/Combine Equipment");
 
                     tutorialProgress = tutorialController.GetTutorialProgress();
-                    if (tutorialProgress == 4)
+                    if (tutorialProgress == 5)
                     {
-                        tutorialController.Play(5);
+                        tutorialController.Play(6);
                     }
 
                     _selectedSpeechBubble = speechBubbleForEquipment;
