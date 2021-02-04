@@ -7,9 +7,14 @@ namespace Nekoyume.UI
     public enum TutorialTargetType
     {
         None = 0,
-        HackAndSlashButton, // QuestBtn
-        CombinationButton, // CombinationBtn
-        CombineEquipmentCategoryButton // CombineEquipmentCategoryButton
+        HackAndSlashButton, // 확인
+        CombinationButton, // 확인
+        CombineEquipmentCategoryButton, // 확인
+        CombineEquipmentCategory,//
+        WeaponTabButton,// 좀더 키워야됨
+        CombinationSlotsButton,
+        MailButton,// 확인
+        SubmitWithCostButton, //
     }
 
     public class TutorialTargetTypeComparer : IEqualityComparer<TutorialTargetType>
