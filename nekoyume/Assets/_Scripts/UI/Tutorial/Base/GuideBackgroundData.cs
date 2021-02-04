@@ -16,7 +16,10 @@ namespace Nekoyume.UI
 
         public TutorialItemType Type => type;
 
-        public GuideBackgroundData(bool isExistFadeIn, bool isEnableMask, RectTransform target)
+        public GuideBackgroundData(
+            bool isExistFadeIn,
+            bool isEnableMask,
+            RectTransform target)
         {
             this.isExistFadeIn = isExistFadeIn;
             this.isEnableMask = isEnableMask;

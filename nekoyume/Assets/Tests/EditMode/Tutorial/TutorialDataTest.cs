@@ -1,11 +1,19 @@
 using System.Text.Json;
 using Nekoyume.UI;
 using NUnit.Framework;
+using UnityEngine;
 
 namespace Tests.EditMode.Tutorial
 {
     public class TutorialDataTest
     {
+        [Test]
+        public void LoadJsonAndDeserialize()
+        {
+            string json = Resources.Load<TextAsset>("Tutorial/Data/TutorialScenario")?.text;
+            Assert.DoesNotThrow(() => JsonSerializer.Deserialize<TutorialScenario>(json));
+        }
+
         [Test]
         public void PresetSerialize()
         {
@@ -32,8 +40,13 @@ namespace Tests.EditMode.Tutorial
         [Test]
         public void ScenarioDataSerialize()
         {
+            var options = new JsonSerializerOptions()
+            {
+                MaxDepth = 0,
+                IgnoreNullValues = true,
+            };
             ScenarioData data = MakeScenarioData();
-            string json = JsonSerializer.Serialize(data);
+            string json = JsonSerializer.Serialize(data, options);
             ScenarioData fromJsonData = JsonSerializer.Deserialize<ScenarioData>(json);
             Assert.AreEqual(data, fromJsonData);
         }
@@ -98,6 +111,8 @@ namespace Tests.EditMode.Tutorial
                 presetId = default,
                 scriptKey = "",
                 targetType = default,
+                targetPositionOffset = default,
+                targetSizeOffset = default,
             };
         }
 

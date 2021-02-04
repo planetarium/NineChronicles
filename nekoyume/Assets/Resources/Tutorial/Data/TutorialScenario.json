@@ -6,6 +6,8 @@
       "data": {
         "presetId": 0,
         "targetType": "HackAndSlashButton",
+        "targetPositionOffset": { "x": 0, "y": 0 },
+        "targetSizeOffset": { "x": 0, "y": 0 },
         "actionType": "QuestClick",
         "emojiType": "Reaction",
         "guideType": "Square",
