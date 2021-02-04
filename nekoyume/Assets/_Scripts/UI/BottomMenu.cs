@@ -820,5 +820,17 @@ namespace Nekoyume.UI.Module
                 States.Instance.CurrentAvatarState.level, blockIndex) ?? false;
             HasNotificationInCharacter.OnNext(hasNotification);
         }
+
+        public void TutorialActionClickBottomMenuWorkShopButton() =>
+            _toggleGroup.SetToggledOn(combinationButton);
+
+        public void TutorialActionClickBottomMenuMailButton() =>
+            _toggleGroup.SetToggledOn(mailButton);
+
+        public void TutorialActionClickBottomMenuCharacterButton() =>
+            _toggleGroup.SetToggledOn(characterButton);
+
+        public void TutorialActionClickBottomMenuBackButton() =>
+            SubscribeNavigationButtonClick();
     }
 }

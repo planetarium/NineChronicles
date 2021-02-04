@@ -8,7 +8,7 @@
         "targetType": "HackAndSlashButton",
         "targetPositionOffset": { "x": 0, "y": 0 },
         "targetSizeOffset": { "x": 0, "y": 0 },
-        "actionType": "QuestClick",
+        "actionType": "TutorialActionHackAndSlash",
         "emojiType": "Reaction",
         "guideType": "Outline",
         "scriptKey": "TUTORIAL_01_001"
@@ -44,7 +44,7 @@
       "data": {
         "presetId": 9,
         "targetType": "None",
-        "actionType": "None",
+        "actionType": "TutorialActionCombinationClick",
         "emojiType": "Question",
         "guideType": "Outline",
         "scriptKey": "TUTORIAL_02_003"
@@ -92,7 +92,7 @@
       "data": {
         "presetId": 9,
         "targetType": "None",
-        "actionType": "None",
+        "actionType": "TutorialActionClickFirstRecipeCellView",
         "emojiType": "Idle",
         "guideType": "Square",
         "scriptKey": "TUTORIAL_02_007"
@@ -116,7 +116,7 @@
       "data": {
         "presetId": 9,
         "targetType": "None",
-        "actionType": "None",
+        "actionType": "TutorialActionClickFirstRecipeCellView",
         "emojiType": "Idle",
         "guideType": "Square",
         "scriptKey": "TUTORIAL_02_009"
@@ -128,7 +128,7 @@
       "data": {
         "presetId": 9,
         "targetType": "None",
-        "actionType": "None",
+        "actionType": "TutorialActionClickCombinationSubmitButton",
         "emojiType": "Idle",
         "guideType": "Square",
         "scriptKey": "TUTORIAL_02_010"
@@ -152,7 +152,7 @@
       "data": {
         "presetId": 9,
         "targetType": "None",
-        "actionType": "None",
+        "actionType": "TutorialActionClickBottomMenuWorkShopButton",
         "emojiType": "Question",
         "guideType": "Circle",
         "scriptKey": "TUTORIAL_02_012"
@@ -452,7 +452,7 @@
       "data": {
         "presetId": 9,
         "targetType": "None",
-        "actionType": "None",
+        "actionType": "TutorialActionClickBottomMenuMailButton",
         "emojiType": "Idle",
         "guideType": "Circle",
         "scriptKey": "TUTORIAL_02_016"
@@ -464,7 +464,7 @@
       "data": {
         "presetId": 3,
         "targetType": "None",
-        "actionType": "None",
+        "actionType": "TutorialActionClickFirstCombinationMailSubmitButton",
         "emojiType": "Idle",
         "guideType": "Square",
         "scriptKey": "TUTORIAL_02_017"
@@ -512,7 +512,7 @@
       "data": {
         "presetId": 3,
         "targetType": "None",
-        "actionType": "TutorialActionClickFirstInventoryCellView",
+        "actionType": "TutorialActionClickAvatarInfoFirstInventoryCellView",
         "emojiType": "Idle",
         "guideType": "Square",
         "scriptKey": "TUTORIAL_02_021"
@@ -572,7 +572,7 @@
       "data": {
         "presetId": 1,
         "targetType": "None",
-        "actionType": "None",
+        "actionType": "TutorialActionClickBottomMenuBackButton",
         "emojiType": "Idle",
         "guideType": "Circle",
         "scriptKey": "TUTORIAL_02_026"
