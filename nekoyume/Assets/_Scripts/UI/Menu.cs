@@ -434,9 +434,9 @@ namespace Nekoyume.UI
             {
                 tutorialController.Play(2);
             }
-            else if (tutorialProgress == 27)
+            else if (tutorialProgress < 50)
             {
-                tutorialController.Play(28);
+                tutorialController.Play(50);
             }
         }
 

@@ -389,6 +389,31 @@ namespace Nekoyume.UI.Module
 
             HasNotificationInMail.OnNext(mailBox.Any(i =>
                 i.New && i.requiredBlockIndex <= _blockIndex));
+            OnReceivedTutorialEquipment();
+        }
+
+        private void SubscribeBlockIndex(long blockIndex)
+        {
+            _blockIndex = blockIndex;
+            var mailBox = Find<Mail>().MailBox;
+            if (!(mailBox is null))
+            {
+                HasNotificationInMail.OnNext(mailBox.Any(i =>
+                    i.New && i.requiredBlockIndex <= _blockIndex));
+                OnReceivedTutorialEquipment();
+            }
+
+            UpdateCombinationNotification();
+        }
+
+        private void OnReceivedTutorialEquipment()
+        {
+            var tutorialController = Game.Game.instance.Stage.TutorialController;
+            var tutorialProgress = tutorialController.GetTutorialProgress();
+            if (tutorialProgress >= 14 && tutorialProgress < 38)
+            {
+                tutorialController.Play(38);
+            }
         }
 
         private void SubscribeAvatarQuestList(QuestList questList)
@@ -403,19 +428,6 @@ namespace Nekoyume.UI.Module
                 quest.IsPaidInAction && quest.isReceivable));
             // todo: `Quest`와의 결합을 끊을 필요가 있어 보임.
             Find<Quest>().SetList(questList);
-        }
-
-        private void SubscribeBlockIndex(long blockIndex)
-        {
-            _blockIndex = blockIndex;
-            var mailBox = Find<Mail>().MailBox;
-            if (!(mailBox is null))
-            {
-                HasNotificationInMail.OnNext(mailBox.Any(i =>
-                    i.New && i.requiredBlockIndex <= _blockIndex));
-            }
-
-            UpdateCombinationNotification();
         }
 
         #endregion
