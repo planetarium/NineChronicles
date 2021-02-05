@@ -415,14 +415,15 @@ namespace Nekoyume.UI
         {
             var tutorialController = Game.Game.instance.Stage.TutorialController;
             var tutorialProgress = tutorialController.GetTutorialProgress();
-
-            var avatarState = Game.Game.instance.States
-                .CurrentAvatarState;
-
-            var nextStageId = avatarState.worldInformation.TryGetLastClearedStageId(out var stageId) ? stageId + 1 : 1;
-            if (nextStageId < 4)
+            if (tutorialProgress <= 0)
             {
-                tutorialController.Play(1);
+                var avatarState = Game.Game.instance.States.CurrentAvatarState;
+                var nextStageId = avatarState.worldInformation
+                    .TryGetLastClearedStageId(out var stageId) ? stageId + 1 : 1;
+                if (nextStageId < 4)
+                {
+                    tutorialController.Play(1);
+                }
             }
             else if (tutorialProgress == 1)
             {

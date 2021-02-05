@@ -145,18 +145,14 @@ namespace Nekoyume.UI
 
         public int GetTutorialProgress()
         {
-            var avatarAddress = States.Instance.CurrentAvatarState.address;
-
-            var prefsKey = $"TUTORIAL_PROGRESS_{avatarAddress}";
+            var prefsKey = $"TUTORIAL_PROGRESS";
             var progress = PlayerPrefs.GetInt(prefsKey, 0);
             return progress;
         }
 
         public void SaveTutorialProgress(int id)
         {
-            var avatarAddress = States.Instance.CurrentAvatarState.address;
-
-            var prefsKey = $"TUTORIAL_PROGRESS_{avatarAddress}";
+            var prefsKey = $"TUTORIAL_PROGRESS";
             PlayerPrefs.SetInt(prefsKey, id);
             Debug.LogWarning($"Saved tutorial progress : {id}");
         }
