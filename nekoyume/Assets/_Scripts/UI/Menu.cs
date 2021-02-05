@@ -415,7 +415,8 @@ namespace Nekoyume.UI
         {
             var tutorialController = Game.Game.instance.Stage.TutorialController;
             var tutorialProgress = tutorialController.GetTutorialProgress();
-            if (GuidedQuest.WorldQuest.Goal < 4)
+            var nextStageId = GuidedQuest.WorldQuest?.Goal ?? 1;
+            if (nextStageId < 4)
             {
                 tutorialController.Play(1);
             }
@@ -493,7 +494,7 @@ namespace Nekoyume.UI
             }
         }
 
-        public void TutorialActionHackAndSlash() => HackAndSlash(GuidedQuest.WorldQuest.Goal);
+        public void TutorialActionHackAndSlash() => HackAndSlash(GuidedQuest.WorldQuest?.Goal ?? 1);
 
         public void TutorialActionGoToFirstRecipeCellView()
         {
