@@ -525,22 +525,5 @@ namespace Nekoyume.UI
 
         public void TutorialActionClickGuidedQuestWorldStage2() =>
             HackAndSlash(GuidedQuest.WorldQuest?.Goal ?? 4);
-
-#if UNITY_EDITOR
-        public void LateUpdate()
-        {
-            if (Input.GetKeyDown(KeyCode.Alpha1))
-            {
-                var controller = Game.Game.instance.Stage.TutorialController;
-                controller.Play(1);
-            }
-
-            if (Input.GetKeyDown(KeyCode.Alpha2))
-            {
-                var controller = Game.Game.instance.Stage.TutorialController;
-                controller.Play(5);
-            }
-        }
-#endif
     }
 }
