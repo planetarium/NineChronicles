@@ -518,7 +518,8 @@ namespace Nekoyume.UI
             GoToCombinationEquipmentRecipe(firstRecipeRow.Id);
         }
 
-        public void TutorialActionClickGuidedQuestWorldStage2() => HackAndSlash(4);
+        public void TutorialActionClickGuidedQuestWorldStage2() =>
+            HackAndSlash(GuidedQuest.WorldQuest?.Goal ?? 4);
 
 #if UNITY_EDITOR
         public void LateUpdate()
