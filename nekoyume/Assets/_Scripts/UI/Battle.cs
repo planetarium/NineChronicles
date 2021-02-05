@@ -46,6 +46,8 @@ namespace Nekoyume.UI
 
         public ComboText ComboText => comboText;
 
+        public const int RequiredStageForExitButton = 3;
+
         protected override void Awake()
         {
             base.Awake();
@@ -93,9 +95,13 @@ namespace Nekoyume.UI
                 out var world) &&
                 world.StageClearedId >= GameConfig.RequireClearedStageLevel.UIBottomMenuInBattle)
             {
+                var showExitButton = world.StageClearedId >= RequiredStageForExitButton;
+
                 var bottomMenu = Find<BottomMenu>();
                 bottomMenu.Show(
-                    UINavigator.NavigationType.Exit,
+                    showExitButton ?
+                        UINavigator.NavigationType.Exit :
+                        UINavigator.NavigationType.None,
                     SubscribeOnExitButtonClick,
                     false,
                     BottomMenu.ToggleableType.Mail,
