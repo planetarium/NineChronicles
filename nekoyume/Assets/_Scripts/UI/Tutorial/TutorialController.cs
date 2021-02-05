@@ -19,10 +19,12 @@ namespace Nekoyume.UI
         private readonly List<Scenario> _scenario = new List<Scenario>();
 
         private readonly Tutorial _tutorial;
-        private RectTransform _buttonRectTransform;
+        private readonly RectTransform _buttonRectTransform;
 
         private const string ScenarioPath = "Tutorial/Data/TutorialScenario";
         private const string PresetPath = "Tutorial/Data/TutorialPreset";
+
+        private readonly List<int> _playIdHistory = new List<int>();
 
         public TutorialController(IEnumerable<Widget> widgets)
         {
@@ -63,6 +65,7 @@ namespace Nekoyume.UI
 
         public void Play(int id)
         {
+            _playIdHistory.Add(id);
             if (!_tutorial.isActiveAndEnabled)
             {
                 _tutorial.Show();
@@ -77,10 +80,16 @@ namespace Nekoyume.UI
                     PlayAction(scenario.data.actionType);
                     Play(scenario.nextId);
                 });
-                SaveTutorialProgress(id);
+
             }
             else
             {
+                if (_playIdHistory.Any())
+                {
+                    SaveTutorialProgress(_playIdHistory.First());
+                    _playIdHistory.Clear();
+                }
+
                 _tutorial.Stop(() => _tutorial.gameObject.SetActive(false));
             }
         }
