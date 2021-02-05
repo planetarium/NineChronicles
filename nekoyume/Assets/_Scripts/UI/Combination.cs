@@ -360,6 +360,9 @@ namespace Nekoyume.UI
             selectionArea.root.SetActive(value == StateType.SelectMenu);
             leftArea.SetActive(value != StateType.SelectMenu);
 
+            var tutorialController = Game.Game.instance.Stage.TutorialController;
+            var tutorialProgress = 0;
+
             switch (value)
             {
                 case StateType.SelectMenu:
@@ -376,6 +379,7 @@ namespace Nekoyume.UI
                     break;
                 case StateType.CombineEquipment:
                     Mixpanel.Track("Unity/Combine Equipment");
+
                     _selectedSpeechBubble = speechBubbleForEquipment;
                     speechBubbleForUpgrade.gameObject.SetActive(false);
 
@@ -888,6 +892,22 @@ namespace Nekoyume.UI
                     throw new ArgumentOutOfRangeException(nameof(panel.stateType), panel.stateType, null);
             }
             StartCoroutine(CoCombineNPCAnimation(itemBase, panel.SubscribeOnClickSubmit, isConsumable));
+        }
+
+        public void TutorialActionClickFirstRecipeCellView() =>
+            itemRecipe.OnClickCellViewFromTutorial();
+
+        public void TutorialActionClickCombinationSubmitButton() =>
+            OnCombinationSubmit(combinationPanel);
+
+        public void TutorialActionCloseCombination()
+        {
+            Close();
+
+            if (gameObject.activeSelf)
+            {
+                Game.Event.OnRoomEnter.Invoke(true);
+            }
         }
     }
 }

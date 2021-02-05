@@ -65,10 +65,13 @@ namespace Nekoyume.UI
         [SerializeField]
         private CanvasLayer developmentLayer = default;
 
-        private List<CanvasLayer> _layers;
+        [SerializeField]
+        private CanvasLayer tutorialMaskLayer = default;
 
+        private List<CanvasLayer> _layers;
         public RectTransform RectTransform { get; private set; }
         public Canvas Canvas { get; private set; }
+        public List<Widget> Widgets { get; private set; } = new List<Widget>();
 
         public bool Interactable
         {
@@ -96,6 +99,8 @@ namespace Nekoyume.UI
                     return systemInfoLayer;
                 case WidgetType.Development:
                     return developmentLayer;
+                case WidgetType.TutorialMask:
+                    return tutorialMaskLayer;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(widgetType), widgetType, null);
             }
@@ -128,6 +133,7 @@ namespace Nekoyume.UI
                     animationLayer,
                     systemInfoLayer,
                     developmentLayer,
+                    tutorialMaskLayer,
                 };
             }
 
@@ -174,6 +180,7 @@ namespace Nekoyume.UI
             {
                 value.Initialize();
             }
+            Widgets.AddRange(firstWidgets);
 
             UpdateLayers();
         }
@@ -277,6 +284,10 @@ namespace Nekoyume.UI
             secondWidgets.Add(Widget.Create<MessageCatManager>(true));
             yield return null;
 
+            // 튜토리얼
+            secondWidgets.Add(Widget.Create<Tutorial>());
+            yield return null;
+
             Widget last = null;
             foreach (var value in secondWidgets)
             {
@@ -290,7 +301,7 @@ namespace Nekoyume.UI
                 yield return null;
                 last = value;
             }
-
+            Widgets.AddRange(secondWidgets);
             UpdateLayers();
         }
 

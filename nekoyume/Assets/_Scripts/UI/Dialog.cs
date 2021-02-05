@@ -42,6 +42,8 @@ namespace Nekoyume.UI
         private string _itemTextColor;
         private Dictionary<int, DialogEffect> _effects = new Dictionary<int, DialogEffect>();
 
+        private System.Action _onDialogCompleted;
+
         public override WidgetType WidgetType => WidgetType.Popup;
 
         public static bool TryGetPlayerPrefsKeyOfCurrentAvatarState(int dialogId, out string key)
@@ -108,11 +110,14 @@ namespace Nekoyume.UI
 
         #endregion
 
-        public void Show(int dialogId)
+        public void Show(int dialogId, System.Action onDialogCompleted = null)
         {
+            _onDialogCompleted = onDialogCompleted;
+
             if (!TryGetPlayerPrefsKeyOfCurrentAvatarState(dialogId, out _playerPrefsKey) ||
                 PlayerPrefs.GetInt(_playerPrefsKey, 0) > 0)
             {
+                onDialogCompleted?.Invoke();
                 return;
             }
 
@@ -121,6 +126,7 @@ namespace Nekoyume.UI
             _dialogNum = L10nManager.LocalizedCount(_dialogKey);
             if (_dialogNum <= 0)
             {
+                onDialogCompleted?.Invoke();
                 return;
             }
 
@@ -149,6 +155,7 @@ namespace Nekoyume.UI
             if (_dialogIndex >= _dialogNum)
             {
                 PlayerPrefs.SetInt(_playerPrefsKey, 1);
+                _onDialogCompleted?.Invoke();
                 StopTimer();
                 Close();
                 return;

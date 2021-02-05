@@ -71,6 +71,7 @@ namespace Nekoyume.Game
         public List<GameObject> ReleaseWhiteList { get; private set; } = new List<GameObject>();
         public SkillController SkillController { get; private set; }
         public BuffController BuffController { get; private set; }
+        public TutorialController TutorialController { get; private set; }
         public bool IsInStage { get; private set; }
         public Model.Enemy Boss { get; private set; }
         public AvatarState AvatarState { get; set; }
@@ -124,6 +125,7 @@ namespace Nekoyume.Game
             dropItemFactory.Initialize();
             SkillController = new SkillController(objectPool);
             BuffController = new BuffController(objectPool);
+            TutorialController = new TutorialController(MainCanvas.instance.Widgets);
         }
 
         private void OnStageStart(BattleLog log)

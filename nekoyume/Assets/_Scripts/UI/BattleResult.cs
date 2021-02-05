@@ -357,6 +357,18 @@ namespace Nekoyume.UI
                 submitButtonText.text = SharedModel.ShouldRepeat
                     ? L10nManager.Localize("UI_BATTLE_AGAIN")
                     : L10nManager.Localize("UI_NEXT_STAGE");
+
+                if (SharedModel.StageID == 3 &&
+                    SharedModel.LastClearedStageId == 3 &&
+                    SharedModel.State == BattleLog.Result.Win)
+                {
+                    fullFormat = L10nManager.Localize("UI_BATTLE_EXIT_FORMAT");
+                    submitButton.gameObject.SetActive(false);
+                    bottomText.text = string.Format(fullFormat, string.Format(secondsFormat, limitSeconds));
+
+                    yield break;
+                }
+
                 submitButton.gameObject.SetActive(true);
             }
 

@@ -27,6 +27,11 @@ namespace Nekoyume.UI.Scroller
         public override void UpdateContent(Model.InventoryItem itemData)
         {
             view.SetData(itemData);
+
+            if (Index == 0)
+            {
+                Context.FirstCell = this;
+            }
         }
     }
 }

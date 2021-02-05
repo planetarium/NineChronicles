@@ -58,6 +58,9 @@ namespace Nekoyume.UI
 
         public bool IsCloseAnimationCompleted { get; private set; }
 
+        public List<TutorialTarget> tutorialTargets = new List<TutorialTarget>();
+        public List<TutorialActionType> tutorialActions = new List<TutorialActionType>();
+
         public IObservable<Widget> OnEnableObservable => _onEnableSubject;
 
         public IObservable<Widget> OnDisableObservable => _onDisableSubject;
@@ -142,6 +145,7 @@ namespace Nekoyume.UI
                     break;
                 case WidgetType.Hud:
                 case WidgetType.Animation:
+                case WidgetType.TutorialMask:
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();

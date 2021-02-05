@@ -216,5 +216,11 @@ namespace Nekoyume.UI
                 yield return null;
             }
         }
+
+        public void TutorialActionClickItemInformationTooltipSubmitButton()
+        {
+            Model.OnSubmitClick.OnNext(this);
+            Close();
+        }
     }
 }

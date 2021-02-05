@@ -322,5 +322,23 @@ namespace Nekoyume.UI
             });
             popup.Pop(model);
         }
+
+        public void TutorialActionClickFirstCombinationMailSubmitButton()
+        {
+            if (MailBox.Count == 0)
+            {
+                Debug.LogError("TutorialActionClickFirstCombinationMailSubmitButton() MailBox.Count == 0");
+                return;
+            }
+
+            var mail = MailBox[0] as CombinationMail;
+            if (mail is null)
+            {
+                Debug.LogError("TutorialActionClickFirstCombinationMailSubmitButton() mail is null");
+                return;
+            }
+
+            Read(mail);
+        }
     }
 }

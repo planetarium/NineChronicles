@@ -421,6 +421,11 @@ namespace Nekoyume
             skillPanel.gameObject.SetActive(true);
         }
 
+        private void DeletePlayerPrefs()
+        {
+            PlayerPrefs.DeleteAll();
+        }
+
         private void SelectSkill(Model.Skill.Skill skill)
         {
             _selectedSkill = skill;

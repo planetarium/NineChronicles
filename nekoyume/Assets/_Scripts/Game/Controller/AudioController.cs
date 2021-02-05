@@ -91,6 +91,10 @@ namespace Nekoyume.Game.Controller
             public const string FenrirGrowlCastingAttack = "sfx_fenrir_growl_casting_attack";
             public const string FenrirGrowlSummon = "sfx_fenrir_growl_summon";
             public const string Heal = "sfx_heal";
+            public const string NPC_Common = "sfx_npc_common";
+            public const string NPC_Congrat = "sfx_npc_congrat";
+            public const string NPC_Question = "sfx_npc_question";
+            public const string GuideArrow = "sfx_guide_arrow";
         }
 
         private enum State

@@ -16,6 +16,8 @@ namespace Nekoyume.UI.Scroller
             public readonly Subject<InventoryCell> OnClick = new Subject<InventoryCell>();
             public readonly Subject<InventoryCell> OnDoubleClick = new Subject<InventoryCell>();
 
+            public InventoryCell FirstCell;
+
             public override void Dispose()
             {
                 OnClick?.Dispose();
@@ -34,6 +36,13 @@ namespace Nekoyume.UI.Scroller
         public IObservable<InventoryCell> OnClick => Context.OnClick;
 
         public IObservable<InventoryCell> OnDoubleClick => Context.OnDoubleClick;
+
+        public bool TryGetFirstCell(out InventoryCell cell)
+        {
+            cell = Context.FirstCell;
+
+            return cell != null;
+        }
 
         protected override FancyCell<InventoryItem, ContextModel> CellTemplate => cellTemplate;
     }

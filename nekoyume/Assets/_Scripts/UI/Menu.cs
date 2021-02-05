@@ -15,6 +15,8 @@ using mixpanel;
 using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
+using System.Collections.Generic;
+using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
@@ -27,7 +29,7 @@ namespace Nekoyume.UI
 
         private const string FirstOpenRankingKeyFormat = "Nekoyume.UI.Menu.FirstOpenRankingKey_{0}";
         private const string FirstOpenQuestKeyFormat = "Nekoyume.UI.Menu.FirstOpenQuestKey_{0}";
-        private const string firstOpenMimisbrunnrKeyFormat = "Nekoyume.UI.Menu.FirstOpenMimisbrunnrKeyKey_{0}";
+        private const string FirstOpenMimisbrunnrKeyFormat = "Nekoyume.UI.Menu.FirstOpenMimisbrunnrKeyKey_{0}";
 
         [SerializeField]
         private MainMenu btnQuest = null;
@@ -65,8 +67,10 @@ namespace Nekoyume.UI
         [SerializeField]
         private GuidedQuest guidedQuest = null;
 
-
         private Coroutine _coLazyClose;
+
+        public SpriteRenderer combinationSpriteRenderer;
+        public SpriteRenderer hasSpriteRenderer;
 
         protected override void Awake()
         {
@@ -78,23 +82,16 @@ namespace Nekoyume.UI
             CloseWidget = null;
 
             guidedQuest.OnClickWorldQuestCell
-                .Subscribe(_ => HackAndSlash())
+                .Subscribe(tuple => HackAndSlash(tuple.quest.Goal))
                 .AddTo(gameObject);
             guidedQuest.OnClickCombinationEquipmentQuestCell
-                .Subscribe(_ => GoToCombinationEquipmentRecipe())
+                .Subscribe(tuple => GoToCombinationEquipmentRecipe(tuple.quest.RecipeId))
                 .AddTo(gameObject);
         }
 
         // TODO: QuestPreparation.Quest(bool repeat) 와 로직이 흡사하기 때문에 정리할 여지가 있습니다.
-        private void HackAndSlash()
+        private void HackAndSlash(int stageId)
         {
-            var worldQuest = GuidedQuest.WorldQuest;
-            if (worldQuest is null)
-            {
-                return;
-            }
-
-            var stageId = worldQuest.Goal;
             var sheets = Game.Game.instance.TableSheets;
             var stageRow = sheets.StageSheet.OrderedList.FirstOrDefault(row => row.Id == stageId);
             if (stageRow is null)
@@ -151,16 +148,9 @@ namespace Nekoyume.UI
             Close(true);
         }
 
-        private void GoToCombinationEquipmentRecipe()
+        private void GoToCombinationEquipmentRecipe(int recipeId)
         {
-            mixpanel.Mixpanel.Track("Unity/Click Guided Quest Combination Equipment");
-            var combinationEquipmentQuest = GuidedQuest.CombinationEquipmentQuest;
-            if (combinationEquipmentQuest is null)
-            {
-                return;
-            }
-
-            var recipeId = combinationEquipmentQuest.RecipeId;
+            Mixpanel.Track("Unity/Click Guided Quest Combination Equipment");
 
             CombinationClickInternal(() =>
                 Find<Combination>().ShowByEquipmentRecipe(recipeId));
@@ -179,7 +169,7 @@ namespace Nekoyume.UI
             var firstOpenShopKey = string.Format(FirstOpenShopKeyFormat, addressHax);
             var firstOpenRankingKey = string.Format(FirstOpenRankingKeyFormat, addressHax);
             var firstOpenQuestKey = string.Format(FirstOpenQuestKeyFormat, addressHax);
-            var firstOpenMimisbrunnrKey = string.Format(firstOpenMimisbrunnrKeyFormat, addressHax);
+            var firstOpenMimisbrunnrKey = string.Format(FirstOpenMimisbrunnrKeyFormat, addressHax);
 
             var combination = Find<Combination>();
             var hasNotificationOnCombination = combination.HasNotification;
@@ -377,7 +367,7 @@ namespace Nekoyume.UI
             if (mimisbrunnrExclamationMark.gameObject.activeSelf)
             {
                 var addressHax = ReactiveAvatarState.Address.Value.ToHex();
-                var key = string.Format(firstOpenMimisbrunnrKeyFormat, addressHax);
+                var key = string.Format(FirstOpenMimisbrunnrKeyFormat, addressHax);
                 PlayerPrefs.SetInt(key, 1);
             }
 
@@ -417,8 +407,41 @@ namespace Nekoyume.UI
         protected override void OnCompleteOfShowAnimationInternal()
         {
             base.OnCompleteOfShowAnimationInternal();
-            Find<Dialog>().Show(1);
+            Find<Dialog>().Show(1, PlayTutorial);
             StartCoroutine(CoHelpPopup());
+        }
+
+        private void PlayTutorial()
+        {
+            var tutorialController = Game.Game.instance.Stage.TutorialController;
+            var tutorialProgress = tutorialController.GetTutorialProgress();
+            if (tutorialProgress <= 0)
+            {
+                var avatarState = Game.Game.instance.States.CurrentAvatarState;
+                var nextStageId = avatarState.worldInformation
+                    .TryGetLastClearedStageId(out var stageId) ? stageId + 1 : 1;
+                if (nextStageId < 4)
+                {
+                    tutorialController.Play(1);
+                }
+            }
+            else if (tutorialProgress == 1)
+            {
+                var recipeRow = Game.Game.instance.TableSheets.EquipmentItemRecipeSheet.OrderedList
+                    .FirstOrDefault();
+                if (recipeRow is null)
+                {
+                    Debug.LogError("EquipmentItemRecipeSheet is empty");
+                }
+                else if (States.Instance.CurrentAvatarState.inventory.HasItem(recipeRow.ResultEquipmentId))
+                {
+                    tutorialController.SaveTutorialProgress(2);
+                }
+                else
+                {
+                    tutorialController.Play(2);
+                }
+            }
         }
 
         private IEnumerator CoHelpPopup()
@@ -484,5 +507,23 @@ namespace Nekoyume.UI
                 bubble.Hide();
             }
         }
+
+        public void TutorialActionHackAndSlash() => HackAndSlash(GuidedQuest.WorldQuest?.Goal ?? 1);
+
+        public void TutorialActionGoToFirstRecipeCellView()
+        {
+            var firstRecipeRow = Game.Game.instance.TableSheets.EquipmentItemRecipeSheet.OrderedList
+                .FirstOrDefault(row => row.UnlockStage == 3);
+            if (firstRecipeRow is null)
+            {
+                Debug.LogError("TutorialActionGoToFirstRecipeCellView() firstRecipeRow is null");
+                return;
+            }
+
+            GoToCombinationEquipmentRecipe(firstRecipeRow.Id);
+        }
+
+        public void TutorialActionClickGuidedQuestWorldStage2() =>
+            HackAndSlash(GuidedQuest.WorldQuest?.Goal ?? 4);
     }
 }

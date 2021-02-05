@@ -10,5 +10,6 @@ namespace Nekoyume.EnumType
         Animation,
         SystemInfo,
         Development,
+        TutorialMask
     }
 }

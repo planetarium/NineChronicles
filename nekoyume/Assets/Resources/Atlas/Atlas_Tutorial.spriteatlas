@@ -1,0 +1,94 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!687078895 &4343727234628468602
+SpriteAtlas:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Atlas_Tutorial
+  m_EditorData:
+    serializedVersion: 2
+    textureSettings:
+      serializedVersion: 2
+      anisoLevel: 1
+      compressionQuality: 50
+      maxTextureSize: 2048
+      textureCompression: 0
+      filterMode: 1
+      generateMipMaps: 0
+      readable: 0
+      crunchedCompression: 0
+      sRGB: 1
+    platformSettings:
+    - serializedVersion: 2
+      m_BuildTarget: DefaultTexturePlatform
+      m_MaxTextureSize: 1024
+      m_ResizeAlgorithm: 0
+      m_TextureFormat: -1
+      m_TextureCompression: 1
+      m_CompressionQuality: 50
+      m_CrunchedCompression: 0
+      m_AllowsAlphaSplitting: 0
+      m_Overridden: 0
+      m_AndroidETC2FallbackOverride: 0
+    packingSettings:
+      serializedVersion: 2
+      padding: 4
+      blockOffset: 1
+      allowAlphaSplitting: 0
+      enableRotation: 0
+      enableTightPacking: 1
+    variantMultiplier: 1
+    packables:
+    - {fileID: 102900000, guid: 302ceed9fdc2e4d84a1129bff25921cf, type: 3}
+    - {fileID: 102900000, guid: 5952a1deecf004fee9e89f17dd3b2b11, type: 3}
+    totalSpriteSurfaceArea: 436256
+    bindAsDefault: 1
+  m_MasterAtlas: {fileID: 0}
+  m_PackedSprites:
+  - {fileID: 21300000, guid: 211de300eb65747f2839b63b4b1a7bae, type: 3}
+  - {fileID: 21300000, guid: 4f8ea1012696e4ecdb3dacc8f40e1cc8, type: 3}
+  - {fileID: 21300000, guid: 8519aa2174e0a4887b4b1ebdf69e37d7, type: 3}
+  - {fileID: 21300000, guid: 85d043426b90d45438391a3a543a75fa, type: 3}
+  - {fileID: 21300000, guid: f3bd0ec22ab5548128e72d38007f9b39, type: 3}
+  - {fileID: 21300000, guid: d968e1059bd9444779a5ef05b40abc8e, type: 3}
+  - {fileID: 21300000, guid: 886d8445f8dd247d8892c8eb49488820, type: 3}
+  - {fileID: 21300000, guid: 14f14c558a65344c482beba532852c13, type: 3}
+  - {fileID: 21300000, guid: fd1a4b36e23e14f02b426e39360b99ab, type: 3}
+  - {fileID: 21300000, guid: 4878d3e69642e4b94b7eab4ff90d2527, type: 3}
+  - {fileID: 21300000, guid: 91c177f691be74d17a42e5192b25da43, type: 3}
+  - {fileID: 21300000, guid: 45671e2862249445893660d84e8a6cda, type: 3}
+  - {fileID: 21300000, guid: 1487d7e81577f48d7a493ed19a57043b, type: 3}
+  - {fileID: 21300000, guid: d3162ef88bf8c46d991d7f9840dd0bb3, type: 3}
+  - {fileID: 21300000, guid: cda38a3ac079a49b98e102f05f697aec, type: 3}
+  - {fileID: 21300000, guid: 8dca408b5f28e4598844c8871737f530, type: 3}
+  - {fileID: 21300000, guid: 83790dab445f4447caaed4082f0b2645, type: 3}
+  - {fileID: 21300000, guid: 274507cb3b1f349c7b858e8e240afd51, type: 3}
+  - {fileID: 21300000, guid: 6aafaf2cc8a0e43d9ba25198b98bb881, type: 3}
+  - {fileID: 21300000, guid: 69ad895f41d5c4098ad1f13d5d186a73, type: 3}
+  - {fileID: 21300000, guid: 21f780ff017fe4d569549793625de121, type: 3}
+  m_PackedSpriteNamesToIndex:
+  - Tutorial_Target_square
+  - Tutorial_Target_Arrow_bg
+  - Tutorial_ch_eye_02
+  - Tutorial_ch_01
+  - Tutorial_Target_circle
+  - Common_bg_Mask
+  - Tutorial_txt_bg_01
+  - Tutorial_ch_eye_01
+  - Tutorial_ch_glasses
+  - Tutorial_ch_eye_03
+  - Tutorial_txt_bg_02
+  - Common_bg_3x3
+  - Tutorial_ch_02
+  - Tutorial_txt_bg_03
+  - Tutorial_ch_00
+  - Tutorial_ch_eye_00
+  - Tutorial_ch_mouse_00
+  - Tutorial_ch_ac_00
+  - Tutorial_ch_ac_01
+  - Tutorial_Black_bg3
+  - Common_mask_Gradient
+  m_Tag: Atlas_Tutorial
+  m_IsVariant: 0
