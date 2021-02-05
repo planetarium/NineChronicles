@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using Coffee.UISoftMask;
 using DG.Tweening;
+using Nekoyume.UI.Module;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -17,11 +18,13 @@ namespace Nekoyume.UI
         [SerializeField] private SoftMask mask;
         [SerializeField] private Image background;
 
+        private Menu _menu;
         private Coroutine _coroutine;
         private Vector2 _cachedMaskSize;
 
         private void Awake()
         {
+            _menu = Widget.Find<Menu>();
             _cachedMaskSize = mask.rectTransform.sizeDelta;
         }
 
@@ -84,9 +87,15 @@ namespace Nekoyume.UI
         private void SetMaskSize(RectTransform target)
         {
             mask.rectTransform.sizeDelta = _cachedMaskSize;
-            if (target && target.sizeDelta.sqrMagnitude > mask.rectTransform.sizeDelta.sqrMagnitude)
+
+            if (target == null)
             {
-                target.sizeDelta = mask.rectTransform.sizeDelta * 1.2f;
+                return;
+            }
+            var menu = target.GetComponent<MainMenu>();
+            if (menu != null && menu.type == MenuType.Combination)
+            {
+                mask.rectTransform.sizeDelta = new Vector2(400, 500);
             }
         }
     }

@@ -70,7 +70,7 @@ namespace Nekoyume.UI
         private Coroutine _coLazyClose;
 
         public SpriteRenderer combinationSpriteRenderer;
-        public SpriteRenderer hasSpriteRenderer;
+        public GameObject outlineHasButtn;
 
         protected override void Awake()
         {
@@ -522,7 +522,7 @@ namespace Nekoyume.UI
             if (Input.GetKeyDown(KeyCode.Alpha2))
             {
                 var controller = Game.Game.instance.Stage.TutorialController;
-                controller.Play(2);
+                controller.Play(5);
             }
         }
 #endif
