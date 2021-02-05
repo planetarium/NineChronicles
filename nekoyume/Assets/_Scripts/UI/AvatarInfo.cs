@@ -746,13 +746,15 @@ namespace Nekoyume.UI
 
         public void TutorialActionClickAvatarInfoFirstInventoryCellView()
         {
-            inventory.Scroll.GetCellViewByIndex(0)
-                .First()
-                .Subscribe(
-                    onNext: cell => inventory.SharedModel.SelectItemView(cell.View),
-                    onError: _ =>
-                        Debug.LogError(
-                            "TutorialActionClickAvatarInfoFirstInventoryCellView() throw error"));
+            if (inventory.Scroll.TryGetFirstCell(out var cell))
+            {
+                inventory.SharedModel.SelectItemView(cell.View);
+            }
+            else
+            {
+                Debug.LogError(
+                    $"TutorialActionClickAvatarInfoFirstInventoryCellView() throw error.");
+            }
         }
 
         public void TutorialActionCloseAvatarInfoWidget() => Close();

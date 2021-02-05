@@ -16,10 +16,7 @@ namespace Nekoyume.UI.Scroller
             public readonly Subject<InventoryCell> OnClick = new Subject<InventoryCell>();
             public readonly Subject<InventoryCell> OnDoubleClick = new Subject<InventoryCell>();
 
-            public readonly Subject<int> RequestCellViewByIndex = new Subject<int>();
-
-            public readonly Subject<InventoryCell> ResponseCellViewByIndex =
-                new Subject<InventoryCell>();
+            public InventoryCell FirstCell;
 
             public override void Dispose()
             {
@@ -40,13 +37,11 @@ namespace Nekoyume.UI.Scroller
 
         public IObservable<InventoryCell> OnDoubleClick => Context.OnDoubleClick;
 
-        public IObservable<InventoryCell> GetCellViewByIndex(int index)
+        public bool TryGetFirstCell(out InventoryCell cell)
         {
-            return Context.ResponseCellViewByIndex
-                .Where(cell => cell.Index == index)
-                .First()
-                .DoOnSubscribe(() => Context.RequestCellViewByIndex.OnNext(index))
-                .TimeoutFrame(10);
+            cell = Context.FirstCell;
+
+            return cell != null;
         }
 
         protected override FancyCell<InventoryItem, ContextModel> CellTemplate => cellTemplate;

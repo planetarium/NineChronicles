@@ -22,16 +22,16 @@ namespace Nekoyume.UI.Scroller
             view.OnDoubleClick
                 .Subscribe(item => Context.OnDoubleClick.OnNext(this))
                 .AddTo(gameObject);
-
-            Context.RequestCellViewByIndex
-                .Where(index => index == Index)
-                .Subscribe(index => Context.ResponseCellViewByIndex.OnNext(this))
-                .AddTo(gameObject);
         }
 
         public override void UpdateContent(Model.InventoryItem itemData)
         {
             view.SetData(itemData);
+
+            if (Index == 0)
+            {
+                Context.FirstCell = this;
+            }
         }
     }
 }
