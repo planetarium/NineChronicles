@@ -61,7 +61,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Floats:
     - PixelSnap: 1
-    - _AlphaThreshold: 0.01
+    - _AlphaThreshold: 0.173
     - _BumpScale: 1
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1
@@ -74,7 +74,7 @@ Material:
     - _Metallic: 0
     - _Mode: 0
     - _OcclusionStrength: 1
-    - _OutlineSize: 1
+    - _OutlineSize: 1.33
     - _Parallax: 0.02
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
@@ -85,5 +85,5 @@ Material:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _Flip: {r: 1, g: 1, b: 1, a: 1}
-    - _OutlineColor: {r: 12.828862, g: 3.753819, b: 0.42359474, a: 0.9019608}
+    - _OutlineColor: {r: 13.572763, g: 9.029486, b: 0, a: 0.9019608}
     - _RendererColor: {r: 1, g: 1, b: 1, a: 1}
