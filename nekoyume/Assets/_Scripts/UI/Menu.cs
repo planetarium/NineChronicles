@@ -82,7 +82,7 @@ namespace Nekoyume.UI
             CloseWidget = null;
 
             guidedQuest.OnClickWorldQuestCell
-                .Subscribe(_ => HackAndSlash())
+                .Subscribe(tuple => HackAndSlash(tuple.quest.Goal))
                 .AddTo(gameObject);
             guidedQuest.OnClickCombinationEquipmentQuestCell
                 .Subscribe(tuple => GoToCombinationEquipmentRecipe(tuple.quest.RecipeId))
@@ -90,15 +90,8 @@ namespace Nekoyume.UI
         }
 
         // TODO: QuestPreparation.Quest(bool repeat) 와 로직이 흡사하기 때문에 정리할 여지가 있습니다.
-        private void HackAndSlash()
+        private void HackAndSlash(int stageId)
         {
-            var worldQuest = GuidedQuest.WorldQuest;
-            if (worldQuest is null)
-            {
-                return;
-            }
-
-            var stageId = worldQuest.Goal;
             var sheets = Game.Game.instance.TableSheets;
             var stageRow = sheets.StageSheet.OrderedList.FirstOrDefault(row => row.Id == stageId);
             if (stageRow is null)
@@ -500,7 +493,7 @@ namespace Nekoyume.UI
             }
         }
 
-        public void TutorialActionHackAndSlash() => HackAndSlash();
+        public void TutorialActionHackAndSlash() => HackAndSlash(1);
 
         public void TutorialActionGoToFirstRecipeCellView()
         {
@@ -514,6 +507,8 @@ namespace Nekoyume.UI
 
             GoToCombinationEquipmentRecipe(firstRecipeRow.Id);
         }
+
+        public void TutorialActionClickGuidedQuestWorldStage2() => HackAndSlash(2);
 
 #if UNITY_EDITOR
         public void LateUpdate()

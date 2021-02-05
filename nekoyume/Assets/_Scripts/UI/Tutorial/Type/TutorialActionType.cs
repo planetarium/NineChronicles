@@ -20,6 +20,7 @@ namespace Nekoyume.UI
         TutorialActionClickAvatarInfoFirstInventoryCellView,
         TutorialActionClickItemInformationTooltipSubmitButton,
         TutorialActionCloseAvatarInfoWidget,
+        TutorialActionClickGuidedQuestWorldStage2,
     }
 
     public class TutorialActionTypeComparer : IEqualityComparer<TutorialActionType>
