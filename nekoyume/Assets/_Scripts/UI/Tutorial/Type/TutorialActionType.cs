@@ -8,7 +8,7 @@ namespace Nekoyume.UI
     {
         None = 0,
         TutorialActionHackAndSlash,
-        TutorialActionCombinationClick,
+        TutorialActionGoToFirstRecipeCellView,
         TutorialActionClickFirstRecipeCellView,
         TutorialActionClickCombinationSubmitButton,
         TutorialActionClickBottomMenuWorkShopButton,
