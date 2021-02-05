@@ -43,7 +43,7 @@ SpriteAtlas:
     packables:
     - {fileID: 102900000, guid: 302ceed9fdc2e4d84a1129bff25921cf, type: 3}
     - {fileID: 102900000, guid: 5952a1deecf004fee9e89f17dd3b2b11, type: 3}
-    totalSpriteSurfaceArea: 430368
+    totalSpriteSurfaceArea: 436256
     bindAsDefault: 1
   m_MasterAtlas: {fileID: 0}
   m_PackedSprites:
@@ -52,6 +52,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 8519aa2174e0a4887b4b1ebdf69e37d7, type: 3}
   - {fileID: 21300000, guid: 85d043426b90d45438391a3a543a75fa, type: 3}
   - {fileID: 21300000, guid: f3bd0ec22ab5548128e72d38007f9b39, type: 3}
+  - {fileID: 21300000, guid: d968e1059bd9444779a5ef05b40abc8e, type: 3}
   - {fileID: 21300000, guid: 886d8445f8dd247d8892c8eb49488820, type: 3}
   - {fileID: 21300000, guid: 14f14c558a65344c482beba532852c13, type: 3}
   - {fileID: 21300000, guid: fd1a4b36e23e14f02b426e39360b99ab, type: 3}
@@ -73,6 +74,7 @@ SpriteAtlas:
   - Tutorial_ch_eye_02
   - Tutorial_ch_01
   - Tutorial_Target_circle
+  - Common_bg_Mask
   - Tutorial_txt_bg_01
   - Tutorial_ch_eye_01
   - Tutorial_ch_glasses
