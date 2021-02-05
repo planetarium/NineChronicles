@@ -43,13 +43,13 @@ namespace Nekoyume.UI
 
         public override void Stop(System.Action callback)
         {
-            SetFade(false, fadeDuration, callback);
+            FadeOut(fadeDuration, callback);
         }
 
         private IEnumerator LatePlay(GuideBackgroundData data, System.Action callback)
         {
             yield return new WaitForSeconds(predelay);
-            SetFade(true, data.isExistFadeIn ? fadeDuration : 0.0f);
+            FadeIn(data.isExistFadeIn ? fadeDuration : 0.0f);
             SetButton(data.buttonRectTransform, data.target);
             SetMaskSize(data.target);
 
@@ -73,13 +73,27 @@ namespace Nekoyume.UI
             buttonRectTransform.sizeDelta = target ? target.sizeDelta : Vector2.one * 2000;
         }
 
-        private void SetFade(bool isIn, float duration, System.Action callback = null)
+        private void FadeIn(float duration, System.Action callback = null)
+        {
+            if (duration > 0)
+            {
+                background.DOKill();
+                var color = background.color;
+                color.a = 0;
+                background.color = color;
+                background.DOFade(alpha, duration)
+                    .SetEase(fadeCurve)
+                    .OnComplete(() => callback?.Invoke());
+            }
+        }
+
+        private void FadeOut(float duration, System.Action callback = null)
         {
             background.DOKill();
             var color = background.color;
-            color.a = isIn ? 0 : alpha;
+            color.a = alpha;
             background.color = color;
-            background.DOFade(isIn ? alpha : 0.0f, duration)
+            background.DOFade(0.0f, duration)
                 .SetEase(fadeCurve)
                 .OnComplete(() => callback?.Invoke());
         }
