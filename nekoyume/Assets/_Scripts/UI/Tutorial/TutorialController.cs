@@ -19,6 +19,7 @@ namespace Nekoyume.UI
         private readonly List<Scenario> _scenario = new List<Scenario>();
 
         private readonly Tutorial _tutorial;
+        private RectTransform _buttonRectTransform;
 
         private const string ScenarioPath = "Tutorial/Data/TutorialScenario";
         private const string PresetPath = "Tutorial/Data/TutorialPreset";
@@ -30,6 +31,7 @@ namespace Nekoyume.UI
                 if (widget is Tutorial tutorial)
                 {
                     _tutorial = tutorial;
+                    _buttonRectTransform = tutorial.NextButton.GetComponent<RectTransform>();
                     continue;
                 }
 
@@ -85,7 +87,7 @@ namespace Nekoyume.UI
 
         public void Stop(System.Action callback = null)
         {
-            _tutorial.ForceStop(() =>
+            _tutorial.Stop(() =>
             {
                 _tutorial.gameObject.SetActive(false);
                 callback?.Invoke();
@@ -114,7 +116,7 @@ namespace Nekoyume.UI
                     preset.isExistFadeInBackground,
                     preset.isEnableMask,
                     target,
-                    _tutorial.NextButton),
+                    _buttonRectTransform),
                 new GuideArrowData(
                     data.guideType,
                     target,
@@ -125,8 +127,7 @@ namespace Nekoyume.UI
                     data.emojiType,
                     (DialogCommaType) preset.commaId,
                     script,
-                    target,
-                    _tutorial.NextButton)
+                    target)
             };
         }
 

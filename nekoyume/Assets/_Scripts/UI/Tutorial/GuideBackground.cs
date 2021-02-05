@@ -47,7 +47,7 @@ namespace Nekoyume.UI
         {
             yield return new WaitForSeconds(predelay);
             SetFade(true, data.isExistFadeIn ? fadeDuration : 0.0f);
-            SetButton(data.button, data.target);
+            SetButton(data.buttonRectTransform, data.target);
             SetMaskSize(data.target);
 
             mask.rectTransform.position = data.target ? data.target.position : Vector3.zero;
@@ -64,11 +64,10 @@ namespace Nekoyume.UI
             callback?.Invoke();
         }
 
-        private void SetButton(Button button, RectTransform target)
+        private void SetButton(RectTransform buttonRectTransform, RectTransform target)
         {
-            var rt = button.GetComponent<RectTransform>();
-            rt.position = target ? target.position  : Vector3.zero;
-            rt.sizeDelta = target ? target.sizeDelta : Vector2.one * 2000;
+            buttonRectTransform.position = target ? target.position  : Vector3.zero;
+            buttonRectTransform.sizeDelta = target ? target.sizeDelta : Vector2.one * 2000;
         }
 
         private void SetFade(bool isIn, float duration, System.Action callback = null)

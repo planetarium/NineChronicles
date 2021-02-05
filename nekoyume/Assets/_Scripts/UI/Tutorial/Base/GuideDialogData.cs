@@ -17,22 +17,18 @@ namespace Nekoyume.UI
 
         public RectTransform target;
 
-        public Button button;
-
         public TutorialItemType Type => type;
 
         public GuideDialogData(
             DialogEmojiType emojiType,
             DialogCommaType commaType,
             string script,
-            RectTransform target,
-            Button button)
+            RectTransform target)
         {
             this.emojiType = emojiType;
             this.commaType = commaType;
             this.script = script;
             this.target = target;
-            this.button = button;
         }
     }
 }

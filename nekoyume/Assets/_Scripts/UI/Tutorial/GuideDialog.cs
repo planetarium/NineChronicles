@@ -6,14 +6,15 @@ using DG.Tweening;
 using Nekoyume.Game.Controller;
 using UnityEngine;
 using RedBlueGames.Tools.TextTyper;
-using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
     public class GuideDialog : TutorialItem
     {
         [SerializeField] private float fadeDuration = 1.0f;
-        [SerializeField] private AnimationCurve fadeCurve = new AnimationCurve(new Keyframe(0, 0), new Keyframe(1, 1));
+        [SerializeField] private AnimationCurve fadeCurve
+            = new AnimationCurve(new Keyframe(0, 0), new Keyframe(1, 1));
+        [SerializeField] private float printDelay = 0.1f;
         [SerializeField] private Transform topContainer;
         [SerializeField] private Transform bottomContainer;
         [SerializeField] private TextTyper textTyper;
@@ -22,10 +23,7 @@ namespace Nekoyume.UI
         [SerializeField] private List<Comma> commaList;
 
         private string _script = string.Empty;
-
-        private System.Action _callback;
         private Coroutine _coroutine;
-        private Button _button;
 
         private readonly int PlayHash = Animator.StringToHash("Play");
         private readonly int StopHash = Animator.StringToHash("Stop");
@@ -34,6 +32,8 @@ namespace Nekoyume.UI
         {
             if (data is GuideDialogData d)
             {
+                ShowComma(DialogCommaType.None);
+                textTyper.TypeText(string.Empty);
                 if (_coroutine != null)
                 {
                     StopCoroutine(_coroutine);
@@ -51,41 +51,27 @@ namespace Nekoyume.UI
         {
             yield return new WaitForSeconds(predelay);
             var height = data.target ? data.target.anchoredPosition.y : 0;
-
             transform.SetParent(height < 0 ? topContainer : bottomContainer);
             transform.localPosition = Vector3.zero;
             ShowEmoji(data.emojiType);
             PlaySound(data.emojiType);
-            textTyper.TypeText(string.Empty);
-            textTyper.PrintCompleted.RemoveAllListeners();
-            textTyper.PrintCompleted.AddListener(() => { ShowComma(data.commaType); });
-            textTyper.CharacterPrinted.RemoveAllListeners();
+            textTyper.PrintCompleted.AddListener(() => { OnPrintCompleted(data.commaType, callback); });
             textTyper.CharacterPrinted.AddListener(PlaySound);
-            ShowComma(DialogCommaType.None);
             SetFade(true, fadeDuration, () =>
             {
                 _script = data.script;
                 PlayEmojiAnimation(PlayHash);
                 Typing();
-                _button = data.button;
-                _button.onClick.AddListener(OnClick);
-                _callback = callback;
             });
         }
 
-        private void OnClick()
+        private void OnPrintCompleted(DialogCommaType commaType, System.Action callback)
         {
-            AudioController.instance.PlaySfx(AudioController.SfxCode.Click);
-            if (textTyper.IsSkippable())
-            {
-                textTyper.Skip();
-            }
-            else
-            {
-                _button?.onClick.RemoveAllListeners();
-                PlayEmojiAnimation(StopHash);
-                _callback?.Invoke();
-            }
+            ShowComma(commaType);
+            PlayEmojiAnimation(StopHash);
+            callback?.Invoke();
+            textTyper.PrintCompleted.RemoveAllListeners();
+            textTyper.CharacterPrinted.RemoveAllListeners();
         }
 
         private void ShowEmoji(DialogEmojiType type)
@@ -136,7 +122,7 @@ namespace Nekoyume.UI
                 return;
             }
 
-            textTyper.TypeText(_script);
+            textTyper.TypeText(_script, printDelay);
             _script = string.Empty;
         }
 
@@ -157,6 +143,22 @@ namespace Nekoyume.UI
 
             AudioController.instance.PlaySfx(AudioController.SfxCode.Typing, 0.1f);
         }
+
+        #region Skip
+        // private void OnClick()
+        // {
+        //
+        //     if (textTyper.IsSkippable())
+        //     {
+        //         textTyper.Skip();
+        //     }
+        //     else
+        //     {
+        //         PlayEmojiAnimation(StopHash);
+        //         _callback?.Invoke();
+        //     }
+        // }
+        #endregion
     }
 
     [Serializable]

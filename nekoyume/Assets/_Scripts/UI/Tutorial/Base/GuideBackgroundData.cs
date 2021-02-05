@@ -14,7 +14,7 @@ namespace Nekoyume.UI
         public bool isEnableMask;
 
         public RectTransform target;
-        public Button button;
+        public RectTransform buttonRectTransform;
 
         public TutorialItemType Type => type;
 
@@ -22,12 +22,12 @@ namespace Nekoyume.UI
             bool isExistFadeIn,
             bool isEnableMask,
             RectTransform target,
-            Button button)
+            RectTransform buttonRectTransform)
         {
             this.isExistFadeIn = isExistFadeIn;
             this.isEnableMask = isEnableMask;
             this.target = target;
-            this.button = button;
+            this.buttonRectTransform = buttonRectTransform;
         }
     }
 }
