@@ -32,7 +32,7 @@ namespace Nekoyume.UI
             button.onClick.AddListener(OnClick);
         }
 
-        public void Play(List<ITutorialData> datas, int presetId, System.Action callback = null)
+        public void Play(List<ITutorialData> datas, int presetId, System.Action callback)
         {
             if (_isPlaying)
             {
@@ -100,7 +100,6 @@ namespace Nekoyume.UI
 
             AudioController.instance.PlaySfx(AudioController.SfxCode.Click);
             _callback?.Invoke();
-            _callback = null;
         }
     }
 
