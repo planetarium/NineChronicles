@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using Nekoyume.Game.Controller;
+using Nekoyume.UI.Module;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -9,16 +10,19 @@ namespace Nekoyume.UI
     public class GuideArrow : TutorialItem
     {
         [SerializeField] private Material growOutline;
+        [SerializeField] private Material spriteDefault;
         private RectTransform _rectTransform;
         private Animator _arrow;
         private Coroutine _coroutine;
         private Image _cachedImage;
+        private Menu _menu;
 
         private readonly Dictionary<GuideType, int> _guideTypes =
             new Dictionary<GuideType, int>(new GuideTypeEqualityComparer());
 
         private void Awake()
         {
+            _menu = Widget.Find<Menu>();
             _rectTransform = GetComponent<RectTransform>();
             _arrow = GetComponent<Animator>();
 
@@ -58,8 +62,7 @@ namespace Nekoyume.UI
 
                     if (d.guideType == GuideType.Outline)
                     {
-                        _cachedImage = d.target.GetComponent<Image>();
-                        _cachedImage.material = growOutline;
+                        ApplyOutline(d.target);
                     }
                 }
 
@@ -87,6 +90,30 @@ namespace Nekoyume.UI
             callback?.Invoke();
         }
 
+
+        private void ApplyOutline(RectTransform target)
+        {
+            _cachedImage = target.GetComponent<Image>();
+            if (_cachedImage != null)
+            {
+                _cachedImage.material = growOutline;
+            }
+
+            var menu = target.GetComponent<MainMenu>();
+            if (menu != null)
+            {
+                switch (menu.type)
+                {
+                    case MenuType.Combination:
+                        _menu.combinationSpriteRenderer.material = growOutline;
+                        break;
+                    case MenuType.Quest:
+                        _menu.hasSpriteRenderer.material = growOutline;
+                        break;
+                }
+            }
+        }
+
         private void Reset()
         {
             _rectTransform.position = Vector2.zero;
@@ -95,6 +122,9 @@ namespace Nekoyume.UI
             {
                 _cachedImage.material = null;
             }
+
+            _menu.combinationSpriteRenderer.material = spriteDefault;
+            _menu.hasSpriteRenderer.material = spriteDefault;
         }
 
         public void PlaySfx()

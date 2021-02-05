@@ -69,6 +69,9 @@ namespace Nekoyume.UI
 
         private Coroutine _coLazyClose;
 
+        public SpriteRenderer combinationSpriteRenderer;
+        public SpriteRenderer hasSpriteRenderer;
+
         protected override void Awake()
         {
             base.Awake();
@@ -82,7 +85,7 @@ namespace Nekoyume.UI
                 .Subscribe(_ => HackAndSlash())
                 .AddTo(gameObject);
             guidedQuest.OnClickCombinationEquipmentQuestCell
-                .Subscribe(_ => GoToCombinationEquipmentRecipe())
+                .Subscribe(tuple => GoToCombinationEquipmentRecipe(tuple.quest.RecipeId))
                 .AddTo(gameObject);
         }
 
@@ -145,8 +148,6 @@ namespace Nekoyume.UI
             Mixpanel.Track("Unity/Click Guided Quest Enter Dungeon", props);
         }
 
-        public void TutorialActionHackAndSlash() => HackAndSlash();
-
         public void GoToStage(BattleLog battleLog)
         {
             Game.Event.OnStageStart.Invoke(battleLog);
@@ -154,16 +155,9 @@ namespace Nekoyume.UI
             Close(true);
         }
 
-        private void GoToCombinationEquipmentRecipe()
+        private void GoToCombinationEquipmentRecipe(int recipeId)
         {
-            mixpanel.Mixpanel.Track("Unity/Click Guided Quest Combination Equipment");
-            var combinationEquipmentQuest = GuidedQuest.CombinationEquipmentQuest;
-            if (combinationEquipmentQuest is null)
-            {
-                return;
-            }
-
-            var recipeId = combinationEquipmentQuest.RecipeId;
+            Mixpanel.Track("Unity/Click Guided Quest Combination Equipment");
 
             CombinationClickInternal(() =>
                 Find<Combination>().ShowByEquipmentRecipe(recipeId));
@@ -292,8 +286,6 @@ namespace Nekoyume.UI
                 }
             });
         }
-
-        public void TutorialActionCombinationClick() => CombinationClick(-1);
 
         private void CombinationClickInternal(System.Action showAction)
         {
@@ -506,6 +498,21 @@ namespace Nekoyume.UI
             {
                 bubble.Hide();
             }
+        }
+
+        public void TutorialActionHackAndSlash() => HackAndSlash();
+
+        public void TutorialActionGoToFirstRecipeCellView()
+        {
+            var firstRecipeRow = Game.Game.instance.TableSheets.EquipmentItemRecipeSheet.OrderedList
+                .FirstOrDefault(row => row.UnlockStage == 1);
+            if (firstRecipeRow is null)
+            {
+                Debug.LogError("TutorialActionGoToFirstRecipeCellView() firstRecipeRow is null");
+                return;
+            }
+
+            GoToCombinationEquipmentRecipe(firstRecipeRow.Id);
         }
 
 #if UNITY_EDITOR
