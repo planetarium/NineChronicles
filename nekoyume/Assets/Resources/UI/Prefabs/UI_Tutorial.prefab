@@ -276,12 +276,12 @@ MonoBehaviour:
     - serializedVersion: 3
       time: 0
       value: 0
-      inSlope: 2
-      outSlope: 2
+      inSlope: 3.3561904
+      outSlope: 3.3561904
       tangentMode: 0
       weightedMode: 0
       inWeight: 0
-      outWeight: 0
+      outWeight: 0.028376844
     - serializedVersion: 3
       time: 1
       value: 1
@@ -294,7 +294,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  maskDuration: 1
+  maskDuration: 0.85
   maskCurve:
     serializedVersion: 2
     m_Curve:
@@ -318,12 +318,12 @@ MonoBehaviour:
       outWeight: 0.33333334
     - serializedVersion: 3
       time: 1
-      value: 1
-      inSlope: 2
-      outSlope: 2
+      value: 1.0020714
+      inSlope: 0.7015567
+      outSlope: 0.7015567
       tangentMode: 0
       weightedMode: 0
-      inWeight: 0
+      inWeight: 0.12331165
       outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
@@ -520,7 +520,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 0, y: -150}
+  m_AnchoredPosition: {x: 0, y: -160}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!1 &5587444256566146934
