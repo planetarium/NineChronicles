@@ -422,7 +422,20 @@ namespace Nekoyume.UI
             }
             else if (tutorialProgress == 1)
             {
-                tutorialController.Play(2);
+                var recipeRow = Game.Game.instance.TableSheets.EquipmentItemRecipeSheet.OrderedList
+                    .FirstOrDefault();
+                if (recipeRow is null)
+                {
+                    Debug.LogError("EquipmentItemRecipeSheet is empty");
+                }
+                else if (States.Instance.CurrentAvatarState.inventory.HasItem(recipeRow.ResultEquipmentId))
+                {
+                    tutorialController.SaveTutorialProgress(2);
+                }
+                else
+                {
+                    tutorialController.Play(2);
+                }
             }
         }
 
