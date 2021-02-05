@@ -763,7 +763,7 @@ namespace Nekoyume.UI
 
         public void TutorialActionClickAvatarInfoFirstInventoryCellView()
         {
-            inventory.Scroll.GetCellViewByIndex(1)
+            inventory.Scroll.GetCellViewByIndex(0)
                 .First()
                 .Subscribe(
                     onNext: cell => inventory.SharedModel.SelectItemView(cell.View),
