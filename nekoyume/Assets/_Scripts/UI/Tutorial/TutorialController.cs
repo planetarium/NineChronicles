@@ -83,9 +83,13 @@ namespace Nekoyume.UI
             }
         }
 
-        public void Stop()
+        public void Stop(System.Action callback = null)
         {
-            _tutorial.ForceStop(() => _tutorial.gameObject.SetActive(false));
+            _tutorial.ForceStop(() =>
+            {
+                _tutorial.gameObject.SetActive(false);
+                callback?.Invoke();
+            });
         }
 
         private void PlayAction(TutorialActionType actionType)

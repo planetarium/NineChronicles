@@ -116,9 +116,9 @@ namespace Nekoyume.UI
 
             var tutorialController = Game.Game.instance.Stage.TutorialController;
             var tutorialProgress = tutorialController.GetTutorialProgress();
-            if (tutorialProgress < 40)
+            if (tutorialProgress < 39)
             {
-                tutorialController.Play(40);
+                tutorialController.Play(39);
             }
 
             if (blur)

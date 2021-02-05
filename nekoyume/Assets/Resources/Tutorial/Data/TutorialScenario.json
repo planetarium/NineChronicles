@@ -40,11 +40,11 @@
     },
     {
       "id": 4,
-      "nextId": 0,
+      "nextId": 5,
       "data": {
         "presetId": 9,
         "targetType": "None",
-        "actionType": "TutorialActionCombinationClick",
+        "actionType": "None",
         "emojiType": "Question",
         "guideType": "Outline",
         "scriptKey": "TUTORIAL_02_003"
@@ -56,7 +56,7 @@
       "data": {
         "presetId": 3,
         "targetType": "CombinationButton",
-        "actionType": "CombinationClick",
+        "actionType": "TutorialActionCombinationClick",
         "emojiType": "Idle",
         "guideType": "Square",
         "scriptKey": "TUTORIAL_02_004"

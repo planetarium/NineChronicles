@@ -145,7 +145,7 @@ namespace Nekoyume.UI
             Mixpanel.Track("Unity/Click Guided Quest Enter Dungeon", props);
         }
 
-        public void HackAndSlashFromTutorial() => HackAndSlash();
+        public void TutorialActionHackAndSlash() => HackAndSlash();
 
         public void GoToStage(BattleLog battleLog)
         {
@@ -293,7 +293,7 @@ namespace Nekoyume.UI
             });
         }
 
-        public void CombinationClickFromTutorial() => CombinationClick(-1);
+        public void TutorialActionCombinationClick() => CombinationClick(-1);
 
         private void CombinationClickInternal(System.Action showAction)
         {
@@ -438,7 +438,7 @@ namespace Nekoyume.UI
             {
                 tutorialController.Play(2);
             }
-            else if (tutorialProgress < 49)
+            else if (tutorialProgress == 48)
             {
                 tutorialController.Play(49);
             }
