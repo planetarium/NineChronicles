@@ -421,9 +421,7 @@ namespace Nekoyume.UI.Module
             var tutorialProgress = tutorialController.GetTutorialProgress();
             if (tutorialProgress == 1)
             {
-                if (!Find<Mail>().IsActive() ||
-                    (tutorialController.CurrentlyPlayingId != 37 &&
-                    tutorialController.CurrentlyPlayingId != 38))
+                if (tutorialController.CurrentlyPlayingId < 37)
                 {
                     tutorialController.Stop(() => tutorialController.Play(37));
                 }
