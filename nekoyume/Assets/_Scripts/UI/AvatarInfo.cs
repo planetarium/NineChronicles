@@ -760,5 +760,18 @@ namespace Nekoyume.UI
                     States.Instance.GameConfigState.ActionPointMax);
             }
         }
+
+        public void TutorialActionClickAvatarInfoFirstInventoryCellView()
+        {
+            inventory.Scroll.GetCellViewByIndex(1)
+                .First()
+                .Subscribe(
+                    onNext: cell => inventory.SharedModel.SelectItemView(cell.View),
+                    onError: _ =>
+                        Debug.LogError(
+                            "TutorialActionClickAvatarInfoFirstInventoryCellView() throw error"));
+        }
+
+        public void TutorialActionCloseAvatarInfoWidget() => Close();
     }
 }

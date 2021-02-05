@@ -43,6 +43,8 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private InventoryScroll scroll = null;
 
+        private ItemType _stateType;
+
         private Sprite _selectedButtonSprite;
         private Sprite _deselectedButtonSprite;
 
@@ -58,6 +60,8 @@ namespace Nekoyume.UI.Module
 
         // FIXME: 진짜 SharedModel이 되게끔 static으로 관리하는 것이 좋겠습니다. 이곳 저곳의 인벤토리 상태가 동기화되지 않는 이슈가 있기 때문입니다.
         public Model.Inventory SharedModel { get; set; }
+
+        public InventoryScroll Scroll => scroll;
 
         #region Mono
 
@@ -163,7 +167,7 @@ namespace Nekoyume.UI.Module
                     costumesButton.image.sprite = _deselectedButtonSprite;
                     consumablesButton.image.sprite = _selectedButtonSprite;
                     materialsButton.image.sprite = _deselectedButtonSprite;
-                    scroll.UpdateData(SharedModel.Consumables, true);
+                    scroll.UpdateData(SharedModel.Consumables, stateType != _stateType);
                     equipmentsButton.text.gameObject.SetActive(true);
                     costumesButton.text.gameObject.SetActive(true);
                     consumablesButton.selectedText.gameObject.SetActive(true);
@@ -174,7 +178,7 @@ namespace Nekoyume.UI.Module
                     costumesButton.image.sprite = _selectedButtonSprite;
                     consumablesButton.image.sprite = _deselectedButtonSprite;
                     materialsButton.image.sprite = _deselectedButtonSprite;
-                    scroll.UpdateData(SharedModel.Costumes, true);
+                    scroll.UpdateData(SharedModel.Costumes, stateType != _stateType);
                     equipmentsButton.text.gameObject.SetActive(true);
                     costumesButton.selectedText.gameObject.SetActive(true);
                     consumablesButton.text.gameObject.SetActive(true);
@@ -185,7 +189,7 @@ namespace Nekoyume.UI.Module
                     costumesButton.image.sprite = _deselectedButtonSprite;
                     consumablesButton.image.sprite = _deselectedButtonSprite;
                     materialsButton.image.sprite = _deselectedButtonSprite;
-                    scroll.UpdateData(SharedModel.Equipments, true);
+                    scroll.UpdateData(SharedModel.Equipments, stateType != _stateType);
                     equipmentsButton.selectedText.gameObject.SetActive(true);
                     costumesButton.text.gameObject.SetActive(true);
                     consumablesButton.text.gameObject.SetActive(true);
@@ -196,7 +200,7 @@ namespace Nekoyume.UI.Module
                     costumesButton.image.sprite = _deselectedButtonSprite;
                     consumablesButton.image.sprite = _deselectedButtonSprite;
                     materialsButton.image.sprite = _selectedButtonSprite;
-                    scroll.UpdateData(SharedModel.Materials, true);
+                    scroll.UpdateData(SharedModel.Materials, stateType != _stateType);
                     equipmentsButton.text.gameObject.SetActive(true);
                     costumesButton.text.gameObject.SetActive(true);
                     consumablesButton.text.gameObject.SetActive(true);
@@ -205,6 +209,8 @@ namespace Nekoyume.UI.Module
                 default:
                     throw new ArgumentOutOfRangeException(nameof(stateType), stateType, null);
             }
+
+            _stateType = stateType;
 
             // 선택된 버튼의 스프라이트가 1픽셀 내려가는 문제가 있음.
 
