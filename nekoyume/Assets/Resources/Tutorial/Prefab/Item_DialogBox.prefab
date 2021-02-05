@@ -166,7 +166,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   predelay: 0.15
-  fadeDuration: 1
+  fadeDuration: 0.5
   fadeCurve:
     serializedVersion: 2
     m_Curve:
@@ -191,6 +191,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  printDelay: 0.1
   topContainer: {fileID: 0}
   bottomContainer: {fileID: 0}
   textTyper: {fileID: 4536168471067268755}

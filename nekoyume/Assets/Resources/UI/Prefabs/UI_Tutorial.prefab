@@ -65,6 +65,7 @@ MonoBehaviour:
   - type: 3
     item: {fileID: 7187191535903708824}
   animator: {fileID: 4927431873330913612}
+  playTime: 2
 --- !u!222 &6744442424251077906
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -187,7 +188,7 @@ RectTransform:
   m_GameObject: {fileID: 3279318659927536086}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 2, y: 2, z: 1}
+  m_LocalScale: {x: 2.4, y: 2.4, z: 1}
   m_Children:
   - {fileID: 9098273719427135768}
   m_Father: {fileID: 5242883063850288637}
@@ -327,7 +328,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  alpha: 0.8
+  alpha: 0.65
   mask: {fileID: 7689178348494104162}
   background: {fileID: 4658177902114798634}
 --- !u!1 &3291433380500980680
@@ -666,6 +667,61 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6251578640505393682, guid: b65257444a4d144508ffcea19cddd073,
+        type: 3}
+      propertyPath: fadeCurve.m_Curve.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6251578640505393682, guid: b65257444a4d144508ffcea19cddd073,
+        type: 3}
+      propertyPath: fadeCurve.m_Curve.Array.data[0].inSlope
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6251578640505393682, guid: b65257444a4d144508ffcea19cddd073,
+        type: 3}
+      propertyPath: fadeCurve.m_Curve.Array.data[0].outSlope
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6251578640505393682, guid: b65257444a4d144508ffcea19cddd073,
+        type: 3}
+      propertyPath: fadeCurve.m_Curve.Array.data[0].tangentMode
+      value: 34
+      objectReference: {fileID: 0}
+    - target: {fileID: 6251578640505393682, guid: b65257444a4d144508ffcea19cddd073,
+        type: 3}
+      propertyPath: fadeCurve.m_Curve.Array.data[1].time
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6251578640505393682, guid: b65257444a4d144508ffcea19cddd073,
+        type: 3}
+      propertyPath: fadeCurve.m_Curve.Array.data[1].value
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6251578640505393682, guid: b65257444a4d144508ffcea19cddd073,
+        type: 3}
+      propertyPath: fadeCurve.m_Curve.Array.data[1].inSlope
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6251578640505393682, guid: b65257444a4d144508ffcea19cddd073,
+        type: 3}
+      propertyPath: fadeCurve.m_Curve.Array.data[1].outSlope
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6251578640505393682, guid: b65257444a4d144508ffcea19cddd073,
+        type: 3}
+      propertyPath: fadeCurve.m_Curve.Array.data[1].tangentMode
+      value: 34
+      objectReference: {fileID: 0}
+    - target: {fileID: 6251578640505393682, guid: b65257444a4d144508ffcea19cddd073,
+        type: 3}
+      propertyPath: topContainer
+      value: 
+      objectReference: {fileID: 3791111620984255611}
+    - target: {fileID: 6251578640505393682, guid: b65257444a4d144508ffcea19cddd073,
+        type: 3}
+      propertyPath: bottomContainer
+      value: 
+      objectReference: {fileID: 8356828295376709094}
     - target: {fileID: 3942733183846350849, guid: b65257444a4d144508ffcea19cddd073,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -771,61 +827,11 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
-    - target: {fileID: 6251578640505393682, guid: b65257444a4d144508ffcea19cddd073,
+    - target: {fileID: 5111392007820844266, guid: b65257444a4d144508ffcea19cddd073,
         type: 3}
-      propertyPath: fadeCurve.m_Curve.Array.size
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 6251578640505393682, guid: b65257444a4d144508ffcea19cddd073,
-        type: 3}
-      propertyPath: fadeCurve.m_Curve.Array.data[0].inSlope
+      propertyPath: m_enableWordWrapping
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 6251578640505393682, guid: b65257444a4d144508ffcea19cddd073,
-        type: 3}
-      propertyPath: fadeCurve.m_Curve.Array.data[0].outSlope
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6251578640505393682, guid: b65257444a4d144508ffcea19cddd073,
-        type: 3}
-      propertyPath: fadeCurve.m_Curve.Array.data[0].tangentMode
-      value: 34
-      objectReference: {fileID: 0}
-    - target: {fileID: 6251578640505393682, guid: b65257444a4d144508ffcea19cddd073,
-        type: 3}
-      propertyPath: fadeCurve.m_Curve.Array.data[1].time
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6251578640505393682, guid: b65257444a4d144508ffcea19cddd073,
-        type: 3}
-      propertyPath: fadeCurve.m_Curve.Array.data[1].value
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6251578640505393682, guid: b65257444a4d144508ffcea19cddd073,
-        type: 3}
-      propertyPath: fadeCurve.m_Curve.Array.data[1].inSlope
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6251578640505393682, guid: b65257444a4d144508ffcea19cddd073,
-        type: 3}
-      propertyPath: fadeCurve.m_Curve.Array.data[1].outSlope
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6251578640505393682, guid: b65257444a4d144508ffcea19cddd073,
-        type: 3}
-      propertyPath: fadeCurve.m_Curve.Array.data[1].tangentMode
-      value: 34
-      objectReference: {fileID: 0}
-    - target: {fileID: 6251578640505393682, guid: b65257444a4d144508ffcea19cddd073,
-        type: 3}
-      propertyPath: topContainer
-      value: 
-      objectReference: {fileID: 3791111620984255611}
-    - target: {fileID: 6251578640505393682, guid: b65257444a4d144508ffcea19cddd073,
-        type: 3}
-      propertyPath: bottomContainer
-      value: 
-      objectReference: {fileID: 8356828295376709094}
     - target: {fileID: 4697928661786513789, guid: b65257444a4d144508ffcea19cddd073,
         type: 3}
       propertyPath: m_AnchorMin.y
@@ -850,11 +856,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Type
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5111392007820844266, guid: b65257444a4d144508ffcea19cddd073,
-        type: 3}
-      propertyPath: m_enableWordWrapping
-      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b65257444a4d144508ffcea19cddd073, type: 3}
@@ -1032,6 +1033,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_AnchoredPosition.y
       value: -17.199997
+      objectReference: {fileID: 0}
+    - target: {fileID: 6232602685332831336, guid: 72026eb0cfa6f48fd93ea86db2eb08bd,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 72026eb0cfa6f48fd93ea86db2eb08bd, type: 3}
