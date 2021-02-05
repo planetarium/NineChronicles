@@ -415,7 +415,7 @@ namespace Nekoyume.UI
         {
             var tutorialController = Game.Game.instance.Stage.TutorialController;
             var tutorialProgress = tutorialController.GetTutorialProgress();
-            if (tutorialProgress == 0)
+            if (GuidedQuest.WorldQuest.Goal < 4)
             {
                 tutorialController.Play(1);
             }
@@ -493,12 +493,12 @@ namespace Nekoyume.UI
             }
         }
 
-        public void TutorialActionHackAndSlash() => HackAndSlash(1);
+        public void TutorialActionHackAndSlash() => HackAndSlash(GuidedQuest.WorldQuest.Goal);
 
         public void TutorialActionGoToFirstRecipeCellView()
         {
             var firstRecipeRow = Game.Game.instance.TableSheets.EquipmentItemRecipeSheet.OrderedList
-                .FirstOrDefault(row => row.UnlockStage == 1);
+                .FirstOrDefault(row => row.UnlockStage == 3);
             if (firstRecipeRow is null)
             {
                 Debug.LogError("TutorialActionGoToFirstRecipeCellView() firstRecipeRow is null");
@@ -508,7 +508,7 @@ namespace Nekoyume.UI
             GoToCombinationEquipmentRecipe(firstRecipeRow.Id);
         }
 
-        public void TutorialActionClickGuidedQuestWorldStage2() => HackAndSlash(2);
+        public void TutorialActionClickGuidedQuestWorldStage2() => HackAndSlash(4);
 
 #if UNITY_EDITOR
         public void LateUpdate()
