@@ -14,7 +14,7 @@ namespace Nekoyume.UI
         WeaponTabButton,
         CombinationSlotsButton,
         MailButton,
-        CombineWithCostButton, // 좌표가 안맞음
+        CombineWithCostButton, // <---- 더미데이터 써야할듯
         EquipmentRecipeCellView, //
         InventoryFirstCell, //
         InventoryEquipWeapon, //
@@ -22,7 +22,7 @@ namespace Nekoyume.UI
         BackButton, //
         ItemEquipButton, // 사이즈큼
         MailReceiveButton, //
-        CombinationSlots, //
+        CombinationSlots, //// <---- 더미데이터 써야할듯 -340 / +50, +90
         GuidedQuestButton, // 좌표 안맞음
         CombinationResultPopupButton// 좌표 안맞음
     }

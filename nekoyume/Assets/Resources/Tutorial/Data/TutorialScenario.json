@@ -67,10 +67,10 @@
       "nextId": 7,
       "data": {
         "presetId": 3,
-        "targetType": "None",
+        "targetType": "CombineEquipmentCategory",
         "actionType": "None",
         "emojiType": "Question",
-        "guideType": "None",
+        "guideType": "Square",
         "scriptKey": "TUTORIAL_02_005"
       }
     },
@@ -79,10 +79,10 @@
       "nextId": 8,
       "data": {
         "presetId": 4,
-        "targetType": "None",
+        "targetType": "WeaponTabButton",
         "actionType": "None",
         "emojiType": "Idle",
-        "guideType": "None",
+        "guideType": "Square",
         "scriptKey": "TUTORIAL_02_006"
       }
     },
@@ -91,8 +91,8 @@
       "nextId": 9,
       "data": {
         "presetId": 9,
-        "targetType": "None",
-        "actionType": "TutorialActionClickFirstRecipeCellView",
+        "targetType": "EquipmentRecipeCellView",
+        "actionType": "None",
         "emojiType": "Idle",
         "guideType": "Square",
         "scriptKey": "TUTORIAL_02_007"
@@ -103,10 +103,10 @@
       "nextId": 10,
       "data": {
         "presetId": 4,
-        "targetType": "None",
+        "targetType": "EquipmentRecipeCellView",
         "actionType": "None",
         "emojiType": "Reaction",
-        "guideType": "None",
+        "guideType": "Square",
         "scriptKey": "TUTORIAL_02_008"
       }
     },
@@ -115,7 +115,7 @@
       "nextId": 11,
       "data": {
         "presetId": 9,
-        "targetType": "None",
+        "targetType": "EquipmentRecipeCellView",
         "actionType": "TutorialActionClickFirstRecipeCellView",
         "emojiType": "Idle",
         "guideType": "Square",
@@ -127,10 +127,10 @@
       "nextId": 12,
       "data": {
         "presetId": 9,
-        "targetType": "None",
+        "targetType": "CombineWithCostButton",
         "actionType": "TutorialActionClickCombinationSubmitButton",
         "emojiType": "Idle",
-        "guideType": "Square",
+        "guideType": "None",
         "scriptKey": "TUTORIAL_02_010"
       }
     },
@@ -151,7 +151,7 @@
       "nextId": 14,
       "data": {
         "presetId": 9,
-        "targetType": "None",
+        "targetType": "CombinationSlotsButton",
         "actionType": "TutorialActionClickBottomMenuWorkShopButton",
         "emojiType": "Question",
         "guideType": "Circle",
@@ -163,10 +163,10 @@
       "nextId": 15,
       "data": {
         "presetId": 2,
-        "targetType": "None",
+        "targetType": "CombinationSlots",
         "actionType": "None",
         "emojiType": "Idle",
-        "guideType": "None",
+        "guideType": "Square",
         "scriptKey": "TUTORIAL_02_013"
       }
     },
@@ -178,7 +178,7 @@
         "targetType": "None",
         "actionType": "None",
         "emojiType": "Idle",
-        "guideType": "None",
+        "guideType": "Square",
         "scriptKey": "TUTORIAL_02_013_L01"
       }
     },
@@ -295,10 +295,10 @@
       "nextId": 26,
       "data": {
         "presetId": 2,
-        "targetType": "None",
+        "targetType": "CombinationSlots",
         "actionType": "None",
         "emojiType": "Reaction",
-        "guideType": "None",
+        "guideType": "Square",
         "scriptKey": "TUTORIAL_02_014"
       }
     },
@@ -310,7 +310,7 @@
         "targetType": "None",
         "actionType": "None",
         "emojiType": "Idle",
-        "guideType": "None",
+        "guideType": "Circle",
         "scriptKey": "TUTORIAL_02_014_L01"
       }
     },
@@ -451,7 +451,7 @@
       "nextId": 39,
       "data": {
         "presetId": 9,
-        "targetType": "None",
+        "targetType": "MailButton",
         "actionType": "TutorialActionClickBottomMenuMailButton",
         "emojiType": "Idle",
         "guideType": "Circle",
@@ -463,8 +463,8 @@
       "nextId": 40,
       "data": {
         "presetId": 3,
-        "targetType": "None",
-        "actionType": "TutorialActionClickFirstCombinationMailSubmitButton",
+        "targetType": "MailReceiveButton",
+        "actionType": "None",
         "emojiType": "Idle",
         "guideType": "Square",
         "scriptKey": "TUTORIAL_02_017"
@@ -475,10 +475,10 @@
       "nextId": 41,
       "data": {
         "presetId": 4,
-        "targetType": "None",
+        "targetType": "MailReceiveButton",
         "actionType": "TutorialActionClickCombinationResultPopupSubmitButton",
         "emojiType": "Reaction",
-        "guideType": "None",
+        "guideType": "Square",
         "scriptKey": "TUTORIAL_02_018"
       }
     },
@@ -487,10 +487,10 @@
       "nextId": 42,
       "data": {
         "presetId": 4,
-        "targetType": "None",
+        "targetType": "CharacterButton",
         "actionType": "None",
         "emojiType": "Question",
-        "guideType": "None",
+        "guideType": "Circle",
         "scriptKey": "TUTORIAL_02_019"
       }
     },
@@ -499,7 +499,7 @@
       "nextId": 43,
       "data": {
         "presetId": 9,
-        "targetType": "None",
+        "targetType": "CharacterButton",
         "actionType": "TutorialActionClickBottomMenuCharacterButton",
         "emojiType": "Reaction",
         "guideType": "Circle",
@@ -511,7 +511,7 @@
       "nextId": 44,
       "data": {
         "presetId": 3,
-        "targetType": "None",
+        "targetType": "InventoryFirstCell",
         "actionType": "TutorialActionClickAvatarInfoFirstInventoryCellView",
         "emojiType": "Idle",
         "guideType": "Square",
@@ -523,7 +523,7 @@
       "nextId": 45,
       "data": {
         "presetId": 6,
-        "targetType": "None",
+        "targetType": "ItemEquipButton",
         "actionType": "TutorialActionClickItemInformationTooltipSubmitButton",
         "emojiType": "Idle",
         "guideType": "Square",
@@ -535,10 +535,10 @@
       "nextId": 46,
       "data": {
         "presetId": 4,
-        "targetType": "None",
+        "targetType": "InventoryEquipWeapon",
         "actionType": "None",
         "emojiType": "Reaction",
-        "guideType": "None",
+        "guideType": "Square",
         "scriptKey": "TUTORIAL_02_023"
       }
     },
@@ -547,10 +547,10 @@
       "nextId": 47,
       "data": {
         "presetId": 4,
-        "targetType": "None",
+        "targetType": "InventoryEquipWeapon",
         "actionType": "None",
         "emojiType": "Idle",
-        "guideType": "None",
+        "guideType": "Square",
         "scriptKey": "TUTORIAL_02_024"
       }
     },
@@ -571,7 +571,7 @@
       "nextId": 49,
       "data": {
         "presetId": 1,
-        "targetType": "None",
+        "targetType": "BackButton",
         "actionType": "TutorialActionClickBottomMenuBackButton",
         "emojiType": "Idle",
         "guideType": "Circle",
@@ -583,7 +583,7 @@
       "nextId": 0,
       "data": {
         "presetId": 1,
-        "targetType": "None",
+        "targetType": "GuidedQuestButton",
         "actionType": "TutorialActionClickGuidedQuestWorldStage2",
         "emojiType": "Reaction",
         "guideType": "Square",
