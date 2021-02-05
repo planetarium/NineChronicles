@@ -70,7 +70,7 @@ namespace Nekoyume.UI
         private Coroutine _coLazyClose;
 
         public SpriteRenderer combinationSpriteRenderer;
-        public GameObject outlineHasButtn;
+        public SpriteRenderer hasSpriteRenderer;
 
         protected override void Awake()
         {

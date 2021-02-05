@@ -108,7 +108,7 @@ namespace Nekoyume.UI
                         _menu.combinationSpriteRenderer.material = growOutline;
                         break;
                     case MenuType.Quest:
-                        _menu.outlineHasButtn.SetActive(true);
+                        _menu.hasSpriteRenderer.material = growOutline;
                         break;
                 }
             }
@@ -124,7 +124,7 @@ namespace Nekoyume.UI
             }
 
             _menu.combinationSpriteRenderer.material = spriteDefault;
-            _menu.outlineHasButtn.SetActive(false);
+            _menu.hasSpriteRenderer.material = spriteDefault;
         }
 
         public void PlaySfx()
