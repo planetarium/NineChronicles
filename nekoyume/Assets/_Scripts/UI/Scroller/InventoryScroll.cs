@@ -46,7 +46,7 @@ namespace Nekoyume.UI.Scroller
                 .Where(cell => cell.Index == index)
                 .First()
                 .DoOnSubscribe(() => Context.RequestCellViewByIndex.OnNext(index))
-                .TimeoutFrame(1);
+                .TimeoutFrame(10);
         }
 
         protected override FancyCell<InventoryItem, ContextModel> CellTemplate => cellTemplate;

@@ -199,13 +199,6 @@ namespace Nekoyume.UI
             OnDisappear?.Invoke();
             _closeAction?.Invoke();
             Close();
-
-            var tutorialController = Game.Game.instance.Stage.TutorialController;
-            var tutorialProgress = tutorialController.GetTutorialProgress();
-            if (tutorialProgress == 11)
-            {
-                tutorialController.Play(12);
-            }
         }
     }
 }

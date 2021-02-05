@@ -415,17 +415,27 @@ namespace Nekoyume.UI
         {
             var tutorialController = Game.Game.instance.Stage.TutorialController;
             var tutorialProgress = tutorialController.GetTutorialProgress();
-            if (GuidedQuest.WorldQuest.Goal < 4)
+            var nextStageId = GuidedQuest.WorldQuest?.Goal ?? 1;
+            if (nextStageId < 4)
             {
                 tutorialController.Play(1);
             }
             else if (tutorialProgress == 1)
             {
-                tutorialController.Play(2);
-            }
-            else if (tutorialProgress == 48)
-            {
-                tutorialController.Play(49);
+                var recipeRow = Game.Game.instance.TableSheets.EquipmentItemRecipeSheet.OrderedList
+                    .FirstOrDefault();
+                if (recipeRow is null)
+                {
+                    Debug.LogError("EquipmentItemRecipeSheet is empty");
+                }
+                else if (States.Instance.CurrentAvatarState.inventory.HasItem(recipeRow.ResultEquipmentId))
+                {
+                    tutorialController.SaveTutorialProgress(2);
+                }
+                else
+                {
+                    tutorialController.Play(2);
+                }
             }
         }
 
@@ -493,7 +503,7 @@ namespace Nekoyume.UI
             }
         }
 
-        public void TutorialActionHackAndSlash() => HackAndSlash(GuidedQuest.WorldQuest.Goal);
+        public void TutorialActionHackAndSlash() => HackAndSlash(GuidedQuest.WorldQuest?.Goal ?? 1);
 
         public void TutorialActionGoToFirstRecipeCellView()
         {

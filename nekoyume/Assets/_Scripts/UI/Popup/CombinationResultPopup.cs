@@ -179,6 +179,6 @@ namespace Nekoyume.UI
         }
 
         public void TutorialActionClickCombinationResultPopupSubmitButton() =>
-            Model.OnClickSubmit.OnNext(Model);
+            Close();
     }
 }

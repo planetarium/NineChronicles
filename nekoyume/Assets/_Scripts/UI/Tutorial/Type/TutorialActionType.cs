@@ -14,7 +14,7 @@ namespace Nekoyume.UI
         TutorialActionClickBottomMenuWorkShopButton,
         TutorialActionClickBottomMenuMailButton,
         TutorialActionClickBottomMenuCharacterButton,
-        TutorialActionClickBottomMenuBackButton,
+        TutorialActionCloseCombination,
         TutorialActionClickFirstCombinationMailSubmitButton,
         TutorialActionClickCombinationResultPopupSubmitButton,
         TutorialActionClickAvatarInfoFirstInventoryCellView,

@@ -149,7 +149,7 @@ namespace Nekoyume.UI
             return progress;
         }
 
-        private void SaveTutorialProgress(int id)
+        public void SaveTutorialProgress(int id)
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
 
