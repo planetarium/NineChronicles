@@ -26,6 +26,8 @@ namespace Nekoyume.UI
 
         private readonly List<int> _playIdHistory = new List<int>();
 
+        public int CurrentPlayingId { get; private set; }
+
         public TutorialController(IEnumerable<Widget> widgets)
         {
             foreach (var widget in widgets)
@@ -65,6 +67,7 @@ namespace Nekoyume.UI
 
         public void Play(int id)
         {
+            CurrentPlayingId = id;
             _playIdHistory.Add(id);
             if (!_tutorial.isActiveAndEnabled)
             {
