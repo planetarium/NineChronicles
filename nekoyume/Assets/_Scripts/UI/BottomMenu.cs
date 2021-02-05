@@ -419,7 +419,7 @@ namespace Nekoyume.UI.Module
         {
             var tutorialController = Game.Game.instance.Stage.TutorialController;
             var tutorialProgress = tutorialController.GetTutorialProgress();
-            if (tutorialProgress >= 14 && tutorialProgress < 37)
+            if (tutorialProgress == 1)
             {
                 tutorialController.Stop(() => tutorialController.Play(37));
             }
@@ -827,8 +827,5 @@ namespace Nekoyume.UI.Module
 
         public void TutorialActionClickBottomMenuCharacterButton() =>
             _toggleGroup.SetToggledOn(characterButton);
-
-        public void TutorialActionClickBottomMenuBackButton() =>
-            SubscribeNavigationButtonClick();
     }
 }

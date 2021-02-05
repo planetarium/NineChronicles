@@ -114,13 +114,6 @@ namespace Nekoyume.UI
             UpdateTabs();
             base.Show(ignoreShowAnimation);
 
-            var tutorialController = Game.Game.instance.Stage.TutorialController;
-            var tutorialProgress = tutorialController.GetTutorialProgress();
-            if (tutorialProgress < 39)
-            {
-                tutorialController.Play(39);
-            }
-
             if (blur)
             {
                 blur.Show();

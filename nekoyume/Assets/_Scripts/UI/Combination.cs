@@ -380,12 +380,6 @@ namespace Nekoyume.UI
                 case StateType.CombineEquipment:
                     Mixpanel.Track("Unity/Combine Equipment");
 
-                    tutorialProgress = tutorialController.GetTutorialProgress();
-                    if (tutorialProgress == 5)
-                    {
-                        tutorialController.Play(6);
-                    }
-
                     _selectedSpeechBubble = speechBubbleForEquipment;
                     speechBubbleForUpgrade.gameObject.SetActive(false);
 
@@ -596,13 +590,6 @@ namespace Nekoyume.UI
         public void OnTweenRecipeCompleted()
         {
             AnimationState = AnimationStateType.Shown;
-
-            var tutorialController = Game.Game.instance.Stage.TutorialController;
-            var tutorialProgress = tutorialController.GetTutorialProgress();
-            if (tutorialProgress == 10)
-            {
-                tutorialController.Play(11);
-            }
         }
 
         private void SubscribeSlotStates(Dictionary<Address, CombinationSlotState> states)
@@ -912,5 +899,15 @@ namespace Nekoyume.UI
 
         public void TutorialActionClickCombinationSubmitButton() =>
             OnCombinationSubmit(combinationPanel);
+
+        public void TutorialActionCloseCombination()
+        {
+            Close();
+
+            if (gameObject.activeSelf)
+            {
+                Game.Event.OnRoomEnter.Invoke(true);
+            }
+        }
     }
 }

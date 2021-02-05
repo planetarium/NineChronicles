@@ -424,10 +424,6 @@ namespace Nekoyume.UI
             {
                 tutorialController.Play(2);
             }
-            else if (tutorialProgress == 48)
-            {
-                tutorialController.Play(49);
-            }
         }
 
         private IEnumerator CoHelpPopup()
