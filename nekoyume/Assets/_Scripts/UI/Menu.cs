@@ -407,6 +407,7 @@ namespace Nekoyume.UI
         protected override void OnCompleteOfShowAnimationInternal()
         {
             base.OnCompleteOfShowAnimationInternal();
+            // TODO: move invocation the PlayTutorial() inside of CoHelpPopup().
             Find<Dialog>().Show(1, PlayTutorial);
             StartCoroutine(CoHelpPopup());
         }
