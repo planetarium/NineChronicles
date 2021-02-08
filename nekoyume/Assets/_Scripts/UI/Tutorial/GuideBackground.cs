@@ -114,6 +114,12 @@ namespace Nekoyume.UI
             {
                 return;
             }
+
+            var maskSize = mask.rectTransform.sizeDelta;
+            maskSize.x = Mathf.Max(maskSize.x, target.sizeDelta.x * 1.5f);
+            maskSize.y = Mathf.Max(maskSize.y, target.sizeDelta.y * 1.5f);
+            mask.rectTransform.sizeDelta = maskSize;
+
             var menu = target.GetComponent<MainMenu>();
             if (menu != null && menu.type == MenuType.Combination)
             {
