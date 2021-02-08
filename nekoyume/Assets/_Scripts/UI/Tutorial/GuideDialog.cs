@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using DG.Tweening;
 using Nekoyume.Game.Controller;
+using Nekoyume.L10n;
 using UnityEngine;
 using RedBlueGames.Tools.TextTyper;
 
@@ -14,7 +15,8 @@ namespace Nekoyume.UI
         [SerializeField] private float fadeDuration = 1.0f;
         [SerializeField] private AnimationCurve fadeCurve
             = new AnimationCurve(new Keyframe(0, 0), new Keyframe(1, 1));
-        [SerializeField] private float printDelay = 0.1f;
+
+        [SerializeField] private List<PrintDelay> printDelays = new List<PrintDelay>();
         [SerializeField] private Transform topContainer;
         [SerializeField] private Transform bottomContainer;
         [SerializeField] private TextTyper textTyper;
@@ -122,7 +124,8 @@ namespace Nekoyume.UI
                 return;
             }
 
-            textTyper.TypeText(_script, printDelay);
+            var printDelay = printDelays.FirstOrDefault(x => x.languageType == L10nManager.CurrentLanguage);
+            textTyper.TypeText(_script, printDelay?.delay ?? 0.1f);
             _script = string.Empty;
         }
 
@@ -179,5 +182,12 @@ namespace Nekoyume.UI
 
         public DialogCommaType Type => type;
         public GameObject Icon => icon;
+    }
+
+    [Serializable]
+    public class PrintDelay
+    {
+        public LanguageType languageType;
+        public float delay;
     }
 }
