@@ -263,7 +263,7 @@ namespace Nekoyume.UI.Module
         {
             var canClose = navigationType != UINavigator.NavigationType.None;
 
-            if(canClose)
+            if (canClose)
             {
                 CloseWidget = () => navigationAction?.Invoke(this);
             }
