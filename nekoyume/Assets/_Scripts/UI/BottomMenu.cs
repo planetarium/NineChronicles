@@ -261,7 +261,16 @@ namespace Nekoyume.UI.Module
             bool animateAlpha = true,
             params ToggleableType[] showButtons)
         {
-            CloseWidget = () => navigationAction?.Invoke(this);
+            var canClose = navigationType != UINavigator.NavigationType.None;
+
+            if (canClose)
+            {
+                CloseWidget = () => navigationAction?.Invoke(this);
+            }
+            else
+            {
+                CloseWidget = null;
+            }
 
             base.Show(animateAlpha);
 
