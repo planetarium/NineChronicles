@@ -52,7 +52,7 @@ namespace Nekoyume.L10n
         PortugueseBrazil,
 
         /// <summary>
-        /// This is same with Portuguese.
+        /// This is same with PortugueseBrazil.
         /// </summary>
         Polish,
 
