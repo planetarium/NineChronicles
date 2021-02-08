@@ -1,19 +1,15 @@
 on:
   push:
     branches:
-    - 9c-alpha-*
-    - 9c-beta-*
-    - 9c-main
     - master
     - development
+    - rc-*
     tags: ['*']
   pull_request:
     branches:
-      - 9c-alpha-*
-      - 9c-beta-*
-      - 9c-main
       - master
       - development
+      - rc-*
 
 name: Pack
 
