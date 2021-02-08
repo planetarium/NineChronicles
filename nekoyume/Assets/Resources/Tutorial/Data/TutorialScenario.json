@@ -592,7 +592,8 @@
         "actionType": "TutorialActionClickGuidedQuestWorldStage2",
         "emojiType": "Reaction",
         "guideType": "Square",
-        "scriptKey": "TUTORIAL_02_027"
+        "scriptKey": "TUTORIAL_02_027",
+        "arrowAdditionalDelay" : 1.5
       }
     }
   ]
