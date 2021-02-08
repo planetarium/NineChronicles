@@ -16,6 +16,8 @@ namespace Nekoyume.UI
 
         public Vector2 targetSizeOffset;
 
+        public float arrowAdditionalDelay;
+
         public bool isSkip;
 
         public TutorialItemType Type => type;
@@ -25,12 +27,14 @@ namespace Nekoyume.UI
             RectTransform target,
             Vector2 targetPositionOffset,
             Vector2 targetSizeOffset,
+            float arrowAdditionalDelay,
             bool isSkip)
         {
             this.guideType = guideType;
             this.target = target;
             this.targetPositionOffset = targetPositionOffset;
             this.targetSizeOffset = targetSizeOffset;
+            this.arrowAdditionalDelay = arrowAdditionalDelay;
             this.isSkip = isSkip;
         }
     }

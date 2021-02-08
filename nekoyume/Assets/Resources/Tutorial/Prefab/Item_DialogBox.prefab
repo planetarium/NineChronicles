@@ -917,8 +917,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 40868536fcc3c2c458788a1cd1298e8f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  shakeLibrary: {fileID: 11400000, guid: 9a6156b25fcccac4e97ef1c8d23def06, type: 2}
-  curveLibrary: {fileID: 11400000, guid: 1807857dbc33603469f5046b18ae0aae, type: 2}
+  shakeLibrary: {fileID: 0}
+  curveLibrary: {fileID: 0}
   useUnscaledTime: 0
   printCompleted:
     m_PersistentCalls:
@@ -967,6 +967,12 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 933984515680791110, guid: 2da621e7527e94404b56ce5f5ded3b05,
+        type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 22100000, guid: 28db6ea87a6658d468f91bb14203a36d,
+        type: 2}
     - target: {fileID: 7960992288396198503, guid: 2da621e7527e94404b56ce5f5ded3b05,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1072,12 +1078,6 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 933984515680791110, guid: 2da621e7527e94404b56ce5f5ded3b05,
-        type: 3}
-      propertyPath: m_Controller
-      value: 
-      objectReference: {fileID: 22100000, guid: 28db6ea87a6658d468f91bb14203a36d,
-        type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2da621e7527e94404b56ce5f5ded3b05, type: 3}
 --- !u!224 &4848024662716986550 stripped

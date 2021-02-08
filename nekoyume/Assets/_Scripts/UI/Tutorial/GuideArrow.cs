@@ -66,7 +66,7 @@ namespace Nekoyume.UI
                     }
                 }
 
-                _coroutine = StartCoroutine(PlayAnimation(d.guideType, d.isSkip, callback));
+                _coroutine = StartCoroutine(PlayAnimation(d.guideType, d.arrowAdditionalDelay, d.isSkip, callback));
             }
         }
 
@@ -78,12 +78,12 @@ namespace Nekoyume.UI
             }
 
             Reset();
-            _coroutine = StartCoroutine(PlayAnimation(GuideType.Stop, false, callback));
+            _coroutine = StartCoroutine(PlayAnimation(GuideType.Stop, 0,false, callback));
         }
 
-        private IEnumerator PlayAnimation(GuideType guideType, bool isSkip, System.Action callback)
+        private IEnumerator PlayAnimation(GuideType guideType, float additionalDelay, bool isSkip, System.Action callback)
         {
-            yield return new WaitForSeconds(predelay);
+            yield return new WaitForSeconds(predelay + additionalDelay);
             _arrow.Play(_guideTypes[guideType], -1, isSkip ? 1 : 0);
             var length = _arrow.GetCurrentAnimatorStateInfo(0).length;
             yield return new WaitForSeconds(length);

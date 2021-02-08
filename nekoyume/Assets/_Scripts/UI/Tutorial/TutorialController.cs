@@ -128,12 +128,14 @@ namespace Nekoyume.UI
                     preset.isExistFadeInBackground,
                     preset.isEnableMask,
                     target,
-                    _buttonRectTransform),
+                    _buttonRectTransform,
+                    data.fullScreenButton),
                 new GuideArrowData(
                     data.guideType,
                     target,
                     data.targetPositionOffset,
                     data.targetSizeOffset,
+                    data.arrowAdditionalDelay,
                     preset.isSkipArrowAnimation),
                 new GuideDialogData(
                     data.emojiType,
