@@ -362,9 +362,8 @@ namespace Nekoyume.UI
                     SharedModel.LastClearedStageId == 3 &&
                     SharedModel.State == BattleLog.Result.Win)
                 {
-                    fullFormat = L10nManager.Localize("UI_BATTLE_EXIT_FORMAT");
                     submitButton.gameObject.SetActive(false);
-                    bottomText.text = string.Format(fullFormat, string.Format(secondsFormat, limitSeconds));
+                    bottomText.text = string.Empty;
 
                     yield break;
                 }
