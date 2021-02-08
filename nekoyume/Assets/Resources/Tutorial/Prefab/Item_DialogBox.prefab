@@ -149,8 +149,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bc0bb2828e6f4b6f82308b85a83887c2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  predelay: 0.1
-  fadeDuration: 0.4
+  predelay: 0.05
+  fadeDuration: 0.2
   fadeCurve:
     serializedVersion: 2
     m_Curve:
@@ -177,11 +177,11 @@ MonoBehaviour:
     m_RotationOrder: 4
   printDelays:
   - languageType: 0
-    delay: 0.05
+    delay: 0.03
   - languageType: 1
-    delay: 0.1
-  - languageType: 6
     delay: 0.05
+  - languageType: 6
+    delay: 0.03
   topContainer: {fileID: 0}
   bottomContainer: {fileID: 0}
   textTyper: {fileID: 4536168471067268755}
