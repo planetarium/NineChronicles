@@ -71,7 +71,8 @@
         "actionType": "None",
         "emojiType": "Question",
         "guideType": "Square",
-        "scriptKey": "TUTORIAL_02_005"
+        "scriptKey": "TUTORIAL_02_005",
+        "fullScreenButton" : true
       }
     },
     {
@@ -83,7 +84,8 @@
         "actionType": "None",
         "emojiType": "Idle",
         "guideType": "Square",
-        "scriptKey": "TUTORIAL_02_006"
+        "scriptKey": "TUTORIAL_02_006",
+        "fullScreenButton" : true
       }
     },
     {
@@ -527,7 +529,8 @@
         "actionType": "TutorialActionClickItemInformationTooltipSubmitButton",
         "emojiType": "Idle",
         "guideType": "Square",
-        "scriptKey": "TUTORIAL_02_022"
+        "scriptKey": "TUTORIAL_02_022",
+        "fullScreenButton" : true
       }
     },
     {
@@ -539,7 +542,8 @@
         "actionType": "None",
         "emojiType": "Reaction",
         "guideType": "Square",
-        "scriptKey": "TUTORIAL_02_023"
+        "scriptKey": "TUTORIAL_02_023",
+        "fullScreenButton" : true
       }
     },
     {
@@ -551,7 +555,8 @@
         "actionType": "None",
         "emojiType": "Idle",
         "guideType": "Square",
-        "scriptKey": "TUTORIAL_02_024"
+        "scriptKey": "TUTORIAL_02_024",
+        "fullScreenButton" : true
       }
     },
     {
