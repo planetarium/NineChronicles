@@ -69,6 +69,8 @@ namespace Nekoyume.UI
 
         public string scriptKey { get; set; }
 
+        public bool fullScreenButton { get; set; }
+
         protected bool Equals(ScenarioData other)
         {
             return presetId == other.presetId &&
@@ -78,7 +80,8 @@ namespace Nekoyume.UI
                    actionType == other.actionType &&
                    guideType == other.guideType &&
                    emojiType == other.emojiType &&
-                   scriptKey == other.scriptKey;
+                   scriptKey == other.scriptKey &&
+                   fullScreenButton == other.fullScreenButton;
         }
 
         public override bool Equals(object obj)
@@ -101,6 +104,7 @@ namespace Nekoyume.UI
                 hashCode = (hashCode * 397) ^ (int) guideType;
                 hashCode = (hashCode * 397) ^ (int) emojiType;
                 hashCode = (hashCode * 397) ^ (scriptKey != null ? scriptKey.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ fullScreenButton.GetHashCode();
                 return hashCode;
             }
         }

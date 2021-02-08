@@ -50,7 +50,7 @@ namespace Nekoyume.UI
         {
             yield return new WaitForSeconds(predelay);
             FadeIn(data.isExistFadeIn ? fadeDuration : 0.0f);
-            SetButton(data.buttonRectTransform, data.target);
+            SetButton(data.fullScreenButton, data.buttonRectTransform, data.target);
             SetMaskSize(data.target);
 
             mask.rectTransform.position = data.target ? data.target.position : Vector3.zero;
@@ -67,10 +67,18 @@ namespace Nekoyume.UI
             callback?.Invoke();
         }
 
-        private void SetButton(RectTransform buttonRectTransform, RectTransform target)
+        private void SetButton(bool isFullScreen, RectTransform buttonRectTransform, RectTransform target)
         {
-            buttonRectTransform.position = target ? target.position  : Vector3.zero;
-            buttonRectTransform.sizeDelta = target ? target.sizeDelta : Vector2.one * 2000;
+            if (isFullScreen)
+            {
+                buttonRectTransform.position = Vector3.zero;
+                buttonRectTransform.sizeDelta = Vector2.one * 2000;
+            }
+            else
+            {
+                buttonRectTransform.position = target ? target.position  : Vector3.zero;
+                buttonRectTransform.sizeDelta = target ? target.sizeDelta : Vector2.one * 2000;
+            }
         }
 
         private void FadeIn(float duration, System.Action callback = null)
@@ -106,6 +114,12 @@ namespace Nekoyume.UI
             {
                 return;
             }
+
+            var maskSize = mask.rectTransform.sizeDelta;
+            maskSize.x = Mathf.Max(maskSize.x, target.sizeDelta.x * 1.5f);
+            maskSize.y = Mathf.Max(maskSize.y, target.sizeDelta.y * 1.5f);
+            mask.rectTransform.sizeDelta = maskSize;
+
             var menu = target.GetComponent<MainMenu>();
             if (menu != null && menu.type == MenuType.Combination)
             {
