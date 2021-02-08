@@ -135,6 +135,7 @@ namespace Nekoyume.UI
                     target,
                     data.targetPositionOffset,
                     data.targetSizeOffset,
+                    data.arrowAdditionalDelay,
                     preset.isSkipArrowAnimation),
                 new GuideDialogData(
                     data.emojiType,
