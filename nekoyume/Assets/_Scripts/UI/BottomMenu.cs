@@ -399,11 +399,6 @@ namespace Nekoyume.UI.Module
             var hasNotification = mailBox.Any(i =>
                 i.New && i.requiredBlockIndex <= _blockIndex);
             HasNotificationInMail.OnNext(hasNotification);
-
-            if (hasNotification)
-            {
-                OnReceivedTutorialEquipment();
-            }
         }
 
         private void SubscribeBlockIndex(long blockIndex)
@@ -415,26 +410,9 @@ namespace Nekoyume.UI.Module
                 var hasNotification = mailBox.Any(i =>
                     i.New && i.requiredBlockIndex <= _blockIndex);
                 HasNotificationInMail.OnNext(hasNotification);
-                if (hasNotification)
-                {
-                    OnReceivedTutorialEquipment();
-                }
             }
 
             UpdateCombinationNotification();
-        }
-
-        private void OnReceivedTutorialEquipment()
-        {
-            var tutorialController = Game.Game.instance.Stage.TutorialController;
-            var tutorialProgress = tutorialController.GetTutorialProgress();
-            if (tutorialProgress == 1)
-            {
-                if (tutorialController.CurrentlyPlayingId < 37)
-                {
-                    tutorialController.Stop(() => tutorialController.Play(37));
-                }
-            }
         }
 
         private void SubscribeAvatarQuestList(QuestList questList)
