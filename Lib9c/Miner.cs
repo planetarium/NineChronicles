@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Libplanet;
@@ -16,30 +17,73 @@ namespace Nekoyume.BlockChain
 {
     public class Miner
     {
-        private BlockChain<PolymorphicAction<ActionBase>> _chain;
-        private Swarm<PolymorphicAction<ActionBase>> _swarm;
+        private readonly BlockChain<PolymorphicAction<ActionBase>> _chain;
+        private readonly Swarm<PolymorphicAction<ActionBase>> _swarm;
+        private readonly PrivateKey _privateKey;
 
-        public Address Address { get; }
+        public bool AuthorizedMiner { get; }
+
+        public Address Address => _privateKey.ToAddress();
+
+        public Transaction<PolymorphicAction<ActionBase>> StageProofTransaction()
+        {
+            // We assume authorized miners create no transactions at all except for
+            // proof transactions.  Without the assumption, nonces for proof txs become
+            // much complicated to determine.
+            var proof = Transaction<PolymorphicAction<ActionBase>>.Create(
+                _chain.GetNextTxNonce(_privateKey.ToAddress()),
+                _privateKey,
+                _chain.Genesis.Hash,
+                new PolymorphicAction<ActionBase>[0]
+            );
+            _chain.StageTransaction(proof);
+            return proof;
+        }
 
         public async Task<Block<PolymorphicAction<ActionBase>>> MineBlockAsync(
             int maxTransactions,
             CancellationToken cancellationToken)
         {
             var txs = new HashSet<Transaction<PolymorphicAction<ActionBase>>>();
-
             var invalidTxs = txs;
+
+            Transaction<PolymorphicAction<ActionBase>> authProof = null;
             Block<PolymorphicAction<ActionBase>> block = null;
             try
             {
+                if (AuthorizedMiner)
+                {
+                    authProof = StageProofTransaction();
+                }
                 block = await _chain.MineBlock(
                     Address,
                     DateTimeOffset.UtcNow,
                     cancellationToken: cancellationToken,
-                    maxTransactions: maxTransactions);
+                    maxTransactions: maxTransactions,
+                    append: false);
 
-                if (_swarm.Running)
+                if (authProof is Transaction<PolymorphicAction<ActionBase>> proof &&
+                    !block.Transactions.Contains(proof))
                 {
-                    _swarm.BroadcastBlock(block);
+                    // For any reason, if the proof tx is not contained mine a new block again
+                    // without any transactions except for the proof tx.
+                    block = Block<PolymorphicAction<ActionBase>>.Mine(
+                        block.Index,
+                        block.Difficulty,
+                        block.TotalDifficulty - block.Difficulty,
+                        Address,
+                        block.PreviousHash,
+                        DateTimeOffset.UtcNow,
+                        new[] { proof },
+                        block.ProtocolVersion,
+                        cancellationToken
+                    );
+                }
+
+                _chain.Append(block);
+                if (_swarm is Swarm<PolymorphicAction<ActionBase>> s && s.Running)
+                {
+                    s.BroadcastBlock(block);
                 }
             }
             catch (OperationCanceledException)
@@ -80,12 +124,17 @@ namespace Nekoyume.BlockChain
             return block;
         }
 
-        public Miner(BlockChain<PolymorphicAction<ActionBase>> chain, Swarm<PolymorphicAction<ActionBase>> swarm, PrivateKey privateKey)
+        public Miner(
+            BlockChain<PolymorphicAction<ActionBase>> chain,
+            Swarm<PolymorphicAction<ActionBase>> swarm,
+            PrivateKey privateKey,
+            bool authorizedMiner
+        )
         {
             _chain = chain ?? throw new ArgumentNullException(nameof(chain));
-            _swarm = swarm ?? throw new ArgumentNullException(nameof(swarm));
-
-            Address = privateKey.PublicKey.ToAddress();
+            _swarm = swarm;
+            _privateKey = privateKey;
+            AuthorizedMiner = authorizedMiner;
         }
     }
 }
