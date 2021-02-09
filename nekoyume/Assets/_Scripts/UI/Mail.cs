@@ -182,14 +182,14 @@ namespace Nekoyume.UI
             var tutorialProgress = tutorialController.GetTutorialProgress();
             if (tutorialProgress == 1)
             {
-                var hasTutorialEquipment = States.Instance.CurrentAvatarState.mailBox
+                var tutorialEquipment = States.Instance.CurrentAvatarState.mailBox
                 .FirstOrDefault(x =>
                 x is AttachmentMail mail &&
                 mail.requiredBlockIndex <= blockIndex &&
                 !(mail.attachment.itemUsable is null) &&
                 mail.attachment.itemUsable.ItemSubType == Nekoyume.Model.Item.ItemSubType.Weapon &&
                 mail.attachment.itemUsable.Id == TutorialEquipmentId);
-                if (!(hasTutorialEquipment is null))
+                if (!(tutorialEquipment is null))
                 {
                     OnReceivedTutorialEquipment();
                 }
