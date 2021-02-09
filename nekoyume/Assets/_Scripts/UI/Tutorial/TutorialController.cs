@@ -72,6 +72,7 @@ namespace Nekoyume.UI
             if (!_tutorial.isActiveAndEnabled)
             {
                 _tutorial.Show();
+                WidgetHandler.Instance.isActiveTutorialMaskWidget = true;
             }
 
             var scenario = _scenario.FirstOrDefault(x => x.id == id);
@@ -93,7 +94,12 @@ namespace Nekoyume.UI
                     _playIdHistory.Clear();
                 }
 
-                _tutorial.Stop(() => _tutorial.gameObject.SetActive(false));
+                _tutorial.Stop(() =>
+                {
+                    _tutorial.gameObject.SetActive(false);
+                    WidgetHandler.Instance.isActiveTutorialMaskWidget = false;
+                });
+
             }
         }
 
@@ -102,6 +108,7 @@ namespace Nekoyume.UI
             _tutorial.Stop(() =>
             {
                 _tutorial.gameObject.SetActive(false);
+                WidgetHandler.Instance.isActiveTutorialMaskWidget = false;
                 callback?.Invoke();
             });
         }

@@ -126,6 +126,8 @@ namespace Nekoyume.Game
             SkillController = new SkillController(objectPool);
             BuffController = new BuffController(objectPool);
             TutorialController = new TutorialController(MainCanvas.instance.Widgets);
+            var messageCatManager = Widget.Find<MessageCatManager>();
+            WidgetHandler.Instance.messageCatManager = messageCatManager;
         }
 
         private void OnStageStart(BattleLog log)
