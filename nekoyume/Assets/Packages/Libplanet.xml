@@ -60,6 +60,18 @@
         <member name="M:Libplanet.Action.AccountStateDeltaImpl.BurnAsset(Libplanet.Address,Libplanet.Assets.FungibleAssetValue)">
             <inheritdoc/>
         </member>
+        <member name="T:Libplanet.Action.AccountStateDeltaImplV0">
+            <summary>
+            Equivalent to <see cref="T:Libplanet.Action.AccountStateDeltaImpl"/> except that it maintains its old (v0)
+            incorrect behavior of <see cref="M:Libplanet.Action.AccountStateDeltaImplV0.TransferAsset(Libplanet.Address,Libplanet.Address,Libplanet.Assets.FungibleAssetValue,System.Boolean)"/>.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Action.AccountStateDeltaImplV0.GetBalance(Libplanet.Address,Libplanet.Assets.Currency)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Action.AccountStateDeltaImplV0.TransferAsset(Libplanet.Address,Libplanet.Address,Libplanet.Assets.FungibleAssetValue,System.Boolean)">
+            <inheritdoc/>
+        </member>
         <member name="T:Libplanet.Action.AccountStateGetter">
             <summary>
             An delegate to provide read-only view of account states.
@@ -116,7 +128,7 @@
             An exception that had risen during evaluation.
             </summary>
         </member>
-        <member name="M:Libplanet.Action.ActionEvaluation.EvaluateActionsGradually(Libplanet.HashDigest{System.Security.Cryptography.SHA256},System.Int64,System.Nullable{Libplanet.Tx.TxId},Libplanet.Action.IAccountStateDelta,Libplanet.Address,Libplanet.Address,System.Byte[],System.Collections.Immutable.IImmutableList{Libplanet.Action.IAction},System.Boolean,Libplanet.Store.Trie.ITrie)">
+        <member name="M:Libplanet.Action.ActionEvaluation.EvaluateActionsGradually(Libplanet.HashDigest{System.Security.Cryptography.SHA256},System.Int64,System.Nullable{Libplanet.Tx.TxId},Libplanet.Action.IAccountStateDelta,Libplanet.Address,Libplanet.Address,System.Byte[],System.Collections.Immutable.IImmutableList{Libplanet.Action.IAction},System.Boolean,Libplanet.Store.Trie.ITrie,System.Boolean)">
             <summary>
             Executes the <paramref name="actions"/> step by step, and emits
             <see cref="T:Libplanet.Action.ActionEvaluation"/> for each step.
@@ -141,6 +153,8 @@
             The default value is <c>false</c>.</param>
             <param name="previousBlockStatesTrie">The trie to contain states at previous block.
             </param>
+            <param name="blockAction">Pass <c>true</c> if it is
+            <see cref="P:Libplanet.Blockchain.Policies.IBlockPolicy`1.BlockAction"/>.</param>
             <returns>Enumerates <see cref="T:Libplanet.Action.ActionEvaluation"/>s for each one in
             <paramref name="actions"/>.  The order is the same to the <paramref name="actions"/>.
             Note that each <see cref="P:Libplanet.Action.IActionContext.Random"/> object
@@ -645,6 +659,12 @@
             A state root hash at the <see cref="P:Libplanet.Action.IActionContext.PreviousStates"/>.  It can cause file I/O interrupt.
             It will be return null if the implementation or your chain didn't support
             the state root hash feature.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Action.IActionContext.BlockAction">
+            <summary>
+            Whether this action is executed as a block action.
+            <c>false</c> if it belongs to a transaction.
             </summary>
         </member>
         <member name="M:Libplanet.Action.IActionContext.GetUnconsumedContext">
@@ -1709,14 +1729,6 @@
             their corresponding <see cref="T:Libplanet.Blocks.Block`1"/>s.
             </summary>
         </member>
-        <member name="F:Libplanet.Blockchain.BlockChain`1._transactions">
-            <summary>
-            All <see cref="T:Libplanet.Tx.Transaction`1"/>s in the <see cref="T:Libplanet.Blockchain.BlockChain`1"/>
-            storage, including orphan <see cref="T:Libplanet.Tx.Transaction`1"/>s.
-            Keys are <see cref="P:Libplanet.Tx.Transaction`1.Id"/>s and values are
-            their corresponding <see cref="T:Libplanet.Tx.Transaction`1"/>s.
-            </summary>
-        </member>
         <member name="F:Libplanet.Blockchain.BlockChain`1._genesis">
             <summary>
             Cached genesis block.
@@ -2180,7 +2192,7 @@
             <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> type.  It should match
             to <see cref="T:Libplanet.Blocks.Block`1"/>'s type parameter.</typeparam>
         </member>
-        <member name="M:Libplanet.Blockchain.Policies.BlockPolicy`1.#ctor(Libplanet.Action.IAction,System.Int32,System.Int64,System.Int32,System.Int32,System.Int32,System.Int32,System.Func{Libplanet.Tx.Transaction{`0},Libplanet.Blockchain.BlockChain{`0},System.Boolean})">
+        <member name="M:Libplanet.Blockchain.Policies.BlockPolicy`1.#ctor(Libplanet.Action.IAction,System.Int32,System.Int64,System.Int32,System.Int32,System.Int32,System.Int32,System.Func{Libplanet.Tx.Transaction{`0},Libplanet.Blockchain.BlockChain{`0},System.Boolean},System.Collections.Generic.IComparer{Libplanet.Blocks.IBlockExcerpt})">
             <summary>
             Creates a <see cref="T:Libplanet.Blockchain.Policies.BlockPolicy`1"/> with configuring
             <see cref="P:Libplanet.Blockchain.Policies.BlockPolicy`1.BlockInterval"/> in milliseconds,
@@ -2206,8 +2218,10 @@
             <param name="doesTransactionFollowPolicy">
             A predicate that determines if the transaction follows the block policy.
             </param>
+            <param name="canonicalChainComparer">The custom rule to determine which is the canonical
+            chain.  If omitted, <see cref="P:Libplanet.Blockchain.Policies.BlockPolicy`1.CanonicalChainComparer"/> is used by default.</param>
         </member>
-        <member name="M:Libplanet.Blockchain.Policies.BlockPolicy`1.#ctor(Libplanet.Action.IAction,System.TimeSpan,System.Int64,System.Int32,System.Int32,System.Int32,System.Int32,System.Func{Libplanet.Tx.Transaction{`0},Libplanet.Blockchain.BlockChain{`0},System.Boolean})">
+        <member name="M:Libplanet.Blockchain.Policies.BlockPolicy`1.#ctor(Libplanet.Action.IAction,System.TimeSpan,System.Int64,System.Int32,System.Int32,System.Int32,System.Int32,System.Func{Libplanet.Tx.Transaction{`0},Libplanet.Blockchain.BlockChain{`0},System.Boolean},System.Collections.Generic.IComparer{Libplanet.Blocks.IBlockExcerpt})">
             <summary>
             Creates a <see cref="T:Libplanet.Blockchain.Policies.BlockPolicy`1"/> with configuring
             <see cref="P:Libplanet.Blockchain.Policies.BlockPolicy`1.BlockInterval"/>, <see cref="P:Libplanet.Blockchain.Policies.BlockPolicy`1.MinimumDifficulty"/> and
@@ -2230,6 +2244,8 @@
             <param name="doesTransactionFollowPolicy">
             A predicate that determines if the transaction follows the block policy.
             </param>
+            <param name="canonicalChainComparer">The custom rule to determine which is the canonical
+            chain.  If omitted, <see cref="P:Libplanet.Blockchain.Policies.BlockPolicy`1.CanonicalChainComparer"/> is used by default.</param>
         </member>
         <member name="P:Libplanet.Blockchain.Policies.BlockPolicy`1.BlockAction">
             <inheritdoc/>
@@ -2247,6 +2263,9 @@
             than this <see cref="P:Libplanet.Blocks.Block`1.Difficulty"/> is dropped.</para>
             </summary>
         </member>
+        <member name="P:Libplanet.Blockchain.Policies.BlockPolicy`1.CanonicalChainComparer">
+            <inheritdoc />
+        </member>
         <member name="M:Libplanet.Blockchain.Policies.BlockPolicy`1.DoesTransactionFollowsPolicy(Libplanet.Tx.Transaction{`0},Libplanet.Blockchain.BlockChain{`0})">
             <inheritdoc
             cref="M:Libplanet.Blockchain.Policies.IBlockPolicy`1.DoesTransactionFollowsPolicy(Libplanet.Tx.Transaction{`0},Libplanet.Blockchain.BlockChain{`0})"/>
@@ -2257,6 +2276,9 @@
         <member name="M:Libplanet.Blockchain.Policies.BlockPolicy`1.GetNextBlockDifficulty(Libplanet.Blockchain.BlockChain{`0})">
             <inheritdoc />
         </member>
+        <member name="M:Libplanet.Blockchain.Policies.BlockPolicy`1.GetMaxBlockBytes(System.Int64)">
+            <inheritdoc />
+        </member>
         <member name="T:Libplanet.Blockchain.Policies.IBlockPolicy`1">
             <summary>
             An interface to determine if consecutive <see cref="T:Libplanet.Blocks.Block`1"/>s are
@@ -2265,6 +2287,14 @@
             </summary>
             <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> type.  It should match
             to <see cref="T:Libplanet.Blocks.Block`1"/>'s type parameter.</typeparam>
+        </member>
+        <member name="P:Libplanet.Blockchain.Policies.IBlockPolicy`1.CanonicalChainComparer">
+            <summary>
+            A comparer to determine which branch is the canonical chain (i.e., best chain).
+            The most greater one according to this comparer is considered to be the canon.
+            </summary>
+            <seealso cref="T:Libplanet.Blocks.IBlockExcerpt"/>
+            <seealso cref="T:Libplanet.Blockchain.TotalDifficultyComparer"/>
         </member>
         <member name="P:Libplanet.Blockchain.Policies.IBlockPolicy`1.BlockAction">
             <summary>
@@ -2344,7 +2374,8 @@
             </param>
             <param name="transaction">The <seealso cref="T:Libplanet.Tx.Transaction`1"/> to be staged.</param>
             <remarks>It does not throw any exception even if the <paramref name="transaction"/> has
-            already been staged.</remarks>
+            already been staged.  It does nothing either if the <paramref name="transaction"/> has
+            marked as ignored (using <see cref="M:Libplanet.Blockchain.Policies.IStagePolicy`1.Ignore(Libplanet.Blockchain.BlockChain{`0},Libplanet.Tx.TxId)"/> method).</remarks>
         </member>
         <member name="M:Libplanet.Blockchain.Policies.IStagePolicy`1.Unstage(Libplanet.Blockchain.BlockChain{`0},Libplanet.Tx.TxId)">
             <summary>
@@ -2355,18 +2386,23 @@
             <remarks>It does not throw any exception even if the <paramref name="id"/> has never
             been staged.</remarks>
         </member>
-        <member name="M:Libplanet.Blockchain.Policies.IStagePolicy`1.HasStaged(Libplanet.Blockchain.BlockChain{`0},Libplanet.Tx.TxId,System.Boolean)">
+        <member name="M:Libplanet.Blockchain.Policies.IStagePolicy`1.Ignore(Libplanet.Blockchain.BlockChain{`0},Libplanet.Tx.TxId)">
             <summary>
-            Checks if a transaction <paramref name="id"/> has staged.
+            Marks a transaction as ignored, so that it will be never staged.
+            </summary>
+            <param name="blockChain">The chain that the stage belongs to.</param>
+            <param name="id">The <see cref="P:Libplanet.Tx.Transaction`1.Id"/> to ignore.</param>
+            <remarks>If the transaction is already in the stage, this method does nothing.</remarks>
+        </member>
+        <member name="M:Libplanet.Blockchain.Policies.IStagePolicy`1.Ignores(Libplanet.Blockchain.BlockChain{`0},Libplanet.Tx.TxId)">
+            <summary>
+            Checks if a transaction should be ignored for any reasons (for example, it is already
+            staged or marked as ignored).
             </summary>
             <param name="blockChain">The chain that the stage belongs to.</param>
             <param name="id">The <see cref="P:Libplanet.Tx.Transaction`1.Id"/> to check.</param>
-            <param name="includeUnstaged">Whether to include transactions that had once staged but
-            unstaged then.</param>
-            <returns><c>true</c> if a transaction is staged.  For transactions that had once staged
-            but unstaged then, it returns <c>true</c> iff <paramref name="includeUnstaged"/> is
-            turned on; otherwise it returns <c>false</c> for those cases.  For transactions
-            that have never staged, it returns <c>false</c>.</returns>
+            <returns><c>true</c> if a transaction should be ignored.
+            Otherwise, <c>false</c>.</returns>
         </member>
         <member name="M:Libplanet.Blockchain.Policies.IStagePolicy`1.Get(Libplanet.Blockchain.BlockChain{`0},Libplanet.Tx.TxId,System.Boolean)">
             <summary>
@@ -2419,8 +2455,11 @@
         <member name="M:Libplanet.Blockchain.Policies.VolatileStagePolicy`1.Unstage(Libplanet.Blockchain.BlockChain{`0},Libplanet.Tx.TxId)">
             <inheritdoc cref="M:Libplanet.Blockchain.Policies.IStagePolicy`1.Unstage(Libplanet.Blockchain.BlockChain{`0},Libplanet.Tx.TxId)"/>
         </member>
-        <member name="M:Libplanet.Blockchain.Policies.VolatileStagePolicy`1.HasStaged(Libplanet.Blockchain.BlockChain{`0},Libplanet.Tx.TxId,System.Boolean)">
-            <inheritdoc cref="M:Libplanet.Blockchain.Policies.IStagePolicy`1.HasStaged(Libplanet.Blockchain.BlockChain{`0},Libplanet.Tx.TxId,System.Boolean)"/>
+        <member name="M:Libplanet.Blockchain.Policies.VolatileStagePolicy`1.Ignore(Libplanet.Blockchain.BlockChain{`0},Libplanet.Tx.TxId)">
+            <inheritdoc cref="M:Libplanet.Blockchain.Policies.IStagePolicy`1.Ignore(Libplanet.Blockchain.BlockChain{`0},Libplanet.Tx.TxId)"/>
+        </member>
+        <member name="M:Libplanet.Blockchain.Policies.VolatileStagePolicy`1.Ignores(Libplanet.Blockchain.BlockChain{`0},Libplanet.Tx.TxId)">
+            <inheritdoc cref="M:Libplanet.Blockchain.Policies.IStagePolicy`1.Ignores(Libplanet.Blockchain.BlockChain{`0},Libplanet.Tx.TxId)"/>
         </member>
         <member name="M:Libplanet.Blockchain.Policies.VolatileStagePolicy`1.Get(Libplanet.Blockchain.BlockChain{`0},Libplanet.Tx.TxId,System.Boolean)">
             <inheritdoc cref="M:Libplanet.Blockchain.Policies.IStagePolicy`1.Get(Libplanet.Blockchain.BlockChain{`0},Libplanet.Tx.TxId,System.Boolean)"/>
@@ -2847,32 +2886,41 @@
             <example>
             <code><![CDATA[
             IStore store = GetStore();
+            IBlockPolicy<ExampleAction> policy = GetPolicy();
             IActionRenderer<ExampleAction> actionRenderer = new SomeActionRenderer();
             // Wraps the actionRenderer with DelayedActionRenderer; the SomeActionRenderer instance
             // becomes to receive event messages only after the relevent blocks are confirmed
             // by 3+ blocks.
             actionRenderer = new DelayedActionRenderer<ExampleAction>(
                actionRenderer,
+               policy,
                store,
                confirmations: 3);
-            // You must pass the same store to the BlockChain<T>() constructor:
+            // You must pass the same policy & store to the BlockChain<T>() constructor:
             var chain = new BlockChain<ExampleAction>(
                ...,
+               policy: policy,
                store: store,
                renderers: new[] { actionRenderer });
             ]]></code>
             </example>
         </member>
-        <member name="M:Libplanet.Blockchain.Renderers.DelayedActionRenderer`1.#ctor(Libplanet.Blockchain.Renderers.IActionRenderer{`0},Libplanet.Store.IStore,System.Int32)">
+        <member name="M:Libplanet.Blockchain.Renderers.DelayedActionRenderer`1.#ctor(Libplanet.Blockchain.Renderers.IActionRenderer{`0},System.Collections.Generic.IComparer{Libplanet.Blocks.IBlockExcerpt},Libplanet.Store.IStore,System.Int32,System.Int64)">
             <summary>
             Creates a new <see cref="T:Libplanet.Blockchain.Renderers.DelayedRenderer`1"/> instance decorating the given
             <paramref name="renderer"/>.
             </summary>
             <param name="renderer">The renderer to decorate which has the <em>actual</em>
             implementations and receives delayed events.</param>
+            <param name="canonicalChainComparer">The same canonical chain comparer to
+            <see cref="P:Libplanet.Blockchain.BlockChain`1.Policy"/>.</param>
             <param name="store">The same store to what <see cref="T:Libplanet.Blockchain.BlockChain`1"/> uses.</param>
             <param name="confirmations">The required number of confirmations to recognize a block.
             See also the <see cref="P:Libplanet.Blockchain.Renderers.DelayedRenderer`1.Confirmations"/> property.</param>
+            <param name="reorgResistantHeight">Configures the height of blocks to maintain the
+            <see cref="T:Libplanet.Action.ActionEvaluation"/> buffer. Buffered <see cref="T:Libplanet.Action.ActionEvaluation"/>s
+            that belong to blocks older than this height from the tip are gone.
+            If zero, which is a default value, is passed the buffer is not cleared.</param>
         </member>
         <member name="P:Libplanet.Blockchain.Renderers.DelayedActionRenderer`1.ActionRenderer">
             <summary>
@@ -2934,27 +2982,34 @@
             <example>
             <code><![CDATA[
             IStore store = GetStore();
+            IBlockPolicy<ExampleAction> policy = GetPolicy();
             IRenderer<ExampleAction> renderer = new SomeRenderer();
             // Wraps the renderer with DelayedRenderer; the SomeRenderer instance becomes to receive
             // event messages only after the relevent blocks are confirmed by 3+ blocks.
-            renderer = new DelayedRenderer<ExampleAction>(renderer, store, confirmations: 3);
-            // You must pass the same store to the BlockChain<T>() constructor:
-            var chain = new BlockChain<ExampleAction>(..., store: store, renderers: new[] { renderer });
+            renderer = new DelayedRenderer<ExampleAction>(renderer, policy, store, confirmations: 3);
+            // You must pass the same policy & store to the BlockChain<T>() constructor:
+            var chain = new BlockChain<ExampleAction>(
+                ...,
+                policy: policy,
+                store: store,
+                renderers: new[] { renderer });
             ]]></code>
             </example>
             <remarks>Since <see cref="T:Libplanet.Blockchain.Renderers.IActionRenderer`1"/> is a subtype of <see cref="T:Libplanet.Blockchain.Renderers.IRenderer`1"/>,
-            <see cref="M:Libplanet.Blockchain.Renderers.DelayedRenderer`1.#ctor(Libplanet.Blockchain.Renderers.IRenderer{`0},Libplanet.Store.IStore,System.Int32)"/> constructor can take
-            an <see cref="T:Libplanet.Blockchain.Renderers.IActionRenderer`1"/> instance as well.  However, even it takes an action
-            renderer, action-level fine-grained events won't hear.  For action renderers,
-            please use <see cref="T:Libplanet.Blockchain.Renderers.DelayedActionRenderer`1"/> instead.</remarks>
+            <see cref="M:Libplanet.Blockchain.Renderers.DelayedRenderer`1.#ctor(Libplanet.Blockchain.Renderers.IRenderer{`0},System.Collections.Generic.IComparer{Libplanet.Blocks.IBlockExcerpt},Libplanet.Store.IStore,System.Int32)"/>
+            constructor can take an <see cref="T:Libplanet.Blockchain.Renderers.IActionRenderer`1"/> instance as well.
+            However, even it takes an action renderer, action-level fine-grained events won't hear.
+            For action renderers, please use <see cref="T:Libplanet.Blockchain.Renderers.DelayedActionRenderer`1"/> instead.</remarks>
         </member>
-        <member name="M:Libplanet.Blockchain.Renderers.DelayedRenderer`1.#ctor(Libplanet.Blockchain.Renderers.IRenderer{`0},Libplanet.Store.IStore,System.Int32)">
+        <member name="M:Libplanet.Blockchain.Renderers.DelayedRenderer`1.#ctor(Libplanet.Blockchain.Renderers.IRenderer{`0},System.Collections.Generic.IComparer{Libplanet.Blocks.IBlockExcerpt},Libplanet.Store.IStore,System.Int32)">
             <summary>
             Creates a new <see cref="T:Libplanet.Blockchain.Renderers.DelayedRenderer`1"/> instance decorating the given
             <paramref name="renderer"/>.
             </summary>
             <param name="renderer">The renderer to decorate which has the <em>actual</em>
             implementations and receives delayed events.</param>
+            <param name="canonicalChainComparer">The same canonical chain comparer to
+            <see cref="P:Libplanet.Blockchain.BlockChain`1.Policy"/>.</param>
             <param name="store">The same store to what <see cref="T:Libplanet.Blockchain.BlockChain`1"/> uses.</param>
             <param name="confirmations">The required number of confirmations to recognize a block.
             It must be greater than zero (note that zero <paramref name="confirmations"/> mean
@@ -2968,6 +3023,12 @@
             The inner renderer which has the <em>actual</em> implementations and receives delayed
             events.
             </summary>
+        </member>
+        <member name="P:Libplanet.Blockchain.Renderers.DelayedRenderer`1.CanonicalChainComparer">
+            <summary>
+            The same canonical chain comparer to <see cref="P:Libplanet.Blockchain.BlockChain`1.Policy"/>.
+            </summary>
+            <seealso cref="P:Libplanet.Blockchain.Policies.IBlockPolicy`1.CanonicalChainComparer"/>
         </member>
         <member name="P:Libplanet.Blockchain.Renderers.DelayedRenderer`1.Store">
             <summary>
@@ -3397,10 +3458,30 @@
             Holds a <see cref="T:Libplanet.Blockchain.FungibleAssetStateCompleter`1"/>.
             </summary>
         </member>
-        <member name="M:Libplanet.Blocks.Block`1.#ctor(System.Int64,System.Int64,System.Numerics.BigInteger,Libplanet.Nonce,System.Nullable{Libplanet.Address},System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}},System.DateTimeOffset,System.Collections.Generic.IEnumerable{Libplanet.Tx.Transaction{`0}},System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}},System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}})">
+        <member name="T:Libplanet.Blockchain.TotalDifficultyComparer">
+            <summary>
+            The default canonical chain comparer (which purpose to be a <see
+            cref="P:Libplanet.Blockchain.Policies.IBlockPolicy`1.CanonicalChainComparer"/>).
+            <para>The chain which has the most <see cref="P:Libplanet.Blocks.Block`1.TotalDifficulty"/> is considered
+            the greatest, i.e., canonical chain.</para>
+            </summary>
+            <remarks>Although this compares blocks' total difficulty, if two blocks have different
+            protocol version, it always consider the higher version greater.</remarks>
+            <seealso cref="P:Libplanet.Blockchain.Policies.IBlockPolicy`1.CanonicalChainComparer"/>
+            <seealso cref="T:Libplanet.Blocks.IBlockExcerpt"/>
+        </member>
+        <member name="M:Libplanet.Blockchain.TotalDifficultyComparer.Compare(Libplanet.Blocks.IBlockExcerpt,Libplanet.Blocks.IBlockExcerpt)">
+            <inheritdoc cref="M:System.Collections.Generic.IComparer`1.Compare(`0,`0)"/>
+        </member>
+        <member name="F:Libplanet.Blocks.Block`1.CurrentProtocolVersion">
+            <summary>
+            The most latest protocol version.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Blocks.Block`1.#ctor(System.Int64,System.Int64,System.Numerics.BigInteger,Libplanet.Nonce,System.Nullable{Libplanet.Address},System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}},System.DateTimeOffset,System.Collections.Generic.IEnumerable{Libplanet.Tx.Transaction{`0}},System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}},System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}},System.Int32)">
             <summary>
             Creates a <see cref="T:Libplanet.Blocks.Block`1"/> instance by manually filling all field values.
-            For a more automated way, see also <see cref="M:Libplanet.Blocks.Block`1.Mine(System.Int64,System.Int64,System.Numerics.BigInteger,Libplanet.Address,System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}},System.DateTimeOffset,System.Collections.Generic.IEnumerable{Libplanet.Tx.Transaction{`0}},System.Threading.CancellationToken)"/> method.
+            For a more automated way, see also <see cref="M:Libplanet.Blocks.Block`1.Mine(System.Int64,System.Int64,System.Numerics.BigInteger,Libplanet.Address,System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}},System.DateTimeOffset,System.Collections.Generic.IEnumerable{Libplanet.Tx.Transaction{`0}},System.Int32,System.Threading.CancellationToken)"/> method.
             </summary>
             <param name="index">The height of the block to create.  Goes to the <see cref="P:Libplanet.Blocks.Block`1.Index"/>.
             </param>
@@ -3426,7 +3507,9 @@
             Automatically determined if <c>null</c> is passed (which is default).</param>
             <param name="stateRootHash">The <see cref="P:Libplanet.Store.Trie.ITrie.Hash"/> of the states on the block.
             </param>
-            <seealso cref="M:Libplanet.Blocks.Block`1.Mine(System.Int64,System.Int64,System.Numerics.BigInteger,Libplanet.Address,System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}},System.DateTimeOffset,System.Collections.Generic.IEnumerable{Libplanet.Tx.Transaction{`0}},System.Threading.CancellationToken)"/>
+            <param name="protocolVersion">The protocol version. <see cref="F:Libplanet.Blocks.Block`1.CurrentProtocolVersion"/>
+            by default.</param>
+            <seealso cref="M:Libplanet.Blocks.Block`1.Mine(System.Int64,System.Int64,System.Numerics.BigInteger,Libplanet.Address,System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}},System.DateTimeOffset,System.Collections.Generic.IEnumerable{Libplanet.Tx.Transaction{`0}},System.Int32,System.Threading.CancellationToken)"/>
         </member>
         <member name="M:Libplanet.Blocks.Block`1.#ctor(Bencodex.Types.Dictionary)">
             <summary>
@@ -3435,6 +3518,11 @@
             <param name="dict">The <see cref="T:Bencodex.Types.Dictionary"/>
             representation of <see cref="T:Libplanet.Blocks.Block`1"/> instance.
             </param>
+        </member>
+        <member name="P:Libplanet.Blocks.Block`1.ProtocolVersion">
+            <summary>
+            The protocol version number.
+            </summary>
         </member>
         <member name="P:Libplanet.Blocks.Block`1.Hash">
             <summary>
@@ -3469,7 +3557,7 @@
             The <see cref="T:Libplanet.Blocks.BlockHeader"/> of the block.
             </summary>
         </member>
-        <member name="M:Libplanet.Blocks.Block`1.Mine(System.Int64,System.Int64,System.Numerics.BigInteger,Libplanet.Address,System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}},System.DateTimeOffset,System.Collections.Generic.IEnumerable{Libplanet.Tx.Transaction{`0}},System.Threading.CancellationToken)">
+        <member name="M:Libplanet.Blocks.Block`1.Mine(System.Int64,System.Int64,System.Numerics.BigInteger,Libplanet.Address,System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}},System.DateTimeOffset,System.Collections.Generic.IEnumerable{Libplanet.Tx.Transaction{`0}},System.Int32,System.Threading.CancellationToken)">
             <summary>
             Generate a block with given <paramref name="transactions"/>.
             </summary>
@@ -3485,6 +3573,7 @@
             <param name="timestamp">The <see cref="T:System.DateTimeOffset"/> when mining started.</param>
             <param name="transactions"><see cref="T:Libplanet.Tx.Transaction`1"/>s that are going to be included
             in the block.</param>
+            <param name="protocolVersion">The protocol version.</param>
             <param name="cancellationToken">
             A cancellation token used to propagate notification that this
             operation should be canceled.</param>
@@ -3555,6 +3644,8 @@
             </param>
             <returns>An <see cref="T:Libplanet.Action.ActionEvaluation"/> for each
             <see cref="T:Libplanet.Action.IAction"/>.</returns>
+            <exception cref="T:Libplanet.Blocks.InvalidBlockHashException">Thrown when
+            the <see cref="P:Libplanet.Blocks.Block`1.Hash"/> is invalid.</exception>
             <exception cref="T:Libplanet.Blocks.InvalidBlockTimestampException">Thrown when
             the <see cref="P:Libplanet.Blocks.Block`1.Timestamp"/> is invalid, for example, it is the far
             future than the given <paramref name="currentTime"/>.</exception>
@@ -3577,6 +3668,13 @@
             any <see cref="T:Libplanet.Action.IAction"/> of <see cref="P:Libplanet.Blocks.Block`1.Transactions"/> tries
             to update the states of <see cref="T:Libplanet.Address"/>es not included
             in <see cref="P:Libplanet.Tx.Transaction`1.UpdatedAddresses"/>.</exception>
+            <exception cref="T:Libplanet.Tx.InvalidTxSignatureException">Thrown when its
+            <see cref="P:Libplanet.Tx.Transaction`1.Signature"/> is invalid or not signed by
+            the account who corresponds to its <see cref="T:Libplanet.Crypto.PublicKey"/>.
+            </exception>
+            <exception cref="T:Libplanet.Tx.InvalidTxPublicKeyException">Thrown when its
+            <see cref="P:Libplanet.Tx.Transaction`1.Signer"/> is not derived from its
+            <see cref="P:Libplanet.Tx.Transaction`1.PublicKey"/>.</exception>
         </member>
         <member name="M:Libplanet.Blocks.Block`1.ToBlockDigest">
             <summary>
@@ -3650,15 +3748,29 @@
             </summary>
             <seealso cref="P:Libplanet.Blockchain.Policies.IBlockPolicy`1.MaxTransactionsPerBlock"/>
         </member>
+        <member name="T:Libplanet.Blocks.BlockExcerpt">
+            <summary>
+            The extension methods for <see cref="T:Libplanet.Blocks.IBlockExcerpt"/>.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Blocks.BlockExcerpt.ToExcerptString(Libplanet.Blocks.IBlockExcerpt)">
+            <summary>
+            Shows <see cref="T:Libplanet.Blocks.IBlockExcerpt"/> instance's members as a string.
+            </summary>
+            <param name="excerpt">An excerpt object to show.</param>
+            <returns>Extracted members as a string.</returns>
+        </member>
         <member name="T:Libplanet.Blocks.BlockHeader">
             <summary>
             Block header containing information about <see cref="T:Libplanet.Blocks.Block`1"/>s except transactions.
             </summary>
         </member>
-        <member name="M:Libplanet.Blocks.BlockHeader.#ctor(System.Int64,System.String,System.Collections.Immutable.ImmutableArray{System.Byte},System.Collections.Immutable.ImmutableArray{System.Byte},System.Int64,System.Numerics.BigInteger,System.Collections.Immutable.ImmutableArray{System.Byte},System.Collections.Immutable.ImmutableArray{System.Byte},System.Collections.Immutable.ImmutableArray{System.Byte},System.Collections.Immutable.ImmutableArray{System.Byte},System.Collections.Immutable.ImmutableArray{System.Byte})">
+        <member name="M:Libplanet.Blocks.BlockHeader.#ctor(System.Int32,System.Int64,System.String,System.Collections.Immutable.ImmutableArray{System.Byte},System.Collections.Immutable.ImmutableArray{System.Byte},System.Int64,System.Numerics.BigInteger,System.Collections.Immutable.ImmutableArray{System.Byte},System.Collections.Immutable.ImmutableArray{System.Byte},System.Collections.Immutable.ImmutableArray{System.Byte},System.Collections.Immutable.ImmutableArray{System.Byte},System.Collections.Immutable.ImmutableArray{System.Byte})">
             <summary>
             Creates a <see cref="T:Libplanet.Blocks.BlockHeader"/> instance.
             </summary>
+            <param name="protocolVersion">The protocol version.  Goes to the <see
+            cref="P:Libplanet.Blocks.BlockHeader.ProtocolVersion"/>.</param>
             <param name="index">The height of the block.  Goes to the <see cref="P:Libplanet.Blocks.BlockHeader.Index"/>.
             </param>
             <param name="timestamp">The time this block is created.
@@ -3685,6 +3797,11 @@
             <param name="stateRootHash">The <see cref="P:Libplanet.Store.Trie.ITrie.Hash"/> of the states on the block.
             </param>
         </member>
+        <member name="P:Libplanet.Blocks.BlockHeader.ProtocolVersion">
+            <summary>
+            The protocol version number.
+            </summary>
+        </member>
         <member name="M:Libplanet.Blocks.BlockHeader.Deserialize(System.Byte[])">
             <summary>
             Gets <see cref="T:Libplanet.Blocks.BlockHeader"/> instance from serialized <paramref name="bytes"/>.
@@ -3707,6 +3824,38 @@
             </summary>
             <returns><see cref="T:Bencodex.Types.Dictionary"/> representation of
             <see cref="T:Libplanet.Blocks.BlockHeader"/>.</returns>
+        </member>
+        <member name="T:Libplanet.Blocks.IBlockExcerpt">
+            <summary>
+            The very essential metadata extracted from a block.  This purposes to determine
+            the canonical chain.
+            </summary>
+            <seealso cref="P:Libplanet.Blockchain.Policies.IBlockPolicy`1.CanonicalChainComparer"/>
+            <seealso cref="T:Libplanet.Blockchain.TotalDifficultyComparer"/>
+        </member>
+        <member name="P:Libplanet.Blocks.IBlockExcerpt.ProtocolVersion">
+            <summary>
+            A block's protocol version.
+            </summary>
+            <seealso cref="P:Libplanet.Blocks.Block`1.ProtocolVersion"/>
+        </member>
+        <member name="P:Libplanet.Blocks.IBlockExcerpt.Index">
+            <summary>
+            A block's index (height).
+            </summary>
+            <seealso cref="P:Libplanet.Blocks.Block`1.Index"/>
+        </member>
+        <member name="P:Libplanet.Blocks.IBlockExcerpt.Hash">
+            <summary>
+            A block's hash.
+            </summary>
+            <seealso cref="P:Libplanet.Blocks.Block`1.Hash"/>
+        </member>
+        <member name="P:Libplanet.Blocks.IBlockExcerpt.TotalDifficulty">
+            <summary>
+            The sum of a block and its all ancestors' difficulties.
+            </summary>
+            <seealso cref="P:Libplanet.Blocks.Block`1.TotalDifficulty"/>
         </member>
         <member name="T:Libplanet.Blocks.InvalidBlockBytesLengthException">
             <summary>
@@ -3748,6 +3897,56 @@
         </member>
         <member name="M:Libplanet.Blocks.InvalidBlockException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
             <inheritdoc cref="M:System.Exception.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)"/>
+        </member>
+        <member name="T:Libplanet.Blocks.InvalidBlockPreEvaluationHashException">
+            <summary>
+            The exception that is thrown when the a <see cref="T:Libplanet.Blocks.Block`1"/>'s
+            <see cref="P:Libplanet.Blocks.Block`1.PreEvaluationHash"/> is invalid.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Blocks.InvalidBlockPreEvaluationHashException.#ctor(Libplanet.HashDigest{System.Security.Cryptography.SHA256},Libplanet.HashDigest{System.Security.Cryptography.SHA256},System.String)">
+            <summary>
+            Initializes a new instance of the
+            <see cref="T:Libplanet.Blocks.InvalidBlockPreEvaluationHashException"/> class.
+            </summary>
+            <param name="actualPreEvaluationHash">The hash recorded as
+            <see cref="P:Libplanet.Blocks.Block`1.PreEvaluationHash"/>.</param>
+            <param name="expectedPreEvaluationHash">The hash calculated from the block except
+            <see cref="P:Libplanet.Blocks.Block`1.StateRootHash"/>.</param>
+            <param name="message">The message that describes the error.</param>
+        </member>
+        <member name="P:Libplanet.Blocks.InvalidBlockPreEvaluationHashException.ActualPreEvaluationHash">
+            <summary>
+            The hash calculated from the block except <see cref="P:Libplanet.Blocks.Block`1.StateRootHash"/>.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Blocks.InvalidBlockPreEvaluationHashException.ExpectedPreEvaluationHash">
+            <summary>
+            The hash recorded as <see cref="P:Libplanet.Blocks.Block`1.PreEvaluationHash"/>.
+            </summary>
+        </member>
+        <member name="T:Libplanet.Blocks.InvalidBlockProtocolVersionException">
+            <summary>
+            The exception that is thrown when a <see cref="T:Libplanet.Blocks.Block`1"/>'s
+            <see cref="P:Libplanet.Blocks.Block`1.ProtocolVersion"/> (or a <see cref="T:Libplanet.Blocks.BlockHeader"/>'s
+            <see cref="P:Libplanet.Blocks.BlockHeader.ProtocolVersion"/>) is invalid.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Blocks.InvalidBlockProtocolVersionException.#ctor(System.Int32,System.String)">
+            <summary>
+            Initializes a new instance of <see cref="T:Libplanet.Blocks.InvalidBlockProtocolVersionException"/> class.
+            </summary>
+            <param name="actualProtocolVersion">The actual block protocol version which is invalid.
+            </param>
+            <param name="message">The message that describes the error.</param>
+        </member>
+        <member name="P:Libplanet.Blocks.InvalidBlockProtocolVersionException.ActualProtocolVersion">
+            <summary>
+            The actual block protocol version which is invalid.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Blocks.InvalidBlockProtocolVersionException.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <inheritdoc cref="M:System.Exception.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)"/>
         </member>
         <member name="T:Libplanet.Blocks.InvalidBlockStateRootHashException">
             <summary>
@@ -5599,6 +5798,11 @@
             Frame containing the sender <see cref="F:Libplanet.Net.Messages.Message.MessageFrame.Peer"/> of the <see cref="T:Libplanet.Net.Messages.Message"/>.
             </summary>
         </member>
+        <member name="F:Libplanet.Net.Messages.Message.MessageFrame.Timestamp">
+            <summary>
+            Frame containing the datetime when the <see cref="T:Libplanet.Net.Messages.Message"/> is created.
+            </summary>
+        </member>
         <member name="F:Libplanet.Net.Messages.Message.MessageFrame.Sign">
             <summary>
             Frame containing signature of the <see cref="T:Libplanet.Net.Messages.Message"/>.
@@ -5617,16 +5821,21 @@
             <see cref="P:Libplanet.Net.Messages.Message.Remote"/>'s transport layer.
             </summary>
         </member>
+        <member name="P:Libplanet.Net.Messages.Message.Timestamp">
+            <summary>
+            The timestamp of the message is created.
+            </summary>
+        </member>
         <member name="P:Libplanet.Net.Messages.Message.Remote">
             <summary>
             The sender <see cref="T:Libplanet.Net.Peer"/> of the message.
             </summary>
         </member>
-        <member name="M:Libplanet.Net.Messages.Message.Parse(NetMQ.NetMQMessage,System.Boolean,Libplanet.Net.AppProtocolVersion,System.Collections.Immutable.IImmutableSet{Libplanet.Crypto.PublicKey},Libplanet.Net.DifferentAppProtocolVersionEncountered)">
+        <member name="M:Libplanet.Net.Messages.Message.Parse(NetMQ.NetMQMessage,System.Boolean,Libplanet.Net.AppProtocolVersion,System.Collections.Immutable.IImmutableSet{Libplanet.Crypto.PublicKey},Libplanet.Net.DifferentAppProtocolVersionEncountered,System.Nullable{System.TimeSpan})">
             <summary>
             Casts given <see cref="T:NetMQ.NetMQMessage"/>-typed <paramref name="raw"/> into
             <see cref="T:Libplanet.Net.Messages.Message"/> and checks its validity.
-            <seealso cref="M:Libplanet.Net.Messages.Message.ToNetMQMessage(Libplanet.Crypto.PrivateKey,Libplanet.Net.Peer,Libplanet.Net.AppProtocolVersion)"/>
+            <seealso cref="M:Libplanet.Net.Messages.Message.ToNetMQMessage(Libplanet.Crypto.PrivateKey,Libplanet.Net.Peer,System.DateTimeOffset,Libplanet.Net.AppProtocolVersion)"/>
             </summary>
             <param name="raw">A <see cref="T:NetMQ.NetMQMessage"/> to parse.</param>
             <param name="reply">A flag to express whether the target is a reply of other message.
@@ -5642,6 +5851,10 @@
             If this callback returns <c>false</c>, an encountered peer is ignored.  If this callback
             is omitted, all peers with different <see cref="T:Libplanet.Net.AppProtocolVersion"/>s are ignored.
             </param>
+            <param name="lifetime">
+            The lifetime of a message.
+            Messages generated before this value from the current time are ignored.
+            If <c>null</c> is given, messages will not be ignored by its timestamp.</param>
             <returns>A <see cref="T:Libplanet.Net.Messages.Message"/> parsed from <paramref name="raw"/>.</returns>
             <exception cref="T:System.ArgumentException">Thrown when empty <paramref name="raw"/> is given.
             </exception>
@@ -5654,7 +5867,7 @@
             <exception cref="T:Libplanet.Net.InvalidMessageException">Thrown when given <paramref name="raw"/>'s
             signer is invalid.</exception>
         </member>
-        <member name="M:Libplanet.Net.Messages.Message.ToNetMQMessage(Libplanet.Crypto.PrivateKey,Libplanet.Net.Peer,Libplanet.Net.AppProtocolVersion)">
+        <member name="M:Libplanet.Net.Messages.Message.ToNetMQMessage(Libplanet.Crypto.PrivateKey,Libplanet.Net.Peer,System.DateTimeOffset,Libplanet.Net.AppProtocolVersion)">
             <summary>
             Casts the message to <see cref="T:NetMQ.NetMQMessage"/> with given <paramref name="key"/>,
             <paramref name="peer"/> and <paramref name="version"/>.
@@ -5663,6 +5876,8 @@
             <param name="peer"><see cref="T:Libplanet.Net.Peer"/>-typed representation of the
             sender's transport layer.
             <seealso cref="P:Libplanet.Net.ITransport.AsPeer"/></param>
+            <param name="timestamp">The <see cref="T:System.DateTimeOffset"/> of the message is created.
+            </param>
             <param name="version"><see cref="T:Libplanet.Net.AppProtocolVersion"/>-typed version of the
             transport layer.</param>
             <returns>A <see cref="T:NetMQ.NetMQMessage"/> containing the signed <see cref="T:Libplanet.Net.Messages.Message"/>.
@@ -5681,7 +5896,7 @@
             <see cref="T:Libplanet.Net.Peer" /> is discovered.
             </summary>
         </member>
-        <member name="M:Libplanet.Net.NetMQTransport.#ctor(Libplanet.Net.Protocols.RoutingTable,Libplanet.Crypto.PrivateKey,Libplanet.Net.AppProtocolVersion,System.Collections.Immutable.IImmutableSet{Libplanet.Crypto.PublicKey},System.Int32,System.String,System.Nullable{System.Int32},System.Collections.Generic.IEnumerable{Libplanet.Net.IceServer},Libplanet.Net.DifferentAppProtocolVersionEncountered)">
+        <member name="M:Libplanet.Net.NetMQTransport.#ctor(Libplanet.Net.Protocols.RoutingTable,Libplanet.Crypto.PrivateKey,Libplanet.Net.AppProtocolVersion,System.Collections.Immutable.IImmutableSet{Libplanet.Crypto.PublicKey},System.Int32,System.String,System.Nullable{System.Int32},System.Collections.Generic.IEnumerable{Libplanet.Net.IceServer},Libplanet.Net.DifferentAppProtocolVersionEncountered,System.Nullable{System.TimeSpan})">
             <summary>
             Creates <see cref="T:Libplanet.Net.NetMQTransport"/> instance.
             </summary>
@@ -5709,6 +5924,10 @@
             If this callback returns <c>false</c>, an encountered peer is ignored.  If this callback
             is omitted, all peers with different <see cref="T:Libplanet.Net.AppProtocolVersion"/>s are ignored.
             </param>
+            <param name="messageLifespan">
+            The lifespan of a message.
+            Messages generated before this value from the current time are ignored.
+            If <c>null</c> is given, messages will not be ignored by its timestamp.</param>
             <exception cref="T:System.ArgumentException">Thrown when both <paramref name="host"/> and
             <paramref name="iceServers"/> are <c>null</c>.</exception>
         </member>
@@ -6447,6 +6666,11 @@
         <member name="P:Libplanet.Net.SwarmOptions.BlockDemandLifespan">
             <summary>
             The lifespan of block demand.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.SwarmOptions.MessageLifespan">
+            <summary>
+            The lifespan of <see cref="T:Libplanet.Net.Messages.Message"/>.
             </summary>
         </member>
         <member name="T:Libplanet.Nonce">
@@ -7410,13 +7634,6 @@
             is passed to <paramref name="signature"/>,
             <paramref name="actions"/>, or <paramref name="publicKey"/>.
             </exception>
-            <exception cref="T:Libplanet.Tx.InvalidTxSignatureException">Thrown when its
-            <paramref name="signature"/> is invalid or not signed by
-            the account who corresponds to <paramref name="publicKey"/>.
-            </exception>
-            <exception cref="T:Libplanet.Tx.InvalidTxPublicKeyException">Thrown when its
-            <paramref name="signer"/> is not derived from its
-            <paramref name="publicKey"/>.</exception>
         </member>
         <member name="M:Libplanet.Tx.Transaction`1.#ctor(Bencodex.Types.Dictionary)">
             <summary>
@@ -7495,14 +7712,22 @@
             The bytes length in its serialized format.
             </summary>
         </member>
-        <member name="M:Libplanet.Tx.Transaction`1.Deserialize(System.Byte[])">
+        <member name="M:Libplanet.Tx.Transaction`1.Deserialize(System.Byte[],System.Boolean)">
             <summary>
             Decodes a <see cref="T:Libplanet.Tx.Transaction`1"/>'s
             <a href="https://bencodex.org/">Bencodex</a> representation.
             </summary>
             <param name="bytes">A <a href="https://bencodex.org/">Bencodex</a>
             representation of a <see cref="T:Libplanet.Tx.Transaction`1"/>.</param>
+            <param name="validate">Whether to validate the transaction.</param>
             <returns>A decoded <see cref="T:Libplanet.Tx.Transaction`1"/> object.</returns>
+            <exception cref="T:Libplanet.Tx.InvalidTxSignatureException">Thrown when its
+            <see cref="P:Libplanet.Tx.Transaction`1.Signature"/> is invalid or not signed by
+            the account who corresponds to <see cref="P:Libplanet.Tx.Transaction`1.PublicKey"/>.
+            </exception>
+            <exception cref="T:Libplanet.Tx.InvalidTxPublicKeyException">Thrown when its
+            <see cref="P:Libplanet.Tx.Transaction`1.Signer"/> is not derived from its
+            <see cref="P:Libplanet.Tx.Transaction`1.PublicKey"/>.</exception>
             <seealso cref="M:Libplanet.Tx.Transaction`1.Serialize(System.Boolean)"/>
         </member>
         <member name="M:Libplanet.Tx.Transaction`1.Create(System.Int64,Libplanet.Crypto.PrivateKey,System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}},System.Collections.Generic.IEnumerable{`0},System.Collections.Immutable.IImmutableSet{Libplanet.Address},System.Nullable{System.DateTimeOffset})">
