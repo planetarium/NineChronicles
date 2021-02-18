@@ -27,6 +27,7 @@ jobs:
       - run: git submodule update --init
       - setup_remote_docker
       - aws-ecr/build-image:
+          no-output-timeout: "30m"
           repo: $CIRCLE_PROJECT_REPONAME
           tag: "git-$CIRCLE_SHA1"
           extra-build-args: >-
