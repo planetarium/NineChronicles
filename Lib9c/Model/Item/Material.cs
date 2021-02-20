@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Security.Cryptography;
-using Bencodex;
 using Bencodex.Types;
 using Libplanet;
 using Nekoyume.Model.State;
@@ -62,5 +61,11 @@ namespace Nekoyume.Model.Item
                 [(Text) "item_id"] = ItemId.Serialize()
             }.Union((Dictionary) base.Serialize()));
 #pragma warning restore LAA1002
+
+        public override string ToString()
+        {
+            return base.ToString() +
+                   $", {nameof(ItemId)}: {ItemId}";
+        }
     }
 }

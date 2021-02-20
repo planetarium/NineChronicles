@@ -25,6 +25,8 @@ namespace Nekoyume.Action
             {
                 return states.SetState(avatarAddress, MarkChanged);
             }
+            
+            var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
 
             if (!states.TryGetAgentAvatarStates(context.Signer, avatarAddress, out var _, out var avatarState))
             {
@@ -35,7 +37,7 @@ namespace Nekoyume.Action
             var apStone = ItemFactory.CreateMaterial(row);
             if (!avatarState.inventory.RemoveFungibleItem(apStone))
             {
-                Log.Error($"Not enough item {apStone}");
+                Log.Error("{AddressesHex}Not enough item {ApStone}", addressesHex, apStone);
                 return states;
             }
 
