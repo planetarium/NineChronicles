@@ -407,6 +407,7 @@ namespace Nekoyume.UI
         protected override void OnCompleteOfShowAnimationInternal()
         {
             base.OnCompleteOfShowAnimationInternal();
+            // TODO: move invocation the PlayTutorial() inside of CoHelpPopup().
             Find<Dialog>().Show(1, PlayTutorial);
             StartCoroutine(CoHelpPopup());
         }
@@ -415,7 +416,7 @@ namespace Nekoyume.UI
         {
             var tutorialController = Game.Game.instance.Stage.TutorialController;
             var tutorialProgress = tutorialController.GetTutorialProgress();
-            if (tutorialProgress <= 0)
+            if (tutorialProgress <= 1)
             {
                 var avatarState = Game.Game.instance.States.CurrentAvatarState;
                 var nextStageId = avatarState.worldInformation
@@ -423,9 +424,11 @@ namespace Nekoyume.UI
                 if (nextStageId < 4)
                 {
                     tutorialController.Play(1);
+                    return;
                 }
             }
-            else if (tutorialProgress == 1)
+
+            if (tutorialProgress == 1)
             {
                 var recipeRow = Game.Game.instance.TableSheets.EquipmentItemRecipeSheet.OrderedList
                     .FirstOrDefault();

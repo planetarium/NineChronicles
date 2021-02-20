@@ -84,6 +84,8 @@ namespace Nekoyume.UI
 
         private static Sprite _selectedButtonSprite;
 
+        private const int TutorialEquipmentId = 10110000;
+
         public MailBox MailBox { get; private set; }
 
         #region override
@@ -175,6 +177,33 @@ namespace Nekoyume.UI
             scroll.UpdateData(list, true);
             emptyImage.SetActive(!list.Any());
             UpdateTabs(blockIndex);
+
+            var tutorialController = Game.Game.instance.Stage.TutorialController;
+            var tutorialProgress = tutorialController.GetTutorialProgress();
+            if (tutorialProgress == 1)
+            {
+                var tutorialEquipment = States.Instance.CurrentAvatarState.mailBox
+                .FirstOrDefault(x =>
+                x is AttachmentMail mail &&
+                mail.requiredBlockIndex <= blockIndex &&
+                !(mail.attachment.itemUsable is null) &&
+                mail.attachment.itemUsable.ItemSubType == Nekoyume.Model.Item.ItemSubType.Weapon &&
+                mail.attachment.itemUsable.Id == TutorialEquipmentId);
+                if (!(tutorialEquipment is null))
+                {
+                    OnReceivedTutorialEquipment();
+                }
+            }
+        }
+
+        private void OnReceivedTutorialEquipment()
+        {
+            var tutorialController = Game.Game.instance.Stage.TutorialController;
+            var tutorialProgress = tutorialController.GetTutorialProgress();
+            if (tutorialController.CurrentlyPlayingId < 37)
+            {
+                tutorialController.Stop(() => tutorialController.Play(37));
+            }
         }
 
         public void UpdateTabs(long? blockIndex = null)

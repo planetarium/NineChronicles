@@ -375,27 +375,19 @@ namespace Nekoyume.UI
 
             if (Input.GetKeyDown(KeyCode.Escape))
             {
-                HideAllMessageCat();
-                CloseWidget?.Invoke();
+                if (!WidgetHandler.Instance.isActiveTutorialMaskWidget)
+                {
+                    WidgetHandler.Instance.HideAllMessageCat();
+                    CloseWidget?.Invoke();
+                }
             }
 
             if (Input.GetKeyDown(KeyCode.Return))
             {
-                HideAllMessageCat();
+                WidgetHandler.Instance.HideAllMessageCat();
                 SubmitWidget?.Invoke();
-            }
-        }
-
-        private static void HideAllMessageCat()
-        {
-            try
-            {
-                Find<MessageCatManager>().HideAll(false);
-            }
-            catch (WidgetNotFoundException)
-            {
-                // Do Nothing.
             }
         }
     }
 }
+
