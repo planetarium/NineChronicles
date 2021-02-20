@@ -40,8 +40,13 @@ namespace Nekoyume.TableData
         {
         }
 
-        public SheetRowNotFoundException(string sheetName, string condition, string value) : base(
-            $"{sheetName}: {condition} - {value}")
+        public SheetRowNotFoundException(string sheetName, string condition, string value) :
+            base($"{sheetName}: {condition} - {value}")
+        {
+        }
+        
+        public SheetRowNotFoundException(string addressesHex, string sheetName, int intKey)
+            : base($"{addressesHex}{sheetName}: Key - {intKey.ToString(CultureInfo.InvariantCulture)}")
         {
         }
 

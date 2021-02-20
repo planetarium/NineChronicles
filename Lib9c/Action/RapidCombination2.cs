@@ -35,6 +35,8 @@ namespace Nekoyume.Action
                     .SetState(avatarAddress, MarkChanged)
                     .SetState(slotAddress, MarkChanged);
             }
+            
+            var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
 
             if (!states.TryGetAgentAvatarStates(
                 context.Signer,
@@ -42,31 +44,31 @@ namespace Nekoyume.Action
                 out var agentState,
                 out var avatarState))
             {
-                throw new FailedLoadStateException("Aborted as the avatar state of the signer was failed to load.");
+                throw new FailedLoadStateException($"{addressesHex}Aborted as the avatar state of the signer was failed to load.");
             }
 
             var slotState = states.GetCombinationSlotState(avatarAddress, slotIndex);
             if (slotState?.Result is null)
             {
-                throw new CombinationSlotResultNullException($"CombinationSlot Result is null. ({avatarAddress}), ({slotIndex})");
+                throw new CombinationSlotResultNullException($"{addressesHex}CombinationSlot Result is null. ({avatarAddress}), ({slotIndex})");
             }
 
             if(!avatarState.worldInformation.IsStageCleared(slotState.UnlockStage))
             {
                 avatarState.worldInformation.TryGetLastClearedStageId(out var current);
-                throw new NotEnoughClearedStageLevelException(slotState.UnlockStage, current);
+                throw new NotEnoughClearedStageLevelException(addressesHex, slotState.UnlockStage, current);
             }
 
             var diff = slotState.Result.itemUsable.RequiredBlockIndex - context.BlockIndex;
             if (diff <= 0)
             {
-                throw new RequiredBlockIndexException($"Already met the required block index. context block index: {context.BlockIndex}, required block index: {slotState.Result.itemUsable.RequiredBlockIndex}");
+                throw new RequiredBlockIndexException($"{addressesHex}Already met the required block index. context block index: {context.BlockIndex}, required block index: {slotState.Result.itemUsable.RequiredBlockIndex}");
             }
 
             var gameConfigState = states.GetGameConfigState();
             if (gameConfigState is null)
             {
-                throw new FailedLoadStateException("Aborted as the GameConfigState was failed to load.");
+                throw new FailedLoadStateException($"{addressesHex}Aborted as the GameConfigState was failed to load.");
             }
 
             var count = RapidCombination.CalculateHourglassCount(gameConfigState, diff);
@@ -76,7 +78,7 @@ namespace Nekoyume.Action
             if (!avatarState.inventory.RemoveFungibleItem(hourGlass, count))
             {
                 throw new NotEnoughMaterialException(
-                    $"Aborted as the player has no enough material ({row.Id} * {count})");
+                    $"{addressesHex}Aborted as the player has no enough material ({row.Id} * {count})");
             }
 
             slotState.Update(context.BlockIndex, hourGlass, count);

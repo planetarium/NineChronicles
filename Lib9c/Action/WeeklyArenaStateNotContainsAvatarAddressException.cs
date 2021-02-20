@@ -12,8 +12,8 @@ namespace Nekoyume.Action
         {
         }
 
-        public WeeklyArenaStateNotContainsAvatarAddressException(Address avatarAddress)
-            : this($"Aborted as the weekly arena state not contains {avatarAddress}.")
+        public WeeklyArenaStateNotContainsAvatarAddressException(string addressesHex, Address avatarAddress)
+            : this($"{addressesHex}Aborted as the weekly arena state not contains {avatarAddress.ToHex()}.")
         {
         }
 
