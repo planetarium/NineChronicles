@@ -6,6 +6,12 @@ namespace Nekoyume.UI
     {
         public TextMeshProUGUI textStage;
 
+        protected override void Awake()
+        {
+            base.Awake();
+            CloseWidget = null;
+        }
+
         public void Show(int stageId)
         {
             textStage.text = $"STAGE {StageInformation.GetStageIdString(stageId)}";
