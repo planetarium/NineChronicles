@@ -53,8 +53,19 @@ namespace Nekoyume.BlockChain
                 new LoggedRenderer<NCAction>(BlockRenderer, logger, logEventLevel);
         }
 
+        public IBlockPolicy<NCAction> GetPolicy(int minimumDifficulty, int maximumTransactions) =>
+            GetPolicy(
+                minimumDifficulty,
+                maximumTransactions,
+                ignoreHardcodedIndicesForBackwardCompatibility: false
+            );
+
         // FIXME 남은 설정들도 설정화 해야 할지도?
-        public IBlockPolicy<NCAction> GetPolicy(int minimumDifficulty, int maximumTransactions)
+        internal IBlockPolicy<NCAction> GetPolicy(
+            int minimumDifficulty,
+            int maximumTransactions,
+            bool ignoreHardcodedIndicesForBackwardCompatibility
+        )
         {
 #if UNITY_EDITOR
             return new DebugPolicy();
@@ -67,6 +78,7 @@ namespace Nekoyume.BlockChain
                 maxTransactionsPerBlock: maximumTransactions,
                 maxBlockBytes: MaxBlockBytes,
                 maxGenesisBytes: MaxGenesisBytes,
+                ignoreHardcodedIndicesForBackwardCompatibility: ignoreHardcodedIndicesForBackwardCompatibility,
                 doesTransactionFollowPolicy: DoesTransactionFollowPolicy
             );
 #endif
@@ -92,10 +104,12 @@ namespace Nekoyume.BlockChain
         {
             try
             {
+                // Check if it is a no-op transaction to prove it's made by the authorized miner.
                 if (blockChain.GetState(AuthorizedMinersState.Address) is Dictionary rawAms &&
                     new AuthorizedMinersState(rawAms).Miners.Contains(transaction.Signer))
                 {
-                    return false;
+                    // The authorization proof has to have no actions at all.
+                    return !transaction.Actions.Any();
                 }
                 
                 if (transaction.Actions.Count == 1 &&
