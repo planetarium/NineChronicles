@@ -17,6 +17,7 @@ namespace Nekoyume.Action
     public class DailyReward : GameAction
     {
         public Address avatarAddress;
+        public DailyRewardResult dailyRewardResult;
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
@@ -64,6 +65,7 @@ namespace Nekoyume.Action
                                            ctx.BlockIndex);
 
             result.id = mail.id;
+            dailyRewardResult.id = mail.id;
             avatarState.UpdateV3(mail);
             return states.SetState(avatarAddress, avatarState.Serialize());
         }
