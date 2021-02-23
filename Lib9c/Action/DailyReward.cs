@@ -16,7 +16,7 @@ namespace Nekoyume.Action
     [ActionType("daily_reward2")]
     public class DailyReward : GameAction
     {
-                public Address avatarAddress;
+        public Address avatarAddress;
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
