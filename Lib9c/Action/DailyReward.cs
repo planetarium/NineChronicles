@@ -18,6 +18,8 @@ namespace Nekoyume.Action
     {
         public Address avatarAddress;
         public DailyRewardResult dailyRewardResult;
+        private const int rewardItemId = 400000;
+        private const int rewardItemCount = 10;
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
@@ -50,8 +52,8 @@ namespace Nekoyume.Action
             // create item
             var materialSheet = states.GetSheet<MaterialItemSheet>();
             var materials = new Dictionary<Material, int>();
-            var material = ItemFactory.CreateMaterial(materialSheet, 400000);
-            materials[material] = 10;
+            var material = ItemFactory.CreateMaterial(materialSheet, rewardItemId);
+            materials[material] = rewardItemCount;
 
             var result = new DailyRewardResult
             {
@@ -65,8 +67,9 @@ namespace Nekoyume.Action
                                            ctx.BlockIndex);
 
             result.id = mail.id;
-            dailyRewardResult.id = mail.id;
+            dailyRewardResult = result;
             avatarState.UpdateV3(mail);
+            avatarState.UpdateFromAddItem(material, rewardItemCount, false);
             return states.SetState(avatarAddress, avatarState.Serialize());
         }
 
