@@ -12,7 +12,6 @@ namespace Lib9c.Tests.Action
     using Xunit;
     using Xunit.Abstractions;
 
-
     public class DailyRewardTest
     {
         private readonly IAccountStateDelta _initialState;
