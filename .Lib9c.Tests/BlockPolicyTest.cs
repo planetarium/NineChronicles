@@ -127,12 +127,12 @@ namespace Lib9c.Tests
 
             var singleAction = new PolymorphicAction<ActionBase>[]
             {
-                new DailyReward(),
+                new DailyReward2(),
             };
             var manyActions = new PolymorphicAction<ActionBase>[]
             {
-                new DailyReward(),
-                new DailyReward(),
+                new DailyReward2(),
+                new DailyReward2(),
             };
             Transaction<PolymorphicAction<ActionBase>> txWithSingleAction =
                 Transaction<PolymorphicAction<ActionBase>>.Create(
@@ -289,7 +289,7 @@ namespace Lib9c.Tests
 
             blockChain.MakeTransaction(
                 adminPrivateKey,
-                new PolymorphicAction<ActionBase>[] { new DailyReward(), }
+                new PolymorphicAction<ActionBase>[] { new DailyReward2(), }
             );
 
             await blockChain.MineBlock(adminAddress);
