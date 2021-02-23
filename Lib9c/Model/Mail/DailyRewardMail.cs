@@ -7,7 +7,7 @@ namespace Nekoyume.Model.Mail
     public class DailyRewardMail : AttachmentMail
     {
         protected override string TypeId => "dailyRewardMail";
-        public override MailType MailType => MailType.Auction;
+        public override MailType MailType => MailType.System;
 
         public DailyRewardMail(AttachmentActionResult attachmentActionResult, long blockIndex, Guid id, long requiredBlockIndex)
             : base(attachmentActionResult, blockIndex, id, requiredBlockIndex)
