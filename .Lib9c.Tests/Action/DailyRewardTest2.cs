@@ -61,7 +61,7 @@
         [InlineData(400000, 10)]
         public void Execute(int itemId, int itemCount)
         {
-            var dailyRewardAction = new DailyReward2
+            var dailyRewardAction = new DailyReward
             {
                 avatarAddress = _avatarAddress,
             };
@@ -81,7 +81,7 @@
             var mail = nextAvatarState.mailBox.First();
             var rewardMail = mail as DailyRewardMail;
             Assert.NotNull(rewardMail);
-            var rewardResult = rewardMail.attachment as DailyReward2.DailyRewardResult;
+            var rewardResult = rewardMail.attachment as DailyReward.DailyRewardResult;
             Assert.NotNull(rewardResult);
             Assert.Single(rewardResult.materials);
             var material = rewardResult.materials.First();
@@ -92,7 +92,7 @@
         [Fact]
         public void ExecuteThrowFailedLoadStateException()
         {
-            var action = new DailyReward2
+            var action = new DailyReward
             {
                 avatarAddress = _avatarAddress,
             };

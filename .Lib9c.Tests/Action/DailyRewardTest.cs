@@ -58,7 +58,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Execute()
         {
-            var dailyRewardAction = new DailyReward
+            var dailyRewardAction = new DailyReward2
             {
                 avatarAddress = _avatarAddress,
             };
@@ -78,7 +78,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void ExecuteThrowFailedLoadStateException()
         {
-            var action = new DailyReward
+            var action = new DailyReward2
             {
                 avatarAddress = _avatarAddress,
             };
