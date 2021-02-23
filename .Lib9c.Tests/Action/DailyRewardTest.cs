@@ -1,14 +1,17 @@
 namespace Lib9c.Tests.Action
 {
+    using System.Linq;
     using Libplanet;
     using Libplanet.Action;
     using Libplanet.Crypto;
     using Nekoyume;
     using Nekoyume.Action;
+    using Nekoyume.Model.Mail;
     using Nekoyume.Model.State;
     using Serilog;
     using Xunit;
     using Xunit.Abstractions;
+
 
     public class DailyRewardTest
     {
@@ -58,7 +61,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Execute()
         {
-            var dailyRewardAction = new DailyReward2
+            var dailyRewardAction = new DailyReward
             {
                 avatarAddress = _avatarAddress,
             };
@@ -66,6 +69,7 @@ namespace Lib9c.Tests.Action
             {
                 BlockIndex = 0,
                 PreviousStates = _initialState,
+                Random = new TestRandom(),
                 Rehearsal = false,
                 Signer = _agentAddress,
             });
@@ -73,12 +77,22 @@ namespace Lib9c.Tests.Action
             var gameConfigState = nextState.GetGameConfigState();
             var nextAvatarState = nextState.GetAvatarState(_avatarAddress);
             Assert.Equal(gameConfigState.ActionPointMax, nextAvatarState.actionPoint);
+            Assert.Single(nextAvatarState.mailBox);
+            var mail = nextAvatarState.mailBox.First();
+            var rewardMail = mail as DailyRewardMail;
+            Assert.NotNull(rewardMail);
+            var rewardResult = rewardMail.attachment as DailyReward.DailyRewardResult;
+            Assert.NotNull(rewardResult);
+            Assert.Single(rewardResult.materials);
+            var material = rewardResult.materials.First();
+            Assert.Equal(400000, material.Key.Id);
+            Assert.Equal(10, material.Value);
         }
 
         [Fact]
         public void ExecuteThrowFailedLoadStateException()
         {
-            var action = new DailyReward2
+            var action = new DailyReward
             {
                 avatarAddress = _avatarAddress,
             };
