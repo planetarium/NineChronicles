@@ -20,6 +20,7 @@ namespace Nekoyume.Action
                 ["itemEnhancement.result"] = d => new ItemEnhancement.ResultModel(d),
                 ["sellCancellation.result"] = d => new SellCancellation.Result(d),
                 ["rapidCombination.result"] = d => new RapidCombination.ResultModel(d),
+                ["dailyReward.dailyRewardResult"] = d => new DailyReward.DailyRewardResult(d),
             };
 
         public ItemUsable itemUsable;
