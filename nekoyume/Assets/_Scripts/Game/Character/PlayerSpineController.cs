@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Nekoyume.Helper;
 using Spine;
+using Spine.Unity;
 using Spine.Unity.Modules.AttachmentTools;
 using UnityEngine;
 
@@ -75,6 +76,8 @@ namespace Nekoyume.Game.Character
 
         private int _weaponSlotIndex;
         private RegionAttachment _weaponAttachmentDefault;
+        private GameObject _currentWeaponVFX;
+        private GameObject _currentWeaponVFXPrefab;
 
         private readonly List<string> _attachmentNames = new List<string>();
 
@@ -139,7 +142,7 @@ namespace Nekoyume.Game.Character
 
         #region Equipments & Costomize
 
-        public void UpdateWeapon(Sprite sprite)
+        public void UpdateWeapon(Sprite sprite, GameObject weaponVFXPrefab = null)
         {
             if (sprite is null)
             {
@@ -149,6 +152,30 @@ namespace Nekoyume.Game.Character
             {
                 var newWeapon = MakeAttachment(sprite);
                 _clonedSkin.SetAttachment(_weaponSlotIndex, WeaponSlot, newWeapon);
+            }
+
+            if (_currentWeaponVFX && !_currentWeaponVFXPrefab.Equals(weaponVFXPrefab))
+            {
+                Destroy(_currentWeaponVFX);
+                _currentWeaponVFX = null;
+                _currentWeaponVFXPrefab = weaponVFXPrefab;
+            }
+
+            if (!(weaponVFXPrefab is null) &&
+                !_currentWeaponVFX &&
+                (!_currentWeaponVFXPrefab?.Equals(weaponVFXPrefab) ?? true))
+            {
+                var weaponVFX = Instantiate(weaponVFXPrefab, transform);
+
+                var weaponSlot = SkeletonAnimation.Skeleton.FindSlot(WeaponSlot);
+                var boneName = weaponSlot.Bone.Data.Name;
+
+                var boneFollower = weaponVFX.GetComponent<BoneFollower>();
+                boneFollower.SkeletonRenderer = SkeletonAnimation;
+                boneFollower.SetBone(boneName);
+
+                _currentWeaponVFX = weaponVFX;
+                _currentWeaponVFXPrefab = weaponVFXPrefab;
             }
 
             UpdateInternal();
