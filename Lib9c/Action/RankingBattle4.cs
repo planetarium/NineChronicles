@@ -141,7 +141,7 @@ namespace Nekoyume.Action
                 throw new WeeklyArenaStateNotContainsAvatarAddressException(addressesHex, EnemyAddress);
             }
 
-            Log.Debug("{WeeklyArenaStateAddress}", weeklyArenaState.address.ToHex());
+            Log.Verbose("{WeeklyArenaStateAddress}", weeklyArenaState.address.ToHex());
 
             var simulator = new RankingSimulator(
                 ctx.Random,

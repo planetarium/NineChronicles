@@ -70,14 +70,14 @@ namespace Nekoyume.Action
             var sw = new Stopwatch();
             sw.Start();
             var started = DateTimeOffset.UtcNow;
-            Log.Debug("{AddressesHex}Buy exec started", addressesHex);
+            Log.Verbose("{AddressesHex}Buy exec started", addressesHex);
 
             if (!states.TryGetAvatarState(ctx.Signer, buyerAvatarAddress, out var buyerAvatarState))
             {
                 throw new FailedLoadStateException($"{addressesHex}Aborted as the avatar state of the buyer was failed to load.");
             }
             sw.Stop();
-            Log.Debug("{AddressesHex}Buy Get Buyer AgentAvatarStates: {Elapsed}", addressesHex, sw.Elapsed);
+            Log.Verbose("{AddressesHex}Buy Get Buyer AgentAvatarStates: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();
 
             if (!buyerAvatarState.worldInformation.IsStageCleared(GameConfig.RequireClearedStageLevel.ActionsInShop))
@@ -95,10 +95,10 @@ namespace Nekoyume.Action
             }
 
             sw.Stop();
-            Log.Debug("{AddressesHex}Buy Get ShopState: {Elapsed}", addressesHex, sw.Elapsed);
+            Log.Verbose("{AddressesHex}Buy Get ShopState: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();
 
-            Log.Debug(
+            Log.Verbose(
                 "{AddressesHex}Execute Buy; buyer: {Buyer} seller: {Seller}",
                 addressesHex,
                 buyerAvatarAddress,
@@ -122,7 +122,7 @@ namespace Nekoyume.Action
                 );
             }
             sw.Stop();
-            Log.Debug("{AddressesHex}Buy Get Item: {Elapsed}", addressesHex, sw.Elapsed);
+            Log.Verbose("{AddressesHex}Buy Get Item: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();
 
             if (!states.TryGetAvatarState(sellerAgentAddress, sellerAvatarAddress, out var sellerAvatarState))
@@ -132,7 +132,7 @@ namespace Nekoyume.Action
                 );
             }
             sw.Stop();
-            Log.Debug("{AddressesHex}Buy Get Seller AgentAvatarStates: {Elapsed}", addressesHex, sw.Elapsed);
+            Log.Verbose("{AddressesHex}Buy Get Seller AgentAvatarStates: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();
 
             // 돈은 있냐?
@@ -213,19 +213,19 @@ namespace Nekoyume.Action
 
             states = states.SetState(sellerAvatarAddress, sellerAvatarState.Serialize());
             sw.Stop();
-            Log.Debug("{AddressesHex}Buy Set Seller AvatarState: {Elapsed}", addressesHex, sw.Elapsed);
+            Log.Verbose("{AddressesHex}Buy Set Seller AvatarState: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();
 
             states = states.SetState(buyerAvatarAddress, buyerAvatarState.Serialize());
             sw.Stop();
-            Log.Debug("{AddressesHex}Buy Set Buyer AvatarState: {Elapsed}", addressesHex, sw.Elapsed);
+            Log.Verbose("{AddressesHex}Buy Set Buyer AvatarState: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();
 
             states = states.SetState(ShopState.Address, shopStateDict);
             sw.Stop();
             var ended = DateTimeOffset.UtcNow;
-            Log.Debug("{AddressesHex}Buy Set ShopState: {Elapsed}", addressesHex, sw.Elapsed);
-            Log.Debug("{AddressesHex}Buy Total Executed Time: {Elapsed}", addressesHex, ended - started);
+            Log.Verbose("{AddressesHex}Buy Set ShopState: {Elapsed}", addressesHex, sw.Elapsed);
+            Log.Verbose("{AddressesHex}Buy Total Executed Time: {Elapsed}", addressesHex, ended - started);
 
             return states;
         }
