@@ -1,0 +1,35 @@
+name: publish
+
+on:
+  push:
+    branches: main
+
+jobs:
+  nuget:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        submodules: true
+    - uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 3.1.403
+    - name: bulid
+      run: |
+        dotnet_args="-c Release -p:NoPackageAnalysis=true"
+        if [[ ! "$GITHUB_REF" =~ ^refs/tags/* ]]; then
+          project_suffix=dev.${{ github.sha }}
+          dotnet_args="$dotnet_args --version-suffix $project_suffix"
+        fi
+        dotnet build $dotnet_args
+        dotnet pack  $dotnet_args
+    - name: push
+      if: github.event_name != 'pull_request'
+      run: |
+        if [[ "$NUGET_API_KEY" != "" ]]; then
+          dotnet nuget push ./Lib9c/.bin/Lib9c.*.nupkg \
+            --api-key "$NUGET_API_KEY" \
+            --source https://api.nuget.org/v3/index.json
+        fi
+      env:
+        NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}

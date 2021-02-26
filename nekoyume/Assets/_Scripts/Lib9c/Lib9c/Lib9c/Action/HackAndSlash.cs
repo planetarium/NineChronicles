@@ -1,0 +1,285 @@
+using System;
+using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Diagnostics;
+using System.Linq;
+using Bencodex.Types;
+using Libplanet;
+using Libplanet.Action;
+using Nekoyume.Battle;
+using Nekoyume.Model;
+using Nekoyume.Model.BattleStatus;
+using Nekoyume.Model.State;
+using Nekoyume.TableData;
+using Serilog;
+
+namespace Nekoyume.Action
+{
+    [Serializable]
+    [ActionType("hack_and_slash")]
+    public class HackAndSlash : GameAction
+    {
+        public List<int> costumes;
+        public List<Guid> equipments;
+        public List<Guid> foods;
+        public int worldId;
+        public int stageId;
+        public Address avatarAddress;
+        public Address WeeklyArenaAddress;
+        public Address RankingMapAddress;
+        public BattleLog Result { get; private set; }
+
+        protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
+            new Dictionary<string, IValue>
+            {
+                ["costumes"] = new List(costumes.OrderBy(i => i).Select(e => e.Serialize())),
+                ["equipments"] = new List(equipments.OrderBy(i => i).Select(e => e.Serialize())),
+                ["foods"] = new List(foods.OrderBy(i => i).Select(e => e.Serialize())),
+                ["worldId"] = worldId.Serialize(),
+                ["stageId"] = stageId.Serialize(),
+                ["avatarAddress"] = avatarAddress.Serialize(),
+                ["weeklyArenaAddress"] = WeeklyArenaAddress.Serialize(),
+                ["rankingMapAddress"] = RankingMapAddress.Serialize(),
+            }.ToImmutableDictionary();
+
+
+        protected override void LoadPlainValueInternal(
+            IImmutableDictionary<string, IValue> plainValue)
+        {
+            costumes = ((List) plainValue["costumes"]).Select(e => e.ToInteger()).ToList();
+            equipments = ((List) plainValue["equipments"]).Select(e => e.ToGuid()).ToList();
+            foods = ((List) plainValue["foods"]).Select(e => e.ToGuid()).ToList();
+            worldId = plainValue["worldId"].ToInteger();
+            stageId = plainValue["stageId"].ToInteger();
+            avatarAddress = plainValue["avatarAddress"].ToAddress();
+            WeeklyArenaAddress = plainValue["weeklyArenaAddress"].ToAddress();
+            RankingMapAddress = plainValue["rankingMapAddress"].ToAddress();
+        }
+
+        public override IAccountStateDelta Execute(IActionContext context)
+        {
+            IActionContext ctx = context;
+            var states = ctx.PreviousStates;
+            if (ctx.Rehearsal)
+            {
+                states = states.SetState(RankingMapAddress, MarkChanged);
+                states = states.SetState(avatarAddress, MarkChanged);
+                states = states.SetState(WeeklyArenaAddress, MarkChanged);
+                return states.SetState(ctx.Signer, MarkChanged);
+            }
+            
+            var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
+
+            Log.Warning("{AddressesHex}hack_and_slash is deprecated. Please use hack_and_slash2", addressesHex);
+            var sw = new Stopwatch();
+            sw.Start();
+            var started = DateTimeOffset.UtcNow;
+            Log.Debug("{AddressesHex}HAS exec started", addressesHex);
+
+            if (!states.TryGetAgentAvatarStates(
+                ctx.Signer,
+                avatarAddress,
+                out AgentState agentState,
+                out AvatarState avatarState))
+            {
+                throw new FailedLoadStateException($"{addressesHex}Aborted as the avatar state of the signer was failed to load.");
+            }
+
+            sw.Stop();
+            Log.Debug("{AddressesHex}HAS Get AgentAvatarStates: {Elapsed}", addressesHex, sw.Elapsed);
+
+            sw.Restart();
+
+            if (avatarState.RankingMapAddress != RankingMapAddress)
+            {
+                throw new InvalidAddressException($"{addressesHex}Invalid ranking map address");
+            }
+
+            // worldId와 stageId가 유효한지 확인합니다.
+            var worldSheet = states.GetSheet<WorldSheet>();
+
+            if (!worldSheet.TryGetValue(worldId, out var worldRow, false))
+            {
+                throw new SheetRowNotFoundException(addressesHex, nameof(WorldSheet), worldId);
+            }
+
+            if (stageId < worldRow.StageBegin ||
+                stageId > worldRow.StageEnd)
+            {
+                throw new SheetRowColumnException(
+                    $"{addressesHex}{worldId} world is not contains {worldRow.Id} stage: " +
+                    $"{worldRow.StageBegin}-{worldRow.StageEnd}");
+            }
+
+            var stageSheet = states.GetSheet<StageSheet>();
+            if (!stageSheet.TryGetValue(stageId, out var stageRow))
+            {
+                throw new SheetRowNotFoundException(addressesHex, nameof(StageSheet), stageId);
+            }
+
+            var worldInformation = avatarState.worldInformation;
+            if (!worldInformation.TryGetWorld(worldId, out var world))
+            {
+                // NOTE: Add new World from WorldSheet
+                worldInformation.AddAndUnlockNewWorld(worldRow, ctx.BlockIndex, worldSheet);
+            }
+
+            if (!world.IsUnlocked)
+            {
+                throw new InvalidWorldException($"{addressesHex}{worldId} is locked.");
+            }
+
+            if (world.StageBegin != worldRow.StageBegin ||
+                world.StageEnd != worldRow.StageEnd)
+            {
+                worldInformation.UpdateWorld(worldRow);
+            }
+
+            if (world.IsStageCleared && stageId > world.StageClearedId + 1 ||
+                !world.IsStageCleared && stageId != world.StageBegin)
+            {
+                throw new InvalidStageException(
+                    $"{addressesHex}Aborted as the stage ({worldId}/{stageId}) is not cleared; " +
+                    $"cleared stage: {world.StageClearedId}"
+                );
+            }
+
+            avatarState.ValidateEquipments(equipments, context.BlockIndex);
+            avatarState.ValidateConsumable(foods, context.BlockIndex);
+
+            sw.Restart();
+            if (avatarState.actionPoint < stageRow.CostAP)
+            {
+                throw new NotEnoughActionPointException(
+                    $"{addressesHex}Aborted due to insufficient action point: " +
+                    $"{avatarState.actionPoint} < {stageRow.CostAP}"
+                );
+            }
+
+            avatarState.actionPoint -= stageRow.CostAP;
+
+            avatarState.EquipCostumes(new HashSet<int>(costumes));
+
+            avatarState.EquipEquipments(equipments);
+            sw.Stop();
+            Log.Debug("{AddressesHex}HAS Unequip items: {Elapsed}", addressesHex, sw.Elapsed);
+
+            sw.Restart();
+            var characterSheet = states.GetSheet<CharacterSheet>();
+            var simulator = new StageSimulator(
+                ctx.Random,
+                avatarState,
+                foods,
+                worldId,
+                stageId,
+                states.GetStageSimulatorSheets()
+            );
+
+            sw.Stop();
+            Log.Debug("{AddressesHex}HAS Initialize Simulator: {Elapsed}", addressesHex, sw.Elapsed);
+
+            sw.Restart();
+            simulator.Simulate();
+            sw.Stop();
+            Log.Debug("{AddressesHex}HAS Simulator.Simulate(): {Elapsed}", addressesHex, sw.Elapsed);
+
+            Log.Debug(
+                "{AddressesHex}Execute HackAndSlash({AvatarAddress}); worldId: {WorldId}, stageId: {StageId}, result: {Result}, " +
+                "clearWave: {ClearWave}, totalWave: {TotalWave}",
+                addressesHex,
+                avatarAddress,
+                worldId,
+                stageId,
+                simulator.Log.result,
+                simulator.Log.clearedWaveNumber,
+                simulator.Log.waveCount
+            );
+
+            sw.Restart();
+            if (simulator.Log.IsClear)
+            {
+                var worldUnlockSheet = states.GetSheet<WorldUnlockSheet>();
+                simulator.Player.worldInformation.ClearStage(
+                    worldId,
+                    stageId,
+                    ctx.BlockIndex,
+                    worldSheet,
+                    worldUnlockSheet
+                );
+            }
+
+            sw.Stop();
+            Log.Debug("{AddressesHex}HAS ClearStage: {Elapsed}", addressesHex, sw.Elapsed);
+
+            sw.Restart();
+            avatarState.Update(simulator);
+
+            var materialSheet = states.GetSheet<MaterialItemSheet>();
+            avatarState.UpdateQuestRewards(materialSheet);
+
+            avatarState.updatedAt = ctx.BlockIndex;
+            states = states.SetState(avatarAddress, avatarState.Serialize());
+
+            sw.Stop();
+            Log.Debug("{AddressesHex}HAS Set AvatarState: {Elapsed}", addressesHex, sw.Elapsed);
+
+            sw.Restart();
+            if (states.TryGetState(RankingMapAddress, out Dictionary d) && simulator.Log.IsClear)
+            {
+                var ranking = new RankingMapState(d);
+                ranking.Update(avatarState);
+
+                sw.Stop();
+                Log.Debug("{AddressesHex}HAS Update RankingState: {Elapsed}", addressesHex, sw.Elapsed);
+                sw.Restart();
+
+                var serialized = ranking.Serialize();
+
+                sw.Stop();
+                Log.Debug("{AddressesHex}HAS Serialize RankingState: {Elapsed}", addressesHex, sw.Elapsed);
+                sw.Restart();
+                states = states.SetState(RankingMapAddress, serialized);
+            }
+
+            sw.Stop();
+            Log.Debug("{AddressesHex}HAS Set RankingState: {Elapsed}", addressesHex, sw.Elapsed);
+
+            sw.Restart();
+            if (simulator.Log.stageId >= GameConfig.RequireClearedStageLevel.ActionsInRankingBoard &&
+                simulator.Log.IsClear &&
+                states.TryGetState(WeeklyArenaAddress, out Dictionary weeklyDict))
+            {
+                var weekly = new WeeklyArenaState(weeklyDict);
+                if (!weekly.Ended)
+                {
+                    if (weekly.ContainsKey(avatarAddress))
+                    {
+                        var info = weekly[avatarAddress];
+                        info.Update(avatarState, characterSheet);
+                        weekly.Update(info);
+                    }
+                    else
+                    {
+                        weekly.Set(avatarState, characterSheet);
+                    }
+
+                    sw.Stop();
+                    Log.Debug("{AddressesHex}HAS Update WeeklyArenaState: {Elapsed}", addressesHex, sw.Elapsed);
+
+                    sw.Restart();
+                    var weeklySerialized = weekly.Serialize();
+                    sw.Stop();
+                    Log.Debug("{AddressesHex}HAS Serialize RankingState: {Elapsed}", addressesHex, sw.Elapsed);
+
+                    states = states.SetState(weekly.address, weeklySerialized);
+                }
+            }
+
+            Result = simulator.Log;
+
+            var ended = DateTimeOffset.UtcNow;
+            Log.Debug("{AddressesHex}HAS Total Executed Time: {Elapsed}", addressesHex, ended - started);
+            return states.SetState(ctx.Signer, agentState.Serialize());
+        }
+    }
+}

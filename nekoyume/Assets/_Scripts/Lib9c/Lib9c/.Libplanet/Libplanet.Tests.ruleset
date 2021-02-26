@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RuleSet
+  Name="Rules for Libplanet.Tests"
+  Description="Code analysis rules for Libplanet.Tests.csproj."
+  ToolsVersion="10.0">
+
+  <Rules
+    AnalyzerId="Microsoft.Analyzers.ManagedCodeAnalysis"
+    RuleNamespace="Microsoft.Rules.Managed">
+
+    <!-- Single line comment should begin with a space. -->
+    <Rule Id="SA1005" Action="None" />
+    <!-- Closing parenthesis should be on line of opening parenthesis -->
+    <Rule Id="SA1112" Action="None" />
+    <!-- Allow tuple types in signatures omit element names. -->
+    <Rule Id="SA1414" Action="None" />
+    <!-- Allow tuple fields to be referred by index (i.e. ItemN). -->
+    <Rule Id="SA1142" Action="None" />
+    <!-- Single-line comment should be preceded by blank line. -->
+    <Rule Id="SA1515" Action="None" />
+    <!-- TODO: Write copyright -->
+    <Rule Id="SA1633" Action="None" />
+    <Rule Id="SA1652" Action="None" />
+    <!-- Allow field name to begin with an underscore. -->
+    <Rule Id="SA1309" Action="None" />
+    <!-- Allow an expression not to declare parenthese. -->
+    <Rule Id="SA1407" Action="None" />
+    <!-- Allow a rich text in a XML doc comment's <summary>. -->
+    <Rule Id="SA1462" Action="None" />
+    <Rule Id="SA1642" Action="None" />
+    <!-- Every property's docs doesn't have to start with "Gets", because
+    it's ridiculous. -->
+    <Rule Id="SA1623" Action="None" />
+    <!--Allow to call an instance member of the local class or a base class is
+    not prefixed with 'this.'. -->
+    <Rule Id="SA1101" Action="None" />
+    <!--Allow closing parenthesis to be placed in new line. -->
+    <Rule Id="SA1009" Action="None" />
+    <Rule Id="SA1111" Action="None" />
+    <!-- TODO: Documentation -->
+    <Rule Id="SA1600" Action="None" />
+    <Rule Id="SA1601" Action="None" />
+    <Rule Id="SA0001" Action="None" />
+  </Rules>
+
+  <Rules AnalyzerId="Menees.Analyzers" RuleNamespace="Menees.Analyzers">
+    <Rule Id="MEN002" Action="Warning" />
+    <Rule Id="MEN007" Action="None" />
+    <Rule Id="MEN009" Action="Warning" />
+    <Rule Id="MEN010" Action="None" />
+    <Rule Id="MEN011" Action="None" />
+  </Rules>
+
+  <Rules AnalyzerId="SonarAnalyzer" RuleNamespace="SonarAnalyzer">
+    <!-- Either remove or fill this block of code. -->
+    <Rule Id="S108" Action="None" />
+    <!-- Add the default parameter value defined in the overridden method. -->
+    <Rule Id="S1006" Action="None" />
+    <!-- Take the required action to fix the issue indicated by this
+    'FIXME' comment. -->
+    <Rule Id="S1134" Action="None" />
+    <!-- Complete the task associated to this 'TODO' comment. -->
+    <Rule Id="S1135" Action="None" />
+    <!-- Add a nested comment explaining why this method is empty, throw a
+    'NotSupportedException' or complete the implementation. -->
+    <Rule Id="S1186" Action="None" />
+    <!-- Make field 'readonly'. -->
+    <Rule Id="S2933" Action="None" />
+    <!-- Return 'Task' instead. -->
+    <Rule Id="S3168" Action="None" />
+    <!-- Make this test method non-'async' or return 'Task'. -->
+    <Rule Id="S3433" Action="None" />
+    <!-- Fix this implementation of 'IDisposable' to conform to the dispose
+    pattern. -->
+    <Rule Id="S3881" Action="None" />
+
+    <!-- Rename parameter 'A' to 'B' to match the interface declaration. -->
+    <Rule Id="S927" Action="None" />
+    <!-- Add a 'protected' constructor or the 'static' keyword to the class
+    declaration. -->
+    <Rule Id="S1118" Action="None" />
+    <!-- Remove the unused local variable 'x'. -->
+    <Rule Id="S1481" Action="None" />
+
+    <!-- Remove this parameter 'x', whose value is ignored in the method. -->
+    <Rule Id="S1172" Action="None" />
+    <!-- Remove this useless assignment to local variable x -->
+    <Rule Id="S1854" Action="None" />
+    <!-- Change this condition so that it does not always evaluate to 'false'; some subsequent code is never executed. -->
+    <Rule Id="S2583" Action="None" />
+    <!-- Remove this redundant jump. -->
+    <Rule Id="S3626" Action="None" />
+    <!-- Restrict types of objects allowed to be deserialized. -->
+    <Rule Id="S5773" Action="None" />
+  </Rules>
+</RuleSet>

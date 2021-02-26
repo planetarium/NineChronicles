@@ -1,0 +1,97 @@
+
+main_shop.png
+size: 256,256
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+arm_1
+  rotate: false
+  xy: 161, 230
+  size: 35, 24
+  orig: 35, 24
+  offset: 0, 0
+  index: -1
+arm_2
+  rotate: false
+  xy: 229, 233
+  size: 23, 21
+  orig: 23, 21
+  offset: 0, 0
+  index: -1
+arm_R_1
+  rotate: false
+  xy: 2, 14
+  size: 26, 46
+  orig: 26, 46
+  offset: 0, 0
+  index: -1
+arm_R_2
+  rotate: true
+  xy: 198, 231
+  size: 23, 29
+  orig: 23, 29
+  offset: 0, 0
+  index: -1
+bag
+  rotate: false
+  xy: 121, 216
+  size: 38, 38
+  orig: 38, 38
+  offset: 0, 0
+  index: -1
+body
+  rotate: false
+  xy: 2, 99
+  size: 52, 79
+  orig: 52, 79
+  offset: 0, 0
+  index: -1
+ear_L
+  rotate: true
+  xy: 2, 2
+  size: 10, 15
+  orig: 10, 15
+  offset: 0, 0
+  index: -1
+ear_R
+  rotate: false
+  xy: 121, 203
+  size: 9, 11
+  orig: 9, 11
+  offset: 0, 0
+  index: -1
+eye_01
+  rotate: true
+  xy: 56, 158
+  size: 20, 8
+  orig: 20, 8
+  offset: 0, 0
+  index: -1
+eye_02
+  rotate: false
+  xy: 71, 192
+  size: 20, 8
+  orig: 20, 8
+  offset: 0, 0
+  index: -1
+hair
+  rotate: false
+  xy: 71, 202
+  size: 48, 52
+  orig: 48, 52
+  offset: 0, 0
+  index: -1
+leg
+  rotate: false
+  xy: 2, 62
+  size: 48, 35
+  orig: 48, 35
+  offset: 0, 0
+  index: -1
+weapon
+  rotate: false
+  xy: 2, 180
+  size: 67, 74
+  orig: 67, 74
+  offset: 0, 0
+  index: -1

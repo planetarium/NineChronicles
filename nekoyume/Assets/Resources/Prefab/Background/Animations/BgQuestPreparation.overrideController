@@ -1,0 +1,15 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!221 &22100000
+AnimatorOverrideController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: BgQuestPreparation
+  m_Controller: {fileID: 9100000, guid: cc485b6e57fe0b94aa3deee75fdfa032, type: 2}
+  m_Clips:
+  - m_OriginalClip: {fileID: 7400000, guid: d7fb1a91a3c7df541beeff030f3b8f86, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: b99f947d5a7c19e4998fd491dc1ab4ed, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: 63c25efd982312d4f89c686a57d83b23, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: 09d3ff22accf4b74894444291c0e0d3c, type: 2}

@@ -1,0 +1,39 @@
+# Common IntelliJ Platform excludes
+
+# User specific
+**/.idea/**/workspace.xml
+**/.idea/**/tasks.xml
+**/.idea/shelf/*
+**/.idea/dictionaries
+
+# Sensitive or high-churn files
+**/.idea/**/dataSources/
+**/.idea/**/dataSources.ids
+**/.idea/**/dataSources.xml
+**/.idea/**/dataSources.local.xml
+**/.idea/**/sqlDataSources.xml
+**/.idea/**/dynamic.xml
+
+# Rider
+# Rider auto-generates .iml files, contentModel.xml, and projectSettingsUpdater.xml
+**/.idea/**/*.iml
+**/.idea/**/contentModel.xml
+**/.idea/**/modules.xml
+**/.idea/**/projectSettingsUpdater.xml
+
+*.suo
+*.user
+.vs/
+[Bb]in/
+[Oo]bj/
+!.github/bin/
+_UpgradeReport_Files/
+[Pp]ackages/
+mono_crash.*.json
+FodyWeavers.xsd
+BenchmarkDotNet.Artifacts
+xunit.runner.console.*/
+
+Thumbs.db
+Desktop.ini
+.DS_Store

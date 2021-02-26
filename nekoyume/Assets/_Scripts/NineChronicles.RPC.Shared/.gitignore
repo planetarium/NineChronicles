@@ -1,0 +1,20 @@
+# Common IntelliJ Platform excludes
+**/.idea/
+
+# Unity generated metadata files
+*.meta
+
+*.suo
+*.user
+.vs/
+[Bb]in/
+[Oo]bj/
+.[Bb]in/
+.[Oo]bj/
+[Pp]ackages/
+
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+Generated/

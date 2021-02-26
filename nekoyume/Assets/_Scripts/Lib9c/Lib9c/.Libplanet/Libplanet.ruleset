@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RuleSet
+  Name="Rules for Libplanet"
+  Description="Code analysis rules for Libplanet.csproj."
+  ToolsVersion="10.0">
+
+  <Rules
+    AnalyzerId="Microsoft.Analyzers.ManagedCodeAnalysis"
+    RuleNamespace="Microsoft.Rules.Managed">
+
+    <!-- TODO: Write copyright -->
+    <Rule Id="SA1633" Action="None" />
+    <Rule Id="SA1652" Action="None" />
+    <!-- Allow field name to begin with an underscore. -->
+    <Rule Id="SA1309" Action="None" />
+    <!-- Allow an expression not to declare parenthese. -->
+    <Rule Id="SA1407" Action="None" />
+    <!-- Allow tuple types in signatures omit element names. -->
+    <Rule Id="SA1414" Action="None" />
+    <!-- Allow tuple fields to be referred by index (i.e. ItemN). -->
+    <Rule Id="SA1142" Action="None" />
+    <!-- Allow a rich text in a XML doc comment's <summary>. -->
+    <Rule Id="SA1462" Action="None" />
+    <Rule Id="SA1642" Action="None" />
+    <!-- Every property's docs doesn't have to start with "Gets", because
+    it's ridiculous. -->
+    <Rule Id="SA1623" Action="None" />
+    <!--Allow to call an instance member of the local class or a base class is
+    not prefixed with 'this.'. -->
+    <Rule Id="SA1101" Action="None" />
+    <!--Allow closing parenthesis to be placed in new line. -->
+    <Rule Id="SA1009" Action="None" />
+    <Rule Id="SA1111" Action="None" />
+    <!-- TODO: Documentation -->
+    <Rule Id="SA1600" Action="None" />
+    <Rule Id="SA1601" Action="None" />
+    <Rule Id="SA0001" Action="None" />
+  </Rules>
+
+  <Rules AnalyzerId="Menees.Analyzers" RuleNamespace="Menees.Analyzers">
+    <Rule Id="MEN002" Action="Warning" />
+    <Rule Id="MEN007" Action="None" />
+    <Rule Id="MEN009" Action="Warning" />
+    <Rule Id="MEN010" Action="None" />
+    <Rule Id="MEN011" Action="None" />
+  </Rules>
+
+  <Rules AnalyzerId="SonarAnalyzer" RuleNamespace="SonarAnalyzer">
+    <!-- These warn about leaving parameters taking ICultureInfo default,
+    which implicitly follows the system's locale settings so that code is
+    non-deterministic. -->
+    <Rule Id="S1449" Action="Warning" />
+    <Rule Id="S4026" Action="Warning" />
+    <Rule Id="S4056" Action="Warning" />
+    <Rule Id="S4057" Action="Warning" />
+
+    <!-- Either remove or fill this block of code. -->
+    <Rule Id="S108" Action="None" />
+    <!-- 'System.NullReferenceException' should not be thrown by user code. -->
+    <Rule Id="S112" Action="None" />
+    <!-- Add the default parameter value defined in the overridden method. -->
+    <Rule Id="S1006" Action="None" />
+    <!-- Add an explanation -->
+    <Rule Id="S1123" Action="None" />
+    <!-- Take the required action to fix the issue indicated by this
+    'FIXME' comment. -->
+    <Rule Id="S1134" Action="None" />
+    <!-- Complete the task associated to this 'TODO' comment. -->
+    <Rule Id="S1135" Action="None" />
+    <!-- Return an empty collection instead of null. -->
+    <Rule Id="S1168" Action="None" />
+    <!-- Remove this unused method parameter 'cancellationToken'. -->
+    <Rule Id="S1172" Action="None" />
+    <!-- This struct overrides 'GetHashCode' and should therefore also override
+    'Equals'. -->
+    <Rule Id="S1206" Action="None" />
+    <!-- When implementing IComparable<T> or IComparable, you should also
+    override Equals, <, >, <=, >=, ==, !=. -->
+    <Rule Id="S1210" Action="None" />
+    <!-- Use a StringBuilder instead. -->
+    <Rule Id="S1643" Action="None" />
+    <!-- Use a 'null' check instead. -->
+    <Rule Id="S2219" Action="None" />
+    <!-- variable is null on at least one execution path. -->
+    <Rule Id="S2259" Action="None" />
+    <!-- Combine this 'try' with the one starting on line x. -->
+    <Rule Id="S2327" Action="None" />
+    <!-- Refactor property into a method, properties should not copy
+    collections. -->
+    <Rule Id="S2365" Action="None" />
+    <!-- Replace the control character at position 1 by its escape sequence
+    '\n'. -->
+    <Rule Id="S2479" Action="None" />
+    <!-- A static field in a generic type is not shared among instances of
+    different close constructed types. -->
+    <Rule Id="S2743" Action="None" />
+    <!-- Make field 'readonly'. -->
+    <Rule Id="S2933" Action="None" />
+    <!-- Fix this implementation of 'IDisposable' to conform to the dispose
+    pattern. -->
+    <Rule Id="S3881" Action="None" />
+    <!-- Update this implementation of 'ISerializable' to conform to the
+    recommended serialization pattern. -->
+    <Rule Id="S3925" Action="None" />
+    <!-- Use a constructor overloads that allows a more meaningful exception
+    message to be provided. -->
+    <Rule Id="S3928" Action="None" />
+    <!-- Initialize all 'static fields' inline and remove the
+    'static constructor'. -->
+    <Rule Id="S3963" Action="None" />
+    <!-- Split this method into two, one handling parameters check and the
+    other handling the asynchronous code. -->
+    <Rule Id="S4457" Action="None" />
+
+    <!-- Remove the unused local variable 'x'. -->
+    <Rule Id="S1481" Action="None" />
+
+    <!-- Remove this useless assignment to local variable x -->
+    <Rule Id="S1854" Action="None" />
+    <!-- Remove this redundant jump. -->
+    <Rule Id="S3626" Action="None" />
+    <!-- Restrict types of objects allowed to be deserialized. -->
+    <Rule Id="S5773" Action="None" />
+  </Rules>
+</RuleSet>
