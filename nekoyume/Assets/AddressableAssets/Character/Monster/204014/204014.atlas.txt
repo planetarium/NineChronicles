@@ -1,0 +1,125 @@
+
+204014.png
+size: 256,256
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+arm_L
+  rotate: true
+  xy: 30, 84
+  size: 10, 5
+  orig: 10, 5
+  offset: 0, 0
+  index: -1
+arm_R
+  rotate: false
+  xy: 224, 242
+  size: 19, 10
+  orig: 19, 10
+  offset: 0, 0
+  index: -1
+body
+  rotate: false
+  xy: 2, 170
+  size: 87, 45
+  orig: 87, 45
+  offset: 0, 0
+  index: -1
+face_01
+  rotate: false
+  xy: 62, 156
+  size: 23, 12
+  orig: 23, 12
+  offset: 0, 0
+  index: -1
+face_02
+  rotate: false
+  xy: 197, 236
+  size: 25, 16
+  orig: 25, 16
+  offset: 0, 0
+  index: -1
+face_03
+  rotate: true
+  xy: 91, 190
+  size: 25, 12
+  orig: 25, 12
+  offset: 0, 0
+  index: -1
+face_04
+  rotate: false
+  xy: 2, 78
+  size: 26, 16
+  orig: 26, 16
+  offset: 0, 0
+  index: -1
+leaf_01
+  rotate: true
+  xy: 107, 222
+  size: 30, 59
+  orig: 30, 59
+  offset: 0, 0
+  index: -1
+leaf_02
+  rotate: false
+  xy: 168, 228
+  size: 27, 24
+  orig: 27, 24
+  offset: 0, 0
+  index: -1
+leaf_03
+  rotate: false
+  xy: 2, 96
+  size: 33, 35
+  orig: 33, 35
+  offset: 0, 0
+  index: -1
+leg_R
+  rotate: false
+  xy: 197, 229
+  size: 10, 5
+  orig: 10, 5
+  offset: 0, 0
+  index: -1
+shadow
+  rotate: false
+  xy: 2, 217
+  size: 103, 35
+  orig: 103, 35
+  offset: 0, 0
+  index: -1
+wood_01
+  rotate: false
+  xy: 245, 242
+  size: 9, 10
+  orig: 9, 10
+  offset: 0, 0
+  index: -1
+wood_02
+  rotate: false
+  xy: 2, 58
+  size: 17, 18
+  orig: 17, 18
+  offset: 0, 0
+  index: -1
+wood_03
+  rotate: false
+  xy: 91, 177
+  size: 10, 11
+  orig: 10, 11
+  offset: 0, 0
+  index: -1
+wood_04
+  rotate: false
+  xy: 40, 138
+  size: 20, 30
+  orig: 20, 30
+  offset: 0, 0
+  index: -1
+wood_05
+  rotate: false
+  xy: 2, 133
+  size: 36, 35
+  orig: 36, 35
+  offset: 0, 0
+  index: -1

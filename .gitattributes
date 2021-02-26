@@ -1,0 +1,2 @@
+nekoyume/Assets/Plugins/**/*.so filter=lfs diff=lfs merge=lfs -text
+tools/**/*.exe filter=lfs diff=lfs merge=lfs -text

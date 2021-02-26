@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Equals</name>
+    </assembly>
+    <members>
+        <member name="T:CustomGetHashCodeAttribute">
+            <summary>
+            Custom method marker. The Method is called by an auto-generated GetHashCode method.
+            </summary>
+        </member>
+        <member name="T:EqualsAttribute">
+            <summary>
+            Adds Equals,GetHashCode,==,!= methods to class.
+            </summary>
+        </member>
+        <member name="T:CustomEqualsInternalAttribute">
+            <summary>
+            Custom method marker. The Method is called by an auto-generated equality comparison after a generated EqualsInternal.
+            </summary>
+        </member>
+        <member name="T:IgnoreDuringEqualsAttribute">
+            <summary>
+            Property will be ignored during generating Equals/GetHashCode method.
+            </summary>
+        </member>
+    </members>
+</doc>

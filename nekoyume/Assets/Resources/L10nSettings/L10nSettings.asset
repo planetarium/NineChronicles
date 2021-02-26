@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 02b5c8b9df664614aa1f27757ee3bc5c, type: 3}
+  m_Name: L10nSettings
+  m_EditorClassIdentifier: 
+  fontAssets:
+  - languageType: 0
+    fontAssetData: {fileID: 11400000, guid: e999af15155e1451f8ee2a14822195e6, type: 2}
+  - languageType: 1
+    fontAssetData: {fileID: 11400000, guid: b578b955c0b644e40889a40bc4dc7950, type: 2}
+  - languageType: 2
+    fontAssetData: {fileID: 11400000, guid: 8591b590b1d3e4af69bd5d7b5cc64ff4, type: 2}
+  - languageType: 3
+    fontAssetData: {fileID: 11400000, guid: e56fbc7fcb22f46539ad2cd28516095f, type: 2}
+  - languageType: 4
+    fontAssetData: {fileID: 11400000, guid: deb3c54fa37294f29b77525d09db4aa5, type: 2}
+  - languageType: 5
+    fontAssetData: {fileID: 11400000, guid: 5d8705022d67c49699a58f621b90567b, type: 2}
+  - languageType: 6
+    fontAssetData: {fileID: 11400000, guid: 3b4755d8abad248c2a54a9744e08d42c, type: 2}

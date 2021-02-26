@@ -1,0 +1,12 @@
+.git
+.circleci
+k8s
+.dockerignore
+Dockerfile*
+nekoyume/Assets/StreamingAssets/clo.json
+nekoyume/Library
+nekoyume/Temp
+nekoyume/Build
+nekoyume/compose
+**/[Bb]in/
+**/[Oo]bj/
