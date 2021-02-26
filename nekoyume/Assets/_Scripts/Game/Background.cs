@@ -1,3 +1,6 @@
+using System.Collections.Generic;
+using System.Linq;
+using Nekoyume.UI;
 using UnityEngine;
 
 
@@ -5,42 +8,106 @@ namespace Nekoyume.Game
 {
     public class Background : MonoBehaviour
     {
-        // FIXME: parallaxSize를 자동으로 구해주는 로직이 SpriteAtlas를 사용하는 케이스를 커버해주지 못해고 있습니다.
-        // 스프라이트의 사이즈가 이를 포함하는 텍스쳐의 사이즈와 다르기 때문입니다.
-        // 지금은 임시로 스프라이트를 포함하는 트랜스폼의 스케일이 기본값이라는 가정하에 렉트를 사용하도록 수정합니다.
-        [SerializeField]
-        private bool autoParallaxSize = true;
+        [SerializeField] private float parallaxSpeed = 0.0f;
 
-        [SerializeField]
-        private float parallaxSize = 0.0f;
-
-        [SerializeField]
-        private float parallaxSpeed = 0.0f;
-
+        private float _parallaxSize = 0.0f;
         private Transform _cameraTransform;
         private Transform[] _images;
         private float _lastCameraX;
         private int _leftIndex;
         private int _rightIndex;
+        private const string DefaultSpritePath = "UI/Textures/Common/8x8_rect_transparent";
 
         private void Awake ()
         {
             _cameraTransform = ActionCamera.instance.transform;
+            var initPosition = transform.localPosition;
+            transform.localPosition = Vector3.zero;
+            InstantiateChildren();
+            InitParallax(initPosition);
+        }
+
+        private void InstantiateChildren()
+        {
+            var spriteRenderer = transform.GetComponent<SpriteRenderer>();
+            if (spriteRenderer == null)
+            {
+                var resource = Resources.Load<Sprite>(DefaultSpritePath);
+                spriteRenderer = gameObject.AddComponent<SpriteRenderer>();
+                spriteRenderer.sprite = resource;
+                spriteRenderer.sortingLayerName = "InGameBackground";
+            }
+            var animator = transform.GetComponent<Animator>();
+            var children = new List<GameObject>();
+            for (var i = 0; i < transform.childCount; ++i)
+            {
+                children.Add(transform.GetChild(i).gameObject);
+            }
+
+            spriteRenderer.enabled = false;
+            for (int i = 0; i < 2; ++i)
+            {
+                var go = new GameObject($"background_{i}");
+                var sr = go.AddComponent<SpriteRenderer>();
+                go.transform.SetParent(transform);
+                sr.sprite = spriteRenderer.sprite;
+                sr.sortingLayerName = spriteRenderer.sortingLayerName;
+                sr.sortingOrder = spriteRenderer.sortingOrder;
+                sr.transform.localPosition = Vector3.zero;
+                sr.drawMode = spriteRenderer.drawMode;
+                sr.tileMode = spriteRenderer.tileMode;
+                sr.size = spriteRenderer.size;
+                if (animator != null)
+                {
+                    var ani = go.AddComponent<Animator>();
+                    ani.runtimeAnimatorController = animator.runtimeAnimatorController;
+                    animator.enabled = false;
+                }
+
+                foreach (var g in children.Select(Instantiate))
+                {
+                    g.transform.SetParent(go.transform);
+                }
+            }
+
+            foreach (var child in children)
+            {
+                DestroyImmediate(child);
+            }
+        }
+
+        private void InitParallax(Vector3 initPosition)
+        {
+            var mainCamera = Camera.main;
+            var cameraHeight = 2 * mainCamera.orthographicSize;
+            var cameraWidth = cameraHeight * mainCamera.aspect;
 
             _images = new Transform[transform.childCount];
             for (var i = 0; i < transform.childCount; ++i)
             {
                 _images[i] = transform.GetChild(i);
-                if (i == 0 &&
-                    autoParallaxSize)
+                if (i == 0)
                 {
-                    var sprite = _images[i].GetComponent<SpriteRenderer>()?.sprite;
-                    if (!(sprite is null))
+                    var sr = _images[i].GetComponent<SpriteRenderer>();
+                    if (sr != null)
                     {
-                        parallaxSize = sprite.rect.width / sprite.pixelsPerUnit;
+                        var minWidth = cameraWidth + 0.5f;
+                        if(sr.drawMode == SpriteDrawMode.Tiled)
+                        {
+                            _parallaxSize = sr.size.x > minWidth ? sr.size.x : minWidth;
+                        }
+                        else
+                        {
+                            var sprite = sr.sprite;
+                            if (!(sprite is null))
+                            {
+                                var width = sprite.rect.width / sprite.pixelsPerUnit;
+                                _parallaxSize = width > minWidth ? width : minWidth;
+                            }
+                        }
                     }
                 }
-                _images[i].position = new Vector3(parallaxSize * i, _images[i].position.y, _images[i].position.z);
+                _images[i].localPosition = new Vector3(_parallaxSize * i + initPosition.x, initPosition.y, initPosition.z);
             }
 
             _lastCameraX = _cameraTransform.position.x;
@@ -48,7 +115,7 @@ namespace Nekoyume.Game
             _rightIndex = _images.Length - 1;
         }
 
-        private void Update()
+        private void LateUpdate()
         {
             var camPosX = _cameraTransform.position.x;
 
@@ -77,9 +144,10 @@ namespace Nekoyume.Game
 
         private void MoveLeft()
         {
-            var position = Vector3.right * (_images[_leftIndex].position.x - parallaxSize);
-            position.y = _images[_rightIndex].position.y;
+            var position = _images[_leftIndex].position;
+            position.x -= _parallaxSize;
             _images[_rightIndex].position = position;
+
             _leftIndex = _rightIndex;
             _rightIndex--;
             if (_rightIndex < 0)
@@ -90,9 +158,10 @@ namespace Nekoyume.Game
 
         private void MoveRight()
         {
-            var position = Vector3.right * (_images[_rightIndex].position.x + parallaxSize);
-            position.y = _images[_leftIndex].position.y;
+            var position = _images[_rightIndex].position;
+            position.x += _parallaxSize;
             _images[_leftIndex].position = position;
+
             _rightIndex = _leftIndex;
             _leftIndex++;
             if (_leftIndex == _images.Length)
