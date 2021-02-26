@@ -1,0 +1,36 @@
+version: '3'
+
+services:
+  seed:
+    image: bitnami/minideb:stretch
+    volumes:
+      - ../Build/LinuxHeadless:/app
+      - ./results/seed:/root/.local/share/planetarium/9c
+      - ./container:/container
+    command: /container/run_seed.sh 59876
+    ports:
+      - "59876:59876"
+
+  miner1:
+    image: bitnami/minideb:stretch
+    volumes:
+      - ../Build/LinuxHeadless:/app
+      - ./results/miner1/:/root/.local/share/planetarium/9c
+      - ./container:/container
+    command: /container/run_miner.sh 59875 59876
+    ports:
+      - "59875:59875"
+    depends_on:
+      - seed
+
+  miner2:
+    image: bitnami/minideb:stretch
+    volumes:
+      - ../Build/LinuxHeadless:/app
+      - ./results/miner2/:/root/.local/share/planetarium/9c
+      - ./container:/container
+    command: /container/run_miner.sh 59874 59876
+    ports:
+      - "59874:59874"
+    depends_on:
+      - seed

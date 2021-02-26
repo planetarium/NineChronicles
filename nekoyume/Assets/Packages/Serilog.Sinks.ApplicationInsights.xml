@@ -1,0 +1,169 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Serilog.Sinks.ApplicationInsights</name>
+    </assembly>
+    <members>
+        <member name="T:Serilog.LoggerConfigurationApplicationInsightsExtensions">
+            <summary>
+            Adds the WriteTo.ApplicationInsights() extension method to <see cref="T:Serilog.LoggerConfiguration"/>.
+            </summary>
+        </member>
+        <member name="M:Serilog.LoggerConfigurationApplicationInsightsExtensions.ApplicationInsights(Serilog.Configuration.LoggerSinkConfiguration,Microsoft.ApplicationInsights.Extensibility.TelemetryConfiguration,Serilog.Sinks.ApplicationInsights.Sinks.ApplicationInsights.TelemetryConverters.ITelemetryConverter,Serilog.Events.LogEventLevel)">
+            <summary>
+            Adds a Serilog sink that writes <see cref="T:Serilog.Events.LogEvent">log events</see> to Microsoft Application Insights 
+            using a custom <see cref="T:Microsoft.ApplicationInsights.Channel.ITelemetry"/> converter / constructor.
+            </summary>
+            <param name="loggerConfiguration">The logger configuration.</param>
+            <param name="telemetryConfiguration">Required Application Insights configuration settings.</param>
+            <param name="telemetryConverter">Required telemetry converter.</param>
+            <param name="restrictedToMinimumLevel">The minimum log event level required in order to write an event to the sink.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Serilog.LoggerConfigurationApplicationInsightsExtensions.ApplicationInsights(Serilog.Configuration.LoggerSinkConfiguration,Serilog.Sinks.ApplicationInsights.Sinks.ApplicationInsights.TelemetryConverters.ITelemetryConverter,Serilog.Events.LogEventLevel)">
+            <summary>
+            Adds a Serilog sink that writes <see cref="T:Serilog.Events.LogEvent">log events</see> to Microsoft Application Insights
+            using the active <see cref="T:Microsoft.ApplicationInsights.Extensibility.TelemetryConfiguration"/>
+            </summary>
+            <param name="loggerConfiguration">The logger configuration.</param>
+            <param name="telemetryConverter">Required telemetry converter.</param>
+            <param name="restrictedToMinimumLevel">The minimum log event level required in order to write an event to the sink.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Serilog.LoggerConfigurationApplicationInsightsExtensions.ApplicationInsights(Serilog.Configuration.LoggerSinkConfiguration,Microsoft.ApplicationInsights.TelemetryClient,Serilog.Sinks.ApplicationInsights.Sinks.ApplicationInsights.TelemetryConverters.ITelemetryConverter,Serilog.Events.LogEventLevel)">
+            <summary>
+            Adds a Serilog sink that writes <see cref="T:Serilog.Events.LogEvent">log events</see> to Microsoft Application Insights 
+            using a custom <see cref="T:Microsoft.ApplicationInsights.Channel.ITelemetry"/> converter / constructor.
+            </summary>
+            <param name="loggerConfiguration">The logger configuration.</param>
+            <param name="telemetryClient">Required Application Insights telemetry client.</param>
+            <param name="telemetryConverter">Required telemetry converter.</param>
+            <param name="restrictedToMinimumLevel">The minimum log event level required in order to write an event to the sink.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Serilog.LoggerConfigurationApplicationInsightsExtensions.ApplicationInsights(Serilog.Configuration.LoggerSinkConfiguration,System.String,Serilog.Sinks.ApplicationInsights.Sinks.ApplicationInsights.TelemetryConverters.ITelemetryConverter,Serilog.Events.LogEventLevel)">
+            <summary>
+            Adds a Serilog sink that writes <see cref="T:Serilog.Events.LogEvent">log events</see> to Microsoft Application Insights 
+            using a custom <see cref="T:Microsoft.ApplicationInsights.Channel.ITelemetry"/> converter / constructor. Only use in rare cases when your application doesn't
+            have already constructed AI telemetry configuration, which is extremely rare.
+            </summary>
+            <param name="loggerConfiguration">The logger configuration.</param>
+            <param name="instrumentationKey">Required Application Insights key.</param>
+            <param name="telemetryConverter">Required telemetry converter.</param>
+            <param name="restrictedToMinimumLevel">The minimum log event level required in order to write an event to the sink.</param>
+            <returns></returns>
+        </member>
+        <member name="T:Serilog.Sinks.ApplicationInsights.ApplicationInsightsSink">
+            <summary>
+            Base class for Microsoft Azure Application Insights based Sinks.
+            Inspired by their NLog Appender implementation.
+            </summary>
+        </member>
+        <member name="P:Serilog.Sinks.ApplicationInsights.ApplicationInsightsSink.IsDisposing">
+            <summary>
+            Gets or sets a value indicating whether this instance is being disposed.
+            </summary>
+            <value>
+            <c>true</c> if this instance is being disposed; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="P:Serilog.Sinks.ApplicationInsights.ApplicationInsightsSink.IsDisposed">
+            <summary>
+            Gets a value indicating whether this instance has been disposed.
+            </summary>
+            <value>
+            <c>true</c> if this instance has been disposed; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="M:Serilog.Sinks.ApplicationInsights.ApplicationInsightsSink.#ctor(Microsoft.ApplicationInsights.TelemetryClient,Serilog.Sinks.ApplicationInsights.Sinks.ApplicationInsights.TelemetryConverters.ITelemetryConverter,System.IFormatProvider)">
+            <summary>
+            Creates a sink that saves logs to the Application Insights account for the given <paramref name="telemetryClient" /> instance.
+            </summary>
+            <param name="telemetryClient">Required Application Insights <paramref name="telemetryClient" />.</param>
+            <param name="telemetryConverter">The <see cref="T:Serilog.Events.LogEvent"/> to <see cref="T:Microsoft.ApplicationInsights.Channel.ITelemetry"/> converter.</param>
+            <param name="formatProvider">Supplies culture-specific formatting information, or null for default provider.</param>
+            <exception cref="T:System.ArgumentNullException"><paramref name="telemetryClient" /> cannot be null</exception>
+        </member>
+        <member name="M:Serilog.Sinks.ApplicationInsights.ApplicationInsightsSink.TrackTelemetry(Microsoft.ApplicationInsights.Channel.ITelemetry)">
+            <summary>
+            Hands over the <paramref name="telemetry" /> to the AI telemetry client.
+            </summary>
+            <param name="telemetry">The telemetry.</param>
+            <exception cref="T:System.ArgumentNullException">telemetry</exception>
+        </member>
+        <member name="M:Serilog.Sinks.ApplicationInsights.ApplicationInsightsSink.Emit(Serilog.Events.LogEvent)">
+            <summary>
+            Emit the provided log event to the sink.
+            </summary>
+            <param name="logEvent">The log event to write.</param>
+            <exception cref="T:System.Exception">A delegate callback throws an exception.</exception>
+            <exception cref="T:System.Reflection.TargetInvocationException">A delegate callback throws an exception.</exception>
+        </member>
+        <member name="M:Serilog.Sinks.ApplicationInsights.ApplicationInsightsSink.CheckForAndThrowIfDisposed">
+            <summary>
+            Checks whether this instance has been disposed and if so, throws an <see cref="T:System.ObjectDisposedException"/>.
+            </summary>
+            <exception cref="T:System.ObjectDisposedException"></exception>
+        </member>
+        <member name="M:Serilog.Sinks.ApplicationInsights.ApplicationInsightsSink.Dispose">
+            <summary>
+            Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+            </summary>
+        </member>
+        <member name="M:Serilog.Sinks.ApplicationInsights.ApplicationInsightsSink.Dispose(System.Boolean)">
+            <summary>
+            Releases unmanaged and - optionally - managed resources.
+            </summary>
+            <param name="disposeManagedResources"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+        </member>
+        <member name="T:Serilog.Sinks.ApplicationInsights.Sinks.ApplicationInsights.TelemetryConverters.TelemetryConverterBase">
+            <summary>
+            Base class for telemetry converters
+            </summary>
+        </member>
+        <!-- Badly formed XML comment ignored for member "F:Serilog.Sinks.ApplicationInsights.Sinks.ApplicationInsights.TelemetryConverters.TelemetryConverterBase.TelemetryPropertiesLogLevel" -->
+        <member name="F:Serilog.Sinks.ApplicationInsights.Sinks.ApplicationInsights.TelemetryConverters.TelemetryConverterBase.TelemetryPropertiesMessageTemplate">
+            <summary>
+            The <see cref="P:Serilog.Events.LogEvent.MessageTemplate"/> is forwarded to the underlying AI Telemetry and its .Properties using this key.
+            </summary>
+        </member>
+        <member name="F:Serilog.Sinks.ApplicationInsights.Sinks.ApplicationInsights.TelemetryConverters.TelemetryConverterBase.TelemetryPropertiesRenderedMessage">
+            <summary>
+            The result of <see cref="M:Serilog.Events.LogEvent.RenderMessage(System.IFormatProvider)"/> is forwarded to the underlying AI Telemetry and its .Properties using this key.
+            </summary>
+        </member>
+        <member name="F:Serilog.Sinks.ApplicationInsights.Sinks.ApplicationInsights.TelemetryConverters.TelemetryConverterBase.OperationIdProperty">
+            <summary>
+            Property that is when included in log context, will be pushed out as AI operation ID.
+            </summary>
+        </member>
+        <member name="M:Serilog.Sinks.ApplicationInsights.Sinks.ApplicationInsights.TelemetryConverters.TelemetryConverterBase.#ctor">
+            <summary>
+            Creates an instance of <see cref="T:Serilog.Sinks.ApplicationInsights.Sinks.ApplicationInsights.TelemetryConverters.TelemetryConverterBase"/> using default value formatter (<see cref="T:Serilog.Sinks.ApplicationInsights.Sinks.ApplicationInsights.Formatters.ApplicationInsightsJsonValueFormatter"/>).
+            </summary>
+        </member>
+        <member name="M:Serilog.Sinks.ApplicationInsights.Sinks.ApplicationInsights.TelemetryConverters.TelemetryConverterBase.ForwardPropertiesToTelemetryProperties(Serilog.Events.LogEvent,Microsoft.ApplicationInsights.DataContracts.ISupportProperties,System.IFormatProvider,System.Boolean,System.Boolean,System.Boolean)">
+            <summary>
+            Forwards all <see cref="T:Serilog.Events.LogEvent" /> data to the <paramref name="telemetryProperties" /> including the log level,
+            rendered message, message template and all <paramref name="logEvent" /> properties to the telemetry.
+            </summary>
+            <param name="logEvent">The log event.</param>
+            <param name="telemetryProperties">The telemetry properties.</param>
+            <param name="formatProvider">The format provider.</param>
+            <param name="includeLogLevel">if set to <c>true</c> the <see cref="P:Serilog.Events.LogEvent.Level"/> is added to the
+            <paramref name="telemetryProperties"/> using the <see cref="F:Serilog.Sinks.ApplicationInsights.Sinks.ApplicationInsights.TelemetryConverters.TelemetryConverterBase.TelemetryPropertiesLogLevel"/> key.</param>
+            <param name="includeRenderedMessage">if set to <c>true</c> the <see cref="M:Serilog.Events.LogEvent.RenderMessage(System.IFormatProvider)"/> output is added to the
+            <paramref name="telemetryProperties"/> using the <see cref="F:Serilog.Sinks.ApplicationInsights.Sinks.ApplicationInsights.TelemetryConverters.TelemetryConverterBase.TelemetryPropertiesRenderedMessage"/> key.</param>
+            <param name="includeMessageTemplate">if set to <c>true</c> the <see cref="P:Serilog.Events.LogEvent.MessageTemplate"/> is added to the
+            <paramref name="telemetryProperties"/> using the <see cref="F:Serilog.Sinks.ApplicationInsights.Sinks.ApplicationInsights.TelemetryConverters.TelemetryConverterBase.TelemetryPropertiesMessageTemplate"/> key.</param>
+            <exception cref="T:System.ArgumentNullException">Thrown if <paramref name="logEvent" /> or <paramref name="telemetryProperties" /> is null.</exception>
+        </member>
+        <member name="M:Serilog.Sinks.ApplicationInsights.Sinks.ApplicationInsights.TelemetryConverters.TelemetryConverterBase.ToSeverityLevel(Serilog.Events.LogEventLevel)">
+            <summary>
+            To the severity level.
+            </summary>
+            <param name="logEventLevel">The log event level.</param>
+            <returns></returns>
+        </member>
+    </members>
+</doc>
