@@ -28,7 +28,6 @@ jobs:
       - setup_remote_docker
       - aws-ecr/build-image:
           no-output-timeout: "30m"
-          account-url: "planetariumhq"
           repo: "ninechronicles-unity"
           tag: "git-$CIRCLE_SHA1"
           extra-build-args: >-
