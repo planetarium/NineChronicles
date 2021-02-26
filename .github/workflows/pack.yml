@@ -1,15 +1,10 @@
 on:
   push:
     branches:
-    - master
+    - main
     - development
     - rc-*
     tags: ['*']
-  pull_request:
-    branches:
-      - master
-      - development
-      - rc-*
 
 name: Pack
 
