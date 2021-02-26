@@ -47,14 +47,14 @@ namespace Nekoyume.Action
             var sw = new Stopwatch();
             sw.Start();
             var started = DateTimeOffset.UtcNow;
-            Log.Debug("{AddressesHex}Sell Cancel exec started", addressesHex);
+            Log.Verbose("{AddressesHex}Sell Cancel exec started", addressesHex);
 
             if (!states.TryGetAgentAvatarStates(ctx.Signer, sellerAvatarAddress, out _, out var avatarState))
             {
                 return states;
             }
             sw.Stop();
-            Log.Debug("{AddressesHex}Sell Cancel Get AgentAvatarStates: {Elapsed}", addressesHex, sw.Elapsed);
+            Log.Verbose("{AddressesHex}Sell Cancel Get AgentAvatarStates: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();
 
             if (!avatarState.worldInformation.TryGetUnlockedWorldByStageClearedBlockIndex(
@@ -72,7 +72,7 @@ namespace Nekoyume.Action
                 return states;
             }
             sw.Stop();
-            Log.Debug("{AddressesHex}Sell Cancel Get ShopState: {Elapsed}", addressesHex, sw.Elapsed);
+            Log.Verbose("{AddressesHex}Sell Cancel Get ShopState: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();
 
             // 상점에서 아이템을 빼온다.
@@ -90,7 +90,7 @@ namespace Nekoyume.Action
             shopStateDict = shopStateDict.SetItem("products", products);
 
             sw.Stop();
-            Log.Debug("{AddressesHex}Sell Cancel Get Unregister Item: {Elapsed}", addressesHex, sw.Elapsed);
+            Log.Verbose("{AddressesHex}Sell Cancel Get Unregister Item: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();
 
             //9c-beta 브랜치에서는 블록 인덱스도 확인 해야함 (이전 블록 유효성 보장)
@@ -114,19 +114,19 @@ namespace Nekoyume.Action
             avatarState.updatedAt = ctx.BlockIndex;
             avatarState.blockIndex = ctx.BlockIndex;
             sw.Stop();
-            Log.Debug("{AddressesHex}Sell Cancel Update AvatarState: {Elapsed}", addressesHex, sw.Elapsed);
+            Log.Verbose("{AddressesHex}Sell Cancel Update AvatarState: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();
 
             states = states.SetState(sellerAvatarAddress, avatarState.Serialize());
             sw.Stop();
-            Log.Debug("{AddressesHex}Sell Cancel Set AvatarState: {Elapsed}", addressesHex, sw.Elapsed);
+            Log.Verbose("{AddressesHex}Sell Cancel Set AvatarState: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();
 
             states = states.SetState(ShopState.Address, shopStateDict);
             sw.Stop();
             var ended = DateTimeOffset.UtcNow;
-            Log.Debug("{AddressesHex}Sell Cancel Set ShopState: {Elapsed}", addressesHex, sw.Elapsed);
-            Log.Debug("{AddressesHex}Sell Cancel Total Executed Time: {Elapsed}", addressesHex, ended - started);
+            Log.Verbose("{AddressesHex}Sell Cancel Set ShopState: {Elapsed}", addressesHex, sw.Elapsed);
+            Log.Verbose("{AddressesHex}Sell Cancel Total Executed Time: {Elapsed}", addressesHex, ended - started);
             return states;
         }
     }
