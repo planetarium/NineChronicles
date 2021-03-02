@@ -92,10 +92,24 @@
             Assert.NotNull(shopItem.ItemUsable);
             Dictionary serialized = (Dictionary)shopItem.Serialize();
 
-            Assert.Equal(contain, serialized.ContainsKey("ebi"));
+            Assert.Equal(contain, serialized.ContainsKey(ShopItem.ExpiredBlockIndexKey));
 
             var deserialized = new ShopItem(serialized);
             Assert.Equal(shopItem, deserialized);
+        }
+
+        [Fact]
+        public void ThrowArgumentOurOfRangeException()
+        {
+            var equipmentRow = TableSheets.EquipmentItemSheet.First;
+            var equipment = new Equipment(equipmentRow, Guid.NewGuid(), 0);
+            Assert.Throws<ArgumentOutOfRangeException>(() => new ShopItem(
+                new PrivateKey().ToAddress(),
+                new PrivateKey().ToAddress(),
+                Guid.NewGuid(),
+                new FungibleAssetValue(Currency, 100, 0),
+                -1,
+                equipment));
         }
 
         private static ShopItem GetShopItemWithFirstCostume()

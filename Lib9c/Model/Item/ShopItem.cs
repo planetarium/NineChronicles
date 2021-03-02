@@ -12,6 +12,7 @@ namespace Nekoyume.Model.Item
     [Serializable]
     public class ShopItem
     {
+        public const string ExpiredBlockIndexKey = "ebi";
         protected static readonly Codec Codec = new Codec();
         
         public readonly Address SellerAgentAddress;
@@ -26,28 +27,16 @@ namespace Nekoyume.Model.Item
             Address sellerAvatarAddress,
             Guid productId,
             FungibleAssetValue price,
-            ItemUsable itemUsable)
+            ItemUsable itemUsable) : this(sellerAgentAddress, sellerAgentAddress, productId, price, 0, itemUsable)
         {
-            SellerAgentAddress = sellerAgentAddress;
-            SellerAvatarAddress = sellerAvatarAddress;
-            ProductId = productId;
-            Price = price;
-            ItemUsable = itemUsable;
-            Costume = null;
         }
 
         public ShopItem(Address sellerAgentAddress,
             Address sellerAvatarAddress,
             Guid productId,
             FungibleAssetValue price,
-            Costume costume)
+            Costume costume) : this(sellerAgentAddress, sellerAvatarAddress, productId, price, 0, costume)
         {
-            SellerAgentAddress = sellerAgentAddress;
-            SellerAvatarAddress = sellerAvatarAddress;
-            ProductId = productId;
-            Price = price;
-            ItemUsable = null;
-            Costume = costume;
         }
 
         public ShopItem(
@@ -63,6 +52,10 @@ namespace Nekoyume.Model.Item
             SellerAvatarAddress = sellerAvatarAddress;
             ProductId = productId;
             Price = price;
+            if (expiredBlockIndex < 0)
+            {
+                throw new ArgumentOutOfRangeException($"ExpiredBlockIndex must be 0 or more, but {expiredBlockIndex}");
+            }
             ExpiredBlockIndex = expiredBlockIndex;
             switch (nonFungibleItem)
             {
@@ -89,9 +82,9 @@ namespace Nekoyume.Model.Item
             Costume = serialized.ContainsKey("costume")
                 ? (Costume) ItemFactory.Deserialize((Dictionary) serialized["costume"])
                 : null;
-            if (serialized.ContainsKey("ebi"))
+            if (serialized.ContainsKey(ExpiredBlockIndexKey))
             {
-                ExpiredBlockIndex = serialized["ebi"].ToLong();
+                ExpiredBlockIndex = serialized[ExpiredBlockIndexKey].ToLong();
             }
         }
         
@@ -132,7 +125,7 @@ namespace Nekoyume.Model.Item
 
             if (ExpiredBlockIndex != 0)
             {
-                innerDictionary.Add((Text) "ebi", ExpiredBlockIndex.Serialize());
+                innerDictionary.Add((Text) ExpiredBlockIndexKey, ExpiredBlockIndex.Serialize());
             }
 
             return new Dictionary(innerDictionary);
