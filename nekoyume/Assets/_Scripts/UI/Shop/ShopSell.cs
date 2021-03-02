@@ -22,8 +22,6 @@ namespace Nekoyume.UI
 
         private NPC _npc;
 
-        private ToggleGroup _toggleGroup;
-
         [SerializeField]
         private CanvasGroup canvasGroup = null;
 
@@ -126,7 +124,6 @@ namespace Nekoyume.UI
             Find<BottomMenu>().Close(ignoreCloseAnimation);
             speechBubble.gameObject.SetActive(false);
             base.Close(ignoreCloseAnimation);
-
             _npc?.gameObject.SetActive(false);
         }
 

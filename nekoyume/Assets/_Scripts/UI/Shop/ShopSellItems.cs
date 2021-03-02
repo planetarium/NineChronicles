@@ -6,7 +6,6 @@ using Nekoyume.Game.Controller;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.State;
-using Nekoyume.State.Subjects;
 using Nekoyume.UI.Model;
 using TMPro;
 using UniRx;
