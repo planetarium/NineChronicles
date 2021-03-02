@@ -54,7 +54,7 @@ namespace Nekoyume.Model.Item
             Price = price;
             if (expiredBlockIndex < 0)
             {
-                throw new ArgumentOutOfRangeException($"ExpiredBlockIndex must be 0 or more, but {expiredBlockIndex}");
+                throw new ArgumentOutOfRangeException($"{nameof(ExpiredBlockIndex)} must be 0 or more, but {expiredBlockIndex}");
             }
             ExpiredBlockIndex = expiredBlockIndex;
             switch (nonFungibleItem)
