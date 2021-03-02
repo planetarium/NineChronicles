@@ -28,20 +28,16 @@ namespace Nekoyume.UI.Model
 
         public readonly Subject<ShopItemView> OnDoubleClickItemView = new Subject<ShopItemView>();
 
-        public Module.ShopItems.ItemSubTypeFilter itemSubTypeFilter
-            = Module.ShopItems.ItemSubTypeFilter.All;
-
-        public Module.ShopItems.SortFilter sortFilter
-            = Module.ShopItems.SortFilter.Class;
+        public ItemSubTypeFilter itemSubTypeFilter = ItemSubTypeFilter.All;
+        public SortFilter sortFilter = SortFilter.Class;
 
         private IReadOnlyDictionary<
             Address, Dictionary<
-                Module.ShopItems.ItemSubTypeFilter, Dictionary<
-                    Module.ShopItems.SortFilter, Dictionary<int, List<ShopItem>>>>> _agentProducts;
+                ItemSubTypeFilter, Dictionary<SortFilter, Dictionary<int, List<ShopItem>>>>>
+            _agentProducts;
 
         private IReadOnlyDictionary<
-                Module.ShopItems.ItemSubTypeFilter, Dictionary<
-                    Module.ShopItems.SortFilter, Dictionary<int, List<ShopItem>>>>
+                ItemSubTypeFilter, Dictionary<SortFilter, Dictionary<int, List<ShopItem>>>>
             _itemSubTypeProducts;
 
         public void Dispose()
@@ -56,15 +52,15 @@ namespace Nekoyume.UI.Model
 
         public void ResetAgentProducts(IReadOnlyDictionary<
             Address, Dictionary<
-                Module.ShopItems.ItemSubTypeFilter, Dictionary<
-                    Module.ShopItems.SortFilter, Dictionary<
+                ItemSubTypeFilter, Dictionary<
+                    SortFilter, Dictionary<
                         int, List<Nekoyume.Model.Item.ShopItem>>>>> products)
         {
             _agentProducts = products is null
                 ? new Dictionary<
                     Address, Dictionary<
-                        Module.ShopItems.ItemSubTypeFilter, Dictionary<
-                            Module.ShopItems.SortFilter, Dictionary<int, List<ShopItem>>>>>()
+                        ItemSubTypeFilter, Dictionary<
+                            SortFilter, Dictionary<int, List<ShopItem>>>>>()
                 : products.ToDictionary(
                     pair => pair.Key,
                     pair => ModelToViewModel(pair.Value));
@@ -73,15 +69,15 @@ namespace Nekoyume.UI.Model
         }
 
         public void ResetItemSubTypeProducts(IReadOnlyDictionary<
-                Module.ShopItems.ItemSubTypeFilter, Dictionary<
-                    Module.ShopItems.SortFilter, Dictionary<int, List<Nekoyume.Model.Item.ShopItem>>
+                ItemSubTypeFilter, Dictionary<
+                    SortFilter, Dictionary<int, List<Nekoyume.Model.Item.ShopItem>>
                 >>
             products)
         {
             _itemSubTypeProducts = products is null
                 ? new Dictionary<
-                    Module.ShopItems.ItemSubTypeFilter, Dictionary<
-                        Module.ShopItems.SortFilter, Dictionary<int, List<ShopItem>>>>()
+                    ItemSubTypeFilter, Dictionary<
+                        SortFilter, Dictionary<int, List<ShopItem>>>>()
                 : ModelToViewModel(products);
 
 
@@ -89,11 +85,11 @@ namespace Nekoyume.UI.Model
         }
 
         private Dictionary<
-                Module.ShopItems.ItemSubTypeFilter, Dictionary<
-                    Module.ShopItems.SortFilter, Dictionary<int, List<ShopItem>>>>
+                ItemSubTypeFilter, Dictionary<
+                    SortFilter, Dictionary<int, List<ShopItem>>>>
             ModelToViewModel(IReadOnlyDictionary<
-                Module.ShopItems.ItemSubTypeFilter, Dictionary<
-                    Module.ShopItems.SortFilter, Dictionary<
+                ItemSubTypeFilter, Dictionary<
+                    SortFilter, Dictionary<
                         int, List<Nekoyume.Model.Item.ShopItem>>>> shopItems)
         {
             return shopItems.ToDictionary(
@@ -166,8 +162,8 @@ namespace Nekoyume.UI.Model
         private static void RemoveProduct(
             Guid productId,
             IReadOnlyDictionary<
-                Module.ShopItems.ItemSubTypeFilter, Dictionary<
-                    Module.ShopItems.SortFilter, Dictionary<int, List<ShopItem>>>> origin,
+                ItemSubTypeFilter, Dictionary<
+                    SortFilter, Dictionary<int, List<ShopItem>>>> origin,
             Dictionary<int, List<ShopItem>> reactivePropertyValue)
         {
             foreach (var pair in origin)
@@ -233,8 +229,8 @@ namespace Nekoyume.UI.Model
         }
 
         private Dictionary<int, List<ShopItem>> GetFilteredAndSortedProducts(IReadOnlyDictionary<
-            Module.ShopItems.ItemSubTypeFilter, Dictionary<
-                Module.ShopItems.SortFilter, Dictionary<int, List<ShopItem>>>> products)
+            ItemSubTypeFilter, Dictionary<
+                SortFilter, Dictionary<int, List<ShopItem>>>> products)
         {
             if (products is null)
             {

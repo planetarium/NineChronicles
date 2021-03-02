@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Game.Character;
@@ -16,7 +16,7 @@ using ShopItem = Nekoyume.UI.Model.ShopItem;
 
 namespace Nekoyume.UI.Module
 {
-    public class ShopItems : MonoBehaviour
+    public class ShopSellItems : MonoBehaviour
     {
         public const int shopItemsCountOfOnePage = 20;
 
@@ -190,20 +190,9 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
-            switch (SharedModel.State.Value)
-            {
-                case Shop.StateType.Buy:
-                    _filteredPageIndex = 0;
-                    UpdateViewWithFilteredPageIndex(SharedModel.ItemSubTypeProducts.Value);
-                    refreshButton.gameObject.SetActive(true);
-                    refreshButton.PlayAnimation(NPCAnimation.Type.Appear);
-                    break;
-                case Shop.StateType.Sell:
-                    _filteredPageIndex = 0;
-                    UpdateViewWithFilteredPageIndex(SharedModel.AgentProducts.Value);
-                    refreshButton.gameObject.SetActive(false);
-                    break;
-            }
+            _filteredPageIndex = 0;
+            UpdateViewWithFilteredPageIndex(SharedModel.AgentProducts.Value);
+            refreshButton.gameObject.SetActive(false);
         }
 
         private void UpdateViewWithFilteredPageIndex(
@@ -284,29 +273,13 @@ namespace Nekoyume.UI.Module
                 previousPageButtonInteractableSwitch.SetSwitchOff();
             }
 
-            switch (SharedModel.State.Value)
-            {
-                case Shop.StateType.Buy:
-                    UpdateViewWithFilteredPageIndex(SharedModel.ItemSubTypeProducts.Value);
-                    break;
-                case Shop.StateType.Sell:
-                    UpdateViewWithFilteredPageIndex(SharedModel.AgentProducts.Value);
-                    break;
-            }
+            UpdateViewWithFilteredPageIndex(SharedModel.AgentProducts.Value);
         }
 
         private void OnNextPageButtonClick(Unit unit)
         {
-            var count = 0;
-            switch (SharedModel.State.Value)
-            {
-                case Shop.StateType.Buy:
-                    count = SharedModel.ItemSubTypeProducts.Value.Count;
-                    break;
-                case Shop.StateType.Sell:
-                    count = SharedModel.AgentProducts.Value.Count;
-                    break;
-            }
+            var count = SharedModel.AgentProducts.Value.Count;
+
 
             if (_filteredPageIndex + 1 >= count)
             {
@@ -322,15 +295,7 @@ namespace Nekoyume.UI.Module
                 nextPageButtonInteractableSwitch.SetSwitchOff();
             }
 
-            switch (SharedModel.State.Value)
-            {
-                case Shop.StateType.Buy:
-                    UpdateViewWithFilteredPageIndex(SharedModel.ItemSubTypeProducts.Value);
-                    break;
-                case Shop.StateType.Sell:
-                    UpdateViewWithFilteredPageIndex(SharedModel.AgentProducts.Value);
-                    break;
-            }
+            UpdateViewWithFilteredPageIndex(SharedModel.AgentProducts.Value);
         }
     }
 }

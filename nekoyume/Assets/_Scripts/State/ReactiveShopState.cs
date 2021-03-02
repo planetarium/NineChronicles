@@ -5,8 +5,11 @@ using Libplanet;
 using Nekoyume.Battle;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
+using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using UniRx;
+using ShopItem = Nekoyume.Model.Item.ShopItem;
+using ShopItems = Nekoyume.UI.Module.ShopItems;
 
 namespace Nekoyume.State
 {
@@ -23,21 +26,20 @@ namespace Nekoyume.State
         }
 
         public static readonly ReactiveProperty<Dictionary<
-                Address, Dictionary<
-                    ShopItems.ItemSubTypeFilter, Dictionary<
-                        ShopItems.SortFilter, Dictionary<int, List<ShopItem>>>>>>
+                Address, Dictionary<ItemSubTypeFilter, Dictionary<
+                        SortFilter, Dictionary<int, List<ShopItem>>>>>>
             AgentProducts =
                 new ReactiveProperty<Dictionary<
                     Address, Dictionary<
-                        ShopItems.ItemSubTypeFilter,
-                        Dictionary<ShopItems.SortFilter, Dictionary<int, List<ShopItem>>>>>>();
+                        ItemSubTypeFilter,
+                        Dictionary<SortFilter, Dictionary<int, List<ShopItem>>>>>>();
 
         public static readonly ReactiveProperty<IReadOnlyDictionary<
-                ShopItems.ItemSubTypeFilter, Dictionary<
-                    ShopItems.SortFilter, Dictionary<int, List<ShopItem>>>>>
+                ItemSubTypeFilter, Dictionary<
+                    SortFilter, Dictionary<int, List<ShopItem>>>>>
             ItemSubTypeProducts = new ReactiveProperty<IReadOnlyDictionary<
-                ShopItems.ItemSubTypeFilter, Dictionary<
-                    ShopItems.SortFilter, Dictionary<int, List<ShopItem>>>>>();
+                ItemSubTypeFilter, Dictionary<
+                    SortFilter, Dictionary<int, List<ShopItem>>>>>();
 
         public static void Initialize(ShopState state)
         {
@@ -64,8 +66,8 @@ namespace Nekoyume.State
 
                 var filteredAgentProducts = new Dictionary<
                     Address, Dictionary<
-                        ShopItems.ItemSubTypeFilter, Dictionary<
-                            ShopItems.SortFilter, Dictionary<int, List<ShopItem>>>>>();
+                        ItemSubTypeFilter, Dictionary<
+                            SortFilter, Dictionary<int, List<ShopItem>>>>>();
                 foreach (var pair in agentProducts)
                 {
                     filteredAgentProducts.Add(
@@ -86,8 +88,8 @@ namespace Nekoyume.State
         }
 
         private static Dictionary<
-                ShopItems.ItemSubTypeFilter, Dictionary<
-                    ShopItems.SortFilter, Dictionary<int, List<ShopItem>>>>
+                ItemSubTypeFilter, Dictionary<
+                    SortFilter, Dictionary<int, List<ShopItem>>>>
             GetGroupedShopItemsByItemSubTypeFilter(IReadOnlyCollection<ShopItem> shopItems)
         {
             var weapons = new List<ShopItem>();
@@ -172,8 +174,7 @@ namespace Nekoyume.State
         }
 
         private static Dictionary<
-                ShopItems.ItemSubTypeFilter, Dictionary<
-                    ShopItems.SortFilter, Dictionary<int, List<ShopItem>>>>
+                ItemSubTypeFilter, Dictionary<SortFilter, Dictionary<int, List<ShopItem>>>>
             GetGroupedShopItemsByItemSubTypeFilter(
                 IReadOnlyCollection<ShopItem> all,
                 IReadOnlyCollection<ShopItem> weapons,
@@ -190,41 +191,41 @@ namespace Nekoyume.State
                 IReadOnlyCollection<ShopItem> titles)
         {
             return new Dictionary<
-                ShopItems.ItemSubTypeFilter, Dictionary<
-                    ShopItems.SortFilter, Dictionary<int, List<ShopItem>>>>
+                ItemSubTypeFilter, Dictionary<
+                    SortFilter, Dictionary<int, List<ShopItem>>>>
             {
-                {ShopItems.ItemSubTypeFilter.All, GetGroupedShopItemsBySortFilter(all)},
-                {ShopItems.ItemSubTypeFilter.Weapon, GetGroupedShopItemsBySortFilter(weapons)},
-                {ShopItems.ItemSubTypeFilter.Armor, GetGroupedShopItemsBySortFilter(armors)},
-                {ShopItems.ItemSubTypeFilter.Belt, GetGroupedShopItemsBySortFilter(belts)},
-                {ShopItems.ItemSubTypeFilter.Necklace, GetGroupedShopItemsBySortFilter(necklaces)},
-                {ShopItems.ItemSubTypeFilter.Ring, GetGroupedShopItemsBySortFilter(rings)},
-                {ShopItems.ItemSubTypeFilter.Food, GetGroupedShopItemsBySortFilter(foods)},
-                {ShopItems.ItemSubTypeFilter.FullCostume, GetGroupedShopItemsBySortFilter(fullCostumes)},
-                {ShopItems.ItemSubTypeFilter.HairCostume, GetGroupedShopItemsBySortFilter(hairCostumes)},
-                {ShopItems.ItemSubTypeFilter.EarCostume, GetGroupedShopItemsBySortFilter(earCostumes)},
-                {ShopItems.ItemSubTypeFilter.EyeCostume, GetGroupedShopItemsBySortFilter(eyeCostumes)},
-                {ShopItems.ItemSubTypeFilter.TailCostume, GetGroupedShopItemsBySortFilter(tailCostumes)},
-                {ShopItems.ItemSubTypeFilter.Title, GetGroupedShopItemsBySortFilter(titles)},
+                {ItemSubTypeFilter.All, GetGroupedShopItemsBySortFilter(all)},
+                {ItemSubTypeFilter.Weapon, GetGroupedShopItemsBySortFilter(weapons)},
+                {ItemSubTypeFilter.Armor, GetGroupedShopItemsBySortFilter(armors)},
+                {ItemSubTypeFilter.Belt, GetGroupedShopItemsBySortFilter(belts)},
+                {ItemSubTypeFilter.Necklace, GetGroupedShopItemsBySortFilter(necklaces)},
+                {ItemSubTypeFilter.Ring, GetGroupedShopItemsBySortFilter(rings)},
+                {ItemSubTypeFilter.Food, GetGroupedShopItemsBySortFilter(foods)},
+                {ItemSubTypeFilter.FullCostume, GetGroupedShopItemsBySortFilter(fullCostumes)},
+                {ItemSubTypeFilter.HairCostume, GetGroupedShopItemsBySortFilter(hairCostumes)},
+                {ItemSubTypeFilter.EarCostume, GetGroupedShopItemsBySortFilter(earCostumes)},
+                {ItemSubTypeFilter.EyeCostume, GetGroupedShopItemsBySortFilter(eyeCostumes)},
+                {ItemSubTypeFilter.TailCostume, GetGroupedShopItemsBySortFilter(tailCostumes)},
+                {ItemSubTypeFilter.Title, GetGroupedShopItemsBySortFilter(titles)},
             };
         }
 
-        private static Dictionary<ShopItems.SortFilter, Dictionary<int, List<ShopItem>>>
+        private static Dictionary<SortFilter, Dictionary<int, List<ShopItem>>>
             GetGroupedShopItemsBySortFilter(IReadOnlyCollection<ShopItem> shopItems)
         {
 
-            return new Dictionary<ShopItems.SortFilter, Dictionary<int, List<ShopItem>>>
+            return new Dictionary<SortFilter, Dictionary<int, List<ShopItem>>>
             {
                 {
-                    ShopItems.SortFilter.Class,
+                    SortFilter.Class,
                     GetGroupedShopItemsByPage(GetSortedShopItems(shopItems, SortType.Grade))
                 },
                 {
-                    ShopItems.SortFilter.CP,
+                    SortFilter.CP,
                     GetGroupedShopItemsByPage(GetSortedShopItems(shopItems, SortType.Cp))
                 },
                 {
-                    ShopItems.SortFilter.Price,
+                    SortFilter.Price,
                     GetGroupedShopItemsByPage(shopItems
                         .OrderByDescending(shopItem => shopItem.Price)
                         .ToList())
