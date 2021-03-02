@@ -74,6 +74,30 @@
             Assert.Equal(deserializedBackup1, deserialized);
         }
 
+        [Theory]
+        [InlineData(0, false)]
+        [InlineData(10, true)]
+        public void SerializeWithExpiredBlockIndex(long expiredBlockIndex, bool contain)
+        {
+            var equipmentRow = TableSheets.EquipmentItemSheet.First;
+            var equipment = new Equipment(equipmentRow, Guid.NewGuid(), 0);
+            var shopItem = new ShopItem(
+                new PrivateKey().ToAddress(),
+                new PrivateKey().ToAddress(),
+                Guid.NewGuid(),
+                new FungibleAssetValue(Currency, 100, 0),
+                expiredBlockIndex,
+                equipment);
+            Assert.Null(shopItem.Costume);
+            Assert.NotNull(shopItem.ItemUsable);
+            Dictionary serialized = (Dictionary)shopItem.Serialize();
+
+            Assert.Equal(contain, serialized.ContainsKey("ebi"));
+
+            var deserialized = new ShopItem(serialized);
+            Assert.Equal(shopItem, deserialized);
+        }
+
         private static ShopItem GetShopItemWithFirstCostume()
         {
             var costumeRow = TableSheets.CostumeItemSheet.First;

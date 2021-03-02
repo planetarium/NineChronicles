@@ -20,6 +20,7 @@ namespace Nekoyume.Model.Item
         public readonly FungibleAssetValue Price;
         public readonly ItemUsable ItemUsable;
         public readonly Costume Costume;
+        public readonly long ExpiredBlockIndex;
 
         public ShopItem(Address sellerAgentAddress,
             Address sellerAvatarAddress,
@@ -49,6 +50,33 @@ namespace Nekoyume.Model.Item
             Costume = costume;
         }
 
+        public ShopItem(
+            Address sellerAgentAddress,
+            Address sellerAvatarAddress,
+            Guid productId,
+            FungibleAssetValue price,
+            long expiredBlockIndex,
+            INonFungibleItem nonFungibleItem
+        )
+        {
+            SellerAgentAddress = sellerAgentAddress;
+            SellerAvatarAddress = sellerAvatarAddress;
+            ProductId = productId;
+            Price = price;
+            ExpiredBlockIndex = expiredBlockIndex;
+            switch (nonFungibleItem)
+            {
+                case ItemUsable itemUsable:
+                    ItemUsable = itemUsable;
+                    Costume = null;
+                    break;
+                case Costume costume:
+                    ItemUsable = null;
+                    Costume = costume;
+                    break;
+            }
+        }
+
         public ShopItem(Dictionary serialized)
         {
             SellerAgentAddress = serialized["sellerAgentAddress"].ToAddress();
@@ -61,6 +89,10 @@ namespace Nekoyume.Model.Item
             Costume = serialized.ContainsKey("costume")
                 ? (Costume) ItemFactory.Deserialize((Dictionary) serialized["costume"])
                 : null;
+            if (serialized.ContainsKey("ebi"))
+            {
+                ExpiredBlockIndex = serialized["ebi"].ToLong();
+            }
         }
         
         protected ShopItem(SerializationInfo info, StreamingContext _)
@@ -96,6 +128,11 @@ namespace Nekoyume.Model.Item
             if (Costume != null)
             {
                 innerDictionary.Add((Text) "costume", Costume.Serialize());
+            }
+
+            if (ExpiredBlockIndex != 0)
+            {
+                innerDictionary.Add((Text) "ebi", ExpiredBlockIndex.Serialize());
             }
 
             return new Dictionary(innerDictionary);
