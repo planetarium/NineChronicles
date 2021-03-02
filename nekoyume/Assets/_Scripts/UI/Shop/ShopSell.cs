@@ -19,11 +19,7 @@ namespace Nekoyume.UI
     {
         private const int NPCId = 300000;
         private static readonly Vector2 NPCPosition = new Vector2(2.76f, -1.72f);
-
         private NPC _npc;
-
-        [SerializeField]
-        private CanvasGroup canvasGroup = null;
 
         [SerializeField]
         private Module.Inventory inventory = null;
@@ -36,9 +32,6 @@ namespace Nekoyume.UI
 
         [SerializeField]
         private SpeechBubble speechBubble = null;
-
-        [SerializeField]
-        private RefreshButton refreshButton = null;
 
         private Model.Shop SharedModel { get; set; }
 
@@ -103,9 +96,6 @@ namespace Nekoyume.UI
 
         protected override void OnCompleteOfShowAnimationInternal()
         {
-            refreshButton.gameObject.SetActive(true);
-            canvasGroup.interactable = true;
-
             var go = Game.Game.instance.Stage.npcFactory.Create(
                 NPCId,
                 NPCPosition,
