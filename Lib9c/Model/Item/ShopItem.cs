@@ -27,7 +27,7 @@ namespace Nekoyume.Model.Item
             Address sellerAvatarAddress,
             Guid productId,
             FungibleAssetValue price,
-            ItemUsable itemUsable) : this(sellerAgentAddress, sellerAgentAddress, productId, price, 0, itemUsable)
+            ItemUsable itemUsable) : this(sellerAgentAddress, sellerAvatarAddress, productId, price, 0, itemUsable)
         {
         }
 
