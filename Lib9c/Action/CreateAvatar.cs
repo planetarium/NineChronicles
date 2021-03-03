@@ -89,7 +89,7 @@ namespace Nekoyume.Action
             var sw = new Stopwatch();
             sw.Start();
             var started = DateTimeOffset.UtcNow;
-            Log.Debug("{AddressesHex}CreateAvatar exec started", addressesHex);
+            Log.Verbose("{AddressesHex}CreateAvatar exec started", addressesHex);
             AgentState existingAgentState = states.GetAgentState(ctx.Signer);
             var agentState = existingAgentState ?? new AgentState(ctx.Signer);
             var avatarState = states.GetAvatarState(avatarAddress);
@@ -111,10 +111,10 @@ namespace Nekoyume.Action
                     $"{addressesHex}Aborted as the signer already has an avatar at index #{index}.");
             }
             sw.Stop();
-            Log.Debug("{AddressesHex}CreateAvatar Get AgentAvatarStates: {Elapsed}", addressesHex, sw.Elapsed);
+            Log.Verbose("{AddressesHex}CreateAvatar Get AgentAvatarStates: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();
 
-            Log.Debug("{AddressesHex}Execute CreateAvatar; player: {AvatarAddress}", addressesHex, avatarAddress);
+            Log.Verbose("{AddressesHex}Execute CreateAvatar; player: {AvatarAddress}", addressesHex, avatarAddress);
 
             agentState.avatarAddresses.Add(index, avatarAddress);
 
@@ -144,9 +144,9 @@ namespace Nekoyume.Action
             avatarState.UpdateQuestRewards(materialItemSheet);
 
             sw.Stop();
-            Log.Debug("{AddressesHex}CreateAvatar CreateAvatarState: {Elapsed}", addressesHex, sw.Elapsed);
+            Log.Verbose("{AddressesHex}CreateAvatar CreateAvatarState: {Elapsed}", addressesHex, sw.Elapsed);
             var ended = DateTimeOffset.UtcNow;
-            Log.Debug("{AddressesHex}CreateAvatar Total Executed Time: {Elapsed}", addressesHex, ended - started);
+            Log.Verbose("{AddressesHex}CreateAvatar Total Executed Time: {Elapsed}", addressesHex, ended - started);
             return states
                 .SetState(ctx.Signer, agentState.Serialize())
                 .SetState(Addresses.Ranking, rankingState.Serialize())

@@ -125,7 +125,7 @@ namespace Nekoyume.Action
             var sw = new Stopwatch();
             sw.Start();
             var started = DateTimeOffset.UtcNow;
-            Log.Debug("{AddressesHex}Combination exec started", addressesHex);
+            Log.Verbose("{AddressesHex}Combination exec started", addressesHex);
 
             if (!states.TryGetAvatarState(ctx.Signer, AvatarAddress, out AvatarState avatarState))
             {
@@ -133,7 +133,7 @@ namespace Nekoyume.Action
             }
 
             sw.Stop();
-            Log.Debug("{AddressesHex}Combination Get AgentAvatarStates: {Elapsed}", addressesHex, sw.Elapsed);
+            Log.Verbose("{AddressesHex}Combination Get AgentAvatarStates: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();
 
             if (!avatarState.worldInformation.IsStageCleared(GameConfig.RequireClearedStageLevel.CombinationEquipmentAction))
@@ -157,7 +157,7 @@ namespace Nekoyume.Action
                     $"{addressesHex}Aborted as the slot state is invalid: {slotState} @ {slotIndex}");
             }
 
-            Log.Debug("{AddressesHex}Execute Combination; player: {Player}", addressesHex, AvatarAddress);
+            Log.Verbose("{AddressesHex}Execute Combination; player: {Player}", addressesHex, AvatarAddress);
             var consumableItemSheet = states.GetSheet<ConsumableItemSheet>();
             var recipeRow = states.GetSheet<ConsumableItemRecipeSheet>().Values.FirstOrDefault(r => r.Id == recipeId);
             if (recipeRow is null)
@@ -184,7 +184,7 @@ namespace Nekoyume.Action
             }
 
             sw.Stop();
-            Log.Debug("{AddressesHex}Combination Remove Materials: {Elapsed}", addressesHex, sw.Elapsed);
+            Log.Verbose("{AddressesHex}Combination Remove Materials: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();
 
             var result = new ResultModel
@@ -208,7 +208,7 @@ namespace Nekoyume.Action
 
             var resultConsumableItemId = recipeRow.ResultConsumableItemId;
             sw.Stop();
-            Log.Debug("{AddressesHex}Combination Get Food id: {Elapsed}", addressesHex, sw.Elapsed);
+            Log.Verbose("{AddressesHex}Combination Get Food id: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();
             result.recipeId = recipeRow.Id;
 
@@ -233,7 +233,7 @@ namespace Nekoyume.Action
             avatarState.Update(mail);
             avatarState.UpdateFromCombination(itemUsable);
             sw.Stop();
-            Log.Debug("{AddressesHex}Combination Update AvatarState: {Elapsed}", addressesHex, sw.Elapsed);
+            Log.Verbose("{AddressesHex}Combination Update AvatarState: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();
 
             var materialSheet = states.GetSheet<MaterialItemSheet>();
@@ -244,9 +244,9 @@ namespace Nekoyume.Action
             states = states.SetState(AvatarAddress, avatarState.Serialize());
             slotState.Update(result, ctx.BlockIndex, requiredBlockIndex);
             sw.Stop();
-            Log.Debug("{AddressesHex}Combination Set AvatarState: {Elapsed}", addressesHex, sw.Elapsed);
+            Log.Verbose("{AddressesHex}Combination Set AvatarState: {Elapsed}", addressesHex, sw.Elapsed);
             var ended = DateTimeOffset.UtcNow;
-            Log.Debug("{AddressesHex}Combination Total Executed Time: {Elapsed}", addressesHex, ended - started);
+            Log.Verbose("{AddressesHex}Combination Total Executed Time: {Elapsed}", addressesHex, ended - started);
             return states
                 .SetState(slotAddress, slotState.Serialize());
         }
