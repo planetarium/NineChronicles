@@ -91,6 +91,7 @@ namespace Lib9c.Tests.Action
                 Math.Max(_tableSheets.StageSheet.First?.Id ?? 1, stageId - 1));
 
             List<Guid> costumes = new List<Guid>();
+            IRandom random = new TestRandom();
             if (avatarLevel >= GameConfig.RequireCharacterLevel.CharacterFullCostumeSlot)
             {
                 var costumeId = _tableSheets
@@ -100,7 +101,7 @@ namespace Lib9c.Tests.Action
                 .Id;
 
                 var costume = (Costume)ItemFactory.CreateItem(
-                    _tableSheets.ItemSheet[costumeId], new TestRandom());
+                    _tableSheets.ItemSheet[costumeId], random);
                 previousAvatarState.inventory.AddItem(costume);
                 costumes.Add(costume.ItemId);
             }
@@ -119,7 +120,7 @@ namespace Lib9c.Tests.Action
 
                 var weapon = ItemFactory.CreateItem(
                     _tableSheets.EquipmentItemSheet[weaponId],
-                    new TestRandom())
+                    random)
                     as Equipment;
                 equipments.Add(weapon.ItemId);
                 previousAvatarState.inventory.AddItem(weapon);
@@ -137,7 +138,7 @@ namespace Lib9c.Tests.Action
 
                 var armor = ItemFactory.CreateItem(
                     _tableSheets.EquipmentItemSheet[armorId],
-                    new TestRandom())
+                    random)
                     as Equipment;
                 equipments.Add(armor.ItemId);
                 previousAvatarState.inventory.AddItem(armor);
@@ -196,6 +197,7 @@ namespace Lib9c.Tests.Action
             Assert.Equal(30, nextAvatarState.mailBox.Count);
             if (contains)
             {
+                //Check for Costume CP.
                 Assert.True(
                     newWeeklyState[_avatarAddress].CombatPoint >
                     CPHelper.GetCP(nextAvatarState, _tableSheets.CharacterSheet)
