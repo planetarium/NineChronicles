@@ -1,4 +1,5 @@
-﻿using mixpanel;
+﻿using System.Collections.Generic;
+using mixpanel;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
@@ -19,28 +20,33 @@ namespace Nekoyume.UI
     {
         private const int NPCId = 300000;
         private static readonly Vector2 NPCPosition = new Vector2(2.76f, -1.72f);
-
         private NPC _npc;
-
-        [SerializeField]
-        private CanvasGroup canvasGroup = null;
-
-        [SerializeField]
-        private Module.Inventory inventory = null;
 
         [SerializeField]
         private ShopBuyItems shopItems = null;
 
-        [SerializeField]
-        private SpeechBubble speechBubble = null;
-
-        [SerializeField]
-        private RefreshButton refreshButton = null;
+        // [SerializeField]
+        // private SpeechBubble speechBubble = null;
 
         private Model.Shop SharedModel { get; set; }
 
+        [SerializeField] private List<ShopItemViewRow> itemViewItems;
+
         protected override void Awake()
         {
+            var ratio = (float)Screen.height / (float)Screen.width;
+            var count = Mathf.RoundToInt(10 * ratio) - 2;
+
+            shopItems.Items.Clear();
+            for (int i = 0; i < itemViewItems.Count; i++)
+            {
+                itemViewItems[i].gameObject.SetActive(i < count);
+                if (i < count)
+                {
+                    shopItems.Items.AddRange(itemViewItems[i].shopItemView);
+                }
+            }
+
             base.Awake();
             SharedModel = new Model.Shop();
             CloseWidget = null;
@@ -50,12 +56,6 @@ namespace Nekoyume.UI
         {
             base.Initialize();
 
-            inventory.SharedModel.SelectedItemView
-                .Subscribe(ShowTooltip)
-                .AddTo(gameObject);
-            inventory.OnDoubleClickItemView
-                .Subscribe(view => ShowActionPopup(view.Model))
-                .AddTo(gameObject);
             shopItems.SharedModel.SelectedItemView
                 .Subscribe(ShowTooltip)
                 .AddTo(gameObject);
@@ -82,8 +82,6 @@ namespace Nekoyume.UI
 
             base.Show(ignoreShowAnimation);
 
-            inventory.SharedModel.State.Value = ItemType.Equipment;
-
             Find<BottomMenu>().Show(
                 UINavigator.NavigationType.Back,
                 SubscribeBackButtonClick,
@@ -99,9 +97,6 @@ namespace Nekoyume.UI
 
         protected override void OnCompleteOfShowAnimationInternal()
         {
-            refreshButton.gameObject.SetActive(true);
-            canvasGroup.interactable = true;
-
             var go = Game.Game.instance.Stage.npcFactory.Create(
                 NPCId,
                 NPCPosition,
@@ -111,7 +106,7 @@ namespace Nekoyume.UI
             _npc.SpineController.Appear();
             go.SetActive(true);
 
-            ShowSpeech("SPEECH_SHOP_GREETING_", CharacterAnimation.Type.Greeting);
+            // ShowSpeech("SPEECH_SHOP_GREETING_", CharacterAnimation.Type.Greeting);
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
@@ -122,26 +117,9 @@ namespace Nekoyume.UI
             _npc?.gameObject.SetActive(false);
         }
 
-        private void ShowTooltip(InventoryItemView view)
-        {
-            var tooltip = Find<ItemInformationTooltip>();
-
-            shopItems.SharedModel.DeselectItemView();
-
-            if (view is null ||
-                view.RectTransform == tooltip.Target)
-            {
-                tooltip.Close();
-                return;
-            }
-
-            tooltip.Show(view.RectTransform, view.Model);
-        }
-
         private void ShowTooltip(ShopItemView view)
         {
             var tooltip = Find<ItemInformationTooltip>();
-            inventory.SharedModel.DeselectItemView();
 
             if (view is null ||
                 view.RectTransform == tooltip.Target)
@@ -282,25 +260,20 @@ namespace Nekoyume.UI
                 string.Format(format, shopItem.ItemBase.Value.GetLocalizedName()));
         }
 
-        private void ShowSpeech(string key,
-            CharacterAnimation.Type type = CharacterAnimation.Type.Emotion)
-        {
-            if (type == CharacterAnimation.Type.Greeting)
-            {
-                _npc.PlayAnimation(NPCAnimation.Type.Greeting_01);
-            }
-            else
-            {
-                _npc.PlayAnimation(NPCAnimation.Type.Emotion_01);
-            }
-
-            speechBubble.SetKey(key);
-            StartCoroutine(speechBubble.CoShowText());
-        }
-
-        private void RefreshAppearAnimation()
-        {
-            refreshButton.PlayAnimation(NPCAnimation.Type.Appear);
-        }
+        // private void ShowSpeech(string key,
+        //     CharacterAnimation.Type type = CharacterAnimation.Type.Emotion)
+        // {
+        //     if (type == CharacterAnimation.Type.Greeting)
+        //     {
+        //         _npc.PlayAnimation(NPCAnimation.Type.Greeting_01);
+        //     }
+        //     else
+        //     {
+        //         _npc.PlayAnimation(NPCAnimation.Type.Emotion_01);
+        //     }
+        //
+        //     speechBubble.SetKey(key);
+        //     StartCoroutine(speechBubble.CoShowText());
+        // }
     }
 }

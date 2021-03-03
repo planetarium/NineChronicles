@@ -72,7 +72,7 @@ namespace Nekoyume.UI.Module
         }
 
         #endregion
-        
+
         public virtual void SetData(TViewModel model)
         {
             if (model is null)
@@ -159,7 +159,7 @@ namespace Nekoyume.UI.Module
         protected override void SetDim(bool isDim)
         {
             base.SetDim(isDim);
-            
+
             enhancementText.color = isDim ? DimmedColor : OriginColor;
             selectionImage.color = isDim ? DimmedColor : OriginColor;
         }

@@ -17,33 +17,33 @@ namespace Nekoyume.UI.Module
 {
     public class ShopBuyItems : MonoBehaviour
     {
-    public const int shopItemsCountOfOnePage = 20;
+        public const int shopItemsCountOfOnePage = 20;
 
-        public List<ShopItemView> items;
+        public List<ShopItemView> Items { get; set; } = new List<ShopItemView>();
 
-        [SerializeField]
-        private TMP_Dropdown itemSubTypeFilter = null;
-
-        [SerializeField]
-        private TMP_Dropdown sortFilter = null;
-
-        [SerializeField]
-        private Button previousPageButton = null;
-
-        [SerializeField]
-        private InteractableSwitchableSelectable previousPageButtonInteractableSwitch = null;
-
-        [SerializeField]
-        private Button nextPageButton = null;
-
-        [SerializeField]
-        private InteractableSwitchableSelectable nextPageButtonInteractableSwitch = null;
-
-        [SerializeField]
-        private TouchHandler refreshButtonTouchHandler = null;
-
-        [SerializeField]
-        private RefreshButton refreshButton = null;
+        // [SerializeField]
+        // private TMP_Dropdown itemSubTypeFilter = null;
+        //
+        // [SerializeField]
+        // private TMP_Dropdown sortFilter = null;
+        //
+        // [SerializeField]
+        // private Button previousPageButton = null;
+        //
+        // [SerializeField]
+        // private InteractableSwitchableSelectable previousPageButtonInteractableSwitch = null;
+        //
+        // [SerializeField]
+        // private Button nextPageButton = null;
+        //
+        // [SerializeField]
+        // private InteractableSwitchableSelectable nextPageButtonInteractableSwitch = null;
+        //
+        // [SerializeField]
+        // private TouchHandler refreshButtonTouchHandler = null;
+        //
+        // [SerializeField]
+        // private RefreshButton refreshButton = null;
 
         private int _filteredPageIndex;
         private readonly List<IDisposable> _disposablesAtOnEnable = new List<IDisposable>();
@@ -64,96 +64,97 @@ namespace Nekoyume.UI.Module
             SharedModel.ItemSubTypeProducts
                 .Subscribe(_ => UpdateView())
                 .AddTo(gameObject);
-
-            itemSubTypeFilter.AddOptions(new[]
-                {
-                    ItemSubTypeFilter.All,
-                    ItemSubTypeFilter.Weapon,
-                    ItemSubTypeFilter.Armor,
-                    ItemSubTypeFilter.Belt,
-                    ItemSubTypeFilter.Necklace,
-                    ItemSubTypeFilter.Ring,
-                    ItemSubTypeFilter.Food,
-                    ItemSubTypeFilter.FullCostume,
-                    ItemSubTypeFilter.HairCostume,
-                    ItemSubTypeFilter.EarCostume,
-                    ItemSubTypeFilter.EyeCostume,
-                    ItemSubTypeFilter.TailCostume,
-                    ItemSubTypeFilter.Title,
-                }
-                .Select(type => type == ItemSubTypeFilter.All
-                    ? L10nManager.Localize("ALL")
-                    : ((ItemSubType) Enum.Parse(typeof(ItemSubType), type.ToString()))
-                    .GetLocalizedString())
-                .ToList());
-            itemSubTypeFilter.onValueChanged.AsObservable()
-                .Select(index =>
-                {
-                    try
-                    {
-                        return (ItemSubTypeFilter) index;
-                    }
-                    catch
-                    {
-                        return ItemSubTypeFilter.All;
-                    }
-                })
-                .Subscribe(filter =>
-                {
-                    SharedModel.itemSubTypeFilter = filter;
-                    OnItemSubTypeFilterChanged(SharedModel.itemSubTypeFilter);
-                })
-                .AddTo(gameObject);
-
-            sortFilter.AddOptions(new[]
-                {
-                    SortFilter.Class,
-                    SortFilter.CP,
-                    SortFilter.Price,
-                }
-                .Select(type => L10nManager.Localize($"UI_{type.ToString().ToUpper()}"))
-                .ToList());
-            sortFilter.onValueChanged.AsObservable()
-                .Select(index =>
-                {
-                    try
-                    {
-                        return (SortFilter) index;
-                    }
-                    catch
-                    {
-                        return SortFilter.Class;
-                    }
-                })
-                .Subscribe(filter =>
-                {
-                    SharedModel.sortFilter = filter;
-                    OnSortFilterChanged(SharedModel.sortFilter);
-                })
-                .AddTo(gameObject);
-
-            previousPageButton.OnClickAsObservable()
-                .Subscribe(OnPreviousPageButtonClick)
-                .AddTo(gameObject);
-            nextPageButton.OnClickAsObservable()
-                .Subscribe(OnNextPageButtonClick)
-                .AddTo(gameObject);
-
-            refreshButtonTouchHandler.OnClick.Subscribe(_ =>
-            {
-                AudioController.PlayClick();
-                // NOTE: 아래 코드를 실행해도 아무런 변화가 없습니다.
-                // 새로고침을 새로 정의한 후에 수정합니다.
-                // SharedModel.ResetItemSubTypeProducts();
-            }).AddTo(gameObject);
+            //
+            // itemSubTypeFilter.AddOptions(new[]
+            //     {
+            //         ItemSubTypeFilter.All,
+            //         ItemSubTypeFilter.Weapon,
+            //         ItemSubTypeFilter.Armor,
+            //         ItemSubTypeFilter.Belt,
+            //         ItemSubTypeFilter.Necklace,
+            //         ItemSubTypeFilter.Ring,
+            //         ItemSubTypeFilter.Food,
+            //         ItemSubTypeFilter.FullCostume,
+            //         ItemSubTypeFilter.HairCostume,
+            //         ItemSubTypeFilter.EarCostume,
+            //         ItemSubTypeFilter.EyeCostume,
+            //         ItemSubTypeFilter.TailCostume,
+            //         ItemSubTypeFilter.Title,
+            //     }
+            //     .Select(type => type == ItemSubTypeFilter.All
+            //         ? L10nManager.Localize("ALL")
+            //         : ((ItemSubType) Enum.Parse(typeof(ItemSubType), type.ToString()))
+            //         .GetLocalizedString())
+            //     .ToList());
+            //
+            // itemSubTypeFilter.onValueChanged.AsObservable()
+            //     .Select(index =>
+            //     {
+            //         try
+            //         {
+            //             return (ItemSubTypeFilter) index;
+            //         }
+            //         catch
+            //         {
+            //             return ItemSubTypeFilter.All;
+            //         }
+            //     })
+            //     .Subscribe(filter =>
+            //     {
+            //         SharedModel.itemSubTypeFilter = filter;
+            //         OnItemSubTypeFilterChanged();
+            //     })
+            //     .AddTo(gameObject);
+            //
+            // sortFilter.AddOptions(new[]
+            //     {
+            //         SortFilter.Class,
+            //         SortFilter.CP,
+            //         SortFilter.Price,
+            //     }
+            //     .Select(type => L10nManager.Localize($"UI_{type.ToString().ToUpper()}"))
+            //     .ToList());
+            // sortFilter.onValueChanged.AsObservable()
+            //     .Select(index =>
+            //     {
+            //         try
+            //         {
+            //             return (SortFilter) index;
+            //         }
+            //         catch
+            //         {
+            //             return SortFilter.Class;
+            //         }
+            //     })
+            //     .Subscribe(filter =>
+            //     {
+            //         SharedModel.sortFilter = filter;
+            //         OnSortFilterChanged();
+            //     })
+            //     .AddTo(gameObject);
+            //
+            // previousPageButton.OnClickAsObservable()
+            //     .Subscribe(OnPreviousPageButtonClick)
+            //     .AddTo(gameObject);
+            // nextPageButton.OnClickAsObservable()
+            //     .Subscribe(OnNextPageButtonClick)
+            //     .AddTo(gameObject);
+            //
+            // refreshButtonTouchHandler.OnClick.Subscribe(_ =>
+            // {
+            //     AudioController.PlayClick();
+            //     // NOTE: 아래 코드를 실행해도 아무런 변화가 없습니다.
+            //     // 새로고침을 새로 정의한 후에 수정합니다.
+            //     // SharedModel.ResetItemSubTypeProducts();
+            // }).AddTo(gameObject);
         }
 
         private void OnEnable()
         {
-            itemSubTypeFilter.SetValueWithoutNotify(0);
-            SharedModel.itemSubTypeFilter = 0;
-            sortFilter.SetValueWithoutNotify(0);
-            SharedModel.sortFilter = 0;
+            // itemSubTypeFilter.SetValueWithoutNotify(0);
+            // SharedModel.itemSubTypeFilter = 0;
+            // sortFilter.SetValueWithoutNotify(0);
+            // SharedModel.sortFilter = 0;
 
             ReactiveShopState.AgentProducts
                 .Subscribe(SharedModel.ResetAgentProducts)
@@ -179,7 +180,7 @@ namespace Nekoyume.UI.Module
 
         private void UpdateView()
         {
-            foreach (var item in items)
+            foreach (var item in Items)
             {
                 item.Clear();
             }
@@ -191,8 +192,8 @@ namespace Nekoyume.UI.Module
 
             _filteredPageIndex = 0;
             UpdateViewWithFilteredPageIndex(SharedModel.ItemSubTypeProducts.Value);
-            refreshButton.gameObject.SetActive(true);
-            refreshButton.PlayAnimation(NPCAnimation.Type.Appear);
+            // refreshButton.gameObject.SetActive(true);
+            // refreshButton.PlayAnimation(NPCAnimation.Type.Appear);
         }
 
         private void UpdateViewWithFilteredPageIndex(
@@ -203,28 +204,28 @@ namespace Nekoyume.UI.Module
                 ? models[_filteredPageIndex]
                 : new List<ShopItem>());
 
-            if (_filteredPageIndex > 0)
-            {
-                previousPageButtonInteractableSwitch.SetSwitchOn();
-            }
-            else
-            {
-                previousPageButtonInteractableSwitch.SetSwitchOff();
-            }
-
-            if (_filteredPageIndex + 1 < count)
-            {
-                nextPageButtonInteractableSwitch.SetSwitchOn();
-            }
-            else
-            {
-                nextPageButtonInteractableSwitch.SetSwitchOff();
-            }
+            // if (_filteredPageIndex > 0)
+            // {
+            //     previousPageButtonInteractableSwitch.SetSwitchOn();
+            // }
+            // else
+            // {
+            //     previousPageButtonInteractableSwitch.SetSwitchOff();
+            // }
+            //
+            // if (_filteredPageIndex + 1 < count)
+            // {
+            //     nextPageButtonInteractableSwitch.SetSwitchOn();
+            // }
+            // else
+            // {
+            //     nextPageButtonInteractableSwitch.SetSwitchOff();
+            // }
         }
 
         private void UpdateViewWithItems(IEnumerable<ShopItem> viewModels)
         {
-            using (var itemViews = items.GetEnumerator())
+            using (var itemViews = Items.GetEnumerator())
             using (var itemModels = viewModels.GetEnumerator())
             {
                 while (itemViews.MoveNext())
@@ -245,13 +246,13 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        private void OnItemSubTypeFilterChanged(ItemSubTypeFilter filter)
+        private void OnItemSubTypeFilterChanged()
         {
             SharedModel.ResetAgentProducts();
             SharedModel.ResetItemSubTypeProducts();
         }
 
-        private void OnSortFilterChanged(SortFilter filter)
+        private void OnSortFilterChanged()
         {
             SharedModel.ResetAgentProducts();
             SharedModel.ResetItemSubTypeProducts();
@@ -259,21 +260,21 @@ namespace Nekoyume.UI.Module
 
         private void OnPreviousPageButtonClick(Unit unit)
         {
-            if (_filteredPageIndex == 0)
-            {
-                previousPageButtonInteractableSwitch.SetSwitchOff();
-                return;
-            }
-
-            _filteredPageIndex--;
-            nextPageButtonInteractableSwitch.SetSwitchOn();
-
-            if (_filteredPageIndex == 0)
-            {
-                previousPageButtonInteractableSwitch.SetSwitchOff();
-            }
-
-            UpdateViewWithFilteredPageIndex(SharedModel.ItemSubTypeProducts.Value);
+            // if (_filteredPageIndex == 0)
+            // {
+            //     previousPageButtonInteractableSwitch.SetSwitchOff();
+            //     return;
+            // }
+            //
+            // _filteredPageIndex--;
+            // nextPageButtonInteractableSwitch.SetSwitchOn();
+            //
+            // if (_filteredPageIndex == 0)
+            // {
+            //     previousPageButtonInteractableSwitch.SetSwitchOff();
+            // }
+            //
+            // UpdateViewWithFilteredPageIndex(SharedModel.ItemSubTypeProducts.Value);
         }
 
         private void OnNextPageButtonClick(Unit unit)
@@ -289,21 +290,21 @@ namespace Nekoyume.UI.Module
                     break;
             }
 
-            if (_filteredPageIndex + 1 >= count)
-            {
-                nextPageButtonInteractableSwitch.SetSwitchOff();
-                return;
-            }
-
-            _filteredPageIndex++;
-            previousPageButtonInteractableSwitch.SetSwitchOn();
-
-            if (_filteredPageIndex + 1 == count)
-            {
-                nextPageButtonInteractableSwitch.SetSwitchOff();
-            }
-
-            UpdateViewWithFilteredPageIndex(SharedModel.ItemSubTypeProducts.Value);
+            // if (_filteredPageIndex + 1 >= count)
+            // {
+            //     nextPageButtonInteractableSwitch.SetSwitchOff();
+            //     return;
+            // }
+            //
+            // _filteredPageIndex++;
+            // previousPageButtonInteractableSwitch.SetSwitchOn();
+            //
+            // if (_filteredPageIndex + 1 == count)
+            // {
+            //     nextPageButtonInteractableSwitch.SetSwitchOff();
+            // }
+            //
+            // UpdateViewWithFilteredPageIndex(SharedModel.ItemSubTypeProducts.Value);
         }
     }
 }
