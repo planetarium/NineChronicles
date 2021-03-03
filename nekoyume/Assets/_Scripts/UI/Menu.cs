@@ -171,6 +171,7 @@ namespace Nekoyume.UI
             btnShop.Update();
             btnRanking.Update();
             btnMimisbrunnr.Update();
+            SetActiveActionPointLoading(false);
 
             var addressHax = ReactiveAvatarState.Address.Value.ToHex();
             var firstOpenCombinationKey = string.Format(FirstOpenCombinationKeyFormat, addressHax);
