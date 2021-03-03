@@ -11,12 +11,30 @@ namespace Nekoyume.Model.Item
     [Serializable]
     public class Costume : ItemBase, INonFungibleItem, IEquippableItem
     {
+        public const string RequiredBlockIndexKey = "rbi";
         // FIXME: Do not use anymore please!
         public bool equipped = false;
         public string SpineResourcePath { get; }
 
         public Guid ItemId { get; }
+
+        public long RequiredBlockIndex
+        {
+            get => _requiredBlockIndex;
+            private set
+            {
+                if (value <= RequiredBlockIndex)
+                {
+                    throw new ArgumentOutOfRangeException(
+                        $"{nameof(RequiredBlockIndex)} must be greater than {RequiredBlockIndex}, but {value}");
+                }
+                _requiredBlockIndex = value;
+            }
+        }
+
         public bool Equipped => equipped;
+
+        private long _requiredBlockIndex;
 
         public Costume(CostumeItemSheet.Row data, Guid itemId) : base(data)
         {
@@ -36,6 +54,11 @@ namespace Nekoyume.Model.Item
             }
 
             ItemId = serialized["item_id"].ToGuid();
+
+            if (serialized.ContainsKey(RequiredBlockIndexKey))
+            {
+                RequiredBlockIndex = serialized[RequiredBlockIndexKey].ToLong();
+            }
         }
         
         protected Costume(SerializationInfo info, StreamingContext _)
@@ -43,14 +66,21 @@ namespace Nekoyume.Model.Item
         {
         }
 
-        public override IValue Serialize() =>
+        public override IValue Serialize()
+        {
 #pragma warning disable LAA1002
-            new Dictionary(new Dictionary<IKey, IValue>
+            var innerDictionary = new Dictionary<IKey, IValue>
             {
                 [(Text) "equipped"] = equipped.Serialize(),
                 [(Text) "spine_resource_path"] = SpineResourcePath.Serialize(),
-                [(Text) "item_id"] = ItemId.Serialize(),
-            }.Union((Dictionary) base.Serialize()));
+                [(Text) "item_id"] = ItemId.Serialize()
+            };
+            if (RequiredBlockIndex > 0)
+            {
+                innerDictionary.Add((Text) RequiredBlockIndexKey, RequiredBlockIndex.Serialize());
+            }
+            return new Dictionary(innerDictionary.Union((Dictionary) base.Serialize()));
+        }
 #pragma warning restore LAA1002
 
         protected bool Equals(Costume other)
@@ -85,6 +115,12 @@ namespace Nekoyume.Model.Item
         public void Unequip()
         {
             equipped = false;
+        }
+
+        public void Lock(long requiredBlockIndex)
+        {
+            Unequip();
+            RequiredBlockIndex = requiredBlockIndex;
         }
     }
 }
