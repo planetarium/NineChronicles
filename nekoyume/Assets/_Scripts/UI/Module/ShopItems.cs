@@ -17,7 +17,7 @@ namespace Nekoyume.UI.Module
 {
     public class ShopItems : MonoBehaviour
     {
-        public const int shopItemsCountOfOnePage = 20;
+
 
         public List<ShopItemView> items;
 

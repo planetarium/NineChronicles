@@ -68,7 +68,7 @@ namespace Nekoyume.State
         /// 샵 상태를 할당한다.
         /// </summary>
         /// <param name="state"></param>
-        public void SetShopState(ShopState state)
+        public void SetShopState(ShopState state, int shopItemsCountOfOnePage = 20)
         {
             if (state is null)
             {
@@ -77,7 +77,7 @@ namespace Nekoyume.State
             }
 
             ShopState = state;
-            ReactiveShopState.Initialize(ShopState);
+            ReactiveShopState.Initialize(ShopState, shopItemsCountOfOnePage);
         }
 
         public void SetWeeklyArenaState(WeeklyArenaState state)

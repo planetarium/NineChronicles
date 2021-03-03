@@ -9,7 +9,6 @@ using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using UniRx;
 using ShopItem = Nekoyume.Model.Item.ShopItem;
-using ShopItems = Nekoyume.UI.Module.ShopItems;
 
 namespace Nekoyume.State
 {
@@ -41,12 +40,16 @@ namespace Nekoyume.State
                 ItemSubTypeFilter, Dictionary<
                     SortFilter, Dictionary<int, List<ShopItem>>>>>();
 
-        public static void Initialize(ShopState state)
+        private static int ShopItemsCountOfOnePage = 20;
+
+        public static void Initialize(ShopState state, int shopItemsCountOfOnePage)
         {
             if (state is null)
             {
                 return;
             }
+
+            ShopItemsCountOfOnePage = shopItemsCountOfOnePage;
 
             var products = state.Products.Values.ToList();
 
@@ -278,7 +281,7 @@ namespace Nekoyume.State
             var pageIndex = 0;
             while (remainCount > 0)
             {
-                var getCount = Math.Min(ShopItems.shopItemsCountOfOnePage, remainCount);
+                var getCount = Math.Min(ShopItemsCountOfOnePage, remainCount);
                 var getList = shopItems.GetRange(listIndex, getCount);
                 result.Add(pageIndex, getList);
                 remainCount -= getCount;

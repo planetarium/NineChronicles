@@ -97,7 +97,7 @@ namespace Nekoyume.UI.Module
             Model.Enhancement.SubscribeTo(enhancementText).AddTo(_disposablesAtSetData);
             Model.EnhancementEnabled.SubscribeTo(enhancementText).AddTo(_disposablesAtSetData);
             Model.Dimmed.Subscribe(SetDim).AddTo(_disposablesAtSetData);
-            Model.Selected.SubscribeTo(selectionImage).AddTo(_disposablesAtSetData);
+            Model.Selected.SubscribeTo(selectionImage.gameObject).AddTo(_disposablesAtSetData);
 
             UpdateView();
         }

@@ -27,18 +27,10 @@ namespace Nekoyume.UI.Module
         // [SerializeField]
         // private TMP_Dropdown sortFilter = null;
         //
-        // [SerializeField]
-        // private Button previousPageButton = null;
-        //
-        // [SerializeField]
-        // private InteractableSwitchableSelectable previousPageButtonInteractableSwitch = null;
-        //
-        // [SerializeField]
-        // private Button nextPageButton = null;
-        //
-        // [SerializeField]
-        // private InteractableSwitchableSelectable nextPageButtonInteractableSwitch = null;
-        //
+        [SerializeField] private Button previousPageButton = null;
+        [SerializeField] private Button nextPageButton = null;
+        [SerializeField] private TextMeshProUGUI pageText = null;
+
         // [SerializeField]
         // private TouchHandler refreshButtonTouchHandler = null;
         //
@@ -133,12 +125,12 @@ namespace Nekoyume.UI.Module
             //     })
             //     .AddTo(gameObject);
             //
-            // previousPageButton.OnClickAsObservable()
-            //     .Subscribe(OnPreviousPageButtonClick)
-            //     .AddTo(gameObject);
-            // nextPageButton.OnClickAsObservable()
-            //     .Subscribe(OnNextPageButtonClick)
-            //     .AddTo(gameObject);
+            previousPageButton.OnClickAsObservable()
+                .Subscribe(OnPreviousPageButtonClick)
+                .AddTo(gameObject);
+            nextPageButton.OnClickAsObservable()
+                .Subscribe(OnNextPageButtonClick)
+                .AddTo(gameObject);
             //
             // refreshButtonTouchHandler.OnClick.Subscribe(_ =>
             // {
@@ -152,9 +144,9 @@ namespace Nekoyume.UI.Module
         private void OnEnable()
         {
             // itemSubTypeFilter.SetValueWithoutNotify(0);
-            // SharedModel.itemSubTypeFilter = 0;
+            SharedModel.itemSubTypeFilter = 0;
             // sortFilter.SetValueWithoutNotify(0);
-            // SharedModel.sortFilter = 0;
+            SharedModel.sortFilter = 0;
 
             ReactiveShopState.AgentProducts
                 .Subscribe(SharedModel.ResetAgentProducts)
@@ -204,23 +196,9 @@ namespace Nekoyume.UI.Module
                 ? models[_filteredPageIndex]
                 : new List<ShopItem>());
 
-            // if (_filteredPageIndex > 0)
-            // {
-            //     previousPageButtonInteractableSwitch.SetSwitchOn();
-            // }
-            // else
-            // {
-            //     previousPageButtonInteractableSwitch.SetSwitchOff();
-            // }
-            //
-            // if (_filteredPageIndex + 1 < count)
-            // {
-            //     nextPageButtonInteractableSwitch.SetSwitchOn();
-            // }
-            // else
-            // {
-            //     nextPageButtonInteractableSwitch.SetSwitchOff();
-            // }
+            previousPageButton.gameObject.SetActive(_filteredPageIndex > 0);
+            nextPageButton.gameObject.SetActive(_filteredPageIndex + 1 < count);
+            pageText.text = (_filteredPageIndex + 1).ToString();
         }
 
         private void UpdateViewWithItems(IEnumerable<ShopItem> viewModels)
@@ -260,51 +238,42 @@ namespace Nekoyume.UI.Module
 
         private void OnPreviousPageButtonClick(Unit unit)
         {
-            // if (_filteredPageIndex == 0)
-            // {
-            //     previousPageButtonInteractableSwitch.SetSwitchOff();
-            //     return;
-            // }
-            //
-            // _filteredPageIndex--;
-            // nextPageButtonInteractableSwitch.SetSwitchOn();
-            //
-            // if (_filteredPageIndex == 0)
-            // {
-            //     previousPageButtonInteractableSwitch.SetSwitchOff();
-            // }
-            //
-            // UpdateViewWithFilteredPageIndex(SharedModel.ItemSubTypeProducts.Value);
+            if (_filteredPageIndex == 0)
+            {
+                previousPageButton.gameObject.SetActive(false);
+                return;
+            }
+
+            _filteredPageIndex--;
+            nextPageButton.gameObject.SetActive(true);
+
+            if (_filteredPageIndex == 0)
+            {
+                previousPageButton.gameObject.SetActive(false);
+            }
+
+            UpdateViewWithFilteredPageIndex(SharedModel.ItemSubTypeProducts.Value);
         }
 
         private void OnNextPageButtonClick(Unit unit)
         {
-            var count = 0;
-            switch (SharedModel.State.Value)
+            var count = SharedModel.ItemSubTypeProducts.Value.Count;
+
+            if (_filteredPageIndex + 1 >= count)
             {
-                case Shop.StateType.Buy:
-                    count = SharedModel.ItemSubTypeProducts.Value.Count;
-                    break;
-                case Shop.StateType.Sell:
-                    count = SharedModel.AgentProducts.Value.Count;
-                    break;
+                nextPageButton.gameObject.SetActive(false);
+                return;
             }
 
-            // if (_filteredPageIndex + 1 >= count)
-            // {
-            //     nextPageButtonInteractableSwitch.SetSwitchOff();
-            //     return;
-            // }
-            //
-            // _filteredPageIndex++;
-            // previousPageButtonInteractableSwitch.SetSwitchOn();
-            //
-            // if (_filteredPageIndex + 1 == count)
-            // {
-            //     nextPageButtonInteractableSwitch.SetSwitchOff();
-            // }
-            //
-            // UpdateViewWithFilteredPageIndex(SharedModel.ItemSubTypeProducts.Value);
+            _filteredPageIndex++;
+            previousPageButton.gameObject.SetActive(true);
+
+            if (_filteredPageIndex + 1 == count)
+            {
+                nextPageButton.gameObject.SetActive(false);
+            }
+
+            UpdateViewWithFilteredPageIndex(SharedModel.ItemSubTypeProducts.Value);
         }
     }
 }
