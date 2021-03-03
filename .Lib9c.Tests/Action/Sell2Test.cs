@@ -105,6 +105,7 @@
             var price = new FungibleAssetValue(currencyState, 100, 0);
 
             var productCount = 0;
+            var random = new TestRandom();
             foreach (var nonFungibleItem in items)
             {
                 var sellAction = new Sell2
@@ -120,7 +121,7 @@
                     PreviousStates = previousStates,
                     Rehearsal = false,
                     Signer = _agentAddress,
-                    Random = new TestRandom(),
+                    Random = random,
                 });
 
                 productCount++;
@@ -237,6 +238,7 @@
                 BlockIndex = 0,
                 PreviousStates = _initialState,
                 Signer = _agentAddress,
+                Random = new TestRandom(),
             }));
         }
 
@@ -264,6 +266,7 @@
                 BlockIndex = 0,
                 PreviousStates = _initialState,
                 Signer = _agentAddress,
+                Random = new TestRandom(),
             }));
         }
     }

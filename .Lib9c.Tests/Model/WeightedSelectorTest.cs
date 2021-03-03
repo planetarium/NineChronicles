@@ -3,11 +3,19 @@ namespace Lib9c.Tests.Model
     using System.Collections.Generic;
     using System.Linq;
     using Lib9c.Tests.Action;
+    using Libplanet.Action;
     using Nekoyume.Battle;
     using Xunit;
 
     public class WeightedSelectorTest
     {
+        private readonly IRandom _random;
+
+        public WeightedSelectorTest()
+        {
+            _random = new TestRandom();
+        }
+
         [Fact]
         public void SelectV2Single()
         {
@@ -148,9 +156,9 @@ namespace Lib9c.Tests.Model
             Assert.Equal(new[] { 1, 2, 3, 4 }, ordered);
         }
 
-        private static WeightedSelector<int> GetSelector()
+        private WeightedSelector<int> GetSelector()
         {
-            var selector = new WeightedSelector<int>(new TestRandom());
+            var selector = new WeightedSelector<int>(_random);
             selector.Add(1, 0.48m);
             selector.Add(2, 0.38m);
             selector.Add(3, 0.09m);

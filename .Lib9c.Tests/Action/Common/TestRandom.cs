@@ -4,7 +4,7 @@ namespace Lib9c.Tests.Action
 
     public class TestRandom : IRandom
     {
-        private readonly System.Random _random = new System.Random();
+        private readonly System.Random _random = new System.Random(Seed: 0);
 
         public int Next()
         {

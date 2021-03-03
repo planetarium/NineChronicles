@@ -201,6 +201,7 @@ namespace Lib9c.Tests.Action
                 BlockIndex = 0,
                 PreviousStates = _initialState,
                 Signer = _agentAddress,
+                Random = new TestRandom(),
             }));
         }
 
@@ -228,6 +229,7 @@ namespace Lib9c.Tests.Action
                 BlockIndex = 0,
                 PreviousStates = _initialState,
                 Signer = _agentAddress,
+                Random = new TestRandom(),
             }));
         }
     }
