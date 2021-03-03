@@ -18,51 +18,9 @@ using Material = Nekoyume.Model.Item.Material;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("combination_consumable4")]
-    public class CombinationConsumable : GameAction
+    [ActionType("combination_consumable")]
+    public class CombinationConsumable4 : GameAction
     {
-        [Serializable]
-        public class ResultModel : AttachmentActionResult
-        {
-            public Dictionary<Material, int> materials;
-            public Guid id;
-            public BigInteger gold;
-            public int actionPoint;
-            public int recipeId;
-            public int? subRecipeId;
-            public ItemType itemType;
-
-            protected override string TypeId => "combination.result-model";
-
-            public ResultModel()
-            {
-            }
-
-            public ResultModel(Dictionary serialized) : base(serialized)
-            {
-                materials = serialized["materials"].ToDictionary_Material_int();
-                id = serialized["id"].ToGuid();
-                gold = serialized["gold"].ToBigInteger();
-                actionPoint = serialized["actionPoint"].ToInteger();
-                recipeId = serialized["recipeId"].ToInteger();
-                subRecipeId = serialized["subRecipeId"].ToNullableInteger();
-                itemType = itemUsable.ItemType;
-            }
-
-            public override IValue Serialize() =>
-#pragma warning disable LAA1002
-                new Dictionary(new Dictionary<IKey, IValue>
-                {
-                    [(Text) "materials"] = materials.Serialize(),
-                    [(Text) "id"] = id.Serialize(),
-                    [(Text) "gold"] = gold.Serialize(),
-                    [(Text) "actionPoint"] = actionPoint.Serialize(),
-                    [(Text) "recipeId"] = recipeId.Serialize(),
-                    [(Text) "subRecipeId"] = subRecipeId.Serialize(),
-                }.Union((Dictionary) base.Serialize()));
-#pragma warning restore LAA1002
-        }
-
         public Address AvatarAddress;
         public int recipeId;
         public int slotIndex;
@@ -87,7 +45,7 @@ namespace Nekoyume.Action
             }
         }
 
-        public CombinationConsumable()
+        public CombinationConsumable4()
         {
         }
 
@@ -119,13 +77,13 @@ namespace Nekoyume.Action
                     .SetState(ctx.Signer, MarkChanged)
                     .SetState(slotAddress, MarkChanged);
             }
-
+            
             var addressesHex = GetSignerAndOtherAddressesHex(context, AvatarAddress);
 
             var sw = new Stopwatch();
             sw.Start();
             var started = DateTimeOffset.UtcNow;
-            Log.Verbose("{AddressesHex}Combination exec started.", addressesHex);
+            Log.Verbose("{AddressesHex}Combination exec started", addressesHex);
 
             if (!states.TryGetAvatarState(ctx.Signer, AvatarAddress, out AvatarState avatarState))
             {
@@ -230,7 +188,7 @@ namespace Nekoyume.Action
                 requiredBlockIndex
             );
             result.id = mail.id;
-            avatarState.UpdateV4(mail, context.BlockIndex);
+            avatarState.Update(mail);
             avatarState.UpdateFromCombination(itemUsable);
             sw.Stop();
             Log.Verbose("{AddressesHex}Combination Update AvatarState: {Elapsed}", addressesHex, sw.Elapsed);
