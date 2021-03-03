@@ -2,22 +2,21 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
+using System.Numerics;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Assets;
 using Nekoyume.Model.Item;
-using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
 using Serilog;
 
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("sell4")]
-    public class Sell : GameAction
+    [ActionType("sell")]
+    public class Sell4 : GameAction
     {
-        public const long ExpiredBlockIndex = 16000;
         public Address sellerAvatarAddress;
         public Guid itemId;
         public FungibleAssetValue price;
@@ -52,7 +51,7 @@ namespace Nekoyume.Action
             var sw = new Stopwatch();
             sw.Start();
             var started = DateTimeOffset.UtcNow;
-            Log.Verbose("{AddressesHex}Sell exec started", addressesHex);
+            Log.Debug("{AddressesHex}Sell exec started", addressesHex);
 
 
             if (price.Sign < 0)
@@ -65,7 +64,7 @@ namespace Nekoyume.Action
                 throw new FailedLoadStateException($"{addressesHex}Aborted as the avatar state of the signer was failed to load.");
             }
             sw.Stop();
-            Log.Verbose("{AddressesHex}Sell Get AgentAvatarStates: {Elapsed}", addressesHex, sw.Elapsed);
+            Log.Debug("{AddressesHex}Sell Get AgentAvatarStates: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();
 
             if (!avatarState.worldInformation.IsStageCleared(GameConfig.RequireClearedStageLevel.ActionsInShop))
@@ -74,61 +73,48 @@ namespace Nekoyume.Action
                 throw new NotEnoughClearedStageLevelException(addressesHex, GameConfig.RequireClearedStageLevel.ActionsInShop, current);
             }
 
-            Log.Verbose("{AddressesHex}Sell IsStageCleared: {Elapsed}", addressesHex, sw.Elapsed);
+            Log.Debug("{AddressesHex}Sell IsStageCleared: {Elapsed}", addressesHex, sw.Elapsed);
 
             sw.Restart();
-
             if (!states.TryGetState(ShopState.Address, out Bencodex.Types.Dictionary shopStateDict))
             {
                 throw new FailedLoadStateException($"{addressesHex}Aborted as the shop state was failed to load.");
             }
 
-            Log.Verbose("{AddressesHex}Sell Get ShopState: {Elapsed}", addressesHex, sw.Elapsed);
+            Log.Debug("{AddressesHex}Sell Get ShopState: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();
 
-            Log.Verbose("{AddressesHex}Execute Sell; seller: {SellerAvatarAddress}", addressesHex, sellerAvatarAddress);
+            Log.Debug("{AddressesHex}Execute Sell; seller: {SellerAvatarAddress}", addressesHex, sellerAvatarAddress);
 
-            var productId = context.Random.GenerateRandomGuid();
-            long expiredBlockIndex = context.BlockIndex + ExpiredBlockIndex;
-            ShopItem shopItem;
-
-            void CheckRequiredBlockIndex(ItemUsable itemUsable)
-            {
-                if (itemUsable.RequiredBlockIndex > context.BlockIndex)
-                {
-                    throw new RequiredBlockIndexException($"{addressesHex}Aborted as the itemUsable to enhance ({itemId}) is not available yet; it will be available at the block #{itemUsable.RequiredBlockIndex}.");
-                }
-            }
-
-            ShopItem GetShopItemFromInventory(INonFungibleItem nonFungibleItem)
-            {
-                return new ShopItem(ctx.Signer, sellerAvatarAddress, productId, price, expiredBlockIndex, nonFungibleItem);
-            }
-
-            // Select an item to sell from the inventory and adjust the quantity.
-            if (avatarState.inventory.TryGetNonFungibleItem<Equipment>(itemId, out var equipment))
-            {
-                CheckRequiredBlockIndex(equipment);
-                equipment.Unequip();
-                equipment.Update(expiredBlockIndex);
-                shopItem = GetShopItemFromInventory(equipment);
-            }
-            else if (avatarState.inventory.TryGetNonFungibleItem<Consumable>(itemId, out var consumable))
-            {
-                CheckRequiredBlockIndex(consumable);
-                consumable.Update(expiredBlockIndex);
-                shopItem = GetShopItemFromInventory(consumable);
-            }
-            else if (avatarState.inventory.TryGetNonFungibleItem<Costume>(itemId, out var costume))
-            {
-                costume.Lock(expiredBlockIndex);
-                shopItem = GetShopItemFromInventory(costume);
-            }
-            else
+            // 인벤토리에서 판매할 아이템을 선택하고 수량을 조절한다.
+            if (!avatarState.inventory.TryGetNonFungibleItem(itemId, out ItemUsable nonFungibleItem))
             {
                 throw new ItemDoesNotExistException(
-                    $"{addressesHex}Aborted as the NonFungibleItem ({itemId}) was failed to load from avatar's inventory.");
+                    $"{addressesHex}Aborted as the NonFungibleItem ({itemId}) was failed to load from avatar's inventory."
+                );
             }
+
+            if (nonFungibleItem.RequiredBlockIndex > context.BlockIndex)
+            {
+                throw new RequiredBlockIndexException(
+                    $"{addressesHex}Aborted as the equipment to enhance ({itemId}) is not available yet; it will be available at the block #{nonFungibleItem.RequiredBlockIndex}."
+                );
+            }
+
+            avatarState.inventory.RemoveNonFungibleItem(nonFungibleItem);
+            if (nonFungibleItem is Equipment equipment)
+            {
+                equipment.equipped = false;
+            }
+
+            var productId = context.Random.GenerateRandomGuid();
+
+            var shopItem = new ShopItem(
+                ctx.Signer,
+                sellerAvatarAddress,
+                productId,
+                price,
+                nonFungibleItem);
 
             IValue shopItemSerialized = shopItem.Serialize();
             IKey productIdSerialized = (IKey)productId.Serialize();
@@ -138,32 +124,22 @@ namespace Nekoyume.Action
             shopStateDict = shopStateDict.SetItem("products", products);
 
             sw.Stop();
-            Log.Verbose("{AddressesHex}Sell Get Register Item: {Elapsed}", addressesHex, sw.Elapsed);
+            Log.Debug("{AddressesHex}Sell Get Register Item: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();
 
             avatarState.updatedAt = ctx.BlockIndex;
             avatarState.blockIndex = ctx.BlockIndex;
 
-            var result = new SellCancellation.Result
-            {
-                shopItem = shopItem,
-                itemUsable = shopItem.ItemUsable,
-                costume = shopItem.Costume
-            };
-            var mail = new SellCancelMail(result, ctx.BlockIndex, ctx.Random.GenerateRandomGuid(), expiredBlockIndex);
-            result.id = mail.id;
-            avatarState.UpdateV3(mail);
-
             states = states.SetState(sellerAvatarAddress, avatarState.Serialize());
             sw.Stop();
-            Log.Verbose("{AddressesHex}Sell Set AvatarState: {Elapsed}", addressesHex, sw.Elapsed);
+            Log.Debug("{AddressesHex}Sell Set AvatarState: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();
 
             states = states.SetState(ShopState.Address, shopStateDict);
             sw.Stop();
             var ended = DateTimeOffset.UtcNow;
-            Log.Verbose("{AddressesHex}Sell Set ShopState: {Elapsed}", addressesHex, sw.Elapsed);
-            Log.Verbose("{AddressesHex}Sell Total Executed Time: {Elapsed}", addressesHex, ended - started);
+            Log.Debug("{AddressesHex}Sell Set ShopState: {Elapsed}", addressesHex, sw.Elapsed);
+            Log.Debug("{AddressesHex}Sell Total Executed Time: {Elapsed}", addressesHex, ended - started);
 
             return states;
         }
