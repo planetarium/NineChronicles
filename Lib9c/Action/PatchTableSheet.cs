@@ -34,7 +34,7 @@ namespace Nekoyume.Action
             var sheets = states.GetState(sheetAddress);
             var value = sheets is null ? string.Empty : sheets.ToDotnetString();
 
-            Log.Debug(
+            Log.Verbose(
                 "{AddressesHex}{TableName} was patched\n" +
                 "before:\n" +
                 "{Value}\n" +
