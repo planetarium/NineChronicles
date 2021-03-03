@@ -21,7 +21,21 @@ namespace Nekoyume.Model.Item
         public readonly FungibleAssetValue Price;
         public readonly ItemUsable ItemUsable;
         public readonly Costume Costume;
-        public readonly long ExpiredBlockIndex;
+        private long _expiredBlockIndex;
+
+        public long ExpiredBlockIndex
+        {
+            get => _expiredBlockIndex;
+            private set
+            {
+                if (value < 0)
+                {
+                    throw new ArgumentOutOfRangeException($"{nameof(ExpiredBlockIndex)} must be 0 or more, but {value}");
+                }
+
+                _expiredBlockIndex = value;
+            }
+        }
 
         public ShopItem(Address sellerAgentAddress,
             Address sellerAvatarAddress,
@@ -52,10 +66,6 @@ namespace Nekoyume.Model.Item
             SellerAvatarAddress = sellerAvatarAddress;
             ProductId = productId;
             Price = price;
-            if (expiredBlockIndex < 0)
-            {
-                throw new ArgumentOutOfRangeException($"{nameof(ExpiredBlockIndex)} must be 0 or more, but {expiredBlockIndex}");
-            }
             ExpiredBlockIndex = expiredBlockIndex;
             switch (nonFungibleItem)
             {

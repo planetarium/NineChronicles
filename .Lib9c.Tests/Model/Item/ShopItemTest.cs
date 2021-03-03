@@ -112,6 +112,23 @@
                 equipment));
         }
 
+        [Fact]
+        public void DeserializeThrowArgumentOurOfRangeException()
+        {
+            var equipmentRow = TableSheets.EquipmentItemSheet.First;
+            var equipment = new Equipment(equipmentRow, Guid.NewGuid(), 0);
+            var shopItem = new ShopItem(
+                new PrivateKey().ToAddress(),
+                new PrivateKey().ToAddress(),
+                Guid.NewGuid(),
+                new FungibleAssetValue(Currency, 100, 0),
+                0,
+                equipment);
+            Dictionary serialized = (Dictionary)shopItem.Serialize();
+            serialized = serialized.SetItem(ShopItem.ExpiredBlockIndexKey, "-1");
+            Assert.Throws<ArgumentOutOfRangeException>(() => new ShopItem(serialized));
+        }
+
         private static ShopItem GetShopItemWithFirstCostume()
         {
             var costumeRow = TableSheets.CostumeItemSheet.First;
