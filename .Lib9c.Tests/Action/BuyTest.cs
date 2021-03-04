@@ -88,13 +88,14 @@ namespace Lib9c.Tests.Action
             var equipment = ItemFactory.CreateItemUsable(
                 _tableSheets.EquipmentItemSheet.First,
                 Guid.NewGuid(),
-                0);
+                100);
             var shopState = new ShopState();
             shopState.Register(new ShopItem(
                 _sellerAgentAddress,
                 _sellerAvatarAddress,
                 Guid.NewGuid(),
                 new FungibleAssetValue(_goldCurrencyState.Currency, 100, 0),
+                100,
                 equipment));
 
             _initialState = _initialState
@@ -108,9 +109,11 @@ namespace Lib9c.Tests.Action
         }
 
         [Theory]
-        [InlineData(ItemType.Equipment, "F9168C5E-CEB2-4faa-B6BF-329BF39FA1E4")]
-        [InlineData(ItemType.Costume, "936DA01F-9ABD-4d9d-80C7-02AF85C822A8")]
-        public void Execute(ItemType itemType, string guid)
+        [InlineData(ItemType.Equipment, "F9168C5E-CEB2-4faa-B6BF-329BF39FA1E4", Sell.ExpiredBlockIndex, true)]
+        [InlineData(ItemType.Costume, "936DA01F-9ABD-4d9d-80C7-02AF85C822A8", Sell.ExpiredBlockIndex, true)]
+        [InlineData(ItemType.Equipment, "F9168C5E-CEB2-4faa-B6BF-329BF39FA1E4", 0, false)]
+        [InlineData(ItemType.Costume, "936DA01F-9ABD-4d9d-80C7-02AF85C822A8", 0, false)]
+        public void Execute(ItemType itemType, string guid, long requiredBlockIndex, bool contain)
         {
             var sellerAvatarState = _initialState.GetAvatarState(_sellerAvatarAddress);
             var buyerAvatarState = _initialState.GetAvatarState(_buyerAvatarAddress);
@@ -121,17 +124,21 @@ namespace Lib9c.Tests.Action
                 var itemUsable = ItemFactory.CreateItemUsable(
                     _tableSheets.EquipmentItemSheet.First,
                     itemId,
-                    Sell.ExpiredBlockIndex);
+                    requiredBlockIndex);
                 nonFungibleItem = itemUsable;
             }
             else
             {
                 var costume = ItemFactory.CreateCostume(_tableSheets.CostumeItemSheet.First, itemId);
-                costume.Update(Sell.ExpiredBlockIndex);
+                costume.Update(requiredBlockIndex);
                 nonFungibleItem = costume;
             }
 
-            sellerAvatarState.inventory.AddItem((ItemBase)nonFungibleItem);
+            // Case for backward compatibility.
+            if (contain)
+            {
+                sellerAvatarState.inventory.AddItem((ItemBase)nonFungibleItem);
+            }
 
             var result = new DailyReward.DailyRewardResult()
             {
@@ -152,13 +159,13 @@ namespace Lib9c.Tests.Action
                 _sellerAvatarAddress,
                 Guid.NewGuid(),
                 new FungibleAssetValue(_goldCurrencyState.Currency, 100, 0),
-                Sell.ExpiredBlockIndex,
+                requiredBlockIndex,
                 nonFungibleItem);
             shopState.Register(shopItem);
 
             Assert.Equal(2, shopState.Products.Count);
-            Assert.Equal(Sell.ExpiredBlockIndex, nonFungibleItem.RequiredBlockIndex);
-            Assert.True(sellerAvatarState.inventory.TryGetNonFungibleItem(itemId, out _));
+            Assert.Equal(requiredBlockIndex, nonFungibleItem.RequiredBlockIndex);
+            Assert.Equal(contain, sellerAvatarState.inventory.TryGetNonFungibleItem(itemId, out _));
 
             IAccountStateDelta prevState = _initialState
                 .SetState(_sellerAvatarAddress, sellerAvatarState.Serialize())
@@ -328,6 +335,34 @@ namespace Lib9c.Tests.Action
             };
 
             Assert.Throws<InsufficientBalanceException>(() => action.Execute(new ActionContext()
+                {
+                    BlockIndex = 0,
+                    PreviousStates = _initialState,
+                    Random = new TestRandom(),
+                    Signer = _buyerAgentAddress,
+                })
+            );
+        }
+
+        [Fact]
+        public void ExecuteThrowItemDoesNotExistExceptionBySellerAvatar()
+        {
+            IAccountStateDelta previousStates = _initialState;
+            ShopState shopState = previousStates.GetShopState();
+            Assert.NotNull(shopState.Products);
+            var (productId, shopItem) = shopState.Products.First();
+            Assert.True(shopItem.ExpiredBlockIndex > 0);
+            Assert.True(shopItem.ItemUsable.RequiredBlockIndex > 0);
+
+            var action = new Buy
+            {
+                buyerAvatarAddress = _buyerAvatarAddress,
+                productId = productId,
+                sellerAgentAddress = _sellerAgentAddress,
+                sellerAvatarAddress = _sellerAvatarAddress,
+            };
+
+            Assert.Throws<ItemDoesNotExistException>(() => action.Execute(new ActionContext()
                 {
                     BlockIndex = 0,
                     PreviousStates = _initialState,

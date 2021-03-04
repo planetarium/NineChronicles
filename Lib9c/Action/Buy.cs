@@ -227,9 +227,12 @@ namespace Nekoyume.Action
             INonFungibleItem nonFungibleItem = (INonFungibleItem) shopItem.ItemUsable ?? shopItem.Costume;
             if (!sellerAvatarState.inventory.RemoveNonFungibleItem(nonFungibleItem))
             {
-                throw new ItemDoesNotExistException(
-                    $"{addressesHex}Aborted as the {nameof(nonFungibleItem)} ({nonFungibleItem.ItemId}) was failed to get from the sellerAvatar."
-                );
+                if (nonFungibleItem.RequiredBlockIndex != 0)
+                {
+                    throw new ItemDoesNotExistException(
+                        $"{addressesHex}Aborted as the {nameof(nonFungibleItem)} ({nonFungibleItem.ItemId}) was failed to get from the sellerAvatar."
+                    );
+                }
             }
             nonFungibleItem.Update(context.BlockIndex);
 
