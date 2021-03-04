@@ -492,7 +492,10 @@ namespace Nekoyume.BlockChain
                 var nonFungibleItem = result.itemUsable ?? (INonFungibleItem) result.costume;
                 var itemBase = result.itemUsable ?? (ItemBase) result.costume;
 
-                LocalLayerModifier.RemoveItem(avatarAddress, nonFungibleItem.ItemId);
+                if (nonFungibleItem.RequiredBlockIndex != 0)
+                {
+                    LocalLayerModifier.RemoveItem(avatarAddress, nonFungibleItem.ItemId);
+                }
                 LocalLayerModifier.AddNewAttachmentMail(avatarAddress, result.id);
                 var format = L10nManager.Localize("NOTIFICATION_SELL_CANCEL_COMPLETE");
                 UI.Notification.Push(MailType.Auction, string.Format(format, itemBase.GetLocalizedName()));
