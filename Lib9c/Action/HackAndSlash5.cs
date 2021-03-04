@@ -7,6 +7,7 @@ using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Battle;
+using Nekoyume.Model;
 using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
@@ -15,10 +16,10 @@ using Serilog;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("hack_and_slash5")]
-    public class HackAndSlash : GameAction
+    [ActionType("hack_and_slash")]
+    public class HackAndSlash5 : GameAction
     {
-        public List<Guid> costumes;
+        public List<int> costumes;
         public List<Guid> equipments;
         public List<Guid> foods;
         public int worldId;
@@ -45,7 +46,7 @@ namespace Nekoyume.Action
         protected override void LoadPlainValueInternal(
             IImmutableDictionary<string, IValue> plainValue)
         {
-            costumes =  ((List) plainValue["costumes"]).Select(e => e.ToGuid()).ToList();
+            costumes = ((List) plainValue["costumes"]).Select(e => e.ToInteger()).ToList();
             equipments = ((List) plainValue["equipments"]).Select(e => e.ToGuid()).ToList();
             foods = ((List) plainValue["foods"]).Select(e => e.ToGuid()).ToList();
             worldId = plainValue["worldId"].ToInteger();
@@ -66,15 +67,20 @@ namespace Nekoyume.Action
                 states = states.SetState(WeeklyArenaAddress, MarkChanged);
                 return states.SetState(ctx.Signer, MarkChanged);
             }
-
+            
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
 
+            Log.Warning("{AddressesHex}hack_and_slash is deprecated. Please use hack_and_slash2", addressesHex);
             var sw = new Stopwatch();
             sw.Start();
             var started = DateTimeOffset.UtcNow;
             Log.Verbose("{AddressesHex}HAS exec started", addressesHex);
 
-            if (!states.TryGetAvatarState(ctx.Signer, avatarAddress, out AvatarState avatarState))
+            if (!states.TryGetAgentAvatarStates(
+                ctx.Signer,
+                avatarAddress,
+                out AgentState agentState,
+                out AvatarState avatarState))
             {
                 throw new FailedLoadStateException($"{addressesHex}Aborted as the avatar state of the signer was failed to load.");
             }
@@ -138,11 +144,8 @@ namespace Nekoyume.Action
                 );
             }
 
-            avatarState.ValidateEquipmentsV2(equipments, context.BlockIndex);
+            avatarState.ValidateEquipments(equipments, context.BlockIndex);
             avatarState.ValidateConsumable(foods, context.BlockIndex);
-            avatarState.ValidateCostume(costumes);
-
-            var costumeStatSheet = states.GetSheet<CostumeStatSheet>();
 
             sw.Restart();
             if (avatarState.actionPoint < stageRow.CostAP)
@@ -155,8 +158,9 @@ namespace Nekoyume.Action
 
             avatarState.actionPoint -= stageRow.CostAP;
 
-            var items = equipments.Concat(costumes);
-            avatarState.EquipItems(items);
+            avatarState.EquipCostumes(new HashSet<int>(costumes));
+
+            avatarState.EquipEquipments(equipments);
             sw.Stop();
             Log.Verbose("{AddressesHex}HAS Unequip items: {Elapsed}", addressesHex, sw.Elapsed);
 
@@ -168,17 +172,16 @@ namespace Nekoyume.Action
                 foods,
                 worldId,
                 stageId,
-                states.GetStageSimulatorSheets(),
-                costumeStatSheet,
-                2);
+                states.GetStageSimulatorSheets()
+            );
 
             sw.Stop();
             Log.Verbose("{AddressesHex}HAS Initialize Simulator: {Elapsed}", addressesHex, sw.Elapsed);
 
             sw.Restart();
-            simulator.SimulateV2();
+            simulator.Simulate();
             sw.Stop();
-            Log.Verbose("{AddressesHex}HAS Simulator.SimulateV2(): {Elapsed}", addressesHex, sw.Elapsed);
+            Log.Verbose("{AddressesHex}HAS Simulator.Simulate(): {Elapsed}", addressesHex, sw.Elapsed);
 
             Log.Verbose(
                 "{AddressesHex}Execute HackAndSlash({AvatarAddress}); worldId: {WorldId}, stageId: {StageId}, result: {Result}, " +
@@ -215,7 +218,6 @@ namespace Nekoyume.Action
             avatarState.UpdateQuestRewards(materialSheet);
 
             avatarState.updatedAt = ctx.BlockIndex;
-            avatarState.mailBox.CleanUpV3(ctx.BlockIndex);
             states = states.SetState(avatarAddress, avatarState.Serialize());
 
             sw.Stop();
@@ -253,12 +255,12 @@ namespace Nekoyume.Action
                     if (weekly.ContainsKey(avatarAddress))
                     {
                         var info = weekly[avatarAddress];
-                        info.Update(avatarState, characterSheet, costumeStatSheet);
+                        info.Update(avatarState, characterSheet);
                         weekly.Update(info);
                     }
                     else
                     {
-                        weekly.SetV2(avatarState, characterSheet, costumeStatSheet);
+                        weekly.Set(avatarState, characterSheet);
                     }
 
                     sw.Stop();
@@ -277,7 +279,7 @@ namespace Nekoyume.Action
 
             var ended = DateTimeOffset.UtcNow;
             Log.Verbose("{AddressesHex}HAS Total Executed Time: {Elapsed}", addressesHex, ended - started);
-            return states;
+            return states.SetState(ctx.Signer, agentState.Serialize());
         }
     }
 }
