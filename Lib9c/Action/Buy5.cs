@@ -17,76 +17,15 @@ using Serilog;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("buy5")]
-    public class Buy : GameAction
+    [ActionType("buy")]
+    public class Buy5 : GameAction
     {
-        public const int TaxRate = 8;
-
         public Address buyerAvatarAddress;
         public Address sellerAgentAddress;
         public Address sellerAvatarAddress;
         public Guid productId;
-        public BuyerResult buyerResult;
-        public SellerResult sellerResult;
-
-        [Serializable]
-        public class BuyerResult : AttachmentActionResult
-        {
-            public ShopItem shopItem;
-            public Guid id;
-
-            protected override string TypeId => "buy.buyerResult";
-
-            public BuyerResult()
-            {
-            }
-
-            public BuyerResult(Bencodex.Types.Dictionary serialized) : base(serialized)
-            {
-                shopItem = new ShopItem((Bencodex.Types.Dictionary) serialized["shopItem"]);
-                id = serialized["id"].ToGuid();
-            }
-
-            public override IValue Serialize() =>
-#pragma warning disable LAA1002
-                new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
-                {
-                    [(Text) "shopItem"] = shopItem.Serialize(),
-                    [(Text) "id"] = id.Serialize(),
-                }.Union((Bencodex.Types.Dictionary) base.Serialize()));
-#pragma warning restore LAA1002
-        }
-
-        [Serializable]
-        public class SellerResult : AttachmentActionResult
-        {
-            public ShopItem shopItem;
-            public Guid id;
-            public FungibleAssetValue gold;
-
-            protected override string TypeId => "buy.sellerResult";
-
-            public SellerResult()
-            {
-            }
-
-            public SellerResult(Bencodex.Types.Dictionary serialized) : base(serialized)
-            {
-                shopItem = new ShopItem((Bencodex.Types.Dictionary) serialized["shopItem"]);
-                id = serialized["id"].ToGuid();
-                gold = serialized["gold"].ToFungibleAssetValue();
-            }
-
-            public override IValue Serialize() =>
-#pragma warning disable LAA1002
-                new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
-                {
-                    [(Text) "shopItem"] = shopItem.Serialize(),
-                    [(Text) "id"] = id.Serialize(),
-                    [(Text) "gold"] = gold.Serialize(),
-                }.Union((Bencodex.Types.Dictionary) base.Serialize()));
-#pragma warning restore LAA1002
-        }
+        public Buy.BuyerResult buyerResult;
+        public Buy.SellerResult sellerResult;
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal => new Dictionary<string, IValue>
         {
@@ -121,7 +60,7 @@ namespace Nekoyume.Action
                         GoldCurrencyState.Address);
                 return states.SetState(ShopState.Address, MarkChanged);
             }
-
+            
             var addressesHex = GetSignerAndOtherAddressesHex(context, buyerAvatarAddress, sellerAvatarAddress);
 
             if (ctx.Signer.Equals(sellerAgentAddress))
@@ -132,7 +71,7 @@ namespace Nekoyume.Action
             var sw = new Stopwatch();
             sw.Start();
             var started = DateTimeOffset.UtcNow;
-            Log.Verbose("{AddressesHex}Buy exec started", addressesHex);
+            Log.Verbose("{Addresses}Buy exec started", addressesHex);
 
             if (!states.TryGetAvatarState(ctx.Signer, buyerAvatarAddress, out var buyerAvatarState))
             {
@@ -145,7 +84,10 @@ namespace Nekoyume.Action
             if (!buyerAvatarState.worldInformation.IsStageCleared(GameConfig.RequireClearedStageLevel.ActionsInShop))
             {
                 buyerAvatarState.worldInformation.TryGetLastClearedStageId(out var current);
-                throw new NotEnoughClearedStageLevelException(addressesHex, GameConfig.RequireClearedStageLevel.ActionsInShop, current);
+                throw new NotEnoughClearedStageLevelException(
+                    addressesHex,
+                    GameConfig.RequireClearedStageLevel.ActionsInShop,
+                    current);
             }
 
             if (!states.TryGetState(ShopState.Address, out Bencodex.Types.Dictionary shopStateDict))
@@ -205,7 +147,7 @@ namespace Nekoyume.Action
                 );
             }
 
-            var tax = shopItem.Price.DivRem(100, out _) * TaxRate;
+            var tax = shopItem.Price.DivRem(100, out _) * Buy.TaxRate;
             var taxedPrice = shopItem.Price - tax;
 
             // 세금을 송금한다.
@@ -224,47 +166,28 @@ namespace Nekoyume.Action
             products = (Dictionary)products.Remove(productIdSerialized);
             shopStateDict = shopStateDict.SetItem("products", products);
 
-            INonFungibleItem nonFungibleItem = (INonFungibleItem) shopItem.ItemUsable ?? shopItem.Costume;
-            if (!sellerAvatarState.inventory.RemoveNonFungibleItem(nonFungibleItem))
-            {
-                throw new ItemDoesNotExistException(
-                    $"{addressesHex}Aborted as the {nameof(nonFungibleItem)} ({nonFungibleItem.ItemId}) was failed to get from the sellerAvatar."
-                );
-            }
-            nonFungibleItem.Update(context.BlockIndex);
-
             // 구매자, 판매자에게 결과 메일 전송
-            buyerResult = new BuyerResult
+            buyerResult = new Buy.BuyerResult
             {
                 shopItem = shopItem,
-                itemUsable = shopItem.ItemUsable,
-                costume = shopItem.Costume
+                itemUsable = shopItem.ItemUsable
             };
             var buyerMail = new BuyerMail(buyerResult, ctx.BlockIndex, ctx.Random.GenerateRandomGuid(), ctx.BlockIndex);
             buyerResult.id = buyerMail.id;
 
-            sellerResult = new SellerResult
+            sellerResult = new Buy.SellerResult
             {
                 shopItem = shopItem,
                 itemUsable = shopItem.ItemUsable,
-                costume = shopItem.Costume,
                 gold = taxedPrice
             };
             var sellerMail = new SellerMail(sellerResult, ctx.BlockIndex, ctx.Random.GenerateRandomGuid(),
                 ctx.BlockIndex);
             sellerResult.id = sellerMail.id;
 
-            buyerAvatarState.UpdateV4(buyerMail, context.BlockIndex);
-            if (buyerResult.itemUsable != null)
-            {
-                buyerAvatarState.UpdateFromAddItem(buyerResult.itemUsable, false);
-            }
-
-            if (buyerResult.costume != null)
-            {
-                buyerAvatarState.UpdateFromAddCostume(buyerResult.costume, false);
-            }
-            sellerAvatarState.UpdateV4(sellerMail, context.BlockIndex);
+            buyerAvatarState.Update(buyerMail);
+            buyerAvatarState.UpdateFromAddItem(buyerResult.itemUsable, false);
+            sellerAvatarState.Update(sellerMail);
 
             // 퀘스트 업데이트
             buyerAvatarState.questList.UpdateTradeQuest(TradeType.Buy, shopItem.Price);

@@ -1,6 +1,7 @@
 namespace Lib9c.Tests.Action
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using Libplanet;
     using Libplanet.Action;
@@ -10,6 +11,7 @@ namespace Lib9c.Tests.Action
     using Nekoyume.Action;
     using Nekoyume.Model;
     using Nekoyume.Model.Item;
+    using Nekoyume.Model.Mail;
     using Nekoyume.Model.State;
     using Serilog;
     using Xunit;
@@ -105,14 +107,63 @@ namespace Lib9c.Tests.Action
                 .MintAsset(_buyerAgentAddress, _goldCurrencyState.Currency * 100);
         }
 
-        [Fact]
-        public void Execute()
+        [Theory]
+        [InlineData(ItemType.Equipment, "F9168C5E-CEB2-4faa-B6BF-329BF39FA1E4")]
+        [InlineData(ItemType.Costume, "936DA01F-9ABD-4d9d-80C7-02AF85C822A8")]
+        public void Execute(ItemType itemType, string guid)
         {
-            var shopState = _initialState.GetShopState();
-            Assert.NotEmpty(shopState.Products);
+            var sellerAvatarState = _initialState.GetAvatarState(_sellerAvatarAddress);
+            var buyerAvatarState = _initialState.GetAvatarState(_buyerAvatarAddress);
+            INonFungibleItem nonFungibleItem;
+            Guid itemId = new Guid(guid);
+            if (itemType == ItemType.Equipment)
+            {
+                var itemUsable = ItemFactory.CreateItemUsable(
+                    _tableSheets.EquipmentItemSheet.First,
+                    itemId,
+                    Sell.ExpiredBlockIndex);
+                nonFungibleItem = itemUsable;
+            }
+            else
+            {
+                var costume = ItemFactory.CreateCostume(_tableSheets.CostumeItemSheet.First, itemId);
+                costume.Update(Sell.ExpiredBlockIndex);
+                nonFungibleItem = costume;
+            }
 
-            var (productId, shopItem) = shopState.Products.FirstOrDefault();
-            Assert.NotNull(shopItem);
+            sellerAvatarState.inventory.AddItem((ItemBase)nonFungibleItem);
+
+            var result = new DailyReward.DailyRewardResult()
+            {
+                id = default,
+                materials = new Dictionary<Material, int>(),
+            };
+
+            for (var i = 0; i < 100; i++)
+            {
+                var mail = new DailyRewardMail(result, i, default, 0);
+                sellerAvatarState.Update(mail);
+                buyerAvatarState.Update(mail);
+            }
+
+            ShopState shopState = _initialState.GetShopState();
+            var shopItem = new ShopItem(
+                _sellerAgentAddress,
+                _sellerAvatarAddress,
+                Guid.NewGuid(),
+                new FungibleAssetValue(_goldCurrencyState.Currency, 100, 0),
+                Sell.ExpiredBlockIndex,
+                nonFungibleItem);
+            shopState.Register(shopItem);
+
+            Assert.Equal(2, shopState.Products.Count);
+            Assert.Equal(Sell.ExpiredBlockIndex, nonFungibleItem.RequiredBlockIndex);
+            Assert.True(sellerAvatarState.inventory.TryGetNonFungibleItem(itemId, out _));
+
+            IAccountStateDelta prevState = _initialState
+                .SetState(_sellerAvatarAddress, sellerAvatarState.Serialize())
+                .SetState(_buyerAvatarAddress, buyerAvatarState.Serialize())
+                .SetState(Addresses.Shop, shopState.Serialize());
 
             var tax = shopItem.Price.DivRem(100, out _) * Buy.TaxRate;
             var taxedPrice = shopItem.Price - tax;
@@ -120,25 +171,38 @@ namespace Lib9c.Tests.Action
             var buyAction = new Buy
             {
                 buyerAvatarAddress = _buyerAvatarAddress,
-                productId = productId,
+                productId = shopItem.ProductId,
                 sellerAgentAddress = _sellerAgentAddress,
                 sellerAvatarAddress = _sellerAvatarAddress,
             };
             var nextState = buyAction.Execute(new ActionContext()
             {
-                BlockIndex = 0,
-                PreviousStates = _initialState,
+                BlockIndex = 1,
+                PreviousStates = prevState,
                 Random = new TestRandom(),
                 Rehearsal = false,
                 Signer = _buyerAgentAddress,
             });
 
             var nextShopState = nextState.GetShopState();
-            Assert.Empty(nextShopState.Products);
+            Assert.Single(nextShopState.Products);
 
             var nextBuyerAvatarState = nextState.GetAvatarState(_buyerAvatarAddress);
             Assert.True(
-                nextBuyerAvatarState.inventory.TryGetNonFungibleItem(shopItem.ItemUsable.ItemId, out ItemUsable _));
+                nextBuyerAvatarState.inventory.TryGetNonFungibleItem(
+                    nonFungibleItem.ItemId,
+                    out INonFungibleItem outNonFungibleItem)
+            );
+            Assert.Equal(1, outNonFungibleItem.RequiredBlockIndex);
+            Assert.Single(nextBuyerAvatarState.mailBox);
+
+            var nextSellerAvatarState = nextState.GetAvatarState(_sellerAvatarAddress);
+            Assert.False(
+                nextSellerAvatarState.inventory.TryGetNonFungibleItem(
+                    nonFungibleItem.ItemId,
+                    out INonFungibleItem _)
+            );
+            Assert.Single(nextSellerAvatarState.mailBox);
 
             var goldCurrencyState = nextState.GetGoldCurrency();
             var goldCurrencyGold = nextState.GetBalance(Addresses.GoldCurrency, goldCurrencyState);
