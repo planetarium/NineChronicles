@@ -23,10 +23,10 @@ namespace Nekoyume.Model.Item
             get => _requiredBlockIndex;
             private set
             {
-                if (value <= RequiredBlockIndex)
+                if (value < 0)
                 {
                     throw new ArgumentOutOfRangeException(
-                        $"{nameof(RequiredBlockIndex)} must be greater than {RequiredBlockIndex}, but {value}");
+                        $"{nameof(RequiredBlockIndex)} must be greater than 0, but {value}");
                 }
                 _requiredBlockIndex = value;
             }

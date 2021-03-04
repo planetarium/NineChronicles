@@ -56,14 +56,12 @@ namespace Lib9c.Tests.Model.Item
             Assert.False(costume.equipped);
         }
 
-        [Theory]
-        [InlineData(0)]
-        [InlineData(-1)]
-        public void LockThrowArgumentOutOfRangeException(long requiredBlockIndex)
+        [Fact]
+        public void LockThrowArgumentOutOfRangeException()
         {
             var costume = new Costume(_costumeRow, Guid.NewGuid());
-            Assert.True(requiredBlockIndex <= costume.RequiredBlockIndex);
-            Assert.Throws<ArgumentOutOfRangeException>(() => costume.Update(requiredBlockIndex));
+            Assert.True(costume.RequiredBlockIndex >= -1);
+            Assert.Throws<ArgumentOutOfRangeException>(() => costume.Update(-1));
         }
 
         [Fact]

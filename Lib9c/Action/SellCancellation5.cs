@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
-using System.Linq;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
@@ -14,40 +13,12 @@ using Serilog;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("sell_cancellation5")]
-    public class SellCancellation : GameAction
+    [ActionType("sell_cancellation")]
+    public class SellCancellation5 : GameAction
     {
         public Guid productId;
         public Address sellerAvatarAddress;
-        public Result result;
-
-        [Serializable]
-        public class Result : AttachmentActionResult
-        {
-            public ShopItem shopItem;
-            public Guid id;
-
-            protected override string TypeId => "sellCancellation.result";
-
-            public Result()
-            {
-            }
-
-            public Result(Bencodex.Types.Dictionary serialized) : base(serialized)
-            {
-                shopItem = new ShopItem((Bencodex.Types.Dictionary) serialized["shopItem"]);
-                id = serialized["id"].ToGuid();
-            }
-
-            public override IValue Serialize() =>
-#pragma warning disable LAA1002
-                new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
-                {
-                    [(Text) "shopItem"] = shopItem.Serialize(),
-                    [(Text) "id"] = id.Serialize()
-                }.Union((Bencodex.Types.Dictionary) base.Serialize()));
-#pragma warning restore LAA1002
-        }
+        public SellCancellation.Result result;
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal => new Dictionary<string, IValue>
         {
@@ -129,29 +100,19 @@ namespace Nekoyume.Action
                 return states;
             }
 
-            INonFungibleItem nonFungibleItem = (INonFungibleItem)outUnregisteredItem.ItemUsable ?? outUnregisteredItem.Costume;
-            if (!avatarState.inventory.TryGetNonFungibleItem(nonFungibleItem.ItemId, out INonFungibleItem outNonFungibleItem))
-            {
-                throw new ItemDoesNotExistException(
-                    $"{addressesHex}Aborted as the NonFungibleItem ({nonFungibleItem.ItemId}) was failed to load from avatar's inventory."
-                );
-            }
-            nonFungibleItem.Update(ctx.BlockIndex);
-            outNonFungibleItem.Update(ctx.BlockIndex);
             // 메일에 아이템을 넣는다.
-            result = new Result
+            result = new SellCancellation.Result
             {
                 shopItem = outUnregisteredItem,
-                itemUsable = outUnregisteredItem.ItemUsable,
-                costume = outUnregisteredItem.Costume
+                itemUsable = outUnregisteredItem.ItemUsable
             };
             var mail = new SellCancelMail(result, ctx.BlockIndex, ctx.Random.GenerateRandomGuid(), ctx.BlockIndex);
             result.id = mail.id;
 
-            avatarState.UpdateV4(mail, context.BlockIndex);
+            avatarState.Update(mail);
+            avatarState.UpdateFromAddItem(result.itemUsable, true);
             avatarState.updatedAt = ctx.BlockIndex;
             avatarState.blockIndex = ctx.BlockIndex;
-
             sw.Stop();
             Log.Verbose("{AddressesHex}Sell Cancel Update AvatarState: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();

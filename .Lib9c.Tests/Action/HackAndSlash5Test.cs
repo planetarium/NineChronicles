@@ -632,7 +632,7 @@ namespace Lib9c.Tests.Action
             formatter.Serialize(ms, action);
             ms.Seek(0, SeekOrigin.Begin);
 
-            var deserialized = (HackAndSlash)formatter.Deserialize(ms);
+            var deserialized = (HackAndSlash5)formatter.Deserialize(ms);
             Assert.Equal(action.PlainValue, deserialized.PlainValue);
         }
 
