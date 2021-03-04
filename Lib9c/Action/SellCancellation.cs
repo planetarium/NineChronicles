@@ -130,14 +130,37 @@ namespace Nekoyume.Action
             }
 
             INonFungibleItem nonFungibleItem = (INonFungibleItem)outUnregisteredItem.ItemUsable ?? outUnregisteredItem.Costume;
+            bool backWardCompatible = false;
             if (!avatarState.inventory.TryGetNonFungibleItem(nonFungibleItem.ItemId, out INonFungibleItem outNonFungibleItem))
             {
-                throw new ItemDoesNotExistException(
-                    $"{addressesHex}Aborted as the NonFungibleItem ({nonFungibleItem.ItemId}) was failed to load from avatar's inventory."
-                );
+                if (nonFungibleItem.RequiredBlockIndex != 0)
+                {
+                    throw new ItemDoesNotExistException(
+                        $"{addressesHex}Aborted as the NonFungibleItem ({nonFungibleItem.ItemId}) was failed to load from avatar's inventory."
+                    );
+                }
+
+                // Backward compatible for old actions.
+                backWardCompatible = true;
+            }
+            else
+            {
+                outNonFungibleItem.Update(ctx.BlockIndex);
             }
             nonFungibleItem.Update(ctx.BlockIndex);
-            outNonFungibleItem.Update(ctx.BlockIndex);
+
+            if (backWardCompatible)
+            {
+                switch (nonFungibleItem)
+                {
+                    case ItemUsable itemUsable:
+                        avatarState.UpdateFromAddItem(itemUsable, true);
+                        break;
+                    case Costume costume:
+                        avatarState.UpdateFromAddCostume(costume, true);
+                        break;
+                }
+            }
             // 메일에 아이템을 넣는다.
             result = new Result
             {

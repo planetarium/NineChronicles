@@ -74,9 +74,11 @@ namespace Lib9c.Tests.Action
         }
 
         [Theory]
-        [InlineData(ItemType.Equipment, "F9168C5E-CEB2-4faa-B6BF-329BF39FA1E4")]
-        [InlineData(ItemType.Costume, "936DA01F-9ABD-4d9d-80C7-02AF85C822A8")]
-        public void Execute(ItemType itemType, string guid)
+        [InlineData(ItemType.Equipment, "F9168C5E-CEB2-4faa-B6BF-329BF39FA1E4", Sell.ExpiredBlockIndex, true)]
+        [InlineData(ItemType.Costume, "936DA01F-9ABD-4d9d-80C7-02AF85C822A8", Sell.ExpiredBlockIndex, true)]
+        [InlineData(ItemType.Equipment, "F9168C5E-CEB2-4faa-B6BF-329BF39FA1E4", 0, false)]
+        [InlineData(ItemType.Costume, "936DA01F-9ABD-4d9d-80C7-02AF85C822A8", 0, false)]
+        public void Execute(ItemType itemType, string guid, long requiredBlockIndex, bool contain)
         {
             var avatarState = _initialState.GetAvatarState(_avatarAddress);
             INonFungibleItem nonFungibleItem;
@@ -86,17 +88,20 @@ namespace Lib9c.Tests.Action
                 var itemUsable = ItemFactory.CreateItemUsable(
                     _tableSheets.EquipmentItemSheet.First,
                     itemId,
-                    Sell.ExpiredBlockIndex);
+                    requiredBlockIndex);
                 nonFungibleItem = itemUsable;
             }
             else
             {
                 var costume = ItemFactory.CreateCostume(_tableSheets.CostumeItemSheet.First, itemId);
-                costume.Update(Sell.ExpiredBlockIndex);
+                costume.Update(requiredBlockIndex);
                 nonFungibleItem = costume;
             }
 
-            avatarState.inventory.AddItem((ItemBase)nonFungibleItem);
+            if (contain)
+            {
+                avatarState.inventory.AddItem((ItemBase)nonFungibleItem);
+            }
 
             var result = new DailyReward.DailyRewardResult()
             {
@@ -116,12 +121,12 @@ namespace Lib9c.Tests.Action
                 _avatarAddress,
                 Guid.NewGuid(),
                 new FungibleAssetValue(_goldCurrencyState.Currency, 100, 0),
-                Sell.ExpiredBlockIndex,
+                requiredBlockIndex,
                 nonFungibleItem);
             shopState.Register(shopItem);
 
-            Assert.Equal(Sell.ExpiredBlockIndex, nonFungibleItem.RequiredBlockIndex);
-            Assert.True(avatarState.inventory.TryGetNonFungibleItem(itemId, out _));
+            Assert.Equal(requiredBlockIndex, nonFungibleItem.RequiredBlockIndex);
+            Assert.Equal(contain, avatarState.inventory.TryGetNonFungibleItem(itemId, out _));
 
             IAccountStateDelta prevState = _initialState
                 .SetState(_avatarAddress, avatarState.Serialize())
@@ -149,6 +154,43 @@ namespace Lib9c.Tests.Action
             Assert.Equal(1, nextNonFungibleItem.RequiredBlockIndex);
             Assert.Single(nextAvatarState.mailBox);
             Assert.IsType<SellCancelMail>(nextAvatarState.mailBox.First());
+        }
+
+        [Fact]
+        public void ExecuteThrowItemDoesNotExistException()
+        {
+            ShopState shopState = _initialState.GetShopState();
+            ItemUsable itemUsable = ItemFactory.CreateItemUsable(
+                _tableSheets.EquipmentItemSheet.First,
+                Guid.NewGuid(),
+                Sell.ExpiredBlockIndex);
+
+            var shopItem = new ShopItem(
+                _agentAddress,
+                _avatarAddress,
+                Guid.NewGuid(),
+                new FungibleAssetValue(_goldCurrencyState.Currency, 100, 0),
+                Sell.ExpiredBlockIndex,
+                itemUsable);
+            shopState.Register(shopItem);
+
+            IAccountStateDelta prevState = _initialState
+                .SetState(Addresses.Shop, shopState.Serialize());
+
+            var action = new SellCancellation
+            {
+                productId = shopItem.ProductId,
+                sellerAvatarAddress = _avatarAddress,
+            };
+
+            Assert.Throws<ItemDoesNotExistException>(() => action.Execute(new ActionContext()
+                {
+                    BlockIndex = 0,
+                    PreviousStates = prevState,
+                    Random = new TestRandom(),
+                    Signer = _agentAddress,
+                })
+            );
         }
     }
 }
