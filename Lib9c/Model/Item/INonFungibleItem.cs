@@ -6,5 +6,6 @@ namespace Nekoyume.Model.Item
     {
         Guid ItemId { get; }
         long RequiredBlockIndex { get; }
+        void Update(long blockIndex);
     }
 }

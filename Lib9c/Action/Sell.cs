@@ -90,45 +90,26 @@ namespace Nekoyume.Action
 
             var productId = context.Random.GenerateRandomGuid();
             long expiredBlockIndex = context.BlockIndex + ExpiredBlockIndex;
-            ShopItem shopItem;
-
-            void CheckRequiredBlockIndex(ItemUsable itemUsable)
-            {
-                if (itemUsable.RequiredBlockIndex > context.BlockIndex)
-                {
-                    throw new RequiredBlockIndexException($"{addressesHex}Aborted as the itemUsable to enhance ({itemId}) is not available yet; it will be available at the block #{itemUsable.RequiredBlockIndex}.");
-                }
-            }
-
-            ShopItem GetShopItemFromInventory(INonFungibleItem nonFungibleItem)
-            {
-                return new ShopItem(ctx.Signer, sellerAvatarAddress, productId, price, expiredBlockIndex, nonFungibleItem);
-            }
 
             // Select an item to sell from the inventory and adjust the quantity.
-            if (avatarState.inventory.TryGetNonFungibleItem<Equipment>(itemId, out var equipment))
-            {
-                CheckRequiredBlockIndex(equipment);
-                equipment.Unequip();
-                equipment.Update(expiredBlockIndex);
-                shopItem = GetShopItemFromInventory(equipment);
-            }
-            else if (avatarState.inventory.TryGetNonFungibleItem<Consumable>(itemId, out var consumable))
-            {
-                CheckRequiredBlockIndex(consumable);
-                consumable.Update(expiredBlockIndex);
-                shopItem = GetShopItemFromInventory(consumable);
-            }
-            else if (avatarState.inventory.TryGetNonFungibleItem<Costume>(itemId, out var costume))
-            {
-                costume.Lock(expiredBlockIndex);
-                shopItem = GetShopItemFromInventory(costume);
-            }
-            else
+            if (!avatarState.inventory.TryGetNonFungibleItem(itemId, out INonFungibleItem nonFungibleItem))
             {
                 throw new ItemDoesNotExistException(
                     $"{addressesHex}Aborted as the NonFungibleItem ({itemId}) was failed to load from avatar's inventory.");
             }
+
+            if (nonFungibleItem.RequiredBlockIndex > context.BlockIndex)
+            {
+                throw new RequiredBlockIndexException(
+                    $"{addressesHex}Aborted as the itemUsable to enhance ({itemId}) is not available yet; it will be available at the block #{nonFungibleItem.RequiredBlockIndex}.");
+            }
+
+            if (nonFungibleItem is Equipment equipment)
+            {
+                equipment.Unequip();
+            }
+            nonFungibleItem.Update(expiredBlockIndex);
+            var shopItem = new ShopItem(ctx.Signer, sellerAvatarAddress, productId, price, expiredBlockIndex, nonFungibleItem);
 
             IValue shopItemSerialized = shopItem.Serialize();
             IKey productIdSerialized = (IKey)productId.Serialize();

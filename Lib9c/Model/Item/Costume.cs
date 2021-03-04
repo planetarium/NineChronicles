@@ -117,10 +117,10 @@ namespace Nekoyume.Model.Item
             equipped = false;
         }
 
-        public void Lock(long requiredBlockIndex)
+        public void Update(long blockIndex)
         {
             Unequip();
-            RequiredBlockIndex = requiredBlockIndex;
+            RequiredBlockIndex = blockIndex;
         }
     }
 }

@@ -47,11 +47,11 @@ namespace Lib9c.Tests.Model.Item
         }
 
         [Fact]
-        public void Lock()
+        public void Update()
         {
             var costume = new Costume(_costumeRow, Guid.NewGuid());
             costume.Equip();
-            costume.Lock(10);
+            costume.Update(10);
             Assert.Equal(10, costume.RequiredBlockIndex);
             Assert.False(costume.equipped);
         }
@@ -63,7 +63,7 @@ namespace Lib9c.Tests.Model.Item
         {
             var costume = new Costume(_costumeRow, Guid.NewGuid());
             Assert.True(requiredBlockIndex <= costume.RequiredBlockIndex);
-            Assert.Throws<ArgumentOutOfRangeException>(() => costume.Lock(requiredBlockIndex));
+            Assert.Throws<ArgumentOutOfRangeException>(() => costume.Update(requiredBlockIndex));
         }
 
         [Fact]
@@ -75,7 +75,7 @@ namespace Lib9c.Tests.Model.Item
             Assert.False(serialized.ContainsKey(Costume.RequiredBlockIndexKey));
             Assert.Equal(costume, new Costume(serialized));
 
-            costume.Lock(1);
+            costume.Update(1);
             serialized = (Dictionary)costume.Serialize();
             Assert.True(serialized.ContainsKey(Costume.RequiredBlockIndexKey));
             Assert.Equal(costume, new Costume(serialized));
