@@ -101,7 +101,7 @@ namespace Nekoyume.Action
             if (nonFungibleItem.RequiredBlockIndex > context.BlockIndex)
             {
                 throw new RequiredBlockIndexException(
-                    $"{addressesHex}Aborted as the itemUsable to enhance ({itemId}) is not available yet; it will be available at the block #{nonFungibleItem.RequiredBlockIndex}.");
+                    $"{addressesHex}Aborted as the itemUsable to sell ({itemId}) is not available yet; it will be available at the block #{nonFungibleItem.RequiredBlockIndex}.");
             }
 
             if (nonFungibleItem is Equipment equipment)
