@@ -23,7 +23,7 @@ namespace Nekoyume.TableData
 
             public Row(Bencodex.Types.Dictionary serialized) : base(serialized)
             {
-                ItemId = Hashcash.Hash(serialized.EncodeIntoChunks().SelectMany(b => b).ToArray());
+                ItemId = HashDigest<SHA256>.DeriveFrom(serialized.EncodeIntoChunks().SelectMany(b => b).ToArray());
             }
 
             protected Row(SerializationInfo info, StreamingContext context)
@@ -39,7 +39,7 @@ namespace Nekoyume.TableData
             public override void Set(IReadOnlyList<string> fields)
             {
                 base.Set(fields);
-                ItemId = Hashcash.Hash(Serialize().EncodeIntoChunks().SelectMany(b => b).ToArray());
+                ItemId = HashDigest<SHA256>.DeriveFrom(Serialize().EncodeIntoChunks().SelectMany(b => b).ToArray());
             }
         }
 

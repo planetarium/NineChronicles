@@ -627,10 +627,10 @@ namespace Lib9c.Tests
             {
             }
 
-            public IValue GetState(string stateKey, HashDigest<SHA256>? blockHash = null, Guid? chainId = null) =>
+            public IValue GetState(string stateKey, BlockHash? blockHash = null, Guid? chainId = null) =>
                 default(Null);
 
-            public bool ContainsBlockStates(HashDigest<SHA256> blockHash) => false;
+            public bool ContainsBlockStates(BlockHash blockHash) => false;
 
             public void ForkStates<T>(Guid sourceChainId, Guid destinationChainId, Block<T> branchpoint)
                 where T : IAction, new()
