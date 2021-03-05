@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Nekoyume.Game.Character;
-using Nekoyume.Game.Controller;
+using Bencodex.Types;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
+using Nekoyume.Model.Stat;
 using Nekoyume.State;
-using Nekoyume.UI.Model;
 using TMPro;
 using UniRx;
 using UnityEngine;
@@ -17,19 +16,13 @@ namespace Nekoyume.UI.Module
 {
     public class ShopBuyItems : MonoBehaviour
     {
-        public const int shopItemsCountOfOnePage = 20;
-
         public List<ShopItemView> Items { get; set; } = new List<ShopItemView>();
 
-        // [SerializeField]
-        // private TMP_Dropdown itemSubTypeFilter = null;
-        //
-        // [SerializeField]
-        // private TMP_Dropdown sortFilter = null;
-        //
+        [SerializeField] List<NCToggleDropdown> toggleDropdowns = new List<NCToggleDropdown>();
         [SerializeField] private Button previousPageButton = null;
         [SerializeField] private Button nextPageButton = null;
         [SerializeField] private TextMeshProUGUI pageText = null;
+
 
         // [SerializeField]
         // private TouchHandler refreshButtonTouchHandler = null;
@@ -39,10 +32,56 @@ namespace Nekoyume.UI.Module
 
         private int _filteredPageIndex;
         private readonly List<IDisposable> _disposablesAtOnEnable = new List<IDisposable>();
+        private readonly List<ItemSubTypeFilter> _toggleTypes = new List<ItemSubTypeFilter>()
+        {
+            ItemSubTypeFilter.Equipment,
+            ItemSubTypeFilter.Food,
+            ItemSubTypeFilter.Costume,
+        };
+
+        private readonly Dictionary<ItemSubTypeFilter, List<ItemSubTypeFilter>> _toggleSubTypes =
+            new Dictionary<ItemSubTypeFilter, List<ItemSubTypeFilter>>()
+        {
+            {
+                ItemSubTypeFilter.Equipment, new List<ItemSubTypeFilter>()
+                {
+                    ItemSubTypeFilter.Equipment,
+                    ItemSubTypeFilter.Weapon,
+                    ItemSubTypeFilter.Armor,
+                    ItemSubTypeFilter.Belt,
+                    ItemSubTypeFilter.Necklace,
+                    ItemSubTypeFilter.Ring,
+                }
+            },
+            {
+                ItemSubTypeFilter.Food, new List<ItemSubTypeFilter>()
+                {
+                    ItemSubTypeFilter.Food,
+                    ItemSubTypeFilter.Food_HP,
+                    ItemSubTypeFilter.Food_ATK,
+                    ItemSubTypeFilter.Food_DEF,
+                    ItemSubTypeFilter.Food_CRI,
+                    ItemSubTypeFilter.Food_HIT,
+                }
+            },
+            {
+                ItemSubTypeFilter.Costume, new List<ItemSubTypeFilter>()
+                {
+                    ItemSubTypeFilter.Costume,
+                    ItemSubTypeFilter.FullCostume,
+                    ItemSubTypeFilter.HairCostume,
+                    ItemSubTypeFilter.EarCostume,
+                    ItemSubTypeFilter.EyeCostume,
+                    ItemSubTypeFilter.TailCostume,
+                    ItemSubTypeFilter.Title,
+                }
+            },
+        };
 
         public Model.ShopItems SharedModel { get; private set; }
 
         #region Mono
+
 
         private void Awake()
         {
@@ -56,6 +95,49 @@ namespace Nekoyume.UI.Module
             SharedModel.ItemSubTypeProducts
                 .Subscribe(_ => UpdateView())
                 .AddTo(gameObject);
+
+            foreach (var toggleDropdown in toggleDropdowns)
+            {
+                var index = toggleDropdowns.IndexOf(toggleDropdown);
+                var toggleType = _toggleTypes[index];
+                toggleDropdown.SetText(FilterSubTypeToString(toggleType));
+                toggleDropdown.onValueChanged.AddListener((value) =>
+                {
+                    if (value)
+                    {
+                        SharedModel.itemSubTypeFilter = toggleType;
+                        OnItemSubTypeFilterChanged();
+                    }
+                });
+
+                var subItems = toggleDropdown.items;
+                var removeList = new List<NCToggle>();
+                foreach (var item in subItems)
+                {
+                    var subIndex = subItems.IndexOf(item);
+                    var subTypes = _toggleSubTypes[toggleType];
+
+                    if (subIndex < subTypes.Count)
+                    {
+                        var subToggleType = subTypes[subIndex];
+                        item.SetText(FilterSubTypeToString(subToggleType));
+                        item.onValueChanged.AddListener((value) =>
+                        {
+                            if (value)
+                            {
+                                SharedModel.itemSubTypeFilter = subToggleType;
+                                OnItemSubTypeFilterChanged();
+                            }
+                        });
+                    }
+                    else
+                    {
+                        removeList.Add(item);
+                    }
+                }
+                subItems.RemoveAll(removeList.Contains);
+            }
+
             //
             // itemSubTypeFilter.AddOptions(new[]
             //     {
@@ -143,6 +225,9 @@ namespace Nekoyume.UI.Module
 
         private void OnEnable()
         {
+            toggleDropdowns.First().isOn = false;
+            toggleDropdowns.First().isOn = true;
+
             // itemSubTypeFilter.SetValueWithoutNotify(0);
             SharedModel.itemSubTypeFilter = 0;
             // sortFilter.SetValueWithoutNotify(0);
@@ -274,6 +359,33 @@ namespace Nekoyume.UI.Module
             }
 
             UpdateViewWithFilteredPageIndex(SharedModel.ItemSubTypeProducts.Value);
+        }
+
+        private string FilterSubTypeToString(ItemSubTypeFilter type)
+        {
+            switch (type)
+            {
+                case ItemSubTypeFilter.All:
+                case ItemSubTypeFilter.Food:
+                case ItemSubTypeFilter.Equipment:
+                case ItemSubTypeFilter.Costume:
+                    return L10nManager.Localize("ALL");
+
+                case ItemSubTypeFilter.Food_HP:
+                    return StatType.HP.ToString();
+                case ItemSubTypeFilter.Food_ATK:
+                    return StatType.ATK.ToString();
+                case ItemSubTypeFilter.Food_DEF:
+                    return StatType.DEF.ToString();
+                case ItemSubTypeFilter.Food_CRI:
+                    return StatType.CRI.ToString();
+                case ItemSubTypeFilter.Food_HIT:
+                    return StatType.HIT.ToString();
+
+                default:
+                    return ((ItemSubType) Enum.Parse(typeof(ItemSubType), type.ToString()))
+                        .GetLocalizedString();
+            }
         }
     }
 }

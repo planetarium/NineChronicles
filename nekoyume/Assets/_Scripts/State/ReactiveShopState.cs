@@ -4,6 +4,7 @@ using System.Linq;
 using Libplanet;
 using Nekoyume.Battle;
 using Nekoyume.Model.Item;
+using Nekoyume.Model.Stat;
 using Nekoyume.Model.State;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
@@ -67,10 +68,7 @@ namespace Nekoyume.State
                     agentProducts[agentAddress].Add(product);
                 }
 
-                var filteredAgentProducts = new Dictionary<
-                    Address, Dictionary<
-                        ItemSubTypeFilter, Dictionary<
-                            SortFilter, Dictionary<int, List<ShopItem>>>>>();
+                var filteredAgentProducts = new Dictionary<Address, Dictionary<ItemSubTypeFilter, Dictionary<SortFilter, Dictionary<int, List<ShopItem>>>>>();
                 foreach (var pair in agentProducts)
                 {
                     filteredAgentProducts.Add(
@@ -95,12 +93,20 @@ namespace Nekoyume.State
                     SortFilter, Dictionary<int, List<ShopItem>>>>
             GetGroupedShopItemsByItemSubTypeFilter(IReadOnlyCollection<ShopItem> shopItems)
         {
+            var equipment = new List<ShopItem>();
+            var food = new List<ShopItem>();
+            var costume = new List<ShopItem>();
+
             var weapons = new List<ShopItem>();
             var armors = new List<ShopItem>();
             var belts = new List<ShopItem>();
             var necklaces = new List<ShopItem>();
             var rings = new List<ShopItem>();
-            var foods = new List<ShopItem>();
+            var foodsHp = new List<ShopItem>();
+            var foodsAtk = new List<ShopItem>();
+            var foodsDef = new List<ShopItem>();
+            var foodsCri = new List<ShopItem>();
+            var foodsHit = new List<ShopItem>();
             var fullCostumes = new List<ShopItem>();
             var hairCostumes = new List<ShopItem>();
             var earCostumes = new List<ShopItem>();
@@ -112,30 +118,55 @@ namespace Nekoyume.State
             {
                 if (shopItem.ItemUsable != null)
                 {
-                    switch (shopItem.ItemUsable.ItemSubType)
+                    if (shopItem.ItemUsable.ItemSubType == ItemSubType.Food)
                     {
-                        case ItemSubType.Weapon:
-                            weapons.Add(shopItem);
-                            break;
-                        case ItemSubType.Armor:
-                            armors.Add(shopItem);
-                            break;
-                        case ItemSubType.Belt:
-                            belts.Add(shopItem);
-                            break;
-                        case ItemSubType.Necklace:
-                            necklaces.Add(shopItem);
-                            break;
-                        case ItemSubType.Ring:
-                            rings.Add(shopItem);
-                            break;
-                        case ItemSubType.Food:
-                            foods.Add(shopItem);
-                            break;
+                        food.Add(shopItem);
+                        var state = shopItem.ItemUsable.StatsMap.GetStats().First(); // todo : foreach 돌려서
+                        switch (state.StatType)
+                        {
+                            case StatType.HP:
+                                foodsHp.Add(shopItem);
+                                break;
+                            case StatType.ATK:
+                                foodsAtk.Add(shopItem);
+                                break;
+                            case StatType.DEF:
+                                foodsDef.Add(shopItem);
+                                break;
+                            case StatType.CRI:
+                                foodsCri.Add(shopItem);
+                                break;
+                            case StatType.HIT:
+                                foodsHit.Add(shopItem);
+                                break;
+                        }
+                    }
+                    else
+                    {
+                        equipment.Add(shopItem);
+                        switch (shopItem.ItemUsable.ItemSubType)
+                        {
+                            case ItemSubType.Weapon:
+                                weapons.Add(shopItem);
+                                break;
+                            case ItemSubType.Armor:
+                                armors.Add(shopItem);
+                                break;
+                            case ItemSubType.Belt:
+                                belts.Add(shopItem);
+                                break;
+                            case ItemSubType.Necklace:
+                                necklaces.Add(shopItem);
+                                break;
+                            case ItemSubType.Ring:
+                                rings.Add(shopItem);
+                                break;
+                        }
                     }
                 }
                 else if (shopItem.Costume != null)
                 {
+                    costume.Add(shopItem);
                     switch (shopItem.Costume.ItemSubType)
                     {
                         case ItemSubType.FullCostume:
@@ -160,50 +191,23 @@ namespace Nekoyume.State
                 }
             }
 
-            return GetGroupedShopItemsByItemSubTypeFilter(
-                shopItems,
-                weapons,
-                armors,
-                belts,
-                necklaces,
-                rings,
-                foods,
-                fullCostumes,
-                hairCostumes,
-                earCostumes,
-                eyeCostumes,
-                tailCostumes,
-                titles);
-        }
-
-        private static Dictionary<
+            var groupedShopItems = new Dictionary<
                 ItemSubTypeFilter, Dictionary<SortFilter, Dictionary<int, List<ShopItem>>>>
-            GetGroupedShopItemsByItemSubTypeFilter(
-                IReadOnlyCollection<ShopItem> all,
-                IReadOnlyCollection<ShopItem> weapons,
-                IReadOnlyCollection<ShopItem> armors,
-                IReadOnlyCollection<ShopItem> belts,
-                IReadOnlyCollection<ShopItem> necklaces,
-                IReadOnlyCollection<ShopItem> rings,
-                IReadOnlyCollection<ShopItem> foods,
-                IReadOnlyCollection<ShopItem> fullCostumes,
-                IReadOnlyCollection<ShopItem> hairCostumes,
-                IReadOnlyCollection<ShopItem> earCostumes,
-                IReadOnlyCollection<ShopItem> eyeCostumes,
-                IReadOnlyCollection<ShopItem> tailCostumes,
-                IReadOnlyCollection<ShopItem> titles)
-        {
-            return new Dictionary<
-                ItemSubTypeFilter, Dictionary<
-                    SortFilter, Dictionary<int, List<ShopItem>>>>
             {
-                {ItemSubTypeFilter.All, GetGroupedShopItemsBySortFilter(all)},
+                {ItemSubTypeFilter.All, GetGroupedShopItemsBySortFilter(shopItems)},
+                {ItemSubTypeFilter.Equipment, GetGroupedShopItemsBySortFilter(equipment)},
+                {ItemSubTypeFilter.Food, GetGroupedShopItemsBySortFilter(food)},
+                {ItemSubTypeFilter.Costume, GetGroupedShopItemsBySortFilter(costume)},
                 {ItemSubTypeFilter.Weapon, GetGroupedShopItemsBySortFilter(weapons)},
                 {ItemSubTypeFilter.Armor, GetGroupedShopItemsBySortFilter(armors)},
                 {ItemSubTypeFilter.Belt, GetGroupedShopItemsBySortFilter(belts)},
                 {ItemSubTypeFilter.Necklace, GetGroupedShopItemsBySortFilter(necklaces)},
                 {ItemSubTypeFilter.Ring, GetGroupedShopItemsBySortFilter(rings)},
-                {ItemSubTypeFilter.Food, GetGroupedShopItemsBySortFilter(foods)},
+                {ItemSubTypeFilter.Food_HP, GetGroupedShopItemsBySortFilter(foodsHp)},
+                {ItemSubTypeFilter.Food_ATK, GetGroupedShopItemsBySortFilter(foodsAtk)},
+                {ItemSubTypeFilter.Food_DEF, GetGroupedShopItemsBySortFilter(foodsDef)},
+                {ItemSubTypeFilter.Food_CRI, GetGroupedShopItemsBySortFilter(foodsCri)},
+                {ItemSubTypeFilter.Food_HIT, GetGroupedShopItemsBySortFilter(foodsHit)},
                 {ItemSubTypeFilter.FullCostume, GetGroupedShopItemsBySortFilter(fullCostumes)},
                 {ItemSubTypeFilter.HairCostume, GetGroupedShopItemsBySortFilter(hairCostumes)},
                 {ItemSubTypeFilter.EarCostume, GetGroupedShopItemsBySortFilter(earCostumes)},
@@ -211,6 +215,7 @@ namespace Nekoyume.State
                 {ItemSubTypeFilter.TailCostume, GetGroupedShopItemsBySortFilter(tailCostumes)},
                 {ItemSubTypeFilter.Title, GetGroupedShopItemsBySortFilter(titles)},
             };
+            return groupedShopItems;
         }
 
         private static Dictionary<SortFilter, Dictionary<int, List<ShopItem>>>

@@ -5,6 +5,7 @@ using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
+using Nekoyume.Model.Stat;
 using Nekoyume.State;
 using Nekoyume.UI.Model;
 using TMPro;
@@ -17,8 +18,6 @@ namespace Nekoyume.UI.Module
 {
     public class ShopItems : MonoBehaviour
     {
-
-
         public List<ShopItemView> items;
 
         [SerializeField]
@@ -51,7 +50,6 @@ namespace Nekoyume.UI.Module
         public Model.ShopItems SharedModel { get; private set; }
 
         #region Mono
-
         private void Awake()
         {
             SharedModel = new Model.ShopItems();
@@ -73,7 +71,11 @@ namespace Nekoyume.UI.Module
                     ItemSubTypeFilter.Belt,
                     ItemSubTypeFilter.Necklace,
                     ItemSubTypeFilter.Ring,
-                    ItemSubTypeFilter.Food,
+                    ItemSubTypeFilter.Food_HP,
+                    ItemSubTypeFilter.Food_ATK,
+                    ItemSubTypeFilter.Food_DEF,
+                    ItemSubTypeFilter.Food_CRI,
+                    ItemSubTypeFilter.Food_HIT,
                     ItemSubTypeFilter.FullCostume,
                     ItemSubTypeFilter.HairCostume,
                     ItemSubTypeFilter.EarCostume,
@@ -81,11 +83,7 @@ namespace Nekoyume.UI.Module
                     ItemSubTypeFilter.TailCostume,
                     ItemSubTypeFilter.Title,
                 }
-                .Select(type => type == ItemSubTypeFilter.All
-                    ? L10nManager.Localize("ALL")
-                    : ((ItemSubType) Enum.Parse(typeof(ItemSubType), type.ToString()))
-                    .GetLocalizedString())
-                .ToList());
+                .Select(FilterSubTypeToString).ToList());
             itemSubTypeFilter.onValueChanged.AsObservable()
                 .Select(index =>
                 {
@@ -329,6 +327,33 @@ namespace Nekoyume.UI.Module
                 case Shop.StateType.Sell:
                     UpdateViewWithFilteredPageIndex(SharedModel.AgentProducts.Value);
                     break;
+            }
+        }
+
+        private string FilterSubTypeToString(ItemSubTypeFilter type)
+        {
+            switch (type)
+            {
+                case ItemSubTypeFilter.All:
+                case ItemSubTypeFilter.Food:
+                case ItemSubTypeFilter.Equipment:
+                case ItemSubTypeFilter.Costume:
+                    return L10nManager.Localize("ALL");
+
+                case ItemSubTypeFilter.Food_HP:
+                    return StatType.HP.ToString();
+                case ItemSubTypeFilter.Food_ATK:
+                    return StatType.ATK.ToString();
+                case ItemSubTypeFilter.Food_DEF:
+                    return StatType.DEF.ToString();
+                case ItemSubTypeFilter.Food_CRI:
+                    return StatType.CRI.ToString();
+                case ItemSubTypeFilter.Food_HIT:
+                    return StatType.HIT.ToString();
+
+                default:
+                    return ((ItemSubType) Enum.Parse(typeof(ItemSubType), type.ToString()))
+                        .GetLocalizedString();
             }
         }
     }
