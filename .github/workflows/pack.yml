@@ -1,9 +1,7 @@
 on:
   push:
     branches:
-    - main
-    - development
-    - rc-*
+    - *
     tags: ['*']
 
 name: Pack
@@ -76,29 +74,3 @@ jobs:
           nekoyume/Build/"${targetPlatform}"/ \
           "${{ secrets.APV_SIGNING_PRIVATE_KEY }}" \
           "$timestamp"
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: ${{ secrets.AWS_REGION }}
-      - uses: chrnorm/deployment-action@releases/v1
-        id: build_artifact
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          description: 'Build artifact'
-          environment: build-artifact
-      - run: mv /tmp/package ./package  # s3-upload-action이 상대 경로만 지원
-        shell: bash
-      - uses: shallwefootball/s3-upload-action@master
-        with:
-          source_dir: package
-          destination_dir: ${{ github.sha }}
-          aws_bucket: 9c-artifacts
-          aws_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      - if: success()
-        uses: chrnorm/deployment-status@releases/v1
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          target_url: ${{ steps.S3.outputs.object_locations[0] }}
-          state: 'success'
-          deployment_id: ${{ steps.build_artifact.outputs.deployment_id }}
