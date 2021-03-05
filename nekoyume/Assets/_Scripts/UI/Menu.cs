@@ -532,6 +532,14 @@ namespace Nekoyume.UI
                 return;
             }
 
+            // Temporarily Lock tutorial recipe.
+            var combination = Find<Combination>();
+            var skipMap = combination.RecipeVFXSkipMap;
+            if (skipMap.ContainsKey(firstRecipeRow.Id))
+            {
+                skipMap.Remove(firstRecipeRow.Id);
+            }
+            combination.SaveRecipeVFXSkipMap();
             GoToCombinationEquipmentRecipe(firstRecipeRow.Id);
         }
 

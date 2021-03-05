@@ -387,7 +387,6 @@ namespace Nekoyume.UI
         private void OnDidAvatarStateLoaded(AvatarState avatarState)
         {
             PlayerPrefs.SetString(RecentlyLoggedInAvatarKey, avatarState.address.ToString());
-            Find<Combination>().LoadRecipeVFXSkipMap();
             if (_isCreateMode)
             {
                 Close();
