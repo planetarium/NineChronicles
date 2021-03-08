@@ -515,13 +515,13 @@ namespace Nekoyume.UI
                     e => ActionRenderHandler.BackToMain(false, e));
         }
 
-        public void NextStage(ActionBase.ActionEvaluation<HackAndSlash4> eval)
+        public void NextStage(ActionBase.ActionEvaluation<HackAndSlash> eval)
         {
             Debug.Log("NextStage From ResponseHackAndSlash");
             StartCoroutine(CoGoToNextStageClose(eval));
         }
 
-        private IEnumerator CoGoToNextStageClose(ActionBase.ActionEvaluation<HackAndSlash4> eval)
+        private IEnumerator CoGoToNextStageClose(ActionBase.ActionEvaluation<HackAndSlash> eval)
         {
             if (Find<Menu>().IsActive())
             {
@@ -534,12 +534,12 @@ namespace Nekoyume.UI
             Close();
         }
 
-        public void NextMimisbrunnrStage(ActionBase.ActionEvaluation<MimisbrunnrBattle2> eval)
+        public void NextMimisbrunnrStage(ActionBase.ActionEvaluation<MimisbrunnrBattle> eval)
         {
             Debug.Log("NextStage From ResponseHackAndSlash");
             StartCoroutine(CoGoToNextMimisbrunnrStageClose(eval));
         }
-        private IEnumerator CoGoToNextMimisbrunnrStageClose(ActionBase.ActionEvaluation<MimisbrunnrBattle2> eval)
+        private IEnumerator CoGoToNextMimisbrunnrStageClose(ActionBase.ActionEvaluation<MimisbrunnrBattle> eval)
         {
             if (Find<Menu>().IsActive())
             {
