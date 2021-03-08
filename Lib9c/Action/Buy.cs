@@ -184,6 +184,11 @@ namespace Nekoyume.Action
             Log.Verbose("{AddressesHex}Buy Get Item: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();
 
+            if (0 < shopItem.ExpiredBlockIndex && shopItem.ExpiredBlockIndex < context.BlockIndex)
+            {
+                throw new ShopItemExpiredException(
+                    $"{addressesHex}Aborted as the shop item ({productId}) already expired on # ({shopItem.ExpiredBlockIndex}).");
+            }
             if (!states.TryGetAvatarState(sellerAgentAddress, sellerAvatarAddress, out var sellerAvatarState))
             {
                 throw new FailedLoadStateException(

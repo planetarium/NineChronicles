@@ -371,5 +371,46 @@ namespace Lib9c.Tests.Action
                 })
             );
         }
+
+        [Fact]
+        public void ExecuteThrowShopItemExpiredException()
+        {
+            IAccountStateDelta previousStates = _initialState;
+            ShopState shopState = _initialState.GetShopState();
+            Guid productId = Guid.NewGuid();
+            var itemUsable = ItemFactory.CreateItemUsable(
+                _tableSheets.EquipmentItemSheet.First,
+                Guid.NewGuid(),
+                10);
+            var shopItem = new ShopItem(
+                _sellerAgentAddress,
+                _sellerAvatarAddress,
+                productId,
+                new FungibleAssetValue(_goldCurrencyState.Currency, 100, 0),
+                10,
+                itemUsable);
+
+            shopState.Register(shopItem);
+            previousStates = previousStates.SetState(Addresses.Shop, shopState.Serialize());
+
+            Assert.True(shopState.Products.ContainsKey(productId));
+
+            var action = new Buy
+            {
+                buyerAvatarAddress = _buyerAvatarAddress,
+                productId = productId,
+                sellerAgentAddress = _sellerAgentAddress,
+                sellerAvatarAddress = _sellerAvatarAddress,
+            };
+
+            Assert.Throws<ShopItemExpiredException>(() => action.Execute(new ActionContext()
+                {
+                    BlockIndex = 11,
+                    PreviousStates = previousStates,
+                    Random = new TestRandom(),
+                    Signer = _buyerAgentAddress,
+                })
+            );
+        }
     }
 }
