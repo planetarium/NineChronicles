@@ -10,12 +10,13 @@ namespace Nekoyume.UI.Module
     public class NCToggleDropdown : NCToggle
     {
         public List<NCToggle> items = new List<NCToggle>();
+        public float duration;
+
         private List<RectTransform> _itemRectTransforms = new List<RectTransform>();
         private List<CanvasGroup> _itemCanvasGroups = new List<CanvasGroup>();
         private Sequence _seq;
         private RectTransform _rectTransform;
         private Vector2 _parentSize;
-        private const float Duration = 0.5f;
 
         protected override void Awake()
         {
@@ -23,8 +24,13 @@ namespace Nekoyume.UI.Module
             _parentSize = _rectTransform.sizeDelta;
             _itemRectTransforms.AddRange(items.Select(x => x.GetComponent<RectTransform>()));
             _itemCanvasGroups.AddRange(items.Select(x => x.GetComponent<CanvasGroup>()));
-            items.First().isOn = false;
-            items.First().isOn = true;
+
+            if (items.Count > 0)
+            {
+                items.First().isOn = false;
+                items.First().isOn = true;
+            }
+
             base.Awake();
         }
 
@@ -50,11 +56,19 @@ namespace Nekoyume.UI.Module
 
             _seq?.Kill();
 
+            if (_rectTransform == null)
+            {
+                _rectTransform = GetComponent<RectTransform>();
+                _parentSize = _rectTransform.sizeDelta;
+            }
+
             _rectTransform.sizeDelta = _parentSize;
 
             if (value)
             {
                 _seq = DOTween.Sequence();
+
+                var eachDuration = duration / _itemRectTransforms.Count;
                 for (int i = 0; i < _itemRectTransforms.Count; i++)
                 {
                     var item = _itemRectTransforms[i];
@@ -64,9 +78,9 @@ namespace Nekoyume.UI.Module
                     var targetMoveY = (i) * -itemSizeDelta.y - _parentSize.y;
                     var targetSize = new Vector2(_parentSize.x,
                         (i + 1) * itemSizeDelta.y + _parentSize.y);
-                    _seq.Append(item.DoAnchoredMoveY(targetMoveY, Duration))
-                        .Join(_rectTransform.DOSizeDelta(targetSize, Duration))
-                        .Join(itemCanvasGroup.DOFade(1, Duration).SetEase(Ease.InExpo));
+                    _seq.Append(item.DoAnchoredMoveY(targetMoveY, eachDuration))
+                        .Join(_rectTransform.DOSizeDelta(targetSize, eachDuration))
+                        .Join(itemCanvasGroup.DOFade(1, eachDuration).SetEase(Ease.InExpo));
                 }
 
                 _seq.Play();

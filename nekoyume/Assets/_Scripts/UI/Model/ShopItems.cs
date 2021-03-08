@@ -30,6 +30,7 @@ namespace Nekoyume.UI.Model
 
         public ItemSubTypeFilter itemSubTypeFilter = ItemSubTypeFilter.All;
         public SortFilter sortFilter = SortFilter.Class;
+        public bool IsReverseOrder = false;
 
         private IReadOnlyDictionary<
             Address, Dictionary<
@@ -249,9 +250,35 @@ namespace Nekoyume.UI.Model
             }
 
             var sortProducts = itemSubTypeProducts[sortFilter];
-            return sortProducts.Count == 0
-                ? new Dictionary<int, List<ShopItem>>()
-                : sortProducts;
+            if (sortProducts.Count == 0)
+            {
+                return new Dictionary<int, List<ShopItem>>();
+            }
+
+            if (IsReverseOrder)
+            {
+                var reverse = new Dictionary<int, List<ShopItem>>();
+                var shopItems = new List<ShopItem>();
+                foreach (var product in sortProducts)
+                {
+                    shopItems.AddRange(product.Value);
+                }
+                shopItems.Reverse();
+
+                int index = 0;
+                foreach (var product in sortProducts)
+                {
+                    var items = shopItems.GetRange(index, product.Value.Count);
+                    reverse.Add(product.Key, items);
+                    index += product.Value.Count;
+                }
+
+                return reverse;
+            }
+            else
+            {
+                return sortProducts;
+            }
         }
 
         private ShopItem CreateShopItem(Nekoyume.Model.Item.ShopItem shopItem)

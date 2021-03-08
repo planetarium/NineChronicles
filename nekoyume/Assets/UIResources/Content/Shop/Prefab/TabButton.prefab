@@ -143,6 +143,7 @@ MonoBehaviour:
   - {fileID: 7052373432407813857}
   - {fileID: 4216524194799093308}
   - {fileID: 6451830029583823478}
+  duration: 1
 --- !u!114 &8948960296696933651
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -782,7 +783,7 @@ PrefabInstance:
     - target: {fileID: 7977264667249319434, guid: 45071a50f74cd1949a4ec57fd8f9d214,
         type: 3}
       propertyPath: m_IsOn
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4121153352078744567, guid: 45071a50f74cd1949a4ec57fd8f9d214,
         type: 3}
@@ -1238,7 +1239,7 @@ PrefabInstance:
     - target: {fileID: 7977264667249319434, guid: 45071a50f74cd1949a4ec57fd8f9d214,
         type: 3}
       propertyPath: m_IsOn
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 45071a50f74cd1949a4ec57fd8f9d214, type: 3}

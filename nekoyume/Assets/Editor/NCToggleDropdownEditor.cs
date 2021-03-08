@@ -13,6 +13,7 @@ namespace Editor
             serializedObject.Update();
             EditorGUILayout.PropertyField(serializedObject.FindProperty("onObject"));
             EditorGUILayout.PropertyField(serializedObject.FindProperty("offObject"));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("duration"));
             DrawList(serializedObject.FindProperty("items"), "item");
 
             serializedObject.ApplyModifiedProperties();
@@ -32,10 +33,11 @@ namespace Editor
             if(listProperty.isExpanded)
             {
                 EditorGUILayout.PropertyField(listProperty.FindPropertyRelative("Array.size"));
-                int Count = listProperty.arraySize;
-                for (int i = 0; i < Count; ++i)
+                int count = listProperty.arraySize;
+                for (int i = 0; i < count; ++i)
                 {
-                    EditorGUILayout.PropertyField(listProperty.GetArrayElementAtIndex(i), new GUIContent(labalName + i));
+                    EditorGUILayout.PropertyField(listProperty.GetArrayElementAtIndex(i),
+                        new GUIContent(labalName + i));
                 }
             }
         }

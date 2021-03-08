@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Bencodex.Types;
+using DG.Tweening;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Stat;
 using Nekoyume.State;
+using Nekoyume.UI.Model;
 using TMPro;
 using UniRx;
 using UnityEngine;
@@ -16,13 +17,19 @@ namespace Nekoyume.UI.Module
 {
     public class ShopBuyItems : MonoBehaviour
     {
+        //todo 스크롤뷰 content 길이 조절해줘야됨
         public List<ShopItemView> Items { get; set; } = new List<ShopItemView>();
 
-        [SerializeField] List<NCToggleDropdown> toggleDropdowns = new List<NCToggleDropdown>();
+        [SerializeField] private List<NCToggleDropdown> toggleDropdowns = new List<NCToggleDropdown>();
+        [SerializeField] private TextMeshProUGUI pageText = null;
         [SerializeField] private Button previousPageButton = null;
         [SerializeField] private Button nextPageButton = null;
-        [SerializeField] private TextMeshProUGUI pageText = null;
+        [SerializeField] private Button sortButton = null;
+        [SerializeField] private Button sortOrderButton = null;
+        [SerializeField] private RectTransform sortOrderIcon = null;
 
+        private TextMeshProUGUI _sortText;
+        private SortFilter _sortFilter = SortFilter.Class;
 
         // [SerializeField]
         // private TouchHandler refreshButtonTouchHandler = null;
@@ -34,6 +41,7 @@ namespace Nekoyume.UI.Module
         private readonly List<IDisposable> _disposablesAtOnEnable = new List<IDisposable>();
         private readonly List<ItemSubTypeFilter> _toggleTypes = new List<ItemSubTypeFilter>()
         {
+            ItemSubTypeFilter.All,
             ItemSubTypeFilter.Equipment,
             ItemSubTypeFilter.Food,
             ItemSubTypeFilter.Costume,
@@ -42,6 +50,9 @@ namespace Nekoyume.UI.Module
         private readonly Dictionary<ItemSubTypeFilter, List<ItemSubTypeFilter>> _toggleSubTypes =
             new Dictionary<ItemSubTypeFilter, List<ItemSubTypeFilter>>()
         {
+            {
+                ItemSubTypeFilter.All, new List<ItemSubTypeFilter>()
+            },
             {
                 ItemSubTypeFilter.Equipment, new List<ItemSubTypeFilter>()
                 {
@@ -138,48 +149,13 @@ namespace Nekoyume.UI.Module
                 subItems.RemoveAll(removeList.Contains);
             }
 
-            //
-            // itemSubTypeFilter.AddOptions(new[]
-            //     {
-            //         ItemSubTypeFilter.All,
-            //         ItemSubTypeFilter.Weapon,
-            //         ItemSubTypeFilter.Armor,
-            //         ItemSubTypeFilter.Belt,
-            //         ItemSubTypeFilter.Necklace,
-            //         ItemSubTypeFilter.Ring,
-            //         ItemSubTypeFilter.Food,
-            //         ItemSubTypeFilter.FullCostume,
-            //         ItemSubTypeFilter.HairCostume,
-            //         ItemSubTypeFilter.EarCostume,
-            //         ItemSubTypeFilter.EyeCostume,
-            //         ItemSubTypeFilter.TailCostume,
-            //         ItemSubTypeFilter.Title,
-            //     }
-            //     .Select(type => type == ItemSubTypeFilter.All
-            //         ? L10nManager.Localize("ALL")
-            //         : ((ItemSubType) Enum.Parse(typeof(ItemSubType), type.ToString()))
-            //         .GetLocalizedString())
-            //     .ToList());
-            //
-            // itemSubTypeFilter.onValueChanged.AsObservable()
-            //     .Select(index =>
-            //     {
-            //         try
-            //         {
-            //             return (ItemSubTypeFilter) index;
-            //         }
-            //         catch
-            //         {
-            //             return ItemSubTypeFilter.All;
-            //         }
-            //     })
-            //     .Subscribe(filter =>
-            //     {
-            //         SharedModel.itemSubTypeFilter = filter;
-            //         OnItemSubTypeFilterChanged();
-            //     })
-            //     .AddTo(gameObject);
-            //
+            previousPageButton.OnClickAsObservable().Subscribe(OnClickPreviousPage).AddTo(gameObject);
+            nextPageButton.OnClickAsObservable().Subscribe(OnClickNextPage).AddTo(gameObject);
+
+            _sortText = sortButton.GetComponentInChildren<TextMeshProUGUI>();
+            sortButton.OnClickAsObservable().Subscribe(OnClickSort).AddTo(gameObject);
+            sortOrderButton.OnClickAsObservable().Subscribe(OnClickSortOrder).AddTo(gameObject);
+
             // sortFilter.AddOptions(new[]
             //     {
             //         SortFilter.Class,
@@ -207,12 +183,7 @@ namespace Nekoyume.UI.Module
             //     })
             //     .AddTo(gameObject);
             //
-            previousPageButton.OnClickAsObservable()
-                .Subscribe(OnPreviousPageButtonClick)
-                .AddTo(gameObject);
-            nextPageButton.OnClickAsObservable()
-                .Subscribe(OnNextPageButtonClick)
-                .AddTo(gameObject);
+
             //
             // refreshButtonTouchHandler.OnClick.Subscribe(_ =>
             // {
@@ -225,7 +196,6 @@ namespace Nekoyume.UI.Module
 
         private void OnEnable()
         {
-            toggleDropdowns.First().isOn = false;
             toggleDropdowns.First().isOn = true;
 
             // itemSubTypeFilter.SetValueWithoutNotify(0);
@@ -321,7 +291,7 @@ namespace Nekoyume.UI.Module
             SharedModel.ResetItemSubTypeProducts();
         }
 
-        private void OnPreviousPageButtonClick(Unit unit)
+        private void OnClickPreviousPage(Unit unit)
         {
             if (_filteredPageIndex == 0)
             {
@@ -340,7 +310,7 @@ namespace Nekoyume.UI.Module
             UpdateViewWithFilteredPageIndex(SharedModel.ItemSubTypeProducts.Value);
         }
 
-        private void OnNextPageButtonClick(Unit unit)
+        private void OnClickNextPage(Unit unit)
         {
             var count = SharedModel.ItemSubTypeProducts.Value.Count;
 
@@ -361,15 +331,38 @@ namespace Nekoyume.UI.Module
             UpdateViewWithFilteredPageIndex(SharedModel.ItemSubTypeProducts.Value);
         }
 
+        private void OnClickSort(Unit unit)
+        {
+            int count = Enum.GetNames(typeof(SortFilter)).Length;
+            _sortFilter = (int) _sortFilter < count - 1 ? _sortFilter + 1 : 0;
+            _sortText.text = L10nManager.Localize($"UI_{_sortFilter.ToString().ToUpper()}");
+
+            SharedModel.sortFilter = _sortFilter;
+            OnSortFilterChanged();
+            // OnItemSubTypeFilterChanged();
+        }
+
+        private void OnClickSortOrder(Unit unit)
+        {
+            var scale = sortOrderIcon.localScale;
+            scale.y *= -1;
+            sortOrderIcon.localScale = scale;
+
+            SharedModel.IsReverseOrder = !SharedModel.IsReverseOrder;
+            OnSortFilterChanged();
+            // OnItemSubTypeFilterChanged();
+        }
+
         private string FilterSubTypeToString(ItemSubTypeFilter type)
         {
             switch (type)
             {
                 case ItemSubTypeFilter.All:
-                case ItemSubTypeFilter.Food:
-                case ItemSubTypeFilter.Equipment:
-                case ItemSubTypeFilter.Costume:
                     return L10nManager.Localize("ALL");
+                case ItemSubTypeFilter.Equipment:
+                    return L10nManager.Localize("UI_EQUIPMENTS");
+                case ItemSubTypeFilter.Costume:
+                    return L10nManager.Localize("UI_COSTUME");
 
                 case ItemSubTypeFilter.Food_HP:
                     return StatType.HP.ToString();
