@@ -6,12 +6,13 @@ namespace Nekoyume.Action
     [Serializable]
     public class WeeklyArenaStateAlreadyEndedException : Exception
     {
+        public const string BaseMessage = "Aborted as the weekly arena state already ended.";
+        
         public WeeklyArenaStateAlreadyEndedException(string message) : base(message)
         {
         }
 
-        public WeeklyArenaStateAlreadyEndedException()
-            : this("Aborted as the weekly arena state already ended.")
+        public WeeklyArenaStateAlreadyEndedException() : base(BaseMessage)
         {
         }
 

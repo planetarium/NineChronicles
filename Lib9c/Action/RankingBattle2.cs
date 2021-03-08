@@ -43,40 +43,44 @@ namespace Nekoyume.Action
                     .MarkBalanceChanged(GoldCurrencyMock, ctx.Signer, WeeklyArenaAddress);
             }
 
+            var addressesHex = GetSignerAndOtherAddressesHex(context, AvatarAddress, EnemyAddress);
+            
             var sw = new Stopwatch();
             sw.Start();
             var started = DateTimeOffset.UtcNow;
-            Log.Debug(
-                "RankingBattle exec started. costume: ({CostumeIds}), equipment: ({EquipmentIds})",
+            Log.Verbose(
+                "{AddressesHex}RankingBattle exec started. costume: ({CostumeIds}), equipment: ({EquipmentIds})",
+                addressesHex,
                 string.Join(",", costumeIds),
                 string.Join(",", equipmentIds)
             );
 
             if (AvatarAddress.Equals(EnemyAddress))
             {
-                throw new InvalidAddressException("Aborted as the signer tried to battle for themselves.");
+                throw new InvalidAddressException($"{addressesHex}Aborted as the signer tried to battle for themselves.");
             }
 
             if (!states.TryGetAvatarState(ctx.Signer, AvatarAddress, out var avatarState))
             {
-                throw new FailedLoadStateException("Aborted as the avatar state of the signer was failed to load.");
+                throw new FailedLoadStateException($"{addressesHex}Aborted as the avatar state of the signer was failed to load.");
             }
 
             sw.Stop();
-            Log.Debug("RankingBattle Get AgentAvatarStates: {Elapsed}", sw.Elapsed);
+            Log.Verbose("{AddressesHex}RankingBattle Get AgentAvatarStates: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();
 
             avatarState.ValidateEquipments(equipmentIds, context.BlockIndex);
             avatarState.ValidateConsumable(consumableIds, context.BlockIndex);
 
             sw.Stop();
-            Log.Debug("RankingBattle Validate Equipments: {Elapsed}", sw.Elapsed);
+            Log.Verbose("{AddressesHex}RankingBattle Validate Equipments: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();
 
             if (!avatarState.worldInformation.TryGetUnlockedWorldByStageClearedBlockIndex(out var world) ||
                 world.StageClearedId < GameConfig.RequireClearedStageLevel.ActionsInRankingBoard)
             {
                 throw new NotEnoughClearedStageLevelException(
+                    addressesHex,
                     GameConfig.RequireClearedStageLevel.ActionsInRankingBoard,
                     world.StageClearedId);
             }
@@ -86,40 +90,42 @@ namespace Nekoyume.Action
             avatarState.ValidateCostume(new HashSet<int>(costumeIds));
 
             sw.Stop();
-            Log.Debug("RankingBattle Equip Equipments: {Elapsed}", sw.Elapsed);
+            Log.Verbose("{AddressesHex}RankingBattle Equip Equipments: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();
 
             var enemyAvatarState = states.GetAvatarState(EnemyAddress);
             if (enemyAvatarState is null)
             {
-                throw new FailedLoadStateException($"Aborted as the avatar state of the opponent ({EnemyAddress}) was failed to load.");
+                throw new FailedLoadStateException($"{addressesHex}Aborted as the avatar state of the opponent ({EnemyAddress}) was failed to load.");
             }
 
             sw.Stop();
-            Log.Debug("RankingBattle Get Enemy AvatarState: {Elapsed}", sw.Elapsed);
+            Log.Verbose("{AddressesHex}RankingBattle Get Enemy AvatarState: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();
 
             var weeklyArenaState = states.GetWeeklyArenaState(WeeklyArenaAddress);
 
             sw.Stop();
-            Log.Debug("RankingBattle Get WeeklyArenaState ({Address}): {Elapsed}", WeeklyArenaAddress, sw.Elapsed);
+            Log.Verbose("{AddressesHex}RankingBattle Get WeeklyArenaState ({Address}): {Elapsed}", addressesHex, WeeklyArenaAddress, sw.Elapsed);
             sw.Restart();
 
             if (weeklyArenaState.Ended)
             {
-                throw new WeeklyArenaStateAlreadyEndedException();
+                throw new WeeklyArenaStateAlreadyEndedException(
+                    addressesHex + WeeklyArenaStateAlreadyEndedException.BaseMessage);
             }
 
             if (!weeklyArenaState.ContainsKey(AvatarAddress))
             {
-                throw new WeeklyArenaStateNotContainsAvatarAddressException(AvatarAddress);
+                throw new WeeklyArenaStateNotContainsAvatarAddressException(addressesHex, AvatarAddress);
             }
 
             var arenaInfo = weeklyArenaState[AvatarAddress];
 
             if (arenaInfo.DailyChallengeCount <= 0)
             {
-                throw new NotEnoughWeeklyArenaChallengeCountException();
+                throw new NotEnoughWeeklyArenaChallengeCountException(
+                    addressesHex + NotEnoughWeeklyArenaChallengeCountException.BaseMessage);
             }
 
             if (!arenaInfo.Active)
@@ -129,17 +135,17 @@ namespace Nekoyume.Action
 
             if (!weeklyArenaState.ContainsKey(EnemyAddress))
             {
-                throw new WeeklyArenaStateNotContainsAvatarAddressException(EnemyAddress);
+                throw new WeeklyArenaStateNotContainsAvatarAddressException(addressesHex, EnemyAddress);
             }
 
             sw.Stop();
-            Log.Debug("RankingBattle Validate ArenaInfo: {Elapsed}", sw.Elapsed);
+            Log.Verbose("{AddressesHex}RankingBattle Validate ArenaInfo: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();
 
             var costumeStatSheet = states.GetSheet<CostumeStatSheet>();
 
             sw.Stop();
-            Log.Debug("RankingBattle Get CostumeStatSheet: {Elapsed}", sw.Elapsed);
+            Log.Verbose("{AddressesHex}RankingBattle Get CostumeStatSheet: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();
 
             var simulator = new RankingSimulator(
@@ -156,15 +162,17 @@ namespace Nekoyume.Action
             simulator.Simulate();
 
             sw.Stop();
-            Log.Debug(
-                "RankingBattle Simulate() with equipment:({Equipment}), costume:({Costume}): {Elapsed}",
+            Log.Verbose(
+                "{AddressesHex}RankingBattle Simulate() with equipment:({Equipment}), costume:({Costume}): {Elapsed}",
+                addressesHex,
                 string.Join(",", simulator.Player.Equipments.Select(r => r.ItemId)),
                 string.Join(",", simulator.Player.Costumes.Select(r => r.ItemId)),
                 sw.Elapsed
             );
 
-            Log.Debug(
-                "Execute RankingBattle({AvatarAddress}); result: {Result} event count: {EventCount}",
+            Log.Verbose(
+                "{AddressesHex}Execute RankingBattle({AvatarAddress}); result: {Result} event count: {EventCount}",
+                addressesHex,
                 AvatarAddress,
                 simulator.Log.result,
                 simulator.Log.Count
@@ -175,24 +183,28 @@ namespace Nekoyume.Action
 
             foreach (var itemBase in simulator.Reward.OrderBy(i => i.Id))
             {
-                Log.Debug($"RankingBattle Add Reward Item({itemBase.Id}): {{Elapsed}}", sw.Elapsed);
+                Log.Verbose(
+                    "{AddressesHex}RankingBattle Add Reward Item({ItemBaseId}): {Elapsed}",
+                    addressesHex,
+                    itemBase.Id,
+                    sw.Elapsed);
                 avatarState.inventory.AddItem(itemBase);
             }
 
             states = states.SetState(WeeklyArenaAddress, weeklyArenaState.Serialize());
 
             sw.Stop();
-            Log.Debug("RankingBattle Serialize WeeklyArenaState: {Elapsed}", sw.Elapsed);
+            Log.Verbose("{AddressesHex}RankingBattle Serialize WeeklyArenaState: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();
 
             states = states.SetState(AvatarAddress, avatarState.Serialize());
 
             sw.Stop();
-            Log.Debug("RankingBattle Serialize AvatarState: {Elapsed}", sw.Elapsed);
+            Log.Verbose("{AddressesHex}RankingBattle Serialize AvatarState: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();
 
             var ended = DateTimeOffset.UtcNow;
-            Log.Debug("RankingBattle Total Executed Time: {Elapsed}", ended - started);
+            Log.Verbose("{AddressesHex}RankingBattle Total Executed Time: {Elapsed}", addressesHex, ended - started);
             return states;
         }
 

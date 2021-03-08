@@ -45,44 +45,47 @@ namespace Nekoyume.Action
                 states = states.SetState(sellerAvatarAddress, MarkChanged);
                 return states.SetState(ctx.Signer, MarkChanged);
             }
+
+            var addressesHex = GetSignerAndOtherAddressesHex(context, sellerAvatarAddress);
+            
             var sw = new Stopwatch();
             sw.Start();
             var started = DateTimeOffset.UtcNow;
-            Log.Debug("Sell exec started.");
+            Log.Verbose("{AddressesHex}Sell exec started", addressesHex);
 
 
             if (price.Sign < 0)
             {
-                throw new InvalidPriceException($"Aborted as the price is less than zero: {price}.");
+                throw new InvalidPriceException($"{addressesHex}Aborted as the price is less than zero: {price}.");
             }
 
             if (!states.TryGetAgentAvatarStates(ctx.Signer, sellerAvatarAddress, out AgentState agentState, out AvatarState avatarState))
             {
-                throw new FailedLoadStateException("Aborted as the avatar state of the signer was failed to load.");
+                throw new FailedLoadStateException($"{addressesHex}Aborted as the avatar state of the signer was failed to load.");
             }
             sw.Stop();
-            Log.Debug("Sell Get AgentAvatarStates: {Elapsed}", sw.Elapsed);
+            Log.Verbose("{AddressesHex}Sell Get AgentAvatarStates: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();
 
             if (!avatarState.worldInformation.IsStageCleared(GameConfig.RequireClearedStageLevel.ActionsInShop))
             {
                 avatarState.worldInformation.TryGetLastClearedStageId(out var current);
-                throw new NotEnoughClearedStageLevelException(GameConfig.RequireClearedStageLevel.ActionsInShop, current);
+                throw new NotEnoughClearedStageLevelException(addressesHex, GameConfig.RequireClearedStageLevel.ActionsInShop, current);
             }
 
-            Log.Debug("Sell IsStageCleared: {Elapsed}", sw.Elapsed);
+            Log.Verbose("{AddressesHex}Sell IsStageCleared: {Elapsed}", addressesHex, sw.Elapsed);
 
             sw.Restart();
 
             if (!states.TryGetState(ShopState.Address, out Bencodex.Types.Dictionary shopStateDict))
             {
-                throw new FailedLoadStateException("Aborted as the shop state was failed to load.");
+                throw new FailedLoadStateException($"{addressesHex}Aborted as the shop state was failed to load.");
             }
 
-            Log.Debug("Sell Get ShopState: {Elapsed}", sw.Elapsed);
+            Log.Verbose("{AddressesHex}Sell Get ShopState: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();
 
-            Log.Debug("Execute Sell; seller: {SellerAvatarAddress}", sellerAvatarAddress);
+            Log.Verbose("{AddressesHex}Execute Sell; seller: {SellerAvatarAddress}", addressesHex, sellerAvatarAddress);
 
             var productId = context.Random.GenerateRandomGuid();
             ShopItem shopItem;
@@ -91,7 +94,7 @@ namespace Nekoyume.Action
             {
                 if (itemUsable.RequiredBlockIndex > context.BlockIndex)
                 {
-                    throw new RequiredBlockIndexException($"Aborted as the itemUsable to enhance ({itemId}) is not available yet; it will be available at the block #{itemUsable.RequiredBlockIndex}.");
+                    throw new RequiredBlockIndexException($"{addressesHex}Aborted as the itemUsable to enhance ({itemId}) is not available yet; it will be available at the block #{itemUsable.RequiredBlockIndex}.");
                 }
             }
 
@@ -126,7 +129,7 @@ namespace Nekoyume.Action
             else
             {
                 throw new ItemDoesNotExistException(
-                    $"Aborted as the NonFungibleItem ({itemId}) was failed to load from avatar's inventory.");
+                    $"{addressesHex}Aborted as the NonFungibleItem ({itemId}) was failed to load from avatar's inventory.");
             }
 
             IValue shopItemSerialized = shopItem.Serialize();
@@ -137,7 +140,7 @@ namespace Nekoyume.Action
             shopStateDict = shopStateDict.SetItem("products", products);
 
             sw.Stop();
-            Log.Debug("Sell Get Register Item: {Elapsed}", sw.Elapsed);
+            Log.Verbose("{AddressesHex}Sell Get Register Item: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();
 
             avatarState.updatedAt = ctx.BlockIndex;
@@ -145,14 +148,14 @@ namespace Nekoyume.Action
 
             states = states.SetState(sellerAvatarAddress, avatarState.Serialize());
             sw.Stop();
-            Log.Debug("Sell Set AvatarState: {Elapsed}", sw.Elapsed);
+            Log.Verbose("{AddressesHex}Sell Set AvatarState: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();
 
             states = states.SetState(ShopState.Address, shopStateDict);
             sw.Stop();
             var ended = DateTimeOffset.UtcNow;
-            Log.Debug("Sell Set ShopState: {Elapsed}", sw.Elapsed);
-            Log.Debug("Sell Total Executed Time: {Elapsed}", ended - started);
+            Log.Verbose("{AddressesHex}Sell Set ShopState: {Elapsed}", addressesHex, sw.Elapsed);
+            Log.Verbose("{AddressesHex}Sell Total Executed Time: {Elapsed}", addressesHex, ended - started);
 
             return states;
         }

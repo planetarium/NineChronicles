@@ -12,6 +12,7 @@ namespace Nekoyume.Model.Item
     [Serializable]
     public class ShopItem
     {
+        public const string ExpiredBlockIndexKey = "ebi";
         protected static readonly Codec Codec = new Codec();
         
         public readonly Address SellerAgentAddress;
@@ -20,33 +21,63 @@ namespace Nekoyume.Model.Item
         public readonly FungibleAssetValue Price;
         public readonly ItemUsable ItemUsable;
         public readonly Costume Costume;
+        private long _expiredBlockIndex;
 
-        public ShopItem(Address sellerAgentAddress,
-            Address sellerAvatarAddress,
-            Guid productId,
-            FungibleAssetValue price,
-            ItemUsable itemUsable)
+        public long ExpiredBlockIndex
         {
-            SellerAgentAddress = sellerAgentAddress;
-            SellerAvatarAddress = sellerAvatarAddress;
-            ProductId = productId;
-            Price = price;
-            ItemUsable = itemUsable;
-            Costume = null;
+            get => _expiredBlockIndex;
+            private set
+            {
+                if (value < 0)
+                {
+                    throw new ArgumentOutOfRangeException($"{nameof(ExpiredBlockIndex)} must be 0 or more, but {value}");
+                }
+
+                _expiredBlockIndex = value;
+            }
         }
 
         public ShopItem(Address sellerAgentAddress,
             Address sellerAvatarAddress,
             Guid productId,
             FungibleAssetValue price,
-            Costume costume)
+            ItemUsable itemUsable) : this(sellerAgentAddress, sellerAvatarAddress, productId, price, 0, itemUsable)
+        {
+        }
+
+        public ShopItem(Address sellerAgentAddress,
+            Address sellerAvatarAddress,
+            Guid productId,
+            FungibleAssetValue price,
+            Costume costume) : this(sellerAgentAddress, sellerAvatarAddress, productId, price, 0, costume)
+        {
+        }
+
+        public ShopItem(
+            Address sellerAgentAddress,
+            Address sellerAvatarAddress,
+            Guid productId,
+            FungibleAssetValue price,
+            long expiredBlockIndex,
+            INonFungibleItem nonFungibleItem
+        )
         {
             SellerAgentAddress = sellerAgentAddress;
             SellerAvatarAddress = sellerAvatarAddress;
             ProductId = productId;
             Price = price;
-            ItemUsable = null;
-            Costume = costume;
+            ExpiredBlockIndex = expiredBlockIndex;
+            switch (nonFungibleItem)
+            {
+                case ItemUsable itemUsable:
+                    ItemUsable = itemUsable;
+                    Costume = null;
+                    break;
+                case Costume costume:
+                    ItemUsable = null;
+                    Costume = costume;
+                    break;
+            }
         }
 
         public ShopItem(Dictionary serialized)
@@ -61,6 +92,10 @@ namespace Nekoyume.Model.Item
             Costume = serialized.ContainsKey("costume")
                 ? (Costume) ItemFactory.Deserialize((Dictionary) serialized["costume"])
                 : null;
+            if (serialized.ContainsKey(ExpiredBlockIndexKey))
+            {
+                ExpiredBlockIndex = serialized[ExpiredBlockIndexKey].ToLong();
+            }
         }
         
         protected ShopItem(SerializationInfo info, StreamingContext _)
@@ -96,6 +131,11 @@ namespace Nekoyume.Model.Item
             if (Costume != null)
             {
                 innerDictionary.Add((Text) "costume", Costume.Serialize());
+            }
+
+            if (ExpiredBlockIndex != 0)
+            {
+                innerDictionary.Add((Text) ExpiredBlockIndexKey, ExpiredBlockIndex.Serialize());
             }
 
             return new Dictionary(innerDictionary);

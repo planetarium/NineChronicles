@@ -6,6 +6,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
 using System.Linq;
 using System.Numerics;
+using System.Text;
 using Bencodex;
 using Bencodex.Types;
 using Libplanet;
@@ -273,6 +274,25 @@ namespace Nekoyume.Action
                     return (T)formatter.Deserialize(stream);
                 }
             }
+        }
+
+        /// <summary>
+        /// returns "[Signer Address, AvatarState Address, ...]"
+        /// </summary>
+        /// <param name="ctx"></param>
+        /// <param name="addresses"></param>
+        /// <returns></returns>
+        protected string GetSignerAndOtherAddressesHex(IActionContext ctx, params Address[] addresses)
+        {
+            StringBuilder sb = new StringBuilder($"[{ctx.Signer.ToHex()}");
+
+            foreach (Address address in addresses)
+            {
+                sb.Append($", {address.ToHex()}");
+            }
+
+            sb.Append("]");
+            return sb.ToString();
         }
 
         protected IAccountStateDelta LogError(IActionContext context, string message, params object[] values)

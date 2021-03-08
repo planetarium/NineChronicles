@@ -42,11 +42,13 @@ namespace Nekoyume.Action
                     .SetState(ctx.Signer, MarkChanged)
                     .MarkBalanceChanged(GoldCurrencyMock, ctx.Signer, WeeklyArenaAddress);
             }
+            
+            var addressesHex = GetSignerAndOtherAddressesHex(context, AvatarAddress, EnemyAddress);
 
-            Log.Warning($"{nameof(RankingBattle)} is deprecated. Please use ${nameof(RankingBattle2)}");
+            Log.Warning("ranking_battle is deprecated. Please use ranking_battle2");
             if (AvatarAddress.Equals(EnemyAddress))
             {
-                throw new InvalidAddressException("Aborted as the signer tried to battle for themselves.");
+                throw new InvalidAddressException($"{addressesHex}Aborted as the signer tried to battle for themselves.");
             }
 
             if (!states.TryGetAgentAvatarStates(
@@ -55,7 +57,7 @@ namespace Nekoyume.Action
                 out var agentState,
                 out var avatarState))
             {
-                throw new FailedLoadStateException("Aborted as the avatar state of the signer was failed to load.");
+                throw new FailedLoadStateException($"{addressesHex}Aborted as the avatar state of the signer was failed to load.");
             }
 
             var costumes = new HashSet<int>(costumeIds);
@@ -68,6 +70,7 @@ namespace Nekoyume.Action
                 world.StageClearedId < GameConfig.RequireClearedStageLevel.ActionsInRankingBoard)
             {
                 throw new NotEnoughClearedStageLevelException(
+                    addressesHex,
                     GameConfig.RequireClearedStageLevel.ActionsInRankingBoard,
                     world.StageClearedId);
             }
@@ -78,26 +81,28 @@ namespace Nekoyume.Action
             var enemyAvatarState = states.GetAvatarState(EnemyAddress);
             if (enemyAvatarState is null)
             {
-                throw new FailedLoadStateException($"Aborted as the avatar state of the opponent ({EnemyAddress}) was failed to load.");
+                throw new FailedLoadStateException($"{addressesHex}Aborted as the avatar state of the opponent ({EnemyAddress}) was failed to load.");
             }
 
             var weeklyArenaState = states.GetWeeklyArenaState(WeeklyArenaAddress);
 
             if (weeklyArenaState.Ended)
             {
-                throw new WeeklyArenaStateAlreadyEndedException();
+                throw new WeeklyArenaStateAlreadyEndedException(
+                    addressesHex + WeeklyArenaStateAlreadyEndedException.BaseMessage);
             }
 
             if (!weeklyArenaState.ContainsKey(AvatarAddress))
             {
-                throw new WeeklyArenaStateNotContainsAvatarAddressException(AvatarAddress);
+                throw new WeeklyArenaStateNotContainsAvatarAddressException(addressesHex, AvatarAddress);
             }
 
             var arenaInfo = weeklyArenaState[AvatarAddress];
 
             if (arenaInfo.DailyChallengeCount <= 0)
             {
-                throw new NotEnoughWeeklyArenaChallengeCountException();
+                throw new NotEnoughWeeklyArenaChallengeCountException(
+                    addressesHex + NotEnoughWeeklyArenaChallengeCountException.BaseMessage);
             }
 
             if (!arenaInfo.Active)
@@ -109,7 +114,7 @@ namespace Nekoyume.Action
                 }
                 catch (InvalidOperationException)
                 {
-                    throw new NotEnoughFungibleAssetValueException(EntranceFee, agentBalance);
+                    throw new NotEnoughFungibleAssetValueException(addressesHex, EntranceFee, agentBalance);
                 }
 
                 if (agentBalance >= new FungibleAssetValue(agentBalance.Currency, EntranceFee, 0))
@@ -127,16 +132,16 @@ namespace Nekoyume.Action
                 }
                 else
                 {
-                    throw new NotEnoughFungibleAssetValueException(EntranceFee, agentBalance);
+                    throw new NotEnoughFungibleAssetValueException(addressesHex, EntranceFee, agentBalance);
                 }
             }
 
             if (!weeklyArenaState.ContainsKey(EnemyAddress))
             {
-                throw new WeeklyArenaStateNotContainsAvatarAddressException(EnemyAddress);
+                throw new WeeklyArenaStateNotContainsAvatarAddressException(addressesHex, EnemyAddress);
             }
 
-            Log.Debug(weeklyArenaState.address.ToHex());
+            Log.Verbose("{WeeklyArenaStateAddress}", weeklyArenaState.address.ToHex());
 
             var simulator = new RankingSimulator(
                 ctx.Random,

@@ -59,41 +59,50 @@ namespace Nekoyume.Action
                         GoldCurrencyState.Address);
                 return states.SetState(ShopState.Address, MarkChanged);
             }
+            
+            var addressesHex = GetSignerAndOtherAddressesHex(context, buyerAvatarAddress, sellerAvatarAddress);
 
             if (ctx.Signer.Equals(sellerAgentAddress))
             {
-                throw new InvalidAddressException("Aborted as the signer is the seller.");
+                throw new InvalidAddressException($"{addressesHex}Aborted as the signer is the seller.");
             }
 
             var sw = new Stopwatch();
             sw.Start();
             var started = DateTimeOffset.UtcNow;
-            Log.Debug("Buy exec started.");
+            Log.Verbose("{AddressesHex}Buy exec started", addressesHex);
 
             if (!states.TryGetAvatarState(ctx.Signer, buyerAvatarAddress, out var buyerAvatarState))
             {
-                throw new FailedLoadStateException("Aborted as the avatar state of the buyer was failed to load.");
+                throw new FailedLoadStateException($"{addressesHex}Aborted as the avatar state of the buyer was failed to load.");
             }
             sw.Stop();
-            Log.Debug("Buy Get Buyer AgentAvatarStates: {Elapsed}", sw.Elapsed);
+            Log.Verbose("{AddressesHex}Buy Get Buyer AgentAvatarStates: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();
 
             if (!buyerAvatarState.worldInformation.IsStageCleared(GameConfig.RequireClearedStageLevel.ActionsInShop))
             {
                 buyerAvatarState.worldInformation.TryGetLastClearedStageId(out var current);
-                throw new NotEnoughClearedStageLevelException(GameConfig.RequireClearedStageLevel.ActionsInShop, current);
+                throw new NotEnoughClearedStageLevelException(
+                    addressesHex,
+                    GameConfig.RequireClearedStageLevel.ActionsInShop,
+                    current);
             }
 
             if (!states.TryGetState(ShopState.Address, out Bencodex.Types.Dictionary shopStateDict))
             {
-                throw new FailedLoadStateException("Aborted as the shop state was failed to load.");
+                throw new FailedLoadStateException($"{addressesHex}Aborted as the shop state was failed to load.");
             }
 
             sw.Stop();
-            Log.Debug("Buy Get ShopState: {Elapsed}", sw.Elapsed);
+            Log.Verbose("{AddressesHex}Buy Get ShopState: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();
 
-            Log.Debug("Execute Buy; buyer: {Buyer} seller: {Seller}", buyerAvatarAddress, sellerAvatarAddress);
+            Log.Verbose(
+                "{AddressesHex}Execute Buy; buyer: {Buyer} seller: {Seller}",
+                addressesHex,
+                buyerAvatarAddress,
+                sellerAvatarAddress);
             // 상점에서 구매할 아이템을 찾는다.
             Dictionary products = (Dictionary)shopStateDict["products"];
 
@@ -101,7 +110,7 @@ namespace Nekoyume.Action
             if (!products.ContainsKey(productIdSerialized))
             {
                 throw new ItemDoesNotExistException(
-                    $"Aborted as the shop item ({productId}) was failed to get from the shop."
+                    $"{addressesHex}Aborted as the shop item ({productId}) was failed to get from the shop."
                 );
             }
 
@@ -109,21 +118,21 @@ namespace Nekoyume.Action
             if (!shopItem.SellerAgentAddress.Equals(sellerAgentAddress))
             {
                 throw new ItemDoesNotExistException(
-                    $"Aborted as the shop item ({productId}) of seller ({shopItem.SellerAgentAddress}) is different from ({sellerAgentAddress})."
+                    $"{addressesHex}Aborted as the shop item ({productId}) of seller ({shopItem.SellerAgentAddress}) is different from ({sellerAgentAddress})."
                 );
             }
             sw.Stop();
-            Log.Debug($"Buy Get Item: {sw.Elapsed}");
+            Log.Verbose("{AddressesHex}Buy Get Item: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();
 
             if (!states.TryGetAvatarState(sellerAgentAddress, sellerAvatarAddress, out var sellerAvatarState))
             {
                 throw new FailedLoadStateException(
-                    $"Aborted as the seller agent/avatar was failed to load from {sellerAgentAddress}/{sellerAvatarAddress}."
+                    $"{addressesHex}Aborted as the seller agent/avatar was failed to load from {sellerAgentAddress}/{sellerAvatarAddress}."
                 );
             }
             sw.Stop();
-            Log.Debug($"Buy Get Seller AgentAvatarStates: {sw.Elapsed}");
+            Log.Verbose("{AddressesHex}Buy Get Seller AgentAvatarStates: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();
 
             // 돈은 있냐?
@@ -133,7 +142,7 @@ namespace Nekoyume.Action
                 throw new InsufficientBalanceException(
                     ctx.Signer,
                     buyerBalance,
-                    $"Aborted as the buyer ({ctx.Signer}) has no sufficient gold: {buyerBalance} < {shopItem.Price}"
+                    $"{addressesHex}Aborted as the buyer ({ctx.Signer}) has no sufficient gold: {buyerBalance} < {shopItem.Price}"
                 );
             }
 
@@ -204,19 +213,19 @@ namespace Nekoyume.Action
 
             states = states.SetState(sellerAvatarAddress, sellerAvatarState.Serialize());
             sw.Stop();
-            Log.Debug("Buy Set Seller AvatarState: {Elapsed}", sw.Elapsed);
+            Log.Verbose("{AddressesHex}Buy Set Seller AvatarState: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();
 
             states = states.SetState(buyerAvatarAddress, buyerAvatarState.Serialize());
             sw.Stop();
-            Log.Debug("Buy Set Buyer AvatarState: {Elapsed}", sw.Elapsed);
+            Log.Verbose("{AddressesHex}Buy Set Buyer AvatarState: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();
 
             states = states.SetState(ShopState.Address, shopStateDict);
             sw.Stop();
             var ended = DateTimeOffset.UtcNow;
-            Log.Debug("Buy Set ShopState: {Elapsed}", sw.Elapsed);
-            Log.Debug("Buy Total Executed Time: {Elapsed}", ended - started);
+            Log.Verbose("{AddressesHex}Buy Set ShopState: {Elapsed}", addressesHex, sw.Elapsed);
+            Log.Verbose("{AddressesHex}Buy Total Executed Time: {Elapsed}", addressesHex, ended - started);
 
             return states;
         }

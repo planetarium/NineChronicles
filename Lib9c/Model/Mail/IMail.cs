@@ -7,5 +7,6 @@ namespace Nekoyume.Model.Mail
         void Read(BuyerMail buyerMail);
         void Read(SellerMail sellerMail);
         void Read(ItemEnhanceMail itemEnhanceMail);
+        void Read(DailyRewardMail dailyRewardMail);
     }
 }

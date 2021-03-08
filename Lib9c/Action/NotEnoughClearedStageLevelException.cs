@@ -10,8 +10,8 @@ namespace Nekoyume.Action
         {
         }
 
-        public NotEnoughClearedStageLevelException(int require, int current) : this(
-            $"Aborted as the signer is not cleared the minimum stage level required: {current} < {require}.")
+        public NotEnoughClearedStageLevelException(string addressesHex, int require, int current) : this(
+            $"{addressesHex}Aborted as the signer is not cleared the minimum stage level required: {current} < {require}.")
         {
         }
 

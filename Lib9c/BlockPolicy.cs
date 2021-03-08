@@ -17,6 +17,16 @@ namespace Nekoyume.BlockChain
         private readonly long _minimumDifficulty;
         private readonly long _difficultyBoundDivisor;
 
+        /// <summary>
+        /// Whether to ignore or respect hardcoded block indices to make older
+        /// blocks compatible with the latest rules.  If it's turned off
+        /// (by default) older blocks pass some new rules by force.
+        /// Therefore, on the mainnet this should be turned off.
+        /// This option is made mainly due to unit tests.  Turning on this
+        /// option can be useful for tests.
+        /// </summary>
+        internal readonly bool IgnoreHardcodedIndicesForBackwardCompatibility;
+
         public BlockPolicy(
             IAction blockAction,
             TimeSpan blockInterval,
@@ -26,7 +36,8 @@ namespace Nekoyume.BlockChain
             int maxBlockBytes,
             int maxGenesisBytes,
             Func<Transaction<NCAction>, BlockChain<NCAction>, bool> doesTransactionFollowPolicy = null
-        ) : base(
+        )
+            : this(
                 blockAction: blockAction,
                 blockInterval: blockInterval,
                 minimumDifficulty: minimumDifficulty,
@@ -34,10 +45,38 @@ namespace Nekoyume.BlockChain
                 maxTransactionsPerBlock: maxTransactionsPerBlock,
                 maxBlockBytes: maxBlockBytes,
                 maxGenesisBytes: maxGenesisBytes,
-                doesTransactionFollowPolicy: doesTransactionFollowPolicy)
+                ignoreHardcodedIndicesForBackwardCompatibility: false,
+                doesTransactionFollowPolicy: doesTransactionFollowPolicy
+            )
+        {
+        }
+
+        internal BlockPolicy(
+            IAction blockAction,
+            TimeSpan blockInterval,
+            long minimumDifficulty,
+            int difficultyBoundDivisor,
+            int maxTransactionsPerBlock,
+            int maxBlockBytes,
+            int maxGenesisBytes,
+            bool ignoreHardcodedIndicesForBackwardCompatibility,
+            Func<Transaction<NCAction>, BlockChain<NCAction>, bool> doesTransactionFollowPolicy = null
+        )
+            : base(
+                blockAction: blockAction,
+                blockInterval: blockInterval,
+                minimumDifficulty: minimumDifficulty,
+                difficultyBoundDivisor: difficultyBoundDivisor,
+                maxTransactionsPerBlock: maxTransactionsPerBlock,
+                maxBlockBytes: maxBlockBytes,
+                maxGenesisBytes: maxGenesisBytes,
+                doesTransactionFollowPolicy: doesTransactionFollowPolicy
+            )
         {
             _minimumDifficulty = minimumDifficulty;
             _difficultyBoundDivisor = difficultyBoundDivisor;
+            IgnoreHardcodedIndicesForBackwardCompatibility =
+                ignoreHardcodedIndicesForBackwardCompatibility;
         }
 
         public AuthorizedMinersState AuthorizedMinersState { get; set; }
@@ -116,17 +155,40 @@ namespace Nekoyume.BlockChain
                 return null;
             }
 
-            bool minedByAuthorities = AuthorizedMinersState.Miners.Contains(miner);
-
-            if (minedByAuthorities)
+            if (!AuthorizedMinersState.Miners.Contains(miner))
             {
-                return null;
+                return new InvalidMinerException(
+                    $"The block #{block.Index} {block.Hash} is not mined by an authorized miner.",
+                    miner
+                );
             }
 
-            return new InvalidMinerException(
-                $"The given block[{block}] isn't mined by authorities.",
-                miner
-            );
+            // Authority should be proven through a no-op transaction (= txs with zero actions).
+            // (For backward compatibility, blocks before 1,200,000th don't have to be proven.
+            // Note that as of Feb 9, 2021, there are about 770,000+ blocks.)
+            Transaction<NCAction>[] txs = block.Transactions.ToArray();
+            if (!txs.Any(tx => tx.Signer.Equals(miner) && !tx.Actions.Any()) &&
+                block.ProtocolVersion > 0 &&
+                (IgnoreHardcodedIndicesForBackwardCompatibility || block.Index > 1_200_000))
+            {
+#if DEBUG
+                string debug =
+                    "  Note that there " +
+                    (txs.Length == 1 ? "is a transaction:" : $"are {txs.Length} transactions:") +
+                    txs.Select((tx, i) =>
+                            $"\n    {i}. {tx.Actions.Count} actions; signed by {tx.Signer}")
+                        .Aggregate(string.Empty, (a, b) => a + b);
+#else
+                const string debug = "";
+#endif
+                return new InvalidMinerException(
+                    $"The block #{block.Index} {block.Hash}'s miner {miner} should be proven by " +
+                    "including a no-op transaction by signed the same authority." + debug,
+                    miner
+                );
+            }
+
+            return null;
         }
 
         private bool IsTargetBlock(long blockIndex)
