@@ -39,7 +39,7 @@ visit [docs.nine-chronicles.com][9c-docs].
  1. Install Unity 2019.1.0f2 version
  1. Clone repository
     ```
-    git clone git@github.com:planetarium/nine-chronicles.git
+    git clone git@github.com:planetarium/NineChronicles.git
     ```
  1. Nagivate to the cloned directory and run the command:
     ```
