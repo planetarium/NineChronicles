@@ -1,10 +1,32 @@
 Nine Chronicles
 ===============
+![Nine Chronicles Banner][9c-banner]
 
 [![CircleCI][ci-badge]][ci]
+[![Discord][Discord-badge]][Discord]
+
+[Nine Chronicles][9c] is a fully open-sourced online RPG without servers — like Bitcoin or BitTorrent,
+the gamers and miners connect to each other to power a distributed game network.
+Set in a vast fantasy world, it is governed by [its players][Discord], and supported by a complex economy
+where supply and demand are the greatest currency.
+
+Decentralized infrastructure has created new possibilities for online gaming, where communities
+can become the actual owners of an online world. By fully open sourcing the repositories for
+Nine Chronicles, players and developers alike can use any part of the game, from the beautiful
+bespoke 2D assets to in-game logic and code.
+
+To learn more about the [codebase][9c-source-code-guide] and the [GraphQL API][9c-api-guide],
+visit [docs.nine-chronicles.com][9c-docs].
 
 [ci-badge]: https://circleci.com/gh/planetarium/nekoyume-unity.svg?style=svg&circle-token=ca79d4f6281fe60cdde55d0f1c3d97d561106bda
 [ci]: https://circleci.com/gh/planetarium/nekoyume-unity
+[Discord-badge]: https://img.shields.io/discord/539405872346955788.svg?color=7289da&logo=discord&logoColor=white
+[Discord]: https://discord.gg/planetarium
+[9c]: https://nine-chronicles.com
+[9c-docs]: https://docs.nine-chronicles.com
+[9c-api-guide]: https://docs.nine-chronicles.com/api-guide
+[9c-source-code-guide]: https://docs.nine-chronicles.com/source-code-guide
+[9c-banner]: docs/9c-banner.jpeg
 
 
 ### Dependency
@@ -17,7 +39,7 @@ Nine Chronicles
  1. Install Unity 2019.1.0f2 version
  1. Clone repository
     ```
-    git clone git@github.com:planetarium/nekoyume-unity.git
+    git clone git@github.com:planetarium/nine-chronicles.git
     ```
  1. Nagivate to the cloned directory and run the command:
     ```
@@ -84,7 +106,7 @@ Use the `Build` menu on the Unity Editor.
 
 #### Reading Order
 
-Peer options for network communication is read in the following order:  
+Peer options for network communication is read in the following order:
 
 1. Command Line parameter upon execution (`--peer`)
 2. (On Windows) `peers.dat` in `%USERPROFILE%\AppData\LocalLow\Planetarium`
@@ -96,7 +118,7 @@ Since the current project doesn't include option 3, the game will run in a singl
 
 Peer list is stored in plain text format and each line includes a node's `publickey,host-name,port,version`.
 
-Ex) 
+Ex)
 
 ```
    02ed49dbe0f2c34d9dff8335d6dd9097f7a3ef17dfb5f048382eebc7f451a50aa1,nekoyume1.koreacentral.cloudapp.azure.com,58598
@@ -104,7 +126,7 @@ Ex)
 ```
 
 - Host name and port must be public.
-    - If `--host` is not provided upon execution, the actual host name and port could be different from the original due to the automatic relay communication via STUN/TURN. 
+    - If `--host` is not provided upon execution, the actual host name and port could be different from the original due to the automatic relay communication via STUN/TURN.
       Therefore, nodes that are used as peers on other nodes must provide its `--host` option on execution.
 - Public key is a hexadecimal string derived from the `PrivateKey` that is used to create a `Swarm` object.
 
