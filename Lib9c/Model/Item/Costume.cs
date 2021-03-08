@@ -12,6 +12,7 @@ namespace Nekoyume.Model.Item
     public class Costume : ItemBase, INonFungibleItem, IEquippableItem
     {
         public const string RequiredBlockIndexKey = "rbi";
+        public const string ItemIdKey = "item_id";
         // FIXME: Do not use anymore please!
         public bool equipped = false;
         public string SpineResourcePath { get; }
@@ -53,7 +54,7 @@ namespace Nekoyume.Model.Item
                 SpineResourcePath = (Text) spineResourcePath;
             }
 
-            ItemId = serialized["item_id"].ToGuid();
+            ItemId = serialized[ItemIdKey].ToGuid();
 
             if (serialized.ContainsKey(RequiredBlockIndexKey))
             {
@@ -73,7 +74,7 @@ namespace Nekoyume.Model.Item
             {
                 [(Text) "equipped"] = equipped.Serialize(),
                 [(Text) "spine_resource_path"] = SpineResourcePath.Serialize(),
-                [(Text) "item_id"] = ItemId.Serialize()
+                [(Text) ItemIdKey] = ItemId.Serialize()
             };
             if (RequiredBlockIndex > 0)
             {

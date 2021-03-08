@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
+using System.Linq;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
@@ -109,13 +110,37 @@ namespace Nekoyume.Action
                 equipment.Unequip();
             }
             nonFungibleItem.Update(expiredBlockIndex);
-            var shopItem = new ShopItem(ctx.Signer, sellerAvatarAddress, productId, price, expiredBlockIndex, nonFungibleItem);
 
-            IValue shopItemSerialized = shopItem.Serialize();
-            IKey productIdSerialized = (IKey)productId.Serialize();
-
+            string productKey = nonFungibleItem is ItemUsable ? "itemUsable" : "costume";
+            string itemIdKey = nonFungibleItem is ItemUsable ? ItemUsable.ItemIdKey : Costume.ItemIdKey;
+            ShopItem shopItem;
             Dictionary products = (Dictionary)shopStateDict["products"];
-            products = (Dictionary)products.Add(productIdSerialized, shopItemSerialized);
+#pragma warning disable LAA1002
+            var productSerialized = products
+                .Select(p => (Dictionary) p.Value)
+                .Where(p => p.ContainsKey(productKey))
+                .FirstOrDefault(p => ((Dictionary)p[productKey])[itemIdKey].Equals(nonFungibleItem.ItemId.Serialize()));
+#pragma warning restore LAA1002
+            // Register new ShopItem
+            if (productSerialized.Equals(Dictionary.Empty))
+            {
+                shopItem = new ShopItem(ctx.Signer, sellerAvatarAddress, productId, price, expiredBlockIndex, nonFungibleItem);
+                IValue shopItemSerialized = shopItem.Serialize();
+                IKey productIdSerialized = (IKey)productId.Serialize();
+                products = (Dictionary)products.Add(productIdSerialized, shopItemSerialized);
+            }
+            // Update Registered ShopItem
+            else
+            {
+                Dictionary item = (Dictionary) productSerialized[productKey];
+                string updateKey = nonFungibleItem is ItemUsable ? "requiredBlockIndex" : Costume.RequiredBlockIndexKey;
+                item = item.SetItem(updateKey, expiredBlockIndex.Serialize());
+                productSerialized = productSerialized
+                    .SetItem(ShopItem.ExpiredBlockIndexKey, expiredBlockIndex.Serialize())
+                    .SetItem(productKey, item);
+                products = (Dictionary) products.SetItem((IKey) productSerialized["productId"], productSerialized);
+                shopItem = new ShopItem(productSerialized);
+            }
             shopStateDict = shopStateDict.SetItem("products", products);
 
             sw.Stop();

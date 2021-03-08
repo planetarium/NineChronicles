@@ -94,10 +94,13 @@ namespace Lib9c.Tests.Action
         }
 
         [Theory]
-        [InlineData(ItemType.Consumable)]
-        [InlineData(ItemType.Costume)]
-        [InlineData(ItemType.Equipment)]
-        public void Execute(ItemType itemType)
+        [InlineData(ItemType.Consumable, true, 2)]
+        [InlineData(ItemType.Costume, true, 2)]
+        [InlineData(ItemType.Equipment, true, 2)]
+        [InlineData(ItemType.Consumable, false, 0)]
+        [InlineData(ItemType.Costume, false, 0)]
+        [InlineData(ItemType.Equipment, false, 0)]
+        public void Execute(ItemType itemType, bool shopItemExist, int blockIndex)
         {
             var shopState = _initialState.GetShopState();
             Assert.Empty(shopState.Products);
@@ -109,7 +112,26 @@ namespace Lib9c.Tests.Action
             var currencyState = previousStates.GetGoldCurrency();
             var price = new FungibleAssetValue(currencyState, ProductPrice, 0);
             INonFungibleItem nonFungibleItem = (INonFungibleItem)inventoryItem.First().item;
-            Assert.Equal(0, nonFungibleItem.RequiredBlockIndex);
+            nonFungibleItem.Update(blockIndex);
+            Assert.Equal(blockIndex, nonFungibleItem.RequiredBlockIndex);
+
+            if (shopItemExist)
+            {
+                var si = new ShopItem(
+                    _agentAddress,
+                    _avatarAddress,
+                    Guid.NewGuid(),
+                    new FungibleAssetValue(currencyState, 100, 0),
+                    blockIndex,
+                    nonFungibleItem);
+                shopState.Register(si);
+                previousStates = previousStates.SetState(Addresses.Shop, shopState.Serialize());
+                Assert.Single(shopState.Products);
+            }
+            else
+            {
+                Assert.Empty(shopState.Products);
+            }
 
             var sellAction = new Sell
             {
@@ -120,17 +142,18 @@ namespace Lib9c.Tests.Action
 
             var nextState = sellAction.Execute(new ActionContext
             {
-                BlockIndex = 0,
+                BlockIndex = 1,
                 PreviousStates = previousStates,
                 Rehearsal = false,
                 Signer = _agentAddress,
                 Random = new TestRandom(),
             });
 
+            const long expiredBlockIndex = Sell.ExpiredBlockIndex + 1;
             var nextAvatarState = nextState.GetAvatarState(_avatarAddress);
             Assert.True(nextAvatarState.inventory.TryGetNonFungibleItem(nonFungibleItem.ItemId, out var nextItem));
             INonFungibleItem nextNonFungibleItem = (INonFungibleItem)nextItem.item;
-            Assert.Equal(Sell.ExpiredBlockIndex, nextNonFungibleItem.RequiredBlockIndex);
+            Assert.Equal(expiredBlockIndex, nextNonFungibleItem.RequiredBlockIndex);
 
             var nextShopState = nextState.GetShopState();
 
@@ -142,14 +165,15 @@ namespace Lib9c.Tests.Action
             INonFungibleItem item = itemType == ItemType.Costume ? (INonFungibleItem)shopItem.Costume : shopItem.ItemUsable;
 
             Assert.Equal(price, shopItem.Price);
-            Assert.Equal(Sell.ExpiredBlockIndex, item.RequiredBlockIndex);
+            Assert.Equal(expiredBlockIndex, shopItem.ExpiredBlockIndex);
+            Assert.Equal(expiredBlockIndex, item.RequiredBlockIndex);
             Assert.Equal(_agentAddress, shopItem.SellerAgentAddress);
             Assert.Equal(_avatarAddress, shopItem.SellerAvatarAddress);
 
             var mailList = nextAvatarState.mailBox.Where(m => m is SellCancelMail).ToList();
             Assert.Single(mailList);
 
-            Assert.Equal(Sell.ExpiredBlockIndex, mailList.First().requiredBlockIndex);
+            Assert.Equal(expiredBlockIndex, mailList.First().requiredBlockIndex);
         }
 
         [Fact]
