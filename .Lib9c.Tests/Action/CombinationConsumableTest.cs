@@ -3,14 +3,13 @@ namespace Lib9c.Tests.Action
     using System.Collections.Generic;
     using System.Globalization;
     using System.Linq;
-    using Bencodex.Types;
     using Libplanet;
     using Libplanet.Action;
     using Nekoyume;
     using Nekoyume.Action;
     using Nekoyume.Model.Item;
+    using Nekoyume.Model.Mail;
     using Nekoyume.Model.State;
-    using Nekoyume.TableData;
     using Xunit;
 
     public class CombinationConsumableTest
@@ -77,7 +76,31 @@ namespace Lib9c.Tests.Action
             const int requiredStage = GameConfig.RequireClearedStageLevel.CombinationConsumableAction;
             for (var i = 1; i < requiredStage + 1; i++)
             {
-                _avatarState.worldInformation.ClearStage(1, i, 0, _tableSheets.WorldSheet, _tableSheets.WorldUnlockSheet);
+                _avatarState.worldInformation.ClearStage(
+                    1,
+                    i,
+                    0,
+                    _tableSheets.WorldSheet,
+                    _tableSheets.WorldUnlockSheet
+                );
+            }
+
+            var equipment = ItemFactory.CreateItemUsable(_tableSheets.EquipmentItemSheet.First, default, 0);
+
+            var result = new CombinationConsumable.ResultModel()
+            {
+                id = default,
+                gold = 0,
+                actionPoint = 0,
+                recipeId = 1,
+                materials = new Dictionary<Material, int>(),
+                itemUsable = equipment,
+            };
+
+            for (var i = 0; i < 100; i++)
+            {
+                var mail = new CombinationMail(result, i, default, 0);
+                _avatarState.Update(mail);
             }
 
             _initialState = _initialState
@@ -105,188 +128,11 @@ namespace Lib9c.Tests.Action
 
             var consumable = (Consumable)slotState.Result.itemUsable;
             Assert.NotNull(consumable);
-        }
 
-        [Fact]
-        public void ExecuteThrowFailedLoadStateException()
-        {
-            var action = new CombinationConsumable()
-            {
-                AvatarAddress = _avatarAddress,
-                recipeId = 1,
-                slotIndex = 0,
-            };
+            var nextAvatarState = nextState.GetAvatarState(_avatarAddress);
 
-            Assert.Throws<FailedLoadStateException>(() => action.Execute(new ActionContext()
-                {
-                    PreviousStates = new State(),
-                    Signer = _agentAddress,
-                    BlockIndex = 1,
-                    Random = _random,
-                })
-            );
-        }
-
-        [Fact]
-        public void ExecuteThrowNotEnoughClearedStageLevelException()
-        {
-            _initialState = _initialState
-                .SetState(_slotAddress, new CombinationSlotState(_slotAddress, 0).Serialize());
-
-            var action = new CombinationConsumable()
-            {
-                AvatarAddress = _avatarAddress,
-                recipeId = 1,
-                slotIndex = 0,
-            };
-
-            Assert.Throws<NotEnoughClearedStageLevelException>(() => action.Execute(new ActionContext()
-                {
-                    PreviousStates = _initialState,
-                    Signer = _agentAddress,
-                    BlockIndex = 1,
-                    Random = _random,
-                })
-            );
-        }
-
-        [Fact]
-        public void ExecuteThrowCombinationSlotUnlockException()
-        {
-            const int requiredStage = GameConfig.RequireClearedStageLevel.CombinationConsumableAction;
-            for (var i = 1; i < requiredStage + 1; i++)
-            {
-                _avatarState.worldInformation.ClearStage(1, i, 0, _tableSheets.WorldSheet, _tableSheets.WorldUnlockSheet);
-            }
-
-            _initialState = _initialState
-                .SetState(_avatarAddress, _avatarState.Serialize())
-                .SetState(_slotAddress, new CombinationSlotState(_slotAddress, requiredStage + 10).Serialize());
-
-            var action = new CombinationConsumable()
-            {
-                AvatarAddress = _avatarAddress,
-                recipeId = 1,
-                slotIndex = 0,
-            };
-
-            Assert.Throws<CombinationSlotUnlockException>(() => action.Execute(new ActionContext()
-                {
-                    PreviousStates = _initialState,
-                    Signer = _agentAddress,
-                    BlockIndex = 1,
-                    Random = _random,
-                })
-            );
-        }
-
-        [Fact]
-        public void ExecuteThrowSheetRowNotFoundException()
-        {
-            const int requiredStage = GameConfig.RequireClearedStageLevel.CombinationConsumableAction;
-            for (var i = 1; i < requiredStage + 1; i++)
-            {
-                _avatarState.worldInformation.ClearStage(1, i, 0, _tableSheets.WorldSheet, _tableSheets.WorldUnlockSheet);
-            }
-
-            _initialState = _initialState
-                .SetState(_avatarAddress, _avatarState.Serialize())
-                .SetState(_slotAddress, new CombinationSlotState(_slotAddress, requiredStage).Serialize());
-
-            var action = new CombinationConsumable()
-            {
-                AvatarAddress = _avatarAddress,
-                recipeId = -1,
-                slotIndex = 0,
-            };
-
-            Assert.Throws<SheetRowNotFoundException>(() => action.Execute(new ActionContext()
-                {
-                    PreviousStates = _initialState,
-                    Signer = _agentAddress,
-                    BlockIndex = 1,
-                    Random = _random,
-                })
-            );
-        }
-
-        [Fact]
-        public void ExecuteThrowNotEnoughMaterialException()
-        {
-            var row = _tableSheets.ConsumableItemRecipeSheet.Values.First();
-
-            const int requiredStage = GameConfig.RequireClearedStageLevel.CombinationConsumableAction;
-            for (var i = 1; i < requiredStage + 1; i++)
-            {
-                _avatarState.worldInformation.ClearStage(1, i, 0, _tableSheets.WorldSheet, _tableSheets.WorldUnlockSheet);
-            }
-
-            _initialState = _initialState
-                .SetState(_avatarAddress, _avatarState.Serialize())
-                .SetState(_slotAddress, new CombinationSlotState(_slotAddress, requiredStage).Serialize());
-
-            var action = new CombinationConsumable()
-            {
-                AvatarAddress = _avatarAddress,
-                recipeId = row.Id,
-                slotIndex = 0,
-            };
-
-            Assert.Throws<NotEnoughMaterialException>(() => action.Execute(new ActionContext()
-                {
-                    PreviousStates = _initialState,
-                    Signer = _agentAddress,
-                    BlockIndex = 1,
-                    Random = _random,
-                })
-            );
-        }
-
-        [Theory]
-        [InlineData(null)]
-        [InlineData(1)]
-        public void ResultModelDeterministic(int? subRecipeId)
-        {
-            var row = _tableSheets.MaterialItemSheet.Values.First();
-            var row2 = _tableSheets.MaterialItemSheet.Values.Last();
-
-            Assert.True(row.Id < row2.Id);
-
-            var material = ItemFactory.CreateMaterial(row);
-            var material2 = ItemFactory.CreateMaterial(row2);
-
-            var itemUsable = ItemFactory.CreateItemUsable(_tableSheets.EquipmentItemSheet.Values.First(), default, 0);
-            var result = new CombinationConsumable.ResultModel()
-            {
-                id = default,
-                gold = 0,
-                actionPoint = 0,
-                recipeId = 1,
-                subRecipeId = subRecipeId,
-                materials = new Dictionary<Material, int>()
-                {
-                    [material] = 1,
-                    [material2] = 1,
-                },
-                itemUsable = itemUsable,
-            };
-
-            var result2 = new CombinationConsumable.ResultModel()
-            {
-                id = default,
-                gold = 0,
-                actionPoint = 0,
-                recipeId = 1,
-                subRecipeId = subRecipeId,
-                materials = new Dictionary<Material, int>()
-                {
-                    [material2] = 1,
-                    [material] = 1,
-                },
-                itemUsable = itemUsable,
-            };
-
-            Assert.Equal(result.Serialize(), result2.Serialize());
+            Assert.Single(nextAvatarState.mailBox);
+            Assert.IsType<CombinationMail>(nextAvatarState.mailBox.First());
         }
     }
 }

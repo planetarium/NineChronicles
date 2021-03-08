@@ -22,11 +22,11 @@ namespace Lib9c.Tests.Model.Item
         {
             Assert.NotNull(_consumableRow);
 
-            var costume = new Consumable(_consumableRow, Guid.NewGuid(), 0);
-            var serialized = costume.Serialize();
+            var consumable = new Consumable(_consumableRow, Guid.NewGuid(), 0);
+            var serialized = consumable.Serialize();
             var deserialized = new Consumable((Bencodex.Types.Dictionary)serialized);
 
-            Assert.Equal(costume, deserialized);
+            Assert.Equal(consumable, deserialized);
         }
 
         [Fact]
@@ -34,15 +34,23 @@ namespace Lib9c.Tests.Model.Item
         {
             Assert.NotNull(_consumableRow);
 
-            var costume = new Consumable(_consumableRow, Guid.NewGuid(), 0);
+            var consumable = new Consumable(_consumableRow, Guid.NewGuid(), 0);
             var formatter = new BinaryFormatter();
             using var ms = new MemoryStream();
-            formatter.Serialize(ms, costume);
+            formatter.Serialize(ms, consumable);
             ms.Seek(0, SeekOrigin.Begin);
 
             var deserialized = (Consumable)formatter.Deserialize(ms);
 
-            Assert.Equal(costume, deserialized);
+            Assert.Equal(consumable, deserialized);
+        }
+
+        [Fact]
+        public void Update()
+        {
+            var consumable = new Consumable(_consumableRow, Guid.NewGuid(), 0);
+            consumable.Update(10);
+            Assert.Equal(10, consumable.RequiredBlockIndex);
         }
     }
 }
