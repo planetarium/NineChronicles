@@ -44,6 +44,7 @@ jobs:
         pushd _benchmarks_snapshot
         7z x "$tmpfile"
         popd
+        .github/scripts/run-migration.sh
     - id: run-benchmarks
       run: |
         dotnet build Lib9c.Benchmarks
@@ -52,4 +53,4 @@ jobs:
           --no-build \
           --verbosity quiet \
           -- \
-          _benchmarks_snapshot 50000
+          _benchmarks_snapshot_migrate 50000
