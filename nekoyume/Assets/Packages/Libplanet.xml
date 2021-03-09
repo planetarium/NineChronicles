@@ -2001,6 +2001,24 @@
             <returns>The next <see cref="P:Libplanet.Tx.Transaction`1.Nonce"/> value of the
             <paramref name="address"/>.</returns>
         </member>
+        <member name="M:Libplanet.Blockchain.BlockChain`1.PerceiveBlock(Libplanet.Blocks.IBlockExcerpt,System.Nullable{System.DateTimeOffset})">
+            <summary>
+            Records and queries the <paramref name="perceivedTime"/> of the given
+            <paramref name="blockExcerpt"/>.
+            <para>Although blocks have their own <see cref="P:Libplanet.Blocks.Block`1.Timestamp"/>, but these values
+            are untrustworthy as they are arbitrarily determined by their miners.</para>
+            <para>On the other hand, this method returns the subjective time according to the local
+            node's perception.</para>
+            <para>If the local node has never perceived the <paramref name="blockExcerpt"/> yet,
+            it is perceived at that moment and the current time is returned instead. (However, you
+            can replace the current time with the <paramref name="perceivedTime"/> option.)
+            In other words, this method is idempotent.</para>
+            </summary>
+            <param name="blockExcerpt">The perceived block.</param>
+            <param name="perceivedTime">The time the local node perceived the given <paramref
+            name="blockExcerpt"/>.  The current time by default.</param>
+            <returns>A pair of a block and the time it was perceived.</returns>
+        </member>
         <member name="M:Libplanet.Blockchain.BlockChain`1.MineBlock(Libplanet.Address,System.DateTimeOffset,System.Boolean,System.Nullable{System.Int32},System.Threading.CancellationToken)">
             <summary>
             Mines a next <see cref="T:Libplanet.Blocks.Block`1"/> using staged <see cref="T:Libplanet.Tx.Transaction`1"/>s,
@@ -2125,6 +2143,36 @@
             </summary>
             <param name="blockHash">The hash of a block which has incomplete states.</param>
         </member>
+        <member name="T:Libplanet.Blockchain.BlockPerception">
+            <summary>
+            Pair of a block and the time the local node perceived it.
+            <para>Purposes to be compared when the canonical chain is determined.</para>
+            </summary>
+        </member>
+        <member name="M:Libplanet.Blockchain.BlockPerception.#ctor(Libplanet.Blocks.IBlockExcerpt,System.DateTimeOffset)">
+            <summary>
+            Creates a pair.
+            </summary>
+            <param name="blockExcerpt">The block perceived by the local node.</param>
+            <param name="perceivedTime">The time the local node perceived the
+            <paramref name="blockExcerpt"/>.</param>
+        </member>
+        <member name="M:Libplanet.Blockchain.BlockPerception.#ctor(Libplanet.Blocks.IBlockExcerpt)">
+            <summary>
+            Creates a pair with setting <see cref="P:Libplanet.Blockchain.BlockPerception.PerceivedTime"/> to the current time.
+            </summary>
+            <param name="blockExcerpt">The block perceived by the local node.</param>
+        </member>
+        <member name="P:Libplanet.Blockchain.BlockPerception.BlockExcerpt">
+            <summary>
+            The block perceived by the local node.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Blockchain.BlockPerception.PerceivedTime">
+            <summary>
+            The time the local node perceived the <see cref="P:Libplanet.Blockchain.BlockPerception.BlockExcerpt"/>.
+            </summary>
+        </member>
         <member name="T:Libplanet.Blockchain.FungibleAssetStateCompleter`1">
             <summary>
             A delegate to be called when <see cref="M:Libplanet.Blockchain.BlockChain`1.GetBalance(Libplanet.Address,Libplanet.Assets.Currency,System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}},Libplanet.Blockchain.FungibleAssetStateCompleter{`0})"/> method encounters
@@ -2192,7 +2240,7 @@
             <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> type.  It should match
             to <see cref="T:Libplanet.Blocks.Block`1"/>'s type parameter.</typeparam>
         </member>
-        <member name="M:Libplanet.Blockchain.Policies.BlockPolicy`1.#ctor(Libplanet.Action.IAction,System.Int32,System.Int64,System.Int32,System.Int32,System.Int32,System.Int32,System.Func{Libplanet.Tx.Transaction{`0},Libplanet.Blockchain.BlockChain{`0},System.Boolean},System.Collections.Generic.IComparer{Libplanet.Blocks.IBlockExcerpt})">
+        <member name="M:Libplanet.Blockchain.Policies.BlockPolicy`1.#ctor(Libplanet.Action.IAction,System.Int32,System.Int64,System.Int32,System.Int32,System.Int32,System.Int32,System.Func{Libplanet.Tx.Transaction{`0},Libplanet.Blockchain.BlockChain{`0},System.Boolean},System.Collections.Generic.IComparer{Libplanet.Blockchain.BlockPerception})">
             <summary>
             Creates a <see cref="T:Libplanet.Blockchain.Policies.BlockPolicy`1"/> with configuring
             <see cref="P:Libplanet.Blockchain.Policies.BlockPolicy`1.BlockInterval"/> in milliseconds,
@@ -2219,9 +2267,9 @@
             A predicate that determines if the transaction follows the block policy.
             </param>
             <param name="canonicalChainComparer">The custom rule to determine which is the canonical
-            chain.  If omitted, <see cref="P:Libplanet.Blockchain.Policies.BlockPolicy`1.CanonicalChainComparer"/> is used by default.</param>
+            chain.  If omitted, <see cref="T:Libplanet.Blockchain.TotalDifficultyComparer"/> is used by default.</param>
         </member>
-        <member name="M:Libplanet.Blockchain.Policies.BlockPolicy`1.#ctor(Libplanet.Action.IAction,System.TimeSpan,System.Int64,System.Int32,System.Int32,System.Int32,System.Int32,System.Func{Libplanet.Tx.Transaction{`0},Libplanet.Blockchain.BlockChain{`0},System.Boolean},System.Collections.Generic.IComparer{Libplanet.Blocks.IBlockExcerpt})">
+        <member name="M:Libplanet.Blockchain.Policies.BlockPolicy`1.#ctor(Libplanet.Action.IAction,System.TimeSpan,System.Int64,System.Int32,System.Int32,System.Int32,System.Int32,System.Func{Libplanet.Tx.Transaction{`0},Libplanet.Blockchain.BlockChain{`0},System.Boolean},System.Collections.Generic.IComparer{Libplanet.Blockchain.BlockPerception})">
             <summary>
             Creates a <see cref="T:Libplanet.Blockchain.Policies.BlockPolicy`1"/> with configuring
             <see cref="P:Libplanet.Blockchain.Policies.BlockPolicy`1.BlockInterval"/>, <see cref="P:Libplanet.Blockchain.Policies.BlockPolicy`1.MinimumDifficulty"/> and
@@ -2245,7 +2293,9 @@
             A predicate that determines if the transaction follows the block policy.
             </param>
             <param name="canonicalChainComparer">The custom rule to determine which is the canonical
-            chain.  If omitted, <see cref="P:Libplanet.Blockchain.Policies.BlockPolicy`1.CanonicalChainComparer"/> is used by default.</param>
+            chain.  If omitted, <see cref="T:Libplanet.Blockchain.TotalDifficultyComparer"/> (having
+            <see cref="P:Libplanet.Blockchain.TotalDifficultyComparer.OutdateAfter"/> configured to triple of
+            <paramref name="blockInterval"/>) is used by default.</param>
         </member>
         <member name="P:Libplanet.Blockchain.Policies.BlockPolicy`1.BlockAction">
             <inheritdoc/>
@@ -2905,7 +2955,7 @@
             ]]></code>
             </example>
         </member>
-        <member name="M:Libplanet.Blockchain.Renderers.DelayedActionRenderer`1.#ctor(Libplanet.Blockchain.Renderers.IActionRenderer{`0},System.Collections.Generic.IComparer{Libplanet.Blocks.IBlockExcerpt},Libplanet.Store.IStore,System.Int32,System.Int64)">
+        <member name="M:Libplanet.Blockchain.Renderers.DelayedActionRenderer`1.#ctor(Libplanet.Blockchain.Renderers.IActionRenderer{`0},System.Collections.Generic.IComparer{Libplanet.Blockchain.BlockPerception},Libplanet.Store.IStore,System.Int32,System.Int64)">
             <summary>
             Creates a new <see cref="T:Libplanet.Blockchain.Renderers.DelayedRenderer`1"/> instance decorating the given
             <paramref name="renderer"/>.
@@ -2996,12 +3046,12 @@
             ]]></code>
             </example>
             <remarks>Since <see cref="T:Libplanet.Blockchain.Renderers.IActionRenderer`1"/> is a subtype of <see cref="T:Libplanet.Blockchain.Renderers.IRenderer`1"/>,
-            <see cref="M:Libplanet.Blockchain.Renderers.DelayedRenderer`1.#ctor(Libplanet.Blockchain.Renderers.IRenderer{`0},System.Collections.Generic.IComparer{Libplanet.Blocks.IBlockExcerpt},Libplanet.Store.IStore,System.Int32)"/>
+            <see cref="M:Libplanet.Blockchain.Renderers.DelayedRenderer`1.#ctor(Libplanet.Blockchain.Renderers.IRenderer{`0},System.Collections.Generic.IComparer{Libplanet.Blockchain.BlockPerception},Libplanet.Store.IStore,System.Int32)"/>
             constructor can take an <see cref="T:Libplanet.Blockchain.Renderers.IActionRenderer`1"/> instance as well.
             However, even it takes an action renderer, action-level fine-grained events won't hear.
             For action renderers, please use <see cref="T:Libplanet.Blockchain.Renderers.DelayedActionRenderer`1"/> instead.</remarks>
         </member>
-        <member name="M:Libplanet.Blockchain.Renderers.DelayedRenderer`1.#ctor(Libplanet.Blockchain.Renderers.IRenderer{`0},System.Collections.Generic.IComparer{Libplanet.Blocks.IBlockExcerpt},Libplanet.Store.IStore,System.Int32)">
+        <member name="M:Libplanet.Blockchain.Renderers.DelayedRenderer`1.#ctor(Libplanet.Blockchain.Renderers.IRenderer{`0},System.Collections.Generic.IComparer{Libplanet.Blockchain.BlockPerception},Libplanet.Store.IStore,System.Int32)">
             <summary>
             Creates a new <see cref="T:Libplanet.Blockchain.Renderers.DelayedRenderer`1"/> instance decorating the given
             <paramref name="renderer"/>.
@@ -3470,7 +3520,31 @@
             <seealso cref="P:Libplanet.Blockchain.Policies.IBlockPolicy`1.CanonicalChainComparer"/>
             <seealso cref="T:Libplanet.Blocks.IBlockExcerpt"/>
         </member>
-        <member name="M:Libplanet.Blockchain.TotalDifficultyComparer.Compare(Libplanet.Blocks.IBlockExcerpt,Libplanet.Blocks.IBlockExcerpt)">
+        <member name="M:Libplanet.Blockchain.TotalDifficultyComparer.#ctor(System.TimeSpan)">
+            <summary>
+            Creates a <see cref="T:Libplanet.Blockchain.TotalDifficultyComparer"/> instance.
+            </summary>
+            <param name="outdateAfter">Blocks taken this time since they are perceived are
+            considered outdated, so that chains having these blocks as their tips become stale.
+            </param>
+        </member>
+        <member name="M:Libplanet.Blockchain.TotalDifficultyComparer.#ctor(System.TimeSpan,System.Func{System.DateTimeOffset})">
+            <summary>
+            Creates a <see cref="T:Libplanet.Blockchain.TotalDifficultyComparer"/> instance.
+            </summary>
+            <param name="outdateAfter">Blocks taken this time since they are perceived are
+            considered outdated, so that chains having these blocks as their tips become stale.
+            </param>
+            <param name="currentTimeGetter">Configures the way to get the current time instead of
+            <see cref="P:System.DateTimeOffset.UtcNow"/> property.</param>
+        </member>
+        <member name="P:Libplanet.Blockchain.TotalDifficultyComparer.OutdateAfter">
+            <summary>
+            Blocks taken this time since they are perceived are considered outdated, so that
+            chains having these blocks as their tips become stale.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Blockchain.TotalDifficultyComparer.Compare(Libplanet.Blockchain.BlockPerception,Libplanet.Blockchain.BlockPerception)">
             <inheritdoc cref="M:System.Collections.Generic.IComparer`1.Compare(`0,`0)"/>
         </member>
         <member name="F:Libplanet.Blocks.Block`1.CurrentProtocolVersion">
@@ -6751,6 +6825,12 @@
         <member name="M:Libplanet.Store.BaseStore.ContainsBlock(Libplanet.HashDigest{System.Security.Cryptography.SHA256})">
             <inheritdoc />
         </member>
+        <member name="M:Libplanet.Store.BaseStore.SetBlockPerceivedTime(Libplanet.HashDigest{System.Security.Cryptography.SHA256},System.DateTimeOffset)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Store.BaseStore.GetBlockPerceivedTime(Libplanet.HashDigest{System.Security.Cryptography.SHA256})">
+            <inheritdoc/>
+        </member>
         <member name="M:Libplanet.Store.BaseStore.ListTxNonces(System.Guid)">
             <inheritdoc/>
         </member>
@@ -6877,6 +6957,12 @@
             <inheritdoc/>
         </member>
         <member name="M:Libplanet.Store.DefaultStore.ContainsBlock(Libplanet.HashDigest{System.Security.Cryptography.SHA256})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Store.DefaultStore.SetBlockPerceivedTime(Libplanet.HashDigest{System.Security.Cryptography.SHA256},System.DateTimeOffset)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Store.DefaultStore.GetBlockPerceivedTime(Libplanet.HashDigest{System.Security.Cryptography.SHA256})">
             <inheritdoc/>
         </member>
         <member name="M:Libplanet.Store.DefaultStore.ListTxNonces(System.Guid)">
@@ -7084,6 +7170,21 @@
             the specified <paramref name="blockHash"/>; otherwise, <c>false</c>.
             </returns>
         </member>
+        <member name="M:Libplanet.Store.IStore.SetBlockPerceivedTime(Libplanet.HashDigest{System.Security.Cryptography.SHA256},System.DateTimeOffset)">
+            <summary>
+            Records the perceived time of a block.  If there is already a record, it is overwritten.
+            </summary>
+            <param name="blockHash"><see cref="P:Libplanet.Blocks.Block`1.Hash"/> to record its perceived time.
+            </param>
+            <param name="perceivedTime">The perceived time to record.</param>
+        </member>
+        <member name="M:Libplanet.Store.IStore.GetBlockPerceivedTime(Libplanet.HashDigest{System.Security.Cryptography.SHA256})">
+            <summary>
+            Queries the perceived time of a block, if it has been recorded.
+            </summary>
+            <param name="blockHash"><see cref="P:Libplanet.Blocks.Block`1.Hash"/> to query.</param>
+            <returns>The perceived time of a block, if it exists.  Otherwise, <c>null</c>.</returns>
+        </member>
         <member name="M:Libplanet.Store.IStore.ListTxNonces(System.Guid)">
             <summary>
             Lists all <see cref="T:Libplanet.Address"/>es that have ever signed <see cref="T:Libplanet.Tx.Transaction`1"/>,
@@ -7160,6 +7261,44 @@
         </member>
         <member name="M:Libplanet.Store.StoreExtensions.NullAction.LoadPlainValue(Bencodex.Types.IValue)">
             <inheritdoc/>
+        </member>
+        <member name="T:Libplanet.Store.TrieStateStore">
+            <summary>
+            An <see cref="T:Libplanet.Store.IStateStore"/> implementation. It stores states with <see cref="T:Libplanet.Store.Trie.MerkleTrie"/>.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Store.TrieStateStore.#ctor(Libplanet.Store.Trie.IKeyValueStore,Libplanet.Store.Trie.IKeyValueStore,System.Boolean)">
+            <summary>
+            Creates a new <see cref="T:Libplanet.Store.TrieStateStore"/>.
+            </summary>
+            <param name="stateKeyValueStore">The storage to store states. It used by
+            <see cref="T:Libplanet.Store.Trie.MerkleTrie"/> in internal.</param>
+            <param name="stateHashKeyValueStore">The storage to store state hash corresponding to
+            block hash.</param>
+            <param name="secure">Whether to use <see cref="T:Libplanet.Store.Trie.MerkleTrie"/> in secure mode.
+            <seealso cref="M:Libplanet.Store.Trie.MerkleTrie.#ctor(Libplanet.Store.Trie.IKeyValueStore,Libplanet.Store.Trie.Nodes.INode,System.Boolean)"/>.</param>
+        </member>
+        <member name="M:Libplanet.Store.TrieStateStore.SetStates``1(Libplanet.Blocks.Block{``0},System.Collections.Immutable.IImmutableDictionary{System.String,Bencodex.Types.IValue})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Store.TrieStateStore.GetState(System.String,System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}},System.Nullable{System.Guid})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Store.TrieStateStore.ContainsBlockStates(Libplanet.HashDigest{System.Security.Cryptography.SHA256})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Store.TrieStateStore.ForkStates``1(System.Guid,System.Guid,Libplanet.Blocks.Block{``0})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Store.TrieStateStore.GetRootHash(Libplanet.HashDigest{System.Security.Cryptography.SHA256})">
+            <summary>
+            Gets the state hash corresponds to <paramref name="blockHash"/>.
+            </summary>
+            <param name="blockHash">The <see cref="P:Libplanet.Blocks.Block`1.Hash"/> to get state hash.</param>
+            <returns>If there is a state hash corresponds to <paramref name="blockHash"/>,
+            it will return the state hash. If not, it will return null.</returns>
+            <exception cref="T:System.Collections.Generic.KeyNotFoundException">If there are no root hashes that correspond to
+            <paramref name="blockHash"/>.</exception>
         </member>
         <member name="T:Libplanet.Store.Trie.CacheableKeyValueStore">
             <summary>
@@ -7355,44 +7494,6 @@
             <summary>
             Wrapper class.
             </summary>
-        </member>
-        <member name="T:Libplanet.Store.TrieStateStore">
-            <summary>
-            An <see cref="T:Libplanet.Store.IStateStore"/> implementation. It stores states with <see cref="T:Libplanet.Store.Trie.MerkleTrie"/>.
-            </summary>
-        </member>
-        <member name="M:Libplanet.Store.TrieStateStore.#ctor(Libplanet.Store.Trie.IKeyValueStore,Libplanet.Store.Trie.IKeyValueStore,System.Boolean)">
-            <summary>
-            Creates a new <see cref="T:Libplanet.Store.TrieStateStore"/>.
-            </summary>
-            <param name="stateKeyValueStore">The storage to store states. It used by
-            <see cref="T:Libplanet.Store.Trie.MerkleTrie"/> in internal.</param>
-            <param name="stateHashKeyValueStore">The storage to store state hash corresponding to
-            block hash.</param>
-            <param name="secure">Whether to use <see cref="T:Libplanet.Store.Trie.MerkleTrie"/> in secure mode.
-            <seealso cref="M:Libplanet.Store.Trie.MerkleTrie.#ctor(Libplanet.Store.Trie.IKeyValueStore,Libplanet.Store.Trie.Nodes.INode,System.Boolean)"/>.</param>
-        </member>
-        <member name="M:Libplanet.Store.TrieStateStore.SetStates``1(Libplanet.Blocks.Block{``0},System.Collections.Immutable.IImmutableDictionary{System.String,Bencodex.Types.IValue})">
-            <inheritdoc/>
-        </member>
-        <member name="M:Libplanet.Store.TrieStateStore.GetState(System.String,System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}},System.Nullable{System.Guid})">
-            <inheritdoc/>
-        </member>
-        <member name="M:Libplanet.Store.TrieStateStore.ContainsBlockStates(Libplanet.HashDigest{System.Security.Cryptography.SHA256})">
-            <inheritdoc/>
-        </member>
-        <member name="M:Libplanet.Store.TrieStateStore.ForkStates``1(System.Guid,System.Guid,Libplanet.Blocks.Block{``0})">
-            <inheritdoc/>
-        </member>
-        <member name="M:Libplanet.Store.TrieStateStore.GetRootHash(Libplanet.HashDigest{System.Security.Cryptography.SHA256})">
-            <summary>
-            Gets the state hash corresponds to <paramref name="blockHash"/>.
-            </summary>
-            <param name="blockHash">The <see cref="P:Libplanet.Blocks.Block`1.Hash"/> to get state hash.</param>
-            <returns>If there is a state hash corresponds to <paramref name="blockHash"/>,
-            it will return the state hash. If not, it will return null.</returns>
-            <exception cref="T:System.Collections.Generic.KeyNotFoundException">If there are no root hashes that correspond to
-            <paramref name="blockHash"/>.</exception>
         </member>
         <member name="T:Libplanet.Tx.InvalidTxException">
             <summary>
