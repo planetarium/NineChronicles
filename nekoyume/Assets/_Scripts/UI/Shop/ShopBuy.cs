@@ -21,12 +21,11 @@ namespace Nekoyume.UI
         private const int NPCId = 300000;
         private static readonly Vector2 NPCPosition = new Vector2(2.76f, -1.72f);
         private NPC _npc;
+        private bool _isEachBuy = false;
 
-        [SerializeField]
-        private ShopBuyItems shopItems = null;
+        [SerializeField] private ShopBuyItems shopItems = null;
 
-        // [SerializeField]
-        // private SpeechBubble speechBubble = null;
+        // [SerializeField] private SpeechBubble speechBubble = null;
 
         private Model.Shop SharedModel { get; set; }
 
@@ -57,10 +56,10 @@ namespace Nekoyume.UI
             base.Initialize();
 
             shopItems.SharedModel.SelectedItemView
-                .Subscribe(ShowTooltip)
+                .Subscribe(OnClickShopItem)
                 .AddTo(gameObject);
             shopItems.SharedModel.OnDoubleClickItemView
-                .Subscribe(view => ShowActionPopup(view.Model))
+                .Subscribe(OnDoubleClickShopItem)
                 .AddTo(gameObject);
 
             SharedModel.ItemCountAndPricePopup.Value.Item
@@ -259,6 +258,22 @@ namespace Nekoyume.UI
             var format = L10nManager.Localize("NOTIFICATION_BUY_START");
             Notification.Push(MailType.Auction,
                 string.Format(format, shopItem.ItemBase.Value.GetLocalizedName()));
+        }
+
+        private void OnClickShopItem(ShopItemView view)
+        {
+            if (_isEachBuy)
+            {
+                ShowTooltip(view);
+            }
+        }
+
+        private void OnDoubleClickShopItem(ShopItemView view)
+        {
+            if (_isEachBuy)
+            {
+                ShowActionPopup(view.Model);
+            }
         }
 
         // private void ShowSpeech(string key,

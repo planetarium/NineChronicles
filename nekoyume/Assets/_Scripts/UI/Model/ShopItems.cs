@@ -30,7 +30,8 @@ namespace Nekoyume.UI.Model
 
         public ItemSubTypeFilter itemSubTypeFilter = ItemSubTypeFilter.All;
         public SortFilter sortFilter = SortFilter.Class;
-        public bool IsReverseOrder = false;
+        public bool isReverseOrder = false;
+        public List<int> searchIds = new List<int>();
 
         private IReadOnlyDictionary<
             Address, Dictionary<
@@ -255,30 +256,50 @@ namespace Nekoyume.UI.Model
                 return new Dictionary<int, List<ShopItem>>();
             }
 
-            if (IsReverseOrder)
+            var shopItems = new List<ShopItem>();
+            foreach (var product in sortProducts)
             {
-                var reverse = new Dictionary<int, List<ShopItem>>();
-                var shopItems = new List<ShopItem>();
-                foreach (var product in sortProducts)
+                if (searchIds.Count > 0) //search
+                {
+                    var select = product.Value
+                        .Where(x => searchIds.Exists(y => y == x.ItemBase.Value.Id));
+                    shopItems.AddRange(select);
+                }
+                else
                 {
                     shopItems.AddRange(product.Value);
                 }
-                shopItems.Reverse();
+            }
 
-                int index = 0;
-                foreach (var product in sortProducts)
+            if (shopItems.Count == 0)
+            {
+                return new Dictionary<int, List<ShopItem>>();
+            }
+
+            if (isReverseOrder)
+            {
+                shopItems.Reverse();
+            }
+
+            var result = new Dictionary<int, List<ShopItem>>();
+            int setCount = sortProducts.First().Value.Count;
+            int index = 0;
+            int page = 0;
+            while (true)
+            {
+                var count = Math.Min(shopItems.Count - index, setCount);
+                if (count <= 0)
                 {
-                    var items = shopItems.GetRange(index, product.Value.Count);
-                    reverse.Add(product.Key, items);
-                    index += product.Value.Count;
+                    break;
                 }
 
-                return reverse;
+                var items = shopItems.GetRange(index, count);
+                result.Add(page, items);
+                index += count;
+                page ++;
             }
-            else
-            {
-                return sortProducts;
-            }
+
+            return result;
         }
 
         private ShopItem CreateShopItem(Nekoyume.Model.Item.ShopItem shopItem)

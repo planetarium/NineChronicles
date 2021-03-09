@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using DG.Tweening;
@@ -18,7 +19,7 @@ namespace Nekoyume.UI.Module
     public class ShopBuyItems : MonoBehaviour
     {
         //todo 스크롤뷰 content 길이 조절해줘야됨
-        public List<ShopItemView> Items { get; set; } = new List<ShopItemView>();
+        public List<ShopItemView> Items { get; } = new List<ShopItemView>();
 
         [SerializeField] private List<NCToggleDropdown> toggleDropdowns = new List<NCToggleDropdown>();
         [SerializeField] private TextMeshProUGUI pageText = null;
@@ -26,8 +27,12 @@ namespace Nekoyume.UI.Module
         [SerializeField] private Button nextPageButton = null;
         [SerializeField] private Button sortButton = null;
         [SerializeField] private Button sortOrderButton = null;
+        [SerializeField] private Button searchButton = null;
         [SerializeField] private RectTransform sortOrderIcon = null;
+        [SerializeField] private TMP_InputField inputField = null;
+        [SerializeField] private Transform inputPlaceholder = null;
 
+        private readonly List<int> _itemIds = new List<int>();
         private TextMeshProUGUI _sortText;
         private SortFilter _sortFilter = SortFilter.Class;
 
@@ -96,6 +101,15 @@ namespace Nekoyume.UI.Module
 
         private void Awake()
         {
+            var equipments = Game.Game.instance.TableSheets.EquipmentItemSheet.Values.Select(x => x.Id);
+            var consumableItems = Game.Game.instance.TableSheets.ConsumableItemSheet.Values.Select(x => x.Id);
+            var costumes = Game.Game.instance.TableSheets.CostumeItemSheet.Values.Select(x => x.Id);
+            _itemIds.AddRange(equipments);
+            _itemIds.AddRange(consumableItems);
+            _itemIds.AddRange(costumes);
+            _sortText = sortButton.GetComponentInChildren<TextMeshProUGUI>();
+            inputPlaceholder.SetAsLastSibling();
+
             SharedModel = new Model.ShopItems();
             SharedModel.State
                 .Subscribe(_ => UpdateView())
@@ -152,39 +166,12 @@ namespace Nekoyume.UI.Module
             previousPageButton.OnClickAsObservable().Subscribe(OnClickPreviousPage).AddTo(gameObject);
             nextPageButton.OnClickAsObservable().Subscribe(OnClickNextPage).AddTo(gameObject);
 
-            _sortText = sortButton.GetComponentInChildren<TextMeshProUGUI>();
+
             sortButton.OnClickAsObservable().Subscribe(OnClickSort).AddTo(gameObject);
             sortOrderButton.OnClickAsObservable().Subscribe(OnClickSortOrder).AddTo(gameObject);
+            searchButton.OnClickAsObservable().Subscribe(OnSearch).AddTo(gameObject);
+            inputField.onSubmit.AddListener(OnClickSearch);
 
-            // sortFilter.AddOptions(new[]
-            //     {
-            //         SortFilter.Class,
-            //         SortFilter.CP,
-            //         SortFilter.Price,
-            //     }
-            //     .Select(type => L10nManager.Localize($"UI_{type.ToString().ToUpper()}"))
-            //     .ToList());
-            // sortFilter.onValueChanged.AsObservable()
-            //     .Select(index =>
-            //     {
-            //         try
-            //         {
-            //             return (SortFilter) index;
-            //         }
-            //         catch
-            //         {
-            //             return SortFilter.Class;
-            //         }
-            //     })
-            //     .Subscribe(filter =>
-            //     {
-            //         SharedModel.sortFilter = filter;
-            //         OnSortFilterChanged();
-            //     })
-            //     .AddTo(gameObject);
-            //
-
-            //
             // refreshButtonTouchHandler.OnClick.Subscribe(_ =>
             // {
             //     AudioController.PlayClick();
@@ -196,12 +183,13 @@ namespace Nekoyume.UI.Module
 
         private void OnEnable()
         {
-            toggleDropdowns.First().isOn = true;
+            inputField.text = string.Empty;
+            sortOrderIcon.localScale = Vector3.one;
 
-            // itemSubTypeFilter.SetValueWithoutNotify(0);
-            SharedModel.itemSubTypeFilter = 0;
-            // sortFilter.SetValueWithoutNotify(0);
-            SharedModel.sortFilter = 0;
+            SharedModel.itemSubTypeFilter = ItemSubTypeFilter.All;
+            SharedModel.sortFilter = SortFilter.Class;
+            SharedModel.isReverseOrder = false;
+            SharedModel.searchIds = new List<int>();
 
             ReactiveShopState.AgentProducts
                 .Subscribe(SharedModel.ResetAgentProducts)
@@ -222,7 +210,6 @@ namespace Nekoyume.UI.Module
             SharedModel.Dispose();
             SharedModel = null;
         }
-
         #endregion
 
         private void UpdateView()
@@ -339,7 +326,6 @@ namespace Nekoyume.UI.Module
 
             SharedModel.sortFilter = _sortFilter;
             OnSortFilterChanged();
-            // OnItemSubTypeFilterChanged();
         }
 
         private void OnClickSortOrder(Unit unit)
@@ -348,9 +334,29 @@ namespace Nekoyume.UI.Module
             scale.y *= -1;
             sortOrderIcon.localScale = scale;
 
-            SharedModel.IsReverseOrder = !SharedModel.IsReverseOrder;
+            SharedModel.isReverseOrder = !SharedModel.isReverseOrder;
             OnSortFilterChanged();
-            // OnItemSubTypeFilterChanged();
+        }
+
+        private void OnClickSearch(string value)
+        {
+            OnSearch(Unit.Default);
+        }
+
+        private void OnSearch(Unit unit)
+        {
+            var containItemIds = new List<int>();
+            foreach (var id in _itemIds)
+            {
+                var itemName = L10nManager.LocalizeItemName(id);
+                if (itemName.Contains(inputField.text))
+                {
+                    containItemIds.Add(id);
+                }
+            }
+
+            SharedModel.searchIds = containItemIds;
+            OnSortFilterChanged();
         }
 
         private string FilterSubTypeToString(ItemSubTypeFilter type)
