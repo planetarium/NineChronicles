@@ -319,7 +319,11 @@ namespace Nekoyume.Helper
             }
         }
 
+#if UNITY_EDITOR
         [Option("aws-sink-guid", Required = false, HelpText = "Guid for aws cloudwatch logging.")]
+#else
+        [Option("aws-sink-guid", Required = true, HelpText = "Guid for aws cloudwatch logging.")]
+#endif
         public string AwsSinkGuid
         {
             get => awsSinkGuid;
