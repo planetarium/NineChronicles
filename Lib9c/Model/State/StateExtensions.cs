@@ -10,6 +10,7 @@ using Bencodex.Types;
 using Libplanet;
 using Libplanet.Assets;
 using Libplanet.Crypto;
+using Nekoyume.Action;
 using Nekoyume.Model.Elemental;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Stat;
@@ -384,6 +385,16 @@ namespace Nekoyume.Model.State
 
         public static FungibleAssetValue? ToNullableFungibleAssetValue(this IValue serialized) =>
             Deserialize(ToFungibleAssetValue, serialized);
+
+        #endregion
+
+        #region Buy
+
+        public static Buy.BuyerResult ToBuyerResult(this IValue serialized) =>
+            new Buy.BuyerResult((Dictionary) serialized);
+
+        public static Buy.SellerResult ToSellerResult(this IValue serialized) =>
+            new Buy.SellerResult((Dictionary) serialized);
 
         #endregion
     }
