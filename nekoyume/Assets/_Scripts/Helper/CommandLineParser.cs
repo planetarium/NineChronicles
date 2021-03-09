@@ -55,6 +55,8 @@ namespace Nekoyume.Helper
 
         private string language = "English";
 
+        private string awsSinkGuid;
+
         // Unity 단독 빌드시의 해시 파워가 낮기 때문에, Unity 버전의 기존치는 .NET Core보다 낮게 잡습니다.
         private int minimumDifficulty = 100000;
 
@@ -313,6 +315,17 @@ namespace Nekoyume.Helper
             set
             {
                 language = value;
+                Empty = false;
+            }
+        }
+
+        [Option("aws-sink-guid", Required = false, HelpText = "Guid for aws cloudwatch logging.")]
+        public string AwsSinkGuid
+        {
+            get => awsSinkGuid;
+            set
+            {
+                awsSinkGuid = value;
                 Empty = false;
             }
         }
