@@ -20,8 +20,6 @@ namespace Nekoyume.Action
     [ActionType("buy_multiple")]
     public class BuyMultiple : GameAction
     {
-        public const int TaxRate = 8;
-
         public Address buyerAvatarAddress;
         public Address sellerAgentAddress;
         public Address sellerAvatarAddress;
@@ -214,7 +212,7 @@ namespace Nekoyume.Action
                     );
                 }
 
-                var tax = shopItem.Price.DivRem(100, out _) * TaxRate;
+                var tax = shopItem.Price.DivRem(100, out _) * Buy.TaxRate;
                 var taxedPrice = shopItem.Price - tax;
 
                 // 세금을 송금한다.
