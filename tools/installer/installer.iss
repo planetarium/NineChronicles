@@ -2,7 +2,6 @@
 #define MyAppPublisher "Nine Corporation"
 #define MyAppURL "https://nine-chronicles.com/"
 #define GameExeName "Nine Chronicles.exe"
-#define GameIconName "icon.ico"
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application. Do not use the same AppId value in installers for other applications.
@@ -42,7 +41,7 @@ Source: ".\vc_redist.x64.exe"; DestDir: "{tmp}"; Flags: deleteafterinstall
 
 [Icons]
 Name: "{autoprograms}\{#MyAppName}"; Filename: "{app}\{#GameExeName}"
-Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#GameExeName}"; IconFilename: "{app}\{#GameIconName}"; Tasks: CreateDesktopIcon
+Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#GameExeName}"; Tasks: CreateDesktopIcon
 Name: "{userstartup}\{#MyAppName}"; Filename: "{app}\{#GameExeName}"; Tasks: RegisterStartup
 
 [Code]
