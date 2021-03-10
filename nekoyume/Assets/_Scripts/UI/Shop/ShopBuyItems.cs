@@ -179,18 +179,6 @@ namespace Nekoyume.UI.Module
             //     // 새로고침을 새로 정의한 후에 수정합니다.
             //     // SharedModel.ResetItemSubTypeProducts();
             // }).AddTo(gameObject);
-        }
-
-        private void OnEnable()
-        {
-            inputField.text = string.Empty;
-            sortOrderIcon.localScale = Vector3.one;
-
-            SharedModel.ClearWishList();
-            SharedModel.itemSubTypeFilter = ItemSubTypeFilter.All;
-            SharedModel.sortFilter = SortFilter.Class;
-            SharedModel.isReverseOrder = false;
-            SharedModel.searchIds = new List<int>();
 
             ReactiveShopState.AgentProducts
                 .Subscribe(SharedModel.ResetAgentProducts)
@@ -199,6 +187,18 @@ namespace Nekoyume.UI.Module
             ReactiveShopState.ItemSubTypeProducts
                 .Subscribe(SharedModel.ResetItemSubTypeProducts)
                 .AddTo(_disposablesAtOnEnable);
+        }
+
+        private void OnEnable()
+        {
+            inputField.text = string.Empty;
+            sortOrderIcon.localScale = Vector3.one;
+
+            SharedModel.itemSubTypeFilter = ItemSubTypeFilter.All;
+            SharedModel.sortFilter = SortFilter.Class;
+            SharedModel.isReverseOrder = false;
+            SharedModel.searchIds = new List<int>();
+            SharedModel.SetMultiplePurchase(false);
         }
 
         private void OnDisable()

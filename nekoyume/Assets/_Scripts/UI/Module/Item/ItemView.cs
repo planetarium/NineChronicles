@@ -170,7 +170,10 @@ namespace Nekoyume.UI.Module
                 Model.ItemBase.Value is null)
             {
                 enhancementText.enabled = false;
-                selectionImage.enabled = false;
+                if (selectionImage != null)
+                {
+                    selectionImage.enabled = false;
+                }
             }
         }
     }

@@ -68,7 +68,6 @@ namespace Nekoyume.UI.Module
             itemSubTypeFilter.AddOptions(new[]
                 {
                     ItemSubTypeFilter.All,
-                    ItemSubTypeFilter.Equipment,
                     ItemSubTypeFilter.Food,
                     ItemSubTypeFilter.Costume,
                     ItemSubTypeFilter.Weapon,

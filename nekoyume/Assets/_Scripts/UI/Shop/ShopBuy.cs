@@ -72,6 +72,8 @@ namespace Nekoyume.UI
             SharedModel.ItemCountAndPricePopup.Value.OnClickCancel
                 .Subscribe(SubscribeItemPopupCancel)
                 .AddTo(gameObject);
+
+            shopBuyBoard.OnChangeBuyType.Subscribe(SetMultiplePurchase).AddTo(gameObject);
         }
 
         public override void Show(bool ignoreShowAnimation = false)
@@ -94,6 +96,7 @@ namespace Nekoyume.UI
                 BottomMenu.ToggleableType.Character);
 
             AudioController.instance.PlayMusic(AudioController.MusicCode.Shop);
+            SetMultiplePurchase(false);
         }
 
         protected override void OnCompleteOfShowAnimationInternal()
@@ -223,6 +226,11 @@ namespace Nekoyume.UI
         {
             SharedModel.ItemCountAndPricePopup.Value.Item.Value = null;
             Find<ItemCountAndPricePopup>().Close();
+        }
+
+        private void SetMultiplePurchase(bool value)
+        {
+            shopItems.SharedModel.SetMultiplePurchase(value);
         }
 
         private void SubscribeBackButtonClick(BottomMenu bottomMenu)

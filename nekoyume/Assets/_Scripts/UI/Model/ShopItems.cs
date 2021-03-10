@@ -33,7 +33,7 @@ namespace Nekoyume.UI.Model
         public SortFilter sortFilter = SortFilter.Class;
         public List<int> searchIds = new List<int>();
         public bool isReverseOrder = false;
-        public bool isMultiplePurchase = true;
+        public bool isMultiplePurchase = false;
 
         private IReadOnlyDictionary<
             Address, Dictionary<
@@ -45,6 +45,8 @@ namespace Nekoyume.UI.Model
             _itemSubTypeProducts;
 
         public readonly List<ShopItem> wishItems = new List<ShopItem>();
+
+        private const int WishListSize = 8;
 
         public void Dispose()
         {
@@ -115,15 +117,16 @@ namespace Nekoyume.UI.Model
                     x.ProductId.Value == view.Model.ProductId.Value);
                 if (selected is null)
                 {
-                    Debug.Log("wishlist add item");
-                    wishItems.Add(view.Model);
-                    SelectedItemView.Value = view;
-                    SelectedItemViewModel.Value = view.Model;
-                    SelectedItemViewModel.Value.Selected.Value = true;
+                    if (wishItems.Count < WishListSize)
+                    {
+                        wishItems.Add(view.Model);
+                        SelectedItemView.Value = view;
+                        SelectedItemViewModel.Value = view.Model;
+                        SelectedItemViewModel.Value.Selected.Value = true;
+                    }
                 }
                 else
                 {
-                    Debug.Log("wishlist remove item");
                     SelectedItemViewModel.Value = view.Model;
                     SelectedItemViewModel.Value.Selected.Value = false;
                     SelectedItemView.Value = view;
@@ -173,9 +176,12 @@ namespace Nekoyume.UI.Model
             }
         }
 
-        public void ClearWishList()
+        public void SetMultiplePurchase(bool value)
         {
             wishItems.Clear();
+            isMultiplePurchase = value;
+            ResetAgentProducts();
+            ResetItemSubTypeProducts();
         }
 
         public void SelectItemView(ShopItemView view)

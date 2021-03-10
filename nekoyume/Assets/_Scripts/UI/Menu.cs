@@ -268,7 +268,7 @@ namespace Nekoyume.UI
             }
 
             Close();
-            Find<Shop>().Show();
+            Find<ShopBuy>().Show();
             AudioController.PlayClick();
             AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ClickMainShop);
         }
