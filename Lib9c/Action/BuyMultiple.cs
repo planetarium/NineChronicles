@@ -167,10 +167,15 @@ namespace Nekoyume.Action
             sw.Stop();
             Log.Verbose("{AddressesHex}BuyMultiple Get Seller AgentAvatarStates: {Elapsed}", addressesHex, sw.Elapsed);
 
-            var shopItems = new List<ShopItem>();
+            if (!productIds.Any())
+            {
+                throw new ItemDoesNotExistException(
+                        $"{addressesHex}Aborted as the requested product's collection is empty."
+                    );
+            }
 
-            // 상점에서 구매할 아이템을 찾는다.
-            Dictionary products = (Dictionary)shopStateDict["products"];
+            // Get products in `ShopState`.
+            Dictionary products = (Dictionary) shopStateDict["products"];
 
             buyerResult = new BuyerResult();
             sellerResult = new SellerResult();
@@ -181,7 +186,7 @@ namespace Nekoyume.Action
             {
                 sw.Restart();
 
-                IKey productIdSerialized = (IKey)productId.Serialize();
+                IKey productIdSerialized = (IKey) productId.Serialize();
                 if (!products.ContainsKey(productIdSerialized))
                 {
                     throw new ItemDoesNotExistException(
@@ -189,7 +194,7 @@ namespace Nekoyume.Action
                     );
                 }
 
-                ShopItem shopItem = new ShopItem((Dictionary)products[productIdSerialized]);
+                ShopItem shopItem = new ShopItem((Dictionary) products[productIdSerialized]);
                 if (!shopItem.SellerAgentAddress.Equals(sellerAgentAddress))
                 {
                     throw new ItemDoesNotExistException(
@@ -199,9 +204,13 @@ namespace Nekoyume.Action
                 sw.Stop();
                 Log.Verbose("{AddressesHex}BuyMultiple Get Item: {Elapsed}", addressesHex, sw.Elapsed);
 
-                shopItems.Add(shopItem);
+                if (0 < shopItem.ExpiredBlockIndex && shopItem.ExpiredBlockIndex < context.BlockIndex)
+                {
+                    throw new ShopItemExpiredException(
+                        $"{addressesHex}Aborted as the shop item ({productId}) already expired on # ({shopItem.ExpiredBlockIndex}).");
+                }
 
-                // 돈은 있냐?
+                // Check buyer's balance
                 FungibleAssetValue buyerBalance = states.GetBalance(context.Signer, states.GetGoldCurrency());
                 if (buyerBalance < shopItem.Price)
                 {
@@ -215,13 +224,13 @@ namespace Nekoyume.Action
                 var tax = shopItem.Price.DivRem(100, out _) * Buy.TaxRate;
                 var taxedPrice = shopItem.Price - tax;
 
-                // 세금을 송금한다.
+                // Transfer tax
                 states = states.TransferAsset(
                     context.Signer,
                     GoldCurrencyState.Address,
                     tax);
 
-                // 구매자의 돈을 판매자에게 송금한다.
+                // Transfer paid money (taxed) to the seller.
                 states = states.TransferAsset(
                     context.Signer,
                     sellerAgentAddress,
@@ -230,6 +239,18 @@ namespace Nekoyume.Action
 
                 products = (Dictionary)products.Remove(productIdSerialized);
                 shopStateDict = shopStateDict.SetItem("products", products);
+
+                INonFungibleItem nonFungibleItem = (INonFungibleItem)shopItem.ItemUsable ?? shopItem.Costume;
+                if (!sellerAvatarState.inventory.RemoveNonFungibleItem(nonFungibleItem))
+                {
+                    if (nonFungibleItem.RequiredBlockIndex != 0)
+                    {
+                        throw new ItemDoesNotExistException(
+                            $"{addressesHex}Aborted as the {nameof(nonFungibleItem)} ({nonFungibleItem.ItemId}) was failed to get from the sellerAvatar."
+                        );
+                    }
+                }
+                nonFungibleItem.Update(context.BlockIndex);
 
                 var buyerResultToAdd = new Buy.BuyerResult
                 {
@@ -253,19 +274,18 @@ namespace Nekoyume.Action
                 sellerResultToAdd.id = sellerMail.id;
                 sellerResults.Add(sellerResultToAdd);
 
-                buyerAvatarState.UpdateV3(buyerMail);
+                buyerAvatarState.UpdateV4(buyerMail, context.BlockIndex);
                 if (buyerResultToAdd.itemUsable != null)
                 {
                     buyerAvatarState.UpdateFromAddItem(buyerResultToAdd.itemUsable, false);
                 }
-
                 if (buyerResultToAdd.costume != null)
                 {
                     buyerAvatarState.UpdateFromAddCostume(buyerResultToAdd.costume, false);
                 }
-                sellerAvatarState.UpdateV3(sellerMail);
+                sellerAvatarState.UpdateV4(sellerMail, context.BlockIndex);
 
-                // 퀘스트 업데이트
+                // Update quest.
                 buyerAvatarState.questList.UpdateTradeQuest(TradeType.Buy, shopItem.Price);
                 sellerAvatarState.questList.UpdateTradeQuest(TradeType.Sell, shopItem.Price);
             }
