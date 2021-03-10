@@ -21,5 +21,6 @@ namespace Nekoyume.L10n
         TextPrologue,
         TextPrologueShadow,
         Title,
+        Test
     }
 }
