@@ -6,6 +6,7 @@ using Nekoyume.Model.Item;
 using Nekoyume.State;
 using Nekoyume.UI.Module;
 using UniRx;
+using UnityEngine;
 
 namespace Nekoyume.UI.Model
 {
@@ -30,8 +31,9 @@ namespace Nekoyume.UI.Model
 
         public ItemSubTypeFilter itemSubTypeFilter = ItemSubTypeFilter.All;
         public SortFilter sortFilter = SortFilter.Class;
-        public bool isReverseOrder = false;
         public List<int> searchIds = new List<int>();
+        public bool isReverseOrder = false;
+        public bool isMultiplePurchase = true;
 
         private IReadOnlyDictionary<
             Address, Dictionary<
@@ -41,6 +43,8 @@ namespace Nekoyume.UI.Model
         private IReadOnlyDictionary<
                 ItemSubTypeFilter, Dictionary<SortFilter, Dictionary<int, List<ShopItem>>>>
             _itemSubTypeProducts;
+
+        public readonly List<ShopItem> wishItems = new List<ShopItem>();
 
         public void Dispose()
         {
@@ -105,14 +109,73 @@ namespace Nekoyume.UI.Model
 
         private void SubscribeItemOnClick(ShopItemView view)
         {
-            if (view is null ||
-                view == SelectedItemView.Value)
+            if (isMultiplePurchase)
             {
-                DeselectItemView();
+                var selected = wishItems.FirstOrDefault(x =>
+                    x.ProductId.Value == view.Model.ProductId.Value);
+                if (selected is null)
+                {
+                    Debug.Log("wishlist add item");
+                    wishItems.Add(view.Model);
+                    SelectedItemView.Value = view;
+                    SelectedItemViewModel.Value = view.Model;
+                    SelectedItemViewModel.Value.Selected.Value = true;
+                }
+                else
+                {
+                    Debug.Log("wishlist remove item");
+                    SelectedItemViewModel.Value = view.Model;
+                    SelectedItemViewModel.Value.Selected.Value = false;
+                    SelectedItemView.Value = view;
+                    wishItems.Remove(selected);
+
+                    SelectedItemViewModel.Value = null;
+                    SelectedItemView.Value = null;
+                }
+            }
+            else
+            {
+                if (view is null || view == SelectedItemView.Value)
+                {
+                    DeselectItemView();
+                    return;
+                }
+
+                SelectItemView(view);
+            }
+        }
+
+        public void RemoveItemInWishList(ShopItem shopItem)
+        {
+            var selected = wishItems.FirstOrDefault(x =>
+                x.ProductId.Value == shopItem.ProductId.Value);
+
+            if (selected is null)
+            {
                 return;
             }
 
-            SelectItemView(view);
+            wishItems.Remove(shopItem);
+            foreach (var keyValuePair in ItemSubTypeProducts.Value)
+            {
+                var reuslt = keyValuePair.Value.FirstOrDefault(
+                    x => x.ProductId.Value == selected.ProductId.Value);
+                if (reuslt != null)
+                {
+                    SelectedItemViewModel.Value = reuslt;
+                    SelectedItemViewModel.Value.Selected.Value = false;
+                    SelectedItemView.Value = reuslt.View;
+
+                    SelectedItemViewModel.Value = null;
+                    SelectedItemView.Value = null;
+                    return;
+                }
+            }
+        }
+
+        public void ClearWishList()
+        {
+            wishItems.Clear();
         }
 
         public void SelectItemView(ShopItemView view)
@@ -122,7 +185,6 @@ namespace Nekoyume.UI.Model
                 return;
 
             DeselectItemView();
-
             SelectedItemView.Value = view;
             SelectedItemViewModel.Value = view.Model;
             SelectedItemViewModel.Value.Selected.Value = true;
@@ -228,6 +290,15 @@ namespace Nekoyume.UI.Model
         public void ResetItemSubTypeProducts()
         {
             ItemSubTypeProducts.Value = GetFilteredAndSortedProducts(_itemSubTypeProducts);
+            foreach (var keyValuePair in ItemSubTypeProducts.Value)
+            {
+                foreach (var shopItem in keyValuePair.Value)
+                {
+                    var isSelected =
+                        wishItems.Exists(x => x.ProductId.Value == shopItem.ProductId.Value);
+                    shopItem.Selected.Value = isSelected;
+                }
+            }
         }
 
         private Dictionary<int, List<ShopItem>> GetFilteredAndSortedProducts(IReadOnlyDictionary<

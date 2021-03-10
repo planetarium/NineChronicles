@@ -21,9 +21,9 @@ namespace Nekoyume.UI
         private const int NPCId = 300000;
         private static readonly Vector2 NPCPosition = new Vector2(2.76f, -1.72f);
         private NPC _npc;
-        private bool _isEachBuy = false;
 
         [SerializeField] private ShopBuyItems shopItems = null;
+        [SerializeField] private ShopBuyBoard shopBuyBoard = null;
 
         // [SerializeField] private SpeechBubble speechBubble = null;
 
@@ -58,6 +58,7 @@ namespace Nekoyume.UI
             shopItems.SharedModel.SelectedItemView
                 .Subscribe(OnClickShopItem)
                 .AddTo(gameObject);
+
             shopItems.SharedModel.OnDoubleClickItemView
                 .Subscribe(OnDoubleClickShopItem)
                 .AddTo(gameObject);
@@ -186,6 +187,11 @@ namespace Nekoyume.UI
             Find<ItemCountAndPricePopup>().Pop(SharedModel.ItemCountAndPricePopup.Value);
         }
 
+        private void AddWishList(ShopItemView view)
+        {
+            shopBuyBoard.UpdateWishList(shopItems.SharedModel);
+        }
+
         private void SubscribeItemPopupSubmit(Model.ItemCountAndPricePopup data)
         {
             if (!(data.Item.Value.ItemBase.Value is INonFungibleItem nonFungibleItem))
@@ -262,7 +268,11 @@ namespace Nekoyume.UI
 
         private void OnClickShopItem(ShopItemView view)
         {
-            if (_isEachBuy)
+            if (shopItems.SharedModel.isMultiplePurchase)
+            {
+                AddWishList(view);
+            }
+            else
             {
                 ShowTooltip(view);
             }
@@ -270,10 +280,12 @@ namespace Nekoyume.UI
 
         private void OnDoubleClickShopItem(ShopItemView view)
         {
-            if (_isEachBuy)
+            if (shopItems.SharedModel.isMultiplePurchase)
             {
-                ShowActionPopup(view.Model);
+                return;
             }
+
+            ShowActionPopup(view.Model);
         }
 
         // private void ShowSpeech(string key,

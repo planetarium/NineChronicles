@@ -186,6 +186,7 @@ namespace Nekoyume.UI.Module
             inputField.text = string.Empty;
             sortOrderIcon.localScale = Vector3.one;
 
+            SharedModel.ClearWishList();
             SharedModel.itemSubTypeFilter = ItemSubTypeFilter.All;
             SharedModel.sortFilter = SortFilter.Class;
             SharedModel.isReverseOrder = false;
