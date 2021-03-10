@@ -12,6 +12,8 @@ using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using UniRx;
 using UnityEngine;
+using UnityEngine.Rendering;
+using UnityEngine.UI;
 using ShopItem = Nekoyume.UI.Model.ShopItem;
 
 namespace Nekoyume.UI
@@ -19,11 +21,13 @@ namespace Nekoyume.UI
     public class ShopBuy : Widget
     {
         private const int NPCId = 300000;
-        private static readonly Vector2 NPCPosition = new Vector2(2.76f, -1.72f);
+        private static readonly Vector2 NPCPosition = new Vector2(2.76f, -1.2f);
         private NPC _npc;
 
         [SerializeField] private ShopBuyItems shopItems = null;
         [SerializeField] private ShopBuyBoard shopBuyBoard = null;
+        [SerializeField] private Button sellButton = null;
+        [SerializeField] private Canvas frontCanvas;
 
         // [SerializeField] private SpeechBubble speechBubble = null;
 
@@ -49,6 +53,11 @@ namespace Nekoyume.UI
             base.Awake();
             SharedModel = new Model.Shop();
             CloseWidget = null;
+            sellButton.onClick.AddListener(() =>
+            {
+                Find<ShopSell>().Show();
+                Find<ShopBuy>().Close();
+            });
         }
 
         public override void Initialize()
@@ -97,18 +106,24 @@ namespace Nekoyume.UI
 
             AudioController.instance.PlayMusic(AudioController.MusicCode.Shop);
             SetMultiplePurchase(false);
-        }
 
-        protected override void OnCompleteOfShowAnimationInternal()
-        {
             var go = Game.Game.instance.Stage.npcFactory.Create(
                 NPCId,
                 NPCPosition,
                 LayerType.InGameBackground,
                 3);
             _npc = go.GetComponent<NPC>();
+            _npc.GetComponent<SortingGroup>().sortingLayerName = LayerType.UI.ToLayerName();
+            _npc.GetComponent<SortingGroup>().sortingOrder = 11;
             _npc.SpineController.Appear();
+
+            frontCanvas.sortingLayerName = LayerType.UI.ToLayerName();
             go.SetActive(true);
+            shopItems.Show();
+        }
+
+        protected override void OnCompleteOfShowAnimationInternal()
+        {
 
             // ShowSpeech("SPEECH_SHOP_GREETING_", CharacterAnimation.Type.Greeting);
         }

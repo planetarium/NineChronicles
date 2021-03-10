@@ -11,6 +11,8 @@ using Nekoyume.UI.Module;
 using TMPro;
 using UniRx;
 using UnityEngine;
+using UnityEngine.Rendering;
+using UnityEngine.UI;
 using ShopItem = Nekoyume.UI.Model.ShopItem;
 
 namespace Nekoyume.UI
@@ -32,6 +34,7 @@ namespace Nekoyume.UI
 
         [SerializeField]
         private SpeechBubble speechBubble = null;
+        [SerializeField] private Button buyButton = null;
 
         private Model.Shop SharedModel { get; set; }
 
@@ -41,6 +44,11 @@ namespace Nekoyume.UI
             SharedModel = new Model.Shop();
             noticeText.text = L10nManager.Localize("UI_SHOP_NOTICE");
             CloseWidget = null;
+            buyButton.onClick.AddListener(() =>
+            {
+                Find<ShopSell>().Close();
+                Find<ShopBuy>().Show();
+            });
         }
 
         public override void Initialize()
@@ -102,7 +110,10 @@ namespace Nekoyume.UI
                 LayerType.InGameBackground,
                 3);
             _npc = go.GetComponent<NPC>();
+            _npc.GetComponent<SortingGroup>().sortingLayerName = LayerType.InGameBackground.ToLayerName();
+            _npc.GetComponent<SortingGroup>().sortingOrder = 3;
             _npc.SpineController.Appear();
+
             go.SetActive(true);
 
             ShowSpeech("SPEECH_SHOP_GREETING_", CharacterAnimation.Type.Greeting);

@@ -189,6 +189,11 @@ namespace Nekoyume.UI.Module
                 .AddTo(_disposablesAtOnEnable);
         }
 
+        public void Show()
+        {
+            toggleDropdowns.First().isOn = true;
+        }
+
         private void OnEnable()
         {
             inputField.text = string.Empty;
