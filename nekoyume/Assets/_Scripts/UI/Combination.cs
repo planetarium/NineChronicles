@@ -784,6 +784,13 @@ namespace Nekoyume.UI
             blur.gameObject.SetActive(false);
             Pop();
             _selectedSpeechBubble.Hide();
+
+            var tutorialController = Game.Game.instance.Stage.TutorialController;
+            var tutorialProgress = tutorialController.GetTutorialProgress();
+            if (tutorialProgress == 2)
+            {
+                tutorialController.Play(48);
+            }
         }
 
         private void SetNPCAlphaZero()
