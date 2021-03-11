@@ -437,7 +437,7 @@ namespace Nekoyume.Game
         {
             if (_options.Maintenance)
             {
-                var w = Widget.Create<Alert>();
+                var w = Widget.Create<SystemPopup>();
                 w.CloseCallback = () =>
                 {
                     Application.OpenURL(GameConfig.DiscordLink);

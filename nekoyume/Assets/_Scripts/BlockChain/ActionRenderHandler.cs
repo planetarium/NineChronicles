@@ -952,7 +952,7 @@ namespace Nekoyume.BlockChain
                     code)
                 : errorMsg;
             Widget
-                .Find<Alert>()
+                .Find<SystemPopup>()
                 .Show(L10nManager.Localize("UI_ERROR"), errorMsg,
                     L10nManager.Localize("UI_OK"), false);
         }
