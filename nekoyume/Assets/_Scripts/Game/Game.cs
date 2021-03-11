@@ -112,13 +112,6 @@ namespace Nekoyume.Game
             States = new States();
             LocalLayer = new LocalLayer();
             MainCanvas.instance.InitializeIntro();
-
-#if !UNITY_EDITOR
-            var c = new CognitoAWSCredentials("ap-northeast-2:6fea0e84-a609-4774-a407-c63de9dbea7b",
-                RegionEndpoint.APNortheast2);
-            _logsClient = new AmazonCloudWatchLogsClient(c, RegionEndpoint.APNortheast2);
-            Application.logMessageReceivedThreaded += UploadLog;
-#endif
         }
 
         private IEnumerator Start()
