@@ -7,6 +7,7 @@ using Nekoyume.Action;
 using Nekoyume.BlockChain;
 using Nekoyume.Model.State;
 using Nekoyume.State.Subjects;
+using Nekoyume.UI;
 using UnityEngine;
 
 namespace Nekoyume.State
@@ -217,6 +218,7 @@ namespace Nekoyume.State
             var avatarState = _avatarStates[CurrentAvatarKey];
             LocalLayer.Instance.InitializeCurrentAvatarState(avatarState);
             UpdateCurrentAvatarState(avatarState, initializeReactiveState);
+            Widget.Find<Combination>().LoadRecipeVFXSkipMap();
 
             if (isNew)
             {

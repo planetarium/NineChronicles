@@ -51,7 +51,7 @@ namespace Nekoyume.State
             // AgentProducts.
             {
                 var agentProducts = new Dictionary<Address, List<ShopItem>>();
-                foreach (var product in products)
+                foreach (var product in products.Where(s => s.ExpiredBlockIndex == 0 || s.ExpiredBlockIndex > Game.Game.instance.Agent.BlockIndex))
                 {
                     var agentAddress = product.SellerAgentAddress;
                     if (!agentProducts.ContainsKey(agentAddress))

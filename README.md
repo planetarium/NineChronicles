@@ -1,54 +1,76 @@
 Nine Chronicles
 ===============
+![Nine Chronicles Banner][9c-banner]
 
 [![CircleCI][ci-badge]][ci]
+[![Discord][Discord-badge]][Discord]
+
+[Nine Chronicles][9c] is a fully open-sourced online RPG without servers — like Bitcoin or BitTorrent,
+the gamers and miners connect to each other to power a distributed game network.
+Set in a vast fantasy world, it is governed by [its players][Discord], and supported by a complex economy
+where supply and demand are the greatest currency.
+
+Decentralized infrastructure has created new possibilities for online gaming, where communities
+can become the actual owners of an online world. By fully open sourcing the repositories for
+Nine Chronicles, players and developers alike can use any part of the game, from the beautiful
+bespoke 2D assets to in-game logic and code.
+
+To learn more about the [codebase][9c-source-code-guide] and the [GraphQL API][9c-api-guide],
+visit [docs.nine-chronicles.com][9c-docs].
 
 [ci-badge]: https://circleci.com/gh/planetarium/nekoyume-unity.svg?style=svg&circle-token=ca79d4f6281fe60cdde55d0f1c3d97d561106bda
 [ci]: https://circleci.com/gh/planetarium/nekoyume-unity
+[Discord-badge]: https://img.shields.io/discord/539405872346955788.svg?color=7289da&logo=discord&logoColor=white
+[Discord]: https://discord.gg/planetarium
+[9c]: https://nine-chronicles.com
+[9c-docs]: https://docs.nine-chronicles.com
+[9c-api-guide]: https://docs.nine-chronicles.com/api-guide
+[9c-source-code-guide]: https://docs.nine-chronicles.com/source-code-guide
+[9c-banner]: docs/9c-banner.jpeg
 
 
-### 의존성
+### Dependency
  - [Unity Hub]
 
 
-### 설치 방법
+### Installation
 
- 1. [Unity Hub] 설치
- 1. Unity 2019.1.0f2 버전 설치
- 1. 저장소 클론
+ 1. Install [Unity Hub]
+ 1. Install Unity 2019.1.0f2 version
+ 1. Clone repository
     ```
-    git clone git@github.com:planetarium/nekoyume-unity.git
+    git clone git@github.com:planetarium/NineChronicles.git
     ```
- 1. 터미널에서 클론한 디렉터리로 들어가서 아래 명령 실행
+ 1. Nagivate to the cloned directory and run the command:
     ```
     git config core.hooksPath hooks
     ```
- 1. 유니티 실행후 프로젝트 빌드
+ 1. Run Unity and build project
 
 
-### 커맨드라인 옵션
+### Command Line Options
 
- - `--private-key`       : 사용할 프라이빗 키를 지정합니다.
- - `--keystore-path`     : 비밀키가 저장될 디렉터리 경로.
- - `--host`              : 사용할 Host 이름을 지정합니다.
- - `--port`              : 사용할 Port를 지정합니다.
- - `--no-miner`          : 마이닝을 사용하지 않습니다.
- - `--minimum-difficulty`: 네트워크에서 합의된 최소 블록 채굴 난이도를 설정합니다.
- - `--peer`              : Peer 를 추가합니다. 추가하려는 Peer가 여럿일 경우 --peer peerA peerB ... 와 같이 추가할 수 있습니다.
- - `--ice-servers`       : NAT 우회에 사용할 TURN 서버 정보를 지정합니다. 지정하는 서버가 여럿일 경우 `--ice-servers serverA serverB` 와 같이 추가할 수 있습니다.
- - `--genesis-block-path`: 제네시스 블록 위치를 지정합니다. http(s)로 된 경로도 지원하며, 지정하지 않은 경우엔 `Assets/StreamingAssets/genesis-block`을 사용합니다.
- - `--storage-path`      : 데이터를 저장할 경로를 지정합니다.
- - `--storage-type`      : 데이터를 저장할 저장소 타입을 지정합니다. 현재는 `--storage-type rocksdb` 로 `RocksDBStore` 를 지정할 수 있습니다.
- - `--rpc-client`        : 체인 데이터를 저장하지 않는 클라이언트 모드로 실행합니다.
- - `--rpc-server-host`   : 클라이언트 모드에서 접속할 서버의 호스트명을 지정합니다.
- - `--rpc-server-port`   : 클라이언트 모드에서 접속할 서버의 포트를 지정합니다.
- - `--auto-play`         : 백그라운드에서 캐릭터 생성 및 자동 전투를 수행합니다.
- - `--console-sink`      : 로그를 콘솔로 출력합니다.
- - `--development`       : 개발 모드로 실행합니다. 디버그용 UI를 표시하고 로그 레벨을 조정합니다.
+ - `--private-key`       : private key to use.
+ - `--keystore-path`     : path to store private key.
+ - `--host`              : host name.
+ - `--port`              : port name.
+ - `--no-miner`          : disable mining.
+ - `--minimum-difficulty`: configure minimum mining difficulty accepted by the network.
+ - `--peer`              : add peer. Multiple peers can be added with `--peer peerA peerB ... `.
+ - `--ice-servers`       : TURN server information used for NAT traversal. Multiple servers can be added with `--ice-servers serverA serverB`.
+ - `--genesis-block-path`: path of genesis block. Supports http(s) paths and uses `Assets/StreamingAssets/genesis-block` if not provided.
+ - `--storage-path`      : path to store chain data.
+ - `--storage-type`      : storage type name. Currently supports `RocksDBStore` (`--storage-type rocksdb`).
+ - `--rpc-client`        : starts client mode that does not store chain data.
+ - `--rpc-server-host`   : rpc server host name.
+ - `--rpc-server-port`   : rpc server port name.
+ - `--auto-play`         : automatically generate character and enter battle stage in the background.
+ - `--console-sink`      : print logs on console.
+ - `--development`       : run in development mode. Shows debugging UI and log level configuration.
 
-#### Unity Editor 에서 커맨드라인 옵션 사용
+#### Using Command Line Options on Unity Editor
 
-위의 커맨드라인 옵션을 Unity 에디터나 빌드한 플레이어에서 사용하려면 `Assets/StreamingAssets/clo.json` 파일을 작성하면 됩니다. 아래는 작성 예시입니다.
+To use the above command line options on Unity Editor or on build player, `Assets/StreamingAssets/clo.json` must be created. Below is an example:
 
 ```
 {
@@ -60,11 +82,11 @@ Nine Chronicles
 }
 ```
 
-- `Assets/StreamingAssets/clo.json` 파일은 버전 관리에서 제외되어 있습니다.
-  - 필요에 따라 `Assets/StreamingAssets/clo_nekoalpha_nominer.json` 와 같이 프리셋을 제공하는 경우가 있습니다. 이러한 프리셋 파일을 `clo.json`으로 이름을 바꾸면 바로 사용하실 수 있습니다.
+- `Assets/StreamingAssets/clo.json` is excluded from version control.
+  - `Assets/StreamingAssets/clo_nekoalpha_nominer.json` could be provided as a preset. To use this file, change the name to `clo.json`.
 
 
-### 커맨드라인 빌드
+### Command Line Build
 
 ```
 $ /UnityPath/Unity -quit -batchmode -projectPath=/path/to/nekoyume/ -executeMethod Editor.Builder.Build[All, MacOS, Windows, Linux, MacOSHeadless, WindowsHeadless, LinuxHeadless]
@@ -76,71 +98,70 @@ $ /UnityPath/Unity -quit -batchmode -projectPath=/path/to/nekoyume/ -executeMeth
 $ /Applications/Unity/Hub/Editor/2019.1.0f2/Unity.app/Contents/MacOS/Unity -quit -batchmode -projectPath=~/planetarium/nekoyume-unity/nekoyume/ -executeMethod Editor.Builder.BuildAll
 ```
 
-### 에디터 빌드
+### Editor Build
 
-유니티 에디터 상단의 Build 메뉴를 사용해서 빌드합니다.
+Use the `Build` menu on the Unity Editor.
 
-### 피어 설정
+### Peer Configuration
 
-#### 읽기 순서
+#### Reading Order
 
-통신을 하기 위한 피어 목록은 다음과 같은 순서로 로드합니다.  
+Peer options for network communication is read in the following order:
 
-1. 실행 시 커맨드라인 인자 (`--peer`)
-2. (Windows 기준) `%USERPROFILE%\AppData\LocalLow\Planetarium` 에 있는 `peers.dat`
-3. 9C 프로젝트의 `Assets\Resources\Config\peers.txt`
+1. Command Line parameter upon execution (`--peer`)
+2. (On Windows) `peers.dat` in `%USERPROFILE%\AppData\LocalLow\Planetarium`
+3. `Assets\Resources\Config\peers.txt` inside NineChronicles project.
 
-현재 프로젝트에선 기본 피어 설정(3번)이 비어있으므로, 1,2번에 별도의 피어 설정이 되어있지 않다면 싱글 노드로 동작합니다.
+Since the current project doesn't include option 3, the game will run in a single node if peer configuration in either option 1 or 2 are not provided.
 
-#### 형식
+#### Format
 
-피어 목록은 평문(Plain Text) 형식으로 저장되며 한 줄마다 한 노드의 정보를 `공개키,호스트명,포트,버전` 형태로 적습니다.
+Peer list is stored in plain text format and each line includes a node's `publickey,host-name,port,version`.
 
-예시) 
+Ex)
 
 ```
    02ed49dbe0f2c34d9dff8335d6dd9097f7a3ef17dfb5f048382eebc7f451a50aa1,nekoyume1.koreacentral.cloudapp.azure.com,58598
    02d05be62f8593721f5abfd28fb83c043ed9d9585f45b652cb67fd6eee3fd3748f,nekoyume2.koreacentral.cloudapp.azure.com,58599
 ```
 
-- 호스트명과 포트는 외부에서 접속 가능한 것이어야 합니다.
-    - 실행시 인자(`—host`)를 지정하지 않은 경우에는 자동으로 STUN/TURN에 의해 릴레이 되므로 실제 호스트명과 포트가 달라질 수 있습니다. 
-      즉, 피어 목록에 기술되는 노드는 반드시 `--host`를 통해 호스트명을 지정하여 실행되어야 합니다.
-- 공개키는 `Swarm` 객체 생성시 사용한 개인키(`PrivateKey`)로부터 유도된 것을 16진수로 부호화한 것입니다.
+- Host name and port must be public.
+    - If `--host` is not provided upon execution, the actual host name and port could be different from the original due to the automatic relay communication via STUN/TURN.
+      Therefore, nodes that are used as peers on other nodes must provide its `--host` option on execution.
+- Public key is a hexadecimal string derived from the `PrivateKey` that is used to create a `Swarm` object.
 
 [Unity Hub]: https://unity3d.com/get-unity/download
 
 
-### Docker-compose 마이너 테스트
+### Docker-compose Miner Test
 
-로컬에서 테스트 하는 것을 전제로 Seed 의 개인키와 노드들의 Host가 하드코딩 되어 있습니다.
+Seed private key and node host are hardcoded for local testing purposes.
 
-- `LinuxHeadless` 빌드 후 아래 명령 실행
+- Build `LinuxHeadless` and run the command below:
 
 ```bash
 cd nekoyume/compose
 docker-compose up --build
 ```
 
-### 오토 플레이 옵션
+### Auto Play Option
 
-`--auto-play` 옵션으로 백그라운드에서 캐릭터를 생성하고 자동전투를 수행하도록 할 수 있습니다.
-현재 캐릭터의 이름은 노드의 Address 앞 여덟자리로 생성되며 `TxProcessInterval` 마다 1 스테이지 전투를 반복합니다.
+`--auto-play` option can be used to generate character and automate battle stages in the background.
+Currently, character's name is generated with the first 8 characters of the node's `Address` and repeats stage 1 battle at the `TxProcessInterval`.
 
-### console sink 옵션
+### Console Sink Option
 
-`--console-sink` 옵션으로 로그를 ApplicationInsights로 보내지 않고 `UnityDebugSink`를 통하여 내보내게 할 수 있습니다.
+`--console-sink` option can send logs via `UnityDebugSink` instead of `ApplicationInsights`.
 
-### 화이트 리스트
+### White List
 
-`nekoyume/Assets/AddressableAssets/TableCSV/Account/ActivationSheet.csv` 를 통해 아래와 같이 화이트 리스트를 관리할 수 있습니다.
+You can use `nekoyume/Assets/AddressableAssets/TableCSV/Account/ActivationSheet.csv` to manage white lists.
 
 ```
 id,public_key
 1,029d256bc6943cd9d18712b1fe1fdd061705d2ffa644a7705b3cf90f408d1ee278
 ```
 
-`ActivationSheet.csv` 파일에 PublicKey가 등록된 경우, 해당 PublicKey를 생성한 PrivateKey로 서명한
-트랜잭션만 마이닝 될 수 있습니다.
+If `PublicKeys` are registered in `ActivationSheet.csv`, only transactions that have been signed with the PrivateKeys of those PublicKeys can be mined.
 
-`ActivationSheet.csv` 파일에 등록된 PublicKey가 없을 경우 화이트리스트 기능이 동작하지 않습니다.
+White list feature will not be activated if there are no `PublicKeys` registered in `ActivationSheet.csv`.
