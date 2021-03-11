@@ -1,7 +1,6 @@
 using System;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using Cocona;
 using Libplanet.RocksDBStore;
 using NCAction = Libplanet.Action.PolymorphicAction<Nekoyume.Action.ActionBase>;
@@ -37,7 +36,7 @@ namespace Lib9c.Tools.SubCommand
                 Console.WriteLine("Skip copy");                
             }
             
-            var originStore = new OldRocksDBStore(originRootPath);
+            var originStore = new MonoRocksDBStore(originRootPath);
             var distStore = new RocksDBStore(distRootPath);
 
             var totalLength = originStore.CountBlocks();
