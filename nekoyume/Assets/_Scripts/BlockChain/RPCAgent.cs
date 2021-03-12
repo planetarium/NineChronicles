@@ -141,8 +141,6 @@ namespace Nekoyume.BlockChain
 
         public void SendException(Exception exc)
         {
-            var (key, code, message) = ErrorCode.GetErrorCode(exc);
-            _service.ReportException(code, message);
         }
 
         public void EnqueueAction(GameAction action)
