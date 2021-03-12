@@ -40,26 +40,14 @@
     },
     {
       "id": 4,
-      "nextId": 5,
-      "data": {
-        "presetId": 4,
-        "targetType": "None",
-        "actionType": "None",
-        "emojiType": "Question",
-        "guideType": "None",
-        "scriptKey": "TUTORIAL_02_003"
-      }
-    },
-    {
-      "id": 5,
       "nextId": 6,
       "data": {
-        "presetId": 9,
+        "presetId": 4,
         "targetType": "CombinationButton",
         "actionType": "TutorialActionGoToFirstRecipeCellView",
-        "emojiType": "Idle",
-        "guideType": "Outline",
-        "scriptKey": "TUTORIAL_02_004"
+        "emojiType": "Question",
+        "guideType": "Square",
+        "scriptKey": "TUTORIAL_02_003"
       }
     },
     {
@@ -80,10 +68,10 @@
       "nextId": 8,
       "data": {
         "presetId": 4,
-        "targetType": "WeaponTabButton",
+        "targetType": "None",
         "actionType": "None",
         "emojiType": "Idle",
-        "guideType": "Square",
+        "guideType": "None",
         "scriptKey": "TUTORIAL_02_006",
         "fullScreenButton" : true
       }
@@ -105,10 +93,10 @@
       "nextId": 10,
       "data": {
         "presetId": 4,
-        "targetType": "EquipmentRecipeCellView",
+        "targetType": "None",
         "actionType": "None",
         "emojiType": "Reaction",
-        "guideType": "Square",
+        "guideType": "None",
         "scriptKey": "TUTORIAL_02_008"
       }
     },
@@ -138,7 +126,7 @@
     },
     {
       "id": 12,
-      "nextId": 0,
+      "nextId": 15,
       "data": {
         "presetId": 4,
         "targetType": "None",
@@ -174,7 +162,7 @@
     },
     {
       "id": 15,
-      "nextId": 16,
+      "nextId": 29,
       "data": {
         "presetId": 4,
         "targetType": "None",
@@ -390,7 +378,7 @@
     },
     {
       "id": 33,
-      "nextId": 34,
+      "nextId": 48,
       "data": {
         "presetId": 4,
         "targetType": "None",
