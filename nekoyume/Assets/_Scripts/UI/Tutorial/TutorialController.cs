@@ -137,7 +137,7 @@ namespace Nekoyume.UI
                     _buttonRectTransform,
                     data.fullScreenButton),
                 new GuideArrowData(
-                    data.guideType,
+                    data.noArrow ? GuideType.Stop : data.guideType,
                     target,
                     data.targetPositionOffset,
                     data.targetSizeOffset,

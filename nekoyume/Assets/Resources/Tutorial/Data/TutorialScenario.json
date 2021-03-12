@@ -46,7 +46,7 @@
         "targetType": "CombinationButton",
         "actionType": "TutorialActionGoToFirstRecipeCellView",
         "emojiType": "Question",
-        "guideType": "Square",
+        "guideType": "Outline",
         "scriptKey": "TUTORIAL_02_003"
       }
     },
@@ -67,13 +67,14 @@
       "id": 7,
       "nextId": 8,
       "data": {
-        "presetId": 4,
-        "targetType": "None",
+        "presetId": 5,
+        "targetType": "CombineEquipmentCategory",
         "actionType": "None",
         "emojiType": "Idle",
         "guideType": "None",
         "scriptKey": "TUTORIAL_02_006",
-        "fullScreenButton" : true
+        "fullScreenButton" : true,
+        "noArrow": true
       }
     },
     {
@@ -92,12 +93,14 @@
       "id": 9,
       "nextId": 10,
       "data": {
-        "presetId": 4,
-        "targetType": "None",
+        "presetId": 5,
+        "targetType": "EquipmentRecipeCellView",
         "actionType": "None",
         "emojiType": "Reaction",
         "guideType": "None",
-        "scriptKey": "TUTORIAL_02_008"
+        "scriptKey": "TUTORIAL_02_008",
+        "fullScreenButton" : true,
+        "noArrow": true
       }
     },
     {
