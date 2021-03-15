@@ -40,26 +40,14 @@
     },
     {
       "id": 4,
-      "nextId": 5,
-      "data": {
-        "presetId": 4,
-        "targetType": "None",
-        "actionType": "None",
-        "emojiType": "Question",
-        "guideType": "None",
-        "scriptKey": "TUTORIAL_02_003"
-      }
-    },
-    {
-      "id": 5,
       "nextId": 6,
       "data": {
-        "presetId": 9,
+        "presetId": 4,
         "targetType": "CombinationButton",
         "actionType": "TutorialActionGoToFirstRecipeCellView",
-        "emojiType": "Idle",
+        "emojiType": "Question",
         "guideType": "Outline",
-        "scriptKey": "TUTORIAL_02_004"
+        "scriptKey": "TUTORIAL_02_003"
       }
     },
     {
@@ -79,13 +67,14 @@
       "id": 7,
       "nextId": 8,
       "data": {
-        "presetId": 4,
-        "targetType": "WeaponTabButton",
+        "presetId": 5,
+        "targetType": "CombineEquipmentCategory",
         "actionType": "None",
         "emojiType": "Idle",
-        "guideType": "Square",
+        "guideType": "None",
         "scriptKey": "TUTORIAL_02_006",
-        "fullScreenButton" : true
+        "fullScreenButton" : true,
+        "noArrow": true
       }
     },
     {
@@ -104,12 +93,14 @@
       "id": 9,
       "nextId": 10,
       "data": {
-        "presetId": 4,
+        "presetId": 5,
         "targetType": "EquipmentRecipeCellView",
         "actionType": "None",
         "emojiType": "Reaction",
-        "guideType": "Square",
-        "scriptKey": "TUTORIAL_02_008"
+        "guideType": "None",
+        "scriptKey": "TUTORIAL_02_008",
+        "fullScreenButton" : true,
+        "noArrow": true
       }
     },
     {
@@ -138,7 +129,7 @@
     },
     {
       "id": 12,
-      "nextId": 13,
+      "nextId": 15,
       "data": {
         "presetId": 4,
         "targetType": "None",
@@ -174,7 +165,7 @@
     },
     {
       "id": 15,
-      "nextId": 16,
+      "nextId": 29,
       "data": {
         "presetId": 4,
         "targetType": "None",
@@ -390,7 +381,7 @@
     },
     {
       "id": 33,
-      "nextId": 34,
+      "nextId": 48,
       "data": {
         "presetId": 4,
         "targetType": "None",

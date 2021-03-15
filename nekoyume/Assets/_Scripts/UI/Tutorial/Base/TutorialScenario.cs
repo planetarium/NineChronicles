@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Text.Json.Serialization;
 using UnityEngine;
 
@@ -71,7 +71,10 @@ namespace Nekoyume.UI
 
         public bool fullScreenButton { get; set; }
 
+        public bool noArrow { get; set; }
+
         public float arrowAdditionalDelay { get; set; }
+
 
         protected bool Equals(ScenarioData other)
         {
@@ -84,6 +87,7 @@ namespace Nekoyume.UI
                    emojiType == other.emojiType &&
                    scriptKey == other.scriptKey &&
                    fullScreenButton == other.fullScreenButton &&
+                   noArrow == other.noArrow &&
                    arrowAdditionalDelay == other.arrowAdditionalDelay;
         }
 
@@ -108,6 +112,7 @@ namespace Nekoyume.UI
                 hashCode = (hashCode * 397) ^ (int) emojiType;
                 hashCode = (hashCode * 397) ^ (scriptKey != null ? scriptKey.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ fullScreenButton.GetHashCode();
+                hashCode = (hashCode * 397) ^ noArrow.GetHashCode();
                 hashCode = (hashCode * 397) ^ arrowAdditionalDelay.GetHashCode();
                 return hashCode;
             }
