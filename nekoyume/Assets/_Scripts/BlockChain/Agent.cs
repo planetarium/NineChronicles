@@ -522,6 +522,18 @@ namespace Nekoyume.BlockChain
                     Debug.LogErrorFormat("RocksDB is not available. DefaultStore will be used. {0}", e);
                 }
             }
+            else if (storgaeType == "monorocksdb")
+            {
+                try
+                {
+                    store = new MonoRocksDBStore(path);
+                    Debug.Log("MonoRocksDB is initialized.");
+                }
+                catch (TypeInitializationException e)
+                {
+                    Debug.LogErrorFormat("RocksDB is not available. DefaultStore will be used. {0}", e);
+                }
+            }
             else
             {
                 Debug.Log($"Storage Type {storageType} is not supported. DefaultStore will be used.");
