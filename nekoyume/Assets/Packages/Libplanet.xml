@@ -6849,6 +6849,9 @@
         <member name="M:Libplanet.Store.BaseStore.Dispose">
             <inheritdoc/>
         </member>
+        <member name="M:Libplanet.Store.BaseStore.ForkTxNonces(System.Guid,System.Guid)">
+            <inheritdoc/>
+        </member>
         <member name="T:Libplanet.Store.ChainIdNotFoundException">
             <summary>
             The exception that is thrown when a chain ID does not exist in
@@ -6972,6 +6975,9 @@
             <inheritdoc/>
         </member>
         <member name="M:Libplanet.Store.DefaultStore.IncreaseTxNonce(System.Guid,Libplanet.Address,System.Int64)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Store.DefaultStore.ForkTxNonces(System.Guid,System.Guid)">
             <inheritdoc/>
         </member>
         <member name="M:Libplanet.Store.DefaultStore.CountTransactions">
@@ -7235,6 +7241,17 @@
             with the specified <paramref name="txId"/>; otherwise, <c>false</c>.
             </returns>
         </member>
+        <member name="M:Libplanet.Store.IStore.ForkTxNonces(System.Guid,System.Guid)">
+            <summary>
+            Forks <see cref="T:Libplanet.Tx.Transaction`1"/> <see cref="P:Libplanet.Tx.Transaction`1.Nonce"/>s from
+            <paramref name="sourceChainId"/> to
+            <paramref name="destinationChainId"/>.
+            </summary>
+            <param name="sourceChainId">The chain <see cref="P:Libplanet.Blockchain.BlockChain`1.Id"/> of
+            <see cref="T:Libplanet.Tx.Transaction`1"/> <see cref="P:Libplanet.Tx.Transaction`1.Nonce"/>s to fork.</param>
+            <param name="destinationChainId">The chain <see cref="P:Libplanet.Blockchain.BlockChain`1.Id"/> of destination
+            <see cref="T:Libplanet.Tx.Transaction`1"/> <see cref="P:Libplanet.Tx.Transaction`1.Nonce"/>s.</param>
+        </member>
         <member name="M:Libplanet.Store.StoreExtensions.Copy(Libplanet.Store.IStore,Libplanet.Store.IStore)">
             <summary>
             Makes a store, <paramref name="to"/>, logically (but not necessarily physically)
@@ -7261,44 +7278,6 @@
         </member>
         <member name="M:Libplanet.Store.StoreExtensions.NullAction.LoadPlainValue(Bencodex.Types.IValue)">
             <inheritdoc/>
-        </member>
-        <member name="T:Libplanet.Store.TrieStateStore">
-            <summary>
-            An <see cref="T:Libplanet.Store.IStateStore"/> implementation. It stores states with <see cref="T:Libplanet.Store.Trie.MerkleTrie"/>.
-            </summary>
-        </member>
-        <member name="M:Libplanet.Store.TrieStateStore.#ctor(Libplanet.Store.Trie.IKeyValueStore,Libplanet.Store.Trie.IKeyValueStore,System.Boolean)">
-            <summary>
-            Creates a new <see cref="T:Libplanet.Store.TrieStateStore"/>.
-            </summary>
-            <param name="stateKeyValueStore">The storage to store states. It used by
-            <see cref="T:Libplanet.Store.Trie.MerkleTrie"/> in internal.</param>
-            <param name="stateHashKeyValueStore">The storage to store state hash corresponding to
-            block hash.</param>
-            <param name="secure">Whether to use <see cref="T:Libplanet.Store.Trie.MerkleTrie"/> in secure mode.
-            <seealso cref="M:Libplanet.Store.Trie.MerkleTrie.#ctor(Libplanet.Store.Trie.IKeyValueStore,Libplanet.Store.Trie.Nodes.INode,System.Boolean)"/>.</param>
-        </member>
-        <member name="M:Libplanet.Store.TrieStateStore.SetStates``1(Libplanet.Blocks.Block{``0},System.Collections.Immutable.IImmutableDictionary{System.String,Bencodex.Types.IValue})">
-            <inheritdoc/>
-        </member>
-        <member name="M:Libplanet.Store.TrieStateStore.GetState(System.String,System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}},System.Nullable{System.Guid})">
-            <inheritdoc/>
-        </member>
-        <member name="M:Libplanet.Store.TrieStateStore.ContainsBlockStates(Libplanet.HashDigest{System.Security.Cryptography.SHA256})">
-            <inheritdoc/>
-        </member>
-        <member name="M:Libplanet.Store.TrieStateStore.ForkStates``1(System.Guid,System.Guid,Libplanet.Blocks.Block{``0})">
-            <inheritdoc/>
-        </member>
-        <member name="M:Libplanet.Store.TrieStateStore.GetRootHash(Libplanet.HashDigest{System.Security.Cryptography.SHA256})">
-            <summary>
-            Gets the state hash corresponds to <paramref name="blockHash"/>.
-            </summary>
-            <param name="blockHash">The <see cref="P:Libplanet.Blocks.Block`1.Hash"/> to get state hash.</param>
-            <returns>If there is a state hash corresponds to <paramref name="blockHash"/>,
-            it will return the state hash. If not, it will return null.</returns>
-            <exception cref="T:System.Collections.Generic.KeyNotFoundException">If there are no root hashes that correspond to
-            <paramref name="blockHash"/>.</exception>
         </member>
         <member name="T:Libplanet.Store.Trie.CacheableKeyValueStore">
             <summary>
@@ -7494,6 +7473,44 @@
             <summary>
             Wrapper class.
             </summary>
+        </member>
+        <member name="T:Libplanet.Store.TrieStateStore">
+            <summary>
+            An <see cref="T:Libplanet.Store.IStateStore"/> implementation. It stores states with <see cref="T:Libplanet.Store.Trie.MerkleTrie"/>.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Store.TrieStateStore.#ctor(Libplanet.Store.Trie.IKeyValueStore,Libplanet.Store.Trie.IKeyValueStore,System.Boolean)">
+            <summary>
+            Creates a new <see cref="T:Libplanet.Store.TrieStateStore"/>.
+            </summary>
+            <param name="stateKeyValueStore">The storage to store states. It used by
+            <see cref="T:Libplanet.Store.Trie.MerkleTrie"/> in internal.</param>
+            <param name="stateHashKeyValueStore">The storage to store state hash corresponding to
+            block hash.</param>
+            <param name="secure">Whether to use <see cref="T:Libplanet.Store.Trie.MerkleTrie"/> in secure mode.
+            <seealso cref="M:Libplanet.Store.Trie.MerkleTrie.#ctor(Libplanet.Store.Trie.IKeyValueStore,Libplanet.Store.Trie.Nodes.INode,System.Boolean)"/>.</param>
+        </member>
+        <member name="M:Libplanet.Store.TrieStateStore.SetStates``1(Libplanet.Blocks.Block{``0},System.Collections.Immutable.IImmutableDictionary{System.String,Bencodex.Types.IValue})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Store.TrieStateStore.GetState(System.String,System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}},System.Nullable{System.Guid})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Store.TrieStateStore.ContainsBlockStates(Libplanet.HashDigest{System.Security.Cryptography.SHA256})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Store.TrieStateStore.ForkStates``1(System.Guid,System.Guid,Libplanet.Blocks.Block{``0})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Store.TrieStateStore.GetRootHash(Libplanet.HashDigest{System.Security.Cryptography.SHA256})">
+            <summary>
+            Gets the state hash corresponds to <paramref name="blockHash"/>.
+            </summary>
+            <param name="blockHash">The <see cref="P:Libplanet.Blocks.Block`1.Hash"/> to get state hash.</param>
+            <returns>If there is a state hash corresponds to <paramref name="blockHash"/>,
+            it will return the state hash. If not, it will return null.</returns>
+            <exception cref="T:System.Collections.Generic.KeyNotFoundException">If there are no root hashes that correspond to
+            <paramref name="blockHash"/>.</exception>
         </member>
         <member name="T:Libplanet.Tx.InvalidTxException">
             <summary>
