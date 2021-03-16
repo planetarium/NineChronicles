@@ -38,6 +38,7 @@ namespace Nekoyume.UI
             public int ClearedWaveNumber;
             public int ActionPoint;
             public int LastClearedStageId;
+            public bool IsClear;
 
             public IReadOnlyList<CountableItem> Rewards => _rewards;
 
@@ -175,7 +176,7 @@ namespace Nekoyume.UI
         {
             _IsAlreadyOut = true;
             AudioController.PlayClick();
-            if (SharedModel.State == BattleLog.Result.Win)
+            if (SharedModel.IsClear)
             {
                 yield return CoDialog(SharedModel.StageID);
             }
