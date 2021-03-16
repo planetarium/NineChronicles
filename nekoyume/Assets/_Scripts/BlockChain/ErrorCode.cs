@@ -1,5 +1,6 @@
 ﻿using System;
 using Libplanet.Action;
+using mixpanel;
 using Nekoyume.Action;
 using Nekoyume.L10n;
 using Nekoyume.Model.State;
@@ -128,6 +129,13 @@ namespace Nekoyume.BlockChain
                     key = "ERROR_UNABLE_TO_RENDER_WHEN_SYNCING_BLOCKS";
                     break;
             }
+
+            var props = new Value
+            {
+                ["code"] = code,
+                ["key"] = key,
+            };
+            Mixpanel.Track("Unity/Error", props);
 
             errorMsg = errorMsg == string.Empty
                 ? string.Format(

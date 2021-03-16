@@ -26,9 +26,7 @@ namespace Updater
         const string MacOSLatestBinaryUrl = "https://download.nine-chronicles.com/latest/macOS.tar.gz";
         const string WindowsLatestBinaryUrl = "https://download.nine-chronicles.com/latest/Windows.zip";
 
-        // NOTE: 9c-beta의 제네시스 해시을 하드코딩 해놓았습니다.
-        private const string SnapshotUrl =
-            "https://download.nine-chronicles.com/latest/4a321a45b07750ca7fa88a0a4a0c817fa26c5f5e54ac2ab91675256e6abed21a-snapshot.zip";
+        private const string SnapshotUrl = "https://download.nine-chronicles.com/v100034/9c-main-snapshot.zip";
 
         const string MacOSUpdaterLatestBinaryUrl = "https://download.nine-chronicles.com/latest/NineChroniclesUpdater";
         const string WindowsUpdaterLatestBinaryUrl = "https://download.nine-chronicles.com/latest/NineChroniclesUpdater.exe";
