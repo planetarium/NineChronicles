@@ -582,7 +582,7 @@ namespace Nekoyume.Game
             else
             {
                 const string groupName = "9c-player-logs";
-                var streamName = Agent.Address.ToString();
+                var streamName = _options.AwsSinkGuid;
                 try
                 {
                     var req = new CreateLogGroupRequest(groupName);
