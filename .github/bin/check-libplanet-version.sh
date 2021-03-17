@@ -2,7 +2,7 @@
 
 root="$(dirname "$0")/../.."
 packages="$root/nekoyume/Assets/Packages"
-libplanet="$root/nekoyume/Assets/_Scripts/Lib9c/Lib9c/.Libplanet"
+libplanet="$root/nekoyume/Assets/_Scripts/Lib9c/lib9c/.Libplanet"
 
 libplanet_mtime="$(git --git-dir="$libplanet/.git" \
                        log -1 --format=%ad --date=iso)"
