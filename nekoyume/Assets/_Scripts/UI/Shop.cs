@@ -1,4 +1,6 @@
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Linq;
 using DG.Tweening;
 using Libplanet.Assets;
@@ -19,6 +21,7 @@ using UniRx;
 using UnityEngine;
 using ShopItem = Nekoyume.UI.Model.ShopItem;
 using ShopItems = Nekoyume.UI.Module.ShopItems;
+using Task = System.Threading.Tasks.Task;
 
 namespace Nekoyume.UI
 {
@@ -146,29 +149,42 @@ namespace Nekoyume.UI
 
         public override void Show(bool ignoreShowAnimation = false)
         {
+            AsyncShow();
+        }
+
+        private async void AsyncShow(bool ignoreShowAnimation = false)
+        {
+            Find<LoadingScreen>().Show();
             Game.Game.instance.Stage.GetPlayer().gameObject.SetActive(false);
-            States.Instance.SetShopState(new ShopState(
-                (Bencodex.Types.Dictionary) Game.Game.instance.Agent.GetState(Addresses.Shop)));
 
-            base.Show(ignoreShowAnimation);
+            var task = Task.Run(() =>
+            {
+                States.Instance.SetShopState(new ShopState(
+                    (Bencodex.Types.Dictionary) Game.Game.instance.Agent.GetState(Addresses.Shop)));
+                return true;
+            });
+            var result = await task;
+            if (result)
+            {
+                inventory.SharedModel.State.Value = ItemType.Equipment;
+                shopItems.SharedModel.State.Value = StateType.Buy;
+                SharedModel.State.Value = StateType.Show;
+                _sequenceOfShopItems = null;
 
-            inventory.SharedModel.State.Value = ItemType.Equipment;
-            shopItems.SharedModel.State.Value = StateType.Buy;
-            SharedModel.State.Value = StateType.Show;
+                base.Show(ignoreShowAnimation);
+                Find<BottomMenu>().Show(
+                    UINavigator.NavigationType.Back,
+                    SubscribeBackButtonClick,
+                    true,
+                    BottomMenu.ToggleableType.Mail,
+                    BottomMenu.ToggleableType.Quest,
+                    BottomMenu.ToggleableType.Chat,
+                    BottomMenu.ToggleableType.IllustratedBook,
+                    BottomMenu.ToggleableType.Character);
 
-            Find<BottomMenu>().Show(
-                UINavigator.NavigationType.Back,
-                SubscribeBackButtonClick,
-                true,
-                BottomMenu.ToggleableType.Mail,
-                BottomMenu.ToggleableType.Quest,
-                BottomMenu.ToggleableType.Chat,
-                BottomMenu.ToggleableType.IllustratedBook,
-                BottomMenu.ToggleableType.Character);
-
-            _sequenceOfShopItems = null;
-
-            AudioController.instance.PlayMusic(AudioController.MusicCode.Shop);
+                AudioController.instance.PlayMusic(AudioController.MusicCode.Shop);
+                Find<LoadingScreen>().Close();
+            }
         }
 
         protected override void OnCompleteOfShowAnimationInternal()
