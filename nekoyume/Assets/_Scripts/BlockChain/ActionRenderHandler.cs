@@ -897,7 +897,6 @@ namespace Nekoyume.BlockChain
         public static void BackToMain(bool showLoadingScreen, Exception exc)
         {
             Debug.LogException(exc);
-            Game.Game.instance.Agent.SendException(exc);
 
             if (DoNotUsePopupError(exc, out var key, out var code, out var errorMsg))
             {
@@ -915,7 +914,6 @@ namespace Nekoyume.BlockChain
         public static void PopupError(Exception exc)
         {
             Debug.LogException(exc);
-            Game.Game.instance.Agent.SendException(exc);
 
             if (DoNotUsePopupError(exc, out var key, out var code, out var errorMsg))
             {
@@ -952,7 +950,7 @@ namespace Nekoyume.BlockChain
                     code)
                 : errorMsg;
             Widget
-                .Find<Alert>()
+                .Find<SystemPopup>()
                 .Show(L10nManager.Localize("UI_ERROR"), errorMsg,
                     L10nManager.Localize("UI_OK"), false);
         }

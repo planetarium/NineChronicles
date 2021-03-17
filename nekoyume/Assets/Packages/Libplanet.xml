@@ -6329,6 +6329,9 @@
             <param name="cancellationToken">A cancellation token used to propagate notification
             that this operation should be canceled.</param>
             <returns>An awaitable task without value.</returns>
+            <exception cref="T:System.TimeoutException">
+            Thrown when validation fails in given <paramref name="timeout"/>.
+            </exception>
         </member>
         <member name="M:Libplanet.Net.Protocols.KademliaProtocol.Update(Libplanet.Net.Peer)">
             <summary>
@@ -6849,6 +6852,9 @@
         <member name="M:Libplanet.Store.BaseStore.Dispose">
             <inheritdoc/>
         </member>
+        <member name="M:Libplanet.Store.BaseStore.ForkTxNonces(System.Guid,System.Guid)">
+            <inheritdoc/>
+        </member>
         <member name="T:Libplanet.Store.ChainIdNotFoundException">
             <summary>
             The exception that is thrown when a chain ID does not exist in
@@ -6972,6 +6978,9 @@
             <inheritdoc/>
         </member>
         <member name="M:Libplanet.Store.DefaultStore.IncreaseTxNonce(System.Guid,Libplanet.Address,System.Int64)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Store.DefaultStore.ForkTxNonces(System.Guid,System.Guid)">
             <inheritdoc/>
         </member>
         <member name="M:Libplanet.Store.DefaultStore.CountTransactions">
@@ -7234,6 +7243,17 @@
             <c>true</c> if the <see cref="T:Libplanet.Store.IStore"/> contains <see cref="T:Libplanet.Tx.Transaction`1"/>
             with the specified <paramref name="txId"/>; otherwise, <c>false</c>.
             </returns>
+        </member>
+        <member name="M:Libplanet.Store.IStore.ForkTxNonces(System.Guid,System.Guid)">
+            <summary>
+            Forks <see cref="T:Libplanet.Tx.Transaction`1"/> <see cref="P:Libplanet.Tx.Transaction`1.Nonce"/>s from
+            <paramref name="sourceChainId"/> to
+            <paramref name="destinationChainId"/>.
+            </summary>
+            <param name="sourceChainId">The chain <see cref="P:Libplanet.Blockchain.BlockChain`1.Id"/> of
+            <see cref="T:Libplanet.Tx.Transaction`1"/> <see cref="P:Libplanet.Tx.Transaction`1.Nonce"/>s to fork.</param>
+            <param name="destinationChainId">The chain <see cref="P:Libplanet.Blockchain.BlockChain`1.Id"/> of destination
+            <see cref="T:Libplanet.Tx.Transaction`1"/> <see cref="P:Libplanet.Tx.Transaction`1.Nonce"/>s.</param>
         </member>
         <member name="M:Libplanet.Store.StoreExtensions.Copy(Libplanet.Store.IStore,Libplanet.Store.IStore)">
             <summary>

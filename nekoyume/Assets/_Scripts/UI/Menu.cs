@@ -444,8 +444,10 @@ namespace Nekoyume.UI
                 if (recipeRow is null)
                 {
                     Debug.LogError("EquipmentItemRecipeSheet is empty");
+                    return;
                 }
-                else if (States.Instance.CurrentAvatarState.inventory.HasItem(recipeRow.ResultEquipmentId))
+
+                if (!States.Instance.CurrentAvatarState.inventory.HasItem(recipeRow.MaterialId))
                 {
                     tutorialController.SaveTutorialProgress(2);
                 }
