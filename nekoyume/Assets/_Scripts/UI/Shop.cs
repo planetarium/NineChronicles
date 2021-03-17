@@ -154,7 +154,7 @@ namespace Nekoyume.UI
 
         private async void AsyncShow(bool ignoreShowAnimation = false)
         {
-            Find<LoadingScreen>().Show();
+            Find<DataLoadingScreen>().Show();
             Game.Game.instance.Stage.GetPlayer().gameObject.SetActive(false);
 
             var task = Task.Run(() =>
@@ -183,7 +183,7 @@ namespace Nekoyume.UI
                     BottomMenu.ToggleableType.Character);
 
                 AudioController.instance.PlayMusic(AudioController.MusicCode.Shop);
-                Find<LoadingScreen>().Close();
+                Find<DataLoadingScreen>().Close();
             }
         }
 
