@@ -3,6 +3,7 @@ namespace Lib9c.Tests.Model.Item
     using System;
     using System.IO;
     using System.Runtime.Serialization.Formatters.Binary;
+    using Bencodex.Types;
     using Nekoyume.Model.Item;
     using Nekoyume.TableData;
     using Xunit;
@@ -43,6 +44,50 @@ namespace Lib9c.Tests.Model.Item
             var deserialized = (Costume)formatter.Deserialize(ms);
 
             Assert.Equal(costume, deserialized);
+        }
+
+        [Fact]
+        public void Update()
+        {
+            var costume = new Costume(_costumeRow, Guid.NewGuid());
+            costume.Equip();
+            costume.Update(10);
+            Assert.Equal(10, costume.RequiredBlockIndex);
+            Assert.False(costume.equipped);
+        }
+
+        [Fact]
+        public void LockThrowArgumentOutOfRangeException()
+        {
+            var costume = new Costume(_costumeRow, Guid.NewGuid());
+            Assert.True(costume.RequiredBlockIndex >= -1);
+            Assert.Throws<ArgumentOutOfRangeException>(() => costume.Update(-1));
+        }
+
+        [Fact]
+        public void SerializeWithRequiredBlockIndex()
+        {
+            // Check RequiredBlockIndex 0 case;
+            var costume = new Costume(_costumeRow, Guid.NewGuid());
+            Dictionary serialized = (Dictionary)costume.Serialize();
+            Assert.False(serialized.ContainsKey(Costume.RequiredBlockIndexKey));
+            Assert.Equal(costume, new Costume(serialized));
+
+            costume.Update(1);
+            serialized = (Dictionary)costume.Serialize();
+            Assert.True(serialized.ContainsKey(Costume.RequiredBlockIndexKey));
+            Assert.Equal(costume, new Costume(serialized));
+        }
+
+        [Fact]
+        public void DeserializeThrowArgumentOurOfRangeException()
+        {
+            var costume = new Costume(_costumeRow, Guid.NewGuid());
+            Assert.Equal(0, costume.RequiredBlockIndex);
+
+            Dictionary serialized = (Dictionary)costume.Serialize();
+            serialized = serialized.SetItem(Costume.RequiredBlockIndexKey, "-1");
+            Assert.Throws<ArgumentOutOfRangeException>(() => new Costume(serialized));
         }
     }
 }

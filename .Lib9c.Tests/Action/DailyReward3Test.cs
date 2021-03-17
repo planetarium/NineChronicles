@@ -1,26 +1,24 @@
 namespace Lib9c.Tests.Action
 {
-    using System.Collections.Generic;
     using System.Linq;
     using Libplanet;
     using Libplanet.Action;
     using Libplanet.Crypto;
     using Nekoyume;
     using Nekoyume.Action;
-    using Nekoyume.Model.Item;
     using Nekoyume.Model.Mail;
     using Nekoyume.Model.State;
     using Serilog;
     using Xunit;
     using Xunit.Abstractions;
 
-    public class DailyRewardTest
+    public class DailyReward3Test
     {
         private readonly IAccountStateDelta _initialState;
         private readonly Address _agentAddress;
         private readonly Address _avatarAddress;
 
-        public DailyRewardTest(ITestOutputHelper outputHelper)
+        public DailyReward3Test(ITestOutputHelper outputHelper)
         {
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Verbose()
@@ -62,7 +60,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Execute()
         {
-            var dailyRewardAction = new DailyReward
+            var dailyRewardAction = new DailyReward3
             {
                 avatarAddress = _avatarAddress,
             };
@@ -93,7 +91,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void ExecuteThrowFailedLoadStateException()
         {
-            var action = new DailyReward
+            var action = new DailyReward3
             {
                 avatarAddress = _avatarAddress,
             };
