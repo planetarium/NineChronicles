@@ -46,7 +46,7 @@ namespace Nekoyume.UI.Module
         private readonly List<IDisposable> _disposablesAtOnEnable = new List<IDisposable>();
         private readonly List<ItemSubTypeFilter> _toggleTypes = new List<ItemSubTypeFilter>()
         {
-            ItemSubTypeFilter.All,
+            // ItemSubTypeFilter.All,
             ItemSubTypeFilter.Equipment,
             ItemSubTypeFilter.Food,
             ItemSubTypeFilter.Costume,
@@ -55,13 +55,13 @@ namespace Nekoyume.UI.Module
         private readonly Dictionary<ItemSubTypeFilter, List<ItemSubTypeFilter>> _toggleSubTypes =
             new Dictionary<ItemSubTypeFilter, List<ItemSubTypeFilter>>()
         {
-            {
-                ItemSubTypeFilter.All, new List<ItemSubTypeFilter>()
-            },
+            // {
+            //     ItemSubTypeFilter.All, new List<ItemSubTypeFilter>()
+            // },
             {
                 ItemSubTypeFilter.Equipment, new List<ItemSubTypeFilter>()
                 {
-                    ItemSubTypeFilter.Equipment,
+                    // ItemSubTypeFilter.Equipment,
                     ItemSubTypeFilter.Weapon,
                     ItemSubTypeFilter.Armor,
                     ItemSubTypeFilter.Belt,
@@ -72,7 +72,7 @@ namespace Nekoyume.UI.Module
             {
                 ItemSubTypeFilter.Food, new List<ItemSubTypeFilter>()
                 {
-                    ItemSubTypeFilter.Food,
+                    // ItemSubTypeFilter.Food,
                     ItemSubTypeFilter.Food_HP,
                     ItemSubTypeFilter.Food_ATK,
                     ItemSubTypeFilter.Food_DEF,
@@ -83,7 +83,7 @@ namespace Nekoyume.UI.Module
             {
                 ItemSubTypeFilter.Costume, new List<ItemSubTypeFilter>()
                 {
-                    ItemSubTypeFilter.Costume,
+                    // ItemSubTypeFilter.Costume,
                     ItemSubTypeFilter.FullCostume,
                     ItemSubTypeFilter.HairCostume,
                     ItemSubTypeFilter.EarCostume,
@@ -125,7 +125,7 @@ namespace Nekoyume.UI.Module
             {
                 var index = toggleDropdowns.IndexOf(toggleDropdown);
                 var toggleType = _toggleTypes[index];
-                toggleDropdown.SetText(FilterSubTypeToString(toggleType));
+                toggleDropdown.SetText(toggleType.TypeToString());
                 toggleDropdown.onValueChanged.AddListener((value) =>
                 {
                     if (value)
@@ -145,7 +145,7 @@ namespace Nekoyume.UI.Module
                     if (subIndex < subTypes.Count)
                     {
                         var subToggleType = subTypes[subIndex];
-                        item.SetText(FilterSubTypeToString(subToggleType));
+                        item.SetText(subToggleType.TypeToString());
                         item.onValueChanged.AddListener((value) =>
                         {
                             if (value)
@@ -199,7 +199,7 @@ namespace Nekoyume.UI.Module
             inputField.text = string.Empty;
             sortOrderIcon.localScale = Vector3.one;
 
-            SharedModel.itemSubTypeFilter = ItemSubTypeFilter.All;
+            SharedModel.itemSubTypeFilter = ItemSubTypeFilter.Weapon;
             SharedModel.sortFilter = SortFilter.Class;
             SharedModel.isReverseOrder = false;
             SharedModel.searchIds = new List<int>();
@@ -363,34 +363,6 @@ namespace Nekoyume.UI.Module
 
             SharedModel.searchIds = containItemIds;
             OnSortFilterChanged();
-        }
-
-        private string FilterSubTypeToString(ItemSubTypeFilter type)
-        {
-            switch (type)
-            {
-                case ItemSubTypeFilter.All:
-                    return L10nManager.Localize("ALL");
-                case ItemSubTypeFilter.Equipment:
-                    return L10nManager.Localize("UI_EQUIPMENTS");
-                case ItemSubTypeFilter.Costume:
-                    return L10nManager.Localize("UI_COSTUME");
-
-                case ItemSubTypeFilter.Food_HP:
-                    return StatType.HP.ToString();
-                case ItemSubTypeFilter.Food_ATK:
-                    return StatType.ATK.ToString();
-                case ItemSubTypeFilter.Food_DEF:
-                    return StatType.DEF.ToString();
-                case ItemSubTypeFilter.Food_CRI:
-                    return StatType.CRI.ToString();
-                case ItemSubTypeFilter.Food_HIT:
-                    return StatType.HIT.ToString();
-
-                default:
-                    return ((ItemSubType) Enum.Parse(typeof(ItemSubType), type.ToString()))
-                        .GetLocalizedString();
-            }
         }
     }
 }

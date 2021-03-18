@@ -354,7 +354,7 @@ GameObject:
   - component: {fileID: 7228298822232165698}
   - component: {fileID: 6482355134135394427}
   - component: {fileID: 6732991615150890369}
-  - component: {fileID: 7202853131914063081}
+  - component: {fileID: 3822464774271197689}
   m_Layer: 5
   m_Name: WishListItemView
   m_TagString: Untagged
@@ -437,7 +437,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e2410c6e911349d6ad72dc1f01bb7559, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &7202853131914063081
+--- !u!114 &3822464774271197689
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -446,14 +446,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 4665053808198396154}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c95ecf421ccd48da891bfabb7e5ae6d5, type: 3}
+  m_Script: {fileID: 11500000, guid: 4f6cba938803cc94286b4a714de66fcd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  itemButton: {fileID: 5876771193729375837}
   backgroundImage: {fileID: 210532434043038317}
-  enhancementText: {fileID: 6797536290134064345}
   gradeImage: {fileID: 5649273184443670677}
   iconImage: {fileID: 4656256043757438257}
+  enhancementText: {fileID: 6797536290134064345}
+  itemButton: {fileID: 5876771193729375837}
 --- !u!1 &5947475328345665340
 GameObject:
   m_ObjectHideFlags: 0

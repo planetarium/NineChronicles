@@ -29,7 +29,7 @@ namespace Nekoyume.UI.Model
 
         public readonly Subject<ShopItemView> OnDoubleClickItemView = new Subject<ShopItemView>();
 
-        public ItemSubTypeFilter itemSubTypeFilter = ItemSubTypeFilter.All;
+        public ItemSubTypeFilter itemSubTypeFilter = ItemSubTypeFilter.Weapon;
         public SortFilter sortFilter = SortFilter.Class;
         public List<int> searchIds = new List<int>();
         public bool isReverseOrder = false;

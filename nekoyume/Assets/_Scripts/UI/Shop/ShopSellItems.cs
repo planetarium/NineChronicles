@@ -67,9 +67,9 @@ namespace Nekoyume.UI.Module
 
             itemSubTypeFilter.AddOptions(new[]
                 {
-                    ItemSubTypeFilter.All,
-                    ItemSubTypeFilter.Food,
-                    ItemSubTypeFilter.Costume,
+                    // ItemSubTypeFilter.All,
+                    // ItemSubTypeFilter.Food,
+                    // ItemSubTypeFilter.Costume,
                     ItemSubTypeFilter.Weapon,
                     ItemSubTypeFilter.Armor,
                     ItemSubTypeFilter.Belt,
@@ -87,23 +87,24 @@ namespace Nekoyume.UI.Module
                     ItemSubTypeFilter.TailCostume,
                     ItemSubTypeFilter.Title,
                 }
-                .Select(type => type == ItemSubTypeFilter.All
-                    ? L10nManager.Localize("ALL")
-                    : ((ItemSubType) Enum.Parse(typeof(ItemSubType), type.ToString()))
-                    .GetLocalizedString())
+                .Select(type => type.TypeToString())
+                // .Select(type => type == ItemSubTypeFilter.All
+                //     ? L10nManager.Localize("ALL")
+                //     : ((ItemSubType) Enum.Parse(typeof(ItemSubType), type.ToString()))
                 .ToList());
             itemSubTypeFilter.onValueChanged.AsObservable()
-                .Select(index =>
-                {
-                    try
-                    {
-                        return (ItemSubTypeFilter) index;
-                    }
-                    catch
-                    {
-                        return ItemSubTypeFilter.All;
-                    }
-                })
+                .Select(index => (ItemSubTypeFilter) index)
+                // .Select(index =>
+                // {
+                //     try
+                //     {
+                //         return (ItemSubTypeFilter) index;
+                //     }
+                //     catch
+                //     {
+                //         return ItemSubTypeFilter.All;
+                //     }
+                // })
                 .Subscribe(filter =>
                 {
                     SharedModel.itemSubTypeFilter = filter;

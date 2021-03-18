@@ -54,7 +54,7 @@ namespace Nekoyume.UI
         {
             foreach (var item in items)
             {
-                item.gameObject.SetActive(false);
+                item?.gameObject.SetActive(false);
             }
         }
 

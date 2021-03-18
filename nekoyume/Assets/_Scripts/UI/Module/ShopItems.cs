@@ -65,7 +65,7 @@ namespace Nekoyume.UI.Module
 
             itemSubTypeFilter.AddOptions(new[]
                 {
-                    ItemSubTypeFilter.All,
+                    // ItemSubTypeFilter.All,
                     ItemSubTypeFilter.Weapon,
                     ItemSubTypeFilter.Armor,
                     ItemSubTypeFilter.Belt,
@@ -85,17 +85,18 @@ namespace Nekoyume.UI.Module
                 }
                 .Select(FilterSubTypeToString).ToList());
             itemSubTypeFilter.onValueChanged.AsObservable()
-                .Select(index =>
-                {
-                    try
-                    {
-                        return (ItemSubTypeFilter) index;
-                    }
-                    catch
-                    {
-                        return ItemSubTypeFilter.All;
-                    }
-                })
+                .Select(index => (ItemSubTypeFilter) index)
+                // .Select(index =>
+                // {
+                //     try
+                //     {
+                //         return (ItemSubTypeFilter) index;
+                //     }
+                //     catch
+                //     {
+                //         return ItemSubTypeFilter.All;
+                //     }
+                // })
                 .Subscribe(filter =>
                 {
                     SharedModel.itemSubTypeFilter = filter;
@@ -334,12 +335,11 @@ namespace Nekoyume.UI.Module
         {
             switch (type)
             {
-                case ItemSubTypeFilter.All:
-                case ItemSubTypeFilter.Food:
-                case ItemSubTypeFilter.Equipment:
-                case ItemSubTypeFilter.Costume:
-                    return L10nManager.Localize("ALL");
-
+                // case ItemSubTypeFilter.All:
+                // case ItemSubTypeFilter.Food:
+                // case ItemSubTypeFilter.Equipment:
+                // case ItemSubTypeFilter.Costume:
+                //     return L10nManager.Localize("ALL");
                 case ItemSubTypeFilter.Food_HP:
                     return StatType.HP.ToString();
                 case ItemSubTypeFilter.Food_ATK:
