@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
@@ -40,7 +40,7 @@ namespace Lib9c.Benchmarks
             IBlockPolicy<NCAction> policy =
                 policySource.GetPolicy(BlockPolicySource.DifficultyBoundDivisor + 1, 0);
             IStagePolicy<NCAction> stagePolicy = new VolatileStagePolicy<NCAction>();
-            var store = new MonoRocksDBStore(storePath);
+            var store = new RocksDBStore(storePath);
             if (!(store.GetCanonicalChainId() is Guid chainId))
             {
                 Console.Error.WriteLine("There is no canonical chain: {0}", storePath);
