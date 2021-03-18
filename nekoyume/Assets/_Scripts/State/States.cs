@@ -7,6 +7,7 @@ using Nekoyume.Action;
 using Nekoyume.BlockChain;
 using Nekoyume.Model.State;
 using Nekoyume.State.Subjects;
+using Nekoyume.UI;
 using UnityEngine;
 
 namespace Nekoyume.State

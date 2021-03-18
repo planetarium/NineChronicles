@@ -141,8 +141,6 @@ namespace Nekoyume.BlockChain
 
         public void SendException(Exception exc)
         {
-            var (key, code, message) = ErrorCode.GetErrorCode(exc);
-            _service.ReportException(code, message);
         }
 
         public void EnqueueAction(GameAction action)
@@ -425,7 +423,7 @@ namespace Nekoyume.BlockChain
                 .Subscribe(_ =>
                 {
                     Widget
-                        .Find<Alert>()
+                        .Find<SystemPopup>()
                         .Show(L10nManager.Localize("UI_ERROR"), errorMsg,
                             L10nManager.Localize("UI_OK"), false);
                 });

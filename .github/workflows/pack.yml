@@ -1,15 +1,10 @@
 on:
   push:
     branches:
-    - master
+    - main
     - development
     - rc-*
     tags: ['*']
-  pull_request:
-    branches:
-      - master
-      - development
-      - rc-*
 
 name: Pack
 
@@ -39,13 +34,10 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: 3.8.6
-      - uses: actions/cache@v1.1.0
+      - uses: actions/cache@v2
         with:
           path: ${{ matrix.projectPath }}/Library
-          key: Library-${{ matrix.projectPath }}-${{ matrix.targetPlatform }}
-          restore-keys: |
-            Library-${{ matrix.projectPath }}-
-            Library-
+          key: ${{ matrix.targetPlatform }}-${{ matrix.projectPath }}-Library-v1
       - uses: docker://gableroux/unity3d:2019.1.0f2 # FIXME: 이미지 pull 받아오는 속도 개선 필요
         env:
           ULF: ${{ secrets.ULF }}

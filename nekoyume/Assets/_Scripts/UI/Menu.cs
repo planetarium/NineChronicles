@@ -171,6 +171,7 @@ namespace Nekoyume.UI
             btnShop.Update();
             btnRanking.Update();
             btnMimisbrunnr.Update();
+            SetActiveActionPointLoading(false);
 
             var addressHax = ReactiveAvatarState.Address.Value.ToHex();
             var firstOpenCombinationKey = string.Format(FirstOpenCombinationKeyFormat, addressHax);
@@ -268,7 +269,7 @@ namespace Nekoyume.UI
             }
 
             Close();
-            Find<ShopBuy>().Show();
+            Find<Shop>().Show();
             AudioController.PlayClick();
             AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ClickMainShop);
         }
@@ -443,8 +444,10 @@ namespace Nekoyume.UI
                 if (recipeRow is null)
                 {
                     Debug.LogError("EquipmentItemRecipeSheet is empty");
+                    return;
                 }
-                else if (States.Instance.CurrentAvatarState.inventory.HasItem(recipeRow.ResultEquipmentId))
+
+                if (!States.Instance.CurrentAvatarState.inventory.HasItem(recipeRow.MaterialId))
                 {
                     tutorialController.SaveTutorialProgress(2);
                 }
@@ -531,6 +534,14 @@ namespace Nekoyume.UI
                 return;
             }
 
+            // Temporarily Lock tutorial recipe.
+            var combination = Find<Combination>();
+            var skipMap = combination.RecipeVFXSkipMap;
+            if (skipMap.ContainsKey(firstRecipeRow.Id))
+            {
+                skipMap.Remove(firstRecipeRow.Id);
+            }
+            combination.SaveRecipeVFXSkipMap();
             GoToCombinationEquipmentRecipe(firstRecipeRow.Id);
         }
 

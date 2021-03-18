@@ -112,13 +112,6 @@ namespace Nekoyume.Game
             States = new States();
             LocalLayer = new LocalLayer();
             MainCanvas.instance.InitializeIntro();
-
-#if !UNITY_EDITOR
-            var c = new CognitoAWSCredentials("ap-northeast-2:6fea0e84-a609-4774-a407-c63de9dbea7b",
-                RegionEndpoint.APNortheast2);
-            _logsClient = new AmazonCloudWatchLogsClient(c, RegionEndpoint.APNortheast2);
-            Application.logMessageReceivedThreaded += UploadLog;
-#endif
         }
 
         private IEnumerator Start()
@@ -437,7 +430,7 @@ namespace Nekoyume.Game
         {
             if (_options.Maintenance)
             {
-                var w = Widget.Create<Alert>();
+                var w = Widget.Create<SystemPopup>();
                 w.CloseCallback = () =>
                 {
                     Application.OpenURL(GameConfig.DiscordLink);
@@ -589,7 +582,7 @@ namespace Nekoyume.Game
             else
             {
                 const string groupName = "9c-player-logs";
-                var streamName = Agent.Address.ToString();
+                var streamName = _options.AwsSinkGuid;
                 try
                 {
                     var req = new CreateLogGroupRequest(groupName);

@@ -1,7 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using Bencodex.Types;
 using Lib9c.Renderer;
+using Nekoyume.Action;
 using Nekoyume.L10n;
+using Nekoyume.Model.Item;
+using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
 using Nekoyume.State;
 using UniRx;
@@ -19,6 +24,7 @@ namespace Nekoyume.BlockChain
 
         private BlockRenderer _blockRenderer;
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
+        private List<Guid> _mailRecords = new List<Guid>();
 
         private BlockRenderHandler()
         {
@@ -31,6 +37,7 @@ namespace Nekoyume.BlockChain
 
             Reorg();
             UpdateWeeklyArenaState();
+            UpdateCurrentAvatarState();
         }
 
         public void Stop()
@@ -85,6 +92,49 @@ namespace Nekoyume.BlockChain
                         new WeeklyArenaState(
                             (Bencodex.Types.Dictionary) agent.GetState(weeklyArenaAddress));
                     States.Instance.SetWeeklyArenaState(weeklyArenaState);
+                })
+                .AddTo(_disposables);
+        }
+
+        private void UpdateCurrentAvatarState()
+        {
+            _blockRenderer.EveryBlock()
+                .ObserveOnMainThread()
+                .Subscribe(_ =>
+                {
+                    IAgent agent = Game.Game.instance.Agent;
+                    ShopState shop = States.Instance.ShopState;
+                    AvatarState avatar = States.Instance.CurrentAvatarState;
+                    List<ShopItem> shopItems = new List<ShopItem>();
+                    bool replace = false;
+
+                    if (!(avatar is null))
+                    {
+                        shopItems = shop.Products.Values.Where(r =>
+                            r.SellerAvatarAddress == avatar.address && r.ExpiredBlockIndex != 0 &&
+                            r.ExpiredBlockIndex <= agent.BlockIndex).ToList();
+                    }
+
+                    if (!shopItems.Any())
+                    {
+                        return;
+                    }
+
+                    var avatarState = new AvatarState((Dictionary)agent.GetState(avatar.address));
+                    List<SellCancelMail> sellCancelMails = avatarState.mailBox.OfType<SellCancelMail>().ToList();
+                    int prevCount = _mailRecords.Count;
+                    foreach (var mail in shopItems.Select(shopItem => sellCancelMails.FirstOrDefault(m =>
+                        ((SellCancellation.Result) m.attachment).shopItem.ProductId == shopItem.ProductId))
+                        .Where(mail => !(mail is null) && !_mailRecords.Contains(mail.id)))
+                    {
+                        _mailRecords.Add(mail.id);
+                        LocalLayerModifier.AddNewAttachmentMail(avatar.address, mail.id);
+                    }
+
+                    if (_mailRecords.Count > prevCount)
+                    {
+                        States.Instance.AddOrReplaceAvatarState(avatarState, States.Instance.CurrentAvatarKey);
+                    }
                 })
                 .AddTo(_disposables);
         }
