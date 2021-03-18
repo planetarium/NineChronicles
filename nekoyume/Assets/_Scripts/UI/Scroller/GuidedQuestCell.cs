@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -5,7 +6,6 @@ using DG.Tweening;
 using Nekoyume.Game.Controller;
 using Nekoyume.UI.Module;
 using Nekoyume.UI.Tween;
-using NUnit.Framework;
 using TMPro;
 using UniRx;
 using UnityEngine;
@@ -203,7 +203,11 @@ namespace Nekoyume.UI.Scroller
                 {
                     var pair = rewardMap.ElementAt(i);
                     var row = sheet.OrderedList.FirstOrDefault(itemRow => itemRow.Id == pair.Key);
-                    Assert.NotNull(row);
+                    if (row is null)
+                    {
+                        Debug.LogError("row is null.");
+                        continue;
+                    }
 
                     reward.SetData(row);
 

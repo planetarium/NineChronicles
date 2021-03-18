@@ -1,5 +1,5 @@
+using System;
 using DG.Tweening;
-using NUnit.Framework;
 using UnityEngine;
 
 namespace Nekoyume.UI.Tween
@@ -39,12 +39,6 @@ namespace Nekoyume.UI.Tween
         private Vector2 OriginAnchoredPosition =>
             _originAnchoredPositionCache
             ?? (_originAnchoredPositionCache = RectTransform.anchoredPosition).Value;
-
-        private void Awake()
-        {
-            Assert.NotNull(RectTransform);
-            Assert.AreEqual(OriginAnchoredPosition, _originAnchoredPositionCache);
-        }
 
         public override Tweener PlayTween()
         {

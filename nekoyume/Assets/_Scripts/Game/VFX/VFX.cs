@@ -1,5 +1,5 @@
+using System;
 using System.Collections;
-using NUnit.Framework;
 using UnityEngine;
 
 namespace Nekoyume.Game.VFX
@@ -40,7 +40,10 @@ namespace Nekoyume.Game.VFX
         {
             _particles = GetComponentsInChildren<ParticleSystem>();
             _particlesLength = _particles.Length;
-            Assert.Greater(_particlesLength, 0);
+            if (_particlesLength == 0)
+            {
+                throw new Exception($"{nameof(VFX)} count of _particleLength is 0");
+            }
 
             foreach (var particle in _particles)
             {

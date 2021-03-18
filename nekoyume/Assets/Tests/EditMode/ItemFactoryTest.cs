@@ -2,14 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Bencodex.Types;
-using Nekoyume;
 using Nekoyume.Game;
 using Nekoyume.Helper;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using NUnit.Framework;
-using UnityEngine;
 
 namespace Tests.EditMode
 {

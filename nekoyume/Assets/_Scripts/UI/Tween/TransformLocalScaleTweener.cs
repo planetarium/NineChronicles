@@ -1,5 +1,4 @@
 using DG.Tweening;
-using NUnit.Framework;
 using Unity.Mathematics;
 using UnityEngine;
 
@@ -44,12 +43,6 @@ namespace Nekoyume.UI.Tween
         private float3 OriginLocalScale =>
             _originLocalScaleCache
             ?? (_originLocalScaleCache = Transform.localScale).Value;
-
-        private void Awake()
-        {
-            Assert.NotNull(Transform);
-            Assert.AreEqual(OriginLocalScale, _originLocalScaleCache);
-        }
 
         public override Tweener PlayTween()
         {

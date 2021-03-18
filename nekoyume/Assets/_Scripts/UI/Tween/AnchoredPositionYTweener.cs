@@ -1,5 +1,5 @@
+using System;
 using DG.Tweening;
-using NUnit.Framework;
 using UnityEngine;
 
 namespace Nekoyume.UI.Tween
@@ -51,9 +51,6 @@ namespace Nekoyume.UI.Tween
 
         private void Awake()
         {
-            Assert.NotNull(RectTransform);
-            Assert.AreEqual(OriginAnchoredPosition, _originAnchoredPositionCache);
-
             if (playOnAwake)
             {
                 PlayTween();

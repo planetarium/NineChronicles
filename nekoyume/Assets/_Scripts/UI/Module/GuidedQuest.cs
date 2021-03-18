@@ -5,11 +5,8 @@ using System.Linq;
 using DG.Tweening;
 using Nekoyume.Model.Quest;
 using Nekoyume.Model.State;
-using Nekoyume.State;
-using Nekoyume.TableData;
 using Nekoyume.UI.Scroller;
 using Nekoyume.UI.Tween;
-using NUnit.Framework;
 using UniRx;
 using UnityEngine;
 
@@ -125,7 +122,10 @@ namespace Nekoyume.UI.Module
         private void Awake()
         {
             // NOTE: 지금은 딱 두 줄만 표시합니다.
-            Assert.AreEqual(cells.Count, 2);
+            if (cells.Count == 2)
+            {
+                throw new Exception($"{nameof(GuidedQuest)} count of cells not equal 2");
+            }
 
             // 뷰 모델을 구독합니다.
             SharedViewModel.worldQuest

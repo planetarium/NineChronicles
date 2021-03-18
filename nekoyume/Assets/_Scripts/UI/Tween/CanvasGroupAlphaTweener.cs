@@ -1,6 +1,5 @@
 using System;
 using DG.Tweening;
-using NUnit.Framework;
 using UnityEngine;
 
 namespace Nekoyume.UI.Tween
@@ -50,9 +49,6 @@ namespace Nekoyume.UI.Tween
 
         private void Awake()
         {
-            Assert.NotNull(CanvasGroup);
-            Assert.AreEqual(OriginAlpha, _originAlphaCache);
-
             if (playOnAwake)
             {
                 PlayTween();
