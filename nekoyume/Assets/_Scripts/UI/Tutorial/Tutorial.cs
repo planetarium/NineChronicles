@@ -89,7 +89,6 @@ namespace Nekoyume.UI
             {
                 item.Item.Stop(() => PlayEnd(callback));
             }
-
         }
 
         private void PlayEnd(System.Action callback = null)
