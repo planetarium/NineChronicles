@@ -6,6 +6,7 @@ using Libplanet;
 using Nekoyume.Action;
 using Nekoyume.Model.Item;
 using Nekoyume.State;
+using Nekoyume.State.Subjects;
 using Nekoyume.UI;
 using UniRx;
 using UnityEngine;
@@ -205,7 +206,7 @@ namespace Nekoyume.BlockChain
             LocalLayerModifier.AddItem(avatarAddress, itemId, itemCount);
             UpdateCurrentAvatarState(eval);
 
-            WidgetHandler.Instance.Menu.SetActiveActionPointLoading(true);
+            GameConfigStateSubject.IsChargingActionPoint.Value = true;
         }
 
         private void ResponseUnrenderItemEnhancement(ActionBase.ActionEvaluation<ItemEnhancement5> eval)

@@ -19,6 +19,7 @@ using Nekoyume.Model.State;
 using TentuPlay.Api;
 using Nekoyume.Model.Quest;
 using Nekoyume.State.Modifiers;
+using Nekoyume.State.Subjects;
 using Nekoyume.TableData;
 using UnityEngine;
 
@@ -219,7 +220,7 @@ namespace Nekoyume.BlockChain
                         var itemCount = eval.Action.dailyRewardResult.materials.First().Value;
                         LocalLayerModifier.RemoveItem(avatarAddress, itemId, itemCount);
                         LocalLayerModifier.AddNewAttachmentMail(avatarAddress, eval.Action.dailyRewardResult.id);
-                        WidgetHandler.Instance.Menu.SetActiveActionPointLoading(false);
+                        GameConfigStateSubject.IsChargingActionPoint.Value = false;
                     }
 
                 }).AddTo(_disposables);
