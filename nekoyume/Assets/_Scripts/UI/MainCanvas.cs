@@ -156,6 +156,7 @@ namespace Nekoyume.UI
                 Widget.Create<GrayLoadingScreen>(),
                 Widget.Create<BlockSyncLoadingScreen>(),
                 Widget.Create<LoadingScreen>(),
+                Widget.Create<DataLoadingScreen>(),
                 Widget.Create<PreloadingScreen>(),
 
                 // 팝업 영역.
