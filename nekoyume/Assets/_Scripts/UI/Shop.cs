@@ -491,9 +491,9 @@ namespace Nekoyume.UI
             }
             else
             {
-                bool exist = shopItems.SharedModel.TryGetShopItemFromAgentProducts(nonFungibleItem.ItemId, out var shopItem);
-                if (!exist || shopItem.ExpiredBlockIndex.Value != 0 &&
-                    shopItem.ExpiredBlockIndex.Value < Game.Game.instance.Agent.BlockIndex)
+                if (!shopItems.SharedModel.TryGetShopItemFromAgentProducts(
+                    nonFungibleItem.ItemId,
+                    out var shopItem))
                 {
                     if (data.Price.Value.Sign * data.Price.Value.MajorUnit < Model.Shop.MinimumPrice)
                     {
