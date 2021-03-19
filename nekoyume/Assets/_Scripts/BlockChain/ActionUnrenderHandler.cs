@@ -202,11 +202,12 @@ namespace Nekoyume.BlockChain
             var avatarAddress = eval.Action.avatarAddress;
             var itemId = eval.Action.dailyRewardResult.materials.First().Key.ItemId;
             var itemCount = eval.Action.dailyRewardResult.materials.First().Value;
-
             LocalLayerModifier.AddItem(avatarAddress, itemId, itemCount);
+            var avatarState = eval.OutputStates.GetAvatarState(avatarAddress);
+            ReactiveAvatarState.DailyRewardReceivedIndex.SetValueAndForceNotify(
+                avatarState.dailyRewardReceivedIndex);
+            GameConfigStateSubject.IsChargingActionPoint.Value = false;
             UpdateCurrentAvatarState(eval);
-
-            GameConfigStateSubject.IsChargingActionPoint.Value = true;
         }
 
         private void ResponseUnrenderItemEnhancement(ActionBase.ActionEvaluation<ItemEnhancement5> eval)
