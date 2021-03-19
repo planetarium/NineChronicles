@@ -74,8 +74,8 @@ namespace Nekoyume.UI.Module
                 .Subscribe(x => SetActionPoint(x, true))
                 .AddTo(_disposables);
 
-            SetActiveLoading(GameConfigStateSubject.IsChargingActionPoint.Value);
             OnSliderChange();
+            SetActiveLoading(GameConfigStateSubject.IsChargingActionPoint.Value);
         }
 
         protected override void OnDisable()

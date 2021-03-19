@@ -186,7 +186,7 @@ namespace Nekoyume.UI.Module
                 L10nManager.Localize("UI_RECEIVING_DAILY_REWARD"));
 
             Game.Game.instance.ActionManager.DailyReward();
-            GameConfigStateSubject.IsChargingActionPoint.Value = true;
+            GameConfigStateSubject.IsChargingActionPoint.SetValueAndForceNotify(true);
             StartCoroutine(CoGetDailyRewardAnimation());
         }
 

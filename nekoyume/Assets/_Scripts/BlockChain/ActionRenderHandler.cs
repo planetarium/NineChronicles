@@ -220,7 +220,7 @@ namespace Nekoyume.BlockChain
                         var itemCount = eval.Action.dailyRewardResult.materials.First().Value;
                         LocalLayerModifier.RemoveItem(avatarAddress, itemId, itemCount);
                         LocalLayerModifier.AddNewAttachmentMail(avatarAddress, eval.Action.dailyRewardResult.id);
-                        GameConfigStateSubject.IsChargingActionPoint.Value = false;
+                        GameConfigStateSubject.IsChargingActionPoint.SetValueAndForceNotify(false);
                     }
 
                 }).AddTo(_disposables);

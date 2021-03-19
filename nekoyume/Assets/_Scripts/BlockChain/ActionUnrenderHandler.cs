@@ -206,7 +206,7 @@ namespace Nekoyume.BlockChain
             var avatarState = eval.OutputStates.GetAvatarState(avatarAddress);
             ReactiveAvatarState.DailyRewardReceivedIndex.SetValueAndForceNotify(
                 avatarState.dailyRewardReceivedIndex);
-            GameConfigStateSubject.IsChargingActionPoint.Value = false;
+            GameConfigStateSubject.IsChargingActionPoint.SetValueAndForceNotify(false);
             UpdateCurrentAvatarState(eval);
         }
 
