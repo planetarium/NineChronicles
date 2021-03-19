@@ -108,7 +108,7 @@ namespace Nekoyume.BlockChain
 
         private void DailyReward()
         {
-            _renderer.EveryUnrender<DailyReward>()
+            _renderer.EveryUnrender<DailyReward3>()
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseDailyReward)
@@ -192,7 +192,7 @@ namespace Nekoyume.BlockChain
             UpdateCurrentAvatarState(eval);
         }
 
-        private void ResponseDailyReward(ActionBase.ActionEvaluation<DailyReward> eval)
+        private void ResponseDailyReward(ActionBase.ActionEvaluation<DailyReward3> eval)
         {
             if (!(eval.Exception is null))
             {

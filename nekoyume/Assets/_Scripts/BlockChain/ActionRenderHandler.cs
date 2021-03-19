@@ -199,7 +199,7 @@ namespace Nekoyume.BlockChain
 
         private void DailyReward()
         {
-            _renderer.EveryRender<DailyReward>()
+            _renderer.EveryRender<DailyReward3>()
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(eval =>
