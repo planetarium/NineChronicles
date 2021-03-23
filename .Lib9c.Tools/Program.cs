@@ -5,6 +5,7 @@ namespace Lib9c.Tools
 {
     [HasSubCommands(typeof(Genesis), Description = "Manage genesis block.")]
     [HasSubCommands(typeof(Tx), Description = "Manage transactions.")]
+    [HasSubCommands(typeof(Store), Description = "Manage store.")]
     class Program
     {
         static void Main(string[] args) => CoconaLiteApp.Run<Program>(args);
