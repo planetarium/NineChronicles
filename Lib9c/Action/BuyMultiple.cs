@@ -27,10 +27,36 @@ namespace Nekoyume.Action
         public BuyerResult buyerResult;
         public SellerResult sellerResult;
 
+        public class ProductInfo : Buy.BuyerResult
+        {
+            public Address sellerAgentAddress;
+            public Address sellerAvatarAddress;
+
+            public ProductInfo()
+            {
+
+            }
+
+            public ProductInfo(Bencodex.Types.Dictionary serialized) : base(serialized)
+            {
+                sellerAgentAddress = serialized["sellerAgentAddress"].ToAddress();
+                sellerAvatarAddress = serialized["sellerAvatarAddress"].ToAddress();
+            }
+
+            public override IValue Serialize() =>
+#pragma warning disable LAA1002
+                new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
+                {
+                    [(Text) "sellerAgentAddress"] = sellerAgentAddress.Serialize(),
+                    [(Text) "sellerAvatarAddress"] = sellerAvatarAddress.Serialize(),
+                }.Union((Bencodex.Types.Dictionary)base.Serialize()));
+#pragma warning restore LAA1002
+        }
+
         [Serializable]
         public class BuyerResult
         {
-            public IEnumerable<Buy.BuyerResult> buyerResults;
+            public IEnumerable<ProductInfo> productInfos;
 
             public BuyerResult()
             {
@@ -38,14 +64,14 @@ namespace Nekoyume.Action
 
             public BuyerResult(Bencodex.Types.Dictionary serialized)
             {
-                buyerResults = serialized["buyerResults"].ToList(StateExtensions.ToBuyerResult);
+                productInfos = serialized["productInfos"].ToList(StateExtensions.ToProductInfo);
             }
 
             public IValue Serialize() =>
 #pragma warning disable LAA1002
                 new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
                 {
-                    [(Text) "buyerResults"] = buyerResults
+                    [(Text) "productInfos"] = productInfos
                         .OrderBy(i => i)
                         .Select(g => g.Serialize()).Serialize()
                 });
@@ -179,7 +205,7 @@ namespace Nekoyume.Action
 
             buyerResult = new BuyerResult();
             sellerResult = new SellerResult();
-            var buyerResults = new List<Buy.BuyerResult>();
+            var productInfos = new List<ProductInfo>();
             var sellerResults = new List<Buy.SellerResult>();
 
             foreach (var productId in productIds)
@@ -252,15 +278,17 @@ namespace Nekoyume.Action
                 }
                 nonFungibleItem.Update(context.BlockIndex);
 
-                var buyerResultToAdd = new Buy.BuyerResult
+                var productInfo = new ProductInfo
                 {
                     shopItem = shopItem,
                     itemUsable = shopItem.ItemUsable,
-                    costume = shopItem.Costume
+                    costume = shopItem.Costume,
+                    sellerAgentAddress = shopItem.SellerAgentAddress,
+                    sellerAvatarAddress = shopItem.SellerAvatarAddress,
                 };
-                var buyerMail = new BuyerMail(buyerResultToAdd, ctx.BlockIndex, ctx.Random.GenerateRandomGuid(), ctx.BlockIndex);
-                buyerResultToAdd.id = buyerMail.id;
-                buyerResults.Add(buyerResultToAdd);
+                var buyerMail = new BuyerMail(productInfo, ctx.BlockIndex, ctx.Random.GenerateRandomGuid(), ctx.BlockIndex);
+                productInfo.id = buyerMail.id;
+                productInfos.Add(productInfo);
 
                 var sellerResultToAdd = new Buy.SellerResult
                 {
@@ -275,13 +303,13 @@ namespace Nekoyume.Action
                 sellerResults.Add(sellerResultToAdd);
 
                 buyerAvatarState.UpdateV4(buyerMail, context.BlockIndex);
-                if (buyerResultToAdd.itemUsable != null)
+                if (productInfo.itemUsable != null)
                 {
-                    buyerAvatarState.UpdateFromAddItem(buyerResultToAdd.itemUsable, false);
+                    buyerAvatarState.UpdateFromAddItem(productInfo.itemUsable, false);
                 }
-                if (buyerResultToAdd.costume != null)
+                if (productInfo.costume != null)
                 {
-                    buyerAvatarState.UpdateFromAddCostume(buyerResultToAdd.costume, false);
+                    buyerAvatarState.UpdateFromAddCostume(productInfo.costume, false);
                 }
                 sellerAvatarState.UpdateV4(sellerMail, context.BlockIndex);
 
@@ -290,7 +318,7 @@ namespace Nekoyume.Action
                 sellerAvatarState.questList.UpdateTradeQuest(TradeType.Sell, shopItem.Price);
             }
 
-            buyerResult.buyerResults = buyerResults;
+            buyerResult.productInfos = productInfos;
             sellerResult.sellerResults = sellerResults;
 
             buyerAvatarState.updatedAt = ctx.BlockIndex;
