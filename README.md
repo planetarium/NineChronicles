@@ -39,14 +39,18 @@ visit [docs.nine-chronicles.com][9c-docs].
  1. Install Unity 2019.1.0f2 version
  1. Clone repository
     ```
-    git clone git@github.com:planetarium/NineChronicles.git
+    git clone https://github.com/planetarium/NineChronicles.git
     ```
  1. Nagivate to the cloned directory and run the command:
     ```
     git config core.hooksPath hooks
+    git submodule update --init --recursive
     ```
  1. Run Unity and build project
 
+To launch Nine Chronicles from the Unity editor, please follow the [step-by-step guide][9c-unity-guide].
+
+[9c-unity-guide]: https://docs.nine-chronicles.com/unity-guide
 
 ### Command Line Options
 
