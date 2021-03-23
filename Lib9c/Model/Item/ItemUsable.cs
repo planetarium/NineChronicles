@@ -14,6 +14,7 @@ namespace Nekoyume.Model.Item
     [Serializable]
     public abstract class ItemUsable : ItemBase, INonFungibleItem
     {
+        public const string ItemIdKey = "itemId";
         public Guid ItemId { get; }
         public StatsMap StatsMap { get; }
         public List<Skill.Skill> Skills { get; }

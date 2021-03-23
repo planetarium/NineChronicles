@@ -1,6 +1,7 @@
 namespace Lib9c.Tests.Action
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using Libplanet;
     using Libplanet.Action;
@@ -10,6 +11,7 @@ namespace Lib9c.Tests.Action
     using Nekoyume.Action;
     using Nekoyume.Model;
     using Nekoyume.Model.Item;
+    using Nekoyume.Model.Mail;
     using Nekoyume.Model.State;
     using Serilog;
     using Xunit;
@@ -17,6 +19,8 @@ namespace Lib9c.Tests.Action
 
     public class SellTest
     {
+        private const long ProductPrice = 100;
+
         private readonly Address _agentAddress;
         private readonly Address _avatarAddress;
         private readonly Currency _currency;
@@ -71,6 +75,17 @@ namespace Lib9c.Tests.Action
                 0);
             _avatarState.inventory.AddItem(equipment);
 
+            var consumable = ItemFactory.CreateItemUsable(
+                _tableSheets.ConsumableItemSheet.First,
+                Guid.NewGuid(),
+                0);
+            _avatarState.inventory.AddItem(consumable);
+
+            var costume = ItemFactory.CreateCostume(
+                _tableSheets.CostumeItemSheet.First,
+                Guid.NewGuid());
+            _avatarState.inventory.AddItem(costume);
+
             _initialState = _initialState
                 .SetState(GoldCurrencyState.Address, goldCurrencyState.Serialize())
                 .SetState(Addresses.Shop, shopState.Serialize())
@@ -78,47 +93,87 @@ namespace Lib9c.Tests.Action
                 .SetState(_avatarAddress, _avatarState.Serialize());
         }
 
-        [Fact]
-        public void Execute()
+        [Theory]
+        [InlineData(ItemType.Consumable, true, 2)]
+        [InlineData(ItemType.Costume, true, 2)]
+        [InlineData(ItemType.Equipment, true, 2)]
+        [InlineData(ItemType.Consumable, false, 0)]
+        [InlineData(ItemType.Costume, false, 0)]
+        [InlineData(ItemType.Equipment, false, 0)]
+        public void Execute(ItemType itemType, bool shopItemExist, int blockIndex)
         {
             var shopState = _initialState.GetShopState();
             Assert.Empty(shopState.Products);
 
             var avatarState = _initialState.GetAvatarState(_avatarAddress);
-            Assert.Single(avatarState.inventory.Equipments);
+            List<Inventory.Item> inventoryItem = avatarState.inventory.Items.Where(i => i.item.ItemType == itemType).ToList();
+            Assert.Single(inventoryItem);
+            var previousStates = _initialState;
+            var currencyState = previousStates.GetGoldCurrency();
+            var price = new FungibleAssetValue(currencyState, ProductPrice, 0);
+            INonFungibleItem nonFungibleItem = (INonFungibleItem)inventoryItem.First().item;
+            nonFungibleItem.Update(blockIndex);
+            Assert.Equal(blockIndex, nonFungibleItem.RequiredBlockIndex);
 
-            var equipment = avatarState.inventory.Equipments.FirstOrDefault();
-            Assert.NotNull(equipment);
+            if (shopItemExist)
+            {
+                var si = new ShopItem(
+                    _agentAddress,
+                    _avatarAddress,
+                    Guid.NewGuid(),
+                    new FungibleAssetValue(currencyState, 100, 0),
+                    blockIndex,
+                    nonFungibleItem);
+                shopState.Register(si);
+                previousStates = previousStates.SetState(Addresses.Shop, shopState.Serialize());
+                Assert.Single(shopState.Products);
+            }
+            else
+            {
+                Assert.Empty(shopState.Products);
+            }
 
-            var currencyState = _initialState.GetGoldCurrency();
-            var price = new FungibleAssetValue(currencyState, 100, 0);
             var sellAction = new Sell
             {
-                itemId = equipment.ItemId,
+                itemId = nonFungibleItem.ItemId,
                 price = price,
                 sellerAvatarAddress = _avatarAddress,
             };
+
             var nextState = sellAction.Execute(new ActionContext
             {
-                BlockIndex = 0,
-                PreviousStates = _initialState,
+                BlockIndex = 1,
+                PreviousStates = previousStates,
                 Rehearsal = false,
                 Signer = _agentAddress,
                 Random = new TestRandom(),
             });
 
+            const long expiredBlockIndex = Sell.ExpiredBlockIndex + 1;
             var nextAvatarState = nextState.GetAvatarState(_avatarAddress);
-            Assert.Empty(nextAvatarState.inventory.Equipments);
+            Assert.True(nextAvatarState.inventory.TryGetNonFungibleItem(nonFungibleItem.ItemId, out var nextItem));
+            INonFungibleItem nextNonFungibleItem = (INonFungibleItem)nextItem.item;
+            Assert.Equal(expiredBlockIndex, nextNonFungibleItem.RequiredBlockIndex);
 
             var nextShopState = nextState.GetShopState();
+
             Assert.Single(nextShopState.Products);
 
-            var (_, shopItem) = nextShopState.Products.FirstOrDefault();
-            Assert.NotNull(shopItem);
-            Assert.Equal(equipment.ItemId, shopItem.ItemUsable.ItemId);
+            var products = nextShopState.Products.Values;
+
+            var shopItem = products.First();
+            INonFungibleItem item = itemType == ItemType.Costume ? (INonFungibleItem)shopItem.Costume : shopItem.ItemUsable;
+
             Assert.Equal(price, shopItem.Price);
+            Assert.Equal(expiredBlockIndex, shopItem.ExpiredBlockIndex);
+            Assert.Equal(expiredBlockIndex, item.RequiredBlockIndex);
             Assert.Equal(_agentAddress, shopItem.SellerAgentAddress);
             Assert.Equal(_avatarAddress, shopItem.SellerAvatarAddress);
+
+            var mailList = nextAvatarState.mailBox.Where(m => m is SellCancelMail).ToList();
+            Assert.Single(mailList);
+
+            Assert.Equal(expiredBlockIndex, mailList.First().requiredBlockIndex);
         }
 
         [Fact]
@@ -201,6 +256,7 @@ namespace Lib9c.Tests.Action
                 BlockIndex = 0,
                 PreviousStates = _initialState,
                 Signer = _agentAddress,
+                Random = new TestRandom(),
             }));
         }
 
@@ -228,6 +284,7 @@ namespace Lib9c.Tests.Action
                 BlockIndex = 0,
                 PreviousStates = _initialState,
                 Signer = _agentAddress,
+                Random = new TestRandom(),
             }));
         }
     }

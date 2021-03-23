@@ -13,8 +13,8 @@ using Nekoyume.TableData;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("daily_reward3")]
-    public class DailyReward : GameAction
+    [ActionType("daily_reward2")]
+    public class DailyReward3 : GameAction
     {
         public Address avatarAddress;
         public DailyRewardResult dailyRewardResult;
@@ -68,7 +68,7 @@ namespace Nekoyume.Action
 
             result.id = mail.id;
             dailyRewardResult = result;
-            avatarState.UpdateV4(mail, context.BlockIndex);
+            avatarState.UpdateV3(mail);
             avatarState.UpdateFromAddItem(material, rewardItemCount, false);
             return states.SetState(avatarAddress, avatarState.Serialize());
         }

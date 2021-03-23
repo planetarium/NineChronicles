@@ -2,7 +2,6 @@ namespace Lib9c.Tests.Action
 {
     using System;
     using System.Collections.Generic;
-    using System.Collections.Immutable;
     using System.IO;
     using System.Linq;
     using System.Runtime.Serialization.Formatters.Binary;
@@ -12,9 +11,11 @@ namespace Lib9c.Tests.Action
     using Libplanet.Crypto;
     using Nekoyume;
     using Nekoyume.Action;
+    using Nekoyume.Battle;
     using Nekoyume.Model;
     using Nekoyume.Model.BattleStatus;
     using Nekoyume.Model.Item;
+    using Nekoyume.Model.Mail;
     using Nekoyume.Model.State;
     using Nekoyume.TableData;
     using Xunit;
@@ -73,8 +74,8 @@ namespace Lib9c.Tests.Action
         }
 
         [Theory]
-        [InlineData(1, 1, 1, false)]
-        [InlineData(100, 1, GameConfig.RequireClearedStageLevel.ActionsInRankingBoard, true)]
+        [InlineData(GameConfig.RequireCharacterLevel.CharacterFullCostumeSlot, 1, 1, false)]
+        [InlineData(200, 1, GameConfig.RequireClearedStageLevel.ActionsInRankingBoard, true)]
         public void Execute(int avatarLevel, int worldId, int stageId, bool contains)
         {
             Assert.True(_tableSheets.WorldSheet.TryGetValue(worldId, out var worldRow));
@@ -89,21 +90,83 @@ namespace Lib9c.Tests.Action
                 _tableSheets.WorldSheet,
                 Math.Max(_tableSheets.StageSheet.First?.Id ?? 1, stageId - 1));
 
-            var costumeId = _tableSheets
+            List<Guid> costumes = new List<Guid>();
+            IRandom random = new TestRandom();
+            if (avatarLevel >= GameConfig.RequireCharacterLevel.CharacterFullCostumeSlot)
+            {
+                var costumeId = _tableSheets
                 .CostumeItemSheet
                 .Values
                 .First(r => r.ItemSubType == ItemSubType.FullCostume)
                 .Id;
-            var costume =
-                ItemFactory.CreateItem(_tableSheets.ItemSheet[costumeId], new TestRandom());
-            previousAvatarState.inventory.AddItem(costume);
+
+                var costume = (Costume)ItemFactory.CreateItem(
+                    _tableSheets.ItemSheet[costumeId], random);
+                previousAvatarState.inventory.AddItem(costume);
+                costumes.Add(costume.ItemId);
+            }
+
+            List<Guid> equipments = new List<Guid>();
+
+            if (avatarLevel >= GameConfig.RequireCharacterLevel.CharacterEquipmentSlotWeapon)
+            {
+                var weaponId = _tableSheets
+                .EquipmentItemSheet
+                .Values
+                .Where(r => r.ItemSubType == ItemSubType.Weapon)
+                .OrderBy(r => r.Stat.ValueAsInt)
+                .Last()
+                .Id;
+
+                var weapon = ItemFactory.CreateItem(
+                    _tableSheets.EquipmentItemSheet[weaponId],
+                    random)
+                    as Equipment;
+                equipments.Add(weapon.ItemId);
+                previousAvatarState.inventory.AddItem(weapon);
+            }
+
+            if (avatarLevel >= GameConfig.RequireCharacterLevel.CharacterEquipmentSlotArmor)
+            {
+                var armorId = _tableSheets
+                .EquipmentItemSheet
+                .Values
+                .Where(r => r.ItemSubType == ItemSubType.Armor)
+                .OrderBy(r => r.Stat.ValueAsInt)
+                .Last()
+                .Id;
+
+                var armor = ItemFactory.CreateItem(
+                    _tableSheets.EquipmentItemSheet[armorId],
+                    random)
+                    as Equipment;
+                equipments.Add(armor.ItemId);
+                previousAvatarState.inventory.AddItem(armor);
+            }
+
+            var mailEquipmentRow = _tableSheets.EquipmentItemSheet.Values.First();
+            var mailEquipment = ItemFactory.CreateItemUsable(mailEquipmentRow, default, 0);
+            var result = new CombinationConsumable.ResultModel
+            {
+                id = default,
+                gold = 0,
+                actionPoint = 0,
+                recipeId = 1,
+                materials = new Dictionary<Material, int>(),
+                itemUsable = mailEquipment,
+            };
+            for (var i = 0; i < 100; i++)
+            {
+                var mail = new CombinationMail(result, i, default, 0);
+                previousAvatarState.Update(mail);
+            }
 
             var state = _initialState.SetState(_avatarAddress, previousAvatarState.Serialize());
 
-            var action = new HackAndSlash()
+            var action = new HackAndSlash
             {
-                costumes = new List<int> { costumeId },
-                equipments = new List<Guid>(),
+                costumes = costumes,
+                equipments = equipments,
                 foods = new List<Guid>(),
                 worldId = worldId,
                 stageId = stageId,
@@ -114,12 +177,13 @@ namespace Lib9c.Tests.Action
 
             Assert.Null(action.Result);
 
-            var nextState = action.Execute(new ActionContext()
+            var nextState = action.Execute(new ActionContext
             {
                 PreviousStates = state,
                 Signer = _agentAddress,
                 Random = new TestRandom(),
                 Rehearsal = false,
+                BlockIndex = 1,
             });
 
             var nextAvatarState = nextState.GetAvatarState(_avatarAddress);
@@ -131,6 +195,15 @@ namespace Lib9c.Tests.Action
             Assert.Equal(BattleLog.Result.Win, action.Result.result);
             Assert.Equal(contains, newWeeklyState.ContainsKey(_avatarAddress));
             Assert.True(nextAvatarState.worldInformation.IsStageCleared(stageId));
+            Assert.Empty(nextAvatarState.mailBox);
+            if (contains)
+            {
+                //Check for Costume CP.
+                Assert.True(
+                    newWeeklyState[_avatarAddress].CombatPoint >
+                    CPHelper.GetCP(nextAvatarState, _tableSheets.CharacterSheet)
+                );
+            }
 
             var value = nextState.GetState(_rankingMapAddress);
 
@@ -142,11 +215,128 @@ namespace Lib9c.Tests.Action
         }
 
         [Fact]
+        public void MaxLevelTest()
+        {
+            var previousAvatarState = _initialState.GetAvatarState(_avatarAddress);
+            var maxLevel = _tableSheets.CharacterLevelSheet.Max(row => row.Value.Level);
+            var expRow = _tableSheets.CharacterLevelSheet[maxLevel];
+            var maxLevelExp = expRow.Exp;
+            var requiredExp = expRow.ExpNeed;
+
+            previousAvatarState.level = maxLevel;
+            previousAvatarState.exp = maxLevelExp + requiredExp - 1;
+
+            var stageId = _tableSheets.StageSheet
+                .FirstOrDefault(row =>
+                (previousAvatarState.level - row.Value.Id) <= StageRewardExpHelper.DifferLowerLimit ||
+                (previousAvatarState.level - row.Value.Id) > StageRewardExpHelper.DifferUpperLimit)
+                .Value.Id;
+            var worldRow = _tableSheets.WorldSheet
+                .FirstOrDefault(row => stageId >= row.Value.StageBegin &&
+                stageId <= row.Value.StageEnd);
+            var worldId = worldRow.Value.Id;
+
+            previousAvatarState.worldInformation = new WorldInformation(
+                0,
+                _tableSheets.WorldSheet,
+                Math.Max(_tableSheets.StageSheet.First?.Id ?? 1, stageId));
+
+            var state = _initialState.SetState(_avatarAddress, previousAvatarState.Serialize());
+
+            var action = new HackAndSlash
+            {
+                costumes = new List<Guid>(),
+                equipments = new List<Guid>(),
+                foods = new List<Guid>(),
+                worldId = worldId,
+                stageId = stageId,
+                avatarAddress = _avatarAddress,
+                WeeklyArenaAddress = _weeklyArenaState.address,
+                RankingMapAddress = _rankingMapAddress,
+            };
+
+            Assert.Null(action.Result);
+
+            var nextState = action.Execute(new ActionContext
+            {
+                PreviousStates = state,
+                Signer = _agentAddress,
+                Random = new TestRandom(),
+                Rehearsal = false,
+            });
+
+            var nextAvatarState = nextState.GetAvatarState(_avatarAddress);
+            Assert.Equal(maxLevelExp + requiredExp - 1, nextAvatarState.exp);
+            Assert.Equal(previousAvatarState.level, nextAvatarState.level);
+        }
+
+        [Theory]
+        [InlineData(ItemSubType.Weapon, GameConfig.MaxEquipmentSlotCount.Weapon)]
+        [InlineData(ItemSubType.Armor, GameConfig.MaxEquipmentSlotCount.Armor)]
+        [InlineData(ItemSubType.Belt, GameConfig.MaxEquipmentSlotCount.Belt)]
+        [InlineData(ItemSubType.Necklace, GameConfig.MaxEquipmentSlotCount.Necklace)]
+        [InlineData(ItemSubType.Ring, GameConfig.MaxEquipmentSlotCount.Ring)]
+        public void MultipleEquipmentTest(ItemSubType type, int maxCount)
+        {
+            var previousAvatarState = _initialState.GetAvatarState(_avatarAddress);
+            var maxLevel = _tableSheets.CharacterLevelSheet.Max(row => row.Value.Level);
+            var expRow = _tableSheets.CharacterLevelSheet[maxLevel];
+            var maxLevelExp = expRow.Exp;
+
+            previousAvatarState.level = maxLevel;
+            previousAvatarState.exp = maxLevelExp;
+
+            var weaponRows = _tableSheets
+                .EquipmentItemSheet
+                .Values
+                .Where(r => r.ItemSubType == type)
+                .Take(maxCount + 1);
+
+            var equipments = new List<Guid>();
+            foreach (var row in weaponRows)
+            {
+                var equipment = ItemFactory.CreateItem(
+                    _tableSheets.EquipmentItemSheet[row.Id],
+                    new TestRandom())
+                    as Equipment;
+
+                equipments.Add(equipment.ItemId);
+                previousAvatarState.inventory.AddItem(equipment);
+            }
+
+            var state = _initialState.SetState(_avatarAddress, previousAvatarState.Serialize());
+
+            var action = new HackAndSlash
+            {
+                costumes = new List<Guid>(),
+                equipments = equipments,
+                foods = new List<Guid>(),
+                worldId = 1,
+                stageId = 1,
+                avatarAddress = _avatarAddress,
+                WeeklyArenaAddress = _weeklyArenaState.address,
+                RankingMapAddress = _rankingMapAddress,
+            };
+
+            Assert.Null(action.Result);
+
+            var exec = Assert.Throws<DuplicateEquipmentException>(() => action.Execute(new ActionContext
+            {
+                PreviousStates = state,
+                Signer = _agentAddress,
+                Random = new TestRandom(),
+                Rehearsal = false,
+            }));
+
+            SerializeException<DuplicateEquipmentException>(exec);
+        }
+
+        [Fact]
         public void ExecuteThrowInvalidRankingMapAddress()
         {
             var action = new HackAndSlash()
             {
-                costumes = new List<int>(),
+                costumes = new List<Guid>(),
                 equipments = new List<Guid>(),
                 foods = new List<Guid>(),
                 worldId = 1,
@@ -176,7 +366,7 @@ namespace Lib9c.Tests.Action
         {
             var action = new HackAndSlash()
             {
-                costumes = new List<int>(),
+                costumes = new List<Guid>(),
                 equipments = new List<Guid>(),
                 foods = new List<Guid>(),
                 worldId = 1,
@@ -204,7 +394,7 @@ namespace Lib9c.Tests.Action
         {
             var action = new HackAndSlash()
             {
-                costumes = new List<int>(),
+                costumes = new List<Guid>(),
                 equipments = new List<Guid>(),
                 foods = new List<Guid>(),
                 worldId = 100,
@@ -235,7 +425,7 @@ namespace Lib9c.Tests.Action
         {
             var action = new HackAndSlash()
             {
-                costumes = new List<int>(),
+                costumes = new List<Guid>(),
                 equipments = new List<Guid>(),
                 foods = new List<Guid>(),
                 worldId = 1,
@@ -264,7 +454,7 @@ namespace Lib9c.Tests.Action
         {
             var action = new HackAndSlash()
             {
-                costumes = new List<int>(),
+                costumes = new List<Guid>(),
                 equipments = new List<Guid>(),
                 foods = new List<Guid>(),
                 worldId = 1,
@@ -296,7 +486,7 @@ namespace Lib9c.Tests.Action
         {
             var action = new HackAndSlash()
             {
-                costumes = new List<int>(),
+                costumes = new List<Guid>(),
                 equipments = new List<Guid>(),
                 foods = new List<Guid>(),
                 worldId = 1,
@@ -336,7 +526,7 @@ namespace Lib9c.Tests.Action
         {
             var action = new HackAndSlash()
             {
-                costumes = new List<int>(),
+                costumes = new List<Guid>(),
                 equipments = new List<Guid>(),
                 foods = new List<Guid>(),
                 worldId = 2,
@@ -367,7 +557,7 @@ namespace Lib9c.Tests.Action
         {
             var action = new HackAndSlash()
             {
-                costumes = new List<int>(),
+                costumes = new List<Guid>(),
                 equipments = new List<Guid>(),
                 foods = new List<Guid>(),
                 worldId = 1,
@@ -413,7 +603,7 @@ namespace Lib9c.Tests.Action
         {
             var action = new HackAndSlash()
             {
-                costumes = new List<int>(),
+                costumes = new List<Guid>(),
                 equipments = new List<Guid>(),
                 foods = new List<Guid>(),
                 worldId = 1,
@@ -455,7 +645,7 @@ namespace Lib9c.Tests.Action
 
             var action = new HackAndSlash()
             {
-                costumes = new List<int>(),
+                costumes = new List<Guid>(),
                 equipments = new List<Guid>()
                 {
                     equipment.ItemId,
@@ -501,7 +691,7 @@ namespace Lib9c.Tests.Action
 
             var action = new HackAndSlash()
             {
-                costumes = new List<int>(),
+                costumes = new List<Guid>(),
                 equipments = new List<Guid>()
                 {
                     equipment.ItemId,
@@ -541,7 +731,7 @@ namespace Lib9c.Tests.Action
 
             var action = new HackAndSlash()
             {
-                costumes = new List<int>(),
+                costumes = new List<Guid>(),
                 equipments = new List<Guid>(),
                 foods = new List<Guid>(),
                 worldId = 1,
@@ -566,110 +756,6 @@ namespace Lib9c.Tests.Action
             Assert.Null(action.Result);
 
             SerializeException<NotEnoughActionPointException>(exec);
-        }
-
-        [Fact]
-        public void Rehearsal()
-        {
-            var action = new HackAndSlash()
-            {
-                costumes = new List<int>(),
-                equipments = new List<Guid>(),
-                foods = new List<Guid>(),
-                worldId = 1,
-                stageId = 1,
-                avatarAddress = _avatarAddress,
-                WeeklyArenaAddress = _weeklyArenaState.address,
-                RankingMapAddress = _rankingMapAddress,
-            };
-
-            var updatedAddresses = new List<Address>()
-            {
-                _agentAddress,
-                _avatarAddress,
-                _weeklyArenaState.address,
-                _rankingMapAddress,
-            };
-
-            var state = new State();
-
-            var nextState = action.Execute(new ActionContext()
-            {
-                PreviousStates = state,
-                Signer = _agentAddress,
-                BlockIndex = 0,
-                Rehearsal = true,
-            });
-
-            Assert.Equal(updatedAddresses.ToImmutableHashSet(), nextState.UpdatedAddresses);
-        }
-
-        [Fact]
-        public void SerializeWithDotnetAPI()
-        {
-            var action = new HackAndSlash()
-            {
-                costumes = new List<int>(),
-                equipments = new List<Guid>(),
-                foods = new List<Guid>(),
-                worldId = 1,
-                stageId = 1,
-                avatarAddress = _avatarAddress,
-                WeeklyArenaAddress = _weeklyArenaState.address,
-                RankingMapAddress = _rankingMapAddress,
-            };
-
-            action.Execute(new ActionContext()
-            {
-                PreviousStates = _initialState,
-                Signer = _agentAddress,
-                Random = new TestRandom(),
-                Rehearsal = false,
-            });
-
-            var formatter = new BinaryFormatter();
-            using var ms = new MemoryStream();
-            formatter.Serialize(ms, action);
-            ms.Seek(0, SeekOrigin.Begin);
-
-            var deserialized = (HackAndSlash)formatter.Deserialize(ms);
-            Assert.Equal(action.PlainValue, deserialized.PlainValue);
-        }
-
-        [Fact]
-        public void PlainValue()
-        {
-            var guid1 = new Guid("F9168C5E-CEB2-4faa-B6BF-329BF39FA1E4");
-            var guid2 = new Guid("936DA01F-9ABD-4d9d-80C7-02AF85C822A8");
-            var action = new HackAndSlash()
-            {
-                costumes = new List<int>()
-                {
-                    3,
-                    2,
-                    1,
-                },
-                equipments = new List<Guid>()
-                {
-                    guid2,
-                    guid1,
-                },
-                foods = new List<Guid>()
-                {
-                    guid2,
-                    guid1,
-                },
-                worldId = 1,
-                stageId = 1,
-                avatarAddress = _avatarAddress,
-                WeeklyArenaAddress = _weeklyArenaState.address,
-                RankingMapAddress = _rankingMapAddress,
-            };
-
-            var deserialized = new HackAndSlash();
-            deserialized.LoadPlainValue(action.PlainValue);
-
-            Assert.Equal(action.PlainValue, deserialized.PlainValue);
         }
 
         private static void SerializeException<T>(Exception exec)

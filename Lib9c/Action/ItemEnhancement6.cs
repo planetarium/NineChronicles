@@ -17,53 +17,17 @@ using Serilog;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("item_enhancement6")]
-    public class ItemEnhancement : GameAction
+    [ActionType("item_enhancement")]
+    public class ItemEnhancement6 : GameAction
     {
         public const int RequiredBlockCount = 1;
 
         public static readonly Address BlacksmithAddress = Addresses.Blacksmith;
 
         public Guid itemId;
-        public Guid materialId;
+        public IEnumerable<Guid> materialIds;
         public Address avatarAddress;
         public int slotIndex;
-
-        [Serializable]
-        public class ResultModel : AttachmentActionResult
-        {
-            protected override string TypeId => "itemEnhancement.result";
-            public Guid id;
-            public IEnumerable<Guid> materialItemIdList;
-            public BigInteger gold;
-            public int actionPoint;
-
-            public ResultModel()
-            {
-            }
-
-            public ResultModel(Bencodex.Types.Dictionary serialized)
-                : base(serialized)
-            {
-                id = serialized["id"].ToGuid();
-                materialItemIdList = serialized["materialItemIdList"].ToList(StateExtensions.ToGuid);
-                gold = serialized["gold"].ToBigInteger();
-                actionPoint = serialized["actionPoint"].ToInteger();
-            }
-
-            public override IValue Serialize() =>
-#pragma warning disable LAA1002
-                new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
-                {
-                    [(Text) "id"] = id.Serialize(),
-                    [(Text) "materialItemIdList"] = materialItemIdList
-                        .OrderBy(i => i)
-                        .Select(g => g.Serialize()).Serialize(),
-                    [(Text) "gold"] = gold.Serialize(),
-                    [(Text) "actionPoint"] = actionPoint.Serialize(),
-                }.Union((Bencodex.Types.Dictionary) base.Serialize()));
-#pragma warning restore LAA1002
-        }
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
@@ -85,6 +49,8 @@ namespace Nekoyume.Action
             }
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
+
+            Log.Warning("{AddressesHex}item_enhancement is deprecated. Please use item_enhancement2", addressesHex);
 
             var sw = new Stopwatch();
             sw.Start();
@@ -137,7 +103,7 @@ namespace Nekoyume.Action
             Log.Verbose("{AddressesHex}ItemEnhancement Get Equipment: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();
 
-            if (enhancementEquipment.level > 9)
+            if(enhancementEquipment.level > 9)
             {
                 // Maximum level exceeded.
                 throw new EquipmentLevelExceededException(
@@ -148,7 +114,7 @@ namespace Nekoyume.Action
             var result = new ItemEnhancement.ResultModel
             {
                 itemUsable = enhancementEquipment,
-                materialItemIdList = new[] { materialId }
+                materialItemIdList = materialIds
             };
 
             var requiredAP = ItemEnhancement.GetRequiredAp();
@@ -174,61 +140,73 @@ namespace Nekoyume.Action
                 );
             }
 
-            if (!avatarState.inventory.TryGetNonFungibleItem(materialId, out ItemUsable materialItem))
+            var materials = new List<Equipment>();
+            foreach (var materialId in materialIds.OrderBy(guid => guid))
             {
-                throw new NotEnoughMaterialException(
-                    $"{addressesHex}Aborted as the signer does not have a necessary material ({materialId})."
-                );
-            }
+                if (!avatarState.inventory.TryGetNonFungibleItem(materialId, out ItemUsable materialItem))
+                {
+                    throw new NotEnoughMaterialException(
+                        $"{addressesHex}Aborted as the signer does not have a necessary material ({materialId})."
+                    );
+                }
 
-            if (materialItem.RequiredBlockIndex > context.BlockIndex)
-            {
-                throw new RequiredBlockIndexException(
-                    $"{addressesHex}Aborted as the material ({materialId}) is not available yet; it will be available at the block #{materialItem.RequiredBlockIndex}."
-                );
-            }
+                if (materialItem.RequiredBlockIndex > context.BlockIndex)
+                {
+                    throw new RequiredBlockIndexException(
+                        $"{addressesHex}Aborted as the material ({materialId}) is not available yet; it will be available at the block #{materialItem.RequiredBlockIndex}."
+                    );
+                }
 
-            if (!(materialItem is Equipment materialEquipment))
-            {
-                throw new InvalidCastException(
-                    $"{addressesHex}Aborted as the material item is not an {nameof(Equipment)}, but {materialItem.GetType().Name}."
-                );
-            }
+                if (!(materialItem is Equipment materialEquipment))
+                {
+                    throw new InvalidCastException(
+                        $"{addressesHex}Aborted as the material item is not an {nameof(Equipment)}, but {materialItem.GetType().Name}."
+                    );
+                }
 
-            if (enhancementEquipment.ItemId == materialId)
-            {
-                throw new InvalidMaterialException(
-                    $"{addressesHex}Aborted as an equipment to enhance ({materialId}) was used as a material too."
-                );
-            }
+                if (materials.Contains(materialEquipment))
+                {
+                    throw new DuplicateMaterialException(
+                        $"{addressesHex}Aborted as the same material was used more than once: {materialEquipment}"
+                    );
+                }
 
-            if (materialEquipment.ItemSubType != enhancementEquipment.ItemSubType)
-            {
-                // Invalid ItemSubType
-                throw new InvalidMaterialException(
-                    $"{addressesHex}Aborted as the material item is not a {enhancementEquipment.ItemSubType}, but {materialEquipment.ItemSubType}."
-                );
-            }
+                if (enhancementEquipment.ItemId == materialId)
+                {
+                    throw new InvalidMaterialException(
+                        $"{addressesHex}Aborted as an equipment to enhance ({materialId}) was used as a material too."
+                    );
+                }
 
-            if (materialEquipment.Grade != enhancementEquipment.Grade)
-            {
-                // Invalid Grade
-                throw new InvalidMaterialException(
-                    $"{addressesHex}Aborted as grades of the equipment to enhance ({enhancementEquipment.Grade}) and a material ({materialEquipment.Grade}) does not match."
-                );
-            }
+                if (materialEquipment.ItemSubType != enhancementEquipment.ItemSubType)
+                {
+                    // Invalid ItemSubType
+                    throw new InvalidMaterialException(
+                        $"{addressesHex}Aborted as the material item is not a {enhancementEquipment.ItemSubType}, but {materialEquipment.ItemSubType}."
+                    );
+                }
 
-            if (materialEquipment.level != enhancementEquipment.level)
-            {
-                // Invalid level
-                throw new InvalidMaterialException(
-                    $"{addressesHex}Aborted as levels of the equipment to enhance ({enhancementEquipment.level}) and a material ({materialEquipment.level}) does not match."
-                );
+                if (materialEquipment.Grade != enhancementEquipment.Grade)
+                {
+                    // Invalid Grade
+                    throw new InvalidMaterialException(
+                        $"{addressesHex}Aborted as grades of the equipment to enhance ({enhancementEquipment.Grade}) and a material ({materialEquipment.Grade}) does not match."
+                    );
+                }
+
+                if (materialEquipment.level != enhancementEquipment.level)
+                {
+                    // Invalid level
+                    throw new InvalidMaterialException(
+                        $"{addressesHex}Aborted as levels of the equipment to enhance ({enhancementEquipment.level}) and a material ({materialEquipment.level}) does not match."
+                    );
+                }
+                sw.Stop();
+                Log.Verbose("{AddressesHex}ItemEnhancement Get Material: {Elapsed}", addressesHex, sw.Elapsed);
+                sw.Restart();
+                materialEquipment.Unequip();
+                materials.Add(materialEquipment);
             }
-            sw.Stop();
-            Log.Verbose("{AddressesHex}ItemEnhancement Get Material: {Elapsed}", addressesHex, sw.Elapsed);
-            sw.Restart();
-            materialEquipment.Unequip();
 
             enhancementEquipment.Unequip();
 
@@ -240,9 +218,12 @@ namespace Nekoyume.Action
             Log.Verbose("{AddressesHex}ItemEnhancement Upgrade Equipment: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();
 
-            result.gold = requiredNCG;
+            result.gold = 0;
 
-            avatarState.inventory.RemoveNonFungibleItem(materialId);
+            foreach (var material in materials)
+            {
+                avatarState.inventory.RemoveNonFungibleItem(material);
+            }
             sw.Stop();
             Log.Verbose("{AddressesHex}ItemEnhancement Remove Materials: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();
@@ -250,7 +231,7 @@ namespace Nekoyume.Action
             result.id = mail.id;
 
             avatarState.inventory.RemoveNonFungibleItem(enhancementEquipment);
-            avatarState.UpdateV4(mail, ctx.BlockIndex);
+            avatarState.Update(mail);
             avatarState.UpdateFromItemEnhancement(enhancementEquipment);
 
             var materialSheet = states.GetSheet<MaterialItemSheet>();
@@ -276,10 +257,18 @@ namespace Nekoyume.Action
                 var dict = new Dictionary<string, IValue>
                 {
                     ["itemId"] = itemId.Serialize(),
-                    ["materialId"] = materialId.Serialize(),
+                    ["materialIds"] = materialIds
+                        .OrderBy(i => i)
+                        .Select(g => g.Serialize())
+                        .Serialize(),
                     ["avatarAddress"] = avatarAddress.Serialize(),
-                    ["slotIndex"] = slotIndex.Serialize(),
                 };
+
+                // slotIndex가 포함되지 않은채 나간 버전과 호환을 위해, 0번째 슬롯을 쓰는 경우엔 보내지 않습니다.
+                if (slotIndex != 0)
+                {
+                    dict["slotIndex"] = slotIndex.Serialize();
+                }
 
                 return dict.ToImmutableDictionary();
             }
@@ -288,32 +277,12 @@ namespace Nekoyume.Action
         protected override void LoadPlainValueInternal(IImmutableDictionary<string, IValue> plainValue)
         {
             itemId = plainValue["itemId"].ToGuid();
-            materialId = plainValue["materialId"].ToGuid();
+            materialIds = plainValue["materialIds"].ToList(StateExtensions.ToGuid);
             avatarAddress = plainValue["avatarAddress"].ToAddress();
             if (plainValue.TryGetValue((Text) "slotIndex", out var value))
             {
                 slotIndex = value.ToInteger();
             }
-        }
-
-        public static BigInteger GetRequiredNCG(EnhancementCostSheet costSheet, int grade, int level)
-        {
-            var row = costSheet
-                .OrderedList
-                .FirstOrDefault(x => x.Grade == grade && x.Level == level);
-
-            return row?.Cost ?? 0;
-        }
-
-        public static Equipment UpgradeEquipment(Equipment equipment)
-        {
-            equipment.LevelUp();
-            return equipment;
-        }
-
-        public static int GetRequiredAp()
-        {
-            return GameConfig.EnhanceEquipmentCostAP;
         }
     }
 }
