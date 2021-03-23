@@ -19,6 +19,7 @@ using Nekoyume.Model.State;
 using TentuPlay.Api;
 using Nekoyume.Model.Quest;
 using Nekoyume.State.Modifiers;
+using Nekoyume.State.Subjects;
 using Nekoyume.TableData;
 using UnityEngine;
 
@@ -198,7 +199,7 @@ namespace Nekoyume.BlockChain
 
         private void DailyReward()
         {
-            _renderer.EveryRender<DailyReward>()
+            _renderer.EveryRender<DailyReward3>()
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(eval =>
@@ -219,7 +220,7 @@ namespace Nekoyume.BlockChain
                         var itemCount = eval.Action.dailyRewardResult.materials.First().Value;
                         LocalLayerModifier.RemoveItem(avatarAddress, itemId, itemCount);
                         LocalLayerModifier.AddNewAttachmentMail(avatarAddress, eval.Action.dailyRewardResult.id);
-                        WidgetHandler.Instance.Menu.SetActiveActionPointLoading(false);
+                        GameConfigStateSubject.IsChargingActionPoint.SetValueAndForceNotify(false);
                     }
 
                 }).AddTo(_disposables);

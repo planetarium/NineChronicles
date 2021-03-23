@@ -6,6 +6,7 @@ using Libplanet;
 using Nekoyume.Action;
 using Nekoyume.Model.Item;
 using Nekoyume.State;
+using Nekoyume.State.Subjects;
 using Nekoyume.UI;
 using UniRx;
 using UnityEngine;
@@ -107,7 +108,7 @@ namespace Nekoyume.BlockChain
 
         private void DailyReward()
         {
-            _renderer.EveryUnrender<DailyReward>()
+            _renderer.EveryUnrender<DailyReward3>()
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseDailyReward)
@@ -191,7 +192,7 @@ namespace Nekoyume.BlockChain
             UpdateCurrentAvatarState(eval);
         }
 
-        private void ResponseDailyReward(ActionBase.ActionEvaluation<DailyReward> eval)
+        private void ResponseDailyReward(ActionBase.ActionEvaluation<DailyReward3> eval)
         {
             if (!(eval.Exception is null))
             {
@@ -201,11 +202,12 @@ namespace Nekoyume.BlockChain
             var avatarAddress = eval.Action.avatarAddress;
             var itemId = eval.Action.dailyRewardResult.materials.First().Key.ItemId;
             var itemCount = eval.Action.dailyRewardResult.materials.First().Value;
-
             LocalLayerModifier.AddItem(avatarAddress, itemId, itemCount);
+            var avatarState = eval.OutputStates.GetAvatarState(avatarAddress);
+            ReactiveAvatarState.DailyRewardReceivedIndex.SetValueAndForceNotify(
+                avatarState.dailyRewardReceivedIndex);
+            GameConfigStateSubject.IsChargingActionPoint.SetValueAndForceNotify(false);
             UpdateCurrentAvatarState(eval);
-
-            WidgetHandler.Instance.Menu.SetActiveActionPointLoading(true);
         }
 
         private void ResponseUnrenderItemEnhancement(ActionBase.ActionEvaluation<ItemEnhancement5> eval)

@@ -283,20 +283,20 @@ namespace Nekoyume.BlockChain
                 .DoOnError(e => HandleException(action.Id, e)); // Last() is for completion
         }
 
-        public IObservable<ActionBase.ActionEvaluation<DailyReward>> DailyReward()
+        public IObservable<ActionBase.ActionEvaluation<DailyReward3>> DailyReward()
         {
             // NOTE: 이곳에서 하는 것이 바람직 하지만, 연출 타이밍을 위해 밖에서 한다.
             // var avatarAddress = States.Instance.CurrentAvatarState.address;
             // LocalLayerModifier.ModifyAvatarDailyRewardReceivedIndex(avatarAddress, true);
             // LocalLayerModifier.ModifyAvatarActionPoint(avatarAddress, GameConfig.ActionPointMax);
 
-            var action = new DailyReward
+            var action = new DailyReward3
             {
                 avatarAddress = States.Instance.CurrentAvatarState.address,
             };
             ProcessAction(action);
 
-            return _renderer.EveryRender<DailyReward>()
+            return _renderer.EveryRender<DailyReward3>()
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .Take(1)
                 .Last()

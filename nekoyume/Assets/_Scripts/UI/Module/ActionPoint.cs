@@ -54,6 +54,8 @@ namespace Nekoyume.UI.Module
             GameConfigStateSubject.GameConfigState
                 .Subscribe(state => sliderAnimator.SetMaxValue(state.ActionPointMax))
                 .AddTo(gameObject);
+
+            GameConfigStateSubject.IsChargingActionPoint.Subscribe(SetActiveLoading).AddTo(gameObject);
         }
 
         protected override void OnEnable()
@@ -73,6 +75,7 @@ namespace Nekoyume.UI.Module
                 .AddTo(_disposables);
 
             OnSliderChange();
+            SetActiveLoading(GameConfigStateSubject.IsChargingActionPoint.Value);
         }
 
         protected override void OnDisable()
@@ -121,7 +124,7 @@ namespace Nekoyume.UI.Module
             eventTrigger.enabled = value;
         }
 
-        public void SetActiveLoading(bool value)
+        private void SetActiveLoading(bool value)
         {
             loading.SetActive(value);
             text.enabled = !value;
