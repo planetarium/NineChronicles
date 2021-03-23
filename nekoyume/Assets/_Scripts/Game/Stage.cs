@@ -563,6 +563,7 @@ namespace Nekoyume.Game
             _battleResultModel.StageID = log.stageId;
             avatarState.worldInformation.TryGetLastClearedStageId(out var lasStageId);
             _battleResultModel.LastClearedStageId = lasStageId;
+            _battleResultModel.IsClear = log.IsClear;
 
             if (isExitReserved)
             {

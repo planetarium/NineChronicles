@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Controller;
+using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -24,16 +25,23 @@ namespace Nekoyume.UI
         private int _playTimeRef;
         private int _finishRef;
         private bool _isPlaying;
+        private IDisposable _onClickDispose = null;
 
         public Button NextButton => button;
 
-        protected override void Awake()
-        {
-            button.onClick.AddListener(OnClick);
-        }
-
         public void Play(List<ITutorialData> datas, int presetId, System.Action callback)
         {
+            if(!(_onClickDispose is null))
+            {
+                _onClickDispose.Dispose();
+                _onClickDispose = null;
+            }
+
+            _onClickDispose = button.OnClickAsObservable()
+                .ThrottleFirst(TimeSpan.FromSeconds(playTime))
+                .Subscribe(_ => OnClick())
+                .AddTo(gameObject);
+
             if (_isPlaying)
             {
                 return;
@@ -72,6 +80,8 @@ namespace Nekoyume.UI
 
         public void Stop(System.Action callback = null)
         {
+            _onClickDispose.Dispose();
+            _onClickDispose = null;
             _finishRef = 0;
             _playTimeRef = 0;
             _isPlaying = true;

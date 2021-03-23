@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
+using mixpanel;
 using Nekoyume.L10n;
-using Nekoyume.State;
 using UnityEngine;
 
 namespace Nekoyume.UI
@@ -27,6 +27,8 @@ namespace Nekoyume.UI
         private readonly List<int> _playIdHistory = new List<int>();
 
         public int CurrentlyPlayingId { get; private set; }
+
+        private readonly List<int> _mixpanelTargets = new List<int>() { 1, 2, 6, 11, 49 };
 
         public TutorialController(IEnumerable<Widget> widgets)
         {
@@ -160,6 +162,15 @@ namespace Nekoyume.UI
 
         public void SaveTutorialProgress(int id)
         {
+            if (_mixpanelTargets.Exists(x => x == id))
+            {
+                var props = new Value
+                {
+                    ["Id"] = id,
+                };
+                Mixpanel.Track("Unity/Tutorial progress", props);
+            }
+
             var prefsKey = $"TUTORIAL_PROGRESS";
             PlayerPrefs.SetInt(prefsKey, id);
             Debug.LogWarning($"Saved tutorial progress : {id}");
