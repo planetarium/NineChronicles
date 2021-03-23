@@ -16,6 +16,7 @@ using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
 using System.Collections.Generic;
+using Nekoyume.State.Subjects;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI
@@ -171,7 +172,6 @@ namespace Nekoyume.UI
             btnShop.Update();
             btnRanking.Update();
             btnMimisbrunnr.Update();
-            SetActiveActionPointLoading(false);
 
             var addressHax = ReactiveAvatarState.Address.Value.ToHex();
             var firstOpenCombinationKey = string.Format(FirstOpenCombinationKeyFormat, addressHax);
@@ -547,10 +547,5 @@ namespace Nekoyume.UI
 
         public void TutorialActionClickGuidedQuestWorldStage2() =>
             HackAndSlash(GuidedQuest.WorldQuest?.Goal ?? 4);
-
-        public void SetActiveActionPointLoading(bool value)
-        {
-            actionPoint.SetActiveLoading(value);
-        }
     }
 }
