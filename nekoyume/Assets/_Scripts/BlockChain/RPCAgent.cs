@@ -108,6 +108,7 @@ namespace Nekoyume.BlockChain
             _lastTipChangedAt = DateTimeOffset.UtcNow;
             _hub = StreamingHubClient.Connect<IActionEvaluationHub, IActionEvaluationHubReceiver>(_channel, this);
             _service = MagicOnionClient.Create<IBlockChainService>(_channel);
+            OnRenderBlock(null, _service.GetTip().ResponseAsync.Result);
 
             _genesis = BlockManager.ImportBlock(options.GenesisBlockPath ?? BlockManager.GenesisBlockPath);
             var appProtocolVersion = options.AppProtocolVersion is null
