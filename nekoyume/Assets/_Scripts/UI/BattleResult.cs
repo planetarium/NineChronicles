@@ -38,6 +38,7 @@ namespace Nekoyume.UI
             public int ClearedWaveNumber;
             public int ActionPoint;
             public int LastClearedStageId;
+            public bool IsClear;
 
             public IReadOnlyList<CountableItem> Rewards => _rewards;
 
@@ -175,7 +176,7 @@ namespace Nekoyume.UI
         {
             _IsAlreadyOut = true;
             AudioController.PlayClick();
-            if (SharedModel.State == BattleLog.Result.Win)
+            if (SharedModel.IsClear)
             {
                 yield return CoDialog(SharedModel.StageID);
             }
@@ -515,13 +516,13 @@ namespace Nekoyume.UI
                     e => ActionRenderHandler.BackToMain(false, e));
         }
 
-        public void NextStage(ActionBase.ActionEvaluation<HackAndSlash> eval)
+        public void NextStage(ActionBase.ActionEvaluation<HackAndSlash4> eval)
         {
             Debug.Log("NextStage From ResponseHackAndSlash");
             StartCoroutine(CoGoToNextStageClose(eval));
         }
 
-        private IEnumerator CoGoToNextStageClose(ActionBase.ActionEvaluation<HackAndSlash> eval)
+        private IEnumerator CoGoToNextStageClose(ActionBase.ActionEvaluation<HackAndSlash4> eval)
         {
             if (Find<Menu>().IsActive())
             {
@@ -534,12 +535,12 @@ namespace Nekoyume.UI
             Close();
         }
 
-        public void NextMimisbrunnrStage(ActionBase.ActionEvaluation<MimisbrunnrBattle> eval)
+        public void NextMimisbrunnrStage(ActionBase.ActionEvaluation<MimisbrunnrBattle2> eval)
         {
             Debug.Log("NextStage From ResponseHackAndSlash");
             StartCoroutine(CoGoToNextMimisbrunnrStageClose(eval));
         }
-        private IEnumerator CoGoToNextMimisbrunnrStageClose(ActionBase.ActionEvaluation<MimisbrunnrBattle> eval)
+        private IEnumerator CoGoToNextMimisbrunnrStageClose(ActionBase.ActionEvaluation<MimisbrunnrBattle2> eval)
         {
             if (Find<Menu>().IsActive())
             {
