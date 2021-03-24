@@ -20,8 +20,7 @@
 
     public class BuyMultipleTest
     {
-        private readonly Address _sellerAgentAddress;
-        private readonly Address _sellerAvatarAddress;
+        private readonly Dictionary<AvatarState, AgentState> _sellerAgentStateMap;
         private readonly Address _buyerAgentAddress;
         private readonly Address _buyerAvatarAddress;
         private readonly AvatarState _buyerAvatarState;
@@ -49,28 +48,12 @@
             var currency = new Currency("NCG", 2, minters: null);
             _goldCurrencyState = new GoldCurrencyState(currency);
 
-            _sellerAgentAddress = new PrivateKey().ToAddress();
-            var sellerAgentState = new AgentState(_sellerAgentAddress);
-            _sellerAvatarAddress = new PrivateKey().ToAddress();
-            var rankingMapAddress = new PrivateKey().ToAddress();
-            var sellerAvatarState = new AvatarState(
-                _sellerAvatarAddress,
-                _sellerAgentAddress,
-                0,
-                _tableSheets.GetAvatarSheets(),
-                new GameConfigState(),
-                rankingMapAddress)
-            {
-                worldInformation = new WorldInformation(
-                    0,
-                    _tableSheets.WorldSheet,
-                    GameConfig.RequireClearedStageLevel.ActionsInShop),
-            };
-            sellerAgentState.avatarAddresses[0] = _sellerAvatarAddress;
+            _sellerAgentStateMap = new Dictionary<AvatarState, AgentState>();
 
             _buyerAgentAddress = new PrivateKey().ToAddress();
             var buyerAgentState = new AgentState(_buyerAgentAddress);
             _buyerAvatarAddress = new PrivateKey().ToAddress();
+            var rankingMapAddress = new PrivateKey().ToAddress();
             _buyerAvatarState = new AvatarState(
                 _buyerAvatarAddress,
                 _buyerAgentAddress,
@@ -91,8 +74,6 @@
             _initialState = _initialState
                 .SetState(GoldCurrencyState.Address, _goldCurrencyState.Serialize())
                 .SetState(Addresses.Shop, shopState.Serialize())
-                .SetState(_sellerAgentAddress, sellerAgentState.Serialize())
-                .SetState(_sellerAvatarAddress, sellerAvatarState.Serialize())
                 .SetState(_buyerAgentAddress, buyerAgentState.Serialize())
                 .SetState(_buyerAvatarAddress, _buyerAvatarState.Serialize())
                 .MintAsset(_buyerAgentAddress, _goldCurrencyState.Currency * 100);
@@ -106,6 +87,8 @@
                 {
                     ItemType = ItemType.Equipment,
                     ItemId = Guid.NewGuid(),
+                    SellerAgentAddress = new PrivateKey().ToAddress(),
+                    SellerAvatarAddress = new PrivateKey().ToAddress(),
                     RequiredBlockIndex = Sell.ExpiredBlockIndex,
                     Buy = true,
                     Price = 10,
@@ -115,6 +98,8 @@
                 {
                     ItemType = ItemType.Costume,
                     ItemId = Guid.NewGuid(),
+                    SellerAgentAddress = new PrivateKey().ToAddress(),
+                    SellerAvatarAddress = new PrivateKey().ToAddress(),
                     RequiredBlockIndex = Sell.ExpiredBlockIndex,
                     Buy = false,
                     Price = 20,
@@ -124,6 +109,8 @@
                 {
                     ItemType = ItemType.Costume,
                     ItemId = Guid.NewGuid(),
+                    SellerAgentAddress = new PrivateKey().ToAddress(),
+                    SellerAvatarAddress = new PrivateKey().ToAddress(),
                     RequiredBlockIndex = 0,
                     Buy = true,
                     Price = 30,
@@ -136,16 +123,18 @@
         [MemberData(nameof(GetExecuteMemberData))]
         public void Execute(params ShopItemData[] productDatas)
         {
-            var sellerAvatarState = _initialState.GetAvatarState(_sellerAvatarAddress);
             var buyerAvatarState = _initialState.GetAvatarState(_buyerAvatarAddress);
 
             var goldCurrency = _initialState.GetGoldCurrency();
             var shopState = _initialState.GetShopState();
             var buyCount = 0;
-            var itemIdsToBuy = new List<Guid>();
+            var itemsToBuy = new List<ShopItem>();
 
             foreach (var product in productDatas)
             {
+                var (sellerAvatarState, sellerAgentState) =
+                    CreateAvatarState(product.SellerAgentAddress, product.SellerAvatarAddress);
+
                 INonFungibleItem nonFungibleItem;
                 if (product.ItemType == ItemType.Equipment)
                 {
@@ -171,8 +160,8 @@
                 var shopItemId = Guid.NewGuid();
 
                 var shopItem = new ShopItem(
-                    _sellerAgentAddress,
-                    _sellerAvatarAddress,
+                    sellerAgentState.address,
+                    sellerAvatarState.address,
                     shopItemId,
                     new FungibleAssetValue(_goldCurrencyState.Currency, product.Price, 0),
                     product.RequiredBlockIndex,
@@ -182,20 +171,31 @@
                 if (product.Buy)
                 {
                     ++buyCount;
-                    itemIdsToBuy.Add(shopItemId);
+                    itemsToBuy.Add(shopItem);
                 }
             }
 
             Assert.NotNull(shopState.Products);
             Assert.Equal(3, shopState.Products.Count);
 
-            IAccountStateDelta previousStates = _initialState
-                .SetState(_sellerAvatarAddress, sellerAvatarState.Serialize())
+            _initialState = _initialState
                 .SetState(_buyerAvatarAddress, buyerAvatarState.Serialize())
                 .SetState(Addresses.Shop, shopState.Serialize());
 
-            var buyerGold = previousStates.GetBalance(_buyerAgentAddress, goldCurrency);
             var priceData = new PriceData(goldCurrency);
+
+            foreach (var avatarState in _sellerAgentStateMap.Keys)
+            {
+                var agentState = _sellerAgentStateMap[avatarState];
+                priceData.TaxedPriceSum[agentState.address] = new FungibleAssetValue(goldCurrency, 0, 0);
+
+                _initialState = _initialState
+                    .SetState(avatarState.address, avatarState.Serialize());
+            }
+
+            IAccountStateDelta previousStates = _initialState;
+
+            var buyerGold = previousStates.GetBalance(_buyerAgentAddress, goldCurrency);
             var priceSumData = productDatas
                 .Where(i => i.Buy)
                 .Aggregate(priceData, (priceSum, next) =>
@@ -204,7 +204,9 @@
                     var tax = price.DivRem(100, out _) * Buy.TaxRate;
                     var taxedPrice = price - tax;
                     priceData.TaxSum += tax;
-                    priceData.TaxedPriceSum += taxedPrice;
+
+                    var prevSum = priceData.TaxedPriceSum[next.SellerAgentAddress];
+                    priceData.TaxedPriceSum[next.SellerAgentAddress] = prevSum + taxedPrice;
                     priceData.PriceSum += price;
                     return priceData;
                 });
@@ -212,9 +214,7 @@
             var buyMultipleAction = new BuyMultiple
             {
                 buyerAvatarAddress = _buyerAvatarAddress,
-                productIds = itemIdsToBuy,
-                sellerAgentAddress = _sellerAgentAddress,
-                sellerAvatarAddress = _sellerAvatarAddress,
+                products = itemsToBuy,
             };
             var nextState = buyMultipleAction.Execute(new ActionContext()
             {
@@ -244,8 +244,13 @@
             goldCurrency = nextState.GetGoldCurrency();
             var nextGoldCurrencyGold = nextState.GetBalance(Addresses.GoldCurrency, goldCurrency);
             Assert.Equal(priceSumData.TaxSum, nextGoldCurrencyGold);
-            var nextSellerGold = nextState.GetBalance(_sellerAgentAddress, goldCurrency);
-            Assert.Equal(priceSumData.TaxedPriceSum, nextSellerGold);
+
+            foreach (var product in productDatas)
+            {
+                var nextSellerGold = nextState.GetBalance(product.SellerAgentAddress, goldCurrency);
+                Assert.Equal(priceSumData.TaxedPriceSum[product.SellerAgentAddress], nextSellerGold);
+            }
+
             var nextBuyerGold = nextState.GetBalance(_buyerAgentAddress, goldCurrency);
             Assert.Equal(buyerGold - priceSumData.PriceSum, nextBuyerGold);
 
@@ -255,12 +260,29 @@
         [Fact]
         public void ExecuteThrowInvalidAddressException()
         {
+            var shopState = _initialState.GetShopState();
+            var costume = ItemFactory.CreateCostume(
+                   _tableSheets.CostumeItemSheet.First,
+                   Guid.NewGuid());
+            shopState.Register(new ShopItem(
+                _buyerAgentAddress,
+                _buyerAvatarAddress,
+                Guid.NewGuid(),
+                new FungibleAssetValue(_goldCurrencyState.Currency, 100, 0),
+                100,
+                costume));
+
+            _initialState = _initialState
+                .SetState(Addresses.Shop, shopState.Serialize());
+
+            shopState = _initialState.GetShopState();
+            var products = shopState.Products.Values.ToList();
+            Assert.NotEmpty(products);
+
             var action = new BuyMultiple
             {
                 buyerAvatarAddress = _buyerAvatarAddress,
-                productIds = new List<Guid>(),
-                sellerAgentAddress = _buyerAgentAddress,
-                sellerAvatarAddress = _buyerAvatarAddress,
+                products = products,
             };
 
             Assert.Throws<InvalidAddressException>(() => action.Execute(new ActionContext()
@@ -279,9 +301,7 @@
             var action = new BuyMultiple
             {
                 buyerAvatarAddress = _buyerAvatarAddress,
-                productIds = new List<Guid>(),
-                sellerAgentAddress = _sellerAgentAddress,
-                sellerAvatarAddress = _sellerAvatarAddress,
+                products = new List<ShopItem>(),
             };
 
             Assert.Throws<FailedLoadStateException>(() => action.Execute(new ActionContext()
@@ -310,9 +330,7 @@
             var action = new BuyMultiple
             {
                 buyerAvatarAddress = _buyerAvatarAddress,
-                productIds = new List<Guid>(),
-                sellerAgentAddress = _sellerAgentAddress,
-                sellerAvatarAddress = _sellerAvatarAddress,
+                products = new List<ShopItem>(),
             };
 
             Assert.Throws<NotEnoughClearedStageLevelException>(() => action.Execute(new ActionContext()
@@ -331,12 +349,16 @@
             var shopState = _initialState.GetShopState();
             Assert.Empty(shopState.Products);
 
+            var sellerAvatarAddress = new PrivateKey().ToAddress();
+            var sellerAgentAddress = new PrivateKey().ToAddress();
+            var (avatarState, agentState) = CreateAvatarState(sellerAgentAddress, sellerAvatarAddress);
+
             var costume = ItemFactory.CreateCostume(
                 _tableSheets.CostumeItemSheet.First,
                 Guid.NewGuid());
             shopState.Register(new ShopItem(
-                _sellerAgentAddress,
-                _sellerAvatarAddress,
+                sellerAgentAddress,
+                sellerAvatarAddress,
                 Guid.NewGuid(),
                 new FungibleAssetValue(_goldCurrencyState.Currency, 100, 0),
                 100,
@@ -348,16 +370,14 @@
             shopState = _initialState.GetShopState();
             Assert.NotEmpty(shopState.Products);
 
-            var productIds = shopState.Products.Keys.ToList();
-            Assert.NotEmpty(productIds);
-            productIds.Add(default);
+            var products = shopState.Products.Values.ToList();
+            Assert.NotEmpty(products);
+            products.Add(default);
 
             var action = new BuyMultiple
             {
                 buyerAvatarAddress = _buyerAvatarAddress,
-                productIds = productIds,
-                sellerAgentAddress = _sellerAgentAddress,
-                sellerAvatarAddress = _sellerAvatarAddress,
+                products = products,
             };
 
             Assert.Throws<ItemDoesNotExistException>(() => action.Execute(new ActionContext()
@@ -373,6 +393,10 @@
         [Fact]
         public void ExecuteThrowItemDoesNotExistExceptionBySellerAvatar()
         {
+            var sellerAvatarAddress = new PrivateKey().ToAddress();
+            var sellerAgentAddress = new PrivateKey().ToAddress();
+            var (avatarState, agentState) = CreateAvatarState(sellerAgentAddress, sellerAvatarAddress);
+
             IAccountStateDelta previousStates = _initialState;
             var shopState = previousStates.GetShopState();
 
@@ -381,8 +405,8 @@
                 Guid.NewGuid(),
                 100);
             shopState.Register(new ShopItem(
-                _sellerAgentAddress,
-                _sellerAvatarAddress,
+                sellerAgentAddress,
+                sellerAvatarAddress,
                 Guid.NewGuid(),
                 new FungibleAssetValue(_goldCurrencyState.Currency, 100, 0),
                 100,
@@ -401,9 +425,7 @@
             var action = new BuyMultiple
             {
                 buyerAvatarAddress = _buyerAvatarAddress,
-                productIds = shopState.Products.Keys,
-                sellerAgentAddress = _sellerAgentAddress,
-                sellerAvatarAddress = _sellerAvatarAddress,
+                products = shopState.Products.Values,
             };
 
             Assert.Throws<ItemDoesNotExistException>(() => action.Execute(new ActionContext()
@@ -422,9 +444,7 @@
             var action = new BuyMultiple
             {
                 buyerAvatarAddress = _buyerAvatarAddress,
-                productIds = new List<Guid>(),
-                sellerAgentAddress = _sellerAgentAddress,
-                sellerAvatarAddress = _sellerAvatarAddress,
+                products = new List<ShopItem>(),
             };
 
             Assert.Throws<ItemDoesNotExistException>(() => action.Execute(new ActionContext()
@@ -442,13 +462,17 @@
         {
             var shopState = _initialState.GetShopState();
 
+            var sellerAvatarAddress = new PrivateKey().ToAddress();
+            var sellerAgentAddress = new PrivateKey().ToAddress();
+            var (avatarState, agentState) = CreateAvatarState(sellerAgentAddress, sellerAvatarAddress);
+
             var equipment = ItemFactory.CreateItemUsable(
                 _tableSheets.EquipmentItemSheet.First,
                 Guid.NewGuid(),
                 1);
             shopState.Register(new ShopItem(
-                _sellerAgentAddress,
-                _sellerAvatarAddress,
+                sellerAgentAddress,
+                sellerAvatarAddress,
                 Guid.NewGuid(),
                 new FungibleAssetValue(_goldCurrencyState.Currency, 1, 0),
                 100,
@@ -458,8 +482,8 @@
                 _tableSheets.CostumeItemSheet.First,
                 Guid.NewGuid());
             shopState.Register(new ShopItem(
-                _sellerAgentAddress,
-                _sellerAvatarAddress,
+                sellerAgentAddress,
+                sellerAvatarAddress,
                 Guid.NewGuid(),
                 new FungibleAssetValue(_goldCurrencyState.Currency, 100, 0),
                 100,
@@ -470,8 +494,8 @@
             shopState = _initialState.GetShopState();
             Assert.NotEmpty(shopState.Products);
 
-            var productIds = shopState.Products.Keys;
-            Assert.NotEmpty(productIds);
+            var products = shopState.Products.Values;
+            Assert.NotEmpty(products);
 
             var balance = _initialState.GetBalance(_buyerAgentAddress, _goldCurrencyState.Currency);
             _initialState = _initialState.BurnAsset(_buyerAgentAddress, balance);
@@ -479,9 +503,7 @@
             var action = new BuyMultiple
             {
                 buyerAvatarAddress = _buyerAvatarAddress,
-                productIds = productIds,
-                sellerAgentAddress = _sellerAgentAddress,
-                sellerAvatarAddress = _sellerAvatarAddress,
+                products = products,
             };
 
             Assert.Throws<InsufficientBalanceException>(() => action.Execute(new ActionContext()
@@ -497,6 +519,10 @@
         [Fact]
         public void ExecuteThrowShopItemExpiredException()
         {
+            var sellerAvatarAddress = new PrivateKey().ToAddress();
+            var sellerAgentAddress = new PrivateKey().ToAddress();
+            var (avatarState, agentState) = CreateAvatarState(sellerAgentAddress, sellerAvatarAddress);
+
             IAccountStateDelta previousStates = _initialState;
             var shopState = previousStates.GetShopState();
 
@@ -506,8 +532,8 @@
                 Guid.NewGuid(),
                 10);
             shopState.Register(new ShopItem(
-                _sellerAgentAddress,
-                _sellerAvatarAddress,
+                sellerAgentAddress,
+                sellerAvatarAddress,
                 productId,
                 new FungibleAssetValue(_goldCurrencyState.Currency, 100, 0),
                 10,
@@ -522,9 +548,7 @@
             var action = new BuyMultiple
             {
                 buyerAvatarAddress = _buyerAvatarAddress,
-                productIds = shopState.Products.Keys,
-                sellerAgentAddress = _sellerAgentAddress,
-                sellerAvatarAddress = _sellerAvatarAddress,
+                products = shopState.Products.Values,
             };
 
             Assert.Throws<ShopItemExpiredException>(() => action.Execute(new ActionContext()
@@ -537,16 +561,44 @@
             );
         }
 
+        private (AvatarState avatarState, AgentState agentState) CreateAvatarState(
+            Address agentAddress, Address avatarAddress)
+        {
+            var agentState = new AgentState(agentAddress);
+            var rankingMapAddress = new PrivateKey().ToAddress();
+
+            var avatarState = new AvatarState(
+                avatarAddress,
+                agentAddress,
+                0,
+                _tableSheets.GetAvatarSheets(),
+                new GameConfigState(),
+                rankingMapAddress)
+            {
+                worldInformation = new WorldInformation(
+                    0,
+                    _tableSheets.WorldSheet,
+                    GameConfig.RequireClearedStageLevel.ActionsInShop),
+            };
+            agentState.avatarAddresses[0] = avatarAddress;
+            _sellerAgentStateMap[avatarState] = agentState;
+
+            _initialState = _initialState
+                .SetState(agentAddress, agentState.Serialize())
+                .SetState(avatarAddress, avatarState.Serialize());
+            return (avatarState, agentState);
+        }
+
         private struct PriceData
         {
             public FungibleAssetValue TaxSum;
-            public FungibleAssetValue TaxedPriceSum;
+            public Dictionary<Address, FungibleAssetValue> TaxedPriceSum;
             public FungibleAssetValue PriceSum;
 
             public PriceData(Currency currency)
             {
                 TaxSum = new FungibleAssetValue(currency, 0, 0);
-                TaxedPriceSum = new FungibleAssetValue(currency, 0, 0);
+                TaxedPriceSum = new Dictionary<Address, FungibleAssetValue>();
                 PriceSum = new FungibleAssetValue(currency, 0, 0);
             }
         }
@@ -556,6 +608,10 @@
             public ItemType ItemType { get; set; }
 
             public Guid ItemId { get; set; }
+
+            public Address SellerAgentAddress { get; set; }
+
+            public Address SellerAvatarAddress { get; set; }
 
             public BigInteger Price { get; set; }
 

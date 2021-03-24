@@ -390,6 +390,9 @@ namespace Nekoyume.Model.State
 
         #region Buy
 
+        public static ShopItem ToShopItem(this IValue serialized) =>
+            new ShopItem((Dictionary) serialized);
+
         public static BuyMultiple.ProductInfo ToProductInfo(this IValue serialized) =>
             new BuyMultiple.ProductInfo((Dictionary) serialized);
 
