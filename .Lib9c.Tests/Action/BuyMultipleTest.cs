@@ -128,7 +128,7 @@
             var goldCurrency = _initialState.GetGoldCurrency();
             var shopState = _initialState.GetShopState();
             var buyCount = 0;
-            var itemsToBuy = new List<ShopItem>();
+            var itemsToBuy = new List<BuyMultiple.PurchaseInfo>();
 
             foreach (var product in productDatas)
             {
@@ -171,7 +171,11 @@
                 if (product.Buy)
                 {
                     ++buyCount;
-                    itemsToBuy.Add(shopItem);
+                    var purchaseInfo = new BuyMultiple.PurchaseInfo(
+                            shopItem.ProductId,
+                            shopItem.SellerAgentAddress,
+                            shopItem.SellerAvatarAddress);
+                    itemsToBuy.Add(purchaseInfo);
                 }
             }
 
@@ -214,7 +218,7 @@
             var buyMultipleAction = new BuyMultiple
             {
                 buyerAvatarAddress = _buyerAvatarAddress,
-                products = itemsToBuy,
+                purchaseInfos = itemsToBuy,
             };
             var nextState = buyMultipleAction.Execute(new ActionContext()
             {
@@ -276,13 +280,18 @@
                 .SetState(Addresses.Shop, shopState.Serialize());
 
             shopState = _initialState.GetShopState();
-            var products = shopState.Products.Values.ToList();
+            var products = shopState.Products.Values
+                .Select(p => new BuyMultiple.PurchaseInfo(
+                    p.ProductId,
+                    p.SellerAgentAddress,
+                    p.SellerAvatarAddress))
+                .ToList();
             Assert.NotEmpty(products);
 
             var action = new BuyMultiple
             {
                 buyerAvatarAddress = _buyerAvatarAddress,
-                products = products,
+                purchaseInfos = products,
             };
 
             Assert.Throws<InvalidAddressException>(() => action.Execute(new ActionContext()
@@ -301,7 +310,7 @@
             var action = new BuyMultiple
             {
                 buyerAvatarAddress = _buyerAvatarAddress,
-                products = new List<ShopItem>(),
+                purchaseInfos = new List<BuyMultiple.PurchaseInfo>(),
             };
 
             Assert.Throws<FailedLoadStateException>(() => action.Execute(new ActionContext()
@@ -330,7 +339,7 @@
             var action = new BuyMultiple
             {
                 buyerAvatarAddress = _buyerAvatarAddress,
-                products = new List<ShopItem>(),
+                purchaseInfos = new List<BuyMultiple.PurchaseInfo>(),
             };
 
             Assert.Throws<NotEnoughClearedStageLevelException>(() => action.Execute(new ActionContext()
@@ -370,24 +379,32 @@
             shopState = _initialState.GetShopState();
             Assert.NotEmpty(shopState.Products);
 
-            var products = shopState.Products.Values.ToList();
+            var products = shopState.Products.Values
+                .Select(p => new BuyMultiple.PurchaseInfo(
+                    p.ProductId,
+                    p.SellerAgentAddress,
+                    p.SellerAvatarAddress))
+                .ToList();
             Assert.NotEmpty(products);
             products.Add(default);
 
             var action = new BuyMultiple
             {
                 buyerAvatarAddress = _buyerAvatarAddress,
-                products = products,
+                purchaseInfos = products,
             };
 
-            Assert.Throws<ItemDoesNotExistException>(() => action.Execute(new ActionContext()
-                {
-                    BlockIndex = 0,
-                    PreviousStates = _initialState,
-                    Random = new TestRandom(),
-                    Signer = _buyerAgentAddress,
-                })
-            );
+            action.Execute(new ActionContext()
+            {
+                BlockIndex = 0,
+                PreviousStates = _initialState,
+                Random = new TestRandom(),
+                Signer = _buyerAgentAddress,
+            });
+
+            var results = action.buyerResult.purchaseResults;
+            var isFailed = results.First(p => p.shopItem is null).errorCode == BuyMultiple.ITEM_DOES_NOT_EXIST;
+            Assert.True(isFailed);
         }
 
         [Fact]
@@ -399,6 +416,7 @@
 
             IAccountStateDelta previousStates = _initialState;
             var shopState = previousStates.GetShopState();
+            var productId = Guid.NewGuid();
 
             var equipment = ItemFactory.CreateItemUsable(
                 _tableSheets.EquipmentItemSheet.First,
@@ -407,7 +425,7 @@
             shopState.Register(new ShopItem(
                 sellerAgentAddress,
                 sellerAvatarAddress,
-                Guid.NewGuid(),
+                productId,
                 new FungibleAssetValue(_goldCurrencyState.Currency, 100, 0),
                 100,
                 equipment));
@@ -418,24 +436,34 @@
             shopState = previousStates.GetShopState();
             Assert.NotEmpty(shopState.Products);
 
-            var (productId, shopItem) = shopState.Products.First();
+            var shopItem = shopState.Products.Values.First();
             Assert.True(shopItem.ExpiredBlockIndex > 0);
             Assert.True(shopItem.ItemUsable.RequiredBlockIndex > 0);
+
+            var products = shopState.Products.Values
+                .Select(p => new BuyMultiple.PurchaseInfo(
+                    p.ProductId,
+                    p.SellerAgentAddress,
+                    p.SellerAvatarAddress))
+                .ToList();
 
             var action = new BuyMultiple
             {
                 buyerAvatarAddress = _buyerAvatarAddress,
-                products = shopState.Products.Values,
+                purchaseInfos = products,
             };
 
-            Assert.Throws<ItemDoesNotExistException>(() => action.Execute(new ActionContext()
-                {
-                    BlockIndex = 0,
-                    PreviousStates = _initialState,
-                    Random = new TestRandom(),
-                    Signer = _buyerAgentAddress,
-                })
-            );
+            action.Execute(new ActionContext()
+            {
+                BlockIndex = 0,
+                PreviousStates = previousStates,
+                Random = new TestRandom(),
+                Signer = _buyerAgentAddress,
+            });
+
+            var result = action.buyerResult.purchaseResults;
+            var isFailed = result.First(r => r.shopItem.ProductId == productId).errorCode == BuyMultiple.ITEM_DOES_NOT_EXIST;
+            Assert.True(isFailed);
         }
 
         [Fact]
@@ -444,7 +472,7 @@
             var action = new BuyMultiple
             {
                 buyerAvatarAddress = _buyerAvatarAddress,
-                products = new List<ShopItem>(),
+                purchaseInfos = new List<BuyMultiple.PurchaseInfo>(),
             };
 
             Assert.Throws<ItemDoesNotExistException>(() => action.Execute(new ActionContext()
@@ -458,7 +486,7 @@
         }
 
         [Fact]
-        public void ExecuteThrowInsufficientBalanceException()
+        public void ExecuteInsufficientBalanceError()
         {
             var shopState = _initialState.GetShopState();
 
@@ -494,7 +522,12 @@
             shopState = _initialState.GetShopState();
             Assert.NotEmpty(shopState.Products);
 
-            var products = shopState.Products.Values;
+            var products = shopState.Products.Values
+                .Select(p => new BuyMultiple.PurchaseInfo(
+                    p.ProductId,
+                    p.SellerAgentAddress,
+                    p.SellerAvatarAddress))
+                .ToList();
             Assert.NotEmpty(products);
 
             var balance = _initialState.GetBalance(_buyerAgentAddress, _goldCurrencyState.Currency);
@@ -503,17 +536,20 @@
             var action = new BuyMultiple
             {
                 buyerAvatarAddress = _buyerAvatarAddress,
-                products = products,
+                purchaseInfos = products,
             };
 
-            Assert.Throws<InsufficientBalanceException>(() => action.Execute(new ActionContext()
-                {
-                    BlockIndex = 0,
-                    PreviousStates = _initialState,
-                    Random = new TestRandom(),
-                    Signer = _buyerAgentAddress,
-                })
-            );
+            action.Execute(new ActionContext()
+            {
+                BlockIndex = 0,
+                PreviousStates = _initialState,
+                Random = new TestRandom(),
+                Signer = _buyerAgentAddress,
+            });
+
+            var results = action.buyerResult.purchaseResults;
+            var isAllFailed = results.Any(r => r.errorCode == BuyMultiple.INSUFFICIENT_BALANCE);
+            Assert.True(isAllFailed);
         }
 
         [Fact]
@@ -544,21 +580,30 @@
             shopState = previousStates.GetShopState();
 
             Assert.True(shopState.Products.ContainsKey(productId));
+            var products = shopState.Products.Values
+                .Select(p => new BuyMultiple.PurchaseInfo(
+                    p.ProductId,
+                    p.SellerAgentAddress,
+                    p.SellerAvatarAddress))
+                .ToList();
 
             var action = new BuyMultiple
             {
                 buyerAvatarAddress = _buyerAvatarAddress,
-                products = shopState.Products.Values,
+                purchaseInfos = products,
             };
 
-            Assert.Throws<ShopItemExpiredException>(() => action.Execute(new ActionContext()
-                {
-                    BlockIndex = 11,
-                    PreviousStates = previousStates,
-                    Random = new TestRandom(),
-                    Signer = _buyerAgentAddress,
-                })
-            );
+            action.Execute(new ActionContext()
+            {
+                BlockIndex = 11,
+                PreviousStates = previousStates,
+                Random = new TestRandom(),
+                Signer = _buyerAgentAddress,
+            });
+
+            var results = action.buyerResult.purchaseResults;
+            var isAllFailed = results.Any(r => r.errorCode == BuyMultiple.SHOPITEM_EXPIRED);
+            Assert.True(isAllFailed);
         }
 
         private (AvatarState avatarState, AgentState agentState) CreateAvatarState(
