@@ -425,7 +425,7 @@ namespace Nekoyume.BlockChain
                 {
                     Widget
                         .Find<SystemPopup>()
-                        .Show(L10nManager.Localize("UI_ERROR"), errorMsg,
+                        .ShowAndQuit(L10nManager.Localize("UI_ERROR"), errorMsg,
                             L10nManager.Localize("UI_OK"), false);
                 });
 
