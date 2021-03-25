@@ -611,10 +611,6 @@ namespace Nekoyume.BlockChain
                             _disposableForBattleEnd = null;
                         });
 
-                var actionFailPopup = Widget.Find<ActionFailPopup>();
-                actionFailPopup.CloseCallback = null;
-                actionFailPopup.Close();
-
                 if (Widget.Find<LoadingScreen>().IsActive())
                 {
                     if (Widget.Find<QuestPreparation>().IsActive())
@@ -668,10 +664,6 @@ namespace Nekoyume.BlockChain
                                 avatarState.questList.completedQuestIds);
                             _disposableForBattleEnd = null;
                         });
-
-                var actionFailPopup = Widget.Find<ActionFailPopup>();
-                actionFailPopup.CloseCallback = null;
-                actionFailPopup.Close();
 
                 if (Widget.Find<LoadingScreen>().IsActive())
                 {
@@ -747,11 +739,7 @@ namespace Nekoyume.BlockChain
                             UpdateWeeklyArenaState(eval);
                             _disposableForBattleEnd = null;
                         });
-
-                var actionFailPopup = Widget.Find<ActionFailPopup>();
-                actionFailPopup.CloseCallback = null;
-                actionFailPopup.Close();
-
+                
                 if (Widget.Find<ArenaBattleLoadingScreen>().IsActive())
                 {
                     Widget.Find<RankingBoard>().GoToStage(eval);
