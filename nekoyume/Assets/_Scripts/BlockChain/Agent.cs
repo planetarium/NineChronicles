@@ -209,7 +209,7 @@ namespace Nekoyume.BlockChain
             }
             catch (InvalidGenesisBlockException)
             {
-                Widget.Find<SystemPopup>().Show("UI_RESET_STORE", "UI_RESET_STORE_CONTENT");
+                Widget.Find<SystemPopup>().ShowAndQuit("UI_RESET_STORE", "UI_RESET_STORE_CONTENT");
             }
 
             if (blocks?.GetState(AuthorizedMinersState.Address) is Dictionary asm)
