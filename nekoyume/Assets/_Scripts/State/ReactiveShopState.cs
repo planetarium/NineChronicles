@@ -39,29 +39,11 @@ namespace Nekoyume.State
                 ShopItems.ItemSubTypeFilter, Dictionary<
                     ShopItems.SortFilter, Dictionary<int, List<ShopItem>>>>>();
 
-        public static void Initialize(ShopState state)
+        public static void Initialize(List<ShopItem> products)
         {
-            if (state is null)
-            {
-                return;
-            }
-
-            var products = state.Products.Values.ToList();
-
             // AgentProducts.
             {
-                var agentProducts = new Dictionary<Address, List<ShopItem>>();
-                foreach (var product in products)
-                {
-                    var agentAddress = product.SellerAgentAddress;
-                    if (!agentProducts.ContainsKey(agentAddress))
-                    {
-                        agentProducts.Add(agentAddress, new List<ShopItem>());
-                    }
-
-                    agentProducts[agentAddress].Add(product);
-                }
-
+                var agentProducts = Game.Game.instance.ShopProducts.Products;
                 var filteredAgentProducts = new Dictionary<
                     Address, Dictionary<
                         ShopItems.ItemSubTypeFilter, Dictionary<

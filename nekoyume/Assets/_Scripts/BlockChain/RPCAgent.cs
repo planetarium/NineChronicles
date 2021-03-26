@@ -209,10 +209,6 @@ namespace Nekoyume.BlockChain
             }
 
             // 상점의 상태를 한 번 동기화 한다.
-            States.Instance.SetShopState(
-                GetState(ShopState.Address) is Bencodex.Types.Dictionary shopDict
-                    ? new ShopState(shopDict)
-                    : new ShopState());
 
             if (GetState(GameConfigState.Address) is Dictionary configDict)
             {

@@ -104,13 +104,6 @@ namespace Nekoyume.BlockChain
             UpdateCurrentAvatarState(avatarState);
         }
 
-        protected void UpdateShopState<T>(ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
-        {
-            States.Instance.SetShopState(new ShopState(
-                (Bencodex.Types.Dictionary) evaluation.OutputStates.GetState(ShopState.Address)
-            ));
-        }
-
         protected void UpdateWeeklyArenaState<T>(ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
         {
             var gameConfigState = States.Instance.GameConfigState;
