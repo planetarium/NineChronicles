@@ -285,7 +285,7 @@ namespace Nekoyume.Game
                 var errorMsg = string.Format(L10nManager.Localize("UI_ERROR_FORMAT"),
                     L10nManager.Localize("BLOCK_DOWNLOAD_FAIL"));
 
-                Widget.Find<SystemPopup>().Show(
+                Widget.Find<SystemPopup>().ShowAndQuit(
                     L10nManager.Localize("UI_ERROR"),
                     errorMsg,
                     L10nManager.Localize("UI_QUIT"),
@@ -310,7 +310,7 @@ namespace Nekoyume.Game
                 return;
             }
 
-            Widget.Find<SystemPopup>().Show(
+            Widget.Find<SystemPopup>().ShowAndQuit(
                 "UI_ERROR",
                 "UI_ERROR_RPC_CONNECTION",
                 "UI_QUIT"
