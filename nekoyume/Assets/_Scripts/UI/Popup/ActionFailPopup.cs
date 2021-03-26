@@ -20,7 +20,11 @@ namespace Nekoyume.UI
             base.Show(L10nManager.Localize("UI_ERROR"), errorMsg,
                 L10nManager.Localize("UI_OK"), false);
             content.text += $"\n{msg}";
-            base.Show();
+#if UNITY_EDITOR
+            CloseCallback = UnityEditor.EditorApplication.ExitPlaymode;
+#else
+            CloseCallback = UnityEngine.Application.Quit;
+#endif
         }
 
         public void Show<T>(string msg) where T : ActionBase

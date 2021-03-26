@@ -19,6 +19,7 @@ using Nekoyume.Model.State;
 using TentuPlay.Api;
 using Nekoyume.Model.Quest;
 using Nekoyume.State.Modifiers;
+using Nekoyume.State.Subjects;
 using Nekoyume.TableData;
 using UnityEngine;
 
@@ -198,7 +199,7 @@ namespace Nekoyume.BlockChain
 
         private void DailyReward()
         {
-            _renderer.EveryRender<DailyReward>()
+            _renderer.EveryRender<DailyReward3>()
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(eval =>
@@ -219,7 +220,7 @@ namespace Nekoyume.BlockChain
                         var itemCount = eval.Action.dailyRewardResult.materials.First().Value;
                         LocalLayerModifier.RemoveItem(avatarAddress, itemId, itemCount);
                         LocalLayerModifier.AddNewAttachmentMail(avatarAddress, eval.Action.dailyRewardResult.id);
-                        WidgetHandler.Instance.Menu.SetActiveActionPointLoading(false);
+                        GameConfigStateSubject.IsChargingActionPoint.SetValueAndForceNotify(false);
                     }
 
                 }).AddTo(_disposables);
@@ -469,16 +470,18 @@ namespace Nekoyume.BlockChain
                 // NOTE: 최종적으로 UpdateCurrentAvatarState()를 호출한다면, 그곳에서 상태를 새로 설정할 것이다.
                 LocalLayerModifier.AddItem(avatarAddress, itemId, false);
                 var format = L10nManager.Localize("NOTIFICATION_SELL_COMPLETE");
-                var shopState = new ShopState((Dictionary) eval.OutputStates.GetState(ShopState.Address));
 
-                var shopItem = shopState.Products.Values.First(r =>
+                var avatarState = new AvatarState((Bencodex.Types.Dictionary) eval.PreviousStates.GetState(avatarAddress));
+                if (avatarState.inventory.TryGetNonFungibleItem(itemId, out Inventory.Item item))
                 {
-                    var nonFungibleItem = r.ItemUsable ?? (INonFungibleItem)r.Costume;
-                    return nonFungibleItem.ItemId == itemId;
-                });
+                    UI.Notification.Push(MailType.Auction, string.Format(format, item.item.GetLocalizedName()));
+                }
+                else
+                {
+                    // exception
+                    Debug.LogError("Failed to get non-fungible item from previous AvatarState.");
+                }
 
-                var itemBase = shopItem.ItemUsable ?? (ItemBase) shopItem.Costume;
-                UI.Notification.Push(MailType.Auction, string.Format(format, itemBase.GetLocalizedName()));
                 UpdateCurrentAvatarState(eval);
             }
         }
@@ -610,10 +613,6 @@ namespace Nekoyume.BlockChain
                             _disposableForBattleEnd = null;
                         });
 
-                var actionFailPopup = Widget.Find<ActionFailPopup>();
-                actionFailPopup.CloseCallback = null;
-                actionFailPopup.Close();
-
                 if (Widget.Find<LoadingScreen>().IsActive())
                 {
                     if (Widget.Find<QuestPreparation>().IsActive())
@@ -667,10 +666,6 @@ namespace Nekoyume.BlockChain
                                 avatarState.questList.completedQuestIds);
                             _disposableForBattleEnd = null;
                         });
-
-                var actionFailPopup = Widget.Find<ActionFailPopup>();
-                actionFailPopup.CloseCallback = null;
-                actionFailPopup.Close();
 
                 if (Widget.Find<LoadingScreen>().IsActive())
                 {
@@ -746,10 +741,6 @@ namespace Nekoyume.BlockChain
                             UpdateWeeklyArenaState(eval);
                             _disposableForBattleEnd = null;
                         });
-
-                var actionFailPopup = Widget.Find<ActionFailPopup>();
-                actionFailPopup.CloseCallback = null;
-                actionFailPopup.Close();
 
                 if (Widget.Find<ArenaBattleLoadingScreen>().IsActive())
                 {

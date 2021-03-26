@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using Bencodex.Types;
 using Libplanet;
@@ -104,6 +105,7 @@ namespace Nekoyume.BlockChain
             UpdateCurrentAvatarState(avatarState);
         }
 
+        [Obsolete("Do not use ActionBase.ActionEvaluation<T>.OutputStates.GetState() method with ShopState.Address or Addresses.Shop.")]
         protected void UpdateShopState<T>(ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
         {
             States.Instance.SetShopState(new ShopState(

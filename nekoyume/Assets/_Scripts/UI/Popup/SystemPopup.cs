@@ -1,5 +1,4 @@
 using Nekoyume.EnumType;
-using UnityEngine;
 using mixpanel;
 
 namespace Nekoyume.UI
@@ -19,12 +18,18 @@ namespace Nekoyume.UI
                 };
                 Mixpanel.Track("Unity/Stage Exit Crash", props);
             }
+
             base.Show(title, content, labelOK, localize);
+        }
+
+        public void ShowAndQuit(string title, string content, string labelOK = "UI_OK", bool localize = true)
+        {
 #if UNITY_EDITOR
             CloseCallback = UnityEditor.EditorApplication.ExitPlaymode;
 #else
-            CloseCallback = Application.Quit;
+            CloseCallback = UnityEngine.Application.Quit;
 #endif
+            Show(title, content, labelOK, localize);
         }
     }
 }
