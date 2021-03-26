@@ -120,7 +120,7 @@ namespace Nekoyume.UI.Model
                     if (wishItems.Count < WishListSize)
                     {
                         wishItems.Add(view.Model);
-                        SelectedItemView.Value = view;
+                        SelectedItemView.SetValueAndForceNotify(view);
                         SelectedItemViewModel.Value = view.Model;
                         SelectedItemViewModel.Value.Selected.Value = true;
                     }

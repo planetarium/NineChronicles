@@ -130,7 +130,8 @@ namespace Nekoyume.UI.Module
                 {
                     if (value)
                     {
-                        SharedModel.itemSubTypeFilter = toggleType;
+                        SharedModel.itemSubTypeFilter = _toggleSubTypes[toggleType].First();
+                        toggleDropdown.items.First().isOn = true;
                         OnItemSubTypeFilterChanged();
                     }
                 });
