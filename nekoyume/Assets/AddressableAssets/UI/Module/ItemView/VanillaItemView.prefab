@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 1035021108352865199}
   - component: {fileID: 7423122486362921741}
   - component: {fileID: 6286694391520092373}
+  - component: {fileID: 4517877899196771039}
   m_Layer: 5
   m_Name: GradeImage
   m_TagString: Untagged
@@ -74,6 +75,23 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
+--- !u!114 &4517877899196771039
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1494730809287772501}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: efe700dddcd8341ff8607ac2c827b4b5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_TargetColor: {r: 1, g: 1, b: 1, a: 1}
+  m_Range: 0.5
+  m_Hue: 0
+  m_Saturation: 0
+  m_Value: 0
 --- !u!1 &4331852862819021068
 GameObject:
   m_ObjectHideFlags: 0
@@ -201,7 +219,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c42f0ed0866e40cfb7a72e7e9aa790a0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  itemViewData: {fileID: 11400000, guid: 7bbcb13078addb548a8707df8e95df63, type: 2}
   gradeImage: {fileID: 6286694391520092373}
+  gradeHsv: {fileID: 4517877899196771039}
   iconImage: {fileID: 6469081157424432497}
 --- !u!114 &4660487413905793083
 MonoBehaviour:
