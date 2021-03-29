@@ -1,4 +1,5 @@
-using System;
+using System.Linq;
+using Coffee.UIEffects;
 using DG.Tweening;
 using Nekoyume.Helper;
 using Nekoyume.TableData;
@@ -9,6 +10,7 @@ namespace Nekoyume.UI.Module
 {
     public class VanillaItemView : MonoBehaviour
     {
+        [SerializeField] protected ItemViewDataScriptableObject itemViewData;
         protected static readonly Color OriginColor = Color.white;
         protected static readonly Color DimmedColor = ColorHelper.HexToColorRGB("848484");
 
@@ -19,6 +21,7 @@ namespace Nekoyume.UI.Module
         }
 
         public Image gradeImage;
+        public UIHsvModifier gradeHsv;
         public Image iconImage;
 
         private Tweener _tweener;
@@ -53,19 +56,13 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
-            Sprite gradeSprite;
-            switch (imageSizeType)
-            {
-                case ImageSizeType.Small:
-                    gradeSprite = SpriteHelper.GetSmallItemBackground(itemRow.Grade);
-                    break;
-                case ImageSizeType.Middle:
-                    gradeSprite = SpriteHelper.GetItemBackground(itemRow.Grade);
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(imageSizeType), imageSizeType, null);
-            }
-            gradeImage.overrideSprite = gradeSprite;
+            var data = itemViewData.datas.FirstOrDefault(x => x.Grade == itemRow.Grade);
+            gradeImage.overrideSprite = data.GradeBackground;
+
+            gradeHsv.range = data.GradeHsvRange;
+            gradeHsv.hue = data.GradeHsvHue;
+            gradeHsv.saturation = data.GradeHsvSaturation;
+            gradeHsv.value = data.GradeHsvValue;
 
             var itemSprite = SpriteHelper.GetItemIcon(itemRow.Id);
             if (itemSprite is null)

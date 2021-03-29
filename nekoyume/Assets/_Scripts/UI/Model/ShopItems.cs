@@ -191,7 +191,7 @@ namespace Nekoyume.UI.Model
                 return;
 
             DeselectItemView();
-            SelectedItemView.Value = view;
+            SelectedItemView.SetValueAndForceNotify(view);
             SelectedItemViewModel.Value = view.Model;
             SelectedItemViewModel.Value.Selected.Value = true;
         }
@@ -206,7 +206,7 @@ namespace Nekoyume.UI.Model
 
             SelectedItemViewModel.Value.Selected.Value = false;
             SelectedItemViewModel.Value = null;
-            SelectedItemView.Value = null;
+            SelectedItemView.SetValueAndForceNotify(null);
         }
 
         #region Shop Item

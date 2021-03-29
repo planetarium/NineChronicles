@@ -351,7 +351,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2853018336156559087}
-  - component: {fileID: 7228298822232165698}
   - component: {fileID: 6482355134135394427}
   - component: {fileID: 6732991615150890369}
   - component: {fileID: 3822464774271197689}
@@ -386,25 +385,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 44, y: 44}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &7228298822232165698
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4665053808198396154}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 147892081c584a24a43178f1822491f7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  gradeImage: {fileID: 5649273184443670677}
-  iconImage: {fileID: 4656256043757438257}
-  touchHandler: {fileID: 6732991615150890369}
-  itemButton: {fileID: 5876771193729375837}
-  backgroundImage: {fileID: 210532434043038317}
-  enhancementText: {fileID: 6797536290134064345}
-  selectionImage: {fileID: 0}
 --- !u!114 &6482355134135394427
 MonoBehaviour:
   m_ObjectHideFlags: 0

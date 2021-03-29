@@ -172,9 +172,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   fixedFontAsset: 0
+  fixedFontStyle: 0
   fixedFontSizeOffset: 0
+  fixedSpacingOption: 0
   fontMaterialType: 0
   l10nKey: 
+  fontMaterialIndexInitialized: 0
+  fontMaterialIndex: 0
+  defaultFontStylesInitialized: 0
+  defaultFontStyles: 0
+  defaultFontSizeInitialized: 0
+  defaultFontSize: 0
+  defaultCharacterSpacingInitialized: 0
+  defaultCharacterSpacing: 0
+  defaultWordSpacingInitialized: 0
+  defaultWordSpacing: 0
+  defaultLineSpacingInitialized: 0
+  defaultLineSpacing: 0
 --- !u!1 &1862850884910694242
 GameObject:
   m_ObjectHideFlags: 0
@@ -227,12 +241,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e7205a892bc4ec459fd274dbb39c781, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  itemViewData: {fileID: 11400000, guid: 7bbcb13078addb548a8707df8e95df63, type: 2}
   gradeImage: {fileID: 8355775687122954721}
+  gradeHsv: {fileID: 428241552555519137}
   iconImage: {fileID: 9011058005550369861}
   touchHandler: {fileID: 6981575046190339317}
   itemButton: {fileID: 391575765559105476}
   backgroundImage: {fileID: 4573435739248648985}
   enhancementText: {fileID: 7189537816729941421}
+  enhancementImage: {fileID: 2940364351670103071}
   selectionImage: {fileID: 7016250071094594672}
   ignoreOne: 0
   countText: {fileID: 1750011393199512308}
@@ -429,9 +446,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   fixedFontAsset: 0
+  fixedFontStyle: 0
   fixedFontSizeOffset: 0
+  fixedSpacingOption: 0
   fontMaterialType: 0
   l10nKey: 
+  fontMaterialIndexInitialized: 0
+  fontMaterialIndex: 0
+  defaultFontStylesInitialized: 0
+  defaultFontStyles: 0
+  defaultFontSizeInitialized: 0
+  defaultFontSize: 0
+  defaultCharacterSpacingInitialized: 0
+  defaultCharacterSpacing: 0
+  defaultWordSpacingInitialized: 0
+  defaultWordSpacing: 0
+  defaultLineSpacingInitialized: 0
+  defaultLineSpacing: 0
 --- !u!1001 &2651351940368288052
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -633,6 +664,18 @@ MonoBehaviour:
   m_Script: {fileID: -765806418, guid: f70555f144d8491a825f0804e09c671c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &428241552555519137 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2394250231736952213, guid: 7ad634ecd8fec49ba9291bfa3f942e7b,
+    type: 3}
+  m_PrefabInstance: {fileID: 2651351940368288052}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: efe700dddcd8341ff8607ac2c827b4b5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &9011058005550369861 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 6469081157424432497, guid: 7ad634ecd8fec49ba9291bfa3f942e7b,
@@ -645,6 +688,12 @@ MonoBehaviour:
   m_Script: {fileID: -765806418, guid: f70555f144d8491a825f0804e09c671c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &2940364351670103071 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 866163676375508267, guid: 7ad634ecd8fec49ba9291bfa3f942e7b,
+    type: 3}
+  m_PrefabInstance: {fileID: 2651351940368288052}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &7189537816729941421 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 5119783568601332889, guid: 7ad634ecd8fec49ba9291bfa3f942e7b,

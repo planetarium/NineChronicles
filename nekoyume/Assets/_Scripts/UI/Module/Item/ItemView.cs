@@ -21,6 +21,7 @@ namespace Nekoyume.UI.Module
         public Button itemButton;
         public Image backgroundImage;
         public TextMeshProUGUI enhancementText;
+        public GameObject enhancementImage;
         public Image selectionImage;
 
         private readonly List<IDisposable> _disposablesAtSetData = new List<IDisposable>();
@@ -91,15 +92,28 @@ namespace Nekoyume.UI.Module
                 throw new ArgumentOutOfRangeException(nameof(ItemSheet.Row), model.ItemBase.Value.Id, null);
             }
             base.SetData(row);
+
+
+            var data = itemViewData.datas.FirstOrDefault(x => x.Grade == row.Grade);
+            enhancementImage.GetComponent<Image>().material = data.EnhancementMaterial;
+
             _disposablesAtSetData.DisposeAllAndClear();
             Model = model;
             Model.GradeEnabled.SubscribeTo(gradeImage).AddTo(_disposablesAtSetData);
             Model.Enhancement.SubscribeTo(enhancementText).AddTo(_disposablesAtSetData);
             Model.EnhancementEnabled.SubscribeTo(enhancementText).AddTo(_disposablesAtSetData);
+            Model.EnhancementEffectEnabled
+                .Subscribe(x => enhancementImage.gameObject.SetActive(x))
+                .AddTo(_disposablesAtSetData);
             Model.Dimmed.Subscribe(SetDim).AddTo(_disposablesAtSetData);
             Model.Selected.SubscribeTo(selectionImage.gameObject).AddTo(_disposablesAtSetData);
 
             UpdateView();
+        }
+
+        private void UpdateEnhancement()
+        {
+
         }
 
         public void SetData(TViewModel model, bool isConsumable)
@@ -133,6 +147,9 @@ namespace Nekoyume.UI.Module
             Model.GradeEnabled.SubscribeTo(gradeImage).AddTo(_disposablesAtSetData);
             Model.Enhancement.SubscribeTo(enhancementText).AddTo(_disposablesAtSetData);
             Model.EnhancementEnabled.SubscribeTo(enhancementText).AddTo(_disposablesAtSetData);
+            Model.EnhancementEffectEnabled
+                .Subscribe(x => enhancementImage.gameObject.SetActive(x))
+                .AddTo(_disposablesAtSetData);
             Model.Dimmed.Subscribe(SetDim).AddTo(_disposablesAtSetData);
             Model.Selected.SubscribeTo(selectionImage).AddTo(_disposablesAtSetData);
 

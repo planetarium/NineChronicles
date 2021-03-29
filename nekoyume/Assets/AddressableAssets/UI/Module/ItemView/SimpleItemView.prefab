@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 809769925232836869}
   - component: {fileID: 672388331833308499}
   m_Layer: 0
-  m_Name: EnchantImage
+  m_Name: EnhancementImage
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -85,6 +85,7 @@ GameObject:
   - component: {fileID: 1035021108352865199}
   - component: {fileID: 7423122486362921741}
   - component: {fileID: 6286694391520092373}
+  - component: {fileID: 2394250231736952213}
   m_Layer: 5
   m_Name: GradeImage
   m_TagString: Untagged
@@ -139,7 +140,7 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_Sprite: {fileID: 21300000, guid: 4b991cafa8c8ef948bd08deeab12d878, type: 3}
+  m_Sprite: {fileID: 0}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -148,6 +149,23 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
+--- !u!114 &2394250231736952213
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1494730809287772501}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: efe700dddcd8341ff8607ac2c827b4b5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_TargetColor: {r: 1, g: 1, b: 1, a: 1}
+  m_Range: 0
+  m_Hue: 0
+  m_Saturation: 0
+  m_Value: 0
 --- !u!1 &2901451010217154596
 GameObject:
   m_ObjectHideFlags: 0
@@ -616,12 +634,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 147892081c584a24a43178f1822491f7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  itemViewData: {fileID: 11400000, guid: 7bbcb13078addb548a8707df8e95df63, type: 2}
   gradeImage: {fileID: 6286694391520092373}
+  gradeHsv: {fileID: 2394250231736952213}
   iconImage: {fileID: 6469081157424432497}
   touchHandler: {fileID: 4911447013500509633}
   itemButton: {fileID: 2424157741892017904}
   backgroundImage: {fileID: 1996050214494677549}
   enhancementText: {fileID: 5119783568601332889}
+  enhancementImage: {fileID: 866163676375508267}
   selectionImage: {fileID: 5014130152458077508}
 --- !u!114 &4660487413905793083
 MonoBehaviour:

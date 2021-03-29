@@ -5,23 +5,32 @@
         _MainTex ("Texture", 2D) = "white" {}
         _Color ("Color",Color) = (1,1,1,1)
         [NoScaleOffset] _NoiseTex ("Texture", 2D) = "black" {}
-        
+
         _Size("Noise Size", Range(0.001, 50)) = 1
         _Speed("Noise Speed", Range(0.001, 5)) = 1
         _Mag("Magnitude", Range(0.0001, 0.1)) = 1
+        _RefNumber ("Stencil Masking Number", int) = 3
     }
     SubShader
     {
         Tags {"Queue"="Transparent" }
         ZWrite Off
 		Blend SrcAlpha One
-          
+
+        Stencil
+	{
+	    Ref [_RefNumber]
+            Comp equal
+            Pass keep
+            ZFail decrWrap
+	}
+
         Pass
         {
             CGPROGRAM
-            #pragma vertex vert 
+            #pragma vertex vert
             #pragma fragment frag
-           
+
             #include "UnityCG.cginc"
 
             struct appdata
@@ -50,17 +59,17 @@
                 v2f o;
                 o.vertex = UnityObjectToClipPos(v.vertex);
                 o.uv = TRANSFORM_TEX(v.uv, _MainTex);
-                
+
                 return o;
             }
 
             fixed4 frag (v2f i) : SV_Target
             {
                 // sample the texture
-                
+
                 fixed2 uv = tex2D(_NoiseTex, i.uv*_Size+(_Time.y*_Speed)).rg*2-1;
                 fixed4 col = tex2D(_MainTex, i.uv+uv*_Mag);
-                
+
                 return col*_Color;
             }
             ENDCG
