@@ -295,6 +295,18 @@ namespace Nekoyume.Action
             return sb.ToString();
         }
 
+        protected IAccountStateDelta LogError(IActionContext context, string message, params object[] values)
+        {
+            string actionType = GetType().Name;
+            object[] prependedValues = new object[values.Length + 2];
+            prependedValues[0] = context.BlockIndex;
+            prependedValues[1] = context.Signer;
+            values.CopyTo(prependedValues, 2);
+            string msg = $"#{{BlockIndex}} {actionType} (by {{Signer}}): {message}";
+            Log.Error(msg, prependedValues);
+            return context.PreviousStates;
+        }
+
         protected bool TryGetAdminState(IActionContext ctx, out AdminState state)
         {
             state = default;

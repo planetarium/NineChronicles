@@ -74,14 +74,14 @@ namespace Nekoyume.Action
 
             public PurchaseResult(Bencodex.Types.Dictionary serialized) : base(serialized)
             {
-                errorCode = (int) ((Integer) serialized["errorCode"]).Value;
+                errorCode = serialized["errorCode"].ToInteger();
             }
 
             public override IValue Serialize() =>
 #pragma warning disable LAA1002
                 new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
                 {
-                    [(Text) "errorCode"] = (Integer) errorCode,
+                    [(Text) "errorCode"] = errorCode.Serialize(),
                 }.Union((Bencodex.Types.Dictionary)base.Serialize()));
 #pragma warning restore LAA1002
         }
@@ -165,12 +165,14 @@ namespace Nekoyume.Action
                 foreach (var info in purchaseInfos)
                 {
                     var sellerAgentAddress = info.sellerAgentAddress;
-                    states = states.SetState(sellerAgentAddress, MarkChanged)
-                    .MarkBalanceChanged(
-                        GoldCurrencyMock,
-                        ctx.Signer,
-                        sellerAgentAddress,
-                        GoldCurrencyState.Address);
+                    var sellerAvatarAddress = info.sellerAvatarAddress;
+
+                    states = states.SetState(sellerAvatarAddress, MarkChanged)
+                        .MarkBalanceChanged(
+                            GoldCurrencyMock,
+                            ctx.Signer,
+                            sellerAgentAddress,
+                            GoldCurrencyState.Address);
                 }
 
                 return states.SetState(ShopState.Address, MarkChanged);
