@@ -21,9 +21,8 @@ namespace Nekoyume
         public static readonly Address AuthorizedMiners  = new Address("000000000000000000000000000000000000000c");
         public static readonly Address Credits           = new Address("000000000000000000000000000000000000000d");
 
-        public static Address GetSheetAddress<T>() where T : ISheet
-        {
-            return TableSheet.Derive(typeof(T).Name);
-        }
+        public static Address GetSheetAddress<T>() where T : ISheet => GetSheetAddress(typeof(T).Name);
+        
+        public static Address GetSheetAddress(string sheetName) => TableSheet.Derive(sheetName);
     }
 }
