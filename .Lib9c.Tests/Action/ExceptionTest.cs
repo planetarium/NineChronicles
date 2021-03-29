@@ -176,6 +176,13 @@ namespace Lib9c.Tests.Action
             }
         }
 
+        [Fact]
+        public void ShopItemExpiredExceptionSerializable()
+        {
+            var exc = new ShopItemExpiredException("for testing.");
+            AssertException<ShopItemExpiredException>(exc);
+        }
+
         private static void AssertException<T>(Exception exc)
             where T : Exception
         {
