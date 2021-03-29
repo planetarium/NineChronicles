@@ -22,8 +22,6 @@ namespace Nekoyume.State
 
         public readonly Dictionary<Address, RankingMapState> RankingMapStates = new Dictionary<Address, RankingMapState>();
 
-        public ShopState ShopState { get; private set; }
-
         public WeeklyArenaState WeeklyArenaState { get; private set; }
 
         public AgentState AgentState { get; private set; }
@@ -63,22 +61,6 @@ namespace Nekoyume.State
 
             RankingMapStates[state.address] = state;
             RankingMapStatesSubject.OnNext(RankingMapStates);
-        }
-
-        /// <summary>
-        /// 샵 상태를 할당한다.
-        /// </summary>
-        /// <param name="state"></param>
-        public void SetShopState(ShopState state, int shopItemsCountOfOnePage = 20)
-        {
-            if (state is null)
-            {
-                Debug.LogWarning($"[{nameof(States)}.{nameof(SetShopState)}] {nameof(state)} is null.");
-                return;
-            }
-
-            ShopState = state;
-            ReactiveShopState.Initialize(ShopState, shopItemsCountOfOnePage);
         }
 
         public void SetWeeklyArenaState(WeeklyArenaState state)

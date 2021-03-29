@@ -1,11 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using Libplanet;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Stat;
+using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.UI.Model;
 using TMPro;
@@ -254,10 +257,63 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        private void OnItemSubTypeFilterChanged(ItemSubTypeFilter filter)
+        private async void OnItemSubTypeFilterChanged(ItemSubTypeFilter itemSubTypeFilter)
         {
-            SharedModel.ResetAgentProducts();
-            SharedModel.ResetItemSubTypeProducts();
+            List<Nekoyume.Model.Item.ShopItem> products = new List<Nekoyume.Model.Item.ShopItem>();
+            ItemSubType itemSubType = ItemSubType.Weapon;
+            switch (itemSubTypeFilter)
+            {
+                case ItemSubTypeFilter.Armor:
+                    itemSubType = ItemSubType.Armor;
+                    break;
+                case ItemSubTypeFilter.Belt:
+                    itemSubType = ItemSubType.Belt;
+                    break;
+                case ItemSubTypeFilter.Necklace:
+                    itemSubType = ItemSubType.Necklace;
+                    break;
+                case ItemSubTypeFilter.Ring:
+                    itemSubType = ItemSubType.Ring;
+                    break;
+                case ItemSubTypeFilter.Food:
+                    itemSubType = ItemSubType.Food;
+                    break;
+                case ItemSubTypeFilter.FullCostume:
+                    itemSubType = ItemSubType.FullCostume;
+                    break;
+                case ItemSubTypeFilter.HairCostume:
+                    itemSubType = ItemSubType.HairCostume;
+                    break;
+                case ItemSubTypeFilter.EarCostume:
+                    itemSubType = ItemSubType.EarCostume;
+                    break;
+                case ItemSubTypeFilter.EyeCostume:
+                    itemSubType = ItemSubType.EyeCostume;
+                    break;
+                case ItemSubTypeFilter.TailCostume:
+                    itemSubType = ItemSubType.TailCostume;
+                    break;
+                case ItemSubTypeFilter.Title:
+                    itemSubType = ItemSubType.Title;
+                    break;
+                // default:
+                //     throw new ArgumentOutOfRangeException(nameof(itemSubTypeFilter), itemSubTypeFilter, null);
+            }
+
+            products = await Task.Run(() =>
+            {
+                foreach (var addressKey in ShardedShopState.AddressKeys)
+                {
+                    Address address = ShardedShopState.DeriveAddress(itemSubType, addressKey);
+                    ShardedShopState shardedShopState =
+                        new ShardedShopState(Game.Game.instance.Agent.GetState(address));
+                    products.AddRange(shardedShopState.Products.Values.ToList());
+                }
+                Debug.Log($"OnItemSubtypeFilterChanged: productsCount: {products.Count}");
+                return products;
+            });
+
+            ReactiveShopState.Initialize(products);
         }
 
         private void OnSortFilterChanged(SortFilter filter)

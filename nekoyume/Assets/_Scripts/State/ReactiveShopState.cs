@@ -42,33 +42,16 @@ namespace Nekoyume.State
                     SortFilter, Dictionary<int, List<ShopItem>>>>>();
 
         private static int ShopItemsCountOfOnePage = 20;
-
-        public static void Initialize(ShopState state, int shopItemsCountOfOnePage)
+        public static void Initialize(List<ShopItem> products)
         {
-            if (state is null)
-            {
-                return;
-            }
-
-            ShopItemsCountOfOnePage = shopItemsCountOfOnePage;
-
-            var products = state.Products.Values.ToList();
-
             // AgentProducts.
             {
-                var agentProducts = new Dictionary<Address, List<ShopItem>>();
-                foreach (var product in products)
-                {
-                    var agentAddress = product.SellerAgentAddress;
-                    if (!agentProducts.ContainsKey(agentAddress))
-                    {
-                        agentProducts.Add(agentAddress, new List<ShopItem>());
-                    }
+                var agentProducts = Game.Game.instance.ShopProducts.Products;
+                var filteredAgentProducts = new Dictionary<
+                    Address, Dictionary<
+                        ItemSubTypeFilter, Dictionary<
+                            SortFilter, Dictionary<int, List<ShopItem>>>>>();
 
-                    agentProducts[agentAddress].Add(product);
-                }
-
-                var filteredAgentProducts = new Dictionary<Address, Dictionary<ItemSubTypeFilter, Dictionary<SortFilter, Dictionary<int, List<ShopItem>>>>>();
                 foreach (var pair in agentProducts)
                 {
                     filteredAgentProducts.Add(

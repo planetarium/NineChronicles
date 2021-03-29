@@ -88,9 +88,9 @@ namespace Nekoyume.UI
         public override void Show(bool ignoreShowAnimation = false)
         {
             Game.Game.instance.Stage.GetPlayer().gameObject.SetActive(false);
-            States.Instance.SetShopState(new ShopState(
-                (Bencodex.Types.Dictionary) Game.Game.instance.Agent.GetState(Addresses.Shop)),
-                shopItems.Items.Count);
+            // States.Instance.SetShopState(new ShopState(
+            //     (Bencodex.Types.Dictionary) Game.Game.instance.Agent.GetState(Addresses.Shop)),
+            //     shopItems.Items.Count);
 
             base.Show(ignoreShowAnimation);
 

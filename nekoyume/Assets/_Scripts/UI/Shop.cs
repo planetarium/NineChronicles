@@ -1,8 +1,10 @@
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Linq;
 using DG.Tweening;
+using Libplanet;
 using Libplanet.Assets;
 using mixpanel;
 using Nekoyume.BlockChain;
@@ -159,8 +161,15 @@ namespace Nekoyume.UI
 
             var task = Task.Run(() =>
             {
-                States.Instance.SetShopState(new ShopState(
-                    (Bencodex.Types.Dictionary) Game.Game.instance.Agent.GetState(Addresses.Shop)));
+                ItemSubType itemSubType = ItemSubType.Weapon;
+                List<Nekoyume.Model.Item.ShopItem> products = new List<Nekoyume.Model.Item.ShopItem>();
+                foreach (var addressKey in ShardedShopState.AddressKeys)
+                {
+                    Address address = ShardedShopState.DeriveAddress(itemSubType, addressKey);
+                    ShardedShopState shardedShopState = new ShardedShopState(Game.Game.instance.Agent.GetState(address));
+                    products.AddRange(shardedShopState.Products.Values.ToList());
+                }
+                ReactiveShopState.Initialize(products);
                 return true;
             });
             var result = await task;
@@ -633,15 +642,6 @@ namespace Nekoyume.UI
 
             var productId = shopItem.ProductId.Value;
 
-            try
-            {
-                States.Instance.ShopState.Unregister(productId);
-            }
-            catch (FailedToUnregisterInShopStateException e)
-            {
-                Debug.LogError(e.Message);
-            }
-
             shopItems.SharedModel.RemoveAgentProduct(productId);
 
             AudioController.instance.PlaySfx(AudioController.SfxCode.InputItem);
@@ -658,14 +658,6 @@ namespace Nekoyume.UI
             var productId = shopItem.ProductId.Value;
 
             LocalLayerModifier.ModifyAgentGold(buyerAgentAddress, -shopItem.Price.Value);
-            try
-            {
-                States.Instance.ShopState.Unregister(productId);
-            }
-            catch (FailedToUnregisterInShopStateException e)
-            {
-                Debug.LogError(e.Message);
-            }
             shopItems.SharedModel.RemoveItemSubTypeProduct(productId);
 
             AudioController.instance.PlaySfx(AudioController.SfxCode.BuyItem);
