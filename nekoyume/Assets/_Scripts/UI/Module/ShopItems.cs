@@ -322,8 +322,8 @@ namespace Nekoyume.UI.Module
                 case ItemSubTypeFilter.Title:
                     itemSubType = ItemSubType.Title;
                     break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(itemSubTypeFilter), itemSubTypeFilter, null);
+                // default:
+                //     throw new ArgumentOutOfRangeException(nameof(itemSubTypeFilter), itemSubTypeFilter, null);
             }
 
             products = await Task.Run(() =>

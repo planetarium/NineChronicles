@@ -43,6 +43,10 @@ namespace Nekoyume.State
                             {
                                 Products.Add(agentAddress, new List<ShopItem>());
                             }
+                            else
+                            {
+                                Products[agentAddress].Add(product);
+                            }
                             //
                             // Products[agentAddress].Add(product);
                         // }
