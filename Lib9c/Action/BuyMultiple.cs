@@ -25,10 +25,10 @@ namespace Nekoyume.Action
         public BuyerResult buyerResult;
         public SellerResult sellerResult;
 
-        public const int FAILED_LOADING_STATE = 1;
-        public const int ITEM_DOES_NOT_EXIST = 2;
-        public const int SHOPITEM_EXPIRED = 3;
-        public const int INSUFFICIENT_BALANCE = 4;
+        public const int ERROR_CODE_FAILED_LOADING_STATE = 1;
+        public const int ERROR_CODE_ITEM_DOES_NOT_EXIST = 2;
+        public const int ERROR_CODE_SHOPITEM_EXPIRED = 3;
+        public const int ERROR_CODE_INSUFFICIENT_BALANCE = 4;
 
         [Serializable]
         public class PurchaseInfo
@@ -244,7 +244,7 @@ namespace Nekoyume.Action
 
                 if (productInfo is null)
                 {
-                    purchaseResult.errorCode = ITEM_DOES_NOT_EXIST;
+                    purchaseResult.errorCode = ERROR_CODE_ITEM_DOES_NOT_EXIST;
                     continue;
                 }
 
@@ -253,7 +253,7 @@ namespace Nekoyume.Action
                 IKey productIdSerialized = (IKey) productId.Serialize();
                 if (!productDict.ContainsKey(productIdSerialized))
                 {
-                    purchaseResult.errorCode = ITEM_DOES_NOT_EXIST;
+                    purchaseResult.errorCode = ERROR_CODE_ITEM_DOES_NOT_EXIST;
                     continue;
                 }
 
@@ -269,7 +269,7 @@ namespace Nekoyume.Action
                         avatarAddress,
                         out var sellerAvatarState))
                 {
-                    purchaseResult.errorCode = FAILED_LOADING_STATE;
+                    purchaseResult.errorCode = ERROR_CODE_FAILED_LOADING_STATE;
                     continue;
                 }
 
@@ -279,7 +279,7 @@ namespace Nekoyume.Action
 
                 if (!shopItem.SellerAgentAddress.Equals(productInfo.sellerAgentAddress))
                 {
-                    purchaseResult.errorCode = ITEM_DOES_NOT_EXIST;
+                    purchaseResult.errorCode = ERROR_CODE_ITEM_DOES_NOT_EXIST;
                     continue;
                 }
                 sw.Stop();
@@ -287,7 +287,7 @@ namespace Nekoyume.Action
 
                 if (0 < shopItem.ExpiredBlockIndex && shopItem.ExpiredBlockIndex < context.BlockIndex)
                 {
-                    purchaseResult.errorCode = SHOPITEM_EXPIRED;
+                    purchaseResult.errorCode = ERROR_CODE_SHOPITEM_EXPIRED;
                     continue;
                 }
 
@@ -295,7 +295,7 @@ namespace Nekoyume.Action
                 FungibleAssetValue buyerBalance = states.GetBalance(context.Signer, states.GetGoldCurrency());
                 if (buyerBalance < shopItem.Price)
                 {
-                    purchaseResult.errorCode = INSUFFICIENT_BALANCE;
+                    purchaseResult.errorCode = ERROR_CODE_INSUFFICIENT_BALANCE;
                     continue;
                 }
 
@@ -324,7 +324,7 @@ namespace Nekoyume.Action
                 {
                     if (nonFungibleItem.RequiredBlockIndex != 0)
                     {
-                        purchaseResult.errorCode = ITEM_DOES_NOT_EXIST;
+                        purchaseResult.errorCode = ERROR_CODE_ITEM_DOES_NOT_EXIST;
                         continue;
                     }
                 }

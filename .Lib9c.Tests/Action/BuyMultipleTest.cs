@@ -513,7 +513,7 @@
             });
 
             var results = action.buyerResult.purchaseResults;
-            var isFailed = results.First(p => p.shopItem is null).errorCode == BuyMultiple.ITEM_DOES_NOT_EXIST;
+            var isFailed = results.First(p => p.shopItem is null).errorCode == BuyMultiple.ERROR_CODE_ITEM_DOES_NOT_EXIST;
             Assert.True(isFailed);
         }
 
@@ -572,7 +572,7 @@
             });
 
             var result = action.buyerResult.purchaseResults;
-            var isFailed = result.First(r => r.shopItem.ProductId == productId).errorCode == BuyMultiple.ITEM_DOES_NOT_EXIST;
+            var isFailed = result.First(r => r.shopItem.ProductId == productId).errorCode == BuyMultiple.ERROR_CODE_ITEM_DOES_NOT_EXIST;
             Assert.True(isFailed);
         }
 
@@ -595,7 +595,7 @@
             var nextBuyerAvatarState = _initialState.GetAvatarState(_buyerAvatarAddress);
             foreach (var result in action.buyerResult.purchaseResults)
             {
-                Assert.Equal(BuyMultiple.ITEM_DOES_NOT_EXIST, result.errorCode);
+                Assert.Equal(BuyMultiple.ERROR_CODE_ITEM_DOES_NOT_EXIST, result.errorCode);
             }
         }
 
@@ -662,7 +662,7 @@
             });
 
             var results = action.buyerResult.purchaseResults;
-            var isAllFailed = results.Any(r => r.errorCode == BuyMultiple.INSUFFICIENT_BALANCE);
+            var isAllFailed = results.Any(r => r.errorCode == BuyMultiple.ERROR_CODE_INSUFFICIENT_BALANCE);
             Assert.True(isAllFailed);
         }
 
@@ -716,7 +716,7 @@
             });
 
             var results = action.buyerResult.purchaseResults;
-            var isAllFailed = results.Any(r => r.errorCode == BuyMultiple.SHOPITEM_EXPIRED);
+            var isAllFailed = results.Any(r => r.errorCode == BuyMultiple.ERROR_CODE_SHOPITEM_EXPIRED);
             Assert.True(isAllFailed);
         }
 
