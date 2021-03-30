@@ -166,7 +166,7 @@ namespace Nekoyume.BlockChain
 
         private void Sell()
         {
-            _renderer.EveryRender<Sell3>()
+            _renderer.EveryRender<Sell>()
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseSell).AddTo(_disposables);
@@ -174,7 +174,7 @@ namespace Nekoyume.BlockChain
 
         private void SellCancellation()
         {
-            _renderer.EveryRender<SellCancellation4>()
+            _renderer.EveryRender<SellCancellation>()
                 .Where(ValidateEvaluationForCurrentAvatarState)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseSellCancellation).AddTo(_disposables);
@@ -182,7 +182,7 @@ namespace Nekoyume.BlockChain
 
         private void Buy()
         {
-            _renderer.EveryRender<Buy4>()
+            _renderer.EveryRender<Buy>()
                 .Where(ValidateEvaluationForAgentState)
 
                 .ObserveOnMainThread()
@@ -460,7 +460,7 @@ namespace Nekoyume.BlockChain
             }
         }
 
-        private void ResponseSell(ActionBase.ActionEvaluation<Sell3> eval)
+        private void ResponseSell(ActionBase.ActionEvaluation<Sell> eval)
         {
             if (eval.Exception is null)
             {
@@ -486,7 +486,7 @@ namespace Nekoyume.BlockChain
             }
         }
 
-        private void ResponseSellCancellation(ActionBase.ActionEvaluation<SellCancellation4> eval)
+        private void ResponseSellCancellation(ActionBase.ActionEvaluation<SellCancellation> eval)
         {
             if (eval.Exception is null)
             {
@@ -503,7 +503,7 @@ namespace Nekoyume.BlockChain
             }
         }
 
-        private void ResponseBuy(ActionBase.ActionEvaluation<Buy4> eval)
+        private void ResponseBuy(ActionBase.ActionEvaluation<Buy> eval)
         {
             if (eval.Exception is null)
             {
