@@ -7,7 +7,7 @@ namespace Nekoyume.UI.Module
 {
     public enum ItemSubTypeFilter
     {
-        // All,
+        All,
         Weapon,
         Armor,
         Belt,
@@ -38,8 +38,8 @@ namespace Nekoyume.UI.Module
         {
             switch (type)
             {
-                // case ItemSubTypeFilter.All:
-                //     return L10nManager.Localize("ALL");
+                case ItemSubTypeFilter.All:
+                    return L10nManager.Localize("ALL");
                 case ItemSubTypeFilter.Equipment:
                     return L10nManager.Localize("UI_EQUIPMENTS");
                 case ItemSubTypeFilter.Costume:

@@ -273,14 +273,14 @@ namespace Nekoyume.UI
             var productId = shopItem.ProductId.Value;
 
             LocalLayerModifier.ModifyAgentGold(buyerAgentAddress, -shopItem.Price.Value);
-            try
-            {
-                States.Instance.ShopState.Unregister(productId);
-            }
-            catch (FailedToUnregisterInShopStateException e)
-            {
-                Debug.LogError(e.Message);
-            }
+            // try
+            // {
+            //     States.Instance.ShopState.Unregister(productId);
+            // }
+            // catch (FailedToUnregisterInShopStateException e)
+            // {
+            //     Debug.LogError(e.Message);
+            // }
             shopItems.SharedModel.RemoveItemSubTypeProduct(productId);
 
             AudioController.instance.PlaySfx(AudioController.SfxCode.BuyItem);

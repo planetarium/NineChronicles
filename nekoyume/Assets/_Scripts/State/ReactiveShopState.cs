@@ -177,7 +177,7 @@ namespace Nekoyume.State
             var groupedShopItems = new Dictionary<
                 ItemSubTypeFilter, Dictionary<SortFilter, Dictionary<int, List<ShopItem>>>>
             {
-                // {ItemSubTypeFilter.All, GetGroupedShopItemsBySortFilter(shopItems)},
+                {ItemSubTypeFilter.All, GetGroupedShopItemsBySortFilter(shopItems)},
                 // {ItemSubTypeFilter.Equipment, GetGroupedShopItemsBySortFilter(equipment)},
                 // {ItemSubTypeFilter.Food, GetGroupedShopItemsBySortFilter(food)},
                 // {ItemSubTypeFilter.Costume, GetGroupedShopItemsBySortFilter(costume)},

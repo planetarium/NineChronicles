@@ -68,7 +68,7 @@ namespace Nekoyume.UI.Module
 
             itemSubTypeFilter.AddOptions(new[]
                 {
-                    // ItemSubTypeFilter.All,
+                    ItemSubTypeFilter.All,
                     ItemSubTypeFilter.Weapon,
                     ItemSubTypeFilter.Armor,
                     ItemSubTypeFilter.Belt,
@@ -86,20 +86,20 @@ namespace Nekoyume.UI.Module
                     ItemSubTypeFilter.TailCostume,
                     ItemSubTypeFilter.Title,
                 }
-                .Select(FilterSubTypeToString).ToList());
+                .Select(x => x.TypeToString()).ToList());
             itemSubTypeFilter.onValueChanged.AsObservable()
-                .Select(index => (ItemSubTypeFilter) index)
-                // .Select(index =>
-                // {
-                //     try
-                //     {
-                //         return (ItemSubTypeFilter) index;
-                //     }
-                //     catch
-                //     {
-                //         return ItemSubTypeFilter.All;
-                //     }
-                // })
+                // .Select(index => (ItemSubTypeFilter) index)
+                .Select(index =>
+                {
+                    try
+                    {
+                        return (ItemSubTypeFilter) index;
+                    }
+                    catch
+                    {
+                        return ItemSubTypeFilter.All;
+                    }
+                })
                 .Subscribe(filter =>
                 {
                     SharedModel.itemSubTypeFilter = filter;
@@ -384,32 +384,6 @@ namespace Nekoyume.UI.Module
                 case Shop.StateType.Sell:
                     UpdateViewWithFilteredPageIndex(SharedModel.AgentProducts.Value);
                     break;
-            }
-        }
-
-        private string FilterSubTypeToString(ItemSubTypeFilter type)
-        {
-            switch (type)
-            {
-                // case ItemSubTypeFilter.All:
-                // case ItemSubTypeFilter.Food:
-                // case ItemSubTypeFilter.Equipment:
-                // case ItemSubTypeFilter.Costume:
-                //     return L10nManager.Localize("ALL");
-                case ItemSubTypeFilter.Food_HP:
-                    return StatType.HP.ToString();
-                case ItemSubTypeFilter.Food_ATK:
-                    return StatType.ATK.ToString();
-                case ItemSubTypeFilter.Food_DEF:
-                    return StatType.DEF.ToString();
-                case ItemSubTypeFilter.Food_CRI:
-                    return StatType.CRI.ToString();
-                case ItemSubTypeFilter.Food_HIT:
-                    return StatType.HIT.ToString();
-
-                default:
-                    return ((ItemSubType) Enum.Parse(typeof(ItemSubType), type.ToString()))
-                        .GetLocalizedString();
             }
         }
     }
