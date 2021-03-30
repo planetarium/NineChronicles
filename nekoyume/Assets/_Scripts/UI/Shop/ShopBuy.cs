@@ -68,10 +68,6 @@ namespace Nekoyume.UI
                 .Subscribe(OnClickShopItem)
                 .AddTo(gameObject);
 
-            shopItems.SharedModel.OnDoubleClickItemView
-                .Subscribe(OnDoubleClickShopItem)
-                .AddTo(gameObject);
-
             SharedModel.ItemCountAndPricePopup.Value.Item
                 .Subscribe(SubscribeItemPopup)
                 .AddTo(gameObject);

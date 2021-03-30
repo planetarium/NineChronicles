@@ -113,27 +113,27 @@ namespace Nekoyume.UI.Model
         {
             if (isMultiplePurchase)
             {
-                var selected = wishItems.FirstOrDefault(x =>
+                var wishItem = wishItems.FirstOrDefault(x =>
                     x.ProductId.Value == view.Model.ProductId.Value);
-                if (selected is null)
+                if (wishItem is null) // 위시리스트에 없을 때
                 {
                     if (wishItems.Count < WishListSize)
                     {
                         wishItems.Add(view.Model);
                         SelectedItemView.SetValueAndForceNotify(view);
-                        SelectedItemViewModel.Value = view.Model;
-                        SelectedItemViewModel.Value.Selected.Value = true;
+                        SelectedItemViewModel.SetValueAndForceNotify(view.Model);
+                        SelectedItemViewModel.Value.Selected.SetValueAndForceNotify(true);
                     }
                 }
                 else
                 {
-                    SelectedItemViewModel.Value = view.Model;
-                    SelectedItemViewModel.Value.Selected.Value = false;
-                    SelectedItemView.Value = view;
-                    wishItems.Remove(selected);
+                    SelectedItemViewModel.SetValueAndForceNotify(view.Model);
+                    SelectedItemViewModel.Value.Selected.SetValueAndForceNotify(false);
+                    SelectedItemView.SetValueAndForceNotify(view);
+                    wishItems.Remove(wishItem);
 
-                    SelectedItemViewModel.Value = null;
-                    SelectedItemView.Value = null;
+                    SelectedItemViewModel.SetValueAndForceNotify(null);
+                    SelectedItemView.SetValueAndForceNotify(null);
                 }
             }
             else
@@ -282,6 +282,11 @@ namespace Nekoyume.UI.Model
 
         public void ResetAgentProducts()
         {
+            if (States.Instance == null)
+            {
+                return;
+            }
+
             var agentAddress = States.Instance.AgentState.address;
             if (_agentProducts is null ||
                 !_agentProducts.ContainsKey(agentAddress))
@@ -390,16 +395,6 @@ namespace Nekoyume.UI.Model
                 }
 
                 SubscribeItemOnClick(shopItemViewModel.View);
-            });
-            item.OnDoubleClick.Subscribe(model =>
-            {
-                if (!(model is ShopItem shopItemViewModel))
-                {
-                    return;
-                }
-
-                DeselectItemView();
-                OnDoubleClickItemView.OnNext(shopItemViewModel.View);
             });
 
             return item;

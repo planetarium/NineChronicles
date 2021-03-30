@@ -162,6 +162,7 @@ namespace Nekoyume.UI
                 // 팝업 영역.
                 Widget.Create<Settings>(),
                 Widget.Create<Confirm>(),
+                Widget.Create<TwoButtonPopup>(),
 
                 // 팝업 영역: 알림.
                 Widget.Create<UpdatePopup>(),
@@ -173,6 +174,7 @@ namespace Nekoyume.UI
                 // 시스템 정보 영역.
                 Widget.Create<BlockChainMessageBoard>(true),
                 Widget.Create<Notification>(true),
+                Widget.Create<OneLinePopup>(true),
                 Widget.Create<VersionInfo>(true),
             };
 
