@@ -2,8 +2,10 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.IO;
     using System.Linq;
     using System.Numerics;
+    using System.Runtime.Serialization.Formatters.Binary;
     using Libplanet;
     using Libplanet.Action;
     using Libplanet.Assets;
@@ -115,6 +117,114 @@
                     Buy = true,
                     Price = 30,
                     ContainsInInventory = false,
+                },
+            };
+            yield return new object[]
+            {
+                new ShopItemData()
+                {
+                    ItemType = ItemType.Costume,
+                    ItemId = Guid.NewGuid(),
+                    SellerAgentAddress = new PrivateKey().ToAddress(),
+                    SellerAvatarAddress = new PrivateKey().ToAddress(),
+                    RequiredBlockIndex = Sell.ExpiredBlockIndex,
+                    Buy = false,
+                    Price = 10,
+                    ContainsInInventory = true,
+                },
+                new ShopItemData()
+                {
+                    ItemType = ItemType.Costume,
+                    ItemId = Guid.NewGuid(),
+                    SellerAgentAddress = new PrivateKey().ToAddress(),
+                    SellerAvatarAddress = new PrivateKey().ToAddress(),
+                    RequiredBlockIndex = Sell.ExpiredBlockIndex,
+                    Buy = false,
+                    Price = 50,
+                    ContainsInInventory = true,
+                },
+                new ShopItemData()
+                {
+                    ItemType = ItemType.Equipment,
+                    ItemId = Guid.NewGuid(),
+                    SellerAgentAddress = new PrivateKey().ToAddress(),
+                    SellerAvatarAddress = new PrivateKey().ToAddress(),
+                    RequiredBlockIndex = Sell.ExpiredBlockIndex,
+                    Buy = false,
+                    Price = 30,
+                    ContainsInInventory = true,
+                },
+            };
+            yield return new object[]
+            {
+                new ShopItemData()
+                {
+                    ItemType = ItemType.Equipment,
+                    ItemId = Guid.NewGuid(),
+                    SellerAgentAddress = new PrivateKey().ToAddress(),
+                    SellerAvatarAddress = new PrivateKey().ToAddress(),
+                    RequiredBlockIndex = 0,
+                    Buy = true,
+                    Price = 20,
+                    ContainsInInventory = false,
+                },
+                new ShopItemData()
+                {
+                    ItemType = ItemType.Equipment,
+                    ItemId = Guid.NewGuid(),
+                    SellerAgentAddress = new PrivateKey().ToAddress(),
+                    SellerAvatarAddress = new PrivateKey().ToAddress(),
+                    RequiredBlockIndex = 0,
+                    Buy = true,
+                    Price = 50,
+                    ContainsInInventory = false,
+                },
+                new ShopItemData()
+                {
+                    ItemType = ItemType.Equipment,
+                    ItemId = Guid.NewGuid(),
+                    SellerAgentAddress = new PrivateKey().ToAddress(),
+                    SellerAvatarAddress = new PrivateKey().ToAddress(),
+                    RequiredBlockIndex = 0,
+                    Buy = true,
+                    Price = 30,
+                    ContainsInInventory = false,
+                },
+            };
+            yield return new object[]
+            {
+                new ShopItemData()
+                {
+                    ItemType = ItemType.Costume,
+                    ItemId = Guid.NewGuid(),
+                    SellerAgentAddress = new PrivateKey().ToAddress(),
+                    SellerAvatarAddress = new PrivateKey().ToAddress(),
+                    RequiredBlockIndex = Sell.ExpiredBlockIndex,
+                    Buy = true,
+                    Price = 30,
+                    ContainsInInventory = true,
+                },
+                new ShopItemData()
+                {
+                    ItemType = ItemType.Costume,
+                    ItemId = Guid.NewGuid(),
+                    SellerAgentAddress = new PrivateKey().ToAddress(),
+                    SellerAvatarAddress = new PrivateKey().ToAddress(),
+                    RequiredBlockIndex = Sell.ExpiredBlockIndex,
+                    Buy = true,
+                    Price = 30,
+                    ContainsInInventory = true,
+                },
+                new ShopItemData()
+                {
+                    ItemType = ItemType.Equipment,
+                    ItemId = Guid.NewGuid(),
+                    SellerAgentAddress = new PrivateKey().ToAddress(),
+                    SellerAvatarAddress = new PrivateKey().ToAddress(),
+                    RequiredBlockIndex = Sell.ExpiredBlockIndex,
+                    Buy = true,
+                    Price = 30,
+                    ContainsInInventory = true,
                 },
             };
         }
@@ -353,7 +463,7 @@
         }
 
         [Fact]
-        public void ExecuteThrowItemDoesNotExistException()
+        public void ExecuteThrowItemDoesNotExistError()
         {
             var shopState = _initialState.GetShopState();
             Assert.Empty(shopState.Products);
@@ -408,7 +518,7 @@
         }
 
         [Fact]
-        public void ExecuteThrowItemDoesNotExistExceptionBySellerAvatar()
+        public void ExecuteThrowItemDoesNotExistErrorBySellerAvatar()
         {
             var sellerAvatarAddress = new PrivateKey().ToAddress();
             var sellerAgentAddress = new PrivateKey().ToAddress();
@@ -467,22 +577,26 @@
         }
 
         [Fact]
-        public void ExecuteThrowItemDoesNotExistExceptionByEmptyCollection()
+        public void ExecuteThrowItemDoesNotExistErrorByEmptyCollection()
         {
             var action = new BuyMultiple
             {
                 buyerAvatarAddress = _buyerAvatarAddress,
                 purchaseInfos = new List<BuyMultiple.PurchaseInfo>(),
             };
+            action.Execute(new ActionContext()
+            {
+                BlockIndex = 0,
+                PreviousStates = _initialState,
+                Random = new TestRandom(),
+                Signer = _buyerAgentAddress,
+            });
 
-            Assert.Throws<ItemDoesNotExistException>(() => action.Execute(new ActionContext()
-                {
-                    BlockIndex = 0,
-                    PreviousStates = _initialState,
-                    Random = new TestRandom(),
-                    Signer = _buyerAgentAddress,
-                })
-            );
+            var nextBuyerAvatarState = _initialState.GetAvatarState(_buyerAvatarAddress);
+            foreach (var result in action.buyerResult.purchaseResults)
+            {
+                Assert.Equal(BuyMultiple.ITEM_DOES_NOT_EXIST, result.errorCode);
+            }
         }
 
         [Fact]
@@ -553,7 +667,7 @@
         }
 
         [Fact]
-        public void ExecuteThrowShopItemExpiredException()
+        public void ExecuteThrowShopItemExpiredError()
         {
             var sellerAvatarAddress = new PrivateKey().ToAddress();
             var sellerAgentAddress = new PrivateKey().ToAddress();
@@ -604,6 +718,60 @@
             var results = action.buyerResult.purchaseResults;
             var isAllFailed = results.Any(r => r.errorCode == BuyMultiple.SHOPITEM_EXPIRED);
             Assert.True(isAllFailed);
+        }
+
+        [Fact]
+        public void SerializeWithDotnetAPI()
+        {
+            var sellerAvatarAddress = new PrivateKey().ToAddress();
+            var sellerAgentAddress = new PrivateKey().ToAddress();
+            CreateAvatarState(sellerAgentAddress, sellerAvatarAddress);
+
+            IAccountStateDelta previousStates = _initialState;
+            var shopState = previousStates.GetShopState();
+
+            var productId = Guid.NewGuid();
+            var equipment = ItemFactory.CreateItemUsable(
+                _tableSheets.EquipmentItemSheet.First,
+                Guid.NewGuid(),
+                0);
+            shopState.Register(new ShopItem(
+                sellerAgentAddress,
+                sellerAvatarAddress,
+                productId,
+                new FungibleAssetValue(_goldCurrencyState.Currency, 100, 0),
+                100,
+                equipment));
+            var products = shopState.Products.Values
+                .Select(p => new BuyMultiple.PurchaseInfo(
+                    p.ProductId,
+                    p.SellerAgentAddress,
+                    p.SellerAvatarAddress))
+                .ToList();
+
+            previousStates = previousStates
+                .SetState(Addresses.Shop, shopState.Serialize());
+
+            var action = new BuyMultiple
+            {
+                buyerAvatarAddress = _buyerAvatarAddress,
+                purchaseInfos = products,
+            };
+            action.Execute(new ActionContext()
+            {
+                BlockIndex = 1,
+                PreviousStates = previousStates,
+                Random = new TestRandom(),
+                Signer = _buyerAgentAddress,
+            });
+
+            var formatter = new BinaryFormatter();
+            using var ms = new MemoryStream();
+            formatter.Serialize(ms, action);
+            ms.Seek(0, SeekOrigin.Begin);
+
+            var deserialized = (BuyMultiple)formatter.Deserialize(ms);
+            Assert.Equal(action.PlainValue, deserialized.PlainValue);
         }
 
         private (AvatarState avatarState, AgentState agentState) CreateAvatarState(

@@ -228,13 +228,6 @@ namespace Nekoyume.Action
                 buyerAvatarAddress,
                 sellerAvatarAddressesString);
 
-            if (!purchaseInfos.Any())
-            {
-                throw new ItemDoesNotExistException(
-                        $"{addressesHex}Aborted as the requested product's collection is empty."
-                    );
-            }
-
             // Get products in `ShopState`.
             Dictionary productDict = (Dictionary) shopStateDict["products"];
 
