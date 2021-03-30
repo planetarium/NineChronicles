@@ -34,7 +34,7 @@ namespace Nekoyume.UI.Module
 
     public static class ItemSubTypeFilterExtension
     {
-        public static string TypeToString(this ItemSubTypeFilter type)
+        public static string TypeToString(this ItemSubTypeFilter type, bool useSell = false)
         {
             switch (type)
             {
@@ -44,21 +44,50 @@ namespace Nekoyume.UI.Module
                     return L10nManager.Localize("UI_EQUIPMENTS");
                 case ItemSubTypeFilter.Costume:
                     return L10nManager.Localize("UI_COSTUME");
-
                 case ItemSubTypeFilter.Food_HP:
-                    return StatType.HP.ToString();
+                    return useSell
+                        ? $"{StatType.HP.ToString()} {ItemSubType.Food.GetLocalizedString()}"
+                        : StatType.HP.ToString();
                 case ItemSubTypeFilter.Food_ATK:
-                    return StatType.ATK.ToString();
+                    return useSell
+                        ? $"{StatType.ATK.ToString()} {ItemSubType.Food.GetLocalizedString()}"
+                        : StatType.ATK.ToString();
                 case ItemSubTypeFilter.Food_DEF:
-                    return StatType.DEF.ToString();
+                    return useSell
+                        ? $"{StatType.DEF.ToString()} {ItemSubType.Food.GetLocalizedString()}"
+                        : StatType.DEF.ToString();
                 case ItemSubTypeFilter.Food_CRI:
-                    return StatType.CRI.ToString();
+                    return useSell
+                        ? $"{StatType.CRI.ToString()} {ItemSubType.Food.GetLocalizedString()}"
+                        : StatType.CRI.ToString();
                 case ItemSubTypeFilter.Food_HIT:
-                    return StatType.HIT.ToString();
+                    return useSell
+                        ? $"{StatType.HIT.ToString()} {ItemSubType.Food.GetLocalizedString()}"
+                        : StatType.HIT.ToString();
 
                 default:
                     return ((ItemSubType) Enum.Parse(typeof(ItemSubType), type.ToString()))
                         .GetLocalizedString();
+            }
+        }
+
+        public static StatType FoodTypeToStatType(this ItemSubTypeFilter type)
+        {
+            switch (type)
+            {
+                case ItemSubTypeFilter.Food_HP:
+                    return StatType.HP;
+                case ItemSubTypeFilter.Food_ATK:
+                    return StatType.ATK;
+                case ItemSubTypeFilter.Food_DEF:
+                    return StatType.DEF;
+                case ItemSubTypeFilter.Food_CRI:
+                    return StatType.CRI;
+                case ItemSubTypeFilter.Food_HIT:
+                    return StatType.HIT;
+
+                default:
+                    return StatType.NONE;
             }
         }
     }

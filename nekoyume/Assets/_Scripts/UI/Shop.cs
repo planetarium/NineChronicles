@@ -161,15 +161,15 @@ namespace Nekoyume.UI
 
             var task = Task.Run(() =>
             {
-                ItemSubType itemSubType = ItemSubType.Weapon;
-                List<Nekoyume.Model.Item.ShopItem> products = new List<Nekoyume.Model.Item.ShopItem>();
-                foreach (var addressKey in ShardedShopState.AddressKeys)
-                {
-                    Address address = ShardedShopState.DeriveAddress(itemSubType, addressKey);
-                    ShardedShopState shardedShopState = new ShardedShopState(Game.Game.instance.Agent.GetState(address));
-                    products.AddRange(shardedShopState.Products.Values.ToList());
-                }
-                ReactiveShopState.Initialize(products);
+                // ItemSubType itemSubType = ItemSubType.Weapon;
+                // List<Nekoyume.Model.Item.ShopItem> products = new List<Nekoyume.Model.Item.ShopItem>();
+                // foreach (var addressKey in ShardedShopState.AddressKeys)
+                // {
+                //     Address address = ShardedShopState.DeriveAddress(itemSubType, addressKey);
+                //     ShardedShopState shardedShopState = new ShardedShopState(Game.Game.instance.Agent.GetState(address));
+                //     products.AddRange(shardedShopState.Products.Values.ToList());
+                // }
+                ReactiveShopState.Initialize(20);
                 return true;
             });
             var result = await task;

@@ -5,7 +5,6 @@ using Libplanet;
 using Nekoyume.Battle;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Stat;
-using Nekoyume.Model.State;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using UniRx;
@@ -41,34 +40,37 @@ namespace Nekoyume.State
                 ItemSubTypeFilter, Dictionary<
                     SortFilter, Dictionary<int, List<ShopItem>>>>>();
 
-        private static int ShopItemsCountOfOnePage = 20;
-        public static void Initialize(List<ShopItem> products)
+        private static int _shopItemsPerPage = 24;
+
+        public static void Initialize(int shopItemsPerPage = 24)
         {
-            // AgentProducts.
+            _shopItemsPerPage = shopItemsPerPage;
+
+            var agentProducts = Game.Game.instance.ShopProducts.Products;
+            var products = new List<ShopItem>();
+            foreach (var pair in agentProducts)
             {
-                var agentProducts = Game.Game.instance.ShopProducts.Products;
-                var filteredAgentProducts = new Dictionary<
-                    Address, Dictionary<
-                        ItemSubTypeFilter, Dictionary<
-                            SortFilter, Dictionary<int, List<ShopItem>>>>>();
-
-                foreach (var pair in agentProducts)
-                {
-                    filteredAgentProducts.Add(
-                        pair.Key,
-                        GetGroupedShopItemsByItemSubTypeFilter(pair.Value));
-                }
-
-                AgentProducts.Value = filteredAgentProducts;
+                products.AddRange(pair.Value);
             }
+
+            // AgentProducts.
+            var filteredAgentProducts = new Dictionary<Address, Dictionary<
+                    ItemSubTypeFilter, Dictionary<
+                        SortFilter, Dictionary<int, List<ShopItem>>>>>();
+            foreach (var pair in agentProducts)
+            {
+                filteredAgentProducts.Add(
+                    pair.Key,
+                    GetGroupedShopItemsByItemSubTypeFilter(pair.Value));
+            }
+
+            AgentProducts.Value = filteredAgentProducts;
 
             // ItemSubTypeProducts.
-            {
-                var agentAddress = States.Instance.AgentState.address;
-                ItemSubTypeProducts.Value = GetGroupedShopItemsByItemSubTypeFilter(products
-                    .Where(product => !product.SellerAgentAddress.Equals(agentAddress))
-                    .ToList());
-            }
+            var agentAddress = States.Instance.AgentState.address;
+            ItemSubTypeProducts.Value = GetGroupedShopItemsByItemSubTypeFilter(products
+                .Where(product => !product.SellerAgentAddress.Equals(agentAddress))
+                .ToList());
         }
 
         private static Dictionary<
@@ -79,7 +81,6 @@ namespace Nekoyume.State
             var equipment = new List<ShopItem>();
             var food = new List<ShopItem>();
             var costume = new List<ShopItem>();
-
             var weapons = new List<ShopItem>();
             var armors = new List<ShopItem>();
             var belts = new List<ShopItem>();
@@ -104,7 +105,7 @@ namespace Nekoyume.State
                     if (shopItem.ItemUsable.ItemSubType == ItemSubType.Food)
                     {
                         food.Add(shopItem);
-                        var state = shopItem.ItemUsable.StatsMap.GetStats().First(); // todo : foreach 돌려서
+                        var state = shopItem.ItemUsable.StatsMap.GetStats().First();
                         switch (state.StatType)
                         {
                             case StatType.HP:
@@ -204,7 +205,6 @@ namespace Nekoyume.State
         private static Dictionary<SortFilter, Dictionary<int, List<ShopItem>>>
             GetGroupedShopItemsBySortFilter(IReadOnlyCollection<ShopItem> shopItems)
         {
-
             return new Dictionary<SortFilter, Dictionary<int, List<ShopItem>>>
             {
                 {
@@ -260,8 +260,7 @@ namespace Nekoyume.State
             throw new ArgumentOutOfRangeException(nameof(type), type, null);
         }
 
-        private static Dictionary<int, List<ShopItem>> GetGroupedShopItemsByPage(
-            List<ShopItem> shopItems)
+        private static Dictionary<int, List<ShopItem>> GetGroupedShopItemsByPage(List<ShopItem> shopItems)
         {
             var result = new Dictionary<int, List<ShopItem>>();
             var remainCount = shopItems.Count;
@@ -269,7 +268,7 @@ namespace Nekoyume.State
             var pageIndex = 0;
             while (remainCount > 0)
             {
-                var getCount = Math.Min(ShopItemsCountOfOnePage, remainCount);
+                var getCount = Math.Min(_shopItemsPerPage, remainCount);
                 var getList = shopItems.GetRange(listIndex, getCount);
                 result.Add(pageIndex, getList);
                 remainCount -= getCount;

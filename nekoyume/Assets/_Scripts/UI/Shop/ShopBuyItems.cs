@@ -1,11 +1,11 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using DG.Tweening;
+using System.Threading.Tasks;
+using Libplanet;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
-using Nekoyume.Model.Stat;
+using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.UI.Model;
 using TMPro;
@@ -180,14 +180,6 @@ namespace Nekoyume.UI.Module
             //     // 새로고침을 새로 정의한 후에 수정합니다.
             //     // SharedModel.ResetItemSubTypeProducts();
             // }).AddTo(gameObject);
-
-            ReactiveShopState.AgentProducts
-                .Subscribe(SharedModel.ResetAgentProducts)
-                .AddTo(_disposablesAtOnEnable);
-
-            ReactiveShopState.ItemSubTypeProducts
-                .Subscribe(SharedModel.ResetItemSubTypeProducts)
-                .AddTo(_disposablesAtOnEnable);
         }
 
         public void Show()
@@ -205,6 +197,14 @@ namespace Nekoyume.UI.Module
             SharedModel.isReverseOrder = false;
             SharedModel.searchIds = new List<int>();
             SharedModel.SetMultiplePurchase(false);
+
+            ReactiveShopState.AgentProducts
+                .Subscribe(SharedModel.ResetAgentProducts)
+                .AddTo(_disposablesAtOnEnable);
+
+            ReactiveShopState.ItemSubTypeProducts
+                .Subscribe(SharedModel.ResetItemSubTypeProducts)
+                .AddTo(_disposablesAtOnEnable);
         }
 
         private void OnDisable()

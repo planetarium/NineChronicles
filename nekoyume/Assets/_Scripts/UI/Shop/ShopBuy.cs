@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using mixpanel;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Character;
@@ -6,7 +7,6 @@ using Nekoyume.Game.Controller;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
-using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
@@ -87,39 +87,58 @@ namespace Nekoyume.UI
 
         public override void Show(bool ignoreShowAnimation = false)
         {
+            AsyncShow();
+        }
+
+        private async void AsyncShow(bool ignoreShowAnimation = false)
+        {
+            Find<DataLoadingScreen>().Show();
             Game.Game.instance.Stage.GetPlayer().gameObject.SetActive(false);
+
+            var task = Task.Run(() =>
+            {
+                ReactiveShopState.Initialize();
+                return true;
+            });
+
+            var result = await task;
+            if (result)
+            {
+                base.Show(ignoreShowAnimation);
+
+                Find<BottomMenu>().Show(
+                    UINavigator.NavigationType.Back,
+                    SubscribeBackButtonClick,
+                    true,
+                    BottomMenu.ToggleableType.Mail,
+                    BottomMenu.ToggleableType.Quest,
+                    BottomMenu.ToggleableType.Chat,
+                    BottomMenu.ToggleableType.IllustratedBook,
+                    BottomMenu.ToggleableType.Character);
+
+                AudioController.instance.PlayMusic(AudioController.MusicCode.Shop);
+                SetMultiplePurchase(false);
+
+                var go = Game.Game.instance.Stage.npcFactory.Create(
+                    NPCId,
+                    NPCPosition,
+                    LayerType.InGameBackground,
+                    3);
+                _npc = go.GetComponent<NPC>();
+                _npc.GetComponent<SortingGroup>().sortingLayerName = LayerType.UI.ToLayerName();
+                _npc.GetComponent<SortingGroup>().sortingOrder = 11;
+                _npc.SpineController.Appear();
+
+                frontCanvas.sortingLayerName = LayerType.UI.ToLayerName();
+                go.SetActive(true);
+                shopItems.Show();
+
+                Find<DataLoadingScreen>().Close();
+            }
+
             // States.Instance.SetShopState(new ShopState(
             //     (Bencodex.Types.Dictionary) Game.Game.instance.Agent.GetState(Addresses.Shop)),
             //     shopItems.Items.Count);
-
-            base.Show(ignoreShowAnimation);
-
-            Find<BottomMenu>().Show(
-                UINavigator.NavigationType.Back,
-                SubscribeBackButtonClick,
-                true,
-                BottomMenu.ToggleableType.Mail,
-                BottomMenu.ToggleableType.Quest,
-                BottomMenu.ToggleableType.Chat,
-                BottomMenu.ToggleableType.IllustratedBook,
-                BottomMenu.ToggleableType.Character);
-
-            AudioController.instance.PlayMusic(AudioController.MusicCode.Shop);
-            SetMultiplePurchase(false);
-
-            var go = Game.Game.instance.Stage.npcFactory.Create(
-                NPCId,
-                NPCPosition,
-                LayerType.InGameBackground,
-                3);
-            _npc = go.GetComponent<NPC>();
-            _npc.GetComponent<SortingGroup>().sortingLayerName = LayerType.UI.ToLayerName();
-            _npc.GetComponent<SortingGroup>().sortingOrder = 11;
-            _npc.SpineController.Appear();
-
-            frontCanvas.sortingLayerName = LayerType.UI.ToLayerName();
-            go.SetActive(true);
-            shopItems.Show();
         }
 
         protected override void OnCompleteOfShowAnimationInternal()

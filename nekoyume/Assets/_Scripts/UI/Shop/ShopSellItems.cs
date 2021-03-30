@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Nekoyume.Game.Character;
-using Nekoyume.Game.Controller;
 using Nekoyume.L10n;
-using Nekoyume.Model.Item;
 using Nekoyume.State;
 using Nekoyume.UI.Model;
 using TMPro;
@@ -40,9 +37,6 @@ namespace Nekoyume.UI.Module
         private InteractableSwitchableSelectable nextPageButtonInteractableSwitch = null;
 
         [SerializeField]
-        private TouchHandler refreshButtonTouchHandler = null;
-
-        [SerializeField]
         private RefreshButton refreshButton = null;
 
         private int _filteredPageIndex;
@@ -67,9 +61,7 @@ namespace Nekoyume.UI.Module
 
             itemSubTypeFilter.AddOptions(new[]
                 {
-                    // ItemSubTypeFilter.All,
-                    // ItemSubTypeFilter.Food,
-                    // ItemSubTypeFilter.Costume,
+                    ItemSubTypeFilter.All,
                     ItemSubTypeFilter.Weapon,
                     ItemSubTypeFilter.Armor,
                     ItemSubTypeFilter.Belt,
@@ -87,28 +79,24 @@ namespace Nekoyume.UI.Module
                     ItemSubTypeFilter.TailCostume,
                     ItemSubTypeFilter.Title,
                 }
-                .Select(type => type.TypeToString())
-                // .Select(type => type == ItemSubTypeFilter.All
-                //     ? L10nManager.Localize("ALL")
-                //     : ((ItemSubType) Enum.Parse(typeof(ItemSubType), type.ToString()))
+                .Select(type => type.TypeToString(true))
                 .ToList());
             itemSubTypeFilter.onValueChanged.AsObservable()
-                .Select(index => (ItemSubTypeFilter) index)
-                // .Select(index =>
-                // {
-                //     try
-                //     {
-                //         return (ItemSubTypeFilter) index;
-                //     }
-                //     catch
-                //     {
-                //         return ItemSubTypeFilter.All;
-                //     }
-                // })
+                .Select(index =>
+                {
+                    try
+                    {
+                        return (ItemSubTypeFilter) index;
+                    }
+                    catch
+                    {
+                        return ItemSubTypeFilter.All;
+                    }
+                })
                 .Subscribe(filter =>
                 {
                     SharedModel.itemSubTypeFilter = filter;
-                    OnItemSubTypeFilterChanged(SharedModel.itemSubTypeFilter);
+                    OnItemSubTypeFilterChanged();
                 })
                 .AddTo(gameObject);
 
@@ -135,7 +123,7 @@ namespace Nekoyume.UI.Module
                 .Subscribe(filter =>
                 {
                     SharedModel.sortFilter = filter;
-                    OnSortFilterChanged(SharedModel.sortFilter);
+                    OnSortFilterChanged();
                 })
                 .AddTo(gameObject);
 
@@ -145,14 +133,6 @@ namespace Nekoyume.UI.Module
             nextPageButton.OnClickAsObservable()
                 .Subscribe(OnNextPageButtonClick)
                 .AddTo(gameObject);
-
-            refreshButtonTouchHandler.OnClick.Subscribe(_ =>
-            {
-                AudioController.PlayClick();
-                // NOTE: 아래 코드를 실행해도 아무런 변화가 없습니다.
-                // 새로고침을 새로 정의한 후에 수정합니다.
-                // SharedModel.ResetItemSubTypeProducts();
-            }).AddTo(gameObject);
         }
 
         private void OnEnable()
@@ -251,13 +231,13 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        private void OnItemSubTypeFilterChanged(ItemSubTypeFilter filter)
+        private void OnItemSubTypeFilterChanged()
         {
             SharedModel.ResetAgentProducts();
             SharedModel.ResetItemSubTypeProducts();
         }
 
-        private void OnSortFilterChanged(SortFilter filter)
+        private void OnSortFilterChanged()
         {
             SharedModel.ResetAgentProducts();
             SharedModel.ResetItemSubTypeProducts();
