@@ -1,5 +1,4 @@
 ﻿using Nekoyume.Game.Controller;
-using Nekoyume.L10n;
 using Nekoyume.UI.Module;
 using TMPro;
 using UniRx;
@@ -46,7 +45,8 @@ namespace Nekoyume.UI
                 return;
             }
 
-            contentText.text = content;
+            var fixedcontent = content.Replace("\\n", "\n");
+            contentText.text = fixedcontent;
 
             _confirmCallback = confirmCallback;
             _cancelCallback = cancelCallback;

@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using mixpanel;
+using Nekoyume.Action;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using Nekoyume.L10n;
-using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.State;
 using Nekoyume.UI.Model;
@@ -55,8 +55,10 @@ namespace Nekoyume.UI
             CloseWidget = null;
             sellButton.onClick.AddListener(() =>
             {
+                _npc?.gameObject.SetActive(false);
+                Find<ItemCountAndPricePopup>().Close();
+                base.Close(true);
                 Find<ShopSell>().Show();
-                Find<ShopBuy>().Close();
             });
         }
 
@@ -70,12 +72,6 @@ namespace Nekoyume.UI
 
             SharedModel.ItemCountAndPricePopup.Value.Item
                 .Subscribe(SubscribeItemPopup)
-                .AddTo(gameObject);
-            SharedModel.ItemCountAndPricePopup.Value.OnClickSubmit
-                .Subscribe(SubscribeItemPopupSubmit)
-                .AddTo(gameObject);
-            SharedModel.ItemCountAndPricePopup.Value.OnClickCancel
-                .Subscribe(SubscribeItemPopupCancel)
                 .AddTo(gameObject);
 
             shopBuyBoard.OnChangeBuyType.Subscribe(SetMultiplePurchase).AddTo(gameObject);
@@ -139,7 +135,6 @@ namespace Nekoyume.UI
 
         protected override void OnCompleteOfShowAnimationInternal()
         {
-
             // ShowSpeech("SPEECH_SHOP_GREETING_", CharacterAnimation.Type.Greeting);
         }
 
@@ -179,34 +174,12 @@ namespace Nekoyume.UI
                 return;
             }
 
-            SharedModel.ItemCountAndPricePopup.Value.TitleText.Value =
-                L10nManager.Localize("UI_BUY");
-            SharedModel.ItemCountAndPricePopup.Value.InfoText.Value =
-                L10nManager.Localize("UI_BUY_INFO");
-            SharedModel.ItemCountAndPricePopup.Value.CountEnabled.Value = false;
-            SharedModel.ItemCountAndPricePopup.Value.Submittable.Value =
-                ButtonEnabledFuncForBuy(shopItem);
-            SharedModel.ItemCountAndPricePopup.Value.Price.Value = shopItem.Price.Value;
-            SharedModel.ItemCountAndPricePopup.Value.PriceInteractable.Value = false;
-            SharedModel.ItemCountAndPricePopup.Value.Item.Value = new CountEditableItem(
-                shopItem.ItemBase.Value,
-                shopItem.Count.Value,
-                shopItem.Count.Value,
-                shopItem.Count.Value);
-        }
-
-        private void ShowActionPopup(CountableItem viewModel)
-        {
-            if (viewModel is null ||
-                viewModel.Dimmed.Value)
-                return;
-
-            var shopItem = viewModel as ShopItem;
-            if (!ButtonEnabledFuncForBuy(shopItem))
-            {
-                return;
-            }
-            ShowBuyPopup(shopItem);
+            var price = shopItem.Price.Value.GetQuantityString();
+            var content = string.Format(L10nManager.Localize("UI_BUY_MULTIPLE_FORMAT"), 1, price);
+            Find<TwoButtonPopup>().Show(content,
+                L10nManager.Localize("UI_BUY"),
+                L10nManager.Localize("UI_CANCEL"),
+                (() => { Buy(shopItem); }));
         }
 
         private void SubscribeItemPopup(CountableItem data)
@@ -225,37 +198,23 @@ namespace Nekoyume.UI
             shopBuyBoard.UpdateWishList(shopItems.SharedModel);
         }
 
-        private void SubscribeItemPopupSubmit(Model.ItemCountAndPricePopup data)
+        private void Buy(ShopItem shopItem)
         {
-            if (!(data.Item.Value.ItemBase.Value is INonFungibleItem nonFungibleItem))
-            {
-                return;
-            }
-
-            if (!shopItems.SharedModel.TryGetShopItemFromItemSubTypeProducts(
-                nonFungibleItem.ItemId,
-                out var shopItem))
-            {
-                return;
-            }
-
             var props = new Value
             {
                 ["Price"] = shopItem.Price.Value.GetQuantityString(),
             };
             Mixpanel.Track("Unity/Buy", props);
 
-            Game.Game.instance.ActionManager.Buy(
-                shopItem.SellerAgentAddress.Value,
-                shopItem.SellerAvatarAddress.Value,
-                shopItem.ProductId.Value);
+            var purchaseInfos = new List<Buy.PurchaseInfo>()
+            {
+                new Buy.PurchaseInfo(shopItem.ProductId.Value,
+                    shopItem.SellerAgentAddress.Value,
+                    shopItem.SellerAvatarAddress.Value,
+                    shopItem.ItemSubType.Value)
+            };
+            Game.Game.instance.ActionManager.Buy(purchaseInfos);
             ResponseBuy(shopItem);
-            }
-
-        private void SubscribeItemPopupCancel(Model.ItemCountAndPricePopup data)
-        {
-            SharedModel.ItemCountAndPricePopup.Value.Item.Value = null;
-            Find<ItemCountAndPricePopup>().Close();
         }
 
         private void SetMultiplePurchase(bool value)
@@ -270,6 +229,21 @@ namespace Nekoyume.UI
                 return;
             }
 
+            if (shopItems.SharedModel.isMultiplePurchase && shopItems.SharedModel.wishItems.Count > 0)
+            {
+                Widget.Find<TwoButtonPopup>().Show(L10nManager.Localize("UI_CLOSE_BUY_WISH_LIST"),
+                    L10nManager.Localize("UI_YES"),
+                    L10nManager.Localize("UI_NO"),
+                    Close);
+            }
+            else
+            {
+                Close();
+            }
+        }
+
+        private void Close()
+        {
             Close(true);
             Game.Event.OnRoomEnter.Invoke(true);
         }
@@ -314,16 +288,6 @@ namespace Nekoyume.UI
             {
                 ShowTooltip(view);
             }
-        }
-
-        private void OnDoubleClickShopItem(ShopItemView view)
-        {
-            if (shopItems.SharedModel.isMultiplePurchase)
-            {
-                return;
-            }
-
-            ShowActionPopup(view.Model);
         }
 
         // private void ShowSpeech(string key,

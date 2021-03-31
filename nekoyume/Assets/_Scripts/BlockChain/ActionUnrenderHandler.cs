@@ -123,38 +123,49 @@ namespace Nekoyume.BlockChain
             }
 
             var buyerAvatarAddress = eval.Action.buyerAvatarAddress;
-            var price = eval.Action.sellerResult.shopItem.Price;
             Address renderQuestAvatarAddress;
-            List<int> renderQuestCompletedQuestIds;
+            var renderQuestCompletedQuestIds = new List<int>();
+            // var price = eval.Action.sellerResult.shopItem.Price;
 
             if (buyerAvatarAddress == States.Instance.CurrentAvatarState.address)
             {
-                var buyerAgentAddress = States.Instance.AgentState.address;
-                var result = eval.Action.buyerResult;
+                var purchaseResults = eval.Action.buyerMultipleResult.purchaseResults;
+                foreach (var purchaseResult in purchaseResults)
+                {
+                    var buyerAgentAddress = States.Instance.AgentState.address;
+                    var price = purchaseResult.shopItem.Price;
+                    var itemId = purchaseResult.itemUsable?.ItemId ?? purchaseResult.costume.ItemId;
+                    var buyerAvatar = eval.OutputStates.GetAvatarState(buyerAvatarAddress);
 
-                var itemId = result.itemUsable?.ItemId ?? result.costume.ItemId;
-                var buyerAvatar = eval.OutputStates.GetAvatarState(buyerAvatarAddress);
+                    LocalLayerModifier.ModifyAgentGold(buyerAgentAddress, -price);
+                    LocalLayerModifier.AddItem(buyerAvatarAddress, itemId);
+                    LocalLayerModifier.RemoveNewAttachmentMail(buyerAvatarAddress, purchaseResult.id);
 
-                LocalLayerModifier.ModifyAgentGold(buyerAgentAddress, -price);
-                LocalLayerModifier.AddItem(buyerAvatarAddress, itemId);
-                LocalLayerModifier.RemoveNewAttachmentMail(buyerAvatarAddress, result.id);
-
-                renderQuestAvatarAddress = buyerAvatarAddress;
-                renderQuestCompletedQuestIds = buyerAvatar.questList.completedQuestIds;
+                    renderQuestAvatarAddress = buyerAvatarAddress;
+                    renderQuestCompletedQuestIds = buyerAvatar.questList.completedQuestIds;
+                }
             }
             else
             {
-                var sellerAvatarAddress = eval.Action.sellerAvatarAddress;
-                var sellerAgentAddress = eval.Action.sellerAgentAddress;
-                var result = eval.Action.sellerResult;
-                var gold = result.gold;
-                var sellerAvatar = eval.OutputStates.GetAvatarState(sellerAvatarAddress);
+                foreach (var sellerResult in eval.Action.sellerMultipleResult.sellerResults)
+                {
+                    var purchaseInfos = eval.Action.purchaseInfos;
+                    var purchaseInfo = purchaseInfos.FirstOrDefault(x => x.productId == sellerResult.id);
+                    if (purchaseInfo != null)
+                    {
+                        var sellerAvatarAddress = purchaseInfo.sellerAvatarAddress;
+                        var sellerAgentAddress = purchaseInfo.sellerAgentAddress;
+                        // var result = eval.Action.sellerResult;
+                        var gold = sellerResult.gold;
+                        var sellerAvatar = eval.OutputStates.GetAvatarState(sellerAvatarAddress);
 
-                LocalLayerModifier.ModifyAgentGold(sellerAgentAddress, gold);
-                LocalLayerModifier.RemoveNewAttachmentMail(sellerAvatarAddress, result.id);
+                        LocalLayerModifier.ModifyAgentGold(sellerAgentAddress, gold);
+                        LocalLayerModifier.RemoveNewAttachmentMail(sellerAvatarAddress, sellerResult.id);
 
-                renderQuestAvatarAddress = sellerAvatarAddress;
-                renderQuestCompletedQuestIds = sellerAvatar.questList.completedQuestIds;
+                        renderQuestAvatarAddress = sellerAvatarAddress;
+                        renderQuestCompletedQuestIds = sellerAvatar.questList.completedQuestIds;
+                    }
+                }
             }
 
             UpdateAgentState(eval);

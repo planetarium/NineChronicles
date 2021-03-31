@@ -90,8 +90,9 @@ namespace Nekoyume.UI
                 return;
             }
 
-            var content = string.Format(L10nManager.Localize("UI_BUY_MULTIPLE_FORMAT"), _wishList.Count, _price);
-            content = content.Replace("\\n", "\n");
+            var content = string.Format(L10nManager.Localize("UI_BUY_MULTIPLE_FORMAT"),
+                _wishList.Count, _price);
+
             Widget.Find<TwoButtonPopup>().Show(content,
                                                L10nManager.Localize("UI_BUY"),
                                                L10nManager.Localize("UI_CANCEL"),

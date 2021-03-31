@@ -70,25 +70,5 @@ namespace Nekoyume.UI.Module
                         .GetLocalizedString();
             }
         }
-
-        public static StatType FoodTypeToStatType(this ItemSubTypeFilter type)
-        {
-            switch (type)
-            {
-                case ItemSubTypeFilter.Food_HP:
-                    return StatType.HP;
-                case ItemSubTypeFilter.Food_ATK:
-                    return StatType.ATK;
-                case ItemSubTypeFilter.Food_DEF:
-                    return StatType.DEF;
-                case ItemSubTypeFilter.Food_CRI:
-                    return StatType.CRI;
-                case ItemSubTypeFilter.Food_HIT:
-                    return StatType.HIT;
-
-                default:
-                    return StatType.NONE;
-            }
-        }
     }
 }

@@ -262,15 +262,12 @@ namespace Nekoyume.BlockChain
                 .DoOnError(e => HandleException(action.Id, e)); // Last() is for completion
         }
 
-        public IObservable<ActionBase.ActionEvaluation<Buy>> Buy(Address sellerAgentAddress,
-            Address sellerAvatarAddress, Guid productId)
+        public IObservable<ActionBase.ActionEvaluation<Buy>> Buy(IEnumerable<Buy.PurchaseInfo> purchaseInfos)
         {
             var action = new Buy
             {
                 buyerAvatarAddress = States.Instance.CurrentAvatarState.address,
-                sellerAgentAddress = sellerAgentAddress,
-                sellerAvatarAddress = sellerAvatarAddress,
-                productId = productId
+                purchaseInfos = purchaseInfos
             };
             ProcessAction(action);
 

@@ -184,7 +184,6 @@ namespace Nekoyume.BlockChain
         {
             _renderer.EveryRender<Buy>()
                 .Where(ValidateEvaluationForAgentState)
-
                 .ObserveOnMainThread()
                 .Subscribe(ResponseBuy).AddTo(_disposables);
         }
@@ -508,84 +507,109 @@ namespace Nekoyume.BlockChain
             if (eval.Exception is null)
             {
                 var buyerAvatarAddress = eval.Action.buyerAvatarAddress;
-                var price = eval.Action.sellerResult.shopItem.Price;
                 Address renderQuestAvatarAddress;
-                List<int> renderQuestCompletedQuestIds = null;
+                var renderQuestCompletedQuestIds = new List<int>();
+                // var price = eval.Action.sellerResult.shopItem.Price;
 
                 if (buyerAvatarAddress == States.Instance.CurrentAvatarState.address)
                 {
-                    var buyerAgentAddress = States.Instance.AgentState.address;
-                    var result = eval.Action.buyerResult;
-                    var nonFungibleItem = result.itemUsable ?? (INonFungibleItem) result.costume;
-                    var itemBase = result.itemUsable ?? (ItemBase) result.costume;
-                    var buyerAvatar = eval.OutputStates.GetAvatarState(buyerAvatarAddress);
-
-                    // 골드 처리.
-                    LocalLayerModifier.ModifyAgentGold(buyerAgentAddress, price);
-
-                    // 메일 처리.
-                    LocalLayerModifier.RemoveItem(buyerAvatarAddress, nonFungibleItem.ItemId);
-                    LocalLayerModifier.AddNewAttachmentMail(buyerAvatarAddress, result.id);
-
-                    var format = L10nManager.Localize("NOTIFICATION_BUY_BUYER_COMPLETE");
-                    UI.Notification.Push(MailType.Auction, string.Format(format, itemBase.GetLocalizedName()));
-
-                    //[TentuPlay] 아이템 구입, 골드 사용
-                    //Local에서 변경하는 States.Instance 보다는 블락에서 꺼내온 eval.OutputStates를 사용
-                    if (eval.OutputStates.TryGetGoldBalance(buyerAgentAddress, GoldCurrency, out var buyerAgentBalance))
+                    var purchaseResults = eval.Action.buyerMultipleResult.purchaseResults;
+                    foreach (var purchaseResult in purchaseResults)
                     {
-                        var total = buyerAgentBalance - price;
-                        new TPStashEvent().CharacterCurrencyUse(
-                            player_uuid: States.Instance.AgentState.address.ToHex(),
-                            character_uuid: States.Instance.CurrentAvatarState.address.ToHex().Substring(0, 4),
-                            currency_slug: "gold",
-                            currency_quantity: float.Parse(price.GetQuantityString()),
-                            currency_total_quantity: float.Parse(total.GetQuantityString()),
-                            reference_entity: entity.Trades,
-                            reference_category_slug: "buy",
-                            reference_slug: itemBase.Id.ToString() //아이템 품번
-                        );
-                    }
+                        if (purchaseResult.errorCode == 0)
+                        {
+                            var buyerAgentAddress = States.Instance.AgentState.address;
+                            // var result = eval.Action.buyerResult;
 
-                    renderQuestAvatarAddress = buyerAvatarAddress;
-                    renderQuestCompletedQuestIds = buyerAvatar.questList.completedQuestIds;
+                            var nonFungibleItem = purchaseResult.itemUsable ?? (INonFungibleItem) purchaseResult.costume;
+                            var itemBase = purchaseResult.itemUsable ?? (ItemBase) purchaseResult.costume;
+                            var buyerAvatar = eval.OutputStates.GetAvatarState(buyerAvatarAddress);
+                            var price = purchaseResult.shopItem.Price;
+
+                            // 골드 처리.
+                            LocalLayerModifier.ModifyAgentGold(buyerAgentAddress, price);
+
+                            // 메일 처리.
+                            LocalLayerModifier.RemoveItem(buyerAvatarAddress, nonFungibleItem.ItemId);
+                            LocalLayerModifier.AddNewAttachmentMail(buyerAvatarAddress, purchaseResult.id);
+
+                            var format = L10nManager.Localize("NOTIFICATION_BUY_BUYER_COMPLETE");
+                            UI.Notification.Push(MailType.Auction, string.Format(format, itemBase.GetLocalizedName()));
+
+                            //[TentuPlay] 아이템 구입, 골드 사용
+                            //Local에서 변경하는 States.Instance 보다는 블락에서 꺼내온 eval.OutputStates를 사용
+                            if (eval.OutputStates.TryGetGoldBalance(buyerAgentAddress, GoldCurrency, out var buyerAgentBalance))
+                            {
+                                var total = buyerAgentBalance - price;
+                                new TPStashEvent().CharacterCurrencyUse(
+                                    player_uuid: States.Instance.AgentState.address.ToHex(),
+                                    character_uuid: States.Instance.CurrentAvatarState.address.ToHex().Substring(0, 4),
+                                    currency_slug: "gold",
+                                    currency_quantity: float.Parse(price.GetQuantityString()),
+                                    currency_total_quantity: float.Parse(total.GetQuantityString()),
+                                    reference_entity: entity.Trades,
+                                    reference_category_slug: "buy",
+                                    reference_slug: itemBase.Id.ToString() //아이템 품번
+                                );
+                            }
+
+                            renderQuestAvatarAddress = buyerAvatarAddress;
+                            renderQuestCompletedQuestIds = buyerAvatar.questList.completedQuestIds;
+
+
+                        }
+                        else
+                        {
+                            // todo 여기서 실패 노티 뿌려줘야됨
+                        }
+                    }
                 }
                 else
                 {
-                    var sellerAvatarAddress = eval.Action.sellerAvatarAddress;
-                    var sellerAgentAddress = eval.Action.sellerAgentAddress;
-                    var result = eval.Action.sellerResult;
-                    var itemBase = result.itemUsable ?? (ItemBase) result.costume;
-                    var gold = result.gold;
-                    var sellerAvatar = eval.OutputStates.GetAvatarState(sellerAvatarAddress);
+                    foreach (var sellerResult in eval.Action.sellerMultipleResult.sellerResults)
+                    {
+                        var purchaseInfos = eval.Action.purchaseInfos;
+                        var purchaseInfo = purchaseInfos.FirstOrDefault(x => x.productId == sellerResult.id);
+                        if (purchaseInfo != null)
+                        {
+                            var sellerAvatarAddress = purchaseInfo.sellerAvatarAddress;
+                            var sellerAgentAddress = purchaseInfo.sellerAgentAddress;
+                            // var result = eval.Action.sellerResult;
 
-                    LocalLayerModifier.ModifyAgentGold(sellerAgentAddress, -gold);
-                    LocalLayerModifier.AddNewAttachmentMail(sellerAvatarAddress, result.id);
+                            var itemBase = sellerResult.itemUsable ?? (ItemBase) sellerResult.costume;
+                            var gold = sellerResult.gold;
+                            var sellerAvatar = eval.OutputStates.GetAvatarState(sellerAvatarAddress);
 
-                    var format = L10nManager.Localize("NOTIFICATION_BUY_SELLER_COMPLETE");
-                    var buyerName =
-                        new AvatarState(
-                                (Bencodex.Types.Dictionary) eval.OutputStates.GetState(eval.Action.buyerAvatarAddress))
-                            .NameWithHash;
-                    UI.Notification.Push(MailType.Auction, string.Format(format, buyerName, itemBase.GetLocalizedName()));
+                            LocalLayerModifier.ModifyAgentGold(sellerAgentAddress, -gold);
+                            LocalLayerModifier.AddNewAttachmentMail(sellerAvatarAddress, sellerResult.id);
 
-                    //[TentuPlay] 아이템 판매완료, 골드 증가
-                    //Local에서 변경하는 States.Instance 보다는 블락에서 꺼내온 eval.OutputStates를 사용
-                    var sellerAgentBalance = eval.OutputStates.GetBalance(sellerAgentAddress, GoldCurrency);
-                    var total = sellerAgentBalance + gold;
-                    new TPStashEvent().CharacterCurrencyGet(
-                        player_uuid: sellerAgentAddress.ToHex(), // seller == 본인인지 확인필요
-                        character_uuid: States.Instance.CurrentAvatarState.address.ToHex().Substring(0, 4),
-                        currency_slug: "gold",
-                        currency_quantity: float.Parse(gold.GetQuantityString()),
-                        currency_total_quantity: float.Parse(total.GetQuantityString()),
-                        reference_entity: entity.Trades,
-                        reference_category_slug: "sell",
-                        reference_slug: itemBase.Id.ToString() //아이템 품번
-                    );
+                            var format = L10nManager.Localize("NOTIFICATION_BUY_SELLER_COMPLETE");
+                            var buyerName =
+                                new AvatarState(
+                                        (Bencodex.Types.Dictionary) eval.OutputStates.GetState(eval.Action.buyerAvatarAddress))
+                                    .NameWithHash;
+                            UI.Notification.Push(MailType.Auction, string.Format(format, buyerName, itemBase.GetLocalizedName()));
 
-                    renderQuestAvatarAddress = sellerAvatarAddress;
-                    renderQuestCompletedQuestIds = sellerAvatar.questList.completedQuestIds;
+                            //[TentuPlay] 아이템 판매완료, 골드 증가
+                            //Local에서 변경하는 States.Instance 보다는 블락에서 꺼내온 eval.OutputStates를 사용
+                            var sellerAgentBalance = eval.OutputStates.GetBalance(sellerAgentAddress, GoldCurrency);
+                            var total = sellerAgentBalance + gold;
+                            new TPStashEvent().CharacterCurrencyGet(
+                                player_uuid: sellerAgentAddress.ToHex(), // seller == 본인인지 확인필요
+                                character_uuid: States.Instance.CurrentAvatarState.address.ToHex().Substring(0, 4),
+                                currency_slug: "gold",
+                                currency_quantity: float.Parse(gold.GetQuantityString()),
+                                currency_total_quantity: float.Parse(total.GetQuantityString()),
+                                reference_entity: entity.Trades,
+                                reference_category_slug: "sell",
+                                reference_slug: itemBase.Id.ToString() //아이템 품번
+                            );
+
+                            renderQuestAvatarAddress = sellerAvatarAddress;
+                            renderQuestCompletedQuestIds = sellerAvatar.questList.completedQuestIds;
+                        }
+                    }
+
                 }
 
                 UpdateAgentState(eval);

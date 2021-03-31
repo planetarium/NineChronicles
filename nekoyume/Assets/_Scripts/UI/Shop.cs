@@ -508,10 +508,10 @@ namespace Nekoyume.UI
                 };
                 Mixpanel.Track("Unity/Buy", props);
 
-                Game.Game.instance.ActionManager.Buy(
-                    shopItem.SellerAgentAddress.Value,
-                    shopItem.SellerAvatarAddress.Value,
-                    shopItem.ProductId.Value);
+                // Game.Game.instance.ActionManager.Buy(
+                //     shopItem.SellerAgentAddress.Value,
+                //     shopItem.SellerAvatarAddress.Value,
+                //     shopItem.ProductId.Value);
                 ResponseBuy(shopItem);
             }
             else

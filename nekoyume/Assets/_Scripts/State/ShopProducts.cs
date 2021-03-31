@@ -9,7 +9,6 @@ namespace Nekoyume.State
     public class ShopProducts
     {
         public readonly Dictionary<Address, List<ShopItem>> Products = new Dictionary<Address, List<ShopItem>>();
-        public readonly Dictionary<ItemSubType, List<ShopItem>> SortedProducts = new Dictionary<ItemSubType, List<ShopItem>>();
 
         private readonly List<ItemSubType> _itemSubTypes = new List<ItemSubType>()
         {
@@ -35,21 +34,14 @@ namespace Nekoyume.State
         public void UpdateProducts()
         {
             Products.Clear();
-            SortedProducts.Clear();
 
             foreach (var itemSubType in _itemSubTypes)
             {
-                if (!SortedProducts.ContainsKey(itemSubType))
-                {
-                    SortedProducts.Add(itemSubType, new List<ShopItem>());
-                }
-
                 foreach (var addressKey in ShardedShopState.AddressKeys)
                 {
                     var address = ShardedShopState.DeriveAddress(itemSubType, addressKey);
                     var state = new ShardedShopState(Game.Game.instance.Agent.GetState(address));
 
-                    SortedProducts[itemSubType].AddRange(state.Products.Values);
                     foreach (var product in state.Products.Values)
                     {
                         var agentAddress = product.SellerAgentAddress;

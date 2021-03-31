@@ -46,8 +46,8 @@ namespace Nekoyume.UI
             CloseWidget = null;
             buyButton.onClick.AddListener(() =>
             {
-                Find<ShopSell>().Close();
                 Find<ShopBuy>().Show();
+                Close();
             });
         }
 
@@ -81,26 +81,16 @@ namespace Nekoyume.UI
 
         public override void Show(bool ignoreShowAnimation = false)
         {
-            Game.Game.instance.Stage.GetPlayer().gameObject.SetActive(false);
-
-            // States.Instance.SetShopState(new ShopState(
-            //     (Bencodex.Types.Dictionary) Game.Game.instance.Agent.GetState(Addresses.Shop)));
-
             base.Show(ignoreShowAnimation);
-
             inventory.SharedModel.State.Value = ItemType.Equipment;
-
-            Find<BottomMenu>().Show(
-                UINavigator.NavigationType.Back,
-                SubscribeBackButtonClick,
-                true,
-                BottomMenu.ToggleableType.Mail,
-                BottomMenu.ToggleableType.Quest,
-                BottomMenu.ToggleableType.Chat,
-                BottomMenu.ToggleableType.IllustratedBook,
-                BottomMenu.ToggleableType.Character);
-
             AudioController.instance.PlayMusic(AudioController.MusicCode.Shop);
+        }
+
+        public override void Close(bool ignoreCloseAnimation = false)
+        {
+            Find<ItemCountAndPricePopup>().Close();
+            speechBubble.gameObject.SetActive(false);
+            base.Close(ignoreCloseAnimation);
         }
 
         protected override void OnCompleteOfShowAnimationInternal()
@@ -118,15 +108,6 @@ namespace Nekoyume.UI
             go.SetActive(true);
 
             ShowSpeech("SPEECH_SHOP_GREETING_", CharacterAnimation.Type.Greeting);
-        }
-
-        public override void Close(bool ignoreCloseAnimation = false)
-        {
-            Find<ItemCountAndPricePopup>().Close();
-            Find<BottomMenu>().Close(ignoreCloseAnimation);
-            speechBubble.gameObject.SetActive(false);
-            base.Close(ignoreCloseAnimation);
-            _npc?.gameObject.SetActive(false);
         }
 
         private void ShowTooltip(InventoryItemView view)

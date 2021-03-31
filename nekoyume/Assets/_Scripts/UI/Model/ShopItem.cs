@@ -14,6 +14,7 @@ namespace Nekoyume.UI.Model
         public readonly ReactiveProperty<Address> SellerAvatarAddress = new ReactiveProperty<Address>();
         public readonly ReactiveProperty<FungibleAssetValue> Price = new ReactiveProperty<FungibleAssetValue>();
         public readonly ReactiveProperty<Guid> ProductId = new ReactiveProperty<Guid>();
+        public readonly ReactiveProperty<ItemSubType> ItemSubType = new ReactiveProperty<ItemSubType>();
 
         public ShopItemView View;
 
@@ -23,14 +24,16 @@ namespace Nekoyume.UI.Model
         {
         }
 
-        private ShopItem(Address sellerAgentAddress, Address sellerAvatarAddress, FungibleAssetValue price, Guid productId,
-            ItemBase item) : base(item, 1)
+        private ShopItem(Address sellerAgentAddress, Address sellerAvatarAddress,
+                         FungibleAssetValue price, Guid productId,
+                         ItemBase item) : base(item, 1)
         {
             GradeEnabled.Value = true;
             SellerAgentAddress.Value = sellerAgentAddress;
             SellerAvatarAddress.Value = sellerAvatarAddress;
             Price.Value = price;
             ProductId.Value = productId;
+            ItemSubType.Value = item.ItemSubType;
         }
 
         public override void Dispose()
