@@ -135,7 +135,7 @@ namespace Nekoyume.UI.Module
                 .AddTo(gameObject);
         }
 
-        private void OnEnable()
+        public void Show()
         {
             itemSubTypeFilter.SetValueWithoutNotify(0);
             SharedModel.itemSubTypeFilter = 0;
@@ -151,7 +151,7 @@ namespace Nekoyume.UI.Module
                 .AddTo(_disposablesAtOnEnable);
         }
 
-        private void OnDisable()
+        public void Close()
         {
             _disposablesAtOnEnable.DisposeAllAndClear();
         }

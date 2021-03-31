@@ -46,8 +46,12 @@ namespace Nekoyume.UI
             CloseWidget = null;
             buyButton.onClick.AddListener(() =>
             {
-                Find<ShopBuy>().Show();
-                Close();
+                speechBubble.gameObject.SetActive(false);
+                Find<ItemCountAndPricePopup>().Close();
+                Find<ShopBuy>().gameObject.SetActive(true);
+                Find<ShopBuy>().Open();
+                _npc?.gameObject.SetActive(false);
+                gameObject.SetActive(false);
             });
         }
 
@@ -82,12 +86,14 @@ namespace Nekoyume.UI
         public override void Show(bool ignoreShowAnimation = false)
         {
             base.Show(ignoreShowAnimation);
+            shopItems.Show();
             inventory.SharedModel.State.Value = ItemType.Equipment;
             AudioController.instance.PlayMusic(AudioController.MusicCode.Shop);
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
         {
+            shopItems.Close();
             Find<ItemCountAndPricePopup>().Close();
             speechBubble.gameObject.SetActive(false);
             base.Close(ignoreCloseAnimation);
@@ -266,17 +272,6 @@ namespace Nekoyume.UI
         {
             SharedModel.ItemCountAndPricePopup.Value.Item.Value = null;
             Find<ItemCountAndPricePopup>().Close();
-        }
-
-        private void SubscribeBackButtonClick(BottomMenu bottomMenu)
-        {
-            if (!CanClose)
-            {
-                return;
-            }
-
-            Close(true);
-            Game.Event.OnRoomEnter.Invoke(true);
         }
 
         private static bool DimmedFuncForSell(InventoryItem inventoryItem)

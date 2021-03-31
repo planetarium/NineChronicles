@@ -182,13 +182,9 @@ namespace Nekoyume.UI.Module
             // }).AddTo(gameObject);
         }
 
-        public void Show()
+        public void Reset()
         {
             toggleDropdowns.First().isOn = true;
-        }
-
-        private void OnEnable()
-        {
             inputField.text = string.Empty;
             sortOrderIcon.localScale = Vector3.one;
 
@@ -197,6 +193,11 @@ namespace Nekoyume.UI.Module
             SharedModel.isReverseOrder = false;
             SharedModel.searchIds = new List<int>();
             SharedModel.SetMultiplePurchase(false);
+        }
+
+        public void Show()
+        {
+            Reset();
 
             ReactiveShopState.AgentProducts
                 .Subscribe(SharedModel.ResetAgentProducts)
@@ -207,7 +208,7 @@ namespace Nekoyume.UI.Module
                 .AddTo(_disposablesAtOnEnable);
         }
 
-        private void OnDisable()
+        public void Close()
         {
             _disposablesAtOnEnable.DisposeAllAndClear();
         }

@@ -55,10 +55,11 @@ namespace Nekoyume.UI
             CloseWidget = null;
             sellButton.onClick.AddListener(() =>
             {
-                _npc?.gameObject.SetActive(false);
+                shopItems.Reset();
                 Find<ItemCountAndPricePopup>().Close();
-                base.Close(true);
-                Find<ShopSell>().Show();
+                Find<ShopSell>().gameObject.SetActive(true);
+                _npc?.gameObject.SetActive(false);
+                gameObject.SetActive(false);
             });
         }
 
@@ -110,32 +111,18 @@ namespace Nekoyume.UI
 
                 AudioController.instance.PlayMusic(AudioController.MusicCode.Shop);
                 SetMultiplePurchase(false);
-
-                var go = Game.Game.instance.Stage.npcFactory.Create(
-                    NPCId,
-                    NPCPosition,
-                    LayerType.InGameBackground,
-                    3);
-                _npc = go.GetComponent<NPC>();
-                _npc.GetComponent<SortingGroup>().sortingLayerName = LayerType.UI.ToLayerName();
-                _npc.GetComponent<SortingGroup>().sortingOrder = 11;
-                _npc.SpineController.Appear();
-
-                frontCanvas.sortingLayerName = LayerType.UI.ToLayerName();
-                go.SetActive(true);
                 shopItems.Show();
-
+                ShowNPC();
                 Find<DataLoadingScreen>().Close();
+                Find<ShopSell>().Show();
+                Find<ShopSell>().gameObject.SetActive(false);
             }
-
-            // States.Instance.SetShopState(new ShopState(
-            //     (Bencodex.Types.Dictionary) Game.Game.instance.Agent.GetState(Addresses.Shop)),
-            //     shopItems.Items.Count);
         }
 
-        protected override void OnCompleteOfShowAnimationInternal()
+        public void Open()
         {
-            // ShowSpeech("SPEECH_SHOP_GREETING_", CharacterAnimation.Type.Greeting);
+            shopItems.Reset();
+            ShowNPC();
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
@@ -144,6 +131,34 @@ namespace Nekoyume.UI
             Find<BottomMenu>().Close(ignoreCloseAnimation);
             base.Close(ignoreCloseAnimation);
             _npc?.gameObject.SetActive(false);
+        }
+
+        public void Close()
+        {
+            shopItems.Close();
+            Close(true);
+            Find<ShopSell>().Close();
+            Game.Event.OnRoomEnter.Invoke(true);
+        }
+
+        private void ShowNPC()
+        {
+            var go = Game.Game.instance.Stage.npcFactory.Create(
+                NPCId,
+                NPCPosition,
+                LayerType.InGameBackground,
+                3);
+            _npc = go.GetComponent<NPC>();
+            _npc.GetComponent<SortingGroup>().sortingLayerName = LayerType.UI.ToLayerName();
+            _npc.GetComponent<SortingGroup>().sortingOrder = 11;
+            _npc.SpineController.Appear();
+            go.SetActive(true);
+            frontCanvas.sortingLayerName = LayerType.UI.ToLayerName();
+        }
+
+        protected override void OnCompleteOfShowAnimationInternal()
+        {
+            // ShowSpeech("SPEECH_SHOP_GREETING_", CharacterAnimation.Type.Greeting);
         }
 
         private void ShowTooltip(ShopItemView view)
@@ -214,6 +229,7 @@ namespace Nekoyume.UI
                     shopItem.ItemSubType.Value)
             };
             Game.Game.instance.ActionManager.Buy(purchaseInfos);
+
             ResponseBuy(shopItem);
         }
 
@@ -242,12 +258,6 @@ namespace Nekoyume.UI
             }
         }
 
-        private void Close()
-        {
-            Close(true);
-            Game.Event.OnRoomEnter.Invoke(true);
-        }
-
         private static bool ButtonEnabledFuncForBuy(CountableItem inventoryItem)
         {
             return inventoryItem is ShopItem shopItem &&
@@ -257,6 +267,7 @@ namespace Nekoyume.UI
         private void ResponseBuy(ShopItem shopItem)
         {
             SharedModel.ItemCountAndPricePopup.Value.Item.Value = null;
+            shopItem.Selected.Value = false;
 
             var buyerAgentAddress = States.Instance.AgentState.address;
             var productId = shopItem.ProductId.Value;
