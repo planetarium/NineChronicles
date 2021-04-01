@@ -187,7 +187,7 @@ namespace Nekoyume.UI
             _player.transform.SetParent(avatarPosition);
             _player.transform.localPosition = Vector3.zero;
 
-            var orderInLayer = MainCanvas.instance.GetLayer(WidgetType).root.sortingOrder + 1;
+            var orderInLayer = MainCanvas.instance.GetLayer(WidgetType).root.sortingOrder + 6;
             _player.SetSortingLayer(SortingLayer.NameToID("UI"), orderInLayer);
 
         }
