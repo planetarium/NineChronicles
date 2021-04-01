@@ -1414,7 +1414,6 @@ GameObject:
   - component: {fileID: 3104844367815860507}
   - component: {fileID: 3106393234482413173}
   - component: {fileID: 3534310988298249055}
-  - component: {fileID: 8551944437906836740}
   m_Layer: 5
   m_Name: UI_Mail
   m_TagString: Untagged
@@ -1505,27 +1504,6 @@ MonoBehaviour:
   emptyText: {fileID: 3042454381435730380}
   emptyTextL10nKey: UI_MAIL_EMPTY
   blur: {fileID: 7872133382900380743}
---- !u!223 &8551944437906836740
-Canvas:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2886511627788967075}
-  m_Enabled: 1
-  serializedVersion: 3
-  m_RenderMode: 2
-  m_Camera: {fileID: 0}
-  m_PlaneDistance: 100
-  m_PixelPerfect: 0
-  m_ReceivesEvents: 1
-  m_OverrideSorting: 1
-  m_OverridePixelPerfect: 0
-  m_SortingBucketNormalizedSize: 0
-  m_AdditionalShaderChannelsFlag: 25
-  m_SortingLayerID: 555532309
-  m_SortingOrder: 12
-  m_TargetDisplay: 0
 --- !u!1 &2886678452255110699
 GameObject:
   m_ObjectHideFlags: 0
@@ -4035,8 +4013,8 @@ MonoBehaviour:
     textComponent: {fileID: 3042454381435730380}
     characterCount: 12
     spriteCount: 0
-    spaceCount: 1
-    wordCount: 2
+    spaceCount: 4
+    wordCount: 4
     linkCount: 0
     lineCount: 1
     pageCount: 1
