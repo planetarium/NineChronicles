@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using mixpanel;
 using Nekoyume.Action;
+using Nekoyume.Game.Controller;
 using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
 using Nekoyume.State;
@@ -16,6 +18,7 @@ namespace Nekoyume.UI
     public class ShopBuyBoard : MonoBehaviour
     {
         [SerializeField] List<ShopBuyWishItemView> items = new List<ShopBuyWishItemView>();
+        [SerializeField] private ShopBuyItems shopItems = null;
         [SerializeField] private GameObject defaultView;
         [SerializeField] private GameObject wishListView;
         [SerializeField] private Button showWishListButton;
@@ -29,7 +32,6 @@ namespace Nekoyume.UI
 
         public readonly Subject<bool> OnChangeBuyType = new Subject<bool>();
 
-        private List<ShopItem> _wishList = new List<ShopItem>();
         private double _price;
 
         private void Awake()
@@ -65,7 +67,7 @@ namespace Nekoyume.UI
 
         private void OnCloseBuyWishList(Unit unit)
         {
-            if (_wishList.Count > 0)
+            if (shopItems.SharedModel.wishItems.Count > 0)
             {
                 Widget.Find<TwoButtonPopup>().Show(L10nManager.Localize("UI_CLOSE_BUY_WISH_LIST"),
                                                    L10nManager.Localize("UI_YES"),
@@ -93,7 +95,7 @@ namespace Nekoyume.UI
             }
 
             var content = string.Format(L10nManager.Localize("UI_BUY_MULTIPLE_FORMAT"),
-                _wishList.Count, _price);
+                shopItems.SharedModel.wishItems.Count, _price);
 
             Widget.Find<TwoButtonPopup>().Show(content,
                                                L10nManager.Localize("UI_BUY"),
@@ -103,12 +105,32 @@ namespace Nekoyume.UI
 
         private void Buy()
         {
-            var purchaseInfos = _wishList.Select(GetPurchseInfo).ToList();
+            var purchaseInfos = shopItems.SharedModel.wishItems.Select(GetPurchseInfo).ToList();
             Game.Game.instance.ActionManager.Buy(purchaseInfos);
-            foreach (var shopItem in _wishList)
+
+            ReactiveShopState.PurchaseHistory.Enqueue(shopItems.SharedModel.wishItems.ToList());
+
+            foreach (var shopItem in shopItems.SharedModel.wishItems)
             {
-                Widget.Find<ShopBuy>().ResponseBuy(shopItem);
+                var price = shopItem.Price.Value.GetQuantityString();
+                var props = new Value
+                {
+                    ["Price"] = shopItem.Price.Value.GetQuantityString(),
+                };
+                Mixpanel.Track("Unity/Buy", props);
+                shopItem.Selected.Value = false;
+                var buyerAgentAddress = States.Instance.AgentState.address;
+                var productId = shopItem.ProductId.Value;
+
+                LocalLayerModifier.ModifyAgentGold(buyerAgentAddress, -shopItem.Price.Value);
+                shopItems.SharedModel.RemoveItemSubTypeProduct(productId);
+                var format = L10nManager.Localize("NOTIFICATION_BUY_START");
+                Notification.Push(MailType.Auction,
+                    string.Format(format, shopItem.ItemBase.Value.GetLocalizedName()));
             }
+            AudioController.instance.PlaySfx(AudioController.SfxCode.BuyItem);
+            shopItems.SharedModel.ClearWishList();
+            UpdateWishList();
         }
 
         private Buy.PurchaseInfo GetPurchseInfo(ShopItem shopItem)
@@ -132,20 +154,19 @@ namespace Nekoyume.UI
             }
         }
 
-        public void UpdateWishList(Model.ShopItems shopItems)
+        public void UpdateWishList()
         {
             Clear();
-            _wishList = shopItems.wishItems;
             _price = 0.0f;
-            for (int i = 0; i < _wishList.Count; i++)
+            for (int i = 0; i < shopItems.SharedModel.wishItems.Count; i++)
             {
-                var shopItem = _wishList[i];
-                _price += double.Parse(shopItem.Price.Value.GetQuantityString());
+                var item = shopItems.SharedModel.wishItems[i];
+                _price += double.Parse(item.Price.Value.GetQuantityString());
                 items[i].gameObject.SetActive(true);
-                items[i].SetData(shopItem, () =>
+                items[i].SetData(item, () =>
                 {
-                    shopItems.RemoveItemInWishList(shopItem);
-                    UpdateWishList(shopItems);
+                    shopItems.SharedModel.RemoveItemInWishList(item);
+                    UpdateWishList();
                 });
             }
 

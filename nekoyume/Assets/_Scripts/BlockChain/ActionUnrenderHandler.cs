@@ -125,7 +125,6 @@ namespace Nekoyume.BlockChain
             var buyerAvatarAddress = eval.Action.buyerAvatarAddress;
             Address renderQuestAvatarAddress;
             var renderQuestCompletedQuestIds = new List<int>();
-            // var price = eval.Action.sellerResult.shopItem.Price;
 
             if (buyerAvatarAddress == States.Instance.CurrentAvatarState.address)
             {
@@ -155,7 +154,6 @@ namespace Nekoyume.BlockChain
                     {
                         var sellerAvatarAddress = purchaseInfo.sellerAvatarAddress;
                         var sellerAgentAddress = purchaseInfo.sellerAgentAddress;
-                        // var result = eval.Action.sellerResult;
                         var gold = sellerResult.gold;
                         var sellerAvatar = eval.OutputStates.GetAvatarState(sellerAvatarAddress);
 

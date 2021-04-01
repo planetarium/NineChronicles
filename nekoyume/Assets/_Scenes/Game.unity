@@ -469,7 +469,6 @@ GameObject:
   m_Component:
   - component: {fileID: 654281525}
   - component: {fileID: 654281524}
-  - component: {fileID: 654281523}
   - component: {fileID: 654281522}
   m_Layer: 0
   m_Name: SpineCamera
@@ -490,14 +489,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f7f9a935493806a43941506ece1c82a9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!81 &654281523
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 654281521}
-  m_Enabled: 1
 --- !u!20 &654281524
 Camera:
   m_ObjectHideFlags: 0

@@ -176,9 +176,13 @@ namespace Nekoyume.UI.Model
             }
         }
 
-        public void SetMultiplePurchase(bool value)
+        public void ClearWishList()
         {
             wishItems.Clear();
+        }
+
+        public void SetMultiplePurchase(bool value)
+        {
             isMultiplePurchase = value;
             ResetAgentProducts();
             ResetItemSubTypeProducts();
@@ -225,8 +229,40 @@ namespace Nekoyume.UI.Model
 
         public void RemoveItemSubTypeProduct(Guid productId)
         {
-            RemoveProduct(productId, _itemSubTypeProducts, ItemSubTypeProducts.Value);
-            ItemSubTypeProducts.SetValueAndForceNotify(ItemSubTypeProducts.Value);
+            foreach (var keyValuePair in _agentProducts)
+            {
+                foreach (var keyValuePair1 in keyValuePair.Value
+                    .SelectMany(valuePair => valuePair.Value.SelectMany(pair => pair.Value)))
+                {
+                    foreach (var shopItem in keyValuePair1.Value)
+                    {
+                        if (productId == shopItem.ProductId.Value)
+                        {
+                            keyValuePair1.Value.Remove(shopItem);
+                            break;
+                        }
+                    }
+                }
+            }
+
+            foreach (var itemSubTypeProduct in _itemSubTypeProducts)
+            {
+                foreach (var valuePair in itemSubTypeProduct.Value
+                    .SelectMany(keyValuePair => keyValuePair.Value))
+                {
+                    foreach (var shopItem in valuePair.Value)
+                    {
+                        if (productId == shopItem.ProductId.Value)
+                        {
+                            valuePair.Value.Remove(shopItem);
+                            break;
+                        }
+                    }
+                }
+            }
+
+            ResetAgentProducts();
+            ResetItemSubTypeProducts();
         }
 
         private static void RemoveProduct(

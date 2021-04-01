@@ -34,8 +34,6 @@ namespace Nekoyume.UI
         [SerializeField] private GameObject refreshLoading = null;
         [SerializeField] private TextMeshProUGUI refreshText = null;
 
-        // [SerializeField] private SpeechBubble speechBubble = null;
-
         private Model.Shop SharedModel { get; set; }
 
         [SerializeField] private List<ShopItemViewRow> itemViewItems;
@@ -196,11 +194,6 @@ namespace Nekoyume.UI
             frontCanvas.sortingLayerName = LayerType.UI.ToLayerName();
         }
 
-        protected override void OnCompleteOfShowAnimationInternal()
-        {
-            // ShowSpeech("SPEECH_SHOP_GREETING_", CharacterAnimation.Type.Greeting);
-        }
-
         private void ShowTooltip(ShopItemView view)
         {
             var tooltip = Find<ItemInformationTooltip>();
@@ -249,11 +242,6 @@ namespace Nekoyume.UI
             Find<ItemCountAndPricePopup>().Pop(SharedModel.ItemCountAndPricePopup.Value);
         }
 
-        private void AddWishList(ShopItemView view)
-        {
-            shopBuyBoard.UpdateWishList(shopItems.SharedModel);
-        }
-
         private void Buy(ShopItem shopItem)
         {
             var props = new Value
@@ -269,6 +257,8 @@ namespace Nekoyume.UI
                     shopItem.SellerAvatarAddress.Value,
                     shopItem.ItemSubType.Value)
             };
+
+            ReactiveShopState.PurchaseHistory.Enqueue(new List<ShopItem>() {shopItem});
             Game.Game.instance.ActionManager.Buy(purchaseInfos);
 
             ResponseBuy(shopItem);
@@ -305,7 +295,7 @@ namespace Nekoyume.UI
                    States.Instance.GoldBalanceState.Gold >= shopItem.Price.Value;
         }
 
-        public void ResponseBuy(ShopItem shopItem)
+        private void ResponseBuy(ShopItem shopItem)
         {
             SharedModel.ItemCountAndPricePopup.Value.Item.Value = null;
             shopItem.Selected.Value = false;
@@ -314,14 +304,7 @@ namespace Nekoyume.UI
             var productId = shopItem.ProductId.Value;
 
             LocalLayerModifier.ModifyAgentGold(buyerAgentAddress, -shopItem.Price.Value);
-            // try
-            // {
-            //     States.Instance.ShopState.Unregister(productId);
-            // }
-            // catch (FailedToUnregisterInShopStateException e)
-            // {
-            //     Debug.LogError(e.Message);
-            // }
+
             shopItems.SharedModel.RemoveItemSubTypeProduct(productId);
 
             AudioController.instance.PlaySfx(AudioController.SfxCode.BuyItem);
@@ -334,28 +317,12 @@ namespace Nekoyume.UI
         {
             if (shopItems.SharedModel.isMultiplePurchase)
             {
-                AddWishList(view);
+                shopBuyBoard.UpdateWishList();
             }
             else
             {
                 ShowTooltip(view);
             }
         }
-
-        // private void ShowSpeech(string key,
-        //     CharacterAnimation.Type type = CharacterAnimation.Type.Emotion)
-        // {
-        //     if (type == CharacterAnimation.Type.Greeting)
-        //     {
-        //         _npc.PlayAnimation(NPCAnimation.Type.Greeting_01);
-        //     }
-        //     else
-        //     {
-        //         _npc.PlayAnimation(NPCAnimation.Type.Emotion_01);
-        //     }
-        //
-        //     speechBubble.SetKey(key);
-        //     StartCoroutine(speechBubble.CoShowText());
-        // }
     }
 }

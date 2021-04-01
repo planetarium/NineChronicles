@@ -21,7 +21,9 @@ using Nekoyume.Model.Quest;
 using Nekoyume.State.Modifiers;
 using Nekoyume.State.Subjects;
 using Nekoyume.TableData;
+using Nekoyume.UI.Module;
 using UnityEngine;
+using Inventory = Nekoyume.Model.Item.Inventory;
 
 namespace Nekoyume.BlockChain
 {
@@ -509,18 +511,16 @@ namespace Nekoyume.BlockChain
                 var buyerAvatarAddress = eval.Action.buyerAvatarAddress;
                 Address renderQuestAvatarAddress;
                 var renderQuestCompletedQuestIds = new List<int>();
-                // var price = eval.Action.sellerResult.shopItem.Price;
 
                 if (buyerAvatarAddress == States.Instance.CurrentAvatarState.address)
                 {
                     var purchaseResults = eval.Action.buyerMultipleResult.purchaseResults;
+                    var purchaseHistory = ReactiveShopState.PurchaseHistory.Dequeue();
                     foreach (var purchaseResult in purchaseResults)
                     {
                         if (purchaseResult.errorCode == 0)
                         {
                             var buyerAgentAddress = States.Instance.AgentState.address;
-                            // var result = eval.Action.buyerResult;
-
                             var nonFungibleItem = purchaseResult.itemUsable ?? (INonFungibleItem) purchaseResult.costume;
                             var itemBase = purchaseResult.itemUsable ?? (ItemBase) purchaseResult.costume;
                             var buyerAvatar = eval.OutputStates.GetAvatarState(buyerAvatarAddress);
@@ -534,7 +534,8 @@ namespace Nekoyume.BlockChain
                             LocalLayerModifier.AddNewAttachmentMail(buyerAvatarAddress, purchaseResult.id);
 
                             var format = L10nManager.Localize("NOTIFICATION_BUY_BUYER_COMPLETE");
-                            UI.Notification.Push(MailType.Auction, string.Format(format, itemBase.GetLocalizedName()));
+                            OneLinePopup.Push(MailType.Auction, string.Format(format, itemBase.GetLocalizedName()));
+                            Debug.Log($"성공 : {itemBase.GetLocalizedName()} : {purchaseResult.productId}");
 
                             //[TentuPlay] 아이템 구입, 골드 사용
                             //Local에서 변경하는 States.Instance 보다는 블락에서 꺼내온 eval.OutputStates를 사용
@@ -555,12 +556,16 @@ namespace Nekoyume.BlockChain
 
                             renderQuestAvatarAddress = buyerAvatarAddress;
                             renderQuestCompletedQuestIds = buyerAvatar.questList.completedQuestIds;
-
-
                         }
                         else
                         {
-                            // todo 여기서 실패 노티 뿌려줘야됨
+                            var item = purchaseHistory.First(x => x.ProductId.Value == purchaseResult.productId);
+                            var errorType = ((ShopErrorType) purchaseResult.errorCode).ToString();
+                            var msg = string.Format(L10nManager.Localize("NOTIFICATION_BUY_FAIL"),
+                                                          item.ItemBase.Value.GetLocalizedName(),
+                                                          purchaseResult.errorCode);
+                            Debug.Log($"###실패 : {item.ItemBase.Value.GetLocalizedName()} : {purchaseResult.productId} : {purchaseResult.errorCode}");
+                            OneLinePopup.Push(MailType.Auction, msg);
                         }
                     }
                 }
@@ -574,7 +579,6 @@ namespace Nekoyume.BlockChain
                         {
                             var sellerAvatarAddress = purchaseInfo.sellerAvatarAddress;
                             var sellerAgentAddress = purchaseInfo.sellerAgentAddress;
-                            // var result = eval.Action.sellerResult;
 
                             var itemBase = sellerResult.itemUsable ?? (ItemBase) sellerResult.costume;
                             var gold = sellerResult.gold;
