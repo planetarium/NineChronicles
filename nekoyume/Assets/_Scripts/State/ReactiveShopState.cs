@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Libplanet;
+using Nekoyume.Action;
 using Nekoyume.Battle;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Stat;
@@ -41,6 +42,8 @@ namespace Nekoyume.State
                     SortFilter, Dictionary<int, List<ShopItem>>>>>();
 
         private static int _shopItemsPerPage = 24;
+
+        public static Queue<List<Nekoyume.UI.Model.ShopItem>> PurchaseHistory = new Queue<List<Nekoyume.UI.Model.ShopItem>>();
 
         public static void Initialize(int shopItemsPerPage = 24)
         {
