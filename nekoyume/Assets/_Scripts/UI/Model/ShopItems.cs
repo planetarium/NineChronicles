@@ -183,6 +183,7 @@ namespace Nekoyume.UI.Model
 
         public void SetMultiplePurchase(bool value)
         {
+            ClearWishList();
             isMultiplePurchase = value;
             ResetAgentProducts();
             ResetItemSubTypeProducts();

@@ -179,13 +179,5 @@ namespace Nekoyume.UI.Module
             gameObject.SetActive(true);
             speechBubble.Init(true);
         }
-
-        void OnGUI()
-        {
-            if (GUI.Button(new Rect(20, 40, 80, 20), "Level 1"))
-            {
-                Widget.Find<Shop>().Show();
-            }
-        }
     }
 }

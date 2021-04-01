@@ -222,7 +222,6 @@ namespace Nekoyume.UI
                 return;
             }
 
-            Debug.Log($"shopItem.ExpiredBlockIndex : {shopItem.ExpiredBlockIndex.Value}");
             var price = shopItem.Price.Value.GetQuantityString();
             var content = string.Format(L10nManager.Localize("UI_BUY_MULTIPLE_FORMAT"), 1, price);
             Find<TwoButtonPopup>().Show(content,
@@ -267,6 +266,7 @@ namespace Nekoyume.UI
         private void SetMultiplePurchase(bool value)
         {
             shopItems.SharedModel.SetMultiplePurchase(value);
+            shopBuyBoard.UpdateWishList();
         }
 
         private void SubscribeBackButtonClick(BottomMenu bottomMenu)

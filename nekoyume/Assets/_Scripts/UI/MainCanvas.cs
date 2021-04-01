@@ -218,8 +218,6 @@ namespace Nekoyume.UI
             yield return null;
             secondWidgets.Add(Widget.Create<ShopBuy>());
             yield return null;
-            secondWidgets.Add(Widget.Create<Shop>());
-            yield return null;
 
             secondWidgets.Add(Widget.Create<QuestPreparation>());
             yield return null;

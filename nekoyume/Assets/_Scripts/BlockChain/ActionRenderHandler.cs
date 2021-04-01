@@ -438,8 +438,6 @@ namespace Nekoyume.BlockChain
                 );
                 AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ActionCombinationSuccess);
 
-                //[TentuPlay] Consumable 합성에 사용한 골드 기록
-                //Local에서 변경하는 States.Instance 보다는 블락에서 꺼내온 eval.OutputStates를 사용
                 if (eval.OutputStates.TryGetGoldBalance(agentAddress, GoldCurrency, out var balance))
                 {
                     var total = balance - new FungibleAssetValue(balance.Currency, result.gold, 0);
@@ -468,7 +466,6 @@ namespace Nekoyume.BlockChain
                 var avatarAddress = eval.Action.sellerAvatarAddress;
                 var itemId = eval.Action.itemId;
 
-                // NOTE: 최종적으로 UpdateCurrentAvatarState()를 호출한다면, 그곳에서 상태를 새로 설정할 것이다.
                 LocalLayerModifier.AddItem(avatarAddress, itemId, false);
                 var format = L10nManager.Localize("NOTIFICATION_SELL_COMPLETE");
 
@@ -479,7 +476,6 @@ namespace Nekoyume.BlockChain
                 }
                 else
                 {
-                    // exception
                     Debug.LogError("Failed to get non-fungible item from previous AvatarState.");
                 }
 
@@ -526,19 +522,13 @@ namespace Nekoyume.BlockChain
                             var buyerAvatar = eval.OutputStates.GetAvatarState(buyerAvatarAddress);
                             var price = purchaseResult.shopItem.Price;
 
-                            // 골드 처리.
                             LocalLayerModifier.ModifyAgentGold(buyerAgentAddress, price);
-
-                            // 메일 처리.
                             LocalLayerModifier.RemoveItem(buyerAvatarAddress, nonFungibleItem.ItemId);
                             LocalLayerModifier.AddNewAttachmentMail(buyerAvatarAddress, purchaseResult.id);
 
                             var format = L10nManager.Localize("NOTIFICATION_BUY_BUYER_COMPLETE");
                             OneLinePopup.Push(MailType.Auction, string.Format(format, itemBase.GetLocalizedName()));
-                            Debug.Log($"성공 : {itemBase.GetLocalizedName()} : {purchaseResult.productId}");
 
-                            //[TentuPlay] 아이템 구입, 골드 사용
-                            //Local에서 변경하는 States.Instance 보다는 블락에서 꺼내온 eval.OutputStates를 사용
                             if (eval.OutputStates.TryGetGoldBalance(buyerAgentAddress, GoldCurrency, out var buyerAgentBalance))
                             {
                                 var total = buyerAgentBalance - price;
@@ -550,7 +540,7 @@ namespace Nekoyume.BlockChain
                                     currency_total_quantity: float.Parse(total.GetQuantityString()),
                                     reference_entity: entity.Trades,
                                     reference_category_slug: "buy",
-                                    reference_slug: itemBase.Id.ToString() //아이템 품번
+                                    reference_slug: itemBase.Id.ToString()
                                 );
                             }
 
@@ -564,7 +554,6 @@ namespace Nekoyume.BlockChain
                             var msg = string.Format(L10nManager.Localize("NOTIFICATION_BUY_FAIL"),
                                                           item.ItemBase.Value.GetLocalizedName(),
                                                           purchaseResult.errorCode);
-                            Debug.Log($"###실패 : {item.ItemBase.Value.GetLocalizedName()} : {purchaseResult.productId} : {purchaseResult.errorCode}");
                             OneLinePopup.Push(MailType.Auction, msg);
                         }
                     }
