@@ -254,17 +254,17 @@ namespace Nekoyume.UI
                     throw new InvalidSellingPriceException(data);
                 }
 
-                Game.Game.instance.ActionManager.Sell(
-                    (INonFungibleItem)data.Item.Value.ItemBase.Value,
-                    data.Price.Value);
+                var itemId = ((INonFungibleItem) data.Item.Value.ItemBase.Value).ItemId;
+                var itemSubType = data.Item.Value.ItemBase.Value.ItemSubType;
+                Game.Game.instance.ActionManager.Sell(itemId, data.Price.Value, itemSubType);
                 ResponseSell();
-
                 return;
             }
 
             Game.Game.instance.ActionManager.SellCancellation(
                 shopItem.SellerAvatarAddress.Value,
-                shopItem.ProductId.Value);
+                shopItem.ProductId.Value,
+                shopItem.ItemSubType.Value);
             ResponseSellCancellation(shopItem);
         }
 
