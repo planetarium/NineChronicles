@@ -281,7 +281,7 @@ namespace Nekoyume.UI
         public void ShowByEquipmentRecipe(int recipeId)
         {
             _equipmentRecipeIdToGo = recipeId;
-
+            ResetSelectedIndex();
             Show();
         }
 
