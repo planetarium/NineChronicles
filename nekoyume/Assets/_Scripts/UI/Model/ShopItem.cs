@@ -15,18 +15,20 @@ namespace Nekoyume.UI.Model
         public readonly ReactiveProperty<FungibleAssetValue> Price = new ReactiveProperty<FungibleAssetValue>();
         public readonly ReactiveProperty<Guid> ProductId = new ReactiveProperty<Guid>();
         public readonly ReactiveProperty<ItemSubType> ItemSubType = new ReactiveProperty<ItemSubType>();
+        public readonly ReactiveProperty<long> ExpiredBlockIndex = new ReactiveProperty<long>();
 
         public ShopItemView View;
 
         public ShopItem(Nekoyume.Model.Item.ShopItem item)
             : this(item.SellerAgentAddress, item.SellerAvatarAddress, item.Price, item.ProductId,
-                item.ItemUsable ?? (ItemBase)item.Costume)
+                item.ItemUsable ?? (ItemBase)item.Costume, item.ExpiredBlockIndex)
         {
+
         }
 
         private ShopItem(Address sellerAgentAddress, Address sellerAvatarAddress,
                          FungibleAssetValue price, Guid productId,
-                         ItemBase item) : base(item, 1)
+                         ItemBase item, long expiredBlockIndex) : base(item, 1)
         {
             GradeEnabled.Value = true;
             SellerAgentAddress.Value = sellerAgentAddress;
@@ -34,6 +36,7 @@ namespace Nekoyume.UI.Model
             Price.Value = price;
             ProductId.Value = productId;
             ItemSubType.Value = item.ItemSubType;
+            ExpiredBlockIndex.Value = expiredBlockIndex;
         }
 
         public override void Dispose()

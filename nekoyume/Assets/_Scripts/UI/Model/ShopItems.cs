@@ -282,7 +282,7 @@ namespace Nekoyume.UI.Model
 
         public void ResetAgentProducts()
         {
-            if (States.Instance == null)
+            if (States.Instance == null || States.Instance.AgentState == null)
             {
                 return;
             }

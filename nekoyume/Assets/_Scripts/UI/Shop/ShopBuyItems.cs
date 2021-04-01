@@ -28,6 +28,7 @@ namespace Nekoyume.UI.Module
         [SerializeField] private Button sortButton = null;
         [SerializeField] private Button sortOrderButton = null;
         [SerializeField] private Button searchButton = null;
+
         [SerializeField] private RectTransform sortOrderIcon = null;
         [SerializeField] private TMP_InputField inputField = null;
         [SerializeField] private Transform inputPlaceholder = null;
@@ -193,6 +194,7 @@ namespace Nekoyume.UI.Module
             SharedModel.isReverseOrder = false;
             SharedModel.searchIds = new List<int>();
             SharedModel.SetMultiplePurchase(false);
+            UpdateSrot();
         }
 
         public void Show()
@@ -327,6 +329,11 @@ namespace Nekoyume.UI.Module
         }
 
         private void OnClickSort(Unit unit)
+        {
+            UpdateSrot();
+        }
+
+        private void UpdateSrot()
         {
             int count = Enum.GetNames(typeof(SortFilter)).Length;
             _sortFilter = (int) _sortFilter < count - 1 ? _sortFilter + 1 : 0;

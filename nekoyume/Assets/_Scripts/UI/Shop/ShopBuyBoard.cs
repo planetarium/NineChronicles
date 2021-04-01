@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using Nekoyume.Action;
 using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
 using Nekoyume.State;
@@ -96,7 +98,25 @@ namespace Nekoyume.UI
             Widget.Find<TwoButtonPopup>().Show(content,
                                                L10nManager.Localize("UI_BUY"),
                                                L10nManager.Localize("UI_CANCEL"),
-                                               (() => {}));
+                                               Buy);
+        }
+
+        private void Buy()
+        {
+            var purchaseInfos = _wishList.Select(GetPurchseInfo).ToList();
+            Game.Game.instance.ActionManager.Buy(purchaseInfos);
+            foreach (var shopItem in _wishList)
+            {
+                Widget.Find<ShopBuy>().ResponseBuy(shopItem);
+            }
+        }
+
+        private Buy.PurchaseInfo GetPurchseInfo(ShopItem shopItem)
+        {
+            return new Buy.PurchaseInfo(shopItem.ProductId.Value,
+                shopItem.SellerAgentAddress.Value,
+                shopItem.SellerAvatarAddress.Value,
+                shopItem.ItemSubType.Value);
         }
 
         private void OnClickTransactionHistory(Unit unit)

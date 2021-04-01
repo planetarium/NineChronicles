@@ -6,10 +6,12 @@ using Nekoyume.EnumType;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using Nekoyume.L10n;
+using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.State;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
+using TMPro;
 using UniRx;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -21,13 +23,16 @@ namespace Nekoyume.UI
     public class ShopBuy : Widget
     {
         private const int NPCId = 300000;
-        private static readonly Vector2 NPCPosition = new Vector2(2.76f, -1.2f);
+        private static readonly Vector3 NPCPosition = new Vector3(1000.1f, 998.2f, 1.7f);
         private NPC _npc;
 
         [SerializeField] private ShopBuyItems shopItems = null;
         [SerializeField] private ShopBuyBoard shopBuyBoard = null;
         [SerializeField] private Button sellButton = null;
         [SerializeField] private Canvas frontCanvas;
+        [SerializeField] private Button refreshButton = null;
+        [SerializeField] private GameObject refreshLoading = null;
+        [SerializeField] private TextMeshProUGUI refreshText = null;
 
         // [SerializeField] private SpeechBubble speechBubble = null;
 
@@ -61,6 +66,35 @@ namespace Nekoyume.UI
                 _npc?.gameObject.SetActive(false);
                 gameObject.SetActive(false);
             });
+
+            refreshButton.onClick.AddListener(Refresh);
+            refreshText.text = L10nManager.Localize("UI_REFRESH");
+        }
+
+        private void Refresh()
+        {
+            AsyncRefresh();
+        }
+        private async void AsyncRefresh()
+        {
+            shopItems.Close();
+            refreshLoading.SetActive(true);
+            refreshText.gameObject.SetActive(false);
+            var task = Task.Run(() =>
+            {
+                Game.Game.instance.ShopProducts.UpdateProducts();
+                return true;
+            });
+
+            var result = await task;
+            if (result)
+            {
+                ReactiveShopState.Initialize();
+                SetMultiplePurchase(false);
+                shopItems.Show();
+                refreshLoading.SetActive(false);
+                refreshText.gameObject.SetActive(true);
+            }
         }
 
         public override void Initialize()
@@ -112,17 +146,25 @@ namespace Nekoyume.UI
                 AudioController.instance.PlayMusic(AudioController.MusicCode.Shop);
                 SetMultiplePurchase(false);
                 shopItems.Show();
-                ShowNPC();
-                Find<DataLoadingScreen>().Close();
+                Reset();
                 Find<ShopSell>().Show();
                 Find<ShopSell>().gameObject.SetActive(false);
+                Find<DataLoadingScreen>().Close();
             }
+        }
+
+
+        private void Reset()
+        {
+            ShowNPC();
+            refreshLoading.SetActive(false);
+            refreshText.gameObject.SetActive(true);
         }
 
         public void Open()
         {
             shopItems.Reset();
-            ShowNPC();
+            Reset();
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
@@ -149,8 +191,6 @@ namespace Nekoyume.UI
                 LayerType.InGameBackground,
                 3);
             _npc = go.GetComponent<NPC>();
-            _npc.GetComponent<SortingGroup>().sortingLayerName = LayerType.UI.ToLayerName();
-            _npc.GetComponent<SortingGroup>().sortingOrder = 11;
             _npc.SpineController.Appear();
             go.SetActive(true);
             frontCanvas.sortingLayerName = LayerType.UI.ToLayerName();
@@ -189,6 +229,7 @@ namespace Nekoyume.UI
                 return;
             }
 
+            Debug.Log($"shopItem.ExpiredBlockIndex : {shopItem.ExpiredBlockIndex.Value}");
             var price = shopItem.Price.Value.GetQuantityString();
             var content = string.Format(L10nManager.Localize("UI_BUY_MULTIPLE_FORMAT"), 1, price);
             Find<TwoButtonPopup>().Show(content,
@@ -264,7 +305,7 @@ namespace Nekoyume.UI
                    States.Instance.GoldBalanceState.Gold >= shopItem.Price.Value;
         }
 
-        private void ResponseBuy(ShopItem shopItem)
+        public void ResponseBuy(ShopItem shopItem)
         {
             SharedModel.ItemCountAndPricePopup.Value.Item.Value = null;
             shopItem.Selected.Value = false;
