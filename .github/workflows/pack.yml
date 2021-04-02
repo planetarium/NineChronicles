@@ -18,7 +18,7 @@ jobs:
         projectPath:
           - nekoyume
         unityVersion:
-          - 2019.1.0f2
+          - 2020.3.0f1
         targetPlatform:
           - Windows
           - MacOS
@@ -37,8 +37,8 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: ${{ matrix.projectPath }}/Library
-          key: ${{ matrix.targetPlatform }}-${{ matrix.projectPath }}-Library-v2
-      - uses: docker://gableroux/unity3d:2019.1.0f2 # FIXME: 이미지 pull 받아오는 속도 개선 필요
+          key: ${{ matrix.targetPlatform }}-${{ matrix.projectPath }}-Library-v3
+      - uses: docker://gableroux/unity3d:2020.3.0f1 # FIXME: 이미지 pull 받아오는 속도 개선 필요
         env:
           ULF: ${{ secrets.ULF }}
           APV_SIGNING_PRIVATE_KEY: ${{ secrets.APV_SIGNING_PRIVATE_KEY }}
