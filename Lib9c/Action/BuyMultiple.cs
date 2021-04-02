@@ -31,8 +31,43 @@ namespace Nekoyume.Action
         public const int ERROR_CODE_INSUFFICIENT_BALANCE = 4;
 
         [Serializable]
-        public class PurchaseInfo
+        public class PurchaseInfo : IComparable<PurchaseInfo>, IComparable
         {
+            public static bool operator >(PurchaseInfo left, PurchaseInfo right) => left.CompareTo(right) > 0;
+
+            public static bool operator <(PurchaseInfo left, PurchaseInfo right) => left.CompareTo(right) < 0;
+
+            public static bool operator >=(PurchaseInfo left, PurchaseInfo right) => left.CompareTo(right) >= 0;
+
+            public static bool operator <=(PurchaseInfo left, PurchaseInfo right) => left.CompareTo(right) <= 0;
+
+            public static bool operator ==(PurchaseInfo left, PurchaseInfo right) => left.Equals(right);
+            public static bool operator !=(PurchaseInfo left, PurchaseInfo right) => !(left == right);
+
+            protected bool Equals(PurchaseInfo other)
+            {
+                return productId.Equals(other.productId) && sellerAgentAddress.Equals(other.sellerAgentAddress) && sellerAvatarAddress.Equals(other.sellerAvatarAddress);
+            }
+
+            public override bool Equals(object obj)
+            {
+                if (ReferenceEquals(null, obj)) return false;
+                if (ReferenceEquals(this, obj)) return true;
+                if (obj.GetType() != this.GetType()) return false;
+                return Equals((PurchaseInfo) obj);
+            }
+
+            public override int GetHashCode()
+            {
+                unchecked
+                {
+                    var hashCode = productId.GetHashCode();
+                    hashCode = (hashCode * 397) ^ sellerAgentAddress.GetHashCode();
+                    hashCode = (hashCode * 397) ^ sellerAvatarAddress.GetHashCode();
+                    return hashCode;
+                }
+            }
+
             public Guid productId;
             public Address sellerAgentAddress;
             public Address sellerAvatarAddress;
@@ -60,21 +95,37 @@ namespace Nekoyume.Action
                     [(Text) "sellerAgentAddress"] = sellerAgentAddress.Serialize(),
                 });
 #pragma warning restore LAA1002
+            public int CompareTo(PurchaseInfo other)
+            {
+                return productId.CompareTo(other.productId);
+            }
+
+            public int CompareTo(object obj)
+            {
+                if (obj is PurchaseInfo other)
+                {
+                    return CompareTo(other);
+                }
+
+                throw new ArgumentException(nameof(obj));
+            }
         }
 
         [Serializable]
         public class PurchaseResult : Buy.BuyerResult
         {
             public int errorCode = 0;
+            public Guid productId;
 
-            public PurchaseResult()
+            public PurchaseResult(Guid shopProductId)
             {
-
+                productId = shopProductId;
             }
 
             public PurchaseResult(Bencodex.Types.Dictionary serialized) : base(serialized)
             {
                 errorCode = serialized["errorCode"].ToInteger();
+                productId = serialized["productId"].ToGuid();
             }
 
             public override IValue Serialize() =>
@@ -82,6 +133,7 @@ namespace Nekoyume.Action
                 new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
                 {
                     [(Text) "errorCode"] = errorCode.Serialize(),
+                    [(Text) "productId"] = productId.Serialize(),
                 }.Union((Bencodex.Types.Dictionary)base.Serialize()));
 #pragma warning restore LAA1002
         }
@@ -239,16 +291,14 @@ namespace Nekoyume.Action
 
             foreach (var productInfo in purchaseInfos)
             {
-                var purchaseResult = new PurchaseResult();
-                purchaseResults.Add(purchaseResult);
-
                 if (productInfo is null)
                 {
-                    purchaseResult.errorCode = ERROR_CODE_ITEM_DOES_NOT_EXIST;
                     continue;
                 }
-
                 var productId = productInfo.productId;
+                var purchaseResult = new PurchaseResult(productId);
+                purchaseResults.Add(purchaseResult);
+
 
                 IKey productIdSerialized = (IKey) productId.Serialize();
                 if (!productDict.ContainsKey(productIdSerialized))
@@ -317,18 +367,6 @@ namespace Nekoyume.Action
 
                 productDict = (Dictionary)productDict.Remove(productIdSerialized);
                 shopStateDict = shopStateDict.SetItem("products", productDict);
-
-                INonFungibleItem nonFungibleItem = (INonFungibleItem)shopItem.ItemUsable ?? shopItem.Costume;
-
-                if (!sellerAvatarState.inventory.RemoveNonFungibleItem(nonFungibleItem))
-                {
-                    if (nonFungibleItem.RequiredBlockIndex != 0)
-                    {
-                        purchaseResult.errorCode = ERROR_CODE_ITEM_DOES_NOT_EXIST;
-                        continue;
-                    }
-                }
-                nonFungibleItem.Update(context.BlockIndex);
 
                 var buyerMail = new BuyerMail(purchaseResult, ctx.BlockIndex, ctx.Random.GenerateRandomGuid(), ctx.BlockIndex);
                 purchaseResult.id = buyerMail.id;
