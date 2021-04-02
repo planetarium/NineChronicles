@@ -242,6 +242,10 @@ namespace Nekoyume.Action
 
             foreach (var productInfo in purchaseInfos)
             {
+                if (productInfo is null)
+                {
+                    continue;
+                }
                 var productId = productInfo.productId;
                 var purchaseResult = new PurchaseResult(productId);
                 purchaseResults.Add(purchaseResult);

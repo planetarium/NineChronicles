@@ -463,61 +463,6 @@
         }
 
         [Fact]
-        public void ExecuteThrowItemDoesNotExistError()
-        {
-            var shopState = _initialState.GetShopState();
-            Assert.Empty(shopState.Products);
-
-            var sellerAvatarAddress = new PrivateKey().ToAddress();
-            var sellerAgentAddress = new PrivateKey().ToAddress();
-            var (avatarState, agentState) = CreateAvatarState(sellerAgentAddress, sellerAvatarAddress);
-
-            var costume = ItemFactory.CreateCostume(
-                _tableSheets.CostumeItemSheet.First,
-                Guid.NewGuid());
-            shopState.Register(new ShopItem(
-                sellerAgentAddress,
-                sellerAvatarAddress,
-                Guid.NewGuid(),
-                new FungibleAssetValue(_goldCurrencyState.Currency, 100, 0),
-                100,
-                costume));
-
-            _initialState = _initialState
-                .SetState(Addresses.Shop, shopState.Serialize());
-
-            shopState = _initialState.GetShopState();
-            Assert.NotEmpty(shopState.Products);
-
-            var products = shopState.Products.Values
-                .Select(p => new BuyMultiple.PurchaseInfo(
-                    p.ProductId,
-                    p.SellerAgentAddress,
-                    p.SellerAvatarAddress))
-                .ToList();
-            Assert.NotEmpty(products);
-            products.Add(default);
-
-            var action = new BuyMultiple
-            {
-                buyerAvatarAddress = _buyerAvatarAddress,
-                purchaseInfos = products,
-            };
-
-            action.Execute(new ActionContext()
-            {
-                BlockIndex = 0,
-                PreviousStates = _initialState,
-                Random = new TestRandom(),
-                Signer = _buyerAgentAddress,
-            });
-
-            var results = action.buyerResult.purchaseResults;
-            var isFailed = results.First(p => p.shopItem is null).errorCode == BuyMultiple.ERROR_CODE_ITEM_DOES_NOT_EXIST;
-            Assert.True(isFailed);
-        }
-
-        [Fact]
         public void ExecuteThrowItemDoesNotExistErrorByEmptyCollection()
         {
             var action = new BuyMultiple
