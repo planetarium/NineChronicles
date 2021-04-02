@@ -33,17 +33,16 @@ namespace Nekoyume.Action
         [Serializable]
         public class PurchaseInfo : IComparable<PurchaseInfo>, IComparable
         {
-            public static bool operator >(PurchaseInfo left, PurchaseInfo right) => Operator.Weave(left, right);
+            public static bool operator >(PurchaseInfo left, PurchaseInfo right) => left.CompareTo(right) > 0;
 
-            public static bool operator <(PurchaseInfo left, PurchaseInfo right) => Operator.Weave(left, right);
+            public static bool operator <(PurchaseInfo left, PurchaseInfo right) => left.CompareTo(right) < 0;
 
-            public static bool operator >=(PurchaseInfo left, PurchaseInfo right) => Operator.Weave(left, right);
+            public static bool operator >=(PurchaseInfo left, PurchaseInfo right) => left.CompareTo(right) >= 0;
 
-            public static bool operator <=(PurchaseInfo left, PurchaseInfo right) => Operator.Weave(left, right);
+            public static bool operator <=(PurchaseInfo left, PurchaseInfo right) => left.CompareTo(right) <= 0;
 
-            public static bool operator ==(PurchaseInfo left, PurchaseInfo right) => Operator.Weave(left, right);
-
-            public static bool operator !=(PurchaseInfo left, PurchaseInfo right) => Operator.Weave(left, right);
+            public static bool operator ==(PurchaseInfo left, PurchaseInfo right) => left.Equals(right);
+            public static bool operator !=(PurchaseInfo left, PurchaseInfo right) => !(left == right);
 
             protected bool Equals(PurchaseInfo other)
             {
