@@ -22,6 +22,7 @@ namespace Nekoyume.Action
         public const long ExpiredBlockIndex = 16000;
         public Address sellerAvatarAddress;
         public Guid itemId;
+        public ItemSubType itemSubType;
         public FungibleAssetValue price;
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal => new Dictionary<string, IValue>
@@ -29,6 +30,7 @@ namespace Nekoyume.Action
             ["sellerAvatarAddress"] = sellerAvatarAddress.Serialize(),
             ["itemId"] = itemId.Serialize(),
             ["price"] = price.Serialize(),
+            ["itemSubType"] = itemSubType.Serialize(),
         }.ToImmutableDictionary();
 
         protected override void LoadPlainValueInternal(IImmutableDictionary<string, IValue> plainValue)
@@ -36,6 +38,7 @@ namespace Nekoyume.Action
             sellerAvatarAddress = plainValue["sellerAvatarAddress"].ToAddress();
             itemId = plainValue["itemId"].ToGuid();
             price = plainValue["price"].ToFungibleAssetValue();
+            itemSubType = plainValue["itemSubType"].ToEnum<ItemSubType>();
         }
 
         public override IAccountStateDelta Execute(IActionContext context)
@@ -44,9 +47,12 @@ namespace Nekoyume.Action
             var states = ctx.PreviousStates;
             if (ctx.Rehearsal)
             {
-                states = states.SetState(ShopState.Address, MarkChanged);
                 states = states.SetState(sellerAvatarAddress, MarkChanged);
-                return states.SetState(ctx.Signer, MarkChanged);
+                states = ShardedShopState.AddressKeys.Aggregate(states,
+                    (current, addressKey) =>
+                        current.SetState(ShardedShopState.DeriveAddress(itemSubType, addressKey), MarkChanged));
+                return states
+                    .SetState(ctx.Signer, MarkChanged);
             }
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, sellerAvatarAddress);
@@ -80,14 +86,6 @@ namespace Nekoyume.Action
 
             sw.Restart();
 
-            if (!states.TryGetState(ShopState.Address, out Bencodex.Types.Dictionary shopStateDict))
-            {
-                throw new FailedLoadStateException($"{addressesHex}Aborted as the shop state was failed to load.");
-            }
-
-            Log.Verbose("{AddressesHex}Sell Get ShopState: {Elapsed}", addressesHex, sw.Elapsed);
-            sw.Restart();
-
             Log.Verbose("{AddressesHex}Execute Sell; seller: {SellerAvatarAddress}", addressesHex, sellerAvatarAddress);
 
             var productId = context.Random.GenerateRandomGuid();
@@ -98,6 +96,15 @@ namespace Nekoyume.Action
             {
                 throw new ItemDoesNotExistException(
                     $"{addressesHex}Aborted as the NonFungibleItem ({itemId}) was failed to load from avatar's inventory.");
+            }
+
+            ItemSubType nonFungibleItemType = nonFungibleItem is Costume costume
+                ? costume.ItemSubType
+                : ((ItemUsable) nonFungibleItem).ItemSubType;
+
+            if (!nonFungibleItemType.Equals(itemSubType))
+            {
+                throw new InvalidItemTypeException($"Expected ItemType: {nonFungibleItemType}. Actual ItemType: {itemSubType}");
             }
 
             if (nonFungibleItem.RequiredBlockIndex > context.BlockIndex)
@@ -112,64 +119,50 @@ namespace Nekoyume.Action
             }
             nonFungibleItem.Update(expiredBlockIndex);
 
-            ShopItem shopItem;
-            Dictionary products = (Dictionary)shopStateDict[LegacyProductsKey];
-            string productKey = nonFungibleItem is ItemUsable ? ItemUsableKey : CostumeKey;
-            string itemIdKey = ItemIdKey;
-#pragma warning disable LAA1002
-            var productSerialized = products
-                .Select(p => (Dictionary) p.Value)
-                .Where(p => p.ContainsKey(productKey))
-                .FirstOrDefault(p => ((Dictionary)p[productKey])[itemIdKey].Equals(nonFungibleItem.ItemId.Serialize()));
-#pragma warning restore LAA1002
-            bool legacy = false;
-            if (productSerialized.Equals(Dictionary.Empty))
+            ShopItem shopItem = new ShopItem(ctx.Signer, sellerAvatarAddress, productId, price, expiredBlockIndex, nonFungibleItem);
+            Address shardedShopAddress = ShardedShopState.DeriveAddress(itemSubType, productId);
+            if (!states.TryGetState(shardedShopAddress, out Bencodex.Types.Dictionary shopStateDict))
             {
-                // Check legacy key.
-                productKey = LegacyCostumeKey;
-                itemIdKey = LegacyCostumeItemIdKey;
-                if (nonFungibleItem is ItemUsable)
-                {
-                    productKey = LegacyItemUsableKey;
-                    itemIdKey = LegacyItemIdKey;
-                }
-                legacy = true;
-
-#pragma warning disable LAA1002
-                productSerialized = products
-                    .Select(p => (Dictionary) p.Value)
-                    .Where(p => p.ContainsKey(productKey))
-                    .FirstOrDefault(p =>
-                        ((Dictionary) p[productKey])[itemIdKey].Equals(nonFungibleItem.ItemId.Serialize()));
-#pragma warning restore LAA1002
+                ShardedShopState shardedShopState = new ShardedShopState(shardedShopAddress);
+                shopStateDict = (Dictionary) shardedShopState.Serialize();
             }
 
+            Log.Verbose("{AddressesHex}Sell Get ShardedShopState: {Elapsed}", addressesHex, sw.Elapsed);
+            sw.Restart();
+
+            List products = (List)shopStateDict[ProductsKey];
+            string productKey = nonFungibleItem is ItemUsable ? ItemUsableKey : CostumeKey;
+#pragma warning disable LAA1002
+            Dictionary productSerialized = products
+                .Select(p => (Dictionary) p)
+                .FirstOrDefault(p =>
+                    ((Dictionary) p[productKey])[ItemIdKey].Equals(nonFungibleItem.ItemId.Serialize()));
+#pragma warning restore LAA1002
+
+            // Register new ShopItem
             if (productSerialized.Equals(Dictionary.Empty))
             {
-                // Register new ShopItem
-                shopItem = new ShopItem(ctx.Signer, sellerAvatarAddress, productId, price, expiredBlockIndex, nonFungibleItem);
                 IValue shopItemSerialized = shopItem.Serialize();
-                IKey productIdSerialized = (IKey)productId.Serialize();
-                products = (Dictionary)products.Add(productIdSerialized, shopItemSerialized);
+                products = products.Add(shopItemSerialized);
             }
             // Update Registered ShopItem
             else
             {
-                string productIdKey = legacy ? LegacyProductIdKey : ProductIdKey;
-                string requiredBlockIndexKey = RequiredBlockIndexKey;
-                if (legacy && nonFungibleItem is ItemUsable)
-                {
-                    requiredBlockIndexKey = LegacyRequiredBlockIndexKey;
-                }
+                // Delete current ShopItem
+                products = (List) products.Remove(productSerialized);
+
+                // Update INonfungibleItem.RequiredBlockIndex
                 Dictionary item = (Dictionary) productSerialized[productKey];
-                item = item.SetItem(requiredBlockIndexKey, expiredBlockIndex.Serialize());
+                item = item.SetItem(RequiredBlockIndexKey, expiredBlockIndex.Serialize());
+
+                // Update ShopItem.ExpiredBlockIndex
                 productSerialized = productSerialized
                     .SetItem(ExpiredBlockIndexKey, expiredBlockIndex.Serialize())
                     .SetItem(productKey, item);
-                products = (Dictionary) products.SetItem((IKey) productSerialized[productIdKey], productSerialized);
+                products = products.Add(productSerialized);
                 shopItem = new ShopItem(productSerialized);
             }
-            shopStateDict = shopStateDict.SetItem(LegacyProductsKey, products);
+            shopStateDict = shopStateDict.SetItem(ProductsKey, new List<IValue>(products));
 
             sw.Stop();
             Log.Verbose("{AddressesHex}Sell Get Register Item: {Elapsed}", addressesHex, sw.Elapsed);
@@ -193,7 +186,7 @@ namespace Nekoyume.Action
             Log.Verbose("{AddressesHex}Sell Set AvatarState: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();
 
-            states = states.SetState(ShopState.Address, shopStateDict);
+            states = states.SetState(shardedShopAddress, shopStateDict);
             sw.Stop();
             var ended = DateTimeOffset.UtcNow;
             Log.Verbose("{AddressesHex}Sell Set ShopState: {Elapsed}", addressesHex, sw.Elapsed);
