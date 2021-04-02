@@ -98,13 +98,7 @@ namespace Nekoyume.Action
 #pragma warning restore LAA1002
             public int CompareTo(PurchaseInfo other)
             {
-                int cmp = productId.CompareTo(other.productId);
-                if (cmp != 0)
-                {
-                    return cmp;
-                }
-
-                return 0;
+                return productId.CompareTo(other.productId);
             }
 
             public int CompareTo(object obj)
