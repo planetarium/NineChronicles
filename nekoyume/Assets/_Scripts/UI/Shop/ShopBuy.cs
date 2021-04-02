@@ -80,16 +80,14 @@ namespace Nekoyume.UI
             shopItems.Close();
             refreshLoading.SetActive(true);
             refreshText.gameObject.SetActive(false);
-            var task = Task.Run(() =>
-            {
-                States.Instance.SetShopState(new ShopState(
-                    (Bencodex.Types.Dictionary) Game.Game.instance.Agent.GetState(Addresses.Shop)));
-                return true;
-            });
 
-            var result = await task;
-            if (result)
+            var task = Task.Run(() => new ShopState(
+                (Bencodex.Types.Dictionary) Game.Game.instance.Agent.GetState(Addresses.Shop)));
+
+            ShopState result = await task;
+            if (result != null)
             {
+                States.Instance.SetShopState(result);
                 SetMultiplePurchase(false);
                 shopItems.Show();
                 refreshLoading.SetActive(false);
