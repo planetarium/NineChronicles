@@ -17,14 +17,6 @@
         ZWrite Off
 		Blend SrcAlpha One
 
-        Stencil
-	{
-	    Ref [_RefNumber]
-            Comp equal
-            Pass keep
-            ZFail decrWrap
-	}
-
         Pass
         {
             CGPROGRAM
