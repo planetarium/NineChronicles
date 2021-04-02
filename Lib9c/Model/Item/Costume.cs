@@ -5,14 +5,13 @@ using System.Runtime.Serialization;
 using Bencodex.Types;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
+using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Model.Item
 {
     [Serializable]
     public class Costume : ItemBase, INonFungibleItem, IEquippableItem
     {
-        public const string RequiredBlockIndexKey = "rbi";
-        public const string ItemIdKey = "item_id";
         // FIXME: Do not use anymore please!
         public bool equipped = false;
         public string SpineResourcePath { get; }
@@ -45,16 +44,20 @@ namespace Nekoyume.Model.Item
 
         public Costume(Dictionary serialized) : base(serialized)
         {
-            if (serialized.TryGetValue((Text) "equipped", out var toEquipped))
+            bool useLegacy = serialized.ContainsKey(LegacyEquippedKey);
+            Text equippedKey = useLegacy ? LegacyEquippedKey : EquippedKey;
+            Text spineResourcePathKey = useLegacy ? LegacySpineResourcePathKey : SpineResourcePathKey;
+            string itemIdKey = useLegacy ? LegacyCostumeItemIdKey : ItemIdKey;
+            if (serialized.TryGetValue(equippedKey, out var toEquipped))
             {
                 equipped = toEquipped.ToBoolean();
             }
-            if (serialized.TryGetValue((Text) "spine_resource_path", out var spineResourcePath))
+            if (serialized.TryGetValue(spineResourcePathKey, out var spineResourcePath))
             {
                 SpineResourcePath = (Text) spineResourcePath;
             }
 
-            ItemId = serialized[ItemIdKey].ToGuid();
+            ItemId = serialized[itemIdKey].ToGuid();
 
             if (serialized.ContainsKey(RequiredBlockIndexKey))
             {
@@ -72,8 +75,8 @@ namespace Nekoyume.Model.Item
 #pragma warning disable LAA1002
             var innerDictionary = new Dictionary<IKey, IValue>
             {
-                [(Text) "equipped"] = equipped.Serialize(),
-                [(Text) "spine_resource_path"] = SpineResourcePath.Serialize(),
+                [(Text) EquippedKey] = equipped.Serialize(),
+                [(Text) SpineResourcePathKey] = SpineResourcePath.Serialize(),
                 [(Text) ItemIdKey] = ItemId.Serialize()
             };
             if (RequiredBlockIndex > 0)
@@ -81,6 +84,23 @@ namespace Nekoyume.Model.Item
                 innerDictionary.Add((Text) RequiredBlockIndexKey, RequiredBlockIndex.Serialize());
             }
             return new Dictionary(innerDictionary.Union((Dictionary) base.Serialize()));
+        }
+#pragma warning restore LAA1002
+
+        public override IValue SerializeLegacy()
+        {
+#pragma warning disable LAA1002
+            var innerDictionary = new Dictionary<IKey, IValue>
+            {
+                [(Text) LegacyEquippedKey] = equipped.Serialize(),
+                [(Text) LegacySpineResourcePathKey] = SpineResourcePath.Serialize(),
+                [(Text) LegacyCostumeItemIdKey] = ItemId.Serialize()
+            };
+            if (RequiredBlockIndex > 0)
+            {
+                innerDictionary.Add((Text) RequiredBlockIndexKey, RequiredBlockIndex.Serialize());
+            }
+            return new Dictionary(innerDictionary.Union((Dictionary) base.SerializeLegacy()));
         }
 #pragma warning restore LAA1002
 

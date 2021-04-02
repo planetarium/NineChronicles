@@ -5,6 +5,7 @@ using Bencodex.Types;
 using Nekoyume.Model.Elemental;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
+using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Model.Item
 {
@@ -29,23 +30,28 @@ namespace Nekoyume.Model.Item
 
         protected ItemBase(Dictionary serialized)
         {
-            if (serialized.TryGetValue((Text) "id", out var id))
+            bool useLegacy = serialized.ContainsKey(LegacyItemTypeKey);
+            Text gradeKey = useLegacy ? LegacyGradeKey : GradeKey;
+            Text itemTypeKey = useLegacy ? LegacyItemTypeKey : ItemTypeKey;
+            Text itemSubTypeKey = useLegacy ? LegacyItemSubTypeKey : ItemSubTypeKey;
+            Text elementalTypeKey = useLegacy ? LegacyElementalTypeKey : ElementalTypeKey;
+            if (serialized.TryGetValue((Text) IdKey, out var id))
             {
                 Id = id.ToInteger();
             }
-            if (serialized.TryGetValue((Text) "grade", out var grade))
+            if (serialized.TryGetValue(gradeKey, out var grade))
             {
                 Grade = grade.ToInteger();
             }
-            if (serialized.TryGetValue((Text) "item_type", out var type))
+            if (serialized.TryGetValue(itemTypeKey, out var type))
             {
                 ItemType = type.ToEnum<ItemType>();
             }
-            if (serialized.TryGetValue((Text) "item_sub_type", out var subType))
+            if (serialized.TryGetValue(itemSubTypeKey, out var subType))
             {
                 ItemSubType = subType.ToEnum<ItemSubType>();
             }
-            if (serialized.TryGetValue((Text) "elemental_type", out var elementalType))
+            if (serialized.TryGetValue(elementalTypeKey, out var elementalType))
             {
                 ElementalType = elementalType.ToEnum<ElementalType>();
             }
@@ -85,11 +91,19 @@ namespace Nekoyume.Model.Item
 
         public virtual IValue Serialize() =>
             Dictionary.Empty
-                .Add("id", Id.Serialize())
-                .Add("item_type", ItemType.Serialize())
-                .Add("item_sub_type", ItemSubType.Serialize())
-                .Add("grade", Grade.Serialize())
-                .Add("elemental_type", ElementalType.Serialize());
+                .Add(IdKey, Id.Serialize())
+                .Add(ItemTypeKey, ItemType.Serialize())
+                .Add(ItemSubTypeKey, ItemSubType.Serialize())
+                .Add(GradeKey, Grade.Serialize())
+                .Add(ElementalTypeKey, ElementalType.Serialize());
+
+        public virtual IValue SerializeLegacy() =>
+            Dictionary.Empty
+                .Add(IdKey, Id.Serialize())
+                .Add(LegacyItemTypeKey, ItemType.Serialize())
+                .Add(LegacyItemSubTypeKey, ItemSubType.Serialize())
+                .Add(LegacyGradeKey, Grade.Serialize())
+                .Add(LegacyElementalTypeKey, ElementalType.Serialize());
 
         public override string ToString()
         {
