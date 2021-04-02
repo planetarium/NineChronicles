@@ -350,7 +350,7 @@
                         product.ItemId,
                         out INonFungibleItem outNonFungibleItem)
                 );
-                Assert.Equal(1, outNonFungibleItem.RequiredBlockIndex);
+                Assert.Equal(product.RequiredBlockIndex, outNonFungibleItem.RequiredBlockIndex);
             }
 
             Assert.Equal(buyCount, nextBuyerAvatarState.mailBox.Count);
@@ -514,65 +514,6 @@
 
             var results = action.buyerResult.purchaseResults;
             var isFailed = results.First(p => p.shopItem is null).errorCode == BuyMultiple.ERROR_CODE_ITEM_DOES_NOT_EXIST;
-            Assert.True(isFailed);
-        }
-
-        [Fact]
-        public void ExecuteThrowItemDoesNotExistErrorBySellerAvatar()
-        {
-            var sellerAvatarAddress = new PrivateKey().ToAddress();
-            var sellerAgentAddress = new PrivateKey().ToAddress();
-            var (avatarState, agentState) = CreateAvatarState(sellerAgentAddress, sellerAvatarAddress);
-
-            IAccountStateDelta previousStates = _initialState;
-            var shopState = previousStates.GetShopState();
-            var productId = Guid.NewGuid();
-
-            var equipment = ItemFactory.CreateItemUsable(
-                _tableSheets.EquipmentItemSheet.First,
-                Guid.NewGuid(),
-                100);
-            shopState.Register(new ShopItem(
-                sellerAgentAddress,
-                sellerAvatarAddress,
-                productId,
-                new FungibleAssetValue(_goldCurrencyState.Currency, 100, 0),
-                100,
-                equipment));
-
-            previousStates = previousStates
-                .SetState(Addresses.Shop, shopState.Serialize());
-
-            shopState = previousStates.GetShopState();
-            Assert.NotEmpty(shopState.Products);
-
-            var shopItem = shopState.Products.Values.First();
-            Assert.True(shopItem.ExpiredBlockIndex > 0);
-            Assert.True(shopItem.ItemUsable.RequiredBlockIndex > 0);
-
-            var products = shopState.Products.Values
-                .Select(p => new BuyMultiple.PurchaseInfo(
-                    p.ProductId,
-                    p.SellerAgentAddress,
-                    p.SellerAvatarAddress))
-                .ToList();
-
-            var action = new BuyMultiple
-            {
-                buyerAvatarAddress = _buyerAvatarAddress,
-                purchaseInfos = products,
-            };
-
-            action.Execute(new ActionContext()
-            {
-                BlockIndex = 0,
-                PreviousStates = previousStates,
-                Random = new TestRandom(),
-                Signer = _buyerAgentAddress,
-            });
-
-            var result = action.buyerResult.purchaseResults;
-            var isFailed = result.First(r => r.shopItem.ProductId == productId).errorCode == BuyMultiple.ERROR_CODE_ITEM_DOES_NOT_EXIST;
             Assert.True(isFailed);
         }
 

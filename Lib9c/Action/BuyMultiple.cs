@@ -318,18 +318,6 @@ namespace Nekoyume.Action
                 productDict = (Dictionary)productDict.Remove(productIdSerialized);
                 shopStateDict = shopStateDict.SetItem("products", productDict);
 
-                INonFungibleItem nonFungibleItem = (INonFungibleItem)shopItem.ItemUsable ?? shopItem.Costume;
-
-                if (!sellerAvatarState.inventory.RemoveNonFungibleItem(nonFungibleItem))
-                {
-                    if (nonFungibleItem.RequiredBlockIndex != 0)
-                    {
-                        purchaseResult.errorCode = ERROR_CODE_ITEM_DOES_NOT_EXIST;
-                        continue;
-                    }
-                }
-                nonFungibleItem.Update(context.BlockIndex);
-
                 var buyerMail = new BuyerMail(purchaseResult, ctx.BlockIndex, ctx.Random.GenerateRandomGuid(), ctx.BlockIndex);
                 purchaseResult.id = buyerMail.id;
 
