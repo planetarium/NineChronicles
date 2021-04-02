@@ -36,6 +36,7 @@ namespace Nekoyume.BlockChain
 
             RewardGold();
             Buy();
+            BuyMultiple();
             Sell();
             SellCancellation();
             DailyReward();
@@ -76,6 +77,15 @@ namespace Nekoyume.BlockChain
                 .Where(ValidateEvaluationForAgentState)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseBuy)
+                .AddTo(_disposables);
+        }
+
+        private void BuyMultiple()
+        {
+            _renderer.EveryUnrender<BuyMultiple>()
+                .Where(ValidateEvaluationForAgentState)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseBuyMultiple)
                 .AddTo(_disposables);
         }
 
@@ -155,6 +165,63 @@ namespace Nekoyume.BlockChain
 
                 renderQuestAvatarAddress = sellerAvatarAddress;
                 renderQuestCompletedQuestIds = sellerAvatar.questList.completedQuestIds;
+            }
+
+            UpdateAgentState(eval);
+            UpdateCurrentAvatarState(eval);
+            UnrenderQuest(renderQuestAvatarAddress, renderQuestCompletedQuestIds);
+        }
+
+
+        private void ResponseBuyMultiple(ActionBase.ActionEvaluation<BuyMultiple> eval)
+        {
+            if (!(eval.Exception is null))
+            {
+                return;
+            }
+
+            var buyerAvatarAddress = eval.Action.buyerAvatarAddress;
+            Address renderQuestAvatarAddress;
+            var renderQuestCompletedQuestIds = new List<int>();
+
+            if (buyerAvatarAddress == States.Instance.CurrentAvatarState.address)
+            {
+                var purchaseResults = eval.Action.buyerResult.purchaseResults;
+                foreach (var purchaseResult in purchaseResults)
+                {
+                    var buyerAgentAddress = States.Instance.AgentState.address;
+                    var price = purchaseResult.shopItem.Price;
+                    var itemId = purchaseResult.itemUsable?.ItemId ?? purchaseResult.costume.ItemId;
+                    var buyerAvatar = eval.OutputStates.GetAvatarState(buyerAvatarAddress);
+
+                    LocalLayerModifier.ModifyAgentGold(buyerAgentAddress, -price);
+                    LocalLayerModifier.AddItem(buyerAvatarAddress, itemId);
+                    LocalLayerModifier.RemoveNewAttachmentMail(buyerAvatarAddress, purchaseResult.id);
+
+                    renderQuestAvatarAddress = buyerAvatarAddress;
+                    renderQuestCompletedQuestIds = buyerAvatar.questList.completedQuestIds;
+                }
+            }
+            else
+            {
+                foreach (var sellerResult in eval.Action.sellerResult.sellerResults)
+                {
+                    var purchaseInfos = eval.Action.purchaseInfos;
+                    var purchaseInfo = purchaseInfos.FirstOrDefault(x => x.productId == sellerResult.id);
+                    if (purchaseInfo != null)
+                    {
+                        var sellerAvatarAddress = purchaseInfo.sellerAvatarAddress;
+                        var sellerAgentAddress = purchaseInfo.sellerAgentAddress;
+                        var gold = sellerResult.gold;
+                        var sellerAvatar = eval.OutputStates.GetAvatarState(sellerAvatarAddress);
+
+                        LocalLayerModifier.ModifyAgentGold(sellerAgentAddress, gold);
+                        LocalLayerModifier.RemoveNewAttachmentMail(sellerAvatarAddress, sellerResult.id);
+
+                        renderQuestAvatarAddress = sellerAvatarAddress;
+                        renderQuestCompletedQuestIds = sellerAvatar.questList.completedQuestIds;
+                    }
+                }
             }
 
             UpdateAgentState(eval);
