@@ -66,15 +66,17 @@ namespace Nekoyume.Action
         public class PurchaseResult : Buy.BuyerResult
         {
             public int errorCode = 0;
+            public Guid productId;
 
-            public PurchaseResult()
+            public PurchaseResult(Guid shopProductId)
             {
-
+                productId = shopProductId;
             }
 
             public PurchaseResult(Bencodex.Types.Dictionary serialized) : base(serialized)
             {
                 errorCode = serialized["errorCode"].ToInteger();
+                productId = serialized["productId"].ToGuid();
             }
 
             public override IValue Serialize() =>
@@ -82,6 +84,7 @@ namespace Nekoyume.Action
                 new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
                 {
                     [(Text) "errorCode"] = errorCode.Serialize(),
+                    [(Text) "productId"] = productId.Serialize(),
                 }.Union((Bencodex.Types.Dictionary)base.Serialize()));
 #pragma warning restore LAA1002
         }
@@ -239,16 +242,10 @@ namespace Nekoyume.Action
 
             foreach (var productInfo in purchaseInfos)
             {
-                var purchaseResult = new PurchaseResult();
+                var productId = productInfo.productId;
+                var purchaseResult = new PurchaseResult(productId);
                 purchaseResults.Add(purchaseResult);
 
-                if (productInfo is null)
-                {
-                    purchaseResult.errorCode = ERROR_CODE_ITEM_DOES_NOT_EXIST;
-                    continue;
-                }
-
-                var productId = productInfo.productId;
 
                 IKey productIdSerialized = (IKey) productId.Serialize();
                 if (!productDict.ContainsKey(productIdSerialized))
