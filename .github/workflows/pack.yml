@@ -38,7 +38,7 @@ jobs:
         with:
           path: ${{ matrix.projectPath }}/Library
           key: ${{ matrix.targetPlatform }}-${{ matrix.projectPath }}-Library-v3
-      - uses: docker://gableroux/unity3d:2020.3.0f1 # FIXME: 이미지 pull 받아오는 속도 개선 필요
+      - uses: docker://unityci/editor:2020.3.0f1 # FIXME: 이미지 pull 받아오는 속도 개선 필요
         env:
           ULF: ${{ secrets.ULF }}
           APV_SIGNING_PRIVATE_KEY: ${{ secrets.APV_SIGNING_PRIVATE_KEY }}
