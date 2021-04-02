@@ -628,6 +628,13 @@
                 new FungibleAssetValue(_goldCurrencyState.Currency, 100, 0),
                 100,
                 equipment));
+            shopState.Register(new ShopItem(
+                sellerAgentAddress,
+                sellerAvatarAddress,
+                Guid.NewGuid(),
+                new FungibleAssetValue(_goldCurrencyState.Currency, 100, 0),
+                100,
+                equipment));
             var products = shopState.Products.Values
                 .Select(p => new BuyMultiple.PurchaseInfo(
                     p.ProductId,
