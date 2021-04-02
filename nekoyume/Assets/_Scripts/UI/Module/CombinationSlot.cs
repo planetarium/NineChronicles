@@ -173,7 +173,8 @@ namespace Nekoyume.UI.Module
 
         private void SelectSlot()
         {
-            if (_data.Validate(States.Instance.CurrentAvatarState,
+            if (_data.Validate(
+                States.Instance.CurrentAvatarState,
                 Game.Game.instance.Agent.BlockIndex))
             {
                 if (Game.Game.instance.Stage.IsInStage)

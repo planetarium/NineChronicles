@@ -36,7 +36,7 @@ namespace Nekoyume.UI.Module
         public int CostAP { get; private set; }
 
         public bool IsThereAnyUnlockedEmptyMaterialView { get; private set; }
-        public virtual bool IsSubmittable { get; }
+        public virtual bool IsSubmittable { get; } = false;
 
         #region Initialize & Terminate
 
