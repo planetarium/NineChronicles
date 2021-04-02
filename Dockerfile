@@ -4,7 +4,7 @@ COPY nekoyume /src
 COPY scripts /scripts
 RUN dotnet build /src/Assets/_Scripts/NineChronicles.RPC.Shared/NineChronicles.RPC.Shared/NineChronicles.RPC.Shared.csproj
 
-FROM gableroux/unity3d:2019.1.0f2 AS build
+FROM gableroux/unity3d:2020.3.0f1 AS build
 
 ARG apt_source
 
