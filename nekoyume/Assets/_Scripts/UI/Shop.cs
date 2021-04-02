@@ -169,7 +169,7 @@ namespace Nekoyume.UI
                 //     ShardedShopState shardedShopState = new ShardedShopState(Game.Game.instance.Agent.GetState(address));
                 //     products.AddRange(shardedShopState.Products.Values.ToList());
                 // }
-                ReactiveShopState.Initialize(20);
+                // ReactiveShopState.Initialize(20);
                 return true;
             });
             var result = await task;

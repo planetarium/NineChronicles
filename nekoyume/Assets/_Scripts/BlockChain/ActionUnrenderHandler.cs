@@ -36,6 +36,7 @@ namespace Nekoyume.BlockChain
 
             RewardGold();
             Buy();
+            BuyMultiple();
             Sell();
             SellCancellation();
             DailyReward();
@@ -72,16 +73,25 @@ namespace Nekoyume.BlockChain
 
         private void Buy()
         {
-            _renderer.EveryUnrender<Buy>()
+            _renderer.EveryUnrender<Buy4>()
                 .Where(ValidateEvaluationForAgentState)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseBuy)
                 .AddTo(_disposables);
         }
 
+        private void BuyMultiple()
+        {
+            _renderer.EveryUnrender<BuyMultiple>()
+                .Where(ValidateEvaluationForAgentState)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseBuyMultiple)
+                .AddTo(_disposables);
+        }
+
         private void Sell()
         {
-            _renderer.EveryUnrender<Sell>()
+            _renderer.EveryUnrender<Sell3>()
                 .Where(ValidateEvaluationForCurrentAvatarState)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseSell)
@@ -90,7 +100,7 @@ namespace Nekoyume.BlockChain
 
         private void SellCancellation()
         {
-            _renderer.EveryUnrender<SellCancellation>()
+            _renderer.EveryUnrender<SellCancellation4>()
                 .Where(ValidateEvaluationForCurrentAvatarState)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseSellCancellation)
@@ -99,7 +109,7 @@ namespace Nekoyume.BlockChain
 
         private void ItemEnhancement()
         {
-            _renderer.EveryUnrender<ItemEnhancement>()
+            _renderer.EveryUnrender<ItemEnhancement5>()
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseUnrenderItemEnhancement)
@@ -108,14 +118,62 @@ namespace Nekoyume.BlockChain
 
         private void DailyReward()
         {
-            _renderer.EveryUnrender<DailyReward>()
+            _renderer.EveryUnrender<DailyReward3>()
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseDailyReward)
                 .AddTo(_disposables);
         }
 
-        private void ResponseBuy(ActionBase.ActionEvaluation<Buy> eval)
+        private void ResponseBuy(ActionBase.ActionEvaluation<Buy4> eval)
+        {
+            if (!(eval.Exception is null))
+            {
+                return;
+            }
+
+            var buyerAvatarAddress = eval.Action.buyerAvatarAddress;
+            var price = eval.Action.sellerResult.shopItem.Price;
+            Address renderQuestAvatarAddress;
+            List<int> renderQuestCompletedQuestIds;
+
+            if (buyerAvatarAddress == States.Instance.CurrentAvatarState.address)
+            {
+                var buyerAgentAddress = States.Instance.AgentState.address;
+                var result = eval.Action.buyerResult;
+
+                var itemId = result.itemUsable?.ItemId ?? result.costume.ItemId;
+                var buyerAvatar = eval.OutputStates.GetAvatarState(buyerAvatarAddress);
+
+                LocalLayerModifier.ModifyAgentGold(buyerAgentAddress, -price);
+                LocalLayerModifier.AddItem(buyerAvatarAddress, itemId);
+                LocalLayerModifier.RemoveNewAttachmentMail(buyerAvatarAddress, result.id);
+
+                renderQuestAvatarAddress = buyerAvatarAddress;
+                renderQuestCompletedQuestIds = buyerAvatar.questList.completedQuestIds;
+            }
+            else
+            {
+                var sellerAvatarAddress = eval.Action.sellerAvatarAddress;
+                var sellerAgentAddress = eval.Action.sellerAgentAddress;
+                var result = eval.Action.sellerResult;
+                var gold = result.gold;
+                var sellerAvatar = eval.OutputStates.GetAvatarState(sellerAvatarAddress);
+
+                LocalLayerModifier.ModifyAgentGold(sellerAgentAddress, gold);
+                LocalLayerModifier.RemoveNewAttachmentMail(sellerAvatarAddress, result.id);
+
+                renderQuestAvatarAddress = sellerAvatarAddress;
+                renderQuestCompletedQuestIds = sellerAvatar.questList.completedQuestIds;
+            }
+
+            UpdateAgentState(eval);
+            UpdateCurrentAvatarState(eval);
+            UnrenderQuest(renderQuestAvatarAddress, renderQuestCompletedQuestIds);
+        }
+
+
+        private void ResponseBuyMultiple(ActionBase.ActionEvaluation<BuyMultiple> eval)
         {
             if (!(eval.Exception is null))
             {
@@ -128,7 +186,7 @@ namespace Nekoyume.BlockChain
 
             if (buyerAvatarAddress == States.Instance.CurrentAvatarState.address)
             {
-                var purchaseResults = eval.Action.buyerMultipleResult.purchaseResults;
+                var purchaseResults = eval.Action.buyerResult.purchaseResults;
                 foreach (var purchaseResult in purchaseResults)
                 {
                     var buyerAgentAddress = States.Instance.AgentState.address;
@@ -146,7 +204,7 @@ namespace Nekoyume.BlockChain
             }
             else
             {
-                foreach (var sellerResult in eval.Action.sellerMultipleResult.sellerResults)
+                foreach (var sellerResult in eval.Action.sellerResult.sellerResults)
                 {
                     var purchaseInfos = eval.Action.purchaseInfos;
                     var purchaseInfo = purchaseInfos.FirstOrDefault(x => x.productId == sellerResult.id);
@@ -171,7 +229,7 @@ namespace Nekoyume.BlockChain
             UnrenderQuest(renderQuestAvatarAddress, renderQuestCompletedQuestIds);
         }
 
-        private void ResponseSell(ActionBase.ActionEvaluation<Sell> eval)
+        private void ResponseSell(ActionBase.ActionEvaluation<Sell3> eval)
         {
             if (!(eval.Exception is null))
             {
@@ -185,7 +243,7 @@ namespace Nekoyume.BlockChain
             UpdateCurrentAvatarState(eval);
         }
 
-        private void ResponseSellCancellation(ActionBase.ActionEvaluation<SellCancellation> eval)
+        private void ResponseSellCancellation(ActionBase.ActionEvaluation<SellCancellation4> eval)
         {
             if (!(eval.Exception is null))
             {
@@ -201,7 +259,7 @@ namespace Nekoyume.BlockChain
             UpdateCurrentAvatarState(eval);
         }
 
-        private void ResponseDailyReward(ActionBase.ActionEvaluation<DailyReward> eval)
+        private void ResponseDailyReward(ActionBase.ActionEvaluation<DailyReward3> eval)
         {
             if (!(eval.Exception is null))
             {
@@ -219,7 +277,7 @@ namespace Nekoyume.BlockChain
             UpdateCurrentAvatarState(eval);
         }
 
-        private void ResponseUnrenderItemEnhancement(ActionBase.ActionEvaluation<ItemEnhancement> eval)
+        private void ResponseUnrenderItemEnhancement(ActionBase.ActionEvaluation<ItemEnhancement5> eval)
         {
             var agentAddress = eval.Signer;
             var avatarAddress = eval.Action.avatarAddress;

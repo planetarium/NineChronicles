@@ -8,6 +8,7 @@ using Nekoyume.Game.Controller;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
+using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
@@ -63,6 +64,7 @@ namespace Nekoyume.UI
                 Find<ShopSell>().gameObject.SetActive(true);
                 _npc?.gameObject.SetActive(false);
                 gameObject.SetActive(false);
+                // ReactiveShopState.Initialize(States.Instance.ShopState, 20);
             });
 
             refreshButton.onClick.AddListener(Refresh);
@@ -80,14 +82,14 @@ namespace Nekoyume.UI
             refreshText.gameObject.SetActive(false);
             var task = Task.Run(() =>
             {
-                Game.Game.instance.ShopProducts.UpdateProducts();
+                States.Instance.SetShopState(new ShopState(
+                    (Bencodex.Types.Dictionary) Game.Game.instance.Agent.GetState(Addresses.Shop)));
                 return true;
             });
 
             var result = await task;
             if (result)
             {
-                ReactiveShopState.Initialize();
                 SetMultiplePurchase(false);
                 shopItems.Show();
                 refreshLoading.SetActive(false);
@@ -122,7 +124,8 @@ namespace Nekoyume.UI
 
             var task = Task.Run(() =>
             {
-                ReactiveShopState.Initialize();
+                States.Instance.SetShopState(new ShopState(
+                    (Bencodex.Types.Dictionary) Game.Game.instance.Agent.GetState(Addresses.Shop)));
                 return true;
             });
 
@@ -249,17 +252,10 @@ namespace Nekoyume.UI
             };
             Mixpanel.Track("Unity/Buy", props);
 
-            var purchaseInfos = new List<Buy.PurchaseInfo>()
-            {
-                new Buy.PurchaseInfo(shopItem.ProductId.Value,
-                    shopItem.SellerAgentAddress.Value,
-                    shopItem.SellerAvatarAddress.Value,
-                    shopItem.ItemSubType.Value)
-            };
-
-            ReactiveShopState.PurchaseHistory.Enqueue(new List<ShopItem>() {shopItem});
-            Game.Game.instance.ActionManager.Buy(purchaseInfos);
-
+            Game.Game.instance.ActionManager.Buy(
+                shopItem.SellerAgentAddress.Value,
+                shopItem.SellerAvatarAddress.Value,
+                shopItem.ProductId.Value);
             ResponseBuy(shopItem);
         }
 

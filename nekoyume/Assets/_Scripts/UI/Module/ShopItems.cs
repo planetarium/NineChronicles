@@ -259,7 +259,8 @@ namespace Nekoyume.UI.Module
 
         private void OnItemSubTypeFilterChanged()
         {
-            ReactiveShopState.Initialize(20);
+            SharedModel.ResetAgentProducts();
+            SharedModel.ResetItemSubTypeProducts();
         }
 
         private void OnSortFilterChanged(SortFilter filter)

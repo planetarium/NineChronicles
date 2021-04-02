@@ -100,13 +100,13 @@ namespace Nekoyume.UI
             Widget.Find<TwoButtonPopup>().Show(content,
                                                L10nManager.Localize("UI_BUY"),
                                                L10nManager.Localize("UI_CANCEL"),
-                                               Buy);
+                                               BuyMultiple);
         }
 
-        private void Buy()
+        private void BuyMultiple()
         {
             var purchaseInfos = shopItems.SharedModel.wishItems.Select(GetPurchseInfo).ToList();
-            Game.Game.instance.ActionManager.Buy(purchaseInfos);
+            Game.Game.instance.ActionManager.BuyMultiple(purchaseInfos);
 
             ReactiveShopState.PurchaseHistory.Enqueue(shopItems.SharedModel.wishItems.ToList());
 
@@ -133,12 +133,11 @@ namespace Nekoyume.UI
             UpdateWishList();
         }
 
-        private Buy.PurchaseInfo GetPurchseInfo(ShopItem shopItem)
+        private BuyMultiple.PurchaseInfo GetPurchseInfo(ShopItem shopItem)
         {
-            return new Buy.PurchaseInfo(shopItem.ProductId.Value,
+            return new BuyMultiple.PurchaseInfo(shopItem.ProductId.Value,
                 shopItem.SellerAgentAddress.Value,
-                shopItem.SellerAvatarAddress.Value,
-                shopItem.ItemSubType.Value);
+                shopItem.SellerAvatarAddress.Value);
         }
 
         private void OnClickTransactionHistory(Unit unit)

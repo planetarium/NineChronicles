@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Libplanet;
-using Nekoyume.Action;
 using Nekoyume.Battle;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Stat;
+using Nekoyume.Model.State;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using UniRx;
@@ -43,37 +43,55 @@ namespace Nekoyume.State
 
         private static int _shopItemsPerPage = 24;
 
-        public static Queue<List<Nekoyume.UI.Model.ShopItem>> PurchaseHistory = new Queue<List<Nekoyume.UI.Model.ShopItem>>();
+        public static readonly Queue<List<Nekoyume.UI.Model.ShopItem>> PurchaseHistory =
+            new Queue<List<Nekoyume.UI.Model.ShopItem>>();
 
-        public static void Initialize(int shopItemsPerPage = 24)
+        public static void Initialize(ShopState state, int shopItemsPerPage)
         {
             _shopItemsPerPage = shopItemsPerPage;
 
-            var agentProducts = Game.Game.instance.ShopProducts.Products;
-            var products = new List<ShopItem>();
-            foreach (var pair in agentProducts)
+            if (state is null)
             {
-                products.AddRange(pair.Value);
+                return;
             }
+
+            var products = state.Products.Values.ToList();
 
             // AgentProducts.
-            var filteredAgentProducts = new Dictionary<Address, Dictionary<
-                    ItemSubTypeFilter, Dictionary<
-                        SortFilter, Dictionary<int, List<ShopItem>>>>>();
-            foreach (var pair in agentProducts)
             {
-                filteredAgentProducts.Add(
-                    pair.Key,
-                    GetGroupedShopItemsByItemSubTypeFilter(pair.Value));
+                var agentProducts = new Dictionary<Address, List<ShopItem>>();
+                foreach (var product in products)
+                {
+                    var agentAddress = product.SellerAgentAddress;
+                    if (!agentProducts.ContainsKey(agentAddress))
+                    {
+                        agentProducts.Add(agentAddress, new List<ShopItem>());
+                    }
+
+                    agentProducts[agentAddress].Add(product);
+                }
+
+                var filteredAgentProducts = new Dictionary<
+                    Address, Dictionary<
+                        ItemSubTypeFilter, Dictionary<
+                            SortFilter, Dictionary<int, List<ShopItem>>>>>();
+                foreach (var pair in agentProducts)
+                {
+                    filteredAgentProducts.Add(
+                        pair.Key,
+                        GetGroupedShopItemsByItemSubTypeFilter(pair.Value));
+                }
+
+                AgentProducts.Value = filteredAgentProducts;
             }
 
-            AgentProducts.Value = filteredAgentProducts;
-
             // ItemSubTypeProducts.
-            var agentAddress = States.Instance.AgentState.address;
-            ItemSubTypeProducts.Value = GetGroupedShopItemsByItemSubTypeFilter(products
-                .Where(product => !product.SellerAgentAddress.Equals(agentAddress))
-                .ToList());
+            {
+                var agentAddress = States.Instance.AgentState.address;
+                ItemSubTypeProducts.Value = GetGroupedShopItemsByItemSubTypeFilter(products
+                    .Where(product => !product.SellerAgentAddress.Equals(agentAddress))
+                    .ToList());
+            }
         }
 
         private static Dictionary<

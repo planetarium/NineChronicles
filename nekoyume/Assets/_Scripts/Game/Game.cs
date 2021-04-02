@@ -60,8 +60,6 @@ namespace Nekoyume.Game
 
         public bool IsInitialized { get; private set; }
 
-        public ShopProducts ShopProducts;
-
         public Prologue Prologue => prologue;
 
         public const string AddressableAssetsContainerPath = nameof(AddressableAssetsContainer);
@@ -153,7 +151,6 @@ namespace Nekoyume.Game
                 )
             );
             yield return new WaitUntil(() => agentInitialized);
-            ShopProducts = new ShopProducts();
             // NOTE: Create ActionManager after Agent initialized.
             ActionManager = new ActionManager(Agent);
             yield return StartCoroutine(CoSyncTableSheets());
