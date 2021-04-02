@@ -122,7 +122,7 @@ namespace Nekoyume.UI.Module
         private void Awake()
         {
             // NOTE: 지금은 딱 두 줄만 표시합니다.
-            if (cells.Count == 2)
+            if (cells.Count != 2)
             {
                 throw new Exception($"{nameof(GuidedQuest)} count of cells not equal 2");
             }
