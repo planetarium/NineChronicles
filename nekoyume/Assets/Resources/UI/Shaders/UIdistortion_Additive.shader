@@ -9,7 +9,6 @@
         _Size("Noise Size", Range(0.001, 50)) = 1
         _Speed("Noise Speed", Range(0.001, 5)) = 1
         _Mag("Magnitude", Range(0.0001, 0.1)) = 1
-        _RefNumber ("Stencil Masking Number", int) = 3
     }
     SubShader
     {
@@ -20,7 +19,6 @@
         Pass
         {
             CGPROGRAM
-            #pragma vertex vert
             #pragma fragment frag
 
             #include "UnityCG.cginc"
