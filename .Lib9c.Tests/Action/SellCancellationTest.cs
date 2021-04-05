@@ -22,8 +22,8 @@ namespace Lib9c.Tests.Action
         private readonly IAccountStateDelta _initialState;
         private readonly Address _agentAddress;
         private readonly Address _avatarAddress;
-        private GoldCurrencyState _goldCurrencyState;
-        private TableSheets _tableSheets;
+        private readonly GoldCurrencyState _goldCurrencyState;
+        private readonly TableSheets _tableSheets;
 
         public SellCancellationTest(ITestOutputHelper outputHelper)
         {
@@ -64,25 +64,27 @@ namespace Lib9c.Tests.Action
             };
             agentState.avatarAddresses[0] = _avatarAddress;
 
-            var shopState = new ShopState();
-
             _initialState = _initialState
                 .SetState(GoldCurrencyState.Address, _goldCurrencyState.Serialize())
-                .SetState(Addresses.Shop, shopState.Serialize())
                 .SetState(_agentAddress, agentState.Serialize())
+                .SetState(Addresses.Shop, new ShopState().Serialize())
                 .SetState(_avatarAddress, avatarState.Serialize());
         }
 
         [Theory]
-        [InlineData(ItemType.Equipment, "F9168C5E-CEB2-4faa-B6BF-329BF39FA1E4", Sell.ExpiredBlockIndex, true)]
-        [InlineData(ItemType.Costume, "936DA01F-9ABD-4d9d-80C7-02AF85C822A8", Sell.ExpiredBlockIndex, true)]
-        [InlineData(ItemType.Equipment, "F9168C5E-CEB2-4faa-B6BF-329BF39FA1E4", 0, false)]
-        [InlineData(ItemType.Costume, "936DA01F-9ABD-4d9d-80C7-02AF85C822A8", 0, false)]
-        public void Execute(ItemType itemType, string guid, long requiredBlockIndex, bool contain)
+        [InlineData(ItemType.Equipment, "F9168C5E-CEB2-4faa-B6BF-329BF39FA1E4", true)]
+        [InlineData(ItemType.Costume, "936DA01F-9ABD-4d9d-80C7-02AF85C822A8", true)]
+        [InlineData(ItemType.Equipment, "F9168C5E-CEB2-4faa-B6BF-329BF39FA1E4", false)]
+        [InlineData(ItemType.Costume, "936DA01F-9ABD-4d9d-80C7-02AF85C822A8", false)]
+        public void Execute(ItemType itemType, string guid, bool contain)
         {
             var avatarState = _initialState.GetAvatarState(_avatarAddress);
             INonFungibleItem nonFungibleItem;
             Guid itemId = new Guid(guid);
+            Guid productId = itemId;
+            ItemSubType itemSubType;
+            long requiredBlockIndex = 0;
+            ShopState legacyShopState = _initialState.GetShopState();
             if (itemType == ItemType.Equipment)
             {
                 var itemUsable = ItemFactory.CreateItemUsable(
@@ -90,17 +92,14 @@ namespace Lib9c.Tests.Action
                     itemId,
                     requiredBlockIndex);
                 nonFungibleItem = itemUsable;
+                itemSubType = itemUsable.ItemSubType;
             }
             else
             {
                 var costume = ItemFactory.CreateCostume(_tableSheets.CostumeItemSheet.First, itemId);
                 costume.Update(requiredBlockIndex);
                 nonFungibleItem = costume;
-            }
-
-            if (contain)
-            {
-                avatarState.inventory.AddItem((ItemBase)nonFungibleItem);
+                itemSubType = costume.ItemSubType;
             }
 
             var result = new DailyReward.DailyRewardResult()
@@ -115,27 +114,43 @@ namespace Lib9c.Tests.Action
                 avatarState.Update(mail);
             }
 
-            ShopState shopState = _initialState.GetShopState();
+            Address shardedShopAddress = ShardedShopState.DeriveAddress(itemSubType, productId);
+            ShardedShopState shopState = new ShardedShopState(shardedShopAddress);
             var shopItem = new ShopItem(
                 _agentAddress,
                 _avatarAddress,
-                Guid.NewGuid(),
+                productId,
                 new FungibleAssetValue(_goldCurrencyState.Currency, 100, 0),
                 requiredBlockIndex,
                 nonFungibleItem);
-            shopState.Register(shopItem);
+
+            if (contain)
+            {
+                shopState.Register(shopItem);
+                avatarState.inventory.AddItem((ItemBase)nonFungibleItem);
+                Assert.Empty(legacyShopState.Products);
+                Assert.Single(shopState.Products);
+            }
+            else
+            {
+                legacyShopState.Register(shopItem);
+                Assert.Single(legacyShopState.Products);
+                Assert.Empty(shopState.Products);
+            }
 
             Assert.Equal(requiredBlockIndex, nonFungibleItem.RequiredBlockIndex);
             Assert.Equal(contain, avatarState.inventory.TryGetNonFungibleItem(itemId, out _));
 
             IAccountStateDelta prevState = _initialState
                 .SetState(_avatarAddress, avatarState.Serialize())
-                .SetState(Addresses.Shop, shopState.Serialize());
+                .SetState(Addresses.Shop, legacyShopState.Serialize())
+                .SetState(shardedShopAddress, shopState.Serialize());
 
             var sellCancellationAction = new SellCancellation
             {
                 productId = shopItem.ProductId,
                 sellerAvatarAddress = _avatarAddress,
+                itemSubType = itemSubType,
             };
             var nextState = sellCancellationAction.Execute(new ActionContext
             {
@@ -146,7 +161,7 @@ namespace Lib9c.Tests.Action
                 Signer = _agentAddress,
             });
 
-            var nextShopState = nextState.GetShopState();
+            ShardedShopState nextShopState = new ShardedShopState(nextState.GetState(shardedShopAddress));
             Assert.Empty(nextShopState.Products);
 
             var nextAvatarState = nextState.GetAvatarState(_avatarAddress);
@@ -154,36 +169,170 @@ namespace Lib9c.Tests.Action
             Assert.Equal(1, nextNonFungibleItem.RequiredBlockIndex);
             Assert.Single(nextAvatarState.mailBox);
             Assert.IsType<SellCancelMail>(nextAvatarState.mailBox.First());
+
+            ShopState nextLegacyShopState = nextState.GetShopState();
+            Assert.Empty(nextLegacyShopState.Products);
         }
 
         [Fact]
-        public void ExecuteThrowItemDoesNotExistException()
+        public void Execute_Throw_FailedLoadStateException()
         {
-            ShopState shopState = _initialState.GetShopState();
+            var action = new SellCancellation
+            {
+                productId = default,
+                sellerAvatarAddress = default,
+                itemSubType = ItemSubType.Weapon,
+            };
+
+            Assert.Throws<FailedLoadStateException>(() => action.Execute(new ActionContext()
+                {
+                    BlockIndex = 0,
+                    PreviousStates = _initialState,
+                    Random = new TestRandom(),
+                    Signer = default,
+                })
+            );
+        }
+
+        [Fact]
+        public void Execute_Throw_NotEnoughClearedStageLevelException()
+        {
+            var avatarState = new AvatarState(_initialState.GetAvatarState(_avatarAddress))
+            {
+                worldInformation = new WorldInformation(
+                    0,
+                    _tableSheets.WorldSheet,
+                    0
+                ),
+            };
+
+            IAccountStateDelta prevState = _initialState.SetState(_avatarAddress, avatarState.Serialize());
+
+            var action = new SellCancellation
+            {
+                productId = default,
+                sellerAvatarAddress = _avatarAddress,
+                itemSubType = ItemSubType.Weapon,
+            };
+
+            Assert.Throws<NotEnoughClearedStageLevelException>(() => action.Execute(new ActionContext
+            {
+                BlockIndex = 0,
+                PreviousStates = prevState,
+                Signer = _agentAddress,
+            }));
+        }
+
+        [Fact]
+        public void Execute_Throw_ItemDoesNotExistException()
+        {
+            Guid productId = Guid.NewGuid();
             ItemUsable itemUsable = ItemFactory.CreateItemUsable(
                 _tableSheets.EquipmentItemSheet.First,
                 Guid.NewGuid(),
                 Sell.ExpiredBlockIndex);
+            Address shardedShopAddress = ShardedShopState.DeriveAddress(itemUsable.ItemSubType, productId);
+            ShardedShopState shopState = new ShardedShopState(shardedShopAddress);
 
             var shopItem = new ShopItem(
                 _agentAddress,
                 _avatarAddress,
+                productId,
+                new FungibleAssetValue(_goldCurrencyState.Currency, 100, 0),
+                Sell.ExpiredBlockIndex,
+                itemUsable);
+
+            IAccountStateDelta prevState = _initialState
+                .SetState(shardedShopAddress, shopState.Serialize());
+
+            var action = new SellCancellation
+            {
+                productId = shopItem.ProductId,
+                sellerAvatarAddress = _avatarAddress,
+                itemSubType = itemUsable.ItemSubType,
+            };
+
+            Assert.Throws<ItemDoesNotExistException>(() => action.Execute(new ActionContext()
+                {
+                    BlockIndex = 0,
+                    PreviousStates = prevState,
+                    Random = new TestRandom(),
+                    Signer = _agentAddress,
+                })
+            );
+        }
+
+        [Fact]
+        public void Execute_Throw_InvalidAddressException_From_Agent()
+        {
+            Guid productId = Guid.NewGuid();
+            ItemUsable itemUsable = ItemFactory.CreateItemUsable(
+                _tableSheets.EquipmentItemSheet.First,
                 Guid.NewGuid(),
+                Sell.ExpiredBlockIndex);
+            Address shardedShopAddress = ShardedShopState.DeriveAddress(itemUsable.ItemSubType, productId);
+            ShardedShopState shopState = new ShardedShopState(shardedShopAddress);
+
+            var shopItem = new ShopItem(
+                default,
+                _avatarAddress,
+                productId,
                 new FungibleAssetValue(_goldCurrencyState.Currency, 100, 0),
                 Sell.ExpiredBlockIndex,
                 itemUsable);
             shopState.Register(shopItem);
 
             IAccountStateDelta prevState = _initialState
-                .SetState(Addresses.Shop, shopState.Serialize());
+                .SetState(shardedShopAddress, shopState.Serialize());
 
             var action = new SellCancellation
             {
                 productId = shopItem.ProductId,
                 sellerAvatarAddress = _avatarAddress,
+                itemSubType = itemUsable.ItemSubType,
             };
 
-            Assert.Throws<ItemDoesNotExistException>(() => action.Execute(new ActionContext()
+            Assert.Throws<InvalidAddressException>(() => action.Execute(new ActionContext()
+                {
+                    BlockIndex = 0,
+                    PreviousStates = prevState,
+                    Random = new TestRandom(),
+                    Signer = _agentAddress,
+                })
+            );
+        }
+
+        [Fact]
+        public void Execute_Throw_InvalidAddressException_From_Avatar()
+        {
+            Guid productId = Guid.NewGuid();
+            ItemUsable itemUsable = ItemFactory.CreateItemUsable(
+                _tableSheets.EquipmentItemSheet.First,
+                Guid.NewGuid(),
+                Sell.ExpiredBlockIndex);
+            Address shardedShopAddress = ShardedShopState.DeriveAddress(itemUsable.ItemSubType, productId);
+            ShardedShopState shopState = new ShardedShopState(shardedShopAddress);
+
+            var shopItem = new ShopItem(
+                _agentAddress,
+                default,
+                productId,
+                new FungibleAssetValue(_goldCurrencyState.Currency, 100, 0),
+                Sell.ExpiredBlockIndex,
+                itemUsable);
+            shopState.Register(shopItem);
+
+            IAccountStateDelta prevState = _initialState
+                .SetState(shardedShopAddress, shopState.Serialize());
+
+            var action = new SellCancellation
+            {
+                productId = shopItem.ProductId,
+                sellerAvatarAddress = _avatarAddress,
+                itemSubType = itemUsable.ItemSubType,
+            };
+
+            Assert.Throws<InvalidAddressException>(() => action.Execute(new ActionContext()
                 {
                     BlockIndex = 0,
                     PreviousStates = prevState,
