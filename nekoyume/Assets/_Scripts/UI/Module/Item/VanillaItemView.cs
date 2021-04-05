@@ -1,5 +1,5 @@
 using System.Linq;
-using Coffee.UIEffects;
+// using Coffee.UIEffects;
 using DG.Tweening;
 using Nekoyume.Helper;
 using Nekoyume.TableData;
@@ -21,7 +21,7 @@ namespace Nekoyume.UI.Module
         }
 
         public Image gradeImage;
-        public UIHsvModifier gradeHsv;
+        // public UIHsvModifier gradeHsv;
         public Image iconImage;
 
         private Tweener _tweener;
@@ -59,10 +59,10 @@ namespace Nekoyume.UI.Module
             var data = itemViewData.datas.FirstOrDefault(x => x.Grade == itemRow.Grade);
             gradeImage.overrideSprite = data.GradeBackground;
 
-            gradeHsv.range = data.GradeHsvRange;
-            gradeHsv.hue = data.GradeHsvHue;
-            gradeHsv.saturation = data.GradeHsvSaturation;
-            gradeHsv.value = data.GradeHsvValue;
+            // gradeHsv.range = data.GradeHsvRange;
+            // gradeHsv.hue = data.GradeHsvHue;
+            // gradeHsv.saturation = data.GradeHsvSaturation;
+            // gradeHsv.value = data.GradeHsvValue;
 
             var itemSprite = SpriteHelper.GetItemIcon(itemRow.Id);
             if (itemSprite is null)
