@@ -11,6 +11,7 @@ using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
 using Serilog;
+using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Action
 {
@@ -111,19 +112,41 @@ namespace Nekoyume.Action
             }
             nonFungibleItem.Update(expiredBlockIndex);
 
-            string productKey = nonFungibleItem is ItemUsable ? "itemUsable" : "costume";
-            string itemIdKey = nonFungibleItem is ItemUsable ? ItemUsable.ItemIdKey : Costume.ItemIdKey;
             ShopItem shopItem;
-            Dictionary products = (Dictionary)shopStateDict["products"];
+            Dictionary products = (Dictionary)shopStateDict[LegacyProductsKey];
+            string productKey = nonFungibleItem is ItemUsable ? ItemUsableKey : CostumeKey;
+            string itemIdKey = ItemIdKey;
 #pragma warning disable LAA1002
             var productSerialized = products
                 .Select(p => (Dictionary) p.Value)
                 .Where(p => p.ContainsKey(productKey))
                 .FirstOrDefault(p => ((Dictionary)p[productKey])[itemIdKey].Equals(nonFungibleItem.ItemId.Serialize()));
 #pragma warning restore LAA1002
-            // Register new ShopItem
+            bool legacy = false;
             if (productSerialized.Equals(Dictionary.Empty))
             {
+                // Check legacy key.
+                productKey = LegacyCostumeKey;
+                itemIdKey = LegacyCostumeItemIdKey;
+                if (nonFungibleItem is ItemUsable)
+                {
+                    productKey = LegacyItemUsableKey;
+                    itemIdKey = LegacyItemIdKey;
+                }
+                legacy = true;
+
+#pragma warning disable LAA1002
+                productSerialized = products
+                    .Select(p => (Dictionary) p.Value)
+                    .Where(p => p.ContainsKey(productKey))
+                    .FirstOrDefault(p =>
+                        ((Dictionary) p[productKey])[itemIdKey].Equals(nonFungibleItem.ItemId.Serialize()));
+#pragma warning restore LAA1002
+            }
+
+            if (productSerialized.Equals(Dictionary.Empty))
+            {
+                // Register new ShopItem
                 shopItem = new ShopItem(ctx.Signer, sellerAvatarAddress, productId, price, expiredBlockIndex, nonFungibleItem);
                 IValue shopItemSerialized = shopItem.Serialize();
                 IKey productIdSerialized = (IKey)productId.Serialize();
@@ -132,16 +155,21 @@ namespace Nekoyume.Action
             // Update Registered ShopItem
             else
             {
+                string productIdKey = legacy ? LegacyProductIdKey : ProductIdKey;
+                string requiredBlockIndexKey = RequiredBlockIndexKey;
+                if (legacy && nonFungibleItem is ItemUsable)
+                {
+                    requiredBlockIndexKey = LegacyRequiredBlockIndexKey;
+                }
                 Dictionary item = (Dictionary) productSerialized[productKey];
-                string updateKey = nonFungibleItem is ItemUsable ? "requiredBlockIndex" : Costume.RequiredBlockIndexKey;
-                item = item.SetItem(updateKey, expiredBlockIndex.Serialize());
+                item = item.SetItem(requiredBlockIndexKey, expiredBlockIndex.Serialize());
                 productSerialized = productSerialized
-                    .SetItem(ShopItem.ExpiredBlockIndexKey, expiredBlockIndex.Serialize())
+                    .SetItem(ExpiredBlockIndexKey, expiredBlockIndex.Serialize())
                     .SetItem(productKey, item);
-                products = (Dictionary) products.SetItem((IKey) productSerialized["productId"], productSerialized);
+                products = (Dictionary) products.SetItem((IKey) productSerialized[productIdKey], productSerialized);
                 shopItem = new ShopItem(productSerialized);
             }
-            shopStateDict = shopStateDict.SetItem("products", products);
+            shopStateDict = shopStateDict.SetItem(LegacyProductsKey, products);
 
             sw.Stop();
             Log.Verbose("{AddressesHex}Sell Get Register Item: {Elapsed}", addressesHex, sw.Elapsed);

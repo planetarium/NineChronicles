@@ -180,12 +180,12 @@ namespace Nekoyume.Model.Item
 
             if (ItemUsable != null)
             {
-                innerDictionary.Add((Text) LegacyItemUsableKey, ItemUsable.Serialize());
+                innerDictionary.Add((Text) LegacyItemUsableKey, ItemUsable.SerializeLegacy());
             }
 
             if (Costume != null)
             {
-                innerDictionary.Add((Text) LegacyCostumeKey, Costume.Serialize());
+                innerDictionary.Add((Text) LegacyCostumeKey, Costume.SerializeLegacy());
             }
 
             if (ExpiredBlockIndex != 0)

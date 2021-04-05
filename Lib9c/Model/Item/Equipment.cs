@@ -98,7 +98,7 @@ namespace Nekoyume.Model.Item
                 [(Text) LegacyStatKey] = Stat.Serialize(),
                 [(Text) LegacySetIdKey] = SetId.Serialize(),
                 [(Text) LegacySpineResourcePathKey] = SpineResourcePath.Serialize(),
-            }.Union((Dictionary) base.Serialize()));
+            }.Union((Dictionary) base.SerializeLegacy()));
 #pragma warning restore LAA1002
 
         public void Equip()
