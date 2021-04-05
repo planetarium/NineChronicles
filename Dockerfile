@@ -4,7 +4,7 @@ COPY nekoyume /src
 COPY scripts /scripts
 RUN dotnet build /src/Assets/_Scripts/NineChronicles.RPC.Shared/NineChronicles.RPC.Shared/NineChronicles.RPC.Shared.csproj
 
-FROM unityci/editor:2020.3.0f1 AS build
+FROM unityci/editor:ubuntu-2020.3.0f1-base-0.11.0 AS build
 
 ARG apt_source
 
