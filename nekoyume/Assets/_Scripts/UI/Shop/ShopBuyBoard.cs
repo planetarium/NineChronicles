@@ -57,7 +57,7 @@ namespace Nekoyume.UI
             OnChangeBuyType.OnNext(true);
         }
 
-        private void ShowDefaultView()
+        public void ShowDefaultView()
         {
             priceText.text = "0";
             defaultView.SetActive(true);

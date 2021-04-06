@@ -73,6 +73,21 @@ namespace Nekoyume.UI
             refreshText.text = L10nManager.Localize("UI_REFRESH");
         }
 
+        public override void Initialize()
+        {
+            base.Initialize();
+
+            shopItems.SharedModel.SelectedItemView
+                .Subscribe(OnClickShopItem)
+                .AddTo(gameObject);
+
+            SharedModel.ItemCountAndPricePopup.Value.Item
+                .Subscribe(SubscribeItemPopup)
+                .AddTo(gameObject);
+
+            shopBuyBoard.OnChangeBuyType.Subscribe(SetMultiplePurchase).AddTo(gameObject);
+        }
+
         private void Refresh()
         {
             AsyncRefresh();
@@ -90,26 +105,12 @@ namespace Nekoyume.UI
             if (result != null)
             {
                 States.Instance.SetShopState(result);
-                SetMultiplePurchase(false);
+                shopBuyBoard.ShowDefaultView();
+                // SetMultiplePurchase(false);
                 shopItems.Show();
                 refreshLoading.SetActive(false);
                 refreshText.gameObject.SetActive(true);
             }
-        }
-
-        public override void Initialize()
-        {
-            base.Initialize();
-
-            shopItems.SharedModel.SelectedItemView
-                .Subscribe(OnClickShopItem)
-                .AddTo(gameObject);
-
-            SharedModel.ItemCountAndPricePopup.Value.Item
-                .Subscribe(SubscribeItemPopup)
-                .AddTo(gameObject);
-
-            shopBuyBoard.OnChangeBuyType.Subscribe(SetMultiplePurchase).AddTo(gameObject);
         }
 
         public override void Show(bool ignoreShowAnimation = false)
@@ -145,8 +146,10 @@ namespace Nekoyume.UI
                     BottomMenu.ToggleableType.Character);
 
                 AudioController.instance.PlayMusic(AudioController.MusicCode.Shop);
-                SetMultiplePurchase(false);
+                shopBuyBoard.ShowDefaultView();
+                // SetMultiplePurchase(false);
                 shopItems.Show();
+
                 Reset();
                 Find<ShopSell>().Show();
                 Find<ShopSell>().gameObject.SetActive(false);
