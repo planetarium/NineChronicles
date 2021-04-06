@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Libplanet;
 using Nekoyume.L10n;
@@ -363,7 +364,7 @@ namespace Nekoyume.UI.Module
             foreach (var id in _itemIds)
             {
                 var itemName = L10nManager.LocalizeItemName(id);
-                if (itemName.Contains(inputField.text))
+                if (Regex.IsMatch(itemName, inputField.text, RegexOptions.IgnoreCase))
                 {
                     containItemIds.Add(id);
                 }
