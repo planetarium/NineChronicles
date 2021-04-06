@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Libplanet;
+using Nekoyume.L10n;
 using Nekoyume.Model.Item;
+using Nekoyume.Model.Mail;
 using Nekoyume.State;
 using Nekoyume.UI.Module;
 using UniRx;
@@ -115,7 +117,7 @@ namespace Nekoyume.UI.Model
             {
                 var wishItem = wishItems.FirstOrDefault(x =>
                     x.ProductId.Value == view.Model.ProductId.Value);
-                if (wishItem is null) // 위시리스트에 없을 때
+                if (wishItem is null)
                 {
                     if (wishItems.Count < WishListSize)
                     {
@@ -123,6 +125,11 @@ namespace Nekoyume.UI.Model
                         SelectedItemView.SetValueAndForceNotify(view);
                         SelectedItemViewModel.SetValueAndForceNotify(view.Model);
                         SelectedItemViewModel.Value.Selected.SetValueAndForceNotify(true);
+                    }
+                    else
+                    {
+                        OneLinePopup.Push(MailType.System,
+                            L10nManager.Localize("NOTIFICATION_BUY_WISHLIST_FULL"));
                     }
                 }
                 else

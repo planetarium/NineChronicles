@@ -70,7 +70,6 @@ namespace Nekoyume.UI
             });
 
             refreshButton.onClick.AddListener(Refresh);
-            refreshText.text = L10nManager.Localize("UI_REFRESH");
         }
 
         public override void Initialize()
@@ -298,7 +297,7 @@ namespace Nekoyume.UI
 
             AudioController.instance.PlaySfx(AudioController.SfxCode.BuyItem);
             var format = L10nManager.Localize("NOTIFICATION_BUY_START");
-            Notification.Push(MailType.Auction,
+            OneLinePopup.Push(MailType.Auction,
                 string.Format(format, shopItem.ItemBase.Value.GetLocalizedName()));
         }
 

@@ -27,8 +27,6 @@ namespace Nekoyume.UI
         [SerializeField] private Button transactionHistoryButton;
 
         [SerializeField] private TextMeshProUGUI priceText;
-        [SerializeField] private TextMeshProUGUI buyText;
-        [SerializeField] private TextMeshProUGUI transactionHistoryText;
 
         public readonly Subject<bool> OnChangeBuyType = new Subject<bool>();
 
@@ -40,8 +38,6 @@ namespace Nekoyume.UI
             cancelButton.OnClickAsObservable().Subscribe(OnCloseBuyWishList).AddTo(gameObject);
             buyButton.OnClickAsObservable().Subscribe(OnClickBuy).AddTo(gameObject);
             transactionHistoryButton.OnClickAsObservable().Subscribe(OnClickTransactionHistory).AddTo(gameObject);
-            buyText.text = L10nManager.Localize("UI_BUY_MULTIPLE");
-            transactionHistoryText.text = L10nManager.Localize("UI_TRANSACTION_HISTORY");
         }
 
         private void OnEnable()
@@ -125,7 +121,7 @@ namespace Nekoyume.UI
                 LocalLayerModifier.ModifyAgentGold(buyerAgentAddress, -shopItem.Price.Value);
                 shopItems.SharedModel.RemoveItemSubTypeProduct(productId);
                 var format = L10nManager.Localize("NOTIFICATION_BUY_START");
-                Notification.Push(MailType.Auction,
+                OneLinePopup.Push(MailType.Auction,
                     string.Format(format, shopItem.ItemBase.Value.GetLocalizedName()));
             }
             AudioController.instance.PlaySfx(AudioController.SfxCode.BuyItem);
