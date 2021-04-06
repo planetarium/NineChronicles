@@ -166,6 +166,7 @@ namespace Nekoyume.UI
             }
 
             priceText.text = _price.ToString();
+            buyButton.GetComponent<CanvasGroup>().alpha = shopItems.SharedModel.wishItems.Count > 0 ? 1.0f : 0.5f;
         }
 
         private void OnDestroy()
