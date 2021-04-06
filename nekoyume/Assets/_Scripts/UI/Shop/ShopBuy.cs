@@ -59,12 +59,14 @@ namespace Nekoyume.UI
             CloseWidget = null;
             sellButton.onClick.AddListener(() =>
             {
-                shopItems.Reset();
-                Find<ItemCountAndPricePopup>().Close();
-                Find<ShopSell>().gameObject.SetActive(true);
-                _npc?.gameObject.SetActive(false);
-                gameObject.SetActive(false);
-                // ReactiveShopState.Initialize(States.Instance.ShopState, 20);
+                CleanUpWishListAlertPopup(() =>
+                {
+                    shopItems.Reset();
+                    Find<ItemCountAndPricePopup>().Close();
+                    Find<ShopSell>().gameObject.SetActive(true);
+                    _npc?.gameObject.SetActive(false);
+                    gameObject.SetActive(false);
+                });
             });
 
             refreshButton.onClick.AddListener(Refresh);
@@ -270,17 +272,7 @@ namespace Nekoyume.UI
                 return;
             }
 
-            if (shopItems.SharedModel.isMultiplePurchase && shopItems.SharedModel.wishItems.Count > 0)
-            {
-                Widget.Find<TwoButtonPopup>().Show(L10nManager.Localize("UI_CLOSE_BUY_WISH_LIST"),
-                    L10nManager.Localize("UI_YES"),
-                    L10nManager.Localize("UI_NO"),
-                    Close);
-            }
-            else
-            {
-                Close();
-            }
+            CleanUpWishListAlertPopup(Close);
         }
 
         private static bool ButtonEnabledFuncForBuy(CountableItem inventoryItem)
@@ -316,6 +308,21 @@ namespace Nekoyume.UI
             else
             {
                 ShowTooltip(view);
+            }
+        }
+
+        private void CleanUpWishListAlertPopup(System.Action callback)
+        {
+            if (shopItems.SharedModel.isMultiplePurchase && shopItems.SharedModel.wishItems.Count > 0)
+            {
+                Widget.Find<TwoButtonPopup>().Show(L10nManager.Localize("UI_CLOSE_BUY_WISH_LIST"),
+                    L10nManager.Localize("UI_YES"),
+                    L10nManager.Localize("UI_NO"),
+                    callback);
+            }
+            else
+            {
+                callback.Invoke();
             }
         }
     }
