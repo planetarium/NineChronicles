@@ -149,7 +149,7 @@ namespace Nekoyume.Action
 
             public BuyerResult(Bencodex.Types.Dictionary serialized)
             {
-                purchaseResults = serialized["purchaseResults"].ToList(StateExtensions.ToPurchaseResult);
+                purchaseResults = serialized["purchaseResults"].ToList(StateExtensions.ToPurchaseResultLegacy);
             }
 
             public IValue Serialize() =>
@@ -200,7 +200,7 @@ namespace Nekoyume.Action
         protected override void LoadPlainValueInternal(IImmutableDictionary<string, IValue> plainValue)
         {
             buyerAvatarAddress = plainValue["buyerAvatarAddress"].ToAddress();
-            purchaseInfos = plainValue["products"].ToList(StateExtensions.ToPurchaseInfo);
+            purchaseInfos = plainValue["products"].ToList(StateExtensions.ToPurchaseInfoLegacy);
         }
 
         public override IAccountStateDelta Execute(IActionContext context)
