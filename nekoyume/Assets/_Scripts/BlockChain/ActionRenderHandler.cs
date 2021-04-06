@@ -614,13 +614,13 @@ namespace Nekoyume.BlockChain
                     var purchaseHistory = ReactiveShopState.PurchaseHistory.Dequeue();
                     foreach (var purchaseResult in purchaseResults)
                     {
+                        var buyerAgentAddress = States.Instance.AgentState.address;
+                        var price = purchaseResult.shopItem.Price;
                         if (purchaseResult.errorCode == 0)
                         {
-                            var buyerAgentAddress = States.Instance.AgentState.address;
                             var nonFungibleItem = purchaseResult.itemUsable ?? (INonFungibleItem) purchaseResult.costume;
                             var itemBase = purchaseResult.itemUsable ?? (ItemBase) purchaseResult.costume;
                             var buyerAvatar = eval.OutputStates.GetAvatarState(buyerAvatarAddress);
-                            var price = purchaseResult.shopItem.Price;
 
                             LocalLayerModifier.ModifyAgentGold(buyerAgentAddress, price);
                             LocalLayerModifier.RemoveItem(buyerAvatarAddress, nonFungibleItem.ItemId);
@@ -653,8 +653,9 @@ namespace Nekoyume.BlockChain
                             var errorType = ((ShopErrorType) purchaseResult.errorCode).ToString();
                             var msg = string.Format(L10nManager.Localize("NOTIFICATION_BUY_FAIL"),
                                                           item.ItemBase.Value.GetLocalizedName(),
-                                                          purchaseResult.errorCode);
+                                                          errorType);
                             OneLinePopup.Push(MailType.Auction, msg);
+                            LocalLayerModifier.ModifyAgentGold(buyerAgentAddress, -price);
                         }
                     }
                 }
