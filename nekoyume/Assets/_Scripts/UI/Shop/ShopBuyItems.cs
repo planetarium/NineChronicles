@@ -187,8 +187,7 @@ namespace Nekoyume.UI.Module
         {
             toggleDropdowns.First().isOn = true;
             inputField.text = string.Empty;
-            sortOrderIcon.localScale = Vector3.down;
-
+            sortOrderIcon.localScale = new Vector3(1, -1, 1);
             SharedModel.itemSubTypeFilter = ItemSubTypeFilter.Weapon;
             SharedModel.sortFilter = SortFilter.Class;
             SharedModel.isReverseOrder = false;
