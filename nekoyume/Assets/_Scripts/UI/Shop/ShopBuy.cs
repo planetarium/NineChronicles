@@ -105,7 +105,6 @@ namespace Nekoyume.UI
             {
                 States.Instance.SetShopState(result);
                 shopBuyBoard.ShowDefaultView();
-                // SetMultiplePurchase(false);
                 shopItems.Show();
                 refreshLoading.SetActive(false);
                 refreshText.gameObject.SetActive(true);
@@ -146,7 +145,6 @@ namespace Nekoyume.UI
 
                 AudioController.instance.PlayMusic(AudioController.MusicCode.Shop);
                 shopBuyBoard.ShowDefaultView();
-                // SetMultiplePurchase(false);
                 shopItems.Show();
 
                 Reset();

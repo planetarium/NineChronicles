@@ -186,14 +186,13 @@ namespace Nekoyume.UI.Model
         public void ClearWishList()
         {
             wishItems.Clear();
+            ResetSelectedState();
         }
 
         public void SetMultiplePurchase(bool value)
         {
             ClearWishList();
             isMultiplePurchase = value;
-            ResetAgentProducts();
-            ResetItemSubTypeProducts();
         }
 
         public void SelectItemView(ShopItemView view)
@@ -345,6 +344,11 @@ namespace Nekoyume.UI.Model
         public void ResetItemSubTypeProducts()
         {
             ItemSubTypeProducts.Value = GetFilteredAndSortedProducts(_itemSubTypeProducts);
+            ResetSelectedState();
+        }
+
+        private void ResetSelectedState()
+        {
             foreach (var keyValuePair in ItemSubTypeProducts.Value)
             {
                 foreach (var shopItem in keyValuePair.Value)

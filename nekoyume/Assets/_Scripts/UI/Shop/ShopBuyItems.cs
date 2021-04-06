@@ -186,6 +186,8 @@ namespace Nekoyume.UI.Module
             SharedModel.isReverseOrder = false;
             SharedModel.searchIds = new List<int>();
             SharedModel.SetMultiplePurchase(false);
+            SharedModel.ResetAgentProducts();
+            SharedModel.ResetItemSubTypeProducts();
             UpdateSrot();
         }
 
