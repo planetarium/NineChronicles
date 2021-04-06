@@ -30,6 +30,8 @@ namespace Nekoyume.UI
 
         public readonly Subject<bool> OnChangeBuyType = new Subject<bool>();
 
+        public bool IsAcitveWishListView => wishListView.activeSelf;
+
         private double _price;
 
         private void Awake()

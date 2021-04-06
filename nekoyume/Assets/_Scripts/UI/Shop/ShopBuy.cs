@@ -301,6 +301,11 @@ namespace Nekoyume.UI
 
         private void OnClickShopItem(ShopItemView view)
         {
+            if (!shopItems.SharedModel.isMultiplePurchase && shopBuyBoard.IsAcitveWishListView)
+            {
+                SetMultiplePurchase(true);
+            }
+
             if (shopItems.SharedModel.isMultiplePurchase)
             {
                 shopBuyBoard.UpdateWishList();
