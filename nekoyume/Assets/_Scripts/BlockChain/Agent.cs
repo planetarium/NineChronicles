@@ -640,7 +640,7 @@ namespace Nekoyume.BlockChain
             {
                 Cheat.Display("Logs", _tipInfo);
                 var peerStateString = string.Join("\n", _swarm.PeersStates.Select(peerState =>
-                    $"Address: {peerState.Address}\n" +
+                    $"Address: {peerState.Peer.Address}\n" +
                     $" - LastUpdated: {peerState.LastUpdated}\n" +
                     $" - LastChecked: {peerState.LastChecked}\n" +
                     $" - Latency: {peerState.Latency}"));
