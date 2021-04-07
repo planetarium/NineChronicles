@@ -31,9 +31,9 @@ namespace Nekoyume.UI
         [SerializeField] private ShopBuyBoard shopBuyBoard = null;
         [SerializeField] private Button sellButton = null;
         [SerializeField] private Canvas frontCanvas;
-        [SerializeField] private Button refreshButton = null;
-        [SerializeField] private GameObject refreshLoading = null;
-        [SerializeField] private TextMeshProUGUI refreshText = null;
+        // [SerializeField] private Button refreshButton = null;
+        // [SerializeField] private GameObject refreshLoading = null;
+        // [SerializeField] private TextMeshProUGUI refreshText = null;
 
         private Model.Shop SharedModel { get; set; }
 
@@ -59,40 +59,17 @@ namespace Nekoyume.UI
             CloseWidget = null;
             sellButton.onClick.AddListener(() =>
             {
-                shopItems.Reset();
-                Find<ItemCountAndPricePopup>().Close();
-                Find<ShopSell>().gameObject.SetActive(true);
-                _npc?.gameObject.SetActive(false);
-                gameObject.SetActive(false);
-                // ReactiveShopState.Initialize(States.Instance.ShopState, 20);
+                CleanUpWishListAlertPopup(() =>
+                {
+                    shopItems.Reset();
+                    Find<ItemCountAndPricePopup>().Close();
+                    Find<ShopSell>().gameObject.SetActive(true);
+                    _npc?.gameObject.SetActive(false);
+                    gameObject.SetActive(false);
+                });
             });
 
-            refreshButton.onClick.AddListener(Refresh);
-            refreshText.text = L10nManager.Localize("UI_REFRESH");
-        }
-
-        private void Refresh()
-        {
-            AsyncRefresh();
-        }
-        private async void AsyncRefresh()
-        {
-            shopItems.Close();
-            refreshLoading.SetActive(true);
-            refreshText.gameObject.SetActive(false);
-
-            var task = Task.Run(() => new ShopState(
-                (Bencodex.Types.Dictionary) Game.Game.instance.Agent.GetState(Addresses.Shop)));
-
-            ShopState result = await task;
-            if (result != null)
-            {
-                States.Instance.SetShopState(result);
-                SetMultiplePurchase(false);
-                shopItems.Show();
-                refreshLoading.SetActive(false);
-                refreshText.gameObject.SetActive(true);
-            }
+            // refreshButton.onClick.AddListener(Refresh);
         }
 
         public override void Initialize()
@@ -109,6 +86,30 @@ namespace Nekoyume.UI
 
             shopBuyBoard.OnChangeBuyType.Subscribe(SetMultiplePurchase).AddTo(gameObject);
         }
+
+        // private void Refresh()
+        // {
+        //     AsyncRefresh();
+        // }
+        // private async void AsyncRefresh()
+        // {
+        //     shopItems.Close();
+        //     refreshLoading.SetActive(true);
+        //     refreshText.gameObject.SetActive(false);
+        //
+        //     var task = Task.Run(() => new ShopState(
+        //         (Bencodex.Types.Dictionary) Game.Game.instance.Agent.GetState(Addresses.Shop)));
+        //
+        //     ShopState result = await task;
+        //     if (result != null)
+        //     {
+        //         States.Instance.SetShopState(result);
+        //         shopBuyBoard.ShowDefaultView();
+        //         shopItems.Show();
+        //         refreshLoading.SetActive(false);
+        //         refreshText.gameObject.SetActive(true);
+        //     }
+        // }
 
         public override void Show(bool ignoreShowAnimation = false)
         {
@@ -143,8 +144,9 @@ namespace Nekoyume.UI
                     BottomMenu.ToggleableType.Character);
 
                 AudioController.instance.PlayMusic(AudioController.MusicCode.Shop);
-                SetMultiplePurchase(false);
+                shopBuyBoard.ShowDefaultView();
                 shopItems.Show();
+
                 Reset();
                 Find<ShopSell>().Show();
                 Find<ShopSell>().gameObject.SetActive(false);
@@ -156,8 +158,8 @@ namespace Nekoyume.UI
         private void Reset()
         {
             ShowNPC();
-            refreshLoading.SetActive(false);
-            refreshText.gameObject.SetActive(true);
+            // refreshLoading.SetActive(false);
+            // refreshText.gameObject.SetActive(true);
         }
 
         public void Open()
@@ -270,17 +272,7 @@ namespace Nekoyume.UI
                 return;
             }
 
-            if (shopItems.SharedModel.isMultiplePurchase && shopItems.SharedModel.wishItems.Count > 0)
-            {
-                Widget.Find<TwoButtonPopup>().Show(L10nManager.Localize("UI_CLOSE_BUY_WISH_LIST"),
-                    L10nManager.Localize("UI_YES"),
-                    L10nManager.Localize("UI_NO"),
-                    Close);
-            }
-            else
-            {
-                Close();
-            }
+            CleanUpWishListAlertPopup(Close);
         }
 
         private static bool ButtonEnabledFuncForBuy(CountableItem inventoryItem)
@@ -303,12 +295,17 @@ namespace Nekoyume.UI
 
             AudioController.instance.PlaySfx(AudioController.SfxCode.BuyItem);
             var format = L10nManager.Localize("NOTIFICATION_BUY_START");
-            Notification.Push(MailType.Auction,
+            OneLinePopup.Push(MailType.Auction,
                 string.Format(format, shopItem.ItemBase.Value.GetLocalizedName()));
         }
 
         private void OnClickShopItem(ShopItemView view)
         {
+            if (!shopItems.SharedModel.isMultiplePurchase && shopBuyBoard.IsAcitveWishListView)
+            {
+                SetMultiplePurchase(true);
+            }
+
             if (shopItems.SharedModel.isMultiplePurchase)
             {
                 shopBuyBoard.UpdateWishList();
@@ -316,6 +313,21 @@ namespace Nekoyume.UI
             else
             {
                 ShowTooltip(view);
+            }
+        }
+
+        private void CleanUpWishListAlertPopup(System.Action callback)
+        {
+            if (shopItems.SharedModel.isMultiplePurchase && shopItems.SharedModel.wishItems.Count > 0)
+            {
+                Widget.Find<TwoButtonPopup>().Show(L10nManager.Localize("UI_CLOSE_BUY_WISH_LIST"),
+                    L10nManager.Localize("UI_YES"),
+                    L10nManager.Localize("UI_NO"),
+                    callback);
+            }
+            else
+            {
+                callback.Invoke();
             }
         }
     }

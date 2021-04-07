@@ -27,10 +27,10 @@ namespace Nekoyume.UI
         [SerializeField] private Button transactionHistoryButton;
 
         [SerializeField] private TextMeshProUGUI priceText;
-        [SerializeField] private TextMeshProUGUI buyText;
-        [SerializeField] private TextMeshProUGUI transactionHistoryText;
 
         public readonly Subject<bool> OnChangeBuyType = new Subject<bool>();
+
+        public bool IsAcitveWishListView => wishListView.activeSelf;
 
         private double _price;
 
@@ -40,8 +40,6 @@ namespace Nekoyume.UI
             cancelButton.OnClickAsObservable().Subscribe(OnCloseBuyWishList).AddTo(gameObject);
             buyButton.OnClickAsObservable().Subscribe(OnClickBuy).AddTo(gameObject);
             transactionHistoryButton.OnClickAsObservable().Subscribe(OnClickTransactionHistory).AddTo(gameObject);
-            buyText.text = L10nManager.Localize("UI_BUY_MULTIPLE");
-            transactionHistoryText.text = L10nManager.Localize("UI_TRANSACTION_HISTORY");
         }
 
         private void OnEnable()
@@ -57,7 +55,7 @@ namespace Nekoyume.UI
             OnChangeBuyType.OnNext(true);
         }
 
-        private void ShowDefaultView()
+        public void ShowDefaultView()
         {
             priceText.text = "0";
             defaultView.SetActive(true);
@@ -125,7 +123,7 @@ namespace Nekoyume.UI
                 LocalLayerModifier.ModifyAgentGold(buyerAgentAddress, -shopItem.Price.Value);
                 shopItems.SharedModel.RemoveItemSubTypeProduct(productId);
                 var format = L10nManager.Localize("NOTIFICATION_BUY_START");
-                Notification.Push(MailType.Auction,
+                OneLinePopup.Push(MailType.Auction,
                     string.Format(format, shopItem.ItemBase.Value.GetLocalizedName()));
             }
             AudioController.instance.PlaySfx(AudioController.SfxCode.BuyItem);
@@ -170,6 +168,7 @@ namespace Nekoyume.UI
             }
 
             priceText.text = _price.ToString();
+            buyButton.GetComponent<CanvasGroup>().alpha = shopItems.SharedModel.wishItems.Count > 0 ? 1.0f : 0.5f;
         }
 
         private void OnDestroy()

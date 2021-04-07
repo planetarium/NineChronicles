@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Libplanet;
 using Nekoyume.L10n;
@@ -11,6 +12,7 @@ using Nekoyume.UI.Model;
 using TMPro;
 using UniRx;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using ShopItem = Nekoyume.UI.Model.ShopItem;
 
@@ -99,7 +101,6 @@ namespace Nekoyume.UI.Module
 
         #region Mono
 
-
         private void Awake()
         {
             var equipments = Game.Game.instance.TableSheets.EquipmentItemSheet.Values.Select(x => x.Id);
@@ -173,27 +174,21 @@ namespace Nekoyume.UI.Module
             sortOrderButton.OnClickAsObservable().Subscribe(OnClickSortOrder).AddTo(gameObject);
             searchButton.OnClickAsObservable().Subscribe(OnSearch).AddTo(gameObject);
             inputField.onSubmit.AddListener(OnClickSearch);
-
-            // refreshButtonTouchHandler.OnClick.Subscribe(_ =>
-            // {
-            //     AudioController.PlayClick();
-            //     // NOTE: 아래 코드를 실행해도 아무런 변화가 없습니다.
-            //     // 새로고침을 새로 정의한 후에 수정합니다.
-            //     // SharedModel.ResetItemSubTypeProducts();
-            // }).AddTo(gameObject);
+            inputField.onValueChanged.AddListener(OnInputValueChange);
         }
 
         public void Reset()
         {
             toggleDropdowns.First().isOn = true;
             inputField.text = string.Empty;
-            sortOrderIcon.localScale = Vector3.one;
-
+            sortOrderIcon.localScale = new Vector3(1, -1, 1);
             SharedModel.itemSubTypeFilter = ItemSubTypeFilter.Weapon;
             SharedModel.sortFilter = SortFilter.Class;
             SharedModel.isReverseOrder = false;
             SharedModel.searchIds = new List<int>();
             SharedModel.SetMultiplePurchase(false);
+            SharedModel.ResetAgentProducts();
+            SharedModel.ResetItemSubTypeProducts();
             UpdateSrot();
         }
 
@@ -358,13 +353,18 @@ namespace Nekoyume.UI.Module
             OnSearch(Unit.Default);
         }
 
+        private void OnInputValueChange(string value)
+        {
+            searchButton.gameObject.SetActive(inputField.text.Length > 0);
+        }
+
         private void OnSearch(Unit unit)
         {
             var containItemIds = new List<int>();
             foreach (var id in _itemIds)
             {
                 var itemName = L10nManager.LocalizeItemName(id);
-                if (itemName.Contains(inputField.text))
+                if (Regex.IsMatch(itemName, inputField.text, RegexOptions.IgnoreCase))
                 {
                     containItemIds.Add(id);
                 }
