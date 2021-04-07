@@ -297,7 +297,7 @@ namespace Nekoyume.Action
                 ctx.BlockIndex);
             sellerResult.id = sellerMail.id;
 
-            buyerAvatarState.UpdateV4(buyerMail, context.BlockIndex);
+            buyerAvatarState.UpdateV3(buyerMail);
             if (buyerResult.itemUsable != null)
             {
                 buyerAvatarState.UpdateFromAddItem(buyerResult.itemUsable, false);
@@ -307,8 +307,7 @@ namespace Nekoyume.Action
             {
                 buyerAvatarState.UpdateFromAddCostume(buyerResult.costume, false);
             }
-
-            sellerAvatarState.UpdateV4(sellerMail, context.BlockIndex);
+            sellerAvatarState.UpdateV3(sellerMail);
 
             // Update quest.
             buyerAvatarState.questList.UpdateTradeQuest(TradeType.Buy, shopItem.Price);

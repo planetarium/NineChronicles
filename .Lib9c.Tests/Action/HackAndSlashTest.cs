@@ -195,7 +195,7 @@ namespace Lib9c.Tests.Action
             Assert.Equal(BattleLog.Result.Win, action.Result.result);
             Assert.Equal(contains, newWeeklyState.ContainsKey(_avatarAddress));
             Assert.True(nextAvatarState.worldInformation.IsStageCleared(stageId));
-            Assert.Empty(nextAvatarState.mailBox);
+            Assert.Equal(30, nextAvatarState.mailBox.Count);
             if (contains)
             {
                 //Check for Costume CP.

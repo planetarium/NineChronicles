@@ -205,7 +205,7 @@ namespace Lib9c.Tests.Action
                     out INonFungibleItem outNonFungibleItem)
             );
             Assert.Equal(1, outNonFungibleItem.RequiredBlockIndex);
-            Assert.Single(nextBuyerAvatarState.mailBox);
+            Assert.Equal(30, nextBuyerAvatarState.mailBox.Count);
 
             var nextSellerAvatarState = nextState.GetAvatarState(_sellerAvatarAddress);
             Assert.False(
@@ -213,7 +213,7 @@ namespace Lib9c.Tests.Action
                     nonFungibleItem.ItemId,
                     out INonFungibleItem _)
             );
-            Assert.Single(nextSellerAvatarState.mailBox);
+            Assert.Equal(30, nextSellerAvatarState.mailBox.Count);
 
             var goldCurrencyState = nextState.GetGoldCurrency();
             var goldCurrencyGold = nextState.GetBalance(Addresses.GoldCurrency, goldCurrencyState);

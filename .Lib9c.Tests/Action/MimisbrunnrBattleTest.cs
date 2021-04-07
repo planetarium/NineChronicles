@@ -163,7 +163,7 @@
             Assert.NotEmpty(reward);
             Assert.Equal(BattleLog.Result.Win, action.Result.result);
             Assert.True(nextAvatarState.worldInformation.IsStageCleared(stageId));
-            Assert.Empty(nextAvatarState.mailBox);
+            Assert.Equal(30, nextAvatarState.mailBox.Count);
 
             var value = nextState.GetState(_rankingMapAddress);
             if (value != null)

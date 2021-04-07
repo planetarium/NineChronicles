@@ -168,9 +168,7 @@ namespace Lib9c.Tests.Action
             var nextAvatarState = nextState.GetAvatarState(_avatarAddress);
             Assert.True(nextAvatarState.inventory.TryGetNonFungibleItem(itemId, out INonFungibleItem nextNonFungibleItem));
             Assert.Equal(1, nextNonFungibleItem.RequiredBlockIndex);
-            Assert.Single(nextAvatarState.mailBox);
-            Assert.IsType<SellCancelMail>(nextAvatarState.mailBox.First());
-
+            Assert.Equal(30, nextAvatarState.mailBox.Count);
             ShopState nextLegacyShopState = nextState.GetShopState();
             Assert.Empty(nextLegacyShopState.Products);
         }

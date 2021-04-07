@@ -179,7 +179,7 @@ namespace Nekoyume.Action
             };
             var mail = new SellCancelMail(result, ctx.BlockIndex, ctx.Random.GenerateRandomGuid(), expiredBlockIndex);
             result.id = mail.id;
-            avatarState.UpdateV4(mail, context.BlockIndex);
+            avatarState.UpdateV3(mail);
 
             states = states.SetState(sellerAvatarAddress, avatarState.Serialize());
             sw.Stop();
