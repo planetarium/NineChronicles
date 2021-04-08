@@ -82,32 +82,23 @@ namespace Nekoyume.Model.Item
 
         public ShopItem(Dictionary serialized)
         {
-            if (serialized.ContainsKey(LegacySellerAgentAddressKey))
-            {
-                SellerAgentAddress = serialized[LegacySellerAgentAddressKey].ToAddress();
-                SellerAvatarAddress = serialized[LegacySellerAvatarAddressKey].ToAddress();
-                ProductId = serialized[LegacyProductIdKey].ToGuid();
-                Price = serialized[LegacyPriceKey].ToFungibleAssetValue();
-                ItemUsable = serialized.ContainsKey(LegacyItemUsableKey)
-                    ? (ItemUsable) ItemFactory.Deserialize((Dictionary) serialized[LegacyItemUsableKey])
-                    : null;
-                Costume = serialized.ContainsKey(LegacyCostumeKey)
-                    ? (Costume) ItemFactory.Deserialize((Dictionary) serialized[LegacyCostumeKey])
-                    : null;
-            }
-            else
-            {
-                SellerAgentAddress = serialized[SellerAgentAddressKey].ToAddress();
-                SellerAvatarAddress = serialized[SellerAvatarAddressKey].ToAddress();
-                ProductId = serialized[ProductIdKey].ToGuid();
-                Price = serialized[PriceKey].ToFungibleAssetValue();
-                ItemUsable = serialized.ContainsKey(ItemUsableKey)
-                    ? (ItemUsable) ItemFactory.Deserialize((Dictionary) serialized[ItemUsableKey])
-                    : null;
-                Costume = serialized.ContainsKey(CostumeKey)
-                    ? (Costume) ItemFactory.Deserialize((Dictionary) serialized[CostumeKey])
-                    : null;
-            }
+            bool useLegacy = serialized.ContainsKey(LegacySellerAgentAddressKey);
+            string sellerAgentKey = useLegacy ? LegacySellerAgentAddressKey : SellerAgentAddressKey;
+            string sellerAvatarKey = useLegacy ? LegacySellerAvatarAddressKey : SellerAvatarAddressKey;
+            string productIdKey = useLegacy ? LegacyProductIdKey : ProductIdKey;
+            string priceKey = useLegacy ? LegacyPriceKey : PriceKey;
+            string itemUsableKey = useLegacy ? LegacyItemUsableKey : ItemUsableKey;
+            string costumeKey = useLegacy ? LegacyCostumeKey : CostumeKey;
+            SellerAgentAddress = serialized[sellerAgentKey].ToAddress();
+            SellerAvatarAddress = serialized[sellerAvatarKey].ToAddress();
+            ProductId = serialized[productIdKey].ToGuid();
+            Price = serialized[priceKey].ToFungibleAssetValue();
+            ItemUsable = serialized.ContainsKey(itemUsableKey)
+                ? (ItemUsable) ItemFactory.Deserialize((Dictionary) serialized[itemUsableKey])
+                : null;
+            Costume = serialized.ContainsKey(costumeKey)
+                ? (Costume) ItemFactory.Deserialize((Dictionary) serialized[costumeKey])
+                : null;
             if (serialized.ContainsKey(ExpiredBlockIndexKey))
             {
                 ExpiredBlockIndex = serialized[ExpiredBlockIndexKey].ToLong();

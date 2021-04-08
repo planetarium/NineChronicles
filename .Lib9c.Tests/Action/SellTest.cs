@@ -134,8 +134,7 @@ namespace Lib9c.Tests.Action
                 if (legacy)
                 {
                     Dictionary sl = (Dictionary)si.SerializeLegacy();
-                    Dictionary productsSerialize =
-                        new Dictionary(Dictionary.Empty.Add((IKey)si.ProductId.Serialize(), sl));
+                    Dictionary productsSerialize = (Dictionary)Dictionary.Empty.Add((IKey)si.ProductId.Serialize(), sl);
                     shopStateDict = shopStateDict.SetItem(LegacyProductsKey, productsSerialize);
                 }
 

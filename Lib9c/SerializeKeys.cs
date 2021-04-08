@@ -45,9 +45,9 @@ namespace Lib9c
         // Stat
         public const string StatTypeKey = "stt";
         public const string StatValueKey = "v";
+        public const string AdditionalStatValueKey = "av";
         public const string LegacyStatTypeKey = "statType";
         public const string LegacyStatValueKey = "value";
-        public const string AdditionalStatValueKey = "av";
         public const string LegacyAdditionalStatValueKey = "additionalValue";
 
         // Skill
