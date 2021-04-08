@@ -26,6 +26,7 @@ namespace Nekoyume.UI
         [SerializeField] private ShopBuyItems shopItems = null;
         [SerializeField] private ShopBuyBoard shopBuyBoard = null;
         [SerializeField] private Button sellButton = null;
+        [SerializeField] private Button spineButton = null;
         [SerializeField] private Canvas frontCanvas;
 
         private Model.Shop SharedModel { get; set; }
@@ -62,6 +63,7 @@ namespace Nekoyume.UI
                 });
             });
 
+            spineButton.onClick.AddListener(() => _npc.PlayAnimation(NPCAnimation.Type.Emotion_01));
         }
 
         public override void Initialize()
@@ -161,6 +163,7 @@ namespace Nekoyume.UI
             _npc.SpineController.Appear();
             go.SetActive(true);
             frontCanvas.sortingLayerName = LayerType.UI.ToLayerName();
+            _npc.PlayAnimation(NPCAnimation.Type.Greeting_01);
         }
 
         private void ShowTooltip(ShopItemView view)
