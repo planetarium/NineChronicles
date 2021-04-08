@@ -93,8 +93,7 @@ namespace Nekoyume.UI.Module
             }
             base.SetData(row);
 
-
-            var data = itemViewData.datas.FirstOrDefault(x => x.Grade == row.Grade);
+            var data = itemViewData.GetItemViewData(row.Grade);
             enhancementImage.GetComponent<Image>().material = data.EnhancementMaterial;
 
             _disposablesAtSetData.DisposeAllAndClear();
