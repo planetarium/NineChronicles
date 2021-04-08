@@ -26,6 +26,7 @@ namespace Nekoyume.UI
         [SerializeField] private Button buyButton;
         [SerializeField] private Button transactionHistoryButton;
 
+        [SerializeField] private TextMeshProUGUI buyText;
         [SerializeField] private TextMeshProUGUI priceText;
 
         public readonly Subject<bool> OnChangeBuyType = new Subject<bool>();
@@ -40,10 +41,12 @@ namespace Nekoyume.UI
             cancelButton.OnClickAsObservable().Subscribe(OnCloseBuyWishList).AddTo(gameObject);
             buyButton.OnClickAsObservable().Subscribe(OnClickBuy).AddTo(gameObject);
             transactionHistoryButton.OnClickAsObservable().Subscribe(OnClickTransactionHistory).AddTo(gameObject);
+            buyButton.image.enabled = false;
         }
 
         private void OnEnable()
         {
+            buyButton.image.enabled = true;
             ShowDefaultView();
         }
 
@@ -168,7 +171,19 @@ namespace Nekoyume.UI
             }
 
             priceText.text = _price.ToString();
-            buyButton.GetComponent<CanvasGroup>().alpha = shopItems.SharedModel.wishItems.Count > 0 ? 1.0f : 0.5f;
+            var currentGold = double.Parse(States.Instance.GoldBalanceState.Gold.GetQuantityString());
+            if (currentGold < _price)
+            {
+                priceText.color = ColorController.Color(3);
+                buyButton.image.color = ColorController.Color(1);
+                buyText.color = ColorController.Color(2);
+            }
+            else
+            {
+                priceText.color = ColorController.Color(0);
+                buyButton.image.color = shopItems.SharedModel.wishItems.Count > 0 ? ColorController.Color(0) : ColorController.Color(1);
+                buyText.color = shopItems.SharedModel.wishItems.Count > 0 ? ColorController.Color(0) : ColorController.Color(2);
+            }
         }
 
         private void OnDestroy()
