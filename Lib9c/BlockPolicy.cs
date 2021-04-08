@@ -169,7 +169,7 @@ namespace Nekoyume.BlockChain
             Transaction<NCAction>[] txs = block.Transactions.ToArray();
             if (!txs.Any(tx => tx.Signer.Equals(miner) && !tx.Actions.Any()) &&
                 block.ProtocolVersion > 0 &&
-                (IgnoreHardcodedIndicesForBackwardCompatibility || block.Index > 1_800_000))
+                (IgnoreHardcodedIndicesForBackwardCompatibility || block.Index > 1_200_000))
             {
 #if DEBUG
                 string debug =
