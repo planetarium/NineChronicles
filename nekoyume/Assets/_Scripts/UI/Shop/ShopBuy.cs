@@ -262,7 +262,10 @@ namespace Nekoyume.UI
         private void SetMultiplePurchase(bool value)
         {
             shopItems.SharedModel.SetMultiplePurchase(value);
-            shopBuyBoard.UpdateWishList();
+            if (value)
+            {
+                shopBuyBoard.UpdateWishList();
+            }
         }
 
         private void SubscribeBackButtonClick(BottomMenu bottomMenu)

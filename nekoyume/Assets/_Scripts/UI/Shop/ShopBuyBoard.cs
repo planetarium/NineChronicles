@@ -184,6 +184,8 @@ namespace Nekoyume.UI
                 buyButton.image.color = shopItems.SharedModel.wishItems.Count > 0 ? ColorController.Color(0) : ColorController.Color(1);
                 buyText.color = shopItems.SharedModel.wishItems.Count > 0 ? ColorController.Color(0) : ColorController.Color(2);
             }
+
+            shopItems.UpdateViewDimmed();
         }
 
         private void OnDestroy()
