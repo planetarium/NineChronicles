@@ -134,6 +134,7 @@ namespace Nekoyume.Game
             yield return Addressables.InitializeAsync();
             yield return StartCoroutine(CoInitializeTableSheets());
             AudioController.instance.Initialize();
+            ColorController.instance.Initialize();
             yield return null;
             // Agent 초기화.
             // Agent를 초기화하기 전에 반드시 Table과 TableSheets를 초기화 함.

@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Nekoyume
 {
-    [CreateAssetMenu(fileName = "ItemViewData", menuName = "Scriptable Object/Item View Data",
+    [CreateAssetMenu(fileName = "UI_ItemViewData", menuName = "Scriptable Object/Item View Data",
         order = int.MaxValue)]
     public class ItemViewDataScriptableObject : ScriptableObject
     {
