@@ -1,21 +1,17 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using mixpanel;
-using Nekoyume.Action;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using Nekoyume.L10n;
-using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
-using TMPro;
 using UniRx;
 using UnityEngine;
-using UnityEngine.Rendering;
 using UnityEngine.UI;
 using ShopItem = Nekoyume.UI.Model.ShopItem;
 
@@ -31,9 +27,6 @@ namespace Nekoyume.UI
         [SerializeField] private ShopBuyBoard shopBuyBoard = null;
         [SerializeField] private Button sellButton = null;
         [SerializeField] private Canvas frontCanvas;
-        // [SerializeField] private Button refreshButton = null;
-        // [SerializeField] private GameObject refreshLoading = null;
-        // [SerializeField] private TextMeshProUGUI refreshText = null;
 
         private Model.Shop SharedModel { get; set; }
 
@@ -69,7 +62,6 @@ namespace Nekoyume.UI
                 });
             });
 
-            // refreshButton.onClick.AddListener(Refresh);
         }
 
         public override void Initialize()
@@ -86,30 +78,6 @@ namespace Nekoyume.UI
 
             shopBuyBoard.OnChangeBuyType.Subscribe(SetMultiplePurchase).AddTo(gameObject);
         }
-
-        // private void Refresh()
-        // {
-        //     AsyncRefresh();
-        // }
-        // private async void AsyncRefresh()
-        // {
-        //     shopItems.Close();
-        //     refreshLoading.SetActive(true);
-        //     refreshText.gameObject.SetActive(false);
-        //
-        //     var task = Task.Run(() => new ShopState(
-        //         (Bencodex.Types.Dictionary) Game.Game.instance.Agent.GetState(Addresses.Shop)));
-        //
-        //     ShopState result = await task;
-        //     if (result != null)
-        //     {
-        //         States.Instance.SetShopState(result);
-        //         shopBuyBoard.ShowDefaultView();
-        //         shopItems.Show();
-        //         refreshLoading.SetActive(false);
-        //         refreshText.gameObject.SetActive(true);
-        //     }
-        // }
 
         public override void Show(bool ignoreShowAnimation = false)
         {
@@ -158,8 +126,6 @@ namespace Nekoyume.UI
         private void Reset()
         {
             ShowNPC();
-            // refreshLoading.SetActive(false);
-            // refreshText.gameObject.SetActive(true);
         }
 
         public void Open()
