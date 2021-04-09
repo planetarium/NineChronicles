@@ -435,6 +435,11 @@ namespace Nekoyume.UI
                     tutorialController.Play(1);
                     return;
                 }
+                else
+                {
+                    tutorialController.SaveTutorialProgress(1);
+                    tutorialProgress = 1;
+                }
             }
 
             if (tutorialProgress == 1)
@@ -536,6 +541,7 @@ namespace Nekoyume.UI
 
             // Temporarily Lock tutorial recipe.
             var combination = Find<Combination>();
+            combination.LoadRecipeVFXSkipMap();
             var skipMap = combination.RecipeVFXSkipMap;
             if (skipMap.ContainsKey(firstRecipeRow.Id))
             {
