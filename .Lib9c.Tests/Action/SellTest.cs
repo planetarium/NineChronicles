@@ -3,6 +3,7 @@ namespace Lib9c.Tests.Action
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using Bencodex.Types;
     using Libplanet;
     using Libplanet.Action;
     using Libplanet.Assets;
@@ -16,6 +17,7 @@ namespace Lib9c.Tests.Action
     using Serilog;
     using Xunit;
     using Xunit.Abstractions;
+    using static SerializeKeys;
 
     public class SellTest
     {
@@ -94,13 +96,16 @@ namespace Lib9c.Tests.Action
         }
 
         [Theory]
-        [InlineData(ItemType.Consumable, true, 2)]
-        [InlineData(ItemType.Costume, true, 2)]
-        [InlineData(ItemType.Equipment, true, 2)]
+        [InlineData(ItemType.Consumable, true, 2, true)]
+        [InlineData(ItemType.Costume, true, 2, true)]
+        [InlineData(ItemType.Equipment, true, 2, true)]
+        [InlineData(ItemType.Consumable, true, 2, false)]
+        [InlineData(ItemType.Costume, true, 2, false)]
+        [InlineData(ItemType.Equipment, true, 2, false)]
         [InlineData(ItemType.Consumable, false, 0)]
         [InlineData(ItemType.Costume, false, 0)]
         [InlineData(ItemType.Equipment, false, 0)]
-        public void Execute(ItemType itemType, bool shopItemExist, int blockIndex)
+        public void Execute(ItemType itemType, bool shopItemExist, int blockIndex, bool legacy = false)
         {
             var shopState = _initialState.GetShopState();
             Assert.Empty(shopState.Products);
@@ -125,7 +130,16 @@ namespace Lib9c.Tests.Action
                     blockIndex,
                     nonFungibleItem);
                 shopState.Register(si);
-                previousStates = previousStates.SetState(Addresses.Shop, shopState.Serialize());
+                Dictionary shopStateDict = (Dictionary)shopState.Serialize();
+                if (legacy)
+                {
+                    Dictionary sl = (Dictionary)si.SerializeLegacy();
+                    Dictionary productsSerialize = (Dictionary)Dictionary.Empty.Add((IKey)si.ProductId.Serialize(), sl);
+                    shopStateDict = shopStateDict.SetItem(LegacyProductsKey, productsSerialize);
+                }
+
+                previousStates = previousStates.SetState(Addresses.Shop, shopStateDict);
+
                 Assert.Single(shopState.Products);
             }
             else

@@ -10,6 +10,7 @@
     using Libplanet.Crypto;
     using Nekoyume.Model.Item;
     using Xunit;
+    using static SerializeKeys;
 
     public class ShopItemTest
     {
@@ -70,7 +71,6 @@
             var deserializedBackup1 = new ShopItem((Dictionary)serializedBackup1);
             var serialized = shopItem.Serialize();
             var deserialized = new ShopItem((Dictionary)serialized);
-            Assert.Equal(serializedBackup1, serialized);
             Assert.Equal(deserializedBackup1, deserialized);
         }
 
@@ -92,7 +92,7 @@
             Assert.NotNull(shopItem.ItemUsable);
             Dictionary serialized = (Dictionary)shopItem.Serialize();
 
-            Assert.Equal(contain, serialized.ContainsKey(ShopItem.ExpiredBlockIndexKey));
+            Assert.Equal(contain, serialized.ContainsKey(ExpiredBlockIndexKey));
 
             var deserialized = new ShopItem(serialized);
             Assert.Equal(shopItem, deserialized);
@@ -125,8 +125,21 @@
                 0,
                 equipment);
             Dictionary serialized = (Dictionary)shopItem.Serialize();
-            serialized = serialized.SetItem(ShopItem.ExpiredBlockIndexKey, "-1");
+            serialized = serialized.SetItem(ExpiredBlockIndexKey, "-1");
             Assert.Throws<ArgumentOutOfRangeException>(() => new ShopItem(serialized));
+        }
+
+        [Theory]
+        [MemberData(nameof(GetShopItems))]
+        public void Deserialize_From_Legacy(params ShopItem[] shopItems)
+        {
+            foreach (var shopItem in shopItems)
+            {
+                var serialized = shopItem.SerializeLegacy();
+                var deserialized = new ShopItem((Bencodex.Types.Dictionary)serialized);
+
+                Assert.Equal(shopItem, deserialized);
+            }
         }
 
         private static ShopItem GetShopItemWithFirstCostume()

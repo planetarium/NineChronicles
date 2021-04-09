@@ -7,6 +7,7 @@ namespace Lib9c.Tests.Model.Item
     using Nekoyume.Model.Item;
     using Nekoyume.TableData;
     using Xunit;
+    using static SerializeKeys;
 
     public class CostumeTest
     {
@@ -70,12 +71,12 @@ namespace Lib9c.Tests.Model.Item
             // Check RequiredBlockIndex 0 case;
             var costume = new Costume(_costumeRow, Guid.NewGuid());
             Dictionary serialized = (Dictionary)costume.Serialize();
-            Assert.False(serialized.ContainsKey(Costume.RequiredBlockIndexKey));
+            Assert.False(serialized.ContainsKey(RequiredBlockIndexKey));
             Assert.Equal(costume, new Costume(serialized));
 
             costume.Update(1);
             serialized = (Dictionary)costume.Serialize();
-            Assert.True(serialized.ContainsKey(Costume.RequiredBlockIndexKey));
+            Assert.True(serialized.ContainsKey(RequiredBlockIndexKey));
             Assert.Equal(costume, new Costume(serialized));
         }
 
@@ -86,8 +87,20 @@ namespace Lib9c.Tests.Model.Item
             Assert.Equal(0, costume.RequiredBlockIndex);
 
             Dictionary serialized = (Dictionary)costume.Serialize();
-            serialized = serialized.SetItem(Costume.RequiredBlockIndexKey, "-1");
+            serialized = serialized.SetItem(RequiredBlockIndexKey, "-1");
             Assert.Throws<ArgumentOutOfRangeException>(() => new Costume(serialized));
+        }
+
+        [Fact]
+        public void Deserialize_From_Legacy()
+        {
+            Assert.NotNull(_costumeRow);
+
+            var costume = new Costume(_costumeRow, Guid.NewGuid());
+            var serialized = costume.SerializeLegacy();
+            var deserialized = new Costume((Bencodex.Types.Dictionary)serialized);
+
+            Assert.Equal(costume, deserialized);
         }
     }
 }

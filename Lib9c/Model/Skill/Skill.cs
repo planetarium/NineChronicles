@@ -5,6 +5,7 @@ using Bencodex.Types;
 using Nekoyume.Model.Elemental;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
+using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Model.Skill
 {
@@ -83,9 +84,17 @@ namespace Nekoyume.Model.Skill
         public IValue Serialize() =>
             new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
             {
-                [(Text) "skillRow"] = SkillRow.Serialize(),
-                [(Text) "power"] = Power.Serialize(),
-                [(Text) "chance"] = Chance.Serialize()
+                [(Text) SkillRowKey] = SkillRow.Serialize(),
+                [(Text) PowerKey] = Power.Serialize(),
+                [(Text) ChanceKey] = Chance.Serialize()
+            });
+
+        public IValue SerializeLegacy() =>
+            new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
+            {
+                [(Text) LegacySkillRowKey] = SkillRow.Serialize(),
+                [(Text) LegacyPowerKey] = Power.Serialize(),
+                [(Text) LegacyChanceKey] = Chance.Serialize()
             });
     }
 }
