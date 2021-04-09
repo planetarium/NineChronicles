@@ -74,5 +74,8 @@ namespace Lib9c
 
         // ShopState
         public const string LegacyProductsKey = "products";
+
+        // Buy
+        public const string BuyerAvatarAddressKey = "ba";
     }
 }

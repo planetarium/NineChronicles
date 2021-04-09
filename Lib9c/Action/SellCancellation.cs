@@ -53,16 +53,16 @@ namespace Nekoyume.Action
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal => new Dictionary<string, IValue>
         {
-            ["productId"] = productId.Serialize(),
-            ["sellerAvatarAddress"] = sellerAvatarAddress.Serialize(),
-            ["itemSubType"] = itemSubType.Serialize(),
+            [ProductIdKey] = productId.Serialize(),
+            [SellerAvatarAddressKey] = sellerAvatarAddress.Serialize(),
+            [ItemSubTypeKey] = itemSubType.Serialize(),
         }.ToImmutableDictionary();
 
         protected override void LoadPlainValueInternal(IImmutableDictionary<string, IValue> plainValue)
         {
-            productId = plainValue["productId"].ToGuid();
-            sellerAvatarAddress = plainValue["sellerAvatarAddress"].ToAddress();
-            itemSubType = plainValue["itemSubType"].ToEnum<ItemSubType>();
+            productId = plainValue[ProductIdKey].ToGuid();
+            sellerAvatarAddress = plainValue[SellerAvatarAddressKey].ToAddress();
+            itemSubType = plainValue[ItemSubTypeKey].ToEnum<ItemSubType>();
         }
 
         public override IAccountStateDelta Execute(IActionContext context)

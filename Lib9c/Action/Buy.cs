@@ -92,20 +92,20 @@ namespace Nekoyume.Action
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal => new Dictionary<string, IValue>
         {
-            ["buyerAvatarAddress"] = buyerAvatarAddress.Serialize(),
-            ["sellerAgentAddress"] = sellerAgentAddress.Serialize(),
-            ["sellerAvatarAddress"] = sellerAvatarAddress.Serialize(),
-            ["productId"] = productId.Serialize(),
-            ["i"] = itemSubType.Serialize(),
+            [BuyerAvatarAddressKey] = buyerAvatarAddress.Serialize(),
+            [SellerAgentAddressKey] = sellerAgentAddress.Serialize(),
+            [SellerAvatarAddressKey] = sellerAvatarAddress.Serialize(),
+            [ProductIdKey] = productId.Serialize(),
+            [ItemSubTypeKey] = itemSubType.Serialize(),
         }.ToImmutableDictionary();
 
         protected override void LoadPlainValueInternal(IImmutableDictionary<string, IValue> plainValue)
         {
-            buyerAvatarAddress = plainValue["buyerAvatarAddress"].ToAddress();
-            sellerAgentAddress = plainValue["sellerAgentAddress"].ToAddress();
-            sellerAvatarAddress = plainValue["sellerAvatarAddress"].ToAddress();
-            productId = plainValue["productId"].ToGuid();
-            itemSubType = plainValue["i"].ToEnum<ItemSubType>();
+            buyerAvatarAddress = plainValue[BuyerAvatarAddressKey].ToAddress();
+            sellerAgentAddress = plainValue[SellerAgentAddressKey].ToAddress();
+            sellerAvatarAddress = plainValue[SellerAgentAddressKey].ToAddress();
+            productId = plainValue[ProductIdKey].ToGuid();
+            itemSubType = plainValue[ItemSubTypeKey].ToEnum<ItemSubType>();
         }
 
         public override IAccountStateDelta Execute(IActionContext context)
