@@ -26,10 +26,10 @@ namespace Lib9c.Tests.Model.State
         [InlineData(ItemSubType.Armor, "a", "fA14f9c48b15d32633f8A297EDc765442bD397e4")]
         [InlineData(ItemSubType.Armor, "A", "fA14f9c48b15d32633f8A297EDc765442bD397e4")]
         [InlineData(ItemSubType.FullCostume, "9", "2d977CC12057F55173e50847c8D397b92eFf9d9c")]
-        public void DeriveAddress(ItemSubType itemSubType, string nonce, string hex)
+        public void DeriveAddress(ItemSubType itemSubType, string nonce, string addressHex)
         {
             Guid guid = new Guid($"{nonce}9168C5E-CEB2-4faa-B6BF-329BF39FA1E4");
-            Address expectedAddress = new Address(hex);
+            Address expectedAddress = new Address(addressHex);
             Assert.Equal(expectedAddress, ShardedShopState.DeriveAddress(itemSubType, guid));
         }
 

@@ -3,6 +3,7 @@ namespace Lib9c.Tests.Action
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using Bencodex.Types;
     using Libplanet;
     using Libplanet.Action;
     using Libplanet.Assets;
@@ -83,7 +84,7 @@ namespace Lib9c.Tests.Action
             Guid itemId = new Guid(guid);
             Guid productId = itemId;
             ItemSubType itemSubType;
-            long requiredBlockIndex = 0;
+            const long requiredBlockIndex = 0;
             ShopState legacyShopState = _initialState.GetShopState();
             if (itemType == ItemType.Equipment)
             {
@@ -161,7 +162,7 @@ namespace Lib9c.Tests.Action
                 Signer = _agentAddress,
             });
 
-            ShardedShopState nextShopState = new ShardedShopState(nextState.GetState(shardedShopAddress));
+            ShardedShopState nextShopState = new ShardedShopState((Dictionary)nextState.GetState(shardedShopAddress));
             Assert.Empty(nextShopState.Products);
 
             var nextAvatarState = nextState.GetAvatarState(_avatarAddress);

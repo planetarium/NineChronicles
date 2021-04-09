@@ -92,10 +92,6 @@ namespace Nekoyume.Model.State
                 .ToDictionary(s => s.ProductId, s => s);
         }
 
-        public ShardedShopState(IValue iValue) : this((Dictionary)iValue)
-        {
-        }
-
         public void Register(ShopItem shopItem)
         {
             Products[shopItem.ProductId] = shopItem;

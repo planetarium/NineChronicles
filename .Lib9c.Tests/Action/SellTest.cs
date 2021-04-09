@@ -168,7 +168,7 @@ namespace Lib9c.Tests.Action
             INonFungibleItem nextNonFungibleItem = (INonFungibleItem)nextItem.item;
             Assert.Equal(expiredBlockIndex, nextNonFungibleItem.RequiredBlockIndex);
 
-            var nextShopState = new ShardedShopState(nextState.GetState(shopAddress));
+            var nextShopState = new ShardedShopState((Dictionary)nextState.GetState(shopAddress));
 
             Assert.Single(nextShopState.Products);
 

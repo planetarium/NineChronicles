@@ -2,6 +2,7 @@ namespace Lib9c.Tests.Action
 {
     using System;
     using System.Collections.Generic;
+    using Bencodex.Types;
     using Libplanet;
     using Libplanet.Action;
     using Libplanet.Assets;
@@ -194,7 +195,7 @@ namespace Lib9c.Tests.Action
                 Signer = _buyerAgentAddress,
             });
 
-            var nextShopState = new ShardedShopState(nextState.GetState(shardedShopAddress));
+            var nextShopState = new ShardedShopState((Dictionary)nextState.GetState(shardedShopAddress));
             Assert.Empty(nextShopState.Products);
 
             var nextBuyerAvatarState = nextState.GetAvatarState(_buyerAvatarAddress);

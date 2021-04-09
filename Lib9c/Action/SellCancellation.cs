@@ -118,7 +118,7 @@ namespace Nekoyume.Action
                 .Select(p => (Dictionary) p)
                 .FirstOrDefault(p => p[ProductIdKey].Equals(productIdSerialized));
 
-            bool backWardCompatible = false;
+            bool backwardCompatible = false;
             if (productSerialized.Equals(Dictionary.Empty))
             {
                 // Backward compatibility.
@@ -140,7 +140,7 @@ namespace Nekoyume.Action
                     legacyProducts = (Dictionary) legacyProducts.Remove(productKey);
                     legacyShopDict = legacyShopDict.SetItem(LegacyProductsKey, legacyProducts);
                     states = states.SetState(Addresses.Shop, legacyShopDict);
-                    backWardCompatible = true;
+                    backwardCompatible = true;
                 }
             }
             else
@@ -166,7 +166,7 @@ namespace Nekoyume.Action
             }
             nonFungibleItem.Update(ctx.BlockIndex);
 
-            if (backWardCompatible)
+            if (backwardCompatible)
             {
                 switch (nonFungibleItem)
                 {
