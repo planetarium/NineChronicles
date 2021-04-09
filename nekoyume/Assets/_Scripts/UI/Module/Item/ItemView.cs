@@ -23,6 +23,7 @@ namespace Nekoyume.UI.Module
         public TextMeshProUGUI enhancementText;
         public GameObject enhancementImage;
         public Image selectionImage;
+        public Image dimmedImage;
 
         private readonly List<IDisposable> _disposablesAtSetData = new List<IDisposable>();
 
@@ -106,6 +107,11 @@ namespace Nekoyume.UI.Module
                 .Subscribe(x => enhancementImage.gameObject.SetActive(x))
                 .AddTo(_disposablesAtSetData);
             Model.Dimmed.Subscribe(SetDim).AddTo(_disposablesAtSetData);
+            if (dimmedImage != null)
+            {
+                Model.Dimmed.SubscribeTo(dimmedImage.gameObject).AddTo(_disposablesAtSetData);
+            }
+
             Model.Selected.SubscribeTo(selectionImage.gameObject).AddTo(_disposablesAtSetData);
 
             UpdateView();
@@ -151,6 +157,10 @@ namespace Nekoyume.UI.Module
                 .Subscribe(x => enhancementImage.gameObject.SetActive(x))
                 .AddTo(_disposablesAtSetData);
             Model.Dimmed.Subscribe(SetDim).AddTo(_disposablesAtSetData);
+            if (dimmedImage != null)
+            {
+                Model.Dimmed.SubscribeTo(dimmedImage).AddTo(_disposablesAtSetData);
+            }
             Model.Selected.SubscribeTo(selectionImage).AddTo(_disposablesAtSetData);
 
             UpdateView();
@@ -176,7 +186,6 @@ namespace Nekoyume.UI.Module
         protected override void SetDim(bool isDim)
         {
             base.SetDim(isDim);
-
             enhancementText.color = isDim ? DimmedColor : OriginColor;
             selectionImage.color = isDim ? DimmedColor : OriginColor;
         }

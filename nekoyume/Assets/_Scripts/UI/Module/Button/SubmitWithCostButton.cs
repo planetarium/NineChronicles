@@ -1,5 +1,6 @@
 using System.Globalization;
 using System.Numerics;
+using Nekoyume.Game.Controller;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -169,7 +170,7 @@ namespace Nekoyume.UI.Module
 
         private static void SetTextColor(TextMeshProUGUI textField, TextMeshProUGUI submitField, bool isEnough)
         {
-            textField.color = isEnough ? Color.white : Color.red;
+            textField.color = isEnough ? Palette.GetColor(0) : Palette.GetColor(3);
             submitField.color = textField.color;
         }
     }

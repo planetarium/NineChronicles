@@ -1309,66 +1309,67 @@ UI_BUY_MULTIPLE,Basket purchase,일괄 구매,compra Basket,,バスケット購�
 UI_TRANSACTION_HISTORY,History,거래 내역,História,,歴史,Geschichte,Historia,ประวัติศาสตร์,Historia,Istorija,Geschiedenis,Sejarah,L'histoire,история,ប្រវត្តិសាស្រ្ត,,历史,
 UI_NOT_ENOUGH_NCG,Insufficient balance.,잔액이 부족합니다.,Saldo insuficiente.,,残高不足。,Mangelhaftes Gleichgewicht.,Saldo insuficiente.,ยอดเงินไม่เพียงพอ,Niewystarczająca ilość środków.,Nepakankama balansas.,Onvoldoende balans.,mencukupi.,Solde insuffisant.,Недостаточный баланс.,សមតុល្យមិនគ្រប់គ្រាន់។,,余额不足。,
 UI_CLOSE_BUY_WISH_LIST,The shopping cart will be emptied. Do you want to proceed?,장바구니가 비워집니다. 계속 진행하시겠습니까?,O carrinho de compras será esvaziado. Você quer prosseguir?,,ショッピングカートは空になります。続行しますか？,Der Warenkorb wird geleert. Möchten Sie fortfahren?,La cesta de la compra se vaciará. Quieres proceder?,รถเข็นช้อปปิ้งจะได้รับการยอบ คุณต้องการที่จะดำเนินการอย่างไร,Wózek na zakupy zostanie opróżniony. Czy chcesz kontynuować?,Krepšelis bus ištuštinti. Ar norite testi?,De winkelwagen wordt geleegd. Wil je doorgaan?,Keranjang belanja akan dikosongkan. Apakah Anda ingin melanjutkan?,Le panier sera vidé. Voulez-vous poursuivre?,Корзина будет очищена. Вы хотите продолжить?,រទេះដើរទិញឥវ៉ាន់នឹងត្រូវទទេ។ តើអ្នកចង់បន្តឬ?,,购物车将被清空。你想继续吗？,
-UI_BUY_MULTIPLE_FORMAT,"Try to purchase {0} items and pay {1} NCG.
+UI_BUY_MULTIPLE_FORMAT,"<color=#FFC777><size=120%><b>Try to purchase {0} items and pay {1} NCG.</b></size></color>
 
-The successful purchase item will arrive by mail and NCG will be deducted.
-Items that have failed to purchase will be notified by mail.
-If NCG is insufficient at the time of closing the transaction, the purchase will fail.","{0}개의 아이템을 구매 시도하고 {1} NCG를 지불합니다.
+Items purchased will be sent by mail.
+NCG is not deducted for failed purchase items.
+If NCG is insufficient, the transaction will fail.","<color=#FFC777><size=120%><b>{0}개 아이템을 구매 시도하고 {1} NCG를 지불합니다.</b></size></color>
 
-구매에 성공한 아이템은 메일로 도착하고 NCG는 차감됩니다.
-구매에 실패한 아이템은 메일로 경과를 알려줍니다.
-거래 체결 시점에서 NCG가 부족한 경우 구매는 실패합니다.","Tente comprar {0} itens e pague {1} NCG.
+구매에 성공한 아이템은 메일로 도착합니다.
+구매에 실패한 아이템은 NCG를 차감하지 않습니다.
+NCG가 부족한 경우 구매는 실패합니다.","<color=#FFC777><size=120%><b>Tente comprar {0} itens e pague {1} NCG.</b></size></color>
 
-O item de compra bem sucedida vai chegar pelo correio e NCG serão deduzidos.
-Itens que não conseguiram compra será notificado por e-mail.
-Se NCG é insuficiente no momento do fechamento da transação, a compra irá falhar.",,"購入{0}アイテムと有料{1} NCGに試してみてください。
+Itens comprados será enviado pelo correio.
+NCG não é deduzido para comprar itens que falharam.
+Se NCG é insuficiente, a transação irá falhar.",,"<color=#FFC777><size=120%><b>購入{0}アイテムと有料{1} NCGに試してみてください。</b></size></color>
 
-成功した購入アイテムは、メールで到着すると、NCGが差し引かれます。
-購入に失敗したアイテムはメールにてお知らせいたします。
-NCGは、トランザクションを閉じる時に不足している場合、購入は失敗します。","Versuchen Sie, Kauf {0} Artikel und bezahle {1} NCG.
+購入したアイテムはメールで送信されます。
+NCGは、失敗した購入アイテムのために控除されていません。
+NCGが不十分な場合、トランザクションは失敗します。","<color=#FFC777><size=120%><b>Versuchen Sie, Kauf {0} Artikel und bezahle {1} NCG.</b></size></color>
 
-Die erfolgreiche Kaufsache wird per Post eintreffen und NCG abgezogen wird.
-Artikel, die es versäumt haben, Kauf werden per Post benachrichtigt.
-Wenn NCG zum Zeitpunkt der Schließung der Transaktion nicht ausreicht, wird der Kauf scheitern.","Trate de comprar {0} artículos y paga {1} NCG.
+Gekaufte Artikel werden per Post geschickt werden.
+NCG ist nicht für die gescheiterten Kauf von Gegenständen in Abzug gebracht.
+Wenn NCG nicht ausreicht, wird scheitern die Transaktion.","<color=#FFC777><size=120%><b>Trate de comprar {0} artículos y paga {1} NCG.</b></size></color>
 
-El artículo de la compra con éxito llegará por correo y NCG se deducirá.
-Los productos que no han logrado compra serán notificados por correo.
-Si NCG es insuficiente en el momento del cierre de la transacción, la compra se producirá un error.","พยายามที่จะซื้อ {0} รายการและจ่าย {1} NCG
+Los artículos comprados serán enviados por correo.
+NCG no se deduce de los artículos de compra que han fallado.
+Si NCG es insuficiente, la operación fallará.","<color=#FFC777><size=120%><b>พยายามที่จะซื้อ {0} รายการและจ่าย {1} NCG</b></size></color>
 
-รายการสั่งซื้อที่ประสบความสำเร็จจะมาถึงโดยทางไปรษณีย์และ NCG จะถูกหักออก
-รายการที่ยังไม่ได้ซื้อจะได้รับแจ้งทางอีเมล์
-หาก NCG ไม่เพียงพอในช่วงเวลาของการปิดการทำธุรกรรมการซื้อจะล้มเหลว","Spróbuj na zakup {0} elementów i wynagrodzenia {1} NCG.
+รายการที่ซื้อจะถูกส่งทางไปรษณีย์
+NCG ไม่ได้หักรายการซื้อล้มเหลว
+หาก NCG ไม่เพียงพอการทำธุรกรรมที่จะล้มเหลว","<color=#FFC777><size=120%><b>Spróbuj na zakup {0} elementów i wynagrodzenia {1} NCG.</b></size></color>
 
-Udana poz zakup przybędzie drogą pocztową i NCG zostanie odjęta.
-Przedmioty, które nie dopełniły zakupu zostanie powiadomiony za pośrednictwem poczty.
-Jeśli NCG jest niewystarczająca w momencie zamknięcia transakcji, zakup zawiedzie.","Pabandykite įsigyti {0} daiktų ir darbo užmokesčio {1} NCG.
+Zakupione przedmioty zostaną wysłane pocztą.
+NCG nie odlicza się do nieudanych zakup rzeczy.
+Jeśli NCG jest niewystarczająca, transakcja zakończy się niepowodzeniem.","<color=#FFC777><size=120%><b>Pabandykite įsigyti {0} daiktų ir darbo užmokesčio {1} NCG.</b></size></color>
 
-Sėkmingas Pirkimo objektas atvyks paštu ir NCG bus išskaičiuota.
-Daiktai, kurie nesugebėjo įsigyti bus pranešta elektroniniu paštu.
-Jei NCG yra nepakankamas uždarymo sandorio metu, pirkimo žlugs.","Probeer te kopen {0} artikelen en pay {1} NCG.
+įsigytų daiktų bus išsiųstas paštu.
+NCG Netiksli išskaičiuojamas nepavykusių pirkti daiktus.
+Jei NCG yra nepakankamas, kad sandoris žlugs.","<color=#FFC777><size=120%><b>Probeer te kopen {0} artikelen en pay {1} NCG.</b></size></color>
 
-De succesvolle aankoop item komt per post en NCG zal worden afgetrokken.
-Items die er niet in geslaagd om de aankoop krijgt hiervan een melding via e-mail.
-Als NCG onvoldoende is op het moment van het sluiten van de transactie zal de aankoop mislukken.","Cobalah untuk pembelian {0} item dan membayar {1} NCG.
+Objecten die worden verzonden via e-mail.
+NCG wordt niet in mindering gebracht voor mislukte aankoop items.
+Als NCG onvoldoende is, zal de transactie mislukken.","<color=#FFC777><size=120%><b>Cobalah untuk pembelian {0} item dan membayar {1} NCG.</b></size></color>
 
-Item pembelian sukses akan tiba melalui surat dan NCG akan dipotong.
-Item yang telah gagal untuk pembelian akan diberitahu melalui surat.
-Jika NCG tidak mencukupi pada saat penutupan transaksi, pembelian akan gagal.","Essayez d'acheter {0} articles et payer {1} NCG.
+Barang yang dibeli akan dikirim melalui pos.
+NCG tidak dipotong untuk item pembelian gagal.
+Jika NCG tidak mencukupi, transaksi akan gagal.","<color=#FFC777><size=120%><b>Essayez d'acheter {0} articles et payer {1} NCG.</b></size></color>
 
-L'élément d'achat réussie arrivera par la poste et NCG sera déduit.
-Les éléments qui ont échoué à l'achat seront avisés par la poste.
-Si NCG est insuffisante au moment de la clôture de la transaction, l'achat échouera.","Попробуйте покупку {0} элементов и оплаты {1} NCG.
+Les articles achetés seront envoyés par la poste.
+NCG n'est pas déduit des articles d'achat ont échoué.
+Si NCG est insuffisante, la transaction échouera.","<color=#FFC777><size=120%><b>Попробуйте покупку {0} элементов и оплаты {1} NCG.</b></size></color>
 
-Успешный пункт покупки будет прибывать по почте и NCG будет списан.
-Предметы, которые не удались покупка будут уведомлены по почте.
-Если NCG недостаточно на момент закрытия сделки, покупка будет выполнена.","សូមព្យាយាមដើម្បីទិញ {0} ធាតុនិងការបង់ប្រាក់ {1} NCG ។
+Приобретенные товары будут отправлены по почте.
+NCG не вычитаются невыполненных пунктов покупки.
+Если NCG недостаточно, сделка не будет выполнена.","<color=#FFC777><size=120%><b>សូមព្យាយាមដើម្បីទិញ {0} ធាតុនិងការបង់ប្រាក់ {1} NCG ។</b></size></color>
 
-ធាតុការទិញដែលទទួលបានជោគជ័យនឹងមកដល់តាមអ៊ីម៉ែលនិង NCG នឹងត្រូវបានកាត់។
-ធាតុដែលបានបរាជ័យក្នុងការទិញនឹងត្រូវបានជូនដំណឹងតាមអ៊ីមែល។
-ប្រសិនបើមាន NCG គឺមិនគ្រប់គ្រាន់នៅក្នុងពេលនៃការបិទប្រតិបត្តិការនេះ, ការទិញនេះនឹងបរាជ័យ។",,"尽量购买{0}项目和支付1 NCG。
+ធាតុដែលបានទិញនឹងត្រូវបានផ្ញើតាមអ៊ីម៉ែល។
+NCG មិនត្រូវបានកាត់សម្រាប់ការបរាជ័យក្នុងធាតុទិញ។
+ប្រសិនបើមាន NCG គឺមិនគ្រប់គ្រាន់, ប្រតិបត្តិការនេះនឹងបរាជ័យ។",,"<color=#FFC777><size=120%><b>尽量购买{0}项目和支付{1}NCG。</b></size></color>
 
-成功的收购项目将通过邮件到达，NCG将被扣除。
-那些没有购买的项目将通过邮件通知。
-如果NCG是在结束交易的时间不够，这次收购将失败。",
+购买的物品将通过邮件发送。
+不扣除未能购买物品NCG。
+如果NCG不足，交易失败。",
 UI_TOTAL,Total,합계,Total,,合計,Endsumme,Total,ทั้งหมด,Całkowita,,,Total,Total,,,,总,
-UI_SEARCH,Search,검색,Search,,Search,Search,Search,Search,Search,Search,Search,Search,Search,Search,Search,,Search,
+UI_SEARCH,Search,검색,Procurar,,探す,Suche,Búsqueda,ค้นหา,Szukaj,Paieška,Zoeken,Cari,Rechercher,Поиск,ស្វែងរក,,搜索,
+UI_RESET,Reset,초기화,Redefinir,,リセット,Reset,Reiniciar,ตั้งค่าใหม่,Resetowanie,Atstatyti,Reset,ulang,Réinitialiser,Сброс настроек,កំណត់ឡើងវិញ,,重启,

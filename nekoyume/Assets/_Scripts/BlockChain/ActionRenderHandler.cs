@@ -534,7 +534,7 @@ namespace Nekoyume.BlockChain
                     LocalLayerModifier.AddNewAttachmentMail(buyerAvatarAddress, result.id);
 
                     var format = L10nManager.Localize("NOTIFICATION_BUY_BUYER_COMPLETE");
-                    OneLinePopup.Push(MailType.Auction, string.Format(format, itemBase.GetLocalizedName()));
+                    OneLinePopup.Push(MailType.Auction, string.Format(format, itemBase.GetLocalizedName(), price));
 
                     //[TentuPlay] 아이템 구입, 골드 사용
                     //Local에서 변경하는 States.Instance 보다는 블락에서 꺼내온 eval.OutputStates를 사용
@@ -573,7 +573,7 @@ namespace Nekoyume.BlockChain
                         new AvatarState(
                                 (Bencodex.Types.Dictionary) eval.OutputStates.GetState(eval.Action.buyerAvatarAddress))
                             .NameWithHash;
-                    UI.Notification.Push(MailType.Auction, string.Format(format, buyerName, itemBase.GetLocalizedName()));
+                    OneLinePopup.Push(MailType.Auction, string.Format(format, buyerName, itemBase.GetLocalizedName()));
 
                     //[TentuPlay] 아이템 판매완료, 골드 증가
                     //Local에서 변경하는 States.Instance 보다는 블락에서 꺼내온 eval.OutputStates를 사용
@@ -627,7 +627,7 @@ namespace Nekoyume.BlockChain
                             LocalLayerModifier.AddNewAttachmentMail(buyerAvatarAddress, purchaseResult.id);
 
                             var format = L10nManager.Localize("NOTIFICATION_BUY_BUYER_COMPLETE");
-                            OneLinePopup.Push(MailType.Auction, string.Format(format, itemBase.GetLocalizedName()));
+                            OneLinePopup.Push(MailType.Auction, string.Format(format, itemBase.GetLocalizedName(), price));
 
                             if (eval.OutputStates.TryGetGoldBalance(buyerAgentAddress, GoldCurrency, out var buyerAgentBalance))
                             {
@@ -653,7 +653,8 @@ namespace Nekoyume.BlockChain
                             var errorType = ((ShopErrorType) purchaseResult.errorCode).ToString();
                             var msg = string.Format(L10nManager.Localize("NOTIFICATION_BUY_FAIL"),
                                                           item.ItemBase.Value.GetLocalizedName(),
-                                                          errorType);
+                                                          errorType,
+                                                          price);
                             OneLinePopup.Push(MailType.Auction, msg);
                             LocalLayerModifier.ModifyAgentGold(buyerAgentAddress, -price);
                         }
@@ -682,7 +683,7 @@ namespace Nekoyume.BlockChain
                                 new AvatarState(
                                         (Bencodex.Types.Dictionary) eval.OutputStates.GetState(eval.Action.buyerAvatarAddress))
                                     .NameWithHash;
-                            UI.Notification.Push(MailType.Auction, string.Format(format, buyerName, itemBase.GetLocalizedName()));
+                            OneLinePopup.Push(MailType.Auction, string.Format(format, buyerName, itemBase.GetLocalizedName()));
 
                             //[TentuPlay] 아이템 판매완료, 골드 증가
                             //Local에서 변경하는 States.Instance 보다는 블락에서 꺼내온 eval.OutputStates를 사용

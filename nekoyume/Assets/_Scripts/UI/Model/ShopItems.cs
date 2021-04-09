@@ -48,7 +48,7 @@ namespace Nekoyume.UI.Model
 
         public readonly List<ShopItem> wishItems = new List<ShopItem>();
 
-        private const int WishListSize = 8;
+        public readonly int WishListSize = 8;
 
         public void Dispose()
         {

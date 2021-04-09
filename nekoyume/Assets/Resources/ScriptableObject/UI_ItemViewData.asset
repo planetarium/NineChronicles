@@ -10,9 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 227f5d522014a9544804e5001249e82b, type: 3}
-  m_Name: ItemViewData
+  m_Name: UI_ItemViewData
   m_EditorClassIdentifier: 
-  visibleEnhancementEffectValue: 6
   datas:
   - grade: 1
     gradeBackground: {fileID: 21300000, guid: aa1fa6458568e40e7983241ea9d23893, type: 3}
