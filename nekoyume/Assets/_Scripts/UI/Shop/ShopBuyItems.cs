@@ -2,17 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using Libplanet;
 using Nekoyume.L10n;
-using Nekoyume.Model.Item;
-using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.UI.Model;
 using TMPro;
 using UniRx;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using ShopItem = Nekoyume.UI.Model.ShopItem;
 
@@ -20,7 +15,6 @@ namespace Nekoyume.UI.Module
 {
     public class ShopBuyItems : MonoBehaviour
     {
-        //todo 스크롤뷰 content 길이 조절해줘야됨
         public List<ShopItemView> Items { get; } = new List<ShopItemView>();
 
         [SerializeField] private List<NCToggleDropdown> toggleDropdowns = new List<NCToggleDropdown>();
@@ -30,6 +24,8 @@ namespace Nekoyume.UI.Module
         [SerializeField] private Button sortButton = null;
         [SerializeField] private Button sortOrderButton = null;
         [SerializeField] private Button searchButton = null;
+        [SerializeField] private Button resetButton = null;
+        [SerializeField] private Animator resetAnimator = null;
 
         [SerializeField] private RectTransform sortOrderIcon = null;
         [SerializeField] private TMP_InputField inputField = null;
@@ -39,17 +35,13 @@ namespace Nekoyume.UI.Module
         private TextMeshProUGUI _sortText;
         private SortFilter _sortFilter = SortFilter.Class;
 
-        // [SerializeField]
-        // private TouchHandler refreshButtonTouchHandler = null;
-        //
-        // [SerializeField]
-        // private RefreshButton refreshButton = null;
+        private readonly int _hashNormal = Animator.StringToHash("Normal");
+        private readonly int _hashDisabled = Animator.StringToHash("Disabled");
 
         private int _filteredPageIndex = 0;
         private readonly List<IDisposable> _disposablesAtOnEnable = new List<IDisposable>();
         private readonly List<ItemSubTypeFilter> _toggleTypes = new List<ItemSubTypeFilter>()
         {
-            // ItemSubTypeFilter.All,
             ItemSubTypeFilter.Equipment,
             ItemSubTypeFilter.Food,
             ItemSubTypeFilter.Costume,
@@ -58,13 +50,9 @@ namespace Nekoyume.UI.Module
         private readonly Dictionary<ItemSubTypeFilter, List<ItemSubTypeFilter>> _toggleSubTypes =
             new Dictionary<ItemSubTypeFilter, List<ItemSubTypeFilter>>()
         {
-            // {
-            //     ItemSubTypeFilter.All, new List<ItemSubTypeFilter>()
-            // },
             {
                 ItemSubTypeFilter.Equipment, new List<ItemSubTypeFilter>()
                 {
-                    // ItemSubTypeFilter.Equipment,
                     ItemSubTypeFilter.Weapon,
                     ItemSubTypeFilter.Armor,
                     ItemSubTypeFilter.Belt,
@@ -75,7 +63,6 @@ namespace Nekoyume.UI.Module
             {
                 ItemSubTypeFilter.Food, new List<ItemSubTypeFilter>()
                 {
-                    // ItemSubTypeFilter.Food,
                     ItemSubTypeFilter.Food_HP,
                     ItemSubTypeFilter.Food_ATK,
                     ItemSubTypeFilter.Food_DEF,
@@ -86,7 +73,6 @@ namespace Nekoyume.UI.Module
             {
                 ItemSubTypeFilter.Costume, new List<ItemSubTypeFilter>()
                 {
-                    // ItemSubTypeFilter.Costume,
                     ItemSubTypeFilter.FullCostume,
                     ItemSubTypeFilter.HairCostume,
                     ItemSubTypeFilter.EarCostume,
@@ -173,6 +159,7 @@ namespace Nekoyume.UI.Module
             sortButton.OnClickAsObservable().Subscribe(OnClickSort).AddTo(gameObject);
             sortOrderButton.OnClickAsObservable().Subscribe(OnClickSortOrder).AddTo(gameObject);
             searchButton.OnClickAsObservable().Subscribe(OnSearch).AddTo(gameObject);
+            resetButton.OnClickAsObservable().Subscribe(OnClickReset).AddTo(gameObject);
             inputField.onSubmit.AddListener(OnClickSearch);
             inputField.onValueChanged.AddListener(OnInputValueChange);
         }
@@ -181,6 +168,8 @@ namespace Nekoyume.UI.Module
         {
             toggleDropdowns.First().isOn = true;
             inputField.text = string.Empty;
+            resetButton.interactable = false;
+            resetAnimator.Play(_hashDisabled);
             sortOrderIcon.localScale = new Vector3(1, -1, 1);
             SharedModel.itemSubTypeFilter = ItemSubTypeFilter.Weapon;
             SharedModel.sortFilter = SortFilter.Class;
@@ -231,8 +220,6 @@ namespace Nekoyume.UI.Module
 
             _filteredPageIndex = 0;
             UpdateViewWithFilteredPageIndex(SharedModel.ItemSubTypeProducts.Value);
-            // refreshButton.gameObject.SetActive(true);
-            // refreshButton.PlayAnimation(NPCAnimation.Type.Appear);
         }
 
         private void UpdateViewWithFilteredPageIndex(
@@ -395,8 +382,16 @@ namespace Nekoyume.UI.Module
             searchButton.gameObject.SetActive(inputField.text.Length > 0);
         }
 
+        private void OnClickReset(Unit unit)
+        {
+            inputField.text = string.Empty;
+            OnSearch(Unit.Default);
+        }
+
         private void OnSearch(Unit unit)
         {
+            resetButton.interactable = inputField.text.Length > 0;
+            resetAnimator.Play(inputField.text.Length > 0 ? _hashNormal : _hashDisabled);
             var containItemIds = new List<int>();
             foreach (var id in _itemIds)
             {

@@ -45,7 +45,7 @@ SpriteAtlas:
     - {fileID: 102900000, guid: f4ec4f8b49db5487fae145d395ec1611, type: 3}
     - {fileID: 102900000, guid: 85f7dc4e2285f4e8eaa1d5143ed311b2, type: 3}
     - {fileID: 102900000, guid: 77aad0043bc7d4ee3a9fda3a23e966a8, type: 3}
-    totalSpriteSurfaceArea: 365751
+    totalSpriteSurfaceArea: 364445
     bindAsDefault: 1
   m_MasterAtlas: {fileID: 0}
   m_PackedSprites:
@@ -65,13 +65,13 @@ SpriteAtlas:
   - {fileID: 21300000, guid: b032f12462df64e2dbaf188fb8300b0e, type: 3}
   - {fileID: 21300000, guid: d3d41544605804dfca63dd045c25a62b, type: 3}
   - {fileID: 21300000, guid: 82ae1a54b2a0d4051807eaff117e5c4a, type: 3}
+  - {fileID: 21300000, guid: f344b094a4f5941708975a61e3df3791, type: 3}
   - {fileID: 21300000, guid: 44fb82a492cfe4e29bd5b178e6774a76, type: 3}
   - {fileID: 21300000, guid: aa1fa6458568e40e7983241ea9d23893, type: 3}
   - {fileID: 21300000, guid: cbca65655fcdd4e0ca14ee0c7fc46cb2, type: 3}
   - {fileID: 21300000, guid: c5cfbc852996246b2bf6b5e38308cfde, type: 3}
   - {fileID: 21300000, guid: 30a478f5996bd4def816264c5de37758, type: 3}
   - {fileID: 21300000, guid: fb2fb1b67c46f491bb19c272de545c18, type: 3}
-  - {fileID: 21300000, guid: f8ebc527aa87e4f2da7520536ec17819, type: 3}
   - {fileID: 21300000, guid: 65711e27f1bc543e6b9c1ed7a729ed4f, type: 3}
   - {fileID: 21300000, guid: 1c5789574157148ca8dd4529f00cd13a, type: 3}
   - {fileID: 21300000, guid: 759d94676296e406fac190ffc20f6c3f, type: 3}
@@ -103,11 +103,9 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 00af165de156e4b30b6579a0171e735f, type: 3}
   - {fileID: 21300000, guid: 5c033e7db52c44756810280ff49ba340, type: 3}
   - {fileID: 21300000, guid: 99c5f78d9d60a4b5385e12e79d30e8c9, type: 3}
-  - {fileID: 21300000, guid: 55352fbdf22e74f52a49fd3d89d83953, type: 3}
   - {fileID: 21300000, guid: bb56b1dd931de4f6fbaae82298e417e9, type: 3}
   - {fileID: 21300000, guid: 452723ed3d7a34919b996c897f3476b0, type: 3}
   - {fileID: 21300000, guid: 543a872e0e3b842578d7e9f53ff3c187, type: 3}
-  - {fileID: 21300000, guid: b741d13ee7bb44ad185d1d90c24c35c2, type: 3}
   - {fileID: 21300000, guid: 8125b05e69570456fb7659c6fc91ce35, type: 3}
   - {fileID: 21300000, guid: b7649e6edca75435ebf160f1674c7968, type: 3}
   - {fileID: 21300000, guid: bd420e9e797da42e6b8f8a430b1a6037, type: 3}
@@ -133,13 +131,13 @@ SpriteAtlas:
   - Common_pattan
   - UI_popup_icon_08_b
   - Item_bg_Grade_03
+  - icon_Reset
   - Shop_bg_08
   - item_bg_Normal
   - Item_bg_Grade_04
   - Item_bg_Grade_02
   - Common_bg_Arrow
   - Shop_bg_09
-  - UI_scroll_bar
   - Shop_bg_11
   - icon_Search
   - UI_bg_frame_02
@@ -171,11 +169,9 @@ SpriteAtlas:
   - Shop_bg_22
   - Common_TabBtn_Select
   - icon_Arrow
-  - Item_bg_Grade_00
   - Shop_bg_10
   - UI_icon_check
   - Common_Btn_Normal
-  - UI_scroll_bg
   - UI_loading_02
   - Common_Btn_Press
   - level_frame

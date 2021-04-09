@@ -113,7 +113,6 @@ namespace Nekoyume.UI
 
             foreach (var shopItem in shopItems.SharedModel.wishItems)
             {
-                var price = shopItem.Price.Value.GetQuantityString();
                 var props = new Value
                 {
                     ["Price"] = shopItem.Price.Value.GetQuantityString(),
