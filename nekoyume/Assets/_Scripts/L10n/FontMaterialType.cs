@@ -22,6 +22,7 @@ namespace Nekoyume.L10n
         TextPrologueShadow,
         Title,
         RankLevel,
-        count,
+        Count,
+        Tutorial,
     }
 }
