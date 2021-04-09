@@ -13,7 +13,7 @@
     <Compile Include="..\BTAI\*.cs" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="DecimalMath.DecimalEx" Version="1.0.1" />
+    <PackageReference Include="DecimalMath.DecimalEx" Version="1.0.2" />
     <PackageReference Include="JetBrains.Annotations" Version="2021.1.0" />
     <PackageReference Include="OptimizedPriorityQueue" Version="4.2.0" />
     <PackageReference Include="Serilog" Version="2.10.0" />
