@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2cd6324defe910049a00728bad803885, type: 3}
   m_Name: UI_ColorReference
   m_EditorClassIdentifier: 
-  datas:
+  palette:
   - {r: 1, g: 1, b: 1, a: 1}
   - {r: 0.39215687, g: 0.39215687, b: 0.39215687, a: 1}
   - {r: 1, g: 1, b: 1, a: 0.3529412}

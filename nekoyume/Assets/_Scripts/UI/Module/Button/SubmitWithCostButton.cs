@@ -170,7 +170,7 @@ namespace Nekoyume.UI.Module
 
         private static void SetTextColor(TextMeshProUGUI textField, TextMeshProUGUI submitField, bool isEnough)
         {
-            textField.color = isEnough ? ColorController.Color(0) : ColorController.Color(3);
+            textField.color = isEnough ? Palette.GetColor(0) : Palette.GetColor(3);
             submitField.color = textField.color;
         }
     }

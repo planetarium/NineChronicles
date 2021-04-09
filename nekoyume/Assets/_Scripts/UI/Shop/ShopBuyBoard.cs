@@ -173,15 +173,15 @@ namespace Nekoyume.UI
             var currentGold = double.Parse(States.Instance.GoldBalanceState.Gold.GetQuantityString());
             if (currentGold < _price)
             {
-                priceText.color = ColorController.Color(3);
-                buyButton.image.color = ColorController.Color(1);
-                buyText.color = ColorController.Color(2);
+                priceText.color = Palette.GetColor(3);
+                buyButton.image.color = Palette.GetColor(1);
+                buyText.color = Palette.GetColor(2);
             }
             else
             {
-                priceText.color = ColorController.Color(0);
-                buyButton.image.color = shopItems.SharedModel.wishItems.Count > 0 ? ColorController.Color(0) : ColorController.Color(1);
-                buyText.color = shopItems.SharedModel.wishItems.Count > 0 ? ColorController.Color(0) : ColorController.Color(2);
+                priceText.color = Palette.GetColor(0);
+                buyButton.image.color = shopItems.SharedModel.wishItems.Count > 0 ? Palette.GetColor(0) : Palette.GetColor(1);
+                buyText.color = shopItems.SharedModel.wishItems.Count > 0 ? Palette.GetColor(0) : Palette.GetColor(2);
             }
 
             shopItems.UpdateViewDimmed();
