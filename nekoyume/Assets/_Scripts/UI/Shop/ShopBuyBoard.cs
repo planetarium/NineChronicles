@@ -75,12 +75,10 @@ namespace Nekoyume.UI
                                                    L10nManager.Localize("UI_NO"), () =>
                                                    {
                                                        ShowDefaultView();
-                                                       shopItems.UpdateViewDimmed();
                                                    });
             }
             else
             {
-                shopItems.UpdateViewDimmed();
                 ShowDefaultView();
             }
         }
@@ -187,8 +185,6 @@ namespace Nekoyume.UI
                 buyButton.image.color = shopItems.SharedModel.wishItems.Count > 0 ? Palette.GetColor(0) : Palette.GetColor(1);
                 buyText.color = shopItems.SharedModel.wishItems.Count > 0 ? Palette.GetColor(0) : Palette.GetColor(2);
             }
-
-            shopItems.UpdateViewDimmed();
         }
 
         private void OnDestroy()
