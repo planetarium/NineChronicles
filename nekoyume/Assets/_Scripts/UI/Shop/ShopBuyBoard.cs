@@ -72,11 +72,15 @@ namespace Nekoyume.UI
             {
                 Widget.Find<TwoButtonPopup>().Show(L10nManager.Localize("UI_CLOSE_BUY_WISH_LIST"),
                                                    L10nManager.Localize("UI_YES"),
-                                                   L10nManager.Localize("UI_NO"),
-                                                   ShowDefaultView);
+                                                   L10nManager.Localize("UI_NO"), () =>
+                                                   {
+                                                       ShowDefaultView();
+                                                       shopItems.UpdateViewDimmed();
+                                                   });
             }
             else
             {
+                shopItems.UpdateViewDimmed();
                 ShowDefaultView();
             }
         }
