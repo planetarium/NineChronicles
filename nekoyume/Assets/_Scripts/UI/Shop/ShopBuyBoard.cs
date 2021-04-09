@@ -142,7 +142,7 @@ namespace Nekoyume.UI
 
         private void OnClickTransactionHistory(Unit unit)
         {
-            OneLinePopup.Push(MailType.System, L10nManager.Localize("UI_ALERT_NOT_IMPLEMENTED_CONTENT"));
+            Widget.Find<Alert>().Show("UI_ALERT_NOT_IMPLEMENTED_TITLE", "UI_ALERT_NOT_IMPLEMENTED_CONTENT");
         }
 
         private void Clear()
