@@ -24,7 +24,10 @@ namespace Nekoyume.Action
 
         protected bool Equals(PurchaseInfo other)
         {
-            return productId.Equals(other.productId) && sellerAgentAddress.Equals(other.sellerAgentAddress) && sellerAvatarAddress.Equals(other.sellerAvatarAddress);
+            return productId.Equals(other.productId)
+                   && sellerAgentAddress.Equals(other.sellerAgentAddress)
+                   && sellerAvatarAddress.Equals(other.sellerAvatarAddress)
+                   && itemSubType.Equals(other.itemSubType);
         }
 
         public override bool Equals(object obj)
@@ -42,6 +45,7 @@ namespace Nekoyume.Action
                 var hashCode = productId.GetHashCode();
                 hashCode = (hashCode * 397) ^ sellerAgentAddress.GetHashCode();
                 hashCode = (hashCode * 397) ^ sellerAvatarAddress.GetHashCode();
+                hashCode = (hashCode * 397) ^ (int) itemSubType;
                 return hashCode;
             }
         }

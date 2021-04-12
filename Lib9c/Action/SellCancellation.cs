@@ -88,7 +88,7 @@ namespace Nekoyume.Action
             if (!states.TryGetAvatarState(ctx.Signer, sellerAvatarAddress, out var avatarState))
             {
                 throw new FailedLoadStateException(
-                    $"{addressesHex}Aborted as the avatar state of the seller was failed to load.");
+                    $"{addressesHex}Aborted as the avatar state of the seller failed to load.");
             }
             sw.Stop();
             Log.Verbose("{AddressesHex}Sell Cancel Get AgentAvatarStates: {Elapsed}", addressesHex, sw.Elapsed);
@@ -132,7 +132,7 @@ namespace Nekoyume.Action
                     if (!legacyProducts.ContainsKey(productKey))
                     {
                         throw new ItemDoesNotExistException(
-                            $"{addressesHex}Aborted as the shop item ({productId}) was failed to get from the legacy shop."
+                            $"{addressesHex}Aborted as the shop item ({productId}) could not be found from the legacy shop."
                         );
                     }
 

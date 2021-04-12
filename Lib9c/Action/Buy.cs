@@ -96,7 +96,7 @@ namespace Nekoyume.Action
         public class PurchaseResult : BuyerResult
         {
             public int errorCode = 0;
-            public Guid productId;
+            public readonly Guid productId;
 
             public PurchaseResult(Guid shopProductId)
             {
