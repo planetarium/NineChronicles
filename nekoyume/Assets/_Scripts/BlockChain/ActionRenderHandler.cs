@@ -563,6 +563,10 @@ namespace Nekoyume.BlockChain
                                     OneLinePopup.Push(MailType.Auction, msg);
                                     LocalLayerModifier.ModifyAgentGold(buyerAgentAddress, price);
                                 }
+                                else
+                                {
+                                    Debug.LogError($"purchaseHistory is null : {eval.Action.Id}");
+                                }
                             }
                         }
                     }
