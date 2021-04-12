@@ -2,7 +2,7 @@ namespace Lib9c.Tests.Action
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
+    using Bencodex.Types;
     using Libplanet;
     using Libplanet.Action;
     using Libplanet.Assets;
@@ -26,6 +26,7 @@ namespace Lib9c.Tests.Action
         private readonly AvatarState _buyerAvatarState;
         private readonly TableSheets _tableSheets;
         private readonly GoldCurrencyState _goldCurrencyState;
+        private readonly Guid _productId;
         private IAccountStateDelta _initialState;
 
         public BuyTest(ITestOutputHelper outputHelper)
@@ -85,59 +86,46 @@ namespace Lib9c.Tests.Action
             };
             buyerAgentState.avatarAddresses[0] = _buyerAvatarAddress;
 
-            var equipment = ItemFactory.CreateItemUsable(
-                _tableSheets.EquipmentItemSheet.First,
-                Guid.NewGuid(),
-                100);
-            var shopState = new ShopState();
-            shopState.Register(new ShopItem(
-                _sellerAgentAddress,
-                _sellerAvatarAddress,
-                Guid.NewGuid(),
-                new FungibleAssetValue(_goldCurrencyState.Currency, 100, 0),
-                100,
-                equipment));
-
+            _productId = new Guid("6d460c1a-755d-48e4-ad67-65d5f519dbc8");
             _initialState = _initialState
                 .SetState(GoldCurrencyState.Address, _goldCurrencyState.Serialize())
-                .SetState(Addresses.Shop, shopState.Serialize())
                 .SetState(_sellerAgentAddress, sellerAgentState.Serialize())
                 .SetState(_sellerAvatarAddress, sellerAvatarState.Serialize())
                 .SetState(_buyerAgentAddress, buyerAgentState.Serialize())
                 .SetState(_buyerAvatarAddress, _buyerAvatarState.Serialize())
+                .SetState(Addresses.Shop, new ShopState().Serialize())
                 .MintAsset(_buyerAgentAddress, _goldCurrencyState.Currency * 100);
         }
 
         [Theory]
-        [InlineData(ItemType.Equipment, "F9168C5E-CEB2-4faa-B6BF-329BF39FA1E4", Sell.ExpiredBlockIndex, true)]
-        [InlineData(ItemType.Costume, "936DA01F-9ABD-4d9d-80C7-02AF85C822A8", Sell.ExpiredBlockIndex, true)]
-        [InlineData(ItemType.Equipment, "F9168C5E-CEB2-4faa-B6BF-329BF39FA1E4", 0, false)]
-        [InlineData(ItemType.Costume, "936DA01F-9ABD-4d9d-80C7-02AF85C822A8", 0, false)]
-        public void Execute(ItemType itemType, string guid, long requiredBlockIndex, bool contain)
+        [InlineData(ItemType.Equipment, "F9168C5E-CEB2-4faa-B6BF-329BF39FA1E4", true)]
+        [InlineData(ItemType.Costume, "936DA01F-9ABD-4d9d-80C7-02AF85C822A8", true)]
+        [InlineData(ItemType.Equipment, "F9168C5E-CEB2-4faa-B6BF-329BF39FA1E4", false)]
+        [InlineData(ItemType.Costume, "936DA01F-9ABD-4d9d-80C7-02AF85C822A8", false)]
+        public void Execute(ItemType itemType, string guid, bool contain)
         {
             var sellerAvatarState = _initialState.GetAvatarState(_sellerAvatarAddress);
             var buyerAvatarState = _initialState.GetAvatarState(_buyerAvatarAddress);
             INonFungibleItem nonFungibleItem;
             Guid itemId = new Guid(guid);
+            Guid productId = itemId;
+            ItemSubType itemSubType;
+            ShopState legacyShopState = _initialState.GetShopState();
             if (itemType == ItemType.Equipment)
             {
                 var itemUsable = ItemFactory.CreateItemUsable(
                     _tableSheets.EquipmentItemSheet.First,
                     itemId,
-                    requiredBlockIndex);
+                    Sell.ExpiredBlockIndex);
                 nonFungibleItem = itemUsable;
+                itemSubType = itemUsable.ItemSubType;
             }
             else
             {
                 var costume = ItemFactory.CreateCostume(_tableSheets.CostumeItemSheet.First, itemId);
-                costume.Update(requiredBlockIndex);
+                costume.Update(Sell.ExpiredBlockIndex);
                 nonFungibleItem = costume;
-            }
-
-            // Case for backward compatibility.
-            if (contain)
-            {
-                sellerAvatarState.inventory.AddItem((ItemBase)nonFungibleItem);
+                itemSubType = costume.ItemSubType;
             }
 
             var result = new DailyReward.DailyRewardResult()
@@ -153,24 +141,39 @@ namespace Lib9c.Tests.Action
                 buyerAvatarState.Update(mail);
             }
 
-            ShopState shopState = _initialState.GetShopState();
+            Address shardedShopAddress = ShardedShopState.DeriveAddress(itemSubType, productId);
             var shopItem = new ShopItem(
                 _sellerAgentAddress,
                 _sellerAvatarAddress,
-                Guid.NewGuid(),
+                productId,
                 new FungibleAssetValue(_goldCurrencyState.Currency, 100, 0),
-                requiredBlockIndex,
+                Sell.ExpiredBlockIndex,
                 nonFungibleItem);
-            shopState.Register(shopItem);
+            Assert.Equal(Sell.ExpiredBlockIndex, nonFungibleItem.RequiredBlockIndex);
 
-            Assert.Equal(2, shopState.Products.Count);
-            Assert.Equal(requiredBlockIndex, nonFungibleItem.RequiredBlockIndex);
+            // Case for backward compatibility.
+            if (contain)
+            {
+                ShardedShopState shopState = new ShardedShopState(shardedShopAddress);
+                shopState.Register(shopItem);
+                sellerAvatarState.inventory.AddItem((ItemBase)nonFungibleItem);
+                Assert.Empty(legacyShopState.Products);
+                Assert.Single(shopState.Products);
+                _initialState = _initialState.SetState(shardedShopAddress, shopState.Serialize());
+            }
+            else
+            {
+                legacyShopState.Register(shopItem);
+                Assert.Single(legacyShopState.Products);
+                Assert.Null(_initialState.GetState(shardedShopAddress));
+            }
+
             Assert.Equal(contain, sellerAvatarState.inventory.TryGetNonFungibleItem(itemId, out _));
 
             IAccountStateDelta prevState = _initialState
                 .SetState(_sellerAvatarAddress, sellerAvatarState.Serialize())
                 .SetState(_buyerAvatarAddress, buyerAvatarState.Serialize())
-                .SetState(Addresses.Shop, shopState.Serialize());
+                .SetState(Addresses.Shop, legacyShopState.Serialize());
 
             var tax = shopItem.Price.DivRem(100, out _) * Buy.TaxRate;
             var taxedPrice = shopItem.Price - tax;
@@ -181,6 +184,7 @@ namespace Lib9c.Tests.Action
                 productId = shopItem.ProductId,
                 sellerAgentAddress = _sellerAgentAddress,
                 sellerAvatarAddress = _sellerAvatarAddress,
+                itemSubType = itemSubType,
             };
             var nextState = buyAction.Execute(new ActionContext()
             {
@@ -191,8 +195,8 @@ namespace Lib9c.Tests.Action
                 Signer = _buyerAgentAddress,
             });
 
-            var nextShopState = nextState.GetShopState();
-            Assert.Single(nextShopState.Products);
+            var nextShopState = new ShardedShopState((Dictionary)nextState.GetState(shardedShopAddress));
+            Assert.Empty(nextShopState.Products);
 
             var nextBuyerAvatarState = nextState.GetAvatarState(_buyerAvatarAddress);
             Assert.True(
@@ -218,6 +222,9 @@ namespace Lib9c.Tests.Action
             Assert.Equal(taxedPrice, sellerGold);
             var buyerGold = nextState.GetBalance(_buyerAgentAddress, goldCurrencyState);
             Assert.Equal(new FungibleAssetValue(goldCurrencyState, 0, 0), buyerGold);
+
+            ShopState nextLegacyShopState = nextState.GetShopState();
+            Assert.Empty(nextLegacyShopState.Products);
         }
 
         [Fact]
@@ -302,6 +309,7 @@ namespace Lib9c.Tests.Action
                 productId = default,
                 sellerAgentAddress = _sellerAgentAddress,
                 sellerAvatarAddress = _sellerAvatarAddress,
+                itemSubType = ItemSubType.Weapon,
             };
 
             Assert.Throws<ItemDoesNotExistException>(() => action.Execute(new ActionContext()
@@ -317,21 +325,34 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void ExecuteThrowInsufficientBalanceException()
         {
-            var shopState = _initialState.GetShopState();
-            Assert.NotEmpty(shopState.Products);
+            Address shardedShopAddress = ShardedShopState.DeriveAddress(ItemSubType.Weapon, _productId);
+            var itemUsable = ItemFactory.CreateItemUsable(
+                _tableSheets.EquipmentItemSheet.First,
+                Guid.NewGuid(),
+                Sell.ExpiredBlockIndex);
 
-            var (productId, shopItem) = shopState.Products.FirstOrDefault();
-            Assert.NotNull(shopItem);
+            var shopItem = new ShopItem(
+                _sellerAgentAddress,
+                _sellerAvatarAddress,
+                _productId,
+                new FungibleAssetValue(_goldCurrencyState.Currency, 100, 0),
+                Sell.ExpiredBlockIndex,
+                itemUsable);
+
+            ShardedShopState shopState = new ShardedShopState(shardedShopAddress);
+            shopState.Register(shopItem);
 
             var balance = _initialState.GetBalance(_buyerAgentAddress, _goldCurrencyState.Currency);
-            _initialState = _initialState.BurnAsset(_buyerAgentAddress, balance);
+            _initialState = _initialState.BurnAsset(_buyerAgentAddress, balance)
+                .SetState(shardedShopAddress, shopState.Serialize());
 
             var action = new Buy
             {
                 buyerAvatarAddress = _buyerAvatarAddress,
-                productId = productId,
+                productId = _productId,
                 sellerAgentAddress = _sellerAgentAddress,
                 sellerAvatarAddress = _sellerAvatarAddress,
+                itemSubType = ItemSubType.Weapon,
             };
 
             Assert.Throws<InsufficientBalanceException>(() => action.Execute(new ActionContext()
@@ -347,19 +368,34 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void ExecuteThrowItemDoesNotExistExceptionBySellerAvatar()
         {
-            IAccountStateDelta previousStates = _initialState;
-            ShopState shopState = previousStates.GetShopState();
-            Assert.NotNull(shopState.Products);
-            var (productId, shopItem) = shopState.Products.First();
+            Address shardedShopAddress = ShardedShopState.DeriveAddress(ItemSubType.Weapon, _productId);
+            var itemUsable = ItemFactory.CreateItemUsable(
+                _tableSheets.EquipmentItemSheet.First,
+                Guid.NewGuid(),
+                Sell.ExpiredBlockIndex);
+
+            var shopItem = new ShopItem(
+                _sellerAgentAddress,
+                _sellerAvatarAddress,
+                _productId,
+                new FungibleAssetValue(_goldCurrencyState.Currency, 100, 0),
+                Sell.ExpiredBlockIndex,
+                itemUsable);
+
+            ShardedShopState shopState = new ShardedShopState(shardedShopAddress);
+            shopState.Register(shopItem);
+            _initialState = _initialState.SetState(shardedShopAddress, shopState.Serialize());
+
             Assert.True(shopItem.ExpiredBlockIndex > 0);
             Assert.True(shopItem.ItemUsable.RequiredBlockIndex > 0);
 
             var action = new Buy
             {
                 buyerAvatarAddress = _buyerAvatarAddress,
-                productId = productId,
+                productId = _productId,
                 sellerAgentAddress = _sellerAgentAddress,
                 sellerAvatarAddress = _sellerAvatarAddress,
+                itemSubType = ItemSubType.Weapon,
             };
 
             Assert.Throws<ItemDoesNotExistException>(() => action.Execute(new ActionContext()
@@ -376,31 +412,32 @@ namespace Lib9c.Tests.Action
         public void ExecuteThrowShopItemExpiredException()
         {
             IAccountStateDelta previousStates = _initialState;
-            ShopState shopState = _initialState.GetShopState();
-            Guid productId = Guid.NewGuid();
-            var itemUsable = ItemFactory.CreateItemUsable(
+            Address shardedShopStateAddress = ShardedShopState.DeriveAddress(ItemSubType.Weapon, _productId);
+            ShardedShopState shopState = new ShardedShopState(shardedShopStateAddress);
+            Weapon itemUsable = (Weapon)ItemFactory.CreateItemUsable(
                 _tableSheets.EquipmentItemSheet.First,
                 Guid.NewGuid(),
                 10);
             var shopItem = new ShopItem(
                 _sellerAgentAddress,
                 _sellerAvatarAddress,
-                productId,
+                _productId,
                 new FungibleAssetValue(_goldCurrencyState.Currency, 100, 0),
                 10,
                 itemUsable);
 
             shopState.Register(shopItem);
-            previousStates = previousStates.SetState(Addresses.Shop, shopState.Serialize());
+            previousStates = previousStates.SetState(shardedShopStateAddress, shopState.Serialize());
 
-            Assert.True(shopState.Products.ContainsKey(productId));
+            Assert.True(shopState.Products.ContainsKey(_productId));
 
             var action = new Buy
             {
                 buyerAvatarAddress = _buyerAvatarAddress,
-                productId = productId,
+                productId = _productId,
                 sellerAgentAddress = _sellerAgentAddress,
                 sellerAvatarAddress = _sellerAvatarAddress,
+                itemSubType = ItemSubType.Weapon,
             };
 
             Assert.Throws<ShopItemExpiredException>(() => action.Execute(new ActionContext()
