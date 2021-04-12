@@ -229,7 +229,6 @@ namespace Nekoyume.UI.Module
             if (count > _filteredPageIndex)
             {
                 UpdateViewWithItems(models[_filteredPageIndex]);
-                UpdateViewDimmed();
             }
 
             previousPageButton.gameObject.SetActive(_filteredPageIndex > 0);
@@ -254,40 +253,6 @@ namespace Nekoyume.UI.Module
                     {
                         itemViews.Current.Clear();
                         continue;
-                    }
-
-                    itemViews.Current.SetData(itemModels.Current);
-                }
-            }
-        }
-
-        public void UpdateViewDimmed()
-        {
-            using (var itemViews = Items.GetEnumerator())
-            using (var itemModels = SharedModel.ItemSubTypeProducts.Value[_filteredPageIndex].GetEnumerator())
-            {
-                while (itemViews.MoveNext())
-                {
-                    if (itemViews.Current is null)
-                    {
-                        break;
-                    }
-
-                    if (!itemModels.MoveNext())
-                    {
-                        itemViews.Current.Clear();
-                        continue;
-                    }
-
-                    if (SharedModel.wishItems.Count == SharedModel.WishListSize)
-                    {
-                        itemModels.Current.Dimmed.Value =
-                            !SharedModel.wishItems.Exists(x =>
-                                x.ProductId == itemModels.Current.ProductId);
-                    }
-                    else
-                    {
-                        itemModels.Current.Dimmed.Value = false;
                     }
 
                     itemViews.Current.SetData(itemModels.Current);
