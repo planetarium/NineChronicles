@@ -265,15 +265,16 @@ namespace Nekoyume.BlockChain
                 .DoOnError(e => HandleException(action.Id, e)); // Last() is for completion
         }
 
-        public IObservable<ActionBase.ActionEvaluation<BuyMultiple>> BuyMultiple(IEnumerable<BuyMultiple.PurchaseInfo> purchaseInfos)
+        public IObservable<ActionBase.ActionEvaluation<BuyMultiple>> BuyMultiple(IEnumerable<BuyMultiple.PurchaseInfo> purchaseInfos,
+            List<Nekoyume.UI.Model.ShopItem> shopItems)
         {
             var action = new BuyMultiple
             {
                 buyerAvatarAddress = States.Instance.CurrentAvatarState.address,
                 purchaseInfos = purchaseInfos
             };
+            ReactiveShopState.PurchaseHistory.Add(action.Id, shopItems);
             ProcessAction(action);
-
             return _renderer.EveryRender<BuyMultiple>()
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .Take(1)

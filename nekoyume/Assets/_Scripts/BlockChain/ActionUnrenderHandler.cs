@@ -73,7 +73,6 @@ namespace Nekoyume.BlockChain
         private void BuyMultiple()
         {
             _renderer.EveryUnrender<BuyMultiple>()
-                .Where(ValidateEvaluationForAgentState)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseBuyMultiple)
                 .AddTo(_disposables);

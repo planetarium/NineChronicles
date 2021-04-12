@@ -185,7 +185,6 @@ namespace Nekoyume.BlockChain
         private void BuyMultiple()
         {
             _renderer.EveryRender<BuyMultiple>()
-                .Where(ValidateEvaluationForAgentState)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseBuyMultiple).AddTo(_disposables);
         }
@@ -511,7 +510,6 @@ namespace Nekoyume.BlockChain
                 if (buyerAvatarAddress == States.Instance.CurrentAvatarState.address)
                 {
                     var purchaseResults = eval.Action.buyerResult.purchaseResults;
-                    var purchaseHistory = ReactiveShopState.PurchaseHistory.Dequeue();
                     foreach (var purchaseResult in purchaseResults)
                     {
                         var buyerAgentAddress = States.Instance.AgentState.address;
@@ -550,16 +548,22 @@ namespace Nekoyume.BlockChain
                         }
                         else
                         {
-
-                            var item = purchaseHistory.First(x => x.ProductId.Value == purchaseResult.productId);
-                            var price = item.Price.Value;
-                            var errorType = ((ShopErrorType) purchaseResult.errorCode).ToString();
-                            var msg = string.Format(L10nManager.Localize("NOTIFICATION_BUY_FAIL"),
-                                                          item.ItemBase.Value.GetLocalizedName(),
-                                                          L10nManager.Localize(errorType),
-                                                          price);
-                            OneLinePopup.Push(MailType.Auction, msg);
-                            LocalLayerModifier.ModifyAgentGold(buyerAgentAddress, price);
+                            if (ReactiveShopState.PurchaseHistory.ContainsKey(eval.Action.Id))
+                            {
+                                var purchaseHistory = ReactiveShopState.PurchaseHistory[eval.Action.Id];
+                                var item = purchaseHistory.FirstOrDefault(x => x.ProductId.Value == purchaseResult.productId);
+                                if (item != null)
+                                {
+                                    var price = item.Price.Value;
+                                    var errorType = ((ShopErrorType) purchaseResult.errorCode).ToString();
+                                    var msg = string.Format(L10nManager.Localize("NOTIFICATION_BUY_FAIL"),
+                                        item.ItemBase.Value.GetLocalizedName(),
+                                        L10nManager.Localize(errorType),
+                                        price);
+                                    OneLinePopup.Push(MailType.Auction, msg);
+                                    LocalLayerModifier.ModifyAgentGold(buyerAgentAddress, price);
+                                }
+                            }
                         }
                     }
                 }
@@ -613,6 +617,11 @@ namespace Nekoyume.BlockChain
                 UpdateAgentState(eval);
                 UpdateCurrentAvatarState(eval);
                 RenderQuest(renderQuestAvatarAddress, renderQuestCompletedQuestIds);
+            }
+
+            else
+            {
+                Debug.Log(eval.Exception);
             }
         }
 

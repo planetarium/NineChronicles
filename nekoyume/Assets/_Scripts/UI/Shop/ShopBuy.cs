@@ -218,8 +218,8 @@ namespace Nekoyume.UI
         private void Buy(ShopItem shopItem)
         {
             var purchaseInfos = new List<BuyMultiple.PurchaseInfo> { GetPurchseInfo(shopItem) };
-            Game.Game.instance.ActionManager.BuyMultiple(purchaseInfos);
-            ReactiveShopState.PurchaseHistory.Enqueue(new List<ShopItem> {shopItem});
+            Game.Game.instance.ActionManager.BuyMultiple(purchaseInfos,
+                new List<ShopItem> {shopItem});
 
             var props = new Value
             {
