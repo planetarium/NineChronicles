@@ -43,8 +43,8 @@ namespace Nekoyume.State
 
         private static int _shopItemsPerPage = 24;
 
-        public static readonly Queue<List<Nekoyume.UI.Model.ShopItem>> PurchaseHistory =
-            new Queue<List<Nekoyume.UI.Model.ShopItem>>();
+        public static readonly Dictionary<Guid, List<Nekoyume.UI.Model.ShopItem>> PurchaseHistory =
+            new Dictionary<Guid, List<Nekoyume.UI.Model.ShopItem>>();
 
         public static void Initialize(ShopState state, int shopItemsPerPage)
         {

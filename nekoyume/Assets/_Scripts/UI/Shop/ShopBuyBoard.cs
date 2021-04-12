@@ -109,9 +109,8 @@ namespace Nekoyume.UI
         private void BuyMultiple()
         {
             var purchaseInfos = shopItems.SharedModel.wishItems.Select(GetPurchseInfo).ToList();
-            Game.Game.instance.ActionManager.BuyMultiple(purchaseInfos);
-
-            ReactiveShopState.PurchaseHistory.Enqueue(shopItems.SharedModel.wishItems.ToList());
+            Game.Game.instance.ActionManager.BuyMultiple(purchaseInfos,
+                shopItems.SharedModel.wishItems.ToList());
 
             foreach (var shopItem in shopItems.SharedModel.wishItems)
             {
