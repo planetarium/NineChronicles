@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using mixpanel;
+using Nekoyume.Action;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
@@ -215,17 +217,36 @@ namespace Nekoyume.UI
 
         private void Buy(ShopItem shopItem)
         {
+            var purchaseInfos = new List<BuyMultiple.PurchaseInfo> { GetPurchseInfo(shopItem) };
+            Game.Game.instance.ActionManager.BuyMultiple(purchaseInfos);
+            ReactiveShopState.PurchaseHistory.Enqueue(new List<ShopItem> {shopItem});
+
             var props = new Value
             {
                 ["Price"] = shopItem.Price.Value.GetQuantityString(),
             };
             Mixpanel.Track("Unity/Buy", props);
 
-            Game.Game.instance.ActionManager.Buy(
+            SharedModel.ItemCountAndPricePopup.Value.Item.Value = null;
+            shopItem.Selected.Value = false;
+
+            var buyerAgentAddress = States.Instance.AgentState.address;
+            var productId = shopItem.ProductId.Value;
+
+            LocalLayerModifier.ModifyAgentGold(buyerAgentAddress, -shopItem.Price.Value);
+            shopItems.SharedModel.RemoveItemSubTypeProduct(productId);
+            var format = L10nManager.Localize("NOTIFICATION_BUY_START");
+            OneLinePopup.Push(MailType.Auction,
+                string.Format(format, shopItem.ItemBase.Value.GetLocalizedName()));
+
+            AudioController.instance.PlaySfx(AudioController.SfxCode.BuyItem);
+        }
+
+        private BuyMultiple.PurchaseInfo GetPurchseInfo(ShopItem shopItem)
+        {
+            return new BuyMultiple.PurchaseInfo(shopItem.ProductId.Value,
                 shopItem.SellerAgentAddress.Value,
-                shopItem.SellerAvatarAddress.Value,
-                shopItem.ProductId.Value);
-            ResponseBuy(shopItem);
+                shopItem.SellerAvatarAddress.Value);
         }
 
         private void SetMultiplePurchase(bool value)
@@ -253,23 +274,7 @@ namespace Nekoyume.UI
                    States.Instance.GoldBalanceState.Gold >= shopItem.Price.Value;
         }
 
-        private void ResponseBuy(ShopItem shopItem)
-        {
-            SharedModel.ItemCountAndPricePopup.Value.Item.Value = null;
-            shopItem.Selected.Value = false;
 
-            var buyerAgentAddress = States.Instance.AgentState.address;
-            var productId = shopItem.ProductId.Value;
-
-            LocalLayerModifier.ModifyAgentGold(buyerAgentAddress, -shopItem.Price.Value);
-
-            shopItems.SharedModel.RemoveItemSubTypeProduct(productId);
-
-            AudioController.instance.PlaySfx(AudioController.SfxCode.BuyItem);
-            var format = L10nManager.Localize("NOTIFICATION_BUY_START");
-            OneLinePopup.Push(MailType.Auction,
-                string.Format(format, shopItem.ItemBase.Value.GetLocalizedName()));
-        }
 
         private void OnClickShopItem(ShopItemView view)
         {
