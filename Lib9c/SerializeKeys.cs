@@ -81,5 +81,10 @@ namespace Lib9c
         public const string PurchaseResultsKey = "prs";
         public const string SellerResultsKey = "srs";
         public const string PurchaseInfosKey = "pis";
+
+        // Staking
+        public const string StartedBlockIndexKey = "sbi";
+        public const string ReceivedBlockIndexKey = "rbi2";
+        public const string StakingRoundKey = "s";
     }
 }
