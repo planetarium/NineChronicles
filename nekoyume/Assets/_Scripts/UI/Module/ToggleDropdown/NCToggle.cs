@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System;
-using TMPro;
 
 namespace Nekoyume.UI.Module
 {
@@ -11,8 +10,6 @@ namespace Nekoyume.UI.Module
         public GameObject onObject;
         public GameObject offObject;
 
-        private TextMeshProUGUI _onText;
-        private TextMeshProUGUI _offText;
         protected NCToggle()
         {
             onValueChanged.AddListener(UpdateObject);
@@ -42,12 +39,6 @@ namespace Nekoyume.UI.Module
         {
             onValueChanged.RemoveAllListeners();
             base.OnDestroy();
-        }
-
-        public void SetText(string text)
-        {
-            onObject.GetComponentInChildren<TextMeshProUGUI>().text = text;
-            offObject.GetComponentInChildren<TextMeshProUGUI>().text = text;
         }
     }
 }

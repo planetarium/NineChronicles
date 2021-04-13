@@ -113,7 +113,6 @@ namespace Nekoyume.UI.Module
             {
                 var index = toggleDropdowns.IndexOf(toggleDropdown);
                 var toggleType = _toggleTypes[index];
-                toggleDropdown.SetText(toggleType.TypeToString());
                 toggleDropdown.onValueChanged.AddListener((value) =>
                 {
                     if (value)
@@ -125,37 +124,25 @@ namespace Nekoyume.UI.Module
                 });
 
                 var subItems = toggleDropdown.items;
-                var removeList = new List<NCToggle>();
+
                 foreach (var item in subItems)
                 {
                     var subIndex = subItems.IndexOf(item);
                     var subTypes = _toggleSubTypes[toggleType];
-
-                    if (subIndex < subTypes.Count)
+                    var subToggleType = subTypes[subIndex];
+                    item.onValueChanged.AddListener((value) =>
                     {
-                        var subToggleType = subTypes[subIndex];
-                        item.SetText(subToggleType.TypeToString());
-                        item.onValueChanged.AddListener((value) =>
+                        if (value)
                         {
-                            if (value)
-                            {
-                                SharedModel.itemSubTypeFilter = subToggleType;
-                                OnItemSubTypeFilterChanged();
-                            }
-                        });
-                    }
-                    else
-                    {
-                        removeList.Add(item);
-                    }
+                            SharedModel.itemSubTypeFilter = subToggleType;
+                            OnItemSubTypeFilterChanged();
+                        }
+                    });
                 }
-                subItems.RemoveAll(removeList.Contains);
             }
 
             previousPageButton.OnClickAsObservable().Subscribe(OnClickPreviousPage).AddTo(gameObject);
             nextPageButton.OnClickAsObservable().Subscribe(OnClickNextPage).AddTo(gameObject);
-
-
             sortButton.OnClickAsObservable().Subscribe(OnClickSort).AddTo(gameObject);
             sortOrderButton.OnClickAsObservable().Subscribe(OnClickSortOrder).AddTo(gameObject);
             searchButton.OnClickAsObservable().Subscribe(OnSearch).AddTo(gameObject);
