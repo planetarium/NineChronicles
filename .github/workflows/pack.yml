@@ -39,7 +39,7 @@ jobs:
           key: ${{ matrix.targetPlatform }}-${{ matrix.projectPath }}-Library-v3
       - uses: docker://unityci/editor:ubuntu-2020.3.0f1-windows-mono-0.11.0 # FIXME: 이미지 pull 받아오는 속도 개선 필요
         env:
-          ULF: ${{ secrets.ULF_GAMECI }}
+          ULF: ${{ secrets.ULF_2020_3_0_F1 }}
           APV_SIGNING_PRIVATE_KEY: ${{ secrets.APV_SIGNING_PRIVATE_KEY }}
         with:
           entrypoint: scripts/build-production.sh
