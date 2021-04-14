@@ -68,7 +68,7 @@ namespace Nekoyume.Action
 
             result.id = mail.id;
             dailyRewardResult = result;
-            avatarState.UpdateV4(mail, context.BlockIndex);
+            avatarState.UpdateV3(mail);
             avatarState.UpdateFromAddItem(material, rewardItemCount, false);
             return states.SetState(avatarAddress, avatarState.Serialize());
         }

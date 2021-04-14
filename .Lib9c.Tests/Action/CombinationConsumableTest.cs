@@ -131,7 +131,7 @@ namespace Lib9c.Tests.Action
 
             var nextAvatarState = nextState.GetAvatarState(_avatarAddress);
 
-            Assert.Single(nextAvatarState.mailBox);
+            Assert.Equal(30, nextAvatarState.mailBox.Count);
             Assert.IsType<CombinationMail>(nextAvatarState.mailBox.First());
         }
     }

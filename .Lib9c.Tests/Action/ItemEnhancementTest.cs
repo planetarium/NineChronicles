@@ -134,7 +134,7 @@ namespace Lib9c.Tests.Action
                 (1000 - expectedGold) * _currency,
                 nextState.GetBalance(Addresses.Blacksmith, _currency)
             );
-            Assert.Single(nextAvatarState.mailBox);
+            Assert.Equal(30, nextAvatarState.mailBox.Count);
 
             var grade = resultEquipment.Grade;
             var costRow = _tableSheets.EnhancementCostSheet
