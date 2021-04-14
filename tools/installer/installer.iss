@@ -161,7 +161,6 @@ begin
         MixpanelTrack('Installer/Finished', UUID);
       end;
   end;
-  Result := True;
 end;
 
 [Run]
