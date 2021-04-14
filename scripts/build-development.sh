@@ -36,7 +36,7 @@ install_license
 
 title "Build binary"
 DOTNET_PATH="$(command -v dotnet)" \
-/opt/Unity/Editor/Unity \
+/opt/unity/Editor/Unity \
   -quit \
   -batchmode \
   -nographics \

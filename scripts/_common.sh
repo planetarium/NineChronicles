@@ -19,7 +19,7 @@ install_license() {
         echo -n "$ULF" | base64 -d > /tmp/Unity_v2020.x.ulf
     fi
 
-    /opt/Unity/Editor/Unity \
+    /opt/unity/Editor/Unity \
         -quit \
         -batchmode \
         -nographics \
