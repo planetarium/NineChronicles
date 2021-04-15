@@ -170,7 +170,7 @@ GameObject:
   - component: {fileID: 1833368876211240169}
   - component: {fileID: 6352535224322201035}
   m_Layer: 5
-  m_Name: RankCell
+  m_Name: RankCell_Myinfo
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -519,7 +519,7 @@ MonoBehaviour:
   fixedFontStyle: 0
   fixedFontSizeOffset: 0
   fixedSpacingOption: 0
-  fontMaterialType: 0
+  fontMaterialType: 11
   l10nKey: 
   fontMaterialIndexInitialized: 0
   fontMaterialIndex: 0
@@ -1099,7 +1099,7 @@ MonoBehaviour:
   fixedFontStyle: 0
   fixedFontSizeOffset: 0
   fixedSpacingOption: 0
-  fontMaterialType: 0
+  fontMaterialType: 11
   l10nKey: 
   fontMaterialIndexInitialized: 0
   fontMaterialIndex: 0
@@ -1269,7 +1269,7 @@ MonoBehaviour:
   m_fontColor32:
     serializedVersion: 2
     rgba: 4286027956
-  m_fontColor: {r: 0.7075472, g: 0.5981803, b: 0.47058564, a: 1}
+  m_fontColor: {r: 1, g: 0.91297174, b: 0.8066038, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
