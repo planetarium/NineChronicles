@@ -405,14 +405,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 0.7877358, b: 0.7877358, a: 1}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_Sprite: {fileID: 21300000, guid: 90143b2a23a6c43feb12eb526f25845e, type: 3}
+  m_Sprite: {fileID: 21300000, guid: e4bdeb12a083e427db97fde94fe27529, type: 3}
   m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -574,8 +574,7 @@ MonoBehaviour:
   m_text: 23
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8a682b7747d4a664089b7b1065aa0035, type: 2}
-  m_sharedMaterial: {fileID: -2364689171920820918, guid: 8a682b7747d4a664089b7b1065aa0035,
-    type: 2}
+  m_sharedMaterial: {fileID: 2100000, guid: e48df4a96fa819444bc15127b9efe530, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1154,8 +1153,7 @@ MonoBehaviour:
   m_text: 23232323
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8a682b7747d4a664089b7b1065aa0035, type: 2}
-  m_sharedMaterial: {fileID: -2364689171920820918, guid: 8a682b7747d4a664089b7b1065aa0035,
-    type: 2}
+  m_sharedMaterial: {fileID: 2100000, guid: e48df4a96fa819444bc15127b9efe530, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1687,16 +1685,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 7267492800988253527}
     m_Modifications:
-    - target: {fileID: 3434827073648422375, guid: a9f817ccaf6b243fdb7a1975b76b842a,
-        type: 3}
-      propertyPath: m_Name
-      value: FramedCharacterView
-      objectReference: {fileID: 0}
-    - target: {fileID: 3434827073648422375, guid: a9f817ccaf6b243fdb7a1975b76b842a,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 7412098714008221570, guid: a9f817ccaf6b243fdb7a1975b76b842a,
         type: 3}
       propertyPath: isTitleFrame
@@ -1817,6 +1805,16 @@ PrefabInstance:
       propertyPath: m_LocalScale.y
       value: 0.9
       objectReference: {fileID: 0}
+    - target: {fileID: 3434827073648422375, guid: a9f817ccaf6b243fdb7a1975b76b842a,
+        type: 3}
+      propertyPath: m_Name
+      value: FramedCharacterView
+      objectReference: {fileID: 0}
+    - target: {fileID: 3434827073648422375, guid: a9f817ccaf6b243fdb7a1975b76b842a,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6487158816000491061, guid: a9f817ccaf6b243fdb7a1975b76b842a,
         type: 3}
       propertyPath: m_Sprite
@@ -1828,16 +1826,6 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 2400401590883738550, guid: a9f817ccaf6b243fdb7a1975b76b842a,
-        type: 3}
-      propertyPath: m_LocalScale.x
-      value: 0.7
-      objectReference: {fileID: 0}
-    - target: {fileID: 2400401590883738550, guid: a9f817ccaf6b243fdb7a1975b76b842a,
-        type: 3}
-      propertyPath: m_LocalScale.y
-      value: 0.7
-      objectReference: {fileID: 0}
     - target: {fileID: 749557080856132949, guid: a9f817ccaf6b243fdb7a1975b76b842a,
         type: 3}
       propertyPath: m_SizeDelta.x
@@ -1847,6 +1835,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_SizeDelta.y
       value: 46
+      objectReference: {fileID: 0}
+    - target: {fileID: 2400401590883738550, guid: a9f817ccaf6b243fdb7a1975b76b842a,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.7
+      objectReference: {fileID: 0}
+    - target: {fileID: 2400401590883738550, guid: a9f817ccaf6b243fdb7a1975b76b842a,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.7
       objectReference: {fileID: 0}
     - target: {fileID: 8264233819107350788, guid: a9f817ccaf6b243fdb7a1975b76b842a,
         type: 3}
