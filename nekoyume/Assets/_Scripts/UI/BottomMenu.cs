@@ -23,6 +23,7 @@ namespace Nekoyume.UI.Module
             Quest,
             Chat,
             IllustratedBook,
+            Ranking,
             Character,
             WorldMap,
             Settings,
@@ -64,6 +65,7 @@ namespace Nekoyume.UI.Module
         public NotifiableButton mailButton;
         public NotifiableButton questButton;
         public NotifiableButton illustratedBookButton;
+        public NotifiableButton rankingButton;
         public NotifiableButton characterButton;
         public NotifiableButton worldMapButton;
         public NotifiableButton settingsButton;
@@ -94,6 +96,7 @@ namespace Nekoyume.UI.Module
         public readonly Subject<bool> HasNotificationInQuest = new Subject<bool>();
         public readonly Subject<bool> HasNotificationInChat = new Subject<bool>();
         public readonly Subject<bool> HasNotificationInIllustratedBook = new Subject<bool>();
+        public readonly Subject<bool> HasNotificationInRanking = new Subject<bool>();
         public readonly Subject<bool> HasNotificationInCharacter = new Subject<bool>();
         public readonly Subject<bool> HasNotificationInWorldMap = new Subject<bool>();
         public readonly Subject<bool> HasNotificationInSettings = new Subject<bool>();
@@ -122,6 +125,7 @@ namespace Nekoyume.UI.Module
             exitButton.SetWidgetType<Confirm>();
             mailButton.SetWidgetType<Mail>();
             questButton.SetWidgetType<Quest>();
+            rankingButton.SetWidgetType<Rank>();
             characterButton.SetWidgetType<AvatarInfo>();
             Find<AvatarInfo>().IsTweenEnd.Subscribe(x => characterButton.SetInteractable(x, true));
             settingsButton.SetWidgetType<Settings>();
@@ -145,6 +149,7 @@ namespace Nekoyume.UI.Module
             _toggleGroup.RegisterToggleable(mailButton);
             _toggleGroup.RegisterToggleable(questButton);
             _toggleGroup.RegisterToggleable(illustratedBookButton);
+            _toggleGroup.RegisterToggleable(rankingButton);
             _toggleGroup.RegisterToggleable(characterButton);
             _toggleGroup.RegisterToggleable(worldMapButton);
             _toggleGroup.RegisterToggleable(settingsButton);
@@ -175,6 +180,9 @@ namespace Nekoyume.UI.Module
                 .AddTo(gameObject);
             HasNotificationInIllustratedBook
                 .SubscribeTo(illustratedBookButton.SharedModel.HasNotification)
+                .AddTo(gameObject);
+            HasNotificationInRanking
+                .SubscribeTo(rankingButton.SharedModel.HasNotification)
                 .AddTo(gameObject);
             HasNotificationInCharacter
                 .SubscribeTo(characterButton.SharedModel.HasNotification)
@@ -249,6 +257,7 @@ namespace Nekoyume.UI.Module
             HasNotificationInQuest.Dispose();
             HasNotificationInChat.Dispose();
             HasNotificationInIllustratedBook.Dispose();
+            HasNotificationInRanking.Dispose();
             HasNotificationInCharacter.Dispose();
             HasNotificationInWorldMap.Dispose();
             HasNotificationInSettings.Dispose();
@@ -445,6 +454,8 @@ namespace Nekoyume.UI.Module
                     return ShowChatButton();
                 case ToggleableType.IllustratedBook:
                     return ShowIllustratedBookButton();
+                case ToggleableType.Ranking:
+                    return ShowRankingButton();
                 case ToggleableType.Character:
                     return ShowCharacterButton();
                 case ToggleableType.WorldMap:
@@ -629,6 +640,60 @@ namespace Nekoyume.UI.Module
             return false;
         }
 
+        private bool ShowRankingButton()
+        {
+            rankingButton.Show();
+
+            var requiredStage = GameConfig.RequireClearedStageLevel.UIBottomMenuRanking;
+            if (!States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(GameConfig
+                .RequireClearedStageLevel.UIBottomMenuRanking))
+            {
+                if (_disposablesForLockedButtons.TryGetValue(ToggleableType.Ranking, out var _))
+                {
+                    rankingButton.SetInteractable(false);
+                    return true;
+                }
+
+                (IDisposable enter, IDisposable exit) disposables;
+
+                disposables.enter = rankingButton.onPointerEnter.Subscribe(_ =>
+                {
+                    if (_cat)
+                    {
+                        _cat.Hide();
+                    }
+
+                    var unlockConditionString = string.Format(
+                        L10nManager.Localize("UI_STAGE_LOCK_FORMAT"),
+                        requiredStage);
+                    var message =
+                        $"{L10nManager.Localize(rankingButton.localizationKey)}\n<sprite name=\"UI_icon_lock_01\"> {unlockConditionString}";
+                    _cat = Find<MessageCatManager>().Show(true, message, true);
+                }).AddTo(rankingButton.gameObject);
+                disposables.exit = rankingButton.onPointerExit.Subscribe(_ =>
+                {
+                    if (_cat)
+                    {
+                        _cat.Hide();
+                    }
+                }).AddTo(rankingButton.gameObject);
+                _disposablesForLockedButtons[ToggleableType.Ranking] = disposables;
+                rankingButton.SetInteractable(false);
+            }
+            else
+            {
+                if (_disposablesForLockedButtons.TryGetValue(ToggleableType.Ranking, out var tuple))
+                {
+                    tuple.pointerEnter.Dispose();
+                    tuple.pointerExit.Dispose();
+                    _disposablesForLockedButtons.Remove(ToggleableType.Ranking);
+                }
+                rankingButton.SetInteractable(true);
+            }
+
+            return true;
+        }
+
         private bool ShowCharacterButton()
         {
             characterButton.Show();
@@ -772,6 +837,8 @@ namespace Nekoyume.UI.Module
                     return chatButton;
                 case ToggleableType.IllustratedBook:
                     return illustratedBookButton;
+                case ToggleableType.Ranking:
+                    return rankingButton;
                 case ToggleableType.Character:
                     return characterButton;
                 case ToggleableType.WorldMap:

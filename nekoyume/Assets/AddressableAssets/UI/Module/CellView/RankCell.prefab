@@ -232,7 +232,7 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4288205055
+    rgba: 4284972173
   m_fontColor: {r: 0.5566038, g: 0.48911327, b: 0.4069509, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
@@ -356,7 +356,6 @@ GameObject:
   - component: {fileID: 3560633758729822794}
   - component: {fileID: 6466007502928849909}
   - component: {fileID: 3993079662713737467}
-  - component: {fileID: 1833368876211240169}
   - component: {fileID: 6352535224322201035}
   m_Layer: 5
   m_Name: RankCell
@@ -422,33 +421,6 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
---- !u!114 &1833368876211240169
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3018884119875456309}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 27c0cc51d0d042a68f60e46f846bb986, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  backgroundImage: {fileID: 3993079662713737467}
-  controlBackgroundImage: 1
-  rankImageContainer: {fileID: 1655756275989626449}
-  rankImage: {fileID: 6417249917260669696}
-  rankTextContainer: {fileID: 3496021633471359621}
-  rankText: {fileID: 576702160095883671}
-  characterView: {fileID: 1283831492688625169}
-  levelText: {fileID: 6431071634858188638}
-  nameText: {fileID: 7867548136127325657}
-  scoreText: {fileID: 0}
-  cpText: {fileID: 3493398272436589879}
-  challengeCountTextContainer: {fileID: 0}
-  challengeCountText: {fileID: 0}
-  avatarInfoButton: {fileID: 0}
-  challengeButton: {fileID: 0}
 --- !u!225 &6352535224322201035
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -1715,6 +1687,16 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 7267492800988253527}
     m_Modifications:
+    - target: {fileID: 3434827073648422375, guid: a9f817ccaf6b243fdb7a1975b76b842a,
+        type: 3}
+      propertyPath: m_Name
+      value: FramedCharacterView
+      objectReference: {fileID: 0}
+    - target: {fileID: 3434827073648422375, guid: a9f817ccaf6b243fdb7a1975b76b842a,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7412098714008221570, guid: a9f817ccaf6b243fdb7a1975b76b842a,
         type: 3}
       propertyPath: isTitleFrame
@@ -1835,16 +1817,6 @@ PrefabInstance:
       propertyPath: m_LocalScale.y
       value: 0.9
       objectReference: {fileID: 0}
-    - target: {fileID: 3434827073648422375, guid: a9f817ccaf6b243fdb7a1975b76b842a,
-        type: 3}
-      propertyPath: m_Name
-      value: FramedCharacterView
-      objectReference: {fileID: 0}
-    - target: {fileID: 3434827073648422375, guid: a9f817ccaf6b243fdb7a1975b76b842a,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 6487158816000491061, guid: a9f817ccaf6b243fdb7a1975b76b842a,
         type: 3}
       propertyPath: m_Sprite
@@ -1856,16 +1828,6 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 749557080856132949, guid: a9f817ccaf6b243fdb7a1975b76b842a,
-        type: 3}
-      propertyPath: m_SizeDelta.x
-      value: 46
-      objectReference: {fileID: 0}
-    - target: {fileID: 749557080856132949, guid: a9f817ccaf6b243fdb7a1975b76b842a,
-        type: 3}
-      propertyPath: m_SizeDelta.y
-      value: 46
-      objectReference: {fileID: 0}
     - target: {fileID: 2400401590883738550, guid: a9f817ccaf6b243fdb7a1975b76b842a,
         type: 3}
       propertyPath: m_LocalScale.x
@@ -1875,6 +1837,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalScale.y
       value: 0.7
+      objectReference: {fileID: 0}
+    - target: {fileID: 749557080856132949, guid: a9f817ccaf6b243fdb7a1975b76b842a,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 46
+      objectReference: {fileID: 0}
+    - target: {fileID: 749557080856132949, guid: a9f817ccaf6b243fdb7a1975b76b842a,
+        type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 46
       objectReference: {fileID: 0}
     - target: {fileID: 8264233819107350788, guid: a9f817ccaf6b243fdb7a1975b76b842a,
         type: 3}
@@ -1889,15 +1861,3 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 8578237380131867027}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1283831492688625169 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 7412098714008221570, guid: a9f817ccaf6b243fdb7a1975b76b842a,
-    type: 3}
-  m_PrefabInstance: {fileID: 8578237380131867027}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2f07a15cae214949b1146dcb2c087562, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
