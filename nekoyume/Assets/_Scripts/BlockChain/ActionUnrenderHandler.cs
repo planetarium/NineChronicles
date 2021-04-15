@@ -35,7 +35,6 @@ namespace Nekoyume.BlockChain
             _renderer = renderer;
 
             RewardGold();
-            Buy();
             BuyMultiple();
             Sell();
             SellCancellation();
@@ -71,19 +70,9 @@ namespace Nekoyume.BlockChain
                 .AddTo(_disposables);
         }
 
-        private void Buy()
-        {
-            _renderer.EveryUnrender<Buy4>()
-                .Where(ValidateEvaluationForAgentState)
-                .ObserveOnMainThread()
-                .Subscribe(ResponseBuy)
-                .AddTo(_disposables);
-        }
-
         private void BuyMultiple()
         {
             _renderer.EveryUnrender<BuyMultiple>()
-                .Where(ValidateEvaluationForAgentState)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseBuyMultiple)
                 .AddTo(_disposables);

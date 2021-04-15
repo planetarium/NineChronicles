@@ -425,15 +425,26 @@ namespace Nekoyume.UI
         {
             var tutorialController = Game.Game.instance.Stage.TutorialController;
             var tutorialProgress = tutorialController.GetTutorialProgress();
+            var avatarState = Game.Game.instance.States.CurrentAvatarState;
+            var nextStageId = avatarState.worldInformation
+                .TryGetLastClearedStageId(out var stageId) ? stageId + 1 : 1;
+
+            if (nextStageId > 4)
+            {
+                return;
+            }
+
             if (tutorialProgress <= 1)
             {
-                var avatarState = Game.Game.instance.States.CurrentAvatarState;
-                var nextStageId = avatarState.worldInformation
-                    .TryGetLastClearedStageId(out var stageId) ? stageId + 1 : 1;
-                if (nextStageId < 4)
+                if (nextStageId <= 3)
                 {
                     tutorialController.Play(1);
                     return;
+                }
+                else
+                {
+                    tutorialController.SaveTutorialProgress(1);
+                    tutorialProgress = 1;
                 }
             }
 
@@ -536,6 +547,7 @@ namespace Nekoyume.UI
 
             // Temporarily Lock tutorial recipe.
             var combination = Find<Combination>();
+            combination.LoadRecipeVFXSkipMap();
             var skipMap = combination.RecipeVFXSkipMap;
             if (skipMap.ContainsKey(firstRecipeRow.Id))
             {

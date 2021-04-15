@@ -26,11 +26,12 @@ namespace Nekoyume.UI
         [SerializeField] private Button buyButton;
         [SerializeField] private Button transactionHistoryButton;
 
-        [SerializeField] private TextMeshProUGUI priceText;
         [SerializeField] private TextMeshProUGUI buyText;
-        [SerializeField] private TextMeshProUGUI transactionHistoryText;
+        [SerializeField] private TextMeshProUGUI priceText;
 
         public readonly Subject<bool> OnChangeBuyType = new Subject<bool>();
+
+        public bool IsAcitveWishListView => wishListView.activeSelf;
 
         private double _price;
 
@@ -40,12 +41,12 @@ namespace Nekoyume.UI
             cancelButton.OnClickAsObservable().Subscribe(OnCloseBuyWishList).AddTo(gameObject);
             buyButton.OnClickAsObservable().Subscribe(OnClickBuy).AddTo(gameObject);
             transactionHistoryButton.OnClickAsObservable().Subscribe(OnClickTransactionHistory).AddTo(gameObject);
-            buyText.text = L10nManager.Localize("UI_BUY_MULTIPLE");
-            transactionHistoryText.text = L10nManager.Localize("UI_TRANSACTION_HISTORY");
+            buyButton.image.enabled = false;
         }
 
         private void OnEnable()
         {
+            buyButton.image.enabled = true;
             ShowDefaultView();
         }
 
@@ -57,7 +58,7 @@ namespace Nekoyume.UI
             OnChangeBuyType.OnNext(true);
         }
 
-        private void ShowDefaultView()
+        public void ShowDefaultView()
         {
             priceText.text = "0";
             defaultView.SetActive(true);
@@ -71,8 +72,10 @@ namespace Nekoyume.UI
             {
                 Widget.Find<TwoButtonPopup>().Show(L10nManager.Localize("UI_CLOSE_BUY_WISH_LIST"),
                                                    L10nManager.Localize("UI_YES"),
-                                                   L10nManager.Localize("UI_NO"),
-                                                   ShowDefaultView);
+                                                   L10nManager.Localize("UI_NO"), () =>
+                                                   {
+                                                       ShowDefaultView();
+                                                   });
             }
             else
             {
@@ -106,13 +109,11 @@ namespace Nekoyume.UI
         private void BuyMultiple()
         {
             var purchaseInfos = shopItems.SharedModel.wishItems.Select(GetPurchseInfo).ToList();
-            Game.Game.instance.ActionManager.BuyMultiple(purchaseInfos);
-
-            ReactiveShopState.PurchaseHistory.Enqueue(shopItems.SharedModel.wishItems.ToList());
+            Game.Game.instance.ActionManager.BuyMultiple(purchaseInfos,
+                shopItems.SharedModel.wishItems.ToList());
 
             foreach (var shopItem in shopItems.SharedModel.wishItems)
             {
-                var price = shopItem.Price.Value.GetQuantityString();
                 var props = new Value
                 {
                     ["Price"] = shopItem.Price.Value.GetQuantityString(),
@@ -125,7 +126,7 @@ namespace Nekoyume.UI
                 LocalLayerModifier.ModifyAgentGold(buyerAgentAddress, -shopItem.Price.Value);
                 shopItems.SharedModel.RemoveItemSubTypeProduct(productId);
                 var format = L10nManager.Localize("NOTIFICATION_BUY_START");
-                Notification.Push(MailType.Auction,
+                OneLinePopup.Push(MailType.Auction,
                     string.Format(format, shopItem.ItemBase.Value.GetLocalizedName()));
             }
             AudioController.instance.PlaySfx(AudioController.SfxCode.BuyItem);
@@ -142,7 +143,7 @@ namespace Nekoyume.UI
 
         private void OnClickTransactionHistory(Unit unit)
         {
-            OneLinePopup.Push(MailType.System, L10nManager.Localize("UI_ALERT_NOT_IMPLEMENTED_CONTENT"));
+            Widget.Find<Alert>().Show("UI_ALERT_NOT_IMPLEMENTED_TITLE", "UI_ALERT_NOT_IMPLEMENTED_CONTENT");
         }
 
         private void Clear()
@@ -170,6 +171,19 @@ namespace Nekoyume.UI
             }
 
             priceText.text = _price.ToString();
+            var currentGold = double.Parse(States.Instance.GoldBalanceState.Gold.GetQuantityString());
+            if (currentGold < _price)
+            {
+                priceText.color = Palette.GetColor(3);
+                buyButton.image.color = Palette.GetColor(1);
+                buyText.color = Palette.GetColor(2);
+            }
+            else
+            {
+                priceText.color = Palette.GetColor(0);
+                buyButton.image.color = shopItems.SharedModel.wishItems.Count > 0 ? Palette.GetColor(0) : Palette.GetColor(1);
+                buyText.color = shopItems.SharedModel.wishItems.Count > 0 ? Palette.GetColor(0) : Palette.GetColor(2);
+            }
         }
 
         private void OnDestroy()

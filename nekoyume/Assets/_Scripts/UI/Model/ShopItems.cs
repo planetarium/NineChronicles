@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Libplanet;
+using Nekoyume.L10n;
 using Nekoyume.Model.Item;
+using Nekoyume.Model.Mail;
 using Nekoyume.State;
 using Nekoyume.UI.Module;
 using UniRx;
@@ -46,7 +48,7 @@ namespace Nekoyume.UI.Model
 
         public readonly List<ShopItem> wishItems = new List<ShopItem>();
 
-        private const int WishListSize = 8;
+        public readonly int WishListSize = 8;
 
         public void Dispose()
         {
@@ -115,7 +117,7 @@ namespace Nekoyume.UI.Model
             {
                 var wishItem = wishItems.FirstOrDefault(x =>
                     x.ProductId.Value == view.Model.ProductId.Value);
-                if (wishItem is null) // 위시리스트에 없을 때
+                if (wishItem is null)
                 {
                     if (wishItems.Count < WishListSize)
                     {
@@ -123,6 +125,11 @@ namespace Nekoyume.UI.Model
                         SelectedItemView.SetValueAndForceNotify(view);
                         SelectedItemViewModel.SetValueAndForceNotify(view.Model);
                         SelectedItemViewModel.Value.Selected.SetValueAndForceNotify(true);
+                    }
+                    else
+                    {
+                        OneLinePopup.Push(MailType.System,
+                            L10nManager.Localize("NOTIFICATION_BUY_WISHLIST_FULL"));
                     }
                 }
                 else
@@ -179,14 +186,13 @@ namespace Nekoyume.UI.Model
         public void ClearWishList()
         {
             wishItems.Clear();
+            ResetSelectedState();
         }
 
         public void SetMultiplePurchase(bool value)
         {
             ClearWishList();
             isMultiplePurchase = value;
-            ResetAgentProducts();
-            ResetItemSubTypeProducts();
         }
 
         public void SelectItemView(ShopItemView view)
@@ -338,6 +344,11 @@ namespace Nekoyume.UI.Model
         public void ResetItemSubTypeProducts()
         {
             ItemSubTypeProducts.Value = GetFilteredAndSortedProducts(_itemSubTypeProducts);
+            ResetSelectedState();
+        }
+
+        private void ResetSelectedState()
+        {
             foreach (var keyValuePair in ItemSubTypeProducts.Value)
             {
                 foreach (var shopItem in keyValuePair.Value)

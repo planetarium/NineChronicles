@@ -83,6 +83,14 @@ namespace Nekoyume.UI
             blur.onClick = () => Close();
         }
 
+        public override void Initialize()
+        {
+            base.Initialize();
+
+            var format = L10nManager.Localize("UI_PRESS_TO_CONTINUE_FORMAT");
+            continueText.text = string.Format(format, ContinueTime);
+        }
+
         protected override void Update()
         {
             base.Update();
