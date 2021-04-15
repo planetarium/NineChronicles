@@ -120,6 +120,49 @@ begin
   end;
 end;
 
+procedure CurPageChanged(CurPageID: Integer);
+var
+  UUID: String;
+begin
+  case CurPageID of
+    wpSelectDir:
+      begin
+        UUID := UseUUID();
+        Log('Install: Request Mixpanel.');
+        Log('UUID: ' + UUID);
+        MixpanelTrack('Installer/SelectDir', UUID);
+      end;
+    wpSelectTasks:
+      begin
+        UUID := UseUUID();
+        Log('Install: Request Mixpanel.');
+        Log('UUID: ' + UUID);
+        MixpanelTrack('Installer/SelectTasks', UUID);
+      end;
+    wpReady:
+      begin
+        UUID := UseUUID();
+        Log('Install: Request Mixpanel.');
+        Log('UUID: ' + UUID);
+        MixpanelTrack('Installer/Ready', UUID);
+      end;
+    wpInstalling:
+      begin
+        UUID := UseUUID();
+        Log('Install: Request Mixpanel.');
+        Log('UUID: ' + UUID);
+        MixpanelTrack('Installer/Installing', UUID);
+      end;
+    wpFinished:
+      begin
+        UUID := UseUUID();
+        Log('UnInstall: Request Mixpanel.');
+        Log('UUID: ' + UUID);
+        MixpanelTrack('Installer/Finished', UUID);
+      end;
+  end;
+end;
+
 [Run]
 Filename: "{cmd}"; Parameters: "/C ""taskkill /im ""{#MyAppName}.exe"""" /f /t"
 
