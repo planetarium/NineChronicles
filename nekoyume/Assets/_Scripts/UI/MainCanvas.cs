@@ -249,6 +249,8 @@ namespace Nekoyume.UI
             yield return null;
             secondWidgets.Add(Widget.Create<CombinationSlots>());
             yield return null;
+            secondWidgets.Add(Widget.Create<Rank>());
+            yield return null;
             secondWidgets.Add(Widget.Create<AvatarInfo>());
             yield return null;
 

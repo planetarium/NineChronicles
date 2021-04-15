@@ -95,6 +95,7 @@ namespace Nekoyume.Game.Entrance
                 BottomMenu.ToggleableType.Quest,
                 BottomMenu.ToggleableType.Chat,
                 BottomMenu.ToggleableType.IllustratedBook,
+                BottomMenu.ToggleableType.Ranking,
                 BottomMenu.ToggleableType.Character,
                 BottomMenu.ToggleableType.Settings,
                 BottomMenu.ToggleableType.Combination
