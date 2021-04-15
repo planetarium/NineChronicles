@@ -5582,6 +5582,16 @@
             The corresponding <see cref="T:System.Net.DnsEndPoint"/> of this peer.
             </summary>
         </member>
+        <member name="M:Libplanet.Net.BoundPeer.ParsePeer(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Libplanet.Net.BoundPeer"/> class from
+            comma-separated string.</summary>
+            <param name="peerInfo">A comma-separated string have format {pubkey},{host},{port}.
+            </param>
+            <returns>A <see cref="T:Libplanet.Net.BoundPeer"/> from given data.</returns>
+            <exception cref="T:System.ArgumentException">Thrown when the given peerInfo is invalid.
+            </exception>
+        </member>
         <member name="M:Libplanet.Net.BoundPeer.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
             <inheritdoc/>
         </member>
@@ -5641,118 +5651,6 @@
             <see cref="T:Libplanet.Net.Swarm`1" /> is trying to connect to.
             </summary>
         </member>
-        <member name="T:Libplanet.Net.ITransport">
-            <summary>
-            An interface to handle peer-to-peer networking, including <see cref="T:Libplanet.Net.Messages.Message"/> exchanging
-            and <see cref="T:Libplanet.Net.Peer"/> managing.
-            </summary>
-        </member>
-        <member name="E:Libplanet.Net.ITransport.ProcessMessageHandler">
-            <summary>
-            The <see cref="T:System.EventHandler"/> invoked when a message that is not
-            a reply is received. To handle reply, please use <see cref=
-            "M:Libplanet.Net.ITransport.SendMessageWithReplyAsync(Libplanet.Net.BoundPeer,Libplanet.Net.Messages.Message,System.Nullable{System.TimeSpan},System.Threading.CancellationToken)"/>.
-            </summary>
-        </member>
-        <member name="P:Libplanet.Net.ITransport.AsPeer">
-            <summary>
-            <see cref="T:Libplanet.Net.Peer"/> representation of <see cref="T:Libplanet.Net.ITransport"/>.
-            </summary>
-        </member>
-        <member name="P:Libplanet.Net.ITransport.LastMessageTimestamp">
-            <summary>
-            The <see cref="T:System.DateTimeOffset"/> of the last message was received.
-            </summary>
-        </member>
-        <member name="M:Libplanet.Net.ITransport.StartAsync(System.Threading.CancellationToken)">
-            <summary>
-            Initiates transport layer.
-            </summary>
-            <param name="cancellationToken">
-            A cancellation token used to propagate notification that this
-            operation should be canceled.</param>
-            <returns>An awaitable task without value.</returns>
-        </member>
-        <member name="M:Libplanet.Net.ITransport.RunAsync(System.Threading.CancellationToken)">
-            <summary>
-            Starts running transport layer. To <see cref="M:Libplanet.Net.ITransport.RunAsync(System.Threading.CancellationToken)"/>, you should call
-            <see cref="M:Libplanet.Net.ITransport.StartAsync(System.Threading.CancellationToken)"/> first.
-            </summary>
-            <param name="cancellationToken">
-            A cancellation token used to propagate notification that this
-            operation should be canceled.</param>
-            <returns>An awaitable task without value.</returns>
-        </member>
-        <member name="M:Libplanet.Net.ITransport.StopAsync(System.TimeSpan,System.Threading.CancellationToken)">
-            <summary>
-            Stops running transport layer.
-            </summary>
-            <param name="waitFor">The <see cref="T:System.TimeSpan"/> of delay
-            before actual stopping.</param>
-            <param name="cancellationToken">
-            A cancellation token used to propagate notification that this
-            operation should be canceled.</param>
-            <returns>An awaitable task without value.</returns>
-        </member>
-        <member name="M:Libplanet.Net.ITransport.SendMessageAsync(Libplanet.Net.BoundPeer,Libplanet.Net.Messages.Message,System.Threading.CancellationToken)">
-            <summary>
-            Sends the <paramref name="message"/> to given <paramref name="peer"/>.
-            </summary>
-            <param name="peer">A <see cref="T:Libplanet.Net.Peer"/> to send message to.</param>
-            <param name="message">A <see cref="T:Libplanet.Net.Messages.Message"/> to send.</param>
-            <param name="cancellationToken">
-            A cancellation token used to propagate notification that this
-            operation should be canceled.</param>
-            <returns>An awaitable task without value.</returns>
-        </member>
-        <member name="M:Libplanet.Net.ITransport.SendMessageWithReplyAsync(Libplanet.Net.BoundPeer,Libplanet.Net.Messages.Message,System.Nullable{System.TimeSpan},System.Threading.CancellationToken)">
-            <summary>
-            Sends the <paramref name="message"/>
-            to given <paramref name="peer"/> and waits for its single reply.
-            </summary>
-            <param name="peer">A <see cref="T:Libplanet.Net.Peer"/> to send message to.</param>
-            <param name="message">A <see cref="T:Libplanet.Net.Messages.Message"/> to send.</param>
-            <param name="timeout">A timeout of waiting for the reply of the message.</param>
-            <param name="cancellationToken">
-            A cancellation token used to propagate notification that this
-            operation should be canceled.</param>
-            <returns>The replies of the <paramref name="message"/>
-            sent by <paramref name="peer"/>.</returns>
-        </member>
-        <member name="M:Libplanet.Net.ITransport.SendMessageWithReplyAsync(Libplanet.Net.BoundPeer,Libplanet.Net.Messages.Message,System.Nullable{System.TimeSpan},System.Int32,System.Threading.CancellationToken)">
-            <summary>
-            Sends the <paramref name="message"/>
-            to given <paramref name="peer"/> and waits for its multiple replies.
-            </summary>
-            <param name="peer">A <see cref="T:Libplanet.Net.Peer"/> to send message to.</param>
-            <param name="message">A <see cref="T:Libplanet.Net.Messages.Message"/> to send.</param>
-            <param name="timeout">A timeout of waiting for the reply of the message.</param>
-            <param name="expectedResponses">The number of expected replies for the message.</param>
-            <param name="cancellationToken">
-            A cancellation token used to propagate notification that this
-            operation should be canceled.</param>
-            <returns>The replies of the <paramref name="message"/>
-            sent by <paramref name="peer"/>.</returns>
-        </member>
-        <member name="M:Libplanet.Net.ITransport.BroadcastMessage(System.Nullable{Libplanet.Address},Libplanet.Net.Messages.Message)">
-            <summary>
-            Broadcasts the <paramref name="message"/> to peers selected from the routing table.
-            </summary>
-            <param name="except">An <see cref="T:Libplanet.Address"/> to exclude from broadcasting.
-            If <c>null</c> is given, no peers will be excluded.</param>
-            <param name="message">A <see cref="T:Libplanet.Net.Messages.Message"/> to broadcast.</param>
-        </member>
-        <member name="M:Libplanet.Net.ITransport.ReplyMessage(Libplanet.Net.Messages.Message)">
-            <summary>
-            Replies message.
-            </summary>
-            <remarks>
-            The <see cref="P:Libplanet.Net.Messages.Message.Identity"/> of the given <paramref name="message"/> must be
-            matched to <see cref="P:Libplanet.Net.Messages.Message.Identity"/> of a message corresponding to the given
-            <paramref name="message"/>.
-            </remarks>
-            <param name="message">A <see cref="T:Libplanet.Net.Messages.Message"/> to reply.</param>
-        </member>
         <member name="P:Libplanet.Net.Messages.BlockHashes.StartIndex">
             <summary>
             The block index of the first hash in <see cref="P:Libplanet.Net.Messages.BlockHashes.Hashes"/>.
@@ -5766,7 +5664,7 @@
         </member>
         <member name="T:Libplanet.Net.Messages.Message">
             <summary>
-            Serves as the base class for messages used in <see cref="T:Libplanet.Net.ITransport"/>.
+            Serves as the base class for messages used in <see cref="T:Libplanet.Net.Transports.ITransport"/>.
             </summary>
         </member>
         <member name="F:Libplanet.Net.Messages.Message.CommonFrames">
@@ -5915,7 +5813,7 @@
             <param name="reply">A flag to express whether the target is a reply of other message.
             </param>
             <param name="localVersion">The <see cref="T:Libplanet.Net.AppProtocolVersion"/>-typed version of the
-            local transport layer. <seealso cref="T:Libplanet.Net.ITransport"/></param>
+            local transport layer. <seealso cref="T:Libplanet.Net.Transports.ITransport"/></param>
             <param name="trustedAppProtocolVersionSigners"><see cref="T:Libplanet.Crypto.PublicKey"/>s of parties
             to trust <see cref="T:Libplanet.Net.AppProtocolVersion"/>s they signed.  To trust any party, pass
             <c>null</c>.</param>
@@ -5949,7 +5847,7 @@
             <param name="key">A <see cref="T:Libplanet.Crypto.PrivateKey"/> to sign message.</param>
             <param name="peer"><see cref="T:Libplanet.Net.Peer"/>-typed representation of the
             sender's transport layer.
-            <seealso cref="P:Libplanet.Net.ITransport.AsPeer"/></param>
+            <seealso cref="P:Libplanet.Net.Transports.ITransport.AsPeer"/></param>
             <param name="timestamp">The <see cref="T:System.DateTimeOffset"/> of the message is created.
             </param>
             <param name="version"><see cref="T:Libplanet.Net.AppProtocolVersion"/>-typed version of the
@@ -5958,102 +5856,6 @@
             </returns>
             <exception cref="T:System.ArgumentNullException">Thrown when <paramref name="peer"/> is
             <c>null</c>.</exception>
-        </member>
-        <member name="T:Libplanet.Net.NetMQTransport">
-            <summary>
-            Implementation of <see cref="T:Libplanet.Net.ITransport"/> interface using NetMQ.
-            </summary>
-        </member>
-        <member name="F:Libplanet.Net.NetMQTransport._differentAppProtocolVersionEncountered">
-            <summary>
-            The <see cref="T:System.EventHandler" /> triggered when the different version of
-            <see cref="T:Libplanet.Net.Peer" /> is discovered.
-            </summary>
-        </member>
-        <member name="M:Libplanet.Net.NetMQTransport.#ctor(Libplanet.Net.Protocols.RoutingTable,Libplanet.Crypto.PrivateKey,Libplanet.Net.AppProtocolVersion,System.Collections.Immutable.IImmutableSet{Libplanet.Crypto.PublicKey},System.Int32,System.String,System.Nullable{System.Int32},System.Collections.Generic.IEnumerable{Libplanet.Net.IceServer},Libplanet.Net.DifferentAppProtocolVersionEncountered,System.Nullable{System.TimeSpan})">
-            <summary>
-            Creates <see cref="T:Libplanet.Net.NetMQTransport"/> instance.
-            </summary>
-            <param name="table">
-            The <see cref="T:Libplanet.Net.Protocols.RoutingTable"/> that manages <see cref="T:Libplanet.Net.Peer"/>s which are connected
-            with this <see cref="T:Libplanet.Net.Peer"/>.
-            </param>
-            <param name="privateKey"><see cref="T:Libplanet.Crypto.PrivateKey"/> of the transport layer.</param>
-            <param name="appProtocolVersion"><see cref="T:Libplanet.Net.AppProtocolVersion"/>-typed
-            version of the transport layer.</param>
-            <param name="trustedAppProtocolVersionSigners"><see cref="T:Libplanet.Crypto.PublicKey"/>s of parties
-            to trust <see cref="T:Libplanet.Net.AppProtocolVersion"/>s they signed.  To trust any party, pass
-            <c>null</c>.</param>
-            <param name="workers">The number of background workers (i.e., threads).</param>
-            <param name="host">A hostname to be a part of a public endpoint, that peers use when
-            they connect to this node.  Note that this is not a hostname to listen to;
-            <see cref="T:Libplanet.Net.NetMQTransport"/> always listens to 0.0.0.0 &amp; ::/0.</param>
-            <param name="listenPort">A port number to listen to.</param>
-            <param name="iceServers">
-            <a href="https://en.wikipedia.org/wiki/Interactive_Connectivity_Establishment">ICE</a>
-            servers to use for TURN/STUN.  Purposes to traverse NAT.</param>
-            <param name="differentAppProtocolVersionEncountered">A delegate called back when a peer
-            with one different from <paramref name="appProtocolVersion"/>, and their version is
-            signed by a trusted party (i.e., <paramref name="trustedAppProtocolVersionSigners"/>).
-            If this callback returns <c>false</c>, an encountered peer is ignored.  If this callback
-            is omitted, all peers with different <see cref="T:Libplanet.Net.AppProtocolVersion"/>s are ignored.
-            </param>
-            <param name="messageLifespan">
-            The lifespan of a message.
-            Messages generated before this value from the current time are ignored.
-            If <c>null</c> is given, messages will not be ignored by its timestamp.</param>
-            <exception cref="T:System.ArgumentException">Thrown when both <paramref name="host"/> and
-            <paramref name="iceServers"/> are <c>null</c>.</exception>
-        </member>
-        <member name="E:Libplanet.Net.NetMQTransport.ProcessMessageHandler">
-            <inheritdoc />
-        </member>
-        <member name="P:Libplanet.Net.NetMQTransport.AsPeer">
-            <inheritdoc cref="P:Libplanet.Net.ITransport.AsPeer"/>
-        </member>
-        <member name="P:Libplanet.Net.NetMQTransport.LastMessageTimestamp">
-            <inheritdoc cref="P:Libplanet.Net.ITransport.LastMessageTimestamp"/>
-        </member>
-        <member name="P:Libplanet.Net.NetMQTransport.Running">
-            <summary>
-            Whether this <see cref="T:Libplanet.Net.NetMQTransport"/> instance is running.
-            </summary>
-            <returns>Boolean value indicates whether the instance is running.</returns>
-        </member>
-        <member name="M:Libplanet.Net.NetMQTransport.StartAsync(System.Threading.CancellationToken)">
-            <inheritdoc />
-        </member>
-        <member name="M:Libplanet.Net.NetMQTransport.RunAsync(System.Threading.CancellationToken)">
-            <inheritdoc />
-        </member>
-        <member name="M:Libplanet.Net.NetMQTransport.StopAsync(System.TimeSpan,System.Threading.CancellationToken)">
-            <inheritdoc />
-        </member>
-        <member name="M:Libplanet.Net.NetMQTransport.Dispose">
-            <inheritdoc />
-        </member>
-        <member name="M:Libplanet.Net.NetMQTransport.WaitForRunningAsync">
-            <summary>
-            Waits until this <see cref="T:Libplanet.Net.NetMQTransport"/> instance gets started to run.
-            </summary>
-            <seealso cref="M:Libplanet.Net.Swarm`1.WaitForRunningAsync"/>
-            <returns>A <see cref="T:System.Threading.Tasks.Task"/> completed when <see cref="P:Libplanet.Net.NetMQTransport.Running"/>
-            property becomes <c>true</c>.</returns>
-        </member>
-        <member name="M:Libplanet.Net.NetMQTransport.SendMessageAsync(Libplanet.Net.BoundPeer,Libplanet.Net.Messages.Message,System.Threading.CancellationToken)">
-            <inheritdoc />
-        </member>
-        <member name="M:Libplanet.Net.NetMQTransport.SendMessageWithReplyAsync(Libplanet.Net.BoundPeer,Libplanet.Net.Messages.Message,System.Nullable{System.TimeSpan},System.Threading.CancellationToken)">
-            <inheritdoc />
-        </member>
-        <member name="M:Libplanet.Net.NetMQTransport.SendMessageWithReplyAsync(Libplanet.Net.BoundPeer,Libplanet.Net.Messages.Message,System.Nullable{System.TimeSpan},System.Int32,System.Threading.CancellationToken)">
-            <inheritdoc />
-        </member>
-        <member name="M:Libplanet.Net.NetMQTransport.BroadcastMessage(System.Nullable{Libplanet.Address},Libplanet.Net.Messages.Message)">
-            <inheritdoc />
-        </member>
-        <member name="M:Libplanet.Net.NetMQTransport.ReplyMessage(Libplanet.Net.Messages.Message)">
-            <inheritdoc />
         </member>
         <member name="T:Libplanet.Net.Peer">
             <summary>
@@ -6107,9 +5909,9 @@
             Represents a <see cref="P:Libplanet.Net.PeerState.Peer"/>'s state in the routing table.
             </summary>
         </member>
-        <member name="P:Libplanet.Net.PeerState.Address">
+        <member name="P:Libplanet.Net.PeerState.Peer">
             <summary>
-            <see cref="P:Libplanet.Net.PeerState.Address"/> of peer.
+            <see cref="T:Libplanet.Net.BoundPeer"/> of the state.
             </summary>
         </member>
         <member name="P:Libplanet.Net.PeerState.LastUpdated">
@@ -6187,10 +5989,11 @@
             that this operation should be canceled.</param>
             <returns>An awaitable task without value.</returns>
         </member>
-        <member name="M:Libplanet.Net.Protocols.IProtocol.RebuildConnectionAsync(System.Threading.CancellationToken)">
+        <member name="M:Libplanet.Net.Protocols.IProtocol.RebuildConnectionAsync(System.Int32,System.Threading.CancellationToken)">
             <summary>
             Reconstructs network connection between peers on network.
             </summary>
+            <param name="depth">Recursive operation depth to search peers from network.</param>
             <param name="cancellationToken">A cancellation token used to propagate notification
             that this operation should be canceled.</param>
             <returns>An awaitable task without value.</returns>
@@ -6263,13 +6066,13 @@
             A Kademlia based peer discovery protocol.
             </summary>
         </member>
-        <member name="M:Libplanet.Net.Protocols.KademliaProtocol.#ctor(Libplanet.Net.Protocols.RoutingTable,Libplanet.Net.ITransport,Libplanet.Address,System.Int32,System.Nullable{System.TimeSpan})">
+        <member name="M:Libplanet.Net.Protocols.KademliaProtocol.#ctor(Libplanet.Net.Protocols.RoutingTable,Libplanet.Net.Transports.ITransport,Libplanet.Address,System.Int32,System.Nullable{System.TimeSpan})">
             <summary>
             Creates a <see cref="T:Libplanet.Net.Protocols.KademliaProtocol"/> instance.
             </summary>
             <param name="table">
             The <see cref="T:Libplanet.Net.Protocols.RoutingTable"/> where <see cref="T:Libplanet.Net.Peer"/>s are stored.</param>
-            <param name="transport"><see cref="T:Libplanet.Net.ITransport"/> to process messages.</param>
+            <param name="transport"><see cref="T:Libplanet.Net.Transports.ITransport"/> to process messages.</param>
             <param name="address">The <see cref="T:Libplanet.Address"/> of the <see cref="T:Libplanet.Net.Peer"/>
             to be the reference point.</param>
             <param name="findConcurrency">The number of concurrency in peer discovery.</param>
@@ -6299,7 +6102,7 @@
             operation should be canceled.</param>
             <returns>An awaitable task without value.</returns>
         </member>
-        <member name="M:Libplanet.Net.Protocols.KademliaProtocol.RebuildConnectionAsync(System.Threading.CancellationToken)">
+        <member name="M:Libplanet.Net.Protocols.KademliaProtocol.RebuildConnectionAsync(System.Int32,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
         <member name="M:Libplanet.Net.Protocols.KademliaProtocol.CheckReplacementCacheAsync(System.Threading.CancellationToken)">
@@ -6345,12 +6148,13 @@
             Thrown when <paramref name="rawPeer"/> is <c>null</c>.
             </exception>
         </member>
-        <member name="M:Libplanet.Net.Protocols.KademliaProtocol.FindPeerAsync(System.Collections.Concurrent.ConcurrentBag{Libplanet.Net.BoundPeer},Libplanet.Address,Libplanet.Net.BoundPeer,System.Int32,System.Nullable{System.TimeSpan},System.Threading.CancellationToken)">
+        <member name="M:Libplanet.Net.Protocols.KademliaProtocol.FindPeerAsync(System.Collections.Concurrent.ConcurrentBag{Libplanet.Net.BoundPeer},System.Collections.Concurrent.ConcurrentBag{Libplanet.Net.BoundPeer},Libplanet.Address,Libplanet.Net.BoundPeer,System.Int32,System.Nullable{System.TimeSpan},System.Threading.CancellationToken)">
             <summary>
             Send <see cref="T:Libplanet.Net.Messages.FindNeighbors"/> messages to <paramref name="viaPeer"/>
             to find <see cref="T:Libplanet.Net.Peer"/>s near <paramref name="target"/>.
             </summary>
             <param name="history">The <see cref="T:Libplanet.Net.Peer"/> that searched.</param>
+            <param name="dialHistory">The <see cref="T:Libplanet.Net.Peer"/> that ping was sent.</param>
             <param name="target">The <see cref="T:Libplanet.Address"/> to find.</param>
             <param name="viaPeer">The target <see cref="T:Libplanet.Net.Peer"/> to send <see cref="T:Libplanet.Net.Messages.FindNeighbors"/>
             message. If null, selects 3 <see cref="T:Libplanet.Net.Peer"/>s from <see cref="T:Libplanet.Net.Protocols.RoutingTable"/> of
@@ -6362,18 +6166,19 @@
             that this operation should be canceled.</param>
             <returns>An awaitable task without value.</returns>
         </member>
-        <member name="M:Libplanet.Net.Protocols.KademliaProtocol.ProcessFoundAsync(System.Collections.Concurrent.ConcurrentBag{Libplanet.Net.BoundPeer},System.Collections.Generic.IEnumerable{Libplanet.Net.BoundPeer},Libplanet.Address,System.Int32,System.Nullable{System.TimeSpan},System.Threading.CancellationToken)">
+        <member name="M:Libplanet.Net.Protocols.KademliaProtocol.ProcessFoundAsync(System.Collections.Concurrent.ConcurrentBag{Libplanet.Net.BoundPeer},System.Collections.Concurrent.ConcurrentBag{Libplanet.Net.BoundPeer},System.Collections.Generic.IEnumerable{Libplanet.Net.BoundPeer},Libplanet.Address,System.Int32,System.Nullable{System.TimeSpan},System.Threading.CancellationToken)">
             <summary>
             Process <see cref="T:Libplanet.Net.Peer"/>s that is replied by sending <see cref="T:Libplanet.Net.Messages.FindNeighbors"/>
             request.
             </summary>
             <param name="history"><see cref="T:Libplanet.Net.Peer"/>s that already searched.</param>
+            <param name="dialHistory"><see cref="T:Libplanet.Net.Peer"/>s that ping sent.</param>
             <param name="found"><see cref="T:Libplanet.Net.Peer"/>s that found.</param>
             <param name="target">The target <see cref="T:Libplanet.Address"/> to search.</param>
             <param name="depth">Target depth of recursive operation. If -1 is given,
             it runs until the closest peer is found.</param>
             <param name="timeout"><see cref="T:System.TimeSpan"/> for next depth's
-            <see cref="M:Libplanet.Net.Protocols.KademliaProtocol.FindPeerAsync(System.Collections.Concurrent.ConcurrentBag{Libplanet.Net.BoundPeer},Libplanet.Address,Libplanet.Net.BoundPeer,System.Int32,System.Nullable{System.TimeSpan},System.Threading.CancellationToken)"/> operation.</param>
+            <see cref="M:Libplanet.Net.Protocols.KademliaProtocol.FindPeerAsync(System.Collections.Concurrent.ConcurrentBag{Libplanet.Net.BoundPeer},System.Collections.Concurrent.ConcurrentBag{Libplanet.Net.BoundPeer},Libplanet.Address,Libplanet.Net.BoundPeer,System.Int32,System.Nullable{System.TimeSpan},System.Threading.CancellationToken)"/> operation.</param>
             <param name="cancellationToken">A cancellation token used to propagate notification
             that this operation should be canceled.</param>
             <returns>An awaitable task without value.</returns>
@@ -6566,8 +6371,8 @@
             <summary>
             Waits until this <see cref="T:Libplanet.Net.Swarm`1"/> instance gets started to run.
             </summary>
-            <seealso cref="M:Libplanet.Net.NetMQTransport.WaitForRunningAsync"/>
-            <returns>A <see cref="T:System.Threading.Tasks.Task"/> completed when <see cref="P:Libplanet.Net.NetMQTransport.Running"/>
+            <seealso cref="M:Libplanet.Net.Transports.NetMQTransport.WaitForRunningAsync"/>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> completed when <see cref="P:Libplanet.Net.Transports.NetMQTransport.Running"/>
             property becomes <c>true</c>.</returns>
         </member>
         <member name="M:Libplanet.Net.Swarm`1.StartAsync(System.Int32,System.Int32,System.Threading.CancellationToken)">
@@ -6710,6 +6515,17 @@
             that this operation should be canceled.</param>
             <returns>An awaitable task without value.</returns>
         </member>
+        <member name="M:Libplanet.Net.Swarm`1.AddPeersAsync(System.Collections.Generic.IEnumerable{Libplanet.Net.Peer},System.Nullable{System.TimeSpan},System.Threading.CancellationToken)">
+            <summary>
+            Adds <paramref name="peers"/> to routing table by sending a simple message.
+            </summary>
+            <param name="peers">A list of peers to add.</param>
+            <param name="timeout">Timeout for this operation. If it is set to <c>null</c>,
+            wait infinitely until the requested operation is finished.</param>
+            <param name="cancellationToken">A cancellation token used to propagate notification
+            that this operation should be canceled.</param>
+            <returns>An awaitable task without value.</returns>
+        </member>
         <member name="P:Libplanet.Net.SwarmOptions.MaxTimeout">
             <summary>
             The maximum timeout used in <see cref="T:Libplanet.Net.Swarm`1"/>.
@@ -6749,6 +6565,243 @@
             <summary>
             The lifespan of <see cref="T:Libplanet.Net.Messages.Message"/>.
             </summary>
+        </member>
+        <member name="P:Libplanet.Net.SwarmOptions.RefreshPeriod">
+            <summary>
+            The frequency of <see cref="M:Libplanet.Net.Protocols.IProtocol.RefreshTableAsync(System.TimeSpan,System.Threading.CancellationToken)" />.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.SwarmOptions.RefreshLifespan">
+            <summary>
+            The lifespan of <see cref="T:Libplanet.Net.Peer"/> in routing table.
+            <seealso cref="M:Libplanet.Net.Protocols.IProtocol.RefreshTableAsync(System.TimeSpan,System.Threading.CancellationToken)" />
+            </summary>
+        </member>
+        <member name="T:Libplanet.Net.Transports.BoundPeerExtensions">
+            <summary>
+            This extension class activates transport-oriented methods on <see cref="T:Libplanet.Net.BoundPeer"/>.
+            </summary>
+            <seealso cref="T:Libplanet.Net.BoundPeer"/>
+        </member>
+        <member name="M:Libplanet.Net.Transports.BoundPeerExtensions.QueryAppProtocolVersion(Libplanet.Net.BoundPeer,System.Nullable{System.TimeSpan})">
+            <summary>
+            Queries <see cref="T:Libplanet.Net.AppProtocolVersion"/> of given <see cref="T:Libplanet.Net.BoundPeer"/>.
+            </summary>
+            <param name="peer">The <see cref="T:Libplanet.Net.BoundPeer"/> to query
+            <see cref="T:Libplanet.Net.AppProtocolVersion"/>.</param>
+            <param name="timeout">Timeout value for request.</param>
+            <returns><see cref="T:Libplanet.Net.AppProtocolVersion"/> of given peer. </returns>
+        </member>
+        <member name="T:Libplanet.Net.Transports.ITransport">
+            <summary>
+            An interface to handle peer-to-peer networking, including <see cref="T:Libplanet.Net.Messages.Message"/> exchanging
+            and <see cref="T:Libplanet.Net.Peer"/> managing.
+            </summary>
+        </member>
+        <member name="E:Libplanet.Net.Transports.ITransport.ProcessMessageHandler">
+            <summary>
+            The <see cref="T:System.EventHandler"/> invoked when a message that is not
+            a reply is received. To handle reply, please use <see cref=
+            "M:Libplanet.Net.Transports.ITransport.SendMessageWithReplyAsync(Libplanet.Net.BoundPeer,Libplanet.Net.Messages.Message,System.Nullable{System.TimeSpan},System.Threading.CancellationToken)"/>.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.Transports.ITransport.AsPeer">
+            <summary>
+            <see cref="T:Libplanet.Net.Peer"/> representation of <see cref="T:Libplanet.Net.Transports.ITransport"/>.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.Transports.ITransport.LastMessageTimestamp">
+            <summary>
+            The <see cref="T:System.DateTimeOffset"/> of the last message was received.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.Transports.ITransport.Running">
+            <summary>
+            Whether this <see cref="T:Libplanet.Net.Transports.ITransport"/> instance is running.
+            </summary>
+            <value>Gets the value indicates whether the instance is running.</value>
+        </member>
+        <member name="M:Libplanet.Net.Transports.ITransport.StartAsync(System.Threading.CancellationToken)">
+            <summary>
+            Initiates transport layer.
+            </summary>
+            <param name="cancellationToken">
+            A cancellation token used to propagate notification that this
+            operation should be canceled.</param>
+            <returns>An awaitable task without value.</returns>
+        </member>
+        <member name="M:Libplanet.Net.Transports.ITransport.RunAsync(System.Threading.CancellationToken)">
+            <summary>
+            Starts running transport layer. To <see cref="M:Libplanet.Net.Transports.ITransport.RunAsync(System.Threading.CancellationToken)"/>, you should call
+            <see cref="M:Libplanet.Net.Transports.ITransport.StartAsync(System.Threading.CancellationToken)"/> first.
+            </summary>
+            <param name="cancellationToken">
+            A cancellation token used to propagate notification that this
+            operation should be canceled.</param>
+            <returns>An awaitable task without value.</returns>
+        </member>
+        <member name="M:Libplanet.Net.Transports.ITransport.StopAsync(System.TimeSpan,System.Threading.CancellationToken)">
+            <summary>
+            Stops running transport layer.
+            </summary>
+            <param name="waitFor">The <see cref="T:System.TimeSpan"/> of delay
+            before actual stopping.</param>
+            <param name="cancellationToken">
+            A cancellation token used to propagate notification that this
+            operation should be canceled.</param>
+            <returns>An awaitable task without value.</returns>
+        </member>
+        <member name="M:Libplanet.Net.Transports.ITransport.SendMessageAsync(Libplanet.Net.BoundPeer,Libplanet.Net.Messages.Message,System.Threading.CancellationToken)">
+            <summary>
+            Sends the <paramref name="message"/> to given <paramref name="peer"/>.
+            </summary>
+            <param name="peer">A <see cref="T:Libplanet.Net.Peer"/> to send message to.</param>
+            <param name="message">A <see cref="T:Libplanet.Net.Messages.Message"/> to send.</param>
+            <param name="cancellationToken">
+            A cancellation token used to propagate notification that this
+            operation should be canceled.</param>
+            <returns>An awaitable task without value.</returns>
+        </member>
+        <member name="M:Libplanet.Net.Transports.ITransport.SendMessageWithReplyAsync(Libplanet.Net.BoundPeer,Libplanet.Net.Messages.Message,System.Nullable{System.TimeSpan},System.Threading.CancellationToken)">
+            <summary>
+            Sends the <paramref name="message"/>
+            to given <paramref name="peer"/> and waits for its single reply.
+            </summary>
+            <param name="peer">A <see cref="T:Libplanet.Net.Peer"/> to send message to.</param>
+            <param name="message">A <see cref="T:Libplanet.Net.Messages.Message"/> to send.</param>
+            <param name="timeout">A timeout of waiting for the reply of the message.</param>
+            <param name="cancellationToken">
+            A cancellation token used to propagate notification that this
+            operation should be canceled.</param>
+            <returns>The replies of the <paramref name="message"/>
+            sent by <paramref name="peer"/>.</returns>
+        </member>
+        <member name="M:Libplanet.Net.Transports.ITransport.SendMessageWithReplyAsync(Libplanet.Net.BoundPeer,Libplanet.Net.Messages.Message,System.Nullable{System.TimeSpan},System.Int32,System.Threading.CancellationToken)">
+            <summary>
+            Sends the <paramref name="message"/>
+            to given <paramref name="peer"/> and waits for its multiple replies.
+            </summary>
+            <param name="peer">A <see cref="T:Libplanet.Net.Peer"/> to send message to.</param>
+            <param name="message">A <see cref="T:Libplanet.Net.Messages.Message"/> to send.</param>
+            <param name="timeout">A timeout of waiting for the reply of the message.</param>
+            <param name="expectedResponses">The number of expected replies for the message.</param>
+            <param name="cancellationToken">
+            A cancellation token used to propagate notification that this
+            operation should be canceled.</param>
+            <returns>The replies of the <paramref name="message"/>
+            sent by <paramref name="peer"/>.</returns>
+        </member>
+        <member name="M:Libplanet.Net.Transports.ITransport.BroadcastMessage(System.Nullable{Libplanet.Address},Libplanet.Net.Messages.Message)">
+            <summary>
+            Broadcasts the <paramref name="message"/> to peers selected from the routing table.
+            </summary>
+            <param name="except">An <see cref="T:Libplanet.Address"/> to exclude from broadcasting.
+            If <c>null</c> is given, no peers will be excluded.</param>
+            <param name="message">A <see cref="T:Libplanet.Net.Messages.Message"/> to broadcast.</param>
+        </member>
+        <member name="M:Libplanet.Net.Transports.ITransport.ReplyMessage(Libplanet.Net.Messages.Message)">
+            <summary>
+            Replies message.
+            </summary>
+            <remarks>
+            The <see cref="P:Libplanet.Net.Messages.Message.Identity"/> of the given <paramref name="message"/> must be
+            matched to <see cref="P:Libplanet.Net.Messages.Message.Identity"/> of a message corresponding to the given
+            <paramref name="message"/>.
+            </remarks>
+            <param name="message">A <see cref="T:Libplanet.Net.Messages.Message"/> to reply.</param>
+        </member>
+        <member name="T:Libplanet.Net.Transports.NetMQTransport">
+            <summary>
+            Implementation of <see cref="T:Libplanet.Net.Transports.ITransport"/> interface using NetMQ.
+            </summary>
+        </member>
+        <member name="F:Libplanet.Net.Transports.NetMQTransport._differentAppProtocolVersionEncountered">
+            <summary>
+            The <see cref="T:System.EventHandler" /> triggered when the different version of
+            <see cref="T:Libplanet.Net.Peer" /> is discovered.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Net.Transports.NetMQTransport.#ctor(Libplanet.Net.Protocols.RoutingTable,Libplanet.Crypto.PrivateKey,Libplanet.Net.AppProtocolVersion,System.Collections.Immutable.IImmutableSet{Libplanet.Crypto.PublicKey},System.Int32,System.String,System.Nullable{System.Int32},System.Collections.Generic.IEnumerable{Libplanet.Net.IceServer},Libplanet.Net.DifferentAppProtocolVersionEncountered,System.Nullable{System.TimeSpan})">
+            <summary>
+            Creates <see cref="T:Libplanet.Net.Transports.NetMQTransport"/> instance.
+            </summary>
+            <param name="table">
+            The <see cref="T:Libplanet.Net.Protocols.RoutingTable"/> that manages <see cref="T:Libplanet.Net.Peer"/>s which are connected
+            with this <see cref="T:Libplanet.Net.Peer"/>.
+            </param>
+            <param name="privateKey"><see cref="T:Libplanet.Crypto.PrivateKey"/> of the transport layer.</param>
+            <param name="appProtocolVersion"><see cref="T:Libplanet.Net.AppProtocolVersion"/>-typed
+            version of the transport layer.</param>
+            <param name="trustedAppProtocolVersionSigners"><see cref="T:Libplanet.Crypto.PublicKey"/>s of parties
+            to trust <see cref="T:Libplanet.Net.AppProtocolVersion"/>s they signed.  To trust any party, pass
+            <c>null</c>.</param>
+            <param name="workers">The number of background workers (i.e., threads).</param>
+            <param name="host">A hostname to be a part of a public endpoint, that peers use when
+            they connect to this node.  Note that this is not a hostname to listen to;
+            <see cref="T:Libplanet.Net.Transports.NetMQTransport"/> always listens to 0.0.0.0 &amp; ::/0.</param>
+            <param name="listenPort">A port number to listen to.</param>
+            <param name="iceServers">
+            <a href="https://en.wikipedia.org/wiki/Interactive_Connectivity_Establishment">ICE</a>
+            servers to use for TURN/STUN.  Purposes to traverse NAT.</param>
+            <param name="differentAppProtocolVersionEncountered">A delegate called back when a peer
+            with one different from <paramref name="appProtocolVersion"/>, and their version is
+            signed by a trusted party (i.e., <paramref name="trustedAppProtocolVersionSigners"/>).
+            If this callback returns <c>false</c>, an encountered peer is ignored.  If this callback
+            is omitted, all peers with different <see cref="T:Libplanet.Net.AppProtocolVersion"/>s are ignored.
+            </param>
+            <param name="messageLifespan">
+            The lifespan of a message.
+            Messages generated before this value from the current time are ignored.
+            If <c>null</c> is given, messages will not be ignored by its timestamp.</param>
+            <exception cref="T:System.ArgumentException">Thrown when both <paramref name="host"/> and
+            <paramref name="iceServers"/> are <c>null</c>.</exception>
+        </member>
+        <member name="E:Libplanet.Net.Transports.NetMQTransport.ProcessMessageHandler">
+            <inheritdoc />
+        </member>
+        <member name="P:Libplanet.Net.Transports.NetMQTransport.AsPeer">
+            <inheritdoc cref="P:Libplanet.Net.Transports.ITransport.AsPeer"/>
+        </member>
+        <member name="P:Libplanet.Net.Transports.NetMQTransport.LastMessageTimestamp">
+            <inheritdoc cref="P:Libplanet.Net.Transports.ITransport.LastMessageTimestamp"/>
+        </member>
+        <member name="P:Libplanet.Net.Transports.NetMQTransport.Running">
+            <inheritdoc cref="P:Libplanet.Net.Transports.ITransport.Running"/>
+        </member>
+        <member name="M:Libplanet.Net.Transports.NetMQTransport.StartAsync(System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:Libplanet.Net.Transports.NetMQTransport.RunAsync(System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:Libplanet.Net.Transports.NetMQTransport.StopAsync(System.TimeSpan,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:Libplanet.Net.Transports.NetMQTransport.Dispose">
+            <inheritdoc />
+        </member>
+        <member name="M:Libplanet.Net.Transports.NetMQTransport.WaitForRunningAsync">
+            <summary>
+            Waits until this <see cref="T:Libplanet.Net.Transports.NetMQTransport"/> instance gets started to run.
+            </summary>
+            <seealso cref="M:Libplanet.Net.Swarm`1.WaitForRunningAsync"/>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> completed when <see cref="P:Libplanet.Net.Transports.NetMQTransport.Running"/>
+            property becomes <c>true</c>.</returns>
+        </member>
+        <member name="M:Libplanet.Net.Transports.NetMQTransport.SendMessageAsync(Libplanet.Net.BoundPeer,Libplanet.Net.Messages.Message,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:Libplanet.Net.Transports.NetMQTransport.SendMessageWithReplyAsync(Libplanet.Net.BoundPeer,Libplanet.Net.Messages.Message,System.Nullable{System.TimeSpan},System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:Libplanet.Net.Transports.NetMQTransport.SendMessageWithReplyAsync(Libplanet.Net.BoundPeer,Libplanet.Net.Messages.Message,System.Nullable{System.TimeSpan},System.Int32,System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:Libplanet.Net.Transports.NetMQTransport.BroadcastMessage(System.Nullable{Libplanet.Address},Libplanet.Net.Messages.Message)">
+            <inheritdoc />
+        </member>
+        <member name="M:Libplanet.Net.Transports.NetMQTransport.ReplyMessage(Libplanet.Net.Messages.Message)">
+            <inheritdoc />
         </member>
         <member name="T:Libplanet.Nonce">
             <summary>

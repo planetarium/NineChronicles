@@ -10,7 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6e3e95a05e4c9774397eeeb7bdee8ccb, type: 3}
-  m_Name: Skill_01
+  m_Name: Attack_02
   m_EditorClassIdentifier: 
+<<<<<<< HEAD:nekoyume/Assets/AddressableAssets/Character/Monster/201005/ReferenceAssets/Attack_02.asset
+  skeletonDataAsset: {fileID: 11400000, guid: bca6df1c362346f40bfd57efc9d9c909, type: 2}
+  animationName: Attack_02
+=======
   skeletonDataAsset: {fileID: 11400000, guid: 7064db2da82a89b40ac2470a7cc59bc0, type: 2}
   animationName: Skill_01
+>>>>>>> development:nekoyume/Assets/AddressableAssets/Character/Monster/206007/ReferenceAssets/Skill_01.asset
