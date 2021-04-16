@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Linq;
 using Nekoyume.Battle;
+using Nekoyume.EnumType;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Stat;
 using Nekoyume.Model.State;
@@ -15,6 +16,8 @@ namespace Nekoyume.UI
 {
     public class FriendInfoPopup : PopupWidget
     {
+        public override WidgetType WidgetType => WidgetType.Tooltip;
+
         private const string NicknameTextFormat = "<color=#B38271>Lv.{0}</color=> {1}";
 
         [SerializeField]
