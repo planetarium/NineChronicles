@@ -1,5 +1,5 @@
-using System.Security.Cryptography;
 using Libplanet;
+using Libplanet.Blocks;
 using TMPro;
 using UniRx;
 
@@ -10,7 +10,7 @@ namespace Nekoyume.UI
         public TextMeshProUGUI informationText;
         private int _version;
         private long _blockIndex;
-        private HashDigest<SHA256> _hash;
+        private BlockHash _hash;
 
         protected override void Awake()
         {
@@ -31,7 +31,7 @@ namespace Nekoyume.UI
             UpdateText();
         }
 
-        private void SubscribeBlockHash(HashDigest<SHA256> hash)
+        private void SubscribeBlockHash(BlockHash hash)
         {
             _hash = hash;
             UpdateText();
