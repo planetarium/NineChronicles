@@ -86,5 +86,9 @@ namespace Lib9c
         public const string StartedBlockIndexKey = "sbi";
         public const string ReceivedBlockIndexKey = "rbi2";
         public const string StakingRoundKey = "s";
+        public const string AvatarAddressKey = "aa";
+        public const string RewardLevelKey = "rl";
+        public const string RewardMapKey = "rm";
+        public const string EndKey = "ed";
     }
 }

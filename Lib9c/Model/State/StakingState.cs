@@ -24,18 +24,24 @@ namespace Nekoyume.Model.State
         }
 
         public const string DeriveFormat = "staking-{0}";
-        public const long ExpirationIndex = 16000;
+        public const long ExpirationIndex = RewardInterval * RewardCapacity;
+        public const int RewardCapacity = 4;
+        public const long RewardInterval = 40000;
 
         public int Level { get; private set; }
         public long ExpiredBlockIndex { get; private set; }
         public long StartedBlockIndex { get; private set; }
         public long ReceivedBlockIndex { get; private set; }
+        public long RewardLevel { get; private set; }
+        public Dictionary<long, Address> RewardMap { get; private set; }
+        public bool End { get; private set; }
 
         public StakingState(Address address, int level, long blockIndex) : base(address)
         {
             Level = level;
             StartedBlockIndex = blockIndex;
             ExpiredBlockIndex = blockIndex + ExpirationIndex;
+            RewardMap = new Dictionary<long, Address>();
         }
 
         public StakingState(Dictionary serialized) : base(serialized)
@@ -44,11 +50,36 @@ namespace Nekoyume.Model.State
             ExpiredBlockIndex = serialized[ExpiredBlockIndexKey].ToLong();
             StartedBlockIndex = serialized[StartedBlockIndexKey].ToLong();
             ReceivedBlockIndex = serialized[ReceivedBlockIndexKey].ToLong();
+            RewardLevel = serialized[RewardLevelKey].ToLong();
+            RewardMap = ((Dictionary) serialized[RewardMapKey]).ToDictionary(
+                kv => kv.Key.ToLong(),
+                kv => kv.Value.ToAddress()
+            );
+            End = serialized[EndKey].ToBoolean();
         }
 
         public void Update(int level)
         {
             Level = level;
+        }
+
+        public void UpdateRewardMap(long rewardLevel, Address avatarAddress, long blockIndex)
+        {
+            if (rewardLevel < 0 || rewardLevel > RewardCapacity)
+            {
+                throw new ArgumentOutOfRangeException(nameof(rewardLevel),
+                    $"reward level must be greater than 0 and less than {RewardCapacity}.");
+            }
+
+            if (RewardMap.ContainsKey(rewardLevel))
+            {
+                throw new AlreadyReceivedException("");
+            }
+
+            RewardMap[rewardLevel] = avatarAddress;
+            RewardLevel = rewardLevel;
+            ReceivedBlockIndex = blockIndex;
+            End = rewardLevel == 4;
         }
 
         public override IValue Serialize()
@@ -60,14 +91,27 @@ namespace Nekoyume.Model.State
                 [(Text) ExpiredBlockIndexKey] = ExpiredBlockIndex.Serialize(),
                 [(Text) StartedBlockIndexKey] = StartedBlockIndex.Serialize(),
                 [(Text) ReceivedBlockIndexKey] = ReceivedBlockIndex.Serialize(),
+                [(Text) RewardLevelKey] = RewardLevel.Serialize(),
+                [(Text) RewardMapKey] = new Dictionary(
+                    RewardMap.Select(
+                        kv => new KeyValuePair<IKey, IValue>(
+                            (IKey) kv.Key.Serialize(),
+                            kv.Value.Serialize()
+                        )
+                    )
+                ),
+                [(Text) EndKey] = End.Serialize(),
             }.Union((Dictionary) base.Serialize()));
 #pragma warning restore LAA1002
         }
 
         protected bool Equals(StakingState other)
         {
+#pragma warning disable LAA1002
             return Level == other.Level && ExpiredBlockIndex == other.ExpiredBlockIndex &&
-                   StartedBlockIndex == other.StartedBlockIndex && ReceivedBlockIndex == other.ReceivedBlockIndex;
+                   StartedBlockIndex == other.StartedBlockIndex && ReceivedBlockIndex == other.ReceivedBlockIndex &&
+                   RewardLevel == other.RewardLevel && RewardMap.SequenceEqual(other.RewardMap) && End == other.End;
+#pragma warning restore LAA1002
         }
 
         public override bool Equals(object obj)
@@ -86,6 +130,9 @@ namespace Nekoyume.Model.State
                 hashCode = (hashCode * 397) ^ ExpiredBlockIndex.GetHashCode();
                 hashCode = (hashCode * 397) ^ StartedBlockIndex.GetHashCode();
                 hashCode = (hashCode * 397) ^ ReceivedBlockIndex.GetHashCode();
+                hashCode = (hashCode * 397) ^ RewardLevel.GetHashCode();
+                hashCode = (hashCode * 397) ^ (RewardMap != null ? RewardMap.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ End.GetHashCode();
                 return hashCode;
             }
         }
