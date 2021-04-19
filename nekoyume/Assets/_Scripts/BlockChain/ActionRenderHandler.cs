@@ -580,6 +580,8 @@ namespace Nekoyume.BlockChain
                         return;
                     }
 
+                    // Make buyer name with hash
+                    // Reference AvatarState.PostConstructor()
                     const string nameWithHashFormat = "{0} <size=80%><color=#A68F7E>#{1}</color></size>";
                     var buyerNameWithHash = string.Format(
                         nameWithHashFormat,
