@@ -1,12 +1,16 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using Libplanet;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
+using Nekoyume.Model.Stat;
+using Nekoyume.Model.State;
 using Nekoyume.State;
-using Nekoyume.State.Subjects;
+using Nekoyume.UI.Model;
 using TMPro;
 using UniRx;
 using UnityEngine;
@@ -17,33 +21,6 @@ namespace Nekoyume.UI.Module
 {
     public class ShopItems : MonoBehaviour
     {
-        // Select in ItemSubType
-        public enum ItemSubTypeFilter
-        {
-            All,
-            Weapon,
-            Armor,
-            Belt,
-            Necklace,
-            Ring,
-            Food,
-            FullCostume,
-            HairCostume,
-            EarCostume,
-            EyeCostume,
-            TailCostume,
-            Title,
-        }
-
-        public enum SortFilter
-        {
-            Class,
-            CP,
-            Price,
-        }
-
-        public const int shopItemsCountOfOnePage = 20;
-
         public List<ShopItemView> items;
 
         [SerializeField]
@@ -76,7 +53,6 @@ namespace Nekoyume.UI.Module
         public Model.ShopItems SharedModel { get; private set; }
 
         #region Mono
-
         private void Awake()
         {
             SharedModel = new Model.ShopItems();
@@ -98,7 +74,11 @@ namespace Nekoyume.UI.Module
                     ItemSubTypeFilter.Belt,
                     ItemSubTypeFilter.Necklace,
                     ItemSubTypeFilter.Ring,
-                    ItemSubTypeFilter.Food,
+                    ItemSubTypeFilter.Food_HP,
+                    ItemSubTypeFilter.Food_ATK,
+                    ItemSubTypeFilter.Food_DEF,
+                    ItemSubTypeFilter.Food_CRI,
+                    ItemSubTypeFilter.Food_HIT,
                     ItemSubTypeFilter.FullCostume,
                     ItemSubTypeFilter.HairCostume,
                     ItemSubTypeFilter.EarCostume,
@@ -106,12 +86,9 @@ namespace Nekoyume.UI.Module
                     ItemSubTypeFilter.TailCostume,
                     ItemSubTypeFilter.Title,
                 }
-                .Select(type => type == ItemSubTypeFilter.All
-                    ? L10nManager.Localize("ALL")
-                    : ((ItemSubType) Enum.Parse(typeof(ItemSubType), type.ToString()))
-                    .GetLocalizedString())
-                .ToList());
+                .Select(x => x.TypeToString()).ToList());
             itemSubTypeFilter.onValueChanged.AsObservable()
+                // .Select(index => (ItemSubTypeFilter) index)
                 .Select(index =>
                 {
                     try
@@ -126,7 +103,7 @@ namespace Nekoyume.UI.Module
                 .Subscribe(filter =>
                 {
                     SharedModel.itemSubTypeFilter = filter;
-                    OnItemSubTypeFilterChanged(SharedModel.itemSubTypeFilter);
+                    OnItemSubTypeFilterChanged();
                 })
                 .AddTo(gameObject);
 
@@ -280,7 +257,7 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        private void OnItemSubTypeFilterChanged(ItemSubTypeFilter filter)
+        private void OnItemSubTypeFilterChanged()
         {
             SharedModel.ResetAgentProducts();
             SharedModel.ResetItemSubTypeProducts();

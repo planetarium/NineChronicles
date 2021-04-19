@@ -4,9 +4,12 @@ using System.Linq;
 using Libplanet;
 using Nekoyume.Battle;
 using Nekoyume.Model.Item;
+using Nekoyume.Model.Stat;
 using Nekoyume.Model.State;
+using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using UniRx;
+using ShopItem = Nekoyume.Model.Item.ShopItem;
 
 namespace Nekoyume.State
 {
@@ -23,24 +26,30 @@ namespace Nekoyume.State
         }
 
         public static readonly ReactiveProperty<Dictionary<
-                Address, Dictionary<
-                    ShopItems.ItemSubTypeFilter, Dictionary<
-                        ShopItems.SortFilter, Dictionary<int, List<ShopItem>>>>>>
+                Address, Dictionary<ItemSubTypeFilter, Dictionary<
+                        SortFilter, Dictionary<int, List<ShopItem>>>>>>
             AgentProducts =
                 new ReactiveProperty<Dictionary<
                     Address, Dictionary<
-                        ShopItems.ItemSubTypeFilter,
-                        Dictionary<ShopItems.SortFilter, Dictionary<int, List<ShopItem>>>>>>();
+                        ItemSubTypeFilter,
+                        Dictionary<SortFilter, Dictionary<int, List<ShopItem>>>>>>();
 
         public static readonly ReactiveProperty<IReadOnlyDictionary<
-                ShopItems.ItemSubTypeFilter, Dictionary<
-                    ShopItems.SortFilter, Dictionary<int, List<ShopItem>>>>>
+                ItemSubTypeFilter, Dictionary<
+                    SortFilter, Dictionary<int, List<ShopItem>>>>>
             ItemSubTypeProducts = new ReactiveProperty<IReadOnlyDictionary<
-                ShopItems.ItemSubTypeFilter, Dictionary<
-                    ShopItems.SortFilter, Dictionary<int, List<ShopItem>>>>>();
+                ItemSubTypeFilter, Dictionary<
+                    SortFilter, Dictionary<int, List<ShopItem>>>>>();
 
-        public static void Initialize(ShopState state)
+        private static int _shopItemsPerPage = 24;
+
+        public static readonly Dictionary<Guid, List<Nekoyume.UI.Model.ShopItem>> PurchaseHistory =
+            new Dictionary<Guid, List<Nekoyume.UI.Model.ShopItem>>();
+
+        public static void Initialize(ShopState state, int shopItemsPerPage)
         {
+            _shopItemsPerPage = shopItemsPerPage;
+
             if (state is null)
             {
                 return;
@@ -64,8 +73,8 @@ namespace Nekoyume.State
 
                 var filteredAgentProducts = new Dictionary<
                     Address, Dictionary<
-                        ShopItems.ItemSubTypeFilter, Dictionary<
-                            ShopItems.SortFilter, Dictionary<int, List<ShopItem>>>>>();
+                        ItemSubTypeFilter, Dictionary<
+                            SortFilter, Dictionary<int, List<ShopItem>>>>>();
                 foreach (var pair in agentProducts)
                 {
                     filteredAgentProducts.Add(
@@ -86,16 +95,23 @@ namespace Nekoyume.State
         }
 
         private static Dictionary<
-                ShopItems.ItemSubTypeFilter, Dictionary<
-                    ShopItems.SortFilter, Dictionary<int, List<ShopItem>>>>
+                ItemSubTypeFilter, Dictionary<
+                    SortFilter, Dictionary<int, List<ShopItem>>>>
             GetGroupedShopItemsByItemSubTypeFilter(IReadOnlyCollection<ShopItem> shopItems)
         {
+            var equipment = new List<ShopItem>();
+            var food = new List<ShopItem>();
+            var costume = new List<ShopItem>();
             var weapons = new List<ShopItem>();
             var armors = new List<ShopItem>();
             var belts = new List<ShopItem>();
             var necklaces = new List<ShopItem>();
             var rings = new List<ShopItem>();
-            var foods = new List<ShopItem>();
+            var foodsHp = new List<ShopItem>();
+            var foodsAtk = new List<ShopItem>();
+            var foodsDef = new List<ShopItem>();
+            var foodsCri = new List<ShopItem>();
+            var foodsHit = new List<ShopItem>();
             var fullCostumes = new List<ShopItem>();
             var hairCostumes = new List<ShopItem>();
             var earCostumes = new List<ShopItem>();
@@ -107,30 +123,55 @@ namespace Nekoyume.State
             {
                 if (shopItem.ItemUsable != null)
                 {
-                    switch (shopItem.ItemUsable.ItemSubType)
+                    if (shopItem.ItemUsable.ItemSubType == ItemSubType.Food)
                     {
-                        case ItemSubType.Weapon:
-                            weapons.Add(shopItem);
-                            break;
-                        case ItemSubType.Armor:
-                            armors.Add(shopItem);
-                            break;
-                        case ItemSubType.Belt:
-                            belts.Add(shopItem);
-                            break;
-                        case ItemSubType.Necklace:
-                            necklaces.Add(shopItem);
-                            break;
-                        case ItemSubType.Ring:
-                            rings.Add(shopItem);
-                            break;
-                        case ItemSubType.Food:
-                            foods.Add(shopItem);
-                            break;
+                        food.Add(shopItem);
+                        var state = shopItem.ItemUsable.StatsMap.GetStats().First();
+                        switch (state.StatType)
+                        {
+                            case StatType.HP:
+                                foodsHp.Add(shopItem);
+                                break;
+                            case StatType.ATK:
+                                foodsAtk.Add(shopItem);
+                                break;
+                            case StatType.DEF:
+                                foodsDef.Add(shopItem);
+                                break;
+                            case StatType.CRI:
+                                foodsCri.Add(shopItem);
+                                break;
+                            case StatType.HIT:
+                                foodsHit.Add(shopItem);
+                                break;
+                        }
+                    }
+                    else
+                    {
+                        equipment.Add(shopItem);
+                        switch (shopItem.ItemUsable.ItemSubType)
+                        {
+                            case ItemSubType.Weapon:
+                                weapons.Add(shopItem);
+                                break;
+                            case ItemSubType.Armor:
+                                armors.Add(shopItem);
+                                break;
+                            case ItemSubType.Belt:
+                                belts.Add(shopItem);
+                                break;
+                            case ItemSubType.Necklace:
+                                necklaces.Add(shopItem);
+                                break;
+                            case ItemSubType.Ring:
+                                rings.Add(shopItem);
+                                break;
+                        }
                     }
                 }
                 else if (shopItem.Costume != null)
                 {
+                    costume.Add(shopItem);
                     switch (shopItem.Costume.ItemSubType)
                     {
                         case ItemSubType.FullCostume:
@@ -155,76 +196,48 @@ namespace Nekoyume.State
                 }
             }
 
-            return GetGroupedShopItemsByItemSubTypeFilter(
-                shopItems,
-                weapons,
-                armors,
-                belts,
-                necklaces,
-                rings,
-                foods,
-                fullCostumes,
-                hairCostumes,
-                earCostumes,
-                eyeCostumes,
-                tailCostumes,
-                titles);
-        }
-
-        private static Dictionary<
-                ShopItems.ItemSubTypeFilter, Dictionary<
-                    ShopItems.SortFilter, Dictionary<int, List<ShopItem>>>>
-            GetGroupedShopItemsByItemSubTypeFilter(
-                IReadOnlyCollection<ShopItem> all,
-                IReadOnlyCollection<ShopItem> weapons,
-                IReadOnlyCollection<ShopItem> armors,
-                IReadOnlyCollection<ShopItem> belts,
-                IReadOnlyCollection<ShopItem> necklaces,
-                IReadOnlyCollection<ShopItem> rings,
-                IReadOnlyCollection<ShopItem> foods,
-                IReadOnlyCollection<ShopItem> fullCostumes,
-                IReadOnlyCollection<ShopItem> hairCostumes,
-                IReadOnlyCollection<ShopItem> earCostumes,
-                IReadOnlyCollection<ShopItem> eyeCostumes,
-                IReadOnlyCollection<ShopItem> tailCostumes,
-                IReadOnlyCollection<ShopItem> titles)
-        {
-            return new Dictionary<
-                ShopItems.ItemSubTypeFilter, Dictionary<
-                    ShopItems.SortFilter, Dictionary<int, List<ShopItem>>>>
+            var groupedShopItems = new Dictionary<
+                ItemSubTypeFilter, Dictionary<SortFilter, Dictionary<int, List<ShopItem>>>>
             {
-                {ShopItems.ItemSubTypeFilter.All, GetGroupedShopItemsBySortFilter(all)},
-                {ShopItems.ItemSubTypeFilter.Weapon, GetGroupedShopItemsBySortFilter(weapons)},
-                {ShopItems.ItemSubTypeFilter.Armor, GetGroupedShopItemsBySortFilter(armors)},
-                {ShopItems.ItemSubTypeFilter.Belt, GetGroupedShopItemsBySortFilter(belts)},
-                {ShopItems.ItemSubTypeFilter.Necklace, GetGroupedShopItemsBySortFilter(necklaces)},
-                {ShopItems.ItemSubTypeFilter.Ring, GetGroupedShopItemsBySortFilter(rings)},
-                {ShopItems.ItemSubTypeFilter.Food, GetGroupedShopItemsBySortFilter(foods)},
-                {ShopItems.ItemSubTypeFilter.FullCostume, GetGroupedShopItemsBySortFilter(fullCostumes)},
-                {ShopItems.ItemSubTypeFilter.HairCostume, GetGroupedShopItemsBySortFilter(hairCostumes)},
-                {ShopItems.ItemSubTypeFilter.EarCostume, GetGroupedShopItemsBySortFilter(earCostumes)},
-                {ShopItems.ItemSubTypeFilter.EyeCostume, GetGroupedShopItemsBySortFilter(eyeCostumes)},
-                {ShopItems.ItemSubTypeFilter.TailCostume, GetGroupedShopItemsBySortFilter(tailCostumes)},
-                {ShopItems.ItemSubTypeFilter.Title, GetGroupedShopItemsBySortFilter(titles)},
+                {ItemSubTypeFilter.All, GetGroupedShopItemsBySortFilter(shopItems)},
+                // {ItemSubTypeFilter.Equipment, GetGroupedShopItemsBySortFilter(equipment)},
+                // {ItemSubTypeFilter.Food, GetGroupedShopItemsBySortFilter(food)},
+                // {ItemSubTypeFilter.Costume, GetGroupedShopItemsBySortFilter(costume)},
+                {ItemSubTypeFilter.Weapon, GetGroupedShopItemsBySortFilter(weapons)},
+                {ItemSubTypeFilter.Armor, GetGroupedShopItemsBySortFilter(armors)},
+                {ItemSubTypeFilter.Belt, GetGroupedShopItemsBySortFilter(belts)},
+                {ItemSubTypeFilter.Necklace, GetGroupedShopItemsBySortFilter(necklaces)},
+                {ItemSubTypeFilter.Ring, GetGroupedShopItemsBySortFilter(rings)},
+                {ItemSubTypeFilter.Food_HP, GetGroupedShopItemsBySortFilter(foodsHp)},
+                {ItemSubTypeFilter.Food_ATK, GetGroupedShopItemsBySortFilter(foodsAtk)},
+                {ItemSubTypeFilter.Food_DEF, GetGroupedShopItemsBySortFilter(foodsDef)},
+                {ItemSubTypeFilter.Food_CRI, GetGroupedShopItemsBySortFilter(foodsCri)},
+                {ItemSubTypeFilter.Food_HIT, GetGroupedShopItemsBySortFilter(foodsHit)},
+                {ItemSubTypeFilter.FullCostume, GetGroupedShopItemsBySortFilter(fullCostumes)},
+                {ItemSubTypeFilter.HairCostume, GetGroupedShopItemsBySortFilter(hairCostumes)},
+                {ItemSubTypeFilter.EarCostume, GetGroupedShopItemsBySortFilter(earCostumes)},
+                {ItemSubTypeFilter.EyeCostume, GetGroupedShopItemsBySortFilter(eyeCostumes)},
+                {ItemSubTypeFilter.TailCostume, GetGroupedShopItemsBySortFilter(tailCostumes)},
+                {ItemSubTypeFilter.Title, GetGroupedShopItemsBySortFilter(titles)},
             };
+            return groupedShopItems;
         }
 
-        private static Dictionary<ShopItems.SortFilter, Dictionary<int, List<ShopItem>>>
+        private static Dictionary<SortFilter, Dictionary<int, List<ShopItem>>>
             GetGroupedShopItemsBySortFilter(IReadOnlyCollection<ShopItem> shopItems)
         {
-
-            return new Dictionary<ShopItems.SortFilter, Dictionary<int, List<ShopItem>>>
+            return new Dictionary<SortFilter, Dictionary<int, List<ShopItem>>>
             {
                 {
-                    ShopItems.SortFilter.Class,
+                    SortFilter.Class,
                     GetGroupedShopItemsByPage(GetSortedShopItems(shopItems, SortType.Grade))
                 },
                 {
-                    ShopItems.SortFilter.CP,
+                    SortFilter.CP,
                     GetGroupedShopItemsByPage(GetSortedShopItems(shopItems, SortType.Cp))
                 },
                 {
-                    ShopItems.SortFilter.Price,
+                    SortFilter.Price,
                     GetGroupedShopItemsByPage(shopItems
                         .OrderByDescending(shopItem => shopItem.Price)
                         .ToList())
@@ -268,8 +281,7 @@ namespace Nekoyume.State
             throw new ArgumentOutOfRangeException(nameof(type), type, null);
         }
 
-        private static Dictionary<int, List<ShopItem>> GetGroupedShopItemsByPage(
-            List<ShopItem> shopItems)
+        private static Dictionary<int, List<ShopItem>> GetGroupedShopItemsByPage(List<ShopItem> shopItems)
         {
             var result = new Dictionary<int, List<ShopItem>>();
             var remainCount = shopItems.Count;
@@ -277,7 +289,7 @@ namespace Nekoyume.State
             var pageIndex = 0;
             while (remainCount > 0)
             {
-                var getCount = Math.Min(ShopItems.shopItemsCountOfOnePage, remainCount);
+                var getCount = Math.Min(_shopItemsPerPage, remainCount);
                 var getList = shopItems.GetRange(listIndex, getCount);
                 result.Add(pageIndex, getList);
                 remainCount -= getCount;

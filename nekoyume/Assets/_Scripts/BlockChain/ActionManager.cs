@@ -218,18 +218,20 @@ namespace Nekoyume.BlockChain
                 .DoOnError(e => HandleException(action.Id, e));
         }
 
-        public IObservable<ActionBase.ActionEvaluation<Sell3>> Sell(INonFungibleItem item, FungibleAssetValue price)
+        public IObservable<ActionBase.ActionEvaluation<Sell3>> Sell(Guid itemId,
+                                                                   FungibleAssetValue price,
+                                                                   ItemSubType itemSubType)
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
 
             // NOTE: 장착했는지 안 했는지에 상관없이 해제 플래그를 걸어 둔다.
-            LocalLayerModifier.SetItemEquip(avatarAddress, item.ItemId, false, false);
+            LocalLayerModifier.SetItemEquip(avatarAddress, itemId, false, false);
 
             var action = new Sell3
             {
                 sellerAvatarAddress = avatarAddress,
-                itemId = item.ItemId,
-                price = price
+                itemId = itemId,
+                price = price,
             };
             ProcessAction(action);
 
@@ -244,7 +246,8 @@ namespace Nekoyume.BlockChain
 
         public IObservable<ActionBase.ActionEvaluation<SellCancellation4>> SellCancellation(
             Address sellerAvatarAddress,
-            Guid productId)
+            Guid productId,
+            ItemSubType itemSubType)
         {
             var action = new SellCancellation4
             {
@@ -262,19 +265,17 @@ namespace Nekoyume.BlockChain
                 .DoOnError(e => HandleException(action.Id, e)); // Last() is for completion
         }
 
-        public IObservable<ActionBase.ActionEvaluation<Buy4>> Buy(Address sellerAgentAddress,
-            Address sellerAvatarAddress, Guid productId)
+        public IObservable<ActionBase.ActionEvaluation<BuyMultiple>> BuyMultiple(IEnumerable<BuyMultiple.PurchaseInfo> purchaseInfos,
+            List<Nekoyume.UI.Model.ShopItem> shopItems)
         {
-            var action = new Buy4
+            var action = new BuyMultiple
             {
                 buyerAvatarAddress = States.Instance.CurrentAvatarState.address,
-                sellerAgentAddress = sellerAgentAddress,
-                sellerAvatarAddress = sellerAvatarAddress,
-                productId = productId
+                purchaseInfos = purchaseInfos
             };
+            ReactiveShopState.PurchaseHistory.Add(action.Id, shopItems);
             ProcessAction(action);
-
-            return _renderer.EveryRender<Buy4>()
+            return _renderer.EveryRender<BuyMultiple>()
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .Take(1)
                 .Last()

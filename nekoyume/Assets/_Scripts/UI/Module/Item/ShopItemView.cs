@@ -27,7 +27,13 @@ namespace Nekoyume.UI.Module
 
         public override void Clear()
         {
+            if (Model != null)
+            {
+                Model.Selected.Value = false;
+            }
+
             base.Clear();
+
             SetBg(0f);
             priceGroup.SetActive(false);
         }

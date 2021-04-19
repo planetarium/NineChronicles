@@ -1,8 +1,10 @@
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Linq;
 using DG.Tweening;
+using Libplanet;
 using Libplanet.Assets;
 using mixpanel;
 using Nekoyume.BlockChain;
@@ -159,8 +161,15 @@ namespace Nekoyume.UI
 
             var task = Task.Run(() =>
             {
-                States.Instance.SetShopState(new ShopState(
-                    (Bencodex.Types.Dictionary) Game.Game.instance.Agent.GetState(Addresses.Shop)));
+                // ItemSubType itemSubType = ItemSubType.Weapon;
+                // List<Nekoyume.Model.Item.ShopItem> products = new List<Nekoyume.Model.Item.ShopItem>();
+                // foreach (var addressKey in ShardedShopState.AddressKeys)
+                // {
+                //     Address address = ShardedShopState.DeriveAddress(itemSubType, addressKey);
+                //     ShardedShopState shardedShopState = new ShardedShopState(Game.Game.instance.Agent.GetState(address));
+                //     products.AddRange(shardedShopState.Products.Values.ToList());
+                // }
+                // ReactiveShopState.Initialize(20);
                 return true;
             });
             var result = await task;
@@ -499,10 +508,10 @@ namespace Nekoyume.UI
                 };
                 Mixpanel.Track("Unity/Buy", props);
 
-                Game.Game.instance.ActionManager.Buy(
-                    shopItem.SellerAgentAddress.Value,
-                    shopItem.SellerAvatarAddress.Value,
-                    shopItem.ProductId.Value);
+                // Game.Game.instance.ActionManager.Buy(
+                //     shopItem.SellerAgentAddress.Value,
+                //     shopItem.SellerAvatarAddress.Value,
+                //     shopItem.ProductId.Value);
                 ResponseBuy(shopItem);
             }
             else
@@ -516,9 +525,9 @@ namespace Nekoyume.UI
                         throw new InvalidSellingPriceException(data);
                     }
 
-                    Game.Game.instance.ActionManager.Sell(
-                        (INonFungibleItem)data.Item.Value.ItemBase.Value,
-                        data.Price.Value);
+                    var itemId = ((INonFungibleItem) data.Item.Value.ItemBase.Value).ItemId;
+                    var itemSubType = data.Item.Value.ItemBase.Value.ItemSubType;
+                    Game.Game.instance.ActionManager.Sell(itemId, data.Price.Value, itemSubType);
                     ResponseSell();
 
                     return;
@@ -526,7 +535,8 @@ namespace Nekoyume.UI
 
                 Game.Game.instance.ActionManager.SellCancellation(
                     shopItem.SellerAvatarAddress.Value,
-                    shopItem.ProductId.Value);
+                    shopItem.ProductId.Value,
+                    shopItem.ItemSubType.Value);
                 ResponseSellCancellation(shopItem);
             }
         }
@@ -633,15 +643,6 @@ namespace Nekoyume.UI
 
             var productId = shopItem.ProductId.Value;
 
-            try
-            {
-                States.Instance.ShopState.Unregister(productId);
-            }
-            catch (FailedToUnregisterInShopStateException e)
-            {
-                Debug.LogError(e.Message);
-            }
-
             shopItems.SharedModel.RemoveAgentProduct(productId);
 
             AudioController.instance.PlaySfx(AudioController.SfxCode.InputItem);
@@ -658,14 +659,6 @@ namespace Nekoyume.UI
             var productId = shopItem.ProductId.Value;
 
             LocalLayerModifier.ModifyAgentGold(buyerAgentAddress, -shopItem.Price.Value);
-            try
-            {
-                States.Instance.ShopState.Unregister(productId);
-            }
-            catch (FailedToUnregisterInShopStateException e)
-            {
-                Debug.LogError(e.Message);
-            }
             shopItems.SharedModel.RemoveItemSubTypeProduct(productId);
 
             AudioController.instance.PlaySfx(AudioController.SfxCode.BuyItem);
