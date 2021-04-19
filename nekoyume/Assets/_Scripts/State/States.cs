@@ -21,7 +21,6 @@ namespace Nekoyume.State
         public static States Instance => Game.Game.instance.States;
 
         public readonly Dictionary<Address, RankingMapState> RankingMapStates = new Dictionary<Address, RankingMapState>();
-
         public ShopState ShopState { get; private set; }
 
         public WeeklyArenaState WeeklyArenaState { get; private set; }
@@ -69,7 +68,7 @@ namespace Nekoyume.State
         /// 샵 상태를 할당한다.
         /// </summary>
         /// <param name="state"></param>
-        public void SetShopState(ShopState state)
+        public void SetShopState(ShopState state, int shopItemsPerPage = 24)
         {
             if (state is null)
             {
@@ -78,7 +77,7 @@ namespace Nekoyume.State
             }
 
             ShopState = state;
-            ReactiveShopState.Initialize(ShopState);
+            ReactiveShopState.Initialize(ShopState, shopItemsPerPage);
         }
 
         public void SetWeeklyArenaState(WeeklyArenaState state)
@@ -218,7 +217,6 @@ namespace Nekoyume.State
             var avatarState = _avatarStates[CurrentAvatarKey];
             LocalLayer.Instance.InitializeCurrentAvatarState(avatarState);
             UpdateCurrentAvatarState(avatarState, initializeReactiveState);
-            Widget.Find<Combination>().LoadRecipeVFXSkipMap();
 
             if (isNew)
             {

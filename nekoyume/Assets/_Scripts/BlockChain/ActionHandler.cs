@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using Bencodex.Types;
 using Libplanet;
@@ -103,14 +102,6 @@ namespace Nekoyume.BlockChain
             //전투중이면 게임에서의 아바타상태를 바로 업데이트하지말고 쌓아둔다.
             var avatarState = evaluation.OutputStates.GetAvatarState(States.Instance.CurrentAvatarState.address);
             UpdateCurrentAvatarState(avatarState);
-        }
-
-        [Obsolete("Do not use ActionBase.ActionEvaluation<T>.OutputStates.GetState() method with ShopState.Address or Addresses.Shop.")]
-        protected void UpdateShopState<T>(ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
-        {
-            States.Instance.SetShopState(new ShopState(
-                (Bencodex.Types.Dictionary) evaluation.OutputStates.GetState(ShopState.Address)
-            ));
         }
 
         protected void UpdateWeeklyArenaState<T>(ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase

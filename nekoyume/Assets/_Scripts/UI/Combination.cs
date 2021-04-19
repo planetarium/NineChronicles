@@ -281,7 +281,7 @@ namespace Nekoyume.UI
         public void ShowByEquipmentRecipe(int recipeId)
         {
             _equipmentRecipeIdToGo = recipeId;
-
+            ResetSelectedIndex();
             Show();
         }
 
@@ -756,7 +756,14 @@ namespace Nekoyume.UI
             }
 
             selectedIndex = idx;
+            if (selectedIndex < 0)
+            {
+                Debug.Log("There is no valid slot in combination slot state.");
+            }
+
             _enhanceEquipment.UpdateSubmittable();
+            combinationPanel.UpdateSubmittable();
+            elementalCombinationPanel.UpdateSubmittable();
         }
 
         public IEnumerator CoCombineNPCAnimation(ItemBase itemBase, System.Action action, bool isConsumable = false)

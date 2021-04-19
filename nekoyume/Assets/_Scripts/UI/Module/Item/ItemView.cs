@@ -21,7 +21,9 @@ namespace Nekoyume.UI.Module
         public Button itemButton;
         public Image backgroundImage;
         public TextMeshProUGUI enhancementText;
+        public GameObject enhancementImage;
         public Image selectionImage;
+        public Image dimmedImage;
 
         private readonly List<IDisposable> _disposablesAtSetData = new List<IDisposable>();
 
@@ -72,7 +74,7 @@ namespace Nekoyume.UI.Module
         }
 
         #endregion
-        
+
         public virtual void SetData(TViewModel model)
         {
             if (model is null)
@@ -91,15 +93,33 @@ namespace Nekoyume.UI.Module
                 throw new ArgumentOutOfRangeException(nameof(ItemSheet.Row), model.ItemBase.Value.Id, null);
             }
             base.SetData(row);
+
+
+            var data = itemViewData.datas.FirstOrDefault(x => x.Grade == row.Grade);
+            enhancementImage.GetComponent<Image>().material = data.EnhancementMaterial;
+
             _disposablesAtSetData.DisposeAllAndClear();
             Model = model;
             Model.GradeEnabled.SubscribeTo(gradeImage).AddTo(_disposablesAtSetData);
             Model.Enhancement.SubscribeTo(enhancementText).AddTo(_disposablesAtSetData);
             Model.EnhancementEnabled.SubscribeTo(enhancementText).AddTo(_disposablesAtSetData);
+            Model.EnhancementEffectEnabled
+                .Subscribe(x => enhancementImage.gameObject.SetActive(x))
+                .AddTo(_disposablesAtSetData);
             Model.Dimmed.Subscribe(SetDim).AddTo(_disposablesAtSetData);
-            Model.Selected.SubscribeTo(selectionImage).AddTo(_disposablesAtSetData);
+            if (dimmedImage != null)
+            {
+                Model.Dimmed.SubscribeTo(dimmedImage.gameObject).AddTo(_disposablesAtSetData);
+            }
+
+            Model.Selected.SubscribeTo(selectionImage.gameObject).AddTo(_disposablesAtSetData);
 
             UpdateView();
+        }
+
+        private void UpdateEnhancement()
+        {
+
         }
 
         public void SetData(TViewModel model, bool isConsumable)
@@ -133,7 +153,14 @@ namespace Nekoyume.UI.Module
             Model.GradeEnabled.SubscribeTo(gradeImage).AddTo(_disposablesAtSetData);
             Model.Enhancement.SubscribeTo(enhancementText).AddTo(_disposablesAtSetData);
             Model.EnhancementEnabled.SubscribeTo(enhancementText).AddTo(_disposablesAtSetData);
+            Model.EnhancementEffectEnabled
+                .Subscribe(x => enhancementImage.gameObject.SetActive(x))
+                .AddTo(_disposablesAtSetData);
             Model.Dimmed.Subscribe(SetDim).AddTo(_disposablesAtSetData);
+            if (dimmedImage != null)
+            {
+                Model.Dimmed.SubscribeTo(dimmedImage).AddTo(_disposablesAtSetData);
+            }
             Model.Selected.SubscribeTo(selectionImage).AddTo(_disposablesAtSetData);
 
             UpdateView();
@@ -159,7 +186,6 @@ namespace Nekoyume.UI.Module
         protected override void SetDim(bool isDim)
         {
             base.SetDim(isDim);
-            
             enhancementText.color = isDim ? DimmedColor : OriginColor;
             selectionImage.color = isDim ? DimmedColor : OriginColor;
         }
@@ -170,7 +196,10 @@ namespace Nekoyume.UI.Module
                 Model.ItemBase.Value is null)
             {
                 enhancementText.enabled = false;
-                selectionImage.enabled = false;
+                if (selectionImage != null)
+                {
+                    selectionImage.enabled = false;
+                }
             }
         }
     }
