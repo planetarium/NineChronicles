@@ -17,7 +17,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Libplanet", ".Libplanet\Lib
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Libplanet.Analyzers", ".Libplanet\Libplanet.Analyzers\Libplanet.Analyzers.csproj", "{659722A9-132F-4B41-87BC-1B56A97A98FA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lib9c.Benchmarks", "Lib9c.Benchmarks\Lib9c.Benchmarks.csproj", "{9EB7458F-FD90-4719-A3B6-FBC678BC43D8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lib9c.Benchmarks", ".Lib9c.Benchmarks\Lib9c.Benchmarks.csproj", "{9EB7458F-FD90-4719-A3B6-FBC678BC43D8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Libplanet.RocksDBStore", ".Libplanet\Libplanet.RocksDBStore\Libplanet.RocksDBStore.csproj", "{17AAB5B1-695B-4597-8B36-1DF5012EE686}"
 EndProject

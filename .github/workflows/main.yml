@@ -56,9 +56,9 @@ jobs:
             -t
     - id: run-benchmarks
       run: |
-        dotnet build Lib9c.Benchmarks
+        dotnet build .Lib9c.Benchmarks
         dotnet run \
-          --project Lib9c.Benchmarks \
+          --project .Lib9c.Benchmarks \
           --no-build \
           --verbosity quiet \
           -- \

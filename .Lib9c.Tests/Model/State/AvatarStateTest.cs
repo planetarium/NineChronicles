@@ -57,7 +57,8 @@ namespace Lib9c.Tests.Model.State
             await Task.Delay(waitMilliseconds);
             AvatarState avatarStateB = GetNewAvatarState(avatarAddress, agentAddress);
 
-            HashDigest<SHA256> Hash(AvatarState avatarState) => Hashcash.Hash(new Codec().Encode(avatarState.Serialize()));
+            HashDigest<SHA256> Hash(AvatarState avatarState) =>
+                HashDigest<SHA256>.DeriveFrom(new Codec().Encode(avatarState.Serialize()));
             Assert.Equal(Hash(avatarStateA), Hash(avatarStateB));
         }
 

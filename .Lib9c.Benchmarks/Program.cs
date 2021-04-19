@@ -48,7 +48,7 @@ namespace Lib9c.Benchmarks
                 return;
             }
 
-            if (!(store.IndexBlockHash(chainId, 0) is HashDigest<SHA256> gHash))
+            if (!(store.IndexBlockHash(chainId, 0) is { } gHash))
             {
                 Console.Error.WriteLine("There is no genesis block: {0}", storePath);
                 Environment.Exit(1);
@@ -62,7 +62,7 @@ namespace Lib9c.Benchmarks
             IStateStore stateStore = new TrieStateStore(stateKeyValueStore, stateRootKeyValueStore);
             var chain = new BlockChain<NCAction>(policy, stagePolicy, store, stateStore, genesis);
             long height = chain.Tip.Index;
-            HashDigest<SHA256>[] blockHashes = limit < 0
+            BlockHash[] blockHashes = limit < 0
                 ? chain.BlockHashes.SkipWhile((_, i) => i < height + limit).ToArray()
                 : chain.BlockHashes.Take(limit).ToArray();
             Console.Error.WriteLine(
