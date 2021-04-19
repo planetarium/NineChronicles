@@ -114,54 +114,6 @@ namespace Nekoyume.BlockChain
                 .AddTo(_disposables);
         }
 
-        private void ResponseBuy(ActionBase.ActionEvaluation<Buy4> eval)
-        {
-            if (!(eval.Exception is null))
-            {
-                return;
-            }
-
-            var buyerAvatarAddress = eval.Action.buyerAvatarAddress;
-            var price = eval.Action.sellerResult.shopItem.Price;
-            Address renderQuestAvatarAddress;
-            List<int> renderQuestCompletedQuestIds;
-
-            if (buyerAvatarAddress == States.Instance.CurrentAvatarState.address)
-            {
-                var buyerAgentAddress = States.Instance.AgentState.address;
-                var result = eval.Action.buyerResult;
-
-                var itemId = result.itemUsable?.ItemId ?? result.costume.ItemId;
-                var buyerAvatar = eval.OutputStates.GetAvatarState(buyerAvatarAddress);
-
-                LocalLayerModifier.ModifyAgentGold(buyerAgentAddress, -price);
-                LocalLayerModifier.AddItem(buyerAvatarAddress, itemId);
-                LocalLayerModifier.RemoveNewAttachmentMail(buyerAvatarAddress, result.id);
-
-                renderQuestAvatarAddress = buyerAvatarAddress;
-                renderQuestCompletedQuestIds = buyerAvatar.questList.completedQuestIds;
-            }
-            else
-            {
-                var sellerAvatarAddress = eval.Action.sellerAvatarAddress;
-                var sellerAgentAddress = eval.Action.sellerAgentAddress;
-                var result = eval.Action.sellerResult;
-                var gold = result.gold;
-                var sellerAvatar = eval.OutputStates.GetAvatarState(sellerAvatarAddress);
-
-                LocalLayerModifier.ModifyAgentGold(sellerAgentAddress, gold);
-                LocalLayerModifier.RemoveNewAttachmentMail(sellerAvatarAddress, result.id);
-
-                renderQuestAvatarAddress = sellerAvatarAddress;
-                renderQuestCompletedQuestIds = sellerAvatar.questList.completedQuestIds;
-            }
-
-            UpdateAgentState(eval);
-            UpdateCurrentAvatarState(eval);
-            UnrenderQuest(renderQuestAvatarAddress, renderQuestCompletedQuestIds);
-        }
-
-
         private void ResponseBuyMultiple(ActionBase.ActionEvaluation<BuyMultiple> eval)
         {
             if (!(eval.Exception is null))
@@ -202,6 +154,7 @@ namespace Nekoyume.BlockChain
                             continue;
                         }
 
+                        // Local layer
                         var price = item.Price.Value;
                         LocalLayerModifier.ModifyAgentGold(agentAddress, -price);
                     }
@@ -216,6 +169,7 @@ namespace Nekoyume.BlockChain
                         continue;
                     }
 
+                    // Local layer
                     LocalLayerModifier.RemoveNewAttachmentMail(currentAvatarAddress, sellerResult.id);
                 }
             }

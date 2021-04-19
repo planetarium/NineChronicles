@@ -556,9 +556,11 @@ namespace Nekoyume.BlockChain
                                 continue;
                             }
 
+                            // Local layer
                             var price = item.Price.Value;
                             LocalLayerModifier.ModifyAgentGold(agentAddress, price);
 
+                            // Push notification
                             var errorType = ((ShopErrorType) purchaseResult.errorCode).ToString();
                             var msg = string.Format(L10nManager.Localize("NOTIFICATION_BUY_FAIL"),
                                 item.ItemBase.Value.GetLocalizedName(),
