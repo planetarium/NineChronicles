@@ -6,7 +6,6 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
-using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Bencodex;
 using Bencodex.Types;
@@ -65,7 +64,7 @@ namespace Nekoyume.BlockChain
 
         public Subject<long> BlockIndexSubject { get; } = new Subject<long>();
 
-        public Subject<HashDigest<SHA256>> BlockTipHashSubject { get; } = new Subject<HashDigest<SHA256>>();
+        public Subject<BlockHash> BlockTipHashSubject { get; } = new Subject<BlockHash>();
 
         public long BlockIndex { get; private set; }
 
@@ -87,7 +86,7 @@ namespace Nekoyume.BlockChain
 
         public int AppProtocolVersion { get; private set; }
 
-        public HashDigest<SHA256> BlockTipHash { get; private set; }
+        public BlockHash BlockTipHash { get; private set; }
 
         public void Initialize(
             CommandLineOptions options,
@@ -325,7 +324,7 @@ namespace Nekoyume.BlockChain
             var newTipHeader = BlockHeader.Deserialize(newTip);
             BlockIndex = newTipHeader.Index;
             BlockIndexSubject.OnNext(BlockIndex);
-            BlockTipHash = new HashDigest<SHA256>(newTipHeader.Hash);
+            BlockTipHash = new BlockHash(newTipHeader.Hash);
             BlockTipHashSubject.OnNext(BlockTipHash);
             _lastTipChangedAt = DateTimeOffset.UtcNow;
             BlockRenderer.RenderBlock(null, null);
