@@ -1,4 +1,5 @@
 using Nekoyume.EnumType;
+using Nekoyume.UI.Module;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -13,6 +14,13 @@ namespace Nekoyume.UI
         [SerializeField]
         private Button closeButton = null;
 
+        [SerializeField]
+        private RankPanel rankPanel = null;
 
+        public override void Show(bool ignoreShowAnimation = false)
+        {
+            base.Show(ignoreShowAnimation);
+            rankPanel.Show();
+        }
     }
 }
