@@ -6,7 +6,7 @@
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application. Do not use the same AppId value in installers for other applications.
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
-AppId={{789AAC8F-6C36-4A84-ABB9-4FEA48EA924C}}
+AppId={{A97500D7-91FD-499D-815F-67F280260669}}
 AppName={#MyAppName}
 AppVersion=
 AppVerName={#MyAppName}
@@ -45,9 +45,6 @@ Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#GameExeName}"; Tasks: Cre
 Name: "{userstartup}\{#MyAppName}"; Filename: "{app}\{#GameExeName}"; Tasks: RegisterStartup
 
 [Code]
-var
-  UUID: String;
-
 function GenerateUUID(): String;
 var
   UUIDLib: Variant;
@@ -62,8 +59,9 @@ var
   LoadedUUID: AnsiString;
 begin
   UUIDPath := Format('%s\planetarium\.installer_mixpanel_uuid', [ExpandConstant('{localappdata}')]);
-  if (FileExists(UUIDPath)) and LoadStringFromFile(UUIDPath, LoadedUUID) then
+  if (FileExists(UUIDPath)) then
   begin
+    LoadStringFromFile(UUIDPath, LoadedUUID)
     Result := LoadedUUID;
   end else begin
     Result := GenerateUUID();
@@ -90,9 +88,9 @@ procedure CurStepChanged(CurStep: TSetupStep);
 var
   UUID: String;
 begin
+  UUID := UseUUID();
   if CurStep = ssInstall then
   begin
-    UUID := UseUUID();
     Log('Install: Request Mixpanel.');
     Log('UUID: ' + UUID);
     MixpanelTrack('Installer/Start', UUID);
@@ -100,7 +98,6 @@ begin
 
   if CurStep = ssPostInstall then
   begin
-    UUID := UseUUID();
     Log('PostInstall: Request Mixpanel.');
     Log('UUID: ' + UUID);
     MixpanelTrack('Installer/End', UUID);
@@ -124,39 +121,35 @@ procedure CurPageChanged(CurPageID: Integer);
 var
   UUID: String;
 begin
+  UUID := UseUUID();
   case CurPageID of
     wpSelectDir:
       begin
-        UUID := UseUUID();
-        Log('Install: Request Mixpanel.');
+        Log('Install: Select Directory.');
         Log('UUID: ' + UUID);
         MixpanelTrack('Installer/SelectDir', UUID);
       end;
     wpSelectTasks:
       begin
-        UUID := UseUUID();
-        Log('Install: Request Mixpanel.');
+        Log('Install: Select Tasks.');
         Log('UUID: ' + UUID);
         MixpanelTrack('Installer/SelectTasks', UUID);
       end;
     wpReady:
       begin
-        UUID := UseUUID();
-        Log('Install: Request Mixpanel.');
+        Log('Install: Ready.');
         Log('UUID: ' + UUID);
         MixpanelTrack('Installer/Ready', UUID);
       end;
     wpInstalling:
       begin
-        UUID := UseUUID();
-        Log('Install: Request Mixpanel.');
+        Log('Install: Installing.');
         Log('UUID: ' + UUID);
         MixpanelTrack('Installer/Installing', UUID);
       end;
     wpFinished:
       begin
-        UUID := UseUUID();
-        Log('UnInstall: Request Mixpanel.');
+        Log('Install: Finished.');
         Log('UUID: ' + UUID);
         MixpanelTrack('Installer/Finished', UUID);
       end;
