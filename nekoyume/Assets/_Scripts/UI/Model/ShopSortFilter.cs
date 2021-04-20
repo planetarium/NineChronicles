@@ -1,6 +1,6 @@
-﻿namespace Nekoyume.UI.Model
+namespace Nekoyume.UI.Model
 {
-    public enum SortFilter
+    public enum ShopSortFilter
     {
         Class = 0,
         CP = 1,
