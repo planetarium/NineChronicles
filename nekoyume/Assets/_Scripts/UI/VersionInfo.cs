@@ -39,7 +39,14 @@ namespace Nekoyume.UI
 
         private void UpdateText()
         {
-            informationText.text = $"APV: {_version} / #{_blockIndex} / Hash: {_hash.ToString().Substring(0, 4)}";
+            const string format = "APV: {0} / #{1} / Hash: {2}";
+            var hash = _hash.ToString();
+            var text = string.Format(
+                format,
+                _version,
+                _blockIndex,
+                hash.Length >= 4 ? hash.Substring(0, 4) : "...");
+            informationText.text = text;
         }
     }
 }
