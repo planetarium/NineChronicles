@@ -43,6 +43,7 @@ namespace Nekoyume.State
 
         private static int _shopItemsPerPage = 24;
 
+        // FIXME: Manage in the other class
         public static readonly Dictionary<Guid, List<Nekoyume.UI.Model.ShopItem>> PurchaseHistory =
             new Dictionary<Guid, List<Nekoyume.UI.Model.ShopItem>>();
 
