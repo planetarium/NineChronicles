@@ -189,6 +189,8 @@ namespace Nekoyume.UI
 
             Mixpanel.Track("Unity/Click Stage");
             _stage = Game.Game.instance.Stage;
+            _stage.repeatStage = false;
+            repeatToggle.isOn = false;
             _stage.LoadBackground("dungeon_02");
             _player = _stage.GetPlayer(_stage.questPreparationPosition);
             var currentAvatarState = Game.Game.instance.States.CurrentAvatarState;
