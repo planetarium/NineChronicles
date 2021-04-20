@@ -69,6 +69,9 @@ namespace Nekoyume.UI
         [SerializeField]
         private Transform buttonStarImageTransform = null;
 
+        [SerializeField]
+        private NCToggle repeatToggle;
+
         [SerializeField, Range(.5f, 3.0f)]
         private float animationTime = 1f;
 
@@ -146,7 +149,7 @@ namespace Nekoyume.UI
 
             _stageId.Subscribe(SubscribeStage).AddTo(gameObject);
 
-            questButton.OnClickAsObservable().Subscribe(_ => QuestClick(false)).AddTo(gameObject);
+            questButton.OnClickAsObservable().Subscribe(_ => QuestClick(repeatToggle.isOn)).AddTo(gameObject);
 
             Game.Event.OnRoomEnter.AddListener(b => Close());
 
@@ -171,6 +174,8 @@ namespace Nekoyume.UI
 
             Mixpanel.Track("Unity/Click Stage");
             _stage = Game.Game.instance.Stage;
+            _stage.repeatStage = false;
+            repeatToggle.isOn = false;
             _stage.LoadBackground("dungeon_01");
             _player = _stage.GetPlayer(_stage.questPreparationPosition);
             if (_player is null)
