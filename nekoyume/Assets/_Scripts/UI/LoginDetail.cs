@@ -102,7 +102,7 @@ namespace Nekoyume.UI
                     {
                         var avatarState = States.Instance.SelectAvatar(_selectedIndex);
                         StartCoroutine(CreateAndLoginAnimation(avatarState));
-                        ActionRenderHandler.Instance.RenderQuest(avatarState.address,
+                        ActionRenderHandler.RenderQuest(avatarState.address,
                             avatarState.questList.completedQuestIds);
 
                         //[TentuPlay]
