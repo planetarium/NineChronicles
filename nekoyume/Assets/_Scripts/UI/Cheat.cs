@@ -210,6 +210,7 @@ namespace Nekoyume
         protected override void Update()
         {
             _updateTime += Time.deltaTime;
+            UpdateInput();
         }
 
         public override void Show(bool ignoreShowAnimation = false)
@@ -430,6 +431,26 @@ namespace Nekoyume
         {
             _selectedSkill = skill;
             DummyBattle(1);
+        }
+
+        private void UpdateInput()
+        {
+            if (Input.GetKeyDown(KeyCode.Alpha1))
+            {
+                Time.timeScale = 1;
+            }
+            if (Input.GetKeyDown(KeyCode.Alpha2))
+            {
+                Time.timeScale = 2;
+            }
+            if (Input.GetKeyDown(KeyCode.Alpha3))
+            {
+                Time.timeScale = 3;
+            }
+            if (Input.GetKeyDown(KeyCode.Alpha4))
+            {
+                Time.timeScale = 4;
+            }
         }
     }
 }
