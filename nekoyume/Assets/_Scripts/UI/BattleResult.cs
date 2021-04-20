@@ -24,21 +24,30 @@ namespace Nekoyume.UI
 {
     public class BattleResult : PopupWidget
     {
+        public enum  NextState
+        {
+            None,
+            GoToMain,
+            RepeatStage,
+            NextStage,
+        }
+
         public class Model
         {
             private readonly List<CountableItem> _rewards = new List<CountableItem>();
 
+            public NextState NextState;
             public BattleLog.Result State;
             public string WorldName;
-            public int StageID;
             public long Exp;
-            public bool ActionPointNotEnough;
-            public bool ShouldExit;
-            public bool ShouldRepeat;
+            public int WorldID;
+            public int StageID;
             public int ClearedWaveNumber;
             public int ActionPoint;
             public int LastClearedStageId;
+            public bool ActionPointNotEnough;
             public bool IsClear;
+            public bool IsEndStage;
 
             public IReadOnlyList<CountableItem> Rewards => _rewards;
 
@@ -102,13 +111,10 @@ namespace Nekoyume.UI
         private Button closeButton = null;
 
         [SerializeField]
-        private TextMeshProUGUI closeButtonText = null;
+        private Button nextButton = null;
 
         [SerializeField]
-        private Button submitButton = null;
-
-        [SerializeField]
-        private TextMeshProUGUI submitButtonText = null;
+        private Button repeatButton = null;
 
         [SerializeField]
         private StageProgressBar stageProgressBar = null;
@@ -141,8 +147,7 @@ namespace Nekoyume.UI
         {
             base.Awake();
 
-            closeButton.OnClickAsObservable()
-                .Subscribe(_ =>
+            closeButton.OnClickAsObservable().Subscribe(_ =>
                 {
                     if (States.Instance.CurrentAvatarState.worldInformation
                         .TryGetUnlockedWorldByStageClearedBlockIndex(out var world))
@@ -154,17 +159,20 @@ namespace Nekoyume.UI
 
                         }
                     }
-                })
-                .AddTo(gameObject);
-            submitButton.OnClickAsObservable()
-                .Subscribe(_ =>
+                }).AddTo(gameObject);
+
+            nextButton.OnClickAsObservable().Subscribe(_ =>
                 {
-                    StartCoroutine(OnClickSubmit());
-                })
-                .AddTo(gameObject);
+                    StartCoroutine(OnClickNext());
+                }).AddTo(gameObject);
+
+            repeatButton.OnClickAsObservable().Subscribe(_ =>
+                {
+                    StartCoroutine(OnClickRepeat());
+                }).AddTo(gameObject);
 
             CloseWidget = closeButton.onClick.Invoke;
-            SubmitWidget = submitButton.onClick.Invoke;
+            SubmitWidget = nextButton.onClick.Invoke;
             defeatTextArea.root.SetActive(false);
             defeatTextArea.defeatText.text =
                 L10nManager.Localize("UI_BATTLE_RESULT_DEFEAT_MESSAGE");
@@ -181,10 +189,9 @@ namespace Nekoyume.UI
                 yield return CoDialog(SharedModel.StageID);
             }
             GoToMain();
-            AnalyticsManager.Instance.BattleLeave();
         }
 
-        private IEnumerator OnClickSubmit()
+        private IEnumerator OnClickNext()
         {
             if (_IsAlreadyOut)
             {
@@ -192,9 +199,20 @@ namespace Nekoyume.UI
             }
 
             AudioController.PlayClick();
-            yield return CoRepeatCurrentOrProceedNextStage();
-            AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName
-                .ClickBattleResultNext);
+            yield return CoProceedNextStage();
+            AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ClickBattleResultNext);
+        }
+
+        private IEnumerator OnClickRepeat()
+        {
+            if (_IsAlreadyOut)
+            {
+                yield break;
+            }
+
+            AudioController.PlayClick();
+            yield return CoRepeatStage();
+            AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ClickBattleResultNext);
         }
 
         private IEnumerator CoDialog(int worldStage)
@@ -235,6 +253,8 @@ namespace Nekoyume.UI
 
             base.Show();
             closeButton.gameObject.SetActive(model.StageID >= 3 || model.LastClearedStageId >= 3);
+            repeatButton.gameObject.SetActive(false);
+            nextButton.gameObject.SetActive(false);
             UpdateView();
         }
 
@@ -288,11 +308,9 @@ namespace Nekoyume.UI
             defeatImageContainer.SetActive(false);
             topArea.SetActive(true);
             defeatTextArea.root.SetActive(false);
-            closeButton.interactable = true;
-            closeButtonText.text = L10nManager.Localize("UI_MAIN");
             stageProgressBar.Show();
 
-            _coUpdateBottomText = StartCoroutine(CoUpdateBottomText(Timer));
+            _coUpdateBottomText = StartCoroutine(CoUpdateBottom(Timer));
             yield return StartCoroutine(CoUpdateRewards());
         }
 
@@ -341,11 +359,8 @@ namespace Nekoyume.UI
             defeatTextArea.defeatText.text = L10nManager.Localize(key);
             defeatTextArea.expText.text = $"EXP + {SharedModel.Exp}";
             bottomText.enabled = false;
-            closeButton.interactable = true;
-            closeButtonText.text = L10nManager.Localize("UI_MAIN");
-            submitButtonText.text = L10nManager.Localize("UI_BATTLE_AGAIN");
 
-            _coUpdateBottomText = StartCoroutine(CoUpdateBottomText(Timer));
+            _coUpdateBottomText = StartCoroutine(CoUpdateBottom(Timer));
             StartCoroutine(CoUpdateRewards());
         }
 
@@ -387,43 +402,52 @@ namespace Nekoyume.UI
             }
         }
 
-        private IEnumerator CoUpdateBottomText(int limitSeconds)
+        private IEnumerator CoUpdateBottom(int limitSeconds)
         {
             var secondsFormat = L10nManager.Localize("UI_AFTER_N_SECONDS");
-            string fullFormat;
-            submitButton.gameObject.SetActive(false);
-            SubmitWidget = closeButton.onClick.Invoke;
-            if (SharedModel.ActionPointNotEnough)
+            string fullFormat = string.Empty;
+            closeButton.interactable = true;
+
+            if (!SharedModel.ActionPointNotEnough)
             {
-                fullFormat =
-                    L10nManager.Localize("UI_BATTLE_RESULT_NOT_ENOUGH_ACTION_POINT_FORMAT");
+                var value = SharedModel.StageID >= 3 || SharedModel.LastClearedStageId >= 3;
+                repeatButton.gameObject.SetActive(value);
+                repeatButton.interactable = value;
             }
-            else if (SharedModel.ShouldExit)
+
+            if (!SharedModel.IsEndStage && !SharedModel.ActionPointNotEnough && SharedModel.IsClear)
             {
-                fullFormat = L10nManager.Localize("UI_BATTLE_EXIT_FORMAT");
+                nextButton.gameObject.SetActive(true);
+                nextButton.interactable = true;
             }
-            else
+
+            switch (SharedModel.NextState)
             {
-                fullFormat = SharedModel.ShouldRepeat
-                    ? L10nManager.Localize("UI_BATTLE_RESULT_REPEAT_STAGE_FORMAT")
-                    : L10nManager.Localize("UI_BATTLE_RESULT_NEXT_STAGE_FORMAT");
-                submitButton.interactable = true;
-                SubmitWidget = submitButton.onClick.Invoke;
-                submitButtonText.text = SharedModel.ShouldRepeat
-                    ? L10nManager.Localize("UI_BATTLE_AGAIN")
-                    : L10nManager.Localize("UI_NEXT_STAGE");
+                case NextState.GoToMain:
+                    SubmitWidget = closeButton.onClick.Invoke;
+                    fullFormat = SharedModel.ActionPointNotEnough ?
+                        L10nManager.Localize("UI_BATTLE_RESULT_NOT_ENOUGH_ACTION_POINT_FORMAT") :
+                        L10nManager.Localize("UI_BATTLE_EXIT_FORMAT");
+                    break;
+                case NextState.RepeatStage:
+                    SubmitWidget = repeatButton.onClick.Invoke;
+                    fullFormat = L10nManager.Localize("UI_BATTLE_RESULT_REPEAT_STAGE_FORMAT");
+                    break;
+                case NextState.NextStage:
+                    SubmitWidget = nextButton.onClick.Invoke;
+                    fullFormat = L10nManager.Localize("UI_BATTLE_RESULT_NEXT_STAGE_FORMAT");
+                    break;
+            }
 
-                if (SharedModel.StageID == 3 &&
-                    SharedModel.LastClearedStageId == 3 &&
-                    SharedModel.State == BattleLog.Result.Win)
-                {
-                    submitButton.gameObject.SetActive(false);
-                    bottomText.text = string.Empty;
-
-                    yield break;
-                }
-
-                submitButton.gameObject.SetActive(true);
+            // for tutorial
+            if (SharedModel.StageID == 3 &&
+                SharedModel.LastClearedStageId == 3 &&
+                SharedModel.State == BattleLog.Result.Win)
+            {
+                nextButton.gameObject.SetActive(false);
+                repeatButton.gameObject.SetActive(false);
+                bottomText.text = string.Empty;
+                yield break;
             }
 
             bottomText.text = string.Format(fullFormat, string.Format(secondsFormat, limitSeconds));
@@ -443,24 +467,27 @@ namespace Nekoyume.UI
                 }
 
                 limitSeconds--;
-                bottomText.text =
-                    string.Format(fullFormat, string.Format(secondsFormat, limitSeconds));
+                bottomText.text = string.Format(fullFormat, string.Format(secondsFormat, limitSeconds));
                 floatTimeMinusOne = limitSeconds - 1f;
             }
 
-            if (SharedModel.ActionPointNotEnough || SharedModel.ShouldExit)
+            switch (SharedModel.NextState)
             {
-                GoToMain();
-            }
-            else
-            {
-                StartCoroutine(OnClickSubmit());
+                case NextState.GoToMain:
+                    StartCoroutine(OnClickClose());
+                    break;
+                case NextState.RepeatStage:
+                    StartCoroutine(OnClickRepeat());
+                    break;
+                case NextState.NextStage:
+                    StartCoroutine(OnClickNext());
+                    break;
             }
         }
 
-        private IEnumerator CoRepeatCurrentOrProceedNextStage()
+        private IEnumerator CoProceedNextStage()
         {
-            if (!submitButton.interactable)
+            if (!nextButton.interactable)
                 yield break;
 
             if (Find<Menu>().IsActive())
@@ -468,57 +495,91 @@ namespace Nekoyume.UI
                 yield break;
             }
 
-            var isNext = !SharedModel.ShouldRepeat;
+            closeButton.interactable = false;
+            repeatButton.interactable = false;
+            nextButton.interactable = false;
+            actionPoint.SetEventTriggerEnabled(false);
+
+            StopCoUpdateBottomText();
+            StartCoroutine(CoFadeOut());
+            var stage = Game.Game.instance.Stage;
+            stage.repeatStage = false;
+            var stageLoadingScreen = Find<StageLoadingScreen>();
+            stageLoadingScreen.Show(stage.zone, SharedModel.WorldName,
+                SharedModel.StageID + 1, true, SharedModel.StageID);
+            Find<Status>().Close();
+
+            StopVFX();
+            var player = stage.RunPlayerForNextStage();
+            player.DisableHUD();
+            ActionRenderHandler.Instance.Pending = true;
+
+            var props = new Value
+            {
+                ["StageId"] = SharedModel.StageID + 1,
+            };
+            Mixpanel.Track("Unity/Stage Exit Next Stage", props);
+
+            yield return Game.Game.instance.ActionManager
+                .HackAndSlash(
+                    player.Costumes,
+                    player.Equipments,
+                    new List<Consumable>(),
+                    SharedModel.WorldID,
+                    SharedModel.StageID + 1)
+                .Subscribe(_ => { },
+                    e => ActionRenderHandler.BackToMain(false, e));
+        }
+
+        private IEnumerator CoRepeatStage()
+        {
+            if (!repeatButton.interactable)
+                yield break;
+
+            if (Find<Menu>().IsActive())
+            {
+                yield break;
+            }
 
             closeButton.interactable = false;
-            submitButton.interactable = false;
+            repeatButton.interactable = false;
+            nextButton.interactable = false;
             actionPoint.SetEventTriggerEnabled(false);
 
             StopCoUpdateBottomText();
             StartCoroutine(CoFadeOut());
             var stage = Game.Game.instance.Stage;
             var stageLoadingScreen = Find<StageLoadingScreen>();
-            stageLoadingScreen.Show(stage.zone,
-                SharedModel.WorldName,
-                isNext ? SharedModel.StageID + 1: SharedModel.StageID,
-                isNext, SharedModel.StageID);
+            stageLoadingScreen.Show(stage.zone, SharedModel.WorldName,
+                SharedModel.StageID, false, SharedModel.StageID);
             Find<Status>().Close();
 
             StopVFX();
             var player = stage.RunPlayerForNextStage();
             player.DisableHUD();
-
-            var worldId = stage.worldId;
-            var stageId = SharedModel.ShouldRepeat
-                ? stage.stageId
-                : stage.stageId + 1;
             ActionRenderHandler.Instance.Pending = true;
+
             var props = new Value
             {
-                ["StageId"] = stageId,
+                ["StageId"] = SharedModel.StageID,
             };
-            var eventKey = "Next Stage";
-            if (SharedModel.ShouldRepeat)
-            {
-                eventKey = SharedModel.ClearedWaveNumber == 3 ? "Repeat" : "Retry";
-            }
-
+            var eventKey = SharedModel.ClearedWaveNumber == 3 ? "Repeat" : "Retry";
             var eventName = $"Unity/Stage Exit {eventKey}";
             Mixpanel.Track(eventName, props);
+
             yield return Game.Game.instance.ActionManager
                 .HackAndSlash(
                     player.Costumes,
                     player.Equipments,
                     new List<Consumable>(),
-                    worldId,
-                    stageId)
+                    SharedModel.WorldID,
+                    SharedModel.StageID)
                 .Subscribe(_ => { },
                     e => ActionRenderHandler.BackToMain(false, e));
         }
 
         public void NextStage(ActionBase.ActionEvaluation<HackAndSlash4> eval)
         {
-            Debug.Log("NextStage From ResponseHackAndSlash");
             StartCoroutine(CoGoToNextStageClose(eval));
         }
 
@@ -537,7 +598,6 @@ namespace Nekoyume.UI
 
         public void NextMimisbrunnrStage(ActionBase.ActionEvaluation<MimisbrunnrBattle2> eval)
         {
-            Debug.Log("NextStage From ResponseHackAndSlash");
             StartCoroutine(CoGoToNextMimisbrunnrStageClose(eval));
         }
         private IEnumerator CoGoToNextMimisbrunnrStageClose(ActionBase.ActionEvaluation<MimisbrunnrBattle2> eval)
@@ -553,7 +613,7 @@ namespace Nekoyume.UI
             Close();
         }
 
-        public void GoToMain()
+        private void GoToMain()
         {
             var props = new Value
             {
@@ -566,6 +626,7 @@ namespace Nekoyume.UI
             Find<Battle>().Close();
             Game.Event.OnRoomEnter.Invoke(true);
             Close();
+            AnalyticsManager.Instance.BattleLeave();
         }
 
         private void StopCoUpdateBottomText()

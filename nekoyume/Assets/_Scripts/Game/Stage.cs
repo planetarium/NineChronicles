@@ -560,18 +560,19 @@ namespace Nekoyume.Game
             _battleResultModel.State = log.result;
             Game.instance.TableSheets.WorldSheet.TryGetValue(log.worldId, out var world);
             _battleResultModel.WorldName = world?.GetLocalizedName();
+            _battleResultModel.WorldID = log.worldId;
             _battleResultModel.StageID = log.stageId;
             avatarState.worldInformation.TryGetLastClearedStageId(out var lasStageId);
             _battleResultModel.LastClearedStageId = lasStageId;
             _battleResultModel.IsClear = log.IsClear;
+            _battleResultModel.IsEndStage = false;
 
             if (isExitReserved)
             {
+                _battleResultModel.NextState = BattleResult.NextState.GoToMain;
                 _battleResultModel.ActionPointNotEnough = false;
-                _battleResultModel.ShouldExit = true;
-                _battleResultModel.ShouldRepeat = false;
             }
-            else if (repeatStage || !isClear)
+            else
             {
                 var apNotEnough = true;
                 if (Game.instance.TableSheets.StageSheet.TryGetValue(stageId, out var stageRow))
@@ -580,49 +581,45 @@ namespace Nekoyume.Game
                 }
 
                 _battleResultModel.ActionPointNotEnough = apNotEnough;
-                _battleResultModel.ShouldExit = apNotEnough;
-                _battleResultModel.ShouldRepeat = !apNotEnough;
-            }
-            else
-            {
-                var apNotEnough = true;
-                if (Game.instance.TableSheets.StageSheet.TryGetValue(stageId + 1, out var stageRow))
+                if (apNotEnough)
                 {
-                    apNotEnough = avatarState.actionPoint < stageRow.CostAP;
-                }
-
-                _battleResultModel.ActionPointNotEnough = apNotEnough;
-                _battleResultModel.ShouldExit = apNotEnough;
-                _battleResultModel.ShouldRepeat = false;
-            }
-
-            if (!_battleResultModel.ShouldExit &&
-                !_battleResultModel.ShouldRepeat)
-            {
-                if (Game.instance.TableSheets.WorldSheet.TryGetValue(worldId, out var worldRow))
-                {
-                    if (stageId == worldRow.StageEnd)
-                    {
-                        _battleResultModel.ShouldExit = true;
-                    }
+                    _battleResultModel.NextState = BattleResult.NextState.GoToMain;
                 }
                 else
                 {
-                    _battleResultModel.ShouldExit = true;
+                    if (isClear)
+                    {
+                        _battleResultModel.NextState = repeatStage ?
+                            BattleResult.NextState.RepeatStage :
+                            BattleResult.NextState.NextStage;
+
+                        if (Game.instance.TableSheets.WorldSheet.TryGetValue(worldId, out var worldRow))
+                        {
+                            if (stageId == worldRow.StageEnd)
+                            {
+                                _battleResultModel.IsEndStage = true;
+                                _battleResultModel.NextState = repeatStage ?
+                                    BattleResult.NextState.RepeatStage :
+                                    BattleResult.NextState.GoToMain;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        _battleResultModel.NextState = repeatStage ?
+                            BattleResult.NextState.RepeatStage :
+                            BattleResult.NextState.GoToMain;
+                    }
                 }
             }
 
             ActionRenderHandler.Instance.Pending = false;
             Widget.Find<BattleResult>().Show(_battleResultModel);
+
             yield return null;
-
-            //[TentuPlay] 전투 입장 시 사용한 아이템 - 소모품
-            string stage_slug = "HackAndSlash" + "_" + log.worldId + "_" + log.stageId;
-            OnCharacterConsumablePlay("HackAndSlash", stage_slug);
-
-            //[TentuPlay] PlayStage 끝 기록
-            OnCharacterStageEnd(log, "HackAndSlash", stage_slug, log.clearedWaveNumber);
-
+            string stageSlug = $"HackAndSlash_{log.worldId}_{log.stageId}";
+            OnCharacterConsumablePlay("HackAndSlash", stageSlug);
+            OnCharacterStageEnd(log, "HackAndSlash", stageSlug, log.clearedWaveNumber);
             var props = new Value
             {
                 ["StageId"] = log.stageId
@@ -717,7 +714,6 @@ namespace Nekoyume.Game
             battle.EnemyPlayerStatus.SetProfile(character.Level, character.NameWithHash, sprite);
             yield return StartCoroutine(spawner.CoSetData(character, new Vector3(8f, -1.2f)));
         }
-
         #region Skill
 
         public IEnumerator CoNormalAttack(

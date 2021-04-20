@@ -79,6 +79,9 @@ namespace Nekoyume.UI
         [SerializeField]
         private Transform buttonStarImageTransform = null;
 
+        [SerializeField]
+        private NCToggle repeatToggle;
+
         [SerializeField, Range(.5f, 3.0f)]
         private float animationTime = 1f;
 
@@ -161,7 +164,7 @@ namespace Nekoyume.UI
 
             _stageId.Subscribe(SubscribeStage).AddTo(gameObject);
 
-            startButton.OnClickAsObservable().Subscribe(_ => BattleClick(false)).AddTo(gameObject);
+            startButton.OnClickAsObservable().Subscribe(_ => BattleClick(repeatToggle.isOn)).AddTo(gameObject);
 
             Game.Event.OnRoomEnter.AddListener(b => Close());
 
