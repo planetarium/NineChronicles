@@ -504,6 +504,8 @@ namespace Nekoyume.UI
             StartCoroutine(CoFadeOut());
             var stage = Game.Game.instance.Stage;
             stage.repeatStage = false;
+            stage.isExitReserved = false;
+            WidgetHandler.Instance.BottomMenu.exitButton.SharedModel.IsEnabled.Value = false;
             var stageLoadingScreen = Find<StageLoadingScreen>();
             stageLoadingScreen.Show(stage.zone, SharedModel.WorldName,
                 SharedModel.StageID + 1, true, SharedModel.StageID);
@@ -549,6 +551,8 @@ namespace Nekoyume.UI
             StopCoUpdateBottomText();
             StartCoroutine(CoFadeOut());
             var stage = Game.Game.instance.Stage;
+            stage.isExitReserved = false;
+            WidgetHandler.Instance.BottomMenu.exitButton.SharedModel.IsEnabled.Value = false;
             var stageLoadingScreen = Find<StageLoadingScreen>();
             stageLoadingScreen.Show(stage.zone, SharedModel.WorldName,
                 SharedModel.StageID, false, SharedModel.StageID);
