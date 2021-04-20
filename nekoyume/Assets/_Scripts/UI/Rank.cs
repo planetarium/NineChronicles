@@ -17,6 +17,12 @@ namespace Nekoyume.UI
         [SerializeField]
         private RankPanel rankPanel = null;
 
+        public override void Initialize()
+        {
+            base.Initialize();
+            rankPanel.Initialize();
+        }
+
         public override void Show(bool ignoreShowAnimation = false)
         {
             base.Show(ignoreShowAnimation);

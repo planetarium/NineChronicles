@@ -169,7 +169,7 @@ GameObject:
   - component: {fileID: 8409937311650923844}
   - component: {fileID: 4551864614370093432}
   m_Layer: 5
-  m_Name: IDText
+  m_Name: AddressText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -357,6 +357,7 @@ GameObject:
   - component: {fileID: 6466007502928849909}
   - component: {fileID: 3993079662713737467}
   - component: {fileID: 6352535224322201035}
+  - component: {fileID: 6424163822567100480}
   m_Layer: 5
   m_Name: RankCell_Myinfo
   m_TagString: Untagged
@@ -433,6 +434,23 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
+--- !u!114 &6424163822567100480
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3018884119875456309}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8f5170c676083424d9598e137d6b81d2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rankText: {fileID: 576702160095883671}
+  nicknameText: {fileID: 7867548136127325657}
+  addressText: {fileID: 8409937311650923844}
+  firstElement: {fileID: 3493398272436589879}
+  secondElement: {fileID: 6564265926207178093}
 --- !u!1 &3496021633471359621
 GameObject:
   m_ObjectHideFlags: 0
@@ -1685,6 +1703,21 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 7267492800988253527}
     m_Modifications:
+    - target: {fileID: 3434827073648422375, guid: a9f817ccaf6b243fdb7a1975b76b842a,
+        type: 3}
+      propertyPath: m_Name
+      value: FramedCharacterView
+      objectReference: {fileID: 0}
+    - target: {fileID: 3434827073648422375, guid: a9f817ccaf6b243fdb7a1975b76b842a,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7412098714008221570, guid: a9f817ccaf6b243fdb7a1975b76b842a,
+        type: 3}
+      propertyPath: isTitleFrame
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2106852222037365949, guid: a9f817ccaf6b243fdb7a1975b76b842a,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1799,21 +1832,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalScale.y
       value: 0.9
-      objectReference: {fileID: 0}
-    - target: {fileID: 7412098714008221570, guid: a9f817ccaf6b243fdb7a1975b76b842a,
-        type: 3}
-      propertyPath: isTitleFrame
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3434827073648422375, guid: a9f817ccaf6b243fdb7a1975b76b842a,
-        type: 3}
-      propertyPath: m_Name
-      value: FramedCharacterView
-      objectReference: {fileID: 0}
-    - target: {fileID: 3434827073648422375, guid: a9f817ccaf6b243fdb7a1975b76b842a,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6487158816000491061, guid: a9f817ccaf6b243fdb7a1975b76b842a,
         type: 3}
