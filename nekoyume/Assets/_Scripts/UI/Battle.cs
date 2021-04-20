@@ -37,8 +37,6 @@ namespace Nekoyume.UI
 
         public BossStatus BossStatus => bossStatus;
 
-        public ToggleableButton RepeatButton => repeatButton;
-
         public HelpButton HelpButton => helpButton;
 
         public BossStatus EnemyPlayerStatus => enemyPlayerStatus;
