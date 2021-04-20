@@ -112,6 +112,16 @@ namespace Nekoyume.UI
             Game.Game.instance.ActionManager.BuyMultiple(purchaseInfos,
                 shopItems.SharedModel.wishItems.ToList());
 
+            if (shopItems.SharedModel.wishItems != null &&
+                shopItems.SharedModel.wishItems.Count > 0)
+            {
+                var props = new Value
+                {
+                    ["Count"] = shopItems.SharedModel.wishItems.Count,
+                };
+                Mixpanel.Track("Unity/Number of Purchased Items", props);
+            }
+
             foreach (var shopItem in shopItems.SharedModel.wishItems)
             {
                 var props = new Value
