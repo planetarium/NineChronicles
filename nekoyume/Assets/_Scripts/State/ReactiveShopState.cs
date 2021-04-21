@@ -47,7 +47,7 @@ namespace Nekoyume.State
         public static readonly Dictionary<Guid, List<Nekoyume.UI.Model.ShopItem>> PurchaseHistory =
             new Dictionary<Guid, List<Nekoyume.UI.Model.ShopItem>>();
 
-        public static void Initialize(ShopState state, int shopItemsPerPage)
+        public static void Initialize(ShopState state, IEnumerable<ShopItem> shardedProducts, int shopItemsPerPage)
         {
             _shopItemsPerPage = shopItemsPerPage;
 
@@ -56,7 +56,10 @@ namespace Nekoyume.State
                 return;
             }
 
+            // It uses shaded shop state with the old store state.
+            // Later, only shaded shop state will be used.
             var products = state.Products.Values.ToList();
+            products.AddRange(shardedProducts);
 
             // AgentProducts.
             {

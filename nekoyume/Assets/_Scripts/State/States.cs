@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using Bencodex.Types;
 using Libplanet;
 using Nekoyume.Action;
 using Nekoyume.BlockChain;
+using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using Nekoyume.State.Subjects;
 using Nekoyume.UI;
@@ -21,7 +23,6 @@ namespace Nekoyume.State
         public static States Instance => Game.Game.instance.States;
 
         public readonly Dictionary<Address, RankingMapState> RankingMapStates = new Dictionary<Address, RankingMapState>();
-        public ShopState ShopState { get; private set; }
 
         public WeeklyArenaState WeeklyArenaState { get; private set; }
 
@@ -62,22 +63,6 @@ namespace Nekoyume.State
 
             RankingMapStates[state.address] = state;
             RankingMapStatesSubject.OnNext(RankingMapStates);
-        }
-
-        /// <summary>
-        /// 샵 상태를 할당한다.
-        /// </summary>
-        /// <param name="state"></param>
-        public void SetShopState(ShopState state, int shopItemsPerPage = 24)
-        {
-            if (state is null)
-            {
-                Debug.LogWarning($"[{nameof(States)}.{nameof(SetShopState)}] {nameof(state)} is null.");
-                return;
-            }
-
-            ShopState = state;
-            ReactiveShopState.Initialize(ShopState, shopItemsPerPage);
         }
 
         public void SetWeeklyArenaState(WeeklyArenaState state)

@@ -232,6 +232,7 @@ namespace Nekoyume.BlockChain
                 sellerAvatarAddress = avatarAddress,
                 itemId = itemId,
                 price = price,
+                itemSubType = itemSubType,
             };
             ProcessAction(action);
 
@@ -253,6 +254,7 @@ namespace Nekoyume.BlockChain
             {
                 productId = productId,
                 sellerAvatarAddress = sellerAvatarAddress,
+                itemSubType = itemSubType,
             };
             ProcessAction(action);
 

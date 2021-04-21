@@ -22,6 +22,7 @@ namespace Nekoyume.UI
     public class ShopBuy : Widget
     {
         private const int NPCId = 300000;
+        private const int ShopItemsPerPage = 24; // todo : Resolution Response Required Later
         private static readonly Vector3 NPCPosition = new Vector3(1000.1f, 998.2f, 1.7f);
         private NPC _npc;
 
@@ -95,8 +96,18 @@ namespace Nekoyume.UI
 
             var task = Task.Run(() =>
             {
-                States.Instance.SetShopState(new ShopState(
-                    (Bencodex.Types.Dictionary) Game.Game.instance.Agent.GetState(Addresses.Shop)));
+                var game = Game.Game.instance;
+                var shopState = new ShopState(
+                    (Bencodex.Types.Dictionary) game.Agent.GetState(Addresses.Shop));
+
+                var shardedProducts = new List<Nekoyume.Model.Item.ShopItem>();
+                Game.Game.instance.ShopProducts.UpdateProducts();
+                foreach (var items in game.ShopProducts.Products.Select(i => i.Value))
+                {
+                    shardedProducts.AddRange(items);
+                }
+
+                ReactiveShopState.Initialize(shopState, shardedProducts, ShopItemsPerPage);
                 return true;
             });
 
