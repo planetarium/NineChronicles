@@ -446,11 +446,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8f5170c676083424d9598e137d6b81d2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  imageContainer: {fileID: 1655756275989626449}
+  textContainer: {fileID: 3496021633471359621}
+  rankImage: {fileID: 6417249917260669696}
   rankText: {fileID: 576702160095883671}
   nicknameText: {fileID: 7867548136127325657}
   addressText: {fileID: 25488258339422006}
   firstElement: {fileID: 3493398272436589879}
   secondElement: {fileID: 6564265926207178093}
+  firstPlaceSprite: {fileID: 21300000, guid: b5bf5b24edcd24e3fbb975b716166eb4, type: 3}
+  secondPlaceSprite: {fileID: 21300000, guid: c6c50146382394d668455c00a30730db, type: 3}
+  thirdPlaceSprite: {fileID: 21300000, guid: 6ef43577a33454f3eae3444f44b80a95, type: 3}
 --- !u!1 &3496021633471359621
 GameObject:
   m_ObjectHideFlags: 0
@@ -1715,11 +1721,6 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 7412098714008221570, guid: a9f817ccaf6b243fdb7a1975b76b842a,
-        type: 3}
-      propertyPath: isTitleFrame
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 2106852222037365949, guid: a9f817ccaf6b243fdb7a1975b76b842a,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1835,16 +1836,15 @@ PrefabInstance:
       propertyPath: m_LocalScale.y
       value: 0.9
       objectReference: {fileID: 0}
-    - target: {fileID: 6487158816000491061, guid: a9f817ccaf6b243fdb7a1975b76b842a,
+    - target: {fileID: 2400401590883738550, guid: a9f817ccaf6b243fdb7a1975b76b842a,
         type: 3}
-      propertyPath: m_Sprite
-      value: 
-      objectReference: {fileID: 21300000, guid: b582833a048854540acc861a471bfb8d,
+      propertyPath: m_LocalScale.x
+      value: 0.7
+      objectReference: {fileID: 0}
+    - target: {fileID: 2400401590883738550, guid: a9f817ccaf6b243fdb7a1975b76b842a,
         type: 3}
-    - target: {fileID: 6487158816000491061, guid: a9f817ccaf6b243fdb7a1975b76b842a,
-        type: 3}
-      propertyPath: m_Enabled
-      value: 1
+      propertyPath: m_LocalScale.y
+      value: 0.7
       objectReference: {fileID: 0}
     - target: {fileID: 749557080856132949, guid: a9f817ccaf6b243fdb7a1975b76b842a,
         type: 3}
@@ -1856,19 +1856,25 @@ PrefabInstance:
       propertyPath: m_SizeDelta.y
       value: 46
       objectReference: {fileID: 0}
-    - target: {fileID: 2400401590883738550, guid: a9f817ccaf6b243fdb7a1975b76b842a,
-        type: 3}
-      propertyPath: m_LocalScale.x
-      value: 0.7
-      objectReference: {fileID: 0}
-    - target: {fileID: 2400401590883738550, guid: a9f817ccaf6b243fdb7a1975b76b842a,
-        type: 3}
-      propertyPath: m_LocalScale.y
-      value: 0.7
-      objectReference: {fileID: 0}
     - target: {fileID: 8264233819107350788, guid: a9f817ccaf6b243fdb7a1975b76b842a,
         type: 3}
       propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7412098714008221570, guid: a9f817ccaf6b243fdb7a1975b76b842a,
+        type: 3}
+      propertyPath: isTitleFrame
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6487158816000491061, guid: a9f817ccaf6b243fdb7a1975b76b842a,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: b582833a048854540acc861a471bfb8d,
+        type: 3}
+    - target: {fileID: 6487158816000491061, guid: a9f817ccaf6b243fdb7a1975b76b842a,
+        type: 3}
+      propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
