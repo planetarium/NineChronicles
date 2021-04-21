@@ -217,8 +217,8 @@ namespace Nekoyume.UI
 
         private void Buy(ShopItem shopItem)
         {
-            var purchaseInfos = new List<BuyMultiple.PurchaseInfo> { GetPurchseInfo(shopItem) };
-            Game.Game.instance.ActionManager.BuyMultiple(purchaseInfos,
+            var purchaseInfos = new List<PurchaseInfo> { GetPurchseInfo(shopItem) };
+            Game.Game.instance.ActionManager.Buy(purchaseInfos,
                 new List<ShopItem> {shopItem});
 
             var countProps = new Value
@@ -246,13 +246,6 @@ namespace Nekoyume.UI
                 string.Format(format, shopItem.ItemBase.Value.GetLocalizedName()));
 
             AudioController.instance.PlaySfx(AudioController.SfxCode.BuyItem);
-        }
-
-        private BuyMultiple.PurchaseInfo GetPurchseInfo(ShopItem shopItem)
-        {
-            return new BuyMultiple.PurchaseInfo(shopItem.ProductId.Value,
-                shopItem.SellerAgentAddress.Value,
-                shopItem.SellerAvatarAddress.Value);
         }
 
         private void SetMultiplePurchase(bool value)
@@ -312,6 +305,14 @@ namespace Nekoyume.UI
             {
                 callback.Invoke();
             }
+        }
+
+        public static PurchaseInfo GetPurchseInfo(ShopItem shopItem)
+        {
+            return new PurchaseInfo(shopItem.ProductId.Value,
+                shopItem.SellerAgentAddress.Value,
+                shopItem.SellerAvatarAddress.Value,
+                shopItem.ItemSubType.Value);
         }
     }
 }

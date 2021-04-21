@@ -35,7 +35,7 @@ namespace Nekoyume.BlockChain
             _renderer = renderer;
 
             RewardGold();
-            BuyMultiple();
+            Buy();
             Sell();
             SellCancellation();
             DailyReward();
@@ -70,11 +70,11 @@ namespace Nekoyume.BlockChain
                 .AddTo(_disposables);
         }
 
-        private void BuyMultiple()
+        private void Buy()
         {
-            _renderer.EveryUnrender<BuyMultiple>()
+            _renderer.EveryUnrender<Buy>()
                 .ObserveOnMainThread()
-                .Subscribe(ResponseBuyMultiple)
+                .Subscribe(ResponseBuy)
                 .AddTo(_disposables);
         }
 
@@ -114,7 +114,7 @@ namespace Nekoyume.BlockChain
                 .AddTo(_disposables);
         }
 
-        private void ResponseBuyMultiple(ActionBase.ActionEvaluation<BuyMultiple> eval)
+        private void ResponseBuy(ActionBase.ActionEvaluation<Buy> eval)
         {
             if (!(eval.Exception is null))
             {
@@ -127,7 +127,7 @@ namespace Nekoyume.BlockChain
             if (eval.Action.buyerAvatarAddress == currentAvatarAddress)
             {
                 var agentAddress = States.Instance.AgentState.address;
-                var purchaseResults = eval.Action.buyerResult.purchaseResults;
+                var purchaseResults = eval.Action.buyerMultipleResult.purchaseResults;
                 foreach (var purchaseResult in purchaseResults)
                 {
                     if (purchaseResult.errorCode == 0)
@@ -162,7 +162,7 @@ namespace Nekoyume.BlockChain
             }
             else
             {
-                foreach (var sellerResult in eval.Action.sellerResult.sellerResults)
+                foreach (var sellerResult in eval.Action.sellerMultipleResult.sellerResults)
                 {
                     if (sellerResult.shopItem.SellerAvatarAddress != currentAvatarAddress)
                     {

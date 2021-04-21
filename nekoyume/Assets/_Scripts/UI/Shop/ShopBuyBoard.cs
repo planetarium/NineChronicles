@@ -108,8 +108,8 @@ namespace Nekoyume.UI
 
         private void BuyMultiple()
         {
-            var purchaseInfos = shopItems.SharedModel.wishItems.Select(GetPurchseInfo).ToList();
-            Game.Game.instance.ActionManager.BuyMultiple(purchaseInfos,
+            var purchaseInfos = shopItems.SharedModel.wishItems.Select(ShopBuy.GetPurchseInfo).ToList();
+            Game.Game.instance.ActionManager.Buy(purchaseInfos,
                 shopItems.SharedModel.wishItems.ToList());
 
             if (shopItems.SharedModel.wishItems != null &&
@@ -142,13 +142,6 @@ namespace Nekoyume.UI
             AudioController.instance.PlaySfx(AudioController.SfxCode.BuyItem);
             shopItems.SharedModel.ClearWishList();
             UpdateWishList();
-        }
-
-        private BuyMultiple.PurchaseInfo GetPurchseInfo(ShopItem shopItem)
-        {
-            return new BuyMultiple.PurchaseInfo(shopItem.ProductId.Value,
-                shopItem.SellerAgentAddress.Value,
-                shopItem.SellerAvatarAddress.Value);
         }
 
         private void OnClickTransactionHistory(Unit unit)
