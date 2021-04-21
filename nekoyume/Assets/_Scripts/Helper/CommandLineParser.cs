@@ -337,7 +337,7 @@ namespace Nekoyume.Helper
         public static CommandLineOptions Load(string localPath)
         {
             var options = CommandLineParser.GetCommandLineOptions();
-            if (!options.Empty)
+            if (options != null && !options.Empty)
             {
                 Debug.Log($"Get options from commandline.");
                 return options;
