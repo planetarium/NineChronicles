@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Bencodex.Types;
 using Nekoyume.Model.State;
-using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Model.Stat
 {
@@ -41,9 +40,7 @@ namespace Nekoyume.Model.Stat
 
         public StatMapEx(Dictionary serialized) : base(serialized)
         {
-            bool useLegacy = serialized.ContainsKey(LegacyAdditionalStatValueKey);
-            string additionalValueKey = useLegacy ? LegacyAdditionalStatValueKey : AdditionalStatValueKey;
-            AdditionalValue = serialized[additionalValueKey].ToDecimal();
+            AdditionalValue = serialized["additionalValue"].ToDecimal();
         }
 
         protected bool Equals(StatMapEx other)
@@ -72,15 +69,7 @@ namespace Nekoyume.Model.Stat
 #pragma warning disable LAA1002
             new Dictionary(new Dictionary<IKey, IValue>
             {
-                [(Text) AdditionalStatValueKey] = (Text)AdditionalValue.Serialize(),
-            }.Union((Dictionary)base.Serialize()));
-#pragma warning restore LAA1002
-
-        public override IValue SerializeLegacy() =>
-#pragma warning disable LAA1002
-            new Dictionary(new Dictionary<IKey, IValue>
-            {
-                [(Text) LegacyAdditionalStatValueKey] = (Text)AdditionalValue.Serialize(),
+                [(Text)"additionalValue"] = (Text)AdditionalValue.Serialize(),
             }.Union((Dictionary)base.Serialize()));
 #pragma warning restore LAA1002
     }

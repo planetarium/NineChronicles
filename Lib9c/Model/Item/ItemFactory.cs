@@ -5,7 +5,6 @@ using Bencodex.Types;
 using Libplanet.Action;
 using Nekoyume.TableData;
 using Nekoyume.Model.State;
-using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Model.Item
 {
@@ -89,15 +88,8 @@ namespace Nekoyume.Model.Item
 
         public static ItemBase Deserialize(Dictionary serialized)
         {
-            Text itemTypeKey = ItemTypeKey;
-            Text itemSubTypeKey = ItemSubTypeKey;
-            if (serialized.ContainsKey(LegacyItemTypeKey))
-            {
-                itemTypeKey = LegacyItemTypeKey;
-                itemSubTypeKey = LegacyItemSubTypeKey;
-            }
-            if (serialized.TryGetValue(itemTypeKey, out var type) &&
-                serialized.TryGetValue(itemSubTypeKey, out var subType))
+            if (serialized.TryGetValue((Text) "item_type", out var type) &&
+                serialized.TryGetValue((Text) "item_sub_type", out var subType))
             {
                 var itemType = type.ToEnum<ItemType>();
                 var itemSubType = subType.ToEnum<ItemSubType>();

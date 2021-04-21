@@ -18,7 +18,6 @@ namespace Lib9c.Tests.Model.State
     using Nekoyume.Model.Quest;
     using Nekoyume.Model.State;
     using Xunit;
-    using static SerializeKeys;
 
     public class AvatarStateTest
     {
@@ -265,7 +264,7 @@ namespace Lib9c.Tests.Model.State
             var row = _tableSheets.CostumeItemSheet.Values.First();
             var costume = ItemFactory.CreateCostume(row, default);
             var serialized = (Dictionary)costume.Serialize();
-            serialized = serialized.SetItem(ItemSubTypeKey, ItemSubType.Armor.Serialize());
+            serialized = serialized.SetItem("item_sub_type", ItemSubType.Armor.Serialize());
             var costume2 = new Costume(serialized);
             var costumeIds = new HashSet<int> { costume2.Id };
             avatarState.inventory.AddItem(costume2);
