@@ -210,6 +210,11 @@ namespace Nekoyume.UI.Module
             switch (category)
             {
                 case RankCategory.Ability:
+                    if (_abilityRankingInfos is null)
+                    {
+                        return;
+                    }
+
                     for (int i = 0; i < _abilityRankingInfos.Count(); ++i)
                     {
                         if (i >= displayCount)

@@ -1,5 +1,6 @@
 using Libplanet;
 using Nekoyume.Model.State;
+using Nekoyume.UI.Module;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -21,6 +22,9 @@ namespace Nekoyume.UI.Scroller
 
         [SerializeField]
         private TextMeshProUGUI rankText = null;
+
+        [SerializeField]
+        private DetailedCharacterView characterView = null;
 
         [SerializeField]
         private TextMeshProUGUI nicknameText = null;
@@ -49,8 +53,10 @@ namespace Nekoyume.UI.Scroller
         public void SetDataAsAbility(int rank, string nickname, Address avatarAddress, int cp, int level)
         {
             nicknameText.text = nickname;
-            addressText.text = avatarAddress.ToString()
+            addressText.text = avatarAddress
+                .ToString()
                 .Remove(addressStringCount);
+
             firstElement.text = cp.ToString();
             secondElement.text = level.ToString();
             switch (rank)
@@ -77,6 +83,7 @@ namespace Nekoyume.UI.Scroller
                     break;
             }
 
+            characterView.SetByAvatarAddress(avatarAddress);
             gameObject.SetActive(true);
         }
     }
