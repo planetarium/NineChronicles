@@ -4,11 +4,21 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Nekoyume.UI.Scroller
 {
     public class RankCell : MonoBehaviour
     {
+        [SerializeField]
+        private GameObject imageContainer = null;
+
+        [SerializeField]
+        private GameObject textContainer = null;
+
+        [SerializeField]
+        private Image rankImage = null;
+
         [SerializeField]
         private TextMeshProUGUI rankText = null;
 
@@ -24,13 +34,48 @@ namespace Nekoyume.UI.Scroller
         [SerializeField]
         private TextMeshProUGUI secondElement = null;
 
-        public void SetDataAsAbility(int rank, string nickname, Address avatarAddress, int level, int cp)
+        [SerializeField]
+        private Sprite firstPlaceSprite = null;
+
+        [SerializeField]
+        private Sprite secondPlaceSprite = null;
+
+        [SerializeField]
+        private Sprite thirdPlaceSprite = null;
+
+        [SerializeField]
+        private int addressStringCount = 6;
+
+        public void SetDataAsAbility(int rank, string nickname, Address avatarAddress, int cp, int level)
         {
-            rankText.text = rank.ToString();
             nicknameText.text = nickname;
-            addressText.text = avatarAddress.ToString();
-            firstElement.text = level.ToString();
-            secondElement.text = cp.ToString();
+            addressText.text = avatarAddress.ToString()
+                .Remove(addressStringCount);
+            firstElement.text = cp.ToString();
+            secondElement.text = level.ToString();
+            switch (rank)
+            {
+                case 1:
+                    imageContainer.SetActive(true);
+                    textContainer.SetActive(false);
+                    rankImage.sprite = firstPlaceSprite;
+                    break;
+                case 2:
+                    imageContainer.SetActive(true);
+                    textContainer.SetActive(false);
+                    rankImage.sprite = secondPlaceSprite;
+                    break;
+                case 3:
+                    imageContainer.SetActive(true);
+                    textContainer.SetActive(false);
+                    rankImage.sprite = thirdPlaceSprite;
+                    break;
+                default:
+                    imageContainer.SetActive(false);
+                    textContainer.SetActive(true);
+                    rankText.text = rank.ToString();
+                    break;
+            }
 
             gameObject.SetActive(true);
         }
