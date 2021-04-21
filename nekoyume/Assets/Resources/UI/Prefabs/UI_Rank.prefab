@@ -2885,7 +2885,7 @@ MonoBehaviour:
   - {fileID: 895384282731528559}
   rankCellPrefab: {fileID: 3018884119875456309, guid: 783de6947a238496c998cc09a261b24a,
     type: 3}
-  myInfoPrefab: {fileID: 3018884119875456309, guid: 3a1af6ae0bdaa47ab924ddc63446f20a,
+  myInfoPrefab: {fileID: 8308349045622448127, guid: 83a6fb8b47846894ea8631bfe1d358b7,
     type: 3}
   firstColumnText: {fileID: 5023157045350064754}
   secondColumnText: {fileID: 3419861935695231570}
@@ -3797,28 +3797,6 @@ PrefabInstance:
       propertyPath: m_EffectFactor
       value: 0.6287411
       objectReference: {fileID: 0}
-    - target: {fileID: 2731226473944183329, guid: 45071a50f74cd1949a4ec57fd8f9d214,
-        type: 3}
-      propertyPath: m_text
-      value: 'UI_STAGE
-
-'
-      objectReference: {fileID: 0}
-    - target: {fileID: 2731226473944183329, guid: 45071a50f74cd1949a4ec57fd8f9d214,
-        type: 3}
-      propertyPath: m_textInfo.characterCount
-      value: 9
-      objectReference: {fileID: 0}
-    - target: {fileID: 2731226473944183329, guid: 45071a50f74cd1949a4ec57fd8f9d214,
-        type: 3}
-      propertyPath: m_textInfo.spaceCount
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2731226473944183329, guid: 45071a50f74cd1949a4ec57fd8f9d214,
-        type: 3}
-      propertyPath: m_textInfo.wordCount
-      value: 2
-      objectReference: {fileID: 0}
     - target: {fileID: 4121153352078744567, guid: 45071a50f74cd1949a4ec57fd8f9d214,
         type: 3}
       propertyPath: m_text
@@ -3850,6 +3828,28 @@ PrefabInstance:
         type: 3}
       propertyPath: m_textInfo.spaceCount
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2731226473944183329, guid: 45071a50f74cd1949a4ec57fd8f9d214,
+        type: 3}
+      propertyPath: m_text
+      value: 'UI_STAGE
+
+'
+      objectReference: {fileID: 0}
+    - target: {fileID: 2731226473944183329, guid: 45071a50f74cd1949a4ec57fd8f9d214,
+        type: 3}
+      propertyPath: m_textInfo.characterCount
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 2731226473944183329, guid: 45071a50f74cd1949a4ec57fd8f9d214,
+        type: 3}
+      propertyPath: m_textInfo.spaceCount
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2731226473944183329, guid: 45071a50f74cd1949a4ec57fd8f9d214,
+        type: 3}
+      propertyPath: m_textInfo.wordCount
+      value: 2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 45071a50f74cd1949a4ec57fd8f9d214, type: 3}
@@ -4392,11 +4392,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: TabButton_Main
       objectReference: {fileID: 0}
-    - target: {fileID: 867982976131992942, guid: 26f57b4cd6ade59448f086de7678075f,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 7752302800529836251, guid: 26f57b4cd6ade59448f086de7678075f,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -4502,6 +4497,26 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 867982976131992942, guid: 26f57b4cd6ade59448f086de7678075f,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3747162246747355884, guid: 26f57b4cd6ade59448f086de7678075f,
+        type: 3}
+      propertyPath: m_text
+      value: UI_ABILITY
+      objectReference: {fileID: 0}
+    - target: {fileID: 3747162246747355884, guid: 26f57b4cd6ade59448f086de7678075f,
+        type: 3}
+      propertyPath: m_textInfo.characterCount
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 3747162246747355884, guid: 26f57b4cd6ade59448f086de7678075f,
+        type: 3}
+      propertyPath: m_textInfo.wordCount
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 4160561406015655916, guid: 26f57b4cd6ade59448f086de7678075f,
         type: 3}
       propertyPath: m_textInfo.characterCount
@@ -4526,21 +4541,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_text
       value: UI_ABILITY
-      objectReference: {fileID: 0}
-    - target: {fileID: 3747162246747355884, guid: 26f57b4cd6ade59448f086de7678075f,
-        type: 3}
-      propertyPath: m_text
-      value: UI_ABILITY
-      objectReference: {fileID: 0}
-    - target: {fileID: 3747162246747355884, guid: 26f57b4cd6ade59448f086de7678075f,
-        type: 3}
-      propertyPath: m_textInfo.characterCount
-      value: 10
-      objectReference: {fileID: 0}
-    - target: {fileID: 3747162246747355884, guid: 26f57b4cd6ade59448f086de7678075f,
-        type: 3}
-      propertyPath: m_textInfo.wordCount
-      value: 2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 26f57b4cd6ade59448f086de7678075f, type: 3}
@@ -4683,11 +4683,6 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 2731226473944183329, guid: 45071a50f74cd1949a4ec57fd8f9d214,
-        type: 3}
-      propertyPath: m_text
-      value: UI_MIMISBRUNNR
-      objectReference: {fileID: 0}
     - target: {fileID: 4121153352078744567, guid: 45071a50f74cd1949a4ec57fd8f9d214,
         type: 3}
       propertyPath: m_text
@@ -4712,6 +4707,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_textInfo.pageCount
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2731226473944183329, guid: 45071a50f74cd1949a4ec57fd8f9d214,
+        type: 3}
+      propertyPath: m_text
+      value: UI_MIMISBRUNNR
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 45071a50f74cd1949a4ec57fd8f9d214, type: 3}
@@ -4740,16 +4740,6 @@ PrefabInstance:
       value: TabButton_Main
       objectReference: {fileID: 0}
     - target: {fileID: 4221827154753238338, guid: 26f57b4cd6ade59448f086de7678075f,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5715816593280106713, guid: 26f57b4cd6ade59448f086de7678075f,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 867982976131992942, guid: 26f57b4cd6ade59448f086de7678075f,
         type: 3}
       propertyPath: m_IsActive
       value: 1
@@ -4859,6 +4849,36 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 867982976131992942, guid: 26f57b4cd6ade59448f086de7678075f,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5715816593280106713, guid: 26f57b4cd6ade59448f086de7678075f,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3747162246747355884, guid: 26f57b4cd6ade59448f086de7678075f,
+        type: 3}
+      propertyPath: m_text
+      value: UI_PROGRESS
+      objectReference: {fileID: 0}
+    - target: {fileID: 3747162246747355884, guid: 26f57b4cd6ade59448f086de7678075f,
+        type: 3}
+      propertyPath: m_textInfo.characterCount
+      value: 11
+      objectReference: {fileID: 0}
+    - target: {fileID: 3747162246747355884, guid: 26f57b4cd6ade59448f086de7678075f,
+        type: 3}
+      propertyPath: m_textInfo.wordCount
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3747162246747355884, guid: 26f57b4cd6ade59448f086de7678075f,
+        type: 3}
+      propertyPath: m_fontSize
+      value: 21.9
+      objectReference: {fileID: 0}
     - target: {fileID: 4160561406015655916, guid: 26f57b4cd6ade59448f086de7678075f,
         type: 3}
       propertyPath: m_textInfo.characterCount
@@ -4888,26 +4908,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_textInfo.spaceCount
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3747162246747355884, guid: 26f57b4cd6ade59448f086de7678075f,
-        type: 3}
-      propertyPath: m_text
-      value: UI_PROGRESS
-      objectReference: {fileID: 0}
-    - target: {fileID: 3747162246747355884, guid: 26f57b4cd6ade59448f086de7678075f,
-        type: 3}
-      propertyPath: m_textInfo.characterCount
-      value: 11
-      objectReference: {fileID: 0}
-    - target: {fileID: 3747162246747355884, guid: 26f57b4cd6ade59448f086de7678075f,
-        type: 3}
-      propertyPath: m_textInfo.wordCount
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 3747162246747355884, guid: 26f57b4cd6ade59448f086de7678075f,
-        type: 3}
-      propertyPath: m_fontSize
-      value: 21.9
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 26f57b4cd6ade59448f086de7678075f, type: 3}
@@ -5040,14 +5040,14 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
-    - target: {fileID: 6145152773070964971, guid: ec3c95a861b3330439e701f8a43f3235,
-        type: 3}
-      propertyPath: m_SizeDelta.y
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 7859865006666117984, guid: ec3c95a861b3330439e701f8a43f3235,
         type: 3}
       propertyPath: m_ChildControlHeight
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6145152773070964971, guid: ec3c95a861b3330439e701f8a43f3235,
+        type: 3}
+      propertyPath: m_SizeDelta.y
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5808909986960697791, guid: ec3c95a861b3330439e701f8a43f3235,
