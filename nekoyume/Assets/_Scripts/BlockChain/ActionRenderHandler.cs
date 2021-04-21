@@ -63,7 +63,7 @@ namespace Nekoyume.BlockChain
             CombinationConsumable();
             Sell();
             SellCancellation();
-            BuyMultiple();
+            Buy();
             DailyReward();
             ItemEnhancement();
             RankingBattle();
@@ -168,7 +168,7 @@ namespace Nekoyume.BlockChain
 
         private void Sell()
         {
-            _renderer.EveryRender<Sell3>()
+            _renderer.EveryRender<Sell>()
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseSell).AddTo(_disposables);
@@ -176,17 +176,17 @@ namespace Nekoyume.BlockChain
 
         private void SellCancellation()
         {
-            _renderer.EveryRender<SellCancellation4>()
+            _renderer.EveryRender<SellCancellation>()
                 .Where(ValidateEvaluationForCurrentAvatarState)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseSellCancellation).AddTo(_disposables);
         }
 
-        private void BuyMultiple()
+        private void Buy()
         {
-            _renderer.EveryRender<BuyMultiple>()
+            _renderer.EveryRender<Buy>()
                 .ObserveOnMainThread()
-                .Subscribe(ResponseBuyMultiple).AddTo(_disposables);
+                .Subscribe(ResponseBuy).AddTo(_disposables);
         }
 
         private void ItemEnhancement()
@@ -458,7 +458,7 @@ namespace Nekoyume.BlockChain
             }
         }
 
-        private void ResponseSell(ActionBase.ActionEvaluation<Sell3> eval)
+        private void ResponseSell(ActionBase.ActionEvaluation<Sell> eval)
         {
             if (eval.Exception is null)
             {
@@ -482,7 +482,7 @@ namespace Nekoyume.BlockChain
             }
         }
 
-        private void ResponseSellCancellation(ActionBase.ActionEvaluation<SellCancellation4> eval)
+        private void ResponseSellCancellation(ActionBase.ActionEvaluation<SellCancellation> eval)
         {
             if (eval.Exception is null)
             {
@@ -499,7 +499,7 @@ namespace Nekoyume.BlockChain
             }
         }
 
-        private void ResponseBuyMultiple(ActionBase.ActionEvaluation<BuyMultiple> eval)
+        private void ResponseBuy(ActionBase.ActionEvaluation<Buy> eval)
         {
             if (eval.Exception is null)
             {
@@ -508,7 +508,7 @@ namespace Nekoyume.BlockChain
                 var currentAvatarState = eval.OutputStates.GetAvatarState(currentAvatarAddress);
                 if (eval.Action.buyerAvatarAddress == currentAvatarAddress)
                 {
-                    var purchaseResults = eval.Action.buyerResult.purchaseResults;
+                    var purchaseResults = eval.Action.buyerMultipleResult.purchaseResults;
                     foreach (var purchaseResult in purchaseResults)
                     {
                         if (purchaseResult.errorCode == 0)
@@ -589,7 +589,7 @@ namespace Nekoyume.BlockChain
                         buyerAvatarAddress.ToHex().Substring(0, 4)
                     );
 
-                    foreach (var sellerResult in eval.Action.sellerResult.sellerResults)
+                    foreach (var sellerResult in eval.Action.sellerMultipleResult.sellerResults)
                     {
                         if (sellerResult.shopItem.SellerAvatarAddress != currentAvatarAddress)
                         {
