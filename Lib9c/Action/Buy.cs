@@ -277,7 +277,7 @@ namespace Nekoyume.Action
                 IValue productIdSerialized = productId.Serialize();
                 Dictionary productSerialized = products
                     .Select(p => (Dictionary) p)
-                    .FirstOrDefault(p => p[ProductIdKey].Equals(productIdSerialized));
+                    .FirstOrDefault(p => p[LegacyProductIdKey].Equals(productIdSerialized));
 
                 bool fromLegacy = false;
                 if (productSerialized.Equals(Dictionary.Empty))

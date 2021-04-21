@@ -131,12 +131,20 @@ namespace Nekoyume.Action
             sw.Restart();
 
             List products = (List)shopStateDict[ProductsKey];
-            string productKey = nonFungibleItem is ItemUsable ? ItemUsableKey : CostumeKey;
+            string productKey = LegacyItemUsableKey;
+            string itemIdKey = LegacyItemIdKey;
+            string requiredBlockIndexKey = LegacyRequiredBlockIndexKey;
+            if (nonFungibleItem is Costume)
+            {
+                productKey = LegacyCostumeKey;
+                itemIdKey = LegacyCostumeItemIdKey;
+                requiredBlockIndexKey = Costume.RequiredBlockIndexKey;
+            }
 #pragma warning disable LAA1002
-            Dictionary productSerialized = products
+                Dictionary productSerialized = products
                 .Select(p => (Dictionary) p)
                 .FirstOrDefault(p =>
-                    ((Dictionary) p[productKey])[ItemIdKey].Equals(nonFungibleItem.ItemId.Serialize()));
+                    ((Dictionary) p[productKey])[itemIdKey].Equals(nonFungibleItem.ItemId.Serialize()));
 #pragma warning restore LAA1002
 
             // Register new ShopItem
@@ -153,7 +161,7 @@ namespace Nekoyume.Action
 
                 // Update INonfungibleItem.RequiredBlockIndex
                 Dictionary item = (Dictionary) productSerialized[productKey];
-                item = item.SetItem(RequiredBlockIndexKey, expiredBlockIndex.Serialize());
+                item = item.SetItem(requiredBlockIndexKey, expiredBlockIndex.Serialize());
 
                 // Update ShopItem.ExpiredBlockIndex
                 productSerialized = productSerialized
