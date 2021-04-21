@@ -6,7 +6,6 @@ using Bencodex.Types;
 using Nekoyume.Model.Stat;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
-using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Model.Item
 {
@@ -37,17 +36,11 @@ namespace Nekoyume.Model.Item
 
         public Equipment(Dictionary serialized) : base(serialized)
         {
-            bool useLegacy = serialized.ContainsKey(LegacyEquippedKey);
-            Text equippedKey = useLegacy ? LegacyEquippedKey : EquippedKey;
-            Text levelKey = useLegacy ? LegacyLevelKey : LevelKey;
-            Text statKey = useLegacy ? LegacyStatKey : StatKey;
-            Text setIdKey = useLegacy ? LegacySetIdKey : SetIdKey;
-            Text spineResourceKey = useLegacy ? LegacySpineResourcePathKey : SpineResourcePathKey;
-            if (serialized.TryGetValue(equippedKey, out var toEquipped))
+            if (serialized.TryGetValue((Text) "equipped", out var toEquipped))
             {
                 equipped = toEquipped.ToBoolean();
             }
-            if (serialized.TryGetValue(levelKey, out var toLevel))
+            if (serialized.TryGetValue((Text) "level", out var toLevel))
             {
                 try
                 {
@@ -58,15 +51,15 @@ namespace Nekoyume.Model.Item
                     level = (int) ((Integer) toLevel).Value;
                 }
             }
-            if (serialized.TryGetValue(statKey, out var stat))
+            if (serialized.TryGetValue((Text) "stat", out var stat))
             {
                 Stat = stat.ToDecimalStat();
             }
-            if (serialized.TryGetValue(setIdKey, out var setId))
+            if (serialized.TryGetValue((Text) "set_id", out var setId))
             {
                 SetId = setId.ToInteger();
             }
-            if (serialized.TryGetValue(spineResourceKey, out var spineResourcePath))
+            if (serialized.TryGetValue((Text) "spine_resource_path", out var spineResourcePath))
             {
                 SpineResourcePath = (Text) spineResourcePath;
             }
@@ -81,24 +74,13 @@ namespace Nekoyume.Model.Item
 #pragma warning disable LAA1002
             new Dictionary(new Dictionary<IKey, IValue>
             {
-                [(Text) EquippedKey] = equipped.Serialize(),
-                [(Text) LevelKey] = level.Serialize(),
-                [(Text) StatKey] = Stat.Serialize(),
-                [(Text) SetIdKey] = SetId.Serialize(),
-                [(Text) SpineResourcePathKey] = SpineResourcePath.Serialize(),
+                [(Text) "equipped"] = equipped.Serialize(),
+                [(Text) "level"] = level.Serialize(),
+                [(Text) "stat"] = Stat.Serialize(),
+                [(Text) "set_id"] = SetId.Serialize(),
+                [(Text) "spine_resource_path"] = SpineResourcePath.Serialize(),
             }.Union((Dictionary) base.Serialize()));
-#pragma warning restore LAA1002
 
-        public override IValue SerializeLegacy() =>
-#pragma warning disable LAA1002
-            new Dictionary(new Dictionary<IKey, IValue>
-            {
-                [(Text) LegacyEquippedKey] = equipped.Serialize(),
-                [(Text) LegacyLevelKey] = level.Serialize(),
-                [(Text) LegacyStatKey] = Stat.Serialize(),
-                [(Text) LegacySetIdKey] = SetId.Serialize(),
-                [(Text) LegacySpineResourcePathKey] = SpineResourcePath.Serialize(),
-            }.Union((Dictionary) base.SerializeLegacy()));
 #pragma warning restore LAA1002
 
         public void Equip()

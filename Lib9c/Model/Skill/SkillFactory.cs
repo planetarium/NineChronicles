@@ -1,7 +1,6 @@
 using Bencodex.Types;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
-using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Model.Skill
 {
@@ -37,17 +36,11 @@ namespace Nekoyume.Model.Skill
                 $"{skillRow.Id}, {skillRow.SkillType}, {skillRow.SkillTargetType}, {skillRow.SkillCategory}");
         }
 
-        public static Skill Deserialize(Dictionary serialized)
-        {
-            bool useLegacy = serialized.ContainsKey(LegacySkillRowKey);
-            string skillRowKey = useLegacy ? LegacySkillRowKey : SkillRowKey;
-            string powerKey = useLegacy ? LegacyPowerKey : PowerKey;
-            string chanceKey = useLegacy ? LegacyChanceKey : ChanceKey;
-            return Get(
-                SkillSheet.Row.Deserialize((Dictionary) serialized[skillRowKey]),
-                serialized[powerKey].ToInteger(),
-                serialized[chanceKey].ToInteger()
+        public static Skill Deserialize(Dictionary serialized) =>
+            Get(
+                SkillSheet.Row.Deserialize((Dictionary) serialized["skillRow"]),
+                serialized["power"].ToInteger(),
+                serialized["chance"].ToInteger()
             );
-        }
     }
 }

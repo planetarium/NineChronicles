@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using Bencodex.Types;
 using Nekoyume.Model.State;
-using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Model.Stat
 {
@@ -35,12 +34,11 @@ namespace Nekoyume.Model.Stat
         }
 
         public StatMap(Dictionary serialized)
+            : this(
+                StatTypeExtension.Deserialize((Binary)serialized["statType"]),
+                serialized["value"].ToDecimal()
+            )
         {
-            bool useLegacy = serialized.ContainsKey(LegacyStatTypeKey);
-            string statTypeKey = useLegacy ? LegacyStatTypeKey : StatTypeKey;
-            string statValueKey = useLegacy ? LegacyStatValueKey : StatValueKey;
-            StatType = StatTypeExtension.Deserialize((Binary) serialized[statTypeKey]);
-            Value = serialized[statValueKey].ToDecimal();
         }
 
         protected bool Equals(StatMap other)
@@ -67,15 +65,8 @@ namespace Nekoyume.Model.Stat
         public virtual IValue Serialize() =>
             new Dictionary(new Dictionary<IKey, IValue>
             {
-                [(Text) StatTypeKey] = StatType.Serialize(),
-                [(Text) StatValueKey] = Value.Serialize(),
-            });
-
-        public virtual IValue SerializeLegacy() =>
-            new Dictionary(new Dictionary<IKey, IValue>
-            {
-                [(Text) LegacyStatTypeKey] = StatType.Serialize(),
-                [(Text) LegacyStatValueKey] = Value.Serialize(),
+                [(Text)"statType"] = StatType.Serialize(),
+                [(Text)"value"] = Value.Serialize(),
             });
     }
 }

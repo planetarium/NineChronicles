@@ -6,13 +6,13 @@ using Bencodex.Types;
 using Libplanet;
 using Libplanet.Assets;
 using Nekoyume.Model.State;
-using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Model.Item
 {
     [Serializable]
     public class ShopItem
     {
+        public const string ExpiredBlockIndexKey = "ebi";
         protected static readonly Codec Codec = new Codec();
         
         public readonly Address SellerAgentAddress;
@@ -82,22 +82,15 @@ namespace Nekoyume.Model.Item
 
         public ShopItem(Dictionary serialized)
         {
-            bool useLegacy = serialized.ContainsKey(LegacySellerAgentAddressKey);
-            string sellerAgentKey = useLegacy ? LegacySellerAgentAddressKey : SellerAgentAddressKey;
-            string sellerAvatarKey = useLegacy ? LegacySellerAvatarAddressKey : SellerAvatarAddressKey;
-            string productIdKey = useLegacy ? LegacyProductIdKey : ProductIdKey;
-            string priceKey = useLegacy ? LegacyPriceKey : PriceKey;
-            string itemUsableKey = useLegacy ? LegacyItemUsableKey : ItemUsableKey;
-            string costumeKey = useLegacy ? LegacyCostumeKey : CostumeKey;
-            SellerAgentAddress = serialized[sellerAgentKey].ToAddress();
-            SellerAvatarAddress = serialized[sellerAvatarKey].ToAddress();
-            ProductId = serialized[productIdKey].ToGuid();
-            Price = serialized[priceKey].ToFungibleAssetValue();
-            ItemUsable = serialized.ContainsKey(itemUsableKey)
-                ? (ItemUsable) ItemFactory.Deserialize((Dictionary) serialized[itemUsableKey])
+            SellerAgentAddress = serialized["sellerAgentAddress"].ToAddress();
+            SellerAvatarAddress = serialized["sellerAvatarAddress"].ToAddress();
+            ProductId = serialized["productId"].ToGuid();
+            Price = serialized["price"].ToFungibleAssetValue();
+            ItemUsable = serialized.ContainsKey("itemUsable")
+                ? (ItemUsable) ItemFactory.Deserialize((Dictionary) serialized["itemUsable"])
                 : null;
-            Costume = serialized.ContainsKey(costumeKey)
-                ? (Costume) ItemFactory.Deserialize((Dictionary) serialized[costumeKey])
+            Costume = serialized.ContainsKey("costume")
+                ? (Costume) ItemFactory.Deserialize((Dictionary) serialized["costume"])
                 : null;
             if (serialized.ContainsKey(ExpiredBlockIndexKey))
             {
@@ -124,20 +117,20 @@ namespace Nekoyume.Model.Item
         {
             var innerDictionary = new Dictionary<IKey, IValue>
             {
-                [(Text) SellerAgentAddressKey] = SellerAgentAddress.Serialize(),
-                [(Text) SellerAvatarAddressKey] = SellerAvatarAddress.Serialize(),
-                [(Text) ProductIdKey] = ProductId.Serialize(),
-                [(Text) PriceKey] = Price.Serialize(),
+                [(Text) "sellerAgentAddress"] = SellerAgentAddress.Serialize(),
+                [(Text) "sellerAvatarAddress"] = SellerAvatarAddress.Serialize(),
+                [(Text) "productId"] = ProductId.Serialize(),
+                [(Text) "price"] = Price.Serialize(),
             };
 
             if (ItemUsable != null)
             {
-                innerDictionary.Add((Text) ItemUsableKey, ItemUsable.Serialize());
+                innerDictionary.Add((Text) "itemUsable", ItemUsable.Serialize());
             }
 
             if (Costume != null)
             {
-                innerDictionary.Add((Text) CostumeKey, Costume.Serialize());
+                innerDictionary.Add((Text) "costume", Costume.Serialize());
             }
 
             if (ExpiredBlockIndex != 0)
@@ -152,40 +145,13 @@ namespace Nekoyume.Model.Item
         public IValue SerializeBackup1() =>
             new Dictionary(new Dictionary<IKey, IValue>
             {
-                [(Text) LegacySellerAgentAddressKey] = SellerAgentAddress.Serialize(),
-                [(Text) LegacySellerAvatarAddressKey] = SellerAvatarAddress.Serialize(),
-                [(Text) LegacyProductIdKey] = ProductId.Serialize(),
-                [(Text) LegacyItemUsableKey] = ItemUsable.Serialize(),
-                [(Text) LegacyPriceKey] = Price.Serialize(),
+                [(Text) "sellerAgentAddress"] = SellerAgentAddress.Serialize(),
+                [(Text) "sellerAvatarAddress"] = SellerAvatarAddress.Serialize(),
+                [(Text) "productId"] = ProductId.Serialize(),
+                [(Text) "itemUsable"] = ItemUsable.Serialize(),
+                [(Text) "price"] = Price.Serialize(),
             });
 
-        public IValue SerializeLegacy()
-        {
-            var innerDictionary = new Dictionary<IKey, IValue>
-            {
-                [(Text) LegacySellerAgentAddressKey] = SellerAgentAddress.Serialize(),
-                [(Text) LegacySellerAvatarAddressKey] = SellerAvatarAddress.Serialize(),
-                [(Text) LegacyProductIdKey] = ProductId.Serialize(),
-                [(Text) LegacyPriceKey] = Price.Serialize(),
-            };
-
-            if (ItemUsable != null)
-            {
-                innerDictionary.Add((Text) LegacyItemUsableKey, ItemUsable.SerializeLegacy());
-            }
-
-            if (Costume != null)
-            {
-                innerDictionary.Add((Text) LegacyCostumeKey, Costume.SerializeLegacy());
-            }
-
-            if (ExpiredBlockIndex != 0)
-            {
-                innerDictionary.Add((Text) ExpiredBlockIndexKey, ExpiredBlockIndex.Serialize());
-            }
-
-            return new Dictionary(innerDictionary);
-        }
         protected bool Equals(ShopItem other)
         {
             return ProductId.Equals(other.ProductId);
