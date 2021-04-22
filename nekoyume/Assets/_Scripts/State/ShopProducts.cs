@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+﻿﻿using System.Collections.Generic;
 using Bencodex.Types;
 using Libplanet;
 using Nekoyume.Model.Item;
@@ -36,9 +36,9 @@ namespace Nekoyume.State
                 {
                     var address = ShardedShopState.DeriveAddress(itemSubType, addressKey);
                     var shardedShopState = Game.Game.instance.Agent.GetState(address);
-                    if (shardedShopState != null)
+                    if (shardedShopState is Dictionary dictionary)
                     {
-                        var state = new ShardedShopState((Dictionary)shardedShopState);
+                        var state = new ShardedShopState(dictionary);
                         foreach (var product in state.Products.Values)
                         {
                             var agentAddress = product.SellerAgentAddress;
