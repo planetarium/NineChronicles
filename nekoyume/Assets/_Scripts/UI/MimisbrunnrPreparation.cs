@@ -191,6 +191,7 @@ namespace Nekoyume.UI
             _stage = Game.Game.instance.Stage;
             _stage.repeatStage = false;
             repeatToggle.isOn = false;
+            repeatToggle.interactable = true;
             _stage.LoadBackground("dungeon_02");
             _player = _stage.GetPlayer(_stage.questPreparationPosition);
             var currentAvatarState = Game.Game.instance.States.CurrentAvatarState;
@@ -476,6 +477,7 @@ namespace Nekoyume.UI
             _stage.IsInStage = true;
             StartCoroutine(CoBattleClick(repeat));
             startButton.interactable = false;
+            repeatToggle.interactable = false;
         }
 
         private IEnumerator CoBattleClick(bool repeat)
