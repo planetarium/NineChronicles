@@ -30,6 +30,7 @@ namespace Nekoyume.State
 
         public void UpdateProducts()
         {
+            Products.Clear();
             foreach (var itemSubType in _itemSubTypes)
             {
                 foreach (var addressKey in ShardedShopState.AddressKeys)
