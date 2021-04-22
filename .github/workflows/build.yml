@@ -67,6 +67,7 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: 9c-${{ matrix.targetPlatform }}
+          path: /tmp/player
       - name: Set up Python # FIXME: 나중에 내장 파이썬 버전이 3.7 이상으로 올라가면 삭제할 것
         uses: actions/setup-python@v2
         with:
