@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
+using Bencodex.Types;
 using Libplanet;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using Nekoyume.UI.Module;
+using UnityEngine;
 
 namespace Nekoyume.State
 {
@@ -26,11 +28,6 @@ namespace Nekoyume.State
             ItemSubType.Title,
         };
 
-        public ShopProducts()
-        {
-            UpdateProducts();
-        }
-
         public void UpdateProducts()
         {
             foreach (var itemSubType in _itemSubTypes)
@@ -38,17 +35,21 @@ namespace Nekoyume.State
                 foreach (var addressKey in ShardedShopState.AddressKeys)
                 {
                     var address = ShardedShopState.DeriveAddress(itemSubType, addressKey);
-                    var state = new ShardedShopState(address);
-                    foreach (var product in state.Products.Values)
+                    var shardedShopState = Game.Game.instance.Agent.GetState(address);
+                    if (shardedShopState != null)
                     {
-                        var agentAddress = product.SellerAgentAddress;
-                        if (!Products.ContainsKey(agentAddress))
+                        var state = new ShardedShopState((Dictionary)shardedShopState);
+                        foreach (var product in state.Products.Values)
                         {
-                            Products.Add(agentAddress, new List<ShopItem>());
-                        }
-                        else
-                        {
-                            Products[agentAddress].Add(product);
+                            var agentAddress = product.SellerAgentAddress;
+                            if (!Products.ContainsKey(agentAddress))
+                            {
+                                Products.Add(agentAddress, new List<ShopItem>());
+                            }
+                            else
+                            {
+                                Products[agentAddress].Add(product);
+                            }
                         }
                     }
                 }
