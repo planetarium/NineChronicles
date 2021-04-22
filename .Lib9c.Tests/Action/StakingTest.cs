@@ -85,8 +85,7 @@ namespace Lib9c.Tests.Action
             AgentState nextAgentState = nextState.GetAgentState(_signer);
             Assert.Equal(level, nextStakingState.Level);
             Assert.Equal(0 * currency, nextState.GetBalance(_signer, currency));
-            int expectedStakingRound = exist ? stakingRound : stakingRound + 1;
-            Assert.Equal(expectedStakingRound, nextAgentState.StakingRound);
+            Assert.Equal(stakingRound, nextAgentState.StakingRound);
         }
 
         [Fact]

@@ -75,7 +75,6 @@ namespace Nekoyume.Action
             else
             {
                 stakingState = new StakingState(stakingAddress, level, context.BlockIndex);
-                agentState.IncreaseStakingRound();
                 states = states.SetState(context.Signer, agentState.Serialize());
             }
 
