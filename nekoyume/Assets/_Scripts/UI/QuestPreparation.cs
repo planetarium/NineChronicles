@@ -176,6 +176,7 @@ namespace Nekoyume.UI
             _stage = Game.Game.instance.Stage;
             _stage.repeatStage = false;
             repeatToggle.isOn = false;
+            repeatToggle.interactable = true;
             _stage.LoadBackground("dungeon_01");
             _player = _stage.GetPlayer(_stage.questPreparationPosition);
             if (_player is null)
@@ -394,6 +395,7 @@ namespace Nekoyume.UI
             _stage.IsInStage = true;
             StartCoroutine(CoQuestClick(repeat));
             questButton.interactable = false;
+            repeatToggle.interactable = false;
         }
 
         private IEnumerator CoQuestClick(bool repeat)
