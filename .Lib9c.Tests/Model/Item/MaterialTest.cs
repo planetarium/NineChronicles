@@ -17,32 +17,52 @@ namespace Lib9c.Tests.Model.Item
             _materialRow = tableSheets.MaterialItemSheet.First;
         }
 
-        [Fact]
-        public void Serialize()
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public void Serialize(bool isTradable)
         {
             Assert.NotNull(_materialRow);
 
-            var costume = new Material(_materialRow);
-            var serialized = costume.Serialize();
+            var material = new Material(_materialRow, isTradable);
+            var serialized = material.Serialize();
             var deserialized = new Material((Bencodex.Types.Dictionary)serialized);
 
-            Assert.Equal(costume, deserialized);
+            Assert.Equal(material, deserialized);
         }
 
-        [Fact]
-        public void SerializeWithDotNetAPI()
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public void SerializeWithDotNetApi(bool isTradable)
         {
             Assert.NotNull(_materialRow);
 
-            var costume = new Material(_materialRow);
+            var material = new Material(_materialRow, isTradable);
             var formatter = new BinaryFormatter();
             using var ms = new MemoryStream();
-            formatter.Serialize(ms, costume);
+            formatter.Serialize(ms, material);
             ms.Seek(0, SeekOrigin.Begin);
 
             var deserialized = (Material)formatter.Deserialize(ms);
 
-            Assert.Equal(costume, deserialized);
+            Assert.Equal(material, deserialized);
+        }
+
+        [Fact]
+        public void Equals_With_Or_Without_IsTradable_When_IsTradable_False()
+        {
+            var material = new Material(_materialRow, false);
+            var serialized = (Bencodex.Types.Dictionary)material.Serialize();
+            var serializedWithoutIsTradable = serialized.ContainsKey("is_tradable")
+                ? new Bencodex.Types.Dictionary(serialized.Remove((Bencodex.Types.Text)"is_tradable"))
+                : serialized;
+            Assert.Equal(serialized, serializedWithoutIsTradable);
+
+            var deserialized = new Material(serialized);
+            var deserializedWithoutIsTradable = new Material(serializedWithoutIsTradable);
+
+            Assert.Equal(deserialized, deserializedWithoutIsTradable);
         }
     }
 }

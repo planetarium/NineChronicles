@@ -27,14 +27,14 @@ namespace Nekoyume.Model.Item
             return new Costume(row, itemId);
         }
 
-        public static Material CreateMaterial(MaterialItemSheet sheet, int itemId)
+        public static Material CreateMaterial(MaterialItemSheet sheet, int itemId, bool isTradable = default)
         {
-            return !sheet.TryGetValue(itemId, out var itemData)
-                ? null
-                : CreateMaterial(itemData);
+            return sheet.TryGetValue(itemId, out var itemData)
+                ? CreateMaterial(itemData, isTradable)
+                : null;
         }
 
-        public static Material CreateMaterial(MaterialItemSheet.Row row)
+        public static Material CreateMaterial(MaterialItemSheet.Row row, bool isTradable = default)
         {
             return new Material(row, isTradable);
         }
