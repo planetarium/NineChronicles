@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Globalization;
 using Bencodex.Types;
 using Libplanet.Action;
@@ -37,9 +36,7 @@ namespace Nekoyume.Model.Item
 
         public static Material CreateMaterial(MaterialItemSheet.Row row)
         {
-            return row.ItemSubType == ItemSubType.Chest
-                ? CreateChest(row, null)
-                : new Material(row);
+            return new Material(row, isTradable);
         }
 
         public static ItemUsable CreateItemUsable(ItemSheet.Row itemRow, Guid id,
@@ -81,11 +78,6 @@ namespace Nekoyume.Model.Item
             return equipment;
         }
 
-        public static Chest CreateChest(MaterialItemSheet.Row row, List<RedeemRewardSheet.RewardInfo> rewards)
-        {
-            return new Chest(row, rewards);
-        }
-
         public static ItemBase Deserialize(Dictionary serialized)
         {
             if (serialized.TryGetValue((Text) "item_type", out var type) &&
@@ -116,7 +108,7 @@ namespace Nekoyume.Model.Item
                         }
                         break;
                     case ItemType.Material:
-                        return itemSubType == ItemSubType.Chest ? new Chest(serialized) : new Material(serialized);
+                        return new Material(serialized);
                     default:
                         throw new ArgumentOutOfRangeException(nameof(itemType));
                 }
@@ -155,7 +147,6 @@ namespace Nekoyume.Model.Item
                 case ItemSubType.NormalMaterial:
                 case ItemSubType.Hourglass:
                 case ItemSubType.ApStone:
-                case ItemSubType.Chest:
                     return new MaterialItemSheet.Row(serialized);
                 default:
                     throw new ArgumentOutOfRangeException();
