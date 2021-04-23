@@ -63,6 +63,7 @@ namespace Lib9c.Tests.Action
         [InlineData(4, 1, 4)]
         [InlineData(4, 2, 5)]
         [InlineData(4, 3, 6)]
+        [InlineData(4, 0, 0)]
         public void Execute(int rewardLevel, int prevRewardLevel, int stakingLevel)
         {
             Address stakingAddress = StakingState.DeriveAddress(_signer, 0);
@@ -117,27 +118,37 @@ namespace Lib9c.Tests.Action
             Assert.Equal(rewardLevel, nextStakingState.RewardLevel);
 
             AvatarState nextAvatarState = nextState.GetAvatarState(_avatarAddress);
-
+            bool hasItem = stakingLevel == 0;
             for (int i = 0; i < nextStakingState.RewardLevel; i++)
             {
                 int level = i + 1;
-                List<StakingRewardSheet.RewardInfo> rewardInfos = _tableSheets.StakingRewardSheet[level].Rewards;
+                List<StakingRewardSheet.RewardInfo> rewardInfos = hasItem
+                ? new List<StakingRewardSheet.RewardInfo>()
+                : _tableSheets.StakingRewardSheet[stakingLevel].Rewards;
                 if (level > stakingLevel)
                 {
                     foreach (var rewardInfo in rewardInfos)
                     {
-                        Assert.True(nextAvatarState.inventory.HasItem(rewardInfo.ItemId, rewardInfo.Quantity * rewardLevel));
+                        Assert.Equal(
+                            hasItem,
+                            nextAvatarState.inventory.HasItem(rewardInfo.ItemId, rewardInfo.Quantity * rewardLevel)
+                        );
                     }
                 }
 
                 Assert.Contains(level, nextStakingState.RewardMap.Keys);
                 Assert.Equal(_avatarAddress, nextStakingState.RewardMap[level].avatarAddress);
-                Assert.Equal(rewardInfos, nextStakingState.RewardMap[level].rewards);
+                // Check new reward only
+                if (level > prevRewardLevel)
+                {
+                    Assert.Equal(rewardInfos, nextStakingState.RewardMap[level].rewards);
+                }
             }
 
             Assert.Equal(0 * currency, nextState.GetBalance(stakingAddress, currency));
             Assert.Equal(balance, nextState.GetBalance(_signer, currency));
             Assert.Equal(stakingRound, nextState.GetAgentState(_signer).StakingRound);
+            Assert.Equal(nextStakingState.End, rewardLevel == 4);
         }
 
         [Fact]

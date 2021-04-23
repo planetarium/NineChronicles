@@ -65,9 +65,11 @@ namespace Nekoyume.Action
                     continue;
                 }
 
-                StakingRewardSheet.Row row = stakingRewardSheet[level];
-                StakingState.Result result = new StakingState.Result(avatarAddress, row.Rewards);
-                foreach (var rewardInfo in row.Rewards)
+                List<StakingRewardSheet.RewardInfo> rewards = stakingRewardSheet.ContainsKey(stakingState.Level)
+                    ? stakingRewardSheet[stakingState.Level].Rewards
+                    : new List<StakingRewardSheet.RewardInfo>();
+                StakingState.Result result = new StakingState.Result(avatarAddress, rewards);
+                foreach (var rewardInfo in rewards)
                 {
                     ItemBase item = ItemFactory.CreateItem(itemSheet[rewardInfo.ItemId], context.Random);
                     avatarState.inventory.AddItem(item, rewardInfo.Quantity);
@@ -87,8 +89,11 @@ namespace Nekoyume.Action
                     gold += currency * stakingSheet[level].RequiredGold;
                 }
                 agentState.IncreaseStakingRound();
-                states = states.SetState(context.Signer, agentState.Serialize())
-                    .TransferAsset(stakingAddress, context.Signer, gold);
+                states = states.SetState(context.Signer, agentState.Serialize());
+                if (gold > currency * 0)
+                {
+                    states = states.TransferAsset(stakingAddress, context.Signer, gold);
+                }
             }
 
             return states
