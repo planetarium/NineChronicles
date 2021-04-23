@@ -51,7 +51,6 @@ namespace Lib9c
         public const string LegacyAdditionalStatValueKey = "additionalValue";
 
         // Skill
-        public const string SkillRowKey = "sr";
         public const string PowerKey = "pw";
         public const string ChanceKey = "ch";
         public const string LegacySkillRowKey = "skillRow";
@@ -90,5 +89,7 @@ namespace Lib9c
         public const string RewardLevelKey = "rl";
         public const string RewardMapKey = "rm";
         public const string EndKey = "ed";
+        public const string StakingResultKey = "sr";
+        public const string QuantityKey = "q";
     }
 }

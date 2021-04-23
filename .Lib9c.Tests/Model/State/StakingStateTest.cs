@@ -1,21 +1,25 @@
 namespace Lib9c.Tests.Model.State
 {
     using System;
+    using System.Collections.Generic;
     using System.IO;
     using System.Runtime.Serialization.Formatters.Binary;
     using Bencodex.Types;
     using Libplanet;
     using Nekoyume.Action;
     using Nekoyume.Model.State;
+    using Nekoyume.TableData;
     using Xunit;
 
     public class StakingStateTest
     {
         private readonly Address _address;
+        private readonly TableSheets _tableSheets;
 
         public StakingStateTest()
         {
             _address = new Address("8d9f76aF8Dc5A812aCeA15d8bf56E2F790F47fd7");
+            _tableSheets = new TableSheets(TableSheetsImporter.ImportSheets());
         }
 
         [Fact]
@@ -59,9 +63,11 @@ namespace Lib9c.Tests.Model.State
             Assert.Empty(stakingState.RewardMap);
 
             Address avatarAddress = default;
-            stakingState.UpdateRewardMap(1, avatarAddress, 14000);
+            List<StakingRewardSheet.RewardInfo> rewards = _tableSheets.StakingRewardSheet[1].Rewards;
+            StakingState.Result result = new StakingState.Result(avatarAddress, rewards);
+            stakingState.UpdateRewardMap(1, result, 14000);
             Assert.Single(stakingState.RewardMap);
-            Assert.Equal(avatarAddress, stakingState.RewardMap[1]);
+            Assert.Equal(result, stakingState.RewardMap[1]);
             Assert.Equal(14000, stakingState.ReceivedBlockIndex);
             Assert.Equal(1, stakingState.RewardLevel);
         }
@@ -73,16 +79,19 @@ namespace Lib9c.Tests.Model.State
         {
             StakingState stakingState = new StakingState(_address, 1, 10000);
 
-            Assert.Throws<ArgumentOutOfRangeException>(() => stakingState.UpdateRewardMap(rewardLevel, _address, 0));
+            List<StakingRewardSheet.RewardInfo> rewards = _tableSheets.StakingRewardSheet[1].Rewards;
+            StakingState.Result result = new StakingState.Result(_address, rewards);
+            Assert.Throws<ArgumentOutOfRangeException>(() => stakingState.UpdateRewardMap(rewardLevel, result, 0));
         }
 
         [Fact]
         public void UpdateRewardMap_Throw_AlreadyReceivedException()
         {
             StakingState stakingState = new StakingState(_address, 1, 10000);
-            stakingState.UpdateRewardMap(1, default, 14000);
-
-            Assert.Throws<AlreadyReceivedException>(() => stakingState.UpdateRewardMap(1, _address, 0));
+            List<StakingRewardSheet.RewardInfo> rewards = _tableSheets.StakingRewardSheet[1].Rewards;
+            StakingState.Result result = new StakingState.Result(default, rewards);
+            stakingState.UpdateRewardMap(1, result, 14000);
+            Assert.Throws<AlreadyReceivedException>(() => stakingState.UpdateRewardMap(1, result, 0));
         }
     }
 }

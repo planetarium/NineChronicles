@@ -66,12 +66,13 @@ namespace Nekoyume.Action
                 }
 
                 StakingRewardSheet.Row row = stakingRewardSheet[level];
+                StakingState.Result result = new StakingState.Result(avatarAddress, row.Rewards);
                 foreach (var rewardInfo in row.Rewards)
                 {
                     ItemBase item = ItemFactory.CreateItem(itemSheet[rewardInfo.ItemId], context.Random);
                     avatarState.inventory.AddItem(item, rewardInfo.Quantity);
                 }
-                stakingState.UpdateRewardMap(level, avatarAddress, context.BlockIndex);
+                stakingState.UpdateRewardMap(level, result, context.BlockIndex);
             }
 
             // Return gold at the end of staking.

@@ -69,7 +69,10 @@ namespace Lib9c.Tests.Action
             StakingState stakingState = new StakingState(stakingAddress, stakingLevel, 0);
             for (int i = 0; i < prevRewardLevel; i++)
             {
-                stakingState.UpdateRewardMap(i + 1, _avatarAddress, 0);
+                int level = i + 1;
+                List<StakingRewardSheet.RewardInfo> rewards = _tableSheets.StakingRewardSheet[level].Rewards;
+                StakingState.Result result = new StakingState.Result(_avatarAddress, rewards);
+                stakingState.UpdateRewardMap(i + 1, result, 0);
             }
 
             Currency currency = _state.GetGoldCurrency();
@@ -118,14 +121,18 @@ namespace Lib9c.Tests.Action
             for (int i = 0; i < nextStakingState.RewardLevel; i++)
             {
                 int level = i + 1;
+                List<StakingRewardSheet.RewardInfo> rewardInfos = _tableSheets.StakingRewardSheet[level].Rewards;
                 if (level > stakingLevel)
                 {
-                    List<StakingRewardSheet.RewardInfo> rewardInfos = _tableSheets.StakingRewardSheet[level].Rewards;
                     foreach (var rewardInfo in rewardInfos)
                     {
                         Assert.True(nextAvatarState.inventory.HasItem(rewardInfo.ItemId, rewardInfo.Quantity * rewardLevel));
                     }
                 }
+
+                Assert.Contains(level, nextStakingState.RewardMap.Keys);
+                Assert.Equal(_avatarAddress, nextStakingState.RewardMap[level].avatarAddress);
+                Assert.Equal(rewardInfos, nextStakingState.RewardMap[level].rewards);
             }
 
             Assert.Equal(0 * currency, nextState.GetBalance(stakingAddress, currency));
@@ -174,7 +181,9 @@ namespace Lib9c.Tests.Action
         {
             Address stakingAddress = StakingState.DeriveAddress(_signer, 0);
             StakingState stakingState = new StakingState(stakingAddress, 1, 0);
-            stakingState.UpdateRewardMap(4, _avatarAddress, 0);
+            List<StakingRewardSheet.RewardInfo> rewards = _tableSheets.StakingRewardSheet[4].Rewards;
+            StakingState.Result result = new StakingState.Result(_avatarAddress, rewards);
+            stakingState.UpdateRewardMap(4, result, 0);
             _state = _state.SetState(stakingAddress, stakingState.Serialize());
 
             StakingReward action = new StakingReward
@@ -199,7 +208,9 @@ namespace Lib9c.Tests.Action
         {
             Address stakingAddress = StakingState.DeriveAddress(_signer, 0);
             StakingState stakingState = new StakingState(stakingAddress, 1, startedBlockIndex);
-            stakingState.UpdateRewardMap(1, _avatarAddress, 0);
+            List<StakingRewardSheet.RewardInfo> rewards = _tableSheets.StakingRewardSheet[1].Rewards;
+            StakingState.Result result = new StakingState.Result(_avatarAddress, rewards);
+            stakingState.UpdateRewardMap(1, result, 0);
 
             _state = _state.SetState(stakingAddress, stakingState.Serialize());
 
@@ -214,30 +225,6 @@ namespace Lib9c.Tests.Action
                     PreviousStates = _state,
                     Signer = _signer,
                     BlockIndex = blockIndex,
-                })
-            );
-        }
-
-        [Fact]
-        public void Execute_Throw_AlreadyReceivedException()
-        {
-            Address stakingAddress = StakingState.DeriveAddress(_signer, 0);
-            StakingState stakingState = new StakingState(stakingAddress, 1, 0);
-            stakingState.UpdateRewardMap(1, _avatarAddress, StakingState.RewardInterval + 1);
-
-            _state = _state.SetState(stakingAddress, stakingState.Serialize());
-
-            StakingReward action = new StakingReward
-            {
-                avatarAddress = _avatarAddress,
-                stakingRound = 0,
-            };
-
-            Assert.Throws<RequiredBlockIndexException>(() => action.Execute(new ActionContext
-                {
-                    PreviousStates = _state,
-                    Signer = _signer,
-                    BlockIndex = StakingState.RewardInterval + 2,
                 })
             );
         }
