@@ -61,6 +61,7 @@ namespace Nekoyume.Model.State
         public long RewardLevel { get; private set; }
         public Dictionary<long, Result> RewardMap { get; private set; }
         public bool End { get; private set; }
+        public Dictionary<long, int> RewardLevelMap { get; private set; }
 
         public StakingState(Address address, int level, long blockIndex) : base(address)
         {
@@ -68,6 +69,13 @@ namespace Nekoyume.Model.State
             StartedBlockIndex = blockIndex;
             ExpiredBlockIndex = blockIndex + ExpirationIndex;
             RewardMap = new Dictionary<long, Result>();
+            RewardLevelMap = new Dictionary<long, int>
+            {
+                [1] = level,
+                [2] = level,
+                [3] = level,
+                [4] = level,
+            };
         }
 
         public StakingState(Dictionary serialized) : base(serialized)
@@ -82,11 +90,21 @@ namespace Nekoyume.Model.State
                 kv => new Result((Dictionary)kv.Value)
             );
             End = serialized[EndKey].ToBoolean();
+            RewardLevelMap = ((Dictionary) serialized[RewardLevelMapKey])
+                .OrderBy(r => r.Key)
+                .ToDictionary(
+                    kv => kv.Key.ToLong(),
+                    kv => kv.Value.ToInteger()
+                );
         }
 
-        public void Update(int level)
+        public void Update(int level, long rewardLevel)
         {
             Level = level;
+            for (long i = rewardLevel; i < RewardLevelMap.Count; i++)
+            {
+                RewardLevelMap[i + 1] = level;
+            }
         }
 
         public void UpdateRewardMap(long rewardLevel, Result avatarAddress, long blockIndex)
@@ -108,6 +126,12 @@ namespace Nekoyume.Model.State
             End = rewardLevel == 4;
         }
 
+        public long GetRewardLevel(long blockIndex)
+        {
+            long diff = blockIndex - ReceivedBlockIndex;
+            return diff / RewardInterval;
+        }
+
         public override IValue Serialize()
         {
 #pragma warning disable LAA1002
@@ -127,6 +151,14 @@ namespace Nekoyume.Model.State
                     )
                 ),
                 [(Text) EndKey] = End.Serialize(),
+                [(Text) RewardLevelMapKey] = new Dictionary(
+                    RewardLevelMap.Select(
+                        kv => new KeyValuePair<IKey, IValue>(
+                            (IKey) kv.Key.Serialize(),
+                            kv.Value.Serialize()
+                        )
+                    )
+                ),
             }.Union((Dictionary) base.Serialize()));
 #pragma warning restore LAA1002
         }
@@ -136,7 +168,8 @@ namespace Nekoyume.Model.State
 #pragma warning disable LAA1002
             return Level == other.Level && ExpiredBlockIndex == other.ExpiredBlockIndex &&
                    StartedBlockIndex == other.StartedBlockIndex && ReceivedBlockIndex == other.ReceivedBlockIndex &&
-                   RewardLevel == other.RewardLevel && RewardMap.SequenceEqual(other.RewardMap) && End == other.End;
+                   RewardLevel == other.RewardLevel && RewardMap.SequenceEqual(other.RewardMap) && End == other.End &&
+                   RewardLevelMap.SequenceEqual(other.RewardLevelMap);
 #pragma warning restore LAA1002
         }
 
@@ -159,6 +192,7 @@ namespace Nekoyume.Model.State
                 hashCode = (hashCode * 397) ^ RewardLevel.GetHashCode();
                 hashCode = (hashCode * 397) ^ (RewardMap != null ? RewardMap.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ End.GetHashCode();
+                hashCode = (hashCode * 397) ^ (RewardLevelMap != null ? RewardLevelMap.GetHashCode() : 0);
                 return hashCode;
             }
         }

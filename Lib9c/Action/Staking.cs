@@ -70,13 +70,14 @@ namespace Nekoyume.Action
                 }
 
                 currentLevel = stakingState.Level + 1;
-                stakingState.Update(level);
             }
             else
             {
                 stakingState = new StakingState(stakingAddress, level, context.BlockIndex);
-                states = states.SetState(context.Signer, agentState.Serialize());
             }
+
+            long rewardLevel = stakingState.GetRewardLevel(context.BlockIndex);
+            stakingState.Update(level, rewardLevel);
 
             for (int i = currentLevel; i < level + 1; i++)
             {

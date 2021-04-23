@@ -44,16 +44,24 @@ namespace Lib9c.Tests.Model.State
             Assert.Equal(stakingState, deserialized);
         }
 
-        [Fact]
-        public void Update()
+        [Theory]
+        [InlineData(0)]
+        [InlineData(1)]
+        [InlineData(2)]
+        [InlineData(3)]
+        public void Update(long rewardLevel)
         {
             StakingState stakingState = new StakingState(_address, 1, 10000);
             Assert.Equal(1, stakingState.Level);
             Assert.Equal(10000, stakingState.StartedBlockIndex);
             Assert.Equal(170000, stakingState.ExpiredBlockIndex);
 
-            stakingState.Update(2);
+            stakingState.Update(2, rewardLevel);
             Assert.Equal(2, stakingState.Level);
+            for (long i = rewardLevel; i < 4; i++)
+            {
+                Assert.Equal(2, stakingState.RewardLevelMap[i + 1]);
+            }
         }
 
         [Fact]
@@ -92,6 +100,16 @@ namespace Lib9c.Tests.Model.State
             StakingState.Result result = new StakingState.Result(default, rewards);
             stakingState.UpdateRewardMap(1, result, 14000);
             Assert.Throws<AlreadyReceivedException>(() => stakingState.UpdateRewardMap(1, result, 0));
+        }
+
+        [Fact]
+        public void GetRewardLevel()
+        {
+            StakingState stakingState = new StakingState(_address, 1, 0);
+            for (long i = 0; i < StakingState.RewardCapacity; i++)
+            {
+                Assert.Equal(i, stakingState.GetRewardLevel(i * StakingState.RewardInterval));
+            }
         }
     }
 }

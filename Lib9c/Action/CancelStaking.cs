@@ -44,9 +44,9 @@ namespace Nekoyume.Action
             FungibleAssetValue balance = 0 * currency;
             StakingSheet stakingSheet = states.GetSheet<StakingSheet>();
             int currentLevel = stakingState.Level;
-            if (currentLevel <= level)
+            if (currentLevel <= level || level <= 0)
             {
-                throw new InvalidLevelException($"The level must be less than {currentLevel}.");
+                throw new InvalidLevelException($"The level must be greater than 0 and less than {currentLevel}.");
             }
 
             if (stakingState.End)
@@ -54,7 +54,8 @@ namespace Nekoyume.Action
                 throw new StakingExpiredException($"{stakingAddress} is already expired on {stakingState.ExpiredBlockIndex}");
             }
 
-            stakingState.Update(level);
+            long rewardLevel = stakingState.GetRewardLevel(context.BlockIndex);
+            stakingState.Update(level, rewardLevel);
             for (int i = currentLevel; i > level; i--)
             {
                 balance += stakingSheet[i].RequiredGold * currency;

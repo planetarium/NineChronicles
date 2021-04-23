@@ -91,5 +91,6 @@ namespace Lib9c
         public const string EndKey = "ed";
         public const string StakingResultKey = "sr";
         public const string QuantityKey = "q";
+        public const string RewardLevelMapKey = "rlm";
     }
 }

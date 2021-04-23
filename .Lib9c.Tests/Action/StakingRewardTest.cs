@@ -63,17 +63,43 @@ namespace Lib9c.Tests.Action
         [InlineData(4, 1, 4)]
         [InlineData(4, 2, 5)]
         [InlineData(4, 3, 6)]
-        [InlineData(4, 0, 0)]
         public void Execute(int rewardLevel, int prevRewardLevel, int stakingLevel)
         {
             Address stakingAddress = StakingState.DeriveAddress(_signer, 0);
-            StakingState stakingState = new StakingState(stakingAddress, stakingLevel, 0);
+            StakingState stakingState = new StakingState(stakingAddress, 1, 0);
             for (int i = 0; i < prevRewardLevel; i++)
             {
                 int level = i + 1;
                 List<StakingRewardSheet.RewardInfo> rewards = _tableSheets.StakingRewardSheet[level].Rewards;
                 StakingState.Result result = new StakingState.Result(_avatarAddress, rewards);
                 stakingState.UpdateRewardMap(i + 1, result, 0);
+            }
+
+            stakingState.Update(stakingLevel, rewardLevel);
+            for (long i = rewardLevel; i < 4; i++)
+            {
+                Assert.Equal(stakingLevel, stakingState.RewardLevelMap[i + 1]);
+            }
+
+            Dictionary<int, int> rewardExpectedMap = new Dictionary<int, int>();
+            foreach (var (key, value) in stakingState.RewardLevelMap)
+            {
+                if (stakingState.RewardMap.ContainsKey(key) || key > rewardLevel)
+                {
+                    continue;
+                }
+
+                foreach (var info in _tableSheets.StakingRewardSheet[value].Rewards)
+                {
+                    if (rewardExpectedMap.ContainsKey(info.ItemId))
+                    {
+                        rewardExpectedMap[info.ItemId] += info.Quantity;
+                    }
+                    else
+                    {
+                        rewardExpectedMap[info.ItemId] = info.Quantity;
+                    }
+                }
             }
 
             Currency currency = _state.GetGoldCurrency();
@@ -118,31 +144,17 @@ namespace Lib9c.Tests.Action
             Assert.Equal(rewardLevel, nextStakingState.RewardLevel);
 
             AvatarState nextAvatarState = nextState.GetAvatarState(_avatarAddress);
-            bool hasItem = stakingLevel == 0;
+            foreach (var (itemId, qty) in rewardExpectedMap)
+            {
+                Assert.True(nextAvatarState.inventory.HasItem(itemId, qty));
+            }
+
             for (int i = 0; i < nextStakingState.RewardLevel; i++)
             {
                 int level = i + 1;
-                List<StakingRewardSheet.RewardInfo> rewardInfos = hasItem
-                ? new List<StakingRewardSheet.RewardInfo>()
-                : _tableSheets.StakingRewardSheet[stakingLevel].Rewards;
-                if (level > stakingLevel)
-                {
-                    foreach (var rewardInfo in rewardInfos)
-                    {
-                        Assert.Equal(
-                            hasItem,
-                            nextAvatarState.inventory.HasItem(rewardInfo.ItemId, rewardInfo.Quantity * rewardLevel)
-                        );
-                    }
-                }
-
+                List<StakingRewardSheet.RewardInfo> rewardInfos = _tableSheets.StakingRewardSheet[stakingLevel].Rewards;
                 Assert.Contains(level, nextStakingState.RewardMap.Keys);
                 Assert.Equal(_avatarAddress, nextStakingState.RewardMap[level].avatarAddress);
-                // Check new reward only
-                if (level > prevRewardLevel)
-                {
-                    Assert.Equal(rewardInfos, nextStakingState.RewardMap[level].rewards);
-                }
             }
 
             Assert.Equal(0 * currency, nextState.GetBalance(stakingAddress, currency));

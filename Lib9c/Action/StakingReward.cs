@@ -47,8 +47,7 @@ namespace Nekoyume.Action
                 throw new StakingExpiredException($"{stakingAddress} is already expired on {stakingState.ExpiredBlockIndex}");
             }
 
-            long diff = context.BlockIndex - stakingState.ReceivedBlockIndex;
-            long rewardLevel = diff / StakingState.RewardInterval;
+            long rewardLevel = stakingState.GetRewardLevel(context.BlockIndex);
             if (rewardLevel <= 0)
             {
                 throw new RequiredBlockIndexException(
@@ -65,9 +64,8 @@ namespace Nekoyume.Action
                     continue;
                 }
 
-                List<StakingRewardSheet.RewardInfo> rewards = stakingRewardSheet.ContainsKey(stakingState.Level)
-                    ? stakingRewardSheet[stakingState.Level].Rewards
-                    : new List<StakingRewardSheet.RewardInfo>();
+                List<StakingRewardSheet.RewardInfo> rewards =
+                    stakingRewardSheet[stakingState.RewardLevelMap[level]].Rewards;
                 StakingState.Result result = new StakingState.Result(avatarAddress, rewards);
                 foreach (var rewardInfo in rewards)
                 {

@@ -40,16 +40,15 @@ namespace Lib9c.Tests.Action
         }
 
         [Theory]
-        [InlineData(7, 0)]
-        [InlineData(6, 1)]
-        [InlineData(5, 2)]
-        [InlineData(4, 3)]
-        public void Execute(int prevLevel, int stakingLevel)
+        [InlineData(7, 1, 1)]
+        [InlineData(6, 2, 40000)]
+        [InlineData(5, 3, 120000)]
+        [InlineData(4, 3, 160000)]
+        public void Execute(int prevLevel, int stakingLevel, long blockIndex)
         {
             Address stakingAddress = StakingState.DeriveAddress(_signer, 0);
             StakingState stakingState = new StakingState(stakingAddress, prevLevel, 0);
             Currency currency = _state.GetGoldCurrency();
-
             FungibleAssetValue balance = 0 * currency;
             foreach (var row in _tableSheets.StakingSheet)
             {
@@ -58,6 +57,8 @@ namespace Lib9c.Tests.Action
                     balance += row.RequiredGold * currency;
                 }
             }
+
+            Assert.All(stakingState.RewardLevelMap, kv => Assert.Equal(prevLevel, kv.Value));
 
             _state = _state
                 .SetState(stakingAddress, stakingState.Serialize())
@@ -73,13 +74,19 @@ namespace Lib9c.Tests.Action
             {
                 PreviousStates = _state,
                 Signer = _signer,
-                BlockIndex = 1,
+                BlockIndex = blockIndex,
             });
 
             StakingState nextStakingState = new StakingState((Dictionary)nextState.GetState(stakingAddress));
             Assert.Equal(stakingLevel, nextStakingState.Level);
             Assert.Equal(0 * currency, nextState.GetBalance(stakingAddress, currency));
             Assert.Equal(balance, nextState.GetBalance(_signer, currency));
+
+            long rewardLevel = nextStakingState.GetRewardLevel(blockIndex);
+            for (long i = rewardLevel; i < 4; i++)
+            {
+                Assert.Equal(stakingLevel, nextStakingState.RewardLevelMap[i + 1]);
+            }
         }
 
         [Fact]
@@ -121,6 +128,7 @@ namespace Lib9c.Tests.Action
         [Theory]
         [InlineData(1, 1)]
         [InlineData(2, 6)]
+        [InlineData(3, 0)]
         public void Execute_Throw_InvalidLevelException(int prevLevel, int level)
         {
             Address stakingAddress = StakingState.DeriveAddress(_signer, 0);

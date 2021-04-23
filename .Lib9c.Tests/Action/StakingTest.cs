@@ -36,17 +36,18 @@ namespace Lib9c.Tests.Action
         }
 
         [Theory]
-        [InlineData(true, 2, 1, 1)]
-        [InlineData(true, 5, 2, 2)]
-        [InlineData(false, 1, 3)]
-        [InlineData(false, 3, 4)]
-        public void Execute(bool exist, int level, int stakingRound, int prevLevel = 0)
+        [InlineData(true, 2, 1, 1, 1)]
+        [InlineData(true, 5, 2, 2, 40000)]
+        [InlineData(false, 1, 3, 0, 120000)]
+        [InlineData(false, 3, 4, 0, 160000)]
+        public void Execute(bool exist, int level, int stakingRound, int prevLevel, long blockIndex)
         {
             Address stakingAddress = StakingState.DeriveAddress(_signer, stakingRound);
             if (exist)
             {
                 StakingState prevStakingState = new StakingState(stakingAddress, prevLevel, 0);
                 _initialState = _initialState.SetState(stakingAddress, prevStakingState.Serialize());
+                Assert.All(prevStakingState.RewardLevelMap, kv => Assert.Equal(prevLevel, kv.Value));
             }
 
             AgentState prevAgentState = _initialState.GetAgentState(_signer);
@@ -78,7 +79,7 @@ namespace Lib9c.Tests.Action
             {
                 PreviousStates = _initialState,
                 Signer = _signer,
-                BlockIndex = 1,
+                BlockIndex = blockIndex,
             });
 
             StakingState nextStakingState = new StakingState((Dictionary)nextState.GetState(stakingAddress));
@@ -86,6 +87,11 @@ namespace Lib9c.Tests.Action
             Assert.Equal(level, nextStakingState.Level);
             Assert.Equal(0 * currency, nextState.GetBalance(_signer, currency));
             Assert.Equal(stakingRound, nextAgentState.StakingRound);
+            long rewardLevel = nextStakingState.GetRewardLevel(blockIndex);
+            for (long i = rewardLevel; i < 4; i++)
+            {
+                Assert.Equal(level, nextStakingState.RewardLevelMap[i + 1]);
+            }
         }
 
         [Fact]
