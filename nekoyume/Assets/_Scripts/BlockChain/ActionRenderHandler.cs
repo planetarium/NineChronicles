@@ -585,7 +585,7 @@ namespace Nekoyume.BlockChain
                     const string nameWithHashFormat = "{0} <size=80%><color=#A68F7E>#{1}</color></size>";
                     var buyerNameWithHash = string.Format(
                         nameWithHashFormat,
-                        ((Bencodex.Types.Text) ((Bencodex.Types.Dictionary) buyerAvatarStateValue)["name"]).Value,
+                        ((Text) ((Dictionary) buyerAvatarStateValue)["name"]).Value,
                         buyerAvatarAddress.ToHex().Substring(0, 4)
                     );
 
@@ -597,6 +597,7 @@ namespace Nekoyume.BlockChain
                         }
 
                         // Local layer
+                        LocalLayerModifier.ModifyAgentGold(agentAddress, -sellerResult.gold);
                         LocalLayerModifier.AddNewAttachmentMail(currentAvatarAddress, sellerResult.id);
 
                         // Push notification
