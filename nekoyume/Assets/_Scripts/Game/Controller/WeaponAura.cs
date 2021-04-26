@@ -33,8 +33,4 @@ public static class WeaponAura
     {
         return Auras.ContainsKey(key) ? Auras[key] : null;
     }
-
-
-
-
 }
