@@ -12,7 +12,7 @@ public static class WeaponAura
     {
         get
         {
-            if (_auras == null)
+            //if (_auras == null) disable for testing
             {
                 _auras = new Dictionary<int, GameObject>();
                 var auraRef = Resources.Load<WeaponAuraScriptableObject>(
