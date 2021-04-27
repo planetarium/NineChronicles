@@ -218,6 +218,12 @@ namespace Nekoyume.Action
             foreach (var row in materialItemSheet.OrderedList)
             {
                 avatarState.inventory.AddItem(ItemFactory.CreateMaterial(row), 10);
+
+                if (row.ItemSubType == ItemSubType.Hourglass ||
+                    row.ItemSubType == ItemSubType.ApStone)
+                {
+                    avatarState.inventory.AddItem(ItemFactory.CreateMaterial(row, true), 100);
+                }
             }
 
             foreach (var row in equipmentItemSheet.OrderedList.Where(row =>
