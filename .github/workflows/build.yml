@@ -60,13 +60,14 @@ jobs:
           - Windows
           - macOS
     needs: build-unity
-    if: ${{ github.ref == 'refs/heads/main' || github.ref == 'refs/heads/development' || startsWith(github.ref, 'rc-') }}
+    if: ${{ github.ref == 'refs/heads/main' || github.ref == 'refs/heads/development' || startsWith(github.ref, 'refs/heads/rc-') }}
     steps:
       - uses: actions/checkout@v2
       - id: download_player
         uses: actions/download-artifact@v2
         with:
           name: 9c-${{ matrix.targetPlatform }}
+          path: /tmp/player
       - name: Set up Python # FIXME: 나중에 내장 파이썬 버전이 3.7 이상으로 올라가면 삭제할 것
         uses: actions/setup-python@v2
         with:

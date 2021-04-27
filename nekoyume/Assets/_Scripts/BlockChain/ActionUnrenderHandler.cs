@@ -170,6 +170,7 @@ namespace Nekoyume.BlockChain
                     }
 
                     // Local layer
+                    LocalLayerModifier.ModifyAgentGold(currentAvatarAddress, sellerResult.gold);
                     LocalLayerModifier.RemoveNewAttachmentMail(currentAvatarAddress, sellerResult.id);
                 }
             }
