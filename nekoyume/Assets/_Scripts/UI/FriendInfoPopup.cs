@@ -20,6 +20,8 @@ namespace Nekoyume.UI
 
         private const string NicknameTextFormat = "<color=#B38271>Lv.{0}</color=> {1}";
 
+        private static readonly Vector3 NPCPosition = new Vector3(1000f, 999.2f, 1.7f);
+
         [SerializeField]
         private Button blurButton = null;
 
@@ -45,15 +47,10 @@ namespace Nekoyume.UI
         private AvatarStats avatarStats = null;
 
         [SerializeField]
-        private RectTransform avatarPosition = null;
-
-        [SerializeField]
         private Canvas contentCanvas = null;
 
         private Vector3 _previousAvatarPosition;
         private Vector3 _previousAvatarLocalScale;
-        private int _previousAvatarSortingLayerID;
-        private int _previousAvatarSortingLayerOrder;
         private bool _previousAvatarActivated;
         private Coroutine _constraintsAvatarToUICoroutine;
         private CharacterStats _tempStats;
@@ -103,13 +100,7 @@ namespace Nekoyume.UI
             var playerTransform = player.transform;
             _previousAvatarPosition = playerTransform.position;
             _previousAvatarLocalScale = playerTransform.localScale;
-            _previousAvatarSortingLayerID = player.sortingGroup.sortingLayerID;
-            _previousAvatarSortingLayerOrder = player.sortingGroup.sortingOrder;
-
-            playerTransform.position = avatarPosition.position;
-            var orderInLayer = MainCanvas.instance.GetLayer(WidgetType).root.sortingOrder + 1;
-            contentCanvas.sortingOrder = orderInLayer;
-            player.SetSortingLayer(SortingLayer.NameToID("UI"), orderInLayer);
+            playerTransform.position = NPCPosition;
 
             _tempStats = player.Model.Stats.Clone() as CharacterStats;
 
@@ -125,7 +116,6 @@ namespace Nekoyume.UI
         {
             while (true)
             {
-                playerTransform.position = avatarPosition.position;
                 playerTransform.localScale = modal.localScale;
                 yield return null;
             }
@@ -143,7 +133,6 @@ namespace Nekoyume.UI
             var player = Game.Game.instance.Stage.GetPlayer(_previousAvatarPosition, true);
             var currentAvatarState = Game.Game.instance.States.CurrentAvatarState;
             player.Set(currentAvatarState);
-            player.SetSortingLayer(_previousAvatarSortingLayerID, _previousAvatarSortingLayerOrder);
             player.transform.localScale = _previousAvatarLocalScale;
             player.gameObject.SetActive(_previousAvatarActivated);
         }
