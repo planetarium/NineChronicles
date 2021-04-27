@@ -45,9 +45,6 @@ Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#GameExeName}"; Tasks: Cre
 Name: "{userstartup}\{#MyAppName}"; Filename: "{app}\{#GameExeName}"; Tasks: RegisterStartup
 
 [Code]
-var
-  UUID: String;
-
 function GenerateUUID(): String;
 var
   UUIDLib: Variant;
@@ -62,8 +59,9 @@ var
   LoadedUUID: AnsiString;
 begin
   UUIDPath := Format('%s\planetarium\.installer_mixpanel_uuid', [ExpandConstant('{localappdata}')]);
-  if (FileExists(UUIDPath)) and LoadStringFromFile(UUIDPath, LoadedUUID) then
+  if (FileExists(UUIDPath)) then
   begin
+    LoadStringFromFile(UUIDPath, LoadedUUID)
     Result := LoadedUUID;
   end else begin
     Result := GenerateUUID();
@@ -90,9 +88,9 @@ procedure CurStepChanged(CurStep: TSetupStep);
 var
   UUID: String;
 begin
+  UUID := UseUUID();
   if CurStep = ssInstall then
   begin
-    UUID := UseUUID();
     Log('Install: Request Mixpanel.');
     Log('UUID: ' + UUID);
     MixpanelTrack('Installer/Start', UUID);
@@ -100,7 +98,6 @@ begin
 
   if CurStep = ssPostInstall then
   begin
-    UUID := UseUUID();
     Log('PostInstall: Request Mixpanel.');
     Log('UUID: ' + UUID);
     MixpanelTrack('Installer/End', UUID);
@@ -117,6 +114,45 @@ begin
     Log('UnInstall: Request Mixpanel.');
     Log('UUID: ' + UUID);
     MixpanelTrack('Installer/Uninstall', UUID);
+  end;
+end;
+
+procedure CurPageChanged(CurPageID: Integer);
+var
+  UUID: String;
+begin
+  UUID := UseUUID();
+  case CurPageID of
+    wpSelectDir:
+      begin
+        Log('Install: Select Directory.');
+        Log('UUID: ' + UUID);
+        MixpanelTrack('Installer/SelectDir', UUID);
+      end;
+    wpSelectTasks:
+      begin
+        Log('Install: Select Tasks.');
+        Log('UUID: ' + UUID);
+        MixpanelTrack('Installer/SelectTasks', UUID);
+      end;
+    wpReady:
+      begin
+        Log('Install: Ready.');
+        Log('UUID: ' + UUID);
+        MixpanelTrack('Installer/Ready', UUID);
+      end;
+    wpInstalling:
+      begin
+        Log('Install: Installing.');
+        Log('UUID: ' + UUID);
+        MixpanelTrack('Installer/Installing', UUID);
+      end;
+    wpFinished:
+      begin
+        Log('Install: Finished.');
+        Log('UUID: ' + UUID);
+        MixpanelTrack('Installer/Finished', UUID);
+      end;
   end;
 end;
 

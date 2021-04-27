@@ -22,6 +22,7 @@ namespace Nekoyume.UI
     public class ShopBuy : Widget
     {
         private const int NPCId = 300000;
+        private const int ShopItemsPerPage = 24; // todo : Resolution Response Required Later
         private static readonly Vector3 NPCPosition = new Vector3(1000.1f, 998.2f, 1.7f);
         private NPC _npc;
 
@@ -95,8 +96,18 @@ namespace Nekoyume.UI
 
             var task = Task.Run(() =>
             {
-                States.Instance.SetShopState(new ShopState(
-                    (Bencodex.Types.Dictionary) Game.Game.instance.Agent.GetState(Addresses.Shop)));
+                var game = Game.Game.instance;
+                var shopState = new ShopState(
+                    (Bencodex.Types.Dictionary) game.Agent.GetState(Addresses.Shop));
+
+                var shardedProducts = new List<Nekoyume.Model.Item.ShopItem>();
+                Game.Game.instance.ShopProducts.UpdateProducts();
+                foreach (var items in game.ShopProducts.Products.Select(i => i.Value))
+                {
+                    shardedProducts.AddRange(items);
+                }
+
+                ReactiveShopState.Initialize(shopState, shardedProducts, ShopItemsPerPage);
                 return true;
             });
 
@@ -217,15 +228,21 @@ namespace Nekoyume.UI
 
         private void Buy(ShopItem shopItem)
         {
-            var purchaseInfos = new List<BuyMultiple.PurchaseInfo> { GetPurchseInfo(shopItem) };
-            Game.Game.instance.ActionManager.BuyMultiple(purchaseInfos,
+            var purchaseInfos = new List<PurchaseInfo> { GetPurchseInfo(shopItem) };
+            Game.Game.instance.ActionManager.Buy(purchaseInfos,
                 new List<ShopItem> {shopItem});
 
-            var props = new Value
+            var countProps = new Value
+            {
+                ["Count"] = 1,
+            };
+            Mixpanel.Track("Unity/Number of Purchased Items", countProps);
+
+            var buyProps = new Value
             {
                 ["Price"] = shopItem.Price.Value.GetQuantityString(),
             };
-            Mixpanel.Track("Unity/Buy", props);
+            Mixpanel.Track("Unity/Buy", buyProps);
 
             SharedModel.ItemCountAndPricePopup.Value.Item.Value = null;
             shopItem.Selected.Value = false;
@@ -240,13 +257,6 @@ namespace Nekoyume.UI
                 string.Format(format, shopItem.ItemBase.Value.GetLocalizedName()));
 
             AudioController.instance.PlaySfx(AudioController.SfxCode.BuyItem);
-        }
-
-        private BuyMultiple.PurchaseInfo GetPurchseInfo(ShopItem shopItem)
-        {
-            return new BuyMultiple.PurchaseInfo(shopItem.ProductId.Value,
-                shopItem.SellerAgentAddress.Value,
-                shopItem.SellerAvatarAddress.Value);
         }
 
         private void SetMultiplePurchase(bool value)
@@ -306,6 +316,14 @@ namespace Nekoyume.UI
             {
                 callback.Invoke();
             }
+        }
+
+        public static PurchaseInfo GetPurchseInfo(ShopItem shopItem)
+        {
+            return new PurchaseInfo(shopItem.ProductId.Value,
+                shopItem.SellerAgentAddress.Value,
+                shopItem.SellerAvatarAddress.Value,
+                shopItem.ItemSubType.Value);
         }
     }
 }

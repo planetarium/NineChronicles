@@ -1,49 +1,126 @@
 on:
-  push: []
-  pull_request: []
+  push:
+    branches: []
+    tags: ['*']
+
 name: Build
 
 jobs:
-  build_9c:
-    name: build_lib9c
-    runs-on: ubuntu-18.04
+  build-unity:
+    name: Build for ${{ matrix.targetPlatform }} on version ${{ matrix.unityVersion }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        projectPath:
+          - nekoyume
+        unityVersion:
+          - 2020.3.4f1
+        targetPlatform:
+          - Windows
+          - macOS
     steps:
-    - uses: actions/checkout@master
-      if: github.event_name != 'pull_request'
-      with:
-        submodules: recursive
-    - uses: actions/checkout@master
-      if: github.event_name == 'pull_request'
-      with:
-        ref: ${{ github.pull_request.head.sha }}
-        submodules: recursive
-    - run: hooks/pre-commit
-    - uses: unsplash/comment-on-pr@master
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        msg: |
-          @${{ github.actor }} 린트 검사를 통과하지 못했습니다.
-          혹시 로컬에서 Git 훅을 설정하지 않으셨나요?
-          아래 명령으로 Git 훅 설정을 해주시기 바랍니다.
+      - name: Set environment variables
+        run: |
+          targetPlatform=${{ matrix.targetPlatform }}
 
-          ```` bash
-          git config core.hooksPath hooks
-          ````
-      if: failure() && github.event_name == 'pull_request'
-    - run: .github/bin/check-libplanet-version.sh
-    - uses: unsplash/comment-on-pr@master
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        msg: |
-          @${{ github.actor }} Libplanet 어셈블리 파일들의 버전이 Lib9c가 참조하는 버전보다 오래되었습니다.
-          Lib9c 서브모듈 안에 있는 Libplanet 서브모듈을 `dotnet build` 명령으로 빌드하고 새 어셈블리를 복사하세요.
-      if: failure() && github.event_name == 'pull_request'
-  build_installer:
-    runs-on: windows-latest
-    name: build installer
+          if [ "$targetPlatform" == "Windows" ]; then
+            echo "DOCKER_IMAGE_TAG=${{ matrix.unityVersion }}-windows-mono-0.11" >> $GITHUB_ENV
+          elif [ "$targetPlatform" == "macOS" ]; then
+            echo "DOCKER_IMAGE_TAG=${{ matrix.unityVersion }}-mac-mono-0.11" >> $GITHUB_ENV
+          fi
+      - uses: actions/checkout@v2
+        with:
+          lfs: true
+          submodules: true
+      - uses: actions/cache@v2
+        with:
+          path: ${{ matrix.projectPath }}/Library
+          key: ${{ matrix.targetPlatform }}-${{ matrix.projectPath }}-Library-v4
+      - name: Build Unity Player using docker
+        run: |
+          docker run \
+            --env ULF="${{ secrets.ULF_2020_3_0_F1 }}" \
+            -w "${{ github.workspace }}" \
+            -v "${{ github.workspace }}":"${{ github.workspace }}" \
+            unityci/editor:${DOCKER_IMAGE_TAG} \
+            scripts/build-player.sh ${{ matrix.targetPlatform }}
+      - uses: actions/upload-artifact@v2
+        with:
+          name: 9c-${{ matrix.targetPlatform }}
+          path: nekoyume/Build/${{ matrix.targetPlatform }}
+          retention-days: 1
+  publish:
+    name: Publish Unity Player for ${{ matrix.targetPlatform }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        targetPlatform:
+          - Windows
+          - macOS
+    needs: build-unity
+    if: ${{ github.ref == 'refs/heads/main' || github.ref == 'refs/heads/development' || startsWith(github.ref, 'refs/heads/rc-') }}
     steps:
-      - uses: actions/checkout@v2.3.4
-      - run: dotnet publish tools/Updater/Updater/Updater.csproj -r win-x64 --self-contained
-      - run: ISCC tools/installer/installer.iss
+      - uses: actions/checkout@v2
+      - id: download_player
+        uses: actions/download-artifact@v2
+        with:
+          name: 9c-${{ matrix.targetPlatform }}
+          path: /tmp/player
+      - name: Set up Python # FIXME: 나중에 내장 파이썬 버전이 3.7 이상으로 올라가면 삭제할 것
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8.6
+      - uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '3.1.201'
+      - name: Pack
+        run: |
+          set -evx
+          mkdir -p $HOME/.local/bin
+          npm config set prefix $HOME/.local/bin
+          export PATH="$HOME/.local/bin:$PATH"
+          npm install --global strip-json-comments-cli
+          dotnet tool install \
+            --global \
+            Libplanet.Tools
+          
+          # macOS 내장 date는 ISO 8601 서식 옵션이 따로 없음
+          timestamp="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+          pip3 install wheel
+          
+          .github/bin/pack.sh \
+          /tmp/package \
+          "${{ matrix.targetPlatform }}" \
+          "${{ steps.download_player.outputs.download-path }}" \
+          "${{ secrets.APV_SIGNING_PRIVATE_KEY }}" \
+          "$timestamp"
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+      - uses: chrnorm/deployment-action@releases/v1
+        id: build_artifact
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          description: 'Build artifact'
+          environment: build-artifact
+      - run: mv /tmp/package ./package  # s3-upload-action이 상대 경로만 지원
+        if: success()
+        shell: bash
+      - uses: shallwefootball/s3-upload-action@master
+        if: success()
+        with:
+          source_dir: package
+          destination_dir: ${{ github.sha }}
+          aws_bucket: 9c-artifacts
+          aws_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      - if: success()
+        uses: chrnorm/deployment-status@releases/v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          target_url: ${{ steps.S3.outputs.object_locations[0] }}
+          state: 'success'
+          deployment_id: ${{ steps.build_artifact.outputs.deployment_id }}

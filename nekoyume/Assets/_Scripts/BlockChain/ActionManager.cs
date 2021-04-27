@@ -218,7 +218,7 @@ namespace Nekoyume.BlockChain
                 .DoOnError(e => HandleException(action.Id, e));
         }
 
-        public IObservable<ActionBase.ActionEvaluation<Sell3>> Sell(Guid itemId,
+        public IObservable<ActionBase.ActionEvaluation<Sell>> Sell(Guid itemId,
                                                                    FungibleAssetValue price,
                                                                    ItemSubType itemSubType)
         {
@@ -227,15 +227,16 @@ namespace Nekoyume.BlockChain
             // NOTE: 장착했는지 안 했는지에 상관없이 해제 플래그를 걸어 둔다.
             LocalLayerModifier.SetItemEquip(avatarAddress, itemId, false, false);
 
-            var action = new Sell3
+            var action = new Sell
             {
                 sellerAvatarAddress = avatarAddress,
                 itemId = itemId,
                 price = price,
+                itemSubType = itemSubType,
             };
             ProcessAction(action);
 
-            return _renderer.EveryRender<Sell3>()
+            return _renderer.EveryRender<Sell>()
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .Take(1)
                 .Last()
@@ -244,19 +245,20 @@ namespace Nekoyume.BlockChain
                 .DoOnError(e => HandleException(action.Id, e)); // Last() is for completion
         }
 
-        public IObservable<ActionBase.ActionEvaluation<SellCancellation4>> SellCancellation(
+        public IObservable<ActionBase.ActionEvaluation<SellCancellation>> SellCancellation(
             Address sellerAvatarAddress,
             Guid productId,
             ItemSubType itemSubType)
         {
-            var action = new SellCancellation4
+            var action = new SellCancellation
             {
                 productId = productId,
                 sellerAvatarAddress = sellerAvatarAddress,
+                itemSubType = itemSubType,
             };
             ProcessAction(action);
 
-            return _renderer.EveryRender<SellCancellation4>()
+            return _renderer.EveryRender<SellCancellation>()
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .Take(1)
                 .Last()
@@ -265,17 +267,17 @@ namespace Nekoyume.BlockChain
                 .DoOnError(e => HandleException(action.Id, e)); // Last() is for completion
         }
 
-        public IObservable<ActionBase.ActionEvaluation<BuyMultiple>> BuyMultiple(IEnumerable<BuyMultiple.PurchaseInfo> purchaseInfos,
+        public IObservable<ActionBase.ActionEvaluation<Buy>> Buy(IEnumerable<PurchaseInfo> purchaseInfos,
             List<Nekoyume.UI.Model.ShopItem> shopItems)
         {
-            var action = new BuyMultiple
+            var action = new Buy
             {
                 buyerAvatarAddress = States.Instance.CurrentAvatarState.address,
                 purchaseInfos = purchaseInfos
             };
             ReactiveShopState.PurchaseHistory.Add(action.Id, shopItems);
             ProcessAction(action);
-            return _renderer.EveryRender<BuyMultiple>()
+            return _renderer.EveryRender<Buy>()
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .Take(1)
                 .Last()

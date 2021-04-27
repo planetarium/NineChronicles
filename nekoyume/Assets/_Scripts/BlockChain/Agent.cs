@@ -57,7 +57,7 @@ namespace Nekoyume.BlockChain
         public static readonly string DefaultStoragePath = StorePath.GetDefaultStoragePath();
 
         public Subject<long> BlockIndexSubject { get; } = new Subject<long>();
-        public Subject<HashDigest<SHA256>> BlockTipHashSubject { get; } = new Subject<HashDigest<SHA256>>();
+        public Subject<BlockHash> BlockTipHashSubject { get; } = new Subject<BlockHash>();
 
         private static IEnumerator _miner;
         private static IEnumerator _txProcessor;
@@ -100,7 +100,7 @@ namespace Nekoyume.BlockChain
 
         public ActionRenderer ActionRenderer => BlockPolicySource.ActionRenderer;
         public int AppProtocolVersion { get; private set; }
-        public HashDigest<SHA256> BlockTipHash => blocks.Tip.Hash;
+        public BlockHash BlockTipHash => blocks.Tip.Hash;
 
         public event EventHandler BootstrapStarted;
         public event EventHandler<PreloadState> PreloadProcessed;
@@ -640,7 +640,7 @@ namespace Nekoyume.BlockChain
             {
                 Cheat.Display("Logs", _tipInfo);
                 var peerStateString = string.Join("\n", _swarm.PeersStates.Select(peerState =>
-                    $"Address: {peerState.Address}\n" +
+                    $"Address: {peerState.Peer.Address}\n" +
                     $" - LastUpdated: {peerState.LastUpdated}\n" +
                     $" - LastChecked: {peerState.LastChecked}\n" +
                     $" - Latency: {peerState.Latency}"));

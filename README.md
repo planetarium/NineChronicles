@@ -36,7 +36,7 @@ visit [docs.nine-chronicles.com][9c-docs].
 ### Installation
 
  1. Install [Unity Hub]
- 1. Install Unity 2019.1.0f2 version
+ 1. Install Unity 2020.3.4f1 version
  1. Clone repository
     ```
     git clone https://github.com/planetarium/NineChronicles.git
@@ -99,7 +99,7 @@ $ /UnityPath/Unity -quit -batchmode -projectPath=/path/to/nekoyume/ -executeMeth
 - Example
 
 ```
-$ /Applications/Unity/Hub/Editor/2019.1.0f2/Unity.app/Contents/MacOS/Unity -quit -batchmode -projectPath=~/planetarium/nekoyume-unity/nekoyume/ -executeMethod Editor.Builder.BuildAll
+$ /Applications/Unity/Hub/Editor/2020.3.4f1/Unity.app/Contents/MacOS/Unity -quit -batchmode -projectPath=~/planetarium/nekoyume-unity/nekoyume/ -executeMethod Editor.Builder.BuildAll
 ```
 
 ### Editor Build
