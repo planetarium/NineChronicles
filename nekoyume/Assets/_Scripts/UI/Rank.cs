@@ -26,7 +26,6 @@ namespace Nekoyume.UI
         public override void Show(bool ignoreShowAnimation = false)
         {
             base.Show(ignoreShowAnimation);
-            rankPanel.LoadRankingInfos();
             rankPanel.Show();
         }
     }

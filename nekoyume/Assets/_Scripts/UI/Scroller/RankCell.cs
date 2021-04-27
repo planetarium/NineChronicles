@@ -50,15 +50,17 @@ namespace Nekoyume.UI.Scroller
         [SerializeField]
         private int addressStringCount = 6;
 
-        public void SetDataAsAbility(int rank, string nickname, Address avatarAddress, int cp, int level)
+        public void SetDataAsAbility(int rank, AbilityRankingInfo rankingInfo)
         {
-            nicknameText.text = nickname;
-            addressText.text = avatarAddress
+            nicknameText.text = rankingInfo.Name;
+            addressText.text = rankingInfo.AvatarAddress
                 .ToString()
                 .Remove(addressStringCount);
 
-            firstElement.text = cp.ToString();
-            secondElement.text = level.ToString();
+            firstElement.text = rankingInfo.Cp.ToString();
+            secondElement.text = rankingInfo.Level.ToString();
+            firstElement.gameObject.SetActive(true);
+            secondElement.gameObject.SetActive(true);
             switch (rank)
             {
                 case 1:
@@ -83,7 +85,45 @@ namespace Nekoyume.UI.Scroller
                     break;
             }
 
-            characterView.SetByAvatarAddress(avatarAddress);
+            characterView.SetByAvatarState(rankingInfo.AvatarState);
+            gameObject.SetActive(true);
+        }
+
+        public void SetDataAsStage(int rank, StageRankingInfo rankingInfo)
+        {
+            nicknameText.text = rankingInfo.Name;
+            addressText.text = rankingInfo.AvatarAddress
+                .ToString()
+                .Remove(addressStringCount);
+
+            firstElement.text = rankingInfo.StageId.ToString();
+            firstElement.gameObject.SetActive(true);
+            secondElement.gameObject.SetActive(false);
+            switch (rank)
+            {
+                case 1:
+                    imageContainer.SetActive(true);
+                    textContainer.SetActive(false);
+                    rankImage.sprite = firstPlaceSprite;
+                    break;
+                case 2:
+                    imageContainer.SetActive(true);
+                    textContainer.SetActive(false);
+                    rankImage.sprite = secondPlaceSprite;
+                    break;
+                case 3:
+                    imageContainer.SetActive(true);
+                    textContainer.SetActive(false);
+                    rankImage.sprite = thirdPlaceSprite;
+                    break;
+                default:
+                    imageContainer.SetActive(false);
+                    textContainer.SetActive(true);
+                    rankText.text = rank.ToString();
+                    break;
+            }
+
+            characterView.SetByAvatarState(rankingInfo.AvatarState);
             gameObject.SetActive(true);
         }
     }
