@@ -4,6 +4,7 @@ using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Model.State;
+using Serilog;
 
 namespace Nekoyume.Action
 {
@@ -59,6 +60,9 @@ namespace Nekoyume.Action
 
             if (pending.Verify(this))
             {
+                // We left this log message to track activation history.
+                // Please delete it if we have an API for evaluation results on the Libplanet side.
+                Log.Information("{pendingAddress} is activated by {signer} now.", pending.address, context.Signer);
                 return state.SetState(
                     ActivatedAccountsState.Address,
                     accounts.AddAccount(context.Signer).Serialize()

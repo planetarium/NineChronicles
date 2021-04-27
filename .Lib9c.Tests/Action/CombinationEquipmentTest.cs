@@ -147,7 +147,7 @@ namespace Lib9c.Tests.Action
 
             var nextAvatarState = nextState.GetAvatarState(_avatarAddress);
 
-            Assert.Single(nextAvatarState.mailBox);
+            Assert.Equal(30, nextAvatarState.mailBox.Count);
             Assert.Equal(2, slotState.Result.itemUsable.GetOptionCount());
 
             var goldCurrencyState = nextState.GetGoldCurrency();

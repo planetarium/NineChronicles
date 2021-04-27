@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
-using System.Security.Permissions;
+using System.Security.Cryptography;
 using Bencodex.Types;
 using Libplanet;
 using Nekoyume.Model.State;
@@ -17,7 +17,7 @@ namespace Nekoyume.Model.Item
         public Chest(MaterialItemSheet.Row data, List<RedeemRewardSheet.RewardInfo> rewards) : base(data)
         {
             Rewards = rewards ?? new List<RedeemRewardSheet.RewardInfo>();
-            ItemId = Hashcash.Hash(Serialize().EncodeIntoChunks().SelectMany(b => b).ToArray());
+            ItemId = HashDigest<SHA256>.DeriveFrom(Serialize().EncodeIntoChunks().SelectMany(b => b).ToArray());
         }
 
         public Chest(Dictionary serialized) : base(serialized)
@@ -30,7 +30,7 @@ namespace Nekoyume.Model.Item
             else
             {
                 Rewards = new List<RedeemRewardSheet.RewardInfo>();
-                ItemId = Hashcash.Hash(Serialize().EncodeIntoChunks().SelectMany(b => b).ToArray());
+                ItemId = HashDigest<SHA256>.DeriveFrom(Serialize().EncodeIntoChunks().SelectMany(b => b).ToArray());
             }
         }
 

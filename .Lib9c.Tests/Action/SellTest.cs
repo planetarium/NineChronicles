@@ -3,6 +3,7 @@ namespace Lib9c.Tests.Action
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using Bencodex.Types;
     using Libplanet;
     using Libplanet.Action;
     using Libplanet.Assets;
@@ -102,9 +103,6 @@ namespace Lib9c.Tests.Action
         [InlineData(ItemType.Equipment, false, 0)]
         public void Execute(ItemType itemType, bool shopItemExist, int blockIndex)
         {
-            var shopState = _initialState.GetShopState();
-            Assert.Empty(shopState.Products);
-
             var avatarState = _initialState.GetAvatarState(_avatarAddress);
             List<Inventory.Item> inventoryItem = avatarState.inventory.Items.Where(i => i.item.ItemType == itemType).ToList();
             Assert.Single(inventoryItem);
@@ -114,23 +112,37 @@ namespace Lib9c.Tests.Action
             INonFungibleItem nonFungibleItem = (INonFungibleItem)inventoryItem.First().item;
             nonFungibleItem.Update(blockIndex);
             Assert.Equal(blockIndex, nonFungibleItem.RequiredBlockIndex);
+            ItemSubType itemSubType = ItemSubType.Food;
+            Guid productId = new Guid("6f460c1a-755d-48e4-ad67-65d5f519dbc8");
+            if (nonFungibleItem is ItemUsable itemUsable)
+            {
+                itemSubType = itemUsable.ItemSubType;
+            }
+            else if (nonFungibleItem is Costume costume)
+            {
+                itemSubType = costume.ItemSubType;
+            }
+
+            Address shopAddress = ShardedShopState.DeriveAddress(itemSubType, productId);
 
             if (shopItemExist)
             {
                 var si = new ShopItem(
                     _agentAddress,
                     _avatarAddress,
-                    Guid.NewGuid(),
+                    productId,
                     new FungibleAssetValue(currencyState, 100, 0),
                     blockIndex,
                     nonFungibleItem);
-                shopState.Register(si);
-                previousStates = previousStates.SetState(Addresses.Shop, shopState.Serialize());
-                Assert.Single(shopState.Products);
+                ShardedShopState shardedShopState =
+                    new ShardedShopState(shopAddress);
+                shardedShopState.Register(si);
+                Assert.Single(shardedShopState.Products);
+                previousStates = previousStates.SetState(shopAddress, shardedShopState.Serialize());
             }
             else
             {
-                Assert.Empty(shopState.Products);
+                Assert.Null(previousStates.GetState(shopAddress));
             }
 
             var sellAction = new Sell
@@ -138,6 +150,7 @@ namespace Lib9c.Tests.Action
                 itemId = nonFungibleItem.ItemId,
                 price = price,
                 sellerAvatarAddress = _avatarAddress,
+                itemSubType = itemSubType,
             };
 
             var nextState = sellAction.Execute(new ActionContext
@@ -155,7 +168,7 @@ namespace Lib9c.Tests.Action
             INonFungibleItem nextNonFungibleItem = (INonFungibleItem)nextItem.item;
             Assert.Equal(expiredBlockIndex, nextNonFungibleItem.RequiredBlockIndex);
 
-            var nextShopState = nextState.GetShopState();
+            var nextShopState = new ShardedShopState((Dictionary)nextState.GetState(shopAddress));
 
             Assert.Single(nextShopState.Products);
 
@@ -177,7 +190,7 @@ namespace Lib9c.Tests.Action
         }
 
         [Fact]
-        public void ExecuteThrowInvalidPriceException()
+        public void Execute_Throw_InvalidPriceException()
         {
             var action = new Sell
             {
@@ -195,13 +208,14 @@ namespace Lib9c.Tests.Action
         }
 
         [Fact]
-        public void ExecuteThrowFailedLoadStateException()
+        public void Execute_Throw_FailedLoadStateException()
         {
             var action = new Sell
             {
                 itemId = default,
                 price = 0 * _currency,
                 sellerAvatarAddress = _avatarAddress,
+                itemSubType = ItemSubType.Food,
             };
 
             Assert.Throws<FailedLoadStateException>(() => action.Execute(new ActionContext
@@ -213,7 +227,7 @@ namespace Lib9c.Tests.Action
         }
 
         [Fact]
-        public void ExecuteThrowNotEnoughClearedStageLevelException()
+        public void Execute_Throw_NotEnoughClearedStageLevelException()
         {
             var avatarState = new AvatarState(_avatarState)
             {
@@ -231,6 +245,7 @@ namespace Lib9c.Tests.Action
                 itemId = default,
                 price = 0 * _currency,
                 sellerAvatarAddress = _avatarAddress,
+                itemSubType = ItemSubType.Food,
             };
 
             Assert.Throws<NotEnoughClearedStageLevelException>(() => action.Execute(new ActionContext
@@ -242,13 +257,14 @@ namespace Lib9c.Tests.Action
         }
 
         [Fact]
-        public void ExecuteThrowItemDoesNotExistException()
+        public void Execute_Throw_ItemDoesNotExistException()
         {
             var action = new Sell
             {
                 itemId = default,
                 price = 0 * _currency,
                 sellerAvatarAddress = _avatarAddress,
+                itemSubType = ItemSubType.Food,
             };
 
             Assert.Throws<ItemDoesNotExistException>(() => action.Execute(new ActionContext
@@ -261,7 +277,7 @@ namespace Lib9c.Tests.Action
         }
 
         [Fact]
-        public void ExecuteThrowRequiredBlockIndexException()
+        public void Execute_Throw_InvalidItemTypeException()
         {
             var equipmentId = Guid.NewGuid();
             var equipment = ItemFactory.CreateItemUsable(
@@ -277,6 +293,36 @@ namespace Lib9c.Tests.Action
                 itemId = equipmentId,
                 price = 0 * _currency,
                 sellerAvatarAddress = _avatarAddress,
+                itemSubType = ItemSubType.Food,
+            };
+
+            Assert.Throws<InvalidItemTypeException>(() => action.Execute(new ActionContext
+            {
+                BlockIndex = 0,
+                PreviousStates = _initialState,
+                Signer = _agentAddress,
+                Random = new TestRandom(),
+            }));
+        }
+
+        [Fact]
+        public void Execute_Throw_RequiredBlockIndexException()
+        {
+            var equipmentId = Guid.NewGuid();
+            var equipment = ItemFactory.CreateItemUsable(
+                _tableSheets.EquipmentItemSheet.First,
+                equipmentId,
+                10);
+            _avatarState.inventory.AddItem(equipment);
+
+            _initialState = _initialState.SetState(_avatarAddress, _avatarState.Serialize());
+
+            var action = new Sell
+            {
+                itemId = equipmentId,
+                price = 0 * _currency,
+                sellerAvatarAddress = _avatarAddress,
+                itemSubType = equipment.ItemSubType,
             };
 
             Assert.Throws<RequiredBlockIndexException>(() => action.Execute(new ActionContext

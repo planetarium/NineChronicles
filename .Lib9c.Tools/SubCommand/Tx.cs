@@ -91,7 +91,7 @@ namespace Lib9c.Tools.SubCommand
             Transaction<NCAction> tx = Transaction<NCAction>.Create(
                 nonce: nonce,
                 privateKey: new PrivateKey(ByteUtil.ParseHex(privateKey)),
-                genesisHash: (genesisHash is null) ? default : new HashDigest<SHA256>(ByteUtil.ParseHex(genesisHash)),
+                genesisHash: (genesisHash is null) ? default : BlockHash.FromString(genesisHash),
                 timestamp: (timestamp is null) ? default : DateTimeOffset.Parse(timestamp),
                 actions: parsedActions
             );
@@ -159,7 +159,7 @@ namespace Lib9c.Tools.SubCommand
             Transaction<NCAction> tx = Transaction<NCAction>.Create(
                 nonce: nonce,
                 privateKey: new PrivateKey(ByteUtil.ParseHex(privateKey)),
-                genesisHash: (genesisHash is null) ? default : new HashDigest<SHA256>(ByteUtil.ParseHex(genesisHash)),
+                genesisHash: (genesisHash is null) ? default : BlockHash.FromString(genesisHash),
                 timestamp: default,
                 actions: new List<NCAction>{ action }
             );

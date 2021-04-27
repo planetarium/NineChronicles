@@ -80,6 +80,7 @@ namespace Nekoyume.Model.Item
                 [(Text) "set_id"] = SetId.Serialize(),
                 [(Text) "spine_resource_path"] = SpineResourcePath.Serialize(),
             }.Union((Dictionary) base.Serialize()));
+
 #pragma warning restore LAA1002
 
         public void Equip()

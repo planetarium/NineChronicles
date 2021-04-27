@@ -254,7 +254,7 @@
 
             _initialState = _initialState.SetState(_avatarAddress, _avatarState.Serialize());
 
-            var action = new Sell
+            var action = new Sell2
             {
                 itemId = equipmentId,
                 price = 0 * _currency,
