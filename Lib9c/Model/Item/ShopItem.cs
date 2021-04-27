@@ -21,6 +21,8 @@ namespace Nekoyume.Model.Item
         public readonly FungibleAssetValue Price;
         public readonly ItemUsable ItemUsable;
         public readonly Costume Costume;
+        public readonly Material Material;
+        public readonly int MaterialCount;
         private long _expiredBlockIndex;
 
         public long ExpiredBlockIndex
@@ -71,13 +73,28 @@ namespace Nekoyume.Model.Item
             {
                 case ItemUsable itemUsable:
                     ItemUsable = itemUsable;
-                    Costume = null;
                     break;
                 case Costume costume:
-                    ItemUsable = null;
                     Costume = costume;
                     break;
             }
+        }
+        
+        public ShopItem(Address sellerAgentAddress,
+            Address sellerAvatarAddress,
+            Guid productId,
+            FungibleAssetValue price,
+            Material material,
+            int count,
+            long expiredBlockIndex)
+        {
+            SellerAgentAddress = sellerAgentAddress;
+            SellerAvatarAddress = sellerAvatarAddress;
+            ProductId = productId;
+            Price = price;
+            Material = material;
+            MaterialCount = count;
+            ExpiredBlockIndex = expiredBlockIndex;
         }
 
         public ShopItem(Dictionary serialized)
@@ -92,6 +109,12 @@ namespace Nekoyume.Model.Item
             Costume = serialized.ContainsKey("costume")
                 ? (Costume) ItemFactory.Deserialize((Dictionary) serialized["costume"])
                 : null;
+            Material = serialized.ContainsKey("material")
+                ? (Material) ItemFactory.Deserialize((Dictionary) serialized["material"])
+                : null;
+            MaterialCount = serialized.ContainsKey("material_count")
+                ? serialized["material_count"].ToInteger()
+                : default;
             if (serialized.ContainsKey(ExpiredBlockIndexKey))
             {
                 ExpiredBlockIndex = serialized[ExpiredBlockIndexKey].ToLong();
@@ -131,6 +154,16 @@ namespace Nekoyume.Model.Item
             if (Costume != null)
             {
                 innerDictionary.Add((Text) "costume", Costume.Serialize());
+            }
+            
+            if (Material != null)
+            {
+                innerDictionary.Add((Text) "material", Material.Serialize());
+            }
+            
+            if (MaterialCount != 0)
+            {
+                innerDictionary.Add((Text) "material_count", MaterialCount.Serialize());
             }
 
             if (ExpiredBlockIndex != 0)

@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.IO;
+    using System.Linq;
     using System.Runtime.Serialization.Formatters.Binary;
     using Bencodex.Types;
     using Libplanet;
@@ -28,6 +29,7 @@
             {
                 GetShopItemWithFirstCostume(),
                 GetShopItemWithFirstEquipment(),
+                GetShopItemWithFirstMaterial(),
             },
         };
 
@@ -99,6 +101,44 @@
         }
 
         [Fact]
+        public void Equals_With_Or_Without_Material_When_Material_Is_Null()
+        {
+            var shopItems = new List<ShopItem>
+            {
+                new ShopItem(
+                    new PrivateKey().ToAddress(),
+                    new PrivateKey().ToAddress(),
+                    Guid.NewGuid(),
+                    new FungibleAssetValue(Currency, 100, 0),
+                    null,
+                    1,
+                    0),
+                new ShopItem(
+                    new PrivateKey().ToAddress(),
+                    new PrivateKey().ToAddress(),
+                    Guid.NewGuid(),
+                    new FungibleAssetValue(Currency, 100, 0),
+                    null,
+                    0,
+                    0),
+            };
+
+            foreach (var shopItem in shopItems)
+            {
+                var serialized = (Dictionary)shopItem.Serialize();
+                var serializedWithoutMaterial = serialized.ContainsKey("material")
+                    ? new Dictionary(serialized.Remove((Text)"material"))
+                    : serialized;
+                Assert.Equal(serialized, serializedWithoutMaterial);
+
+                var deserialized = new ShopItem(serialized);
+                var deserializedWithoutMaterial = new ShopItem(serializedWithoutMaterial);
+                Assert.Equal(deserialized, deserializedWithoutMaterial);
+                Assert.Equal(shopItem, deserializedWithoutMaterial);
+            }
+        }
+
+        [Fact]
         public void ThrowArgumentOurOfRangeException()
         {
             var equipmentRow = TableSheets.EquipmentItemSheet.First;
@@ -151,6 +191,45 @@
                 Guid.NewGuid(),
                 new FungibleAssetValue(Currency, 100, 0),
                 equipment);
+        }
+
+        private static ShopItem GetShopItemWithFirstMaterial()
+        {
+            var row = TableSheets.MaterialItemSheet.First;
+            var material = new Material(row);
+            return new ShopItem(
+                new PrivateKey().ToAddress(),
+                new PrivateKey().ToAddress(),
+                Guid.NewGuid(),
+                new FungibleAssetValue(Currency, 100, 0),
+                material,
+                1,
+                0);
+        }
+
+        private static IEnumerable<object[]> GetShopItemsWithTradableMaterial()
+        {
+            var objects = new object[2];
+            var index = 0;
+            foreach (var row in TableSheets.MaterialItemSheet.OrderedList
+                .Where(e => e.ItemSubType == ItemSubType.Hourglass || e.ItemSubType == ItemSubType.ApStone))
+            {
+                var material = new Material(row, true);
+                var shopItem = new ShopItem(
+                    new PrivateKey().ToAddress(),
+                    new PrivateKey().ToAddress(),
+                    Guid.NewGuid(),
+                    new FungibleAssetValue(Currency, 100, 0),
+                    material,
+                    1,
+                    0);
+                objects[index++] = shopItem;
+            }
+
+            return new List<object[]>
+            {
+                objects,
+            };
         }
     }
 }

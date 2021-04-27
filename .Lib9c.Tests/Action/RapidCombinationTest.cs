@@ -287,7 +287,7 @@ namespace Lib9c.Tests.Action
             var material = ItemFactory.CreateMaterial(
                 _tableSheets.MaterialItemSheet.Values.First(r =>
                     r.ItemSubType == ItemSubType.Hourglass));
-            avatarState.inventory.AddItem(material, alreadyHasCount);
+            avatarState.inventory.AddItem(material, count: alreadyHasCount);
 
             var firstEquipmentRow = _tableSheets.EquipmentItemSheet.First;
             Assert.NotNull(firstEquipmentRow);
