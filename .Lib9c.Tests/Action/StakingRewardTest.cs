@@ -1,5 +1,6 @@
 namespace Lib9c.Tests.Action
 {
+    using System;
     using System.Collections.Generic;
     using Bencodex.Types;
     using Libplanet;
@@ -8,6 +9,7 @@ namespace Lib9c.Tests.Action
     using Libplanet.Crypto;
     using Nekoyume;
     using Nekoyume.Action;
+    using Nekoyume.Model.Mail;
     using Nekoyume.Model.State;
     using Nekoyume.TableData;
     using Xunit;
@@ -71,8 +73,8 @@ namespace Lib9c.Tests.Action
             {
                 int level = i + 1;
                 List<StakingRewardSheet.RewardInfo> rewards = _tableSheets.StakingRewardSheet[level].Rewards;
-                StakingState.Result result = new StakingState.Result(_avatarAddress, rewards);
-                stakingState.UpdateRewardMap(i + 1, result, 0);
+                StakingResult result = new StakingResult(Guid.NewGuid(), _avatarAddress, rewards);
+                stakingState.UpdateRewardMap(level, result, 0);
             }
 
             stakingState.Update(stakingLevel, rewardLevel);
@@ -101,6 +103,9 @@ namespace Lib9c.Tests.Action
                     }
                 }
             }
+
+            AvatarState prevAvatarState = _state.GetAvatarState(_avatarAddress);
+            Assert.Empty(prevAvatarState.mailBox);
 
             Currency currency = _state.GetGoldCurrency();
             int stakingRound = _state.GetAgentState(_signer).StakingRound;
@@ -138,6 +143,7 @@ namespace Lib9c.Tests.Action
                 PreviousStates = _state,
                 Signer = _signer,
                 BlockIndex = rewardLevel * StakingState.RewardInterval,
+                Random = new TestRandom(),
             });
 
             StakingState nextStakingState = new StakingState((Dictionary)nextState.GetState(stakingAddress));
@@ -148,6 +154,16 @@ namespace Lib9c.Tests.Action
             {
                 Assert.True(nextAvatarState.inventory.HasItem(itemId, qty));
             }
+
+            Assert.Equal(rewardLevel - prevRewardLevel, nextAvatarState.mailBox.Count);
+            Assert.All(nextAvatarState.mailBox, mail =>
+            {
+                Assert.IsType<StakingMail>(mail);
+                StakingMail stakingMail = (StakingMail)mail;
+                Assert.IsType<StakingResult>(stakingMail.attachment);
+                StakingResult result = (StakingResult)stakingMail.attachment;
+                Assert.Equal(result.id, mail.id);
+            });
 
             for (int i = 0; i < nextStakingState.RewardLevel; i++)
             {
@@ -205,7 +221,7 @@ namespace Lib9c.Tests.Action
             Address stakingAddress = StakingState.DeriveAddress(_signer, 0);
             StakingState stakingState = new StakingState(stakingAddress, 1, 0);
             List<StakingRewardSheet.RewardInfo> rewards = _tableSheets.StakingRewardSheet[4].Rewards;
-            StakingState.Result result = new StakingState.Result(_avatarAddress, rewards);
+            StakingResult result = new StakingResult(Guid.NewGuid(), _avatarAddress, rewards);
             stakingState.UpdateRewardMap(4, result, 0);
             _state = _state.SetState(stakingAddress, stakingState.Serialize());
 
@@ -232,7 +248,7 @@ namespace Lib9c.Tests.Action
             Address stakingAddress = StakingState.DeriveAddress(_signer, 0);
             StakingState stakingState = new StakingState(stakingAddress, 1, startedBlockIndex);
             List<StakingRewardSheet.RewardInfo> rewards = _tableSheets.StakingRewardSheet[1].Rewards;
-            StakingState.Result result = new StakingState.Result(_avatarAddress, rewards);
+            StakingResult result = new StakingResult(Guid.NewGuid(), _avatarAddress, rewards);
             stakingState.UpdateRewardMap(1, result, 0);
 
             _state = _state.SetState(stakingAddress, stakingState.Serialize());
@@ -271,6 +287,7 @@ namespace Lib9c.Tests.Action
                     PreviousStates = _state,
                     Signer = _signer,
                     BlockIndex = StakingState.ExpirationIndex,
+                    Random = new TestRandom(),
                 })
             );
         }

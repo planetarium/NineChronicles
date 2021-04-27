@@ -1,5 +1,6 @@
 namespace Lib9c.Tests.Action
 {
+    using System;
     using System.Collections.Generic;
     using Bencodex.Types;
     using Libplanet;
@@ -158,8 +159,8 @@ namespace Lib9c.Tests.Action
             StakingState stakingState = new StakingState(stakingAddress, 2, 0);
             for (int i = 0; i < StakingState.RewardCapacity; i++)
             {
-                StakingState.Result result = new StakingState.Result(default, new List<StakingRewardSheet.RewardInfo>());
-                stakingState.UpdateRewardMap(i + 1, result, 0);
+                StakingResult stakingResult = new StakingResult(Guid.NewGuid(), default, new List<StakingRewardSheet.RewardInfo>());
+                stakingState.UpdateRewardMap(i + 1, stakingResult, 0);
             }
 
             Assert.True(stakingState.End);

@@ -6,6 +6,7 @@ using Libplanet;
 using Libplanet.Action;
 using Libplanet.Assets;
 using Nekoyume.Model.Item;
+using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using static Lib9c.SerializeKeys;
@@ -66,7 +67,10 @@ namespace Nekoyume.Action
 
                 List<StakingRewardSheet.RewardInfo> rewards =
                     stakingRewardSheet[stakingState.RewardLevelMap[level]].Rewards;
-                StakingState.Result result = new StakingState.Result(avatarAddress, rewards);
+                Guid id = context.Random.GenerateRandomGuid();
+                StakingResult result = new StakingResult(id, avatarAddress, rewards);
+                StakingMail mail = new StakingMail(result, context.BlockIndex, id, context.BlockIndex);
+                avatarState.UpdateV3(mail);
                 foreach (var rewardInfo in rewards)
                 {
                     ItemBase item = ItemFactory.CreateItem(itemSheet[rewardInfo.ItemId], context.Random);

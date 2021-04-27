@@ -5,7 +5,6 @@ using System.Linq;
 using Bencodex.Types;
 using Libplanet;
 using Nekoyume.Action;
-using Nekoyume.TableData;
 using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Model.State
@@ -13,31 +12,6 @@ namespace Nekoyume.Model.State
     [Serializable]
     public class StakingState: State
     {
-        [Serializable]
-        public class Result
-        {
-            public Address avatarAddress;
-            public List<StakingRewardSheet.RewardInfo> rewards;
-
-            public Result(Address address, List<StakingRewardSheet.RewardInfo> rewardInfos)
-            {
-                avatarAddress = address;
-                rewards = rewardInfos;
-            }
-
-            public Result(Dictionary serialized)
-            {
-                avatarAddress = serialized[AvatarAddressKey].ToAddress();
-                rewards = serialized[StakingResultKey]
-                    .ToList(s => new StakingRewardSheet.RewardInfo((Dictionary) s));
-            }
-
-            public Dictionary Serialize() =>
-                Dictionary.Empty
-                    .Add(AvatarAddressKey, avatarAddress.Serialize())
-                    .Add(StakingResultKey, new List(rewards.Select(r => r.Serialize())).Serialize());
-        }
-
         public static Address DeriveAddress(Address baseAddress, int stakingRound)
         {
             return baseAddress.Derive(
@@ -59,7 +33,7 @@ namespace Nekoyume.Model.State
         public long StartedBlockIndex { get; private set; }
         public long ReceivedBlockIndex { get; private set; }
         public long RewardLevel { get; private set; }
-        public Dictionary<long, Result> RewardMap { get; private set; }
+        public Dictionary<long, StakingResult> RewardMap { get; private set; }
         public bool End { get; private set; }
         public Dictionary<long, int> RewardLevelMap { get; private set; }
 
@@ -68,7 +42,7 @@ namespace Nekoyume.Model.State
             Level = level;
             StartedBlockIndex = blockIndex;
             ExpiredBlockIndex = blockIndex + ExpirationIndex;
-            RewardMap = new Dictionary<long, Result>();
+            RewardMap = new Dictionary<long, StakingResult>();
             RewardLevelMap = new Dictionary<long, int>
             {
                 [1] = level,
@@ -87,7 +61,7 @@ namespace Nekoyume.Model.State
             RewardLevel = serialized[RewardLevelKey].ToLong();
             RewardMap = ((Dictionary) serialized[RewardMapKey]).ToDictionary(
                 kv => kv.Key.ToLong(),
-                kv => new Result((Dictionary)kv.Value)
+                kv => new StakingResult((Dictionary)kv.Value)
             );
             End = serialized[EndKey].ToBoolean();
             RewardLevelMap = ((Dictionary) serialized[RewardLevelMapKey])
@@ -107,7 +81,7 @@ namespace Nekoyume.Model.State
             }
         }
 
-        public void UpdateRewardMap(long rewardLevel, Result avatarAddress, long blockIndex)
+        public void UpdateRewardMap(long rewardLevel, StakingResult avatarAddress, long blockIndex)
         {
             if (rewardLevel < 0 || rewardLevel > RewardCapacity)
             {

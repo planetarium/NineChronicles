@@ -72,7 +72,7 @@ namespace Lib9c.Tests.Model.State
 
             Address avatarAddress = default;
             List<StakingRewardSheet.RewardInfo> rewards = _tableSheets.StakingRewardSheet[1].Rewards;
-            StakingState.Result result = new StakingState.Result(avatarAddress, rewards);
+            StakingResult result = new StakingResult(Guid.NewGuid(), avatarAddress, rewards);
             stakingState.UpdateRewardMap(1, result, 14000);
             Assert.Single(stakingState.RewardMap);
             Assert.Equal(result, stakingState.RewardMap[1]);
@@ -88,7 +88,7 @@ namespace Lib9c.Tests.Model.State
             StakingState stakingState = new StakingState(_address, 1, 10000);
 
             List<StakingRewardSheet.RewardInfo> rewards = _tableSheets.StakingRewardSheet[1].Rewards;
-            StakingState.Result result = new StakingState.Result(_address, rewards);
+            StakingResult result = new StakingResult(Guid.NewGuid(), _address, rewards);
             Assert.Throws<ArgumentOutOfRangeException>(() => stakingState.UpdateRewardMap(rewardLevel, result, 0));
         }
 
@@ -97,7 +97,7 @@ namespace Lib9c.Tests.Model.State
         {
             StakingState stakingState = new StakingState(_address, 1, 10000);
             List<StakingRewardSheet.RewardInfo> rewards = _tableSheets.StakingRewardSheet[1].Rewards;
-            StakingState.Result result = new StakingState.Result(default, rewards);
+            StakingResult result = new StakingResult(Guid.NewGuid(), default, rewards);
             stakingState.UpdateRewardMap(1, result, 14000);
             Assert.Throws<AlreadyReceivedException>(() => stakingState.UpdateRewardMap(1, result, 0));
         }
