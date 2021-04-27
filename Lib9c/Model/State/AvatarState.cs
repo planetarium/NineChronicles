@@ -337,7 +337,7 @@ namespace Nekoyume.Model.State
         
         public void UpdateFromAddItem(ItemBase itemUsable, int count, bool canceled)
         {
-            var pair = inventory.AddItem(itemUsable, count);
+            var pair = inventory.AddItem(itemUsable, count: count);
             itemMap.Add(pair);
 
             if (!canceled)
@@ -363,7 +363,7 @@ namespace Nekoyume.Model.State
             {
                 var row = materialItemSheet.OrderedList.First(itemRow => itemRow.Id == pair.Key);
                 var item = ItemFactory.CreateMaterial(row);
-                var map = inventory.AddItem(item, pair.Value);
+                var map = inventory.AddItem(item, count: pair.Value);
                 itemMap.Add(map);
                 items.Add(item);
             }

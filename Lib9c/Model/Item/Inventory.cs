@@ -121,6 +121,29 @@ namespace Nekoyume.Model.Item
             .ThenByDescending(i => i.count)
             .Select(i => i.Serialize()));
 
+        protected bool Equals(Inventory other)
+        {
+            if (_items.Count == 0 && other._items.Count == 0)
+            {
+                return true;
+            }
+
+            return Equals(_items, other._items);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((Inventory) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return (_items != null ? _items.GetHashCode() : 0);
+        }
+
         #region Add
 
         public KeyValuePair<int, int> AddItem(ItemBase itemBase, int count = 1)
@@ -179,18 +202,39 @@ namespace Nekoyume.Model.Item
 
         public bool RemoveMaterial(HashDigest<SHA256> id, int count = 1)
         {
-            if (!TryGetMaterial(id, out var item) ||
-                item.count < count)
+            TryGetMaterial(id, false, out var nonTradableMaterial);
+            TryGetMaterial(id, true, out var tradableMaterial);
+            var sum = nonTradableMaterial?.count ?? 0 + tradableMaterial?.count ?? 0;
+            if (sum < count)
             {
                 return false;
             }
-
-            item.count -= count;
-            if (item.count == 0)
+            
+            if (nonTradableMaterial != null)
             {
-                _items.Remove(item);
-            }
+                if (nonTradableMaterial.count > count)
+                {
+                    nonTradableMaterial.count -= count;
+                    return true;
+                }
 
+                count -= nonTradableMaterial.count;
+                _items.Remove(nonTradableMaterial);
+                if (count == 0)
+                {
+                    return true;
+                }
+            }
+            
+            if (tradableMaterial != null)
+            {
+                tradableMaterial.count -= count;
+                if (tradableMaterial.count == 0)
+                {
+                    _items.Remove(tradableMaterial);
+                }
+            }
+            
             return true;
         }
 
@@ -234,25 +278,26 @@ namespace Nekoyume.Model.Item
             switch (itemBase)
             {
                 case Material material:
-                    return TryGetMaterial(material.ItemId, out outFungibleItem);
+                    return TryGetMaterial(material.ItemId, material.IsTradable, out outFungibleItem);
                 default:
                     outFungibleItem = null;
                     return false;
             }
         }
 
-        public bool TryGetFungibleItem(int id, out Item outFungibleItem)
+        public bool TryGetFungibleItem(int rowId, out Item outFungibleItem)
         {
-            outFungibleItem = _items.FirstOrDefault(i => i.item.Id == id);
+            outFungibleItem = _items.FirstOrDefault(i => i.item.Id == rowId);
             return !(outFungibleItem is null);
         }
 
-        public bool TryGetMaterial(HashDigest<SHA256> itemId, out Item outMaterial)
+        public bool TryGetMaterial(HashDigest<SHA256> itemId, bool isTradable, out Item outMaterial)
         {
             foreach (var fungibleItem in _items)
             {
                 if (!(fungibleItem.item is Material material) ||
-                    !material.ItemId.Equals(itemId))
+                    !material.ItemId.Equals(itemId) ||
+                    !material.IsTradable.Equals(isTradable))
                 {
                     continue;
                 }
