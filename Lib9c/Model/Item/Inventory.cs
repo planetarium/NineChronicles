@@ -200,6 +200,17 @@ namespace Nekoyume.Model.Item
             }
         }
 
+        public bool RemoveTradableFungibleItem(ItemBase itemBase, int count = 1)
+        {
+            switch (itemBase)
+            {
+                case Material material:
+                    return RemoveTradableMaterial(material.ItemId, count);
+                default:
+                    return false;
+            }
+        }
+
         public bool RemoveMaterial(HashDigest<SHA256> id, int count = 1)
         {
             TryGetMaterial(id, false, out var nonTradableMaterial);
@@ -235,6 +246,23 @@ namespace Nekoyume.Model.Item
                 }
             }
 
+            return true;
+        }
+
+        public bool RemoveTradableMaterial(HashDigest<SHA256> id, int count = 1)
+        {
+            if (!TryGetMaterial(id, true, out var tradableMaterial) ||
+                tradableMaterial.count < count)
+            {
+                return false;
+            }
+
+            tradableMaterial.count -= count;
+            if (tradableMaterial.count == 0)
+            {
+                _items.Remove(tradableMaterial);
+            }
+            
             return true;
         }
 

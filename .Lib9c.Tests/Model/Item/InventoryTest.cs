@@ -79,5 +79,22 @@
             inventory.RemoveMaterial(row.ItemId);
             Assert.Empty(inventory.Materials);
         }
+
+        [Fact]
+        public void RemoveTradableMaterial()
+        {
+            var row = TableSheets.MaterialItemSheet.First;
+            Assert.NotNull(row);
+            var material = ItemFactory.CreateMaterial(row);
+            var tradableMaterial = ItemFactory.CreateMaterial(row, true);
+            var inventory = new Inventory();
+            Assert.Empty(inventory.Items);
+            inventory.AddItem(material);
+            inventory.AddItem(tradableMaterial);
+            inventory.RemoveTradableMaterial(row.ItemId);
+            Assert.False(inventory.Materials.First().IsTradable);
+            Assert.False(inventory.RemoveTradableMaterial(row.ItemId));
+            Assert.Single(inventory.Materials);
+        }
     }
 }
