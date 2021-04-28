@@ -1,16 +1,18 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using Bencodex.Types;
 using Libplanet;
 using Nekoyume.Action;
 using Nekoyume.BlockChain;
-using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using Nekoyume.State.Subjects;
-using Nekoyume.UI;
+using Nekoyume.UI.Model;
+using Nekoyume.UI.Module;
 using UnityEngine;
+using Debug = UnityEngine.Debug;
 
 namespace Nekoyume.State
 {
@@ -41,6 +43,20 @@ namespace Nekoyume.State
 
         public readonly Dictionary<Address, CombinationSlotState> CombinationSlotStates =
             new Dictionary<Address, CombinationSlotState>();
+
+        private HashSet<Model.State.RankingInfo> rankingInfoSet = null;
+
+        public List<AbilityRankingModel> AbilityRankingInfos = null;
+
+        public List<StageRankingModel> StageRankingInfos = null;
+
+        public List<StageRankingModel> MimisbrunnrRankingInfos = null;
+
+        public Dictionary<int, AbilityRankingModel> AgentAbilityRankingInfos = new Dictionary<int, AbilityRankingModel>();
+
+        public Dictionary<int, StageRankingModel> AgentStageRankingInfos = new Dictionary<int, StageRankingModel>();
+
+        public Dictionary<int, StageRankingModel> AgentMimisbrunnrRankingInfos = new Dictionary<int, StageRankingModel>();
 
         public States()
         {
@@ -279,6 +295,208 @@ namespace Nekoyume.State
                 return;
 
             ReactiveAvatarState.Initialize(CurrentAvatarState);
+        }
+
+        public void UpdateRanking()
+        {
+            var rankingMapStates = RankingMapStates;
+            rankingInfoSet = new HashSet<RankingInfo>();
+            foreach (var pair in rankingMapStates)
+            {
+                var rankingInfo = pair.Value.GetRankingInfos(null);
+                rankingInfoSet.UnionWith(rankingInfo);
+            }
+
+            Debug.LogWarning($"total user count : {rankingInfoSet.Count()}");
+
+            var sw = new Stopwatch();
+            sw.Start();
+
+            LoadAbilityRankingInfos();
+            LoadStageRankingInfo();
+            LoadMimisbrunnrRankingInfo();
+
+            sw.Stop();
+            UnityEngine.Debug.LogWarning($"total elapsed : {sw.Elapsed}");
+        }
+
+        private void LoadAbilityRankingInfos()
+        {
+            var abilityRankingInfos = rankingInfoSet
+                .Select(rankingInfo =>
+                {
+                    var avatarAddress = rankingInfo.AvatarAddress;
+                    var arenaInfo = WeeklyArenaState.GetArenaInfo(avatarAddress);
+
+                    return arenaInfo;
+                })
+                .ToList()
+                .Where(x => x != null)
+                .OrderByDescending(i => i is null ? 0 : i.CombatPoint)
+                .ThenByDescending(i => i.Level)
+                .ToList();
+
+            foreach (var pair in _avatarStates)
+            {
+                var avatarState = pair.Value;
+                var avatarAddress = avatarState.address;
+                var index = abilityRankingInfos.FindIndex(i => i.AvatarAddress.Equals(avatarAddress));
+                if (index >= 0)
+                {
+                    var info = abilityRankingInfos[index];
+
+                    AgentAbilityRankingInfos[pair.Key] = 
+                        new AbilityRankingModel()
+                        {
+                            Rank = index + 1,
+                            Name = avatarState.name,
+                            AvatarState = avatarState,
+                            AvatarAddress = avatarAddress,
+                            Cp = info is null ? 0 : info.CombatPoint,
+                            Level = info.Level
+                        };
+                }
+            }
+
+            AbilityRankingInfos = abilityRankingInfos
+                .Take(RankPanel.RankingBoardDisplayCount)
+                .Select(arenaInfo =>
+                {
+                    var avatarAddress = arenaInfo.AvatarAddress;
+                    var iValue = Game.Game.instance.Agent.GetState(avatarAddress);
+                    var avatarState = new AvatarState((Bencodex.Types.Dictionary) iValue);
+
+                    return new AbilityRankingModel()
+                    {
+                        Name = avatarState.name,
+                        AvatarState = avatarState,
+                        AvatarAddress = avatarAddress,
+                        Cp = arenaInfo.CombatPoint,
+                        Level = arenaInfo.Level,
+                    };
+                }).ToList();
+        }
+
+        private void LoadStageRankingInfo()
+        {
+            var sw = new Stopwatch();
+            var inner = new Stopwatch();
+
+            //sw.Start();
+            //inner.Start();
+
+            var orderedAvatarStates = rankingInfoSet
+                .Select(rankingInfo =>
+                {
+                    var iValue = Game.Game.instance.Agent.GetState(rankingInfo.AvatarAddress);
+                    //inner.Stop();
+                    //UnityEngine.Debug.LogWarning($"getstate elapsed : {inner.Elapsed}");
+                    //inner.Restart();
+
+                    var avatarState = new AvatarState((Bencodex.Types.Dictionary)iValue);
+                    //inner.Stop();
+                    //UnityEngine.Debug.LogWarning($"new avatarstate elapsed : {inner.Elapsed}");
+                    //inner.Restart();
+
+                    return avatarState;
+                })
+                .ToList()
+                .OrderByDescending(x => x.worldInformation.TryGetLastClearedStageId(out var id) ? id : 0)
+                .ToList();
+
+            //inner.Stop();
+            //sw.Stop();
+            //UnityEngine.Debug.LogWarning($"stage ranking elapsed : {sw.Elapsed}");
+            //sw.Restart();
+
+            foreach (var pair in _avatarStates)
+            {
+                var avatarState = pair.Value;
+                var avatarAddress = avatarState.address;
+                var index = orderedAvatarStates.FindIndex(i => i.address.Equals(avatarAddress));
+                if (index >= 0)
+                {
+                    var stageProgress = avatarState.worldInformation.TryGetLastClearedStageId(out var id) ? id : 0;
+
+                    AgentStageRankingInfos[pair.Key] = 
+                        new StageRankingModel()
+                        {
+                            Rank = index + 1,
+                            Name = avatarState.name,
+                            AvatarState = avatarState,
+                            AvatarAddress = avatarState.address,
+                            Stage = stageProgress,
+                        };
+                }
+            }
+
+            StageRankingInfos = orderedAvatarStates
+                .Take(RankPanel.RankingBoardDisplayCount)
+                .Select(avatarState =>
+                {
+                    var stageProgress = avatarState.worldInformation.TryGetLastClearedStageId(out var id) ? id : 0;
+
+                    return new StageRankingModel()
+                    {
+                        Name = avatarState.name,
+                        AvatarState = avatarState,
+                        AvatarAddress = avatarState.address,
+                        Stage = stageProgress,
+                    };
+                }).ToList();
+        }
+
+        private void LoadMimisbrunnrRankingInfo()
+        {
+            var orderedAvatarStates = rankingInfoSet
+                .Select(rankingInfo =>
+                {
+                    var iValue = Game.Game.instance.Agent.GetState(rankingInfo.AvatarAddress);
+                    var avatarState = new AvatarState((Bencodex.Types.Dictionary)iValue);
+
+                    return avatarState;
+                })
+                .ToList()
+                .OrderByDescending(x => x.worldInformation.TryGetLastClearedMimisbrunnrStageId(out var id) ? id : 0)
+                .ToList();
+
+            foreach (var pair in _avatarStates)
+            {
+                var avatarState = pair.Value;
+                var avatarAddress = avatarState.address;
+                var index = orderedAvatarStates.FindIndex(i => i.address.Equals(avatarAddress));
+                if (index >= 0)
+                {
+                    var stageProgress = avatarState.worldInformation.TryGetLastClearedMimisbrunnrStageId(out var id) ? id : 0;
+
+                    AgentMimisbrunnrRankingInfos[pair.Key] =
+                        new StageRankingModel()
+                        {
+                            Rank = index + 1,
+                            Name = avatarState.name,
+                            AvatarState = avatarState,
+                            AvatarAddress = avatarState.address,
+                            Stage = stageProgress > 0 ?
+                                stageProgress - GameConfig.MimisbrunnrStartStageId + 1 : 0,
+                        };
+                }
+            }
+
+            MimisbrunnrRankingInfos = orderedAvatarStates
+                .Take(RankPanel.RankingBoardDisplayCount)
+                .Select(avatarState =>
+                {
+                    var stageProgress = avatarState.worldInformation.TryGetLastClearedMimisbrunnrStageId(out var id) ? id : 0;
+
+                    return new StageRankingModel()
+                    {
+                        Name = avatarState.name,
+                        AvatarState = avatarState,
+                        AvatarAddress = avatarState.address,
+                        Stage = stageProgress > 0 ?
+                            stageProgress - GameConfig.MimisbrunnrStartStageId + 1 : 0,
+                    };
+                }).ToList();
         }
     }
 }

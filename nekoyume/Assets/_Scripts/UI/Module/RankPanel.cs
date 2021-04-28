@@ -1,4 +1,3 @@
-using Libplanet;
 using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.UI.Scroller;
@@ -7,27 +6,11 @@ using System.Linq;
 using TMPro;
 using UniRx;
 using UnityEngine;
+using Nekoyume.UI.Model;
+using Debug = UnityEngine.Debug;
 
 namespace Nekoyume.UI.Module
 {
-    public class RankingInfo
-    {
-        public string Name;
-        public Address AvatarAddress;
-        public AvatarState AvatarState;
-    }
-
-    public class AbilityRankingInfo : RankingInfo
-    {
-        public int Cp;
-        public int Level;
-    }
-
-    public class StageRankingInfo : RankingInfo
-    {
-        public int StageId;
-    }
-
     public class RankPanel : MonoBehaviour
     {
         [SerializeField]
@@ -51,24 +34,9 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private RankCell myInfoCell = null;
 
-        [SerializeField]
-        private int displayCount = 100;
-
-        private HashSet<Nekoyume.Model.State.RankingInfo> rankingInfoSet = null;
+        public const int RankingBoardDisplayCount = 100;
 
         private List<RankCell> _cellViewCache = new List<RankCell>();
-
-        private List<AbilityRankingInfo> _abilityRankingInfos = null;
-
-        private List<StageRankingInfo> _stageRankingInfos = null;
-
-        private List<StageRankingInfo> _mimisbrunnrRankingInfos = null;
-
-        private (int rank, AbilityRankingInfo rankingInfo) _myAbilityRankingInfo;
-
-        private (int rank, StageRankingInfo rankingInfo) _myStageRankingInfo;
-
-        private (int rank, StageRankingInfo rankingInfo) _myMimisbrunnrRankingInfo;
 
         private readonly Dictionary<RankCategory, (string, string)> _rankColumnMap = new Dictionary<RankCategory, (string, string)>
         {
@@ -142,7 +110,7 @@ namespace Nekoyume.UI.Module
         {
             GameObject gameObject;
             RankCell rankCell;
-            for (int i = 0; i < displayCount; ++i)
+            for (int i = 0; i < RankingBoardDisplayCount; ++i)
             {
                 gameObject = Instantiate(rankCellPrefab, cellViewParent);
                 rankCell = gameObject.GetComponent<RankCell>();
@@ -154,20 +122,6 @@ namespace Nekoyume.UI.Module
             rankCell = gameObject.GetComponent<RankCell>();
             _cellViewCache.Add(rankCell);
             gameObject.SetActive(false);
-        }
-
-        private void Awake()
-        {
-            if (rankingInfoSet is null)
-            {
-                var rankingMapStates = States.Instance.RankingMapStates;
-                rankingInfoSet = new HashSet<Nekoyume.Model.State.RankingInfo>();
-                foreach (var pair in rankingMapStates)
-                {
-                    var rankingInfo = pair.Value.GetRankingInfos(null);
-                    rankingInfoSet.UnionWith(rankingInfo);
-                }
-            }
         }
 
         public void Show()
@@ -198,61 +152,89 @@ namespace Nekoyume.UI.Module
 
         private void UpdateCategory(RankCategory category)
         {
+            UpdateCategoryAsync(category);
+        }
+
+        private async void UpdateCategoryAsync(RankCategory category)
+        {
+            var states = States.Instance;
+            var loadingTask = Game.Game.instance.RankLoadingTask;
+
+            if (loadingTask.IsFaulted)
+            {
+                Debug.LogError($"Error loading ranking. Exception : \n{loadingTask.Exception}\n{loadingTask.Exception.StackTrace}");
+                return;
+            }
+
+            if (!loadingTask.IsCompleted)
+            {
+                await loadingTask;
+            }
+
             switch (category)
             {
                 case RankCategory.Ability:
-                    if (_abilityRankingInfos is null)
+                    var abilityRankingInfos = states.AbilityRankingInfos;
+                    if (states.AgentAbilityRankingInfos.TryGetValue(states.CurrentAvatarKey, out var abilityInfo))
                     {
-                        LoadAbilityRankingInfos();
+                        myInfoCell.SetDataAsAbility(abilityInfo);
                     }
 
-                    for (int i = 0; i < _abilityRankingInfos.Count(); ++i)
+                    for (int i = 0; i < RankingBoardDisplayCount; ++i)
                     {
-                        if (i >= displayCount)
+                        if (i >= abilityRankingInfos.Count())
                         {
+                            _cellViewCache[i].gameObject.SetActive(false);
                             break;
                         }
 
                         var rank = i + 1;
-                        _cellViewCache[i].SetDataAsAbility(rank, _abilityRankingInfos[i]);
+                        abilityRankingInfos[i].Rank = rank;
+                        _cellViewCache[i].SetDataAsAbility(abilityRankingInfos[i]);
+                        _cellViewCache[i].gameObject.SetActive(true);
                     }
-                    myInfoCell.SetDataAsAbility(_myAbilityRankingInfo.rank, _myAbilityRankingInfo.rankingInfo);
                     break;
                 case RankCategory.Stage:
-                    if (_stageRankingInfos is null)
+                    var stageRankingInfos = states.StageRankingInfos;
+                    if (states.AgentStageRankingInfos.TryGetValue(states.CurrentAvatarKey, out var stageInfo))
                     {
-                        LoadStageRankingInfo();
+                        myInfoCell.SetDataAsStage(stageInfo);
                     }
 
-                    for (int i = 0; i < _stageRankingInfos.Count(); ++i)
+                    for (int i = 0; i < RankingBoardDisplayCount; ++i)
                     {
-                        if (i >= displayCount)
+                        if (i >= stageRankingInfos.Count())
                         {
+                            _cellViewCache[i].gameObject.SetActive(false);
                             break;
                         }
 
                         var rank = i + 1;
-                        _cellViewCache[i].SetDataAsStage(rank, _stageRankingInfos[i]);
+                        stageRankingInfos[i].Rank = rank;
+                        _cellViewCache[i].SetDataAsStage(stageRankingInfos[i]);
+                        _cellViewCache[i].gameObject.SetActive(true);
                     }
-                    myInfoCell.SetDataAsStage(_myStageRankingInfo.rank, _myStageRankingInfo.rankingInfo);
                     break;
                 case RankCategory.Mimisburnnr:
-                    if (_mimisbrunnrRankingInfos is null)
+                    var mimisbrunnrRankingInfos = states.MimisbrunnrRankingInfos;
+                    if (states.AgentMimisbrunnrRankingInfos.TryGetValue(states.CurrentAvatarKey, out var mimisbrunnrInfo))
                     {
-                        LoadMimisbrunnrRankingInfo();
+                        myInfoCell.SetDataAsStage(mimisbrunnrInfo);
                     }
 
-                    for (int i = 0; i < _mimisbrunnrRankingInfos.Count(); ++i)
+                    for (int i = 0; i < RankingBoardDisplayCount; ++i)
                     {
-                        if (i >= displayCount)
+                        if (i >= mimisbrunnrRankingInfos.Count())
                         {
+                            _cellViewCache[i].gameObject.SetActive(false);
                             break;
                         }
 
                         var rank = i + 1;
-                        _cellViewCache[i].SetDataAsStage(rank, _mimisbrunnrRankingInfos[i]);
+                        mimisbrunnrRankingInfos[i].Rank = rank;
+                        _cellViewCache[i].SetDataAsStage(mimisbrunnrRankingInfos[i]);
+                        _cellViewCache[i].gameObject.SetActive(true);
                     }
-                    myInfoCell.SetDataAsStage(_myMimisbrunnrRankingInfo.rank, _myMimisbrunnrRankingInfo.rankingInfo);
                     break;
                 default:
                     _cellViewCache.ForEach(cell => cell.gameObject.SetActive(false));
@@ -261,164 +243,6 @@ namespace Nekoyume.UI.Module
 
             firstColumnText.text = _rankColumnMap[category].Item1;
             secondColumnText.text = _rankColumnMap[category].Item2;
-        }
-
-        private void LoadAbilityRankingInfos()
-        {
-            var weeklyArenaState = States.Instance.WeeklyArenaState;
-
-            var abilityRankingInfos = rankingInfoSet
-                .OrderByDescending(i =>
-                {
-                    var avatarAddress = i.AvatarAddress;
-                    var arenaInfo = weeklyArenaState.GetArenaInfo(avatarAddress);
-
-                    return arenaInfo is null ? 0 : arenaInfo.CombatPoint;
-                })
-                .ThenByDescending(c => c.Level)
-                .ToList();
-
-            var myAvatarState = States.Instance.CurrentAvatarState;
-            var myAvatarAddress = myAvatarState.address;
-            var myInfoIndex = abilityRankingInfos.FindIndex(i => i.AvatarAddress.Equals(myAvatarAddress));
-            if (myInfoIndex >= 0)
-            {
-                var myInfo = abilityRankingInfos[myInfoIndex];
-                var myArenaInfo = weeklyArenaState.GetArenaInfo(myAvatarAddress);
-                var avatarNameWithNoHash = myArenaInfo.AvatarName.Split().First();
-
-                _myAbilityRankingInfo = (
-                    myInfoIndex + 1,
-                    new AbilityRankingInfo()
-                    {
-                        Name = avatarNameWithNoHash,
-                        AvatarState = myAvatarState,
-                        AvatarAddress = myAvatarAddress,
-                        Cp = myArenaInfo is null ? 0 : myArenaInfo.CombatPoint,
-                        Level = myInfo.Level
-                    });
-            }
-
-            _abilityRankingInfos = abilityRankingInfos
-                .Take(displayCount)
-                .Select(i =>
-                {
-                    var avatarAddress = i.AvatarAddress;
-                    var arenaInfo = weeklyArenaState.GetArenaInfo(avatarAddress);
-                    var avatarNameWithNoHash = arenaInfo.AvatarName.Split().First();
-
-                    var iValue = Game.Game.instance.Agent.GetState(avatarAddress);
-                    var avatarState = new AvatarState((Bencodex.Types.Dictionary)iValue);
-
-                    return new AbilityRankingInfo()
-                    {
-                        Name = avatarNameWithNoHash,
-                        AvatarState = avatarState,
-                        AvatarAddress = avatarAddress,
-                        Cp = arenaInfo.CombatPoint,
-                        Level = arenaInfo.Level
-                    };
-                }).ToList();
-        }
-
-        private void LoadStageRankingInfo()
-        {
-            var stageRankingInfos = rankingInfoSet
-                .Select(rankingInfo =>
-                {
-                    var iValue = Game.Game.instance.Agent.GetState(rankingInfo.AvatarAddress);
-                    var avatarState = new AvatarState((Bencodex.Types.Dictionary) iValue);
-
-                    return (avatarState, rankingInfo);
-                })
-                .OrderByDescending(x => x.avatarState.worldInformation
-                    .TryGetLastClearedStageId(out var id) ? id : 0)
-                    .ToList();
-
-            var myAvatarState = States.Instance.CurrentAvatarState;
-            var myAvatarAddress = myAvatarState.address;
-            var myInfoIndex = stageRankingInfos.FindIndex(i => i.avatarState.address.Equals(myAvatarAddress));
-            if (myInfoIndex >= 0)
-            {
-                var (avatarState, _) = stageRankingInfos[myInfoIndex];
-                var myStageProgress = myAvatarState.worldInformation.TryGetLastClearedStageId(out var id) ? id : 0;
-
-                _myStageRankingInfo = (
-                    myInfoIndex + 1,
-                    new StageRankingInfo()
-                    {
-                        Name = avatarState.name,
-                        AvatarState = avatarState,
-                        AvatarAddress = avatarState.address,
-                        StageId = myStageProgress,
-                    });
-            }
-
-            _stageRankingInfos = stageRankingInfos
-                .Take(displayCount)
-                .Select(i =>
-                {
-                    var avatarState = i.avatarState;
-                    var stageProgress = avatarState.worldInformation.TryGetLastClearedStageId(out var id) ? id : 0;
-
-                    return new StageRankingInfo()
-                    {
-                        Name = avatarState.name,
-                        AvatarState = avatarState,
-                        AvatarAddress = avatarState.address,
-                        StageId = stageProgress,
-                    };
-                }).ToList();
-        }
-
-        private void LoadMimisbrunnrRankingInfo()
-        {
-            var mimisbrunnrRankingInfos = rankingInfoSet
-                .Select(rankingInfo =>
-                {
-                    var iValue = Game.Game.instance.Agent.GetState(rankingInfo.AvatarAddress);
-                    var avatarState = new AvatarState((Bencodex.Types.Dictionary) iValue);
-
-                    return (avatarState, rankingInfo);
-                })
-                .OrderByDescending(x => x.avatarState.worldInformation
-                    .TryGetLastClearedMimisbrunnrStageId(out var id) ? id : 0)
-                    .ToList();
-
-            var myAvatarState = States.Instance.CurrentAvatarState;
-            var myAvatarAddress = myAvatarState.address;
-            var myInfoIndex = mimisbrunnrRankingInfos.FindIndex(i => i.avatarState.address.Equals(myAvatarAddress));
-            if (myInfoIndex >= 0)
-            {
-                var (avatarState, rankingInfo) = mimisbrunnrRankingInfos[myInfoIndex];
-                var myStageProgress = myAvatarState.worldInformation.TryGetLastClearedMimisbrunnrStageId(out var id) ? id : 0;
-
-                _myMimisbrunnrRankingInfo = (
-                    myInfoIndex + 1,
-                    new StageRankingInfo()
-                    {
-                        Name = avatarState.name,
-                        AvatarState = avatarState,
-                        AvatarAddress = avatarState.address,
-                        StageId = myStageProgress,
-                    });
-            }
-
-            _mimisbrunnrRankingInfos = mimisbrunnrRankingInfos
-                .Take(displayCount)
-                .Select(i =>
-                {
-                    var avatarState = i.avatarState;
-                    var stageProgress = avatarState.worldInformation.TryGetLastClearedMimisbrunnrStageId(out var id) ? id : 0;
-
-                    return new StageRankingInfo()
-                    {
-                        Name = avatarState.name,
-                        AvatarState = avatarState,
-                        AvatarAddress = avatarState.address,
-                        StageId = stageProgress,
-                    };
-                }).ToList();
         }
     }
 }

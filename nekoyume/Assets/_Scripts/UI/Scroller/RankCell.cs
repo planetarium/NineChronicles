@@ -1,5 +1,6 @@
 using Libplanet;
 using Nekoyume.Model.State;
+using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using System.Collections;
 using System.Collections.Generic;
@@ -50,7 +51,7 @@ namespace Nekoyume.UI.Scroller
         [SerializeField]
         private int addressStringCount = 6;
 
-        public void SetDataAsAbility(int rank, AbilityRankingInfo rankingInfo)
+        public void SetDataAsAbility(AbilityRankingModel rankingInfo)
         {
             nicknameText.text = rankingInfo.Name;
             addressText.text = rankingInfo.AvatarAddress
@@ -61,6 +62,8 @@ namespace Nekoyume.UI.Scroller
             secondElement.text = rankingInfo.Level.ToString();
             firstElement.gameObject.SetActive(true);
             secondElement.gameObject.SetActive(true);
+
+            var rank = rankingInfo.Rank;
             switch (rank)
             {
                 case 1:
@@ -89,16 +92,18 @@ namespace Nekoyume.UI.Scroller
             gameObject.SetActive(true);
         }
 
-        public void SetDataAsStage(int rank, StageRankingInfo rankingInfo)
+        public void SetDataAsStage(StageRankingModel rankingInfo)
         {
             nicknameText.text = rankingInfo.Name;
             addressText.text = rankingInfo.AvatarAddress
                 .ToString()
                 .Remove(addressStringCount);
 
-            firstElement.text = rankingInfo.StageId.ToString();
+            firstElement.text = rankingInfo.Stage.ToString();
             firstElement.gameObject.SetActive(true);
             secondElement.gameObject.SetActive(false);
+
+            var rank = rankingInfo.Rank;
             switch (rank)
             {
                 case 1:
