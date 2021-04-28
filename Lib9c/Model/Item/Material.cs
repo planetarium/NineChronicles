@@ -9,15 +9,20 @@ using Nekoyume.TableData;
 namespace Nekoyume.Model.Item
 {
     [Serializable]
-    public class Material : ItemBase, ISerializable
+    public class Material : ItemBase, ISerializable, IFungibleItem, ITradableItem
     {
         public HashDigest<SHA256> ItemId { get; }
+
+        public HashDigest<SHA256> FungibleId => ItemId;
+        
+        public Guid TradeId { get; }
         
         public bool IsTradable { get; }
 
         public Material(MaterialItemSheet.Row data, bool isTradable = default) : base(data)
         {
             ItemId = data.ItemId;
+            TradeId = new Guid(HashDigest<MD5>.DeriveFrom(ItemId.ToByteArray()).ToByteArray());
             IsTradable = isTradable;
         }
 
@@ -26,6 +31,7 @@ namespace Nekoyume.Model.Item
             if (serialized.TryGetValue((Text) "item_id", out var itemId))
             {
                 ItemId = itemId.ToItemId();
+                TradeId = new Guid(HashDigest<MD5>.DeriveFrom(ItemId.ToByteArray()).ToByteArray());
             }
 
             IsTradable = serialized.ContainsKey("is_tradable") ? serialized["is_tradable"].ToBoolean() : default;
@@ -79,6 +85,7 @@ namespace Nekoyume.Model.Item
         {
             return base.ToString() +
                    $", {nameof(ItemId)}: {ItemId}" +
+                   $", {nameof(TradeId)}: {TradeId}" +
                    $", {nameof(IsTradable)}: {IsTradable}";
         }
     }

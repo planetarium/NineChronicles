@@ -1,6 +1,5 @@
 namespace Lib9c.Tests.Model.Item
 {
-    using System;
     using System.IO;
     using System.Runtime.Serialization.Formatters.Binary;
     using Nekoyume.Model.Item;
@@ -50,9 +49,17 @@ namespace Lib9c.Tests.Model.Item
         }
 
         [Fact]
+        public void Equals_TradeId_When_ItemId_Is_Equals()
+        {
+            var material = new Material(_materialRow);
+            var material2 = new Material(_materialRow, true);
+            Assert.Equal(material.TradeId, material2.TradeId);
+        }
+
+        [Fact]
         public void Equals_With_Or_Without_IsTradable_When_IsTradable_False()
         {
-            var material = new Material(_materialRow, false);
+            var material = new Material(_materialRow);
             var serialized = (Bencodex.Types.Dictionary)material.Serialize();
             var serializedWithoutIsTradable = serialized.ContainsKey("is_tradable")
                 ? new Bencodex.Types.Dictionary(serialized.Remove((Bencodex.Types.Text)"is_tradable"))
