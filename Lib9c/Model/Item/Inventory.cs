@@ -234,7 +234,7 @@ namespace Nekoyume.Model.Item
                     _items.Remove(tradableMaterial);
                 }
             }
-            
+
             return true;
         }
 
