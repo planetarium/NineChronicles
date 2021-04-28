@@ -1,5 +1,6 @@
 ﻿namespace Lib9c.Tests.Model.Item
 {
+    using System;
     using System.IO;
     using System.Linq;
     using System.Runtime.Serialization.Formatters.Binary;
@@ -78,6 +79,42 @@
             Assert.True(inventory.Materials.First().IsTradable);
             inventory.RemoveMaterial(row.ItemId);
             Assert.Empty(inventory.Materials);
+        }
+
+        [Fact]
+        public void RemoveTradableItem_INonFungibleItem()
+        {
+            var row = TableSheets.EquipmentItemSheet.First;
+            Assert.NotNull(row);
+            var itemUsable = ItemFactory.CreateItemUsable(row, Guid.NewGuid(), 0);
+            var nonFungibleItem = (INonFungibleItem)itemUsable;
+            Assert.NotNull(nonFungibleItem);
+            var inventory = new Inventory();
+            Assert.Empty(inventory.Items);
+            inventory.AddItem(itemUsable);
+            Assert.Single(inventory.Equipments);
+            Assert.True(inventory.RemoveTradableItem(nonFungibleItem));
+            Assert.Empty(inventory.Equipments);
+            Assert.False(inventory.RemoveTradableItem(nonFungibleItem));
+        }
+
+        [Fact]
+        public void RemoveTradableItem_Material()
+        {
+            var row = TableSheets.MaterialItemSheet.First;
+            Assert.NotNull(row);
+            var material = ItemFactory.CreateMaterial(row);
+            var tradableMaterial = ItemFactory.CreateMaterial(row, true);
+            var tradableItem = (ITradableItem)tradableMaterial;
+            Assert.NotNull(tradableItem);
+            var inventory = new Inventory();
+            Assert.Empty(inventory.Items);
+            inventory.AddItem(material);
+            inventory.AddItem(tradableMaterial);
+            inventory.RemoveTradableItem(tradableItem);
+            Assert.False(inventory.Materials.First().IsTradable);
+            Assert.False(inventory.RemoveTradableItem(tradableItem));
+            Assert.Single(inventory.Materials);
         }
 
         [Fact]

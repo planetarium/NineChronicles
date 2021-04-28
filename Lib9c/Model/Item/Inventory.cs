@@ -200,10 +200,12 @@ namespace Nekoyume.Model.Item
             }
         }
 
-        public bool RemoveTradableFungibleItem(ItemBase itemBase, int count = 1)
+        public bool RemoveTradableItem(ITradableItem tradableItem, int count = 1)
         {
-            switch (itemBase)
+            switch (tradableItem)
             {
+                case INonFungibleItem nonFungibleItem:
+                    return RemoveNonFungibleItem(nonFungibleItem);
                 case Material material:
                     return RemoveTradableMaterial(material.ItemId, count);
                 default:
@@ -319,6 +321,22 @@ namespace Nekoyume.Model.Item
             return !(outFungibleItem is null);
         }
 
+        public bool TryGetFungibleItem(HashDigest<SHA256> fungibleId, out Item outFungibleItem)
+        {
+            foreach (var item in _items)
+            {
+                if (item.item is IFungibleItem fungibleItem &&
+                    fungibleItem.FungibleId.Equals(fungibleId))
+                {
+                    outFungibleItem = item;
+                    return true;
+                }
+            }
+
+            outFungibleItem = null;
+            return false;
+        }
+
         public bool TryGetMaterial(HashDigest<SHA256> itemId, bool isTradable, out Item outMaterial)
         {
             foreach (var fungibleItem in _items)
@@ -428,6 +446,11 @@ namespace Nekoyume.Model.Item
             .Select(i => i.item)
             .OfType<INonFungibleItem>()
             .Any(i => i.ItemId.Equals(itemId));
+        
+        public bool HasTradableItem(Guid tradeId) => _items
+            .Select(i => i.item)
+            .OfType<ITradableItem>()
+            .Any(i => i.TradeId.Equals(tradeId));
 
         #endregion
 
@@ -437,12 +460,14 @@ namespace Nekoyume.Model.Item
 
             foreach (var (type, slotCount) in availableSlots)
             {
-                var equipments = Equipments.Where(e =>
-                    e.ItemSubType == type &&
-                    e.RequiredBlockIndex <= blockIndex);
-                var current = equipments.Where(e => e.equipped);
+                var equipments = Equipments
+                    .Where(e =>
+                        e.ItemSubType == type &&
+                        e.RequiredBlockIndex <= blockIndex)
+                    .ToList();
+                var current = equipments.Where(e => e.equipped).ToList();
                 // When an equipment slot is empty.
-                if (current.Count() < Math.Min(equipments.Count(), slotCount))
+                if (current.Count < Math.Min(equipments.Count, slotCount))
                 {
                     return true;
                 }
@@ -451,7 +476,9 @@ namespace Nekoyume.Model.Item
                 foreach (var equipment in equipments)
                 {
                     if (equipment.equipped)
+                    {
                         continue;
+                    }
 
                     var cp = CPHelper.GetCP(equipment);
                     if (current.Any(i => CPHelper.GetCP(i) < cp))
