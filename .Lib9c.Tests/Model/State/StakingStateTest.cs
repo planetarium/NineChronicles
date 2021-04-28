@@ -113,5 +113,21 @@ namespace Lib9c.Tests.Model.State
                 Assert.Equal(i, stakingState.GetRewardLevel(i * StakingState.RewardInterval));
             }
         }
+
+        [Theory]
+        [InlineData(0, 0, 40000, true)]
+        [InlineData(0, 40000, 80000, true)]
+        [InlineData(0, 40000, 40001, false)]
+        [InlineData(40000, 0, 60000, false)]
+        public void CanReceive(long startedBlockIndex, long receivedBlockIndex, long blockIndex, bool expected)
+        {
+            StakingState stakingState = new StakingState(_address, 1, startedBlockIndex, _tableSheets.StakingRewardSheet);
+            Dictionary serialized = (Dictionary)stakingState.Serialize();
+            serialized = serialized.SetItem(ReceivedBlockIndexKey, receivedBlockIndex.Serialize());
+            stakingState = new StakingState(serialized);
+            Assert.Equal(receivedBlockIndex, stakingState.ReceivedBlockIndex);
+            Assert.Equal(startedBlockIndex, stakingState.StartedBlockIndex);
+            Assert.Equal(expected, stakingState.CanReceive(blockIndex));
+        }
     }
 }

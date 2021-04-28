@@ -74,7 +74,7 @@ namespace Lib9c.Tests.Action
             {
                 int level = i + 1;
                 StakingResult result = new StakingResult(Guid.NewGuid(), _avatarAddress, rewards);
-                stakingState.UpdateRewardMap(level, result, 0);
+                stakingState.UpdateRewardMap(level, result, i * StakingState.RewardInterval);
             }
 
             List<StakingRewardSheet.RewardInfo> stakingRewards = _tableSheets.StakingRewardSheet[stakingLevel].Rewards;

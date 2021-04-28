@@ -48,14 +48,13 @@ namespace Nekoyume.Action
                 throw new StakingExpiredException($"{stakingAddress} is already expired on {stakingState.ExpiredBlockIndex}");
             }
 
-            long rewardLevel = stakingState.GetRewardLevel(context.BlockIndex);
-            if (rewardLevel <= 0)
+            if (!stakingState.CanReceive(context.BlockIndex))
             {
                 throw new RequiredBlockIndexException(
-                    $"{stakingAddress} is not available yet; it will be available after {stakingState.ReceivedBlockIndex + StakingState.ExpirationIndex}");
+                    $"{stakingAddress} is not available yet; it will be available after {Math.Max(stakingState.StartedBlockIndex, stakingState.ReceivedBlockIndex) + StakingState.RewardInterval}");
             }
 
-            StakingRewardSheet stakingRewardSheet = states.GetSheet<StakingRewardSheet>();
+            long rewardLevel = stakingState.GetRewardLevel(context.BlockIndex);
             ItemSheet itemSheet = states.GetItemSheet();
             for (int i = 0; i < rewardLevel; i++)
             {
