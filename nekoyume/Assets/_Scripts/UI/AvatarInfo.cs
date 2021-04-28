@@ -6,6 +6,7 @@ using Nekoyume.Battle;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Factory;
+using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Stat;
@@ -34,7 +35,7 @@ namespace Nekoyume.UI
         private TextMeshProUGUI nicknameText = null;
 
         [SerializeField]
-        private TextMeshProUGUI titleText = null;
+        private GameObject titleSocket = null;
 
         [SerializeField]
         private TextMeshProUGUI cpText = null;
@@ -68,6 +69,7 @@ namespace Nekoyume.UI
         private int _previousSortingLayerOrder;
         private bool _previousActivated;
         private Coroutine _disableCpTween;
+        private GameObject _cachedCharacterTitle;
 
         public readonly ReactiveProperty<bool> IsTweenEnd = new ReactiveProperty<bool>(true);
 
@@ -212,9 +214,13 @@ namespace Nekoyume.UI
             var title = avatarState.inventory.Costumes.FirstOrDefault(costume =>
                 costume.ItemSubType == ItemSubType.Title &&
                 costume.equipped);
-            titleText.text = title is null
-                ? ""
-                : title.GetLocalizedName();
+
+            if (!(title is null))
+            {
+                Destroy(_cachedCharacterTitle);
+                var clone  = ResourcesHelper.GetCharacterTitle(title.Grade, title.GetLocalizedName());
+                _cachedCharacterTitle = Instantiate(clone, titleSocket.transform);
+            }
 
             costumeSlots.SetPlayerCostumes(playerModel, ShowTooltip, Unequip);
             equipmentSlots.SetPlayerEquipments(playerModel, ShowTooltip, Unequip);
@@ -352,7 +358,9 @@ namespace Nekoyume.UI
                     UpdateStatViews();
                     if (costume.ItemSubType == ItemSubType.Title)
                     {
-                        titleText.text = costume.GetLocalizedName();
+                        Destroy(_cachedCharacterTitle);
+                        var clone = ResourcesHelper.GetCharacterTitle(costume.Grade, costume.GetLocalizedName());
+                        _cachedCharacterTitle = Instantiate(clone, titleSocket.transform);
                     }
 
                     break;
@@ -457,7 +465,7 @@ namespace Nekoyume.UI
 
                     if (costume.ItemSubType == ItemSubType.Title)
                     {
-                        titleText.text = "";
+                        Destroy(_cachedCharacterTitle);
                     }
 
                     break;
