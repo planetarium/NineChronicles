@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Amazon;
 using Amazon.CloudWatchLogs;
 using Amazon.CloudWatchLogs.Model;
@@ -65,6 +66,8 @@ namespace Nekoyume.Game
         public Prologue Prologue => prologue;
 
         public const string AddressableAssetsContainerPath = nameof(AddressableAssetsContainer);
+
+        public Task RankLoadingTask = null;
 
         private CommandLineOptions _options;
 
@@ -494,6 +497,17 @@ namespace Nekoyume.Game
                 loginPopup.GetPrivateKey(),
                 callback
             );
+
+            RankLoadingTask = Task.Run(() =>
+            {
+                var states = States.Instance;
+                states.UpdateRanking();
+
+                return
+                    states.AbilityRankingInfos != null ||
+                    states.StageRankingInfos != null ||
+                    states.MimisbrunnrRankingInfos != null;
+            });
         }
 
         public void ResetStore()

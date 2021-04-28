@@ -1,9 +1,5 @@
-using System.Linq;
-using Nekoyume.Game.Character;
-using Nekoyume.Helper;
 using Nekoyume.Model.State;
 using TMPro;
-using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 
