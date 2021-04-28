@@ -16,6 +16,7 @@ namespace Nekoyume.Model.Item
     {
         public const string ItemIdKey = "itemId";
         public Guid ItemId { get; }
+        public Guid TradeId => ItemId;
         public StatsMap StatsMap { get; }
         public List<Skill.Skill> Skills { get; }
         public List<BuffSkill> BuffSkills { get; }

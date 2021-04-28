@@ -18,6 +18,7 @@ namespace Nekoyume.Model.Item
         public string SpineResourcePath { get; }
 
         public Guid ItemId { get; }
+        public Guid TradeId => ItemId;
 
         public long RequiredBlockIndex
         {
