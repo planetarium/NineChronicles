@@ -54,6 +54,7 @@ namespace Nekoyume.Action
 
             StakingState stakingState;
             int currentLevel = 1;
+            StakingRewardSheet stakingRewardSheet = states.GetSheet<StakingRewardSheet>();
             if (states.TryGetState(stakingAddress, out Dictionary stateDict))
             {
                 stakingState = new StakingState(stateDict);
@@ -70,14 +71,13 @@ namespace Nekoyume.Action
                 }
 
                 currentLevel = stakingState.Level + 1;
+                long rewardLevel = stakingState.GetRewardLevel(context.BlockIndex);
+                stakingState.Update(level, rewardLevel, stakingRewardSheet);
             }
             else
             {
-                stakingState = new StakingState(stakingAddress, level, context.BlockIndex);
+                stakingState = new StakingState(stakingAddress, level, context.BlockIndex, stakingRewardSheet);
             }
-
-            long rewardLevel = stakingState.GetRewardLevel(context.BlockIndex);
-            stakingState.Update(level, rewardLevel);
 
             for (int i = currentLevel; i < level + 1; i++)
             {

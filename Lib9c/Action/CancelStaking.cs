@@ -55,7 +55,8 @@ namespace Nekoyume.Action
             }
 
             long rewardLevel = stakingState.GetRewardLevel(context.BlockIndex);
-            stakingState.Update(level, rewardLevel);
+            StakingRewardSheet stakingRewardSheet = states.GetSheet<StakingRewardSheet>();
+            stakingState.Update(level, rewardLevel, stakingRewardSheet);
             for (int i = currentLevel; i > level; i--)
             {
                 balance += stakingSheet[i].RequiredGold * currency;

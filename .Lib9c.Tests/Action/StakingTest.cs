@@ -45,9 +45,10 @@ namespace Lib9c.Tests.Action
             Address stakingAddress = StakingState.DeriveAddress(_signer, stakingRound);
             if (exist)
             {
-                StakingState prevStakingState = new StakingState(stakingAddress, prevLevel, 0);
+                List<StakingRewardSheet.RewardInfo> rewards = _tableSheets.StakingRewardSheet[prevLevel].Rewards;
+                StakingState prevStakingState = new StakingState(stakingAddress, prevLevel, 0, _tableSheets.StakingRewardSheet);
                 _initialState = _initialState.SetState(stakingAddress, prevStakingState.Serialize());
-                Assert.All(prevStakingState.RewardLevelMap, kv => Assert.Equal(prevLevel, kv.Value));
+                Assert.All(prevStakingState.RewardLevelMap, kv => Assert.Equal(rewards, kv.Value));
             }
 
             AgentState prevAgentState = _initialState.GetAgentState(_signer);
@@ -90,7 +91,8 @@ namespace Lib9c.Tests.Action
             long rewardLevel = nextStakingState.GetRewardLevel(blockIndex);
             for (long i = rewardLevel; i < 4; i++)
             {
-                Assert.Equal(level, nextStakingState.RewardLevelMap[i + 1]);
+                List<StakingRewardSheet.RewardInfo> expected = _tableSheets.StakingRewardSheet[level].Rewards;
+                Assert.Equal(expected, nextStakingState.RewardLevelMap[i + 1]);
             }
         }
 
@@ -179,7 +181,7 @@ namespace Lib9c.Tests.Action
         public void Execute_Throw_StakingExpiredException()
         {
             Address stakingAddress = StakingState.DeriveAddress(_signer, 0);
-            StakingState prevStakingState = new StakingState(stakingAddress, 1, 0);
+            StakingState prevStakingState = new StakingState(stakingAddress, 1, 0, _tableSheets.StakingRewardSheet);
             Assert.Equal(StakingState.ExpirationIndex, prevStakingState.ExpiredBlockIndex);
 
             _initialState = _initialState.SetState(stakingAddress, prevStakingState.Serialize());
@@ -204,7 +206,7 @@ namespace Lib9c.Tests.Action
         public void Execute_Throw_InvalidLevelException(int prevLevel, int level)
         {
             Address stakingAddress = StakingState.DeriveAddress(_signer, 0);
-            StakingState prevStakingState = new StakingState(stakingAddress, prevLevel, 0);
+            StakingState prevStakingState = new StakingState(stakingAddress, prevLevel, 0, _tableSheets.StakingRewardSheet);
             _initialState = _initialState.SetState(stakingAddress, prevStakingState.Serialize());
 
             Staking action = new Staking

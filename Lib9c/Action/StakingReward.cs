@@ -65,8 +65,7 @@ namespace Nekoyume.Action
                     continue;
                 }
 
-                List<StakingRewardSheet.RewardInfo> rewards =
-                    stakingRewardSheet[stakingState.RewardLevelMap[level]].Rewards;
+                List<StakingRewardSheet.RewardInfo> rewards = stakingState.RewardLevelMap[level];
                 Guid id = context.Random.GenerateRandomGuid();
                 StakingResult result = new StakingResult(id, avatarAddress, rewards);
                 StakingMail mail = new StakingMail(result, context.BlockIndex, id, context.BlockIndex);

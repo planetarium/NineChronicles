@@ -10,6 +10,7 @@ namespace Lib9c.Tests.Model.State
     using Nekoyume.Model.State;
     using Nekoyume.TableData;
     using Xunit;
+    using static SerializeKeys;
 
     public class StakingStateTest
     {
@@ -25,15 +26,15 @@ namespace Lib9c.Tests.Model.State
         [Fact]
         public void Serialize()
         {
-            StakingState stakingState = new StakingState(_address, 1, 10000);
+            StakingState stakingState = new StakingState(_address, 1, 10000, _tableSheets.StakingRewardSheet);
             Dictionary serialized = (Dictionary)stakingState.Serialize();
-            Assert.Equal(stakingState, new StakingState(serialized));
+            Assert.Equal(serialized, new StakingState(serialized).Serialize());
         }
 
         [Fact]
         public void Serialize_DotNet_API()
         {
-            StakingState stakingState = new StakingState(_address, 1, 10000);
+            StakingState stakingState = new StakingState(_address, 1, 10000, _tableSheets.StakingRewardSheet);
             var formatter = new BinaryFormatter();
             using var ms = new MemoryStream();
             formatter.Serialize(ms, stakingState);
@@ -41,7 +42,7 @@ namespace Lib9c.Tests.Model.State
 
             var deserialized = (StakingState)formatter.Deserialize(ms);
 
-            Assert.Equal(stakingState, deserialized);
+            Assert.Equal(stakingState.Serialize(), deserialized.Serialize());
         }
 
         [Theory]
@@ -51,23 +52,24 @@ namespace Lib9c.Tests.Model.State
         [InlineData(3)]
         public void Update(long rewardLevel)
         {
-            StakingState stakingState = new StakingState(_address, 1, 10000);
+            StakingState stakingState = new StakingState(_address, 1, 10000, _tableSheets.StakingRewardSheet);
             Assert.Equal(1, stakingState.Level);
             Assert.Equal(10000, stakingState.StartedBlockIndex);
             Assert.Equal(170000, stakingState.ExpiredBlockIndex);
 
-            stakingState.Update(2, rewardLevel);
+            stakingState.Update(2, rewardLevel, _tableSheets.StakingRewardSheet);
             Assert.Equal(2, stakingState.Level);
+            List<StakingRewardSheet.RewardInfo> rewards = _tableSheets.StakingRewardSheet[2].Rewards;
             for (long i = rewardLevel; i < 4; i++)
             {
-                Assert.Equal(2, stakingState.RewardLevelMap[i + 1]);
+                Assert.Equal(rewards, stakingState.RewardLevelMap[i + 1]);
             }
         }
 
         [Fact]
         public void UpdateRewardMap()
         {
-            StakingState stakingState = new StakingState(_address, 1, 10000);
+            StakingState stakingState = new StakingState(_address, 1, 10000, _tableSheets.StakingRewardSheet);
             Assert.Empty(stakingState.RewardMap);
 
             Address avatarAddress = default;
@@ -85,7 +87,7 @@ namespace Lib9c.Tests.Model.State
         [InlineData(5)]
         public void UpdateRewardMap_Throw_ArgumentOutOfRangeException(long rewardLevel)
         {
-            StakingState stakingState = new StakingState(_address, 1, 10000);
+            StakingState stakingState = new StakingState(_address, 1, 10000, _tableSheets.StakingRewardSheet);
 
             List<StakingRewardSheet.RewardInfo> rewards = _tableSheets.StakingRewardSheet[1].Rewards;
             StakingResult result = new StakingResult(Guid.NewGuid(), _address, rewards);
@@ -95,7 +97,7 @@ namespace Lib9c.Tests.Model.State
         [Fact]
         public void UpdateRewardMap_Throw_AlreadyReceivedException()
         {
-            StakingState stakingState = new StakingState(_address, 1, 10000);
+            StakingState stakingState = new StakingState(_address, 1, 10000, _tableSheets.StakingRewardSheet);
             List<StakingRewardSheet.RewardInfo> rewards = _tableSheets.StakingRewardSheet[1].Rewards;
             StakingResult result = new StakingResult(Guid.NewGuid(), default, rewards);
             stakingState.UpdateRewardMap(1, result, 14000);
@@ -105,7 +107,7 @@ namespace Lib9c.Tests.Model.State
         [Fact]
         public void GetRewardLevel()
         {
-            StakingState stakingState = new StakingState(_address, 1, 0);
+            StakingState stakingState = new StakingState(_address, 1, 0, _tableSheets.StakingRewardSheet);
             for (long i = 0; i < StakingState.RewardCapacity; i++)
             {
                 Assert.Equal(i, stakingState.GetRewardLevel(i * StakingState.RewardInterval));

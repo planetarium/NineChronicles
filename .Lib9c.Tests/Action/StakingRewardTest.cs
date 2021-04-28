@@ -68,19 +68,20 @@ namespace Lib9c.Tests.Action
         public void Execute(int rewardLevel, int prevRewardLevel, int stakingLevel)
         {
             Address stakingAddress = StakingState.DeriveAddress(_signer, 0);
-            StakingState stakingState = new StakingState(stakingAddress, 1, 0);
+            List<StakingRewardSheet.RewardInfo> rewards = _tableSheets.StakingRewardSheet[1].Rewards;
+            StakingState stakingState = new StakingState(stakingAddress, 1, 0, _tableSheets.StakingRewardSheet);
             for (int i = 0; i < prevRewardLevel; i++)
             {
                 int level = i + 1;
-                List<StakingRewardSheet.RewardInfo> rewards = _tableSheets.StakingRewardSheet[level].Rewards;
                 StakingResult result = new StakingResult(Guid.NewGuid(), _avatarAddress, rewards);
                 stakingState.UpdateRewardMap(level, result, 0);
             }
 
-            stakingState.Update(stakingLevel, rewardLevel);
+            List<StakingRewardSheet.RewardInfo> stakingRewards = _tableSheets.StakingRewardSheet[stakingLevel].Rewards;
+            stakingState.Update(stakingLevel, rewardLevel, _tableSheets.StakingRewardSheet);
             for (long i = rewardLevel; i < 4; i++)
             {
-                Assert.Equal(stakingLevel, stakingState.RewardLevelMap[i + 1]);
+                Assert.Equal(stakingRewards, stakingState.RewardLevelMap[i + 1]);
             }
 
             Dictionary<int, int> rewardExpectedMap = new Dictionary<int, int>();
@@ -91,7 +92,7 @@ namespace Lib9c.Tests.Action
                     continue;
                 }
 
-                foreach (var info in _tableSheets.StakingRewardSheet[value].Rewards)
+                foreach (var info in value)
                 {
                     if (rewardExpectedMap.ContainsKey(info.ItemId))
                     {
@@ -219,7 +220,7 @@ namespace Lib9c.Tests.Action
         public void Execute_Throw_StakingExpiredException()
         {
             Address stakingAddress = StakingState.DeriveAddress(_signer, 0);
-            StakingState stakingState = new StakingState(stakingAddress, 1, 0);
+            StakingState stakingState = new StakingState(stakingAddress, 1, 0, _tableSheets.StakingRewardSheet);
             List<StakingRewardSheet.RewardInfo> rewards = _tableSheets.StakingRewardSheet[4].Rewards;
             StakingResult result = new StakingResult(Guid.NewGuid(), _avatarAddress, rewards);
             stakingState.UpdateRewardMap(4, result, 0);
@@ -246,7 +247,7 @@ namespace Lib9c.Tests.Action
         public void Execute_Throw_RequiredBlockIndexException(long startedBlockIndex, long blockIndex)
         {
             Address stakingAddress = StakingState.DeriveAddress(_signer, 0);
-            StakingState stakingState = new StakingState(stakingAddress, 1, startedBlockIndex);
+            StakingState stakingState = new StakingState(stakingAddress, 1, startedBlockIndex, _tableSheets.StakingRewardSheet);
             List<StakingRewardSheet.RewardInfo> rewards = _tableSheets.StakingRewardSheet[1].Rewards;
             StakingResult result = new StakingResult(Guid.NewGuid(), _avatarAddress, rewards);
             stakingState.UpdateRewardMap(1, result, 0);
@@ -272,7 +273,7 @@ namespace Lib9c.Tests.Action
         public void Execute_Throw_InsufficientBalanceException()
         {
             Address stakingAddress = StakingState.DeriveAddress(_signer, 0);
-            StakingState stakingState = new StakingState(stakingAddress, 1, 0);
+            StakingState stakingState = new StakingState(stakingAddress, 1, 0, _tableSheets.StakingRewardSheet);
 
             _state = _state.SetState(stakingAddress, stakingState.Serialize());
 

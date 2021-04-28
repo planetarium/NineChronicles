@@ -5,6 +5,7 @@ using System.Linq;
 using Bencodex.Types;
 using Libplanet;
 using Nekoyume.Action;
+using Nekoyume.TableData;
 using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Model.State
@@ -35,20 +36,22 @@ namespace Nekoyume.Model.State
         public long RewardLevel { get; private set; }
         public Dictionary<long, StakingResult> RewardMap { get; private set; }
         public bool End { get; private set; }
-        public Dictionary<long, int> RewardLevelMap { get; private set; }
+        public Dictionary<long, List<StakingRewardSheet.RewardInfo>> RewardLevelMap { get; private set; }
 
-        public StakingState(Address address, int level, long blockIndex) : base(address)
+        public StakingState(Address address, int level, long blockIndex,
+            StakingRewardSheet stakingRewardSheet) : base(address)
         {
             Level = level;
             StartedBlockIndex = blockIndex;
             ExpiredBlockIndex = blockIndex + ExpirationIndex;
             RewardMap = new Dictionary<long, StakingResult>();
-            RewardLevelMap = new Dictionary<long, int>
+            List<StakingRewardSheet.RewardInfo> rewardInfos = stakingRewardSheet[level].Rewards;
+            RewardLevelMap = new Dictionary<long, List<StakingRewardSheet.RewardInfo>>
             {
-                [1] = level,
-                [2] = level,
-                [3] = level,
-                [4] = level,
+                [1] = rewardInfos,
+                [2] = rewardInfos,
+                [3] = rewardInfos,
+                [4] = rewardInfos,
             };
         }
 
@@ -68,16 +71,20 @@ namespace Nekoyume.Model.State
                 .OrderBy(r => r.Key)
                 .ToDictionary(
                     kv => kv.Key.ToLong(),
-                    kv => kv.Value.ToInteger()
+                    kv => kv.Value
+                        .ToList(v => new StakingRewardSheet.RewardInfo((Dictionary)v))
+                        .OrderBy(r => r.ItemId)
+                        .ToList()
                 );
         }
 
-        public void Update(int level, long rewardLevel)
+        public void Update(int level, long rewardLevel, StakingRewardSheet stakingRewardSheet)
         {
             Level = level;
+            List<StakingRewardSheet.RewardInfo> rewardInfos = stakingRewardSheet[level].Rewards;
             for (long i = rewardLevel; i < RewardLevelMap.Count; i++)
             {
-                RewardLevelMap[i + 1] = level;
+                RewardLevelMap[i + 1] = rewardInfos;
             }
         }
 
@@ -129,7 +136,7 @@ namespace Nekoyume.Model.State
                     RewardLevelMap.Select(
                         kv => new KeyValuePair<IKey, IValue>(
                             (IKey) kv.Key.Serialize(),
-                            kv.Value.Serialize()
+                            new List(kv.Value.Select(v => v.Serialize())).Serialize()
                         )
                     )
                 ),
