@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
@@ -16,8 +16,8 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("sell5")]
-    public class Sell : GameAction
+    [ActionType("sell4")]
+    public class Sell5 : GameAction
     {
         public const long ExpiredBlockIndex = 16000;
         public Address sellerAvatarAddress;
