@@ -57,11 +57,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 71c1514a6bd24e1e882cebbe1904ce04, type: 3}
-  m_Name: Black Drama Demo_WorldMap SDF
+  m_Name: Black Drama Demo SDF
   m_EditorClassIdentifier: 
-  hashCode: 1023698895
+  hashCode: -489285906
   material: {fileID: 2174879058129231693}
-  materialHashCode: -376424305
+  materialHashCode: -1266026610
   m_Version: 1.1.0
   m_SourceFontFileGUID: a43ecbc689c1d4ceaa243e473815f6d7
   m_SourceFontFile_EditorRef: {fileID: 12800000, guid: a43ecbc689c1d4ceaa243e473815f6d7,
@@ -306,7 +306,7 @@ MonoBehaviour:
       m_Height: 16
       m_HorizontalBearingX: 0
       m_HorizontalBearingY: 13
-      m_HorizontalAdvance: 14
+      m_HorizontalAdvance: 16
     m_GlyphRect:
       m_X: 10
       m_Y: 151
@@ -494,6 +494,20 @@ MonoBehaviour:
       m_Y: 114
       m_Width: 10
       m_Height: 18
+    m_Scale: 1
+    m_AtlasIndex: 0
+  - m_Index: 68
+    m_Metrics:
+      m_Width: 0
+      m_Height: 0
+      m_HorizontalBearingX: 0
+      m_HorizontalBearingY: 0
+      m_HorizontalAdvance: 0
+    m_GlyphRect:
+      m_X: 0
+      m_Y: 0
+      m_Width: 0
+      m_Height: 0
     m_Scale: 1
     m_AtlasIndex: 0
   - m_Index: 71
@@ -754,7 +768,7 @@ MonoBehaviour:
       m_Height: 14
       m_HorizontalBearingX: -1
       m_HorizontalBearingY: 13
-      m_HorizontalAdvance: 10
+      m_HorizontalAdvance: 9
     m_GlyphRect:
       m_X: 215
       m_Y: 68
@@ -796,7 +810,7 @@ MonoBehaviour:
       m_Height: 14
       m_HorizontalBearingX: 1
       m_HorizontalBearingY: 13
-      m_HorizontalAdvance: 11
+      m_HorizontalAdvance: 10
     m_GlyphRect:
       m_X: 130
       m_Y: 178
@@ -1005,6 +1019,10 @@ MonoBehaviour:
     m_Unicode: 90
     m_GlyphIndex: 66
     m_Scale: 0.95
+  - m_ElementType: 1
+    m_Unicode: 92
+    m_GlyphIndex: 68
+    m_Scale: 1
   - m_ElementType: 1
     m_Unicode: 95
     m_GlyphIndex: 71
@@ -5026,7 +5044,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: e40af70f602bf4295ba24954aca123c6, type: 3}
+        m_Texture: {fileID: 2800000, guid: 74abccf47958e49ccbd56c5c1c8a929a, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _OutlineTex:
