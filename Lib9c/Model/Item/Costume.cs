@@ -5,14 +5,13 @@ using System.Runtime.Serialization;
 using Bencodex.Types;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
+using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Model.Item
 {
     [Serializable]
     public class Costume : ItemBase, INonFungibleItem, IEquippableItem
     {
-        public const string RequiredBlockIndexKey = "rbi";
-        public const string ItemIdKey = "item_id";
         // FIXME: Do not use anymore please!
         public bool equipped = false;
         public string SpineResourcePath { get; }
@@ -55,14 +54,14 @@ namespace Nekoyume.Model.Item
                 SpineResourcePath = (Text) spineResourcePath;
             }
 
-            ItemId = serialized[ItemIdKey].ToGuid();
+            ItemId = serialized[LegacyCostumeItemIdKey].ToGuid();
 
             if (serialized.ContainsKey(RequiredBlockIndexKey))
             {
                 RequiredBlockIndex = serialized[RequiredBlockIndexKey].ToLong();
             }
         }
-        
+
         protected Costume(SerializationInfo info, StreamingContext _)
             : this((Dictionary) Codec.Decode((byte[]) info.GetValue("serialized", typeof(byte[]))))
         {
@@ -75,7 +74,7 @@ namespace Nekoyume.Model.Item
             {
                 [(Text) "equipped"] = equipped.Serialize(),
                 [(Text) "spine_resource_path"] = SpineResourcePath.Serialize(),
-                [(Text) ItemIdKey] = ItemId.Serialize()
+                [(Text) LegacyCostumeItemIdKey] = ItemId.Serialize()
             };
             if (RequiredBlockIndex > 0)
             {
