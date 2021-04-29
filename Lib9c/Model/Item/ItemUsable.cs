@@ -14,7 +14,6 @@ namespace Nekoyume.Model.Item
     [Serializable]
     public abstract class ItemUsable : ItemBase, INonFungibleItem
     {
-        public const string ItemIdKey = "itemId";
         public Guid ItemId { get; }
         public Guid TradeId => ItemId;
         public StatsMap StatsMap { get; }
@@ -82,7 +81,7 @@ namespace Nekoyume.Model.Item
                 RequiredBlockIndex = requiredBlockIndex.ToLong();
             }
         }
-        
+
         protected ItemUsable(SerializationInfo info, StreamingContext _)
             : this((Dictionary) Codec.Decode((byte[]) info.GetValue("serialized", typeof(byte[]))))
         {
