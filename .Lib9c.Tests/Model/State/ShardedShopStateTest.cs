@@ -38,8 +38,6 @@ namespace Lib9c.Tests.Model.State
         [InlineData(ItemSubType.FoodMaterial)]
         [InlineData(ItemSubType.MonsterPart)]
         [InlineData(ItemSubType.NormalMaterial)]
-        [InlineData(ItemSubType.Hourglass)]
-        [InlineData(ItemSubType.ApStone)]
         public void DeriveAddress_Throw_InvalidItemTypeException(ItemSubType itemSubType)
         {
             Assert.Throws<InvalidItemTypeException>(() => ShardedShopState.DeriveAddress(itemSubType, Guid.NewGuid()));
