@@ -2,7 +2,7 @@
 
 namespace Nekoyume.Model.Item
 {
-    public interface ITradableItem
+    public interface ITradableItem: IItem
     {
         Guid TradeId { get; }
     }

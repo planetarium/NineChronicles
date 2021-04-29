@@ -9,14 +9,14 @@ using Nekoyume.TableData;
 namespace Nekoyume.Model.Item
 {
     [Serializable]
-    public class Material : ItemBase, ISerializable, IFungibleItem, ITradableItem
+    public class Material : ItemBase, ISerializable, IFungibleItem
     {
         public HashDigest<SHA256> ItemId { get; }
 
         public HashDigest<SHA256> FungibleId => ItemId;
-        
+
         public Guid TradeId { get; }
-        
+
         public bool IsTradable { get; }
 
         public Material(MaterialItemSheet.Row data, bool isTradable = default) : base(data)
@@ -72,7 +72,7 @@ namespace Nekoyume.Model.Item
         {
             var result = ((Dictionary) base.Serialize())
                 .SetItem("item_id", ItemId.Serialize());
-            
+
             if (IsTradable)
             {
                 result = result.SetItem("is_tradable", IsTradable.Serialize());

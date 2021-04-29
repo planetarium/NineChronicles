@@ -9,10 +9,10 @@ using Nekoyume.TableData;
 namespace Nekoyume.Model.Item
 {
     [Serializable]
-    public abstract class ItemBase : IState
+    public abstract class ItemBase : IState, IItem
     {
         protected static readonly Codec Codec = new Codec();
-        
+
         public int Id { get; }
         public int Grade { get; }
         public ItemType ItemType { get; }
@@ -55,14 +55,14 @@ namespace Nekoyume.Model.Item
             : this((Dictionary) Codec.Decode((byte[]) info.GetValue("serialized", typeof(byte[]))))
         {
         }
-        
+
         public void GetObjectData(SerializationInfo info, StreamingContext context)
         {
             if (info == null)
             {
                 throw new ArgumentNullException(nameof(info));
             }
-            
+
             info.AddValue("serialized", Codec.Encode(Serialize()));
         }
 
