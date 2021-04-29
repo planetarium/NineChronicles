@@ -18,6 +18,7 @@ namespace Nekoyume.Model.Item
 
         public Guid ItemId { get; }
         public Guid TradeId => ItemId;
+        public Guid NonFungibleId => ItemId;
 
         public long RequiredBlockIndex
         {

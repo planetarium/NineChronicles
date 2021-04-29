@@ -110,7 +110,7 @@
             {
                 var sellAction = new Sell2
                 {
-                    itemId = nonFungibleItem.ItemId,
+                    itemId = nonFungibleItem.NonFungibleId,
                     price = price,
                     sellerAvatarAddress = _avatarAddress,
                 };
@@ -142,12 +142,12 @@
 
                 if (shopItem.ItemUsable != null)
                 {
-                    Assert.Equal(nonFungibleItem.ItemId, shopItem.ItemUsable.ItemId);
+                    Assert.Equal(nonFungibleItem.NonFungibleId, shopItem.ItemUsable.ItemId);
                 }
 
                 if (shopItem.Costume != null)
                 {
-                    Assert.Equal(nonFungibleItem.ItemId, shopItem.Costume.ItemId);
+                    Assert.Equal(nonFungibleItem.NonFungibleId, shopItem.Costume.ItemId);
                 }
 
                 Assert.Equal(price, shopItem.Price);

@@ -144,7 +144,7 @@ namespace Nekoyume.Action
                 Dictionary productSerialized = products
                 .Select(p => (Dictionary) p)
                 .FirstOrDefault(p =>
-                    ((Dictionary) p[productKey])[itemIdKey].Equals(nonFungibleItem.ItemId.Serialize()));
+                    ((Dictionary) p[productKey])[itemIdKey].Equals(nonFungibleItem.NonFungibleId.Serialize()));
 #pragma warning restore LAA1002
 
             // Register new ShopItem

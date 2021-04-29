@@ -389,7 +389,7 @@ namespace Lib9c.Tests.Model.State
             }
 
             avatarState.EquipItems(equippableItems.OfType<INonFungibleItem>()
-                .Select(nonFungibleItem => nonFungibleItem.ItemId));
+                .Select(nonFungibleItem => nonFungibleItem.NonFungibleId));
 
             foreach (var equippableItem in equippableItems)
             {

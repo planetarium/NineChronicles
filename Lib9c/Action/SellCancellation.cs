@@ -160,7 +160,7 @@ namespace Nekoyume.Action
             }
 
             INonFungibleItem nonFungibleItem = (INonFungibleItem)shopItem.ItemUsable ?? shopItem.Costume;
-            if (avatarState.inventory.TryGetNonFungibleItem(nonFungibleItem.ItemId, out INonFungibleItem outNonFungibleItem))
+            if (avatarState.inventory.TryGetNonFungibleItem(nonFungibleItem.NonFungibleId, out INonFungibleItem outNonFungibleItem))
             {
                 outNonFungibleItem.Update(ctx.BlockIndex);
             }

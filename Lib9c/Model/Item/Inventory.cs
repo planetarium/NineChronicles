@@ -295,7 +295,7 @@ namespace Nekoyume.Model.Item
 
         public bool RemoveNonFungibleItem(INonFungibleItem nonFungibleItem)
         {
-            return RemoveNonFungibleItem(nonFungibleItem.ItemId);
+            return RemoveNonFungibleItem(nonFungibleItem.NonFungibleId);
         }
 
         public bool RemoveNonFungibleItem(Guid itemId)
@@ -375,7 +375,7 @@ namespace Nekoyume.Model.Item
             foreach (var item in _items)
             {
                 if (!(item.item is INonFungibleItem nonFungibleItem) ||
-                    !nonFungibleItem.ItemId.Equals(itemId))
+                    !nonFungibleItem.NonFungibleId.Equals(itemId))
                 {
                     continue;
                 }
@@ -390,7 +390,7 @@ namespace Nekoyume.Model.Item
 
         public bool TryGetNonFungibleItem<T>(T nonFungibleItem, out T outNonFungibleItem)
             where T : INonFungibleItem =>
-            TryGetNonFungibleItem(nonFungibleItem.ItemId, out outNonFungibleItem);
+            TryGetNonFungibleItem(nonFungibleItem.NonFungibleId, out outNonFungibleItem);
 
         public bool TryGetNonFungibleItem<T>(Guid itemId, out T outNonFungibleItem)
             where T : INonFungibleItem
@@ -398,7 +398,7 @@ namespace Nekoyume.Model.Item
             foreach (var item in _items)
             {
                 if (!(item.item is T nonFungibleItem) ||
-                    !nonFungibleItem.ItemId.Equals(itemId))
+                    !nonFungibleItem.NonFungibleId.Equals(itemId))
                 {
                     continue;
                 }
@@ -497,7 +497,7 @@ namespace Nekoyume.Model.Item
         public bool HasItem(Guid itemId) => _items
             .Select(i => i.item)
             .OfType<INonFungibleItem>()
-            .Any(i => i.ItemId.Equals(itemId));
+            .Any(i => i.NonFungibleId.Equals(itemId));
 
         public bool HasTradableItem(Guid tradeId) => _items
             .Select(i => i.item)

@@ -147,7 +147,7 @@
 
             var sellAction = new Sell5
             {
-                itemId = nonFungibleItem.ItemId,
+                itemId = nonFungibleItem.NonFungibleId,
                 price = price,
                 sellerAvatarAddress = _avatarAddress,
                 itemSubType = itemSubType,
@@ -164,7 +164,7 @@
 
             const long expiredBlockIndex = Sell.ExpiredBlockIndex + 1;
             var nextAvatarState = nextState.GetAvatarState(_avatarAddress);
-            Assert.True(nextAvatarState.inventory.TryGetNonFungibleItem(nonFungibleItem.ItemId, out var nextItem));
+            Assert.True(nextAvatarState.inventory.TryGetNonFungibleItem(nonFungibleItem.NonFungibleId, out var nextItem));
             INonFungibleItem nextNonFungibleItem = (INonFungibleItem)nextItem.item;
             Assert.Equal(expiredBlockIndex, nextNonFungibleItem.RequiredBlockIndex);
 

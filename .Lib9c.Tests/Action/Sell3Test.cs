@@ -121,7 +121,7 @@
             {
                 var sellAction = new Sell3
                 {
-                    itemId = nonFungibleItem.ItemId,
+                    itemId = nonFungibleItem.NonFungibleId,
                     price = price,
                     sellerAvatarAddress = _avatarAddress,
                 };
