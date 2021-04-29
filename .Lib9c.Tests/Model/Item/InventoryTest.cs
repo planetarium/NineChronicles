@@ -111,7 +111,7 @@
             Assert.Empty(inventory.Items);
             inventory.AddItem(material);
             inventory.AddItem(tradableMaterial);
-            inventory.RemoveTradableItem(tradableItem);
+            Assert.True(inventory.RemoveTradableItem(tradableItem));
             Assert.False(inventory.Materials.First().IsTradable);
             Assert.False(inventory.RemoveTradableItem(tradableItem));
             Assert.Single(inventory.Materials);
