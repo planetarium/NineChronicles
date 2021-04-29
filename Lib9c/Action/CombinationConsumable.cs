@@ -171,7 +171,9 @@ namespace Nekoyume.Action
                 var count = materialInfo.Count;
                 if (avatarState.inventory.HasItem(materialId, count))
                 {
+#pragma warning disable 618
                     avatarState.inventory.TryGetFungibleItem(materialId, out var inventoryItem);
+#pragma warning restore 618
                     var material = (Material) inventoryItem.item;
                     materials[material] = count;
                     avatarState.inventory.RemoveFungibleItem(material, count);
