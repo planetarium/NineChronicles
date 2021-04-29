@@ -106,22 +106,8 @@
         {
             var shopItems = new List<ShopItem>
             {
-                new ShopItem(
-                    new PrivateKey().ToAddress(),
-                    new PrivateKey().ToAddress(),
-                    Guid.NewGuid(),
-                    new FungibleAssetValue(_currency, 100, 0),
-                    null,
-                    1,
-                    0),
-                new ShopItem(
-                    new PrivateKey().ToAddress(),
-                    new PrivateKey().ToAddress(),
-                    Guid.NewGuid(),
-                    new FungibleAssetValue(_currency, 100, 0),
-                    null,
-                    0,
-                    0),
+                GetShopItemWithFirstCostume(),
+                GetShopItemWithFirstEquipment(),
             };
 
             foreach (var shopItem in shopItems)
@@ -203,8 +189,8 @@
                 new PrivateKey().ToAddress(),
                 Guid.NewGuid(),
                 new FungibleAssetValue(_currency, 100, 0),
-                material,
                 1,
+                material,
                 0);
         }
 
@@ -221,8 +207,8 @@
                     new PrivateKey().ToAddress(),
                     Guid.NewGuid(),
                     new FungibleAssetValue(_currency, 100, 0),
-                    material,
                     1,
+                    material,
                     0);
                 objects[index++] = shopItem;
             }

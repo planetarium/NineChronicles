@@ -14,7 +14,7 @@ namespace Nekoyume.Model.Item
     {
         public const string ExpiredBlockIndexKey = "ebi";
         protected static readonly Codec Codec = new Codec();
-        
+
         public readonly Address SellerAgentAddress;
         public readonly Address SellerAvatarAddress;
         public readonly Guid ProductId;
@@ -77,24 +77,36 @@ namespace Nekoyume.Model.Item
                 case Costume costume:
                     Costume = costume;
                     break;
+                default:
+                    throw new ArgumentException(
+                        $"{nameof(nonFungibleItem)} should be able to cast as ItemUsable or Costume.");
             }
         }
-        
+
         public ShopItem(Address sellerAgentAddress,
             Address sellerAvatarAddress,
             Guid productId,
             FungibleAssetValue price,
-            Material material,
-            int count,
-            long expiredBlockIndex)
+            long expiredBlockIndex,
+            ITradableItem tradableItem,
+            int count)
         {
             SellerAgentAddress = sellerAgentAddress;
             SellerAvatarAddress = sellerAvatarAddress;
             ProductId = productId;
             Price = price;
-            Material = material;
-            MaterialCount = count;
             ExpiredBlockIndex = expiredBlockIndex;
+
+            switch (tradableItem)
+            {
+                case Material material:
+                    Material = material;
+                    MaterialCount = count;
+                    break;
+                default:
+                    throw new ArgumentException(
+                        $"{nameof(tradableItem)} should be able to cast as Material.");
+            }
         }
 
         public ShopItem(Dictionary serialized)
@@ -112,27 +124,27 @@ namespace Nekoyume.Model.Item
             Material = serialized.ContainsKey("material")
                 ? (Material) ItemFactory.Deserialize((Dictionary) serialized["material"])
                 : null;
-            MaterialCount = serialized.ContainsKey("material_count")
-                ? serialized["material_count"].ToInteger()
+            MaterialCount = serialized.ContainsKey("materialCount")
+                ? serialized["materialCount"].ToInteger()
                 : default;
             if (serialized.ContainsKey(ExpiredBlockIndexKey))
             {
                 ExpiredBlockIndex = serialized[ExpiredBlockIndexKey].ToLong();
             }
         }
-        
+
         protected ShopItem(SerializationInfo info, StreamingContext _)
             : this((Dictionary) Codec.Decode((byte[]) info.GetValue("serialized", typeof(byte[]))))
         {
         }
-        
+
         public void GetObjectData(SerializationInfo info, StreamingContext context)
         {
             if (info == null)
             {
                 throw new ArgumentNullException(nameof(info));
             }
-            
+
             info.AddValue("serialized", Codec.Encode(Serialize()));
         }
 
@@ -155,15 +167,15 @@ namespace Nekoyume.Model.Item
             {
                 innerDictionary.Add((Text) "costume", Costume.Serialize());
             }
-            
+
             if (Material != null)
             {
                 innerDictionary.Add((Text) "material", Material.Serialize());
             }
-            
+
             if (MaterialCount != 0)
             {
-                innerDictionary.Add((Text) "material_count", MaterialCount.Serialize());
+                innerDictionary.Add((Text) "materialCount", MaterialCount.Serialize());
             }
 
             if (ExpiredBlockIndex != 0)
