@@ -19,6 +19,7 @@ namespace Lib9c
 
         // ItemUsable, Costume
         public const string ItemIdKey = "ii";
+        public const string ItemCountKey = "item_count";
         public const string StatsMapKey = "sm";
         public const string SkillsKey = "sk";
         public const string BuffSkillsKey = "bs";
