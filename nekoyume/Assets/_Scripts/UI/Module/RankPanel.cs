@@ -126,6 +126,11 @@ namespace Nekoyume.UI.Module
 
         public void Show()
         {
+            ToggleFirstElement();
+        }
+
+        private void ToggleFirstElement()
+        {
             var firstElement = toggles.First();
             if (firstElement is null)
             {
@@ -196,6 +201,13 @@ namespace Nekoyume.UI.Module
                     break;
                 case RankCategory.Stage:
                     var stageRankingInfos = states.StageRankingInfos;
+                    if (stageRankingInfos is null)
+                    {
+                        ToggleFirstElement();
+                        Widget.Find<SystemPopup>().Show("UI_ALERT_NOT_IMPLEMENTED_TITLE", "UI_ALERT_NOT_IMPLEMENTED_CONTENT");
+                        return;
+                    }
+
                     if (states.AgentStageRankingInfos.TryGetValue(states.CurrentAvatarKey, out var stageInfo))
                     {
                         myInfoCell.SetDataAsStage(stageInfo);
@@ -217,6 +229,13 @@ namespace Nekoyume.UI.Module
                     break;
                 case RankCategory.Mimisburnnr:
                     var mimisbrunnrRankingInfos = states.MimisbrunnrRankingInfos;
+                    if (mimisbrunnrRankingInfos is null)
+                    {
+                        ToggleFirstElement();
+                        Widget.Find<SystemPopup>().Show("UI_ALERT_NOT_IMPLEMENTED_TITLE", "UI_ALERT_NOT_IMPLEMENTED_CONTENT");
+                        return;
+                    }
+
                     if (states.AgentMimisbrunnrRankingInfos.TryGetValue(states.CurrentAvatarKey, out var mimisbrunnrInfo))
                     {
                         myInfoCell.SetDataAsStage(mimisbrunnrInfo);
