@@ -10,6 +10,8 @@ namespace Lib9c
         public const string PriceKey = "p";
         public const string ItemUsableKey = "i";
         public const string CostumeKey = "c";
+        public const string MaterialKey = "material";
+        public const string MaterialCountKey = "material_count";
         public const string LegacySellerAgentAddressKey = "sellerAgentAddress";
         public const string LegacySellerAvatarAddressKey = "sellerAvatarAddress";
         public const string LegacyProductIdKey = "productId";
