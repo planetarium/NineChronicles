@@ -313,8 +313,8 @@ namespace Nekoyume.State
             sw.Start();
 
             LoadAbilityRankingInfos();
-            LoadStageRankingInfo();
-            LoadMimisbrunnrRankingInfo();
+            //LoadStageRankingInfo();
+            //LoadMimisbrunnrRankingInfo();
 
             sw.Stop();
             UnityEngine.Debug.LogWarning($"total elapsed : {sw.Elapsed}");
@@ -379,35 +379,17 @@ namespace Nekoyume.State
 
         private void LoadStageRankingInfo()
         {
-            var sw = new Stopwatch();
-            var inner = new Stopwatch();
-
-            //sw.Start();
-            //inner.Start();
-
             var orderedAvatarStates = rankingInfoSet
                 .Select(rankingInfo =>
                 {
                     var iValue = Game.Game.instance.Agent.GetState(rankingInfo.AvatarAddress);
-                    //inner.Stop();
-                    //UnityEngine.Debug.LogWarning($"getstate elapsed : {inner.Elapsed}");
-                    //inner.Restart();
-
                     var avatarState = new AvatarState((Bencodex.Types.Dictionary)iValue);
-                    //inner.Stop();
-                    //UnityEngine.Debug.LogWarning($"new avatarstate elapsed : {inner.Elapsed}");
-                    //inner.Restart();
 
                     return avatarState;
                 })
                 .ToList()
                 .OrderByDescending(x => x.worldInformation.TryGetLastClearedStageId(out var id) ? id : 0)
                 .ToList();
-
-            //inner.Stop();
-            //sw.Stop();
-            //UnityEngine.Debug.LogWarning($"stage ranking elapsed : {sw.Elapsed}");
-            //sw.Restart();
 
             foreach (var pair in _avatarStates)
             {
