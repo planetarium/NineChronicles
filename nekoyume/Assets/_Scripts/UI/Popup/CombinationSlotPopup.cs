@@ -159,7 +159,9 @@ namespace Nekoyume.UI
                     States.Instance.CurrentAvatarState.inventory.HasItem(_row.ItemId, _cost);
 
                 var count = States.Instance.CurrentAvatarState.inventory
-                    .TryGetMaterial(_row.ItemId, out var glass) ? glass.count : 0;
+                    .TryGetFungibleItems(_row.ItemId, out var outFungibleItems)
+                    ? outFungibleItems.Sum(e => e.count)
+                    : 0;
 
                 if (result.id == chainResult?.id)
                 {

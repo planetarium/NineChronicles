@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using Nekoyume.TableData;
@@ -47,23 +48,23 @@ namespace Nekoyume.UI.Module
             Show();
         }
 
-        private void SetView(
+        private static void SetView(
             RequiredItemView view,
             int materialId,
             int requiredCount,
             bool checkInventory
         )
         {
-            var item = ItemFactory.CreateMaterial(Game.Game.instance.TableSheets.MaterialItemSheet, materialId);
+            var material = ItemFactory.CreateMaterial(Game.Game.instance.TableSheets.MaterialItemSheet, materialId);
             var itemCount = requiredCount;
             if (checkInventory)
             {
                 var inventory = Game.Game.instance.States.CurrentAvatarState.inventory;
-                itemCount = inventory.TryGetFungibleItem(item, out var inventoryItem)
-                    ? inventoryItem.count
+                itemCount = inventory.TryGetFungibleItems(material.FungibleId, out var outFungibleItems)
+                    ? outFungibleItems.Sum(e => e.count)
                     : 0;
             }
-            var countableItem = new CountableItem(item, itemCount);
+            var countableItem = new CountableItem(material, itemCount);
             view.SetData(countableItem, requiredCount);
             if (!checkInventory)
             {

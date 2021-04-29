@@ -91,8 +91,8 @@ namespace Nekoyume.UI.Module
                     var itemCount = requiredCount;
                     if (checkInventory)
                     {
-                        itemCount = inventory.TryGetFungibleItem(material, out var inventoryItem)
-                            ? inventoryItem.count
+                        itemCount = inventory.TryGetFungibleItems(material.FungibleId, out var outFungibleItems)
+                            ? outFungibleItems.Sum(e => e.count)
                             : 0;
                     }
                     var item = new CountableItem(material, itemCount);
