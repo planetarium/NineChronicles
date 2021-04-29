@@ -232,9 +232,9 @@ namespace Nekoyume.Action
             }
 
             var serializedProductDictionary = serializedProductList
-                .Select(p => (Dictionary) p)
+                .Select(p => (BxDictionary) p)
                 .FirstOrDefault(p =>
-                    ((Dictionary) p[productKey])[itemIdKey].Equals(serializedTradeId));
+                    ((BxDictionary) p[productKey])[itemIdKey].Equals(serializedTradeId));
 
             // Register new ShopItem
             if (serializedProductDictionary.Equals(BxDictionary.Empty))
