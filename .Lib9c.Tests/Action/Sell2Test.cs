@@ -161,7 +161,7 @@
         [Fact]
         public void ExecuteThrowInvalidPriceException()
         {
-            var action = new Sell
+            var action = new Sell2
             {
                 itemId = default,
                 price = -1 * _currency,
@@ -179,7 +179,7 @@
         [Fact]
         public void ExecuteThrowFailedLoadStateException()
         {
-            var action = new Sell
+            var action = new Sell2
             {
                 itemId = default,
                 price = 0 * _currency,
@@ -226,7 +226,7 @@
         [Fact]
         public void ExecuteThrowItemDoesNotExistException()
         {
-            var action = new Sell
+            var action = new Sell2
             {
                 itemId = default,
                 price = 0 * _currency,
