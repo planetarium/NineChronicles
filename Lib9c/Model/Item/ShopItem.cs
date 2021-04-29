@@ -6,6 +6,7 @@ using Bencodex.Types;
 using Libplanet;
 using Libplanet.Assets;
 using Nekoyume.Model.State;
+using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Model.Item
 {
@@ -111,21 +112,21 @@ namespace Nekoyume.Model.Item
 
         public ShopItem(Dictionary serialized)
         {
-            SellerAgentAddress = serialized["sellerAgentAddress"].ToAddress();
-            SellerAvatarAddress = serialized["sellerAvatarAddress"].ToAddress();
-            ProductId = serialized["productId"].ToGuid();
-            Price = serialized["price"].ToFungibleAssetValue();
-            ItemUsable = serialized.ContainsKey("itemUsable")
-                ? (ItemUsable) ItemFactory.Deserialize((Dictionary) serialized["itemUsable"])
+            SellerAgentAddress = serialized[LegacySellerAgentAddressKey].ToAddress();
+            SellerAvatarAddress = serialized[LegacySellerAvatarAddressKey].ToAddress();
+            ProductId = serialized[LegacyProductIdKey].ToGuid();
+            Price = serialized[LegacyPriceKey].ToFungibleAssetValue();
+            ItemUsable = serialized.ContainsKey(LegacyItemUsableKey)
+                ? (ItemUsable) ItemFactory.Deserialize((Dictionary) serialized[LegacyItemUsableKey])
                 : null;
-            Costume = serialized.ContainsKey("costume")
-                ? (Costume) ItemFactory.Deserialize((Dictionary) serialized["costume"])
+            Costume = serialized.ContainsKey(LegacyCostumeKey)
+                ? (Costume) ItemFactory.Deserialize((Dictionary) serialized[LegacyCostumeKey])
                 : null;
-            Material = serialized.ContainsKey("material")
-                ? (Material) ItemFactory.Deserialize((Dictionary) serialized["material"])
+            Material = serialized.ContainsKey(MaterialKey)
+                ? (Material) ItemFactory.Deserialize((Dictionary) serialized[MaterialKey])
                 : null;
-            MaterialCount = serialized.ContainsKey("materialCount")
-                ? serialized["materialCount"].ToInteger()
+            MaterialCount = serialized.ContainsKey(MaterialCountKey)
+                ? serialized[MaterialCountKey].ToInteger()
                 : default;
             if (serialized.ContainsKey(ExpiredBlockIndexKey))
             {
@@ -152,30 +153,30 @@ namespace Nekoyume.Model.Item
         {
             var innerDictionary = new Dictionary<IKey, IValue>
             {
-                [(Text) "sellerAgentAddress"] = SellerAgentAddress.Serialize(),
-                [(Text) "sellerAvatarAddress"] = SellerAvatarAddress.Serialize(),
-                [(Text) "productId"] = ProductId.Serialize(),
-                [(Text) "price"] = Price.Serialize(),
+                [(Text) LegacySellerAgentAddressKey] = SellerAgentAddress.Serialize(),
+                [(Text) LegacySellerAvatarAddressKey] = SellerAvatarAddress.Serialize(),
+                [(Text) LegacyProductIdKey] = ProductId.Serialize(),
+                [(Text) LegacyPriceKey] = Price.Serialize(),
             };
 
             if (ItemUsable != null)
             {
-                innerDictionary.Add((Text) "itemUsable", ItemUsable.Serialize());
+                innerDictionary.Add((Text) LegacyItemUsableKey, ItemUsable.Serialize());
             }
 
             if (Costume != null)
             {
-                innerDictionary.Add((Text) "costume", Costume.Serialize());
+                innerDictionary.Add((Text) LegacyCostumeKey, Costume.Serialize());
             }
 
             if (Material != null)
             {
-                innerDictionary.Add((Text) "material", Material.Serialize());
+                innerDictionary.Add((Text) MaterialKey, Material.Serialize());
             }
 
             if (MaterialCount != 0)
             {
-                innerDictionary.Add((Text) "materialCount", MaterialCount.Serialize());
+                innerDictionary.Add((Text) MaterialCountKey, MaterialCount.Serialize());
             }
 
             if (ExpiredBlockIndex != 0)
@@ -190,11 +191,11 @@ namespace Nekoyume.Model.Item
         public IValue SerializeBackup1() =>
             new Dictionary(new Dictionary<IKey, IValue>
             {
-                [(Text) "sellerAgentAddress"] = SellerAgentAddress.Serialize(),
-                [(Text) "sellerAvatarAddress"] = SellerAvatarAddress.Serialize(),
-                [(Text) "productId"] = ProductId.Serialize(),
-                [(Text) "itemUsable"] = ItemUsable.Serialize(),
-                [(Text) "price"] = Price.Serialize(),
+                [(Text) LegacySellerAgentAddressKey] = SellerAgentAddress.Serialize(),
+                [(Text) LegacySellerAvatarAddressKey] = SellerAvatarAddress.Serialize(),
+                [(Text) LegacyProductIdKey] = ProductId.Serialize(),
+                [(Text) LegacyItemUsableKey] = ItemUsable.Serialize(),
+                [(Text) LegacyPriceKey] = Price.Serialize(),
             });
 
         protected bool Equals(ShopItem other)
