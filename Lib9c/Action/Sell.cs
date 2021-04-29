@@ -54,13 +54,12 @@ namespace Nekoyume.Action
             if (context.Rehearsal)
             {
                 states = states.SetState(sellerAvatarAddress, MarkChanged);
-                states = ShardedShopState.AddressKeys.Aggregate(states,
-                    (current, addressKey) =>
-                        current.SetState(
-                            ShardedShopState.DeriveAddress(itemSubType, addressKey),
-                            MarkChanged));
-                return states
-                    .SetState(context.Signer, MarkChanged);
+                states = ShardedShopState.AddressKeys.Aggregate(
+                    states,
+                    (current, addressKey) => current.SetState(
+                        ShardedShopState.DeriveAddress(itemSubType, addressKey),
+                        MarkChanged));
+                return states.SetState(context.Signer, MarkChanged);
             }
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, sellerAvatarAddress);
@@ -123,22 +122,25 @@ namespace Nekoyume.Action
                     $"{addressesHex}Aborted because {nameof(itemCount)}({itemCount}) should be greater than or equal to 1.");
             }
 
-            if (!avatarState.inventory.TryGetTradableItem(itemId, out var tradableItem, out var tradableItemCount))
+            if (!avatarState.inventory.TryGetTradableItemWithoutNonTradableFungibleItem(
+                    itemId,
+                    out var inventoryItem) ||
+                !(inventoryItem.item is ITradableItem tradableItem))
             {
                 throw new ItemDoesNotExistException(
-                    $"{addressesHex}Aborted as the NonFungibleItem ({itemId}) was failed to load from avatar's inventory.");
+                    $"{addressesHex}Aborted because the tradable item({itemId}) was failed to load from avatar's inventory.");
             }
 
-            if (tradableItemCount < itemCount)
+            if (inventoryItem.count < itemCount)
             {
                 throw new ArgumentOutOfRangeException(
-                    $"{addressesHex}Aborted because {nameof(tradableItemCount)}({tradableItemCount}) should be greater than or equal to {nameof(itemCount)}({itemCount}).");
+                    $"{addressesHex}Aborted because inventory item count({inventoryItem.count}) should be greater than or equal to {nameof(itemCount)}({itemCount}).");
             }
 
             if (!tradableItem.ItemSubType.Equals(itemSubType))
             {
                 throw new InvalidItemTypeException(
-                    $"{addressesHex}Expected ItemType: {tradableItem.ItemSubType}. Actual ItemType: {itemSubType}");
+                    $"{addressesHex}Expected ItemSubType: {tradableItem.ItemSubType}. Actual ItemSubType: {itemSubType}");
             }
 
             // Make ShopItem
@@ -159,12 +161,12 @@ namespace Nekoyume.Action
                 if (nonFungibleItem.RequiredBlockIndex > context.BlockIndex)
                 {
                     throw new RequiredBlockIndexException(
-                        $"{addressesHex}Aborted as the nonFungibleItem to sell ({itemId}) is not available yet; it will be available at the block #{nonFungibleItem.RequiredBlockIndex}.");
+                        $"{addressesHex}Aborted because the non-fungible item({itemId}) to sell is not available yet; it will be available at the block #{nonFungibleItem.RequiredBlockIndex}.");
                 }
 
-                if (nonFungibleItem is Equipment equipment)
+                if (nonFungibleItem is IEquippableItem equippableItem)
                 {
-                    equipment.Unequip();
+                    equippableItem.Unequip();
                 }
 
                 nonFungibleItem.Update(expiredBlockIndex);
@@ -205,7 +207,6 @@ namespace Nekoyume.Action
             sw.Restart();
 
             var serializedProductList = (BxList) serializedSharedShopState[ProductsKey];
-            // ..............................................
             string productKey;
             string itemIdKey;
             string requiredBlockIndexKey;
@@ -249,7 +250,7 @@ namespace Nekoyume.Action
                         {
                             var materialItemId =
                                 ((BxDictionary) p[productKey])[itemIdKey].ToItemId();
-                            return Material.DeriveGuid(materialItemId)
+                            return Material.DeriveTradeId(materialItemId)
                                 .Equals(tradableItem.TradeId);
                         });
                     break;
@@ -267,7 +268,8 @@ namespace Nekoyume.Action
             else
             {
                 // Delete current ShopItem
-                serializedProductList = (BxList) serializedProductList.Remove(serializedProductDictionary);
+                serializedProductList =
+                    (BxList) serializedProductList.Remove(serializedProductDictionary);
 
                 // Update INonFungibleItem.RequiredBlockIndex
                 var item = (BxDictionary) serializedProductDictionary[productKey];
@@ -299,7 +301,10 @@ namespace Nekoyume.Action
                 itemUsable = shopItem.ItemUsable,
                 costume = shopItem.Costume
             };
-            var mail = new SellCancelMail(result, context.BlockIndex, context.Random.GenerateRandomGuid(),
+            var mail = new SellCancelMail(
+                result,
+                context.BlockIndex,
+                context.Random.GenerateRandomGuid(),
                 expiredBlockIndex);
             result.id = mail.id;
             avatarState.UpdateV3(mail);
@@ -313,7 +318,9 @@ namespace Nekoyume.Action
             sw.Stop();
             var ended = DateTimeOffset.UtcNow;
             Log.Verbose("{AddressesHex}Sell Set ShopState: {Elapsed}", addressesHex, sw.Elapsed);
-            Log.Verbose("{AddressesHex}Sell Total Executed Time: {Elapsed}", addressesHex,
+            Log.Verbose(
+                "{AddressesHex}Sell Total Executed Time: {Elapsed}",
+                addressesHex,
                 ended - started);
 
             return states;

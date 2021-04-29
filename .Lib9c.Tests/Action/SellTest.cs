@@ -187,11 +187,10 @@ namespace Lib9c.Tests.Action
 
             // Check AvatarState and Inventory
             var nextAvatarState = nextState.GetAvatarState(_avatarAddress);
-            Assert.True(nextAvatarState.inventory.TryGetTradableItem(
+            Assert.True(nextAvatarState.inventory.TryGetTradableItemWithoutNonTradableFungibleItem(
                 tradableItem.TradeId,
-                out var nextTradableItemInInventory,
-                out _));
-            if (nextTradableItemInInventory is INonFungibleItem nextNonFungibleItemInInventory)
+                out var nextInventoryItem));
+            if (nextInventoryItem.item is INonFungibleItem nextNonFungibleItemInInventory)
             {
                 Assert.Equal(expiredBlockIndex, nextNonFungibleItemInInventory.RequiredBlockIndex);
             }
