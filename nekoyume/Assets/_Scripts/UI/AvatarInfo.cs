@@ -35,7 +35,7 @@ namespace Nekoyume.UI
         private TextMeshProUGUI nicknameText = null;
 
         [SerializeField]
-        private GameObject titleSocket = null;
+        private Transform titleSocket = null;
 
         [SerializeField]
         private TextMeshProUGUI cpText = null;
@@ -218,8 +218,8 @@ namespace Nekoyume.UI
             if (!(title is null))
             {
                 Destroy(_cachedCharacterTitle);
-                var clone  = ResourcesHelper.GetCharacterTitle(title.Grade, title.GetLocalizedName());
-                _cachedCharacterTitle = Instantiate(clone, titleSocket.transform);
+                var clone  = ResourcesHelper.GetCharacterTitle(title.Grade, title.GetLocalizedNonColoredName());
+                _cachedCharacterTitle = Instantiate(clone, titleSocket);
             }
 
             costumeSlots.SetPlayerCostumes(playerModel, ShowTooltip, Unequip);
@@ -359,8 +359,8 @@ namespace Nekoyume.UI
                     if (costume.ItemSubType == ItemSubType.Title)
                     {
                         Destroy(_cachedCharacterTitle);
-                        var clone = ResourcesHelper.GetCharacterTitle(costume.Grade, costume.GetLocalizedName());
-                        _cachedCharacterTitle = Instantiate(clone, titleSocket.transform);
+                        var clone = ResourcesHelper.GetCharacterTitle(costume.Grade, costume.GetLocalizedNonColoredName());
+                        _cachedCharacterTitle = Instantiate(clone, titleSocket);
                     }
 
                     break;

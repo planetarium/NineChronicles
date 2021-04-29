@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
+using Nekoyume.Helper;
 using Nekoyume.Model.Buff;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Stat;
@@ -15,13 +16,6 @@ namespace Nekoyume.UI
 {
     public class HpBar : ProgressBar
     {
-        [Serializable]
-        public struct TitleContainer
-        {
-            public GameObject root;
-            public TextMeshProUGUI titleText;
-        }
-
         [SerializeField]
         private BuffLayout buffLayout = null;
 
@@ -32,20 +26,22 @@ namespace Nekoyume.UI
         private Slider additionalSlider = null;
 
         [SerializeField]
-        private TitleContainer titleContainer = default;
+        private Transform titleSocket = default;
 
-        public HpBarVFX HpVFX { get; protected set; }
+        private GameObject _cachedCharacterTitle;
+
+        public HpBarVFX HpVFX { get; private set; }
 
         public void SetTitle(Costume title)
         {
             if (title is null)
             {
-                titleContainer.root.SetActive(false);
                 return;
             }
 
-            titleContainer.titleText.text = title.GetLocalizedNonColoredName();
-            titleContainer.root.SetActive(true);
+            Destroy(_cachedCharacterTitle);
+            var clone  = ResourcesHelper.GetCharacterTitle(title.Grade, title.GetLocalizedNonColoredName());
+            _cachedCharacterTitle = Instantiate(clone, titleSocket);
         }
 
         public void SetBuffs(IReadOnlyDictionary<int, Buff> buffs)
