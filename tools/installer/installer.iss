@@ -45,12 +45,15 @@ Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#GameExeName}"; Tasks: Cre
 Name: "{userstartup}\{#MyAppName}"; Filename: "{app}\{#GameExeName}"; Tasks: RegisterStartup
 
 [Code]
+var
+  UUID: String;
+
 function GenerateUUID(): String;
 var
   UUIDLib: Variant;
 begin
   UUIDLib := CreateOleObject('Scriptlet.TypeLib');
-  result := Copy(UUIDLib.GUID(), 2, 36)
+  Result := Copy(UUIDLib.GUID(), 2, 36);
 end;
 
 function UseUUID(): String;
@@ -61,12 +64,18 @@ begin
   UUIDPath := Format('%s\planetarium\.installer_mixpanel_uuid', [ExpandConstant('{localappdata}')]);
   if (FileExists(UUIDPath)) then
   begin
-    LoadStringFromFile(UUIDPath, LoadedUUID)
+    LoadStringFromFile(UUIDPath, LoadedUUID);
     Result := LoadedUUID;
   end else begin
     Result := GenerateUUID();
     SaveStringToFile(UUIDPath, Result, False);
   end
+end;
+
+function InitializeSetup(): Boolean;
+begin
+  UUID := UseUUID();
+  Result := True;
 end;
 
 procedure MixpanelTrack(Event, UUID: String);
@@ -76,7 +85,7 @@ begin
   WinHttpReq := CreateOleObject('WinHttp.WinHttpRequest.5.1');
   WinHttpReq.Open('POST', 'https://api.mixpanel.com/track', False);
   WinHttpReq.SetRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-  WinHttpReq.Send(Format('data={"event":"%s","properties":{"token":"80a1e14b57d050536185c7459d45195a","action":"start","distinct_id":"%s"}}', [Event, UUID]));
+  WinHttpReq.Send(Format('data={"event":"%s","properties":{"token":"80a1e14b57d050536185c7459d45195a","distinct_id":"%s"}}', [Event, UUID]));
   if WinHttpReq.ResponseText = 1 then begin
     Log('Mixpanel request success.');
   end else begin
@@ -84,74 +93,88 @@ begin
   end;
 end;
 
-procedure CurStepChanged(CurStep: TSetupStep);
+procedure SendUUID(Event, UUID: String);
 var
-  UUID: String;
+  WinHttpReq: Variant;
 begin
-  UUID := UseUUID();
+  WinHttpReq := CreateOleObject('WinHttp.WinHttpRequest.5.1');
+  WinHttpReq.Open('POST', 'https://planetariumhq.slack.com/services/hooks/slackbot?token=4hBLriaHECDGHlNNbOnwjkfk&channel=%239c-installer', False);
+  WinHttpReq.SetRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+  WinHttpReq.Send('[INSTALLER] UUID: ' + UUID + ' // EVENT: ' + Event);
+  if WinHttpReq.ResponseText = 'ok' then begin
+    Log('Slack request success.');
+  end else begin
+    Log('Slack request failed. ' + WinHttpReq.ResponseText);
+  end;
+end;
+
+procedure CurStepChanged(CurStep: TSetupStep);
+begin
   if CurStep = ssInstall then
   begin
     Log('Install: Request Mixpanel.');
     Log('UUID: ' + UUID);
-    MixpanelTrack('Installer/Start', UUID);
+    MixpanelTrack('Installer/Start-test', UUID);
+    SendUUID('5. Installer/Start', UUID);
   end;
 
   if CurStep = ssPostInstall then
   begin
     Log('PostInstall: Request Mixpanel.');
     Log('UUID: ' + UUID);
-    MixpanelTrack('Installer/End', UUID);
+    MixpanelTrack('Installer/End-test', UUID);
+    SendUUID('6. Installer/End', UUID);
   end;
 end;
 
 procedure CurUninstallStepChanged(CurUninstallStep: TUninstallStep);
-var
-  UUID: String;
 begin
   if CurUninstallStep = usUninstall then
   begin
-    UUID := UseUUID();
     Log('UnInstall: Request Mixpanel.');
     Log('UUID: ' + UUID);
-    MixpanelTrack('Installer/Uninstall', UUID);
+    MixpanelTrack('Installer/Uninstall-test', UUID);
+    SendUUID('8. Installer/Uninstall', UUID);
   end;
 end;
 
 procedure CurPageChanged(CurPageID: Integer);
-var
-  UUID: String;
 begin
-  UUID := UseUUID();
   case CurPageID of
     wpSelectDir:
       begin
         Log('Install: Select Directory.');
         Log('UUID: ' + UUID);
-        MixpanelTrack('Installer/SelectDir', UUID);
+        MixpanelTrack('Installer/SelectDir-test', UUID);
+        SendUUID('1. Installer/SelectDir', UUID);
       end;
     wpSelectTasks:
       begin
         Log('Install: Select Tasks.');
         Log('UUID: ' + UUID);
-        MixpanelTrack('Installer/SelectTasks', UUID);
+        MixpanelTrack('Installer/SelectTasks-test', UUID);
+        SendUUID('2. Installer/SelectTasks', UUID);
       end;
     wpReady:
       begin
         Log('Install: Ready.');
         Log('UUID: ' + UUID);
-        MixpanelTrack('Installer/Ready', UUID);
+        MixpanelTrack('Installer/Ready-test', UUID);
+        SendUUID('3. Installer/Ready', UUID);
       end;
     wpInstalling:
       begin
         Log('Install: Installing.');
         Log('UUID: ' + UUID);
-        MixpanelTrack('Installer/Installing', UUID);
+        MixpanelTrack('Installer/Installing-test', UUID);
+        SendUUID('4. Installer/Installing', UUID);
       end;
     wpFinished:
       begin
         Log('Install: Finished.');
         Log('UUID: ' + UUID);
-        MixpanelTrack('Installer/Finished', UUID);
+        MixpanelTrack('Installer/Finished-test', UUID);
+        SendUUID('7. Installer/Finished', UUID);
       end;
   end;
 end;
