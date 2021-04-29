@@ -165,20 +165,31 @@ namespace Nekoyume.Model.Item
             return new KeyValuePair<int, int>(itemBase.Id, count);
         }
 
-        private Item AddFungibleItem(ItemBase itemBase, int count = 1)
+        public Item AddFungibleItem(ItemBase itemBase, int count = 1)
         {
-            if (TryGetFungibleItem(itemBase, out var fungibleItem))
+            switch (itemBase)
             {
-                fungibleItem.count += count;
-                return fungibleItem;
+                case Material material:
+                    return AddMaterial(material, count);
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
-
-            fungibleItem = new Item(itemBase, count);
-            _items.Add(fungibleItem);
-            return fungibleItem;
         }
 
-        private Item AddNonFungibleItem(ItemBase itemBase)
+        public Item AddMaterial(Material material, int count = 1)
+        {
+            if (TryGetFungibleItem(material.ItemId, material.IsTradable, out var outMaterial))
+            {
+                outMaterial.count += count;
+                return outMaterial;
+            }
+
+            outMaterial = new Item(material, count);
+            _items.Add(outMaterial);
+            return outMaterial;
+        }
+
+        public Item AddNonFungibleItem(ItemBase itemBase)
         {
             var nonFungibleItem = new Item(itemBase);
             _items.Add(nonFungibleItem);
@@ -215,14 +226,14 @@ namespace Nekoyume.Model.Item
 
         public bool RemoveMaterial(HashDigest<SHA256> id, int count = 1)
         {
-            TryGetMaterial(id, false, out var nonTradableMaterial);
-            TryGetMaterial(id, true, out var tradableMaterial);
+            TryGetFungibleItem(id, false, out var nonTradableMaterial);
+            TryGetFungibleItem(id, true, out var tradableMaterial);
             var sum = nonTradableMaterial?.count ?? 0 + tradableMaterial?.count ?? 0;
             if (sum < count)
             {
                 return false;
             }
-            
+
             if (nonTradableMaterial != null)
             {
                 if (nonTradableMaterial.count > count)
@@ -238,7 +249,7 @@ namespace Nekoyume.Model.Item
                     return true;
                 }
             }
-            
+
             if (tradableMaterial != null)
             {
                 tradableMaterial.count -= count;
@@ -253,7 +264,7 @@ namespace Nekoyume.Model.Item
 
         public bool RemoveTradableMaterial(HashDigest<SHA256> id, int count = 1)
         {
-            if (!TryGetMaterial(id, true, out var tradableMaterial) ||
+            if (!TryGetFungibleItem(id, true, out var tradableMaterial) ||
                 tradableMaterial.count < count)
             {
                 return false;
@@ -264,7 +275,7 @@ namespace Nekoyume.Model.Item
             {
                 _items.Remove(tradableMaterial);
             }
-            
+
             return true;
         }
 
@@ -303,41 +314,14 @@ namespace Nekoyume.Model.Item
 
         #region Try Get
 
-        public bool TryGetFungibleItem(ItemBase itemBase, out Item outFungibleItem)
-        {
-            switch (itemBase)
-            {
-                case Material material:
-                    return TryGetMaterial(material.ItemId, material.IsTradable, out outFungibleItem);
-                default:
-                    outFungibleItem = null;
-                    return false;
-            }
-        }
-
+        [Obsolete("Use TryGetFungibleItem(HashDigest<SHA256> itemId, bool isTradable, out Item outFungibleItem)")]
         public bool TryGetFungibleItem(int rowId, out Item outFungibleItem)
         {
             outFungibleItem = _items.FirstOrDefault(i => i.item.Id == rowId);
             return !(outFungibleItem is null);
         }
 
-        public bool TryGetFungibleItem(HashDigest<SHA256> fungibleId, out Item outFungibleItem)
-        {
-            foreach (var item in _items)
-            {
-                if (item.item is IFungibleItem fungibleItem &&
-                    fungibleItem.FungibleId.Equals(fungibleId))
-                {
-                    outFungibleItem = item;
-                    return true;
-                }
-            }
-
-            outFungibleItem = null;
-            return false;
-        }
-
-        public bool TryGetMaterial(HashDigest<SHA256> itemId, bool isTradable, out Item outMaterial)
+        public bool TryGetFungibleItem(HashDigest<SHA256> itemId, bool isTradable, out Item outFungibleItem)
         {
             foreach (var fungibleItem in _items)
             {
@@ -348,12 +332,27 @@ namespace Nekoyume.Model.Item
                     continue;
                 }
 
-                outMaterial = fungibleItem;
+                outFungibleItem = fungibleItem;
                 return true;
             }
 
-            outMaterial = null;
+            outFungibleItem = null;
             return false;
+        }
+
+        public bool TryGetFungibleItems(HashDigest<SHA256> fungibleId, out List<Item> outFungibleItems)
+        {
+            outFungibleItems = new List<Item>();
+            foreach (var item in _items)
+            {
+                if (item.item is IFungibleItem fungibleItem &&
+                    fungibleItem.FungibleId.Equals(fungibleId))
+                {
+                    outFungibleItems.Add(item);
+                }
+            }
+
+            return outFungibleItems.Count > 0;
         }
 
         // FIXME: It must be deleted. As ItemId was added to the costume, it became NonFungible.
@@ -420,6 +419,26 @@ namespace Nekoyume.Model.Item
             return false;
         }
 
+        public bool TryGetTradableItem(Guid tradeId, out ITradableItem tradableItem, out int count)
+        {
+            foreach (var item in _items)
+            {
+                tradableItem = item.item as ITradableItem;
+                if (tradableItem is null ||
+                    !tradableItem.TradeId.Equals(tradeId))
+                {
+                    continue;
+                }
+
+                count = item.count;
+                return true;
+            }
+
+            tradableItem = null;
+            count = default;
+            return false;
+        }
+
         #endregion
 
         #region Has
@@ -446,7 +465,7 @@ namespace Nekoyume.Model.Item
             .Select(i => i.item)
             .OfType<INonFungibleItem>()
             .Any(i => i.ItemId.Equals(itemId));
-        
+
         public bool HasTradableItem(Guid tradeId) => _items
             .Select(i => i.item)
             .OfType<ITradableItem>()
