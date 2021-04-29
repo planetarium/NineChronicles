@@ -138,7 +138,7 @@ namespace Nekoyume.Action
             {
                 productKey = LegacyCostumeKey;
                 itemIdKey = LegacyCostumeItemIdKey;
-                requiredBlockIndexKey = Costume.RequiredBlockIndexKey;
+                requiredBlockIndexKey = RequiredBlockIndexKey;
             }
 #pragma warning disable LAA1002
                 Dictionary productSerialized = products

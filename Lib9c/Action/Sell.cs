@@ -220,21 +220,42 @@ namespace Nekoyume.Action
                 case ItemType.Costume:
                     productKey = LegacyCostumeKey;
                     itemIdKey = LegacyCostumeItemIdKey;
-                    requiredBlockIndexKey = Costume.RequiredBlockIndexKey;
+                    requiredBlockIndexKey = RequiredBlockIndexKey;
                     break;
                 case ItemType.Material:
-                    productKey = "?";
-                    itemIdKey = "?";
-                    requiredBlockIndexKey = "?";
+                    productKey = MaterialKey;
+                    itemIdKey = LegacyCostumeItemIdKey;
+                    requiredBlockIndexKey = RequiredBlockIndexKey;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
 
-            var serializedProductDictionary = serializedProductList
-                .Select(p => (BxDictionary) p)
-                .FirstOrDefault(p =>
-                    ((BxDictionary) p[productKey])[itemIdKey].Equals(serializedTradeId));
+            BxDictionary serializedProductDictionary;
+            switch (tradableItem.ItemType)
+            {
+                case ItemType.Consumable:
+                case ItemType.Costume:
+                case ItemType.Equipment:
+                    serializedProductDictionary = serializedProductList
+                        .Select(p => (BxDictionary) p)
+                        .FirstOrDefault(p =>
+                            ((BxDictionary) p[productKey])[itemIdKey].Equals(serializedTradeId));
+                    break;
+                case ItemType.Material:
+                    serializedProductDictionary = serializedProductList
+                        .Select(p => (BxDictionary) p)
+                        .FirstOrDefault(p =>
+                        {
+                            var materialItemId =
+                                ((BxDictionary) p[productKey])[itemIdKey].ToItemId();
+                            return Material.DeriveGuid(materialItemId)
+                                .Equals(tradableItem.TradeId);
+                        });
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
 
             // Register new ShopItem
             if (serializedProductDictionary.Equals(BxDictionary.Empty))
