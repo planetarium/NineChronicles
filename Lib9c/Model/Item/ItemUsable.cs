@@ -15,7 +15,7 @@ namespace Nekoyume.Model.Item
     public abstract class ItemUsable : ItemBase, INonFungibleItem
     {
         public Guid ItemId { get; }
-        public Guid TradeId => ItemId;
+        public Guid TradableId => ItemId;
         public Guid NonFungibleId => ItemId;
         public StatsMap StatsMap { get; }
         public List<Skill.Skill> Skills { get; }

@@ -53,7 +53,7 @@ namespace Lib9c.Tests.Model.Item
         {
             var material = new Material(_materialRow);
             var material2 = new Material(_materialRow, true);
-            Assert.Equal(material.TradeId, material2.TradeId);
+            Assert.Equal(material.TradableId, material2.TradableId);
         }
 
         [Fact]

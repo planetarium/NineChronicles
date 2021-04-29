@@ -168,7 +168,7 @@ namespace Lib9c.Tests.Action
 
             var sellAction = new Sell
             {
-                itemId = tradableItem.TradeId,
+                itemId = tradableItem.TradableId,
                 itemSubType = tradableItem.ItemSubType,
                 itemCount = 1,
                 price = price,
@@ -188,7 +188,7 @@ namespace Lib9c.Tests.Action
             // Check AvatarState and Inventory
             var nextAvatarState = nextState.GetAvatarState(_avatarAddress);
             Assert.True(nextAvatarState.inventory.TryGetTradableItemWithoutNonTradableFungibleItem(
-                tradableItem.TradeId,
+                tradableItem.TradableId,
                 out var nextInventoryItem));
             if (nextInventoryItem.item is INonFungibleItem nextNonFungibleItemInInventory)
             {

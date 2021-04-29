@@ -270,7 +270,7 @@ namespace Nekoyume.Model.Item
 
         public bool RemoveTradableMaterial(HashDigest<SHA256> fungibleId, int count = 1)
         {
-            var tradeId = Material.DeriveTradeId(fungibleId);
+            var tradeId = Material.DeriveTradableId(fungibleId);
             if (!TryGetTradableItems(tradeId, out var items))
             {
                 return false;
@@ -417,7 +417,7 @@ namespace Nekoyume.Model.Item
             foreach (var item in _items)
             {
                 if (!(item.item is ITradableItem tradableItem) ||
-                    !tradableItem.TradeId.Equals(tradeId))
+                    !tradableItem.TradableId.Equals(tradeId))
                 {
                     continue;
                 }
@@ -435,7 +435,7 @@ namespace Nekoyume.Model.Item
             foreach (var item in _items)
             {
                 if (!(item.item is T t) ||
-                    !t.TradeId.Equals(tradeId))
+                    !t.TradableId.Equals(tradeId))
                 {
                     continue;
                 }
@@ -453,7 +453,7 @@ namespace Nekoyume.Model.Item
             foreach (var item in _items)
             {
                 if (!(item.item is ITradableItem tradableItem) ||
-                    !tradableItem.TradeId.Equals(tradeId))
+                    !tradableItem.TradableId.Equals(tradeId))
                 {
                     continue;
                 }
@@ -502,7 +502,7 @@ namespace Nekoyume.Model.Item
         public bool HasTradableItem(Guid tradeId) => _items
             .Select(i => i.item)
             .OfType<ITradableItem>()
-            .Any(i => i.TradeId.Equals(tradeId));
+            .Any(i => i.TradableId.Equals(tradeId));
 
         #endregion
 

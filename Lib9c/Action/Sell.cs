@@ -146,7 +146,7 @@ namespace Nekoyume.Action
             // Make ShopItem
             var productId = context.Random.GenerateRandomGuid();
             var expiredBlockIndex = context.BlockIndex + ExpiredBlockIndex;
-            var serializedTradeId = tradableItem.TradeId.Serialize();
+            var serializedTradeId = tradableItem.TradableId.Serialize();
             ShopItem shopItem = null;
 
             // INonFungibleItem process
@@ -250,8 +250,8 @@ namespace Nekoyume.Action
                         {
                             var materialItemId =
                                 ((BxDictionary) p[productKey])[itemIdKey].ToItemId();
-                            return Material.DeriveTradeId(materialItemId)
-                                .Equals(tradableItem.TradeId);
+                            return Material.DeriveTradableId(materialItemId)
+                                .Equals(tradableItem.TradableId);
                         });
                     break;
                 default:

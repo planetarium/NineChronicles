@@ -15,17 +15,17 @@ namespace Nekoyume.Model.Item
 
         public HashDigest<SHA256> FungibleId => ItemId;
 
-        public Guid TradeId { get; }
+        public Guid TradableId { get; }
 
         public bool IsTradable { get; }
 
-        public static Guid DeriveTradeId(HashDigest<SHA256> hashDigest) =>
+        public static Guid DeriveTradableId(HashDigest<SHA256> hashDigest) =>
             new Guid(HashDigest<MD5>.DeriveFrom(hashDigest.ToByteArray()).ToByteArray());
 
         public Material(MaterialItemSheet.Row data, bool isTradable = default) : base(data)
         {
             ItemId = data.ItemId;
-            TradeId = DeriveTradeId(ItemId);
+            TradableId = DeriveTradableId(ItemId);
             IsTradable = isTradable;
         }
 
@@ -34,7 +34,7 @@ namespace Nekoyume.Model.Item
             if (serialized.TryGetValue((Text) "item_id", out var itemId))
             {
                 ItemId = itemId.ToItemId();
-                TradeId = DeriveTradeId(ItemId);
+                TradableId = DeriveTradableId(ItemId);
             }
 
             IsTradable = serialized.ContainsKey("is_tradable") ? serialized["is_tradable"].ToBoolean() : default;
@@ -88,7 +88,7 @@ namespace Nekoyume.Model.Item
         {
             return base.ToString() +
                    $", {nameof(ItemId)}: {ItemId}" +
-                   $", {nameof(TradeId)}: {TradeId}" +
+                   $", {nameof(TradableId)}: {TradableId}" +
                    $", {nameof(IsTradable)}: {IsTradable}";
         }
     }
