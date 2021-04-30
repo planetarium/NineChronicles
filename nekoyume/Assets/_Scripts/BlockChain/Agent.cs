@@ -635,6 +635,7 @@ namespace Nekoyume.BlockChain
 
         private IEnumerator CoLogger()
         {
+            Widget.Create<BattleSimulator>(true);
             Widget.Create<Cheat>(true);
             while (true)
             {
