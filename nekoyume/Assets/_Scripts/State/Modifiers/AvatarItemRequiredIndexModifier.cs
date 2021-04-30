@@ -8,23 +8,23 @@ namespace Nekoyume.State.Modifiers
     public class AvatarItemRequiredIndexModifier : AvatarStateModifier
     {
         private long _blockIndex;
-        private readonly Guid _itemId;
+        private readonly Guid _nonFungibleId;
         public override bool IsEmpty => _blockIndex == 0;
 
-        public AvatarItemRequiredIndexModifier(long blockIndex, Guid itemId)
+        public AvatarItemRequiredIndexModifier(long blockIndex, Guid nonFungibleId)
         {
             _blockIndex = blockIndex;
-            _itemId = itemId;
+            _nonFungibleId = nonFungibleId;
         }
 
-        public AvatarItemRequiredIndexModifier(Guid itemId)
+        public AvatarItemRequiredIndexModifier(Guid nonFungibleId)
         {
-            _itemId = itemId;
+            _nonFungibleId = nonFungibleId;
         }
 
         public override void Add(IAccumulatableStateModifier<AvatarState> modifier)
         {
-            if (modifier is AvatarItemRequiredIndexModifier m && m._itemId == _itemId)
+            if (modifier is AvatarItemRequiredIndexModifier m && m._nonFungibleId == _nonFungibleId)
             {
                 _blockIndex += m._blockIndex;
             }
@@ -32,7 +32,7 @@ namespace Nekoyume.State.Modifiers
 
         public override void Remove(IAccumulatableStateModifier<AvatarState> modifier)
         {
-            if (modifier is AvatarItemRequiredIndexModifier m && m._itemId == _itemId)
+            if (modifier is AvatarItemRequiredIndexModifier m && m._nonFungibleId == _nonFungibleId)
             {
                 _blockIndex -= m._blockIndex;
             }
@@ -42,8 +42,8 @@ namespace Nekoyume.State.Modifiers
         {
             var item = state.inventory.Items
                 .Select(i => i.item)
-                .OfType<ItemUsable>()
-                .FirstOrDefault(i => i.ItemId == _itemId);
+                .OfType<INonFungibleItem>()
+                .FirstOrDefault(i => i.NonFungibleId == _nonFungibleId);
             item?.Update(_blockIndex);
             return state;
         }

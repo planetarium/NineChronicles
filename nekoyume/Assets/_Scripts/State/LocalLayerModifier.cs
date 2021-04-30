@@ -103,9 +103,9 @@ namespace Nekoyume.State
 
         #region Avatar / AddItem
 
-        public static void AddItem(Address avatarAddress, Guid guid, bool resetState = true)
+        public static void AddItem(Address avatarAddress, Guid nonFungibleId, bool resetState = true)
         {
-            var modifier = new AvatarInventoryNonFungibleItemRemover(guid);
+            var modifier = new AvatarInventoryNonFungibleItemRemover(nonFungibleId);
             LocalLayer.Instance.Remove(avatarAddress, modifier);
 
             if (!resetState)
@@ -158,9 +158,9 @@ namespace Nekoyume.State
 
         #region Avatar / RemoveItem
 
-        public static void RemoveItem(Address avatarAddress, Guid guid)
+        public static void RemoveItem(Address avatarAddress, Guid nonFungibleId)
         {
-            var modifier = new AvatarInventoryNonFungibleItemRemover(guid);
+            var modifier = new AvatarInventoryNonFungibleItemRemover(nonFungibleId);
             LocalLayer.Instance.Add(avatarAddress, modifier);
             RemoveItemInternal(avatarAddress, modifier);
         }
@@ -379,16 +379,16 @@ namespace Nekoyume.State
         /// Change the equipment's mounting status.
         /// </summary>
         /// <param name="avatarAddress"></param>
-        /// <param name="itemId"></param>
+        /// <param name="nonFungibleId"></param>
         /// <param name="equip"></param>
         /// <param name="resetState"></param>
         public static void SetItemEquip(
             Address avatarAddress,
-            Guid itemId,
+            Guid nonFungibleId,
             bool equip,
             bool resetState = true)
         {
-            var modifier = new AvatarInventoryItemEquippedModifier(itemId, equip);
+            var modifier = new AvatarInventoryItemEquippedModifier(nonFungibleId, equip);
             LocalLayer.Instance.Add(avatarAddress, modifier);
 
             if (!TryGetLoadedAvatarState(
@@ -444,11 +444,11 @@ namespace Nekoyume.State
 
         public static void ModifyAvatarItemRequiredIndex(
             Address avatarAddress,
-            Guid itemId,
+            Guid nonFungibleId,
             long blockIndex
         )
         {
-            var modifier = new AvatarItemRequiredIndexModifier(blockIndex, itemId);
+            var modifier = new AvatarItemRequiredIndexModifier(blockIndex, nonFungibleId);
             LocalLayer.Instance.Add(avatarAddress, modifier);
 
             if (!TryGetLoadedAvatarState(
@@ -472,9 +472,9 @@ namespace Nekoyume.State
                 outAvatarState.dailyRewardReceivedIndex);
         }
 
-        public static void RemoveAvatarItemRequiredIndex(Address avatarAddress, Guid itemId)
+        public static void RemoveAvatarItemRequiredIndex(Address avatarAddress, Guid nonFungibleId)
         {
-            var modifier = new AvatarItemRequiredIndexModifier(itemId);
+            var modifier = new AvatarItemRequiredIndexModifier(nonFungibleId);
             LocalLayer.Instance.Remove(avatarAddress, modifier);
         }
 
@@ -691,7 +691,6 @@ namespace Nekoyume.State
             Address slotAddress
         )
         {
-
             // When the layer is covered, additionally set the block height to prevent state updates until the actual state comes in.
             var blockIndex = Game.Game.instance.Agent.BlockIndex + 100;
             var requiredBlockIndex = blockIndex + 1;
@@ -710,12 +709,16 @@ namespace Nekoyume.State
                 return;
             }
 
-            equipment.LevelUp();
-            equipment.Update(requiredBlockIndex);
-
             var enhancementRow = Game.Game.instance.TableSheets
                 .EnhancementCostSheet.Values
                 .FirstOrDefault(x => x.Grade == equipment.Grade && x.Level == equipment.level);
+            if (enhancementRow is null)
+            {
+                return;
+            }
+
+            equipment.LevelUp();
+            equipment.Update(requiredBlockIndex);
 
             var result = new ItemEnhancement.ResultModel
             {

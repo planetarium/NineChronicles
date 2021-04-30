@@ -284,7 +284,7 @@ namespace Nekoyume.BlockChain
                 // NOTE: 최종적으로 UpdateCurrentAvatarState()를 호출한다면, 그곳에서 상태를 새로 설정할 것이다.
                 LocalLayerModifier.AddItem(avatarAddress, pair.Key.ItemId, pair.Value, false);
             }
-            LocalLayerModifier.RemoveAvatarItemRequiredIndex(avatarAddress, result.itemUsable.ItemId);
+            LocalLayerModifier.RemoveAvatarItemRequiredIndex(avatarAddress, result.itemUsable.NonFungibleId);
             LocalLayerModifier.ResetCombinationSlot(slot);
 
             AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ActionCombinationSuccess);
@@ -491,7 +491,7 @@ namespace Nekoyume.BlockChain
                 var nonFungibleItem = result.itemUsable ?? (INonFungibleItem) result.costume;
                 var itemBase = result.itemUsable ?? (ItemBase) result.costume;
 
-                LocalLayerModifier.RemoveItem(avatarAddress, nonFungibleItem.ItemId);
+                LocalLayerModifier.RemoveItem(avatarAddress, nonFungibleItem.NonFungibleId);
                 LocalLayerModifier.AddNewAttachmentMail(avatarAddress, result.id);
                 var format = L10nManager.Localize("NOTIFICATION_SELL_CANCEL_COMPLETE");
                 UI.Notification.Push(MailType.Auction, string.Format(format, itemBase.GetLocalizedName()));
@@ -517,7 +517,7 @@ namespace Nekoyume.BlockChain
                             var price = purchaseResult.shopItem.Price;
                             var nonFungibleItem = purchaseResult.itemUsable ?? (INonFungibleItem) purchaseResult.costume;
                             LocalLayerModifier.ModifyAgentGold(agentAddress, price);
-                            LocalLayerModifier.RemoveItem(currentAvatarAddress, nonFungibleItem.ItemId);
+                            LocalLayerModifier.RemoveItem(currentAvatarAddress, nonFungibleItem.NonFungibleId);
                             LocalLayerModifier.AddNewAttachmentMail(currentAvatarAddress, purchaseResult.id);
 
                             // Push notification

@@ -82,9 +82,9 @@ namespace Tests.EditMode.State.Modifiers
                 Assert.True(itemBase is IEquippableItem);
                 var nonFungibleItem = (INonFungibleItem) itemBase;
                 var equippableItem = (IEquippableItem) itemBase;
-                Assert.True(_avatarState.inventory.HasItem(nonFungibleItem.ItemId));
+                Assert.True(_avatarState.inventory.HasItem(nonFungibleItem.NonFungibleId));
                 Assert.True(_avatarState.inventory.TryGetNonFungibleItem(
-                    nonFungibleItem.ItemId,
+                    nonFungibleItem.NonFungibleId,
                     out _));
                 Assert.False(equippableItem.Equipped);
             }
@@ -125,7 +125,8 @@ namespace Tests.EditMode.State.Modifiers
                 return false;
             }
 
-            var modifier = new AvatarInventoryItemEquippedModifier(nonFungibleItem.ItemId, true);
+            var modifier =
+                new AvatarInventoryItemEquippedModifier(nonFungibleItem.NonFungibleId, true);
             modifier.Modify(_avatarState);
             Assert.True(equippableItem.Equipped);
 
@@ -140,7 +141,8 @@ namespace Tests.EditMode.State.Modifiers
                 return false;
             }
 
-            var modifier = new AvatarInventoryItemEquippedModifier(nonFungibleItem.ItemId, false);
+            var modifier =
+                new AvatarInventoryItemEquippedModifier(nonFungibleItem.NonFungibleId, false);
             modifier.Modify(_avatarState);
             Assert.False(equippableItem.Equipped);
 

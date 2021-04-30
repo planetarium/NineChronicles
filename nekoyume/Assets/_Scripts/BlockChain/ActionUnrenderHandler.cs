@@ -204,9 +204,9 @@ namespace Nekoyume.BlockChain
             var result = eval.Action.result;
             var nonFungibleItem = result.itemUsable ?? (INonFungibleItem) result.costume;
             var avatarAddress = eval.Action.sellerAvatarAddress;
-            var itemId = nonFungibleItem.ItemId;
+            var nonFungibleId = nonFungibleItem.NonFungibleId;
 
-            LocalLayerModifier.AddItem(avatarAddress, itemId);
+            LocalLayerModifier.AddItem(avatarAddress, nonFungibleId);
             UpdateCurrentAvatarState(eval);
         }
 

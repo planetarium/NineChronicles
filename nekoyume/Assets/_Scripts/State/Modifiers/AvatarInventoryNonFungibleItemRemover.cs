@@ -5,6 +5,7 @@ using System.Text;
 using Nekoyume.JsonConvertibles;
 using Nekoyume.Model.State;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Nekoyume.State.Modifiers
 {
@@ -12,16 +13,16 @@ namespace Nekoyume.State.Modifiers
     public class AvatarInventoryNonFungibleItemRemover : AvatarStateModifier
     {
         [SerializeField]
-        private List<JsonConvertibleGuid> guidList;
+        private List<JsonConvertibleGuid> nonFungibleIds;
 
-        public override bool IsEmpty => guidList.Count == 0;
+        public override bool IsEmpty => nonFungibleIds.Count == 0;
 
-        public AvatarInventoryNonFungibleItemRemover(params Guid[] guidParams)
+        public AvatarInventoryNonFungibleItemRemover(params Guid[] nonFungibleIdParams)
         {
-            guidList = new List<JsonConvertibleGuid>();
-            foreach (var guid in guidParams)
+            nonFungibleIds = new List<JsonConvertibleGuid>();
+            foreach (var guid in nonFungibleIdParams)
             {
-                guidList.Add(new JsonConvertibleGuid(guid));
+                nonFungibleIds.Add(new JsonConvertibleGuid(guid));
             }
         }
 
@@ -32,9 +33,9 @@ namespace Nekoyume.State.Modifiers
                 return;
             }
 
-            foreach (var incoming in m.guidList.Where(incoming => !guidList.Contains(incoming)))
+            foreach (var incoming in m.nonFungibleIds.Where(incoming => !nonFungibleIds.Contains(incoming)))
             {
-                guidList.Add(incoming);
+                nonFungibleIds.Add(incoming);
             }
         }
 
@@ -45,9 +46,9 @@ namespace Nekoyume.State.Modifiers
                 return;
             }
 
-            foreach (var incoming in m.guidList.Where(incoming => guidList.Contains(incoming)))
+            foreach (var incoming in m.nonFungibleIds.Where(incoming => nonFungibleIds.Contains(incoming)))
             {
-                guidList.Remove(incoming);
+                nonFungibleIds.Remove(incoming);
             }
         }
 
@@ -58,7 +59,7 @@ namespace Nekoyume.State.Modifiers
                 return null;
             }
 
-            foreach (var guid in guidList)
+            foreach (var guid in nonFungibleIds)
             {
                 state.inventory.RemoveNonFungibleItem(guid.Value);
             }
@@ -69,7 +70,7 @@ namespace Nekoyume.State.Modifiers
         public override string ToString()
         {
             var sb = new StringBuilder();
-            foreach (var guid in guidList)
+            foreach (var guid in nonFungibleIds)
             {
                 sb.AppendLine(guid.Value.ToString());
             }
