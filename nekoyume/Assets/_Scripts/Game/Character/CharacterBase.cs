@@ -57,11 +57,6 @@ namespace Nekoyume.Game.Character
             {
                 _currentHp = Math.Min(Math.Max(value, 0), HP);
                 UpdateHpBar();
-
-//                if (Animator?.Target != null)
-//                {
-//                    Debug.LogWarning($"{Animator.Target.name}'s {nameof(CurrentHP)} setter called: {CurrentHP}({Model.Stats.CurrentHP}) / {HP}({Model.Stats.LevelStats.HP}+{Model.Stats.BuffStats.HP})");
-//                }
             }
         }
 
@@ -72,6 +67,7 @@ namespace Nekoyume.Game.Character
         public float RunSpeed { get; set; }
 
         public HpBar HPBar { get; private set; }
+        public HudContainer HudContainer { get; private set; }
         private ProgressBar CastingBar { get; set; }
         protected SpeechBubble SpeechBubble { get; set; }
 
@@ -121,6 +117,11 @@ namespace Nekoyume.Game.Character
             HitPointBoxCollider = GetComponent<BoxCollider>();
         }
 
+        protected virtual void Start()
+        {
+            InitializeHudContainer();
+        }
+
         protected virtual void OnDisable()
         {
             RunSpeed = 0.0f;
@@ -138,7 +139,7 @@ namespace Nekoyume.Game.Character
         {
             _disposablesForModel.DisposeAllAndClear();
             CharacterModel = model;
-
+            InitializeHudContainer();
             if (updateCurrentHP)
             {
                 CurrentHP = HP;
@@ -160,9 +161,10 @@ namespace Nekoyume.Game.Character
         protected virtual void Update()
         {
             _root?.Tick();
-            if (HPBar)
+
+            if(HudContainer)
             {
-                HPBar.UpdatePosition(gameObject, HUDOffset);
+                HudContainer.UpdatePosition(gameObject, HUDOffset);
             }
 
             if (SpeechBubble)
@@ -171,10 +173,21 @@ namespace Nekoyume.Game.Character
             }
         }
 
+        private void InitializeHudContainer()
+        {
+            if (!HudContainer)
+            {
+                var hud = Widget.FindOrCreate<HudContainer>();
+                HudContainer = hud;
+            }
+        }
+
         protected virtual void InitializeHpBar()
         {
             HPBar = Widget.FindOrCreate<HpBar>();
-            HPBar.SetTitle(null);
+            HPBar.transform.SetParent(HudContainer.transform);
+            HPBar.transform.localPosition = Vector3.zero;
+            HPBar.transform.localScale = Vector3.one;
         }
 
         public virtual void UpdateHpBar()
@@ -187,7 +200,7 @@ namespace Nekoyume.Game.Character
                 InitializeHpBar();
             }
 
-            HPBar.UpdatePosition(gameObject, HUDOffset);
+            HudContainer.UpdatePosition(gameObject, HUDOffset);
             HPBar.Set(CurrentHP, CharacterModel.Stats.BuffStats.HP, HP);
             HPBar.SetBuffs(CharacterModel.Buffs);
             HPBar.SetLevel(Level);
@@ -424,6 +437,12 @@ namespace Nekoyume.Game.Character
 
         public void DisableHUD()
         {
+            if (HudContainer)
+            {
+                HudContainer.gameObject.SetActive(false);
+                HudContainer = null;
+            }
+
             if (HPBar)
             {
                 HPBar.gameObject.SetActive(false);

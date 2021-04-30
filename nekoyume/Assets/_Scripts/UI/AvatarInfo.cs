@@ -185,13 +185,11 @@ namespace Nekoyume.UI
         private void CreatePlayer(AvatarState avatarState)
         {
             _player = PlayerFactory.Create(avatarState).GetComponent<Player>();
+            var orderInLayer = MainCanvas.instance.GetLayer(WidgetType).root.sortingOrder + 1;
+            _player.SetSortingLayer(SortingLayer.NameToID("UI"), orderInLayer);
             _player.Set(avatarState);
             _player.transform.SetParent(avatarPosition);
             _player.transform.localPosition = Vector3.zero;
-
-            var orderInLayer = MainCanvas.instance.GetLayer(WidgetType).root.sortingOrder + 1;
-            _player.SetSortingLayer(SortingLayer.NameToID("UI"), orderInLayer);
-
         }
 
         private void UpdateUIPlayer()

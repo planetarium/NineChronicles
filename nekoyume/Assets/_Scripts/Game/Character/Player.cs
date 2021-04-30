@@ -18,6 +18,7 @@ namespace Nekoyume.Game.Character
     public class Player : CharacterBase
     {
         private readonly List<IDisposable> _disposablesForModel = new List<IDisposable>();
+        private GameObject _cachedCharacterTitle;
 
         public long EXP = 0;
         public long EXPMax { get; private set; }
@@ -71,6 +72,27 @@ namespace Nekoyume.Game.Character
 
                     Animator.Touch();
                 }).AddTo(gameObject);
+        }
+
+        protected override void Start()
+        {
+            base.Start();
+            UpdateTitle();
+        }
+
+        protected override void Update()
+        {
+            base.Update();
+            if (HudContainer)
+            {
+                HudContainer.UpdateAlpha(SpineController.SkeletonAnimation.skeleton.A);
+            }
+        }
+
+        protected override void OnDisable()
+        {
+            base.OnDisable();
+            Destroy(_cachedCharacterTitle);
         }
 
         private void OnDestroy()
@@ -147,13 +169,24 @@ namespace Nekoyume.Game.Character
             return SpineController.BoxCollider;
         }
 
-        protected override void InitializeHpBar()
+        private void UpdateTitle()
         {
-            base.InitializeHpBar();
+            Destroy(_cachedCharacterTitle);
 
-            var title = Costumes.FirstOrDefault(costume =>
-                costume.ItemSubType == ItemSubType.Title && costume.equipped);
-            HPBar.SetTitle(title);
+            if (sortingGroup != null &&
+                sortingGroup.sortingLayerID == SortingLayer.NameToID("UI"))
+            {
+                return;
+            }
+
+            var title = Costumes.FirstOrDefault(
+                costume => costume.ItemSubType == ItemSubType.Title && costume.equipped);
+            if (title != null && HudContainer != null)
+            {
+                var clone  = ResourcesHelper.GetCharacterTitle(title.Grade, title.GetLocalizedNonColoredName());
+                _cachedCharacterTitle = Instantiate(clone, HudContainer.transform);
+                _cachedCharacterTitle.transform.SetAsFirstSibling();
+            }
         }
 
         #region AttackPoint & HitPoint
@@ -213,7 +246,7 @@ namespace Nekoyume.Game.Character
                     UpdateTailById(costume.Id);
                     break;
                 case ItemSubType.Title:
-                    // TODO: 구현!
+                    UpdateTitle();
                     break;
             }
         }
@@ -251,7 +284,7 @@ namespace Nekoyume.Game.Character
                     UpdateTail();
                     break;
                 case ItemSubType.Title:
-                    // TODO: 구현!
+                    UpdateTitle();
                     break;
             }
         }

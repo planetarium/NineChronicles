@@ -1,7 +1,6 @@
 using System;
 using Nekoyume.Model;
 using Nekoyume.Model.State;
-using Nekoyume.TableData;
 using UnityEngine;
 
 namespace Nekoyume.Game.Factory

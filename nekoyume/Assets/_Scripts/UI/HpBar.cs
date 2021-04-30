@@ -1,10 +1,7 @@
-using System;
 using System.Collections.Generic;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
-using Nekoyume.Helper;
 using Nekoyume.Model.Buff;
-using Nekoyume.Model.Item;
 using Nekoyume.Model.Stat;
 using Nekoyume.UI.Module;
 using TMPro;
@@ -28,21 +25,7 @@ namespace Nekoyume.UI
         [SerializeField]
         private Transform titleSocket = default;
 
-        private GameObject _cachedCharacterTitle;
-
         public HpBarVFX HpVFX { get; private set; }
-
-        public void SetTitle(Costume title)
-        {
-            if (title is null)
-            {
-                return;
-            }
-
-            Destroy(_cachedCharacterTitle);
-            var clone  = ResourcesHelper.GetCharacterTitle(title.Grade, title.GetLocalizedNonColoredName());
-            _cachedCharacterTitle = Instantiate(clone, titleSocket);
-        }
 
         public void SetBuffs(IReadOnlyDictionary<int, Buff> buffs)
         {
