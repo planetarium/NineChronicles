@@ -49,7 +49,7 @@
 
         [Theory]
         [MemberData(nameof(GetShopItems))]
-        public void SerializeWithDotNetApi(params ShopItem[] shopItems)
+        public void Serialize_With_DotNet_Api(params ShopItem[] shopItems)
         {
             foreach (var shopItem in shopItems)
             {
@@ -80,7 +80,7 @@
         [Theory]
         [InlineData(0, false)]
         [InlineData(10, true)]
-        public void SerializeWithExpiredBlockIndex(long expiredBlockIndex, bool contain)
+        public void Serialize_With_ExpiredBlockIndex(long expiredBlockIndex, bool contain)
         {
             var equipmentRow = _tableSheets.EquipmentItemSheet.First;
             var equipment = new Equipment(equipmentRow, Guid.NewGuid(), 0);

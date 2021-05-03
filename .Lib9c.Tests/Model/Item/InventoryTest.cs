@@ -27,7 +27,7 @@
         }
 
         [Fact]
-        public void SerializeWithDotNetApi()
+        public void Serialize_With_DotNet_Api()
         {
             var inventory = new Inventory();
             var formatter = new BinaryFormatter();
@@ -39,7 +39,7 @@
         }
 
         [Fact]
-        public void SameMaterialsWhichNotSameIsTradableField_AreContainedSeparately()
+        public void SameMaterials_Which_NotSame_IsTradableField_Are_Contained_Separately()
         {
             var row = TableSheets.MaterialItemSheet.First;
             Assert.NotNull(row);
