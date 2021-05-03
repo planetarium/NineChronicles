@@ -52,6 +52,7 @@ Material:
     - _ColorMask: 15
     - _Diffuse: 0
     - _FaceDilate: 0.2
+    - _FaceShininess: 0
     - _FaceUVSpeedX: 0
     - _FaceUVSpeedY: 0
     - _GlowInner: 0.381
@@ -62,6 +63,7 @@ Material:
     - _LightAngle: 6.28
     - _MaskSoftnessX: 0
     - _MaskSoftnessY: 0
+    - _OutlineShininess: 0
     - _OutlineSoftness: 0
     - _OutlineUVSpeedX: 20
     - _OutlineUVSpeedY: 4
@@ -100,6 +102,7 @@ Material:
     - _OutlineColor: {r: 0, g: 0, b: 0, a: 1}
     - _ReflectFaceColor: {r: 0, g: 0, b: 0, a: 1}
     - _ReflectOutlineColor: {r: 0, g: 0, b: 0, a: 1}
+    - _SpecColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecularColor: {r: 0.7294118, g: 0.85882354, b: 0.49803922, a: 1}
     - _UnderlayColor: {r: 0.24705882, g: 0.06233051, b: 0.058823526, a: 1}
   m_BuildTextureStacks: []
