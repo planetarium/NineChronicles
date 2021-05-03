@@ -18,7 +18,7 @@ using Material = Nekoyume.Model.Item.Material;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("combination_consumable4")]
+    [ActionType("combination_consumable5")]
     public class CombinationConsumable : GameAction
     {
         [Serializable]
@@ -87,10 +87,6 @@ namespace Nekoyume.Action
             }
         }
 
-        public CombinationConsumable()
-        {
-        }
-
         protected override void LoadPlainValueInternal(IImmutableDictionary<string, IValue> plainValue)
         {
             recipeId = plainValue["recipeId"].ToInteger();
@@ -125,7 +121,7 @@ namespace Nekoyume.Action
             var sw = new Stopwatch();
             sw.Start();
             var started = DateTimeOffset.UtcNow;
-            Log.Verbose("{AddressesHex}Combination exec started.", addressesHex);
+            Log.Verbose("{AddressesHex}Combination exec started", addressesHex);
 
             if (!states.TryGetAvatarState(ctx.Signer, AvatarAddress, out AvatarState avatarState))
             {
@@ -171,10 +167,12 @@ namespace Nekoyume.Action
                 var count = materialInfo.Count;
                 if (avatarState.inventory.HasItem(materialId, count))
                 {
-#pragma warning disable 618
-                    avatarState.inventory.TryGetFungibleItem(materialId, out var inventoryItem);
-#pragma warning restore 618
-                    var material = (Material) inventoryItem.item;
+                    avatarState.inventory.TryGetItem(materialId, out var inventoryItem);
+                    if (!(inventoryItem.item is Material material))
+                    {
+                        throw new InvalidMaterialException($"Aborted because material id({materialId}) not valid");
+                    }
+
                     materials[material] = count;
                     avatarState.inventory.RemoveFungibleItem(material, count);
                 }

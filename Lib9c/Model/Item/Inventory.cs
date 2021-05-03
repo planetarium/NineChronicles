@@ -328,13 +328,6 @@ namespace Nekoyume.Model.Item
 
         #region Try Get
 
-        [Obsolete("Use TryGetFungibleItems(HashDigest<SHA256> fungibleId, out List<Item> outFungibleItems)")]
-        public bool TryGetFungibleItem(int rowId, out Item outFungibleItem)
-        {
-            outFungibleItem = _items.FirstOrDefault(i => i.item.Id == rowId);
-            return !(outFungibleItem is null);
-        }
-
         // FIXME: It must be deleted. As ItemId was added to the costume, it became INonFungibleItem.
         [Obsolete("Use public bool TryGetNonFungibleItem<T>(Guid itemId, out T outNonFungibleItem)")]
         public bool TryGetCostume(int rowId, out Costume outCostume)
@@ -355,22 +348,28 @@ namespace Nekoyume.Model.Item
             return false;
         }
 
-        public bool TryGetFungibleItems(HashDigest<SHA256> fungibleId, out List<Item> outFungibleItems)
+        public bool TryGetItem(int rowId, out Item outItem)
         {
-            outFungibleItems = new List<Item>();
+            outItem = _items.FirstOrDefault(e => e.item.Id == rowId);
+            return !(outItem is null);
+        }
+
+        public bool TryGetFungibleItems(HashDigest<SHA256> fungibleId, out List<Item> outItems)
+        {
+            outItems = new List<Item>();
             foreach (var item in _items)
             {
                 if (item.item is IFungibleItem fungibleItem &&
                     fungibleItem.FungibleId.Equals(fungibleId))
                 {
-                    outFungibleItems.Add(item);
+                    outItems.Add(item);
                 }
             }
 
-            return outFungibleItems.Count > 0;
+            return outItems.Count > 0;
         }
 
-        public bool TryGetNonFungibleItem(Guid itemId, out Item outInventoryItem)
+        public bool TryGetNonFungibleItem(Guid itemId, out Item outItem)
         {
             foreach (var item in _items)
             {
@@ -380,11 +379,11 @@ namespace Nekoyume.Model.Item
                     continue;
                 }
 
-                outInventoryItem = item;
+                outItem = item;
                 return true;
             }
 
-            outInventoryItem = null;
+            outItem = null;
             return false;
         }
 
@@ -411,9 +410,9 @@ namespace Nekoyume.Model.Item
             return false;
         }
 
-        public bool TryGetTradableItems(Guid tradeId, out List<Item> inventoryItems)
+        public bool TryGetTradableItems(Guid tradeId, out List<Item> outItems)
         {
-            inventoryItems = new List<Item>();
+            outItems = new List<Item>();
             foreach (var item in _items)
             {
                 if (!(item.item is ITradableItem tradableItem) ||
@@ -422,33 +421,15 @@ namespace Nekoyume.Model.Item
                     continue;
                 }
 
-                inventoryItems.Add(item);
+                outItems.Add(item);
             }
 
-            return inventoryItems.Any();
-        }
-
-        public bool TryGetTradableItems<T>(Guid tradeId, out List<T> tradableItems)
-            where T: ITradableItem
-        {
-            tradableItems = new List<T>();
-            foreach (var item in _items)
-            {
-                if (!(item.item is T t) ||
-                    !t.TradableId.Equals(tradeId))
-                {
-                    continue;
-                }
-
-                tradableItems.Add(t);
-            }
-
-            return tradableItems.Any();
+            return outItems.Any();
         }
 
         public bool TryGetTradableItemWithoutNonTradableFungibleItem(
             Guid tradeId,
-            out Item inventoryItem)
+            out Item outItem)
         {
             foreach (var item in _items)
             {
@@ -464,11 +445,32 @@ namespace Nekoyume.Model.Item
                     continue;
                 }
 
-                inventoryItem = item;
+                outItem = item;
                 return true;
             }
 
-            inventoryItem = null;
+            outItem = null;
+            return false;
+        }
+
+        public bool TryGetNonTradableFungibleItem(
+            HashDigest<SHA256> fungibleId,
+            out Item outItem)
+        {
+            foreach (var item in _items)
+            {
+                if (!(item.item is IFungibleItem fungibleItem) ||
+                    fungibleItem.IsTradable ||
+                    !fungibleItem.FungibleId.Equals(fungibleId))
+                {
+                    continue;
+                }
+
+                outItem = item;
+                return true;
+            }
+
+            outItem = null;
             return false;
         }
 
