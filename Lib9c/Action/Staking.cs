@@ -34,7 +34,7 @@ namespace Nekoyume.Action
             AgentState agentState = states.GetAgentState(context.Signer);
             if (agentState is null)
             {
-                throw new FailedLoadStateException("Aborted as the agent state is failed to load.");
+                throw new FailedLoadStateException("Aborted as the agent state failed to load.");
             }
 
             if (agentState.StakingRound != stakingRound)
@@ -62,7 +62,7 @@ namespace Nekoyume.Action
                 if (stakingState.ExpiredBlockIndex < context.BlockIndex)
                 {
                     throw new StakingExpiredException(
-                        $"{stakingAddress} is already expired on {stakingState.ExpiredBlockIndex}");
+                        $"{stakingAddress} has already expired on {stakingState.ExpiredBlockIndex}");
                 }
 
                 if (stakingState.Level >= level)

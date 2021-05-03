@@ -4,7 +4,7 @@ using System.Runtime.Serialization;
 namespace Nekoyume.Action
 {
     [Serializable]
-    public class StakingExpiredException : Exception
+    public class StakingExpiredException : InvalidOperationException
     {
         public StakingExpiredException(string msg) : base(msg)
         {

@@ -4,7 +4,7 @@ using System.Runtime.Serialization;
 namespace Nekoyume.Action
 {
     [Serializable]
-    public class InvalidStakingRoundException : Exception
+    public class InvalidStakingRoundException : InvalidOperationException
     {
         public InvalidStakingRoundException(string msg) : base(msg)
         {

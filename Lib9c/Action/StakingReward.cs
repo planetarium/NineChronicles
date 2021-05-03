@@ -34,18 +34,18 @@ namespace Nekoyume.Action
 
             if (!states.TryGetAgentAvatarStates(context.Signer, avatarAddress, out AgentState agentState, out AvatarState avatarState))
             {
-                throw new FailedLoadStateException($"Aborted as the avatar state of the signer is failed to load.");
+                throw new FailedLoadStateException($"Aborted as the avatar state of the signer failed to load.");
             }
 
             if (!states.TryGetState(stakingAddress, out Dictionary stateDict))
             {
-                throw new FailedLoadStateException($"Aborted as the staking state is failed to load.");
+                throw new FailedLoadStateException($"Aborted as the staking state failed to load.");
             }
 
             StakingState stakingState = new StakingState(stateDict);
             if (stakingState.End)
             {
-                throw new StakingExpiredException($"{stakingAddress} is already expired on {stakingState.ExpiredBlockIndex}");
+                throw new StakingExpiredException($"{stakingAddress} has already expired on {stakingState.ExpiredBlockIndex}");
             }
 
             if (!stakingState.CanReceive(context.BlockIndex))

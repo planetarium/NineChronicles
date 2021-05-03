@@ -31,12 +31,12 @@ namespace Nekoyume.Action
             AgentState agentState = states.GetAgentState(context.Signer);
             if (agentState is null)
             {
-                throw new FailedLoadStateException("Aborted as the agent state is failed to load.");
+                throw new FailedLoadStateException("Aborted as the agent state failed to load.");
             }
 
             if (!states.TryGetState(stakingAddress, out Dictionary stateDict))
             {
-                throw new FailedLoadStateException($"Aborted as the staking state is failed to load.");
+                throw new FailedLoadStateException($"Aborted as the staking state failed to load.");
             }
 
             StakingState stakingState = new StakingState(stateDict);
@@ -51,7 +51,7 @@ namespace Nekoyume.Action
 
             if (stakingState.End)
             {
-                throw new StakingExpiredException($"{stakingAddress} is already expired on {stakingState.ExpiredBlockIndex}");
+                throw new StakingExpiredException($"{stakingAddress} has already expired on {stakingState.ExpiredBlockIndex}");
             }
 
             long rewardLevel = stakingState.GetRewardLevel(context.BlockIndex);
