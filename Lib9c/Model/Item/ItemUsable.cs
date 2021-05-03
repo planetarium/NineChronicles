@@ -20,7 +20,22 @@ namespace Nekoyume.Model.Item
         public StatsMap StatsMap { get; }
         public List<Skill.Skill> Skills { get; }
         public List<BuffSkill> BuffSkills { get; }
-        public long RequiredBlockIndex { get; private set; }
+
+        public long RequiredBlockIndex
+        {
+            get => _requiredBlockIndex;
+            set
+            {
+                if (value < 0)
+                {
+                    throw new ArgumentOutOfRangeException(
+                        $"{nameof(RequiredBlockIndex)} must be greater than 0, but {value}");
+                }
+                _requiredBlockIndex = value;
+            }
+        }
+
+        private long _requiredBlockIndex;
 
         protected ItemUsable(ItemSheet.Row data, Guid id, long requiredBlockIndex) : base(data)
         {

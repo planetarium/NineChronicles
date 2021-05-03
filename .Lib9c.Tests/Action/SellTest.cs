@@ -131,7 +131,7 @@ namespace Lib9c.Tests.Action
                 ShopItem shopItem;
                 if (tradableItem is INonFungibleItem nonFungibleItem)
                 {
-                    nonFungibleItem.Update(blockIndex);
+                    nonFungibleItem.RequiredBlockIndex = blockIndex;
                     Assert.Equal(blockIndex, nonFungibleItem.RequiredBlockIndex);
 
                     shopItem = new ShopItem(

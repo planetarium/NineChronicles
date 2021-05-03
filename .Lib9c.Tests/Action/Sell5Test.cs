@@ -110,7 +110,7 @@
             var currencyState = previousStates.GetGoldCurrency();
             var price = new FungibleAssetValue(currencyState, ProductPrice, 0);
             INonFungibleItem nonFungibleItem = (INonFungibleItem)inventoryItem.First().item;
-            nonFungibleItem.Update(blockIndex);
+            nonFungibleItem.RequiredBlockIndex = blockIndex;
             Assert.Equal(blockIndex, nonFungibleItem.RequiredBlockIndex);
             ItemSubType itemSubType = ItemSubType.Food;
             Guid productId = new Guid("6f460c1a-755d-48e4-ad67-65d5f519dbc8");

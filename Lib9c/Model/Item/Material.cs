@@ -17,7 +17,23 @@ namespace Nekoyume.Model.Item
 
         public Guid TradableId { get; }
 
+        public long RequiredBlockIndex
+        {
+            get => _requiredBlockIndex;
+            set
+            {
+                if (value < 0)
+                {
+                    throw new ArgumentOutOfRangeException(
+                        $"{nameof(RequiredBlockIndex)} must be greater than 0, but {value}");
+                }
+                _requiredBlockIndex = value;
+            }
+        }
+
         public bool IsTradable { get; }
+
+        private long _requiredBlockIndex;
 
         public static Guid DeriveTradableId(HashDigest<SHA256> hashDigest) =>
             new Guid(HashDigest<MD5>.DeriveFrom(hashDigest.ToByteArray()).ToByteArray());
@@ -37,7 +53,13 @@ namespace Nekoyume.Model.Item
                 TradableId = DeriveTradableId(ItemId);
             }
 
-            IsTradable = serialized.ContainsKey("is_tradable") ? serialized["is_tradable"].ToBoolean() : default;
+            RequiredBlockIndex = serialized.ContainsKey("required_block_index")
+                ? serialized["required_block_index"].ToLong()
+                : default;
+
+            IsTradable = serialized.ContainsKey("is_tradable")
+                ? serialized["is_tradable"].ToBoolean()
+                : default;
         }
 
         protected Material(SerializationInfo info, StreamingContext _)
@@ -74,7 +96,8 @@ namespace Nekoyume.Model.Item
         public override IValue Serialize()
         {
             var result = ((Dictionary) base.Serialize())
-                .SetItem("item_id", ItemId.Serialize());
+                .SetItem("item_id", ItemId.Serialize())
+                .SetItem("required_block_index", RequiredBlockIndex.Serialize());
 
             if (IsTradable)
             {
@@ -89,6 +112,7 @@ namespace Nekoyume.Model.Item
             return base.ToString() +
                    $", {nameof(ItemId)}: {ItemId}" +
                    $", {nameof(TradableId)}: {TradableId}" +
+                   $", {nameof(RequiredBlockIndex)}: {RequiredBlockIndex}" +
                    $", {nameof(IsTradable)}: {IsTradable}";
         }
     }

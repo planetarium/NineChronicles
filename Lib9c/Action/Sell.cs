@@ -169,7 +169,7 @@ namespace Nekoyume.Action
                     equippableItem.Unequip();
                 }
 
-                nonFungibleItem.Update(expiredBlockIndex);
+                nonFungibleItem.RequiredBlockIndex = expiredBlockIndex;
                 shopItem = new ShopItem(
                     context.Signer,
                     sellerAvatarAddress,

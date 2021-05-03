@@ -117,7 +117,7 @@ namespace Nekoyume.Action
             {
                 equipment.Unequip();
             }
-            nonFungibleItem.Update(expiredBlockIndex);
+            nonFungibleItem.RequiredBlockIndex = expiredBlockIndex;
 
             ShopItem shopItem = new ShopItem(ctx.Signer, sellerAvatarAddress, productId, price, expiredBlockIndex, nonFungibleItem);
             Address shardedShopAddress = ShardedShopState.DeriveAddress(itemSubType, productId);

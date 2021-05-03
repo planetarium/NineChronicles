@@ -23,7 +23,7 @@ namespace Nekoyume.Model.Item
         public long RequiredBlockIndex
         {
             get => _requiredBlockIndex;
-            private set
+            set
             {
                 if (value < 0)
                 {

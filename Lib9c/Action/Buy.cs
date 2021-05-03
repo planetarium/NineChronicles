@@ -365,7 +365,7 @@ namespace Nekoyume.Action
                     continue;
                 }
 
-                nonFungibleItem.Update(context.BlockIndex);
+                nonFungibleItem.RequiredBlockIndex = context.BlockIndex;
 
                 // Send result mail for buyer, seller.
                 purchaseResult.shopItem = shopItem;
