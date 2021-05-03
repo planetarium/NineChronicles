@@ -13,6 +13,14 @@ MonoBehaviour:
   m_Name: UI_ItemViewData
   m_EditorClassIdentifier: 
   datas:
+  - grade: 0
+    gradeBackground: {fileID: 21300000, guid: aa1fa6458568e40e7983241ea9d23893, type: 3}
+    gradeHsvRange: 0.5
+    gradeHsvHue: 0
+    gradeHsvSaturation: 0
+    gradeHsvValue: 0
+    enhancementMaterial: {fileID: 2100000, guid: d0ba5015ebc174e1980d7df502f1ebb6,
+      type: 2}
   - grade: 1
     gradeBackground: {fileID: 21300000, guid: aa1fa6458568e40e7983241ea9d23893, type: 3}
     gradeHsvRange: 0.5
