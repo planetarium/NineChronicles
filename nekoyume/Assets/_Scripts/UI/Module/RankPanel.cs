@@ -38,6 +38,8 @@ namespace Nekoyume.UI.Module
 
         private List<RankCell> _cellViewCache = new List<RankCell>();
 
+        private RankCell _myInfoCellCache = null;
+
         private readonly Dictionary<RankCategory, (string, string)> _rankColumnMap = new Dictionary<RankCategory, (string, string)>
         {
             { RankCategory.Ability, ("UI_CP", "UI_LEVEL") },
@@ -120,7 +122,7 @@ namespace Nekoyume.UI.Module
 
             gameObject = Instantiate(myInfoPrefab, cellViewParent);
             rankCell = gameObject.GetComponent<RankCell>();
-            _cellViewCache.Add(rankCell);
+            _myInfoCellCache = rankCell;
             gameObject.SetActive(false);
         }
 
@@ -176,6 +178,7 @@ namespace Nekoyume.UI.Module
                 await loadingTask;
             }
 
+            _myInfoCellCache.gameObject.SetActive(false);
             switch (category)
             {
                 case RankCategory.Ability:
@@ -187,16 +190,24 @@ namespace Nekoyume.UI.Module
 
                     for (int i = 0; i < RankingBoardDisplayCount; ++i)
                     {
+                        var info = abilityRankingInfos[i];
                         if (i >= abilityRankingInfos.Count())
                         {
                             _cellViewCache[i].gameObject.SetActive(false);
                             break;
                         }
 
-                        var rank = i + 1;
-                        abilityRankingInfos[i].Rank = rank;
-                        _cellViewCache[i].SetDataAsAbility(abilityRankingInfos[i]);
-                        _cellViewCache[i].gameObject.SetActive(true);
+                        if (info.AvatarState.address != states.CurrentAvatarState.address)
+                        {
+                            _cellViewCache[i].SetDataAsAbility(info);
+                            _cellViewCache[i].gameObject.SetActive(true);
+                        }
+                        else
+                        {
+                            _myInfoCellCache.SetDataAsAbility(info);
+                            _myInfoCellCache.transform.SetSiblingIndex(info.Rank - 1);
+                            _myInfoCellCache.gameObject.SetActive(true);
+                        }
                     }
                     break;
                 case RankCategory.Stage:
@@ -221,8 +232,6 @@ namespace Nekoyume.UI.Module
                             break;
                         }
 
-                        var rank = i + 1;
-                        stageRankingInfos[i].Rank = rank;
                         _cellViewCache[i].SetDataAsStage(stageRankingInfos[i]);
                         _cellViewCache[i].gameObject.SetActive(true);
                     }
@@ -249,8 +258,6 @@ namespace Nekoyume.UI.Module
                             break;
                         }
 
-                        var rank = i + 1;
-                        mimisbrunnrRankingInfos[i].Rank = rank;
                         _cellViewCache[i].SetDataAsStage(mimisbrunnrRankingInfos[i]);
                         _cellViewCache[i].gameObject.SetActive(true);
                     }

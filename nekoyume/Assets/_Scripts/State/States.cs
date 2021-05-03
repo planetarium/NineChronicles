@@ -6,6 +6,7 @@ using System.Linq;
 using Bencodex.Types;
 using Libplanet;
 using Nekoyume.Action;
+using Nekoyume.Battle;
 using Nekoyume.BlockChain;
 using Nekoyume.Model.State;
 using Nekoyume.State.Subjects;
@@ -322,59 +323,60 @@ namespace Nekoyume.State
 
         private void LoadAbilityRankingInfos()
         {
-            var abilityRankingInfos = rankingInfoSet
+            var characterSheet = Game.Game.instance.TableSheets.CharacterSheet;
+            var costumeStatSheet = Game.Game.instance.TableSheets.CostumeStatSheet;
+
+            var rankOffset = 1;
+            AbilityRankingInfos = rankingInfoSet
+                .OrderByDescending(i => i.Level)
+                .Take(100)
                 .Select(rankingInfo =>
                 {
-                    var avatarAddress = rankingInfo.AvatarAddress;
-                    var arenaInfo = WeeklyArenaState.GetArenaInfo(avatarAddress);
+                    var iValue = Game.Game.instance.Agent.GetState(rankingInfo.AvatarAddress);
+                    var avatarState = new AvatarState((Bencodex.Types.Dictionary)iValue);
+                    var cp = CPHelper.GetCPV2(avatarState, characterSheet, costumeStatSheet);
 
-                    return arenaInfo;
+                    return new AbilityRankingModel()
+                    {
+                        AvatarState = avatarState,
+                        Cp = cp,
+                    };
                 })
                 .ToList()
-                .Where(x => x != null)
-                .OrderByDescending(i => i is null ? 0 : i.CombatPoint)
-                .ThenByDescending(i => i.Level)
+                .OrderByDescending(i => i.Cp)
+                .ThenByDescending(i => i.AvatarState.level)
                 .ToList();
+            AbilityRankingInfos.ForEach(i => i.Rank = rankOffset++);
 
             foreach (var pair in _avatarStates)
             {
                 var avatarState = pair.Value;
                 var avatarAddress = avatarState.address;
-                var index = abilityRankingInfos.FindIndex(i => i.AvatarAddress.Equals(avatarAddress));
+                var index = AbilityRankingInfos.FindIndex(i => i.AvatarState.address.Equals(avatarAddress));
                 if (index >= 0)
                 {
-                    var info = abilityRankingInfos[index];
+                    var info = AbilityRankingInfos[index];
 
-                    AgentAbilityRankingInfos[pair.Key] = 
+                    AgentAbilityRankingInfos[pair.Key] =
                         new AbilityRankingModel()
                         {
                             Rank = index + 1,
-                            Name = avatarState.name,
                             AvatarState = avatarState,
-                            AvatarAddress = avatarAddress,
-                            Cp = info is null ? 0 : info.CombatPoint,
-                            Level = info.Level
+                            Cp = info.Cp,
+                        };
+                }
+                else
+                {
+                    var cp = CPHelper.GetCPV2(avatarState, characterSheet, costumeStatSheet);
+
+                    AgentAbilityRankingInfos[pair.Key] =
+                        new AbilityRankingModel()
+                        {
+                            AvatarState = avatarState,
+                            Cp = cp,
                         };
                 }
             }
-
-            AbilityRankingInfos = abilityRankingInfos
-                .Take(RankPanel.RankingBoardDisplayCount)
-                .Select(arenaInfo =>
-                {
-                    var avatarAddress = arenaInfo.AvatarAddress;
-                    var iValue = Game.Game.instance.Agent.GetState(avatarAddress);
-                    var avatarState = new AvatarState((Bencodex.Types.Dictionary) iValue);
-
-                    return new AbilityRankingModel()
-                    {
-                        Name = avatarState.name,
-                        AvatarState = avatarState,
-                        AvatarAddress = avatarAddress,
-                        Cp = arenaInfo.CombatPoint,
-                        Level = arenaInfo.Level,
-                    };
-                }).ToList();
         }
 
         private void LoadStageRankingInfo()
@@ -404,9 +406,7 @@ namespace Nekoyume.State
                         new StageRankingModel()
                         {
                             Rank = index + 1,
-                            Name = avatarState.name,
                             AvatarState = avatarState,
-                            AvatarAddress = avatarState.address,
                             Stage = stageProgress,
                         };
                 }
@@ -420,9 +420,7 @@ namespace Nekoyume.State
 
                     return new StageRankingModel()
                     {
-                        Name = avatarState.name,
                         AvatarState = avatarState,
-                        AvatarAddress = avatarState.address,
                         Stage = stageProgress,
                     };
                 }).ToList();
@@ -455,9 +453,7 @@ namespace Nekoyume.State
                         new StageRankingModel()
                         {
                             Rank = index + 1,
-                            Name = avatarState.name,
                             AvatarState = avatarState,
-                            AvatarAddress = avatarState.address,
                             Stage = stageProgress > 0 ?
                                 stageProgress - GameConfig.MimisbrunnrStartStageId + 1 : 0,
                         };
@@ -472,9 +468,7 @@ namespace Nekoyume.State
 
                     return new StageRankingModel()
                     {
-                        Name = avatarState.name,
                         AvatarState = avatarState,
-                        AvatarAddress = avatarState.address,
                         Stage = stageProgress > 0 ?
                             stageProgress - GameConfig.MimisbrunnrStartStageId + 1 : 0,
                     };
