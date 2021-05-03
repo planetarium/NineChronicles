@@ -74,12 +74,6 @@ namespace Nekoyume.Game.Character
                 }).AddTo(gameObject);
         }
 
-        protected override void Start()
-        {
-            base.Start();
-            UpdateTitle();
-        }
-
         protected override void Update()
         {
             base.Update();
@@ -169,8 +163,19 @@ namespace Nekoyume.Game.Character
             return SpineController.BoxCollider;
         }
 
-        private void UpdateTitle()
+        private void UpdateTitle(Costume costume = null)
         {
+            if (costume == null)
+            {
+                Destroy(_cachedCharacterTitle);
+                return;
+            }
+
+            if (_cachedCharacterTitle && costume.GetLocalizedNonColoredName().Contains(_cachedCharacterTitle.name))
+            {
+                return;
+            }
+
             Destroy(_cachedCharacterTitle);
 
             if (sortingGroup != null &&
@@ -179,12 +184,12 @@ namespace Nekoyume.Game.Character
                 return;
             }
 
-            var title = Costumes.FirstOrDefault(
-                costume => costume.ItemSubType == ItemSubType.Title && costume.equipped);
-            if (title != null && HudContainer != null)
+            if (HudContainer != null)
             {
-                var clone  = ResourcesHelper.GetCharacterTitle(title.Grade, title.GetLocalizedNonColoredName());
+                HudContainer.gameObject.SetActive(true);
+                var clone  = ResourcesHelper.GetCharacterTitle(costume.Grade, costume.GetLocalizedNonColoredName());
                 _cachedCharacterTitle = Instantiate(clone, HudContainer.transform);
+                _cachedCharacterTitle.name = costume.Id.ToString();
                 _cachedCharacterTitle.transform.SetAsFirstSibling();
             }
         }
@@ -246,7 +251,7 @@ namespace Nekoyume.Game.Character
                     UpdateTailById(costume.Id);
                     break;
                 case ItemSubType.Title:
-                    UpdateTitle();
+                    UpdateTitle(costume);
                     break;
             }
         }

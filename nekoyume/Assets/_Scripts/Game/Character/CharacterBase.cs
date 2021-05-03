@@ -158,14 +158,17 @@ namespace Nekoyume.Game.Character
             OnDeadEnd();
         }
 
-        protected virtual void Update()
+        private void FixedUpdate()
         {
-            _root?.Tick();
-
             if(HudContainer)
             {
                 HudContainer.UpdatePosition(gameObject, HUDOffset);
             }
+        }
+
+        protected virtual void Update()
+        {
+            _root?.Tick();
 
             if (SpeechBubble)
             {
@@ -437,12 +440,6 @@ namespace Nekoyume.Game.Character
 
         public void DisableHUD()
         {
-            if (HudContainer)
-            {
-                HudContainer.gameObject.SetActive(false);
-                HudContainer = null;
-            }
-
             if (HPBar)
             {
                 HPBar.gameObject.SetActive(false);
