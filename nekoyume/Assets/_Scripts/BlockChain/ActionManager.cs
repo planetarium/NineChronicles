@@ -102,8 +102,6 @@ namespace Nekoyume.BlockChain
                 throw new NullReferenceException(nameof(weeklyArenaAddress));
             }
 
-            Mixpanel.Track("Unity/Create Mimisbrunnr");
-
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             costumes = costumes ?? new List<Costume>();
             equipments = equipments ?? new List<Equipment>();
@@ -155,8 +153,6 @@ namespace Nekoyume.BlockChain
             {
                 throw new NullReferenceException(nameof(weeklyArenaAddress));
             }
-
-            Mixpanel.Track("Unity/Create HackAndSlash");
 
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             costumes = costumes ?? new List<Costume>();

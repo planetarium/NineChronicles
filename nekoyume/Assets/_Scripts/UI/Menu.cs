@@ -145,11 +145,6 @@ namespace Nekoyume.UI
 
         public void GoToStage(BattleLog battleLog)
         {
-            var props = new Value
-            {
-                ["StageId"] = battleLog.stageId,
-            };
-            Mixpanel.Track("Unity/Stage Start", props);
             Game.Event.OnStageStart.Invoke(battleLog);
             Find<LoadingScreen>().Close();
             Close(true);
@@ -243,7 +238,6 @@ namespace Nekoyume.UI
                 PlayerPrefs.SetInt(key, 1);
             }
 
-            Mixpanel.Track("Unity/Enter Dungeon");
             _coLazyClose = StartCoroutine(CoLazyClose());
             var avatarState = States.Instance.CurrentAvatarState;
             Find<WorldMap>().Show(avatarState.worldInformation);
@@ -375,7 +369,6 @@ namespace Nekoyume.UI
                 PlayerPrefs.SetInt(key, 1);
             }
 
-            Mixpanel.Track("Unity/Enter Mimisbrunnr");
             _coLazyClose = StartCoroutine(CoLazyClose());
             AudioController.PlayClick();
 

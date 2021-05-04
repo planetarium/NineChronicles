@@ -511,12 +511,6 @@ namespace Nekoyume.UI
             player.DisableHUD();
             ActionRenderHandler.Instance.Pending = true;
 
-            var props = new Value
-            {
-                ["StageId"] = SharedModel.StageID + 1,
-            };
-            Mixpanel.Track("Unity/Stage Exit Next Stage", props);
-
             yield return Game.Game.instance.ActionManager
                 .HackAndSlash(
                     player.Costumes,

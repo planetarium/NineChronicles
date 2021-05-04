@@ -681,16 +681,10 @@ namespace Nekoyume.UI
                             States.Instance.CurrentAvatarState.address, _requiredCost);
                     }, e => ActionRenderHandler.BackToMain(false, e))
                 .AddTo(this);
-            Mixpanel.Track("Unity/Waiting Block");
         }
 
         public void GoToStage(BattleLog battleLog)
         {
-            var props = new Value
-            {
-                ["StageId"] = battleLog.stageId,
-            };
-            Mixpanel.Track("Unity/Stage Start", props);
             Game.Event.OnStageStart.Invoke(battleLog);
             Find<LoadingScreen>().Close();
             Close(true);
