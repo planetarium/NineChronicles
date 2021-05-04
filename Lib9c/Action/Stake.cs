@@ -12,8 +12,8 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("staking")]
-    public class Staking : GameAction
+    [ActionType("stake")]
+    public class Stake : GameAction
     {
         public int level;
         public int stakingRound;

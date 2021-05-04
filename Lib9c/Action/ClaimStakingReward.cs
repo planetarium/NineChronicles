@@ -14,8 +14,8 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("staking_reward")]
-    public class StakingReward : GameAction
+    [ActionType("claim_staking_reward")]
+    public class ClaimStakingReward : GameAction
     {
         public Address avatarAddress;
         public int stakingRound;

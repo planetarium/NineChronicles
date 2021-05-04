@@ -14,14 +14,14 @@ namespace Lib9c.Tests.Action
     using Nekoyume.TableData;
     using Xunit;
 
-    public class StakingRewardTest
+    public class ClaimStakingRewardTest
     {
         private readonly Address _signer;
         private readonly Address _avatarAddress;
         private readonly TableSheets _tableSheets;
         private IAccountStateDelta _state;
 
-        public StakingRewardTest()
+        public ClaimStakingRewardTest()
         {
             _signer = default;
             _avatarAddress = _signer.Derive("avatar");
@@ -133,7 +133,7 @@ namespace Lib9c.Tests.Action
             Assert.Equal(prevRewardLevel, stakingState.RewardLevel);
             Assert.Equal(0, _state.GetAgentState(_signer).StakingRound);
 
-            StakingReward action = new StakingReward
+            ClaimStakingReward action = new ClaimStakingReward
             {
                 avatarAddress = _avatarAddress,
                 stakingRound = 0,
@@ -183,7 +183,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Execute_Throw_FailedLoadStateException_AgentState()
         {
-            StakingReward action = new StakingReward
+            ClaimStakingReward action = new ClaimStakingReward
             {
                 avatarAddress = _avatarAddress,
                 stakingRound = 0,
@@ -201,7 +201,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Execute_Throw_FailedLoadStateException_StakingState()
         {
-            StakingReward action = new StakingReward
+            ClaimStakingReward action = new ClaimStakingReward
             {
                 avatarAddress = _avatarAddress,
                 stakingRound = 1,
@@ -226,7 +226,7 @@ namespace Lib9c.Tests.Action
             stakingState.UpdateRewardMap(4, result, 0);
             _state = _state.SetState(stakingAddress, stakingState.Serialize());
 
-            StakingReward action = new StakingReward
+            ClaimStakingReward action = new ClaimStakingReward
             {
                 avatarAddress = _avatarAddress,
                 stakingRound = 0,
@@ -254,7 +254,7 @@ namespace Lib9c.Tests.Action
 
             _state = _state.SetState(stakingAddress, stakingState.Serialize());
 
-            StakingReward action = new StakingReward
+            ClaimStakingReward action = new ClaimStakingReward
             {
                 avatarAddress = _avatarAddress,
                 stakingRound = 0,
@@ -277,7 +277,7 @@ namespace Lib9c.Tests.Action
 
             _state = _state.SetState(stakingAddress, stakingState.Serialize());
 
-            StakingReward action = new StakingReward
+            ClaimStakingReward action = new ClaimStakingReward
             {
                 avatarAddress = _avatarAddress,
                 stakingRound = 0,

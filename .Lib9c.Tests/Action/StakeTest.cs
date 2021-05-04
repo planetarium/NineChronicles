@@ -12,13 +12,13 @@ namespace Lib9c.Tests.Action
     using Nekoyume.TableData;
     using Xunit;
 
-    public class StakingTest
+    public class StakeTest
     {
         private readonly TableSheets _tableSheets;
         private readonly Address _signer;
         private IAccountStateDelta _initialState;
 
-        public StakingTest()
+        public StakeTest()
         {
             Dictionary<string, string> sheets = TableSheetsImporter.ImportSheets();
             _tableSheets = new TableSheets(sheets);
@@ -70,7 +70,7 @@ namespace Lib9c.Tests.Action
                 }
             }
 
-            Staking action = new Staking
+            Stake action = new Stake
             {
                 level = level,
                 stakingRound = stakingRound,
@@ -99,7 +99,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Execute_Throw_FailedLoadStateException()
         {
-            Staking action = new Staking
+            Stake action = new Stake
             {
                 level = 1,
                 stakingRound = 1,
@@ -126,7 +126,7 @@ namespace Lib9c.Tests.Action
 
             _initialState = _initialState.SetState(_signer, prevAgentState.Serialize());
 
-            Staking action = new Staking
+            Stake action = new Stake
             {
                 level = 1,
                 stakingRound = stakingRound,
@@ -147,7 +147,7 @@ namespace Lib9c.Tests.Action
 
             Assert.False(_tableSheets.StakingSheet.Keys.Contains(level));
 
-            Staking action = new Staking
+            Stake action = new Stake
             {
                 level = level,
                 stakingRound = 0,
@@ -164,7 +164,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Execute_Throw_InsufficientBalanceException()
         {
-            Staking action = new Staking
+            Stake action = new Stake
             {
                 level = 1,
             };
@@ -186,7 +186,7 @@ namespace Lib9c.Tests.Action
 
             _initialState = _initialState.SetState(stakingAddress, prevStakingState.Serialize());
 
-            Staking action = new Staking
+            Stake action = new Stake
             {
                 level = 2,
                 stakingRound = 0,
@@ -209,7 +209,7 @@ namespace Lib9c.Tests.Action
             StakingState prevStakingState = new StakingState(stakingAddress, prevLevel, 0, _tableSheets.StakingRewardSheet);
             _initialState = _initialState.SetState(stakingAddress, prevStakingState.Serialize());
 
-            Staking action = new Staking
+            Stake action = new Stake
             {
                 level = level,
                 stakingRound = 0,
@@ -227,7 +227,7 @@ namespace Lib9c.Tests.Action
         public void Rehearsal()
         {
             Address stakingAddress = StakingState.DeriveAddress(_signer, 1);
-            Staking action = new Staking
+            Stake action = new Stake
             {
                 level = 1,
                 stakingRound = 1,
