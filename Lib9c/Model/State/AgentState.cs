@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Bencodex.Types;
 using Libplanet;
+using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Model.State
 {
@@ -14,6 +15,7 @@ namespace Nekoyume.Model.State
     {
         public readonly Dictionary<int, Address> avatarAddresses;
         public HashSet<int> unlockedOptions;
+        public int StakingRound { get; private set; }
 
         public AgentState(Address address) : base(address)
         {
@@ -35,6 +37,9 @@ namespace Nekoyume.Model.State
             unlockedOptions = serialized.ContainsKey((IKey)(Text) "unlockedOptions")
                 ? serialized["unlockedOptions"].ToHashSet(StateExtensions.ToInteger)
                 : new HashSet<int>();
+            StakingRound = serialized.ContainsKey((IKey) (Text) StakingRoundKey)
+                ? serialized[StakingRoundKey].ToInteger()
+                : 0;
         }
 
         public object Clone()
@@ -42,11 +47,17 @@ namespace Nekoyume.Model.State
             return MemberwiseClone();
         }
 
-        public override IValue Serialize() =>
-#pragma warning disable LAA1002
-            new Dictionary(new Dictionary<IKey, IValue>
+        public void IncreaseStakingRound()
+        {
+            StakingRound++;
+        }
+
+        public override IValue Serialize()
+        {
+            var innerDict = new Dictionary<IKey, IValue>
             {
-                [(Text)"avatarAddresses"] = new Dictionary(
+#pragma warning disable LAA1002
+                [(Text) "avatarAddresses"] = new Dictionary(
                     avatarAddresses.Select(kv =>
                         new KeyValuePair<IKey, IValue>(
                             new Binary(BitConverter.GetBytes(kv.Key)),
@@ -54,9 +65,14 @@ namespace Nekoyume.Model.State
                         )
                     )
                 ),
-                [(Text)"unlockedOptions"] = unlockedOptions.Select(i => i.Serialize()).Serialize(),
-            }.Union((Dictionary)base.Serialize()));
+                [(Text) "unlockedOptions"] = unlockedOptions.Select(i => i.Serialize()).Serialize(),
+            };
+            if (StakingRound > 0)
+            {
+                innerDict.Add((Text) StakingRoundKey, StakingRound.Serialize());
+            }
+            return new Dictionary(innerDict.Union((Dictionary) base.Serialize()));
 #pragma warning restore LAA1002
-
+        }
     }
 }

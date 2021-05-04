@@ -183,6 +183,27 @@ namespace Lib9c.Tests.Action
             AssertException<ShopItemExpiredException>(exc);
         }
 
+        [Fact]
+        public void InvalidStakingRoundException_Serializable()
+        {
+            var exc = new InvalidStakingRoundException("for testing.");
+            AssertException<InvalidStakingRoundException>(exc);
+        }
+
+        [Fact]
+        public void StakingExpiredException_Serializable()
+        {
+            var exc = new StakingExpiredException("for testing.");
+            AssertException<StakingExpiredException>(exc);
+        }
+
+        [Fact]
+        public void InvalidLevelException_Serializable()
+        {
+            var exc = new InvalidLevelException("for testing.");
+            AssertException<InvalidLevelException>(exc);
+        }
+
         private static void AssertException<T>(Exception exc)
             where T : Exception
         {
