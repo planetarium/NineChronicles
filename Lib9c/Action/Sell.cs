@@ -282,7 +282,9 @@ namespace Nekoyume.Action
             {
                 shopItem = shopItem,
                 itemUsable = shopItem.ItemUsable,
-                costume = shopItem.Costume
+                costume = shopItem.Costume,
+                tradableFungibleItem = shopItem.TradableFungibleItem,
+                tradableFungibleItemCount = shopItem.TradableFungibleItemCount,
             };
             var mail = new SellCancelMail(
                 result,

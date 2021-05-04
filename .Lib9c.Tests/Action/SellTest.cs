@@ -208,7 +208,28 @@ namespace Lib9c.Tests.Action
 
             var mailList = nextAvatarState.mailBox.Where(m => m is SellCancelMail).ToList();
             Assert.Single(mailList);
-            Assert.Equal(expiredBlockIndex, mailList.First().requiredBlockIndex);
+            var mail = mailList.First() as SellCancelMail;
+            Assert.NotNull(mail);
+            Assert.Equal(expiredBlockIndex, mail.requiredBlockIndex);
+            switch (itemType)
+            {
+                case ItemType.Consumable:
+                case ItemType.Equipment:
+                    Assert.NotNull(mail.attachment.itemUsable);
+                    Assert.Equal(tradableItem, mail.attachment.itemUsable);
+                    break;
+                case ItemType.Costume:
+                    Assert.NotNull(mail.attachment.costume);
+                    Assert.Equal(tradableItem, mail.attachment.costume);
+                    break;
+                case ItemType.Material:
+                    Assert.NotNull(mail.attachment.tradableFungibleItem);
+                    Assert.Equal(tradableItem, mail.attachment.tradableFungibleItem);
+                    Assert.True(mail.attachment.tradableFungibleItemCount == 1);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(itemType), itemType, null);
+            }
         }
 
         [Fact]
