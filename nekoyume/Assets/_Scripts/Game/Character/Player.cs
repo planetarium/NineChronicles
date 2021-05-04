@@ -79,7 +79,21 @@ namespace Nekoyume.Game.Character
             base.Update();
             if (HudContainer)
             {
-                HudContainer.UpdateAlpha(SpineController.SkeletonAnimation.skeleton.A);
+                if (Game.instance.Stage.IsInStage)
+                {
+                    if (Game.instance.Stage.IsShowHud)
+                    {
+                        HudContainer.UpdateAlpha(IsDead ? 0 : 1);
+                    }
+                    else
+                    {
+                        HudContainer.UpdateAlpha(0);
+                    }
+                }
+                else
+                {
+                    HudContainer.UpdateAlpha(SpineController.SkeletonAnimation.skeleton.A);
+                }
             }
         }
 

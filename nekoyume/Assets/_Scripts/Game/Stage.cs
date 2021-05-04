@@ -75,6 +75,7 @@ namespace Nekoyume.Game
         public BuffController BuffController { get; private set; }
         public TutorialController TutorialController { get; private set; }
         public bool IsInStage { get; set; }
+        public bool IsShowHud { get; set; }
         public Model.Enemy Boss { get; private set; }
         public AvatarState AvatarState { get; set; }
 
@@ -458,12 +459,13 @@ namespace Nekoyume.Game
             Widget.Find<BattleResult>().StageProgressBar.Initialize(false);
             var title = Widget.Find<StageTitle>();
             title.Show(stageId);
-
+            IsShowHud = false;
             yield return new WaitForSeconds(StageConfig.instance.stageEnterDelay);
 
             yield return StartCoroutine(title.CoClose());
 
             AudioController.instance.PlayMusic(data.BGM);
+            IsShowHud = true;
         }
 
         private IEnumerator CoRankingBattleEnter(BattleLog log)
@@ -530,6 +532,7 @@ namespace Nekoyume.Game
                 yield return new WaitForSeconds(1f);
             }
 
+            IsShowHud = false;
             if (log.result == BattleLog.Result.Win)
             {
                 _stageRunningPlayer.DisableHUD();

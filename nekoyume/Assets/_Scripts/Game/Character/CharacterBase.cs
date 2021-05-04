@@ -158,7 +158,7 @@ namespace Nekoyume.Game.Character
             OnDeadEnd();
         }
 
-        private void FixedUpdate()
+        private void LateUpdate()
         {
             if(HudContainer)
             {
@@ -201,6 +201,7 @@ namespace Nekoyume.Game.Character
             if (!HPBar)
             {
                 InitializeHpBar();
+                HudContainer.UpdateAlpha(1);
             }
 
             HudContainer.UpdatePosition(gameObject, HUDOffset);
@@ -444,6 +445,7 @@ namespace Nekoyume.Game.Character
             {
                 HPBar.gameObject.SetActive(false);
                 HPBar = null;
+                HudContainer.UpdateAlpha(0);
             }
 
             if (!ReferenceEquals(CastingBar, null))
