@@ -102,30 +102,6 @@
         }
 
         [Fact]
-        public void Equals_With_Or_Without_Material_When_Material_Is_Null()
-        {
-            var shopItems = new List<ShopItem>
-            {
-                GetShopItemWithFirstCostume(),
-                GetShopItemWithFirstEquipment(),
-            };
-
-            foreach (var shopItem in shopItems)
-            {
-                var serialized = (BxDictionary)shopItem.Serialize();
-                var serializedWithoutMaterial = serialized.ContainsKey("material")
-                    ? new BxDictionary(serialized.Remove((Text)"material"))
-                    : serialized;
-                Assert.Equal(serialized, serializedWithoutMaterial);
-
-                var deserialized = new ShopItem(serialized);
-                var deserializedWithoutMaterial = new ShopItem(serializedWithoutMaterial);
-                Assert.Equal(deserialized, deserializedWithoutMaterial);
-                Assert.Equal(shopItem, deserializedWithoutMaterial);
-            }
-        }
-
-        [Fact]
         public void ThrowArgumentOurOfRangeException()
         {
             var equipmentRow = _tableSheets.EquipmentItemSheet.First;
