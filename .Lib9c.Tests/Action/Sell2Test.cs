@@ -208,7 +208,7 @@
 
             _initialState = _initialState.SetState(_avatarAddress, avatarState.Serialize());
 
-            var action = new Sell
+            var action = new Sell2
             {
                 itemId = default,
                 price = 0 * _currency,

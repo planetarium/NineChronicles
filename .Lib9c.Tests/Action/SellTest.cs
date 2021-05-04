@@ -125,31 +125,15 @@ namespace Lib9c.Tests.Action
                 productId);
             if (shopItemExist)
             {
-                ShopItem shopItem;
-                if (tradableItem is INonFungibleItem nonFungibleItem)
-                {
-                    nonFungibleItem.RequiredBlockIndex = blockIndex;
-                    Assert.Equal(blockIndex, nonFungibleItem.RequiredBlockIndex);
-
-                    shopItem = new ShopItem(
-                        _agentAddress,
-                        _avatarAddress,
-                        productId,
-                        price,
-                        blockIndex,
-                        nonFungibleItem);
-                }
-                else
-                {
-                    shopItem = new ShopItem(
-                        _agentAddress,
-                        _avatarAddress,
-                        productId,
-                        price,
-                        blockIndex,
-                        tradableItem,
-                        1);
-                }
+                tradableItem.RequiredBlockIndex = blockIndex;
+                Assert.Equal(blockIndex, tradableItem.RequiredBlockIndex);
+                var shopItem = new ShopItem(
+                    _agentAddress,
+                    _avatarAddress,
+                    productId,
+                    price,
+                    blockIndex,
+                    tradableItem);
 
                 var shardedShopState = new ShardedShopState(shardedShopAddress);
                 shardedShopState.Register(shopItem);
@@ -165,11 +149,11 @@ namespace Lib9c.Tests.Action
 
             var sellAction = new Sell
             {
-                itemId = tradableItem.TradableId,
-                itemSubType = tradableItem.ItemSubType,
-                itemCount = 1,
-                price = price,
                 sellerAvatarAddress = _avatarAddress,
+                tradableId = tradableItem.TradableId,
+                count = 1,
+                price = price,
+                itemSubType = tradableItem.ItemSubType,
             };
             var nextState = sellAction.Execute(new ActionContext
             {
@@ -187,10 +171,9 @@ namespace Lib9c.Tests.Action
             Assert.True(nextAvatarState.inventory.TryGetTradableItem(
                 tradableItem.TradableId,
                 out var nextInventoryItem));
-            if (nextInventoryItem.item is INonFungibleItem nextNonFungibleItemInInventory)
-            {
-                Assert.Equal(expiredBlockIndex, nextNonFungibleItemInInventory.RequiredBlockIndex);
-            }
+            var nextTradableItem = nextInventoryItem.item as ITradableItem;
+            Assert.NotNull(nextTradableItem);
+            Assert.Equal(expiredBlockIndex, nextTradableItem.RequiredBlockIndex);
 
             // Check ShardedShopState and ShopItem
             var nextSerializedShardedShopState = nextState.GetState(shardedShopAddress);
@@ -221,11 +204,7 @@ namespace Lib9c.Tests.Action
             Assert.Equal(expiredBlockIndex, nextShopItem.ExpiredBlockIndex);
             Assert.Equal(_agentAddress, nextShopItem.SellerAgentAddress);
             Assert.Equal(_avatarAddress, nextShopItem.SellerAvatarAddress);
-
-            if (nextTradableItemInShopItem is INonFungibleItem nextNonFungibleItemInShopItem)
-            {
-                Assert.Equal(expiredBlockIndex, nextNonFungibleItemInShopItem.RequiredBlockIndex);
-            }
+            Assert.Equal(expiredBlockIndex, nextTradableItemInShopItem.RequiredBlockIndex);
 
             var mailList = nextAvatarState.mailBox.Where(m => m is SellCancelMail).ToList();
             Assert.Single(mailList);
@@ -237,11 +216,11 @@ namespace Lib9c.Tests.Action
         {
             var action = new Sell
             {
-                itemId = default,
-                itemSubType = default,
-                itemCount = 1,
-                price = -1 * _currency,
                 sellerAvatarAddress = _avatarAddress,
+                tradableId = default,
+                count = 1,
+                price = -1 * _currency,
+                itemSubType = default,
             };
 
             Assert.Throws<InvalidPriceException>(() => action.Execute(new ActionContext
@@ -257,11 +236,11 @@ namespace Lib9c.Tests.Action
         {
             var action = new Sell
             {
-                itemId = default,
-                itemSubType = ItemSubType.Food,
-                itemCount = 1,
-                price = 0 * _currency,
                 sellerAvatarAddress = _avatarAddress,
+                tradableId = default,
+                count = 1,
+                price = 0 * _currency,
+                itemSubType = ItemSubType.Food,
             };
 
             Assert.Throws<FailedLoadStateException>(() => action.Execute(new ActionContext
@@ -288,11 +267,11 @@ namespace Lib9c.Tests.Action
 
             var action = new Sell
             {
-                itemId = default,
-                itemSubType = ItemSubType.Food,
-                itemCount = 1,
-                price = 0 * _currency,
                 sellerAvatarAddress = _avatarAddress,
+                tradableId = default,
+                count = 1,
+                price = 0 * _currency,
+                itemSubType = ItemSubType.Food,
             };
 
             Assert.Throws<NotEnoughClearedStageLevelException>(() => action.Execute(new ActionContext
@@ -308,11 +287,11 @@ namespace Lib9c.Tests.Action
         {
             var action = new Sell
             {
-                itemId = default,
-                itemSubType = ItemSubType.Food,
-                itemCount = 1,
-                price = 0 * _currency,
                 sellerAvatarAddress = _avatarAddress,
+                tradableId = default,
+                count = 1,
+                price = 0 * _currency,
+                itemSubType = ItemSubType.Food,
             };
 
             Assert.Throws<ItemDoesNotExistException>(() => action.Execute(new ActionContext
@@ -338,11 +317,11 @@ namespace Lib9c.Tests.Action
 
             var action = new Sell
             {
-                itemId = equipmentId,
-                itemSubType = ItemSubType.Food,
-                itemCount = 1,
-                price = 0 * _currency,
                 sellerAvatarAddress = _avatarAddress,
+                tradableId = equipmentId,
+                count = 1,
+                price = 0 * _currency,
+                itemSubType = ItemSubType.Food,
             };
 
             Assert.Throws<InvalidItemTypeException>(() => action.Execute(new ActionContext
@@ -368,11 +347,11 @@ namespace Lib9c.Tests.Action
 
             var action = new Sell
             {
-                itemId = equipmentId,
-                itemSubType = equipment.ItemSubType,
-                itemCount = 1,
-                price = 0 * _currency,
                 sellerAvatarAddress = _avatarAddress,
+                tradableId = equipmentId,
+                count = 1,
+                price = 0 * _currency,
+                itemSubType = equipment.ItemSubType,
             };
 
             Assert.Throws<RequiredBlockIndexException>(() => action.Execute(new ActionContext

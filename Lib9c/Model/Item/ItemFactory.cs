@@ -4,6 +4,7 @@ using Bencodex.Types;
 using Libplanet.Action;
 using Nekoyume.TableData;
 using Nekoyume.Model.State;
+using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Model.Item
 {
@@ -108,7 +109,7 @@ namespace Nekoyume.Model.Item
                         }
                         break;
                     case ItemType.Material:
-                        if (serialized.ContainsKey("required_block_index"))
+                        if (serialized.ContainsKey(RequiredBlockIndexKey))
                         {
                             return new TradableMaterial(serialized);
                         }

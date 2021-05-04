@@ -5,6 +5,7 @@ using Bencodex.Types;
 using Libplanet;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
+using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Model.Item
 {
@@ -39,8 +40,8 @@ namespace Nekoyume.Model.Item
 
         public TradableMaterial(Dictionary serialized) : base(serialized)
         {
-            RequiredBlockIndex = serialized.ContainsKey("required_block_index")
-                ? serialized["required_block_index"].ToLong()
+            RequiredBlockIndex = serialized.ContainsKey(RequiredBlockIndexKey)
+                ? serialized[RequiredBlockIndexKey].ToLong()
                 : default;
 
             TradableId = DeriveTradableId(ItemId);
@@ -72,13 +73,8 @@ namespace Nekoyume.Model.Item
             }
         }
 
-        public override IValue Serialize()
-        {
-            var result = ((Dictionary) base.Serialize())
-                .SetItem("required_block_index", RequiredBlockIndex.Serialize());
-
-            return result;
-        }
+        public override IValue Serialize() => ((Dictionary) base.Serialize())
+            .SetItem(RequiredBlockIndexKey, RequiredBlockIndex.Serialize());
 
         public override string ToString()
         {

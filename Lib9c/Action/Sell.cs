@@ -22,30 +22,31 @@ namespace Nekoyume.Action
     public class Sell : GameAction
     {
         public const long ExpiredBlockIndex = 16000;
+
         public Address sellerAvatarAddress;
-        public Guid itemId;
-        public ItemSubType itemSubType;
-        public int itemCount;
+        public Guid tradableId;
+        public int count;
         public FungibleAssetValue price;
+        public ItemSubType itemSubType;
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
             new Dictionary<string, IValue>
             {
                 [SellerAvatarAddressKey] = sellerAvatarAddress.Serialize(),
-                [ItemIdKey] = itemId.Serialize(),
-                [ItemSubTypeKey] = itemSubType.Serialize(),
-                [ItemCountKey] = itemCount.Serialize(),
+                [ItemIdKey] = tradableId.Serialize(),
+                [ItemCountKey] = count.Serialize(),
                 [PriceKey] = price.Serialize(),
+                [ItemSubTypeKey] = itemSubType.Serialize(),
             }.ToImmutableDictionary();
 
         protected override void LoadPlainValueInternal(
             IImmutableDictionary<string, IValue> plainValue)
         {
             sellerAvatarAddress = plainValue[SellerAvatarAddressKey].ToAddress();
-            itemId = plainValue[ItemIdKey].ToGuid();
-            itemSubType = plainValue[ItemSubTypeKey].ToEnum<ItemSubType>();
-            itemCount = plainValue[ItemCountKey].ToInteger();
+            tradableId = plainValue[ItemIdKey].ToGuid();
+            count = plainValue[ItemCountKey].ToInteger();
             price = plainValue[PriceKey].ToFungibleAssetValue();
+            itemSubType = plainValue[ItemSubTypeKey].ToEnum<ItemSubType>();
         }
 
         public override IAccountStateDelta Execute(IActionContext context)
@@ -116,25 +117,25 @@ namespace Nekoyume.Action
                         $"{addressesHex}Aborted because {nameof(itemSubType)}({itemSubType}) does not support.");
             }
 
-            if (itemCount < 1)
+            if (count < 1)
             {
                 throw new InvalidShopItemException(
-                    $"{addressesHex}Aborted because {nameof(itemCount)}({itemCount}) should be greater than or equal to 1.");
+                    $"{addressesHex}Aborted because {nameof(count)}({count}) should be greater than or equal to 1.");
             }
 
             if (!avatarState.inventory.TryGetTradableItem(
-                    itemId,
+                    tradableId,
                     out var inventoryItem) ||
                 !(inventoryItem.item is ITradableItem tradableItem))
             {
                 throw new ItemDoesNotExistException(
-                    $"{addressesHex}Aborted because the tradable item({itemId}) was failed to load from avatar's inventory.");
+                    $"{addressesHex}Aborted because the tradable item({tradableId}) was failed to load from avatar's inventory.");
             }
 
-            if (inventoryItem.count < itemCount)
+            if (inventoryItem.count < count)
             {
                 throw new ItemDoesNotExistException(
-                    $"{addressesHex}Aborted because inventory item count({inventoryItem.count}) should be greater than or equal to {nameof(itemCount)}({itemCount}).");
+                    $"{addressesHex}Aborted because inventory item count({inventoryItem.count}) should be greater than or equal to {nameof(count)}({count}).");
             }
 
             if (!tradableItem.ItemSubType.Equals(itemSubType))
@@ -145,32 +146,23 @@ namespace Nekoyume.Action
 
             switch (tradableItem)
             {
-                case INonFungibleItem _ when itemCount != 1:
+                case INonFungibleItem _ when count != 1:
                     throw new ArgumentOutOfRangeException(
-                        $"{addressesHex}Aborted because {nameof(itemCount)}({itemCount}) should be 1 because {nameof(itemId)}({itemId}) is non-fungible item.");
+                        $"{addressesHex}Aborted because {nameof(count)}({count}) should be 1 because {nameof(tradableId)}({tradableId}) is non-fungible item.");
                 case INonFungibleItem nonFungibleItem when nonFungibleItem.RequiredBlockIndex > context.BlockIndex:
                     throw new RequiredBlockIndexException(
-                        $"{addressesHex}Aborted because the non-fungible item({itemId}) to sell is not available yet; it will be available at the block #{nonFungibleItem.RequiredBlockIndex}.");
+                        $"{addressesHex}Aborted because the non-fungible item({tradableId}) to sell is not available yet; it will be available at the block #{nonFungibleItem.RequiredBlockIndex}.");
             }
+
+            var expiredBlockIndex = context.BlockIndex + ExpiredBlockIndex;
+            tradableItem.RequiredBlockIndex = expiredBlockIndex;
 
             if (tradableItem is IEquippableItem equippableItem)
             {
                 equippableItem.Unequip();
             }
 
-            // Make ShopItem
             var productId = context.Random.GenerateRandomGuid();
-            var expiredBlockIndex = context.BlockIndex + ExpiredBlockIndex;
-            tradableItem.RequiredBlockIndex = expiredBlockIndex;
-            var shopItem = new ShopItem(
-                context.Signer,
-                sellerAvatarAddress,
-                productId,
-                price,
-                expiredBlockIndex,
-                tradableItem,
-                itemCount);
-
             var shardedShopAddress = ShardedShopState.DeriveAddress(itemSubType, productId);
             if (!states.TryGetState(shardedShopAddress, out BxDictionary serializedSharedShopState))
             {
@@ -238,9 +230,18 @@ namespace Nekoyume.Action
                     throw new ArgumentOutOfRangeException();
             }
 
+            ShopItem shopItem;
             // Register new ShopItem
             if (serializedProductDictionary.Equals(BxDictionary.Empty))
             {
+                shopItem = new ShopItem(
+                    context.Signer,
+                    sellerAvatarAddress,
+                    productId,
+                    price,
+                    expiredBlockIndex,
+                    tradableItem,
+                    count);
                 var serializedShopItem = shopItem.Serialize();
                 serializedProductList = serializedProductList.Add(serializedShopItem);
             }
@@ -255,15 +256,14 @@ namespace Nekoyume.Action
                 var inChainShopItem = (BxDictionary) serializedProductDictionary[productKey];
                 inChainShopItem = inChainShopItem
                     .SetItem(requiredBlockIndexKey, expiredBlockIndex.Serialize())
-                    .SetItem(TradableFungibleItemCountKey, itemCount.Serialize());
+                    .SetItem(TradableFungibleItemCountKey, count.Serialize());
 
                 // Update ShopItem.ExpiredBlockIndex
                 serializedProductDictionary = serializedProductDictionary
                     .SetItem(ExpiredBlockIndexKey, expiredBlockIndex.Serialize())
                     .SetItem(productKey, inChainShopItem);
                 serializedProductList = serializedProductList.Add(serializedProductDictionary);
-                // 필요한가??
-                // shopItem = new ShopItem(serializedProductDictionary);
+                shopItem = new ShopItem(serializedProductDictionary);
             }
 
             serializedSharedShopState = serializedSharedShopState.SetItem(
