@@ -42,7 +42,7 @@ namespace Tests.EditMode.State.Modifiers
         {
             var equipment = GetEquipment();
             _avatarState.inventory.AddItem(equipment);
-            Assert.True(_avatarState.inventory.HasItem(equipment.ItemId));
+            Assert.True(_avatarState.inventory.HasNonFungibleItem(equipment.ItemId));
             Assert.True(_avatarState.inventory.TryGetNonFungibleItem(
                 equipment.ItemId,
                 out _));
@@ -56,7 +56,7 @@ namespace Tests.EditMode.State.Modifiers
         {
             var costume = GetCostume();
             _avatarState.inventory.AddItem(costume);
-            Assert.True(_avatarState.inventory.HasItem(costume.ItemId));
+            Assert.True(_avatarState.inventory.HasNonFungibleItem(costume.ItemId));
             Assert.True(_avatarState.inventory.TryGetNonFungibleItem(
                 costume.ItemId,
                 out _));
@@ -82,7 +82,7 @@ namespace Tests.EditMode.State.Modifiers
                 Assert.True(itemBase is IEquippableItem);
                 var nonFungibleItem = (INonFungibleItem) itemBase;
                 var equippableItem = (IEquippableItem) itemBase;
-                Assert.True(_avatarState.inventory.HasItem(nonFungibleItem.NonFungibleId));
+                Assert.True(_avatarState.inventory.HasNonFungibleItem(nonFungibleItem.NonFungibleId));
                 Assert.True(_avatarState.inventory.TryGetNonFungibleItem(
                     nonFungibleItem.NonFungibleId,
                     out _));

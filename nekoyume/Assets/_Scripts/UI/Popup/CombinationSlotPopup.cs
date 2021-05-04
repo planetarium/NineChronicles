@@ -156,7 +156,7 @@ namespace Nekoyume.UI
                 _row = Game.Game.instance.TableSheets.MaterialItemSheet.Values
                     .First(r => r.ItemSubType == ItemSubType.Hourglass);
                 var isEnough =
-                    States.Instance.CurrentAvatarState.inventory.HasItem(_row.ItemId, _cost);
+                    States.Instance.CurrentAvatarState.inventory.HasFungibleItem(_row.ItemId, _cost);
 
                 var count = States.Instance.CurrentAvatarState.inventory
                     .TryGetFungibleItems(_row.ItemId, out var outFungibleItems)

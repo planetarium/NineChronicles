@@ -109,7 +109,7 @@ namespace Nekoyume.State.Modifiers
 
             foreach (var pair in idAndCountDictionary.Value)
             {
-                state.inventory.RemoveMaterial(pair.Key.Value, pair.Value);
+                state.inventory.RemoveFungibleItem(pair.Key.Value, pair.Value);
             }
 
             return state;

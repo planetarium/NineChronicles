@@ -463,7 +463,7 @@ namespace Nekoyume.BlockChain
             if (eval.Exception is null)
             {
                 var avatarAddress = eval.Action.sellerAvatarAddress;
-                var itemId = eval.Action.itemId;
+                var itemId = eval.Action.tradableId;
 
                 LocalLayerModifier.AddItem(avatarAddress, itemId, false);
                 var format = L10nManager.Localize("NOTIFICATION_SELL_COMPLETE");

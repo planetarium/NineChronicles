@@ -353,6 +353,11 @@ namespace Nekoyume.UI
             popup.Pop(model);
         }
 
+        public void Read(StakingMail stakingMail)
+        {
+            //
+        }
+
         public void TutorialActionClickFirstCombinationMailSubmitButton()
         {
             if (MailBox.Count == 0)

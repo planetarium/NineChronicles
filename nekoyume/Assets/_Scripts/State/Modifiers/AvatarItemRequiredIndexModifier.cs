@@ -44,7 +44,11 @@ namespace Nekoyume.State.Modifiers
                 .Select(i => i.item)
                 .OfType<INonFungibleItem>()
                 .FirstOrDefault(i => i.NonFungibleId == _nonFungibleId);
-            item?.Update(_blockIndex);
+            if (!(item is null))
+            {
+                item.RequiredBlockIndex = _blockIndex;
+            }
+
             return state;
         }
     }

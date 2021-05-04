@@ -525,9 +525,9 @@ namespace Nekoyume.UI
                         throw new InvalidSellingPriceException(data);
                     }
 
-                    var nonFungibleId = ((INonFungibleItem) data.Item.Value.ItemBase.Value).NonFungibleId;
+                    var tradableId = ((ITradableItem) data.Item.Value.ItemBase.Value).TradableId;
                     var itemSubType = data.Item.Value.ItemBase.Value.ItemSubType;
-                    Game.Game.instance.ActionManager.Sell(nonFungibleId, data.Price.Value, itemSubType);
+                    Game.Game.instance.ActionManager.Sell(tradableId, data.Price.Value, itemSubType);
                     ResponseSell();
 
                     return;

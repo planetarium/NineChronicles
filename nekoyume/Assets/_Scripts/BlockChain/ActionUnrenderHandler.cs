@@ -188,7 +188,7 @@ namespace Nekoyume.BlockChain
             }
 
             var avatarAddress = eval.Action.sellerAvatarAddress;
-            var itemId = eval.Action.itemId;
+            var itemId = eval.Action.tradableId;
 
             LocalLayerModifier.RemoveItem(avatarAddress, itemId);
             UpdateCurrentAvatarState(eval);

@@ -218,19 +218,19 @@ namespace Nekoyume.BlockChain
                 .DoOnError(e => HandleException(action.Id, e));
         }
 
-        public IObservable<ActionBase.ActionEvaluation<Sell>> Sell(Guid itemId,
+        public IObservable<ActionBase.ActionEvaluation<Sell>> Sell(Guid tradableId,
                                                                    FungibleAssetValue price,
                                                                    ItemSubType itemSubType)
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
 
             // NOTE: 장착했는지 안 했는지에 상관없이 해제 플래그를 걸어 둔다.
-            LocalLayerModifier.SetItemEquip(avatarAddress, itemId, false, false);
+            LocalLayerModifier.SetItemEquip(avatarAddress, tradableId, false, false);
 
             var action = new Sell
             {
                 sellerAvatarAddress = avatarAddress,
-                itemId = itemId,
+                tradableId = tradableId,
                 price = price,
                 itemSubType = itemSubType,
             };
@@ -383,6 +383,7 @@ namespace Nekoyume.BlockChain
             int? subRecipeId = null)
         {
             Mixpanel.Track("Unity/Create CombinationEquipment");
+            Mixpanel.Track("event-name", "key", new Value());
 
             // 결과 주소도 고정되게 바꿔야함
             var action = new CombinationEquipment4

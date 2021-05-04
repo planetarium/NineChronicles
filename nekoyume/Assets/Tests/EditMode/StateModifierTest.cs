@@ -76,11 +76,11 @@ namespace Tests.EditMode
 
             var material = GetFirstMaterial();
             _avatarState.inventory.AddItem(material);
-            Assert.True(_avatarState.inventory.HasItem(material.ItemId));
+            Assert.True(_avatarState.inventory.HasFungibleItem(material.ItemId));
             var modifier =
                 JsonTest(new AvatarInventoryFungibleItemRemover(material.ItemId, 1));
             _avatarState = modifier.Modify(_avatarState);
-            Assert.False(_avatarState.inventory.HasItem(material.ItemId));
+            Assert.False(_avatarState.inventory.HasFungibleItem(material.ItemId));
         }
 
         [Test]
@@ -91,11 +91,11 @@ namespace Tests.EditMode
 
             var equipment = GetFirstEquipment();
             _avatarState.inventory.AddItem(equipment);
-            Assert.True(_avatarState.inventory.HasItem(equipment.ItemId));
+            Assert.True(_avatarState.inventory.HasNonFungibleItem(equipment.ItemId));
             var modifier =
                 JsonTest(new AvatarInventoryNonFungibleItemRemover(equipment.ItemId));
             _avatarState = modifier.Modify(_avatarState);
-            Assert.False(_avatarState.inventory.HasItem(equipment.ItemId));
+            Assert.False(_avatarState.inventory.HasNonFungibleItem(equipment.ItemId));
         }
 
         [Test]
