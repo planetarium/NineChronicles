@@ -71,7 +71,10 @@ namespace Nekoyume.Action
                 avatarState.UpdateV3(mail);
                 foreach (var rewardInfo in rewards)
                 {
-                    ItemBase item = ItemFactory.CreateItem(itemSheet[rewardInfo.ItemId], context.Random);
+                    var row = itemSheet[rewardInfo.ItemId];
+                    var item = row is MaterialItemSheet.Row materialRow
+                        ? ItemFactory.CreateTradableMaterial(materialRow)
+                        : ItemFactory.CreateItem(row, context.Random);
                     avatarState.inventory.AddItem(item, rewardInfo.Quantity);
                 }
                 stakingState.UpdateRewardMap(level, result, context.BlockIndex);
