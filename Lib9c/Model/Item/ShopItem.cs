@@ -22,8 +22,8 @@ namespace Nekoyume.Model.Item
         public readonly FungibleAssetValue Price;
         public readonly ItemUsable ItemUsable;
         public readonly Costume Costume;
-        public readonly Material Material;
-        public readonly int MaterialCount;
+        public readonly ITradableFungibleItem TradableFungibleItem;
+        public readonly int TradableFungibleItemCount;
         private long _expiredBlockIndex;
 
         public long ExpiredBlockIndex
@@ -44,44 +44,8 @@ namespace Nekoyume.Model.Item
             Address sellerAvatarAddress,
             Guid productId,
             FungibleAssetValue price,
-            ItemUsable itemUsable) : this(sellerAgentAddress, sellerAvatarAddress, productId, price, 0, itemUsable)
+            ITradableItem itemUsable) : this(sellerAgentAddress, sellerAvatarAddress, productId, price, 0, itemUsable)
         {
-        }
-
-        public ShopItem(Address sellerAgentAddress,
-            Address sellerAvatarAddress,
-            Guid productId,
-            FungibleAssetValue price,
-            Costume costume) : this(sellerAgentAddress, sellerAvatarAddress, productId, price, 0, costume)
-        {
-        }
-
-        public ShopItem(
-            Address sellerAgentAddress,
-            Address sellerAvatarAddress,
-            Guid productId,
-            FungibleAssetValue price,
-            long expiredBlockIndex,
-            INonFungibleItem nonFungibleItem
-        )
-        {
-            SellerAgentAddress = sellerAgentAddress;
-            SellerAvatarAddress = sellerAvatarAddress;
-            ProductId = productId;
-            Price = price;
-            ExpiredBlockIndex = expiredBlockIndex;
-            switch (nonFungibleItem)
-            {
-                case ItemUsable itemUsable:
-                    ItemUsable = itemUsable;
-                    break;
-                case Costume costume:
-                    Costume = costume;
-                    break;
-                default:
-                    throw new ArgumentException(
-                        $"{nameof(nonFungibleItem)} should be able to cast as ItemUsable or Costume.");
-            }
         }
 
         public ShopItem(Address sellerAgentAddress,
@@ -90,7 +54,7 @@ namespace Nekoyume.Model.Item
             FungibleAssetValue price,
             long expiredBlockIndex,
             ITradableItem tradableItem,
-            int count)
+            int tradableItemCount = 1)
         {
             SellerAgentAddress = sellerAgentAddress;
             SellerAvatarAddress = sellerAvatarAddress;
@@ -100,13 +64,19 @@ namespace Nekoyume.Model.Item
 
             switch (tradableItem)
             {
-                case Material material:
-                    Material = material;
-                    MaterialCount = count;
+                case ItemUsable itemUsable:
+                    ItemUsable = itemUsable;
+                    break;
+                case Costume costume:
+                    Costume = costume;
+                    break;
+                case ITradableFungibleItem tradableFungibleItem:
+                    TradableFungibleItem = tradableFungibleItem;
+                    TradableFungibleItemCount = tradableItemCount;
                     break;
                 default:
-                    throw new ArgumentException(
-                        $"{nameof(tradableItem)} should be able to cast as Material.");
+                    throw new ArgumentOutOfRangeException(
+                        $"{nameof(tradableItem)} should be able to case as ItemUsable or Costume or Material");
             }
         }
 
@@ -122,11 +92,11 @@ namespace Nekoyume.Model.Item
             Costume = serialized.ContainsKey(LegacyCostumeKey)
                 ? (Costume) ItemFactory.Deserialize((Dictionary) serialized[LegacyCostumeKey])
                 : null;
-            Material = serialized.ContainsKey(MaterialKey)
-                ? (Material) ItemFactory.Deserialize((Dictionary) serialized[MaterialKey])
+            TradableFungibleItem = serialized.ContainsKey(TradableFungibleItemKey)
+                ? (ITradableFungibleItem) ItemFactory.Deserialize((Dictionary) serialized[TradableFungibleItemKey])
                 : null;
-            MaterialCount = serialized.ContainsKey(MaterialCountKey)
-                ? serialized[MaterialCountKey].ToInteger()
+            TradableFungibleItemCount = serialized.ContainsKey(TradableFungibleItemCountKey)
+                ? serialized[TradableFungibleItemCountKey].ToInteger()
                 : default;
             if (serialized.ContainsKey(ExpiredBlockIndexKey))
             {
@@ -169,14 +139,14 @@ namespace Nekoyume.Model.Item
                 innerDictionary.Add((Text) LegacyCostumeKey, Costume.Serialize());
             }
 
-            if (Material != null)
+            if (TradableFungibleItem != null)
             {
-                innerDictionary.Add((Text) MaterialKey, Material.Serialize());
+                innerDictionary.Add((Text) TradableFungibleItemKey, TradableFungibleItem.Serialize());
             }
 
-            if (MaterialCount != 0)
+            if (TradableFungibleItemCount != 0)
             {
-                innerDictionary.Add((Text) MaterialCountKey, MaterialCount.Serialize());
+                innerDictionary.Add((Text) TradableFungibleItemCountKey, TradableFungibleItemCount.Serialize());
             }
 
             if (ExpiredBlockIndex != 0)

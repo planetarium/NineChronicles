@@ -27,17 +27,17 @@ namespace Nekoyume.Model.Item
             return new Costume(row, itemId);
         }
 
-        public static Material CreateMaterial(MaterialItemSheet sheet, int itemId, bool isTradable = default)
+        public static Material CreateMaterial(MaterialItemSheet sheet, int itemId)
         {
             return sheet.TryGetValue(itemId, out var itemData)
-                ? CreateMaterial(itemData, isTradable)
+                ? CreateMaterial(itemData)
                 : null;
         }
 
-        public static Material CreateMaterial(MaterialItemSheet.Row row, bool isTradable = default)
-        {
-            return new Material(row, isTradable);
-        }
+        public static Material CreateMaterial(MaterialItemSheet.Row row) => new Material(row);
+
+        public static TradableMaterial CreateTradableMaterial(MaterialItemSheet.Row row)
+            => new TradableMaterial(row);
 
         public static ItemUsable CreateItemUsable(ItemSheet.Row itemRow, Guid id,
             long requiredBlockIndex, int level = 0)
@@ -108,7 +108,14 @@ namespace Nekoyume.Model.Item
                         }
                         break;
                     case ItemType.Material:
-                        return new Material(serialized);
+                        if (serialized.ContainsKey("required_block_index"))
+                        {
+                            return new TradableMaterial(serialized);
+                        }
+                        else
+                        {
+                            return new Material(serialized);
+                        }
                     default:
                         throw new ArgumentOutOfRangeException(nameof(itemType));
                 }

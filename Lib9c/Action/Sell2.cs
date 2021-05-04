@@ -45,9 +45,9 @@ namespace Nekoyume.Action
                 states = states.SetState(sellerAvatarAddress, MarkChanged);
                 return states.SetState(ctx.Signer, MarkChanged);
             }
-            
+
             var addressesHex = GetSignerAndOtherAddressesHex(context, sellerAvatarAddress);
-            
+
             var sw = new Stopwatch();
             sw.Start();
             var started = DateTimeOffset.UtcNow;
@@ -111,7 +111,9 @@ namespace Nekoyume.Action
             }
             else if (avatarState.inventory.TryGetNonFungibleItem<Costume>(itemId, out var costume))
             {
+#pragma warning disable 618
                 avatarState.inventory.LegacyRemoveNonFungibleItem(itemId);
+#pragma warning restore 618
                 costume.equipped = false;
                 shopItem = new ShopItem(
                     ctx.Signer,

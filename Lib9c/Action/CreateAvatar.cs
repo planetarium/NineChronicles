@@ -75,7 +75,7 @@ namespace Nekoyume.Action
                     .SetState(Addresses.Ranking, MarkChanged)
                     .MarkBalanceChanged(GoldCurrencyMock, GoldCurrencyState.Address, context.Signer);
             }
-            
+
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
 
             Log.Warning("{AddressesHex}create_avatar is deprecated. Please use create_avatar2", addressesHex);
@@ -222,7 +222,7 @@ namespace Nekoyume.Action
                 if (row.ItemSubType == ItemSubType.Hourglass ||
                     row.ItemSubType == ItemSubType.ApStone)
                 {
-                    avatarState.inventory.AddItem(ItemFactory.CreateMaterial(row, true), 100);
+                    avatarState.inventory.AddItem(ItemFactory.CreateTradableMaterial(row), 100);
                 }
             }
 

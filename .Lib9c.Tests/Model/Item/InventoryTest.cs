@@ -44,7 +44,7 @@
             var row = TableSheets.MaterialItemSheet.First;
             Assert.NotNull(row);
             var material = ItemFactory.CreateMaterial(row);
-            var tradableMaterial = ItemFactory.CreateMaterial(row, true);
+            var tradableMaterial = ItemFactory.CreateTradableMaterial(row);
             var inventory = new Inventory();
             Assert.Empty(inventory.Items);
             inventory.AddItem(material);
@@ -53,32 +53,51 @@
             inventory.AddItem(tradableMaterial);
             Assert.Equal(2, inventory.Items.Count);
             Assert.Equal(2, inventory.Materials.Count());
-            inventory.RemoveMaterial(row.ItemId);
+            inventory.RemoveFungibleItem(row.ItemId);
             Assert.Single(inventory.Items);
             Assert.Single(inventory.Materials);
         }
 
         [Fact]
-        public void Remove_NonTradableMaterial_FasterThan_TradableMaterial()
+        public void RemoveFungibleItem_NonTradableItem_Removed_Faster_Than_TradableItem()
         {
             var row = TableSheets.MaterialItemSheet.First;
             Assert.NotNull(row);
             var material = ItemFactory.CreateMaterial(row);
-            var tradableMaterial = ItemFactory.CreateMaterial(row, true);
+            var tradableMaterial = ItemFactory.CreateTradableMaterial(row);
             var inventory = new Inventory();
             Assert.Empty(inventory.Items);
             inventory.AddItem(material);
             inventory.AddItem(tradableMaterial);
-            inventory.RemoveMaterial(row.ItemId);
-            Assert.True(inventory.Materials.First().IsTradable);
-            inventory.RemoveMaterial(row.ItemId);
+            inventory.RemoveFungibleItem(row.ItemId);
+            Assert.True(inventory.Materials.First() is ITradableFungibleItem);
+            inventory.RemoveFungibleItem(row.ItemId);
             Assert.Empty(inventory.Materials);
             inventory.AddItem(tradableMaterial);
             inventory.AddItem(material);
-            inventory.RemoveMaterial(row.ItemId);
-            Assert.True(inventory.Materials.First().IsTradable);
-            inventory.RemoveMaterial(row.ItemId);
+            inventory.RemoveFungibleItem(row.ItemId);
+            Assert.True(inventory.Materials.First() is ITradableFungibleItem);
+            inventory.RemoveFungibleItem(row.ItemId);
             Assert.Empty(inventory.Materials);
+        }
+
+        [Fact]
+        public void RemoveTradableItem_IFungibleItem()
+        {
+            var row = TableSheets.MaterialItemSheet.First;
+            Assert.NotNull(row);
+            var material = ItemFactory.CreateMaterial(row);
+            var tradableMaterial = ItemFactory.CreateTradableMaterial(row);
+            var tradableItem = (ITradableItem)tradableMaterial;
+            Assert.NotNull(tradableItem);
+            var inventory = new Inventory();
+            Assert.Empty(inventory.Items);
+            inventory.AddItem(material);
+            inventory.AddItem(tradableMaterial);
+            Assert.True(inventory.RemoveTradableItem(tradableItem));
+            Assert.False(inventory.Materials.First() is ITradableFungibleItem);
+            Assert.False(inventory.RemoveTradableItem(tradableItem));
+            Assert.Single(inventory.Materials);
         }
 
         [Fact]
@@ -99,38 +118,19 @@
         }
 
         [Fact]
-        public void RemoveTradableItem_Material()
+        public void RemoveTradableFungibleItem()
         {
             var row = TableSheets.MaterialItemSheet.First;
             Assert.NotNull(row);
             var material = ItemFactory.CreateMaterial(row);
-            var tradableMaterial = ItemFactory.CreateMaterial(row, true);
-            var tradableItem = (ITradableItem)tradableMaterial;
-            Assert.NotNull(tradableItem);
+            var tradableMaterial = ItemFactory.CreateTradableMaterial(row);
             var inventory = new Inventory();
             Assert.Empty(inventory.Items);
             inventory.AddItem(material);
             inventory.AddItem(tradableMaterial);
-            Assert.True(inventory.RemoveTradableItem(tradableItem));
-            Assert.False(inventory.Materials.First().IsTradable);
-            Assert.False(inventory.RemoveTradableItem(tradableItem));
-            Assert.Single(inventory.Materials);
-        }
-
-        [Fact]
-        public void RemoveTradableMaterial()
-        {
-            var row = TableSheets.MaterialItemSheet.First;
-            Assert.NotNull(row);
-            var material = ItemFactory.CreateMaterial(row);
-            var tradableMaterial = ItemFactory.CreateMaterial(row, true);
-            var inventory = new Inventory();
-            Assert.Empty(inventory.Items);
-            inventory.AddItem(material);
-            inventory.AddItem(tradableMaterial);
-            inventory.RemoveTradableMaterial(row.ItemId);
-            Assert.False(inventory.Materials.First().IsTradable);
-            Assert.False(inventory.RemoveTradableMaterial(row.ItemId));
+            inventory.RemoveTradableFungibleItem(row.ItemId);
+            Assert.False(inventory.Materials.First() is ITradableFungibleItem);
+            Assert.False(inventory.RemoveTradableFungibleItem(row.ItemId));
             Assert.Single(inventory.Materials);
         }
     }

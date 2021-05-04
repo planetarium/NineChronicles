@@ -70,9 +70,9 @@
         {
             var shopItem = GetShopItemWithFirstEquipment();
             var serializedBackup1 = shopItem.SerializeBackup1();
-            var deserializedBackup1 = new ShopItem((Dictionary)serializedBackup1);
+            var deserializedBackup1 = new ShopItem((BxDictionary)serializedBackup1);
             var serialized = shopItem.Serialize();
-            var deserialized = new ShopItem((Dictionary)serialized);
+            var deserialized = new ShopItem((BxDictionary)serialized);
             Assert.Equal(serializedBackup1, serialized);
             Assert.Equal(deserializedBackup1, deserialized);
         }
@@ -93,7 +93,7 @@
                 equipment);
             Assert.Null(shopItem.Costume);
             Assert.NotNull(shopItem.ItemUsable);
-            Dictionary serialized = (Dictionary)shopItem.Serialize();
+            var serialized = (BxDictionary)shopItem.Serialize();
 
             Assert.Equal(contain, serialized.ContainsKey(ShopItem.ExpiredBlockIndexKey));
 
@@ -112,9 +112,9 @@
 
             foreach (var shopItem in shopItems)
             {
-                var serialized = (Dictionary)shopItem.Serialize();
+                var serialized = (BxDictionary)shopItem.Serialize();
                 var serializedWithoutMaterial = serialized.ContainsKey("material")
-                    ? new Dictionary(serialized.Remove((Text)"material"))
+                    ? new BxDictionary(serialized.Remove((Text)"material"))
                     : serialized;
                 Assert.Equal(serialized, serializedWithoutMaterial);
 
@@ -183,14 +183,14 @@
         private static ShopItem GetShopItemWithFirstMaterial()
         {
             var row = _tableSheets.MaterialItemSheet.First;
-            var material = new Material(row);
+            var tradableMaterial = new TradableMaterial(row);
             return new ShopItem(
                 new PrivateKey().ToAddress(),
                 new PrivateKey().ToAddress(),
                 Guid.NewGuid(),
                 new FungibleAssetValue(_currency, 100, 0),
                 1,
-                material,
+                tradableMaterial,
                 0);
         }
 
@@ -201,14 +201,14 @@
             foreach (var row in _tableSheets.MaterialItemSheet.OrderedList
                 .Where(e => e.ItemSubType == ItemSubType.Hourglass || e.ItemSubType == ItemSubType.ApStone))
             {
-                var material = new Material(row, true);
+                var tradableMaterial = new TradableMaterial(row);
                 var shopItem = new ShopItem(
                     new PrivateKey().ToAddress(),
                     new PrivateKey().ToAddress(),
                     Guid.NewGuid(),
                     new FungibleAssetValue(_currency, 100, 0),
                     1,
-                    material,
+                    tradableMaterial,
                     0);
                 objects[index++] = shopItem;
             }

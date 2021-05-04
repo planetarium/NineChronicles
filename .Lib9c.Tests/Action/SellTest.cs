@@ -86,12 +86,9 @@ namespace Lib9c.Tests.Action
                 Guid.NewGuid());
             _avatarState.inventory.AddItem(costume);
 
-            var tradableMaterialRow =
-                _tableSheets.MaterialItemSheet.OrderedList.FirstOrDefault(row =>
-                    row.ItemSubType == ItemSubType.Hourglass);
-            var tradableMaterial = ItemFactory.CreateMaterial(
-                tradableMaterialRow,
-                true);
+            var tradableMaterialRow = _tableSheets.MaterialItemSheet.OrderedList
+                .FirstOrDefault(row => row.ItemSubType == ItemSubType.Hourglass);
+            var tradableMaterial = ItemFactory.CreateTradableMaterial(tradableMaterialRow);
             _avatarState.inventory.AddItem(tradableMaterial);
 
             _initialState = _initialState
@@ -187,7 +184,7 @@ namespace Lib9c.Tests.Action
 
             // Check AvatarState and Inventory
             var nextAvatarState = nextState.GetAvatarState(_avatarAddress);
-            Assert.True(nextAvatarState.inventory.TryGetTradableItemWithoutNonTradableFungibleItem(
+            Assert.True(nextAvatarState.inventory.TryGetTradableItem(
                 tradableItem.TradableId,
                 out var nextInventoryItem));
             if (nextInventoryItem.item is INonFungibleItem nextNonFungibleItemInInventory)
@@ -214,7 +211,7 @@ namespace Lib9c.Tests.Action
                     nextTradableItemInShopItem = nextShopItem.Costume;
                     break;
                 case ItemType.Material:
-                    nextTradableItemInShopItem = nextShopItem.Material;
+                    nextTradableItemInShopItem = nextShopItem.TradableFungibleItem;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(itemType), itemType, null);

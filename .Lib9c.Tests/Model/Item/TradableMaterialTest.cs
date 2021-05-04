@@ -6,11 +6,11 @@ namespace Lib9c.Tests.Model.Item
     using Nekoyume.TableData;
     using Xunit;
 
-    public class MaterialTest
+    public class TradableMaterialTest
     {
         private readonly MaterialItemSheet.Row _materialRow;
 
-        public MaterialTest()
+        public TradableMaterialTest()
         {
             var tableSheets = new TableSheets(TableSheetsImporter.ImportSheets());
             _materialRow = tableSheets.MaterialItemSheet.First;
@@ -21,9 +21,9 @@ namespace Lib9c.Tests.Model.Item
         {
             Assert.NotNull(_materialRow);
 
-            var material = new Material(_materialRow);
+            var material = new TradableMaterial(_materialRow);
             var serialized = material.Serialize();
-            var deserialized = new Material((Bencodex.Types.Dictionary)serialized);
+            var deserialized = new TradableMaterial((Bencodex.Types.Dictionary)serialized);
 
             Assert.Equal(material, deserialized);
         }
@@ -33,13 +33,13 @@ namespace Lib9c.Tests.Model.Item
         {
             Assert.NotNull(_materialRow);
 
-            var material = new Material(_materialRow);
+            var material = new TradableMaterial(_materialRow);
             var formatter = new BinaryFormatter();
             using var ms = new MemoryStream();
             formatter.Serialize(ms, material);
             ms.Seek(0, SeekOrigin.Begin);
 
-            var deserialized = (Material)formatter.Deserialize(ms);
+            var deserialized = (TradableMaterial)formatter.Deserialize(ms);
 
             Assert.Equal(material, deserialized);
         }

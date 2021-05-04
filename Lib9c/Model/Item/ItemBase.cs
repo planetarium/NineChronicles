@@ -9,7 +9,7 @@ using Nekoyume.TableData;
 namespace Nekoyume.Model.Item
 {
     [Serializable]
-    public abstract class ItemBase : IState, IItem
+    public abstract class ItemBase : IItem
     {
         protected static readonly Codec Codec = new Codec();
 

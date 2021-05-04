@@ -161,25 +161,49 @@ namespace Nekoyume.Action
                 throw new InvalidAddressException($"{addressesHex}Invalid Avatar Address");
             }
 
-            var nonFungibleItem = (INonFungibleItem)shopItem.ItemUsable ?? shopItem.Costume;
-            if (avatarState.inventory.TryGetNonFungibleItem(
-                nonFungibleItem.NonFungibleId,
-                out INonFungibleItem outNonFungibleItem))
+            ITradableItem tradableItem;
+            var tradableItemCount = 1;
+            if (!(shopItem.ItemUsable is null))
             {
-                outNonFungibleItem.Update(context.BlockIndex);
+                tradableItem = shopItem.ItemUsable;
             }
-            nonFungibleItem.Update(context.BlockIndex);
-
-            if (backwardCompatible)
+            else if (!(shopItem.Costume is null))
             {
-                switch (nonFungibleItem)
+                tradableItem = shopItem.Costume;
+            }
+            else if (!(shopItem.TradableFungibleItem is null))
+            {
+                tradableItem = shopItem.TradableFungibleItem;
+                tradableItemCount = shopItem.TradableFungibleItemCount;
+            }
+            else
+            {
+                throw new Exception();
+            }
+
+            if (avatarState.inventory.TryGetTradableItem(
+                    tradableItem.TradableId,
+                    out var inventoryItem) &&
+                inventoryItem.item is INonFungibleItem nonFungibleItemInInventory)
+            {
+                nonFungibleItemInInventory.RequiredBlockIndex = context.BlockIndex;
+            }
+
+            if (tradableItem is INonFungibleItem nonFungibleItem)
+            {
+                nonFungibleItem.RequiredBlockIndex = context.BlockIndex;
+
+                if (backwardCompatible)
                 {
-                    case ItemUsable itemUsable:
-                        avatarState.UpdateFromAddItem(itemUsable, true);
-                        break;
-                    case Costume costume:
-                        avatarState.UpdateFromAddCostume(costume, true);
-                        break;
+                    switch (nonFungibleItem)
+                    {
+                        case ItemUsable itemUsable:
+                            avatarState.UpdateFromAddItem(itemUsable, true);
+                            break;
+                        case Costume costume:
+                            avatarState.UpdateFromAddCostume(costume, true);
+                            break;
+                    }
                 }
             }
 

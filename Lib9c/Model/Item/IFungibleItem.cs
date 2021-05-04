@@ -3,10 +3,8 @@ using Libplanet;
 
 namespace Nekoyume.Model.Item
 {
-    public interface IFungibleItem: ITradableItem
+    public interface IFungibleItem: IItem
     {
         HashDigest<SHA256> FungibleId { get; }
-
-        bool IsTradable { get; }
     }
 }
