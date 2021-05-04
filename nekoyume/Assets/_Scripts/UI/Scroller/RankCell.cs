@@ -1,9 +1,12 @@
 using Libplanet;
+using Nekoyume.Game.Controller;
 using Nekoyume.Model.State;
+using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -50,19 +53,41 @@ namespace Nekoyume.UI.Scroller
         [SerializeField]
         private int addressStringCount = 6;
 
-        public void SetDataAsAbility(int rank, AbilityRankingInfo rankingInfo)
+        private void Awake()
         {
-            nicknameText.text = rankingInfo.Name;
-            addressText.text = rankingInfo.AvatarAddress
+            characterView.OnClickCharacterIcon
+                .Subscribe(avatarState =>
+                {
+                    if (avatarState is null)
+                    {
+                        return;
+                    }
+
+                    Widget.Find<FriendInfoPopup>().Show(avatarState);
+                })
+                .AddTo(gameObject);
+        }
+
+        public void SetDataAsAbility(AbilityRankingModel rankingInfo)
+        {
+            nicknameText.text = rankingInfo.AvatarState.name;
+            addressText.text = rankingInfo.AvatarState.address
                 .ToString()
                 .Remove(addressStringCount);
 
             firstElement.text = rankingInfo.Cp.ToString();
-            secondElement.text = rankingInfo.Level.ToString();
+            secondElement.text = rankingInfo.AvatarState.level.ToString();
             firstElement.gameObject.SetActive(true);
             secondElement.gameObject.SetActive(true);
+
+            var rank = rankingInfo.Rank;
             switch (rank)
             {
+                case 0:
+                    imageContainer.SetActive(false);
+                    textContainer.SetActive(true);
+                    rankText.text = "-";
+                    break;
                 case 1:
                     imageContainer.SetActive(true);
                     textContainer.SetActive(false);
@@ -89,16 +114,18 @@ namespace Nekoyume.UI.Scroller
             gameObject.SetActive(true);
         }
 
-        public void SetDataAsStage(int rank, StageRankingInfo rankingInfo)
+        public void SetDataAsStage(StageRankingModel rankingInfo)
         {
-            nicknameText.text = rankingInfo.Name;
-            addressText.text = rankingInfo.AvatarAddress
+            nicknameText.text = rankingInfo.AvatarState.name;
+            addressText.text = rankingInfo.AvatarState.address
                 .ToString()
                 .Remove(addressStringCount);
 
-            firstElement.text = rankingInfo.StageId.ToString();
+            firstElement.text = rankingInfo.Stage.ToString();
             firstElement.gameObject.SetActive(true);
             secondElement.gameObject.SetActive(false);
+
+            var rank = rankingInfo.Rank;
             switch (rank)
             {
                 case 1:

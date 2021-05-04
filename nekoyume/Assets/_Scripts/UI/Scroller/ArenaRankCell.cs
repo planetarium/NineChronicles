@@ -85,6 +85,20 @@ namespace Nekoyume.UI.Scroller
 
         private void Awake()
         {
+            characterView.OnClickCharacterIcon
+                .ThrottleFirst(new TimeSpan(0, 0, 1))
+                .Subscribe(avatarState =>
+                {
+                    if (avatarState is null)
+                    {
+                        avatarState = new AvatarState(
+                            (Bencodex.Types.Dictionary) Game.Game.instance.Agent.GetState(ArenaInfo.AvatarAddress));
+                    }
+
+                    Widget.Find<FriendInfoPopup>().Show(avatarState);
+                })
+                .AddTo(gameObject);
+
             avatarInfoButton.OnClickAsObservable()
                 .ThrottleFirst(new TimeSpan(0, 0, 1))
                 .Subscribe(_ =>
