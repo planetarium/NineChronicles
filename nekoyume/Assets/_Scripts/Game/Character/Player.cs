@@ -100,7 +100,7 @@ namespace Nekoyume.Game.Character
         protected override void OnDisable()
         {
             base.OnDisable();
-            Destroy(_cachedCharacterTitle);
+            DestroyImmediate(_cachedCharacterTitle);
         }
 
         private void OnDestroy()
@@ -185,7 +185,7 @@ namespace Nekoyume.Game.Character
                 return;
             }
 
-            if (_cachedCharacterTitle && costume.GetLocalizedNonColoredName().Contains(_cachedCharacterTitle.name))
+            if (_cachedCharacterTitle && costume.Id.ToString().Equals(_cachedCharacterTitle.name))
             {
                 return;
             }
