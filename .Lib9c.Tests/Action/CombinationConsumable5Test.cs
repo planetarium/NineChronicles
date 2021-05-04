@@ -5,7 +5,6 @@ namespace Lib9c.Tests.Action
     using System.Linq;
     using Libplanet;
     using Libplanet.Action;
-    using Libplanet.Assets;
     using Nekoyume;
     using Nekoyume.Action;
     using Nekoyume.Model.Item;
@@ -13,18 +12,18 @@ namespace Lib9c.Tests.Action
     using Nekoyume.Model.State;
     using Xunit;
 
-    public class CombinationEquipment2Test
+    public class CombinationConsumable5Test
     {
         private readonly Address _agentAddress;
         private readonly Address _avatarAddress;
         private readonly Address _slotAddress;
         private readonly Dictionary<string, string> _sheets;
-        private readonly TableSheets _tableSheets;
         private readonly IRandom _random;
+        private readonly TableSheets _tableSheets;
         private readonly AvatarState _avatarState;
         private IAccountStateDelta _initialState;
 
-        public CombinationEquipment2Test()
+        public CombinationConsumable5Test()
         {
             _agentAddress = default;
             _avatarAddress = _agentAddress.Derive("avatar");
@@ -38,10 +37,11 @@ namespace Lib9c.Tests.Action
             _sheets = TableSheetsImporter.ImportSheets();
             _random = new TestRandom();
             _tableSheets = new TableSheets(_sheets);
+
             var agentState = new AgentState(_agentAddress);
             agentState.avatarAddresses[0] = _avatarAddress;
-
             var gameConfigState = new GameConfigState();
+
             _avatarState = new AvatarState(
                 _avatarAddress,
                 _agentAddress,
@@ -50,19 +50,10 @@ namespace Lib9c.Tests.Action
                 gameConfigState,
                 default
             );
-            var gold = new GoldCurrencyState(new Currency("NCG", 2, minter: null));
 
             _initialState = new State()
                 .SetState(_agentAddress, agentState.Serialize())
-                .SetState(_avatarAddress, _avatarState.Serialize())
-                .SetState(
-                    _slotAddress,
-                    new CombinationSlotState(
-                        _slotAddress,
-                        GameConfig.RequireClearedStageLevel.CombinationEquipmentAction
-                    ).Serialize())
-                .SetState(GoldCurrencyState.Address, gold.Serialize())
-                .MintAsset(GoldCurrencyState.Address, gold.Currency * 100000000000);
+                .SetState(_avatarAddress, _avatarState.Serialize());
 
             foreach (var (key, value) in _sheets)
             {
@@ -74,12 +65,15 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Execute()
         {
-            var row = _tableSheets.EquipmentItemRecipeSheet.Values.First();
-            var materialRow = _tableSheets.MaterialItemSheet[row.MaterialId];
-            var material = ItemFactory.CreateItem(materialRow, _random);
-            _avatarState.inventory.AddItem(material, count: row.MaterialCount);
+            var row = _tableSheets.ConsumableItemRecipeSheet.Values.First();
+            foreach (var materialInfo in row.Materials)
+            {
+                var materialRow = _tableSheets.MaterialItemSheet[materialInfo.Id];
+                var material = ItemFactory.CreateItem(materialRow, _random);
+                _avatarState.inventory.AddItem(material, count: materialInfo.Count);
+            }
 
-            const int requiredStage = GameConfig.RequireClearedStageLevel.CombinationEquipmentAction;
+            const int requiredStage = GameConfig.RequireClearedStageLevel.CombinationConsumableAction;
             for (var i = 1; i < requiredStage + 1; i++)
             {
                 _avatarState.worldInformation.ClearStage(
@@ -91,8 +85,7 @@ namespace Lib9c.Tests.Action
                 );
             }
 
-            var equipmentRow = _tableSheets.EquipmentItemSheet.Values.First();
-            var equipment = ItemFactory.CreateItemUsable(equipmentRow, default, 0);
+            var equipment = ItemFactory.CreateItemUsable(_tableSheets.EquipmentItemSheet.First, default, 0);
 
             var result = new CombinationConsumable.ResultModel()
             {
@@ -110,13 +103,15 @@ namespace Lib9c.Tests.Action
                 _avatarState.Update(mail);
             }
 
-            _initialState = _initialState.SetState(_avatarAddress, _avatarState.Serialize());
+            _initialState = _initialState
+                .SetState(_avatarAddress, _avatarState.Serialize())
+                .SetState(_slotAddress, new CombinationSlotState(_slotAddress, requiredStage).Serialize());
 
-            var action = new CombinationEquipment2()
+            var action = new CombinationConsumable5()
             {
                 AvatarAddress = _avatarAddress,
-                RecipeId = row.Id,
-                SlotIndex = 0,
+                recipeId = row.Id,
+                slotIndex = 0,
             };
 
             var nextState = action.Execute(new ActionContext()
@@ -130,11 +125,14 @@ namespace Lib9c.Tests.Action
             var slotState = nextState.GetCombinationSlotState(_avatarAddress, 0);
 
             Assert.NotNull(slotState.Result);
-            Assert.NotNull(slotState.Result.itemUsable);
+
+            var consumable = (Consumable)slotState.Result.itemUsable;
+            Assert.NotNull(consumable);
 
             var nextAvatarState = nextState.GetAvatarState(_avatarAddress);
 
             Assert.Equal(30, nextAvatarState.mailBox.Count);
+            Assert.IsType<CombinationMail>(nextAvatarState.mailBox.First());
         }
     }
 }

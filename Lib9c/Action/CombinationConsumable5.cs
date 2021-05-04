@@ -18,8 +18,8 @@ using Material = Nekoyume.Model.Item.Material;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("combination_consumable2")]
-    public class CombinationConsumable2 : GameAction
+    [ActionType("combination_consumable4")]
+    public class CombinationConsumable5 : GameAction
     {
         public Address AvatarAddress;
         public int recipeId;
@@ -45,7 +45,7 @@ namespace Nekoyume.Action
             }
         }
 
-        public CombinationConsumable2()
+        public CombinationConsumable5()
         {
         }
 
@@ -83,7 +83,7 @@ namespace Nekoyume.Action
             var sw = new Stopwatch();
             sw.Start();
             var started = DateTimeOffset.UtcNow;
-            Log.Verbose("{AddressesHex}Combination exec started", addressesHex);
+            Log.Verbose("{AddressesHex}Combination exec started.", addressesHex);
 
             if (!states.TryGetAvatarState(ctx.Signer, AvatarAddress, out AvatarState avatarState))
             {
@@ -188,7 +188,7 @@ namespace Nekoyume.Action
                 requiredBlockIndex
             );
             result.id = mail.id;
-            avatarState.UpdateV2(mail);
+            avatarState.UpdateV3(mail);
             avatarState.UpdateFromCombination(itemUsable);
             sw.Stop();
             Log.Verbose("{AddressesHex}Combination Update AvatarState: {Elapsed}", addressesHex, sw.Elapsed);

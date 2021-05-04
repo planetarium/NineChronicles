@@ -102,7 +102,9 @@ namespace Lib9c.Tests.Action
             HashSet<int> expectedItems = new[] { 100000, 40100000 }.ToHashSet();
             Assert.Subset(nextAvatarState.inventory.Items.Select(i => i.item.Id).ToHashSet(), expectedItems);
             Assert.Equal(goldState.Currency * 100, nextState.GetBalance(_agentAddress, goldState.Currency));
+#pragma warning disable 618
             Assert.True(nextAvatarState.inventory.TryGetCostume(40100000, out var costume));
+#pragma warning restore 618
             Assert.NotEqual(default, costume.ItemId);
 
             // Check the code redeemed properly

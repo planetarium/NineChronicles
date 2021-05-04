@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.Serialization;
 using System.Security.Cryptography;
 using Bencodex.Types;
@@ -11,9 +9,11 @@ using Nekoyume.TableData;
 namespace Nekoyume.Model.Item
 {
     [Serializable]
-    public class Material : ItemBase, ISerializable
+    public class Material : ItemBase, ISerializable, IFungibleItem
     {
-        public HashDigest<SHA256> ItemId { get; protected set; }
+        public HashDigest<SHA256> ItemId { get; }
+
+        public HashDigest<SHA256> FungibleId => ItemId;
 
         public Material(MaterialItemSheet.Row data) : base(data)
         {
@@ -35,7 +35,8 @@ namespace Nekoyume.Model.Item
 
         protected bool Equals(Material other)
         {
-            return base.Equals(other) && ItemId.Equals(other.ItemId);
+            return base.Equals(other) &&
+                   ItemId.Equals(other.ItemId);
         }
 
         public override bool Equals(object obj)
@@ -50,17 +51,19 @@ namespace Nekoyume.Model.Item
         {
             unchecked
             {
-                return (base.GetHashCode() * 397) ^ ItemId.GetHashCode();
+                var hashCode = base.GetHashCode();
+                hashCode = (hashCode * 397) ^ ItemId.GetHashCode();
+                return hashCode;
             }
         }
 
-        public override IValue Serialize() =>
-#pragma warning disable LAA1002
-            new Dictionary(new Dictionary<IKey, IValue>
-            {
-                [(Text) "item_id"] = ItemId.Serialize()
-            }.Union((Dictionary) base.Serialize()));
-#pragma warning restore LAA1002
+        public override IValue Serialize()
+        {
+            var result = ((Dictionary) base.Serialize())
+                .SetItem("item_id", ItemId.Serialize());
+
+            return result;
+        }
 
         public override string ToString()
         {

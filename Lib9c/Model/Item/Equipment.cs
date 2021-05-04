@@ -12,7 +12,7 @@ namespace Nekoyume.Model.Item
     [Serializable]
     public class Equipment : ItemUsable, IEquippableItem
     {
-        // FIXME: Do not use anymore please!
+        // FIXME: Whether the equipment is equipped or not has no asset value and must be removed from the state.
         public bool equipped = false;
         public int level;
         public DecimalStat Stat { get; }
@@ -64,12 +64,12 @@ namespace Nekoyume.Model.Item
                 SpineResourcePath = (Text) spineResourcePath;
             }
         }
-        
+
         protected Equipment(SerializationInfo info, StreamingContext _)
             : this((Dictionary) Codec.Decode((byte[]) info.GetValue("serialized", typeof(byte[]))))
         {
         }
-        
+
         public override IValue Serialize() =>
 #pragma warning disable LAA1002
             new Dictionary(new Dictionary<IKey, IValue>
