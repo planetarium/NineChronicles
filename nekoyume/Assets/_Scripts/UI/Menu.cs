@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Linq;
 using Nekoyume.BlockChain;
@@ -6,7 +5,6 @@ using Nekoyume.Game;
 using Nekoyume.Game.Controller;
 using Nekoyume.State;
 using Nekoyume.UI.Module;
-using Nekoyume.Manager;
 using Nekoyume.Model.BattleStatus;
 using UniRx;
 using UnityEngine;
@@ -250,7 +248,6 @@ namespace Nekoyume.UI
             var avatarState = States.Instance.CurrentAvatarState;
             Find<WorldMap>().Show(avatarState.worldInformation);
             AudioController.PlayClick();
-            AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ClickMainBattle);
         }
 
         public void ShopClick()
@@ -271,7 +268,6 @@ namespace Nekoyume.UI
             Close();
             Find<ShopBuy>().Show();
             AudioController.PlayClick();
-            AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ClickMainShop);
         }
 
         public void CombinationClick(int slotIndex = -1)
@@ -313,7 +309,6 @@ namespace Nekoyume.UI
             showAction();
 
             AudioController.PlayClick();
-            AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ClickMainCombination);
         }
 
         public void RankingClick()
@@ -383,7 +378,6 @@ namespace Nekoyume.UI
             Mixpanel.Track("Unity/Enter Mimisbrunnr");
             _coLazyClose = StartCoroutine(CoLazyClose());
             AudioController.PlayClick();
-            AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ClickHardBattle);
 
             SharedViewModel.SelectedWorldId.SetValueAndForceNotify(world.Id);
             SharedViewModel.SelectedStageId.SetValueAndForceNotify(world.GetNextStageId());

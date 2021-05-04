@@ -7,7 +7,6 @@ using Libplanet;
 using Libplanet.Assets;
 using Nekoyume.Action;
 using Nekoyume.Game.Character;
-using Nekoyume.Manager;
 using Nekoyume.Model.Item;
 using Nekoyume.State;
 using UniRx;
@@ -123,11 +122,6 @@ namespace Nekoyume.BlockChain
             };
             ProcessAction(action);
 
-            var itemIDs = equipments
-                .Select(e => e.Id)
-                .Concat(foods.Select(f => f.Id))
-                .ToArray();
-            AnalyticsManager.Instance.Battle(itemIDs);
             return _renderer.EveryRender<MimisbrunnrBattle2>()
                 .SkipWhile(eval => !eval.Action.Id.Equals(action.Id))
                 .Take(1)
@@ -182,11 +176,6 @@ namespace Nekoyume.BlockChain
             };
             ProcessAction(action);
 
-            var itemIDs = equipments
-                .Select(e => e.Id)
-                .Concat(foods.Select(f => f.Id))
-                .ToArray();
-            AnalyticsManager.Instance.Battle(itemIDs);
             return _renderer.EveryRender<HackAndSlash4>()
                 .SkipWhile(eval => !eval.Action.Id.Equals(action.Id))
                 .Take(1)
@@ -199,8 +188,6 @@ namespace Nekoyume.BlockChain
         public IObservable<ActionBase.ActionEvaluation<CombinationConsumable3>> CombinationConsumable(
             int recipeId, int slotIndex)
         {
-            AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ActionCombination);
-
             var action = new CombinationConsumable3
             {
                 recipeId = recipeId,

@@ -6,7 +6,6 @@ using Nekoyume.Battle;
 using Nekoyume.BlockChain;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
-using Nekoyume.Manager;
 using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Stat;
@@ -496,7 +495,6 @@ namespace Nekoyume.UI
             yield return new WaitWhile(() => animation.IsPlaying);
             Battle(repeat);
             AudioController.PlayClick();
-            AnalyticsManager.Instance.BattleEntrance(repeat);
         }
 
         #region slot
