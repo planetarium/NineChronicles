@@ -124,6 +124,10 @@ namespace Lib9c.Tests
 
         public CostumeStatSheet CostumeStatSheet { get; private set; }
 
+        public StakingSheet StakingSheet { get; private set; }
+
+        public StakingRewardSheet StakingRewardSheet { get; private set; }
+
         public void ItemSheetInitialize()
         {
             ItemSheet = new ItemSheet();
