@@ -49,6 +49,7 @@ namespace Nekoyume.Action
             }
 
             Currency currency = states.GetGoldCurrency();
+            // Set default gold value.
             FungibleAssetValue requiredGold = currency * 0;
             FungibleAssetValue balance = states.GetBalance(context.Signer, states.GetGoldCurrency());
 

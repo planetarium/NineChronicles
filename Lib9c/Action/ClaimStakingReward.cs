@@ -82,6 +82,7 @@ namespace Nekoyume.Action
             {
                 StakingSheet stakingSheet = states.GetSheet<StakingSheet>();
                 Currency currency = states.GetGoldCurrency();
+                // Set default gold value.
                 FungibleAssetValue gold = currency * 0;
                 for (int i = 0; i < stakingState.Level; i++)
                 {
