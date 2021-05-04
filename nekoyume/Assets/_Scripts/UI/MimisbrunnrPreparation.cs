@@ -754,6 +754,7 @@ namespace Nekoyume.UI
 
             _stage.isExitReserved = false;
             _stage.repeatStage = repeat;
+            _stage.foodCount = consumables.Count;
             ActionRenderHandler.Instance.Pending = true;
             Game.Game.instance.ActionManager
                 .MimisbrunnrBattle(

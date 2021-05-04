@@ -188,6 +188,11 @@ namespace Nekoyume.BlockChain
         public IObservable<ActionBase.ActionEvaluation<CombinationConsumable3>> CombinationConsumable(
             int recipeId, int slotIndex)
         {
+            Mixpanel.Track("Unity/Create CombinationConsumable", new Value()
+            {
+                ["RecipeId"] = recipeId,
+            });
+
             var action = new CombinationConsumable3
             {
                 recipeId = recipeId,
@@ -306,6 +311,8 @@ namespace Nekoyume.BlockChain
             LocalLayerModifier.SetItemEquip(avatarAddress, itemId, false, false);
             LocalLayerModifier.SetItemEquip(avatarAddress, materialId, false, false);
 
+            Mixpanel.Track("Unity/Item Enhancement");
+
             var action = new ItemEnhancement5
             {
                 itemId = itemId,
@@ -334,6 +341,7 @@ namespace Nekoyume.BlockChain
             if (!ArenaHelper.TryGetThisWeekAddress(out var weeklyArenaAddress))
                 throw new NullReferenceException(nameof(weeklyArenaAddress));
 
+            Mixpanel.Track("Unity/Ranking Battle");
             var action = new RankingBattle
             {
                 AvatarAddress = States.Instance.CurrentAvatarState.address,
@@ -369,7 +377,10 @@ namespace Nekoyume.BlockChain
             int slotIndex,
             int? subRecipeId = null)
         {
-            Mixpanel.Track("Unity/Create CombinationEquipment");
+            Mixpanel.Track("Unity/Create CombinationEquipment", new Value()
+            {
+                ["RecipeId"] = recipeId,
+            });
 
             // 결과 주소도 고정되게 바꿔야함
             var action = new CombinationEquipment4
