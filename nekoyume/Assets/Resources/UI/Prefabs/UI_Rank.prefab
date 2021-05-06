@@ -3392,7 +3392,6 @@ GameObject:
   - component: {fileID: 9112409922550750338}
   - component: {fileID: 9112409922550750348}
   - component: {fileID: 8907150788172144174}
-  - component: {fileID: 4656516661731010147}
   m_Layer: 5
   m_Name: UI_Rank
   m_TagString: Untagged
@@ -3446,25 +3445,6 @@ MonoBehaviour:
   tutorialActions: 
   closeButton: {fileID: 725586661956196557}
   rankPanel: {fileID: 3769975546697769537}
---- !u!95 &4656516661731010147
-Animator:
-  serializedVersion: 3
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9112409922550750337}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 4ebe747bd7f6a4c8dbd55dbf20250e5c, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &9112928454622774160
 GameObject:
   m_ObjectHideFlags: 0
