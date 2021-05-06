@@ -31,7 +31,7 @@ namespace Nekoyume.Helper
 
         private string storagePath;
 
-        private string storageType;
+        private string storageType = "rocksdb";
 
         private bool rpcClient;
 
@@ -336,8 +336,8 @@ namespace Nekoyume.Helper
 
         public static CommandLineOptions Load(string localPath)
         {
-            var options = CommnadLineParser.GetCommandLineOptions();
-            if (!options.Empty)
+            var options = CommandLineParser.GetCommandLineOptions();
+            if (options != null && !options.Empty)
             {
                 Debug.Log($"Get options from commandline.");
                 return options;
@@ -416,7 +416,7 @@ namespace Nekoyume.Helper
         }
     }
 
-    public static class CommnadLineParser
+    public static class CommandLineParser
     {
         public static CommandLineOptions GetCommandLineOptions()
         {

@@ -9,7 +9,6 @@ using Nekoyume.Game;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
 using Nekoyume.L10n;
-using Nekoyume.Manager;
 using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.Item;
 using Nekoyume.State;
@@ -200,7 +199,6 @@ namespace Nekoyume.UI
 
             AudioController.PlayClick();
             yield return CoProceedNextStage();
-            AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ClickBattleResultNext);
         }
 
         private IEnumerator OnClickRepeat()
@@ -212,7 +210,6 @@ namespace Nekoyume.UI
 
             AudioController.PlayClick();
             yield return CoRepeatStage();
-            AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ClickBattleResultNext);
         }
 
         private IEnumerator CoDialog(int worldStage)
@@ -300,7 +297,6 @@ namespace Nekoyume.UI
         {
             AudioController.instance.PlayMusic(AudioController.MusicCode.Win, 0.3f);
             StartCoroutine(EmitBattleWinVFX());
-            AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ActionBattleWin);
 
             victoryImageContainer.SetActive(true);
             _victoryImageAnimator.SetInteger("ClearedWave", SharedModel.ClearedWaveNumber);
@@ -344,7 +340,6 @@ namespace Nekoyume.UI
         private void UpdateViewAsDefeat(BattleLog.Result result)
         {
             AudioController.instance.PlayMusic(AudioController.MusicCode.Lose);
-            AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ActionBattleLose);
 
             victoryImageContainer.SetActive(false);
             defeatImageContainer.SetActive(true);
@@ -516,12 +511,6 @@ namespace Nekoyume.UI
             player.DisableHUD();
             ActionRenderHandler.Instance.Pending = true;
 
-            var props = new Value
-            {
-                ["StageId"] = SharedModel.StageID + 1,
-            };
-            Mixpanel.Track("Unity/Stage Exit Next Stage", props);
-
             yield return Game.Game.instance.ActionManager
                 .HackAndSlash(
                     player.Costumes,
@@ -630,7 +619,6 @@ namespace Nekoyume.UI
             Find<Battle>().Close();
             Game.Event.OnRoomEnter.Invoke(true);
             Close();
-            AnalyticsManager.Instance.BattleLeave();
         }
 
         private void StopCoUpdateBottomText()

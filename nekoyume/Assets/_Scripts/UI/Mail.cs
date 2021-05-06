@@ -306,11 +306,9 @@ namespace Nekoyume.UI
 
         public void Read(SellerMail sellerMail)
         {
-            var agentAddress = States.Instance.AgentState.address;
             var avatarAddress = States.Instance.CurrentAvatarState.address;
+            var agentAddress = States.Instance.AgentState.address;
             var attachment = (Buy.SellerResult) sellerMail.attachment;
-
-            //TODO 관련 기획이 끝나면 별도 UI를 생성
             LocalLayerModifier.ModifyAgentGold(agentAddress, attachment.gold);
             LocalLayerModifier.RemoveNewAttachmentMail(avatarAddress, sellerMail.id);
         }

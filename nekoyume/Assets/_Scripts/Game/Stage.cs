@@ -26,6 +26,7 @@ using UnityEngine;
 using TentuPlay.Api;
 using UniRx;
 using mixpanel;
+using Nekoyume.Battle;
 using Nekoyume.Game.Character;
 using Nekoyume.L10n;
 using UnityEngine.Rendering;
@@ -61,6 +62,7 @@ namespace Nekoyume.Game
         public readonly Vector2 roomPosition = new Vector2(-2.808f, -1.519f);
         public bool repeatStage;
         public bool isExitReserved;
+        public int foodCount = 0;
         public string zone;
         public Animator roomAnimator { get; private set; }
 
@@ -620,9 +622,17 @@ namespace Nekoyume.Game
             string stageSlug = $"HackAndSlash_{log.worldId}_{log.stageId}";
             OnCharacterConsumablePlay("HackAndSlash", stageSlug);
             OnCharacterStageEnd(log, "HackAndSlash", stageSlug, log.clearedWaveNumber);
+
+            var characterSheet = Game.instance.TableSheets.CharacterSheet;
+            var costumeStatSheet = Game.instance.TableSheets.CostumeStatSheet;
+            var cp = CPHelper.GetCPV2(States.Instance.CurrentAvatarState, characterSheet, costumeStatSheet);
             var props = new Value
             {
-                ["StageId"] = log.stageId
+                ["StageId"] = log.stageId,
+                ["ClearedWave"] = log.clearedWaveNumber,
+                ["Repeat"] = repeatStage,
+                ["CP"] = cp,
+                ["FoodCount"] = foodCount
             };
             Mixpanel.Track("Unity/Stage End", props);
         }

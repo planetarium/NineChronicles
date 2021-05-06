@@ -2,8 +2,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using mixpanel;
 using Nekoyume.Helper;
-using Nekoyume.Manager;
 using Nekoyume.Model.Item;
 using Nekoyume.UI;
 using UniRx;
@@ -589,8 +589,11 @@ namespace Nekoyume.Game.Character
                     character_uuid: States.Instance.CurrentAvatarState.address.ToHex()
                         .Substring(0, 4), level_from: (int) level, level_to: (int) Level);
 
-                AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ActionStatusLevelUp,
-                    level);
+                Mixpanel.Track("Unity/User Level Up", new Value
+                {
+                    ["code"] = level,
+                });
+
                 Widget.Find<LevelUpCelebratePopup>()?.Show(level, Level);
                 InitStats(Model);
             }
