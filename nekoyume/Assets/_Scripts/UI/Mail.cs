@@ -357,7 +357,41 @@ namespace Nekoyume.UI
 
         public void Read(StakingMail stakingMail)
         {
-            //
+            if (!(stakingMail.attachment is StakingResult stakingResult))
+            {
+                return;
+            }
+            
+            var model = new UI.Model.ClaimStakingRewardPopup(
+                stakingMail.id,
+                stakingResult.avatarAddress,
+                stakingResult.rewards);
+            var popup = Find<ClaimStakingRewardPopup>();
+            popup.OnClickSubmit.First().Subscribe(widget =>
+            {
+                // LocalLayer
+                var mailId = widget.Model.MailId;
+                var avatarAddress = widget.Model.AvatarAddress;
+                var rewardInfos = widget.Model.RewardInfos;
+                for (var i = 0; i < rewardInfos.Count; i++)
+                {
+                    var rewardInfo = rewardInfos[i];
+                    if (!rewardInfo.ItemId.TryParseAsTradableId(
+                        Game.Game.instance.TableSheets.ItemSheet,
+                        out var tradableId))
+                    {
+                        continue;
+                    }
+                
+                    LocalLayerModifier.AddItem(avatarAddress, tradableId, rewardInfo.Quantity);
+                }
+            
+                LocalLayerModifier.RemoveNewAttachmentMail(avatarAddress, mailId, true);
+                // ~LocalLayer
+                
+                widget.Close();
+            });
+            popup.Pop(model);
         }
 
         public void TutorialActionClickFirstCombinationMailSubmitButton()

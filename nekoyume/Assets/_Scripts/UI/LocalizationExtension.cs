@@ -50,8 +50,10 @@ namespace Nekoyume.UI
 
                     var format = L10nManager.Localize("UI_SELLER_MAIL_FORMAT");
                     return string.Format(format, sellerResult.gold, GetLocalizedNonColoredName(attachment.itemUsable ?? (ItemBase)attachment.costume));
-                case DailyRewardMail dailyRewardMail:
+                case DailyRewardMail _:
                     return L10nManager.Localize("UI_DAILY_REWARD_MAIL_FORMAT");
+                case StakingMail _:
+                    return L10nManager.Localize("NOTIFICATION_CLAIM_STAKING_REWARD");
                 default:
                     throw new NotSupportedException(
                         $"Given mail[{mail}] doesn't support {nameof(ToInfo)}() method."
