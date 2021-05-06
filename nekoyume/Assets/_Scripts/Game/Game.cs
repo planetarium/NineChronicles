@@ -17,14 +17,18 @@ using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
+using Nekoyume.Model.Item;
+using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
 using Nekoyume.Pattern;
 using Nekoyume.State;
+using Nekoyume.TableData;
 using Nekoyume.UI;
 using UniRx;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
+using Mail = Nekoyume.UI.Mail;
 using Menu = Nekoyume.UI.Menu;
 
 namespace Nekoyume.Game
@@ -167,10 +171,12 @@ namespace Nekoyume.Game
                 .Subscribe(PlayMouseOnClickVFX)
                 .AddTo(gameObject);
 
-
             Widget.Find<VersionInfo>().SetVersion(Agent.AppProtocolVersion);
 
             ShowNext(agentInitializeSucceed);
+#if UNITY_EDITOR
+            EditorTests();
+#endif
         }
 
         private void SubscribeRPCAgent()
@@ -659,5 +665,85 @@ namespace Nekoyume.Game
 
             return msg;
         }
+#if UNITY_EDITOR
+        private void EditorTests()
+        {
+            // Test monster collection rewards mail. `M` + `0~4`
+            Observable.EveryUpdate()
+                .Where(_ => Input.GetKey(KeyCode.M))
+                .Select(_ =>
+                {
+                    Debug.Log("pressed `M`");
+                    if (Input.GetKeyDown(KeyCode.Alpha0))
+                    {
+                        return 0;
+                    }
+
+                    if (Input.GetKeyDown(KeyCode.Alpha1))
+                    {
+                        return 1;
+                    }
+
+                    if (Input.GetKeyDown(KeyCode.Alpha2))
+                    {
+                        return 2;
+                    }
+
+                    if (Input.GetKeyDown(KeyCode.Alpha3))
+                    {
+                        return 3;
+                    }
+
+                    if (Input.GetKeyDown(KeyCode.Alpha4))
+                    {
+                        return 4;
+                    }
+
+                    return -1;
+                })
+                .Subscribe(rewardsCount =>
+                {
+                    Debug.Log($"pressed {rewardsCount}");
+                    if (rewardsCount < 0)
+                    {
+                        return;
+                    }
+
+                    var hourglassId = TableSheets.ItemSheet.OrderedList
+                        .FirstOrDefault(e => e.ItemSubType == ItemSubType.Hourglass)?.Id ?? 0;
+                    var apPotionId = TableSheets.ItemSheet.OrderedList
+                        .FirstOrDefault(e => e.ItemSubType == ItemSubType.ApStone)?.Id ?? 0;
+                    var rewardInfos = new List<StakingRewardSheet.RewardInfo>();
+                    for (var i = 0; i < rewardsCount; i++)
+                    {
+                        var dict = new Bencodex.Types.Dictionary();
+                        dict = dict
+                            .SetItem(
+                                Lib9c.SerializeKeys.IdKey,
+                                i % 2 == 0 ? hourglassId.Serialize() : apPotionId.Serialize())
+                            .SetItem(
+                                Lib9c.SerializeKeys.QuantityKey,
+                                UnityEngine.Random.Range(1, 100).Serialize());
+                        rewardInfos.Add(new StakingRewardSheet.RewardInfo(dict));
+                    }
+
+                    var mailId = Guid.NewGuid();
+                    var avatarAddress = States.Instance.CurrentAvatarState.address;
+                    var monsterCollectionRewards = new StakingResult(
+                        mailId,
+                        avatarAddress,
+                        rewardInfos);
+                    var monsterCollectionRewardsMail = new StakingMail(
+                        monsterCollectionRewards,
+                        Agent.BlockIndex,
+                        mailId,
+                        Agent.BlockIndex);
+                    States.Instance.CurrentAvatarState.mailBox.Add(monsterCollectionRewardsMail);
+                    LocalLayerModifier.AddNewAttachmentMail(avatarAddress, mailId);
+                    Widget.Find<Mail>().Show();
+                })
+                .AddTo(gameObject);
+        }
+#endif
     }
 }
