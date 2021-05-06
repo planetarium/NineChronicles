@@ -115,7 +115,7 @@ namespace System.Buffers
 
         private static unsafe bool TryReadMultisegment(ref SequenceReader<byte> reader, out long value)
         {
-            Debug.Assert(reader.UnreadSpan.Length < sizeof(T), "reader.UnreadSpan.Length < sizeof(T)");
+            Debug.Assert(reader.UnreadSpan.Length < sizeof(long), "reader.UnreadSpan.Length < sizeof(long)");
 
             // Not enough data in the current segment, try to peek for the data we need.
             long buffer = default;
