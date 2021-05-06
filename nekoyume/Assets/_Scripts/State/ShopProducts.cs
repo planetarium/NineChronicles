@@ -42,12 +42,16 @@ namespace Nekoyume.State
                         var state = new ShardedShopState(dictionary);
                         foreach (var product in state.Products.Values)
                         {
-                            var agentAddress = product.SellerAgentAddress;
-                            if (!Products.ContainsKey(agentAddress))
+                            if (product.ExpiredBlockIndex != 0 && product.ExpiredBlockIndex >
+                                Game.Game.instance.Agent.BlockIndex)
                             {
-                                Products.Add(agentAddress, new List<ShopItem>());
+                                var agentAddress = product.SellerAgentAddress;
+                                if (!Products.ContainsKey(agentAddress))
+                                {
+                                    Products.Add(agentAddress, new List<ShopItem>());
+                                }
+                                Products[agentAddress].Add(product);
                             }
-                            Products[agentAddress].Add(product);
                         }
                     }
                 }
