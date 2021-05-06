@@ -143,8 +143,6 @@ namespace Nekoyume.Game
             // Agent가 Table과 TableSheets에 약한 의존성을 갖고 있음.(Deserialize 단계 때문)
             var agentInitialized = false;
             var agentInitializeSucceed = false;
-
-            // yield return StartCoroutine();
             yield return StartCoroutine(
                 CoLogin(
                     succeed =>
