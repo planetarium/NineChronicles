@@ -951,7 +951,7 @@ namespace Nekoyume.BlockChain
             // Notification
             UI.Notification.Push(
                 MailType.System,
-                L10nManager.Localize("NOTIFICATION_CLAIM_STAKING_REWARD"));
+                L10nManager.Localize("NOTIFICATION_CLAIM_MONSTER_COLLECTION_REWARD"));
 
             UpdateAgentState(eval);
             UpdateCurrentAvatarState(eval);
