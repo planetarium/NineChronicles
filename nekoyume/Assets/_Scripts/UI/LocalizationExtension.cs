@@ -53,7 +53,7 @@ namespace Nekoyume.UI
                 case DailyRewardMail _:
                     return L10nManager.Localize("UI_DAILY_REWARD_MAIL_FORMAT");
                 case StakingMail _:
-                    return L10nManager.Localize("NOTIFICATION_CLAIM_MONSTER_COLLECTION_REWARD");
+                    return L10nManager.Localize("UI_MONSTER_COLLECTION_MAIL_FORMAT");
                 default:
                     throw new NotSupportedException(
                         $"Given mail[{mail}] doesn't support {nameof(ToInfo)}() method."
