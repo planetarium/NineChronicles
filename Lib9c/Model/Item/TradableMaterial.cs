@@ -54,7 +54,7 @@ namespace Nekoyume.Model.Item
 
         protected bool Equals(TradableMaterial other)
         {
-            return base.Equals(other) && TradableId.Equals(other.TradableId);
+            return base.Equals(other) && RequiredBlockIndex == other.RequiredBlockIndex && TradableId.Equals(other.TradableId);
         }
 
         public override bool Equals(object obj)
@@ -69,7 +69,10 @@ namespace Nekoyume.Model.Item
         {
             unchecked
             {
-                return (base.GetHashCode() * 397) ^ TradableId.GetHashCode();
+                var hashCode = base.GetHashCode();
+                hashCode = (hashCode * 397) ^ RequiredBlockIndex.GetHashCode();
+                hashCode = (hashCode * 397) ^ TradableId.GetHashCode();
+                return hashCode;
             }
         }
 

@@ -73,14 +73,16 @@ namespace Lib9c.Tests.Action
         }
 
         [Theory]
-        [InlineData(ItemType.Equipment, "F9168C5E-CEB2-4faa-B6BF-329BF39FA1E4", true)]
-        [InlineData(ItemType.Costume, "936DA01F-9ABD-4d9d-80C7-02AF85C822A8", true)]
-        [InlineData(ItemType.Equipment, "F9168C5E-CEB2-4faa-B6BF-329BF39FA1E4", false)]
-        [InlineData(ItemType.Costume, "936DA01F-9ABD-4d9d-80C7-02AF85C822A8", false)]
-        public void Execute(ItemType itemType, string guid, bool contain)
+        [InlineData(ItemType.Equipment, "F9168C5E-CEB2-4faa-B6BF-329BF39FA1E4", true, 1)]
+        [InlineData(ItemType.Costume, "936DA01F-9ABD-4d9d-80C7-02AF85C822A8", true, 1)]
+        [InlineData(ItemType.Material, "15396359-04db-68d5-f24a-d89c18665900", true, 1)]
+        [InlineData(ItemType.Material, "15396359-04db-68d5-f24a-d89c18665900", true, 2)]
+        [InlineData(ItemType.Equipment, "F9168C5E-CEB2-4faa-B6BF-329BF39FA1E4", false, 1)]
+        [InlineData(ItemType.Costume, "936DA01F-9ABD-4d9d-80C7-02AF85C822A8", false, 1)]
+        public void Execute(ItemType itemType, string guid, bool contain, int itemCount)
         {
             var avatarState = _initialState.GetAvatarState(_avatarAddress);
-            INonFungibleItem nonFungibleItem;
+            ITradableItem tradableItem;
             Guid itemId = new Guid(guid);
             Guid productId = itemId;
             ItemSubType itemSubType;
@@ -92,15 +94,22 @@ namespace Lib9c.Tests.Action
                     _tableSheets.EquipmentItemSheet.First,
                     itemId,
                     requiredBlockIndex);
-                nonFungibleItem = itemUsable;
+                tradableItem = itemUsable;
                 itemSubType = itemUsable.ItemSubType;
             }
-            else
+            else if (itemType == ItemType.Costume)
             {
                 var costume = ItemFactory.CreateCostume(_tableSheets.CostumeItemSheet.First, itemId);
                 costume.Update(requiredBlockIndex);
-                nonFungibleItem = costume;
+                tradableItem = costume;
                 itemSubType = costume.ItemSubType;
+            }
+            else
+            {
+                var material = ItemFactory.CreateTradableMaterial(
+                    _tableSheets.MaterialItemSheet.OrderedList.First(r => r.ItemSubType == ItemSubType.Hourglass));
+                itemSubType = material.ItemSubType;
+                tradableItem = material;
             }
 
             var result = new DailyReward.DailyRewardResult()
@@ -123,12 +132,13 @@ namespace Lib9c.Tests.Action
                 productId,
                 new FungibleAssetValue(_goldCurrencyState.Currency, 100, 0),
                 requiredBlockIndex,
-                nonFungibleItem);
+                tradableItem,
+                itemCount);
 
             if (contain)
             {
                 shopState.Register(shopItem);
-                avatarState.inventory.AddItem((ItemBase)nonFungibleItem);
+                avatarState.inventory.AddItem((ItemBase)tradableItem, itemCount);
                 Assert.Empty(legacyShopState.Products);
                 Assert.Single(shopState.Products);
             }
@@ -139,8 +149,11 @@ namespace Lib9c.Tests.Action
                 Assert.Empty(shopState.Products);
             }
 
-            Assert.Equal(requiredBlockIndex, nonFungibleItem.RequiredBlockIndex);
-            Assert.Equal(contain, avatarState.inventory.TryGetNonFungibleItem(itemId, out _));
+            Assert.Equal(requiredBlockIndex, tradableItem.RequiredBlockIndex);
+            Assert.Equal(
+                contain,
+                avatarState.inventory.TryGetTradableItems(itemId, requiredBlockIndex, itemCount, out _)
+            );
 
             IAccountStateDelta prevState = _initialState
                 .SetState(_avatarAddress, avatarState.Serialize())
@@ -166,8 +179,21 @@ namespace Lib9c.Tests.Action
             Assert.Empty(nextShopState.Products);
 
             var nextAvatarState = nextState.GetAvatarState(_avatarAddress);
-            Assert.True(nextAvatarState.inventory.TryGetNonFungibleItem(itemId, out INonFungibleItem nextNonFungibleItem));
-            Assert.Equal(1, nextNonFungibleItem.RequiredBlockIndex);
+            Assert.False(nextAvatarState.inventory.TryGetTradableItems(
+                itemId,
+                requiredBlockIndex,
+                itemCount,
+                out List<Inventory.Item> _
+            ));
+            Assert.True(nextAvatarState.inventory.TryGetTradableItems(
+                itemId,
+                1,
+                itemCount,
+                out List<Inventory.Item> inventoryItems
+            ));
+            Assert.Single(inventoryItems);
+            ITradableItem nextTradableItem = (ITradableItem)inventoryItems.First().item;
+            Assert.Equal(1, nextTradableItem.RequiredBlockIndex);
             Assert.Equal(30, nextAvatarState.mailBox.Count);
             ShopState nextLegacyShopState = nextState.GetShopState();
             Assert.Empty(nextLegacyShopState.Products);
