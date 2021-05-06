@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
@@ -7,20 +8,13 @@ namespace Nekoyume.Helper
 {
     public static class ResourcesHelper
     {
-        private static List<ScriptableObject> _resources;
-        private static IEnumerable<ScriptableObject> Resources
+        private static readonly List<ScriptableObject> Resources = new List<ScriptableObject>();
+
+        public static IEnumerator CoInitialize()
         {
-            get
-            {
-                if (_resources == null)
-                {
-                    _resources = new List<ScriptableObject>();
-                    var resources =
-                        UnityEngine.Resources.LoadAll<ScriptableObject>("ScriptableObject/");
-                    _resources.AddRange(resources);
-                }
-                return _resources;
-            }
+            yield return null;
+            var resources = UnityEngine.Resources.LoadAll<ScriptableObject>("ScriptableObject/");
+            Resources.AddRange(resources);
         }
 
         private static T Get<T>()
