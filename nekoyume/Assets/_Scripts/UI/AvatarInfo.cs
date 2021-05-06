@@ -143,6 +143,7 @@ namespace Nekoyume.UI
 
         public override void Show(bool ignoreShowAnimation = false)
         {
+            Destroy(_cachedCharacterTitle);
             var currentAvatarState = Game.Game.instance.States.CurrentAvatarState;
             IsTweenEnd.Value = false;
             Show(currentAvatarState, ignoreShowAnimation);
@@ -184,9 +185,9 @@ namespace Nekoyume.UI
 
         private void CreatePlayer(AvatarState avatarState)
         {
-            _player = PlayerFactory.Create(avatarState).GetComponent<Player>();
             var orderInLayer = MainCanvas.instance.GetLayer(WidgetType).root.sortingOrder + 1;
-            _player.SetSortingLayer(SortingLayer.NameToID("UI"), orderInLayer);
+            _player = PlayerFactory.CreateBySettingLayer(avatarState, SortingLayer.NameToID("UI"), orderInLayer)
+                                   .GetComponent<Player>();
             _player.Set(avatarState);
             _player.transform.SetParent(avatarPosition);
             _player.transform.localPosition = Vector3.zero;
