@@ -26,5 +26,6 @@ namespace Nekoyume.L10n
         RankLevel,
         Count,
         Tutorial,
+        RewardText,
     }
 }
