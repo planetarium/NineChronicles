@@ -42,10 +42,7 @@ namespace Nekoyume.UI.Scroller
         private TextMeshProUGUI rankText = null;
 
         [SerializeField]
-        private FramedCharacterView characterView = null;
-
-        [SerializeField]
-        private TextMeshProUGUI levelText = null;
+        private DetailedCharacterView characterView = null;
 
         [SerializeField]
         private TextMeshProUGUI nameText = null;
@@ -160,7 +157,6 @@ namespace Nekoyume.UI.Scroller
             }
 
             UpdateRank(rank);
-            levelText.text = ArenaInfo.Level.ToString();
             nameText.text = ArenaInfo.AvatarName;
             scoreText.text = ArenaInfo.Score.ToString();
             cpText.text = GetCP(arenaInfo);
@@ -188,7 +184,7 @@ namespace Nekoyume.UI.Scroller
             else
             {
                 //FIXME 현재 코스튬대응이 안되있음 lib9c쪽과 함께 고쳐야함
-                characterView.SetByArmorId(arenaInfo.ArmorId);
+                characterView.SetByArenaInfo(arenaInfo);
                 if (currentAvatarArenaInfo is null)
                 {
                     challengeButton.SetSubmittable(true);
