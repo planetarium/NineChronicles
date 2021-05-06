@@ -347,8 +347,6 @@ GameObject:
   - component: {fileID: 3993079662713737467}
   - component: {fileID: 1833368876211240169}
   - component: {fileID: 6352535224322201035}
-  - component: {fileID: 7575421550052372201}
-  - component: {fileID: 8114046495344012273}
   m_Layer: 5
   m_Name: ArenaRankCell
   m_TagString: Untagged
@@ -454,48 +452,6 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
---- !u!114 &7575421550052372201
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3018884119875456309}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4aed7f6867e8d5645a56db125ce2708e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  startDelay: 1
-  end: -605
-  duration: 1
-  snapping: 0
-  showEase: 18
-  closeEase: 17
-  isFrom: 1
-  playOnAwake: 0
-  playOnEnable: 1
---- !u!114 &8114046495344012273
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3018884119875456309}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: abaa6dcb22ea4841ad6cfc83488b42d9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  delayForPlay: 1
-  easeForPlay: 18
-  delayForPlayReverse: 1
-  easeForPlayReverse: 17
-  end: 0
-  duration: 1
-  isFrom: 1
-  playOnAwake: 0
-  playOnEnable: 1
 --- !u!1 &3219152262709275016
 GameObject:
   m_ObjectHideFlags: 0
