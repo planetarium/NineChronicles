@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography;
-using Libplanet;
 using Nekoyume.JsonConvertibles;
 using Nekoyume.Model.State;
 using UnityEngine;
@@ -10,18 +7,10 @@ using UnityEngine;
 namespace Nekoyume.State.Modifiers
 {
     [Serializable]
-    public class AvatarInventoryFungibleItemRemover : AvatarStateModifier
+    public class AvatarInventoryTradableItemRemover : AvatarStateModifier
     {
         [Serializable]
-        public class JsonConvertibleFungibleId : JsonConvertibleHashDigest<SHA256>
-        {
-            public JsonConvertibleFungibleId(HashDigest<SHA256> fungibleId) : base(fungibleId)
-            {
-            }
-        }
-
-        [Serializable]
-        public class InnerDictionary : JsonConvertibleDictionary<JsonConvertibleFungibleId, int>
+        public class InnerDictionary : JsonConvertibleDictionary<JsonConvertibleGuid, int>
         {
         }
 
@@ -30,7 +19,7 @@ namespace Nekoyume.State.Modifiers
 
         public override bool IsEmpty => innerDictionary.Value.Count == 0;
 
-        public AvatarInventoryFungibleItemRemover(HashDigest<SHA256> fungibleId, int count)
+        public AvatarInventoryTradableItemRemover(Guid tradableId, int count = 1)
         {
             if (count is 0)
             {
@@ -39,10 +28,10 @@ namespace Nekoyume.State.Modifiers
             }
 
             innerDictionary = new InnerDictionary();
-            innerDictionary.Value.Add(new JsonConvertibleFungibleId(fungibleId), count);
+            innerDictionary.Value.Add(new JsonConvertibleGuid(tradableId), count);
         }
 
-        public AvatarInventoryFungibleItemRemover(Dictionary<HashDigest<SHA256>, int> dictionary)
+        public AvatarInventoryTradableItemRemover(Dictionary<Guid, int> dictionary)
         {
             innerDictionary = new InnerDictionary();
             foreach (var pair in dictionary)
@@ -52,13 +41,13 @@ namespace Nekoyume.State.Modifiers
                     continue;
                 }
 
-                innerDictionary.Value.Add(new JsonConvertibleFungibleId(pair.Key), pair.Value);
+                innerDictionary.Value.Add(new JsonConvertibleGuid(pair.Key), pair.Value);
             }
         }
 
         public override void Add(IAccumulatableStateModifier<AvatarState> modifier)
         {
-            if (!(modifier is AvatarInventoryFungibleItemRemover m))
+            if (!(modifier is AvatarInventoryTradableItemRemover m))
             {
                 return;
             }
@@ -79,7 +68,7 @@ namespace Nekoyume.State.Modifiers
 
         public override void Remove(IAccumulatableStateModifier<AvatarState> modifier)
         {
-            if (!(modifier is AvatarInventoryFungibleItemRemover m))
+            if (!(modifier is AvatarInventoryTradableItemRemover m))
             {
                 return;
             }
@@ -109,7 +98,7 @@ namespace Nekoyume.State.Modifiers
 
             foreach (var pair in innerDictionary.Value)
             {
-                state.inventory.RemoveFungibleItem(pair.Key.Value, pair.Value);
+                state.inventory.RemoveTradableItem(pair.Key.Value, pair.Value);
             }
 
             return state;

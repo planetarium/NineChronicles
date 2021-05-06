@@ -505,8 +505,7 @@ namespace Nekoyume.UI
             LocalLayerModifier.SetItemEquip(
                 States.Instance.CurrentAvatarState.address,
                 nonFungibleItem.NonFungibleId,
-                equip,
-                false);
+                equip);
         }
 
         private void PostEquipOrUnequip(EquipmentSlot slot)

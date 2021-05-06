@@ -16,9 +16,9 @@ namespace Nekoyume.JsonConvertibles
 
         [SerializeField] private string json;
 
-        public JsonConvertibleHashDigest(HashDigest<T> hashDigest)
+        public JsonConvertibleHashDigest(HashDigest<T> tradableId)
         {
-            Value = hashDigest;
+            Value = tradableId;
             json = null;
         }
         

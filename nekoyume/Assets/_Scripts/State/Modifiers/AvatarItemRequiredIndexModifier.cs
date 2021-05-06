@@ -8,23 +8,23 @@ namespace Nekoyume.State.Modifiers
     public class AvatarItemRequiredIndexModifier : AvatarStateModifier
     {
         private long _blockIndex;
-        private readonly Guid _nonFungibleId;
+        private readonly Guid _tradableId;
         public override bool IsEmpty => _blockIndex == 0;
 
-        public AvatarItemRequiredIndexModifier(long blockIndex, Guid nonFungibleId)
+        public AvatarItemRequiredIndexModifier(long blockIndex, Guid tradableId)
         {
             _blockIndex = blockIndex;
-            _nonFungibleId = nonFungibleId;
+            _tradableId = tradableId;
         }
 
-        public AvatarItemRequiredIndexModifier(Guid nonFungibleId)
+        public AvatarItemRequiredIndexModifier(Guid tradableId)
         {
-            _nonFungibleId = nonFungibleId;
+            _tradableId = tradableId;
         }
 
         public override void Add(IAccumulatableStateModifier<AvatarState> modifier)
         {
-            if (modifier is AvatarItemRequiredIndexModifier m && m._nonFungibleId == _nonFungibleId)
+            if (modifier is AvatarItemRequiredIndexModifier m && m._tradableId == _tradableId)
             {
                 _blockIndex += m._blockIndex;
             }
@@ -32,7 +32,7 @@ namespace Nekoyume.State.Modifiers
 
         public override void Remove(IAccumulatableStateModifier<AvatarState> modifier)
         {
-            if (modifier is AvatarItemRequiredIndexModifier m && m._nonFungibleId == _nonFungibleId)
+            if (modifier is AvatarItemRequiredIndexModifier m && m._tradableId == _tradableId)
             {
                 _blockIndex -= m._blockIndex;
             }
@@ -42,8 +42,8 @@ namespace Nekoyume.State.Modifiers
         {
             var item = state.inventory.Items
                 .Select(i => i.item)
-                .OfType<INonFungibleItem>()
-                .FirstOrDefault(i => i.NonFungibleId == _nonFungibleId);
+                .OfType<ITradableItem>()
+                .FirstOrDefault(i => i.TradableId == _tradableId);
             if (!(item is null))
             {
                 item.RequiredBlockIndex = _blockIndex;

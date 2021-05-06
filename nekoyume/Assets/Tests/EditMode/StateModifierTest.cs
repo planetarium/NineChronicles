@@ -84,18 +84,18 @@ namespace Tests.EditMode
         }
 
         [Test]
-        public void AvatarInventoryNonFungibleItemRemover()
+        public void AvatarInventoryTradableItemRemover()
         {
             if (_tableSheets.MaterialItemSheet.First is null)
                 return;
 
             var equipment = GetFirstEquipment();
             _avatarState.inventory.AddItem(equipment);
-            Assert.True(_avatarState.inventory.HasNonFungibleItem(equipment.ItemId));
+            Assert.True(_avatarState.inventory.HasTradableItem(equipment.TradableId));
             var modifier =
-                JsonTest(new AvatarInventoryNonFungibleItemRemover(equipment.ItemId));
+                JsonTest(new AvatarInventoryTradableItemRemover(equipment.TradableId));
             _avatarState = modifier.Modify(_avatarState);
-            Assert.False(_avatarState.inventory.HasNonFungibleItem(equipment.ItemId));
+            Assert.False(_avatarState.inventory.HasNonFungibleItem(equipment.TradableId));
         }
 
         [Test]
