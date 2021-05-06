@@ -1,4 +1,5 @@
 using Libplanet;
+using Nekoyume.EnumType;
 using Nekoyume.Game.Controller;
 using Nekoyume.Model.State;
 using Nekoyume.UI.Model;
@@ -36,7 +37,10 @@ namespace Nekoyume.UI.Scroller
         private TextMeshProUGUI addressText = null;
 
         [SerializeField]
-        private TextMeshProUGUI firstElement = null;
+        private TextMeshProUGUI firstElementCpText = null;
+
+        [SerializeField]
+        private TextMeshProUGUI firstElementText = null;
 
         [SerializeField]
         private TextMeshProUGUI secondElement = null;
@@ -75,9 +79,11 @@ namespace Nekoyume.UI.Scroller
                 .ToString()
                 .Remove(addressStringCount);
 
-            firstElement.text = rankingInfo.Cp.ToString();
+            firstElementCpText.text = rankingInfo.Cp.ToString();
             secondElement.text = rankingInfo.AvatarState.level.ToString();
-            firstElement.gameObject.SetActive(true);
+
+            firstElementText.gameObject.SetActive(false);
+            firstElementCpText.gameObject.SetActive(true);
             secondElement.gameObject.SetActive(true);
 
             var rank = rankingInfo.Rank;
@@ -121,8 +127,9 @@ namespace Nekoyume.UI.Scroller
                 .ToString()
                 .Remove(addressStringCount);
 
-            firstElement.text = rankingInfo.Stage.ToString();
-            firstElement.gameObject.SetActive(true);
+            firstElementText.text = rankingInfo.Stage.ToString();
+            firstElementText.gameObject.SetActive(true);
+            firstElementCpText.gameObject.SetActive(false);
             secondElement.gameObject.SetActive(false);
 
             var rank = rankingInfo.Rank;

@@ -1,6 +1,7 @@
 using Nekoyume.EnumType;
 using System;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 namespace Nekoyume
@@ -10,17 +11,12 @@ namespace Nekoyume
     public class PaletteScriptableObject : ScriptableObject
     {
         [Serializable]
-        private class ColorInfo
+        public class ButtonColorInfo
         {
-            public ButtonColorType Name;
+            public ButtonColorType ButtonColorType;
             public Color Color;
         }
 
-        [SerializeField]
-        private List<ColorInfo> buttonColorPalette;
-
-        public List<Color> palette;
+        public List<ButtonColorInfo> ButtonColorPalette;
     }
-
-
 }

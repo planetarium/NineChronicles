@@ -1,7 +1,8 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using mixpanel;
 using Nekoyume.Action;
+using Nekoyume.EnumType;
 using Nekoyume.Game.Controller;
 using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
@@ -177,15 +178,17 @@ namespace Nekoyume.UI
             var currentGold = double.Parse(States.Instance.GoldBalanceState.Gold.GetQuantityString());
             if (currentGold < _price)
             {
-                priceText.color = Palette.GetColor(3);
-                buyButton.image.color = Palette.GetColor(1);
-                buyText.color = Palette.GetColor(2);
+                priceText.color = Palette.GetButtonColor(ButtonColorType.Unable);
+                buyButton.image.color = Palette.GetButtonColor(ButtonColorType.ColorDisabled);
+                buyText.color = Palette.GetButtonColor(ButtonColorType.AlphaDisabled);
             }
             else
             {
-                priceText.color = Palette.GetColor(0);
-                buyButton.image.color = shopItems.SharedModel.wishItems.Count > 0 ? Palette.GetColor(0) : Palette.GetColor(1);
-                buyText.color = shopItems.SharedModel.wishItems.Count > 0 ? Palette.GetColor(0) : Palette.GetColor(2);
+                priceText.color = Palette.GetButtonColor(0);
+                buyButton.image.color = shopItems.SharedModel.wishItems.Count > 0 ?
+                    Palette.GetButtonColor(ButtonColorType.Enabled) : Palette.GetButtonColor(ButtonColorType.ColorDisabled);
+                buyText.color = shopItems.SharedModel.wishItems.Count > 0 ?
+                    Palette.GetButtonColor(ButtonColorType.Enabled) : Palette.GetButtonColor(ButtonColorType.AlphaDisabled);
             }
         }
 
