@@ -362,20 +362,13 @@ namespace Nekoyume.UI
                 return;
             }
             
-            var model = new UI.Model.ClaimStakingRewardPopup(
-                stakingMail.id,
-                stakingResult.avatarAddress,
-                stakingResult.rewards);
-            var popup = Find<ClaimStakingRewardPopup>();
+            var popup = Find<MonsterCollectionRewardsPopup>();
             popup.OnClickSubmit.First().Subscribe(widget =>
             {
                 // LocalLayer
-                var mailId = widget.Model.MailId;
-                var avatarAddress = widget.Model.AvatarAddress;
-                var rewardInfos = widget.Model.RewardInfos;
-                for (var i = 0; i < rewardInfos.Count; i++)
+                for (var i = 0; i < stakingResult.rewards.Count; i++)
                 {
-                    var rewardInfo = rewardInfos[i];
+                    var rewardInfo = stakingResult.rewards[i];
                     if (!rewardInfo.ItemId.TryParseAsTradableId(
                         Game.Game.instance.TableSheets.ItemSheet,
                         out var tradableId))
@@ -383,15 +376,15 @@ namespace Nekoyume.UI
                         continue;
                     }
                 
-                    LocalLayerModifier.AddItem(avatarAddress, tradableId, rewardInfo.Quantity);
+                    LocalLayerModifier.AddItem(stakingResult.avatarAddress, tradableId, rewardInfo.Quantity);
                 }
             
-                LocalLayerModifier.RemoveNewAttachmentMail(avatarAddress, mailId, true);
+                LocalLayerModifier.RemoveNewAttachmentMail(stakingResult.avatarAddress, stakingMail.id, true);
                 // ~LocalLayer
                 
                 widget.Close();
             });
-            popup.Pop(model);
+            popup.Pop(stakingResult.rewards);
         }
 
         public void TutorialActionClickFirstCombinationMailSubmitButton()
