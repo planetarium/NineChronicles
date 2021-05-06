@@ -59,7 +59,7 @@ namespace Nekoyume.UI.Module
         public override void SetByPlayer(Player player)
         {
             base.SetByPlayer(player);
-
+            
             if (!isTitleFrame)
             {
                 return;

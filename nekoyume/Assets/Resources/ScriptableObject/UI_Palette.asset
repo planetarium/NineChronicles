@@ -12,6 +12,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2cd6324defe910049a00728bad803885, type: 3}
   m_Name: UI_Palette
   m_EditorClassIdentifier: 
+  buttonColorPalette:
+  - Name: 0
+    Color: {r: 1, g: 1, b: 1, a: 1}
+  - Name: 1
+    Color: {r: 0.39215687, g: 0.39215687, b: 0.39215687, a: 1}
+  - Name: 2
+    Color: {r: 1, g: 1, b: 1, a: 0.3529412}
+  - Name: 3
+    Color: {r: 1, g: 0, b: 0, a: 1}
   palette:
   - {r: 1, g: 1, b: 1, a: 1}
   - {r: 0.39215687, g: 0.39215687, b: 0.39215687, a: 1}

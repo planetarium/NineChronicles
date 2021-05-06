@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+using Nekoyume.EnumType;
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Nekoyume
@@ -7,6 +9,18 @@ namespace Nekoyume
         order = int.MaxValue)]
     public class PaletteScriptableObject : ScriptableObject
     {
+        [Serializable]
+        private class ColorInfo
+        {
+            public ButtonColorType Name;
+            public Color Color;
+        }
+
+        [SerializeField]
+        private List<ColorInfo> buttonColorPalette;
+
         public List<Color> palette;
     }
+
+
 }
