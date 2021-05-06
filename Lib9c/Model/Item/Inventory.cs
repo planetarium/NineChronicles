@@ -267,6 +267,26 @@ namespace Nekoyume.Model.Item
             }
         }
 
+        public bool RemoveTradableItem(Guid tradableId, int count = 1)
+        {
+            var target = _items.FirstOrDefault(e =>
+                e.item is ITradableItem tradableItem &&
+                tradableItem.TradableId.Equals(tradableId));
+            if (target is null ||
+                target.count < count)
+            {
+                return false;
+            }
+
+            target.count -= count;
+            if (target.count == 0)
+            {
+                _items.Remove(target);
+            }
+
+            return true;
+        }
+
         public bool RemoveTradableFungibleItem(HashDigest<SHA256> fungibleId, int count = 1) =>
             RemoveFungibleItem(fungibleId, count, true);
 
