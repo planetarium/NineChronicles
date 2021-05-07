@@ -447,9 +447,10 @@ namespace Planetarium.Nekoyume.Editor
             {
                 var id = Path.GetFileName(subFolderPath);
                 var skeletonDataAssetPath = Path.Combine(subFolderPath, $"{id}_SkeletonData.asset");
+                Debug.Log($"Try to create spine prefab with {skeletonDataAssetPath}");
                 var skeletonDataAsset =
                     AssetDatabase.LoadAssetAtPath<SkeletonDataAsset>(skeletonDataAssetPath);
-                if (skeletonDataAsset is null)
+                if (ReferenceEquals(skeletonDataAsset, null) || skeletonDataAsset == null)
                 {
                     Debug.LogError($"Not Found SkeletonData from {skeletonDataAssetPath}");
                     continue;

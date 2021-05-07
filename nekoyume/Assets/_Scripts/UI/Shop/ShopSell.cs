@@ -1,4 +1,5 @@
-﻿using Nekoyume.EnumType;
+﻿using mixpanel;
+using Nekoyume.EnumType;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using Nekoyume.L10n;
@@ -256,10 +257,12 @@ namespace Nekoyume.UI
                 var tradableId = ((ITradableItem) data.Item.Value.ItemBase.Value).TradableId;
                 var itemSubType = data.Item.Value.ItemBase.Value.ItemSubType;
                 Game.Game.instance.ActionManager.Sell(tradableId, data.Price.Value, itemSubType);
+                Mixpanel.Track("Unity/Sell");
                 ResponseSell();
                 return;
             }
 
+            Mixpanel.Track("Unity/Sell Cancellation");
             Game.Game.instance.ActionManager.SellCancellation(
                 shopItem.SellerAvatarAddress.Value,
                 shopItem.ProductId.Value,
