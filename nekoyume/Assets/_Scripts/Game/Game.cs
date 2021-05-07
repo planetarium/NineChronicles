@@ -174,9 +174,11 @@ namespace Nekoyume.Game
             Widget.Find<VersionInfo>().SetVersion(Agent.AppProtocolVersion);
 
             ShowNext(agentInitializeSucceed);
-#if UNITY_EDITOR
-            EditorTests();
-#endif
+
+            if (GameConfig.IsEditor)
+            {
+                EditorTests();
+            }
         }
 
         private void SubscribeRPCAgent()
@@ -665,7 +667,7 @@ namespace Nekoyume.Game
 
             return msg;
         }
-#if UNITY_EDITOR
+
         private void EditorTests()
         {
             // Test monster collection rewards mail. `M` + `0~4`
@@ -744,6 +746,5 @@ namespace Nekoyume.Game
                 })
                 .AddTo(gameObject);
         }
-#endif
     }
 }
