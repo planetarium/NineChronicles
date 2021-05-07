@@ -405,15 +405,6 @@ namespace Nekoyume.Model.Item
                 }
             }
             return true;
-
-            // outItem = _items
-            //     .Where(i => i.count >= count)
-            //     .Select(i => i.item)
-            //     .OfType<ITradableItem>()
-            //     .Where(t => t.TradableId.Equals(tradeId) && t.RequiredBlockIndex <= blockIndex)
-            //     .OrderBy(r => r.RequiredBlockIndex)
-            //     .FirstOrDefault();
-            // return !(outItem is null);
         }
 
         // public bool TryGetTradableItemWithoutNonTradableFungibleItem(
@@ -544,11 +535,8 @@ namespace Nekoyume.Model.Item
                         break;
                     }
 
-                    if (item.count <= remain)
-                    {
-                        _items.Remove(item);
-                        remain -= item.count;
-                    }
+                    _items.Remove(item);
+                    remain -= item.count;
 
                     if (remain <= 0)
                     {
@@ -563,7 +551,7 @@ namespace Nekoyume.Model.Item
                 }
 
                 // Copy new TradableMaterial
-                if (items.First().item is TradableMaterial tradableMaterial)
+                if (tradableItem is TradableMaterial tradableMaterial)
                 {
                     var material = new TradableMaterial((Dictionary) tradableMaterial.Serialize())
                     {
@@ -572,12 +560,11 @@ namespace Nekoyume.Model.Item
                     AddItem(material, count);
                     return material;
                 }
-                else
-                {
-                    tradableItem.RequiredBlockIndex = requiredBlockIndex;
-                    AddItem((ItemBase)tradableItem, count);
-                    return tradableItem;
-                }
+
+                // NonFungibleItem case.
+                tradableItem.RequiredBlockIndex = requiredBlockIndex;
+                AddItem((ItemBase)tradableItem, count);
+                return tradableItem;
 
             }
 
