@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using _Scripts.Extension;
 using Bencodex.Types;
 using Lib9c.Renderer;
 using Libplanet;
