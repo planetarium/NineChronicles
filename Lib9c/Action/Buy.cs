@@ -18,7 +18,7 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("buy5")]
+    [ActionType("buy6")]
     public class Buy : GameAction
     {
         public const int TaxRate = 8;
@@ -275,13 +275,22 @@ namespace Nekoyume.Action
                 // Find product from ShardedShopState.
                 List products = (List) shopStateDict[ProductsKey];
                 IValue productIdSerialized = productId.Serialize();
+                IValue sellerAgentSerialized = purchaseInfo.sellerAgentAddress.Serialize();
                 Dictionary productSerialized = products
                     .Select(p => (Dictionary) p)
-                    .FirstOrDefault(p => p[LegacyProductIdKey].Equals(productIdSerialized));
+                    .FirstOrDefault(p =>
+                        p[LegacyProductIdKey].Equals(productIdSerialized) &&
+                        p[LegacySellerAgentAddressKey].Equals(sellerAgentSerialized));
 
                 bool fromLegacy = false;
                 if (productSerialized.Equals(Dictionary.Empty))
                 {
+                    if (purchaseInfo.itemSubType == ItemSubType.Hourglass ||
+                        purchaseInfo.itemSubType == ItemSubType.ApStone)
+                    {
+                        purchaseResult.errorCode = ErrorCodeItemDoesNotExist;
+                        continue;
+                    }
                     // Backward compatibility.
                     IValue rawShop = states.GetState(Addresses.Shop);
                     if (!(rawShop is null))
@@ -358,14 +367,29 @@ namespace Nekoyume.Action
                 products = (List) products.Remove(productSerialized);
                 shopStateDict = shopStateDict.SetItem(ProductsKey, new List<IValue>(products));
 
-                INonFungibleItem nonFungibleItem = (INonFungibleItem) shopItem.ItemUsable ?? shopItem.Costume;
-                if (!sellerAvatarState.inventory.RemoveNonFungibleItem(nonFungibleItem) && !fromLegacy)
+                ITradableItem tradableItem;
+                int count = 1;
+                if (!(shopItem.ItemUsable is null))
+                {
+                    tradableItem = shopItem.ItemUsable;
+                }
+                else if (!(shopItem.Costume is null))
+                {
+                    tradableItem = shopItem.Costume;
+                }
+                else
+                {
+                    tradableItem = shopItem.TradableFungibleItem;
+                    count = shopItem.TradableFungibleItemCount;
+                }
+
+                if (!sellerAvatarState.inventory.RemoveTradableItem(tradableItem, count) && !fromLegacy)
                 {
                     purchaseResult.errorCode = ErrorCodeItemDoesNotExist;
                     continue;
                 }
 
-                nonFungibleItem.RequiredBlockIndex = context.BlockIndex;
+                tradableItem.RequiredBlockIndex = context.BlockIndex;
 
                 // Send result mail for buyer, seller.
                 purchaseResult.shopItem = shopItem;
@@ -396,6 +420,11 @@ namespace Nekoyume.Action
                 if (purchaseResult.costume != null)
                 {
                     buyerAvatarState.UpdateFromAddCostume(purchaseResult.costume, false);
+                }
+
+                if (tradableItem is TradableMaterial material)
+                {
+                    buyerAvatarState.inventory.AddItem(material, shopItem.TradableFungibleItemCount);
                 }
 
                 sellerAvatarState.UpdateV3(sellerMail);
