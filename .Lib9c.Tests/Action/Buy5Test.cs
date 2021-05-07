@@ -19,7 +19,7 @@ namespace Lib9c.Tests.Action
     using Xunit;
     using Xunit.Abstractions;
 
-    public class Buy6Test
+    public class Buy5Test
     {
         private readonly Address _sellerAgentAddress;
         private readonly Address _sellerAvatarAddress;
@@ -31,7 +31,7 @@ namespace Lib9c.Tests.Action
         private readonly Guid _productId;
         private IAccountStateDelta _initialState;
 
-        public Buy6Test(ITestOutputHelper outputHelper)
+        public Buy5Test(ITestOutputHelper outputHelper)
         {
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Verbose()
