@@ -91,7 +91,7 @@ namespace Tests.EditMode
 
             var equipment = GetFirstEquipment();
             _avatarState.inventory.AddItem(equipment);
-            Assert.True(_avatarState.inventory.HasTradableItem(equipment.TradableId));
+            Assert.True(_avatarState.inventory.HasTradableItem(equipment.TradableId, equipment.RequiredBlockIndex, 1));
             var modifier =
                 JsonTest(new AvatarInventoryTradableItemRemover(equipment.TradableId));
             _avatarState = modifier.Modify(_avatarState);
