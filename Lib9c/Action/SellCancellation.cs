@@ -122,6 +122,11 @@ namespace Nekoyume.Action
             var backwardCompatible = false;
             if (productSerialized.Equals(BxDictionary.Empty))
             {
+                if (itemSubType == ItemSubType.Hourglass || itemSubType == ItemSubType.ApStone)
+                {
+                    throw new ItemDoesNotExistException(
+                        $"{addressesHex}Aborted as the shop item ({productId}) could not be found from the shop.");
+                }
                 // Backward compatibility.
                 var rawShop = states.GetState(Addresses.Shop);
                 if (!(rawShop is null))
@@ -162,7 +167,7 @@ namespace Nekoyume.Action
             }
 
             ITradableItem tradableItem;
-            var tradableItemCount = 1;
+            int itemCount = 1;
             if (!(shopItem.ItemUsable is null))
             {
                 tradableItem = shopItem.ItemUsable;
@@ -174,25 +179,26 @@ namespace Nekoyume.Action
             else if (!(shopItem.TradableFungibleItem is null))
             {
                 tradableItem = shopItem.TradableFungibleItem;
-                tradableItemCount = shopItem.TradableFungibleItemCount;
+                itemCount = shopItem.TradableFungibleItemCount;
             }
             else
             {
-                throw new Exception();
+                throw new InvalidShopItemException($"{addressesHex}Tradable Item is null.");
             }
 
-            if (avatarState.inventory.TryGetTradableItem(
+            if (avatarState.inventory.TryGetTradableItems(
                     tradableItem.TradableId,
-                    out var inventoryItem) &&
-                inventoryItem.item is INonFungibleItem nonFungibleItemInInventory)
+                    tradableItem.RequiredBlockIndex,
+                    itemCount,
+                    out var tradableItems))
             {
-                nonFungibleItemInInventory.RequiredBlockIndex = context.BlockIndex;
+                ITradableItem tradableItemInInventory = (ITradableItem) tradableItems.First().item;
+                tradableItemInInventory.RequiredBlockIndex = context.BlockIndex;
             }
 
             if (tradableItem is INonFungibleItem nonFungibleItem)
             {
                 nonFungibleItem.RequiredBlockIndex = context.BlockIndex;
-
                 if (backwardCompatible)
                 {
                     switch (nonFungibleItem)

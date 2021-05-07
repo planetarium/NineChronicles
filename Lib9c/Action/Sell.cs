@@ -10,6 +10,7 @@ using Libplanet.Assets;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
+using Nekoyume.TableData;
 using Serilog;
 using BxDictionary = Bencodex.Types.Dictionary;
 using BxList = Bencodex.Types.List;
@@ -123,44 +124,34 @@ namespace Nekoyume.Action
                     $"{addressesHex}Aborted because {nameof(count)}({count}) should be greater than or equal to 1.");
             }
 
-            if (!avatarState.inventory.TryGetTradableItem(
-                    tradableId,
-                    out var inventoryItem) ||
-                !(inventoryItem.item is ITradableItem tradableItem))
+            if (!avatarState.inventory.TryGetTradableItems(tradableId, context.BlockIndex, count, out List<Inventory.Item> inventoryItems))
             {
                 throw new ItemDoesNotExistException(
                     $"{addressesHex}Aborted because the tradable item({tradableId}) was failed to load from avatar's inventory.");
             }
 
-            if (inventoryItem.count < count)
-            {
-                throw new ItemDoesNotExistException(
-                    $"{addressesHex}Aborted because inventory item count({inventoryItem.count}) should be greater than or equal to {nameof(count)}({count}).");
-            }
-
-            if (!tradableItem.ItemSubType.Equals(itemSubType))
-            {
-                throw new InvalidItemTypeException(
-                    $"{addressesHex}Expected ItemSubType: {tradableItem.ItemSubType}. Actual ItemSubType: {itemSubType}");
-            }
-
-            switch (tradableItem)
-            {
-                case INonFungibleItem _ when count != 1:
-                    throw new ArgumentOutOfRangeException(
-                        $"{addressesHex}Aborted because {nameof(count)}({count}) should be 1 because {nameof(tradableId)}({tradableId}) is non-fungible item.");
-                case INonFungibleItem nonFungibleItem when nonFungibleItem.RequiredBlockIndex > context.BlockIndex:
-                    throw new RequiredBlockIndexException(
-                        $"{addressesHex}Aborted because the non-fungible item({tradableId}) to sell is not available yet; it will be available at the block #{nonFungibleItem.RequiredBlockIndex}.");
-            }
-
+            IEnumerable<ITradableItem> tradableItems = inventoryItems.Select(i => (ITradableItem)i.item).ToList();
             var expiredBlockIndex = context.BlockIndex + ExpiredBlockIndex;
-            tradableItem.RequiredBlockIndex = expiredBlockIndex;
 
-            if (tradableItem is IEquippableItem equippableItem)
+            foreach (var ti in tradableItems)
             {
-                equippableItem.Unequip();
+                if (!ti.ItemSubType.Equals(itemSubType))
+                {
+                    throw new InvalidItemTypeException(
+                        $"{addressesHex}Expected ItemSubType: {ti.ItemSubType}. Actual ItemSubType: {itemSubType}");
+                }
+
+                if (ti is INonFungibleItem)
+                {
+                    if (count != 1)
+                    {
+                        throw new ArgumentOutOfRangeException(
+                            $"{addressesHex}Aborted because {nameof(count)}({count}) should be 1 because {nameof(tradableId)}({tradableId}) is non-fungible item.");
+                    }
+                }
             }
+
+            ITradableItem tradableItem = avatarState.inventory.SellItem(tradableId, context.BlockIndex, count);
 
             var productId = context.Random.GenerateRandomGuid();
             var shardedShopAddress = ShardedShopState.DeriveAddress(itemSubType, productId);
@@ -204,30 +195,27 @@ namespace Nekoyume.Action
             }
 
             BxDictionary serializedProductDictionary;
-            switch (tradableItem.ItemType)
+            if (tradableItem.ItemType == ItemType.Material)
             {
-                case ItemType.Consumable:
-                case ItemType.Costume:
-                case ItemType.Equipment:
-                    var serializedTradeId = tradableItem.TradableId.Serialize();
-                    serializedProductDictionary = serializedProductList
-                        .Select(p => (BxDictionary) p)
-                        .FirstOrDefault(p =>
-                            ((BxDictionary) p[productKey])[itemIdKey].Equals(serializedTradeId));
-                    break;
-                case ItemType.Material:
-                    serializedProductDictionary = serializedProductList
-                        .Select(p => (BxDictionary) p)
-                        .FirstOrDefault(p =>
-                        {
-                            var materialItemId =
-                                ((BxDictionary) p[productKey])[itemIdKey].ToItemId();
-                            return TradableMaterial.DeriveTradableId(materialItemId)
-                                .Equals(tradableItem.TradableId);
-                        });
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
+                // Find expired TradableMaterial
+                serializedProductDictionary = serializedProductList
+                    .Select(p => (BxDictionary) p)
+                    .FirstOrDefault(p =>
+                    {
+                        var materialItemId =
+                            ((BxDictionary) p[productKey])[itemIdKey].ToItemId();
+                        var requiredBlockIndex = p[ExpiredBlockIndexKey].ToLong();
+                        return TradableMaterial.DeriveTradableId(materialItemId)
+                            .Equals(tradableItem.TradableId) && requiredBlockIndex <= context.BlockIndex;
+                    });
+            }
+            else
+            {
+                var serializedTradeId = tradableItem.TradableId.Serialize();
+                serializedProductDictionary = serializedProductList
+                    .Select(p => (BxDictionary) p)
+                    .FirstOrDefault(p =>
+                        ((BxDictionary) p[productKey])[itemIdKey].Equals(serializedTradeId));
             }
 
             ShopItem shopItem;
@@ -255,13 +243,20 @@ namespace Nekoyume.Action
                 // Update ITradableItem.RequiredBlockIndex
                 var inChainShopItem = (BxDictionary) serializedProductDictionary[productKey];
                 inChainShopItem = inChainShopItem
-                    .SetItem(requiredBlockIndexKey, expiredBlockIndex.Serialize())
-                    .SetItem(TradableFungibleItemCountKey, count.Serialize());
+                    .SetItem(requiredBlockIndexKey, expiredBlockIndex.Serialize());
 
                 // Update ShopItem.ExpiredBlockIndex
                 serializedProductDictionary = serializedProductDictionary
                     .SetItem(ExpiredBlockIndexKey, expiredBlockIndex.Serialize())
                     .SetItem(productKey, inChainShopItem);
+
+                // Update only Material for backwardCompatible.
+                if (tradableItem.ItemType == ItemType.Material)
+                {
+                    serializedProductDictionary = serializedProductDictionary
+                        .SetItem(TradableFungibleItemCountKey, count.Serialize());
+                }
+
                 serializedProductList = serializedProductList.Add(serializedProductDictionary);
                 shopItem = new ShopItem(serializedProductDictionary);
             }

@@ -377,22 +377,34 @@ namespace Nekoyume.Model.Item
             return false;
         }
 
-        public bool TryGetTradableItem(Guid tradeId, out Item outItem)
+        public bool TryGetTradableItems(Guid tradeId, long blockIndex, int count, out List<Item> outItem)
         {
-            foreach (var item in _items)
+            outItem = new List<Item>();
+            List<Item> items = _items
+                .Where(i =>
+                    i.item is ITradableItem item &&
+                    item.TradableId.Equals(tradeId) &&
+                    item.RequiredBlockIndex <= blockIndex
+                )
+                .OrderBy(i => ((ITradableItem)i.item).RequiredBlockIndex)
+                .ThenBy(i => i.count)
+                .ToList();
+            int totalCount = items.Sum(i => i.count);
+            if (totalCount < count)
             {
-                if (!(item.item is ITradableItem tradableItem) ||
-                    !tradableItem.TradableId.Equals(tradeId))
-                {
-                    continue;
-                }
-
-                outItem = item;
-                return true;
+                return false;
             }
 
-            outItem = null;
-            return false;
+            foreach (var item in items)
+            {
+                outItem.Add(item);
+                count -= item.count;
+                if (count < 0)
+                {
+                    break;
+                }
+            }
+            return true;
         }
 
         // public bool TryGetTradableItemWithoutNonTradableFungibleItem(
@@ -447,9 +459,9 @@ namespace Nekoyume.Model.Item
         #region Has
 
         public bool HasItem(int rowId, int count = 1) => _items
-            .Exists(item =>
-                item.item.Id == rowId &&
-                item.count >= count);
+            .Where(item =>
+                item.item.Id == rowId
+            ).Sum(item => item.count) >= count;
 
         public bool HasFungibleItem(HashDigest<SHA256> fungibleId, int count = 1) => _items
             .Exists(item =>
@@ -462,10 +474,12 @@ namespace Nekoyume.Model.Item
             .OfType<INonFungibleItem>()
             .Any(i => i.NonFungibleId.Equals(nonFungibleId));
 
-        public bool HasTradableItem(Guid tradableId) => _items
-            .Select(i => i.item)
-            .OfType<ITradableItem>()
-            .Any(i => i.TradableId.Equals(tradableId));
+        public bool HasTradableItem(Guid tradableId, long blockIndex, int count) => _items
+            .Where(i =>
+                i.item is ITradableItem tradableItem &&
+                tradableItem.TradableId.Equals(tradableId) &&
+                tradableItem.RequiredBlockIndex <= blockIndex)
+            .Sum(i => i.count) >= count;
 
         #endregion
 
@@ -504,6 +518,57 @@ namespace Nekoyume.Model.Item
             }
 
             return false;
+        }
+
+        public ITradableItem SellItem(Guid tradableId, long blockIndex, int count)
+        {
+            if (TryGetTradableItems(tradableId, blockIndex, count, out List<Item> items))
+            {
+                int remain = count;
+                long requiredBlockIndex = blockIndex + Sell.ExpiredBlockIndex;
+                for (int i = 0; i < items.Count; i++)
+                {
+                    Item item = items[i];
+                    if (item.count > remain)
+                    {
+                        item.count -= remain;
+                        break;
+                    }
+
+                    _items.Remove(item);
+                    remain -= item.count;
+
+                    if (remain <= 0)
+                    {
+                        break;
+                    }
+                }
+
+                ITradableItem tradableItem = (ITradableItem) items.First().item;
+                if (tradableItem is IEquippableItem equippableItem)
+                {
+                    equippableItem.Unequip();
+                }
+
+                // Copy new TradableMaterial
+                if (tradableItem is TradableMaterial tradableMaterial)
+                {
+                    var material = new TradableMaterial((Dictionary) tradableMaterial.Serialize())
+                    {
+                        RequiredBlockIndex = requiredBlockIndex
+                    };
+                    AddItem(material, count);
+                    return material;
+                }
+
+                // NonFungibleItem case.
+                tradableItem.RequiredBlockIndex = requiredBlockIndex;
+                AddItem((ItemBase)tradableItem, count);
+                return tradableItem;
+
+            }
+
+            throw new ItemDoesNotExistException(tradableId.ToString());
         }
     }
 }
