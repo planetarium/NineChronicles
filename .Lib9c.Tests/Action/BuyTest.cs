@@ -279,6 +279,7 @@ namespace Lib9c.Tests.Action
                         out _
                     )
                 );
+                Assert.DoesNotContain(((ItemBase)tradableItem).Id, buyerAvatarState.itemMap.Keys);
 
                 var purchaseInfo = new PurchaseInfo(
                     shopItem.ProductId,
@@ -356,9 +357,11 @@ namespace Lib9c.Tests.Action
                 Inventory.Item inventoryItem = inventoryItems.First();
                 ITradableItem tradableItem = (ITradableItem)inventoryItem.item;
                 Assert.Equal(1, tradableItem.RequiredBlockIndex);
-                Assert.Equal(
-                    tradableItem is TradableMaterial ? shopItemMembers.Sum(i => i.ItemCount) : itemCount,
-                    inventoryItem.count);
+                int expectedCount = tradableItem is TradableMaterial
+                    ? shopItemMembers.Sum(i => i.ItemCount)
+                    : itemCount;
+                Assert.Equal(expectedCount, inventoryItem.count);
+                Assert.Equal(expectedCount, nextBuyerAvatarState.itemMap[((ItemBase)tradableItem).Id]);
 
                 var nextSellerAvatarState = nextState.GetAvatarState(purchaseInfo.sellerAvatarAddress);
                 Assert.False(

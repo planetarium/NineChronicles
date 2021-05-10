@@ -424,7 +424,7 @@ namespace Nekoyume.Action
 
                 if (tradableItem is TradableMaterial material)
                 {
-                    buyerAvatarState.inventory.AddItem(material, shopItem.TradableFungibleItemCount);
+                    buyerAvatarState.UpdateFromAddItem(material, shopItem.TradableFungibleItemCount, false);
                 }
 
                 sellerAvatarState.UpdateV3(sellerMail);
