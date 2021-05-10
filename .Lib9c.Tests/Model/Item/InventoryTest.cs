@@ -85,6 +85,50 @@
         }
 
         [Fact]
+        public void RemoveTradableItem()
+        {
+            var random = new TestRandom();
+            var inventory = new Inventory();
+            Assert.Empty(inventory.Items);
+
+            var tradableItems = new List<ITradableItem>();
+
+            var materialRow = TableSheets.MaterialItemSheet.First;
+            Assert.NotNull(materialRow);
+            var tradableMaterial = ItemFactory.CreateTradableMaterial(materialRow);
+            inventory.AddItem(tradableMaterial);
+            Assert.Single(inventory.Items);
+            tradableItems.Add(tradableMaterial);
+            Assert.Single(tradableItems);
+
+            var equipmentRow = TableSheets.EquipmentItemSheet.First;
+            Assert.NotNull(equipmentRow);
+            var equipment = (Equipment)ItemFactory.CreateItem(equipmentRow, random);
+            inventory.AddItem(equipment);
+            Assert.Equal(2, inventory.Items.Count);
+            tradableItems.Add(equipment);
+            Assert.Equal(2, tradableItems.Count);
+
+            var costumeRow = TableSheets.CostumeItemSheet.First;
+            Assert.NotNull(costumeRow);
+            var costume = (Costume)ItemFactory.CreateItem(costumeRow, random);
+            inventory.AddItem(costume);
+            Assert.Equal(3, inventory.Items.Count);
+            tradableItems.Add(costume);
+            Assert.Equal(3, tradableItems.Count);
+
+            for (var i = 0; i < tradableItems.Count; i++)
+            {
+                var tradableItem = tradableItems[i];
+                Assert.NotNull(tradableItem);
+                var tradableId = tradableItem.TradableId;
+                Assert.True(inventory.RemoveTradableItem(tradableId));
+                Assert.False(inventory.RemoveTradableItem(tradableId));
+                Assert.Equal(2 - i, inventory.Items.Count);
+            }
+        }
+
+        [Fact]
         public void RemoveTradableItem_IFungibleItem()
         {
             var row = TableSheets.MaterialItemSheet.First;
