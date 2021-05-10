@@ -42,12 +42,12 @@ namespace Nekoyume.UI
 
         private void SetBlockIndex(long blockIndex)
         {
-            remainTimeSlider.value = Sell.ExpiredBlockIndex - (_expiredTime - blockIndex);
+            remainTimeSlider.value = _expiredTime - blockIndex;
         }
 
         private void OnSliderChange(float value)
         {
-            var remainSecond = (Sell.ExpiredBlockIndex - value) * 15;
+            var remainSecond = value * 15;
             var timeSpan = TimeSpan.FromSeconds(remainSecond);
 
             var sb = new StringBuilder();
@@ -71,14 +71,13 @@ namespace Nekoyume.UI
                 sb.Append("1m");
             }
 
-            var remainBlock = Sell.ExpiredBlockIndex - value;
-            remainTime.text = string.Format(L10nManager.Localize("UI_BLOCK_TIMER"), remainBlock, sb);
+            remainTime.text = string.Format(L10nManager.Localize("UI_BLOCK_TIMER"), value, sb);
         }
 
         public void UpdateTimer(long expiredTime)
         {
             _expiredTime = expiredTime;
-            remainTimeSlider.value = Sell.ExpiredBlockIndex - (_expiredTime - Game.Game.instance.Agent.BlockIndex);
+            remainTimeSlider.value = _expiredTime - Game.Game.instance.Agent.BlockIndex;
         }
     }
 }
