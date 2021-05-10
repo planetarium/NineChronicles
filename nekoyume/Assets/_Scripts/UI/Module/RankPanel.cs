@@ -8,6 +8,7 @@ using UniRx;
 using UnityEngine;
 using Nekoyume.UI.Model;
 using Debug = UnityEngine.Debug;
+using Nekoyume.L10n;
 
 namespace Nekoyume.UI.Module
 {
@@ -267,8 +268,10 @@ namespace Nekoyume.UI.Module
                     break;
             }
 
-            firstColumnText.text = _rankColumnMap[category].Item1;
-            secondColumnText.text = _rankColumnMap[category].Item2;
+            var firstCategory = _rankColumnMap[category].Item1;
+            firstColumnText.text = firstCategory.StartsWith("UI_") ? L10nManager.Localize(firstCategory) : firstCategory;
+            var secondCategory = _rankColumnMap[category].Item2;
+            secondColumnText.text = secondCategory.StartsWith("UI_") ? L10nManager.Localize(secondCategory) : secondCategory;
         }
     }
 }
