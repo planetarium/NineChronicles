@@ -190,13 +190,13 @@ namespace Nekoyume.UI
                 return;
             }
 
-            tooltip.Show(
+            tooltip.ShowForShop(
                 view.RectTransform,
                 view.Model,
                 ButtonEnabledFuncForBuy,
                 L10nManager.Localize("UI_BUY"),
                 _ => ShowBuyPopup(tooltip.itemInformation.Model.item.Value as ShopItem),
-                _ => shopItems.SharedModel.DeselectItemView());
+                _ => shopItems.SharedModel.DeselectItemView(), true);
         }
 
         private void ShowBuyPopup(ShopItem shopItem)

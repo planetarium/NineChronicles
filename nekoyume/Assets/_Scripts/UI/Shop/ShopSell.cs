@@ -59,12 +59,15 @@ namespace Nekoyume.UI
         {
             base.Initialize();
 
+            // inventory
             inventory.SharedModel.SelectedItemView
                 .Subscribe(ShowTooltip)
                 .AddTo(gameObject);
             inventory.OnDoubleClickItemView
                 .Subscribe(view => ShowActionPopup(view.Model))
                 .AddTo(gameObject);
+
+            // shopItems
             shopItems.SharedModel.SelectedItemView
                 .Subscribe(ShowTooltip)
                 .AddTo(gameObject);
@@ -152,14 +155,14 @@ namespace Nekoyume.UI
                 return;
             }
 
-            tooltip.Show(
+            tooltip.ShowForShop(
                 view.RectTransform,
                 view.Model,
                 ButtonEnabledFuncForSell,
                 L10nManager.Localize("UI_RETRIEVE"),
                 _ =>
                     ShowRetrievePopup(tooltip.itemInformation.Model.item.Value as ShopItem),
-                _ => shopItems.SharedModel.DeselectItemView());
+                _ => shopItems.SharedModel.DeselectItemView(), false);
         }
 
         private void ShowSellPopup(InventoryItem inventoryItem)
@@ -316,18 +319,7 @@ namespace Nekoyume.UI
         private void ResponseSellCancellation(ShopItem shopItem)
         {
             SharedModel.ItemCountAndPricePopup.Value.Item.Value = null;
-
             var productId = shopItem.ProductId.Value;
-
-            // try
-            // {
-            //     States.Instance.ShopState.Unregister(productId);
-            // }
-            // catch (FailedToUnregisterInShopStateException e)
-            // {
-            //     Debug.LogError(e.Message);
-            // }
-
             shopItems.SharedModel.RemoveAgentProduct(productId);
 
             AudioController.instance.PlaySfx(AudioController.SfxCode.InputItem);
