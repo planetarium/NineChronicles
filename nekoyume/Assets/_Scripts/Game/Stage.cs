@@ -1157,7 +1157,7 @@ namespace Nekoyume.Game
 
             if (stageId == GameConfig.RequireClearedStageLevel.UIMainMenuShop)
             {
-                menuNames.Add(nameof(UI.Shop));
+                menuNames.Add("Shop");
             }
 
             if (stageId == GameConfig.RequireClearedStageLevel.UIMainMenuRankingBoard)

@@ -99,9 +99,6 @@ namespace Nekoyume.UI.Module
             inputPlaceholder.SetAsLastSibling();
 
             SharedModel = new Model.ShopItems();
-            SharedModel.State
-                .Subscribe(_ => UpdateView())
-                .AddTo(gameObject);
             SharedModel.AgentProducts
                 .Subscribe(_ => UpdateView())
                 .AddTo(gameObject);

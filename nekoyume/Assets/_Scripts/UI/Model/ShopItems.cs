@@ -14,9 +14,6 @@ namespace Nekoyume.UI.Model
 {
     public class ShopItems : IDisposable
     {
-        public readonly ReactiveProperty<UI.Shop.StateType> State =
-            new ReactiveProperty<UI.Shop.StateType>();
-
         public readonly ReactiveProperty<Dictionary<int, List<ShopItem>>> AgentProducts =
             new ReactiveProperty<Dictionary<int, List<ShopItem>>>();
 
@@ -52,7 +49,6 @@ namespace Nekoyume.UI.Model
 
         public void Dispose()
         {
-            State.Dispose();
             AgentProducts.Dispose();
             ItemSubTypeProducts.Dispose();
             SelectedItemView.Dispose();
