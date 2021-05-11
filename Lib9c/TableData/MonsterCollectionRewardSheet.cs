@@ -9,7 +9,7 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.TableData
 {
     [Serializable]
-    public class StakingRewardSheet : Sheet<int, StakingRewardSheet.Row>
+    public class MonsterCollectionRewardSheet : Sheet<int, MonsterCollectionRewardSheet.Row>
     {
         [Serializable]
         public class RewardInfo
@@ -60,18 +60,18 @@ namespace Nekoyume.TableData
         [Serializable]
         public class Row : SheetRow<int>
         {
-            public override int Key => StakingLevel;
-            public int StakingLevel { get; private set; }
+            public override int Key => MonsterCollectionLevel;
+            public int MonsterCollectionLevel { get; private set; }
             public List<RewardInfo> Rewards { get; private set; }
             public override void Set(IReadOnlyList<string> fields)
             {
-                StakingLevel = ParseInt(fields[0]);
+                MonsterCollectionLevel = ParseInt(fields[0]);
                 var info = new RewardInfo(fields.Skip(1).ToArray());
                 Rewards = new List<RewardInfo> {info};
             }
         }
 
-        public StakingRewardSheet() : base(nameof(StakingRewardSheet))
+        public MonsterCollectionRewardSheet() : base(nameof(MonsterCollectionRewardSheet))
         {
         }
 

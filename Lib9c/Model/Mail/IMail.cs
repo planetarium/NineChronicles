@@ -8,6 +8,6 @@ namespace Nekoyume.Model.Mail
         void Read(SellerMail sellerMail);
         void Read(ItemEnhanceMail itemEnhanceMail);
         void Read(DailyRewardMail dailyRewardMail);
-        void Read(StakingMail stakingMail);
+        void Read(MonsterCollectionMail monsterCollectionMail);
     }
 }

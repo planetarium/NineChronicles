@@ -11,20 +11,20 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Model.State
 {
     [Serializable]
-    public class StakingState: State
+    public class MonsterCollectionState: State
     {
-        public static Address DeriveAddress(Address baseAddress, int stakingRound)
+        public static Address DeriveAddress(Address baseAddress, int collectRound)
         {
             return baseAddress.Derive(
                 string.Format(
                     CultureInfo.InvariantCulture,
                     DeriveFormat,
-                    stakingRound
+                    collectRound
                 )
             );
         }
 
-        public const string DeriveFormat = "staking-{0}";
+        public const string DeriveFormat = "monster-collection-{0}";
         public const long ExpirationIndex = RewardInterval * RewardCapacity;
         public const int RewardCapacity = 4;
         public const long RewardInterval = 40000;
@@ -34,19 +34,19 @@ namespace Nekoyume.Model.State
         public long StartedBlockIndex { get; private set; }
         public long ReceivedBlockIndex { get; private set; }
         public long RewardLevel { get; private set; }
-        public Dictionary<long, StakingResult> RewardMap { get; private set; }
+        public Dictionary<long, MonsterCollectionResult> RewardMap { get; private set; }
         public bool End { get; private set; }
-        public Dictionary<long, List<StakingRewardSheet.RewardInfo>> RewardLevelMap { get; private set; }
+        public Dictionary<long, List<MonsterCollectionRewardSheet.RewardInfo>> RewardLevelMap { get; private set; }
 
-        public StakingState(Address address, int level, long blockIndex,
-            StakingRewardSheet stakingRewardSheet) : base(address)
+        public MonsterCollectionState(Address address, int level, long blockIndex,
+            MonsterCollectionRewardSheet monsterCollectionRewardSheet) : base(address)
         {
             Level = level;
             StartedBlockIndex = blockIndex;
             ExpiredBlockIndex = blockIndex + ExpirationIndex;
-            RewardMap = new Dictionary<long, StakingResult>();
-            List<StakingRewardSheet.RewardInfo> rewardInfos = stakingRewardSheet[level].Rewards;
-            RewardLevelMap = new Dictionary<long, List<StakingRewardSheet.RewardInfo>>
+            RewardMap = new Dictionary<long, MonsterCollectionResult>();
+            List<MonsterCollectionRewardSheet.RewardInfo> rewardInfos = monsterCollectionRewardSheet[level].Rewards;
+            RewardLevelMap = new Dictionary<long, List<MonsterCollectionRewardSheet.RewardInfo>>
             {
                 [1] = rewardInfos,
                 [2] = rewardInfos,
@@ -55,7 +55,7 @@ namespace Nekoyume.Model.State
             };
         }
 
-        public StakingState(Dictionary serialized) : base(serialized)
+        public MonsterCollectionState(Dictionary serialized) : base(serialized)
         {
             Level = serialized[LevelKey].ToInteger();
             ExpiredBlockIndex = serialized[ExpiredBlockIndexKey].ToLong();
@@ -64,7 +64,7 @@ namespace Nekoyume.Model.State
             RewardLevel = serialized[RewardLevelKey].ToLong();
             RewardMap = ((Dictionary) serialized[RewardMapKey]).ToDictionary(
                 kv => kv.Key.ToLong(),
-                kv => new StakingResult((Dictionary)kv.Value)
+                kv => new MonsterCollectionResult((Dictionary)kv.Value)
             );
             End = serialized[EndKey].ToBoolean();
             RewardLevelMap = ((Dictionary) serialized[RewardLevelMapKey])
@@ -72,23 +72,23 @@ namespace Nekoyume.Model.State
                 .ToDictionary(
                     kv => kv.Key.ToLong(),
                     kv => kv.Value
-                        .ToList(v => new StakingRewardSheet.RewardInfo((Dictionary)v))
+                        .ToList(v => new MonsterCollectionRewardSheet.RewardInfo((Dictionary)v))
                         .OrderBy(r => r.ItemId)
                         .ToList()
                 );
         }
 
-        public void Update(int level, long rewardLevel, StakingRewardSheet stakingRewardSheet)
+        public void Update(int level, long rewardLevel, MonsterCollectionRewardSheet monsterCollectionRewardSheet)
         {
             Level = level;
-            List<StakingRewardSheet.RewardInfo> rewardInfos = stakingRewardSheet[level].Rewards;
+            List<MonsterCollectionRewardSheet.RewardInfo> rewardInfos = monsterCollectionRewardSheet[level].Rewards;
             for (long i = rewardLevel; i < RewardLevelMap.Count; i++)
             {
                 RewardLevelMap[i + 1] = rewardInfos;
             }
         }
 
-        public void UpdateRewardMap(long rewardLevel, StakingResult avatarAddress, long blockIndex)
+        public void UpdateRewardMap(long rewardLevel, MonsterCollectionResult avatarAddress, long blockIndex)
         {
             if (rewardLevel < 0 || rewardLevel > RewardCapacity)
             {
@@ -149,7 +149,7 @@ namespace Nekoyume.Model.State
 #pragma warning restore LAA1002
         }
 
-        protected bool Equals(StakingState other)
+        protected bool Equals(MonsterCollectionState other)
         {
 #pragma warning disable LAA1002
             return Level == other.Level && ExpiredBlockIndex == other.ExpiredBlockIndex &&
@@ -164,7 +164,7 @@ namespace Nekoyume.Model.State
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != this.GetType()) return false;
-            return Equals((StakingState) obj);
+            return Equals((MonsterCollectionState) obj);
         }
 
         public override int GetHashCode()

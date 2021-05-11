@@ -10,28 +10,28 @@ using Nekoyume.TableData;
 namespace Nekoyume.Model.State
 {
     [Serializable]
-    public class StakingResult : AttachmentActionResult
+    public class MonsterCollectionResult : AttachmentActionResult
     {
         public Guid id;
         public Address avatarAddress;
-        public List<StakingRewardSheet.RewardInfo> rewards;
+        public List<MonsterCollectionRewardSheet.RewardInfo> rewards;
 
-        public StakingResult(Guid guid, Address address, List<StakingRewardSheet.RewardInfo> rewardInfos)
+        public MonsterCollectionResult(Guid guid, Address address, List<MonsterCollectionRewardSheet.RewardInfo> rewardInfos)
         {
             id = guid;
             avatarAddress = address;
             rewards = rewardInfos;
         }
 
-        public StakingResult(Dictionary serialized)
+        public MonsterCollectionResult(Dictionary serialized)
         {
             id = serialized[SerializeKeys.IdKey].ToGuid();
             avatarAddress = serialized[SerializeKeys.AvatarAddressKey].ToAddress();
-            rewards = serialized[SerializeKeys.StakingResultKey]
-                .ToList(s => new StakingRewardSheet.RewardInfo((Dictionary) s));
+            rewards = serialized[SerializeKeys.MonsterCollectionResultKey]
+                .ToList(s => new MonsterCollectionRewardSheet.RewardInfo((Dictionary) s));
         }
 
-        protected override string TypeId => "staking.result";
+        protected override string TypeId => "monsterCollection.result";
 
         public override IValue Serialize() =>
 #pragma warning disable LAA1002
@@ -39,7 +39,7 @@ namespace Nekoyume.Model.State
             {
                 [(Text)SerializeKeys.IdKey] = id.Serialize(),
                 [(Text)SerializeKeys.AvatarAddressKey] = avatarAddress.Serialize(),
-                [(Text)SerializeKeys.StakingResultKey] = new List(rewards.Select(r => r.Serialize())).Serialize(),
+                [(Text)SerializeKeys.MonsterCollectionResultKey] = new List(rewards.Select(r => r.Serialize())).Serialize(),
             }.Union((Dictionary) base.Serialize()));
 #pragma warning restore LAA1002
     }
