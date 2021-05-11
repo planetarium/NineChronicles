@@ -395,6 +395,8 @@ namespace Nekoyume.Action
                 purchaseResult.shopItem = shopItem;
                 purchaseResult.itemUsable = shopItem.ItemUsable;
                 purchaseResult.costume = shopItem.Costume;
+                purchaseResult.tradableFungibleItem = shopItem.TradableFungibleItem;
+                purchaseResult.tradableFungibleItemCount = shopItem.TradableFungibleItemCount;
                 var buyerMail = new BuyerMail(purchaseResult, ctx.BlockIndex, ctx.Random.GenerateRandomGuid(),
                     ctx.BlockIndex);
                 purchaseResult.id = buyerMail.id;
@@ -422,7 +424,7 @@ namespace Nekoyume.Action
                     buyerAvatarState.UpdateFromAddCostume(purchaseResult.costume, false);
                 }
 
-                if (tradableItem is TradableMaterial material)
+                if (purchaseResult.tradableFungibleItem is TradableMaterial material)
                 {
                     buyerAvatarState.UpdateFromAddItem(material, shopItem.TradableFungibleItemCount, false);
                 }

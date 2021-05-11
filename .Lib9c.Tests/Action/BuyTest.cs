@@ -346,6 +346,8 @@ namespace Lib9c.Tests.Action
                 totalPrice += shopItem.Price;
 
                 int itemCount = shopItem.TradableFungibleItemCount == 0 ? 1 : shopItem.TradableFungibleItemCount;
+                Assert.Equal(shopItem.TradableFungibleItemCount == 0, pr.tradableFungibleItem is null);
+                Assert.Equal(shopItem.TradableFungibleItemCount, pr.tradableFungibleItemCount);
                 Assert.True(
                     nextBuyerAvatarState.inventory.TryGetTradableItems(
                         itemId,
