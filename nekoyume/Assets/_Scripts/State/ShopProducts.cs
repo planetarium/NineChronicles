@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿﻿using System.Collections.Generic;
+using Bencodex.Types;
 using Libplanet;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using Nekoyume.UI.Module;
+using UnityEngine;
 
 namespace Nekoyume.State
 {
@@ -26,29 +28,30 @@ namespace Nekoyume.State
             ItemSubType.Title,
         };
 
-        public ShopProducts()
-        {
-            UpdateProducts();
-        }
-
         public void UpdateProducts()
         {
+            Products.Clear();
             foreach (var itemSubType in _itemSubTypes)
             {
                 foreach (var addressKey in ShardedShopState.AddressKeys)
                 {
                     var address = ShardedShopState.DeriveAddress(itemSubType, addressKey);
-                    var state = new ShardedShopState(address);
-                    foreach (var product in state.Products.Values)
+                    var shardedShopState = Game.Game.instance.Agent.GetState(address);
+                    if (shardedShopState is Dictionary dictionary)
                     {
-                        var agentAddress = product.SellerAgentAddress;
-                        if (!Products.ContainsKey(agentAddress))
+                        var state = new ShardedShopState(dictionary);
+                        foreach (var product in state.Products.Values)
                         {
-                            Products.Add(agentAddress, new List<ShopItem>());
-                        }
-                        else
-                        {
-                            Products[agentAddress].Add(product);
+                            if (product.ExpiredBlockIndex != 0 && product.ExpiredBlockIndex >
+                                Game.Game.instance.Agent.BlockIndex)
+                            {
+                                var agentAddress = product.SellerAgentAddress;
+                                if (!Products.ContainsKey(agentAddress))
+                                {
+                                    Products.Add(agentAddress, new List<ShopItem>());
+                                }
+                                Products[agentAddress].Add(product);
+                            }
                         }
                     }
                 }
