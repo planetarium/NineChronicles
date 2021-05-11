@@ -1,13 +1,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using mixpanel;
-using Nekoyume.Action;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Controller;
 using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
 using Nekoyume.State;
-using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using TMPro;
 using UniRx;

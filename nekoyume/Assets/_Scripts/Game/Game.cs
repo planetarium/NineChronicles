@@ -22,6 +22,7 @@ using Nekoyume.Model.State;
 using Nekoyume.Pattern;
 using Nekoyume.State;
 using Nekoyume.UI;
+using Nekoyume.UI.Module;
 using UniRx;
 using UnityEditor;
 using UnityEngine;
@@ -66,8 +67,6 @@ namespace Nekoyume.Game
         public Prologue Prologue => prologue;
 
         public const string AddressableAssetsContainerPath = nameof(AddressableAssetsContainer);
-
-        public Task RankLoadingTask = null;
 
         private CommandLineOptions _options;
 
@@ -498,16 +497,7 @@ namespace Nekoyume.Game
                 callback
             );
 
-            RankLoadingTask = Task.Run(() =>
-            {
-                var states = States.Instance;
-                states.UpdateRanking();
-
-                return
-                    states.AbilityRankingInfos != null ||
-                    states.StageRankingInfos != null ||
-                    states.MimisbrunnrRankingInfos != null;
-            });
+            RankPanel.UpdateSharedModel();
         }
 
         public void ResetStore()

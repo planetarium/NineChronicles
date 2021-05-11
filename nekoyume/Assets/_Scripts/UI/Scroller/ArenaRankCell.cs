@@ -83,7 +83,6 @@ namespace Nekoyume.UI.Scroller
         private void Awake()
         {
             characterView.OnClickCharacterIcon
-                .ThrottleFirst(new TimeSpan(0, 0, 1))
                 .Subscribe(avatarState =>
                 {
                     if (avatarState is null)

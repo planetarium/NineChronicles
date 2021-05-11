@@ -1,5 +1,7 @@
+using System;
 using System.Linq;
 using Nekoyume.Game.Character;
+using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
@@ -26,10 +28,14 @@ namespace Nekoyume.UI.Module
 
         private void Awake()
         {
-            button.onClick.AddListener(() =>
-            {
-                OnClickCharacterIcon.OnNext(_avatarStateToDisplay);
-            });
+            button.OnClickAsObservable()
+                .ThrottleFirst(new TimeSpan(0, 0, 1))
+                .Subscribe(_ =>
+                {
+                    OnClickCharacterIcon.OnNext(_avatarStateToDisplay);
+                    AudioController.PlayClick();
+                })
+                .AddTo(gameObject);
         }
 
         public override void SetByAvatarState(AvatarState avatarState)

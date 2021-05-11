@@ -1,11 +1,5 @@
-using Libplanet;
-using Nekoyume.EnumType;
-using Nekoyume.Game.Controller;
-using Nekoyume.Model.State;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UniRx;
 using UnityEngine;
