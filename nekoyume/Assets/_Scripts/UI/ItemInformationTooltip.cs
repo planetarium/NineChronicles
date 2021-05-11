@@ -105,7 +105,7 @@ namespace Nekoyume.UI
                 return;
             }
 
-            submit.SetActive(true);
+            submit.SetActive(submitEnabledFunc != null);
             sell.SetActive(false);
             buy.SetActive(false);
 
