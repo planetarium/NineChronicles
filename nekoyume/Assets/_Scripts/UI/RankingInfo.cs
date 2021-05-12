@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Libplanet;
+using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.State;
 using Nekoyume.State;
@@ -98,33 +99,11 @@ namespace Nekoyume.UI
         private void OnSliderChange(float value)
         {
             var gameConfigState = States.Instance.GameConfigState;
-            var remainSecond = (gameConfigState.DailyArenaInterval - value) * 15;
-            var timeSpan = TimeSpan.FromSeconds(remainSecond);
-
-            var sb = new StringBuilder();
-            if (timeSpan.Hours > 0)
-            {
-                sb.Append($"{timeSpan.Hours}h");
-            }
-
-            if (timeSpan.Minutes > 0)
-            {
-                if (timeSpan.Hours > 0)
-                {
-                    sb.Append(" ");
-                }
-
-                sb.Append($"{timeSpan.Minutes}m");
-            }
-
-            if (sb.Length == 0)
-            {
-                sb.Append("1m");
-            }
-
+            var remainBlock = gameConfigState.DailyArenaInterval - value;
+            var time = Util.GetBlockToTime((int)remainBlock);
             remainTime.text = string.Format(
                 L10nManager.Localize("UI_REMAININGTIME"),
-                sb,
+                time,
                 (int) value, gameConfigState.DailyArenaInterval);
         }
     }
