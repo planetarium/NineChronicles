@@ -271,7 +271,7 @@ namespace Nekoyume.UI
 
             if (!_weeklyCachedInfo.Any())
             {
-                currentAvatarCellView.Hide();
+                currentAvatarCellView.ShowMyDefaultInfo();
 
                 UpdateBoard(StateType.Arena);
                 return;
@@ -284,7 +284,7 @@ namespace Nekoyume.UI
             }
             else
             {
-                currentAvatarCellView.Hide();
+                currentAvatarCellView.ShowMyDefaultInfo();
                 LocalLayerModifier.AddWeeklyArenaInfoActivator(Game.Game.instance.TableSheets.CharacterSheet);
             }
 
@@ -309,14 +309,13 @@ namespace Nekoyume.UI
                 if (!currentAvatarAddress.HasValue ||
                     !weeklyArenaState.ContainsKey(currentAvatarAddress.Value))
                 {
-                    currentAvatarCellView.Hide();
+                    currentAvatarCellView.ShowMyDefaultInfo();
 
                     arenaRankScroll.Show(_weeklyCachedInfo
                         .Select(tuple => new ArenaRankCell.ViewModel
                         {
                             rank = tuple.rank,
                             arenaInfo = tuple.arenaInfo,
-                            currentAvatarArenaInfo = null
                         }).ToList(), true);
                     // NOTE: If you want to test many arena cells, use below instead of above.
                     // arenaRankScroll.Show(Enumerable
@@ -349,7 +348,6 @@ namespace Nekoyume.UI
                     {
                         rank = tuple.rank,
                         arenaInfo = tuple.arenaInfo,
-                        currentAvatarArenaInfo = currentAvatarArenaInfo
                     }).ToList(), true);
             }
             else

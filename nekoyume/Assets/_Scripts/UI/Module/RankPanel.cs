@@ -239,7 +239,9 @@ namespace Nekoyume.UI.Module
 
         public const int RankingBoardDisplayCount = 100;
 
-        private List<RankCell> _cellViewCache = new List<RankCell>();
+        private readonly ReactiveProperty<RankCategory> _currentCategory = new ReactiveProperty<RankCategory>();
+
+        private readonly List<RankCell> _cellViewCache = new List<RankCell>();
 
         private RankCell _myInfoCellCache = null;
 
@@ -266,6 +268,9 @@ namespace Nekoyume.UI.Module
 
         public void Initialize()
         {
+            _currentCategory.Subscribe(UpdateCategory)
+                .AddTo(gameObject);
+
             var currentCategory = RankCategory.Ability;
             foreach (var toggle in toggles)
             {
@@ -280,7 +285,7 @@ namespace Nekoyume.UI.Module
                         {
                             if (value)
                             {
-                                UpdateCategory(innerCategory2);
+                                _currentCategory.SetValueAndForceNotify(innerCategory2);
                             }
                         });
                         ++innerCategory;
@@ -315,7 +320,7 @@ namespace Nekoyume.UI.Module
                     {
                         if (value)
                         {
-                            UpdateCategory(innerCategory);
+                            _currentCategory.SetValueAndForceNotify(innerCategory);
                         }
                     });
                     ++currentCategory;
@@ -346,6 +351,7 @@ namespace Nekoyume.UI.Module
         public void Show()
         {
             ToggleFirstElement();
+            _currentCategory.SetValueAndForceNotify(RankCategory.Ability);
         }
 
         private void ToggleFirstElement()
@@ -381,6 +387,11 @@ namespace Nekoyume.UI.Module
 
         private async void UpdateCategoryAsync(RankCategory category)
         {
+            if (_myInfoCellCache is null)
+            {
+                return;
+            }
+
             var states = States.Instance;
 
             if (RankLoadingTask.IsFaulted)
@@ -404,6 +415,10 @@ namespace Nekoyume.UI.Module
                     {
                         myInfoCell.SetDataAsAbility(abilityInfo);
                     }
+                    else
+                    {
+                        myInfoCell.SetEmpty(states.CurrentAvatarState);
+                    }
 
                     rankScroll.Show(abilityRankingInfos, true);
                     break;
@@ -421,6 +436,10 @@ namespace Nekoyume.UI.Module
                     {
                         myInfoCell.SetDataAsStage(stageInfo);
                     }
+                    else
+                    {
+                        myInfoCell.SetEmpty(states.CurrentAvatarState);
+                    }
 
                     rankScroll.Show(stageRankingInfos, true);
                     break;
@@ -437,6 +456,10 @@ namespace Nekoyume.UI.Module
                         .TryGetValue(states.CurrentAvatarKey, out var mimisbrunnrInfo))
                     {
                         myInfoCell.SetDataAsStage(mimisbrunnrInfo);
+                    }
+                    else
+                    {
+                        myInfoCell.SetEmpty(states.CurrentAvatarState);
                     }
 
                     rankScroll.Show(mimisbrunnrRankingInfos, true);

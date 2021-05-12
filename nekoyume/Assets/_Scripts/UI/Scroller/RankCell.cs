@@ -1,3 +1,4 @@
+using Nekoyume.Model.State;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using TMPro;
@@ -83,6 +84,7 @@ namespace Nekoyume.UI.Scroller
         public void SetDataAsAbility(AbilityRankingModel rankingInfo)
         {
             nicknameText.text = rankingInfo.AvatarState.name;
+            nicknameText.gameObject.SetActive(true);
             addressText.text = rankingInfo.AvatarState.address
                 .ToString()
                 .Remove(addressStringCount);
@@ -131,6 +133,7 @@ namespace Nekoyume.UI.Scroller
         public void SetDataAsStage(StageRankingModel rankingInfo)
         {
             nicknameText.text = rankingInfo.AvatarState.name;
+            nicknameText.gameObject.SetActive(true);
             addressText.text = rankingInfo.AvatarState.address
                 .ToString()
                 .Remove(addressStringCount);
@@ -167,6 +170,19 @@ namespace Nekoyume.UI.Scroller
 
             characterView.SetByAvatarState(rankingInfo.AvatarState);
             gameObject.SetActive(true);
+        }
+
+        public void SetEmpty(AvatarState avatarState)
+        {
+            rankText.text = "-";
+            characterView.SetByAvatarState(avatarState);
+            nicknameText.text = avatarState.name;
+            addressText.text = avatarState.address.ToString();
+
+            firstElementText.text = "-";
+            firstElementText.gameObject.SetActive(true);
+            firstElementCpText.gameObject.SetActive(false);
+            secondElement.gameObject.SetActive(false);
         }
     }
 }
