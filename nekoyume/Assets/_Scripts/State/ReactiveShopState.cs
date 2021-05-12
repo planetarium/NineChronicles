@@ -61,6 +61,8 @@ namespace Nekoyume.State
             var products = state.Products.Values.ToList();
             products.AddRange(shardedProducts);
 
+
+
             // AgentProducts.
             {
                 var agentProducts = new Dictionary<Address, List<ShopItem>>();
@@ -72,7 +74,17 @@ namespace Nekoyume.State
                         agentProducts.Add(agentAddress, new List<ShopItem>());
                     }
 
-                    agentProducts[agentAddress].Add(product);
+                    if (Game.Game.instance.Agent.Address == agentAddress)
+                    {
+                        if (product.SellerAvatarAddress == States.Instance.CurrentAvatarState.address)
+                        {
+                            agentProducts[agentAddress].Add(product);
+                        }
+                    }
+                    else
+                    {
+                        agentProducts[agentAddress].Add(product);
+                    }
                 }
 
                 var filteredAgentProducts = new Dictionary<
@@ -92,6 +104,8 @@ namespace Nekoyume.State
             // ItemSubTypeProducts.
             {
                 var agentAddress = States.Instance.AgentState.address;
+
+                // 내 아바타아이디와 같지 않은 것들
                 ItemSubTypeProducts.Value = GetGroupedShopItemsByItemSubTypeFilter(products
                     .Where(product => !product.SellerAgentAddress.Equals(agentAddress))
                     .ToList());
