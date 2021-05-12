@@ -5,7 +5,6 @@ using Nekoyume.Model.Item;
 using Nekoyume.TableData;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
-using TMPro;
 using UniRx;
 using UnityEngine;
 
@@ -15,9 +14,6 @@ namespace Nekoyume.UI
     {
         private class Model
         {
-            public readonly ReactiveProperty<string> TitleTextL10nKey
-                = new ReactiveProperty<string>(string.Empty);
-
             public readonly ReactiveProperty<List<StakingRewardSheet.RewardInfo>> RewardInfos
                 = new ReactiveProperty<List<StakingRewardSheet.RewardInfo>>();
         }
@@ -25,9 +21,6 @@ namespace Nekoyume.UI
         private readonly Model _model = new Model();
         
         // View
-        [SerializeField]
-        private TextMeshProUGUI titleText;
-        
         [SerializeField]
         private List<SimpleCountableItemView> itemViews;
         
@@ -39,9 +32,7 @@ namespace Nekoyume.UI
 
         protected override void Awake()
         {
-            Debug.LogWarning($"Awake() beginning.");
             base.Awake();
-            _model.TitleTextL10nKey.SubscribeL10nKeyTo(titleText).AddTo(gameObject);
             _model.RewardInfos.Subscribe(rewardInfos =>
             {
                 for (var i = 0; i < itemViews.Count; i++)
@@ -72,14 +63,12 @@ namespace Nekoyume.UI
             }).AddTo(gameObject);
             
             SubmitWidget = () => submitButton.OnSubmitClick.OnNext(submitButton);
-            Debug.LogWarning($"Awake() end.");
         }
 
         public void Pop(List<StakingRewardSheet.RewardInfo> rewardInfos)
         {
             SetData(rewardInfos);
             base.Show();
-            // LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform) verticalLayoutGroup.transform);
         }
 
         private void SetData(List<StakingRewardSheet.RewardInfo> rewardInfos)
