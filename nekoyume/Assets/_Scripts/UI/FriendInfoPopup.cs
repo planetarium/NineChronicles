@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Linq;
 using Nekoyume.Battle;
+using Nekoyume.Helper;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Stat;
 using Nekoyume.Model.State;
@@ -27,7 +28,7 @@ namespace Nekoyume.UI
         private TextMeshProUGUI nicknameText = null;
 
         [SerializeField]
-        private TextMeshProUGUI titleText = null;
+        private Transform titleSocket = null;
 
         [SerializeField]
         private TextMeshProUGUI cpText = null;
@@ -54,6 +55,7 @@ namespace Nekoyume.UI
         private bool _previousAvatarActivated;
         private Coroutine _constraintsAvatarToUICoroutine;
         private CharacterStats _tempStats;
+        private GameObject _cachedCharacterTitle;
 
         #region Override
 
@@ -158,10 +160,14 @@ namespace Nekoyume.UI
             var title = avatarState.inventory.Costumes.FirstOrDefault(costume =>
                 costume.ItemSubType == ItemSubType.Title &&
                 costume.equipped);
-            titleText.text = title is null
-                ? ""
-                : title.GetLocalizedName();
-            
+
+            if (!(title is null))
+            {
+                Destroy(_cachedCharacterTitle);
+                var clone  = ResourcesHelper.GetCharacterTitle(title.Grade, title.GetLocalizedNonColoredName());
+                _cachedCharacterTitle = Instantiate(clone, titleSocket);
+            }
+
             cpText.text = CPHelper
                 .GetCPV2(avatarState, game.TableSheets.CharacterSheet, game.TableSheets.CostumeStatSheet)
                 .ToString();
