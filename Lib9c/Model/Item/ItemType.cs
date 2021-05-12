@@ -37,7 +37,7 @@ namespace Nekoyume.Model.Item
         NormalMaterial = 14,
         Hourglass = 15,
         ApStone = 16,
-        [Obsolete("ItemSubType.Chest has never been used. And we won't use it in the future until we have a specific reason.")]
+        [Obsolete("ItemSubType.Chest has never been used outside the MaterialItemSheet. And we won't use it in the future until we have a specific reason.")]
         Chest = 17,
 
         // Costume
