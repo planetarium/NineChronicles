@@ -30,8 +30,8 @@ namespace Nekoyume.Model.Item
 
         private long _requiredBlockIndex;
 
-        public static Guid DeriveTradableId(HashDigest<SHA256> hashDigest) =>
-            new Guid(HashDigest<MD5>.DeriveFrom(hashDigest.ToByteArray()).ToByteArray());
+        public static Guid DeriveTradableId(HashDigest<SHA256> fungibleId) =>
+            new Guid(HashDigest<MD5>.DeriveFrom(fungibleId.ToByteArray()).ToByteArray());
 
         public TradableMaterial(MaterialItemSheet.Row data) : base(data)
         {
