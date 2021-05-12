@@ -72,7 +72,17 @@ namespace Nekoyume.State
                         agentProducts.Add(agentAddress, new List<ShopItem>());
                     }
 
-                    agentProducts[agentAddress].Add(product);
+                    if (Game.Game.instance.Agent.Address == agentAddress)
+                    {
+                        if (product.SellerAvatarAddress == States.Instance.CurrentAvatarState.address)
+                        {
+                            agentProducts[agentAddress].Add(product);
+                        }
+                    }
+                    else
+                    {
+                        agentProducts[agentAddress].Add(product);
+                    }
                 }
 
                 var filteredAgentProducts = new Dictionary<

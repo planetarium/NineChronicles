@@ -32,6 +32,10 @@ namespace Nekoyume.UI
         [SerializeField] private Button spineButton = null;
         [SerializeField] private Canvas frontCanvas;
 
+
+        private ShopState _cachedShopState;
+        private List<Nekoyume.Model.Item.ShopItem> _cachedShardedProducts = new List<Nekoyume.Model.Item.ShopItem>();
+
         private Model.Shop SharedModel { get; set; }
 
         [SerializeField] private List<ShopItemViewRow> itemViewItems;
@@ -61,6 +65,7 @@ namespace Nekoyume.UI
                     shopItems.Reset();
                     Find<ItemCountAndPricePopup>().Close();
                     Find<ShopSell>().gameObject.SetActive(true);
+                    Find<ShopSell>().Show(_cachedShopState, _cachedShardedProducts);
                     _npc?.gameObject.SetActive(false);
                     gameObject.SetActive(false);
                 });
@@ -107,6 +112,8 @@ namespace Nekoyume.UI
                     shardedProducts.AddRange(items);
                 }
 
+                _cachedShopState = shopState;
+                _cachedShardedProducts = shardedProducts;
                 ReactiveShopState.Initialize(shopState, shardedProducts, ShopItemsPerPage);
                 return true;
             });
@@ -131,7 +138,6 @@ namespace Nekoyume.UI
                 shopItems.Show();
 
                 Reset();
-                Find<ShopSell>().Show();
                 Find<ShopSell>().gameObject.SetActive(false);
                 Find<DataLoadingScreen>().Close();
             }
