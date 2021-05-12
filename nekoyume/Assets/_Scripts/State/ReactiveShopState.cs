@@ -102,8 +102,6 @@ namespace Nekoyume.State
             // ItemSubTypeProducts.
             {
                 var agentAddress = States.Instance.AgentState.address;
-
-                // 내 아바타아이디와 같지 않은 것들
                 ItemSubTypeProducts.Value = GetGroupedShopItemsByItemSubTypeFilter(products
                     .Where(product => !product.SellerAgentAddress.Equals(agentAddress))
                     .ToList());
