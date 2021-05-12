@@ -26,7 +26,7 @@ namespace Nekoyume.Model.Mail
                 ["seller"] = d => new SellerMail(d),
                 ["itemEnhance"] = d => new ItemEnhanceMail(d),
                 ["dailyRewardMail"] = d => new DailyRewardMail(d),
-                ["stakingMail"] = d => new StakingMail(d),
+                ["monsterCollectionMail"] = d => new MonsterCollectionMail(d),
             };
 
         public Guid id;

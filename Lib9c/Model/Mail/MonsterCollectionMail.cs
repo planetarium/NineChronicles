@@ -5,14 +5,14 @@ using Nekoyume.Action;
 namespace Nekoyume.Model.Mail
 {
     [Serializable]
-    public class StakingMail : AttachmentMail
+    public class MonsterCollectionMail : AttachmentMail
     {
-        public StakingMail(AttachmentActionResult attachmentActionResult, long blockIndex, Guid id, long requiredBlockIndex)
+        public MonsterCollectionMail(AttachmentActionResult attachmentActionResult, long blockIndex, Guid id, long requiredBlockIndex)
             : base(attachmentActionResult, blockIndex, id, requiredBlockIndex)
         {
         }
 
-        public StakingMail(Dictionary serialized) : base(serialized)
+        public MonsterCollectionMail(Dictionary serialized) : base(serialized)
         {
         }
 
@@ -21,7 +21,7 @@ namespace Nekoyume.Model.Mail
             mail.Read(this);
         }
 
-        protected override string TypeId => "stakingMail";
+        protected override string TypeId => "monsterCollectionMail";
         public override MailType MailType => MailType.System;
     }
 }

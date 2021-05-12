@@ -15,7 +15,7 @@ namespace Nekoyume.Model.State
     {
         public readonly Dictionary<int, Address> avatarAddresses;
         public HashSet<int> unlockedOptions;
-        public int StakingRound { get; private set; }
+        public int MonsterCollectionRound { get; private set; }
 
         public AgentState(Address address) : base(address)
         {
@@ -37,8 +37,8 @@ namespace Nekoyume.Model.State
             unlockedOptions = serialized.ContainsKey((IKey)(Text) "unlockedOptions")
                 ? serialized["unlockedOptions"].ToHashSet(StateExtensions.ToInteger)
                 : new HashSet<int>();
-            StakingRound = serialized.ContainsKey((IKey) (Text) StakingRoundKey)
-                ? serialized[StakingRoundKey].ToInteger()
+            MonsterCollectionRound = serialized.ContainsKey((IKey) (Text) MonsterCollectionRoundKey)
+                ? serialized[MonsterCollectionRoundKey].ToInteger()
                 : 0;
         }
 
@@ -47,9 +47,9 @@ namespace Nekoyume.Model.State
             return MemberwiseClone();
         }
 
-        public void IncreaseStakingRound()
+        public void IncreaseCollectionRound()
         {
-            StakingRound++;
+            MonsterCollectionRound++;
         }
 
         public override IValue Serialize()
@@ -67,9 +67,9 @@ namespace Nekoyume.Model.State
                 ),
                 [(Text) "unlockedOptions"] = unlockedOptions.Select(i => i.Serialize()).Serialize(),
             };
-            if (StakingRound > 0)
+            if (MonsterCollectionRound > 0)
             {
-                innerDict.Add((Text) StakingRoundKey, StakingRound.Serialize());
+                innerDict.Add((Text) MonsterCollectionRoundKey, MonsterCollectionRound.Serialize());
             }
             return new Dictionary(innerDict.Union((Dictionary) base.Serialize()));
 #pragma warning restore LAA1002

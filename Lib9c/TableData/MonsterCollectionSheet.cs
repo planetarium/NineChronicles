@@ -5,7 +5,7 @@ using static Nekoyume.TableData.TableExtensions;
 namespace Nekoyume.TableData
 {
     [Serializable]
-    public class StakingSheet : Sheet<int, StakingSheet.Row>
+    public class MonsterCollectionSheet : Sheet<int, MonsterCollectionSheet.Row>
     {
         [Serializable]
         public class Row: SheetRow<int>
@@ -23,7 +23,7 @@ namespace Nekoyume.TableData
             }
         }
 
-        public StakingSheet() : base(nameof(StakingSheet))
+        public MonsterCollectionSheet() : base(nameof(MonsterCollectionSheet))
         {
         }
     }

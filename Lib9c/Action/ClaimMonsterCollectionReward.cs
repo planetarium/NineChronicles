@@ -14,22 +14,22 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("claim_staking_reward")]
-    public class ClaimStakingReward : GameAction
+    [ActionType("claim_monster_collection_reward")]
+    public class ClaimMonsterCollectionReward : GameAction
     {
         public Address avatarAddress;
-        public int stakingRound;
+        public int collectionRound;
         public override IAccountStateDelta Execute(IActionContext context)
         {
             IAccountStateDelta states = context.PreviousStates;
-            Address stakingAddress = StakingState.DeriveAddress(context.Signer, stakingRound);
+            Address collectionAddress = MonsterCollectionState.DeriveAddress(context.Signer, collectionRound);
 
             if (context.Rehearsal)
             {
                 return states
                     .SetState(context.Signer, MarkChanged)
                     .SetState(avatarAddress, MarkChanged)
-                    .SetState(stakingAddress, MarkChanged);
+                    .SetState(collectionAddress, MarkChanged);
             }
 
             if (!states.TryGetAgentAvatarStates(context.Signer, avatarAddress, out AgentState agentState, out AvatarState avatarState))
@@ -37,37 +37,37 @@ namespace Nekoyume.Action
                 throw new FailedLoadStateException($"Aborted as the avatar state of the signer failed to load.");
             }
 
-            if (!states.TryGetState(stakingAddress, out Dictionary stateDict))
+            if (!states.TryGetState(collectionAddress, out Dictionary stateDict))
             {
-                throw new FailedLoadStateException($"Aborted as the staking state failed to load.");
+                throw new FailedLoadStateException($"Aborted as the monster collection state failed to load.");
             }
 
-            StakingState stakingState = new StakingState(stateDict);
-            if (stakingState.End)
+            MonsterCollectionState monsterCollectionState = new MonsterCollectionState(stateDict);
+            if (monsterCollectionState.End)
             {
-                throw new StakingExpiredException($"{stakingAddress} has already expired on {stakingState.ExpiredBlockIndex}");
+                throw new MonsterCollectionExpiredException($"{collectionAddress} has already expired on {monsterCollectionState.ExpiredBlockIndex}");
             }
 
-            if (!stakingState.CanReceive(context.BlockIndex))
+            if (!monsterCollectionState.CanReceive(context.BlockIndex))
             {
                 throw new RequiredBlockIndexException(
-                    $"{stakingAddress} is not available yet; it will be available after {Math.Max(stakingState.StartedBlockIndex, stakingState.ReceivedBlockIndex) + StakingState.RewardInterval}");
+                    $"{collectionAddress} is not available yet; it will be available after {Math.Max(monsterCollectionState.StartedBlockIndex, monsterCollectionState.ReceivedBlockIndex) + MonsterCollectionState.RewardInterval}");
             }
 
-            long rewardLevel = stakingState.GetRewardLevel(context.BlockIndex);
+            long rewardLevel = monsterCollectionState.GetRewardLevel(context.BlockIndex);
             ItemSheet itemSheet = states.GetItemSheet();
             for (int i = 0; i < rewardLevel; i++)
             {
                 int level = i + 1;
-                if (level <= stakingState.RewardLevel)
+                if (level <= monsterCollectionState.RewardLevel)
                 {
                     continue;
                 }
 
-                List<StakingRewardSheet.RewardInfo> rewards = stakingState.RewardLevelMap[level];
+                List<MonsterCollectionRewardSheet.RewardInfo> rewards = monsterCollectionState.RewardLevelMap[level];
                 Guid id = context.Random.GenerateRandomGuid();
-                StakingResult result = new StakingResult(id, avatarAddress, rewards);
-                StakingMail mail = new StakingMail(result, context.BlockIndex, id, context.BlockIndex);
+                MonsterCollectionResult result = new MonsterCollectionResult(id, avatarAddress, rewards);
+                MonsterCollectionMail mail = new MonsterCollectionMail(result, context.BlockIndex, id, context.BlockIndex);
                 avatarState.UpdateV3(mail);
                 foreach (var rewardInfo in rewards)
                 {
@@ -77,44 +77,44 @@ namespace Nekoyume.Action
                         : ItemFactory.CreateItem(row, context.Random);
                     avatarState.inventory.AddItem(item, rewardInfo.Quantity);
                 }
-                stakingState.UpdateRewardMap(level, result, context.BlockIndex);
+                monsterCollectionState.UpdateRewardMap(level, result, context.BlockIndex);
             }
 
-            // Return gold at the end of staking.
+            // Return gold at the end of monster collect.
             if (rewardLevel == 4)
             {
-                StakingSheet stakingSheet = states.GetSheet<StakingSheet>();
+                MonsterCollectionSheet monsterCollectionSheet = states.GetSheet<MonsterCollectionSheet>();
                 Currency currency = states.GetGoldCurrency();
                 // Set default gold value.
                 FungibleAssetValue gold = currency * 0;
-                for (int i = 0; i < stakingState.Level; i++)
+                for (int i = 0; i < monsterCollectionState.Level; i++)
                 {
                     int level = i + 1;
-                    gold += currency * stakingSheet[level].RequiredGold;
+                    gold += currency * monsterCollectionSheet[level].RequiredGold;
                 }
-                agentState.IncreaseStakingRound();
+                agentState.IncreaseCollectionRound();
                 states = states.SetState(context.Signer, agentState.Serialize());
                 if (gold > currency * 0)
                 {
-                    states = states.TransferAsset(stakingAddress, context.Signer, gold);
+                    states = states.TransferAsset(collectionAddress, context.Signer, gold);
                 }
             }
 
             return states
                 .SetState(avatarAddress, avatarState.Serialize())
-                .SetState(stakingAddress, stakingState.Serialize());
+                .SetState(collectionAddress, monsterCollectionState.Serialize());
         }
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal => new Dictionary<string, IValue>
         {
             [AvatarAddressKey] = avatarAddress.Serialize(),
-            [StakingRoundKey] = stakingRound.Serialize(),
+            [MonsterCollectionRoundKey] = collectionRound.Serialize(),
         }.ToImmutableDictionary();
 
         protected override void LoadPlainValueInternal(IImmutableDictionary<string, IValue> plainValue)
         {
             avatarAddress = plainValue[AvatarAddressKey].ToAddress();
-            stakingRound = plainValue[StakingRoundKey].ToInteger();
+            collectionRound = plainValue[MonsterCollectionRoundKey].ToInteger();
         }
     }
 }

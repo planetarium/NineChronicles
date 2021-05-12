@@ -184,17 +184,17 @@ namespace Lib9c.Tests.Action
         }
 
         [Fact]
-        public void InvalidStakingRoundException_Serializable()
+        public void InvalidMonsterCollectionRoundException_Serializable()
         {
-            var exc = new InvalidStakingRoundException("for testing.");
-            AssertException<InvalidStakingRoundException>(exc);
+            var exc = new InvalidMonsterCollectionRoundException("for testing.");
+            AssertException<InvalidMonsterCollectionRoundException>(exc);
         }
 
         [Fact]
-        public void StakingExpiredException_Serializable()
+        public void MonsterCollectionExpiredException_Serializable()
         {
-            var exc = new StakingExpiredException("for testing.");
-            AssertException<StakingExpiredException>(exc);
+            var exc = new MonsterCollectionExpiredException("for testing.");
+            AssertException<MonsterCollectionExpiredException>(exc);
         }
 
         [Fact]
