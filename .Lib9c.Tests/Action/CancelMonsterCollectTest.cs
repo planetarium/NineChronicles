@@ -13,13 +13,13 @@ namespace Lib9c.Tests.Action
     using Nekoyume.TableData;
     using Xunit;
 
-    public class CancelStakingTest
+    public class CancelMonsterCollectTest
     {
         private readonly Address _signer;
         private readonly TableSheets _tableSheets;
         private IAccountStateDelta _state;
 
-        public CancelStakingTest()
+        public CancelMonsterCollectTest()
         {
             _signer = default;
             _state = new State();
@@ -45,31 +45,31 @@ namespace Lib9c.Tests.Action
         [InlineData(6, 2, 40000)]
         [InlineData(5, 3, 120000)]
         [InlineData(4, 3, 160000)]
-        public void Execute(int prevLevel, int stakingLevel, long blockIndex)
+        public void Execute(int prevLevel, int collectionLevel, long blockIndex)
         {
-            Address stakingAddress = StakingState.DeriveAddress(_signer, 0);
-            List<StakingRewardSheet.RewardInfo> rewardInfos = _tableSheets.StakingRewardSheet[prevLevel].Rewards;
-            StakingState stakingState = new StakingState(stakingAddress, prevLevel, 0, _tableSheets.StakingRewardSheet);
+            Address collectionAddress = MonsterCollectionState.DeriveAddress(_signer, 0);
+            List<MonsterCollectionRewardSheet.RewardInfo> rewardInfos = _tableSheets.MonsterCollectionRewardSheet[prevLevel].Rewards;
+            MonsterCollectionState monsterCollectionState = new MonsterCollectionState(collectionAddress, prevLevel, 0, _tableSheets.MonsterCollectionRewardSheet);
             Currency currency = _state.GetGoldCurrency();
             FungibleAssetValue balance = 0 * currency;
-            foreach (var row in _tableSheets.StakingSheet)
+            foreach (var row in _tableSheets.MonsterCollectionSheet)
             {
-                if (stakingLevel < row.Level && row.Level <= prevLevel)
+                if (collectionLevel < row.Level && row.Level <= prevLevel)
                 {
                     balance += row.RequiredGold * currency;
                 }
             }
 
-            Assert.All(stakingState.RewardLevelMap, kv => Assert.Equal(rewardInfos, kv.Value));
+            Assert.All(monsterCollectionState.RewardLevelMap, kv => Assert.Equal(rewardInfos, kv.Value));
 
             _state = _state
-                .SetState(stakingAddress, stakingState.Serialize())
-                .MintAsset(stakingAddress, balance);
+                .SetState(collectionAddress, monsterCollectionState.Serialize())
+                .MintAsset(collectionAddress, balance);
 
-            CancelStaking action = new CancelStaking
+            CancelMonsterCollect action = new CancelMonsterCollect
             {
-                stakingRound = 0,
-                level = stakingLevel,
+                collectRound = 0,
+                level = collectionLevel,
             };
 
             IAccountStateDelta nextState = action.Execute(new ActionContext
@@ -79,26 +79,26 @@ namespace Lib9c.Tests.Action
                 BlockIndex = blockIndex,
             });
 
-            StakingState nextStakingState = new StakingState((Dictionary)nextState.GetState(stakingAddress));
-            Assert.Equal(stakingLevel, nextStakingState.Level);
-            Assert.Equal(0 * currency, nextState.GetBalance(stakingAddress, currency));
+            MonsterCollectionState nextMonsterCollectionState = new MonsterCollectionState((Dictionary)nextState.GetState(collectionAddress));
+            Assert.Equal(collectionLevel, nextMonsterCollectionState.Level);
+            Assert.Equal(0 * currency, nextState.GetBalance(collectionAddress, currency));
             Assert.Equal(balance, nextState.GetBalance(_signer, currency));
 
-            long rewardLevel = nextStakingState.GetRewardLevel(blockIndex);
-            List<StakingRewardSheet.RewardInfo> nextRewardInfos = _tableSheets.StakingRewardSheet[stakingLevel].Rewards;
+            long rewardLevel = nextMonsterCollectionState.GetRewardLevel(blockIndex);
+            List<MonsterCollectionRewardSheet.RewardInfo> nextRewardInfos = _tableSheets.MonsterCollectionRewardSheet[collectionLevel].Rewards;
             for (long i = rewardLevel; i < 4; i++)
             {
-                Assert.Equal(nextRewardInfos, nextStakingState.RewardLevelMap[i + 1]);
+                Assert.Equal(nextRewardInfos, nextMonsterCollectionState.RewardLevelMap[i + 1]);
             }
         }
 
         [Fact]
         public void Execute_Throw_FailedLoadStateException_AgentState()
         {
-            CancelStaking action = new CancelStaking
+            CancelMonsterCollect action = new CancelMonsterCollect
             {
                 level = 0,
-                stakingRound = 0,
+                collectRound = 0,
             };
 
             Assert.Throws<FailedLoadStateException>(() => action.Execute(new ActionContext
@@ -111,12 +111,12 @@ namespace Lib9c.Tests.Action
         }
 
         [Fact]
-        public void Execute_Throw_FailedLoadStateException_StakingState()
+        public void Execute_Throw_FailedLoadStateException_MonsterCollectionState()
         {
-            CancelStaking action = new CancelStaking
+            CancelMonsterCollect action = new CancelMonsterCollect
             {
                 level = 0,
-                stakingRound = 0,
+                collectRound = 0,
             };
 
             Assert.Throws<FailedLoadStateException>(() => action.Execute(new ActionContext
@@ -134,15 +134,15 @@ namespace Lib9c.Tests.Action
         [InlineData(3, 0)]
         public void Execute_Throw_InvalidLevelException(int prevLevel, int level)
         {
-            Address stakingAddress = StakingState.DeriveAddress(_signer, 0);
-            StakingState stakingState = new StakingState(stakingAddress, prevLevel, 0, _tableSheets.StakingRewardSheet);
+            Address collectionAddress = MonsterCollectionState.DeriveAddress(_signer, 0);
+            MonsterCollectionState monsterCollectionState = new MonsterCollectionState(collectionAddress, prevLevel, 0, _tableSheets.MonsterCollectionRewardSheet);
 
-            _state = _state.SetState(stakingAddress, stakingState.Serialize());
+            _state = _state.SetState(collectionAddress, monsterCollectionState.Serialize());
 
-            CancelStaking action = new CancelStaking
+            CancelMonsterCollect action = new CancelMonsterCollect
             {
                 level = level,
-                stakingRound = 0,
+                collectRound = 0,
             };
 
             Assert.Throws<InvalidLevelException>(() => action.Execute(new ActionContext
@@ -155,27 +155,27 @@ namespace Lib9c.Tests.Action
         }
 
         [Fact]
-        public void Execute_Throw_StakingExpiredException()
+        public void Execute_Throw_MonsterCollectionExpiredException()
         {
-            Address stakingAddress = StakingState.DeriveAddress(_signer, 0);
-            StakingState stakingState = new StakingState(stakingAddress, 2, 0, _tableSheets.StakingRewardSheet);
-            for (int i = 0; i < StakingState.RewardCapacity; i++)
+            Address collectionAddress = MonsterCollectionState.DeriveAddress(_signer, 0);
+            MonsterCollectionState monsterCollectionState = new MonsterCollectionState(collectionAddress, 2, 0, _tableSheets.MonsterCollectionRewardSheet);
+            for (int i = 0; i < MonsterCollectionState.RewardCapacity; i++)
             {
-                StakingResult stakingResult = new StakingResult(Guid.NewGuid(), default, new List<StakingRewardSheet.RewardInfo>());
-                stakingState.UpdateRewardMap(i + 1, stakingResult, 0);
+                MonsterCollectionResult monsterCollectionResult = new MonsterCollectionResult(Guid.NewGuid(), default, new List<MonsterCollectionRewardSheet.RewardInfo>());
+                monsterCollectionState.UpdateRewardMap(i + 1, monsterCollectionResult, 0);
             }
 
-            Assert.True(stakingState.End);
+            Assert.True(monsterCollectionState.End);
 
-            _state = _state.SetState(stakingAddress, stakingState.Serialize());
+            _state = _state.SetState(collectionAddress, monsterCollectionState.Serialize());
 
-            CancelStaking action = new CancelStaking
+            CancelMonsterCollect action = new CancelMonsterCollect
             {
                 level = 1,
-                stakingRound = 0,
+                collectRound = 0,
             };
 
-            Assert.Throws<StakingExpiredException>(() => action.Execute(new ActionContext
+            Assert.Throws<MonsterCollectionExpiredException>(() => action.Execute(new ActionContext
                 {
                     PreviousStates = _state,
                     Signer = _signer,
@@ -187,15 +187,15 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Execute_Throw_InsufficientBalanceException()
         {
-            Address stakingAddress = StakingState.DeriveAddress(_signer, 0);
-            StakingState stakingState = new StakingState(stakingAddress, 2, 0, _tableSheets.StakingRewardSheet);
+            Address collectionAddress = MonsterCollectionState.DeriveAddress(_signer, 0);
+            MonsterCollectionState monsterCollectionState = new MonsterCollectionState(collectionAddress, 2, 0, _tableSheets.MonsterCollectionRewardSheet);
 
-            _state = _state.SetState(stakingAddress, stakingState.Serialize());
+            _state = _state.SetState(collectionAddress, monsterCollectionState.Serialize());
 
-            CancelStaking action = new CancelStaking
+            CancelMonsterCollect action = new CancelMonsterCollect
             {
                 level = 1,
-                stakingRound = 0,
+                collectRound = 0,
             };
 
             Assert.Throws<InsufficientBalanceException>(() => action.Execute(new ActionContext

@@ -14,14 +14,14 @@ namespace Lib9c.Tests.Action
     using Nekoyume.TableData;
     using Xunit;
 
-    public class ClaimStakingRewardTest
+    public class ClaimMonsterCollectionRewardTest
     {
         private readonly Address _signer;
         private readonly Address _avatarAddress;
         private readonly TableSheets _tableSheets;
         private IAccountStateDelta _state;
 
-        public ClaimStakingRewardTest()
+        public ClaimMonsterCollectionRewardTest()
         {
             _signer = default;
             _avatarAddress = _signer.Derive("avatar");
@@ -65,29 +65,29 @@ namespace Lib9c.Tests.Action
         [InlineData(4, 1, 4)]
         [InlineData(4, 2, 5)]
         [InlineData(4, 3, 6)]
-        public void Execute(int rewardLevel, int prevRewardLevel, int stakingLevel)
+        public void Execute(int rewardLevel, int prevRewardLevel, int collectionLevel)
         {
-            Address stakingAddress = StakingState.DeriveAddress(_signer, 0);
-            List<StakingRewardSheet.RewardInfo> rewards = _tableSheets.StakingRewardSheet[1].Rewards;
-            StakingState stakingState = new StakingState(stakingAddress, 1, 0, _tableSheets.StakingRewardSheet);
+            Address collectionAddress = MonsterCollectionState.DeriveAddress(_signer, 0);
+            List<MonsterCollectionRewardSheet.RewardInfo> rewards = _tableSheets.MonsterCollectionRewardSheet[1].Rewards;
+            MonsterCollectionState monsterCollectionState = new MonsterCollectionState(collectionAddress, 1, 0, _tableSheets.MonsterCollectionRewardSheet);
             for (int i = 0; i < prevRewardLevel; i++)
             {
                 int level = i + 1;
-                StakingResult result = new StakingResult(Guid.NewGuid(), _avatarAddress, rewards);
-                stakingState.UpdateRewardMap(level, result, i * StakingState.RewardInterval);
+                MonsterCollectionResult result = new MonsterCollectionResult(Guid.NewGuid(), _avatarAddress, rewards);
+                monsterCollectionState.UpdateRewardMap(level, result, i * MonsterCollectionState.RewardInterval);
             }
 
-            List<StakingRewardSheet.RewardInfo> stakingRewards = _tableSheets.StakingRewardSheet[stakingLevel].Rewards;
-            stakingState.Update(stakingLevel, rewardLevel, _tableSheets.StakingRewardSheet);
+            List<MonsterCollectionRewardSheet.RewardInfo> collectionRewards = _tableSheets.MonsterCollectionRewardSheet[collectionLevel].Rewards;
+            monsterCollectionState.Update(collectionLevel, rewardLevel, _tableSheets.MonsterCollectionRewardSheet);
             for (long i = rewardLevel; i < 4; i++)
             {
-                Assert.Equal(stakingRewards, stakingState.RewardLevelMap[i + 1]);
+                Assert.Equal(collectionRewards, monsterCollectionState.RewardLevelMap[i + 1]);
             }
 
             Dictionary<int, int> rewardExpectedMap = new Dictionary<int, int>();
-            foreach (var (key, value) in stakingState.RewardLevelMap)
+            foreach (var (key, value) in monsterCollectionState.RewardLevelMap)
             {
-                if (stakingState.RewardMap.ContainsKey(key) || key > rewardLevel)
+                if (monsterCollectionState.RewardMap.ContainsKey(key) || key > rewardLevel)
                 {
                     continue;
                 }
@@ -109,46 +109,46 @@ namespace Lib9c.Tests.Action
             Assert.Empty(prevAvatarState.mailBox);
 
             Currency currency = _state.GetGoldCurrency();
-            int stakingRound = _state.GetAgentState(_signer).StakingRound;
+            int collectionRound = _state.GetAgentState(_signer).MonsterCollectionRound;
 
             _state = _state
-                .SetState(stakingAddress, stakingState.Serialize());
+                .SetState(collectionAddress, monsterCollectionState.Serialize());
 
             FungibleAssetValue balance = 0 * currency;
             if (rewardLevel == 4)
             {
-                foreach (var row in _tableSheets.StakingSheet)
+                foreach (var row in _tableSheets.MonsterCollectionSheet)
                 {
-                    if (row.Level <= stakingLevel)
+                    if (row.Level <= collectionLevel)
                     {
                         balance += row.RequiredGold * currency;
                     }
                 }
 
-                stakingRound += 1;
+                collectionRound += 1;
                 _state = _state
-                    .MintAsset(stakingAddress, balance);
+                    .MintAsset(collectionAddress, balance);
             }
 
-            Assert.Equal(prevRewardLevel, stakingState.RewardLevel);
-            Assert.Equal(0, _state.GetAgentState(_signer).StakingRound);
+            Assert.Equal(prevRewardLevel, monsterCollectionState.RewardLevel);
+            Assert.Equal(0, _state.GetAgentState(_signer).MonsterCollectionRound);
 
-            ClaimStakingReward action = new ClaimStakingReward
+            ClaimMonsterCollectionReward action = new ClaimMonsterCollectionReward
             {
                 avatarAddress = _avatarAddress,
-                stakingRound = 0,
+                collectionRound = 0,
             };
 
             IAccountStateDelta nextState = action.Execute(new ActionContext
             {
                 PreviousStates = _state,
                 Signer = _signer,
-                BlockIndex = rewardLevel * StakingState.RewardInterval,
+                BlockIndex = rewardLevel * MonsterCollectionState.RewardInterval,
                 Random = new TestRandom(),
             });
 
-            StakingState nextStakingState = new StakingState((Dictionary)nextState.GetState(stakingAddress));
-            Assert.Equal(rewardLevel, nextStakingState.RewardLevel);
+            MonsterCollectionState nextMonsterCollectionState = new MonsterCollectionState((Dictionary)nextState.GetState(collectionAddress));
+            Assert.Equal(rewardLevel, nextMonsterCollectionState.RewardLevel);
 
             AvatarState nextAvatarState = nextState.GetAvatarState(_avatarAddress);
             foreach (var (itemId, qty) in rewardExpectedMap)
@@ -159,34 +159,34 @@ namespace Lib9c.Tests.Action
             Assert.Equal(rewardLevel - prevRewardLevel, nextAvatarState.mailBox.Count);
             Assert.All(nextAvatarState.mailBox, mail =>
             {
-                Assert.IsType<StakingMail>(mail);
-                StakingMail stakingMail = (StakingMail)mail;
-                Assert.IsType<StakingResult>(stakingMail.attachment);
-                StakingResult result = (StakingResult)stakingMail.attachment;
+                Assert.IsType<MonsterCollectionMail>(mail);
+                MonsterCollectionMail monsterCollectionMail = (MonsterCollectionMail)mail;
+                Assert.IsType<MonsterCollectionResult>(monsterCollectionMail.attachment);
+                MonsterCollectionResult result = (MonsterCollectionResult)monsterCollectionMail.attachment;
                 Assert.Equal(result.id, mail.id);
             });
 
-            for (int i = 0; i < nextStakingState.RewardLevel; i++)
+            for (int i = 0; i < nextMonsterCollectionState.RewardLevel; i++)
             {
                 int level = i + 1;
-                List<StakingRewardSheet.RewardInfo> rewardInfos = _tableSheets.StakingRewardSheet[stakingLevel].Rewards;
-                Assert.Contains(level, nextStakingState.RewardMap.Keys);
-                Assert.Equal(_avatarAddress, nextStakingState.RewardMap[level].avatarAddress);
+                List<MonsterCollectionRewardSheet.RewardInfo> rewardInfos = _tableSheets.MonsterCollectionRewardSheet[collectionLevel].Rewards;
+                Assert.Contains(level, nextMonsterCollectionState.RewardMap.Keys);
+                Assert.Equal(_avatarAddress, nextMonsterCollectionState.RewardMap[level].avatarAddress);
             }
 
-            Assert.Equal(0 * currency, nextState.GetBalance(stakingAddress, currency));
+            Assert.Equal(0 * currency, nextState.GetBalance(collectionAddress, currency));
             Assert.Equal(balance, nextState.GetBalance(_signer, currency));
-            Assert.Equal(stakingRound, nextState.GetAgentState(_signer).StakingRound);
-            Assert.Equal(nextStakingState.End, rewardLevel == 4);
+            Assert.Equal(collectionRound, nextState.GetAgentState(_signer).MonsterCollectionRound);
+            Assert.Equal(nextMonsterCollectionState.End, rewardLevel == 4);
         }
 
         [Fact]
         public void Execute_Throw_FailedLoadStateException_AgentState()
         {
-            ClaimStakingReward action = new ClaimStakingReward
+            ClaimMonsterCollectionReward action = new ClaimMonsterCollectionReward
             {
                 avatarAddress = _avatarAddress,
-                stakingRound = 0,
+                collectionRound = 0,
             };
 
             Assert.Throws<FailedLoadStateException>(() => action.Execute(new ActionContext
@@ -199,12 +199,12 @@ namespace Lib9c.Tests.Action
         }
 
         [Fact]
-        public void Execute_Throw_FailedLoadStateException_StakingState()
+        public void Execute_Throw_FailedLoadStateException_MonsterCollectionState()
         {
-            ClaimStakingReward action = new ClaimStakingReward
+            ClaimMonsterCollectionReward action = new ClaimMonsterCollectionReward
             {
                 avatarAddress = _avatarAddress,
-                stakingRound = 1,
+                collectionRound = 1,
             };
 
             Assert.Throws<FailedLoadStateException>(() => action.Execute(new ActionContext
@@ -217,22 +217,22 @@ namespace Lib9c.Tests.Action
         }
 
         [Fact]
-        public void Execute_Throw_StakingExpiredException()
+        public void Execute_Throw_MonsterCollectionExpiredException()
         {
-            Address stakingAddress = StakingState.DeriveAddress(_signer, 0);
-            StakingState stakingState = new StakingState(stakingAddress, 1, 0, _tableSheets.StakingRewardSheet);
-            List<StakingRewardSheet.RewardInfo> rewards = _tableSheets.StakingRewardSheet[4].Rewards;
-            StakingResult result = new StakingResult(Guid.NewGuid(), _avatarAddress, rewards);
-            stakingState.UpdateRewardMap(4, result, 0);
-            _state = _state.SetState(stakingAddress, stakingState.Serialize());
+            Address collectionAddress = MonsterCollectionState.DeriveAddress(_signer, 0);
+            MonsterCollectionState monsterCollectionState = new MonsterCollectionState(collectionAddress, 1, 0, _tableSheets.MonsterCollectionRewardSheet);
+            List<MonsterCollectionRewardSheet.RewardInfo> rewards = _tableSheets.MonsterCollectionRewardSheet[4].Rewards;
+            MonsterCollectionResult result = new MonsterCollectionResult(Guid.NewGuid(), _avatarAddress, rewards);
+            monsterCollectionState.UpdateRewardMap(4, result, 0);
+            _state = _state.SetState(collectionAddress, monsterCollectionState.Serialize());
 
-            ClaimStakingReward action = new ClaimStakingReward
+            ClaimMonsterCollectionReward action = new ClaimMonsterCollectionReward
             {
                 avatarAddress = _avatarAddress,
-                stakingRound = 0,
+                collectionRound = 0,
             };
 
-            Assert.Throws<StakingExpiredException>(() => action.Execute(new ActionContext
+            Assert.Throws<MonsterCollectionExpiredException>(() => action.Execute(new ActionContext
                 {
                     PreviousStates = _state,
                     Signer = _signer,
@@ -243,21 +243,21 @@ namespace Lib9c.Tests.Action
 
         [Theory]
         [InlineData(0, -1)]
-        [InlineData(0, StakingState.RewardInterval - 1)]
+        [InlineData(0, MonsterCollectionState.RewardInterval - 1)]
         public void Execute_Throw_RequiredBlockIndexException(long startedBlockIndex, long blockIndex)
         {
-            Address stakingAddress = StakingState.DeriveAddress(_signer, 0);
-            StakingState stakingState = new StakingState(stakingAddress, 1, startedBlockIndex, _tableSheets.StakingRewardSheet);
-            List<StakingRewardSheet.RewardInfo> rewards = _tableSheets.StakingRewardSheet[1].Rewards;
-            StakingResult result = new StakingResult(Guid.NewGuid(), _avatarAddress, rewards);
-            stakingState.UpdateRewardMap(1, result, 0);
+            Address collectionAddress = MonsterCollectionState.DeriveAddress(_signer, 0);
+            MonsterCollectionState monsterCollectionState = new MonsterCollectionState(collectionAddress, 1, startedBlockIndex, _tableSheets.MonsterCollectionRewardSheet);
+            List<MonsterCollectionRewardSheet.RewardInfo> rewards = _tableSheets.MonsterCollectionRewardSheet[1].Rewards;
+            MonsterCollectionResult result = new MonsterCollectionResult(Guid.NewGuid(), _avatarAddress, rewards);
+            monsterCollectionState.UpdateRewardMap(1, result, 0);
 
-            _state = _state.SetState(stakingAddress, stakingState.Serialize());
+            _state = _state.SetState(collectionAddress, monsterCollectionState.Serialize());
 
-            ClaimStakingReward action = new ClaimStakingReward
+            ClaimMonsterCollectionReward action = new ClaimMonsterCollectionReward
             {
                 avatarAddress = _avatarAddress,
-                stakingRound = 0,
+                collectionRound = 0,
             };
 
             Assert.Throws<RequiredBlockIndexException>(() => action.Execute(new ActionContext
@@ -272,22 +272,22 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Execute_Throw_InsufficientBalanceException()
         {
-            Address stakingAddress = StakingState.DeriveAddress(_signer, 0);
-            StakingState stakingState = new StakingState(stakingAddress, 1, 0, _tableSheets.StakingRewardSheet);
+            Address collectionAddress = MonsterCollectionState.DeriveAddress(_signer, 0);
+            MonsterCollectionState monsterCollectionState = new MonsterCollectionState(collectionAddress, 1, 0, _tableSheets.MonsterCollectionRewardSheet);
 
-            _state = _state.SetState(stakingAddress, stakingState.Serialize());
+            _state = _state.SetState(collectionAddress, monsterCollectionState.Serialize());
 
-            ClaimStakingReward action = new ClaimStakingReward
+            ClaimMonsterCollectionReward action = new ClaimMonsterCollectionReward
             {
                 avatarAddress = _avatarAddress,
-                stakingRound = 0,
+                collectionRound = 0,
             };
 
             Assert.Throws<InsufficientBalanceException>(() => action.Execute(new ActionContext
                 {
                     PreviousStates = _state,
                     Signer = _signer,
-                    BlockIndex = StakingState.ExpirationIndex,
+                    BlockIndex = MonsterCollectionState.ExpirationIndex,
                     Random = new TestRandom(),
                 })
             );

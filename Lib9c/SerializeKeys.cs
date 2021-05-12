@@ -84,15 +84,15 @@ namespace Lib9c
         public const string SellerResultsKey = "srs";
         public const string PurchaseInfosKey = "pis";
 
-        // Staking
+        // MonsterCollection
         public const string StartedBlockIndexKey = "sbi";
         public const string ReceivedBlockIndexKey = "rbi2";
-        public const string StakingRoundKey = "s";
+        public const string MonsterCollectionRoundKey = "s";
         public const string AvatarAddressKey = "aa";
         public const string RewardLevelKey = "rl";
         public const string RewardMapKey = "rm";
         public const string EndKey = "ed";
-        public const string StakingResultKey = "sr";
+        public const string MonsterCollectionResultKey = "mcr";
         public const string QuantityKey = "q";
         public const string RewardLevelMapKey = "rlm";
     }
