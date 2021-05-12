@@ -715,7 +715,7 @@ namespace Nekoyume.Game
                         .FirstOrDefault(e => e.ItemSubType == ItemSubType.Hourglass)?.Id ?? 0;
                     var apPotionId = TableSheets.ItemSheet.OrderedList
                         .FirstOrDefault(e => e.ItemSubType == ItemSubType.ApStone)?.Id ?? 0;
-                    var rewardInfos = new List<StakingRewardSheet.RewardInfo>();
+                    var rewardInfos = new List<MonsterCollectionRewardSheet.RewardInfo>();
                     for (var i = 0; i < rewardsCount; i++)
                     {
                         var dict = new Bencodex.Types.Dictionary();
@@ -726,16 +726,16 @@ namespace Nekoyume.Game
                             .SetItem(
                                 Lib9c.SerializeKeys.QuantityKey,
                                 UnityEngine.Random.Range(1, 100).Serialize());
-                        rewardInfos.Add(new StakingRewardSheet.RewardInfo(dict));
+                        rewardInfos.Add(new MonsterCollectionRewardSheet.RewardInfo(dict));
                     }
 
                     var mailId = Guid.NewGuid();
                     var avatarAddress = States.Instance.CurrentAvatarState.address;
-                    var monsterCollectionRewards = new StakingResult(
+                    var monsterCollectionRewards = new MonsterCollectionResult(
                         mailId,
                         avatarAddress,
                         rewardInfos);
-                    var monsterCollectionRewardsMail = new StakingMail(
+                    var monsterCollectionRewardsMail = new MonsterCollectionMail(
                         monsterCollectionRewards,
                         Agent.BlockIndex,
                         mailId,

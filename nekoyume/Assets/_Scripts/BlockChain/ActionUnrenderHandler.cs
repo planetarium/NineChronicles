@@ -4,13 +4,11 @@ using System.Linq;
 using Lib9c.Renderer;
 using Libplanet;
 using Nekoyume.Action;
-using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.State.Subjects;
-using Nekoyume.UI;
 using UniRx;
 using UnityEngine;
 
@@ -40,6 +38,11 @@ namespace Nekoyume.BlockChain
             RewardGold();
             // GameConfig(); todo.
             // CreateAvatar(); ignore.
+            
+            // Battle
+            // HackAndSlash(); todo.
+            // RankingBattle(); todo.
+            // MimisbrunnrBattle(); todo.
 
             // Craft
             // CombinationConsumable(); todo.
@@ -56,7 +59,7 @@ namespace Nekoyume.BlockChain
             DailyReward();
             // RedeemCode(); todo.
             // ChargeActionPoint(); todo.
-            ClaimStakingReward();
+            ClaimMonsterCollectionReward();
         }
 
         public void Stop()
@@ -131,12 +134,12 @@ namespace Nekoyume.BlockChain
                 .AddTo(_disposables);
         }
 
-        private void ClaimStakingReward()
+        private void ClaimMonsterCollectionReward()
         {
-            _renderer.EveryUnrender<ClaimStakingReward>()
+            _renderer.EveryUnrender<ClaimMonsterCollectionReward>()
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
-                .Subscribe(ResponseClaimStakingReward)
+                .Subscribe(ResponseClaimMonsterCollectionReward)
                 .AddTo(_disposables);
         }
 
@@ -289,7 +292,7 @@ namespace Nekoyume.BlockChain
             UnrenderQuest(avatarAddress, avatarState.questList.completedQuestIds);
         }
 
-        private void ResponseClaimStakingReward(ActionBase.ActionEvaluation<ClaimStakingReward> eval)
+        private void ResponseClaimMonsterCollectionReward(ActionBase.ActionEvaluation<ClaimMonsterCollectionReward> eval)
         {
             if (!(eval.Exception is null))
             {
@@ -298,14 +301,14 @@ namespace Nekoyume.BlockChain
             
             var avatarAddress = eval.Action.avatarAddress;
             var avatarState = eval.OutputStates.GetAvatarState(avatarAddress);
-            var mail = avatarState.mailBox.FirstOrDefault(e => e is StakingMail);
-            if (!(mail is StakingMail {attachment: StakingResult stakingResult}))
+            var mail = avatarState.mailBox.FirstOrDefault(e => e is MonsterCollectionMail);
+            if (!(mail is MonsterCollectionMail {attachment: MonsterCollectionResult monsterCollectionResult}))
             {
                 return;
             }
 
             // LocalLayer
-            var rewardInfos = stakingResult.rewards;
+            var rewardInfos = monsterCollectionResult.rewards;
             for (var i = 0; i < rewardInfos.Count; i++)
             {
                 var rewardInfo = rewardInfos[i];

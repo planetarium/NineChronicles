@@ -76,7 +76,7 @@ namespace Nekoyume.BlockChain
             DailyReward();
             RedeemCode();
             ChargeActionPoint();
-            ClaimStakingReward();
+            ClaimMonsterCollectionReward();
         }
 
         public void Stop()
@@ -278,12 +278,12 @@ namespace Nekoyume.BlockChain
                 .Subscribe(ResponseChargeActionPoint).AddTo(_disposables);
         }
 
-        private void ClaimStakingReward()
+        private void ClaimMonsterCollectionReward()
         {
-            _renderer.EveryRender<ClaimStakingReward>()
+            _renderer.EveryRender<ClaimMonsterCollectionReward>()
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
-                .Subscribe(ResponseClaimStakingReward).AddTo(_disposables);
+                .Subscribe(ResponseClaimMonsterCollectionReward).AddTo(_disposables);
         }
 
         private void ResponseRapidCombination(ActionBase.ActionEvaluation<RapidCombination2> eval)
@@ -908,7 +908,7 @@ namespace Nekoyume.BlockChain
             }
         }
 
-        private void ResponseClaimStakingReward(ActionBase.ActionEvaluation<ClaimStakingReward> eval)
+        private void ResponseClaimMonsterCollectionReward(ActionBase.ActionEvaluation<ClaimMonsterCollectionReward> eval)
         {
             if (!(eval.Exception is null))
             {
@@ -917,14 +917,14 @@ namespace Nekoyume.BlockChain
 
             var avatarAddress = eval.Action.avatarAddress;
             var avatarState = eval.OutputStates.GetAvatarState(avatarAddress);
-            var mail = avatarState.mailBox.FirstOrDefault(e => e is StakingMail);
-            if (!(mail is StakingMail {attachment: StakingResult stakingResult}))
+            var mail = avatarState.mailBox.FirstOrDefault(e => e is MonsterCollectionMail);
+            if (!(mail is MonsterCollectionMail {attachment: MonsterCollectionResult monsterCollectionResult}))
             {
                 return;
             }
 
             // LocalLayer
-            var rewardInfos = stakingResult.rewards;
+            var rewardInfos = monsterCollectionResult.rewards;
             for (var i = 0; i < rewardInfos.Count; i++)
             {
                 var rewardInfo = rewardInfos[i];

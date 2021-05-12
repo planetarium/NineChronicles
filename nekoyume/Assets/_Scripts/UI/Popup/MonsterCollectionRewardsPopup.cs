@@ -14,8 +14,8 @@ namespace Nekoyume.UI
     {
         private class Model
         {
-            public readonly ReactiveProperty<List<StakingRewardSheet.RewardInfo>> RewardInfos
-                = new ReactiveProperty<List<StakingRewardSheet.RewardInfo>>();
+            public readonly ReactiveProperty<List<MonsterCollectionRewardSheet.RewardInfo>> RewardInfos
+                = new ReactiveProperty<List<MonsterCollectionRewardSheet.RewardInfo>>();
         }
 
         private readonly Model _model = new Model();
@@ -65,13 +65,13 @@ namespace Nekoyume.UI
             SubmitWidget = () => submitButton.OnSubmitClick.OnNext(submitButton);
         }
 
-        public void Pop(List<StakingRewardSheet.RewardInfo> rewardInfos)
+        public void Pop(List<MonsterCollectionRewardSheet.RewardInfo> rewardInfos)
         {
             SetData(rewardInfos);
             base.Show();
         }
 
-        private void SetData(List<StakingRewardSheet.RewardInfo> rewardInfos)
+        private void SetData(List<MonsterCollectionRewardSheet.RewardInfo> rewardInfos)
         {
             _model.RewardInfos.Value = rewardInfos;
         }

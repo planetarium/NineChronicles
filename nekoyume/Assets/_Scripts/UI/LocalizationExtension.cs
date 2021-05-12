@@ -52,7 +52,7 @@ namespace Nekoyume.UI
                     return string.Format(format, sellerResult.gold, GetLocalizedNonColoredName(attachment.itemUsable ?? (ItemBase)attachment.costume));
                 case DailyRewardMail _:
                     return L10nManager.Localize("UI_DAILY_REWARD_MAIL_FORMAT");
-                case StakingMail _:
+                case MonsterCollectionMail _:
                     return L10nManager.Localize("UI_MONSTER_COLLECTION_MAIL_FORMAT");
                 default:
                     throw new NotSupportedException(
