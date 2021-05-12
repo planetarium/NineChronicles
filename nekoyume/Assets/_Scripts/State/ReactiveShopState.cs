@@ -61,8 +61,6 @@ namespace Nekoyume.State
             var products = state.Products.Values.ToList();
             products.AddRange(shardedProducts);
 
-
-
             // AgentProducts.
             {
                 var agentProducts = new Dictionary<Address, List<ShopItem>>();
