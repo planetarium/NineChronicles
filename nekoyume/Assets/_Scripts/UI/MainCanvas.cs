@@ -271,6 +271,8 @@ namespace Nekoyume.UI
             yield return null;
             secondWidgets.Add(Widget.Create<LevelUpCelebratePopup>());
             yield return null;
+            secondWidgets.Add(Widget.Create<MonsterCollectionRewardsPopup>());
+            yield return null;
             // 임시로 팝업보다 상단에 배치합니다.
             secondWidgets.Add(Widget.Create<BottomMenu>());
             yield return null;

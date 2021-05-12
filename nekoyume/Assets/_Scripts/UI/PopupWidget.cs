@@ -13,9 +13,6 @@ namespace Nekoyume.UI
             PlayPopupSound();
         }
 
-        protected virtual void PlayPopupSound()
-        {
-            AudioController.PlayPopup();
-        }
+        protected virtual void PlayPopupSound() => AudioController.PlayPopup();
     }
 }

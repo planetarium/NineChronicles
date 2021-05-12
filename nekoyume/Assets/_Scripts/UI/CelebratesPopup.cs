@@ -340,11 +340,10 @@ namespace Nekoyume.UI
                 LocalLayerModifier.AddItem(
                     avatarAddress,
                     materialRow.Value.ItemId,
-                    reward.Value,
-                    false);
+                    reward.Value);
             }
 
-            LocalLayerModifier.RemoveReceivableQuest(avatarAddress, questId);
+            LocalLayerModifier.RemoveReceivableQuest(avatarAddress, questId, true);
         }
 
         private void AppearNPC(bool ignoreShowAnimation, NPCAnimation.Type animationType)

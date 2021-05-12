@@ -17,14 +17,18 @@ using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
+using Nekoyume.Model.Item;
+using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
 using Nekoyume.Pattern;
 using Nekoyume.State;
+using Nekoyume.TableData;
 using Nekoyume.UI;
 using UniRx;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
+using Mail = Nekoyume.UI.Mail;
 using Menu = Nekoyume.UI.Menu;
 
 namespace Nekoyume.Game
@@ -168,7 +172,6 @@ namespace Nekoyume.Game
                 .Select(_ => Input.mousePosition)
                 .Subscribe(PlayMouseOnClickVFX)
                 .AddTo(gameObject);
-
 
             Widget.Find<VersionInfo>().SetVersion(Agent.AppProtocolVersion);
 

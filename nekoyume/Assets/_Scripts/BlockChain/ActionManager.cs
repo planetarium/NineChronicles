@@ -206,19 +206,19 @@ namespace Nekoyume.BlockChain
                 .DoOnError(e => HandleException(action.Id, e));
         }
 
-        public IObservable<ActionBase.ActionEvaluation<Sell>> Sell(Guid itemId,
+        public IObservable<ActionBase.ActionEvaluation<Sell>> Sell(Guid tradableId,
                                                                    FungibleAssetValue price,
                                                                    ItemSubType itemSubType)
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
 
             // NOTE: 장착했는지 안 했는지에 상관없이 해제 플래그를 걸어 둔다.
-            LocalLayerModifier.SetItemEquip(avatarAddress, itemId, false, false);
+            LocalLayerModifier.SetItemEquip(avatarAddress, tradableId, false);
 
             var action = new Sell
             {
                 sellerAvatarAddress = avatarAddress,
-                itemId = itemId,
+                tradableId = tradableId,
                 price = price,
                 itemSubType = itemSubType,
             };
@@ -304,8 +304,8 @@ namespace Nekoyume.BlockChain
             var avatarAddress = States.Instance.CurrentAvatarState.address;
 
             // NOTE: 장착했는지 안 했는지에 상관없이 해제 플래그를 걸어 둔다.
-            LocalLayerModifier.SetItemEquip(avatarAddress, itemId, false, false);
-            LocalLayerModifier.SetItemEquip(avatarAddress, materialId, false, false);
+            LocalLayerModifier.SetItemEquip(avatarAddress, itemId, false);
+            LocalLayerModifier.SetItemEquip(avatarAddress, materialId, false);
 
             Mixpanel.Track("Unity/Item Enhancement");
 

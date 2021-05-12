@@ -525,7 +525,7 @@ namespace Nekoyume.UI
 
             LocalLayerModifier.SetItemEquip(
                 States.Instance.CurrentAvatarState.address,
-                nonFungibleItem.ItemId,
+                nonFungibleItem.NonFungibleId,
                 equip);
         }
 
