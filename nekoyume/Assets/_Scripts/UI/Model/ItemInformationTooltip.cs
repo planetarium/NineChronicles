@@ -66,6 +66,7 @@ namespace Nekoyume.UI.Model
             SubmitButtonEnabled.Dispose();
             SubmitButtonText.Dispose();
             Price.Dispose();
+            ExpiredBlockIndex.Dispose();
             OnSubmitClick.Dispose();
             OnCloseClick.Dispose();
             base.Dispose();
