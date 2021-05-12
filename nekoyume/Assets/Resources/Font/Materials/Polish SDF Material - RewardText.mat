@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Polish SDF Material - QuestRewardText
+  m_Name: Polish SDF Material - RewardText
   m_Shader: {fileID: 4800000, guid: 68e6db2ebdc24f95958faec2be5558d6, type: 3}
   m_ShaderKeywords: BEVEL_ON GLOW_ON UNDERLAY_ON
   m_LightmapFlags: 4
@@ -38,8 +38,8 @@ Material:
         m_Offset: {x: 0, y: 0}
     - _OutlineTex:
         m_Texture: {fileID: 0}
-        m_Scale: {x: 20.1, y: 4}
-        m_Offset: {x: 20, y: 20}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     m_Floats:
     - _Ambient: 0
     - _Bevel: 0.107
@@ -68,9 +68,9 @@ Material:
     - _OutlineWidth: 0
     - _PerspectiveFilter: 0.875
     - _Reflectivity: 9.54
-    - _ScaleRatioA: 0.9
-    - _ScaleRatioB: 0.72675
-    - _ScaleRatioC: 0.47314453
+    - _ScaleRatioA: 0.875
+    - _ScaleRatioB: 0.7065625
+    - _ScaleRatioC: 0.46000165
     - _ScaleX: 1
     - _ScaleY: 1
     - _ShaderFlags: 1
@@ -102,3 +102,4 @@ Material:
     - _ReflectOutlineColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecularColor: {r: 0.7294118, g: 0.85882354, b: 0.49803922, a: 1}
     - _UnderlayColor: {r: 0.105882354, g: 0.043137256, b: 0.019607844, a: 1}
+  m_BuildTextureStacks: []
