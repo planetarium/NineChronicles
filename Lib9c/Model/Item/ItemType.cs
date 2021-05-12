@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace Nekoyume.Model.Item
@@ -36,8 +37,8 @@ namespace Nekoyume.Model.Item
         NormalMaterial = 14,
         Hourglass = 15,
         ApStone = 16,
-        // NOTE: No more use.
-        //Chest = 17,
+        [Obsolete("ItemSubType.Chest has never been used outside the MaterialItemSheet. And we won't use it in the future until we have a specific reason.")]
+        Chest = 17,
 
         // Costume
         Title = 18,
