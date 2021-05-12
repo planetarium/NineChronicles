@@ -176,11 +176,6 @@ namespace Nekoyume.Game
             Widget.Find<VersionInfo>().SetVersion(Agent.AppProtocolVersion);
 
             ShowNext(agentInitializeSucceed);
-
-            if (GameConfig.IsEditor)
-            {
-                EditorTests();
-            }
         }
 
         private void SubscribeRPCAgent()
@@ -668,85 +663,6 @@ namespace Nekoyume.Game
             }
 
             return msg;
-        }
-
-        private void EditorTests()
-        {
-            // Test monster collection rewards mail. `M` + `0~4`
-            Observable.EveryUpdate()
-                .Where(_ => Input.GetKey(KeyCode.M))
-                .Select(_ =>
-                {
-                    Debug.Log("pressed `M`");
-                    if (Input.GetKeyDown(KeyCode.Alpha0))
-                    {
-                        return 0;
-                    }
-
-                    if (Input.GetKeyDown(KeyCode.Alpha1))
-                    {
-                        return 1;
-                    }
-
-                    if (Input.GetKeyDown(KeyCode.Alpha2))
-                    {
-                        return 2;
-                    }
-
-                    if (Input.GetKeyDown(KeyCode.Alpha3))
-                    {
-                        return 3;
-                    }
-
-                    if (Input.GetKeyDown(KeyCode.Alpha4))
-                    {
-                        return 4;
-                    }
-
-                    return -1;
-                })
-                .Subscribe(rewardsCount =>
-                {
-                    Debug.Log($"pressed {rewardsCount}");
-                    if (rewardsCount < 0)
-                    {
-                        return;
-                    }
-
-                    var hourglassId = TableSheets.ItemSheet.OrderedList
-                        .FirstOrDefault(e => e.ItemSubType == ItemSubType.Hourglass)?.Id ?? 0;
-                    var apPotionId = TableSheets.ItemSheet.OrderedList
-                        .FirstOrDefault(e => e.ItemSubType == ItemSubType.ApStone)?.Id ?? 0;
-                    var rewardInfos = new List<MonsterCollectionRewardSheet.RewardInfo>();
-                    for (var i = 0; i < rewardsCount; i++)
-                    {
-                        var dict = new Bencodex.Types.Dictionary();
-                        dict = dict
-                            .SetItem(
-                                Lib9c.SerializeKeys.IdKey,
-                                i % 2 == 0 ? hourglassId.Serialize() : apPotionId.Serialize())
-                            .SetItem(
-                                Lib9c.SerializeKeys.QuantityKey,
-                                UnityEngine.Random.Range(1, 100).Serialize());
-                        rewardInfos.Add(new MonsterCollectionRewardSheet.RewardInfo(dict));
-                    }
-
-                    var mailId = Guid.NewGuid();
-                    var avatarAddress = States.Instance.CurrentAvatarState.address;
-                    var monsterCollectionRewards = new MonsterCollectionResult(
-                        mailId,
-                        avatarAddress,
-                        rewardInfos);
-                    var monsterCollectionRewardsMail = new MonsterCollectionMail(
-                        monsterCollectionRewards,
-                        Agent.BlockIndex,
-                        mailId,
-                        Agent.BlockIndex);
-                    States.Instance.CurrentAvatarState.mailBox.Add(monsterCollectionRewardsMail);
-                    LocalLayerModifier.AddNewAttachmentMail(avatarAddress, mailId);
-                    Widget.Find<Mail>().Show();
-                })
-                .AddTo(gameObject);
         }
     }
 }
