@@ -104,14 +104,19 @@ namespace Lib9c.Tests.Model.State
             Assert.Throws<AlreadyReceivedException>(() => monsterCollectionState.UpdateRewardMap(1, result, 0));
         }
 
-        [Fact]
-        public void GetRewardLevel()
+        [Theory]
+        [InlineData(-1, 0)]
+        [InlineData(0, 0)]
+        [InlineData(1, 1)]
+        [InlineData(2, 2)]
+        [InlineData(3, 3)]
+        [InlineData(4, 4)]
+        [InlineData(5, 4)]
+        public void GetRewardLevel(int interval, long expected)
         {
             MonsterCollectionState monsterCollectionState = new MonsterCollectionState(_address, 1, 0, _tableSheets.MonsterCollectionRewardSheet);
-            for (long i = 0; i < MonsterCollectionState.RewardCapacity; i++)
-            {
-                Assert.Equal(i, monsterCollectionState.GetRewardLevel(i * MonsterCollectionState.RewardInterval));
-            }
+            long blockIndex = MonsterCollectionState.RewardInterval * interval;
+            Assert.Equal(expected, monsterCollectionState.GetRewardLevel(blockIndex));
         }
 
         [Theory]

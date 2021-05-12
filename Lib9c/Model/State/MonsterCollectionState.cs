@@ -109,8 +109,8 @@ namespace Nekoyume.Model.State
 
         public long GetRewardLevel(long blockIndex)
         {
-            long diff = blockIndex - StartedBlockIndex;
-            return diff / RewardInterval;
+            long diff = Math.Max(0, blockIndex - StartedBlockIndex);
+            return Math.Min(RewardCapacity, diff / RewardInterval);
         }
 
         public bool CanReceive(long blockIndex)
