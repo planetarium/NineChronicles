@@ -7,7 +7,9 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI.Scroller
 {
-    public class RankCell : MonoBehaviour
+    public class RankCell : RectCell<
+        RankingModel,
+        RankScroll.ContextModel>
     {
         [SerializeField]
         private GameObject imageContainer = null;
@@ -64,6 +66,18 @@ namespace Nekoyume.UI.Scroller
                     Widget.Find<FriendInfoPopup>().Show(avatarState);
                 })
                 .AddTo(gameObject);
+        }
+
+        public override void UpdateContent(RankingModel viewModel)
+        {
+            if (viewModel is AbilityRankingModel abilityRankingModel)
+            {
+                SetDataAsAbility(abilityRankingModel);
+            }
+            else if (viewModel is StageRankingModel stageRankingModel)
+            {
+                SetDataAsStage(stageRankingModel);
+            }
         }
 
         public void SetDataAsAbility(AbilityRankingModel rankingInfo)

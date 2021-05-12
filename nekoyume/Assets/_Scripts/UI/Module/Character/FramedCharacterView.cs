@@ -31,7 +31,7 @@ namespace Nekoyume.UI.Module
             button.OnClickAsObservable()
                 .ThrottleFirst(new TimeSpan(0, 0, 1))
                 .Subscribe(_ =>
-                {
+                {   
                     OnClickCharacterIcon.OnNext(_avatarStateToDisplay);
                     AudioController.PlayClick();
                 })

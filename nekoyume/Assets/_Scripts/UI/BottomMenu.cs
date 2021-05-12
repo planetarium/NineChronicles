@@ -644,9 +644,8 @@ namespace Nekoyume.UI.Module
         {
             rankingButton.Show();
 
-            var requiredStage = GameConfig.RequireClearedStageLevel.UIBottomMenuRanking;
-            if (!States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(GameConfig
-                .RequireClearedStageLevel.UIBottomMenuRanking))
+            var requiredStage = 1;
+            if (!States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(1))
             {
                 if (_disposablesForLockedButtons.TryGetValue(ToggleableType.Ranking, out var _))
                 {

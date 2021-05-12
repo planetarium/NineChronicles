@@ -146,7 +146,7 @@ namespace Nekoyume.UI.Module
                 }
 
                 StageRankingInfos = orderedAvatarStates
-                    .Take(RankPanel.RankingBoardDisplayCount)
+                    .Take(RankingBoardDisplayCount)
                     .Select(avatarState =>
                     {
                         var stageProgress = avatarState.worldInformation.TryGetLastClearedStageId(out var id) ? id : 0;
@@ -194,7 +194,7 @@ namespace Nekoyume.UI.Module
                 }
 
                 MimisbrunnrRankingInfos = orderedAvatarStates
-                    .Take(RankPanel.RankingBoardDisplayCount)
+                    .Take(RankingBoardDisplayCount)
                     .Select(avatarState =>
                     {
                         var stageProgress = avatarState.worldInformation.TryGetLastClearedMimisbrunnrStageId(out var id) ? id : 0;
@@ -230,6 +230,9 @@ namespace Nekoyume.UI.Module
 
         [SerializeField]
         private TextMeshProUGUI secondColumnText = null;
+
+        [SerializeField]
+        private RankScroll rankScroll = null;
 
         [SerializeField]
         private RankCell myInfoCell = null;
@@ -402,27 +405,7 @@ namespace Nekoyume.UI.Module
                         myInfoCell.SetDataAsAbility(abilityInfo);
                     }
 
-                    for (int i = 0; i < RankingBoardDisplayCount; ++i)
-                    {
-                        var info = abilityRankingInfos[i];
-                        if (i >= abilityRankingInfos.Count())
-                        {
-                            _cellViewCache[i].gameObject.SetActive(false);
-                            break;
-                        }
-
-                        if (info.AvatarState.address != states.CurrentAvatarState.address)
-                        {
-                            _cellViewCache[i].SetDataAsAbility(info);
-                            _cellViewCache[i].gameObject.SetActive(true);
-                        }
-                        else
-                        {
-                            _myInfoCellCache.SetDataAsAbility(info);
-                            _myInfoCellCache.transform.SetSiblingIndex(info.Rank - 1);
-                            _myInfoCellCache.gameObject.SetActive(true);
-                        }
-                    }
+                    rankScroll.Show(abilityRankingInfos, true);
                     break;
                 case RankCategory.Stage:
                     var stageRankingInfos = SharedModel.StageRankingInfos;
@@ -439,17 +422,7 @@ namespace Nekoyume.UI.Module
                         myInfoCell.SetDataAsStage(stageInfo);
                     }
 
-                    for (int i = 0; i < RankingBoardDisplayCount; ++i)
-                    {
-                        if (i >= stageRankingInfos.Count())
-                        {
-                            _cellViewCache[i].gameObject.SetActive(false);
-                            break;
-                        }
-
-                        _cellViewCache[i].SetDataAsStage(stageRankingInfos[i]);
-                        _cellViewCache[i].gameObject.SetActive(true);
-                    }
+                    rankScroll.Show(stageRankingInfos, true);
                     break;
                 case RankCategory.Mimisburnnr:
                     var mimisbrunnrRankingInfos = SharedModel.MimisbrunnrRankingInfos;
@@ -466,17 +439,7 @@ namespace Nekoyume.UI.Module
                         myInfoCell.SetDataAsStage(mimisbrunnrInfo);
                     }
 
-                    for (int i = 0; i < RankingBoardDisplayCount; ++i)
-                    {
-                        if (i >= mimisbrunnrRankingInfos.Count())
-                        {
-                            _cellViewCache[i].gameObject.SetActive(false);
-                            break;
-                        }
-
-                        _cellViewCache[i].SetDataAsStage(mimisbrunnrRankingInfos[i]);
-                        _cellViewCache[i].gameObject.SetActive(true);
-                    }
+                    rankScroll.Show(mimisbrunnrRankingInfos, true);
                     break;
                 default:
                     _cellViewCache.ForEach(cell => cell.gameObject.SetActive(false));

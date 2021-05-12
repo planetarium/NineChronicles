@@ -1,4 +1,3 @@
-using Libplanet;
 using Nekoyume.Model.State;
 
 namespace Nekoyume.UI.Model
