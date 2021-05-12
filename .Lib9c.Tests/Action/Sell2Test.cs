@@ -110,7 +110,7 @@
             {
                 var sellAction = new Sell2
                 {
-                    itemId = nonFungibleItem.ItemId,
+                    itemId = nonFungibleItem.NonFungibleId,
                     price = price,
                     sellerAvatarAddress = _avatarAddress,
                 };
@@ -142,12 +142,12 @@
 
                 if (shopItem.ItemUsable != null)
                 {
-                    Assert.Equal(nonFungibleItem.ItemId, shopItem.ItemUsable.ItemId);
+                    Assert.Equal(nonFungibleItem.NonFungibleId, shopItem.ItemUsable.ItemId);
                 }
 
                 if (shopItem.Costume != null)
                 {
-                    Assert.Equal(nonFungibleItem.ItemId, shopItem.Costume.ItemId);
+                    Assert.Equal(nonFungibleItem.NonFungibleId, shopItem.Costume.ItemId);
                 }
 
                 Assert.Equal(price, shopItem.Price);
@@ -161,7 +161,7 @@
         [Fact]
         public void ExecuteThrowInvalidPriceException()
         {
-            var action = new Sell
+            var action = new Sell2
             {
                 itemId = default,
                 price = -1 * _currency,
@@ -179,7 +179,7 @@
         [Fact]
         public void ExecuteThrowFailedLoadStateException()
         {
-            var action = new Sell
+            var action = new Sell2
             {
                 itemId = default,
                 price = 0 * _currency,
@@ -208,7 +208,7 @@
 
             _initialState = _initialState.SetState(_avatarAddress, avatarState.Serialize());
 
-            var action = new Sell
+            var action = new Sell2
             {
                 itemId = default,
                 price = 0 * _currency,
@@ -226,7 +226,7 @@
         [Fact]
         public void ExecuteThrowItemDoesNotExistException()
         {
-            var action = new Sell
+            var action = new Sell2
             {
                 itemId = default,
                 price = 0 * _currency,

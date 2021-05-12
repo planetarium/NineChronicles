@@ -183,6 +183,27 @@ namespace Lib9c.Tests.Action
             AssertException<ShopItemExpiredException>(exc);
         }
 
+        [Fact]
+        public void InvalidMonsterCollectionRoundException_Serializable()
+        {
+            var exc = new InvalidMonsterCollectionRoundException("for testing.");
+            AssertException<InvalidMonsterCollectionRoundException>(exc);
+        }
+
+        [Fact]
+        public void MonsterCollectionExpiredException_Serializable()
+        {
+            var exc = new MonsterCollectionExpiredException("for testing.");
+            AssertException<MonsterCollectionExpiredException>(exc);
+        }
+
+        [Fact]
+        public void InvalidLevelException_Serializable()
+        {
+            var exc = new InvalidLevelException("for testing.");
+            AssertException<InvalidLevelException>(exc);
+        }
+
         private static void AssertException<T>(Exception exc)
             where T : Exception
         {
