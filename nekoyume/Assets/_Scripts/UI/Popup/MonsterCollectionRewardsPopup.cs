@@ -75,7 +75,5 @@ namespace Nekoyume.UI
         {
             _model.RewardInfos.Value = rewardInfos;
         }
-
-        public void Clear() => SetData(null);
     }
 }
