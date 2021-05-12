@@ -1,10 +1,12 @@
-﻿using mixpanel;
+﻿using System.Collections.Generic;
+using mixpanel;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
+using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
@@ -20,6 +22,7 @@ namespace Nekoyume.UI
     public class ShopSell : Widget
     {
         private const int NPCId = 300000;
+        private const int ShopItemsPerPage = 20;
         private static readonly Vector2 NPCPosition = new Vector2(2.76f, -1.72f);
         private NPC _npc;
 
@@ -83,9 +86,10 @@ namespace Nekoyume.UI
                 .AddTo(gameObject);
         }
 
-        public override void Show(bool ignoreShowAnimation = false)
+        public void Show(ShopState shopState, IEnumerable<Nekoyume.Model.Item.ShopItem> shardedProducts)
         {
-            base.Show(ignoreShowAnimation);
+            base.Show();
+            ReactiveShopState.Initialize(shopState, shardedProducts, ShopItemsPerPage);
             shopItems.Show();
             inventory.SharedModel.State.Value = ItemType.Equipment;
             AudioController.instance.PlayMusic(AudioController.MusicCode.Shop);
