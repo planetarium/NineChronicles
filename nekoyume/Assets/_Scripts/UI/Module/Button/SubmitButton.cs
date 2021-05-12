@@ -1,4 +1,3 @@
-using System;
 using Nekoyume.Game.Controller;
 using TMPro;
 using UniRx;
