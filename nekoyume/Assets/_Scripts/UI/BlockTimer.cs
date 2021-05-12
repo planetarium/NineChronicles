@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Nekoyume.Action;
+using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.State;
 using TMPro;
@@ -47,31 +48,10 @@ namespace Nekoyume.UI
 
         private void OnSliderChange(float value)
         {
-            var remainSecond = value * 15;
-            var timeSpan = TimeSpan.FromSeconds(remainSecond);
+            Debug.Log($"test : {value}");
 
-            var sb = new StringBuilder();
-            if (timeSpan.Hours > 0)
-            {
-                sb.Append($"{timeSpan.Hours}h");
-            }
-
-            if (timeSpan.Minutes > 0)
-            {
-                if (timeSpan.Hours > 0)
-                {
-                    sb.Append(" ");
-                }
-
-                sb.Append($"{timeSpan.Minutes}m");
-            }
-
-            if (sb.Length == 0)
-            {
-                sb.Append("1m");
-            }
-
-            remainTime.text = string.Format(L10nManager.Localize("UI_BLOCK_TIMER"), value, sb);
+            var time = Util.GetBlockToTime((int) value);
+            remainTime.text = string.Format(L10nManager.Localize("UI_BLOCK_TIMER"), value, time);
         }
 
         public void UpdateTimer(long expiredTime)
