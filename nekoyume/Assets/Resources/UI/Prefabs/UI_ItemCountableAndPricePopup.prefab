@@ -230,11 +230,11 @@ GameObject:
   - component: {fileID: 224498378854315574}
   - component: {fileID: 222673993354493914}
   - component: {fileID: 114075238686579876}
-  - component: {fileID: 2509139748992700350}
   - component: {fileID: 2269805390546318469}
   - component: {fileID: 3210077395262828308}
+  - component: {fileID: -365719557452423387}
   m_Layer: 5
-  m_Name: UI_ItemCountAndPricePopUp_new
+  m_Name: UI_ItemCountableAndPricePopup
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -298,27 +298,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &2509139748992700350
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1819994206506296}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 071cbbcff0f14483b6a486b069351a3d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  tutorialTargets: []
-  tutorialActions: 
-  titleText: {fileID: 2306292042616979258}
-  informationText: {fileID: 0}
-  cancelButton: {fileID: 114459440507080414}
-  cancelButtonText: {fileID: 8735976915397570410}
-  itemView: {fileID: 1559352539837814424}
-  submitButton: {fileID: 0}
-  priceInputField: {fileID: 7587875841025880237}
 --- !u!114 &2269805390546318469
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -363,7 +342,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 2509139748992700350}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: 
         m_MethodName: Close
         m_Mode: 6
@@ -394,6 +373,26 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &-365719557452423387
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1819994206506296}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a5b9d3db13e84b67ae1dda5bac7bf9b6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tutorialTargets: []
+  tutorialActions: 
+  titleText: {fileID: 0}
+  informationText: {fileID: 0}
+  cancelButton: {fileID: 0}
+  cancelButtonText: {fileID: 0}
+  itemView: {fileID: 0}
+  submitButton: {fileID: 0}
 --- !u!1 &19833193104340809
 GameObject:
   m_ObjectHideFlags: 0
@@ -1566,7 +1565,7 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 2509139748992700350}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: 
         m_MethodName: OnValueChanged
         m_Mode: 1
@@ -5169,7 +5168,7 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 2509139748992700350}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: 
         m_MethodName: OnValueChanged
         m_Mode: 1
@@ -5861,18 +5860,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5a7ec89f001bf46e686e8583d2f3a60e, type: 3}
---- !u!114 &1559352539837814424 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 1997991965690462128, guid: 5a7ec89f001bf46e686e8583d2f3a60e,
-    type: 3}
-  m_PrefabInstance: {fileID: 1016025456135285032}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3d710db0c8f34326bca10f1fe0a9fa88, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!224 &1669268851050493044 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 1816018180843216220, guid: 5a7ec89f001bf46e686e8583d2f3a60e,
