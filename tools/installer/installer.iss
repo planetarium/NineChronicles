@@ -85,26 +85,11 @@ begin
   WinHttpReq := CreateOleObject('WinHttp.WinHttpRequest.5.1');
   WinHttpReq.Open('POST', 'https://api.mixpanel.com/track', False);
   WinHttpReq.SetRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-  WinHttpReq.Send(Format('data={"event":"%s","properties":{"token":"80a1e14b57d050536185c7459d45195a","distinct_id":"%s"}}', [Event, UUID]));
+  WinHttpReq.Send(Format('data={"event":"%s","properties":{"token":"80a1e14b57d050536185c7459d45195a", "version": "20210513", "distinct_id":"%s"}}', [Event, UUID]));
   if WinHttpReq.ResponseText = 1 then begin
     Log('Mixpanel request success.');
   end else begin
     Log('Mixpanel request failed. ' + WinHttpReq.ResponseText);
-  end;
-end;
-
-procedure SendUUID(Event, UUID: String);
-var
-  WinHttpReq: Variant;
-begin
-  WinHttpReq := CreateOleObject('WinHttp.WinHttpRequest.5.1');
-  WinHttpReq.Open('POST', 'https://planetariumhq.slack.com/services/hooks/slackbot?token=4hBLriaHECDGHlNNbOnwjkfk&channel=%239c-installer', False);
-  WinHttpReq.SetRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-  WinHttpReq.Send('[INSTALLER] UUID: ' + UUID + ' // EVENT: ' + Event);
-  if WinHttpReq.ResponseText = 'ok' then begin
-    Log('Slack request success.');
-  end else begin
-    Log('Slack request failed. ' + WinHttpReq.ResponseText);
   end;
 end;
 
@@ -114,16 +99,14 @@ begin
   begin
     Log('Install: Request Mixpanel.');
     Log('UUID: ' + UUID);
-    MixpanelTrack('Installer/Start-test', UUID);
-    SendUUID('5. Installer/Start', UUID);
+    MixpanelTrack('Installer/Start', UUID);
   end;
 
   if CurStep = ssPostInstall then
   begin
     Log('PostInstall: Request Mixpanel.');
     Log('UUID: ' + UUID);
-    MixpanelTrack('Installer/End-test', UUID);
-    SendUUID('6. Installer/End', UUID);
+    MixpanelTrack('Installer/End', UUID);
   end;
 end;
 
@@ -133,8 +116,7 @@ begin
   begin
     Log('UnInstall: Request Mixpanel.');
     Log('UUID: ' + UUID);
-    MixpanelTrack('Installer/Uninstall-test', UUID);
-    SendUUID('8. Installer/Uninstall', UUID);
+    MixpanelTrack('Installer/Uninstall', UUID);
   end;
 end;
 
@@ -145,36 +127,31 @@ begin
       begin
         Log('Install: Select Directory.');
         Log('UUID: ' + UUID);
-        MixpanelTrack('Installer/SelectDir-test', UUID);
-        SendUUID('1. Installer/SelectDir', UUID);
+        MixpanelTrack('Installer/SelectDir', UUID);
       end;
     wpSelectTasks:
       begin
         Log('Install: Select Tasks.');
         Log('UUID: ' + UUID);
-        MixpanelTrack('Installer/SelectTasks-test', UUID);
-        SendUUID('2. Installer/SelectTasks', UUID);
+        MixpanelTrack('Installer/SelectTasks', UUID);
       end;
     wpReady:
       begin
         Log('Install: Ready.');
         Log('UUID: ' + UUID);
-        MixpanelTrack('Installer/Ready-test', UUID);
-        SendUUID('3. Installer/Ready', UUID);
+        MixpanelTrack('Installer/Ready', UUID);
       end;
     wpInstalling:
       begin
         Log('Install: Installing.');
         Log('UUID: ' + UUID);
-        MixpanelTrack('Installer/Installing-test', UUID);
-        SendUUID('4. Installer/Installing', UUID);
+        MixpanelTrack('Installer/Installing', UUID);
       end;
     wpFinished:
       begin
         Log('Install: Finished.');
         Log('UUID: ' + UUID);
-        MixpanelTrack('Installer/Finished-test', UUID);
-        SendUUID('7. Installer/Finished', UUID);
+        MixpanelTrack('Installer/Finished', UUID);
       end;
   end;
 end;
@@ -194,7 +171,7 @@ Filename: {tmp}\vc_redist.x64.exe; \
 
 [Run]
 Filename: {app}\Nine Chronicles Updater.exe; \
-    StatusMsg: "Updating Nine Chonicles Executables..."
+    StatusMsg: "Updating Nine Chronicles Executables..."
 
 [Run]
 Filename: "{app}\{#GameExeName}"; Flags: nowait postinstall skipifsilent
