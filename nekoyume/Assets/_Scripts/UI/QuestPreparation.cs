@@ -392,6 +392,7 @@ namespace Nekoyume.UI
         private void QuestClick(bool repeat)
         {
             _stage.IsInStage = true;
+            _stage.IsShowHud = true;
             StartCoroutine(CoQuestClick(repeat));
             questButton.interactable = false;
             repeatToggle.interactable = false;

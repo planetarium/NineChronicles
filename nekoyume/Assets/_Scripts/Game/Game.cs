@@ -3,14 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
-using Amazon;
 using Amazon.CloudWatchLogs;
 using Amazon.CloudWatchLogs.Model;
-using Amazon.CognitoIdentity;
 using Bencodex.Types;
-using Libplanet;
-using Libplanet.Crypto;
 using mixpanel;
 using Nekoyume.Action;
 using Nekoyume.BlockChain;
@@ -24,7 +19,6 @@ using Nekoyume.State;
 using Nekoyume.UI;
 using Nekoyume.UI.Module;
 using UniRx;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using Menu = Nekoyume.UI.Menu;
@@ -137,6 +131,7 @@ namespace Nekoyume.Game
             MainCanvas.instance.InitializeFirst();
             yield return Addressables.InitializeAsync();
             yield return StartCoroutine(CoInitializeTableSheets());
+            yield return StartCoroutine(ResourcesHelper.CoInitialize());
             AudioController.instance.Initialize();
             yield return null;
             // Agent 초기화.
@@ -154,6 +149,7 @@ namespace Nekoyume.Game
                     }
                 )
             );
+
             yield return new WaitUntil(() => agentInitialized);
             ShopProducts = new ShopProducts();
             // NOTE: Create ActionManager after Agent initialized.

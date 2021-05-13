@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Korean SDF Material - QuestRewardText
+  m_Name: English SDF Material - RewardText
   m_Shader: {fileID: 4800000, guid: 68e6db2ebdc24f95958faec2be5558d6, type: 3}
   m_ShaderKeywords: BEVEL_ON GLOW_ON UNDERLAY_ON
   m_LightmapFlags: 4
@@ -32,7 +32,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 7490950175445712415, guid: ee85c922f6a7b4b5ba900ec7f0dedb49,
+        m_Texture: {fileID: 2581811425775587407, guid: 8a682b7747d4a664089b7b1065aa0035,
           type: 2}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
@@ -81,8 +81,8 @@ Material:
     - _StencilOp: 0
     - _StencilReadMask: 255
     - _StencilWriteMask: 255
-    - _TextureHeight: 4096
-    - _TextureWidth: 4096
+    - _TextureHeight: 1024
+    - _TextureWidth: 1024
     - _UnderlayDilate: 1
     - _UnderlayOffsetX: 0
     - _UnderlayOffsetY: -0.536
@@ -102,3 +102,4 @@ Material:
     - _ReflectOutlineColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecularColor: {r: 0.7294118, g: 0.85882354, b: 0.49803922, a: 1}
     - _UnderlayColor: {r: 0.105882354, g: 0.043137256, b: 0.019607844, a: 1}
+  m_BuildTextureStacks: []
