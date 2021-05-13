@@ -491,6 +491,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 81eee01f533917743a34e48eb96f56d9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isInfiniteScroll: 1
   contentRect: {fileID: 476187227}
   targetAnimationTime: 2
   curve:
@@ -571,6 +572,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 81eee01f533917743a34e48eb96f56d9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isInfiniteScroll: 0
   contentRect: {fileID: 2045304188}
   targetAnimationTime: 2
   curve:
