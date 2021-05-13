@@ -111,6 +111,7 @@ namespace Nekoyume
             public const int UIBottomMenuChat = IsEditor ? 1 : 7;
             public const int UIBottomMenuQuest = 1;
             public const int UIBottomMenuMimisbrunnr = ActionsInMimisbrunnr;
+            public const int UIBottomMenuRanking = IsEditor ? 1 : 3;
 
             #endregion
         }
