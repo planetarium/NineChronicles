@@ -17,4 +17,10 @@ namespace Nekoyume.UI.Model
     {
         public int Stage;
     }
+
+    public class EquipmentRankingModel : RankingModel
+    {
+        public int Level;
+        public int Cp;
+    }
 }

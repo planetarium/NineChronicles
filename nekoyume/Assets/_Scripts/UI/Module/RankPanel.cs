@@ -27,11 +27,15 @@ namespace Nekoyume.UI.Module
 
             public List<StageRankingModel> MimisbrunnrRankingInfos = null;
 
+            public List<EquipmentRankingModel> WeaponRankingModel = null;
+
             public Dictionary<int, AbilityRankingModel> AgentAbilityRankingInfos = new Dictionary<int, AbilityRankingModel>();
 
             public Dictionary<int, StageRankingModel> AgentStageRankingInfos = new Dictionary<int, StageRankingModel>();
 
             public Dictionary<int, StageRankingModel> AgentMimisbrunnrRankingInfos = new Dictionary<int, StageRankingModel>();
+
+            public Dictionary<int, EquipmentRankingModel> AgentWeaponRankingInfos = new Dictionary<int, EquipmentRankingModel>();
 
             public void Update()
             {
@@ -235,21 +239,18 @@ namespace Nekoyume.UI.Module
         private RankScroll rankScroll = null;
 
         [SerializeField]
-        private RankCell myInfoCell = null;
+        private RankCellPanel myInfoCell = null;
 
         public const int RankingBoardDisplayCount = 100;
 
         private readonly ReactiveProperty<RankCategory> _currentCategory = new ReactiveProperty<RankCategory>();
-
-        private readonly List<RankCell> _cellViewCache = new List<RankCell>();
-
-        private RankCell _myInfoCellCache = null;
 
         private readonly Dictionary<RankCategory, (string, string)> _rankColumnMap = new Dictionary<RankCategory, (string, string)>
         {
             { RankCategory.Ability, ("UI_CP", "UI_LEVEL") },
             { RankCategory.Stage, ("UI_STAGE", null)},
             { RankCategory.Mimisburnnr, ("UI_STAGE", null) },
+            { RankCategory.Weapon, ("UI_CP", null) },
         };
 
         public static void UpdateSharedModel()
@@ -326,32 +327,11 @@ namespace Nekoyume.UI.Module
                     ++currentCategory;
                 }
             }
-
-            CacheCellViews();
-        }
-
-        private void CacheCellViews()
-        {
-            GameObject gameObject;
-            RankCell rankCell;
-            for (int i = 0; i < RankingBoardDisplayCount; ++i)
-            {
-                gameObject = Instantiate(rankCellPrefab, cellViewParent);
-                rankCell = gameObject.GetComponent<RankCell>();
-                _cellViewCache.Add(rankCell);
-                gameObject.SetActive(false);
-            }
-
-            gameObject = Instantiate(myInfoPrefab, cellViewParent);
-            rankCell = gameObject.GetComponent<RankCell>();
-            _myInfoCellCache = rankCell;
-            gameObject.SetActive(false);
         }
 
         public void Show()
         {
             ToggleFirstElement();
-            _currentCategory.SetValueAndForceNotify(RankCategory.Ability);
         }
 
         private void ToggleFirstElement()
@@ -378,6 +358,9 @@ namespace Nekoyume.UI.Module
 
                 firstSubElement.isOn = true;
             }
+
+            _currentCategory.SetValueAndForceNotify(RankCategory.Ability);
+            
         }
 
         private void UpdateCategory(RankCategory category)
@@ -387,13 +370,6 @@ namespace Nekoyume.UI.Module
 
         private async void UpdateCategoryAsync(RankCategory category)
         {
-            if (_myInfoCellCache is null)
-            {
-                return;
-            }
-
-            var states = States.Instance;
-
             if (RankLoadingTask.IsFaulted)
             {
                 Debug.LogError($"Error loading ranking. Exception : \n{RankLoadingTask.Exception}\n{RankLoadingTask.Exception.StackTrace}");
@@ -405,7 +381,13 @@ namespace Nekoyume.UI.Module
                 await RankLoadingTask;
             }
 
-            _myInfoCellCache.gameObject.SetActive(false);
+            var states = States.Instance;
+
+            if (states.CurrentAvatarState is null)
+            {
+                return;
+            }
+
             switch (category)
             {
                 case RankCategory.Ability:
@@ -464,8 +446,17 @@ namespace Nekoyume.UI.Module
 
                     rankScroll.Show(mimisbrunnrRankingInfos, true);
                     break;
+                case RankCategory.Weapon:
+                    var weaponRankingInfos = SharedModel.WeaponRankingModel;
+                    if (weaponRankingInfos is null)
+                    {
+                        ToggleFirstElement();
+                        Widget.Find<SystemPopup>().Show("UI_ALERT_NOT_IMPLEMENTED_TITLE", "UI_ALERT_NOT_IMPLEMENTED_CONTENT");
+                        return;
+                    }
+
+                    break;
                 default:
-                    _cellViewCache.ForEach(cell => cell.gameObject.SetActive(false));
                     break;
             }
 

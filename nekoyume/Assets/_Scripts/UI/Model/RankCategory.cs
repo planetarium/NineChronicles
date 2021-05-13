@@ -5,5 +5,6 @@ namespace Nekoyume.UI.Module
         Ability = 0,
         Stage = 1,
         Mimisburnnr = 2,
+        Weapon = 3,
     }
 }
