@@ -37,7 +37,7 @@ namespace Nekoyume.UI.Tween
 
         private void OnEnable()
         {
-            Kill();
+            KillTween();
 
             var fitter = contentRect.GetComponent<ContentSizeFitter>();
             fitter.SetLayoutHorizontal();
@@ -49,10 +49,10 @@ namespace Nekoyume.UI.Tween
 
         private void OnDisable()
         {
-            Kill();
+            KillTween();
         }
 
-        private void Kill()
+        private void KillTween()
         {
             if (_coroutine is null)
             {
