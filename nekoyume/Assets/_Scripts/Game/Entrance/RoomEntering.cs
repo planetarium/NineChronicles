@@ -39,6 +39,7 @@ namespace Nekoyume.Game.Entrance
             var roomPosition = stage.roomPosition;
 
             var player = stage.GetPlayer(roomPosition - new Vector2(3.0f, 0.0f));
+            player.transform.localScale = Vector3.one;
             player.DisableHUD();
             player.StopAllCoroutines();
             player.StartRun();
