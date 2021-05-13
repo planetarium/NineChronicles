@@ -114,7 +114,7 @@ namespace Nekoyume.UI
 
                 _cachedShopState = shopState;
                 _cachedShardedProducts = shardedProducts;
-                ReactiveShopState.Initialize(shopState, shardedProducts, ShopItemsPerPage);
+                ReactiveShopState.Initialize(_cachedShopState, _cachedShardedProducts, ShopItemsPerPage);
                 return true;
             });
 
@@ -151,6 +151,7 @@ namespace Nekoyume.UI
 
         public void Open()
         {
+            ReactiveShopState.Initialize(_cachedShopState, _cachedShardedProducts, ShopItemsPerPage);
             shopItems.Reset();
             Reset();
         }
