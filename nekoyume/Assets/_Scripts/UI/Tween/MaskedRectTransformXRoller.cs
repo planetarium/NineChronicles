@@ -37,10 +37,7 @@ namespace Nekoyume.UI.Tween
 
         private void OnEnable()
         {
-            if (_coroutine != null)
-            {
-                Kill();
-            }
+            Kill();
 
             var fitter = contentRect.GetComponent<ContentSizeFitter>();
             fitter.SetLayoutHorizontal();
@@ -52,14 +49,16 @@ namespace Nekoyume.UI.Tween
 
         private void OnDisable()
         {
-            if (_coroutine != null)
-            {
-                Kill();
-            }
+            Kill();
         }
 
         private void Kill()
         {
+            if (_coroutine is null)
+            {
+                return;
+            }
+
             StopCoroutine(_coroutine);
             contentRect.anchoredPosition = _originalPos;
             _coroutine = null;
