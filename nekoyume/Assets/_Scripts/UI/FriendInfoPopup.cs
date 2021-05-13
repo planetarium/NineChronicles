@@ -49,6 +49,7 @@ namespace Nekoyume.UI
 
         private CharacterStats _tempStats;
         private GameObject _cachedCharacterTitle;
+        private Player _player;
 
         #region Override
 
@@ -77,9 +78,8 @@ namespace Nekoyume.UI
             _player.gameObject.SetActive(false);
             base.Close(ignoreCloseAnimation);
         }
-
         #endregion
-        private Player _player;
+
         public void Show(AvatarState avatarState, bool ignoreShowAnimation = false)
         {
             base.Show(ignoreShowAnimation);
