@@ -230,44 +230,6 @@ namespace Nekoyume.UI.Model
             AgentProducts.SetValueAndForceNotify(AgentProducts.Value);
         }
 
-        public void RemoveItemSubTypeProduct(Guid productId)
-        {
-            foreach (var keyValuePair in _agentProducts)
-            {
-                foreach (var keyValuePair1 in keyValuePair.Value
-                    .SelectMany(valuePair => valuePair.Value.SelectMany(pair => pair.Value)))
-                {
-                    foreach (var shopItem in keyValuePair1.Value)
-                    {
-                        if (productId == shopItem.ProductId.Value)
-                        {
-                            keyValuePair1.Value.Remove(shopItem);
-                            break;
-                        }
-                    }
-                }
-            }
-
-            foreach (var itemSubTypeProduct in _itemSubTypeProducts)
-            {
-                foreach (var valuePair in itemSubTypeProduct.Value
-                    .SelectMany(keyValuePair => keyValuePair.Value))
-                {
-                    foreach (var shopItem in valuePair.Value)
-                    {
-                        if (productId == shopItem.ProductId.Value)
-                        {
-                            valuePair.Value.Remove(shopItem);
-                            break;
-                        }
-                    }
-                }
-            }
-
-            ResetAgentProducts();
-            ResetItemSubTypeProducts();
-        }
-
         private static void RemoveProduct(
             Guid productId,
             IReadOnlyDictionary<

@@ -21,8 +21,8 @@ namespace Nekoyume.UI
 {
     public class ShopBuy : Widget
     {
+        public static int ShopItemsPerPage = 24; // todo : Resolution Response Required Later
         private const int NPCId = 300000;
-        private const int ShopItemsPerPage = 24; // todo : Resolution Response Required Later
         private static readonly Vector3 NPCPosition = new Vector3(1000.1f, 998.2f, 1.7f);
         private NPC _npc;
 
@@ -31,10 +31,6 @@ namespace Nekoyume.UI
         [SerializeField] private Button sellButton = null;
         [SerializeField] private Button spineButton = null;
         [SerializeField] private Canvas frontCanvas;
-
-
-        private ShopState _cachedShopState;
-        private List<Nekoyume.Model.Item.ShopItem> _cachedShardedProducts = new List<Nekoyume.Model.Item.ShopItem>();
 
         private Model.Shop SharedModel { get; set; }
 
@@ -65,7 +61,7 @@ namespace Nekoyume.UI
                     shopItems.Reset();
                     Find<ItemCountAndPricePopup>().Close();
                     Find<ShopSell>().gameObject.SetActive(true);
-                    Find<ShopSell>().Show(_cachedShopState, _cachedShardedProducts);
+                    Find<ShopSell>().Show();
                     _npc?.gameObject.SetActive(false);
                     gameObject.SetActive(false);
                 });
@@ -111,9 +107,6 @@ namespace Nekoyume.UI
                 {
                     shardedProducts.AddRange(items);
                 }
-
-                _cachedShopState = shopState;
-                _cachedShardedProducts = shardedProducts;
                 ReactiveShopState.Initialize(shopState, shardedProducts, ShopItemsPerPage);
                 return true;
             });
@@ -151,6 +144,7 @@ namespace Nekoyume.UI
 
         public void Open()
         {
+            ReactiveShopState.Update(ShopItemsPerPage);
             shopItems.Reset();
             Reset();
         }
@@ -257,7 +251,8 @@ namespace Nekoyume.UI
             var productId = shopItem.ProductId.Value;
 
             LocalLayerModifier.ModifyAgentGold(buyerAgentAddress, -shopItem.Price.Value);
-            shopItems.SharedModel.RemoveItemSubTypeProduct(productId);
+            ReactiveShopState.RemoveShopItem(productId, ShopItemsPerPage);
+
             var format = L10nManager.Localize("NOTIFICATION_BUY_START");
             OneLinePopup.Push(MailType.Auction,
                 string.Format(format, shopItem.ItemBase.Value.GetLocalizedName()));

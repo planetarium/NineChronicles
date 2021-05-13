@@ -48,8 +48,6 @@ namespace Nekoyume.UI
 
         private void OnSliderChange(float value)
         {
-            Debug.Log($"test : {value}");
-
             var time = Util.GetBlockToTime((int) value);
             remainTime.text = string.Format(L10nManager.Localize("UI_BLOCK_TIMER"), value, time);
         }

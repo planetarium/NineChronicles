@@ -89,10 +89,10 @@ namespace Nekoyume.UI
                 .AddTo(gameObject);
         }
 
-        public void Show(ShopState shopState, IEnumerable<Nekoyume.Model.Item.ShopItem> shardedProducts)
+        public void Show()
         {
             base.Show();
-            ReactiveShopState.Initialize(shopState, shardedProducts, ShopItemsPerPage);
+            ReactiveShopState.Update(ShopItemsPerPage);
             shopItems.Show();
             inventory.SharedModel.State.Value = ItemType.Equipment;
             AudioController.instance.PlayMusic(AudioController.MusicCode.Shop);
