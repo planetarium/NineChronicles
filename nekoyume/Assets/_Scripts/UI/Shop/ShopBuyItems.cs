@@ -151,6 +151,7 @@ namespace Nekoyume.UI.Module
         public void Reset()
         {
             toggleDropdowns.First().isOn = true;
+            toggleDropdowns.First().items.First().isOn = true;
             inputField.text = string.Empty;
             resetButton.interactable = false;
             resetAnimator.Play(_hashDisabled);
@@ -162,7 +163,7 @@ namespace Nekoyume.UI.Module
             SharedModel.SetMultiplePurchase(false);
             SharedModel.ResetAgentProducts();
             SharedModel.ResetItemSubTypeProducts();
-            UpdateSrot();
+            UpdateSort();
         }
 
         public void Show()
@@ -298,10 +299,10 @@ namespace Nekoyume.UI.Module
 
         private void OnClickSort(Unit unit)
         {
-            UpdateSrot();
+            UpdateSort();
         }
 
-        private void UpdateSrot()
+        private void UpdateSort()
         {
             int count = Enum.GetNames(typeof(SortFilter)).Length;
             _sortFilter = (int) _sortFilter < count - 1 ? _sortFilter + 1 : 0;
