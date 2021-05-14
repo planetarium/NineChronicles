@@ -1,4 +1,4 @@
-namespace Nekoyume.UI.Module
+namespace Nekoyume.UI.Model
 {
     public enum RankCategory
     {
