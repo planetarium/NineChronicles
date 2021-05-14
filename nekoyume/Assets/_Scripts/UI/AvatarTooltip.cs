@@ -127,7 +127,7 @@ namespace Nekoyume.UI
         private void OnClickAvatarInfo(Unit unit)
         {
             AudioController.PlayClick();
-            Find<FriendInfoPopup>().Show(_selectedAvatarState);
+            Find<FriendInfoPopup>().Show(_selectedAvatarState, true);
             Close();
         }
     }

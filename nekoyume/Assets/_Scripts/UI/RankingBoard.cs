@@ -413,9 +413,14 @@ namespace Nekoyume.UI
         private void SubscribeBackButtonClick(BottomMenu bottomMenu)
         {
             var avatarInfo = Find<AvatarInfo>();
+            var friendInfoPopup = Find<FriendInfoPopup>();
             if (avatarInfo.gameObject.activeSelf)
             {
                 avatarInfo.Close();
+            }
+            else if(friendInfoPopup.gameObject.activeSelf)
+            {
+                friendInfoPopup.Close();
             }
             else
             {

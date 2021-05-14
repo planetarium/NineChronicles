@@ -6,6 +6,7 @@ using Nekoyume.Battle;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Factory;
+using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Stat;
@@ -34,7 +35,7 @@ namespace Nekoyume.UI
         private TextMeshProUGUI nicknameText = null;
 
         [SerializeField]
-        private TextMeshProUGUI titleText = null;
+        private Transform titleSocket = null;
 
         [SerializeField]
         private TextMeshProUGUI cpText = null;
@@ -68,6 +69,7 @@ namespace Nekoyume.UI
         private int _previousSortingLayerOrder;
         private bool _previousActivated;
         private Coroutine _disableCpTween;
+        private GameObject _cachedCharacterTitle;
 
         public readonly ReactiveProperty<bool> IsTweenEnd = new ReactiveProperty<bool>(true);
 
@@ -141,6 +143,7 @@ namespace Nekoyume.UI
 
         public override void Show(bool ignoreShowAnimation = false)
         {
+            Destroy(_cachedCharacterTitle);
             var currentAvatarState = Game.Game.instance.States.CurrentAvatarState;
             IsTweenEnd.Value = false;
             Show(currentAvatarState, ignoreShowAnimation);
@@ -182,14 +185,12 @@ namespace Nekoyume.UI
 
         private void CreatePlayer(AvatarState avatarState)
         {
-            _player = PlayerFactory.Create(avatarState).GetComponent<Player>();
+            var orderInLayer = MainCanvas.instance.GetLayer(WidgetType).root.sortingOrder + 1;
+            _player = PlayerFactory.CreateBySettingLayer(avatarState, SortingLayer.NameToID("UI"), orderInLayer)
+                                   .GetComponent<Player>();
             _player.Set(avatarState);
             _player.transform.SetParent(avatarPosition);
             _player.transform.localPosition = Vector3.zero;
-
-            var orderInLayer = MainCanvas.instance.GetLayer(WidgetType).root.sortingOrder + 1;
-            _player.SetSortingLayer(SortingLayer.NameToID("UI"), orderInLayer);
-
         }
 
         private void UpdateUIPlayer()
@@ -212,9 +213,13 @@ namespace Nekoyume.UI
             var title = avatarState.inventory.Costumes.FirstOrDefault(costume =>
                 costume.ItemSubType == ItemSubType.Title &&
                 costume.equipped);
-            titleText.text = title is null
-                ? ""
-                : title.GetLocalizedName();
+
+            if (!(title is null))
+            {
+                Destroy(_cachedCharacterTitle);
+                var clone  = ResourcesHelper.GetCharacterTitle(title.Grade, title.GetLocalizedNonColoredName());
+                _cachedCharacterTitle = Instantiate(clone, titleSocket);
+            }
 
             costumeSlots.SetPlayerCostumes(playerModel, ShowTooltip, Unequip);
             equipmentSlots.SetPlayerEquipments(playerModel, ShowTooltip, Unequip);
@@ -352,7 +357,9 @@ namespace Nekoyume.UI
                     UpdateStatViews();
                     if (costume.ItemSubType == ItemSubType.Title)
                     {
-                        titleText.text = costume.GetLocalizedName();
+                        Destroy(_cachedCharacterTitle);
+                        var clone = ResourcesHelper.GetCharacterTitle(costume.Grade, costume.GetLocalizedNonColoredName());
+                        _cachedCharacterTitle = Instantiate(clone, titleSocket);
                     }
 
                     break;
@@ -457,7 +464,7 @@ namespace Nekoyume.UI
 
                     if (costume.ItemSubType == ItemSubType.Title)
                     {
-                        titleText.text = "";
+                        Destroy(_cachedCharacterTitle);
                     }
 
                     break;
@@ -587,9 +594,13 @@ namespace Nekoyume.UI
                 inventory.SharedModel.TryGetCostume(slot.Item as Costume, out item) ||
                 inventory.SharedModel.TryGetEquipment(slot.Item as Equipment, out item))
             {
+                var (submitEnabledFunc, submitText, onSubmit) = GetToolTipParams(item);
                 tooltip.Show(
                     slot.RectTransform,
                     item,
+                    submitEnabledFunc,
+                    submitText,
+                    _ => onSubmit(item),
                     _ => inventory.SharedModel.DeselectItemView());
             }
         }

@@ -26,6 +26,7 @@ using UnityEngine;
 using TentuPlay.Api;
 using UniRx;
 using mixpanel;
+using Nekoyume.Battle;
 using Nekoyume.Game.Character;
 using Nekoyume.L10n;
 using UnityEngine.Rendering;
@@ -61,6 +62,7 @@ namespace Nekoyume.Game
         public readonly Vector2 roomPosition = new Vector2(-2.808f, -1.519f);
         public bool repeatStage;
         public bool isExitReserved;
+        public int foodCount = 0;
         public string zone;
         public Animator roomAnimator { get; private set; }
 
@@ -75,6 +77,7 @@ namespace Nekoyume.Game
         public BuffController BuffController { get; private set; }
         public TutorialController TutorialController { get; private set; }
         public bool IsInStage { get; set; }
+        public bool IsShowHud { get; set; }
         public Model.Enemy Boss { get; private set; }
         public AvatarState AvatarState { get; set; }
 
@@ -458,12 +461,13 @@ namespace Nekoyume.Game
             Widget.Find<BattleResult>().StageProgressBar.Initialize(false);
             var title = Widget.Find<StageTitle>();
             title.Show(stageId);
-
+            IsShowHud = false;
             yield return new WaitForSeconds(StageConfig.instance.stageEnterDelay);
 
             yield return StartCoroutine(title.CoClose());
 
             AudioController.instance.PlayMusic(data.BGM);
+            IsShowHud = true;
         }
 
         private IEnumerator CoRankingBattleEnter(BattleLog log)
@@ -530,6 +534,7 @@ namespace Nekoyume.Game
                 yield return new WaitForSeconds(1f);
             }
 
+            IsShowHud = false;
             if (log.result == BattleLog.Result.Win)
             {
                 _stageRunningPlayer.DisableHUD();
@@ -620,9 +625,17 @@ namespace Nekoyume.Game
             string stageSlug = $"HackAndSlash_{log.worldId}_{log.stageId}";
             OnCharacterConsumablePlay("HackAndSlash", stageSlug);
             OnCharacterStageEnd(log, "HackAndSlash", stageSlug, log.clearedWaveNumber);
+
+            var characterSheet = Game.instance.TableSheets.CharacterSheet;
+            var costumeStatSheet = Game.instance.TableSheets.CostumeStatSheet;
+            var cp = CPHelper.GetCPV2(States.Instance.CurrentAvatarState, characterSheet, costumeStatSheet);
             var props = new Value
             {
-                ["StageId"] = log.stageId
+                ["StageId"] = log.stageId,
+                ["ClearedWave"] = log.clearedWaveNumber,
+                ["Repeat"] = repeatStage,
+                ["CP"] = cp,
+                ["FoodCount"] = foodCount
             };
             Mixpanel.Track("Unity/Stage End", props);
         }
@@ -1147,7 +1160,7 @@ namespace Nekoyume.Game
 
             if (stageId == GameConfig.RequireClearedStageLevel.UIMainMenuShop)
             {
-                menuNames.Add(nameof(UI.Shop));
+                menuNames.Add("Shop");
             }
 
             if (stageId == GameConfig.RequireClearedStageLevel.UIMainMenuRankingBoard)
