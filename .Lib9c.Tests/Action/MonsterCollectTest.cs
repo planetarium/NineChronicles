@@ -37,9 +37,9 @@ namespace Lib9c.Tests.Action
 
         [Theory]
         [InlineData(true, 2, 1, 1, 1)]
-        [InlineData(true, 5, 2, 2, 40000)]
-        [InlineData(false, 1, 3, 0, 120000)]
-        [InlineData(false, 3, 4, 0, 160000)]
+        [InlineData(true, 5, 2, 2, MonsterCollectionState.RewardInterval)]
+        [InlineData(false, 1, 3, 0, MonsterCollectionState.RewardInterval * 3)]
+        [InlineData(false, 3, 4, 0, MonsterCollectionState.RewardInterval * 4)]
         public void Execute(bool exist, int level, int monsterCollectionRound, int prevLevel, long blockIndex)
         {
             Address monsterCollectionAddress = MonsterCollectionState.DeriveAddress(_signer, monsterCollectionRound);
