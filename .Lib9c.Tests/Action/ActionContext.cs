@@ -3,6 +3,7 @@ namespace Lib9c.Tests.Action
     using System.Security.Cryptography;
     using Libplanet;
     using Libplanet.Action;
+    using Libplanet.Blocks;
     using Libplanet.Tx;
 
     public class ActionContext : IActionContext
@@ -12,6 +13,8 @@ namespace Lib9c.Tests.Action
         public TxId? TxId { get; set; }
 
         public Address Miner { get; set; }
+
+        public BlockHash BlockHash { get; set; }
 
         public long BlockIndex { get; set; }
 
@@ -33,6 +36,7 @@ namespace Lib9c.Tests.Action
                 Signer = Signer,
                 TxId = TxId,
                 Miner = Miner,
+                BlockHash = BlockHash,
                 BlockIndex = BlockIndex,
                 Rehearsal = Rehearsal,
                 PreviousStates = PreviousStates,
