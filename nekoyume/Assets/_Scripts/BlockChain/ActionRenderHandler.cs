@@ -470,14 +470,16 @@ namespace Nekoyume.BlockChain
             {
                 var avatarAddress = eval.Action.sellerAvatarAddress;
                 var tradableId = eval.Action.tradableId;
+                var blockIndex = Game.Game.instance.Agent.BlockIndex;
+                var count = eval.Action.count;
 
                 LocalLayerModifier.AddItem(avatarAddress, tradableId);
                 var format = L10nManager.Localize("NOTIFICATION_SELL_COMPLETE");
 
                 var avatarState = new AvatarState((Bencodex.Types.Dictionary) eval.PreviousStates.GetState(avatarAddress));
-                if (avatarState.inventory.TryGetNonFungibleItem(tradableId, out var item))
+                if (avatarState.inventory.TryGetTradableItems(tradableId, blockIndex, count, out var item))
                 {
-                    UI.Notification.Push(MailType.Auction, string.Format(format, item.item.GetLocalizedName()));
+                    UI.Notification.Push(MailType.Auction, string.Format(format, item.First().item.GetLocalizedName()));
                 }
                 else
                 {
@@ -494,10 +496,12 @@ namespace Nekoyume.BlockChain
             {
                 var avatarAddress = eval.Action.sellerAvatarAddress;
                 var result = eval.Action.result;
-                var nonFungibleItem = result.itemUsable ?? (INonFungibleItem) result.costume;
-                var itemBase = result.itemUsable ?? (ItemBase) result.costume;
-
-                LocalLayerModifier.RemoveItem(avatarAddress, nonFungibleItem.NonFungibleId);
+                var itemBase = ShopSell.GetItemBase(result);
+                var count = result.tradableFungibleItemCount > 0
+                    ? result.tradableFungibleItemCount
+                    : 1;
+                var tradableItem = (ITradableItem) itemBase;
+                LocalLayerModifier.RemoveItem(avatarAddress, tradableItem.TradableId, count);
                 LocalLayerModifier.AddNewAttachmentMail(avatarAddress, result.id);
                 var format = L10nManager.Localize("NOTIFICATION_SELL_CANCEL_COMPLETE");
                 UI.Notification.Push(MailType.Auction, string.Format(format, itemBase.GetLocalizedName()));
@@ -934,10 +938,10 @@ namespace Nekoyume.BlockChain
                 {
                     continue;
                 }
-                
+
                 LocalLayerModifier.RemoveItem(avatarAddress, tradableId, rewardInfo.Quantity);
             }
-            
+
             LocalLayerModifier.AddNewAttachmentMail(avatarAddress, mail.id);
             // ~LocalLayer
 

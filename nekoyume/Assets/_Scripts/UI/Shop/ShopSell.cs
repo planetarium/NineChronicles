@@ -1,12 +1,11 @@
-﻿using System.Collections.Generic;
 using mixpanel;
+using Nekoyume.Action;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
-using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
@@ -51,6 +50,7 @@ namespace Nekoyume.UI
             {
                 speechBubble.gameObject.SetActive(false);
                 Find<ItemCountAndPricePopup>().Close();
+                Find<ItemCountableAndPricePopup>().Close();
                 Find<ShopBuy>().gameObject.SetActive(true);
                 Find<ShopBuy>().Open();
                 _npc?.gameObject.SetActive(false);
@@ -66,26 +66,30 @@ namespace Nekoyume.UI
             inventory.SharedModel.SelectedItemView
                 .Subscribe(ShowTooltip)
                 .AddTo(gameObject);
-            inventory.OnDoubleClickItemView
-                .Subscribe(view => ShowActionPopup(view.Model))
-                .AddTo(gameObject);
-
-            // shopItems
             shopItems.SharedModel.SelectedItemView
                 .Subscribe(ShowTooltip)
                 .AddTo(gameObject);
-            shopItems.SharedModel.OnDoubleClickItemView
-                .Subscribe(view => ShowActionPopup(view.Model))
+
+            // sell
+            SharedModel.ItemCountableAndPricePopup.Value.Item
+                .Subscribe(SubscribeSellPopup)
+                .AddTo(gameObject);
+            SharedModel.ItemCountableAndPricePopup.Value.OnClickSubmit
+                .Subscribe(SubscribeSellPopupSubmit)
+                .AddTo(gameObject);
+            SharedModel.ItemCountableAndPricePopup.Value.OnClickCancel
+                .Subscribe(SubscribeSellPopupCancel)
                 .AddTo(gameObject);
 
+            // sell cancellation
             SharedModel.ItemCountAndPricePopup.Value.Item
-                .Subscribe(SubscribeItemPopup)
+                .Subscribe(SubscribeSellCancellationPopup)
                 .AddTo(gameObject);
             SharedModel.ItemCountAndPricePopup.Value.OnClickSubmit
-                .Subscribe(SubscribeItemPopupSubmit)
+                .Subscribe(SubscribeSellCancellationPopupSubmit)
                 .AddTo(gameObject);
             SharedModel.ItemCountAndPricePopup.Value.OnClickCancel
-                .Subscribe(SubscribeItemPopupCancel)
+                .Subscribe(SubscribeSellCancellationPopupCancel)
                 .AddTo(gameObject);
         }
 
@@ -102,6 +106,7 @@ namespace Nekoyume.UI
         {
             shopItems.Close();
             Find<ItemCountAndPricePopup>().Close();
+            Find<ItemCountableAndPricePopup>().Close();
             speechBubble.gameObject.SetActive(false);
             base.Close(ignoreCloseAnimation);
         }
@@ -177,15 +182,14 @@ namespace Nekoyume.UI
                 return;
             }
 
-            SharedModel.ItemCountAndPricePopup.Value.TitleText.Value =
+            SharedModel.ItemCountableAndPricePopup.Value.TitleText.Value =
                 L10nManager.Localize("UI_SELL");
-            SharedModel.ItemCountAndPricePopup.Value.InfoText.Value =
+            SharedModel.ItemCountableAndPricePopup.Value.InfoText.Value =
                 L10nManager.Localize("UI_SELL_INFO");
-            SharedModel.ItemCountAndPricePopup.Value.CountEnabled.Value = true;
-            SharedModel.ItemCountAndPricePopup.Value.Submittable.Value =
+            SharedModel.ItemCountableAndPricePopup.Value.CountEnabled.Value = true;
+            SharedModel.ItemCountableAndPricePopup.Value.Submittable.Value =
                 !DimmedFuncForSell(inventoryItem);
-            SharedModel.ItemCountAndPricePopup.Value.PriceInteractable.Value = true;
-            SharedModel.ItemCountAndPricePopup.Value.Item.Value = new CountEditableItem(
+            SharedModel.ItemCountableAndPricePopup.Value.Item.Value = new CountEditableItem(
                 inventoryItem.ItemBase.Value,
                 1,
                 1,
@@ -234,7 +238,45 @@ namespace Nekoyume.UI
             }
         }
 
-        private void SubscribeItemPopup(CountableItem data)
+        // sell
+        private void SubscribeSellPopup(CountableItem data)
+        {
+            if (data is null)
+            {
+                Find<ItemCountableAndPricePopup>().Close();
+                return;
+            }
+
+            Find<ItemCountableAndPricePopup>().Pop(SharedModel.ItemCountableAndPricePopup.Value);
+        }
+
+        private void SubscribeSellPopupSubmit(Model.ItemCountableAndPricePopup data)
+        {
+            if (!(data.Item.Value.ItemBase.Value is ITradableItem tradableItem))
+            {
+                return;
+            }
+
+            if (data.Price.Value.Sign * data.Price.Value.MajorUnit < Model.Shop.MinimumPrice)
+            {
+                throw new InvalidSellingPriceException(data);
+            }
+
+            var tradableId = ((ITradableItem) data.Item.Value.ItemBase.Value).TradableId;
+            var itemSubType = data.Item.Value.ItemBase.Value.ItemSubType;
+            Game.Game.instance.ActionManager.Sell(tradableId, data.Price.Value, 1, itemSubType); // todo : fix count
+            Mixpanel.Track("Unity/Sell");
+            ResponseSell();
+        }
+
+        private void SubscribeSellPopupCancel(Model.ItemCountableAndPricePopup data)
+        {
+            SharedModel.ItemCountableAndPricePopup.Value.Item.Value = null;
+            Find<ItemCountableAndPricePopup>().Close();
+        }
+
+        // sell cancellation
+        private void SubscribeSellCancellationPopup(CountableItem data)
         {
             if (data is null)
             {
@@ -244,29 +286,21 @@ namespace Nekoyume.UI
 
             Find<ItemCountAndPricePopup>().Pop(SharedModel.ItemCountAndPricePopup.Value);
         }
-
-        private void SubscribeItemPopupSubmit(Model.ItemCountAndPricePopup data)
+        private void SubscribeSellCancellationPopupSubmit(Model.ItemCountAndPricePopup data)
         {
-            if (!(data.Item.Value.ItemBase.Value is INonFungibleItem nonFungibleItem))
+            if (!(data.Item.Value.ItemBase.Value is ITradableItem tradableItem))
             {
                 return;
             }
 
             if (!shopItems.SharedModel.TryGetShopItemFromAgentProducts(
-                nonFungibleItem.NonFungibleId,
+                tradableItem.TradableId,
                 out var shopItem))
             {
                 if (data.Price.Value.Sign * data.Price.Value.MajorUnit < Model.Shop.MinimumPrice)
                 {
                     throw new InvalidSellingPriceException(data);
                 }
-
-                var tradableId = ((ITradableItem) data.Item.Value.ItemBase.Value).TradableId;
-                var itemSubType = data.Item.Value.ItemBase.Value.ItemSubType;
-                Game.Game.instance.ActionManager.Sell(tradableId, data.Price.Value, itemSubType);
-                Mixpanel.Track("Unity/Sell");
-                ResponseSell();
-                return;
             }
 
             Mixpanel.Track("Unity/Sell Cancellation");
@@ -277,7 +311,7 @@ namespace Nekoyume.UI
             ResponseSellCancellation(shopItem);
         }
 
-        private void SubscribeItemPopupCancel(Model.ItemCountAndPricePopup data)
+        private void SubscribeSellCancellationPopupCancel(Model.ItemCountAndPricePopup data)
         {
             SharedModel.ItemCountAndPricePopup.Value.Item.Value = null;
             Find<ItemCountAndPricePopup>().Close();
@@ -285,7 +319,11 @@ namespace Nekoyume.UI
 
         private static bool DimmedFuncForSell(InventoryItem inventoryItem)
         {
-            return inventoryItem.ItemBase.Value.ItemType == ItemType.Material;
+            if (inventoryItem.ItemBase.Value.ItemType == ItemType.Material)
+            {
+                return !(inventoryItem.ItemBase.Value is TradableMaterial);
+            }
+            return false;
         }
 
         private static bool ButtonEnabledFuncForSell(CountableItem inventoryItem)
@@ -305,15 +343,15 @@ namespace Nekoyume.UI
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
 
-            var item = SharedModel.ItemCountAndPricePopup.Value.Item.Value;
-            SharedModel.ItemCountAndPricePopup.Value.Item.Value = null;
+            var item = SharedModel.ItemCountableAndPricePopup.Value.Item.Value;
+            SharedModel.ItemCountableAndPricePopup.Value.Item.Value = null;
 
-            if (!(item.ItemBase.Value is INonFungibleItem nonFungibleItem))
+            if (!(item.ItemBase.Value is ITradableItem tradableItem))
             {
                 return;
             }
 
-            LocalLayerModifier.RemoveItem(avatarAddress, nonFungibleItem.NonFungibleId);
+            LocalLayerModifier.RemoveItem(avatarAddress, tradableItem.TradableId);
             AudioController.instance.PlaySfx(AudioController.SfxCode.InputItem);
             var format = L10nManager.Localize("NOTIFICATION_SELL_START");
             Notification.Push(MailType.Auction,
@@ -341,5 +379,22 @@ namespace Nekoyume.UI
 
             speechBubble.SetKey(key);
         }
+
+
+        public static ItemBase GetItemBase(SellCancellation.Result result)
+        {
+            if (result.itemUsable != null)
+            {
+                return result.itemUsable;
+            }
+
+            if (result.costume != null)
+            {
+                return result.costume;
+            }
+
+            return (ItemBase)result.tradableFungibleItem;
+        }
+
     }
 }

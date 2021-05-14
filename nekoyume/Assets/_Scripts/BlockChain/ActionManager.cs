@@ -208,6 +208,7 @@ namespace Nekoyume.BlockChain
 
         public IObservable<ActionBase.ActionEvaluation<Sell>> Sell(Guid tradableId,
                                                                    FungibleAssetValue price,
+                                                                   int count,
                                                                    ItemSubType itemSubType)
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
@@ -220,6 +221,7 @@ namespace Nekoyume.BlockChain
                 sellerAvatarAddress = avatarAddress,
                 tradableId = tradableId,
                 price = price,
+                count = count,
                 itemSubType = itemSubType,
             };
             ProcessAction(action);

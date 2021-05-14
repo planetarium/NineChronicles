@@ -75,6 +75,7 @@ namespace Nekoyume.UI.Module
                     ItemSubTypeFilter.EyeCostume,
                     ItemSubTypeFilter.TailCostume,
                     ItemSubTypeFilter.Title,
+                    ItemSubTypeFilter.Materials,
                 }
                 .Select(type => type.TypeToString(true))
                 .ToList());

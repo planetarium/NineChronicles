@@ -21,7 +21,7 @@ namespace Nekoyume.UI.Model
 
         public ShopItem(Nekoyume.Model.Item.ShopItem item)
             : this(item.SellerAgentAddress, item.SellerAvatarAddress, item.Price, item.ProductId,
-                item.ItemUsable ?? (ItemBase)item.Costume, item.ExpiredBlockIndex)
+                GetItemBase(item), item.ExpiredBlockIndex)
         {
 
         }
@@ -46,6 +46,22 @@ namespace Nekoyume.UI.Model
             Price.Dispose();
             ProductId.Dispose();
             base.Dispose();
+        }
+
+
+        private static ItemBase GetItemBase(Nekoyume.Model.Item.ShopItem item)
+        {
+            if (item.ItemUsable != null)
+            {
+                return item.ItemUsable;
+            }
+
+            if (item.Costume != null)
+            {
+                return item.Costume;
+            }
+
+            return (ItemBase) item.TradableFungibleItem;
         }
     }
 }

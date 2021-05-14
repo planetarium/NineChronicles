@@ -9,6 +9,7 @@ using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.State.Subjects;
+using Nekoyume.UI;
 using UniRx;
 using UnityEngine;
 
@@ -38,7 +39,7 @@ namespace Nekoyume.BlockChain
             RewardGold();
             // GameConfig(); todo.
             // CreateAvatar(); ignore.
-            
+
             // Battle
             // HackAndSlash(); todo.
             // RankingBattle(); todo.
@@ -230,12 +231,15 @@ namespace Nekoyume.BlockChain
                 return;
             }
 
-            var result = eval.Action.result;
-            var nonFungibleItem = result.itemUsable ?? (ITradableItem) result.costume;
             var avatarAddress = eval.Action.sellerAvatarAddress;
-            var tradableId = nonFungibleItem.TradableId;
+            var result = eval.Action.result;
+            var itemBase = ShopSell.GetItemBase(result);
+            var count = result.tradableFungibleItemCount > 0
+                ? result.tradableFungibleItemCount
+                : 1;
+            var tradableItem = (ITradableItem) itemBase;
 
-            LocalLayerModifier.AddItem(avatarAddress, tradableId);
+            LocalLayerModifier.AddItem(avatarAddress, tradableItem.TradableId, count);
             UpdateCurrentAvatarState(eval);
         }
 
@@ -298,7 +302,7 @@ namespace Nekoyume.BlockChain
             {
                 return;
             }
-            
+
             var avatarAddress = eval.Action.avatarAddress;
             var avatarState = eval.OutputStates.GetAvatarState(avatarAddress);
             var mail = avatarState.mailBox.FirstOrDefault(e => e is MonsterCollectionMail);
@@ -321,7 +325,7 @@ namespace Nekoyume.BlockChain
 
                 LocalLayerModifier.AddItem(avatarAddress, tradableId, rewardInfo.Quantity);
             }
-            
+
             LocalLayerModifier.RemoveNewAttachmentMail(avatarAddress, mail.id);
             // ~LocalLayer
 
