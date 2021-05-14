@@ -162,7 +162,7 @@ namespace Nekoyume.Model.State
             inventory = new Inventory((List)serialized["inventory"]);
             worldInformation = new WorldInformation((Dictionary)serialized["worldInformation"]);
             updatedAt = serialized["updatedAt"].ToLong();
-            agentAddress = new Address(((Binary)serialized["agentAddress"]).Value);
+            agentAddress = new Address(((Binary)serialized["agentAddress"]).ToByteArray());
             questList = new QuestList((Dictionary) serialized["questList"]);
             mailBox = new MailBox((List)serialized["mailBox"]);
             blockIndex = (long)((Integer)serialized["blockIndex"]).Value;

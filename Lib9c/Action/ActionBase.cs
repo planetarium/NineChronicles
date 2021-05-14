@@ -249,7 +249,7 @@ namespace Nekoyume.Action
                                 return new Bencodex.Types.Dictionary(new[]
                                 {
                                     new KeyValuePair<IKey, IValue>((Text) "address", (Binary) ua.Key.ToByteArray()),
-                                    new KeyValuePair<IKey, IValue>((Text) "currency", c.Serialize()),
+                                    new KeyValuePair<IKey, IValue>((Text) "currency", CurrencyExtensions.Serialize(c)),
                                     new KeyValuePair<IKey, IValue>((Text) "amount", (Integer) b.RawValue),
                                 });
                             }

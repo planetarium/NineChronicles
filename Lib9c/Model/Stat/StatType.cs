@@ -64,6 +64,6 @@ namespace Nekoyume.Model.Stat
             new Binary(BitConverter.GetBytes((int) statType));
 
         public static StatType Deserialize(Binary serialized) =>
-            (StatType) BitConverter.ToInt32(serialized.Value, 0);
+            (StatType) BitConverter.ToInt32(serialized.ToByteArray(), 0);
     }
 }

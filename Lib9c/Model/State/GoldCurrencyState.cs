@@ -37,7 +37,7 @@ namespace Nekoyume.Model.State
         {
             var values = new Dictionary<IKey, IValue>
             {
-                [(Text)"currency"] = Currency.Serialize()
+                [(Text)"currency"] = CurrencyExtensions.Serialize(Currency)
             };
 #pragma warning disable LAA1002
             return new Dictionary(values.Union((Dictionary)base.Serialize()));
