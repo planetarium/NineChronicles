@@ -450,24 +450,24 @@ namespace Nekoyume.UI.Model
 
         #endregion
 
-        public bool TryGetShopItemFromAgentProducts(Guid itemId, out ShopItem shopItem)
+        public bool TryGetShopItemFromAgentProducts(Guid nonFungibleId, out ShopItem shopItem)
         {
             shopItem = AgentProducts.Value.Values
                 .SelectMany(list => list)
                 .Where(item => item.ItemBase.Value is INonFungibleItem)
                 .FirstOrDefault(item =>
-                    ((INonFungibleItem) item.ItemBase.Value).ItemId.Equals(itemId));
+                    ((INonFungibleItem) item.ItemBase.Value).NonFungibleId.Equals(nonFungibleId));
 
             return !(shopItem is null);
         }
 
-        public bool TryGetShopItemFromItemSubTypeProducts(Guid itemId, out ShopItem shopItem)
+        public bool TryGetShopItemFromItemSubTypeProducts(Guid nonFungibleId, out ShopItem shopItem)
         {
             shopItem = ItemSubTypeProducts.Value.Values
                 .SelectMany(list => list)
                 .Where(item => item.ItemBase.Value is INonFungibleItem)
                 .FirstOrDefault(item =>
-                    ((INonFungibleItem) item.ItemBase.Value).ItemId.Equals(itemId));
+                    ((INonFungibleItem) item.ItemBase.Value).NonFungibleId.Equals(nonFungibleId));
 
             return !(shopItem is null);
         }

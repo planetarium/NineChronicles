@@ -20,6 +20,7 @@ namespace Nekoyume.UI.Model
         public void Dispose()
         {   
             OnClickSubmit.Dispose();
+            itemInformation.Dispose();
         }
     }
 }

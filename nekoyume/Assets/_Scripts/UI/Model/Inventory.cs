@@ -107,18 +107,20 @@ namespace Nekoyume.UI.Model
 
         public void AddItem(ItemBase itemBase, int count = 1)
         {
-            var blockIndex = Game.Game.instance.Agent?.BlockIndex ?? -1;
+            if (itemBase is ITradableItem tradableItem)
+            {
+                var blockIndex = Game.Game.instance.Agent?.BlockIndex ?? -1;
+                if (tradableItem.RequiredBlockIndex > blockIndex)
+                {
+                    return;
+                }
+            }
+
             InventoryItem inventoryItem;
             switch (itemBase.ItemType)
             {
                 case ItemType.Consumable:
-                    var consumable = (Consumable) itemBase;
-                    if (consumable.RequiredBlockIndex > blockIndex)
-                    {
-                        break;
-                    }
-
-                    inventoryItem = CreateInventoryItem(consumable, count);
+                    inventoryItem = CreateInventoryItem(itemBase, count);
                     Consumables.Add(inventoryItem);
                     break;
                 case ItemType.Costume:
@@ -129,12 +131,7 @@ namespace Nekoyume.UI.Model
                     break;
                 case ItemType.Equipment:
                     var equipment = (Equipment) itemBase;
-                    if (equipment.RequiredBlockIndex > blockIndex)
-                    {
-                        break;
-                    }
-
-                    inventoryItem = CreateInventoryItem(equipment, count);
+                    inventoryItem = CreateInventoryItem(itemBase, count);
                     inventoryItem.EquippedEnabled.Value = equipment.equipped;
                     Equipments.Add(inventoryItem);
                     break;
