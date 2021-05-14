@@ -462,8 +462,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Stage 999
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8a682b7747d4a664089b7b1065aa0035, type: 2}
-  m_sharedMaterial: {fileID: 2100000, guid: 1d76289fafd1e498bbf819fb87c42441, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: ee85c922f6a7b4b5ba900ec7f0dedb49, type: 2}
+  m_sharedMaterial: {fileID: 2100000, guid: b6287a6d2fb9b4e93ad07fbb2baa9ade, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -5019,6 +5019,11 @@ PrefabInstance:
       propertyPath: m_textInfo.characterCount
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 1705752097425494995, guid: c7487058de8bb554d8df48672a0b5c5a,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1758386983919167824, guid: c7487058de8bb554d8df48672a0b5c5a,
         type: 3}
       propertyPath: m_textInfo.lineCount
@@ -6214,6 +6219,11 @@ PrefabInstance:
       propertyPath: m_textInfo.characterCount
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 3541327345225648840, guid: c7487058de8bb554d8df48672a0b5c5a,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3559622003398474669, guid: c7487058de8bb554d8df48672a0b5c5a,
         type: 3}
       propertyPath: m_textInfo.lineCount
@@ -6962,6 +6972,48 @@ PrefabInstance:
     - target: {fileID: 4805758132598688726, guid: c7487058de8bb554d8df48672a0b5c5a,
         type: 3}
       propertyPath: m_textInfo.characterCount
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4813206763332416446, guid: c7487058de8bb554d8df48672a0b5c5a,
+        type: 3}
+      propertyPath: m_text
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 4813206763332416446, guid: c7487058de8bb554d8df48672a0b5c5a,
+        type: 3}
+      propertyPath: m_fontSize
+      value: 22
+      objectReference: {fileID: 0}
+    - target: {fileID: 4813206763332416446, guid: c7487058de8bb554d8df48672a0b5c5a,
+        type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: 36f716ed321c04c3b8c41a8c6e14f1d7,
+        type: 2}
+    - target: {fileID: 4813206763332416446, guid: c7487058de8bb554d8df48672a0b5c5a,
+        type: 3}
+      propertyPath: m_fontSizeBase
+      value: 22
+      objectReference: {fileID: 0}
+    - target: {fileID: 4813206763332416446, guid: c7487058de8bb554d8df48672a0b5c5a,
+        type: 3}
+      propertyPath: m_enableKerning
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4813206763332416446, guid: c7487058de8bb554d8df48672a0b5c5a,
+        type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: 2174879058129231693, guid: 36f716ed321c04c3b8c41a8c6e14f1d7,
+        type: 2}
+    - target: {fileID: 4813206763332416446, guid: c7487058de8bb554d8df48672a0b5c5a,
+        type: 3}
+      propertyPath: checkPaddingRequired
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4813206763332416446, guid: c7487058de8bb554d8df48672a0b5c5a,
+        type: 3}
+      propertyPath: m_enableExtraPadding
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4864581601720506483, guid: c7487058de8bb554d8df48672a0b5c5a,
