@@ -27,5 +27,6 @@ namespace Nekoyume.L10n
         Count,
         Tutorial,
         RewardText,
+        Paper,
     }
 }

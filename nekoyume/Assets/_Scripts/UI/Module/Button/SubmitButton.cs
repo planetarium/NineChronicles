@@ -55,6 +55,7 @@ namespace Nekoyume.UI.Module
             button.interactable = submittable;
             backgroundImage.enabled = !submittable;
             backgroundImageForSubmittable.enabled = submittable;
+
             submitText.gameObject.SetActive(!submittable);
             submitTextForSubmittable.gameObject.SetActive(submittable);
         }

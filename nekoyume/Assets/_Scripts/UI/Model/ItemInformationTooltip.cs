@@ -18,13 +18,11 @@ namespace Nekoyume.UI.Model
         public readonly ReactiveProperty<bool> SubmitButtonEnabled = new ReactiveProperty<bool>(false);
         public readonly ReactiveProperty<string> SubmitButtonText = new ReactiveProperty<string>(null);
 
-        public readonly ReactiveProperty<bool> PriceEnabled = new ReactiveProperty<bool>(false);
         public readonly ReactiveProperty<FungibleAssetValue> Price;
+        public readonly ReactiveProperty<long> ExpiredBlockIndex = new ReactiveProperty<long>();
 
         public readonly Subject<UI.ItemInformationTooltip> OnSubmitClick = new Subject<UI.ItemInformationTooltip>();
         public readonly Subject<UI.ItemInformationTooltip> OnCloseClick = new Subject<UI.ItemInformationTooltip>();
-
-        public readonly ReadOnlyReactiveProperty<bool> FooterRootActive;
 
         public ItemInformationTooltip(CountableItem countableItem = null)
         {
@@ -36,22 +34,17 @@ namespace Nekoyume.UI.Model
             {
                 if (item is null)
                 {
-                    TitleText.Value = "";
-
+                    TitleText.Value = string.Empty;
                     return;
                 }
 
                 TitleText.Value = item.ItemBase.Value.GetLocalizedName();
 
-                if (!(item is ShopItem shopItem))
+                if (item is ShopItem shopItem)
                 {
-                    PriceEnabled.Value = false;
-
-                    return;
+                    Price.Value = shopItem.Price.Value;
+                    ExpiredBlockIndex.Value = shopItem.ExpiredBlockIndex.Value;
                 }
-
-                PriceEnabled.Value = true;
-                Price.Value = shopItem.Price.Value;
             });
 
             SubmitButtonEnabledFunc.Value = SubmitButtonEnabledFuncDefault;
@@ -64,9 +57,6 @@ namespace Nekoyume.UI.Model
 
                 SubmitButtonEnabled.Value = SubmitButtonEnabledFunc.Value(ItemInformation.item.Value);
             });
-
-            FooterRootActive = Observable.CombineLatest(SubmitButtonEnabled, PriceEnabled)
-                .Select(_ => _[0] || _[1]).ToReadOnlyReactiveProperty();
         }
 
         public override void Dispose()
@@ -75,14 +65,10 @@ namespace Nekoyume.UI.Model
             SubmitButtonEnabledFunc.Dispose();
             SubmitButtonEnabled.Dispose();
             SubmitButtonText.Dispose();
-            PriceEnabled.Dispose();
             Price.Dispose();
-
+            ExpiredBlockIndex.Dispose();
             OnSubmitClick.Dispose();
             OnCloseClick.Dispose();
-
-            FooterRootActive.Dispose();
-
             base.Dispose();
         }
 
