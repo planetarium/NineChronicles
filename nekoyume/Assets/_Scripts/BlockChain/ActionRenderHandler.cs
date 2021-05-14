@@ -10,7 +10,6 @@ using Libplanet.Assets;
 using Nekoyume.Action;
 using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
-using Nekoyume.Manager;
 using Nekoyume.Model.Item;
 using Nekoyume.State;
 using Nekoyume.UI;
@@ -287,8 +286,6 @@ namespace Nekoyume.BlockChain
             LocalLayerModifier.RemoveAvatarItemRequiredIndex(avatarAddress, result.itemUsable.ItemId);
             LocalLayerModifier.ResetCombinationSlot(slot);
 
-            AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ActionCombinationSuccess);
-
             //[TentuPlay] RapidCombinationConsumable 합성에 사용한 골드 기록
             //Local에서 변경하는 States.Instance 보다는 블락에서 꺼내온 eval.OutputStates를 사용
             var agentAddress = eval.Signer;
@@ -343,8 +340,6 @@ namespace Nekoyume.BlockChain
                     string.Format(format, result.itemUsable.GetLocalizedName()),
                     slot.UnlockBlockIndex,
                     result.itemUsable.ItemId);
-
-                AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ActionCombinationSuccess);
 
                 //[TentuPlay] Equipment 합성에 사용한 골드 기록
                 //Local에서 변경하는 States.Instance 보다는 블락에서 꺼내온 eval.OutputStates를 사용
@@ -435,7 +430,6 @@ namespace Nekoyume.BlockChain
                     slot.UnlockBlockIndex,
                     result.itemUsable.ItemId
                 );
-                AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ActionCombinationSuccess);
 
                 if (eval.OutputStates.TryGetGoldBalance(agentAddress, GoldCurrency, out var balance))
                 {

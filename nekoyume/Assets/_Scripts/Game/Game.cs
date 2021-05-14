@@ -135,6 +135,7 @@ namespace Nekoyume.Game
             MainCanvas.instance.InitializeFirst();
             yield return Addressables.InitializeAsync();
             yield return StartCoroutine(CoInitializeTableSheets());
+            yield return StartCoroutine(ResourcesHelper.CoInitialize());
             AudioController.instance.Initialize();
             yield return null;
             // Agent 초기화.
@@ -152,6 +153,7 @@ namespace Nekoyume.Game
                     }
                 )
             );
+
             yield return new WaitUntil(() => agentInitialized);
             ShopProducts = new ShopProducts();
             // NOTE: Create ActionManager after Agent initialized.

@@ -14,9 +14,6 @@ namespace Nekoyume.UI.Model
 {
     public class ShopItems : IDisposable
     {
-        public readonly ReactiveProperty<UI.Shop.StateType> State =
-            new ReactiveProperty<UI.Shop.StateType>();
-
         public readonly ReactiveProperty<Dictionary<int, List<ShopItem>>> AgentProducts =
             new ReactiveProperty<Dictionary<int, List<ShopItem>>>();
 
@@ -52,7 +49,6 @@ namespace Nekoyume.UI.Model
 
         public void Dispose()
         {
-            State.Dispose();
             AgentProducts.Dispose();
             ItemSubTypeProducts.Dispose();
             SelectedItemView.Dispose();
@@ -232,44 +228,6 @@ namespace Nekoyume.UI.Model
 
             RemoveProduct(productId, _agentProducts[agentAddress], AgentProducts.Value);
             AgentProducts.SetValueAndForceNotify(AgentProducts.Value);
-        }
-
-        public void RemoveItemSubTypeProduct(Guid productId)
-        {
-            foreach (var keyValuePair in _agentProducts)
-            {
-                foreach (var keyValuePair1 in keyValuePair.Value
-                    .SelectMany(valuePair => valuePair.Value.SelectMany(pair => pair.Value)))
-                {
-                    foreach (var shopItem in keyValuePair1.Value)
-                    {
-                        if (productId == shopItem.ProductId.Value)
-                        {
-                            keyValuePair1.Value.Remove(shopItem);
-                            break;
-                        }
-                    }
-                }
-            }
-
-            foreach (var itemSubTypeProduct in _itemSubTypeProducts)
-            {
-                foreach (var valuePair in itemSubTypeProduct.Value
-                    .SelectMany(keyValuePair => keyValuePair.Value))
-                {
-                    foreach (var shopItem in valuePair.Value)
-                    {
-                        if (productId == shopItem.ProductId.Value)
-                        {
-                            valuePair.Value.Remove(shopItem);
-                            break;
-                        }
-                    }
-                }
-            }
-
-            ResetAgentProducts();
-            ResetItemSubTypeProducts();
         }
 
         private static void RemoveProduct(

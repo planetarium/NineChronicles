@@ -1,12 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using mixpanel;
-using Nekoyume.Action;
 using Nekoyume.Game.Controller;
 using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
 using Nekoyume.State;
-using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using TMPro;
 using UniRx;
@@ -72,10 +70,7 @@ namespace Nekoyume.UI
             {
                 Widget.Find<TwoButtonPopup>().Show(L10nManager.Localize("UI_CLOSE_BUY_WISH_LIST"),
                                                    L10nManager.Localize("UI_YES"),
-                                                   L10nManager.Localize("UI_NO"), () =>
-                                                   {
-                                                       ShowDefaultView();
-                                                   });
+                                                   L10nManager.Localize("UI_NO"), ShowDefaultView);
             }
             else
             {
@@ -134,7 +129,7 @@ namespace Nekoyume.UI
                 var productId = shopItem.ProductId.Value;
 
                 LocalLayerModifier.ModifyAgentGold(buyerAgentAddress, -shopItem.Price.Value);
-                shopItems.SharedModel.RemoveItemSubTypeProduct(productId);
+                ReactiveShopState.RemoveShopItem(productId, ShopBuy.ShopItemsPerPage);
                 var format = L10nManager.Localize("NOTIFICATION_BUY_START");
                 OneLinePopup.Push(MailType.Auction,
                     string.Format(format, shopItem.ItemBase.Value.GetLocalizedName()));
