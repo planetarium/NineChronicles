@@ -47,10 +47,10 @@ namespace Nekoyume.State
         public static readonly Dictionary<Guid, List<Nekoyume.UI.Model.ShopItem>> PurchaseHistory =
             new Dictionary<Guid, List<Nekoyume.UI.Model.ShopItem>>();
 
+        private static List<ShopItem> _products = new List<ShopItem>();
+
         public static void Initialize(ShopState state, IEnumerable<ShopItem> shardedProducts, int shopItemsPerPage)
         {
-            _shopItemsPerPage = shopItemsPerPage;
-
             if (state is null)
             {
                 return;
@@ -58,13 +58,31 @@ namespace Nekoyume.State
 
             // It uses shaded shop state with the old store state.
             // Later, only shaded shop state will be used.
-            var products = state.Products.Values.ToList();
-            products.AddRange(shardedProducts);
+            _products = state.Products.Values.ToList();
+            _products.AddRange(shardedProducts);
 
+            Update(shopItemsPerPage);
+        }
+
+        public static void RemoveShopItem(Guid productId, int shopItemsPerPage)
+        {
+
+            var item = _products.FirstOrDefault(x => x.ProductId == productId);
+            if (item != null)
+            {
+                _products.Remove(item);
+            }
+
+            Update(shopItemsPerPage);
+        }
+
+        public static void Update(int shopItemsPerPage)
+        {
+            _shopItemsPerPage = shopItemsPerPage;
             // AgentProducts.
             {
                 var agentProducts = new Dictionary<Address, List<ShopItem>>();
-                foreach (var product in products)
+                foreach (var product in _products)
                 {
                     var agentAddress = product.SellerAgentAddress;
                     if (!agentProducts.ContainsKey(agentAddress))
@@ -72,18 +90,25 @@ namespace Nekoyume.State
                         agentProducts.Add(agentAddress, new List<ShopItem>());
                     }
 
-                    agentProducts[agentAddress].Add(product);
+                    if (Game.Game.instance.Agent.Address == agentAddress)
+                    {
+                        if (product.SellerAvatarAddress == States.Instance.CurrentAvatarState.address)
+                        {
+                            agentProducts[agentAddress].Add(product);
+                        }
+                    }
+                    else
+                    {
+                        agentProducts[agentAddress].Add(product);
+                    }
                 }
 
                 var filteredAgentProducts = new Dictionary<
-                    Address, Dictionary<
-                        ItemSubTypeFilter, Dictionary<
-                            ShopSortFilter, Dictionary<int, List<ShopItem>>>>>();
+                    Address,
+                    Dictionary<ItemSubTypeFilter, Dictionary<ShopSortFilter, Dictionary<int, List<ShopItem>>>>>();
                 foreach (var pair in agentProducts)
                 {
-                    filteredAgentProducts.Add(
-                        pair.Key,
-                        GetGroupedShopItemsByItemSubTypeFilter(pair.Value));
+                    filteredAgentProducts.Add(pair.Key, GetGroupedShopItemsByItemSubTypeFilter(pair.Value));
                 }
 
                 AgentProducts.Value = filteredAgentProducts;
@@ -92,9 +117,8 @@ namespace Nekoyume.State
             // ItemSubTypeProducts.
             {
                 var agentAddress = States.Instance.AgentState.address;
-                ItemSubTypeProducts.Value = GetGroupedShopItemsByItemSubTypeFilter(products
-                    .Where(product => !product.SellerAgentAddress.Equals(agentAddress))
-                    .ToList());
+                ItemSubTypeProducts.Value = GetGroupedShopItemsByItemSubTypeFilter(_products
+                    .Where(product => !product.SellerAgentAddress.Equals(agentAddress)).ToList());
             }
         }
 

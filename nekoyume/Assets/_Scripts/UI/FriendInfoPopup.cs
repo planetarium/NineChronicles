@@ -2,6 +2,8 @@ using System.Collections;
 using System.Linq;
 using Nekoyume.Battle;
 using Nekoyume.EnumType;
+using Nekoyume.Game.Character;
+using Nekoyume.Game.Factory;
 using Nekoyume.Helper;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Stat;
@@ -48,14 +50,11 @@ namespace Nekoyume.UI
         private AvatarStats avatarStats = null;
 
         [SerializeField]
-        private Canvas contentCanvas = null;
+        private RectTransform avatarPosition = null;
 
-        private Vector3 _previousAvatarPosition;
-        private Vector3 _previousAvatarLocalScale;
-        private bool _previousAvatarActivated;
-        private Coroutine _constraintsAvatarToUICoroutine;
         private CharacterStats _tempStats;
         private GameObject _cachedCharacterTitle;
+        private Player _player;
 
         #region Override
 
@@ -77,66 +76,33 @@ namespace Nekoyume.UI
             Show(currentAvatarState, ignoreShowAnimation);
         }
 
-        protected override void OnCompleteOfCloseAnimationInternal()
+        public override void Close(bool ignoreCloseAnimation = false)
         {
-            ReturnPlayer();
+            _player.transform.SetParent(Game.Game.instance.Stage.transform);
+            _player.transform.localScale = Vector3.one;
+            _player.gameObject.SetActive(false);
+            base.Close(ignoreCloseAnimation);
         }
-
         #endregion
 
         public void Show(AvatarState avatarState, bool ignoreShowAnimation = false)
         {
             base.Show(ignoreShowAnimation);
 
-            ReplacePlayer(avatarState);
+            CreatePlayer(avatarState);
             UpdateSlotView(avatarState);
             UpdateStatViews();
         }
 
-        private void ReplacePlayer(AvatarState avatarState)
+        private void CreatePlayer(AvatarState avatarState)
         {
-            var stage = Game.Game.instance.Stage;
-            _previousAvatarActivated = stage.selectedPlayer && stage.selectedPlayer.gameObject.activeSelf;
-            var player = stage.GetPlayer();
-            player.Set(avatarState);
-            var playerTransform = player.transform;
-            _previousAvatarPosition = playerTransform.position;
-            _previousAvatarLocalScale = playerTransform.localScale;
-            playerTransform.position = NPCPosition;
-
-            _tempStats = player.Model.Stats.Clone() as CharacterStats;
-
-            if (!(_constraintsAvatarToUICoroutine is null))
-            {
-                StopCoroutine(_constraintsAvatarToUICoroutine);
-            }
-
-            _constraintsAvatarToUICoroutine = StartCoroutine(CoConstraintsPlayerToUI(playerTransform));
-        }
-
-        private IEnumerator CoConstraintsPlayerToUI(Transform playerTransform)
-        {
-            while (true)
-            {
-                playerTransform.localScale = modal.localScale;
-                yield return null;
-            }
-        }
-
-        private void ReturnPlayer()
-        {
-            if (!(_constraintsAvatarToUICoroutine is null))
-            {
-                StopCoroutine(_constraintsAvatarToUICoroutine);
-                _constraintsAvatarToUICoroutine = null;
-            }
-
-            // NOTE: 플레이어를 강제로 재생성해서 플레이어의 모델이 장비 변경 상태를 반영하도록 합니다.
-            var player = Game.Game.instance.Stage.GetPlayer(_previousAvatarPosition, true);
-            var currentAvatarState = Game.Game.instance.States.CurrentAvatarState;
-            player.Set(currentAvatarState);
-            player.transform.localScale = _previousAvatarLocalScale;
-            player.gameObject.SetActive(_previousAvatarActivated);
+            var orderInLayer = MainCanvas.instance.GetLayer(WidgetType).root.sortingOrder + 1;
+            _player = PlayerFactory.CreateBySettingLayer(avatarState, SortingLayer.NameToID("UI"), orderInLayer)
+                .GetComponent<Player>();
+            _player.Set(avatarState);
+            _player.transform.SetParent(avatarPosition);
+            _player.transform.localScale = Vector3.one * 160.0f;
+            _player.transform.localPosition = Vector3.zero;
         }
 
         private void UpdateSlotView(AvatarState avatarState)
@@ -170,6 +136,7 @@ namespace Nekoyume.UI
 
         private void UpdateStatViews()
         {
+            _tempStats = _player.Model.Stats.Clone() as CharacterStats;
             var equipments = equipmentSlots
                 .Where(slot => !slot.IsLock && !slot.IsEmpty)
                 .Select(slot => slot.Item as Equipment)

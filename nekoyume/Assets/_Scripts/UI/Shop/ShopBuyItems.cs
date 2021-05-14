@@ -99,9 +99,6 @@ namespace Nekoyume.UI.Module
             inputPlaceholder.SetAsLastSibling();
 
             SharedModel = new Model.ShopItems();
-            SharedModel.State
-                .Subscribe(_ => UpdateView())
-                .AddTo(gameObject);
             SharedModel.AgentProducts
                 .Subscribe(_ => UpdateView())
                 .AddTo(gameObject);
@@ -154,6 +151,7 @@ namespace Nekoyume.UI.Module
         public void Reset()
         {
             toggleDropdowns.First().isOn = true;
+            toggleDropdowns.First().items.First().isOn = true;
             inputField.text = string.Empty;
             resetButton.interactable = false;
             resetAnimator.Play(_hashDisabled);

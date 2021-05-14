@@ -133,7 +133,7 @@ namespace Nekoyume.Helper
                     result = Resources.Load<Sprite>(
                         string.Format(MenuIllustratePathFormat, "UI_bg_ranking"));
                     break;
-                case nameof(Shop):
+                case "Shop":
                     result = Resources.Load<Sprite>(
                         string.Format(MenuIllustratePathFormat, "UI_bg_shop"));
                     break;
