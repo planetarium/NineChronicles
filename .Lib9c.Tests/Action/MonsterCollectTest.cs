@@ -12,13 +12,13 @@ namespace Lib9c.Tests.Action
     using Nekoyume.TableData;
     using Xunit;
 
-    public class StakeTest
+    public class MonsterCollectTest
     {
         private readonly TableSheets _tableSheets;
         private readonly Address _signer;
         private IAccountStateDelta _initialState;
 
-        public StakeTest()
+        public MonsterCollectTest()
         {
             Dictionary<string, string> sheets = TableSheetsImporter.ImportSheets();
             _tableSheets = new TableSheets(sheets);
