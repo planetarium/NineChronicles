@@ -406,6 +406,8 @@ namespace Nekoyume.Action
                     shopItem = shopItem,
                     itemUsable = shopItem.ItemUsable,
                     costume = shopItem.Costume,
+                    tradableFungibleItem = shopItem.TradableFungibleItem,
+                    tradableFungibleItemCount = shopItem.TradableFungibleItemCount,
                     gold = taxedPrice
                 };
                 var sellerMail = new SellerMail(sellerResult, ctx.BlockIndex, ctx.Random.GenerateRandomGuid(),
