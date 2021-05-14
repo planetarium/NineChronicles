@@ -380,7 +380,6 @@ namespace Nekoyume.UI
             speechBubble.SetKey(key);
         }
 
-
         public static ItemBase GetItemBase(SellCancellation.Result result)
         {
             if (result.itemUsable != null)
@@ -395,6 +394,5 @@ namespace Nekoyume.UI
 
             return (ItemBase)result.tradableFungibleItem;
         }
-
     }
 }

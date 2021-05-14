@@ -525,14 +525,15 @@ namespace Nekoyume.BlockChain
                         {
                             // Local layer
                             var price = purchaseResult.shopItem.Price;
-                            var nonFungibleItem = purchaseResult.itemUsable ?? (INonFungibleItem) purchaseResult.costume;
+                            var itemBase = ShopBuy.GetItemBase(purchaseResult);
+                            var tradableItem = (ITradableItem) itemBase;
                             LocalLayerModifier.ModifyAgentGold(agentAddress, price);
-                            LocalLayerModifier.RemoveItem(currentAvatarAddress, nonFungibleItem.NonFungibleId);
+                            LocalLayerModifier.RemoveItem(currentAvatarAddress, tradableItem.TradableId);
                             LocalLayerModifier.AddNewAttachmentMail(currentAvatarAddress, purchaseResult.id);
 
                             // Push notification
                             var format = L10nManager.Localize("NOTIFICATION_BUY_BUYER_COMPLETE");
-                            var itemBase = purchaseResult.itemUsable ?? (ItemBase) purchaseResult.costume;
+
                             OneLinePopup.Push(MailType.Auction, string.Format(format, itemBase.GetLocalizedName(), price));
 
                             // Analytics

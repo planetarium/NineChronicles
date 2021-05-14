@@ -290,10 +290,12 @@ namespace Nekoyume.UI
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             var attachment = (Buy.BuyerResult) buyerMail.attachment;
-            var itemBase = attachment.itemUsable ?? (ItemBase)attachment.costume;
-            var tradableItem = attachment.itemUsable ?? (ITradableItem)attachment.costume;
+            var itemBase = ShopBuy.GetItemBase(attachment);
+            var tradableItem = (ITradableItem) itemBase;
+            var count = attachment.tradableFungibleItemCount > 0 ?
+                             attachment.tradableFungibleItemCount : 1;
             var popup = Find<CombinationResultPopup>();
-            var model = new UI.Model.CombinationResultPopup(new CountableItem(itemBase, 1))
+            var model = new UI.Model.CombinationResultPopup(new CountableItem(itemBase, count))
             {
                 isSuccess = true,
                 materialItems = new List<CombinationMaterial>()
