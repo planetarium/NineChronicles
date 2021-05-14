@@ -10,7 +10,7 @@ namespace Nekoyume
 #else
         public const bool IsEditor = false;
 #endif
-
+        
         public const int SlotCount = 3;
         public const float WaitSeconds = 180f;
         public const string AvatarNickNamePattern = @"^[0-9a-zA-Z]{2,20}$";
