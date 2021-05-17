@@ -122,8 +122,8 @@
                 var tradableItem = tradableItems[i];
                 Assert.NotNull(tradableItem);
                 var tradableId = tradableItem.TradableId;
-                Assert.True(inventory.RemoveTradableItem(tradableId));
-                Assert.False(inventory.RemoveTradableItem(tradableId));
+                Assert.True(inventory.RemoveTradableItem(tradableId, 0));
+                Assert.False(inventory.RemoveTradableItem(tradableId, 0));
                 Assert.Equal(2 - i, inventory.Items.Count);
             }
         }
@@ -141,6 +141,8 @@
             Assert.Empty(inventory.Items);
             inventory.AddItem(material);
             inventory.AddItem(tradableMaterial);
+            Assert.Equal(0, tradableMaterial.RequiredBlockIndex);
+            Assert.False(inventory.RemoveTradableItem(tradableItem.TradableId, 1));
             Assert.True(inventory.RemoveTradableItem(tradableItem));
             Assert.False(inventory.Materials.First() is ITradableFungibleItem);
             Assert.False(inventory.RemoveTradableItem(tradableItem));
@@ -159,6 +161,7 @@
             Assert.Empty(inventory.Items);
             inventory.AddItem(itemUsable);
             Assert.Single(inventory.Equipments);
+            Assert.False(inventory.RemoveTradableItem(nonFungibleItem.TradableId, 1, 1));
             Assert.True(inventory.RemoveTradableItem(nonFungibleItem));
             Assert.Empty(inventory.Equipments);
             Assert.False(inventory.RemoveTradableItem(nonFungibleItem));

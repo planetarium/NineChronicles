@@ -255,24 +255,15 @@ namespace Nekoyume.Model.Item
         public bool RemoveNonFungibleItem(Guid nonFungibleId)
             => TryGetNonFungibleItem(nonFungibleId, out var item) && _items.Remove(item);
 
-        public bool RemoveTradableItem(ITradableItem tradableItem, int count = 1)
-        {
-            switch (tradableItem)
-            {
-                case IFungibleItem fungibleItem:
-                    return RemoveFungibleItem(fungibleItem, count, true);
-                case INonFungibleItem nonFungibleItem:
-                    return RemoveNonFungibleItem(nonFungibleItem);
-                default:
-                    return false;
-            }
-        }
+        public bool RemoveTradableItem(ITradableItem tradableItem, int count = 1) =>
+            RemoveTradableItem(tradableItem.TradableId, tradableItem.RequiredBlockIndex, count);
 
-        public bool RemoveTradableItem(Guid tradableId, int count = 1)
+        public bool RemoveTradableItem(Guid tradableId, long blockIndex, int count = 1)
         {
             var target = _items.FirstOrDefault(e =>
                 e.item is ITradableItem tradableItem &&
-                tradableItem.TradableId.Equals(tradableId));
+                tradableItem.TradableId.Equals(tradableId) &&
+                tradableItem.RequiredBlockIndex == blockIndex);
             if (target is null ||
                 target.count < count)
             {
