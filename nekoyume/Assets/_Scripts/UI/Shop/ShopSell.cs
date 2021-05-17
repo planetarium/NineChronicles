@@ -253,7 +253,7 @@ namespace Nekoyume.UI
             }
 
             if (!shopItems.SharedModel.TryGetShopItemFromAgentProducts(
-                nonFungibleItem.ItemId,
+                nonFungibleItem.NonFungibleId,
                 out var shopItem))
             {
                 if (data.Price.Value.Sign * data.Price.Value.MajorUnit < Model.Shop.MinimumPrice)
@@ -261,9 +261,9 @@ namespace Nekoyume.UI
                     throw new InvalidSellingPriceException(data);
                 }
 
-                var itemId = ((INonFungibleItem) data.Item.Value.ItemBase.Value).ItemId;
+                var tradableId = ((ITradableItem) data.Item.Value.ItemBase.Value).TradableId;
                 var itemSubType = data.Item.Value.ItemBase.Value.ItemSubType;
-                Game.Game.instance.ActionManager.Sell(itemId, data.Price.Value, itemSubType);
+                Game.Game.instance.ActionManager.Sell(tradableId, data.Price.Value, itemSubType);
                 Mixpanel.Track("Unity/Sell");
                 ResponseSell();
                 return;
@@ -313,7 +313,7 @@ namespace Nekoyume.UI
                 return;
             }
 
-            LocalLayerModifier.RemoveItem(avatarAddress, nonFungibleItem.ItemId);
+            LocalLayerModifier.RemoveItem(avatarAddress, nonFungibleItem.NonFungibleId);
             AudioController.instance.PlaySfx(AudioController.SfxCode.InputItem);
             var format = L10nManager.Localize("NOTIFICATION_SELL_START");
             Notification.Push(MailType.Auction,

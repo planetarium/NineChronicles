@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using mixpanel;
@@ -124,6 +124,7 @@ namespace Nekoyume.UI
                     BottomMenu.ToggleableType.Quest,
                     BottomMenu.ToggleableType.Chat,
                     BottomMenu.ToggleableType.IllustratedBook,
+                    BottomMenu.ToggleableType.Ranking,
                     BottomMenu.ToggleableType.Character);
 
                 AudioController.instance.PlayMusic(AudioController.MusicCode.Shop);
