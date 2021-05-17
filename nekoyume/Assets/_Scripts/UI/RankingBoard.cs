@@ -348,6 +348,7 @@ namespace Nekoyume.UI
                     {
                         rank = tuple.rank,
                         arenaInfo = tuple.arenaInfo,
+                        currentAvatarArenaInfo = currentAvatarArenaInfo,
                     }).ToList(), true);
             }
             else

@@ -116,7 +116,7 @@ namespace Nekoyume.UI
             if (!(title is null))
             {
                 Destroy(_cachedCharacterTitle);
-                var clone  = ResourcesHelper.GetCharacterTitle(title.Grade, title.GetLocalizedNonColoredName());
+                var clone = ResourcesHelper.GetCharacterTitle(title.Grade, title.GetLocalizedNonColoredName());
                 _cachedCharacterTitle = Instantiate(clone, titleSocket);
             }
 
