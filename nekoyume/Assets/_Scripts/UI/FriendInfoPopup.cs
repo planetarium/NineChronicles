@@ -49,9 +49,6 @@ namespace Nekoyume.UI
         [SerializeField]
         private AvatarStats avatarStats = null;
 
-        [SerializeField]
-        private RectTransform avatarPosition = null;
-
         private CharacterStats _tempStats;
         private GameObject _cachedCharacterTitle;
         private Player _player;
@@ -96,11 +93,8 @@ namespace Nekoyume.UI
 
         private void CreatePlayer(AvatarState avatarState)
         {
-            var orderInLayer = MainCanvas.instance.GetLayer(WidgetType).root.sortingOrder + 1;
-            _player = PlayerFactory.CreateBySettingLayer(avatarState, SortingLayer.NameToID("UI"), orderInLayer)
+            _player = PlayerFactory.Create(avatarState)
                 .GetComponent<Player>();
-            _player.Set(avatarState);
-            _player.transform.SetParent(avatarPosition);
             _player.transform.localScale = Vector3.one;
             _player.transform.position = NPCPosition;
         }
@@ -108,7 +102,7 @@ namespace Nekoyume.UI
         private void UpdateSlotView(AvatarState avatarState)
         {
             var game = Game.Game.instance;
-            var playerModel = game.Stage.GetPlayer().Model;
+            var playerModel = _player.Model;
 
             nicknameText.text = string.Format(
                 NicknameTextFormat,
