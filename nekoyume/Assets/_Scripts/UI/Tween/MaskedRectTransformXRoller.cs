@@ -39,12 +39,7 @@ namespace Nekoyume.UI.Tween
         {
             KillTween();
 
-            var fitter = contentRect.GetComponent<ContentSizeFitter>();
-            fitter.SetLayoutHorizontal();
-            if (_rectTransform.rect.width < contentRect.rect.width)
-            {
-                _coroutine = StartCoroutine(CoScrollContent());
-            }
+            _coroutine = StartCoroutine(CoScrollContent());
         }
 
         private void OnDisable()
@@ -66,6 +61,12 @@ namespace Nekoyume.UI.Tween
 
         private IEnumerator CoScrollContent()
         {
+            yield return null;
+            if (_rectTransform.rect.width >= contentRect.rect.width)
+            {
+                yield break;
+            }
+
             if (curve is null)
             {
                 Debug.LogError($"Curve not set.");

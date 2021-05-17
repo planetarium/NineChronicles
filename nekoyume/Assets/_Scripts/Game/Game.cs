@@ -3,13 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Amazon;
 using Amazon.CloudWatchLogs;
 using Amazon.CloudWatchLogs.Model;
-using Amazon.CognitoIdentity;
 using Bencodex.Types;
+#if !UNITY_EDITOR
 using Libplanet;
 using Libplanet.Crypto;
+#endif
 using mixpanel;
 using Nekoyume.Action;
 using Nekoyume.BlockChain;
@@ -17,19 +17,16 @@ using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
-using Nekoyume.Model.Item;
-using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
 using Nekoyume.Pattern;
 using Nekoyume.State;
-using Nekoyume.TableData;
 using Nekoyume.UI;
+using Nekoyume.UI.Module;
 using UniRx;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
-using Mail = Nekoyume.UI.Mail;
 using Menu = Nekoyume.UI.Menu;
+
 
 namespace Nekoyume.Game
 {
@@ -499,6 +496,8 @@ namespace Nekoyume.Game
                 loginPopup.GetPrivateKey(),
                 callback
             );
+
+            RankPanel.UpdateSharedModel();
         }
 
         public void ResetStore()

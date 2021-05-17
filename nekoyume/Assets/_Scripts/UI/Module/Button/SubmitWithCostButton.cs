@@ -1,6 +1,7 @@
 using System.Globalization;
 using System.Numerics;
 using Libplanet.Assets;
+using Nekoyume.EnumType;
 using Nekoyume.Game.Controller;
 using TMPro;
 using UnityEngine;
@@ -182,7 +183,7 @@ namespace Nekoyume.UI.Module
 
         private static void SetTextColor(Graphic textField, Graphic submitField, bool isEnough)
         {
-            textField.color = isEnough ? Palette.GetColor(0) : Palette.GetColor(3);
+            textField.color = isEnough ? Palette.GetButtonColor(ButtonColorType.Enabled) : Palette.GetButtonColor(ButtonColorType.Unable);
             submitField.color = textField.color;
         }
     }
