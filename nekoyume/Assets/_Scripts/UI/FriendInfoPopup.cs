@@ -76,12 +76,12 @@ namespace Nekoyume.UI
             Show(currentAvatarState, ignoreShowAnimation);
         }
 
-        public override void Close(bool ignoreCloseAnimation = false)
+        protected override void OnCompleteOfCloseAnimationInternal()
         {
+            base.OnCompleteOfCloseAnimationInternal();
             _player.transform.SetParent(Game.Game.instance.Stage.transform);
             _player.transform.localScale = Vector3.one;
             _player.gameObject.SetActive(false);
-            base.Close(ignoreCloseAnimation);
         }
         #endregion
 
@@ -101,8 +101,8 @@ namespace Nekoyume.UI
                 .GetComponent<Player>();
             _player.Set(avatarState);
             _player.transform.SetParent(avatarPosition);
-            _player.transform.localScale = Vector3.one * 160.0f;
-            _player.transform.localPosition = Vector3.zero;
+            _player.transform.localScale = Vector3.one;
+            _player.transform.position = NPCPosition;
         }
 
         private void UpdateSlotView(AvatarState avatarState)
