@@ -594,9 +594,13 @@ namespace Nekoyume.UI
                 inventory.SharedModel.TryGetCostume(slot.Item as Costume, out item) ||
                 inventory.SharedModel.TryGetEquipment(slot.Item as Equipment, out item))
             {
+                var (submitEnabledFunc, submitText, onSubmit) = GetToolTipParams(item);
                 tooltip.Show(
                     slot.RectTransform,
                     item,
+                    submitEnabledFunc,
+                    submitText,
+                    _ => onSubmit(item),
                     _ => inventory.SharedModel.DeselectItemView());
             }
         }
