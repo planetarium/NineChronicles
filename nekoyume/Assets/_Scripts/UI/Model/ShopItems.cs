@@ -14,9 +14,6 @@ namespace Nekoyume.UI.Model
 {
     public class ShopItems : IDisposable
     {
-        public readonly ReactiveProperty<UI.Shop.StateType> State =
-            new ReactiveProperty<UI.Shop.StateType>();
-
         public readonly ReactiveProperty<Dictionary<int, List<ShopItem>>> AgentProducts =
             new ReactiveProperty<Dictionary<int, List<ShopItem>>>();
 
@@ -32,18 +29,18 @@ namespace Nekoyume.UI.Model
         public readonly Subject<ShopItemView> OnDoubleClickItemView = new Subject<ShopItemView>();
 
         public ItemSubTypeFilter itemSubTypeFilter = ItemSubTypeFilter.Weapon;
-        public SortFilter sortFilter = SortFilter.Class;
+        public ShopSortFilter sortFilter = ShopSortFilter.Class;
         public List<int> searchIds = new List<int>();
         public bool isReverseOrder = false;
         public bool isMultiplePurchase = false;
 
         private IReadOnlyDictionary<
             Address, Dictionary<
-                ItemSubTypeFilter, Dictionary<SortFilter, Dictionary<int, List<ShopItem>>>>>
+                ItemSubTypeFilter, Dictionary<ShopSortFilter, Dictionary<int, List<ShopItem>>>>>
             _agentProducts;
 
         private IReadOnlyDictionary<
-                ItemSubTypeFilter, Dictionary<SortFilter, Dictionary<int, List<ShopItem>>>>
+                ItemSubTypeFilter, Dictionary<ShopSortFilter, Dictionary<int, List<ShopItem>>>>
             _itemSubTypeProducts;
 
         public readonly List<ShopItem> wishItems = new List<ShopItem>();
@@ -52,7 +49,6 @@ namespace Nekoyume.UI.Model
 
         public void Dispose()
         {
-            State.Dispose();
             AgentProducts.Dispose();
             ItemSubTypeProducts.Dispose();
             SelectedItemView.Dispose();
@@ -63,14 +59,14 @@ namespace Nekoyume.UI.Model
         public void ResetAgentProducts(IReadOnlyDictionary<
             Address, Dictionary<
                 ItemSubTypeFilter, Dictionary<
-                    SortFilter, Dictionary<
+                    ShopSortFilter, Dictionary<
                         int, List<Nekoyume.Model.Item.ShopItem>>>>> products)
         {
             _agentProducts = products is null
                 ? new Dictionary<
                     Address, Dictionary<
                         ItemSubTypeFilter, Dictionary<
-                            SortFilter, Dictionary<int, List<ShopItem>>>>>()
+                            ShopSortFilter, Dictionary<int, List<ShopItem>>>>>()
                 : products.ToDictionary(
                     pair => pair.Key,
                     pair => ModelToViewModel(pair.Value));
@@ -80,14 +76,14 @@ namespace Nekoyume.UI.Model
 
         public void ResetItemSubTypeProducts(IReadOnlyDictionary<
                 ItemSubTypeFilter, Dictionary<
-                    SortFilter, Dictionary<int, List<Nekoyume.Model.Item.ShopItem>>
+                    ShopSortFilter, Dictionary<int, List<Nekoyume.Model.Item.ShopItem>>
                 >>
             products)
         {
             _itemSubTypeProducts = products is null
                 ? new Dictionary<
                     ItemSubTypeFilter, Dictionary<
-                        SortFilter, Dictionary<int, List<ShopItem>>>>()
+                        ShopSortFilter, Dictionary<int, List<ShopItem>>>>()
                 : ModelToViewModel(products);
 
 
@@ -96,10 +92,10 @@ namespace Nekoyume.UI.Model
 
         private Dictionary<
                 ItemSubTypeFilter, Dictionary<
-                    SortFilter, Dictionary<int, List<ShopItem>>>>
+                    ShopSortFilter, Dictionary<int, List<ShopItem>>>>
             ModelToViewModel(IReadOnlyDictionary<
                 ItemSubTypeFilter, Dictionary<
-                    SortFilter, Dictionary<
+                    ShopSortFilter, Dictionary<
                         int, List<Nekoyume.Model.Item.ShopItem>>>> shopItems)
         {
             return shopItems.ToDictionary(
@@ -234,49 +230,11 @@ namespace Nekoyume.UI.Model
             AgentProducts.SetValueAndForceNotify(AgentProducts.Value);
         }
 
-        public void RemoveItemSubTypeProduct(Guid productId)
-        {
-            foreach (var keyValuePair in _agentProducts)
-            {
-                foreach (var keyValuePair1 in keyValuePair.Value
-                    .SelectMany(valuePair => valuePair.Value.SelectMany(pair => pair.Value)))
-                {
-                    foreach (var shopItem in keyValuePair1.Value)
-                    {
-                        if (productId == shopItem.ProductId.Value)
-                        {
-                            keyValuePair1.Value.Remove(shopItem);
-                            break;
-                        }
-                    }
-                }
-            }
-
-            foreach (var itemSubTypeProduct in _itemSubTypeProducts)
-            {
-                foreach (var valuePair in itemSubTypeProduct.Value
-                    .SelectMany(keyValuePair => keyValuePair.Value))
-                {
-                    foreach (var shopItem in valuePair.Value)
-                    {
-                        if (productId == shopItem.ProductId.Value)
-                        {
-                            valuePair.Value.Remove(shopItem);
-                            break;
-                        }
-                    }
-                }
-            }
-
-            ResetAgentProducts();
-            ResetItemSubTypeProducts();
-        }
-
         private static void RemoveProduct(
             Guid productId,
             IReadOnlyDictionary<
                 ItemSubTypeFilter, Dictionary<
-                    SortFilter, Dictionary<int, List<ShopItem>>>> origin,
+                    ShopSortFilter, Dictionary<int, List<ShopItem>>>> origin,
             Dictionary<int, List<ShopItem>> reactivePropertyValue)
         {
             foreach (var pair in origin)
@@ -362,7 +320,7 @@ namespace Nekoyume.UI.Model
 
         private Dictionary<int, List<ShopItem>> GetFilteredAndSortedProducts(IReadOnlyDictionary<
             ItemSubTypeFilter, Dictionary<
-                SortFilter, Dictionary<int, List<ShopItem>>>> products)
+                ShopSortFilter, Dictionary<int, List<ShopItem>>>> products)
         {
             if (products is null)
             {
@@ -450,24 +408,24 @@ namespace Nekoyume.UI.Model
 
         #endregion
 
-        public bool TryGetShopItemFromAgentProducts(Guid itemId, out ShopItem shopItem)
+        public bool TryGetShopItemFromAgentProducts(Guid nonFungibleId, out ShopItem shopItem)
         {
             shopItem = AgentProducts.Value.Values
                 .SelectMany(list => list)
                 .Where(item => item.ItemBase.Value is INonFungibleItem)
                 .FirstOrDefault(item =>
-                    ((INonFungibleItem) item.ItemBase.Value).ItemId.Equals(itemId));
+                    ((INonFungibleItem) item.ItemBase.Value).NonFungibleId.Equals(nonFungibleId));
 
             return !(shopItem is null);
         }
 
-        public bool TryGetShopItemFromItemSubTypeProducts(Guid itemId, out ShopItem shopItem)
+        public bool TryGetShopItemFromItemSubTypeProducts(Guid nonFungibleId, out ShopItem shopItem)
         {
             shopItem = ItemSubTypeProducts.Value.Values
                 .SelectMany(list => list)
                 .Where(item => item.ItemBase.Value is INonFungibleItem)
                 .FirstOrDefault(item =>
-                    ((INonFungibleItem) item.ItemBase.Value).ItemId.Equals(itemId));
+                    ((INonFungibleItem) item.ItemBase.Value).NonFungibleId.Equals(nonFungibleId));
 
             return !(shopItem is null);
         }

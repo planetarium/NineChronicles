@@ -7,7 +7,6 @@ using Libplanet;
 using Libplanet.Assets;
 using Nekoyume.Action;
 using Nekoyume.Game.Character;
-using Nekoyume.Manager;
 using Nekoyume.Model.Item;
 using Nekoyume.State;
 using UniRx;
@@ -103,8 +102,6 @@ namespace Nekoyume.BlockChain
                 throw new NullReferenceException(nameof(weeklyArenaAddress));
             }
 
-            Mixpanel.Track("Unity/Create Mimisbrunnr");
-
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             costumes = costumes ?? new List<Costume>();
             equipments = equipments ?? new List<Equipment>();
@@ -123,11 +120,6 @@ namespace Nekoyume.BlockChain
             };
             ProcessAction(action);
 
-            var itemIDs = equipments
-                .Select(e => e.Id)
-                .Concat(foods.Select(f => f.Id))
-                .ToArray();
-            AnalyticsManager.Instance.Battle(itemIDs);
             return _renderer.EveryRender<MimisbrunnrBattle2>()
                 .SkipWhile(eval => !eval.Action.Id.Equals(action.Id))
                 .Take(1)
@@ -162,8 +154,6 @@ namespace Nekoyume.BlockChain
                 throw new NullReferenceException(nameof(weeklyArenaAddress));
             }
 
-            Mixpanel.Track("Unity/Create HackAndSlash");
-
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             costumes = costumes ?? new List<Costume>();
             equipments = equipments ?? new List<Equipment>();
@@ -182,11 +172,6 @@ namespace Nekoyume.BlockChain
             };
             ProcessAction(action);
 
-            var itemIDs = equipments
-                .Select(e => e.Id)
-                .Concat(foods.Select(f => f.Id))
-                .ToArray();
-            AnalyticsManager.Instance.Battle(itemIDs);
             return _renderer.EveryRender<HackAndSlash4>()
                 .SkipWhile(eval => !eval.Action.Id.Equals(action.Id))
                 .Take(1)
@@ -199,7 +184,10 @@ namespace Nekoyume.BlockChain
         public IObservable<ActionBase.ActionEvaluation<CombinationConsumable3>> CombinationConsumable(
             int recipeId, int slotIndex)
         {
-            AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ActionCombination);
+            Mixpanel.Track("Unity/Create CombinationConsumable", new Value()
+            {
+                ["RecipeId"] = recipeId,
+            });
 
             var action = new CombinationConsumable3
             {
@@ -218,19 +206,19 @@ namespace Nekoyume.BlockChain
                 .DoOnError(e => HandleException(action.Id, e));
         }
 
-        public IObservable<ActionBase.ActionEvaluation<Sell>> Sell(Guid itemId,
+        public IObservable<ActionBase.ActionEvaluation<Sell>> Sell(Guid tradableId,
                                                                    FungibleAssetValue price,
                                                                    ItemSubType itemSubType)
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
 
             // NOTE: 장착했는지 안 했는지에 상관없이 해제 플래그를 걸어 둔다.
-            LocalLayerModifier.SetItemEquip(avatarAddress, itemId, false, false);
+            LocalLayerModifier.SetItemEquip(avatarAddress, tradableId, false);
 
             var action = new Sell
             {
                 sellerAvatarAddress = avatarAddress,
-                itemId = itemId,
+                tradableId = tradableId,
                 price = price,
                 itemSubType = itemSubType,
             };
@@ -316,8 +304,10 @@ namespace Nekoyume.BlockChain
             var avatarAddress = States.Instance.CurrentAvatarState.address;
 
             // NOTE: 장착했는지 안 했는지에 상관없이 해제 플래그를 걸어 둔다.
-            LocalLayerModifier.SetItemEquip(avatarAddress, itemId, false, false);
-            LocalLayerModifier.SetItemEquip(avatarAddress, materialId, false, false);
+            LocalLayerModifier.SetItemEquip(avatarAddress, itemId, false);
+            LocalLayerModifier.SetItemEquip(avatarAddress, materialId, false);
+
+            Mixpanel.Track("Unity/Item Enhancement");
 
             var action = new ItemEnhancement5
             {
@@ -347,6 +337,7 @@ namespace Nekoyume.BlockChain
             if (!ArenaHelper.TryGetThisWeekAddress(out var weeklyArenaAddress))
                 throw new NullReferenceException(nameof(weeklyArenaAddress));
 
+            Mixpanel.Track("Unity/Ranking Battle");
             var action = new RankingBattle
             {
                 AvatarAddress = States.Instance.CurrentAvatarState.address,
@@ -382,7 +373,10 @@ namespace Nekoyume.BlockChain
             int slotIndex,
             int? subRecipeId = null)
         {
-            Mixpanel.Track("Unity/Create CombinationEquipment");
+            Mixpanel.Track("Unity/Create CombinationEquipment", new Value()
+            {
+                ["RecipeId"] = recipeId,
+            });
 
             // 결과 주소도 고정되게 바꿔야함
             var action = new CombinationEquipment4

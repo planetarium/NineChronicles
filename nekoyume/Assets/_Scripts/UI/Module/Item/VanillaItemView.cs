@@ -56,7 +56,7 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
-            var data = itemViewData.datas.FirstOrDefault(x => x.Grade == itemRow.Grade);
+            var data = itemViewData.GetItemViewData(itemRow.Grade);
             gradeImage.overrideSprite = data.GradeBackground;
 
             gradeHsv.range = data.GradeHsvRange;

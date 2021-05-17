@@ -6,7 +6,6 @@ using Nekoyume.Battle;
 using Nekoyume.BlockChain;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
-using Nekoyume.Manager;
 using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Stat;
@@ -393,6 +392,7 @@ namespace Nekoyume.UI
         private void QuestClick(bool repeat)
         {
             _stage.IsInStage = true;
+            _stage.IsShowHud = true;
             StartCoroutine(CoQuestClick(repeat));
             questButton.interactable = false;
             repeatToggle.interactable = false;
@@ -413,7 +413,6 @@ namespace Nekoyume.UI
             yield return new WaitWhile(() => animation.IsPlaying);
             Quest(repeat);
             AudioController.PlayClick();
-            AnalyticsManager.Instance.BattleEntrance(repeat);
         }
 
         #region slot
@@ -504,9 +503,8 @@ namespace Nekoyume.UI
 
             LocalLayerModifier.SetItemEquip(
                 States.Instance.CurrentAvatarState.address,
-                nonFungibleItem.ItemId,
-                equip,
-                false);
+                nonFungibleItem.NonFungibleId,
+                equip);
         }
 
         private void PostEquipOrUnequip(EquipmentSlot slot)
@@ -666,6 +664,7 @@ namespace Nekoyume.UI
 
             _stage.isExitReserved = false;
             _stage.repeatStage = repeat;
+            _stage.foodCount = consumables.Count;
             ActionRenderHandler.Instance.Pending = true;
             Game.Game.instance.ActionManager
                 .HackAndSlash(
@@ -682,16 +681,10 @@ namespace Nekoyume.UI
                             States.Instance.CurrentAvatarState.address, _requiredCost);
                     }, e => ActionRenderHandler.BackToMain(false, e))
                 .AddTo(this);
-            Mixpanel.Track("Unity/Waiting Block");
         }
 
         public void GoToStage(BattleLog battleLog)
         {
-            var props = new Value
-            {
-                ["StageId"] = battleLog.stageId,
-            };
-            Mixpanel.Track("Unity/Stage Start", props);
             Game.Event.OnStageStart.Invoke(battleLog);
             Find<LoadingScreen>().Close();
             Close(true);

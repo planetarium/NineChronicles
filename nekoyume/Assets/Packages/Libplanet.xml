@@ -225,6 +225,20 @@
             the <see cref="P:Libplanet.Action.CurrencyPermissionException.TransactionSigner"/>.
             </summary>
         </member>
+        <member name="T:Libplanet.Action.ExtractableException">
+            <summary>
+            Extension methods for <see cref="T:Libplanet.Action.IExtractableException"/> and other <see cref="T:System.Exception"/>s
+            that do not implement <see cref="T:Libplanet.Action.IExtractableException"/>.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Action.ExtractableException.ExtractMetadata(System.Exception)">
+            <summary>
+            Extracts metadata from any exception in a general way.
+            </summary>
+            <param name="exception">An exception to extract its metadata from.</param>
+            <returns>Extracted metadata.  If there is not its metadata at all, or it does not
+            support metadata extraction, it can return <c>null</c> instead.</returns>
+        </member>
         <member name="T:Libplanet.Action.IAccountStateDelta">
             <summary>
             An interface to manipulate account states with
@@ -506,7 +520,7 @@
                     var dictionary = (Bencodex.Types.Dictionary)plainValue;
                     Type = (ActType)(int)dictionary.GetValue<Integer>("type");
                     TargetAddress =
-                        new Address(dictionary.GetValue<Binary>("target_address").Value);
+                        new Address(dictionary.GetValue<Binary>("target_address"));
                 }
             }
             ]]></code>
@@ -612,15 +626,27 @@
             a transaction that an executed <see cref="T:Libplanet.Action.IAction"/> belongs to.
             </summary>
         </member>
+        <member name="P:Libplanet.Action.IActionContext.TxId">
+            <summary>
+            <see cref="P:Libplanet.Tx.Transaction`1.Id"/> of a transaction that an executed <see cref="T:Libplanet.Action.IAction"/>
+            belongs to.  This is <c>null</c> iff <see cref="P:Libplanet.Action.IActionContext.BlockAction"/> is <c>true</c>.
+            </summary>
+        </member>
         <member name="P:Libplanet.Action.IActionContext.Miner">
             <summary>
             <see cref="T:Libplanet.Address"/> of a block miner account.
             </summary>
         </member>
+        <member name="P:Libplanet.Action.IActionContext.BlockHash">
+            <summary>
+            <see cref="T:Libplanet.Blocks.Block`1"/>.<see cref="P:Libplanet.Blocks.Block`1.Hash"/> of a transaction that an executed
+            <see cref="T:Libplanet.Action.IAction"/> belongs to.
+            </summary>
+        </member>
         <member name="P:Libplanet.Action.IActionContext.BlockIndex">
             <summary>
-            Block index of a transaction that an executed <see cref="T:Libplanet.Action.IAction"/>
-            belongs to.
+            <see cref="T:Libplanet.Blocks.Block`1"/>.<see cref="P:Libplanet.Blocks.Block`1.Index"/> of a transaction that an executed
+            <see cref="T:Libplanet.Action.IAction"/> belongs to.
             </summary>
         </member>
         <member name="P:Libplanet.Action.IActionContext.Rehearsal">
@@ -676,6 +702,22 @@
             </summary>
             <returns>A clone instance, which is distinct from its original.  Its internal state
             is entirely equivalent to the original's unconsumed initial state.</returns>
+        </member>
+        <member name="T:Libplanet.Action.IExtractableException">
+            <summary>
+            Marks an exception type as able to extract its metadata, so that these metadata can be
+            stored as a part of <see cref="T:Libplanet.Tx.TxFailure"/>.
+            </summary>
+            <seealso cref="P:Libplanet.Tx.TxFailure.ExceptionMetadata"/>
+        </member>
+        <member name="P:Libplanet.Action.IExtractableException.Metadata">
+            <summary>
+            Metadata of the exception.  It purposes to store these metadata as a part of
+            <see cref="T:Libplanet.Tx.TxFailure"/>.
+            </summary>
+            <remarks>As every metadata becomes a part of blockchain, which is replicated database
+            on the network, for the equivalent exception, the same metadata should be extracted.
+            </remarks>
         </member>
         <member name="T:Libplanet.Action.InsufficientBalanceException">
             <summary>
@@ -1144,6 +1186,17 @@
             href="https://github.com/ethereum/EIPs/blob/master/EIPS/eip-55.md"
             >EIP 55</a>.</param>
         </member>
+        <member name="M:Libplanet.Address.#ctor(Bencodex.Types.Binary)">
+            <summary>
+            Creates an <see cref="T:Libplanet.Address"/> instance from the given Bencodex <see cref="T:Bencodex.Types.Binary"/>
+            (i.e., <paramref name="address"/>).
+            </summary>
+            <param name="address">A Bencodex <see cref="T:Bencodex.Types.Binary"/> of 20 <see cref="T:System.Byte"/>s which
+            represents an <see cref="T:Libplanet.Address"/>.
+            </param>
+            <exception cref="T:System.ArgumentException">Thrown when the given <paramref name="address"/>
+            did not lengthen 20 bytes.</exception>
+        </member>
         <member name="P:Libplanet.Address.ByteArray">
             <summary>
             An immutable array of 20 <see cref="T:System.Byte"/>s that represent this
@@ -1308,6 +1361,14 @@
             instead.  See also <see cref="F:Libplanet.Assets.Currency.Minters"/> field which corresponds to this.</param>
             <seealso cref="M:Libplanet.Assets.Currency.#ctor(System.String,System.Byte,System.Collections.Immutable.IImmutableSet{Libplanet.Address})"/>
         </member>
+        <member name="M:Libplanet.Assets.Currency.#ctor(Bencodex.Types.IValue)">
+            <summary>
+            Deserializes a <see cref="T:Libplanet.Assets.Currency"/> type from a Bencodex value.
+            </summary>
+            <param name="serialized">The Bencodex value serialized by <see cref="M:Libplanet.Assets.Currency.Serialize"/>
+            method.</param>
+            <seealso cref="M:Libplanet.Assets.Currency.Serialize"/>
+        </member>
         <member name="M:Libplanet.Assets.Currency.op_Multiply(Libplanet.Assets.Currency,System.Numerics.BigInteger)">
             <summary>
             Gets a fungible asset value with the given <paramref name="quantity"/> of the
@@ -1359,6 +1420,12 @@
         </member>
         <member name="M:Libplanet.Assets.Currency.Equals(Libplanet.Assets.Currency)">
             <inheritdoc cref="M:System.IEquatable`1.Equals(`0)"/>
+        </member>
+        <member name="M:Libplanet.Assets.Currency.Serialize">
+            <summary>
+            Serializes the currency into a Bencodex value.
+            </summary>
+            <returns>The serialized Bencodex value.</returns>
         </member>
         <member name="T:Libplanet.Assets.FungibleAssetValue">
             <summary>
@@ -1750,7 +1817,9 @@
             If the <paramref name="store"/> has no genesis block yet this argument will
             be used for that.</param>
             <param name="renderers">Listens state changes on the created chain.  Listens nothing
-            by default or if it is <c>null</c>.</param>
+            by default or if it is <c>null</c>.  Note that action renderers receive events made
+            by unsuccessful transactions too; see also <see cref="T:Libplanet.Blockchain.Renderers.AtomicActionRenderer`1"/> for
+            workaround.</param>
             <param name="stateStore"><see cref="T:Libplanet.Store.IStateStore"/> to store states.</param>
             <exception cref="T:Libplanet.Blocks.InvalidGenesisBlockException">Thrown when the <paramref name="store"/>
             has a genesis block and it does not match to what the network expects
@@ -1920,9 +1989,24 @@
             <paramref name="offset"/>) of the <paramref name="currency"/>.
             </returns>
         </member>
+        <member name="M:Libplanet.Blockchain.BlockChain`1.GetTxExecution(Libplanet.Blocks.BlockHash,Libplanet.Tx.TxId)">
+            <summary>
+            Queries the recorded <see cref="T:Libplanet.Tx.TxExecution"/> for a successful or failed
+            <see cref="T:Libplanet.Tx.Transaction`1"/> within a <see cref="T:Libplanet.Blocks.Block`1"/>.
+            </summary>
+            <param name="blockHash">The <see cref="P:Libplanet.Blocks.Block`1.Hash"/> of the <see cref="T:Libplanet.Blocks.Block`1"/>
+            that the <see cref="T:Libplanet.Tx.Transaction`1"/> is executed within.</param>
+            <param name="txid">The executed <see cref="T:Libplanet.Tx.Transaction`1"/>'s
+            <see cref="P:Libplanet.Tx.Transaction`1.Id"/>.</param>
+            <returns>The recorded <see cref="T:Libplanet.Tx.TxExecution"/>.  If the transaction has never been
+            executed within the block, it returns <c>null</c> instead.</returns>
+        </member>
         <member name="M:Libplanet.Blockchain.BlockChain`1.Append(Libplanet.Blocks.Block{`0},System.Nullable{Libplanet.Blockchain.StateCompleterSet{`0}})">
             <summary>
             Adds a <paramref name="block"/> to the end of this chain.
+            <para><see cref="P:Libplanet.Blocks.Block`1.Transactions"/> in the <paramref name="block"/> updates
+            states and balances in the blockchain, and <see cref="T:Libplanet.Tx.TxExecution"/>s for
+            transactions are recorded.</para>
             <para>Note that <see cref="P:Libplanet.Blockchain.BlockChain`1.Renderers"/> receive events right after the <paramref
             name="block"/> is confirmed (and thus all states reflect changes in the <paramref
             name="block"/>).</para>
@@ -1949,6 +2033,9 @@
         <member name="M:Libplanet.Blockchain.BlockChain`1.Append(Libplanet.Blocks.Block{`0},System.DateTimeOffset,System.Nullable{Libplanet.Blockchain.StateCompleterSet{`0}})">
             <summary>
             Adds a <paramref name="block"/> to the end of this chain.
+            <para><see cref="P:Libplanet.Blocks.Block`1.Transactions"/> in the <paramref name="block"/> updates
+            states and balances in the blockchain, and <see cref="T:Libplanet.Tx.TxExecution"/>s for
+            transactions are recorded.</para>
             <para>Note that <see cref="P:Libplanet.Blockchain.BlockChain`1.Renderers"/> receive events right after the <paramref
             name="block"/> is confirmed (and thus all states reflect changes in the <paramref
             name="block"/>).</para>
@@ -2637,6 +2724,64 @@
         <member name="M:Libplanet.Blockchain.Renderers.AnonymousRenderer`1.RenderReorgEnd(Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0})">
             <inheritdoc cref="M:Libplanet.Blockchain.Renderers.IRenderer`1.RenderReorgEnd(Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0})"/>
         </member>
+        <member name="T:Libplanet.Blockchain.Renderers.AtomicActionRenderer`1">
+            <summary>
+            A middleware to make action render events to satisfy transactions' atomicity.
+            <para>Decorates an <see cref="T:Libplanet.Blockchain.Renderers.IActionRenderer`1"/> instance and filters out render events
+            made by unsuccessful transactions (i.e., transactions with one or more exception-throwing
+            actions).</para>
+            </summary>
+            <remarks>The wrapped <see cref="P:Libplanet.Blockchain.Renderers.AtomicActionRenderer`1.ActionRenderer"/> will not receive any
+            <see cref="M:Libplanet.Blockchain.Renderers.IActionRenderer`1.RenderActionError(Libplanet.Action.IAction,Libplanet.Action.IActionContext,System.Exception)"/> and
+            <see cref="M:Libplanet.Blockchain.Renderers.IActionRenderer`1.UnrenderActionError(Libplanet.Action.IAction,Libplanet.Action.IActionContext,System.Exception)"/> events except for block actions,
+            which do not belong to any transactions.
+            </remarks>
+            <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> type.  It should match to
+            <see cref="T:Libplanet.Blockchain.BlockChain`1"/>'s type parameter.</typeparam>
+        </member>
+        <member name="M:Libplanet.Blockchain.Renderers.AtomicActionRenderer`1.#ctor(Libplanet.Blockchain.Renderers.IActionRenderer{`0})">
+            <summary>
+            Creates a new <see cref="T:Libplanet.Blockchain.Renderers.AtomicActionRenderer`1"/> instance decorating the given
+            <paramref name="actionRenderer"/>.
+            </summary>
+            <param name="actionRenderer">The inner action renderer which has the <em>actual</em>
+            implementations and expects to receive no <see cref="M:Libplanet.Blockchain.Renderers.AtomicActionRenderer`1.RenderActionError(Libplanet.Action.IAction,Libplanet.Action.IActionContext,System.Exception)"/>/<see
+            cref="M:Libplanet.Blockchain.Renderers.AtomicActionRenderer`1.UnrenderActionError(Libplanet.Action.IAction,Libplanet.Action.IActionContext,System.Exception)"/> events.</param>
+        </member>
+        <member name="P:Libplanet.Blockchain.Renderers.AtomicActionRenderer`1.ActionRenderer">
+            <summary>
+            The inner action renderer which has the <em>actual</em> implementations and expects to
+            receive no <see cref="M:Libplanet.Blockchain.Renderers.AtomicActionRenderer`1.RenderActionError(Libplanet.Action.IAction,Libplanet.Action.IActionContext,System.Exception)"/>/<see cref="M:Libplanet.Blockchain.Renderers.AtomicActionRenderer`1.UnrenderActionError(Libplanet.Action.IAction,Libplanet.Action.IActionContext,System.Exception)"/> events.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Blockchain.Renderers.AtomicActionRenderer`1.RenderBlock(Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0})">
+            <inheritdoc cref="M:Libplanet.Blockchain.Renderers.IRenderer`1.RenderBlock(Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0})"/>
+        </member>
+        <member name="M:Libplanet.Blockchain.Renderers.AtomicActionRenderer`1.RenderBlockEnd(Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0})">
+            <inheritdoc cref="M:Libplanet.Blockchain.Renderers.IActionRenderer`1.RenderBlockEnd(Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0})"/>
+        </member>
+        <member name="M:Libplanet.Blockchain.Renderers.AtomicActionRenderer`1.RenderReorg(Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0})">
+            <inheritdoc cref="M:Libplanet.Blockchain.Renderers.IRenderer`1.RenderReorg(Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0})"/>
+        </member>
+        <member name="M:Libplanet.Blockchain.Renderers.AtomicActionRenderer`1.RenderReorgEnd(Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0})">
+            <inheritdoc cref="M:Libplanet.Blockchain.Renderers.IRenderer`1.RenderReorgEnd(Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0})"/>
+        </member>
+        <member name="M:Libplanet.Blockchain.Renderers.AtomicActionRenderer`1.RenderAction(Libplanet.Action.IAction,Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)">
+            <inheritdoc
+            cref="M:Libplanet.Blockchain.Renderers.IActionRenderer`1.RenderAction(Libplanet.Action.IAction,Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)"/>
+        </member>
+        <member name="M:Libplanet.Blockchain.Renderers.AtomicActionRenderer`1.UnrenderAction(Libplanet.Action.IAction,Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)">
+            <inheritdoc
+            cref="M:Libplanet.Blockchain.Renderers.IActionRenderer`1.UnrenderAction(Libplanet.Action.IAction,Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)"/>
+        </member>
+        <member name="M:Libplanet.Blockchain.Renderers.AtomicActionRenderer`1.RenderActionError(Libplanet.Action.IAction,Libplanet.Action.IActionContext,System.Exception)">
+            <inheritdoc
+            cref="M:Libplanet.Blockchain.Renderers.IActionRenderer`1.RenderActionError(Libplanet.Action.IAction,Libplanet.Action.IActionContext,System.Exception)"/>
+        </member>
+        <member name="M:Libplanet.Blockchain.Renderers.AtomicActionRenderer`1.UnrenderActionError(Libplanet.Action.IAction,Libplanet.Action.IActionContext,System.Exception)">
+            <inheritdoc
+            cref="M:Libplanet.Blockchain.Renderers.IActionRenderer`1.UnrenderActionError(Libplanet.Action.IAction,Libplanet.Action.IActionContext,System.Exception)"/>
+        </member>
         <member name="T:Libplanet.Blockchain.Renderers.Debug.InvalidRenderException`1">
             <summary>
             Exception thrown by <see cref="T:Libplanet.Blockchain.Renderers.Debug.ValidatingActionRenderer`1"/>.
@@ -3003,6 +3148,9 @@
         <member name="M:Libplanet.Blockchain.Renderers.DelayedActionRenderer`1.RenderBlockEnd(Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0})">
             <inheritdoc cref="M:Libplanet.Blockchain.Renderers.IActionRenderer`1.RenderBlockEnd(Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0})"/>
         </member>
+        <member name="M:Libplanet.Blockchain.Renderers.DelayedActionRenderer`1.RenderReorgEnd(Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0})">
+            <inheritdoc cref="M:Libplanet.Blockchain.Renderers.IRenderer`1.RenderReorgEnd(Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0})"/>
+        </member>
         <member name="M:Libplanet.Blockchain.Renderers.DelayedActionRenderer`1.LocateBlockPath(Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0})">
             <summary>
             Lists all descendants from <paramref name="lower"/> (exclusive) to
@@ -3148,6 +3296,18 @@
             (one time)</description></item>
             </list>
             </summary>
+            <remarks>Although <see cref="T:Libplanet.Tx.Transaction`1"/>s affect the states in
+            the <see cref="T:Libplanet.Store.IStateStore"/> all or nothing at all (i.e., atomically),
+            <see cref="T:Libplanet.Blockchain.Renderers.IActionRenderer`1"/> receives all action-related events
+            (<see cref="M:Libplanet.Blockchain.Renderers.IActionRenderer`1.RenderAction(Libplanet.Action.IAction,Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)"/>/<see cref="M:Libplanet.Blockchain.Renderers.IActionRenderer`1.RenderActionError(Libplanet.Action.IAction,Libplanet.Action.IActionContext,System.Exception)"/>/<see cref="M:Libplanet.Blockchain.Renderers.IActionRenderer`1.UnrenderAction(Libplanet.Action.IAction,Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)"
+            />/<see cref="M:Libplanet.Blockchain.Renderers.IActionRenderer`1.UnrenderActionError(Libplanet.Action.IAction,Libplanet.Action.IActionContext,System.Exception)"/>) <em>immediately</em> without buffering,
+            which means actions are rendered <em>even before</em> whether there are any actions throwing
+            an exception in the same transaction is determined.  In other words, for <see
+            cref="T:Libplanet.Blockchain.Renderers.IActionRenderer`1"/>s, it is not guaranteed that actions in a transaction are atomic.
+            <para>If your action renderer expects to receive only render events about actions belonging
+            successful transactions, wrap your action renderer with
+            <see cref="T:Libplanet.Blockchain.Renderers.AtomicActionRenderer`1"/>.</para>
+            </remarks>
             <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> type.  It should match to
             <see cref="T:Libplanet.Blockchain.BlockChain`1"/>'s type parameter.</typeparam>
         </member>
@@ -3552,7 +3712,7 @@
             The most latest protocol version.
             </summary>
         </member>
-        <member name="M:Libplanet.Blocks.Block`1.#ctor(System.Int64,System.Int64,System.Numerics.BigInteger,Libplanet.Nonce,System.Nullable{Libplanet.Address},System.Nullable{Libplanet.Blocks.BlockHash},System.DateTimeOffset,System.Collections.Generic.IEnumerable{Libplanet.Tx.Transaction{`0}},System.Nullable{Libplanet.Blocks.BlockHash},System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}},System.Int32)">
+        <member name="M:Libplanet.Blocks.Block`1.#ctor(System.Int64,System.Int64,System.Numerics.BigInteger,Libplanet.Nonce,System.Nullable{Libplanet.Address},System.Nullable{Libplanet.Blocks.BlockHash},System.DateTimeOffset,System.Collections.Generic.IReadOnlyList{Libplanet.Tx.Transaction{`0}},System.Nullable{Libplanet.Blocks.BlockHash},System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}},System.Int32)">
             <summary>
             Creates a <see cref="T:Libplanet.Blocks.Block`1"/> instance by manually filling all field values.
             For a more automated way, see also <see cref="M:Libplanet.Blocks.Block`1.Mine(System.Int64,System.Int64,System.Numerics.BigInteger,Libplanet.Address,System.Nullable{Libplanet.Blocks.BlockHash},System.DateTimeOffset,System.Collections.Generic.IEnumerable{Libplanet.Tx.Transaction{`0}},System.Int32,System.Threading.CancellationToken)"/> method.
@@ -3693,8 +3853,12 @@
             <see cref="P:Libplanet.Tx.Transaction`1.Actions"/> (e.g., tx&#xb9;-act&#xb9;,
             tx&#xb9;-act&#xb2;, tx&#xb2;-act&#xb9;, tx&#xb2;-act&#xb2;,
             &#x2026;).
-            Note that each <see cref="P:Libplanet.Action.IActionContext.Random"/> object has
-            a unconsumed state.
+            <para>If a <see cref="T:Libplanet.Tx.Transaction`1"/> has multiple
+            <see cref="P:Libplanet.Tx.Transaction`1.Actions"/>, each <see cref="T:Libplanet.Action.ActionEvaluation"/> includes
+            all previous <see cref="T:Libplanet.Action.ActionEvaluation"/>s' delta in the same
+            <see cref="T:Libplanet.Tx.Transaction`1"/> besides its own delta.</para>
+            <para>Note that each <see cref="P:Libplanet.Action.IActionContext.Random"/> object has a unconsumed state.
+            </para>
             </returns>
         </member>
         <member name="M:Libplanet.Blocks.Block`1.Evaluate(System.DateTimeOffset,Libplanet.Action.AccountStateGetter,Libplanet.Action.AccountBalanceGetter,Libplanet.Store.Trie.ITrie)">
@@ -5407,6 +5571,23 @@
         <member name="M:Libplanet.KeyStore.Web3KeyStore.Remove(System.Guid)">
             <inheritdoc/>
         </member>
+        <member name="T:Libplanet.KeyValuePairExtensions">
+            <summary>
+            Extension methods that help you to write more fluent dictionary-manipulating code.
+            </summary>
+            <example>
+            The following example shows how an immutable dictionary can transform only its keys or
+            its values:
+            <code><![CDATA[
+            var a = ImmutableDictionary<string, int>.Empty.Add("foo", 1).Add("bar", 2);
+            // a: foo => 1, bar => 2
+            var b = a.SelectWithinKeys(k => k.ToUpperInvariant()).ToImmutableDictionary();
+            // b: FOO => 1, BAR => 2
+            var c = a.SelectWithinValues(v => -v * 2).ToImmutableDictionary();
+            // c: foo => -2, bar => -4
+            ]]></code>
+            </example>
+        </member>
         <member name="T:Libplanet.Net.ActionExecutionState">
             <summary>
             Indicates a progress of executing block actions.
@@ -6294,13 +6475,16 @@
             Kademlia distributed hash table.
             </summary>
         </member>
-        <member name="M:Libplanet.Net.Protocols.RoutingTable.#ctor(Libplanet.Address,System.Int32,System.Int32)">
+        <member name="M:Libplanet.Net.Protocols.RoutingTable.#ctor(Libplanet.Address,System.Int32,System.Int32,System.Collections.Immutable.IImmutableSet{Libplanet.Net.BoundPeer})">
             <summary>
             Creates a Kademlia distributed hash table instance.
             </summary>
             <param name="address"><see cref="T:Libplanet.Address"/> of this peer.</param>
             <param name="tableSize">The number of buckets in the table.</param>
             <param name="bucketSize">The size of a single bucket.</param>
+            <param name="staticPeers">
+            The list of <see cref="T:Libplanet.Net.Peer"/>s to keep in routing table permanently.
+            The <see cref="T:Libplanet.Net.Peer"/>s in the list won't be removed in any cases.</param>
             <exception cref="T:System.ArgumentOutOfRangeException">
             Thrown when <paramref name="tableSize"/> or <paramref name="bucketSize"/> is
             less then or equal to 0.</exception>
@@ -6320,14 +6504,25 @@
             The number of peers in the table.
             </summary>
         </member>
+        <member name="P:Libplanet.Net.Protocols.RoutingTable.StaticPeers">
+            <summary>
+            An <see cref="T:System.Collections.Generic.IReadOnlyList`1"/> of static peers in the table.
+            </summary>
+        </member>
         <member name="P:Libplanet.Net.Protocols.RoutingTable.Peers">
             <summary>
-            An <see cref="T:System.Collections.Generic.IEnumerable`1"/> of peers in the table.
+            An <see cref="T:System.Collections.Generic.IReadOnlyList`1"/> of peers in the table.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.Protocols.RoutingTable.StaticPeerStates">
+            <summary>
+            An <see cref="T:System.Collections.Generic.IReadOnlyList`1"/> of <see cref="T:Libplanet.Net.PeerState"/> of
+            static peers in the table.
             </summary>
         </member>
         <member name="P:Libplanet.Net.Protocols.RoutingTable.PeerStates">
             <summary>
-            An <see cref="T:System.Collections.Generic.IEnumerable`1"/> of <see cref="T:Libplanet.Net.PeerState"/> of peers in the table.
+            An <see cref="T:System.Collections.Generic.IReadOnlyList`1"/> of <see cref="T:Libplanet.Net.PeerState"/> of peers in the table.
             </summary>
         </member>
         <member name="M:Libplanet.Net.Protocols.RoutingTable.AddPeer(Libplanet.Net.BoundPeer)">
@@ -6359,7 +6554,7 @@
         </member>
         <member name="M:Libplanet.Net.Protocols.RoutingTable.Clear">
             <summary>
-            Removes all peers in the table.
+            Removes all peers in the table. This method does not affect static peers.
             </summary>
         </member>
         <member name="M:Libplanet.Net.Protocols.RoutingTable.Neighbors(Libplanet.Net.Peer,System.Int32,System.Boolean)">
@@ -6671,6 +6866,12 @@
             <seealso cref="M:Libplanet.Net.Protocols.IProtocol.RefreshTableAsync(System.TimeSpan,System.Threading.CancellationToken)" />
             </summary>
         </member>
+        <member name="P:Libplanet.Net.SwarmOptions.StaticPeers">
+            <summary>
+            The list of <see cref="T:Libplanet.Net.Peer"/>s to keep in routing table permanently.
+            The <see cref="T:Libplanet.Net.Peer"/>s in the list won't be removed in any cases.
+            </summary>
+        </member>
         <member name="T:Libplanet.Net.Transports.BoundPeerExtensions">
             <summary>
             This extension class activates transport-oriented methods on <see cref="T:Libplanet.Net.BoundPeer"/>.
@@ -6942,6 +7143,11 @@
             <returns>A hexadecimal representation of a <see cref="T:Libplanet.Nonce"/>.
             </returns>
         </member>
+        <member name="T:Libplanet.Store.BaseStore">
+            <summary>
+            Common code for several <see cref="T:Libplanet.Store.IStore"/> implementations.
+            </summary>
+        </member>
         <member name="M:Libplanet.Store.BaseStore.ListChainIds">
             <inheritdoc />
         </member>
@@ -6989,6 +7195,15 @@
         </member>
         <member name="M:Libplanet.Store.BaseStore.ContainsBlock(Libplanet.Blocks.BlockHash)">
             <inheritdoc cref="M:Libplanet.Store.IStore.ContainsBlock(Libplanet.Blocks.BlockHash)"/>
+        </member>
+        <member name="M:Libplanet.Store.BaseStore.PutTxExecution(Libplanet.Tx.TxSuccess)">
+            <inheritdoc cref="M:Libplanet.Store.IStore.PutTxExecution(Libplanet.Tx.TxSuccess)"/>
+        </member>
+        <member name="M:Libplanet.Store.BaseStore.PutTxExecution(Libplanet.Tx.TxFailure)">
+            <inheritdoc cref="M:Libplanet.Store.IStore.PutTxExecution(Libplanet.Tx.TxFailure)"/>
+        </member>
+        <member name="M:Libplanet.Store.BaseStore.GetTxExecution(Libplanet.Blocks.BlockHash,Libplanet.Tx.TxId)">
+            <inheritdoc cref="M:Libplanet.Store.IStore.GetTxExecution(Libplanet.Blocks.BlockHash,Libplanet.Tx.TxId)"/>
         </member>
         <member name="M:Libplanet.Store.BaseStore.SetBlockPerceivedTime(Libplanet.Blocks.BlockHash,System.DateTimeOffset)">
             <inheritdoc cref="M:Libplanet.Store.IStore.SetBlockPerceivedTime(Libplanet.Blocks.BlockHash,System.DateTimeOffset)"/>
@@ -7043,20 +7258,18 @@
             </summary>
             <seealso cref="T:Libplanet.Store.IStore"/>
         </member>
-        <member name="M:Libplanet.Store.DefaultStore.#ctor(System.String,System.Boolean,System.Boolean,System.Int32,System.Int32,System.Int32,System.Int32,System.Boolean,System.Boolean)">
+        <member name="M:Libplanet.Store.DefaultStore.#ctor(System.String,System.Boolean,System.Int32,System.Int32,System.Int32,System.Boolean,System.Boolean)">
             <summary>
             Creates a new <seealso cref="T:Libplanet.Store.DefaultStore"/>.
             </summary>
             <param name="path">The path of the directory where the storage files will be saved.
             If the path is <c>null</c>, the database is created in memory.</param>
-            <param name="compress">Whether to compress data.  Does not compress by default.</param>
             <param name="journal">
             Enables or disables double write check to ensure durability.
             </param>
             <param name="indexCacheSize">Max number of pages in the index cache.</param>
             <param name="blockCacheSize">The capacity of the block cache.</param>
             <param name="txCacheSize">The capacity of the transaction cache.</param>
-            <param name="statesCacheSize">The capacity of the states cache.</param>
             <param name="flush">Writes data direct to disk avoiding OS cache.  Turned on by default.
             </param>
             <param name="readOnly">Opens database readonly mode. Turned off by default.</param>
@@ -7127,6 +7340,15 @@
         <member name="M:Libplanet.Store.DefaultStore.ContainsBlock(Libplanet.Blocks.BlockHash)">
             <inheritdoc cref="M:Libplanet.Store.BaseStore.ContainsBlock(Libplanet.Blocks.BlockHash)"/>
         </member>
+        <member name="M:Libplanet.Store.DefaultStore.PutTxExecution(Libplanet.Tx.TxSuccess)">
+            <inheritdoc cref="M:Libplanet.Store.BaseStore.PutTxExecution(Libplanet.Tx.TxSuccess)"/>
+        </member>
+        <member name="M:Libplanet.Store.DefaultStore.PutTxExecution(Libplanet.Tx.TxFailure)">
+            <inheritdoc cref="M:Libplanet.Store.BaseStore.PutTxExecution(Libplanet.Tx.TxFailure)"/>
+        </member>
+        <member name="M:Libplanet.Store.DefaultStore.GetTxExecution(Libplanet.Blocks.BlockHash,Libplanet.Tx.TxId)">
+            <inheritdoc cref="M:Libplanet.Store.BaseStore.GetTxExecution(Libplanet.Blocks.BlockHash,Libplanet.Tx.TxId)"/>
+        </member>
         <member name="M:Libplanet.Store.DefaultStore.SetBlockPerceivedTime(Libplanet.Blocks.BlockHash,System.DateTimeOffset)">
             <inheritdoc cref="M:Libplanet.Store.BaseStore.SetBlockPerceivedTime(Libplanet.Blocks.BlockHash,System.DateTimeOffset)"/>
         </member>
@@ -7159,7 +7381,7 @@
         <member name="M:Libplanet.Store.IStateStore.SetStates``1(Libplanet.Blocks.Block{``0},System.Collections.Immutable.IImmutableDictionary{System.String,Bencodex.Types.IValue})">
             <summary>
             Sets states mapped as relation <see cref="P:Libplanet.Blocks.Block`1.Hash"/> → states.
-            It guarantees <see cref="M:Libplanet.Store.IStateStore.GetState(System.String,System.Nullable{Libplanet.Blocks.BlockHash},System.Nullable{System.Guid})"/> will return the same state if you passed same
+            It guarantees <see cref="M:Libplanet.Store.IStateStore.GetState(System.String,System.Nullable{Libplanet.Blocks.BlockHash})"/> will return the same state if you passed same
             <paramref name="block"/> unless it has overwritten.
             </summary>
             <param name="block">The <see cref="T:Libplanet.Blocks.Block`1"/> to set states.</param>
@@ -7167,7 +7389,7 @@
             <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> type. It should match to
             <paramref name="block"/>'s type parameter.</typeparam>
         </member>
-        <member name="M:Libplanet.Store.IStateStore.GetState(System.String,System.Nullable{Libplanet.Blocks.BlockHash},System.Nullable{System.Guid})">
+        <member name="M:Libplanet.Store.IStateStore.GetState(System.String,System.Nullable{Libplanet.Blocks.BlockHash})">
             <summary>
             Gets state queried by <paramref name="stateKey"/> in the point,
             <paramref name="blockHash"/>.
@@ -7175,7 +7397,6 @@
             <param name="stateKey">The key to query state.</param>
             <param name="blockHash">The <see cref="P:Libplanet.Blocks.Block`1.Hash"/> which the point to query by
             <paramref name="stateKey"/> at.</param>
-            <param name="chainId">The <see cref="P:Libplanet.Blockchain.BlockChain`1.Id"/> of wanted got.</param>
             <returns>The state queried from <paramref name="blockHash"/> and
             <paramref name="stateKey"/>. If it couldn't find state, returns <c>null</c>.</returns>
         </member>
@@ -7371,6 +7592,45 @@
             the specified <paramref name="blockHash"/>; otherwise, <c>false</c>.
             </returns>
         </member>
+        <member name="M:Libplanet.Store.IStore.PutTxExecution(Libplanet.Tx.TxSuccess)">
+            <summary>
+            Records the given <paramref name="txSuccess"/>.
+            </summary>
+            <remarks>If there is already the record for the same <see cref="P:Libplanet.Tx.TxExecution.BlockHash"/>
+            and <see cref="P:Libplanet.Tx.TxExecution.TxId"/>, the record is silently overwritten.</remarks>
+            <param name="txSuccess">The successful transaction execution summary to record.
+            Must not be <c>null</c>.</param>
+            <exception cref="T:System.ArgumentNullException">Thrown when <paramref name="txSuccess"/> is
+            <c>null</c>.</exception>
+            <seealso cref="M:Libplanet.Store.IStore.PutTxExecution(Libplanet.Tx.TxFailure)"/>
+            <seealso cref="M:Libplanet.Store.IStore.GetTxExecution(Libplanet.Blocks.BlockHash,Libplanet.Tx.TxId)"/>
+        </member>
+        <member name="M:Libplanet.Store.IStore.PutTxExecution(Libplanet.Tx.TxFailure)">
+            <summary>
+            Records the given <paramref name="txFailure"/>.
+            </summary>
+            <remarks>If there is already the record for the same <see cref="P:Libplanet.Tx.TxExecution.BlockHash"/>
+            and <see cref="P:Libplanet.Tx.TxExecution.TxId"/>, the record is silently overwritten.</remarks>
+            <param name="txFailure">The failed transaction execution summary to record.
+            Must not be <c>null</c>.</param>
+            <exception cref="T:System.ArgumentNullException">Thrown when <paramref name="txFailure"/> is
+            <c>null</c>.</exception>
+            <seealso cref="M:Libplanet.Store.IStore.PutTxExecution(Libplanet.Tx.TxSuccess)"/>
+            <seealso cref="M:Libplanet.Store.IStore.GetTxExecution(Libplanet.Blocks.BlockHash,Libplanet.Tx.TxId)"/>
+        </member>
+        <member name="M:Libplanet.Store.IStore.GetTxExecution(Libplanet.Blocks.BlockHash,Libplanet.Tx.TxId)">
+            <summary>
+            Retrieves the recorded transaction execution summary.
+            </summary>
+            <param name="blockHash">The <see cref="P:Libplanet.Blocks.Block`1.Hash"/> of the recorded transaction
+            execution to retrieve.</param>
+            <param name="txid">The <see cref="P:Libplanet.Tx.Transaction`1.Id"/> of the recorded transaction
+            execution to retrieve.</param>
+            <returns>The recorded transaction execution summary.  If it has been never recorded
+            <c>null</c> is returned instead.</returns>
+            <seealso cref="M:Libplanet.Store.IStore.PutTxExecution(Libplanet.Tx.TxFailure)"/>
+            <seealso cref="M:Libplanet.Store.IStore.PutTxExecution(Libplanet.Tx.TxSuccess)"/>
+        </member>
         <member name="M:Libplanet.Store.IStore.SetBlockPerceivedTime(Libplanet.Blocks.BlockHash,System.DateTimeOffset)">
             <summary>
             Records the perceived time of a block.  If there is already a record, it is overwritten.
@@ -7493,7 +7753,7 @@
         <member name="M:Libplanet.Store.TrieStateStore.SetStates``1(Libplanet.Blocks.Block{``0},System.Collections.Immutable.IImmutableDictionary{System.String,Bencodex.Types.IValue})">
             <inheritdoc/>
         </member>
-        <member name="M:Libplanet.Store.TrieStateStore.GetState(System.String,System.Nullable{Libplanet.Blocks.BlockHash},System.Nullable{System.Guid})">
+        <member name="M:Libplanet.Store.TrieStateStore.GetState(System.String,System.Nullable{Libplanet.Blocks.BlockHash})">
             <inheritdoc/>
         </member>
         <member name="M:Libplanet.Store.TrieStateStore.ContainsBlockStates(Libplanet.Blocks.BlockHash)">
@@ -8181,9 +8441,11 @@
             </param>
             <returns>Enumerates <see cref="T:Libplanet.Action.ActionEvaluation"/>s for each one in
             <see cref="P:Libplanet.Tx.Transaction`1.Actions"/>.
-            The order is the same to the <see cref="P:Libplanet.Tx.Transaction`1.Actions"/>.
-            Note that each <see cref="P:Libplanet.Action.IActionContext.Random"/> object has
-            a unconsumed state.
+            <para>The order is the same to the <see cref="P:Libplanet.Tx.Transaction`1.Actions"/>.</para>
+            <para>Each <see cref="T:Libplanet.Action.ActionEvaluation"/> includes its previous
+            <see cref="T:Libplanet.Action.ActionEvaluation"/>s' delta besides its own delta.</para>
+            <para>Note that each <see cref="P:Libplanet.Action.IActionContext.Random"/> object has a unconsumed state.
+            </para>
             </returns>
         </member>
         <member name="M:Libplanet.Tx.Transaction`1.EvaluateActions(Libplanet.Blocks.BlockHash,System.Int64,Libplanet.Action.IAccountStateDelta,Libplanet.Address,System.Boolean)">
@@ -8232,6 +8494,72 @@
         </member>
         <member name="M:Libplanet.Tx.Transaction`1.GetHashCode">
             <inheritdoc />
+        </member>
+        <member name="T:Libplanet.Tx.TxExecution">
+            <summary>
+            Summarizes an execution result of a <see cref="T:Libplanet.Tx.Transaction`1"/>.
+            <para>Note that <see cref="T:Libplanet.Tx.Transaction`1"/>s cannot be executed without belonging to
+            a <see cref="T:Libplanet.Blocks.Block`1"/>, and even if it's the same <see cref="T:Libplanet.Tx.Transaction`1"/> its
+            result can vary depending on <see cref="T:Libplanet.Blocks.Block`1"/> that it is executed within.</para>
+            </summary>
+            <seealso cref="T:Libplanet.Tx.TxSuccess"/>
+            <seealso cref="T:Libplanet.Tx.TxFailure"/>
+        </member>
+        <member name="P:Libplanet.Tx.TxExecution.BlockHash">
+            <summary>
+            The <see cref="P:Libplanet.Blocks.Block`1.Hash"/> of the <see cref="T:Libplanet.Blocks.Block`1"/> that
+            the <see cref="T:Libplanet.Tx.Transaction`1"/> is executed within.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Tx.TxExecution.TxId">
+            <summary>
+            The executed <see cref="T:Libplanet.Tx.Transaction`1"/>'s <see cref="P:Libplanet.Tx.Transaction`1.Id"/>.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Tx.TxExecution.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <inheritdoc cref="M:System.Runtime.Serialization.ISerializable.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)"/>
+        </member>
+        <member name="T:Libplanet.Tx.TxFailure">
+            <summary>
+            Summarizes an execution result of a <see cref="T:Libplanet.Tx.Transaction`1"/> with any exception-throwing
+            actions.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Tx.TxFailure.#ctor(Libplanet.Blocks.BlockHash,Libplanet.Tx.TxId,System.String,Bencodex.Types.IValue)">
+            <summary>
+            Creates a <see cref="T:Libplanet.Tx.TxFailure"/> instance.
+            </summary>
+            <param name="blockHash">The <see cref="P:Libplanet.Blocks.Block`1.Hash"/> of the <see cref="T:Libplanet.Blocks.Block`1"/>
+            that the <see cref="T:Libplanet.Tx.Transaction`1"/> is executed within.</param>
+            <param name="txId">The executed <see cref="T:Libplanet.Tx.Transaction`1"/>'s <see
+            cref="P:Libplanet.Tx.Transaction`1.Id"/>.</param>
+            <param name="exceptionName">The name of the exception type,
+            e.g., <c>System.ArgumentException</c>.</param>
+            <param name="exceptionMetadata">Optional metadata about the exception.</param>
+        </member>
+        <member name="M:Libplanet.Tx.TxFailure.#ctor(Libplanet.Blocks.BlockHash,Libplanet.Tx.TxId,System.Exception)">
+            <summary>
+            Creates a <see cref="T:Libplanet.Tx.TxFailure"/> instance.
+            </summary>
+            <param name="blockHash">The <see cref="P:Libplanet.Blocks.Block`1.Hash"/> of the <see cref="T:Libplanet.Blocks.Block`1"/>
+            that the <see cref="T:Libplanet.Tx.Transaction`1"/> is executed within.</param>
+            <param name="txId">The executed <see cref="T:Libplanet.Tx.Transaction`1"/>'s <see
+            cref="P:Libplanet.Tx.Transaction`1.Id"/>.</param>
+            <param name="exception">The uncaught exception thrown by an action in the transaction.
+            </param>
+        </member>
+        <member name="P:Libplanet.Tx.TxFailure.ExceptionName">
+            <summary>
+            The name of the exception type, e.g., <c>System.ArgumentException</c>.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Tx.TxFailure.ExceptionMetadata">
+            <summary>
+            Optional metadata about the exception.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Tx.TxFailure.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <inheritdoc cref="M:System.Runtime.Serialization.ISerializable.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)"/>
         </member>
         <member name="T:Libplanet.Tx.TxId">
             <summary>
@@ -8302,6 +8630,60 @@
         </member>
         <member name="M:Libplanet.Tx.TxId.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
             <inheritdoc />
+        </member>
+        <member name="T:Libplanet.Tx.TxSuccess">
+            <summary>
+            Summarizes an execution result of a successful <see cref="T:Libplanet.Tx.Transaction`1"/>.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Tx.TxSuccess.#ctor(Libplanet.Blocks.BlockHash,Libplanet.Tx.TxId,System.Collections.Immutable.IImmutableDictionary{Libplanet.Address,Bencodex.Types.IValue},System.Collections.Immutable.IImmutableDictionary{Libplanet.Address,System.Collections.Immutable.IImmutableDictionary{Libplanet.Assets.Currency,Libplanet.Assets.FungibleAssetValue}},System.Collections.Immutable.IImmutableDictionary{Libplanet.Address,System.Collections.Immutable.IImmutableDictionary{Libplanet.Assets.Currency,Libplanet.Assets.FungibleAssetValue}})">
+            <summary>
+            Creates a <see cref="T:Libplanet.Tx.TxSuccess"/> instance.
+            </summary>
+            <param name="blockHash">The <see cref="P:Libplanet.Blocks.Block`1.Hash"/> of the <see cref="T:Libplanet.Blocks.Block`1"/>
+            that the <see cref="T:Libplanet.Tx.Transaction`1"/> is executed within.</param>
+            <param name="txId">The executed <see cref="T:Libplanet.Tx.Transaction`1"/>'s <see
+            cref="P:Libplanet.Tx.Transaction`1.Id"/>.</param>
+            <param name="updatedStates">The states delta made by the actions in
+            the transaction within the block.</param>
+            <param name="fungibleAssetsDelta"><see cref="T:Libplanet.Address"/>es and sets of
+            <see cref="T:Libplanet.Assets.Currency"/> whose fungible assets have been updated by the actions in
+            the transaction within the block.  Included <see cref="T:Libplanet.Assets.FungibleAssetValue"/>s are
+            the delta values (plus or minus) that the transaction makes.</param>
+            <param name="updatedFungibleAssets"><see cref="T:Libplanet.Address"/>es and sets of
+            <see cref="T:Libplanet.Assets.Currency"/> whose fungible assets have been updated by the actions in
+            the transaction within the block.  Included <see cref="T:Libplanet.Assets.FungibleAssetValue"/>s are
+            the final balances right after the transaction is executed.</param>
+        </member>
+        <member name="P:Libplanet.Tx.TxSuccess.UpdatedStates">
+            <summary>
+            The states delta made by the actions in the transaction within the block.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Tx.TxSuccess.FungibleAssetsDelta">
+            <summary>
+            <see cref="T:Libplanet.Address"/>es and sets of
+            <see cref="T:Libplanet.Assets.Currency"/> whose fungible assets have been updated by the actions in
+            the transaction within the block.  Included <see cref="T:Libplanet.Assets.FungibleAssetValue"/>s are
+            the delta values (plus or minus) that the transaction makes.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Tx.TxSuccess.UpdatedFungibleAssets">
+            <summary>
+            <see cref="T:Libplanet.Address"/>es and sets of <see cref="T:Libplanet.Assets.Currency"/> whose fungible assets have
+            been updated by the actions in the transaction within the block.  Included
+            <see cref="T:Libplanet.Assets.FungibleAssetValue"/>s are the final balances right after the transaction is
+            executed.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Tx.TxSuccess.UpdatedAddresses">
+            <summary>
+            All <seealso cref="T:Libplanet.Address"/>es of the accounts that have been updated by the actions
+            in the transaction within the block.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Tx.TxSuccess.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <inheritdoc cref="M:System.Runtime.Serialization.ISerializable.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)"/>
         </member>
         <member name="T:Libplanet.Tx.TxViolatingBlockPolicyException">
             <summary>

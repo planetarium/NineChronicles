@@ -3,13 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Amazon;
 using Amazon.CloudWatchLogs;
 using Amazon.CloudWatchLogs.Model;
-using Amazon.CognitoIdentity;
 using Bencodex.Types;
+#if !UNITY_EDITOR
 using Libplanet;
 using Libplanet.Crypto;
+#endif
 using mixpanel;
 using Nekoyume.Action;
 using Nekoyume.BlockChain;
@@ -21,11 +21,12 @@ using Nekoyume.Model.State;
 using Nekoyume.Pattern;
 using Nekoyume.State;
 using Nekoyume.UI;
+using Nekoyume.UI.Module;
 using UniRx;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using Menu = Nekoyume.UI.Menu;
+
 
 namespace Nekoyume.Game
 {
@@ -135,6 +136,7 @@ namespace Nekoyume.Game
             MainCanvas.instance.InitializeFirst();
             yield return Addressables.InitializeAsync();
             yield return StartCoroutine(CoInitializeTableSheets());
+            yield return StartCoroutine(ResourcesHelper.CoInitialize());
             AudioController.instance.Initialize();
             yield return null;
             // Agent 초기화.
@@ -152,6 +154,7 @@ namespace Nekoyume.Game
                     }
                 )
             );
+
             yield return new WaitUntil(() => agentInitialized);
             ShopProducts = new ShopProducts();
             // NOTE: Create ActionManager after Agent initialized.
@@ -166,7 +169,6 @@ namespace Nekoyume.Game
                 .Select(_ => Input.mousePosition)
                 .Subscribe(PlayMouseOnClickVFX)
                 .AddTo(gameObject);
-
 
             Widget.Find<VersionInfo>().SetVersion(Agent.AppProtocolVersion);
 
@@ -494,6 +496,8 @@ namespace Nekoyume.Game
                 loginPopup.GetPrivateKey(),
                 callback
             );
+
+            RankPanel.UpdateSharedModel();
         }
 
         public void ResetStore()

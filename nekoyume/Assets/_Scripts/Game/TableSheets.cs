@@ -124,6 +124,10 @@ namespace Nekoyume.Game
 
         public MimisbrunnrSheet MimisbrunnrSheet { get; private set; }
 
+        public MonsterCollectionSheet MonsterCollectionSheet { get; private set; }
+
+        public MonsterCollectionRewardSheet MonsterCollectionRewardSheet { get; private set; }
+
         public void ItemSheetInitialize()
         {
             ItemSheet = new ItemSheet();

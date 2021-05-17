@@ -13,46 +13,46 @@ namespace Nekoyume.State.Modifiers
     public class AvatarInventoryFungibleItemRemover : AvatarStateModifier
     {
         [Serializable]
-        public class InnerHashDigest : JsonConvertibleHashDigest<SHA256>
+        public class JsonConvertibleFungibleId : JsonConvertibleHashDigest<SHA256>
         {
-            public InnerHashDigest(HashDigest<SHA256> hashDigest) : base(hashDigest)
+            public JsonConvertibleFungibleId(HashDigest<SHA256> fungibleId) : base(fungibleId)
             {
             }
         }
 
         [Serializable]
-        public class InnerDictionary : JsonConvertibleDictionary<InnerHashDigest, int>
+        public class InnerDictionary : JsonConvertibleDictionary<JsonConvertibleFungibleId, int>
         {
         }
 
         [SerializeField]
-        private InnerDictionary idAndCountDictionary;
+        private InnerDictionary innerDictionary;
 
-        public override bool IsEmpty => idAndCountDictionary.Value.Count == 0;
+        public override bool IsEmpty => innerDictionary.Value.Count == 0;
 
-        public AvatarInventoryFungibleItemRemover(HashDigest<SHA256> id, int count)
+        public AvatarInventoryFungibleItemRemover(HashDigest<SHA256> fungibleId, int count)
         {
             if (count is 0)
             {
-                idAndCountDictionary = new InnerDictionary();
+                innerDictionary = new InnerDictionary();
                 return;
             }
 
-            idAndCountDictionary = new InnerDictionary();
-            idAndCountDictionary.Value.Add(new InnerHashDigest(id), count);
+            innerDictionary = new InnerDictionary();
+            innerDictionary.Value.Add(new JsonConvertibleFungibleId(fungibleId), count);
         }
 
-        public AvatarInventoryFungibleItemRemover(Dictionary<HashDigest<SHA256>, int> idAndCountDictionary)
+        public AvatarInventoryFungibleItemRemover(Dictionary<HashDigest<SHA256>, int> dictionary)
         {
-            this.idAndCountDictionary = new InnerDictionary();
-            foreach (var pair in idAndCountDictionary)
+            innerDictionary = new InnerDictionary();
+            foreach (var pair in dictionary)
             {
                 if (pair.Value is 0)
                 {
                     continue;
                 }
 
-                this.idAndCountDictionary.Value.Add(new InnerHashDigest(pair.Key), pair.Value);
+                innerDictionary.Value.Add(new JsonConvertibleFungibleId(pair.Key), pair.Value);
             }
         }
 
@@ -63,16 +63,16 @@ namespace Nekoyume.State.Modifiers
                 return;
             }
 
-            foreach (var pair in m.idAndCountDictionary.Value)
+            foreach (var pair in m.innerDictionary.Value)
             {
                 var key = pair.Key;
-                if (idAndCountDictionary.Value.ContainsKey(key))
+                if (innerDictionary.Value.ContainsKey(key))
                 {
-                    idAndCountDictionary.Value[key] += pair.Value;
+                    innerDictionary.Value[key] += pair.Value;
                 }
                 else
                 {
-                    idAndCountDictionary.Value.Add(key, pair.Value);
+                    innerDictionary.Value.Add(key, pair.Value);
                 }
             }
         }
@@ -84,18 +84,18 @@ namespace Nekoyume.State.Modifiers
                 return;
             }
 
-            foreach (var pair in m.idAndCountDictionary.Value)
+            foreach (var pair in m.innerDictionary.Value)
             {
                 var key = pair.Key;
-                if (!idAndCountDictionary.Value.ContainsKey(key))
+                if (!innerDictionary.Value.ContainsKey(key))
                 {
                     continue;
                 }
 
-                idAndCountDictionary.Value[key] -= pair.Value;
-                if (idAndCountDictionary.Value[key] <= 0)
+                innerDictionary.Value[key] -= pair.Value;
+                if (innerDictionary.Value[key] <= 0)
                 {
-                    idAndCountDictionary.Value.Remove(key);
+                    innerDictionary.Value.Remove(key);
                 }
             }
         }
@@ -107,9 +107,9 @@ namespace Nekoyume.State.Modifiers
                 return null;
             }
 
-            foreach (var pair in idAndCountDictionary.Value)
+            foreach (var pair in innerDictionary.Value)
             {
-                state.inventory.RemoveMaterial(pair.Key.Value, pair.Value);
+                state.inventory.RemoveFungibleItem(pair.Key.Value, pair.Value);
             }
 
             return state;

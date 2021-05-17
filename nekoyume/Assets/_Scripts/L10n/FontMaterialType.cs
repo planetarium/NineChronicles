@@ -8,7 +8,9 @@ namespace Nekoyume.L10n
         CP,
         Main,
         Mining,
-        QuestRewardText,
+        QuestRewardText5,
+        QuestRewardText4,
+        QuestRewardText3,
         Ranking,
         RankingBoardInfo,
         Rating,
@@ -24,5 +26,7 @@ namespace Nekoyume.L10n
         RankLevel,
         Count,
         Tutorial,
+        RewardText,
+        Paper,
     }
 }

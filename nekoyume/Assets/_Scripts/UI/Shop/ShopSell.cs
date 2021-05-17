@@ -1,9 +1,12 @@
-﻿using Nekoyume.EnumType;
+﻿using System.Collections.Generic;
+using mixpanel;
+using Nekoyume.EnumType;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
+using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
@@ -19,6 +22,7 @@ namespace Nekoyume.UI
     public class ShopSell : Widget
     {
         private const int NPCId = 300000;
+        private const int ShopItemsPerPage = 20;
         private static readonly Vector2 NPCPosition = new Vector2(2.76f, -1.72f);
         private NPC _npc;
 
@@ -58,12 +62,15 @@ namespace Nekoyume.UI
         {
             base.Initialize();
 
+            // inventory
             inventory.SharedModel.SelectedItemView
                 .Subscribe(ShowTooltip)
                 .AddTo(gameObject);
             inventory.OnDoubleClickItemView
                 .Subscribe(view => ShowActionPopup(view.Model))
                 .AddTo(gameObject);
+
+            // shopItems
             shopItems.SharedModel.SelectedItemView
                 .Subscribe(ShowTooltip)
                 .AddTo(gameObject);
@@ -82,9 +89,10 @@ namespace Nekoyume.UI
                 .AddTo(gameObject);
         }
 
-        public override void Show(bool ignoreShowAnimation = false)
+        public void Show()
         {
-            base.Show(ignoreShowAnimation);
+            base.Show();
+            ReactiveShopState.Update(ShopItemsPerPage);
             shopItems.Show();
             inventory.SharedModel.State.Value = ItemType.Equipment;
             AudioController.instance.PlayMusic(AudioController.MusicCode.Shop);
@@ -151,14 +159,14 @@ namespace Nekoyume.UI
                 return;
             }
 
-            tooltip.Show(
+            tooltip.ShowForShop(
                 view.RectTransform,
                 view.Model,
                 ButtonEnabledFuncForSell,
                 L10nManager.Localize("UI_RETRIEVE"),
                 _ =>
                     ShowRetrievePopup(tooltip.itemInformation.Model.item.Value as ShopItem),
-                _ => shopItems.SharedModel.DeselectItemView());
+                _ => shopItems.SharedModel.DeselectItemView(), false);
         }
 
         private void ShowSellPopup(InventoryItem inventoryItem)
@@ -245,7 +253,7 @@ namespace Nekoyume.UI
             }
 
             if (!shopItems.SharedModel.TryGetShopItemFromAgentProducts(
-                nonFungibleItem.ItemId,
+                nonFungibleItem.NonFungibleId,
                 out var shopItem))
             {
                 if (data.Price.Value.Sign * data.Price.Value.MajorUnit < Model.Shop.MinimumPrice)
@@ -253,13 +261,15 @@ namespace Nekoyume.UI
                     throw new InvalidSellingPriceException(data);
                 }
 
-                var itemId = ((INonFungibleItem) data.Item.Value.ItemBase.Value).ItemId;
+                var tradableId = ((ITradableItem) data.Item.Value.ItemBase.Value).TradableId;
                 var itemSubType = data.Item.Value.ItemBase.Value.ItemSubType;
-                Game.Game.instance.ActionManager.Sell(itemId, data.Price.Value, itemSubType);
+                Game.Game.instance.ActionManager.Sell(tradableId, data.Price.Value, itemSubType);
+                Mixpanel.Track("Unity/Sell");
                 ResponseSell();
                 return;
             }
 
+            Mixpanel.Track("Unity/Sell Cancellation");
             Game.Game.instance.ActionManager.SellCancellation(
                 shopItem.SellerAvatarAddress.Value,
                 shopItem.ProductId.Value,
@@ -303,7 +313,7 @@ namespace Nekoyume.UI
                 return;
             }
 
-            LocalLayerModifier.RemoveItem(avatarAddress, nonFungibleItem.ItemId);
+            LocalLayerModifier.RemoveItem(avatarAddress, nonFungibleItem.NonFungibleId);
             AudioController.instance.PlaySfx(AudioController.SfxCode.InputItem);
             var format = L10nManager.Localize("NOTIFICATION_SELL_START");
             Notification.Push(MailType.Auction,
@@ -313,18 +323,7 @@ namespace Nekoyume.UI
         private void ResponseSellCancellation(ShopItem shopItem)
         {
             SharedModel.ItemCountAndPricePopup.Value.Item.Value = null;
-
             var productId = shopItem.ProductId.Value;
-
-            // try
-            // {
-            //     States.Instance.ShopState.Unregister(productId);
-            // }
-            // catch (FailedToUnregisterInShopStateException e)
-            // {
-            //     Debug.LogError(e.Message);
-            // }
-
             shopItems.SharedModel.RemoveAgentProduct(productId);
 
             AudioController.instance.PlaySfx(AudioController.SfxCode.InputItem);

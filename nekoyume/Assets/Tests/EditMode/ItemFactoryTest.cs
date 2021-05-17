@@ -45,21 +45,6 @@ namespace Tests.EditMode
         }
 
         [Test]
-        public void CreateChest()
-        {
-            var row = _tableSheets.MaterialItemSheet.Values.First(r => r.ItemSubType == ItemSubType.Chest);
-            var chest = ItemFactory.CreateChest(row, null);
-            Assert.IsNotNull(chest);
-            Assert.AreEqual(chest.Rewards, new List<RedeemRewardSheet.RewardInfo>());
-
-            var rewards = _tableSheets.RedeemRewardSheet.Values.First().Rewards;
-            var chest2 = ItemFactory.CreateChest(row, rewards);
-            Assert.IsNotNull(chest2);
-            Assert.AreEqual(chest2.Rewards, rewards);
-            Assert.AreNotEqual(chest, chest2);
-        }
-
-        [Test]
         public void SerializeMaterial()
         {
             var row = _tableSheets.MaterialItemSheet.Values.First();
@@ -182,42 +167,6 @@ namespace Tests.EditMode
             var deserialize = ItemFactory.Deserialize(legacy);
             Assert.AreEqual(equipment, deserialize);
             Assert.AreEqual(equipment, ItemFactory.Deserialize(serialized));
-        }
-
-        [Test]
-        public void SerializeChest()
-        {
-            var row = _tableSheets.MaterialItemSheet.Values.First(r => r.ItemSubType == ItemSubType.Chest);
-            var chest = ItemFactory.CreateChest(row, null);
-            Assert.IsNotNull(chest);
-            Assert.AreEqual(chest.Rewards, new List<RedeemRewardSheet.RewardInfo>());
-            var serialized = (Dictionary) chest.Serialize();
-            Assert.IsTrue(serialized.ContainsKey((IKey)(Text) "rewards"));
-            Assert.AreEqual(chest, ItemFactory.Deserialize(serialized));
-
-            var rewards = _tableSheets.RedeemRewardSheet.Values.First().Rewards;
-            var chest2 = ItemFactory.CreateChest(row, rewards);
-            Assert.IsNotNull(chest2);
-            Assert.AreEqual(chest2.Rewards, rewards);
-            var serialized2 = (Dictionary) chest2.Serialize();
-            Assert.IsTrue(serialized2.ContainsKey((IKey)(Text) "rewards"));
-            Assert.AreEqual(chest2, ItemFactory.Deserialize(serialized2));
-            Assert.AreNotEqual(serialized, serialized2);
-            Assert.AreNotEqual(chest, chest2);
-            Assert.AreNotEqual(chest.ItemId, chest2.ItemId);
-        }
-
-        [Test]
-        public void SerializeChestDoesNotThrowArgumentNullException()
-        {
-            var row = _tableSheets.MaterialItemSheet.Values.First(r => r.ItemSubType == ItemSubType.Chest);
-            var chestMaterial = ItemFactory.CreateMaterial(row);
-            var chest = ItemFactory.CreateChest(row, null);
-            Assert.IsNotNull(chestMaterial);
-            Assert.DoesNotThrow(() => chestMaterial.Serialize());
-            var serialized = (Dictionary) chestMaterial.Serialize();
-            Assert.IsTrue(serialized.ContainsKey((IKey)(Text) "rewards"));
-            Assert.AreEqual(chest, ItemFactory.Deserialize(serialized));
         }
     }
 }

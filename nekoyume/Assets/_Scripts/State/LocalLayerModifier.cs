@@ -103,9 +103,18 @@ namespace Nekoyume.State
 
         #region Avatar / AddItem
 
-        public static void AddItem(Address avatarAddress, Guid guid, bool resetState = true)
+        public static void AddItem(
+            Address avatarAddress,
+            Guid tradableId,
+            int count = 1,
+            bool resetState = default)
         {
-            var modifier = new AvatarInventoryNonFungibleItemRemover(guid);
+            if (count is 0)
+            {
+                return;
+            }
+            
+            var modifier = new AvatarInventoryTradableItemRemover(tradableId, count);
             LocalLayer.Instance.Remove(avatarAddress, modifier);
 
             if (!resetState)
@@ -118,32 +127,16 @@ namespace Nekoyume.State
 
         public static void AddItem(
             Address avatarAddress,
-            HashDigest<SHA256> id,
-            int count,
-            bool resetState = true)
+            HashDigest<SHA256> fungibleId,
+            int count = 1,
+            bool resetState = default)
         {
             if (count is 0)
             {
                 return;
             }
 
-            var modifier = new AvatarInventoryFungibleItemRemover(id, count);
-            LocalLayer.Instance.Remove(avatarAddress, modifier);
-
-            if (!resetState)
-            {
-                return;
-            }
-
-            TryResetLoadedAvatarState(avatarAddress, out _, out _);
-        }
-
-        public static void AddItem(
-            Address avatarAddress,
-            Dictionary<HashDigest<SHA256>, int> idAndCountDictionary,
-            bool resetState = true)
-        {
-            var modifier = new AvatarInventoryFungibleItemRemover(idAndCountDictionary);
+            var modifier = new AvatarInventoryFungibleItemRemover(fungibleId, count);
             LocalLayer.Instance.Remove(avatarAddress, modifier);
 
             if (!resetState)
@@ -158,30 +151,21 @@ namespace Nekoyume.State
 
         #region Avatar / RemoveItem
 
-        public static void RemoveItem(Address avatarAddress, Guid guid)
+        public static void RemoveItem(Address avatarAddress, Guid tradableId, int count = 1)
         {
-            var modifier = new AvatarInventoryNonFungibleItemRemover(guid);
+            var modifier = new AvatarInventoryTradableItemRemover(tradableId, count);
             LocalLayer.Instance.Add(avatarAddress, modifier);
             RemoveItemInternal(avatarAddress, modifier);
         }
 
-        public static void RemoveItem(Address avatarAddress, HashDigest<SHA256> id, int count)
+        public static void RemoveItem(Address avatarAddress, HashDigest<SHA256> fungibleId, int count = 1)
         {
             if (count is 0)
             {
                 return;
             }
 
-            var modifier = new AvatarInventoryFungibleItemRemover(id, count);
-            LocalLayer.Instance.Add(avatarAddress, modifier);
-            RemoveItemInternal(avatarAddress, modifier);
-        }
-
-        public static void RemoveItem(
-            Address avatarAddress,
-            Dictionary<HashDigest<SHA256>, int> idAndCountDictionary)
-        {
-            var modifier = new AvatarInventoryFungibleItemRemover(idAndCountDictionary);
+            var modifier = new AvatarInventoryFungibleItemRemover(fungibleId, count);
             LocalLayer.Instance.Add(avatarAddress, modifier);
             RemoveItemInternal(avatarAddress, modifier);
         }
@@ -280,7 +264,7 @@ namespace Nekoyume.State
         public static void RemoveNewAttachmentMail(
             Address avatarAddress,
             Guid mailId,
-            bool resetState = true)
+            bool resetState = default)
         {
             var modifier = new AvatarAttachmentMailNewSetter(mailId);
             LocalLayer.Instance.Remove(avatarAddress, modifier);
@@ -290,16 +274,13 @@ namespace Nekoyume.State
                 return;
             }
 
-            TryResetLoadedAvatarState(
-                avatarAddress,
-                out var outAvatarState,
-                out var isCurrentAvatarState);
+            TryResetLoadedAvatarState(avatarAddress, out _, out _);
         }
 
         public static void RemoveAttachmentResult(
             Address avatarAddress,
             Guid mailId,
-            bool resetState = true)
+            bool resetState = default)
         {
             var resultModifier = new AvatarAttachmentMailResultSetter(mailId);
             LocalLayer.Instance.Remove(avatarAddress, resultModifier);
@@ -309,10 +290,7 @@ namespace Nekoyume.State
                 return;
             }
 
-            TryResetLoadedAvatarState(
-                avatarAddress,
-                out var outAvatarState,
-                out var isCurrentAvatarState);
+            TryResetLoadedAvatarState(avatarAddress, out _, out _);
         }
 
         #endregion
@@ -358,7 +336,7 @@ namespace Nekoyume.State
         public static void RemoveReceivableQuest(
             Address avatarAddress,
             int id,
-            bool resetState = true)
+            bool resetState = default)
         {
             var modifier = new AvatarQuestIsReceivableSetter(id);
             LocalLayer.Instance.Remove(avatarAddress, modifier);
@@ -379,16 +357,16 @@ namespace Nekoyume.State
         /// Change the equipment's mounting status.
         /// </summary>
         /// <param name="avatarAddress"></param>
-        /// <param name="itemId"></param>
+        /// <param name="nonFungibleId"></param>
         /// <param name="equip"></param>
         /// <param name="resetState"></param>
         public static void SetItemEquip(
             Address avatarAddress,
-            Guid itemId,
+            Guid nonFungibleId,
             bool equip,
-            bool resetState = true)
+            bool resetState = default)
         {
-            var modifier = new AvatarInventoryItemEquippedModifier(itemId, equip);
+            var modifier = new AvatarInventoryItemEquippedModifier(nonFungibleId, equip);
             LocalLayer.Instance.Add(avatarAddress, modifier);
 
             if (!TryGetLoadedAvatarState(
@@ -444,11 +422,11 @@ namespace Nekoyume.State
 
         public static void ModifyAvatarItemRequiredIndex(
             Address avatarAddress,
-            Guid itemId,
+            Guid tradableId,
             long blockIndex
         )
         {
-            var modifier = new AvatarItemRequiredIndexModifier(blockIndex, itemId);
+            var modifier = new AvatarItemRequiredIndexModifier(blockIndex, tradableId);
             LocalLayer.Instance.Add(avatarAddress, modifier);
 
             if (!TryGetLoadedAvatarState(
@@ -472,76 +450,10 @@ namespace Nekoyume.State
                 outAvatarState.dailyRewardReceivedIndex);
         }
 
-        public static void RemoveAvatarItemRequiredIndex(Address avatarAddress, Guid itemId)
+        public static void RemoveAvatarItemRequiredIndex(Address avatarAddress, Guid tradableId)
         {
-            var modifier = new AvatarItemRequiredIndexModifier(itemId);
+            var modifier = new AvatarItemRequiredIndexModifier(tradableId);
             LocalLayer.Instance.Remove(avatarAddress, modifier);
-        }
-
-        public static void AddMaterial(Address avatarAddress, HashDigest<SHA256> itemId, int count, bool resetState)
-        {
-            if (count is 0)
-            {
-                return;
-            }
-
-            var modifier = new AvatarInventoryMaterialModifier(
-                new Dictionary<HashDigest<SHA256>, int>
-                {
-                    [itemId] = count,
-                }
-            );
-
-            LocalLayer.Instance.Add(avatarAddress, modifier);
-
-            if (!TryGetLoadedAvatarState(
-                avatarAddress,
-                out var outAvatarState,
-                out _,
-                out var isCurrentAvatarState)
-            )
-            {
-                return;
-            }
-
-            outAvatarState = modifier.Modify(outAvatarState);
-
-            if (!isCurrentAvatarState)
-            {
-                return;
-            }
-
-            if (!resetState)
-            {
-                return;
-            }
-
-            TryResetLoadedAvatarState(avatarAddress, out _, out _);
-
-        }
-
-        public static void RemoveMaterial(Address avatarAddress, HashDigest<SHA256> itemId, int count, bool resetState)
-        {
-            if (count is 0)
-            {
-                return;
-            }
-
-            var modifier = new AvatarInventoryMaterialModifier(
-                new Dictionary<HashDigest<SHA256>, int>
-                {
-                    [itemId] = count,
-                }
-            );
-
-            LocalLayer.Instance.Remove(avatarAddress, modifier);
-
-            if (!resetState)
-            {
-                return;
-            }
-
-            TryResetLoadedAvatarState(avatarAddress, out _, out _);
         }
 
         public static void AddWorld(Address avatarAddress, int worldId)
@@ -757,7 +669,6 @@ namespace Nekoyume.State
             Address slotAddress
         )
         {
-
             // When the layer is covered, additionally set the block height to prevent state updates until the actual state comes in.
             var blockIndex = Game.Game.instance.Agent.BlockIndex + 100;
             var requiredBlockIndex = blockIndex + 1;
@@ -776,12 +687,16 @@ namespace Nekoyume.State
                 return;
             }
 
-            equipment.LevelUp();
-            equipment.Update(requiredBlockIndex);
-
             var enhancementRow = Game.Game.instance.TableSheets
                 .EnhancementCostSheet.Values
                 .FirstOrDefault(x => x.Grade == equipment.Grade && x.Level == equipment.level);
+            if (enhancementRow is null)
+            {
+                return;
+            }
+
+            equipment.LevelUp();
+            equipment.Update(requiredBlockIndex);
 
             var result = new ItemEnhancement.ResultModel
             {

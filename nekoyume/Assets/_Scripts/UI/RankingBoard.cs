@@ -186,6 +186,7 @@ namespace Nekoyume.UI
                 UINavigator.NavigationType.Back,
                 SubscribeBackButtonClick,
                 true,
+                BottomMenu.ToggleableType.Ranking,
                 BottomMenu.ToggleableType.Character);
 
             var go = Game.Game.instance.Stage.npcFactory.Create(
@@ -270,7 +271,7 @@ namespace Nekoyume.UI
 
             if (!_weeklyCachedInfo.Any())
             {
-                currentAvatarCellView.Hide();
+                currentAvatarCellView.ShowMyDefaultInfo();
 
                 UpdateBoard(StateType.Arena);
                 return;
@@ -283,7 +284,7 @@ namespace Nekoyume.UI
             }
             else
             {
-                currentAvatarCellView.Hide();
+                currentAvatarCellView.ShowMyDefaultInfo();
                 LocalLayerModifier.AddWeeklyArenaInfoActivator(Game.Game.instance.TableSheets.CharacterSheet);
             }
 
@@ -308,14 +309,13 @@ namespace Nekoyume.UI
                 if (!currentAvatarAddress.HasValue ||
                     !weeklyArenaState.ContainsKey(currentAvatarAddress.Value))
                 {
-                    currentAvatarCellView.Hide();
+                    currentAvatarCellView.ShowMyDefaultInfo();
 
                     arenaRankScroll.Show(_weeklyCachedInfo
                         .Select(tuple => new ArenaRankCell.ViewModel
                         {
                             rank = tuple.rank,
                             arenaInfo = tuple.arenaInfo,
-                            currentAvatarArenaInfo = null
                         }).ToList(), true);
                     // NOTE: If you want to test many arena cells, use below instead of above.
                     // arenaRankScroll.Show(Enumerable
@@ -348,7 +348,7 @@ namespace Nekoyume.UI
                     {
                         rank = tuple.rank,
                         arenaInfo = tuple.arenaInfo,
-                        currentAvatarArenaInfo = currentAvatarArenaInfo
+                        currentAvatarArenaInfo = currentAvatarArenaInfo,
                     }).ToList(), true);
             }
             else
@@ -413,9 +413,14 @@ namespace Nekoyume.UI
         private void SubscribeBackButtonClick(BottomMenu bottomMenu)
         {
             var avatarInfo = Find<AvatarInfo>();
+            var friendInfoPopup = Find<FriendInfoPopup>();
             if (avatarInfo.gameObject.activeSelf)
             {
                 avatarInfo.Close();
+            }
+            else if(friendInfoPopup.gameObject.activeSelf)
+            {
+                friendInfoPopup.Close();
             }
             else
             {
