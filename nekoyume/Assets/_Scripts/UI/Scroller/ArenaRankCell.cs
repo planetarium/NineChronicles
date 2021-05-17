@@ -42,10 +42,7 @@ namespace Nekoyume.UI.Scroller
         private TextMeshProUGUI rankText = null;
 
         [SerializeField]
-        private FramedCharacterView characterView = null;
-
-        [SerializeField]
-        private TextMeshProUGUI levelText = null;
+        private DetailedCharacterView characterView = null;
 
         [SerializeField]
         private TextMeshProUGUI nameText = null;
@@ -85,6 +82,19 @@ namespace Nekoyume.UI.Scroller
 
         private void Awake()
         {
+            characterView.OnClickCharacterIcon
+                .Subscribe(avatarState =>
+                {
+                    if (avatarState is null)
+                    {
+                        avatarState = new AvatarState(
+                            (Bencodex.Types.Dictionary) Game.Game.instance.Agent.GetState(ArenaInfo.AvatarAddress));
+                    }
+
+                    Widget.Find<FriendInfoPopup>().Show(avatarState);
+                })
+                .AddTo(gameObject);
+
             avatarInfoButton.OnClickAsObservable()
                 .ThrottleFirst(new TimeSpan(0, 0, 1))
                 .Subscribe(_ =>
@@ -131,9 +141,25 @@ namespace Nekoyume.UI.Scroller
             });
         }
 
+        public void ShowMyDefaultInfo()
+        {
+            UpdateRank(-1);
+
+            var currentAvatarState = States.Instance.CurrentAvatarState;
+            characterView.SetByAvatarState(currentAvatarState);
+            nameText.text = currentAvatarState.NameWithHash;
+            scoreText.text = "-";
+            cpText.text = "-";
+
+            challengeCountTextContainer.SetActive(true);
+            challengeButton.gameObject.SetActive(false);
+            challengeCountText.text =
+                $"<color=orange>{GameConfig.ArenaChallengeCountMax}</color>/{GameConfig.ArenaChallengeCountMax}";
+        }
+
         public override void UpdateContent(ViewModel itemData)
         {
-            var rank = itemData.rank;
+            var rank = itemData?.rank ?? -1;
             var arenaInfo = itemData.arenaInfo;
             var currentAvatarArenaInfo = itemData.currentAvatarArenaInfo;
 
@@ -146,7 +172,6 @@ namespace Nekoyume.UI.Scroller
             }
 
             UpdateRank(rank);
-            levelText.text = ArenaInfo.Level.ToString();
             nameText.text = ArenaInfo.AvatarName;
             scoreText.text = ArenaInfo.Score.ToString();
             cpText.text = GetCP(arenaInfo);
@@ -169,12 +194,13 @@ namespace Nekoyume.UI.Scroller
                 }
 
                 challengeCountText.text =
-                    $"<color=orange>{currentAvatarArenaInfo.DailyChallengeCount}</color>/{GameConfig.ArenaChallengeCountMax}";
+                    $"<color=orange>{arenaInfo.DailyChallengeCount}</color>/{GameConfig.ArenaChallengeCountMax}";
             }
             else
             {
                 //FIXME 현재 코스튬대응이 안되있음 lib9c쪽과 함께 고쳐야함
-                characterView.SetByArmorId(arenaInfo.ArmorId);
+                characterView.SetByArenaInfo(arenaInfo);
+
                 if (currentAvatarArenaInfo is null)
                 {
                     challengeButton.SetSubmittable(true);
@@ -184,12 +210,19 @@ namespace Nekoyume.UI.Scroller
                     challengeButton.SetSubmittable(currentAvatarArenaInfo.DailyChallengeCount > 0);
                 }
             }
+
+            characterView.Show();
         }
 
         private void UpdateRank(int rank)
         {
             switch (rank)
             {
+                case -1:
+                    rankImageContainer.SetActive(false);
+                    rankTextContainer.SetActive(true);
+                    rankText.text = "-";
+                    break;
                 case 1:
                 case 2:
                 case 3:

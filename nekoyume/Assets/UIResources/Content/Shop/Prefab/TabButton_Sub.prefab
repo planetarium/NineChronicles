@@ -746,7 +746,7 @@ GameObject:
   - component: {fileID: 2731226473944183329}
   - component: {fileID: 8751284157924376449}
   m_Layer: 5
-  m_Name: DisabledText
+  m_Name: EnabledText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -907,7 +907,7 @@ MonoBehaviour:
   fixedFontStyle: 0
   fixedFontSizeOffset: 0
   fixedSpacingOption: 0
-  fontMaterialType: 0
+  fontMaterialType: 2
   l10nKey: 
   fontMaterialIndexInitialized: 0
   fontMaterialIndex: 0
