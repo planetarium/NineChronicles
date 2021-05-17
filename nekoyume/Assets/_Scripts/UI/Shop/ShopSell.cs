@@ -107,6 +107,7 @@ namespace Nekoyume.UI
             ReactiveShopState.Update(ShopItemsPerPage);
             shopItems.Show();
             inventory.SharedModel.State.Value = ItemType.Equipment;
+            inventory.SharedModel.DimmedFunc.Value = inventoryItem => !(inventoryItem.ItemBase.Value is ITradableItem);
             AudioController.instance.PlayMusic(AudioController.MusicCode.Shop);
         }
 
@@ -244,9 +245,6 @@ namespace Nekoyume.UI
                     break;
             }
         }
-        // UI_UNIT_PRICE
-        // UI_COUNT
-        // UI_TOTAL
 
         // sell
         private void SubscribeSellPopup(CountableItem data)
