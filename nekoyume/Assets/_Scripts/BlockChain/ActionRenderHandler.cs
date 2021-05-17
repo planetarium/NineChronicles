@@ -472,14 +472,23 @@ namespace Nekoyume.BlockChain
                 var tradableId = eval.Action.tradableId;
                 var blockIndex = Game.Game.instance.Agent.BlockIndex;
                 var count = eval.Action.count;
-
-                LocalLayerModifier.AddItem(avatarAddress, tradableId);
-                var format = L10nManager.Localize("NOTIFICATION_SELL_COMPLETE");
-
                 var avatarState = new AvatarState((Bencodex.Types.Dictionary) eval.PreviousStates.GetState(avatarAddress));
                 if (avatarState.inventory.TryGetTradableItems(tradableId, blockIndex, count, out var item))
                 {
-                    UI.Notification.Push(MailType.Auction, string.Format(format, item.First().item.GetLocalizedName()));
+                    string message = string.Empty;
+                    if (count > 1)
+                    {
+                        message = string.Format(L10nManager.Localize("NOTIFICATION_MULTIPLE_SELL_COMPLETE"),
+                            item.First().item.GetLocalizedName(),
+                            count);
+                    }
+                    else
+                    {
+                        message = string.Format(L10nManager.Localize("NOTIFICATION_SELL_COMPLETE"),
+                            item.First().item.GetLocalizedName());
+                    }
+
+                    UI.Notification.Push(MailType.Auction, message);
                 }
                 else
                 {
@@ -526,9 +535,12 @@ namespace Nekoyume.BlockChain
                             // Local layer
                             var price = purchaseResult.shopItem.Price;
                             var itemBase = ShopBuy.GetItemBase(purchaseResult);
+                            var count = purchaseResult.tradableFungibleItemCount > 0
+                                ? purchaseResult.tradableFungibleItemCount
+                                : 1;
                             var tradableItem = (ITradableItem) itemBase;
                             LocalLayerModifier.ModifyAgentGold(agentAddress, price);
-                            LocalLayerModifier.RemoveItem(currentAvatarAddress, tradableItem.TradableId);
+                            LocalLayerModifier.RemoveItem(currentAvatarAddress, tradableItem.TradableId, count);
                             LocalLayerModifier.AddNewAttachmentMail(currentAvatarAddress, purchaseResult.id);
 
                             // Push notification

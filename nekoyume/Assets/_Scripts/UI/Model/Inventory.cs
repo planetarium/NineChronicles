@@ -84,7 +84,7 @@ namespace Nekoyume.UI.Model
                 return;
             }
 
-            foreach (var item in inventory.Items)
+            foreach (var item in inventory.Items.OrderByDescending(x => x.item is ITradableItem))
             {
                 AddItem(item.item, item.count);
             }

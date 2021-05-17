@@ -164,9 +164,13 @@ namespace Nekoyume.BlockChain
                     {
                         // Local layer
                         var price = purchaseResult.shopItem.Price;
-                        var tradableId = purchaseResult.itemUsable?.TradableId ?? purchaseResult.costume.TradableId;
+                        var itemBase = ShopBuy.GetItemBase(purchaseResult);
+                        var count = purchaseResult.tradableFungibleItemCount > 0
+                            ? purchaseResult.tradableFungibleItemCount
+                            : 1;
+                        var tradableItem = (ITradableItem) itemBase;
                         LocalLayerModifier.ModifyAgentGold(agentAddress, -price);
-                        LocalLayerModifier.AddItem(currentAvatarAddress, tradableId);
+                        LocalLayerModifier.AddItem(currentAvatarAddress, tradableItem.TradableId, count);
                         LocalLayerModifier.RemoveNewAttachmentMail(currentAvatarAddress, purchaseResult.id);
                     }
                     else

@@ -302,7 +302,7 @@ namespace Nekoyume.UI
             };
             model.OnClickSubmit.Subscribe(_ =>
             {
-                LocalLayerModifier.AddItem(avatarAddress, tradableItem.TradableId);
+                LocalLayerModifier.AddItem(avatarAddress, tradableItem.TradableId, count);
                 LocalLayerModifier.RemoveNewAttachmentMail(avatarAddress, buyerMail.id, true);
             }).AddTo(gameObject);
             popup.Pop(model);

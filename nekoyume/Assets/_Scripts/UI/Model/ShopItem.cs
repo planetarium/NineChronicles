@@ -21,19 +21,20 @@ namespace Nekoyume.UI.Model
 
         public ShopItem(Nekoyume.Model.Item.ShopItem item)
             : this(item.SellerAgentAddress, item.SellerAvatarAddress, item.Price, item.ProductId,
-                GetItemBase(item), item.ExpiredBlockIndex)
+                item.TradableFungibleItemCount, GetItemBase(item), item.ExpiredBlockIndex)
         {
 
         }
 
         private ShopItem(Address sellerAgentAddress, Address sellerAvatarAddress,
-                         FungibleAssetValue price, Guid productId,
+                         FungibleAssetValue price, Guid productId, int count,
                          ItemBase item, long expiredBlockIndex) : base(item, 1)
         {
             GradeEnabled.Value = true;
             SellerAgentAddress.Value = sellerAgentAddress;
             SellerAvatarAddress.Value = sellerAvatarAddress;
             Price.Value = price;
+            Count.Value = count;
             ProductId.Value = productId;
             ItemSubType.Value = item.ItemSubType;
             ExpiredBlockIndex.Value = expiredBlockIndex;
