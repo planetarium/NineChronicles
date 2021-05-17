@@ -176,55 +176,6 @@ namespace Nekoyume.Game
             Widget.Find<VersionInfo>().SetVersion(Agent.AppProtocolVersion);
 
             ShowNext(agentInitializeSucceed);
-
-            if (GameConfig.IsEditor)
-            {
-                Observable.EveryUpdate().Subscribe(_ =>
-                {
-                    ShopItem stateModel = null;
-                    if (Input.GetKeyDown(KeyCode.Alpha1))
-                    {
-                        stateModel = new ShopItem(
-                            new Address(),
-                            new Address(),
-                            Guid.NewGuid(),
-                            States.Instance.GoldBalanceState.Gold - States.Instance.GoldBalanceState.Gold.Currency * 10,
-                            ItemFactory.CreateItemUsable(
-                                TableSheets.EquipmentItemSheet.First,
-                                Guid.NewGuid(),
-                                Agent.BlockIndex));
-                    }
-
-                    if (Input.GetKeyDown(KeyCode.Alpha2))
-                    {
-                        stateModel = new ShopItem(
-                            new Address(),
-                            new Address(),
-                            Guid.NewGuid(),
-                            States.Instance.GoldBalanceState.Gold + States.Instance.GoldBalanceState.Gold.Currency * 10,
-                            ItemFactory.CreateItemUsable(
-                                TableSheets.EquipmentItemSheet.First,
-                                Guid.NewGuid(),
-                                Agent.BlockIndex));
-                    }
-
-                    if (stateModel is null)
-                    {
-                        return;
-                    }
-                    
-                    var uiModel = new UI.Model.ShopItem(stateModel);
-                    Widget.Find<ItemInformationTooltip>().ShowForShop(
-                        null,
-                        uiModel,
-                        inventoryItem => inventoryItem is UI.Model.ShopItem shopItem &&
-                                         States.Instance.GoldBalanceState.Gold >= shopItem.Price.Value,
-                        L10nManager.Localize("UI_BUY"),
-                        null,
-                        null,
-                        true);
-                }).AddTo(gameObject);
-            }
         }
 
         private void SubscribeRPCAgent()
