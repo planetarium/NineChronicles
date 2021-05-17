@@ -22,23 +22,27 @@ namespace Nekoyume.UI
 {
     public class ShopSell : Widget
     {
+        private enum PriorityType
+        {
+            Price,
+            Count,
+        }
+
+        [SerializeField] private Module.Inventory inventory = null;
+
+        [SerializeField] private ShopSellItems shopItems = null;
+
+        [SerializeField] private TextMeshProUGUI noticeText = null;
+
+        [SerializeField] private SpeechBubble speechBubble = null;
+        [SerializeField] private Button buyButton = null;
+
+        private NPC _npc;
+        private static readonly Vector2 NPCPosition = new Vector2(2.76f, -1.72f);
+
         private const int NPCId = 300000;
         private const int ShopItemsPerPage = 20;
-        private static readonly Vector2 NPCPosition = new Vector2(2.76f, -1.72f);
-        private NPC _npc;
-
-        [SerializeField]
-        private Module.Inventory inventory = null;
-
-        [SerializeField]
-        private ShopSellItems shopItems = null;
-
-        [SerializeField]
-        private TextMeshProUGUI noticeText = null;
-
-        [SerializeField]
-        private SpeechBubble speechBubble = null;
-        [SerializeField] private Button buyButton = null;
+        private const int LimitPrice  = 100000000;
 
         private Model.Shop SharedModel { get; set; }
 
@@ -82,10 +86,10 @@ namespace Nekoyume.UI
             SharedModel.ItemCountableAndPricePopup.Value.OnClickCancel
                 .Subscribe(SubscribeSellPopupCancel)
                 .AddTo(gameObject);
-            SharedModel.ItemCountableAndPricePopup.Value.OnClickCount
+            SharedModel.ItemCountableAndPricePopup.Value.OnChangeCount
                 .Subscribe(SubscribeSellPopupCount)
                 .AddTo(gameObject);
-            SharedModel.ItemCountableAndPricePopup.Value.OnClickPrice
+            SharedModel.ItemCountableAndPricePopup.Value.OnChangePrice
                 .Subscribe(SubscribeSellPopupPrice)
                 .AddTo(gameObject);
 
@@ -194,7 +198,6 @@ namespace Nekoyume.UI
             var data = SharedModel.ItemCountableAndPricePopup.Value;
             data.TitleText.Value = inventoryItem.ItemBase.Value.GetLocalizedName();
             data.InfoText.Value = string.Empty;
-            data.Count.Value = 1;
             data.CountEnabled.Value = true;
             data.Submittable.Value = !DimmedFuncForSell(inventoryItem);
             data.Item.Value = new CountEditableItem(inventoryItem.ItemBase.Value,
@@ -285,25 +288,46 @@ namespace Nekoyume.UI
 
         private void SubscribeSellPopupCount(int count)
         {
-            var model = SharedModel.ItemCountableAndPricePopup.Value;
-            var maxCount = model.Item.Value.MaxCount;
-            model.Count.Value = maxCount.Value == count ? count : model.Count.Value + count;
-            model.Count.Value = Mathf.Clamp(model.Count.Value, 1, maxCount.Value);
+            SharedModel.ItemCountableAndPricePopup.Value.Count.Value = count;
+            UpdateTotalPrice(PriorityType.Count);
         }
 
         private void SubscribeSellPopupPrice(int price)
         {
-            var model = SharedModel.ItemCountableAndPricePopup.Value;
-            var currentPrice = Convert.ToInt32(model.Price.Value.GetQuantityString()) + price;
-
-            model.Price.Value =
-                new FungibleAssetValue(model.Price.Value.Currency, currentPrice, 0);
-            model.TotalPrice.Value =
-                new FungibleAssetValue(model.Price.Value.Currency,
-                    currentPrice * model.Count.Value, 0);
+            var priceModel = SharedModel.ItemCountableAndPricePopup.Value.Price;
+            priceModel.Value = new FungibleAssetValue(priceModel.Value.Currency, price, 0);
+            UpdateTotalPrice(PriorityType.Price);
         }
 
+        private void UpdateTotalPrice(PriorityType priorityType)
+        {
+            var model = SharedModel.ItemCountableAndPricePopup.Value;
+            var price = Convert.ToInt32(model.Price.Value.GetQuantityString());
+            var count = model.Count.Value;
+            var totalPrice = price * count;
 
+            if (totalPrice > LimitPrice)
+            {
+                switch (priorityType)
+                {
+                    case PriorityType.Price:
+                        price = LimitPrice / model.Count.Value;
+                        model.Price.Value = new FungibleAssetValue(model.Price.Value.Currency, price, 0);
+                        break;
+                    case PriorityType.Count:
+                        count = LimitPrice / price;
+                        model.Count.Value = count;
+                        break;
+                }
+
+                totalPrice = price * count;
+
+                OneLinePopup.Push(MailType.System, L10nManager.Localize("UI_SELL_LIMIT_EXCEEDED"));
+            }
+
+            model.TotalPrice.Value =
+                new FungibleAssetValue(model.Price.Value.Currency, totalPrice, 0);
+        }
         // sell cancellation
         private void SubscribeSellCancellationPopup(CountableItem data)
         {

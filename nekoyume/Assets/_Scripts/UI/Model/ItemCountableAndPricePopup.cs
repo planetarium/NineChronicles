@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using Libplanet.Assets;
+﻿using Libplanet.Assets;
 using Nekoyume.State;
 using UniRx;
 
@@ -11,8 +10,8 @@ namespace Nekoyume.UI.Model
         public readonly ReactiveProperty<FungibleAssetValue> TotalPrice;
         public readonly ReactiveProperty<int> Count = new ReactiveProperty<int>(1);
 
-        public readonly Subject<int> OnClickCount = new Subject<int>();
-        public readonly Subject<int> OnClickPrice = new Subject<int>();
+        public readonly Subject<int> OnChangeCount = new Subject<int>();
+        public readonly Subject<int> OnChangePrice = new Subject<int>();
 
         public ItemCountableAndPricePopup()
         {
@@ -26,8 +25,8 @@ namespace Nekoyume.UI.Model
             Price.Dispose();
             TotalPrice.Dispose();
             Count.Dispose();
-            OnClickCount.Dispose();
-            OnClickPrice.Dispose();
+            OnChangeCount.Dispose();
+            OnChangePrice.Dispose();
             base.Dispose();
         }
     }
