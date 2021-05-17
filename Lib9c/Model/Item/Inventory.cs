@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 using Bencodex.Types;
+using CsvHelper.Configuration.Attributes;
 using Libplanet;
 using Nekoyume.Action;
 using Nekoyume.Battle;
@@ -425,6 +426,17 @@ namespace Nekoyume.Model.Item
                 }
             }
             return true;
+        }
+
+        public bool TryGetTradableItem(Guid tradeId, long blockIndex, int count, out Item outItem)
+        {
+            outItem = _items.FirstOrDefault(i =>
+                i.item is ITradableItem item &&
+                item.TradableId.Equals(tradeId) &&
+                item.RequiredBlockIndex == blockIndex &&
+                i.count >= count
+            );
+            return !(outItem is null);
         }
 
         // public bool TryGetTradableItemWithoutNonTradableFungibleItem(

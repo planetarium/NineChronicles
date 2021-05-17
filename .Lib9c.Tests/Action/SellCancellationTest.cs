@@ -148,7 +148,7 @@ namespace Lib9c.Tests.Action
                         // Different RequiredBlockIndex for divide inventory slot.
                         var tradable = new TradableMaterial((Dictionary)tradableItem.Serialize())
                         {
-                            RequiredBlockIndex = tradableItem.RequiredBlockIndex + i,
+                            RequiredBlockIndex = tradableItem.RequiredBlockIndex - i,
                         };
                         avatarState.inventory.AddItem(tradable, 2 - i);
                     }
@@ -213,7 +213,8 @@ namespace Lib9c.Tests.Action
                 itemCount,
                 out List<Inventory.Item> inventoryItems
             ));
-            Assert.Single(inventoryItems);
+            Assert.Empty(inventoryItems.Select(i => (ITradableItem)i.item).Where(item => item.RequiredBlockIndex == requiredBlockIndex));
+            Assert.Equal(inventoryCount, inventoryItems.Count);
             Inventory.Item inventoryItem = inventoryItems.First();
             Assert.Equal(itemCount, inventoryItem.count);
             Assert.Equal(inventoryCount, nextAvatarState.inventory.Items.Count);
