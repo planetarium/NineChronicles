@@ -27,7 +27,7 @@ namespace Nekoyume.Model.State
         public const string DeriveFormat = "monster-collection-{0}";
         public const long ExpirationIndex = RewardInterval * RewardCapacity;
         public const int RewardCapacity = 4;
-        public const long RewardInterval = 40000;
+        public const long RewardInterval = 50400;
 
         public int Level { get; private set; }
         public long ExpiredBlockIndex { get; private set; }

@@ -55,7 +55,7 @@ namespace Lib9c.Tests.Model.State
             MonsterCollectionState monsterCollectionState = new MonsterCollectionState(_address, 1, 10000, _tableSheets.MonsterCollectionRewardSheet);
             Assert.Equal(1, monsterCollectionState.Level);
             Assert.Equal(10000, monsterCollectionState.StartedBlockIndex);
-            Assert.Equal(170000, monsterCollectionState.ExpiredBlockIndex);
+            Assert.Equal(MonsterCollectionState.RewardInterval * 4 + 10000, monsterCollectionState.ExpiredBlockIndex);
 
             monsterCollectionState.Update(2, rewardLevel, _tableSheets.MonsterCollectionRewardSheet);
             Assert.Equal(2, monsterCollectionState.Level);
@@ -120,10 +120,10 @@ namespace Lib9c.Tests.Model.State
         }
 
         [Theory]
-        [InlineData(0, 0, 40000, true)]
-        [InlineData(0, 40000, 80000, true)]
-        [InlineData(0, 40000, 40001, false)]
-        [InlineData(40000, 0, 60000, false)]
+        [InlineData(0, 0, MonsterCollectionState.RewardInterval, true)]
+        [InlineData(0, MonsterCollectionState.RewardInterval, MonsterCollectionState.RewardInterval * 2, true)]
+        [InlineData(0, MonsterCollectionState.RewardInterval, MonsterCollectionState.RewardInterval + 1, false)]
+        [InlineData(MonsterCollectionState.RewardInterval, 0, MonsterCollectionState.RewardInterval * 1.5, false)]
         public void CanReceive(long startedBlockIndex, long receivedBlockIndex, long blockIndex, bool expected)
         {
             MonsterCollectionState monsterCollectionState = new MonsterCollectionState(_address, 1, startedBlockIndex, _tableSheets.MonsterCollectionRewardSheet);
