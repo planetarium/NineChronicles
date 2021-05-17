@@ -1,3 +1,5 @@
+using System;
+using Libplanet.Assets;
 using mixpanel;
 using Nekoyume.Action;
 using Nekoyume.EnumType;
@@ -79,6 +81,12 @@ namespace Nekoyume.UI
                 .AddTo(gameObject);
             SharedModel.ItemCountableAndPricePopup.Value.OnClickCancel
                 .Subscribe(SubscribeSellPopupCancel)
+                .AddTo(gameObject);
+            SharedModel.ItemCountableAndPricePopup.Value.OnClickCount
+                .Subscribe(SubscribeSellPopupCount)
+                .AddTo(gameObject);
+            SharedModel.ItemCountableAndPricePopup.Value.OnClickPrice
+                .Subscribe(SubscribeSellPopupPrice)
                 .AddTo(gameObject);
 
             // sell cancellation
@@ -182,18 +190,17 @@ namespace Nekoyume.UI
                 return;
             }
 
-            SharedModel.ItemCountableAndPricePopup.Value.TitleText.Value =
-                L10nManager.Localize("UI_SELL");
-            SharedModel.ItemCountableAndPricePopup.Value.InfoText.Value =
-                L10nManager.Localize("UI_SELL_INFO");
-            SharedModel.ItemCountableAndPricePopup.Value.CountEnabled.Value = true;
-            SharedModel.ItemCountableAndPricePopup.Value.Submittable.Value =
-                !DimmedFuncForSell(inventoryItem);
-            SharedModel.ItemCountableAndPricePopup.Value.Item.Value = new CountEditableItem(
-                inventoryItem.ItemBase.Value,
+            var data = SharedModel.ItemCountableAndPricePopup.Value;
+            data.TitleText.Value = inventoryItem.ItemBase.Value.GetLocalizedName();
+            data.InfoText.Value = string.Empty;
+            data.Count.Value = 1;
+            data.CountEnabled.Value = true;
+            data.Submittable.Value = !DimmedFuncForSell(inventoryItem);
+            data.Item.Value = new CountEditableItem(inventoryItem.ItemBase.Value,
                 1,
                 1,
                 inventoryItem.Count.Value);
+            data.Item.Value.CountEnabled.Value = false;
         }
 
         private void ShowRetrievePopup(ShopItem shopItem)
@@ -208,7 +215,7 @@ namespace Nekoyume.UI
                 L10nManager.Localize("UI_RETRIEVE");
             SharedModel.ItemCountAndPricePopup.Value.InfoText.Value =
                 L10nManager.Localize("UI_RETRIEVE_INFO");
-            SharedModel.ItemCountAndPricePopup.Value.CountEnabled.Value = false;
+            SharedModel.ItemCountAndPricePopup.Value.CountEnabled.Value = true;
             SharedModel.ItemCountAndPricePopup.Value.Submittable.Value =
                 ButtonEnabledFuncForSell(shopItem);
             SharedModel.ItemCountAndPricePopup.Value.Price.Value = shopItem.Price.Value;
@@ -237,6 +244,9 @@ namespace Nekoyume.UI
                     break;
             }
         }
+        // UI_UNIT_PRICE
+        // UI_COUNT
+        // UI_TOTAL
 
         // sell
         private void SubscribeSellPopup(CountableItem data)
@@ -274,6 +284,27 @@ namespace Nekoyume.UI
             SharedModel.ItemCountableAndPricePopup.Value.Item.Value = null;
             Find<ItemCountableAndPricePopup>().Close();
         }
+
+        private void SubscribeSellPopupCount(int count)
+        {
+            var model = SharedModel.ItemCountableAndPricePopup.Value;
+            var maxCount = model.Item.Value.MaxCount;
+            model.Count.Value = maxCount.Value == count ? count : model.Count.Value + count;
+            model.Count.Value = Mathf.Clamp(model.Count.Value, 1, maxCount.Value);
+        }
+
+        private void SubscribeSellPopupPrice(int price)
+        {
+            var model = SharedModel.ItemCountableAndPricePopup.Value;
+            var currentPrice = Convert.ToInt32(model.Price.Value.GetQuantityString()) + price;
+
+            model.Price.Value =
+                new FungibleAssetValue(model.Price.Value.Currency, currentPrice, 0);
+            model.TotalPrice.Value =
+                new FungibleAssetValue(model.Price.Value.Currency,
+                    currentPrice * model.Count.Value, 0);
+        }
+
 
         // sell cancellation
         private void SubscribeSellCancellationPopup(CountableItem data)
