@@ -137,7 +137,11 @@ namespace Nekoyume.UI.Module
         private void OnDisable()
         {
             _disposablesAtOnEnable.DisposeAllAndClear();
-            Widget.Find<ItemInformationTooltip>().Close();
+
+            if (Widget.TryFind<ItemInformationTooltip>(out var tooltip))
+            {
+                tooltip.Close();
+            }
         }
 
         private void OnDestroy()
@@ -230,7 +234,10 @@ namespace Nekoyume.UI.Module
                 }
             }
 
-            Widget.Find<ItemInformationTooltip>().Close();
+            if (Widget.TryFind<ItemInformationTooltip>(out var tooltip))
+            {
+                tooltip.Close();
+            }
         }
 
         private void SubscribeSelectedItemView(InventoryItemView view)

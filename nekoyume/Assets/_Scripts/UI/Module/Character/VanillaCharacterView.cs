@@ -113,7 +113,6 @@ namespace Nekoyume.UI.Module
         private void SetIcon(Sprite image)
         {
             iconImage.overrideSprite = image;
-            iconImage.SetNativeSize();
             iconImage.enabled = true;
         }
     }

@@ -27,19 +27,19 @@ namespace Nekoyume.State
 
         public static readonly ReactiveProperty<Dictionary<
                 Address, Dictionary<ItemSubTypeFilter, Dictionary<
-                        SortFilter, Dictionary<int, List<ShopItem>>>>>>
+                        ShopSortFilter, Dictionary<int, List<ShopItem>>>>>>
             AgentProducts =
                 new ReactiveProperty<Dictionary<
                     Address, Dictionary<
                         ItemSubTypeFilter,
-                        Dictionary<SortFilter, Dictionary<int, List<ShopItem>>>>>>();
+                        Dictionary<ShopSortFilter, Dictionary<int, List<ShopItem>>>>>>();
 
         public static readonly ReactiveProperty<IReadOnlyDictionary<
                 ItemSubTypeFilter, Dictionary<
-                    SortFilter, Dictionary<int, List<ShopItem>>>>>
+                    ShopSortFilter, Dictionary<int, List<ShopItem>>>>>
             ItemSubTypeProducts = new ReactiveProperty<IReadOnlyDictionary<
                 ItemSubTypeFilter, Dictionary<
-                    SortFilter, Dictionary<int, List<ShopItem>>>>>();
+                    ShopSortFilter, Dictionary<int, List<ShopItem>>>>>();
 
         private static int _shopItemsPerPage = 24;
 
@@ -103,9 +103,9 @@ namespace Nekoyume.State
                     }
                 }
 
-                var filteredAgentProducts =
-                    new Dictionary<Address,
-                        Dictionary<ItemSubTypeFilter, Dictionary<SortFilter, Dictionary<int, List<ShopItem>>>>>();
+                var filteredAgentProducts = new Dictionary<
+                    Address,
+                    Dictionary<ItemSubTypeFilter, Dictionary<ShopSortFilter, Dictionary<int, List<ShopItem>>>>>();
                 foreach (var pair in agentProducts)
                 {
                     filteredAgentProducts.Add(pair.Key, GetGroupedShopItemsByItemSubTypeFilter(pair.Value));
@@ -124,7 +124,7 @@ namespace Nekoyume.State
 
         private static Dictionary<
                 ItemSubTypeFilter, Dictionary<
-                    SortFilter, Dictionary<int, List<ShopItem>>>>
+                    ShopSortFilter, Dictionary<int, List<ShopItem>>>>
             GetGroupedShopItemsByItemSubTypeFilter(IReadOnlyCollection<ShopItem> shopItems)
         {
             var equipment = new List<ShopItem>();
@@ -231,7 +231,7 @@ namespace Nekoyume.State
             }
 
             var groupedShopItems = new Dictionary<
-                ItemSubTypeFilter, Dictionary<SortFilter, Dictionary<int, List<ShopItem>>>>
+                ItemSubTypeFilter, Dictionary<ShopSortFilter, Dictionary<int, List<ShopItem>>>>
             {
                 {ItemSubTypeFilter.All, GetGroupedShopItemsBySortFilter(shopItems)},
                 {ItemSubTypeFilter.Weapon, GetGroupedShopItemsBySortFilter(weapons)},
@@ -255,21 +255,21 @@ namespace Nekoyume.State
             return groupedShopItems;
         }
 
-        private static Dictionary<SortFilter, Dictionary<int, List<ShopItem>>>
+        private static Dictionary<ShopSortFilter, Dictionary<int, List<ShopItem>>>
             GetGroupedShopItemsBySortFilter(IReadOnlyCollection<ShopItem> shopItems)
         {
-            return new Dictionary<SortFilter, Dictionary<int, List<ShopItem>>>
+            return new Dictionary<ShopSortFilter, Dictionary<int, List<ShopItem>>>
             {
                 {
-                    SortFilter.Class,
+                    ShopSortFilter.Class,
                     GetGroupedShopItemsByPage(GetSortedShopItems(shopItems, SortType.Grade))
                 },
                 {
-                    SortFilter.CP,
+                    ShopSortFilter.CP,
                     GetGroupedShopItemsByPage(GetSortedShopItems(shopItems, SortType.Cp))
                 },
                 {
-                    SortFilter.Price,
+                    ShopSortFilter.Price,
                     GetGroupedShopItemsByPage(shopItems
                         .OrderByDescending(shopItem => shopItem.Price)
                         .ToList())

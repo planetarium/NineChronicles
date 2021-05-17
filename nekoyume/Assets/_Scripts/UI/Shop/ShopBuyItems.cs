@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -33,7 +33,7 @@ namespace Nekoyume.UI.Module
 
         private readonly List<int> _itemIds = new List<int>();
         private TextMeshProUGUI _sortText;
-        private SortFilter _sortFilter = SortFilter.Class;
+        private ShopSortFilter _sortFilter = ShopSortFilter.Class;
 
         private readonly int _hashNormal = Animator.StringToHash("Normal");
         private readonly int _hashDisabled = Animator.StringToHash("Disabled");
@@ -170,7 +170,7 @@ namespace Nekoyume.UI.Module
             resetAnimator.Play(_hashDisabled);
             sortOrderIcon.localScale = new Vector3(1, -1, 1);
             SharedModel.itemSubTypeFilter = ItemSubTypeFilter.Weapon;
-            SharedModel.sortFilter = SortFilter.Class;
+            SharedModel.sortFilter = ShopSortFilter.Class;
             SharedModel.isReverseOrder = false;
             SharedModel.searchIds = new List<int>();
             SharedModel.SetMultiplePurchase(false);
@@ -317,7 +317,7 @@ namespace Nekoyume.UI.Module
 
         private void UpdateSort()
         {
-            int count = Enum.GetNames(typeof(SortFilter)).Length;
+            int count = Enum.GetNames(typeof(ShopSortFilter)).Length;
             _sortFilter = (int) _sortFilter < count - 1 ? _sortFilter + 1 : 0;
             _sortText.text = L10nManager.Localize($"UI_{_sortFilter.ToString().ToUpper()}");
 
