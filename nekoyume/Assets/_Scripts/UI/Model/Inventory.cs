@@ -138,7 +138,7 @@ namespace Nekoyume.UI.Model
                     break;
                 case ItemType.Material:
                     var material = (Material) itemBase;
-                    bool istTradable = itemBase is TradableMaterial;
+                    bool istTradable = material is TradableMaterial;
                     if (TryGetMaterial(material, istTradable, out inventoryItem))
                     {
                         inventoryItem.Count.Value += count;
