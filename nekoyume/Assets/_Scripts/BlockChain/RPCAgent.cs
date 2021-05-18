@@ -128,6 +128,7 @@ namespace Nekoyume.BlockChain
 
         public FungibleAssetValue GetBalance(Address address, Currency currency)
         {
+            // FIXME: `CurrencyExtension.Serialize()` should be changed to `Currency.Serialize()`.
             var result = _service.GetBalance(
                 address.ToByteArray(),
                 _codec.Encode(CurrencyExtensions.Serialize(currency))
