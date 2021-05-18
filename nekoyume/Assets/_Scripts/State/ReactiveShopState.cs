@@ -225,7 +225,7 @@ namespace Nekoyume.State
                 }
                 else
                 {
-                    // 현재는 모래시계랑 AP포션 뿐이 없음.
+                    // Currently, there are only hourglass and AP potions.
                     materials.Add(shopItem);
                 }
             }
