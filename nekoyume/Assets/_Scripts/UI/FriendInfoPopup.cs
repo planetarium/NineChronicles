@@ -73,12 +73,12 @@ namespace Nekoyume.UI
             Show(currentAvatarState, ignoreShowAnimation);
         }
 
-        protected override void OnCompleteOfCloseAnimationInternal()
+        public override void Close(bool ignoreCloseAnimation = false)
         {
-            base.OnCompleteOfCloseAnimationInternal();
             _player.transform.SetParent(Game.Game.instance.Stage.transform);
             _player.transform.localScale = Vector3.one;
             _player.gameObject.SetActive(false);
+            base.Close(ignoreCloseAnimation);
         }
         #endregion
 
