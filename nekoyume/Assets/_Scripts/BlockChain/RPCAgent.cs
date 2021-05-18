@@ -130,7 +130,7 @@ namespace Nekoyume.BlockChain
         {
             var result = _service.GetBalance(
                 address.ToByteArray(),
-                _codec.Encode(currency.Serialize())
+                _codec.Encode(CurrencyExtensions.Serialize(currency))
             );
             byte[] raw = result.ResponseAsync.Result;
             var serialized = (Bencodex.Types.List) _codec.Decode(raw);
