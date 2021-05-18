@@ -249,8 +249,8 @@ namespace Nekoyume.UI.Model
                 case ItemType.Equipment:
                     return TryGetEquipment((ItemUsable) itemBase, out inventoryItem);
                 case ItemType.Material:
-                    bool istTradable = itemBase is TradableMaterial;
-                    return TryGetMaterial((Material) itemBase, istTradable, out inventoryItem);
+                    bool isTradable = itemBase is TradableMaterial;
+                    return TryGetMaterial((Material) itemBase, isTradable, out inventoryItem);
                 default:
                     throw new ArgumentOutOfRangeException();
             }
