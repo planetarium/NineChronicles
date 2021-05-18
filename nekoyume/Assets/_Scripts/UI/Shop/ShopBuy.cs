@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using mixpanel;
@@ -7,6 +7,7 @@ using Nekoyume.EnumType;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using Nekoyume.L10n;
+using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
 using Nekoyume.State;
@@ -124,6 +125,7 @@ namespace Nekoyume.UI
                     BottomMenu.ToggleableType.Quest,
                     BottomMenu.ToggleableType.Chat,
                     BottomMenu.ToggleableType.IllustratedBook,
+                    BottomMenu.ToggleableType.Ranking,
                     BottomMenu.ToggleableType.Character);
 
                 AudioController.instance.PlayMusic(AudioController.MusicCode.Shop);
@@ -325,6 +327,36 @@ namespace Nekoyume.UI
                 shopItem.SellerAgentAddress.Value,
                 shopItem.SellerAvatarAddress.Value,
                 shopItem.ItemSubType.Value);
+        }
+
+        public static ItemBase GetItemBase(Buy.PurchaseResult result)
+        {
+            if (result.itemUsable != null)
+            {
+                return result.itemUsable;
+            }
+
+            if (result.costume != null)
+            {
+                return result.costume;
+            }
+
+            return (ItemBase)result.tradableFungibleItem;
+        }
+
+        public static ItemBase GetItemBase(AttachmentActionResult result)
+        {
+            if (result.itemUsable != null)
+            {
+                return result.itemUsable;
+            }
+
+            if (result.costume != null)
+            {
+                return result.costume;
+            }
+
+            return (ItemBase)result.tradableFungibleItem;
         }
     }
 }

@@ -24,9 +24,11 @@ namespace Nekoyume.State
             ItemSubType.EyeCostume,
             ItemSubType.TailCostume,
             ItemSubType.Title,
+            ItemSubType.Hourglass,
+            ItemSubType.ApStone,
         };
 
-        private readonly List<ItemSubType> _equipmentSubTypes = new List<ItemSubType>()
+        private readonly List<ItemSubType> _shardedSubTypes = new List<ItemSubType>()
         {
             ItemSubType.Weapon,
             ItemSubType.Armor,
@@ -34,6 +36,8 @@ namespace Nekoyume.State
             ItemSubType.Necklace,
             ItemSubType.Ring,
             ItemSubType.Food,
+            ItemSubType.Hourglass,
+            ItemSubType.ApStone,
         };
 
         public void UpdateProducts()
@@ -41,7 +45,7 @@ namespace Nekoyume.State
             Products.Clear();
             foreach (var itemSubType in _itemSubTypes)
             {
-                if (_equipmentSubTypes.Contains(itemSubType))
+                if (_shardedSubTypes.Contains(itemSubType))
                 {
                     foreach (var addressKey in ShardedShopState.AddressKeys)
                     {

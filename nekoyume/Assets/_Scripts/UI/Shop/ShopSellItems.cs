@@ -75,6 +75,7 @@ namespace Nekoyume.UI.Module
                     ItemSubTypeFilter.EyeCostume,
                     ItemSubTypeFilter.TailCostume,
                     ItemSubTypeFilter.Title,
+                    ItemSubTypeFilter.Materials,
                 }
                 .Select(type => type.TypeToString(true))
                 .ToList());
@@ -99,9 +100,9 @@ namespace Nekoyume.UI.Module
 
             sortFilter.AddOptions(new[]
                 {
-                    SortFilter.Class,
-                    SortFilter.CP,
-                    SortFilter.Price,
+                    ShopSortFilter.Class,
+                    ShopSortFilter.CP,
+                    ShopSortFilter.Price,
                 }
                 .Select(type => L10nManager.Localize($"UI_{type.ToString().ToUpper()}"))
                 .ToList());
@@ -110,11 +111,11 @@ namespace Nekoyume.UI.Module
                 {
                     try
                     {
-                        return (SortFilter) index;
+                        return (ShopSortFilter) index;
                     }
                     catch
                     {
-                        return SortFilter.Class;
+                        return ShopSortFilter.Class;
                     }
                 })
                 .Subscribe(filter =>

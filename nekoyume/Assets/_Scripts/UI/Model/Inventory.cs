@@ -8,6 +8,7 @@ using Nekoyume.Model.Elemental;
 using Nekoyume.Model.Item;
 using Nekoyume.UI.Module;
 using UniRx;
+using UnityEngine;
 using Material = Nekoyume.Model.Item.Material;
 
 namespace Nekoyume.UI.Model
@@ -83,7 +84,7 @@ namespace Nekoyume.UI.Model
                 return;
             }
 
-            foreach (var item in inventory.Items)
+            foreach (var item in inventory.Items.OrderByDescending(x => x.item is ITradableItem))
             {
                 AddItem(item.item, item.count);
             }
@@ -137,12 +138,12 @@ namespace Nekoyume.UI.Model
                     break;
                 case ItemType.Material:
                     var material = (Material) itemBase;
-                    if (TryGetMaterial(material, out inventoryItem))
+                    bool istTradable = material is TradableMaterial;
+                    if (TryGetMaterial(material, istTradable, out inventoryItem))
                     {
                         inventoryItem.Count.Value += count;
                         break;
                     }
-
                     inventoryItem = CreateInventoryItem(itemBase, count);
                     Materials.Add(inventoryItem);
                     break;
@@ -192,7 +193,8 @@ namespace Nekoyume.UI.Model
                     Equipments.Remove(inventoryItem);
                     break;
                 case ItemType.Material:
-                    if (!TryGetMaterial((Material) itemBase, out inventoryItem))
+                    bool isTradable = itemBase is TradableMaterial;
+                    if (!TryGetMaterial((Material) itemBase, isTradable, out inventoryItem))
                     {
                         break;
                     }
@@ -247,7 +249,8 @@ namespace Nekoyume.UI.Model
                 case ItemType.Equipment:
                     return TryGetEquipment((ItemUsable) itemBase, out inventoryItem);
                 case ItemType.Material:
-                    return TryGetMaterial((Material) itemBase, out inventoryItem);
+                    bool isTradable = itemBase is TradableMaterial;
+                    return TryGetMaterial((Material) itemBase, isTradable, out inventoryItem);
                 default:
                     throw new ArgumentOutOfRangeException();
             }
@@ -348,7 +351,7 @@ namespace Nekoyume.UI.Model
             return false;
         }
 
-        public bool TryGetMaterial(Material material, out InventoryItem inventoryItem)
+        public bool TryGetMaterial(Material material, bool isTradableMaterial, out InventoryItem inventoryItem)
         {
             if (material is null)
             {
@@ -356,10 +359,10 @@ namespace Nekoyume.UI.Model
                 return false;
             }
 
-            return TryGetMaterial(material.ItemId, out inventoryItem);
+            return TryGetMaterial(material.ItemId, isTradableMaterial, out inventoryItem);
         }
 
-        public bool TryGetMaterial(HashDigest<SHA256> itemId, out InventoryItem inventoryItem)
+        public bool TryGetMaterial(HashDigest<SHA256> itemId, bool isTradableMaterial, out InventoryItem inventoryItem)
         {
             foreach (var item in Materials)
             {
@@ -367,6 +370,21 @@ namespace Nekoyume.UI.Model
                     !material.ItemId.Equals(itemId))
                 {
                     continue;
+                }
+
+                if (isTradableMaterial)
+                {
+                    if (!(item.ItemBase.Value is TradableMaterial tradableMaterial))
+                    {
+                        continue;
+                    }
+                }
+                else
+                {
+                    if ((item.ItemBase.Value is TradableMaterial tradableMaterial))
+                    {
+                        continue;
+                    }
                 }
 
                 inventoryItem = item;

@@ -12,6 +12,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2cd6324defe910049a00728bad803885, type: 3}
   m_Name: UI_Palette
   m_EditorClassIdentifier: 
+  ButtonColorPalette:
+  - ButtonColorType: 0
+    Color: {r: 1, g: 1, b: 1, a: 1}
+  - ButtonColorType: 1
+    Color: {r: 0.39215687, g: 0.39215687, b: 0.39215687, a: 1}
+  - ButtonColorType: 2
+    Color: {r: 1, g: 1, b: 1, a: 0.3529412}
+  - ButtonColorType: 3
+    Color: {r: 1, g: 0, b: 0, a: 1}
+  GradientColorPalette:
+  - GradientColorType: 0
+    ColorMode: 2
+    Colors:
+    - {r: 0.85490197, g: 0.65882355, b: 0.32941177, a: 1}
+    - {r: 0.7529412, g: 0.34509805, b: 0.13725491, a: 1}
   palette:
   - {r: 1, g: 1, b: 1, a: 1}
   - {r: 0.39215687, g: 0.39215687, b: 0.39215687, a: 1}

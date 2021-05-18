@@ -203,7 +203,6 @@ namespace Nekoyume.Game.Character
                 InitializeHpBar();
                 HudContainer.UpdateAlpha(1);
             }
-
             HudContainer.UpdatePosition(gameObject, HUDOffset);
             HPBar.Set(CurrentHP, CharacterModel.Stats.BuffStats.HP, HP);
             HPBar.SetBuffs(CharacterModel.Buffs);
@@ -446,6 +445,8 @@ namespace Nekoyume.Game.Character
                 HPBar.gameObject.SetActive(false);
                 HPBar = null;
                 HudContainer.UpdateAlpha(0);
+                HudContainer.gameObject.SetActive(false);
+                HudContainer = null;
             }
 
             if (!ReferenceEquals(CastingBar, null))

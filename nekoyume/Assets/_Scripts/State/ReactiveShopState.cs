@@ -27,19 +27,19 @@ namespace Nekoyume.State
 
         public static readonly ReactiveProperty<Dictionary<
                 Address, Dictionary<ItemSubTypeFilter, Dictionary<
-                        SortFilter, Dictionary<int, List<ShopItem>>>>>>
+                        ShopSortFilter, Dictionary<int, List<ShopItem>>>>>>
             AgentProducts =
                 new ReactiveProperty<Dictionary<
                     Address, Dictionary<
                         ItemSubTypeFilter,
-                        Dictionary<SortFilter, Dictionary<int, List<ShopItem>>>>>>();
+                        Dictionary<ShopSortFilter, Dictionary<int, List<ShopItem>>>>>>();
 
         public static readonly ReactiveProperty<IReadOnlyDictionary<
                 ItemSubTypeFilter, Dictionary<
-                    SortFilter, Dictionary<int, List<ShopItem>>>>>
+                    ShopSortFilter, Dictionary<int, List<ShopItem>>>>>
             ItemSubTypeProducts = new ReactiveProperty<IReadOnlyDictionary<
                 ItemSubTypeFilter, Dictionary<
-                    SortFilter, Dictionary<int, List<ShopItem>>>>>();
+                    ShopSortFilter, Dictionary<int, List<ShopItem>>>>>();
 
         private static int _shopItemsPerPage = 24;
 
@@ -103,9 +103,9 @@ namespace Nekoyume.State
                     }
                 }
 
-                var filteredAgentProducts =
-                    new Dictionary<Address,
-                        Dictionary<ItemSubTypeFilter, Dictionary<SortFilter, Dictionary<int, List<ShopItem>>>>>();
+                var filteredAgentProducts = new Dictionary<
+                    Address,
+                    Dictionary<ItemSubTypeFilter, Dictionary<ShopSortFilter, Dictionary<int, List<ShopItem>>>>>();
                 foreach (var pair in agentProducts)
                 {
                     filteredAgentProducts.Add(pair.Key, GetGroupedShopItemsByItemSubTypeFilter(pair.Value));
@@ -124,7 +124,7 @@ namespace Nekoyume.State
 
         private static Dictionary<
                 ItemSubTypeFilter, Dictionary<
-                    SortFilter, Dictionary<int, List<ShopItem>>>>
+                    ShopSortFilter, Dictionary<int, List<ShopItem>>>>
             GetGroupedShopItemsByItemSubTypeFilter(IReadOnlyCollection<ShopItem> shopItems)
         {
             var equipment = new List<ShopItem>();
@@ -146,6 +146,7 @@ namespace Nekoyume.State
             var eyeCostumes = new List<ShopItem>();
             var tailCostumes = new List<ShopItem>();
             var titles = new List<ShopItem>();
+            var materials = new List<ShopItem>();
 
             foreach (var shopItem in shopItems)
             {
@@ -222,15 +223,17 @@ namespace Nekoyume.State
                             break;
                     }
                 }
+                else
+                {
+                    // Currently, there are only hourglass and AP potions.
+                    materials.Add(shopItem);
+                }
             }
 
             var groupedShopItems = new Dictionary<
-                ItemSubTypeFilter, Dictionary<SortFilter, Dictionary<int, List<ShopItem>>>>
+                ItemSubTypeFilter, Dictionary<ShopSortFilter, Dictionary<int, List<ShopItem>>>>
             {
                 {ItemSubTypeFilter.All, GetGroupedShopItemsBySortFilter(shopItems)},
-                // {ItemSubTypeFilter.Equipment, GetGroupedShopItemsBySortFilter(equipment)},
-                // {ItemSubTypeFilter.Food, GetGroupedShopItemsBySortFilter(food)},
-                // {ItemSubTypeFilter.Costume, GetGroupedShopItemsBySortFilter(costume)},
                 {ItemSubTypeFilter.Weapon, GetGroupedShopItemsBySortFilter(weapons)},
                 {ItemSubTypeFilter.Armor, GetGroupedShopItemsBySortFilter(armors)},
                 {ItemSubTypeFilter.Belt, GetGroupedShopItemsBySortFilter(belts)},
@@ -247,25 +250,26 @@ namespace Nekoyume.State
                 {ItemSubTypeFilter.EyeCostume, GetGroupedShopItemsBySortFilter(eyeCostumes)},
                 {ItemSubTypeFilter.TailCostume, GetGroupedShopItemsBySortFilter(tailCostumes)},
                 {ItemSubTypeFilter.Title, GetGroupedShopItemsBySortFilter(titles)},
+                {ItemSubTypeFilter.Materials, GetGroupedShopItemsBySortFilter(materials)},
             };
             return groupedShopItems;
         }
 
-        private static Dictionary<SortFilter, Dictionary<int, List<ShopItem>>>
+        private static Dictionary<ShopSortFilter, Dictionary<int, List<ShopItem>>>
             GetGroupedShopItemsBySortFilter(IReadOnlyCollection<ShopItem> shopItems)
         {
-            return new Dictionary<SortFilter, Dictionary<int, List<ShopItem>>>
+            return new Dictionary<ShopSortFilter, Dictionary<int, List<ShopItem>>>
             {
                 {
-                    SortFilter.Class,
+                    ShopSortFilter.Class,
                     GetGroupedShopItemsByPage(GetSortedShopItems(shopItems, SortType.Grade))
                 },
                 {
-                    SortFilter.CP,
+                    ShopSortFilter.CP,
                     GetGroupedShopItemsByPage(GetSortedShopItems(shopItems, SortType.Cp))
                 },
                 {
-                    SortFilter.Price,
+                    ShopSortFilter.Price,
                     GetGroupedShopItemsByPage(shopItems
                         .OrderByDescending(shopItem => shopItem.Price)
                         .ToList())
@@ -280,6 +284,8 @@ namespace Nekoyume.State
                 .OrderByDescending(shopItem => GetTypeValue(shopItem.Costume, type)));
             result.AddRange(shopItems.Where(shopItem => shopItem.ItemUsable != null)
                 .OrderByDescending(shopItem => GetTypeValue(shopItem.ItemUsable, type)));
+            result.AddRange(shopItems.Where(shopItem => shopItem.TradableFungibleItem != null)
+                .OrderByDescending(shopItem => GetTypeValue((ItemBase)shopItem.TradableFungibleItem, type)));
             return result;
         }
 
@@ -299,6 +305,8 @@ namespace Nekoyume.State
                             var costumeSheet = Game.Game.instance.TableSheets.CostumeStatSheet;
                             return CPHelper.GetCP(costume, costumeSheet);
                         }
+                        default:
+                            return 0;
                     }
                     break;
                 case SortType.None:

@@ -31,7 +31,7 @@ namespace Nekoyume.Helper
         private const string RankIconPath = "UI/Textures/UI_icon_ranking_{0}";
 
         private const string TitleFramePathFormat = "UI/Textures/TitleFrames/{0}";
-        private static readonly string TitleFrameDefaultPath = string.Format(TitleFramePathFormat, 4990001);
+        private static readonly string TitleFrameDefaultPath = string.Format(TitleFramePathFormat, 49900001);
 
         private const string MenuIllustratePathFormat = "UI/Textures/MenuIllustrates/{0}";
 
