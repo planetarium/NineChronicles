@@ -30,6 +30,8 @@ using Menu = Nekoyume.UI.Menu;
 
 namespace Nekoyume.Game
 {
+    using UniRx;
+
     [RequireComponent(typeof(Agent), typeof(RPCAgent))]
     public class Game : MonoSingleton<Game>
     {

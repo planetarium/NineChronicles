@@ -2,13 +2,14 @@ using System;
 using DG.Tweening;
 using Nekoyume.Game.Controller;
 using Nekoyume.TableData;
-using UniRx;
 using UniRx.Triggers;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
 {
+    using UniRx;
+
     public class WorldButton : MonoBehaviour
     {
         private enum State

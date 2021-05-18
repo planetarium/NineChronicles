@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,6 +27,8 @@ using Toggle = Nekoyume.UI.Module.Toggle;
 
 namespace Nekoyume.UI
 {
+    using UniRx;
+
     public class MimisbrunnrPreparation : Widget
     {
         private static readonly Color BattleStartButtonOriginColor = Color.white;

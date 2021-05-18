@@ -21,6 +21,8 @@ using Inventory = Nekoyume.Model.Item.Inventory;
 
 namespace Nekoyume.UI
 {
+    using UniRx;
+
     public class CombinationSlotPopup : PopupWidget
     {
         public RecipeCellView recipeCellView;

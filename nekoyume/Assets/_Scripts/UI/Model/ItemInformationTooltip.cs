@@ -2,10 +2,11 @@ using System;
 using System.Numerics;
 using Libplanet.Assets;
 using Nekoyume.State;
-using UniRx;
 
 namespace Nekoyume.UI.Model
 {
+    using UniRx;
+
     public class ItemInformationTooltip : Tooltip
     {
         public readonly ItemInformation ItemInformation;

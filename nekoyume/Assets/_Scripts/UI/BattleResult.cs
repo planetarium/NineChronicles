@@ -21,6 +21,8 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
+    using UniRx;
+
     public class BattleResult : PopupWidget
     {
         public enum  NextState

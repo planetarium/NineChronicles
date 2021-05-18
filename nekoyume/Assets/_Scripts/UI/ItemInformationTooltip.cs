@@ -8,12 +8,13 @@ using Nekoyume.State;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using TMPro;
-using UniRx;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
 namespace Nekoyume.UI
 {
+    using UniRx;
+
     public class ItemInformationTooltip : VerticalTooltipWidget<Model.ItemInformationTooltip>
     {
         [SerializeField] private TextMeshProUGUI titleText;

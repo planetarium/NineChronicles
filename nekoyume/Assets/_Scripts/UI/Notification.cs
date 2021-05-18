@@ -11,6 +11,8 @@ using UnityEngine;
 
 namespace Nekoyume.UI
 {
+    using UniRx;
+
     /// <summary>
     /// Usage: Just to call the `Notification.Push()` method anywhere.
     /// </summary>

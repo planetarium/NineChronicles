@@ -1,17 +1,16 @@
 using System;
 using System.Collections.Generic;
-using System.Text;
 using Nekoyume.Action;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
-using Nekoyume.State;
 using TMPro;
-using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
+    using UniRx;
+
     public class BlockTimer : MonoBehaviour
     {
         [SerializeField] private TextMeshProUGUI remainTime = null;

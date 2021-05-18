@@ -15,6 +15,8 @@ using UnityEngine;
 
 namespace Nekoyume.BlockChain
 {
+    using UniRx;
+
     public class ActionUnrenderHandler : ActionHandler
     {
         private static class Singleton

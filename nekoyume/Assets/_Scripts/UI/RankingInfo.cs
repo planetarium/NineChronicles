@@ -1,19 +1,18 @@
 using System;
 using System.Collections.Generic;
-using System.Text;
-using Libplanet;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.State.Subjects;
 using TMPro;
-using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
+    using UniRx;
+
     public class RankingInfo : MonoBehaviour
     {
         [SerializeField]

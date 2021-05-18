@@ -6,12 +6,13 @@ using Nekoyume.Model.Item;
 using Nekoyume.State;
 using Nekoyume.UI.Scroller;
 using TMPro;
-using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
 {
+    using UniRx;
+
     public class Inventory : MonoBehaviour
     {
         [Serializable]

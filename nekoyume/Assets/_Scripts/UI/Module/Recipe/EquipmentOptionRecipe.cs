@@ -1,14 +1,14 @@
-using Nekoyume.Model.Quest;
 using Nekoyume.State;
 using Nekoyume.TableData;
 using Nekoyume.UI.Scroller;
 using System;
 using System.Linq;
-using UniRx;
 using UnityEngine;
 
 namespace Nekoyume.UI.Module
 {
+    using UniRx;
+
     public class EquipmentOptionRecipe : MonoBehaviour
     {
         [SerializeField]

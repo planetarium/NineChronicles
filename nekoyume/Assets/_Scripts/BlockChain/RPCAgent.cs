@@ -29,12 +29,13 @@ using Nekoyume.UI;
 using NineChronicles.RPC.Shared.Exceptions;
 using UniRx;
 using UnityEngine;
-using UnityEngine.Events;
 using static Nekoyume.Action.ActionBase;
 using Logger = Serilog.Core.Logger;
 
 namespace Nekoyume.BlockChain
 {
+    using UniRx;
+
     public class RPCAgent : MonoBehaviour, IAgent, IActionEvaluationHubReceiver
     {
         private const float TxProcessInterval = 1.0f;

@@ -23,6 +23,8 @@ using Toggle = Nekoyume.UI.Module.Toggle;
 
 namespace Nekoyume.UI
 {
+    using UniRx;
+
     public class QuestPreparation : Widget
     {
         [SerializeField]

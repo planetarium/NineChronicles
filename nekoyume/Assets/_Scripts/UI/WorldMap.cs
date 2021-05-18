@@ -10,6 +10,8 @@ using mixpanel;
 
 namespace Nekoyume.UI
 {
+    using UniRx;
+
     public class WorldMap : Widget
     {
         public class ViewModel

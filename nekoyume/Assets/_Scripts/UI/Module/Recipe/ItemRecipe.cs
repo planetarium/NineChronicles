@@ -15,6 +15,8 @@ using Nekoyume.Model.Stat;
 
 namespace Nekoyume.UI.Module
 {
+    using UniRx;
+
     public class ItemRecipe : MonoBehaviour
     {
         [SerializeField]
