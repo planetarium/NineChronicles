@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 using Bencodex.Types;
-using CsvHelper.Configuration.Attributes;
 using Libplanet;
 using Nekoyume.Action;
 using Nekoyume.Battle;
@@ -567,31 +566,51 @@ namespace Nekoyume.Model.Item
                     }
                 }
 
-                ITradableItem tradableItem = (ITradableItem) items.First().item;
-                if (tradableItem is IEquippableItem equippableItem)
-                {
-                    equippableItem.Unequip();
-                }
-
-                // Copy new TradableMaterial
-                if (tradableItem is TradableMaterial tradableMaterial)
-                {
-                    var material = new TradableMaterial((Dictionary) tradableMaterial.Serialize())
-                    {
-                        RequiredBlockIndex = requiredBlockIndex
-                    };
-                    AddItem(material, count);
-                    return material;
-                }
-
-                // NonFungibleItem case.
-                tradableItem.RequiredBlockIndex = requiredBlockIndex;
-                AddItem((ItemBase)tradableItem, count);
-                return tradableItem;
-
+                return ReplaceTradableItem(count, items.First(), requiredBlockIndex);
             }
 
             throw new ItemDoesNotExistException(tradableId.ToString());
+        }
+
+        public ITradableItem UpdateTradableItem(Guid tradableId, long blockIndex, int count, long requiredBlockIndex)
+        {
+            if (TryGetTradableItem(tradableId, blockIndex, count, out Item item))
+            {
+                item.count -= count;
+                if (item.count <= 0)
+                {
+                    _items.Remove(item);
+                }
+
+                return ReplaceTradableItem(count, item, requiredBlockIndex);
+            }
+
+            throw new ItemDoesNotExistException(tradableId.ToString());
+        }
+
+        private ITradableItem ReplaceTradableItem(int count, Item item, long requiredBlockIndex)
+        {
+            ITradableItem tradableItem = (ITradableItem) item.item;
+            if (tradableItem is IEquippableItem equippableItem)
+            {
+                equippableItem.Unequip();
+            }
+
+            // Copy new TradableMaterial
+            if (tradableItem is TradableMaterial tradableMaterial)
+            {
+                var material = new TradableMaterial((Dictionary) tradableMaterial.Serialize())
+                {
+                    RequiredBlockIndex = requiredBlockIndex
+                };
+                AddItem(material, count);
+                return material;
+            }
+
+            // NonFungibleItem case.
+            tradableItem.RequiredBlockIndex = requiredBlockIndex;
+            AddItem((ItemBase) tradableItem, count);
+            return tradableItem;
         }
     }
 }

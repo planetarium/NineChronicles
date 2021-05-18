@@ -471,5 +471,80 @@
                 Assert.Equal(i, item.RequiredBlockIndex);
             }
         }
+
+        [Theory]
+        [InlineData(ItemType.Equipment)]
+        [InlineData(ItemType.Costume)]
+        [InlineData(ItemType.Consumable)]
+        [InlineData(ItemType.Material)]
+        public void UpdateTradableItem(ItemType itemType)
+        {
+            ItemSheet.Row row;
+            switch (itemType)
+            {
+                case ItemType.Consumable:
+                    row = TableSheets.EquipmentItemSheet.First;
+                    break;
+                case ItemType.Costume:
+                    row = TableSheets.CostumeItemSheet.First;
+                    break;
+                case ItemType.Equipment:
+                    row = TableSheets.ConsumableItemSheet.First;
+                    break;
+                case ItemType.Material:
+                    row = TableSheets.MaterialItemSheet.First;
+                    break;
+                default:
+                    throw new Exception();
+            }
+
+            var inventory = new Inventory();
+            ITradableItem tradableItem;
+            if (itemType == ItemType.Material)
+            {
+                tradableItem = ItemFactory.CreateTradableMaterial((MaterialItemSheet.Row)row);
+            }
+            else
+            {
+                tradableItem = (ITradableItem)ItemFactory.CreateItem(row, new TestRandom());
+            }
+
+            inventory.AddItem((ItemBase)tradableItem, 1);
+            Assert.Single(inventory.Items);
+            ITradableItem result = inventory.UpdateTradableItem(tradableItem.TradableId, 0, 1, 1);
+            Assert.Equal(1, result.RequiredBlockIndex);
+            Assert.Single(inventory.Items);
+            Inventory.Item inventoryItem = inventory.Items.First();
+            Assert.Equal(1, inventoryItem.count);
+            Assert.Equal(1, ((ITradableItem)inventoryItem.item).RequiredBlockIndex);
+        }
+
+        [Fact]
+        public void UpdateTradableItem_Material_Multiple_Slot()
+        {
+            MaterialItemSheet.Row row = TableSheets.MaterialItemSheet.First;
+            Assert.NotNull(row);
+            Guid tradableId = TradableMaterial.DeriveTradableId(row.ItemId);
+            var inventory = new Inventory();
+            for (int i = 0; i < 2; i++)
+            {
+                ITradableItem tradableItem = ItemFactory.CreateTradableMaterial(row);
+                tradableItem.RequiredBlockIndex = i;
+                inventory.AddItem((ItemBase)tradableItem, 2);
+            }
+
+            Assert.Equal(2, inventory.Items.Count);
+            ITradableItem result = inventory.UpdateTradableItem(tradableId, 0, 1, 1);
+            Assert.Equal(2, inventory.Items.Count);
+            Assert.Equal(1, result.RequiredBlockIndex);
+            Assert.True(inventory.TryGetTradableItems(tradableId, 1, 4, out List<Inventory.Item> items));
+            Assert.Equal(2, items.Count);
+            for (int i = 0; i < items.Count; i++)
+            {
+                var item = items[i];
+                Assert.Equal(2 * i + 1, item.count);
+                Assert.Equal(i, ((ITradableItem)item.item).RequiredBlockIndex);
+            }
+        }
     }
 }

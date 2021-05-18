@@ -186,14 +186,10 @@ namespace Nekoyume.Action
                 throw new InvalidShopItemException($"{addressesHex}Tradable Item is null.");
             }
 
-            if (avatarState.inventory.TryGetTradableItem(
-                    tradableItem.TradableId,
-                    tradableItem.RequiredBlockIndex,
-                    itemCount,
-                    out var tradableItems))
+            if (!backwardCompatible)
             {
-                ITradableItem tradableItemInInventory = (ITradableItem) tradableItems.item;
-                tradableItemInInventory.RequiredBlockIndex = context.BlockIndex;
+                avatarState.inventory.UpdateTradableItem(tradableItem.TradableId,
+                    tradableItem.RequiredBlockIndex, itemCount, context.BlockIndex);
             }
 
             if (tradableItem is INonFungibleItem nonFungibleItem)
