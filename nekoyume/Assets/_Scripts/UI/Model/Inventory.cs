@@ -193,8 +193,8 @@ namespace Nekoyume.UI.Model
                     Equipments.Remove(inventoryItem);
                     break;
                 case ItemType.Material:
-                    bool istTradable = itemBase is TradableMaterial;
-                    if (!TryGetMaterial((Material) itemBase, istTradable, out inventoryItem))
+                    bool isTradable = itemBase is TradableMaterial;
+                    if (!TryGetMaterial((Material) itemBase, isTradable, out inventoryItem))
                     {
                         break;
                     }
