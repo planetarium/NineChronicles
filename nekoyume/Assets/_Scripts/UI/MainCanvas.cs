@@ -259,6 +259,8 @@ namespace Nekoyume.UI
             yield return null;
             secondWidgets.Add(Widget.Create<ItemCountAndPricePopup>());
             yield return null;
+            secondWidgets.Add(Widget.Create<ItemCountableAndPricePopup>());
+            yield return null;
             secondWidgets.Add(Widget.Create<DailyRewardItemPopup>());
             yield return null;
             secondWidgets.Add(Widget.Create<CombinationResultPopup>());

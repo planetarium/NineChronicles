@@ -26,6 +26,7 @@ namespace Nekoyume.UI.Module
         EyeCostume,
         TailCostume,
         Title,
+        Materials,
 
         Equipment,
         Food,
@@ -64,6 +65,8 @@ namespace Nekoyume.UI.Module
                     return useSell
                         ? $"{StatType.HIT.ToString()} {ItemSubType.Food.GetLocalizedString()}"
                         : StatType.HIT.ToString();
+                case ItemSubTypeFilter.Materials:
+                    return L10nManager.Localize("UI_MATERIALS");
 
                 default:
                     return ((ItemSubType) Enum.Parse(typeof(ItemSubType), type.ToString()))

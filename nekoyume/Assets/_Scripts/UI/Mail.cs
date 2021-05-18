@@ -258,9 +258,9 @@ namespace Nekoyume.UI
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             var attachment = (SellCancellation.Result) mail.attachment;
-            var itemBase = attachment.itemUsable ?? (ItemBase)attachment.costume;
-            var tradableItem = attachment.itemUsable ?? (ITradableItem)attachment.costume;
-            //TODO 관련 기획이 끝나면 별도 UI를 생성
+            var itemBase = ShopSell.GetItemBase(attachment);
+            var tradableItem = (ITradableItem) itemBase;
+
             var popup = Find<ItemCountAndPricePopup>();
             var model = new UI.Model.ItemCountAndPricePopup();
             model.TitleText.Value = L10nManager.Localize("UI_RETRIEVE");
@@ -268,7 +268,8 @@ namespace Nekoyume.UI
             model.PriceInteractable.Value = false;
             model.Price.Value = attachment.shopItem.Price;
             model.CountEnabled.Value = false;
-            model.Item.Value = new CountEditableItem(itemBase, 1, 1, 1);
+            model.Item.Value = new CountEditableItem(itemBase, 1, 1, 1); // todo : 카운트 세팅해줘야함
+
             model.OnClickSubmit.Subscribe(_ =>
             {
                 LocalLayerModifier.AddItem(avatarAddress, tradableItem.TradableId);
@@ -289,17 +290,19 @@ namespace Nekoyume.UI
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             var attachment = (Buy.BuyerResult) buyerMail.attachment;
-            var itemBase = attachment.itemUsable ?? (ItemBase)attachment.costume;
-            var tradableItem = attachment.itemUsable ?? (ITradableItem)attachment.costume;
+            var itemBase = ShopBuy.GetItemBase(attachment);
+            var tradableItem = (ITradableItem) itemBase;
+            var count = attachment.tradableFungibleItemCount > 0 ?
+                             attachment.tradableFungibleItemCount : 1;
             var popup = Find<CombinationResultPopup>();
-            var model = new UI.Model.CombinationResultPopup(new CountableItem(itemBase, 1))
+            var model = new UI.Model.CombinationResultPopup(new CountableItem(itemBase, count))
             {
                 isSuccess = true,
                 materialItems = new List<CombinationMaterial>()
             };
             model.OnClickSubmit.Subscribe(_ =>
             {
-                LocalLayerModifier.AddItem(avatarAddress, tradableItem.TradableId);
+                LocalLayerModifier.AddItem(avatarAddress, tradableItem.TradableId, count);
                 LocalLayerModifier.RemoveNewAttachmentMail(avatarAddress, buyerMail.id, true);
             }).AddTo(gameObject);
             popup.Pop(model);
@@ -360,7 +363,7 @@ namespace Nekoyume.UI
             {
                 return;
             }
-            
+
             var popup = Find<MonsterCollectionRewardsPopup>();
             popup.OnClickSubmit.First().Subscribe(widget =>
             {
@@ -374,13 +377,13 @@ namespace Nekoyume.UI
                     {
                         continue;
                     }
-                
+
                     LocalLayerModifier.AddItem(monsterCollectionResult.avatarAddress, tradableId, rewardInfo.Quantity);
                 }
-            
+
                 LocalLayerModifier.RemoveNewAttachmentMail(monsterCollectionResult.avatarAddress, monsterCollectionMail.id, true);
                 // ~LocalLayer
-                
+
                 widget.Close();
             });
             popup.Pop(monsterCollectionResult.rewards);

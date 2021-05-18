@@ -44,6 +44,7 @@ namespace Nekoyume.UI.Module
         {
             ItemSubTypeFilter.Equipment,
             ItemSubTypeFilter.Food,
+            ItemSubTypeFilter.Materials,
             ItemSubTypeFilter.Costume,
         };
 
@@ -71,6 +72,9 @@ namespace Nekoyume.UI.Module
                 }
             },
             {
+                ItemSubTypeFilter.Materials, new List<ItemSubTypeFilter>()
+            },
+            {
                 ItemSubTypeFilter.Costume, new List<ItemSubTypeFilter>()
                 {
                     ItemSubTypeFilter.FullCostume,
@@ -92,9 +96,11 @@ namespace Nekoyume.UI.Module
             var equipments = Game.Game.instance.TableSheets.EquipmentItemSheet.Values.Select(x => x.Id);
             var consumableItems = Game.Game.instance.TableSheets.ConsumableItemSheet.Values.Select(x => x.Id);
             var costumes = Game.Game.instance.TableSheets.CostumeItemSheet.Values.Select(x => x.Id);
+            var materials = Game.Game.instance.TableSheets.MaterialItemSheet.Values.Select(x => x.Id);
             _itemIds.AddRange(equipments);
             _itemIds.AddRange(consumableItems);
             _itemIds.AddRange(costumes);
+            _itemIds.AddRange(materials);
             _sortText = sortButton.GetComponentInChildren<TextMeshProUGUI>();
             inputPlaceholder.SetAsLastSibling();
 
@@ -114,8 +120,15 @@ namespace Nekoyume.UI.Module
                 {
                     if (value)
                     {
-                        SharedModel.itemSubTypeFilter = _toggleSubTypes[toggleType].First();
-                        toggleDropdown.items.First().isOn = true;
+                        if (_toggleSubTypes[toggleType].Count > 0)
+                        {
+                            SharedModel.itemSubTypeFilter = _toggleSubTypes[toggleType].First();
+                            toggleDropdown.items.First().isOn = true;
+                        }
+                        else
+                        {
+                            SharedModel.itemSubTypeFilter = ItemSubTypeFilter.Materials;
+                        }
                         OnItemSubTypeFilterChanged();
                     }
                 });

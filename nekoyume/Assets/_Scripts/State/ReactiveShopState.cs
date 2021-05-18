@@ -146,6 +146,7 @@ namespace Nekoyume.State
             var eyeCostumes = new List<ShopItem>();
             var tailCostumes = new List<ShopItem>();
             var titles = new List<ShopItem>();
+            var materials = new List<ShopItem>();
 
             foreach (var shopItem in shopItems)
             {
@@ -222,15 +223,17 @@ namespace Nekoyume.State
                             break;
                     }
                 }
+                else
+                {
+                    // Currently, there are only hourglass and AP potions.
+                    materials.Add(shopItem);
+                }
             }
 
             var groupedShopItems = new Dictionary<
                 ItemSubTypeFilter, Dictionary<ShopSortFilter, Dictionary<int, List<ShopItem>>>>
             {
                 {ItemSubTypeFilter.All, GetGroupedShopItemsBySortFilter(shopItems)},
-                // {ItemSubTypeFilter.Equipment, GetGroupedShopItemsBySortFilter(equipment)},
-                // {ItemSubTypeFilter.Food, GetGroupedShopItemsBySortFilter(food)},
-                // {ItemSubTypeFilter.Costume, GetGroupedShopItemsBySortFilter(costume)},
                 {ItemSubTypeFilter.Weapon, GetGroupedShopItemsBySortFilter(weapons)},
                 {ItemSubTypeFilter.Armor, GetGroupedShopItemsBySortFilter(armors)},
                 {ItemSubTypeFilter.Belt, GetGroupedShopItemsBySortFilter(belts)},
@@ -247,6 +250,7 @@ namespace Nekoyume.State
                 {ItemSubTypeFilter.EyeCostume, GetGroupedShopItemsBySortFilter(eyeCostumes)},
                 {ItemSubTypeFilter.TailCostume, GetGroupedShopItemsBySortFilter(tailCostumes)},
                 {ItemSubTypeFilter.Title, GetGroupedShopItemsBySortFilter(titles)},
+                {ItemSubTypeFilter.Materials, GetGroupedShopItemsBySortFilter(materials)},
             };
             return groupedShopItems;
         }
@@ -280,6 +284,8 @@ namespace Nekoyume.State
                 .OrderByDescending(shopItem => GetTypeValue(shopItem.Costume, type)));
             result.AddRange(shopItems.Where(shopItem => shopItem.ItemUsable != null)
                 .OrderByDescending(shopItem => GetTypeValue(shopItem.ItemUsable, type)));
+            result.AddRange(shopItems.Where(shopItem => shopItem.TradableFungibleItem != null)
+                .OrderByDescending(shopItem => GetTypeValue((ItemBase)shopItem.TradableFungibleItem, type)));
             return result;
         }
 
@@ -299,6 +305,8 @@ namespace Nekoyume.State
                             var costumeSheet = Game.Game.instance.TableSheets.CostumeStatSheet;
                             return CPHelper.GetCP(costume, costumeSheet);
                         }
+                        default:
+                            return 0;
                     }
                     break;
                 case SortType.None:

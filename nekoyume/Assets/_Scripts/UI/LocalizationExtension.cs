@@ -26,8 +26,7 @@ namespace Nekoyume.UI
                 case BuyerMail buyerMail:
                     return string.Format(
                         L10nManager.Localize("UI_BUYER_MAIL_FORMAT"),
-                        GetLocalizedNonColoredName(buyerMail.attachment.itemUsable ?? (ItemBase)buyerMail.attachment.costume)
-                    );
+                        GetLocalizedNonColoredName(GetItemBase(buyerMail.attachment)));
                 case CombinationMail combinationMail:
                     return string.Format(
                         L10nManager.Localize("UI_COMBINATION_NOTIFY_FORMAT"),
@@ -41,15 +40,17 @@ namespace Nekoyume.UI
                 case SellCancelMail sellCancelMail:
                     return string.Format(
                         L10nManager.Localize("UI_SELL_CANCEL_MAIL_FORMAT"),
-                        GetLocalizedNonColoredName(sellCancelMail.attachment.itemUsable ?? (ItemBase)sellCancelMail.attachment.costume)
+                        GetLocalizedNonColoredName(GetItemBase(sellCancelMail.attachment))
                     );
                 case SellerMail sellerMail:
                     var attachment = sellerMail.attachment;
                     if (!(attachment is Buy.SellerResult sellerResult))
+                    {
                         throw new InvalidCastException($"({nameof(Buy.SellerResult)}){nameof(attachment)}");
+                    }
 
                     var format = L10nManager.Localize("UI_SELLER_MAIL_FORMAT");
-                    return string.Format(format, sellerResult.gold, GetLocalizedNonColoredName(attachment.itemUsable ?? (ItemBase)attachment.costume));
+                    return string.Format(format, sellerResult.gold, GetLocalizedNonColoredName(GetItemBase(attachment)));
                 case DailyRewardMail _:
                     return L10nManager.Localize("UI_DAILY_REWARD_MAIL_FORMAT");
                 case MonsterCollectionMail _:
@@ -59,6 +60,20 @@ namespace Nekoyume.UI
                         $"Given mail[{mail}] doesn't support {nameof(ToInfo)}() method."
                     );
             }
+        }
+
+        private static ItemBase GetItemBase(AttachmentActionResult attachment)
+        {
+            if (attachment.itemUsable != null)
+            {
+                return attachment.itemUsable;
+            }
+
+            if (attachment.costume != null)
+            {
+                return attachment.costume;
+            }
+            return (ItemBase)attachment.tradableFungibleItem;
         }
 
         public static string GetTitle(this QuestModel quest)
