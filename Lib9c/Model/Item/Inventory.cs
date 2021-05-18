@@ -254,24 +254,15 @@ namespace Nekoyume.Model.Item
         public bool RemoveNonFungibleItem(Guid nonFungibleId)
             => TryGetNonFungibleItem(nonFungibleId, out var item) && _items.Remove(item);
 
-        public bool RemoveTradableItem(ITradableItem tradableItem, int count = 1)
-        {
-            switch (tradableItem)
-            {
-                case IFungibleItem fungibleItem:
-                    return RemoveFungibleItem(fungibleItem, count, true);
-                case INonFungibleItem nonFungibleItem:
-                    return RemoveNonFungibleItem(nonFungibleItem);
-                default:
-                    return false;
-            }
-        }
+        public bool RemoveTradableItem(ITradableItem tradableItem, int count = 1) =>
+            RemoveTradableItem(tradableItem.TradableId, tradableItem.RequiredBlockIndex, count);
 
-        public bool RemoveTradableItem(Guid tradableId, int count = 1)
+        public bool RemoveTradableItem(Guid tradableId, long blockIndex, int count = 1)
         {
             var target = _items.FirstOrDefault(e =>
                 e.item is ITradableItem tradableItem &&
-                tradableItem.TradableId.Equals(tradableId));
+                tradableItem.TradableId.Equals(tradableId) &&
+                tradableItem.RequiredBlockIndex == blockIndex);
             if (target is null ||
                 target.count < count)
             {
@@ -427,6 +418,17 @@ namespace Nekoyume.Model.Item
             return true;
         }
 
+        public bool TryGetTradableItem(Guid tradeId, long blockIndex, int count, out Item outItem)
+        {
+            outItem = _items.FirstOrDefault(i =>
+                i.item is ITradableItem item &&
+                item.TradableId.Equals(tradeId) &&
+                item.RequiredBlockIndex == blockIndex &&
+                i.count >= count
+            );
+            return !(outItem is null);
+        }
+
         // public bool TryGetTradableItemWithoutNonTradableFungibleItem(
         //     Guid tradeId,
         //     out Item outItem)
@@ -564,31 +566,51 @@ namespace Nekoyume.Model.Item
                     }
                 }
 
-                ITradableItem tradableItem = (ITradableItem) items.First().item;
-                if (tradableItem is IEquippableItem equippableItem)
-                {
-                    equippableItem.Unequip();
-                }
-
-                // Copy new TradableMaterial
-                if (tradableItem is TradableMaterial tradableMaterial)
-                {
-                    var material = new TradableMaterial((Dictionary) tradableMaterial.Serialize())
-                    {
-                        RequiredBlockIndex = requiredBlockIndex
-                    };
-                    AddItem(material, count);
-                    return material;
-                }
-
-                // NonFungibleItem case.
-                tradableItem.RequiredBlockIndex = requiredBlockIndex;
-                AddItem((ItemBase)tradableItem, count);
-                return tradableItem;
-
+                return ReplaceTradableItem(count, items.First(), requiredBlockIndex);
             }
 
             throw new ItemDoesNotExistException(tradableId.ToString());
+        }
+
+        public ITradableItem UpdateTradableItem(Guid tradableId, long blockIndex, int count, long requiredBlockIndex)
+        {
+            if (TryGetTradableItem(tradableId, blockIndex, count, out Item item))
+            {
+                item.count -= count;
+                if (item.count <= 0)
+                {
+                    _items.Remove(item);
+                }
+
+                return ReplaceTradableItem(count, item, requiredBlockIndex);
+            }
+
+            throw new ItemDoesNotExistException(tradableId.ToString());
+        }
+
+        private ITradableItem ReplaceTradableItem(int count, Item item, long requiredBlockIndex)
+        {
+            ITradableItem tradableItem = (ITradableItem) item.item;
+            if (tradableItem is IEquippableItem equippableItem)
+            {
+                equippableItem.Unequip();
+            }
+
+            // Copy new TradableMaterial
+            if (tradableItem is TradableMaterial tradableMaterial)
+            {
+                var material = new TradableMaterial((Dictionary) tradableMaterial.Serialize())
+                {
+                    RequiredBlockIndex = requiredBlockIndex
+                };
+                AddItem(material, count);
+                return material;
+            }
+
+            // NonFungibleItem case.
+            tradableItem.RequiredBlockIndex = requiredBlockIndex;
+            AddItem((ItemBase) tradableItem, count);
+            return tradableItem;
         }
     }
 }
