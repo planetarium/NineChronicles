@@ -479,13 +479,13 @@ namespace Nekoyume.BlockChain
                     if (count > 1)
                     {
                         message = string.Format(L10nManager.Localize("NOTIFICATION_MULTIPLE_SELL_COMPLETE"),
-                            item.First().item.GetLocalizedName(),
+                            items.First().item.GetLocalizedName(),
                             count);
                     }
                     else
                     {
                         message = string.Format(L10nManager.Localize("NOTIFICATION_SELL_COMPLETE"),
-                            item.First().item.GetLocalizedName());
+                            items.First().item.GetLocalizedName());
                     }
 
                     UI.Notification.Push(MailType.Auction, message);
