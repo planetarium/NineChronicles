@@ -135,7 +135,7 @@ namespace Nekoyume.BlockChain
             byte[] raw = result.ResponseAsync.Result;
             var serialized = (Bencodex.Types.List) _codec.Decode(raw);
             return FungibleAssetValue.FromRawValue(
-                CurrencyExtensions.Deserialize((Bencodex.Types.Dictionary) serialized.ElementAt(0)),
+                new Currency(serialized.ElementAt(0)),
                 serialized.ElementAt(1).ToBigInteger());
         }
 
