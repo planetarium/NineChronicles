@@ -473,7 +473,7 @@ namespace Nekoyume.BlockChain
                 var blockIndex = Game.Game.instance.Agent.BlockIndex;
                 var count = eval.Action.count;
                 var avatarState = new AvatarState((Bencodex.Types.Dictionary) eval.PreviousStates.GetState(avatarAddress));
-                if (avatarState.inventory.TryGetTradableItems(tradableId, blockIndex, count, out var item))
+                if (avatarState.inventory.TryGetTradableItems(tradableId, blockIndex, count, out var items))
                 {
                     string message = string.Empty;
                     if (count > 1)
