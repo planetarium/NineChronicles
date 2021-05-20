@@ -102,7 +102,6 @@ namespace Nekoyume.UI
         public void Show()
         {
             base.Show();
-            ReactiveShopState.Update(ShopItemsPerPage);
             shopItems.Show();
             inventory.SharedModel.State.Value = ItemType.Equipment;
             inventory.SharedModel.DimmedFunc.Value = inventoryItem => !(inventoryItem.ItemBase.Value is ITradableItem);
