@@ -22,7 +22,6 @@ namespace Nekoyume.UI
 {
     public class ShopBuy : Widget
     {
-        public static int ShopItemsPerPage = 24; // todo : Resolution Response Required Later
         private const int NPCId = 300000;
         private static readonly Vector3 NPCPosition = new Vector3(1000.1f, 998.2f, 1.7f);
         private NPC _npc;
@@ -108,7 +107,7 @@ namespace Nekoyume.UI
                 {
                     shardedProducts.AddRange(items);
                 }
-                ReactiveShopState.Initialize(shopState, shardedProducts, ShopItemsPerPage);
+                ReactiveShopState.Initialize(shopState, shardedProducts);
                 return true;
             });
 
@@ -146,7 +145,7 @@ namespace Nekoyume.UI
 
         public void Open()
         {
-            ReactiveShopState.Update(ShopItemsPerPage);
+            ReactiveShopState.Update();
             shopItems.Reset();
             Reset();
         }
@@ -253,7 +252,7 @@ namespace Nekoyume.UI
             var productId = shopItem.ProductId.Value;
 
             LocalLayerModifier.ModifyAgentGold(buyerAgentAddress, -shopItem.Price.Value);
-            ReactiveShopState.RemoveShopItem(productId, ShopItemsPerPage);
+            ReactiveShopState.RemoveShopItem(productId);
 
             var format = L10nManager.Localize("NOTIFICATION_BUY_START");
             OneLinePopup.Push(MailType.Auction,
