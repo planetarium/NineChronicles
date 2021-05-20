@@ -12,6 +12,7 @@ using Debug = UnityEngine.Debug;
 using Nekoyume.L10n;
 using Nekoyume.Battle;
 using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 
 namespace Nekoyume.UI.Module
 {
@@ -40,14 +41,14 @@ namespace Nekoyume.UI.Module
             public void Update()
             {
                 var rankingMapStates = States.Instance.RankingMapStates;
-                SharedModel._rankingInfoSet = new HashSet<Nekoyume.Model.State.RankingInfo>();
+                _rankingInfoSet = new HashSet<Nekoyume.Model.State.RankingInfo>();
                 foreach (var pair in rankingMapStates)
                 {
                     var rankingInfo = pair.Value.GetRankingInfos(null);
-                    SharedModel._rankingInfoSet.UnionWith(rankingInfo);
+                    _rankingInfoSet.UnionWith(rankingInfo);
                 }
 
-                Debug.LogWarning($"total user count : {SharedModel._rankingInfoSet.Count()}");
+                Debug.LogWarning($"total user count : {_rankingInfoSet.Count()}");
 
                 var sw = new Stopwatch();
                 sw.Start();
@@ -257,13 +258,12 @@ namespace Nekoyume.UI.Module
         {
             RankLoadingTask = Task.Run(() =>
             {
-                var model = SharedModel;
-                model.Update();
+                SharedModel.Update();
 
                 return
-                    model.AbilityRankingInfos != null ||
-                    model.StageRankingInfos != null ||
-                    model.MimisbrunnrRankingInfos != null;
+                    SharedModel.AbilityRankingInfos != null ||
+                    SharedModel.StageRankingInfos != null ||
+                    SharedModel.MimisbrunnrRankingInfos != null;
             });
         }
 
@@ -370,6 +370,7 @@ namespace Nekoyume.UI.Module
 
         private async void UpdateCategoryAsync(RankCategory category)
         {
+            await UniTask.WaitWhile(() => RankLoadingTask is null);
             if (RankLoadingTask.IsFaulted)
             {
                 Debug.LogError($"Error loading ranking. Exception : \n{RankLoadingTask.Exception}\n{RankLoadingTask.Exception.StackTrace}");
@@ -465,9 +466,5 @@ namespace Nekoyume.UI.Module
             var secondCategory = _rankColumnMap[category].Item2;
             secondColumnText.text = secondCategory.StartsWith("UI_") ? L10nManager.Localize(secondCategory) : secondCategory;
         }
-
-        #region Shared Model Update
-
-        #endregion
     }
 }
