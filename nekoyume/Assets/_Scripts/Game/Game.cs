@@ -132,16 +132,15 @@ namespace Nekoyume.Game
             yield return L10nManager.Initialize(LanguageTypeMapper.ISO396(_options.Language)).ToYieldInstruction();
 #endif
 
-            // UI 초기화 1차.
+            // Initialize MainCanvas first
             MainCanvas.instance.InitializeFirst();
             yield return Addressables.InitializeAsync();
+            // Initialize TableSheets. This should be done before initialize the Agent.
             yield return StartCoroutine(CoInitializeTableSheets());
             yield return StartCoroutine(ResourcesHelper.CoInitialize());
             AudioController.instance.Initialize();
             yield return null;
-            // Agent 초기화.
-            // Agent를 초기화하기 전에 반드시 Table과 TableSheets를 초기화 함.
-            // Agent가 Table과 TableSheets에 약한 의존성을 갖고 있음.(Deserialize 단계 때문)
+            // Initialize Agent
             var agentInitialized = false;
             var agentInitializeSucceed = false;
             yield return StartCoroutine(
@@ -160,8 +159,11 @@ namespace Nekoyume.Game
             // NOTE: Create ActionManager after Agent initialized.
             ActionManager = new ActionManager(Agent);
             yield return StartCoroutine(CoSyncTableSheets());
-            // UI 초기화 2차.
+            // Initialize MainCanvas second
             yield return StartCoroutine(MainCanvas.instance.InitializeSecond());
+            // Initialize Rank.SharedModel
+            RankPanel.UpdateSharedModel();
+            // Initialize Stage
             Stage.Initialize();
 
             Observable.EveryUpdate()
@@ -496,8 +498,6 @@ namespace Nekoyume.Game
                 loginPopup.GetPrivateKey(),
                 callback
             );
-
-            RankPanel.UpdateSharedModel();
         }
 
         public void ResetStore()
