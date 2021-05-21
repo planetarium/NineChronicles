@@ -43,6 +43,12 @@ namespace Nekoyume.Action
                     .MarkBalanceChanged(GoldCurrencyMock, ctx.Signer, WeeklyArenaAddress);
             }
 
+            // Avoid InvalidBlockStateRootHashException
+            if (ctx.BlockIndex == 680341 && Id.Equals(new Guid("df37dbd8-5703-4dff-918b-ad22ee4c34c6")))
+            {
+                return states;
+            }
+
             var addressesHex = GetSignerAndOtherAddressesHex(context, AvatarAddress, EnemyAddress);
 
             var sw = new Stopwatch();
