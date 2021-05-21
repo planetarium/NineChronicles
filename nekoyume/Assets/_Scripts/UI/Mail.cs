@@ -260,6 +260,8 @@ namespace Nekoyume.UI
             var attachment = (SellCancellation.Result) mail.attachment;
             var itemBase = ShopSell.GetItemBase(attachment);
             var tradableItem = (ITradableItem) itemBase;
+            var count = attachment.tradableFungibleItemCount > 0 ?
+                attachment.tradableFungibleItemCount : 1;
 
             var popup = Find<ItemCountAndPricePopup>();
             var model = new UI.Model.ItemCountAndPricePopup();
@@ -268,7 +270,7 @@ namespace Nekoyume.UI
             model.PriceInteractable.Value = false;
             model.Price.Value = attachment.shopItem.Price;
             model.CountEnabled.Value = false;
-            model.Item.Value = new CountEditableItem(itemBase, 1, 1, 1); // todo : 카운트 세팅해줘야함
+            model.Item.Value = new CountEditableItem(itemBase, count, count, count);
 
             model.OnClickSubmit.Subscribe(_ =>
             {
