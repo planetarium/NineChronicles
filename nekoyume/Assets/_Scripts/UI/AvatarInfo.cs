@@ -64,10 +64,6 @@ namespace Nekoyume.UI
         private EquipmentSlot _weaponSlot;
         private EquipmentSlot _armorSlot;
         private Player _player;
-        private Vector3 _previousAvatarPosition;
-        private int _previousSortingLayerID;
-        private int _previousSortingLayerOrder;
-        private bool _previousActivated;
         private Coroutine _disableCpTween;
         private GameObject _cachedCharacterTitle;
 
