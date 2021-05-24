@@ -207,7 +207,8 @@ namespace Nekoyume.Model.Item
         public bool RemoveFungibleItem(
             HashDigest<SHA256> fungibleId,
             int count = 1,
-            bool onlyTradableItem = default)
+            bool onlyTradableItem = default
+        )
         {
             var targetItems = (onlyTradableItem
                     ? _items
@@ -232,6 +233,85 @@ namespace Nekoyume.Model.Item
             }
 
             for (var i = 0; i < targetItems.Length; i++)
+            {
+                var item = targetItems[i];
+                if (item.count > count)
+                {
+                    item.count -= count;
+                    break;
+                }
+
+                count -= item.count;
+                item.count = 0;
+                _items.Remove(item);
+            }
+
+            return true;
+        }
+
+        public bool RemoveFungibleItemV2(
+            IFungibleItem fungibleItem,
+            long blockIndex,
+            int count = 1,
+            bool onlyTradableItem = default
+        ) => RemoveFungibleItemV2(fungibleItem.FungibleId, blockIndex, count, onlyTradableItem);
+
+        public bool RemoveFungibleItemV2(
+            HashDigest<SHA256> fungibleId,
+            long blockIndex,
+            int count = 1,
+            bool onlyTradableItem = default
+        )
+        {
+            List<Item> targetItems = new List<Item>();
+            if (onlyTradableItem)
+            {
+                targetItems = _items
+                    .Where(e =>
+                        e.item is ITradableFungibleItem tradableFungibleItem &&
+                        tradableFungibleItem.FungibleId.Equals(fungibleId))
+                    .OrderBy(e => ((ITradableFungibleItem) e.item).RequiredBlockIndex)
+                    .ThenByDescending(e => e.count)
+                    .ToList();
+            }
+            else
+            {
+                foreach (var item in _items)
+                {
+                    if (item.item is ITradableItem tradableItem)
+                    {
+                        if (tradableItem.TradableId.Equals(TradableMaterial.DeriveTradableId(fungibleId)) &&
+                            tradableItem.RequiredBlockIndex <= blockIndex)
+                        {
+                            targetItems.Add(item);
+                        }
+                        continue;
+                    }
+
+                    if (item.item is IFungibleItem fungibleItem && fungibleItem.FungibleId.Equals(fungibleId))
+                    {
+                        targetItems.Add(item);
+                    }
+                }
+
+                targetItems = targetItems
+                    .OrderBy(e => e.item is ITradableItem)
+                    .ThenBy(e => e.count)
+                    .ToList();
+            }
+
+            if (!targetItems.Any())
+            {
+                return false;
+            }
+
+            var totalCount = targetItems.Sum(e => e.count);
+            if (totalCount < count)
+            {
+                return false;
+            }
+
+            for (var i = 0; i < targetItems.Count; i++)
             {
                 var item = targetItems[i];
                 if (item.count > count)
@@ -485,11 +565,28 @@ namespace Nekoyume.Model.Item
                 item.item.Id == rowId
             ).Sum(item => item.count) >= count;
 
-        public bool HasFungibleItem(HashDigest<SHA256> fungibleId, int count = 1) => _items
-            .Exists(item =>
-                item.item is IFungibleItem fungibleItem &&
-                fungibleItem.FungibleId.Equals(fungibleId) &&
-                item.count >= count);
+        public bool HasFungibleItem(HashDigest<SHA256> fungibleId, long blockIndex, int count = 1)
+        {
+            int totalCount = 0;
+            foreach (var item in _items)
+            {
+                if (item.item is ITradableItem tradableItem)
+                {
+                    if (tradableItem.TradableId.Equals(TradableMaterial.DeriveTradableId(fungibleId)) &&
+                        tradableItem.RequiredBlockIndex <= blockIndex)
+                    {
+                        totalCount += item.count;
+                    }
+                    continue;
+                }
+
+                if (item.item is IFungibleItem fungibleItem && fungibleItem.FungibleId.Equals(fungibleId))
+                {
+                    totalCount += item.count;
+                }
+            }
+            return totalCount >= count;
+        }
 
         public bool HasNonFungibleItem(Guid nonFungibleId) => _items
             .Select(i => i.item)
