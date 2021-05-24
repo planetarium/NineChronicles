@@ -30,7 +30,7 @@ namespace Nekoyume.Model.State
             avatarAddresses = ((Dictionary)serialized["avatarAddresses"])
                 .Where(kv => kv.Key is Binary)
                 .ToDictionary(
-                    kv => BitConverter.ToInt32(((Binary)kv.Key).Value, 0),
+                    kv => BitConverter.ToInt32(((Binary)kv.Key).ToByteArray(), 0),
                     kv => kv.Value.ToAddress()
                 );
 #pragma warning restore LAA1002

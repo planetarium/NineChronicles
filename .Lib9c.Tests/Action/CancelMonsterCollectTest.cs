@@ -42,9 +42,9 @@ namespace Lib9c.Tests.Action
 
         [Theory]
         [InlineData(7, 1, 1)]
-        [InlineData(6, 2, 40000)]
-        [InlineData(5, 3, 120000)]
-        [InlineData(4, 3, 160000)]
+        [InlineData(6, 2, MonsterCollectionState.RewardInterval)]
+        [InlineData(5, 3, MonsterCollectionState.RewardInterval * 3)]
+        [InlineData(4, 3, MonsterCollectionState.RewardInterval * 4)]
         public void Execute(int prevLevel, int collectionLevel, long blockIndex)
         {
             Address collectionAddress = MonsterCollectionState.DeriveAddress(_signer, 0);

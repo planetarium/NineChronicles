@@ -186,14 +186,10 @@ namespace Nekoyume.Action
                 throw new InvalidShopItemException($"{addressesHex}Tradable Item is null.");
             }
 
-            if (avatarState.inventory.TryGetTradableItems(
-                    tradableItem.TradableId,
-                    tradableItem.RequiredBlockIndex,
-                    itemCount,
-                    out var tradableItems))
+            if (!backwardCompatible)
             {
-                ITradableItem tradableItemInInventory = (ITradableItem) tradableItems.First().item;
-                tradableItemInInventory.RequiredBlockIndex = context.BlockIndex;
+                avatarState.inventory.UpdateTradableItem(tradableItem.TradableId,
+                    tradableItem.RequiredBlockIndex, itemCount, context.BlockIndex);
             }
 
             if (tradableItem is INonFungibleItem nonFungibleItem)
@@ -218,7 +214,9 @@ namespace Nekoyume.Action
             {
                 shopItem = shopItem,
                 itemUsable = shopItem.ItemUsable,
-                costume = shopItem.Costume
+                costume = shopItem.Costume,
+                tradableFungibleItem = shopItem.TradableFungibleItem,
+                tradableFungibleItemCount = shopItem.TradableFungibleItemCount,
             };
             var mail = new SellCancelMail(result, context.BlockIndex, context.Random.GenerateRandomGuid(), context.BlockIndex);
             result.id = mail.id;

@@ -3,7 +3,6 @@ using System.Linq;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Assets;
-using Nekoyume.Model.State;
 
 namespace Nekoyume
 {
@@ -25,7 +24,7 @@ namespace Nekoyume
             IImmutableSet<Address> minters = null;
             if (serialized["minters"] is Bencodex.Types.List mintersAsList)
             {
-                minters = mintersAsList.Select(b => new Address((Binary) b)).ToImmutableHashSet();
+                minters = mintersAsList.Select(b => new Address(((Binary) b).ByteArray)).ToImmutableHashSet();
             }
             
             return new Currency((Text)serialized["ticker"], ((Binary)serialized["decimalPlaces"]).First(), minters);
