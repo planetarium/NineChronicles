@@ -546,5 +546,49 @@
                 Assert.Equal(i, ((ITradableItem)item.item).RequiredBlockIndex);
             }
         }
+
+        [Fact]
+        public void HasFungibleItem()
+        {
+            MaterialItemSheet.Row row = TableSheets.MaterialItemSheet.First;
+            Assert.NotNull(row);
+            var inventory = new Inventory();
+            Material material = ItemFactory.CreateMaterial(row);
+            inventory.AddItem(material, 2);
+            for (int i = 0; i < 2; i++)
+            {
+                ITradableItem tradableItem = ItemFactory.CreateTradableMaterial(row);
+                tradableItem.RequiredBlockIndex = i;
+                inventory.AddItem((ItemBase)tradableItem, 2);
+            }
+
+            Assert.False(inventory.HasFungibleItem(row.ItemId, 0, 6));
+            Assert.True(inventory.HasFungibleItem(row.ItemId, 0, 4));
+            Assert.True(inventory.HasFungibleItem(row.ItemId, 1, 6));
+            inventory.RemoveFungibleItem(row.ItemId, 6);
+        }
+
+        [Fact]
+        public void RemoveFungibleItemV2()
+        {
+            MaterialItemSheet.Row row = TableSheets.MaterialItemSheet.First;
+            Assert.NotNull(row);
+            var inventory = new Inventory();
+            Material material = ItemFactory.CreateMaterial(row);
+            inventory.AddItem(material, 2);
+            for (int i = 0; i < 2; i++)
+            {
+                ITradableItem tradableItem = ItemFactory.CreateTradableMaterial(row);
+                tradableItem.RequiredBlockIndex = i;
+                inventory.AddItem((ItemBase)tradableItem, 2);
+            }
+
+            Assert.True(inventory.HasItem(row.Id, 6));
+            Assert.False(inventory.RemoveFungibleItemV2(row.ItemId, 0, 6));
+            Assert.True(inventory.RemoveFungibleItemV2(row.ItemId, 0, 2));
+            Assert.True(inventory.HasItem(row.Id, 4));
+            Assert.True(inventory.TryGetFungibleItems(row.ItemId, out List<Inventory.Item> items));
+            Assert.All(items, item => Assert.True(item.item is IFungibleItem));
+        }
     }
 }

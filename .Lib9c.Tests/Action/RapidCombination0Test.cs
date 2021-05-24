@@ -17,7 +17,7 @@ namespace Lib9c.Tests.Action
     using Nekoyume.TableData;
     using Xunit;
 
-    public class RapidCombination2Test
+    public class RapidCombination0Test
     {
         private readonly IAccountStateDelta _initialState;
 
@@ -26,7 +26,7 @@ namespace Lib9c.Tests.Action
         private readonly Address _agentAddress;
         private readonly Address _avatarAddress;
 
-        public RapidCombination2Test()
+        public RapidCombination0Test()
         {
             _initialState = new State();
 
@@ -107,13 +107,13 @@ namespace Lib9c.Tests.Action
                 CombinationSlotState.DeriveFormat,
                 0));
             var slotState = new CombinationSlotState(slotAddress, slotStateUnlockStage);
-            slotState.Update(result, 0, requiredBlockIndex);
+            slotState.Update(result, 0, 0);
 
             var tempState = _initialState
                 .SetState(_avatarAddress, avatarState.Serialize())
                 .SetState(slotAddress, slotState.Serialize());
 
-            var action = new RapidCombination2
+            var action = new RapidCombination0
             {
                 avatarAddress = _avatarAddress,
                 slotIndex = 0,
@@ -147,7 +147,7 @@ namespace Lib9c.Tests.Action
             var tempState = _initialState
                 .SetState(slotAddress, slotState.Serialize());
 
-            var action = new RapidCombination2
+            var action = new RapidCombination0
             {
                 avatarAddress = _avatarAddress,
                 slotIndex = 0,
@@ -178,7 +178,7 @@ namespace Lib9c.Tests.Action
             var equipment = (Equipment)ItemFactory.CreateItemUsable(
                 firstEquipmentRow,
                 Guid.NewGuid(),
-                100);
+                0);
 
             var result = new CombinationConsumable.ResultModel
             {
@@ -201,13 +201,13 @@ namespace Lib9c.Tests.Action
                 .SetState(_avatarAddress, avatarState.Serialize())
                 .SetState(slotAddress, slotState.Serialize());
 
-            var action = new RapidCombination2
+            var action = new RapidCombination0
             {
                 avatarAddress = _avatarAddress,
                 slotIndex = 0,
             };
 
-            Assert.Throws<NotEnoughClearedStageLevelException>(() => action.Execute(new ActionContext
+            Assert.Throws<CombinationSlotUnlockException>(() => action.Execute(new ActionContext
             {
                 PreviousStates = tempState,
                 Signer = _agentAddress,
@@ -257,7 +257,7 @@ namespace Lib9c.Tests.Action
                 .SetState(_avatarAddress, avatarState.Serialize())
                 .SetState(slotAddress, slotState.Serialize());
 
-            var action = new RapidCombination2
+            var action = new RapidCombination0
             {
                 avatarAddress = _avatarAddress,
                 slotIndex = 0,
@@ -325,7 +325,7 @@ namespace Lib9c.Tests.Action
                 .SetState(_avatarAddress, avatarState.Serialize())
                 .SetState(slotAddress, slotState.Serialize());
 
-            var action = new RapidCombination2
+            var action = new RapidCombination0
             {
                 avatarAddress = _avatarAddress,
                 slotIndex = 0,
