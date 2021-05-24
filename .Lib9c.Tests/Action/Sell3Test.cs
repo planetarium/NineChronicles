@@ -121,7 +121,7 @@
             {
                 var sellAction = new Sell3
                 {
-                    itemId = nonFungibleItem.ItemId,
+                    itemId = nonFungibleItem.NonFungibleId,
                     price = price,
                     sellerAvatarAddress = _avatarAddress,
                 };
@@ -162,7 +162,7 @@
         [Fact]
         public void ExecuteThrowInvalidPriceException()
         {
-            var action = new Sell
+            var action = new Sell3
             {
                 itemId = default,
                 price = -1 * _currency,
@@ -180,7 +180,7 @@
         [Fact]
         public void ExecuteThrowFailedLoadStateException()
         {
-            var action = new Sell
+            var action = new Sell3
             {
                 itemId = default,
                 price = 0 * _currency,
@@ -209,7 +209,7 @@
 
             _initialState = _initialState.SetState(_avatarAddress, avatarState.Serialize());
 
-            var action = new Sell
+            var action = new Sell3
             {
                 itemId = default,
                 price = 0 * _currency,
@@ -227,7 +227,7 @@
         [Fact]
         public void ExecuteThrowItemDoesNotExistException()
         {
-            var action = new Sell
+            var action = new Sell3
             {
                 itemId = default,
                 price = 0 * _currency,

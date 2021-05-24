@@ -77,7 +77,7 @@ namespace Nekoyume.Action
                     .SetState(ctx.Signer, MarkChanged)
                     .SetState(slotAddress, MarkChanged);
             }
-            
+
             var addressesHex = GetSignerAndOtherAddressesHex(context, AvatarAddress);
 
             var sw = new Stopwatch();
@@ -129,7 +129,7 @@ namespace Nekoyume.Action
                 var count = materialInfo.Count;
                 if (avatarState.inventory.HasItem(materialId, count))
                 {
-                    avatarState.inventory.TryGetFungibleItem(materialId, out var inventoryItem);
+                    avatarState.inventory.TryGetItem(materialId, out var inventoryItem);
                     var material = (Material) inventoryItem.item;
                     materials[material] = count;
                     avatarState.inventory.RemoveFungibleItem(material, count);

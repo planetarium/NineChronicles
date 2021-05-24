@@ -627,7 +627,7 @@ namespace Lib9c.Tests
             {
             }
 
-            public IValue GetState(string stateKey, BlockHash? blockHash = null, Guid? chainId = null) =>
+            public IValue GetState(string stateKey, BlockHash? blockHash = null) =>
                 default(Null);
 
             public bool ContainsBlockStates(BlockHash blockHash) => false;

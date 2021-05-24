@@ -14,12 +14,28 @@ namespace Nekoyume.Model.Item
     [Serializable]
     public abstract class ItemUsable : ItemBase, INonFungibleItem
     {
-        public const string ItemIdKey = "itemId";
         public Guid ItemId { get; }
+        public Guid TradableId => ItemId;
+        public Guid NonFungibleId => ItemId;
         public StatsMap StatsMap { get; }
         public List<Skill.Skill> Skills { get; }
         public List<BuffSkill> BuffSkills { get; }
-        public long RequiredBlockIndex { get; private set; }
+
+        public long RequiredBlockIndex
+        {
+            get => _requiredBlockIndex;
+            set
+            {
+                if (value < 0)
+                {
+                    throw new ArgumentOutOfRangeException(
+                        $"{nameof(RequiredBlockIndex)} must be greater than 0, but {value}");
+                }
+                _requiredBlockIndex = value;
+            }
+        }
+
+        private long _requiredBlockIndex;
 
         protected ItemUsable(ItemSheet.Row data, Guid id, long requiredBlockIndex) : base(data)
         {
@@ -81,7 +97,7 @@ namespace Nekoyume.Model.Item
                 RequiredBlockIndex = requiredBlockIndex.ToLong();
             }
         }
-        
+
         protected ItemUsable(SerializationInfo info, StreamingContext _)
             : this((Dictionary) Codec.Decode((byte[]) info.GetValue("serialized", typeof(byte[]))))
         {

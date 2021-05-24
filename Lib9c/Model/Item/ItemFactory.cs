@@ -1,10 +1,10 @@
 using System;
-using System.Collections.Generic;
 using System.Globalization;
 using Bencodex.Types;
 using Libplanet.Action;
 using Nekoyume.TableData;
 using Nekoyume.Model.State;
+using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Model.Item
 {
@@ -30,17 +30,15 @@ namespace Nekoyume.Model.Item
 
         public static Material CreateMaterial(MaterialItemSheet sheet, int itemId)
         {
-            return !sheet.TryGetValue(itemId, out var itemData)
-                ? null
-                : CreateMaterial(itemData);
+            return sheet.TryGetValue(itemId, out var itemData)
+                ? CreateMaterial(itemData)
+                : null;
         }
 
-        public static Material CreateMaterial(MaterialItemSheet.Row row)
-        {
-            return row.ItemSubType == ItemSubType.Chest
-                ? CreateChest(row, null)
-                : new Material(row);
-        }
+        public static Material CreateMaterial(MaterialItemSheet.Row row) => new Material(row);
+
+        public static TradableMaterial CreateTradableMaterial(MaterialItemSheet.Row row)
+            => new TradableMaterial(row);
 
         public static ItemUsable CreateItemUsable(ItemSheet.Row itemRow, Guid id,
             long requiredBlockIndex, int level = 0)
@@ -81,11 +79,6 @@ namespace Nekoyume.Model.Item
             return equipment;
         }
 
-        public static Chest CreateChest(MaterialItemSheet.Row row, List<RedeemRewardSheet.RewardInfo> rewards)
-        {
-            return new Chest(row, rewards);
-        }
-
         public static ItemBase Deserialize(Dictionary serialized)
         {
             if (serialized.TryGetValue((Text) "item_type", out var type) &&
@@ -116,7 +109,14 @@ namespace Nekoyume.Model.Item
                         }
                         break;
                     case ItemType.Material:
-                        return itemSubType == ItemSubType.Chest ? new Chest(serialized) : new Material(serialized);
+                        if (serialized.ContainsKey(RequiredBlockIndexKey))
+                        {
+                            return new TradableMaterial(serialized);
+                        }
+                        else
+                        {
+                            return new Material(serialized);
+                        }
                     default:
                         throw new ArgumentOutOfRangeException(nameof(itemType));
                 }
@@ -155,7 +155,6 @@ namespace Nekoyume.Model.Item
                 case ItemSubType.NormalMaterial:
                 case ItemSubType.Hourglass:
                 case ItemSubType.ApStone:
-                case ItemSubType.Chest:
                     return new MaterialItemSheet.Row(serialized);
                 default:
                     throw new ArgumentOutOfRangeException();

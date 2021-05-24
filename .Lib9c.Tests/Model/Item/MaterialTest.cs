@@ -1,6 +1,5 @@
 namespace Lib9c.Tests.Model.Item
 {
-    using System;
     using System.IO;
     using System.Runtime.Serialization.Formatters.Binary;
     using Nekoyume.Model.Item;
@@ -22,27 +21,27 @@ namespace Lib9c.Tests.Model.Item
         {
             Assert.NotNull(_materialRow);
 
-            var costume = new Material(_materialRow);
-            var serialized = costume.Serialize();
+            var material = new Material(_materialRow);
+            var serialized = material.Serialize();
             var deserialized = new Material((Bencodex.Types.Dictionary)serialized);
 
-            Assert.Equal(costume, deserialized);
+            Assert.Equal(material, deserialized);
         }
 
         [Fact]
-        public void SerializeWithDotNetAPI()
+        public void SerializeWithDotNetApi()
         {
             Assert.NotNull(_materialRow);
 
-            var costume = new Material(_materialRow);
+            var material = new Material(_materialRow);
             var formatter = new BinaryFormatter();
             using var ms = new MemoryStream();
-            formatter.Serialize(ms, costume);
+            formatter.Serialize(ms, material);
             ms.Seek(0, SeekOrigin.Begin);
 
             var deserialized = (Material)formatter.Deserialize(ms);
 
-            Assert.Equal(costume, deserialized);
+            Assert.Equal(material, deserialized);
         }
     }
 }

@@ -143,11 +143,11 @@ namespace Nekoyume.Action
                 );
             }
 
-            foreach (var rawPeding in PendingActivations)
+            foreach (var rawPending in PendingActivations)
             {
                 states = states.SetState(
-                    new PendingActivationState((Bencodex.Types.Dictionary)rawPeding).address,
-                    rawPeding
+                    new PendingActivationState((Bencodex.Types.Dictionary)rawPending).address,
+                    rawPending
                 );
             }
 
