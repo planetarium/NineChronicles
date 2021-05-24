@@ -455,6 +455,33 @@ namespace Nekoyume.Model.State
             return Score - current;
         }
 
+        public int Update(AvatarState avatarState, int enemyScore, BattleLog.Result result)
+        {
+            switch (result)
+            {
+                case BattleLog.Result.Win:
+                    ArenaRecord.Win++;
+                    break;
+                case BattleLog.Result.Lose:
+                    ArenaRecord.Lose++;
+                    break;
+                case BattleLog.Result.TimeOver:
+                    ArenaRecord.Draw++;
+                    return 0;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(result), result, null);
+            }
+
+            var score = ArenaScoreHelper.GetScore(Score, enemyScore, result);
+            var calculated = Score + score;
+            var current = Score;
+            Score = Math.Max(1000, calculated);
+            DailyChallengeCount--;
+            ArmorId = avatarState.GetArmorId();
+            Level = avatarState.level;
+            return Score - current;
+        }
+
         public void Activate()
         {
             Active = true;

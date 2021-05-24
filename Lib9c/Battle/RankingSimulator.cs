@@ -22,6 +22,7 @@ namespace Nekoyume.Battle
         private readonly ArenaInfo _arenaInfo;
         private readonly ArenaInfo _enemyInfo;
         private readonly AvatarState _avatarState;
+        private readonly int _enemyScore;
 
         public readonly WeeklyArenaRewardSheet WeeklyArenaRewardSheet;
         public override IEnumerable<ItemBase> Reward => _reward;
@@ -47,6 +48,11 @@ namespace Nekoyume.Battle
             _stageId = stageId;
             _arenaInfo = arenaInfo;
             _enemyInfo = enemyInfo;
+            if (!(enemyInfo is null))
+            {
+                _enemyScore  = enemyInfo.Score;
+            }
+
             _avatarState = avatarState;
             WeeklyArenaRewardSheet = rankingSimulatorSheets.WeeklyArenaRewardSheet;
         }
@@ -74,6 +80,31 @@ namespace Nekoyume.Battle
         {
             Player.SetCostumeStat(costumeStatSheet);
             _enemyPlayer.SetCostumeStat(costumeStatSheet);
+        }
+
+        public RankingSimulator(
+            IRandom random,
+            AvatarState avatarState,
+            AvatarState enemyAvatarState,
+            List<Guid> foods,
+            RankingSimulatorSheets rankingSimulatorSheets,
+            int stageId,
+            ArenaInfo arenaInfo,
+            int enemyScore,
+            CostumeStatSheet costumeStatSheet
+        ) : this(
+            random,
+            avatarState,
+            enemyAvatarState,
+            foods,
+            rankingSimulatorSheets,
+            stageId,
+            arenaInfo,
+            null,
+            costumeStatSheet
+        )
+        {
+            _enemyScore = enemyScore;
         }
 
         public Player Simulate()
@@ -265,7 +296,7 @@ namespace Nekoyume.Battle
                 Characters.Enqueue(character, TurnPriority / character.SPD);
             }
 
-            Log.diffScore = _arenaInfo.Update(_avatarState, _enemyInfo, Result);
+            Log.diffScore = _arenaInfo.Update(_avatarState, _enemyScore, Result);
             Log.score = _arenaInfo.Score;
 
             var itemSelector = new WeightedSelector<StageSheet.RewardData>(Random);
