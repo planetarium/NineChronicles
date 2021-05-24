@@ -18,7 +18,7 @@ namespace Tests.EditMode
                 "hourglass_per_block", "3"
             });
             state.Update(row);
-            Assert.AreEqual(1, RapidCombination.CalculateHourglassCount(state, diff));
+            Assert.AreEqual(1, RapidCombination0.CalculateHourglassCount(state, diff));
         }
     }
 }

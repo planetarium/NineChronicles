@@ -141,7 +141,7 @@ namespace Nekoyume.UI.Module
             }
 
             var gameConfigState = Game.Game.instance.States.GameConfigState;
-            var cost = RapidCombination.CalculateHourglassCount(gameConfigState, diff);
+            var cost = RapidCombination0.CalculateHourglassCount(gameConfigState, diff);
 
             var row = Game.Game.instance.TableSheets.MaterialItemSheet.Values
                 .First(r => r.ItemSubType == ItemSubType.Hourglass);

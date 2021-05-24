@@ -76,11 +76,11 @@ namespace Tests.EditMode
 
             var material = GetFirstMaterial();
             _avatarState.inventory.AddItem(material);
-            Assert.True(_avatarState.inventory.HasFungibleItem(material.ItemId));
+            Assert.True(_avatarState.inventory.HasFungibleItem(material.ItemId, Game.instance.Agent.BlockIndex));
             var modifier =
                 JsonTest(new AvatarInventoryFungibleItemRemover(material.ItemId, 1));
             _avatarState = modifier.Modify(_avatarState);
-            Assert.False(_avatarState.inventory.HasFungibleItem(material.ItemId));
+            Assert.False(_avatarState.inventory.HasFungibleItem(material.ItemId, Game.instance.Agent.BlockIndex));
         }
 
         [Test]
