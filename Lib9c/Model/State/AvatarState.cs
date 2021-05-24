@@ -12,6 +12,7 @@ using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.Quest;
 using Nekoyume.TableData;
+using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Model.State
 {
@@ -155,31 +156,31 @@ namespace Nekoyume.Model.State
         public AvatarState(Dictionary serialized)
             : base(serialized)
         {
-            name = ((Text)serialized["name"]).Value;
-            characterId = (int)((Integer)serialized["characterId"]).Value;
-            level = (int)((Integer)serialized["level"]).Value;
-            exp = (long)((Integer)serialized["exp"]).Value;
-            inventory = new Inventory((List)serialized["inventory"]);
-            worldInformation = new WorldInformation((Dictionary)serialized["worldInformation"]);
-            updatedAt = serialized["updatedAt"].ToLong();
-            agentAddress = new Address(((Binary)serialized["agentAddress"]).ToByteArray());
-            questList = new QuestList((Dictionary) serialized["questList"]);
-            mailBox = new MailBox((List)serialized["mailBox"]);
-            blockIndex = (long)((Integer)serialized["blockIndex"]).Value;
-            dailyRewardReceivedIndex = (long)((Integer)serialized["dailyRewardReceivedIndex"]).Value;
-            actionPoint = (int)((Integer)serialized["actionPoint"]).Value;
-            stageMap = new CollectionMap((Dictionary)serialized["stageMap"]);
-            serialized.TryGetValue((Text)"monsterMap", out var value2);
+            name = ((Text)serialized[LegacyNameKey]).Value;
+            characterId = (int)((Integer)serialized[LegacyCharacterIdKey]).Value;
+            level = (int)((Integer)serialized[LegacyLevelKey]).Value;
+            exp = (long)((Integer)serialized[LegacyExpKey]).Value;
+            inventory = new Inventory((List)serialized[LegacyInventoryKey]);
+            worldInformation = new WorldInformation((Dictionary)serialized[LegacyWorldInformationKey]);
+            updatedAt = serialized[LegacyUpdatedAtKey].ToLong();
+            agentAddress = new Address(((Binary)serialized[LegacyAgentAddressKey]).ToByteArray());
+            questList = new QuestList((Dictionary) serialized[LegacyQuestListKey]);
+            mailBox = new MailBox((List)serialized[LegacyMailBoxKey]);
+            blockIndex = (long)((Integer)serialized[LegacyBlockIndexKey]).Value;
+            dailyRewardReceivedIndex = (long)((Integer)serialized[LegacyDailyRewardReceivedIndexKey]).Value;
+            actionPoint = (int)((Integer)serialized[LegacyActionPointKey]).Value;
+            stageMap = new CollectionMap((Dictionary)serialized[LegacyStageMapKey]);
+            serialized.TryGetValue((Text)LegacyMonsterMapKey, out var value2);
             monsterMap = value2 is null ? new CollectionMap() : new CollectionMap((Dictionary)value2);
-            itemMap = new CollectionMap((Dictionary)serialized["itemMap"]);
-            eventMap = new CollectionMap((Dictionary)serialized["eventMap"]);
-            hair = (int)((Integer)serialized["hair"]).Value;
-            lens = (int)((Integer)serialized["lens"]).Value;
-            ear = (int)((Integer)serialized["ear"]).Value;
-            tail = (int)((Integer)serialized["tail"]).Value;
-            combinationSlotAddresses = serialized["combinationSlotAddresses"].ToList(StateExtensions.ToAddress);
-            RankingMapAddress = serialized["ranking_map_address"].ToAddress();
-            if (serialized.TryGetValue((Text) "nonce", out var nonceValue))
+            itemMap = new CollectionMap((Dictionary)serialized[LegacyItemMapKey]);
+            eventMap = new CollectionMap((Dictionary)serialized[LegacyEventMapKey]);
+            hair = (int)((Integer)serialized[LegacyHairKey]).Value;
+            lens = (int)((Integer)serialized[LegacyLensKey]).Value;
+            ear = (int)((Integer)serialized[LegacyEarKey]).Value;
+            tail = (int)((Integer)serialized[LegacyTailKey]).Value;
+            combinationSlotAddresses = serialized[LegacyCombinationSlotAddressesKey].ToList(StateExtensions.ToAddress);
+            RankingMapAddress = serialized[LegacyRankingMapAddressKey].ToAddress();
+            if (serialized.TryGetValue((Text)LegacyNonceKey, out var nonceValue))
             {
                 Nonce = nonceValue.ToInteger();
             }
@@ -767,6 +768,40 @@ namespace Nekoyume.Model.State
         }
 
         public override IValue Serialize() =>
+#pragma warning disable LAA1002
+            new Dictionary(new Dictionary<IKey, IValue>
+            {
+                [(Text)LegacyNameKey] = (Text)name,
+                [(Text)LegacyCharacterIdKey] = (Integer)characterId,
+                [(Text)LegacyLevelKey] = (Integer)level,
+                [(Text)LegacyExpKey] = (Integer)exp,
+                [(Text)LegacyInventoryKey] = inventory.Serialize(),
+                [(Text)LegacyWorldInformationKey] = worldInformation.Serialize(),
+                [(Text)LegacyUpdatedAtKey] = updatedAt.Serialize(),
+                [(Text)LegacyAgentAddressKey] = agentAddress.Serialize(),
+                [(Text)LegacyQuestListKey] = questList.Serialize(),
+                [(Text)LegacyMailBoxKey] = mailBox.Serialize(),
+                [(Text)LegacyBlockIndexKey] = (Integer)blockIndex,
+                [(Text)LegacyDailyRewardReceivedIndexKey] = (Integer)dailyRewardReceivedIndex,
+                [(Text)LegacyActionPointKey] = (Integer)actionPoint,
+                [(Text)LegacyStageMapKey] = stageMap.Serialize(),
+                [(Text)LegacyMonsterMapKey] = monsterMap.Serialize(),
+                [(Text)LegacyItemMapKey] = itemMap.Serialize(),
+                [(Text)LegacyEventMapKey] = eventMap.Serialize(),
+                [(Text)LegacyHairKey] = (Integer)hair,
+                [(Text)LegacyLensKey] = (Integer)lens,
+                [(Text)LegacyEarKey] = (Integer)ear,
+                [(Text)LegacyTailKey] = (Integer)tail,
+                [(Text)LegacyCombinationSlotAddressesKey] = combinationSlotAddresses
+                    .OrderBy(i => i)
+                    .Select(i => i.Serialize())
+                    .Serialize(),
+                [(Text)LegacyNonceKey] = Nonce.Serialize(),
+                [(Text)LegacyRankingMapAddressKey] = RankingMapAddress.Serialize(),
+            }.Union((Dictionary)base.Serialize()));
+#pragma warning restore LAA1002
+
+        public override IValue SerializeV2() =>
 #pragma warning disable LAA1002
             new Dictionary(new Dictionary<IKey, IValue>
             {

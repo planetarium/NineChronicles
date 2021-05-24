@@ -95,5 +95,32 @@ namespace Lib9c
         public const string MonsterCollectionResultKey = "mcr";
         public const string QuantityKey = "q";
         public const string RewardLevelMapKey = "rlm";
+
+        // State
+        public const string AddressKey = "a";
+        public const string LegacyAddressKey = "address";
+        public const string LegacyNameKey = "name";
+        public const string LegacyCharacterIdKey = "characterId";
+        public const string LegacyExpKey = "exp";
+        public const string LegacyInventoryKey = "inventory";
+        public const string LegacyWorldInformationKey = "worldInformation";
+        public const string LegacyUpdatedAtKey = "updatedAt";
+        public const string LegacyAgentAddressKey = "agentAddress";
+        public const string LegacyQuestListKey = "questList";
+        public const string LegacyMailBoxKey = "mailBox";
+        public const string LegacyBlockIndexKey = "blockIndex";
+        public const string LegacyDailyRewardReceivedIndexKey = "dailyRewardReceivedIndex";
+        public const string LegacyActionPointKey = "actionPoint";
+        public const string LegacyStageMapKey = "stageMap";
+        public const string LegacyMonsterMapKey = "monsterMap";
+        public const string LegacyItemMapKey = "itemMap";
+        public const string LegacyEventMapKey = "eventMap";
+        public const string LegacyHairKey = "hair";
+        public const string LegacyLensKey = "lens";
+        public const string LegacyEarKey = "ear";
+        public const string LegacyTailKey = "tail";
+        public const string LegacyCombinationSlotAddressesKey = "combinationSlotAddresses";
+        public const string LegacyNonceKey = "nonce";
+        public const string LegacyRankingMapAddressKey = "ranking_map_address";
     }
 }
