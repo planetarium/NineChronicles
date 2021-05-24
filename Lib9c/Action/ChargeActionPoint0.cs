@@ -8,12 +8,13 @@ using Libplanet.Action;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
+using Serilog;
 
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("charge_action_point2")]
-    public class ChargeActionPoint : GameAction
+    [ActionType("charge_action_point")]
+    public class ChargeActionPoint0 : GameAction
     {
         public Address avatarAddress;
 
@@ -27,24 +28,23 @@ namespace Nekoyume.Action
             
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
 
-            if (!states.TryGetAvatarState(context.Signer, avatarAddress, out var avatarState))
+            if (!states.TryGetAgentAvatarStates(context.Signer, avatarAddress, out var _, out var avatarState))
             {
-                throw new FailedLoadStateException(
-                    $"{addressesHex}Aborted as the avatar state of the signer was failed to load.");
+                return states;
             }
 
-            var row = states.GetSheet<MaterialItemSheet>().Values.First(r => r.ItemSubType == ItemSubType.ApStone);
-            if (!avatarState.inventory.RemoveFungibleItemV2(row.ItemId, context.BlockIndex))
+            var row = states.GetSheet<MaterialItemSheet>().Values.FirstOrDefault(r => r.ItemSubType == ItemSubType.ApStone);
+            var apStone = ItemFactory.CreateMaterial(row);
+            if (!avatarState.inventory.RemoveFungibleItem(apStone))
             {
-                throw new NotEnoughMaterialException(
-                    $"{addressesHex}Aborted as the player has no enough material ({row.Id})");
+                Log.Error("{AddressesHex}Not enough item {ApStone}", addressesHex, apStone);
+                return states;
             }
 
             var gameConfigState = states.GetGameConfigState();
             if (gameConfigState is null)
             {
-                throw new FailedLoadStateException(
-                    $"{addressesHex}Aborted as the game config state was failed to load.");
+                return states;
             }
 
             avatarState.actionPoint = gameConfigState.ActionPointMax;
