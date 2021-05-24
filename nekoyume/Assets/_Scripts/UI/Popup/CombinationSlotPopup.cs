@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using Bencodex.Types;
@@ -16,6 +17,7 @@ using Nekoyume.UI.Module;
 using Nekoyume.UI.Scroller;
 using UniRx;
 using UnityEngine;
+using Inventory = Nekoyume.Model.Item.Inventory;
 
 namespace Nekoyume.UI
 {
@@ -153,15 +155,9 @@ namespace Nekoyume.UI
                 _cost = Action.RapidCombination.CalculateHourglassCount(
                     States.Instance.GameConfigState,
                     diff);
-                _row = Game.Game.instance.TableSheets.MaterialItemSheet.Values
-                    .First(r => r.ItemSubType == ItemSubType.Hourglass);
-                var isEnough =
-                    States.Instance.CurrentAvatarState.inventory.HasFungibleItem(_row.ItemId, _cost);
 
-                var count = States.Instance.CurrentAvatarState.inventory
-                    .TryGetFungibleItems(_row.ItemId, out var outFungibleItems)
-                    ? outFungibleItems.Sum(e => e.count)
-                    : 0;
+                var count = GetHourglassCount();
+                var isEnough = count > 0;
 
                 if (result.id == chainResult?.id)
                 {
@@ -180,6 +176,29 @@ namespace Nekoyume.UI
             }
 
             base.Show();
+        }
+
+        private int GetHourglassCount()
+        {
+            var count = 0;
+            var inventory = States.Instance.CurrentAvatarState.inventory;
+            var materials =
+                inventory.Items.OrderByDescending(x => x.item.ItemType == ItemType.Material);
+            var hourglass = materials.Where(x => x.item.ItemSubType == ItemSubType.Hourglass);
+            foreach (var item in hourglass)
+            {
+                if (item.item is TradableMaterial tradableItem)
+                {
+                    var blockIndex = Game.Game.instance.Agent?.BlockIndex ?? -1;
+                    if (tradableItem.RequiredBlockIndex > blockIndex)
+                    {
+                        continue;
+                    }
+                }
+                count += item.count;
+            }
+
+            return count;
         }
 
         private void RapidCombination()
