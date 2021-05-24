@@ -156,34 +156,88 @@ namespace Nekoyume.Model.State
         public AvatarState(Dictionary serialized)
             : base(serialized)
         {
-            name = ((Text)serialized[LegacyNameKey]).Value;
-            characterId = (int)((Integer)serialized[LegacyCharacterIdKey]).Value;
-            level = (int)((Integer)serialized[LegacyLevelKey]).Value;
-            exp = (long)((Integer)serialized[LegacyExpKey]).Value;
-            inventory = new Inventory((List)serialized[LegacyInventoryKey]);
-            worldInformation = new WorldInformation((Dictionary)serialized[LegacyWorldInformationKey]);
-            updatedAt = serialized[LegacyUpdatedAtKey].ToLong();
-            agentAddress = new Address(((Binary)serialized[LegacyAgentAddressKey]).ToByteArray());
-            questList = new QuestList((Dictionary) serialized[LegacyQuestListKey]);
-            mailBox = new MailBox((List)serialized[LegacyMailBoxKey]);
-            blockIndex = (long)((Integer)serialized[LegacyBlockIndexKey]).Value;
-            dailyRewardReceivedIndex = (long)((Integer)serialized[LegacyDailyRewardReceivedIndexKey]).Value;
-            actionPoint = (int)((Integer)serialized[LegacyActionPointKey]).Value;
-            stageMap = new CollectionMap((Dictionary)serialized[LegacyStageMapKey]);
-            serialized.TryGetValue((Text)LegacyMonsterMapKey, out var value2);
-            monsterMap = value2 is null ? new CollectionMap() : new CollectionMap((Dictionary)value2);
-            itemMap = new CollectionMap((Dictionary)serialized[LegacyItemMapKey]);
-            eventMap = new CollectionMap((Dictionary)serialized[LegacyEventMapKey]);
-            hair = (int)((Integer)serialized[LegacyHairKey]).Value;
-            lens = (int)((Integer)serialized[LegacyLensKey]).Value;
-            ear = (int)((Integer)serialized[LegacyEarKey]).Value;
-            tail = (int)((Integer)serialized[LegacyTailKey]).Value;
-            combinationSlotAddresses = serialized[LegacyCombinationSlotAddressesKey].ToList(StateExtensions.ToAddress);
-            RankingMapAddress = serialized[LegacyRankingMapAddressKey].ToAddress();
-            if (serialized.TryGetValue((Text)LegacyNonceKey, out var nonceValue))
+            string nameKey = NameKey;
+            string characterIdKey = CharacterIdKey;
+            string levelKey = LevelKey;
+            string expKey = ExpKey;
+            string inventoryKey = LegacyInventoryKey;
+            string worldInformationKey = LegacyWorldInformationKey;
+            string updatedAtKey = UpdatedAtKey;
+            string agentAddressKey = AgentAddressKey;
+            string questListKey = LegacyQuestListKey;
+            string mailBoxKey = MailBoxKey;
+            string blockIndexKey = BlockIndexKey;
+            string dailyRewardReceivedIndexKey = DailyRewardReceivedIndexKey;
+            string actionPointKey = ActionPointKey;
+            string stageMapKey = StageMapKey;
+            string monsterMapKey = MonsterMapKey;
+            string itemMapKey = ItemMapKey;
+            string eventMapKey = EventMapKey;
+            string hairKey = HairKey;
+            string lensKey = LensKey;
+            string earKey = EarKey;
+            string tailKey = TailKey;
+            string combinationSlotAddressesKey = CombinationSlotAddressesKey;
+            string rankingMapAddressKey = RankingMapAddressKey;
+            if (serialized.ContainsKey(LegacyNameKey))
             {
-                Nonce = nonceValue.ToInteger();
+                nameKey = LegacyNameKey;
+                characterIdKey = LegacyCharacterIdKey;
+                levelKey = LegacyLevelKey;
+                updatedAtKey = LegacyUpdatedAtKey;
+                agentAddressKey = LegacyAgentAddressKey;
+                mailBoxKey = LegacyMailBoxKey;
+                blockIndexKey = LegacyBlockIndexKey;
+                dailyRewardReceivedIndexKey = LegacyDailyRewardReceivedIndexKey;
+                actionPointKey = LegacyActionPointKey;
+                stageMapKey = LegacyStageMapKey;
+                monsterMapKey = LegacyMonsterMapKey;
+                itemMapKey = LegacyItemMapKey;
+                eventMapKey = LegacyEventMapKey;
+                hairKey = LegacyHairKey;
+                earKey = LegacyEarKey;
+                tailKey = LegacyTailKey;
+                combinationSlotAddressesKey = LegacyCombinationSlotAddressesKey;
+                rankingMapAddressKey = LegacyRankingMapAddressKey;
             }
+
+            name = serialized[nameKey].ToDotnetString();
+            characterId = (int)((Integer)serialized[characterIdKey]).Value;
+            level = (int)((Integer)serialized[levelKey]).Value;
+            exp = (long)((Integer)serialized[expKey]).Value;
+            updatedAt = serialized[updatedAtKey].ToLong();
+            agentAddress = serialized[agentAddressKey].ToAddress();
+            mailBox = new MailBox((List)serialized[mailBoxKey]);
+            blockIndex = (long)((Integer)serialized[blockIndexKey]).Value;
+            dailyRewardReceivedIndex = (long)((Integer)serialized[dailyRewardReceivedIndexKey]).Value;
+            actionPoint = (int)((Integer)serialized[actionPointKey]).Value;
+            stageMap = new CollectionMap((Dictionary)serialized[stageMapKey]);
+            serialized.TryGetValue((Text)monsterMapKey, out var value2);
+            monsterMap = value2 is null ? new CollectionMap() : new CollectionMap((Dictionary)value2);
+            itemMap = new CollectionMap((Dictionary)serialized[itemMapKey]);
+            eventMap = new CollectionMap((Dictionary)serialized[eventMapKey]);
+            hair = (int)((Integer)serialized[hairKey]).Value;
+            lens = (int)((Integer)serialized[lensKey]).Value;
+            ear = (int)((Integer)serialized[earKey]).Value;
+            tail = (int)((Integer)serialized[tailKey]).Value;
+            combinationSlotAddresses = serialized[combinationSlotAddressesKey].ToList(StateExtensions.ToAddress);
+            RankingMapAddress = serialized[rankingMapAddressKey].ToAddress();
+
+            if (serialized.ContainsKey(inventoryKey))
+            {
+                inventory = new Inventory((List)serialized[inventoryKey]);
+            }
+
+            if (serialized.ContainsKey(worldInformationKey))
+            {
+                worldInformation = new WorldInformation((Dictionary)serialized[worldInformationKey]);
+            }
+
+            if (serialized.ContainsKey(questListKey))
+            {
+                questList = new QuestList((Dictionary)serialized[questListKey]);
+            }
+
             PostConstructor();
         }
 
@@ -774,7 +828,7 @@ namespace Nekoyume.Model.State
                 [(Text)LegacyNameKey] = (Text)name,
                 [(Text)LegacyCharacterIdKey] = (Integer)characterId,
                 [(Text)LegacyLevelKey] = (Integer)level,
-                [(Text)LegacyExpKey] = (Integer)exp,
+                [(Text)ExpKey] = (Integer)exp,
                 [(Text)LegacyInventoryKey] = inventory.Serialize(),
                 [(Text)LegacyWorldInformationKey] = worldInformation.Serialize(),
                 [(Text)LegacyUpdatedAtKey] = updatedAt.Serialize(),
@@ -789,7 +843,7 @@ namespace Nekoyume.Model.State
                 [(Text)LegacyItemMapKey] = itemMap.Serialize(),
                 [(Text)LegacyEventMapKey] = eventMap.Serialize(),
                 [(Text)LegacyHairKey] = (Integer)hair,
-                [(Text)LegacyLensKey] = (Integer)lens,
+                [(Text)LensKey] = (Integer)lens,
                 [(Text)LegacyEarKey] = (Integer)ear,
                 [(Text)LegacyTailKey] = (Integer)tail,
                 [(Text)LegacyCombinationSlotAddressesKey] = combinationSlotAddresses
@@ -805,34 +859,30 @@ namespace Nekoyume.Model.State
 #pragma warning disable LAA1002
             new Dictionary(new Dictionary<IKey, IValue>
             {
-                [(Text)"name"] = (Text)name,
-                [(Text)"characterId"] = (Integer)characterId,
-                [(Text)"level"] = (Integer)level,
-                [(Text)"exp"] = (Integer)exp,
-                [(Text)"inventory"] = inventory.Serialize(),
-                [(Text)"worldInformation"] = worldInformation.Serialize(),
-                [(Text)"updatedAt"] = updatedAt.Serialize(),
-                [(Text)"agentAddress"] = agentAddress.Serialize(),
-                [(Text)"questList"] = questList.Serialize(),
-                [(Text)"mailBox"] = mailBox.Serialize(),
-                [(Text)"blockIndex"] = (Integer)blockIndex,
-                [(Text)"dailyRewardReceivedIndex"] = (Integer)dailyRewardReceivedIndex,
-                [(Text)"actionPoint"] = (Integer)actionPoint,
-                [(Text)"stageMap"] = stageMap.Serialize(),
-                [(Text)"monsterMap"] = monsterMap.Serialize(),
-                [(Text)"itemMap"] = itemMap.Serialize(),
-                [(Text)"eventMap"] = eventMap.Serialize(),
-                [(Text)"hair"] = (Integer)hair,
-                [(Text)"lens"] = (Integer)lens,
-                [(Text)"ear"] = (Integer)ear,
-                [(Text)"tail"] = (Integer)tail,
-                [(Text)"combinationSlotAddresses"] = combinationSlotAddresses
+                [(Text)NameKey] = (Text)name,
+                [(Text)CharacterIdKey] = (Integer)characterId,
+                [(Text)LevelKey] = (Integer)level,
+                [(Text)ExpKey] = (Integer)exp,
+                [(Text)UpdatedAtKey] = updatedAt.Serialize(),
+                [(Text)AgentAddressKey] = agentAddress.Serialize(),
+                [(Text)MailBoxKey] = mailBox.Serialize(),
+                [(Text)BlockIndexKey] = (Integer)blockIndex,
+                [(Text)DailyRewardReceivedIndexKey] = (Integer)dailyRewardReceivedIndex,
+                [(Text)ActionPointKey] = (Integer)actionPoint,
+                [(Text)StageMapKey] = stageMap.Serialize(),
+                [(Text)MonsterMapKey] = monsterMap.Serialize(),
+                [(Text)ItemMapKey] = itemMap.Serialize(),
+                [(Text)EventMapKey] = eventMap.Serialize(),
+                [(Text)HairKey] = (Integer)hair,
+                [(Text)LensKey] = (Integer)lens,
+                [(Text)EarKey] = (Integer)ear,
+                [(Text)TailKey] = (Integer)tail,
+                [(Text)CombinationSlotAddressesKey] = combinationSlotAddresses
                     .OrderBy(i => i)
                     .Select(i => i.Serialize())
                     .Serialize(),
-                [(Text) "nonce"] = Nonce.Serialize(),
-                [(Text)"ranking_map_address"] = RankingMapAddress.Serialize(),
-            }.Union((Dictionary)base.Serialize()));
+                [(Text)RankingMapAddressKey] = RankingMapAddress.Serialize(),
+            }.Union((Dictionary)base.SerializeV2()));
 #pragma warning restore LAA1002
     }
 }

@@ -42,6 +42,15 @@ namespace Lib9c.Tests.Model.State
             Assert.Equal(avatarState.address, deserialized.address);
             Assert.Equal(avatarState.agentAddress, deserialized.agentAddress);
             Assert.Equal(avatarState.blockIndex, deserialized.blockIndex);
+
+            var serializeV2 = avatarState.SerializeV2();
+            var deserializeV2 = new AvatarState((Bencodex.Types.Dictionary)serializeV2);
+            Assert.Equal(avatarState.address, deserializeV2.address);
+            Assert.Equal(avatarState.agentAddress, deserializeV2.agentAddress);
+            Assert.Equal(avatarState.blockIndex, deserializeV2.blockIndex);
+            Assert.Null(deserializeV2.inventory);
+            Assert.Null(deserializeV2.worldInformation);
+            Assert.Null(deserializeV2.questList);
         }
 
         [Theory]
