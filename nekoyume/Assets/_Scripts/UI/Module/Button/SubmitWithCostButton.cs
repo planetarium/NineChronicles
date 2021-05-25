@@ -59,7 +59,7 @@ namespace Nekoyume.UI.Module
         public void ShowNCG(FungibleAssetValue ncg, bool isEnough)
         {
             costNCG.SetActive(true);
-            SetText(costNCGText, costNCGTextForSubmittable, isEnough, ncg.ToString());
+            SetText(costNCGText, costNCGTextForSubmittable, isEnough, ncg.GetQuantityString());
             UpdateSpace();
         }
 

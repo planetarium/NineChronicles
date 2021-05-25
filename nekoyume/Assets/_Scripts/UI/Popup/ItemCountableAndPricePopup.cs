@@ -55,7 +55,9 @@ namespace Nekoyume.UI
             {
                 var maxCount = _data.Item.Value.MaxCount.Value;
                 var count = InputFieldValueToField(countInputField);
-                _data.OnChangeCount.OnNext(Mathf.Clamp(count, 1, maxCount));
+                var result = Mathf.Clamp(count, 1, maxCount);
+                countInputField.text = result.ToString();
+                _data.OnChangeCount.OnNext(result);
             }).AddTo(_disposablesForAwake);
 
             addCountButton.OnClickAsObservable().Subscribe(_ =>

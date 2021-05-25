@@ -102,7 +102,6 @@ namespace Nekoyume.UI
         public void Show()
         {
             base.Show();
-            ReactiveShopState.Update(ShopItemsPerPage);
             shopItems.Show();
             inventory.SharedModel.State.Value = ItemType.Equipment;
             inventory.SharedModel.DimmedFunc.Value = inventoryItem => !(inventoryItem.ItemBase.Value is ITradableItem);
@@ -262,16 +261,16 @@ namespace Nekoyume.UI
                 return;
             }
 
-            if (data.Price.Value.Sign * data.Price.Value.MajorUnit < Model.Shop.MinimumPrice)
+            if (data.TotalPrice.Value.Sign * data.TotalPrice.Value.MajorUnit < Model.Shop.MinimumPrice)
             {
                 throw new InvalidSellingPriceException(data);
             }
 
             var tradableId = ((ITradableItem) data.Item.Value.ItemBase.Value).TradableId;
-            var price = data.Price.Value;
+            var totalPrice = data.TotalPrice.Value;
             var count = data.Count.Value;
             var itemSubType = data.Item.Value.ItemBase.Value.ItemSubType;
-            Game.Game.instance.ActionManager.Sell(tradableId, price, count, itemSubType);
+            Game.Game.instance.ActionManager.Sell(tradableId, totalPrice, count, itemSubType);
             Mixpanel.Track("Unity/Sell");
             ResponseSell();
         }
@@ -322,7 +321,7 @@ namespace Nekoyume.UI
             }
 
             model.TotalPrice.Value =
-                new FungibleAssetValue(model.Price.Value.Currency, totalPrice, 0);
+                new FungibleAssetValue(model.TotalPrice.Value.Currency, totalPrice, 0);
         }
 
         // sell cancellation

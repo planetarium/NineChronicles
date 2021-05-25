@@ -249,7 +249,7 @@ namespace Nekoyume.BlockChain
 
         private void RapidCombination()
         {
-            _renderer.EveryRender<RapidCombination2>()
+            _renderer.EveryRender<RapidCombination>()
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseRapidCombination).AddTo(_disposables);
@@ -286,41 +286,44 @@ namespace Nekoyume.BlockChain
                 .Subscribe(ResponseClaimMonsterCollectionReward).AddTo(_disposables);
         }
 
-        private void ResponseRapidCombination(ActionBase.ActionEvaluation<RapidCombination2> eval)
+        private void ResponseRapidCombination(ActionBase.ActionEvaluation<RapidCombination> eval)
         {
-            var avatarAddress = eval.Action.avatarAddress;
-            var slot =
-                eval.OutputStates.GetCombinationSlotState(avatarAddress, eval.Action.slotIndex);
-            var result = (RapidCombination.ResultModel) slot.Result;
-            foreach (var pair in result.cost)
+            if (eval.Exception is null)
             {
-                // NOTE: 최종적으로 UpdateCurrentAvatarState()를 호출한다면, 그곳에서 상태를 새로 설정할 것이다.
-                LocalLayerModifier.AddItem(avatarAddress, pair.Key.ItemId, pair.Value);
+                var avatarAddress = eval.Action.avatarAddress;
+                var slot =
+                    eval.OutputStates.GetCombinationSlotState(avatarAddress, eval.Action.slotIndex);
+                var result = (RapidCombination0.ResultModel) slot.Result;
+                foreach (var pair in result.cost)
+                {
+                    // NOTE: 최종적으로 UpdateCurrentAvatarState()를 호출한다면, 그곳에서 상태를 새로 설정할 것이다.
+                    LocalLayerModifier.AddItem(avatarAddress, pair.Key.ItemId, pair.Value);
+                }
+                LocalLayerModifier.RemoveAvatarItemRequiredIndex(avatarAddress, result.itemUsable.NonFungibleId);
+                LocalLayerModifier.ResetCombinationSlot(slot);
+
+                //[TentuPlay] RapidCombinationConsumable 합성에 사용한 골드 기록
+                //Local에서 변경하는 States.Instance 보다는 블락에서 꺼내온 eval.OutputStates를 사용
+                var agentAddress = eval.Signer;
+                var qty = eval.OutputStates.GetAvatarState(avatarAddress).inventory.Materials
+                    .Count(i => i.ItemSubType == ItemSubType.Hourglass);
+                var prevQty = eval.PreviousStates.GetAvatarState(avatarAddress).inventory.Materials
+                    .Count(i => i.ItemSubType == ItemSubType.Hourglass);
+                new TPStashEvent().CharacterItemUse(
+                    player_uuid: agentAddress.ToHex(),
+                    character_uuid: States.Instance.CurrentAvatarState.address.ToHex().Substring(0, 4),
+                    item_category: itemCategory.Consumable,
+                    item_slug: "hourglass",
+                    item_quantity: (float)(prevQty - qty),
+                    reference_entity: entity.Items,
+                    reference_category_slug: "consumables_rapid_combination",
+                    reference_slug: slot.Result.itemUsable.Id.ToString()
+                );
+
+                UpdateAgentState(eval);
+                UpdateCurrentAvatarState(eval);
+                UpdateCombinationSlotState(slot);
             }
-            LocalLayerModifier.RemoveAvatarItemRequiredIndex(avatarAddress, result.itemUsable.NonFungibleId);
-            LocalLayerModifier.ResetCombinationSlot(slot);
-
-            //[TentuPlay] RapidCombinationConsumable 합성에 사용한 골드 기록
-            //Local에서 변경하는 States.Instance 보다는 블락에서 꺼내온 eval.OutputStates를 사용
-            var agentAddress = eval.Signer;
-            var qty = eval.OutputStates.GetAvatarState(avatarAddress).inventory.Materials
-                .Count(i => i.ItemSubType == ItemSubType.Hourglass);
-            var prevQty = eval.PreviousStates.GetAvatarState(avatarAddress).inventory.Materials
-                .Count(i => i.ItemSubType == ItemSubType.Hourglass);
-            new TPStashEvent().CharacterItemUse(
-                player_uuid: agentAddress.ToHex(),
-                character_uuid: States.Instance.CurrentAvatarState.address.ToHex().Substring(0, 4),
-                item_category: itemCategory.Consumable,
-                item_slug: "hourglass",
-                item_quantity: (float)(prevQty - qty),
-                reference_entity: entity.Items,
-                reference_category_slug: "consumables_rapid_combination",
-                reference_slug: slot.Result.itemUsable.Id.ToString()
-            );
-
-            UpdateAgentState(eval);
-            UpdateCurrentAvatarState(eval);
-            UpdateCombinationSlotState(slot);
         }
 
         private void ResponseCombinationEquipment(ActionBase.ActionEvaluation<CombinationEquipment4> eval)

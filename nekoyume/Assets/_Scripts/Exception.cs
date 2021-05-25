@@ -270,7 +270,7 @@ public class InvalidSellingPriceException : Exception
     public InvalidSellingPriceException(Nekoyume.UI.Model.ItemCountableAndPricePopup popup) :
         base(string.Format(MessageFormat,
             popup.Item.Value.ItemBase.Value.GetLocalizedName(),
-            popup.Price.Value))
+            popup.TotalPrice.Value))
     {
 
     }
