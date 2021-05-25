@@ -1,4 +1,5 @@
 using Nekoyume.Model.State;
+using System.Collections.Generic;
 
 namespace Nekoyume.UI.Model
 {
@@ -15,12 +16,27 @@ namespace Nekoyume.UI.Model
 
     public class StageRankingModel : RankingModel
     {
-        public int Stage;
+        public int ClearedStageId;
     }
 
     public class EquipmentRankingModel : RankingModel
     {
         public int Level;
         public int Cp;
+    }
+
+    public class StageRankingResponse
+    {
+        public List<StageRankingRecord> StageRanking;
+    }
+
+    public class RankingRecord
+    {
+        public string AvatarAddress;
+    }
+
+    public class StageRankingRecord : RankingRecord
+    {
+        public int ClearedStageId;
     }
 }

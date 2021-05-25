@@ -12,7 +12,8 @@ using Debug = UnityEngine.Debug;
 using Nekoyume.L10n;
 using Nekoyume.Battle;
 using System.Threading.Tasks;
-using Cysharp.Threading.Tasks;
+using Nekoyume.GraphQL;
+using Libplanet;
 
 namespace Nekoyume.UI.Module
 {
@@ -38,7 +39,7 @@ namespace Nekoyume.UI.Module
 
             public Dictionary<int, EquipmentRankingModel> AgentWeaponRankingInfos = new Dictionary<int, EquipmentRankingModel>();
 
-            public void Update()
+            public async Task Update()
             {
                 var rankingMapStates = States.Instance.RankingMapStates;
                 _rankingInfoSet = new HashSet<Nekoyume.Model.State.RankingInfo>();
@@ -54,6 +55,8 @@ namespace Nekoyume.UI.Module
                 sw.Start();
 
                 LoadAbilityRankingInfos();
+                await LoadStageRankingInfos();
+                await LoadMimisbrunnrRankingInfos();
 
                 sw.Stop();
                 UnityEngine.Debug.LogWarning($"total elapsed : {sw.Elapsed}");
@@ -117,100 +120,128 @@ namespace Nekoyume.UI.Module
                 }
             }
 
-            private void LoadStageRankingInfo()
+            private async Task LoadStageRankingInfos()
             {
-                var orderedAvatarStates = _rankingInfoSet
-                    .Select(rankingInfo =>
+                var client = NineChroniclesAPIClient.Instance;
+                var query =
+                    @"query {
+                        stageRanking(limit: 100) {
+                            avatarAddress
+                            clearedStageId
+                            name
+                        }
+                    }";
+
+                var response = await client.GetObjectAsync<StageRankingResponse>(query);
+                var rankOffset = 1;
+                StageRankingInfos =
+                    response.StageRanking
+                    .Select(x =>
                     {
-                        var iValue = Game.Game.instance.Agent.GetState(rankingInfo.AvatarAddress);
+                        var addressString = x.AvatarAddress.Substring(2);
+                        var address = new Address(addressString);
+                        var iValue = Game.Game.instance.Agent.GetState(address);
                         var avatarState = new AvatarState((Bencodex.Types.Dictionary)iValue);
 
-                        return avatarState;
-                    })
-                    .ToList()
-                    .OrderByDescending(x => x.worldInformation.TryGetLastClearedStageId(out var id) ? id : 0)
-                    .ToList();
+                        return new StageRankingModel
+                        {
+                            AvatarState = avatarState,
+                            ClearedStageId = x.ClearedStageId,
+                            Rank = rankOffset++,
+                        };
+                    }).ToList();
 
                 foreach (var pair in States.Instance.AvatarStates)
                 {
-                    var avatarState = pair.Value;
-                    var avatarAddress = avatarState.address;
-                    var index = orderedAvatarStates.FindIndex(i => i.address.Equals(avatarAddress));
-                    if (index >= 0)
-                    {
-                        var stageProgress = avatarState.worldInformation.TryGetLastClearedStageId(out var id) ? id : 0;
+                    var myInfoQuery =
+                        @"query {
+                        stageRanking(limit:100) {
+                            avatarAddress
+                            clearedStageId
+                            name
+                        }
+                    }";
 
-                        AgentStageRankingInfos[pair.Key] =
-                            new StageRankingModel()
-                            {
-                                Rank = index + 1,
-                                AvatarState = avatarState,
-                                Stage = stageProgress,
-                            };
+                    var myInfoResponse = await client.GetObjectAsync<StageRankingRecord>(myInfoQuery);
+                    if (myInfoResponse is null)
+                    {
+                        Debug.LogError("Failed getting ranking via API.");
+                        return;
                     }
-                }
 
-                StageRankingInfos = orderedAvatarStates
-                    .Take(RankingBoardDisplayCount)
-                    .Select(avatarState =>
+                    var addressString = myInfoResponse.AvatarAddress.Substring(2);
+                    var address = new Address(addressString);
+                    var iValue = Game.Game.instance.Agent.GetState(address);
+                    var avatarState = new AvatarState((Bencodex.Types.Dictionary)iValue);
+                    AgentStageRankingInfos[pair.Key] = new StageRankingModel
                     {
-                        var stageProgress = avatarState.worldInformation.TryGetLastClearedStageId(out var id) ? id : 0;
-
-                        return new StageRankingModel()
-                        {
-                            AvatarState = avatarState,
-                            Stage = stageProgress,
-                        };
-                    }).ToList();
+                        AvatarState = avatarState,
+                        ClearedStageId = myInfoResponse.ClearedStageId,
+                    };
+                }
             }
 
-            private void LoadMimisbrunnrRankingInfo()
+            private async Task LoadMimisbrunnrRankingInfos()
             {
-                var orderedAvatarStates = _rankingInfoSet
-                    .Select(rankingInfo =>
+                var client = NineChroniclesAPIClient.Instance;
+                var query =
+                    @"query {
+                        stageRanking(limit: 100, mimisbrunnr: true) {
+                            avatarAddress
+                            clearedStageId
+                            name
+                        }
+                    }";
+
+                var response = await client.GetObjectAsync<StageRankingResponse>(query);
+                var rankOffset = 1;
+                MimisbrunnrRankingInfos =
+                    response.StageRanking
+                    .Select(x =>
                     {
-                        var iValue = Game.Game.instance.Agent.GetState(rankingInfo.AvatarAddress);
+                        var addressString = x.AvatarAddress.Substring(2);
+                        var address = new Address(addressString);
+                        var iValue = Game.Game.instance.Agent.GetState(address);
                         var avatarState = new AvatarState((Bencodex.Types.Dictionary)iValue);
 
-                        return avatarState;
-                    })
-                    .ToList()
-                    .OrderByDescending(x => x.worldInformation.TryGetLastClearedMimisbrunnrStageId(out var id) ? id : 0)
-                    .ToList();
+                        return new StageRankingModel
+                        {
+                            AvatarState = avatarState,
+                            ClearedStageId = x.ClearedStageId > 0 ?
+                                x.ClearedStageId - GameConfig.MimisbrunnrStartStageId + 1 : 0,
+                            Rank = rankOffset++,
+                        };
+                    }).ToList();
 
                 foreach (var pair in States.Instance.AvatarStates)
                 {
-                    var avatarState = pair.Value;
-                    var avatarAddress = avatarState.address;
-                    var index = orderedAvatarStates.FindIndex(i => i.address.Equals(avatarAddress));
-                    if (index >= 0)
-                    {
-                        var stageProgress = avatarState.worldInformation.TryGetLastClearedMimisbrunnrStageId(out var id) ? id : 0;
+                    var myInfoQuery =
+                        @"query {
+                        stageRanking(limit: 100, mimisbrunnr: true) {
+                            avatarAddress
+                            clearedStageId
+                            name
+                        }
+                    }";
 
-                        AgentMimisbrunnrRankingInfos[pair.Key] =
-                            new StageRankingModel()
-                            {
-                                Rank = index + 1,
-                                AvatarState = avatarState,
-                                Stage = stageProgress > 0 ?
-                                    stageProgress - GameConfig.MimisbrunnrStartStageId + 1 : 0,
-                            };
+                    var myInfoResponse = await client.GetObjectAsync<StageRankingRecord>(myInfoQuery);
+                    if (myInfoResponse is null)
+                    {
+                        Debug.LogError("Failed getting ranking via API.");
+                        return;
                     }
-                }
 
-                MimisbrunnrRankingInfos = orderedAvatarStates
-                    .Take(RankingBoardDisplayCount)
-                    .Select(avatarState =>
+                    var addressString = myInfoResponse.AvatarAddress.Substring(2);
+                    var address = new Address(addressString);
+                    var iValue = Game.Game.instance.Agent.GetState(address);
+                    var avatarState = new AvatarState((Bencodex.Types.Dictionary)iValue);
+                    AgentMimisbrunnrRankingInfos[pair.Key] = new StageRankingModel
                     {
-                        var stageProgress = avatarState.worldInformation.TryGetLastClearedMimisbrunnrStageId(out var id) ? id : 0;
-
-                        return new StageRankingModel()
-                        {
-                            AvatarState = avatarState,
-                            Stage = stageProgress > 0 ?
-                                stageProgress - GameConfig.MimisbrunnrStartStageId + 1 : 0,
-                        };
-                    }).ToList();
+                        AvatarState = avatarState,
+                        ClearedStageId = myInfoResponse.ClearedStageId > 0 ?
+                                myInfoResponse.ClearedStageId - GameConfig.MimisbrunnrStartStageId + 1 : 0,
+                    };
+                }
             }
         }
 
@@ -256,15 +287,9 @@ namespace Nekoyume.UI.Module
 
         public static void UpdateSharedModel()
         {
-            RankLoadingTask = Task.Run(() =>
-            {
-                SharedModel.Update();
+            var model = SharedModel;
 
-                return
-                    SharedModel.AbilityRankingInfos != null ||
-                    SharedModel.StageRankingInfos != null ||
-                    SharedModel.MimisbrunnrRankingInfos != null;
-            });
+            RankLoadingTask = model.Update();
         }
 
         public void Initialize()
@@ -407,13 +432,6 @@ namespace Nekoyume.UI.Module
                     break;
                 case RankCategory.Stage:
                     var stageRankingInfos = SharedModel.StageRankingInfos;
-                    if (stageRankingInfos is null)
-                    {
-                        ToggleFirstElement();
-                        Widget.Find<SystemPopup>().Show("UI_ALERT_NOT_IMPLEMENTED_TITLE", "UI_ALERT_NOT_IMPLEMENTED_CONTENT");
-                        return;
-                    }
-
                     if (SharedModel.AgentStageRankingInfos
                         .TryGetValue(states.CurrentAvatarKey, out var stageInfo))
                     {
@@ -428,13 +446,6 @@ namespace Nekoyume.UI.Module
                     break;
                 case RankCategory.Mimisburnnr:
                     var mimisbrunnrRankingInfos = SharedModel.MimisbrunnrRankingInfos;
-                    if (mimisbrunnrRankingInfos is null)
-                    {
-                        ToggleFirstElement();
-                        Widget.Find<SystemPopup>().Show("UI_ALERT_NOT_IMPLEMENTED_TITLE", "UI_ALERT_NOT_IMPLEMENTED_CONTENT");
-                        return;
-                    }
-
                     if (SharedModel.AgentMimisbrunnrRankingInfos
                         .TryGetValue(states.CurrentAvatarKey, out var mimisbrunnrInfo))
                     {

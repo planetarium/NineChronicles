@@ -119,7 +119,7 @@ namespace Nekoyume.UI.Scroller
                 .ToString()
                 .Remove(addressStringCount);
 
-            firstElementText.text = rankingInfo.Stage.ToString();
+            firstElementText.text = rankingInfo.ClearedStageId.ToString();
             firstElementText.gameObject.SetActive(true);
             firstElementCpText.gameObject.SetActive(false);
             secondElement.gameObject.SetActive(false);
