@@ -501,7 +501,7 @@ namespace Nekoyume.UI.Module
             var secondCategory = _rankColumnMap[category].Item2;
             if (secondCategory is null)
             {
-                firstColumnText.text = string.Empty;
+                secondColumnText.text = string.Empty;
             }
             else
             {

@@ -158,7 +158,8 @@ namespace Nekoyume.UI.Scroller
             rankText.text = "-";
             characterView.SetByAvatarState(avatarState);
             nicknameText.text = avatarState.name;
-            addressText.text = avatarState.address.ToString();
+            addressText.text = avatarState.address.ToString()
+                .Remove(addressStringCount);
 
             firstElementText.text = "-";
             firstElementText.gameObject.SetActive(true);
