@@ -35,6 +35,13 @@ namespace Lib9c.Tests.Action
         private static readonly Currency _currency = new Currency("NCG", 2, default(Address?));
 
         [Fact]
+        public void Constructor_ThrowsMemoLengthOverflowException()
+        {
+            Assert.Throws<MemoLengthOverflowException>(() =>
+                new TransferAsset(_sender, _recipient, _currency * 100, new string(' ', 100)));
+        }
+
+        [Fact]
         public void Execute()
         {
             var balance = ImmutableDictionary<(Address, Currency), FungibleAssetValue>.Empty
@@ -290,6 +297,21 @@ namespace Lib9c.Tests.Action
             Assert.Equal(_recipient, action.Recipient);
             Assert.Equal(_currency * 100, action.Amount);
             Assert.Equal(memo, action.Memo);
+        }
+
+        [Fact]
+        public void LoadPlainValue_ThrowsMemoLengthOverflowException()
+        {
+            var action = new TransferAsset();
+            var plainValue = new Dictionary(new[]
+            {
+                new KeyValuePair<IKey, IValue>((Text)"sender", _sender.Serialize()),
+                new KeyValuePair<IKey, IValue>((Text)"recipient", _recipient.Serialize()),
+                new KeyValuePair<IKey, IValue>((Text)"amount", (_currency * 100).Serialize()),
+                new KeyValuePair<IKey, IValue>((Text)"memo", new string(' ', 81).Serialize()),
+            });
+
+            Assert.Throws<MemoLengthOverflowException>(() => action.LoadPlainValue(plainValue));
         }
 
         [Theory]

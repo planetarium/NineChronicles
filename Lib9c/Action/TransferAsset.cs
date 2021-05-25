@@ -15,6 +15,8 @@ namespace Nekoyume.Action
     [ActionType("transfer_asset")]
     public class TransferAsset : ActionBase, ISerializable
     {
+        private const int MemoMaxLength = 80;
+
         public TransferAsset()
         {
         }
@@ -24,6 +26,8 @@ namespace Nekoyume.Action
             Sender = sender;
             Recipient = recipient;
             Amount = amount;
+
+            CheckMemoLength(memo);
             Memo = memo;
         }
 
@@ -102,11 +106,23 @@ namespace Nekoyume.Action
             Recipient = asDict["recipient"].ToAddress();
             Amount = asDict["amount"].ToFungibleAssetValue();
             Memo = asDict.TryGetValue((Text) "memo", out IValue memo) ? memo.ToDotnetString() : null;
+
+            CheckMemoLength(Memo);
         }
 
         public void GetObjectData(SerializationInfo info, StreamingContext context)
         {
             info.AddValue("serialized", new Codec().Encode(PlainValue));
+        }
+
+        private void CheckMemoLength(string memo)
+        {
+            if (memo?.Length > MemoMaxLength)
+            {
+                string msg = $"The length of the memo, {memo.Length}, " +
+                             $"is overflowed than the max length, {MemoMaxLength}.";
+                throw new MemoLengthOverflowException(msg);
+            }
         }
     }
 }
