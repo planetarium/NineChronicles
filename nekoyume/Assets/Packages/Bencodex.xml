@@ -59,9 +59,10 @@
             <inheritdoc />
         </member>
         <member name="T:Bencodex.Misc.ByteArrayComparer">
-            <summary>Similar to <c cref="T:System.StringComparer">StringComparer</c>
-            but for <c cref="T:System.Byte">Byte</c> arrays instead of
-            Unicode <c cref="T:System.String">String</c>s.</summary>
+            <summary>
+            Similar to <see cref="T:System.StringComparer"/> but for <see cref="T:System.Byte"/>s instead of Unicode
+            <see cref="T:System.String"/>s.
+            </summary>
         </member>
         <member name="T:Bencodex.Misc.CompositeComparer`2">
             <summary>Compose given two comparers into one comparer.</summary>
@@ -106,6 +107,12 @@
         </member>
         <member name="T:Bencodex.Types.Null">
             <summary>Represents a Bencodex null value (i.e., <c>n</c>).</summary>
+        </member>
+        <member name="F:Bencodex.Types.Null.Value">
+            <summary>
+            Represents a <see cref="T:Bencodex.Types.Null"/> instance.  Recommends to prefer this over using
+            the default constructor or a <c>default</c> keyword.  This field is read-only.
+            </summary>
         </member>
     </members>
 </doc>

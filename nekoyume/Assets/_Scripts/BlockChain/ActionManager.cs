@@ -206,20 +206,22 @@ namespace Nekoyume.BlockChain
                 .DoOnError(e => HandleException(action.Id, e));
         }
 
-        public IObservable<ActionBase.ActionEvaluation<Sell>> Sell(Guid itemId,
+        public IObservable<ActionBase.ActionEvaluation<Sell>> Sell(Guid tradableId,
                                                                    FungibleAssetValue price,
+                                                                   int count,
                                                                    ItemSubType itemSubType)
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
 
             // NOTE: 장착했는지 안 했는지에 상관없이 해제 플래그를 걸어 둔다.
-            LocalLayerModifier.SetItemEquip(avatarAddress, itemId, false, false);
+            LocalLayerModifier.SetItemEquip(avatarAddress, tradableId, false);
 
             var action = new Sell
             {
                 sellerAvatarAddress = avatarAddress,
-                itemId = itemId,
+                tradableId = tradableId,
                 price = price,
+                count = count,
                 itemSubType = itemSubType,
             };
             ProcessAction(action);
@@ -304,8 +306,8 @@ namespace Nekoyume.BlockChain
             var avatarAddress = States.Instance.CurrentAvatarState.address;
 
             // NOTE: 장착했는지 안 했는지에 상관없이 해제 플래그를 걸어 둔다.
-            LocalLayerModifier.SetItemEquip(avatarAddress, itemId, false, false);
-            LocalLayerModifier.SetItemEquip(avatarAddress, materialId, false, false);
+            LocalLayerModifier.SetItemEquip(avatarAddress, itemId, false);
+            LocalLayerModifier.SetItemEquip(avatarAddress, materialId, false);
 
             Mixpanel.Track("Unity/Item Enhancement");
 
@@ -397,16 +399,16 @@ namespace Nekoyume.BlockChain
                 .DoOnError(e => HandleException(action.Id, e));
         }
 
-        public IObservable<ActionBase.ActionEvaluation<RapidCombination2>> RapidCombination(int slotIndex)
+        public IObservable<ActionBase.ActionEvaluation<RapidCombination>> RapidCombination(int slotIndex)
         {
-            var action = new RapidCombination2
+            var action = new RapidCombination
             {
                 avatarAddress = States.Instance.CurrentAvatarState.address,
                 slotIndex = slotIndex
             };
             ProcessAction(action);
 
-            return _renderer.EveryRender<RapidCombination2>()
+            return _renderer.EveryRender<RapidCombination>()
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .Take(1)
                 .Last()

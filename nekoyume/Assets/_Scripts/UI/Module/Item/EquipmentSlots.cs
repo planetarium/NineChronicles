@@ -201,7 +201,8 @@ namespace Nekoyume.UI.Module
             slot = slots.FirstOrDefault(e =>
                 !e.IsLock &&
                 !e.IsEmpty &&
-                ((INonFungibleItem)e.Item).ItemId.Equals(((INonFungibleItem)itemBase).ItemId) &&
+                ((INonFungibleItem) e.Item).NonFungibleId
+                .Equals(((INonFungibleItem) itemBase).NonFungibleId) &&
                 e.Item.Equals(itemBase));
             return slot;
         }

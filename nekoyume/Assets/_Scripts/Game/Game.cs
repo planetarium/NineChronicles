@@ -3,13 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Amazon;
 using Amazon.CloudWatchLogs;
 using Amazon.CloudWatchLogs.Model;
-using Amazon.CognitoIdentity;
 using Bencodex.Types;
+#if !UNITY_EDITOR
 using Libplanet;
 using Libplanet.Crypto;
+#endif
 using mixpanel;
 using Nekoyume.Action;
 using Nekoyume.BlockChain;
@@ -21,11 +21,12 @@ using Nekoyume.Model.State;
 using Nekoyume.Pattern;
 using Nekoyume.State;
 using Nekoyume.UI;
+using Nekoyume.UI.Module;
 using UniRx;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using Menu = Nekoyume.UI.Menu;
+
 
 namespace Nekoyume.Game
 {
@@ -131,16 +132,15 @@ namespace Nekoyume.Game
             yield return L10nManager.Initialize(LanguageTypeMapper.ISO396(_options.Language)).ToYieldInstruction();
 #endif
 
-            // UI 초기화 1차.
+            // Initialize MainCanvas first
             MainCanvas.instance.InitializeFirst();
             yield return Addressables.InitializeAsync();
+            // Initialize TableSheets. This should be done before initialize the Agent.
             yield return StartCoroutine(CoInitializeTableSheets());
             yield return StartCoroutine(ResourcesHelper.CoInitialize());
             AudioController.instance.Initialize();
             yield return null;
-            // Agent 초기화.
-            // Agent를 초기화하기 전에 반드시 Table과 TableSheets를 초기화 함.
-            // Agent가 Table과 TableSheets에 약한 의존성을 갖고 있음.(Deserialize 단계 때문)
+            // Initialize Agent
             var agentInitialized = false;
             var agentInitializeSucceed = false;
             yield return StartCoroutine(
@@ -159,8 +159,11 @@ namespace Nekoyume.Game
             // NOTE: Create ActionManager after Agent initialized.
             ActionManager = new ActionManager(Agent);
             yield return StartCoroutine(CoSyncTableSheets());
-            // UI 초기화 2차.
+            // Initialize MainCanvas second
             yield return StartCoroutine(MainCanvas.instance.InitializeSecond());
+            // Initialize Rank.SharedModel
+            RankPanel.UpdateSharedModel();
+            // Initialize Stage
             Stage.Initialize();
 
             Observable.EveryUpdate()
@@ -168,7 +171,6 @@ namespace Nekoyume.Game
                 .Select(_ => Input.mousePosition)
                 .Subscribe(PlayMouseOnClickVFX)
                 .AddTo(gameObject);
-
 
             Widget.Find<VersionInfo>().SetVersion(Agent.AppProtocolVersion);
 

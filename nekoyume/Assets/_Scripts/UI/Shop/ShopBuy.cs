@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using mixpanel;
@@ -7,6 +7,7 @@ using Nekoyume.EnumType;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using Nekoyume.L10n;
+using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
 using Nekoyume.State;
@@ -21,7 +22,6 @@ namespace Nekoyume.UI
 {
     public class ShopBuy : Widget
     {
-        public static int ShopItemsPerPage = 24; // todo : Resolution Response Required Later
         private const int NPCId = 300000;
         private static readonly Vector3 NPCPosition = new Vector3(1000.1f, 998.2f, 1.7f);
         private NPC _npc;
@@ -107,7 +107,7 @@ namespace Nekoyume.UI
                 {
                     shardedProducts.AddRange(items);
                 }
-                ReactiveShopState.Initialize(shopState, shardedProducts, ShopItemsPerPage);
+                ReactiveShopState.Initialize(shopState, shardedProducts);
                 return true;
             });
 
@@ -124,6 +124,7 @@ namespace Nekoyume.UI
                     BottomMenu.ToggleableType.Quest,
                     BottomMenu.ToggleableType.Chat,
                     BottomMenu.ToggleableType.IllustratedBook,
+                    BottomMenu.ToggleableType.Ranking,
                     BottomMenu.ToggleableType.Character);
 
                 AudioController.instance.PlayMusic(AudioController.MusicCode.Shop);
@@ -144,7 +145,7 @@ namespace Nekoyume.UI
 
         public void Open()
         {
-            ReactiveShopState.Update(ShopItemsPerPage);
+            ReactiveShopState.Update();
             shopItems.Reset();
             Reset();
         }
@@ -251,7 +252,7 @@ namespace Nekoyume.UI
             var productId = shopItem.ProductId.Value;
 
             LocalLayerModifier.ModifyAgentGold(buyerAgentAddress, -shopItem.Price.Value);
-            ReactiveShopState.RemoveShopItem(productId, ShopItemsPerPage);
+            ReactiveShopState.RemoveShopItem(productId);
 
             var format = L10nManager.Localize("NOTIFICATION_BUY_START");
             OneLinePopup.Push(MailType.Auction,
@@ -325,6 +326,36 @@ namespace Nekoyume.UI
                 shopItem.SellerAgentAddress.Value,
                 shopItem.SellerAvatarAddress.Value,
                 shopItem.ItemSubType.Value);
+        }
+
+        public static ItemBase GetItemBase(Buy.PurchaseResult result)
+        {
+            if (result.itemUsable != null)
+            {
+                return result.itemUsable;
+            }
+
+            if (result.costume != null)
+            {
+                return result.costume;
+            }
+
+            return (ItemBase)result.tradableFungibleItem;
+        }
+
+        public static ItemBase GetItemBase(AttachmentActionResult result)
+        {
+            if (result.itemUsable != null)
+            {
+                return result.itemUsable;
+            }
+
+            if (result.costume != null)
+            {
+                return result.costume;
+            }
+
+            return (ItemBase)result.tradableFungibleItem;
         }
     }
 }

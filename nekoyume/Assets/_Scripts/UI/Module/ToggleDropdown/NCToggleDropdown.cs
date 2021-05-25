@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using DG.Tweening;
@@ -22,11 +22,10 @@ namespace Nekoyume.UI.Module
         {
             _rectTransform = GetComponent<RectTransform>();
             _parentSize = _rectTransform.sizeDelta;
-            _itemRectTransforms.AddRange(items.Select(x => x.GetComponent<RectTransform>()));
-            _itemCanvasGroups.AddRange(items.Select(x => x.GetComponent<CanvasGroup>()));
-
             if (items.Count > 0)
             {
+                _itemRectTransforms.AddRange(items.Select(x => x.GetComponent<RectTransform>()));
+                _itemCanvasGroups.AddRange(items.Select(x => x.GetComponent<CanvasGroup>()));
                 items.First().isOn = false;
                 items.First().isOn = true;
             }

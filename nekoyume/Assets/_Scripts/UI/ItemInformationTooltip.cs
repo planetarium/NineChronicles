@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Nekoyume.EnumType;
 using Nekoyume.Extension;
 using Nekoyume.Game.Controller;
+using Nekoyume.State;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using TMPro;
@@ -171,6 +172,10 @@ namespace Nekoyume.UI
             {
                 Model.SubmitButtonText.SubscribeTo(buyButton).AddTo(_disposablesForModel);
                 Model.SubmitButtonEnabled.Subscribe(buyButton.SetSubmittable).AddTo(_disposablesForModel);
+                Model.Price.Subscribe(price =>
+                {
+                    buyButton.ShowNCG(price, price <= States.Instance.GoldBalanceState.Gold);
+                }).AddTo(_disposablesForModel);
             }
             else
             {
