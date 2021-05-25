@@ -32,6 +32,7 @@ namespace Nekoyume.UI.Model
 
     public class RankingRecord
     {
+        public int Ranking;
         public string AvatarAddress;
     }
 

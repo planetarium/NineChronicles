@@ -14,6 +14,7 @@ using Nekoyume.Battle;
 using System.Threading.Tasks;
 using Nekoyume.GraphQL;
 using Libplanet;
+using Cysharp.Threading.Tasks;
 
 namespace Nekoyume.UI.Module
 {
@@ -126,6 +127,7 @@ namespace Nekoyume.UI.Module
                 var query =
                     @"query {
                         stageRanking(limit: 100) {
+                            ranking
                             avatarAddress
                             clearedStageId
                             name
@@ -133,7 +135,6 @@ namespace Nekoyume.UI.Module
                     }";
 
                 var response = await client.GetObjectAsync<StageRankingResponse>(query);
-                var rankOffset = 1;
                 StageRankingInfos =
                     response.StageRanking
                     .Select(x =>
@@ -141,42 +142,58 @@ namespace Nekoyume.UI.Module
                         var addressString = x.AvatarAddress.Substring(2);
                         var address = new Address(addressString);
                         var iValue = Game.Game.instance.Agent.GetState(address);
+                        if (iValue is Bencodex.Types.Null || iValue is null)
+                        {
+                            Debug.LogError($"Failed to get state of user {address}.");
+                            return null;
+                        }
                         var avatarState = new AvatarState((Bencodex.Types.Dictionary)iValue);
 
                         return new StageRankingModel
                         {
                             AvatarState = avatarState,
                             ClearedStageId = x.ClearedStageId,
-                            Rank = rankOffset++,
+                            Rank = x.Ranking,
                         };
-                    }).ToList();
+                    })
+                    .Where(x => x != null)
+                    .ToList();
 
                 foreach (var pair in States.Instance.AvatarStates)
                 {
-                    var myInfoQuery =
-                        @"query {
-                        stageRanking(limit:100) {
-                            avatarAddress
-                            clearedStageId
-                            name
-                        }
-                    }";
+                    var myInfoQuery = 
+                        $@"query {{
+                            stageRanking(avatarAddress: ""{pair.Value.address}"") {{
+                                ranking
+                                avatarAddress
+                                clearedStageId
+                                name
+                            }}
+                        }}";
 
-                    var myInfoResponse = await client.GetObjectAsync<StageRankingRecord>(myInfoQuery);
+                    var myInfoResponse = await client.GetObjectAsync<StageRankingResponse>(myInfoQuery);
                     if (myInfoResponse is null)
                     {
-                        Debug.LogError("Failed getting ranking via API.");
+                        Debug.LogError("Failed getting my ranking record.");
                         return;
                     }
 
-                    var addressString = myInfoResponse.AvatarAddress.Substring(2);
+                    var myRecord = myInfoResponse.StageRanking.FirstOrDefault();
+                    if (myRecord is null)
+                    {
+                        Debug.LogWarning($"{nameof(StageRankingRecord)} not exists.");
+                        return;
+                    }
+
+                    var addressString = myRecord.AvatarAddress.Substring(2);
                     var address = new Address(addressString);
                     var iValue = Game.Game.instance.Agent.GetState(address);
                     var avatarState = new AvatarState((Bencodex.Types.Dictionary)iValue);
                     AgentStageRankingInfos[pair.Key] = new StageRankingModel
                     {
                         AvatarState = avatarState,
-                        ClearedStageId = myInfoResponse.ClearedStageId,
+                        ClearedStageId = myRecord.ClearedStageId,
+                        Rank = myRecord.Ranking,
                     };
                 }
             }
@@ -187,6 +204,7 @@ namespace Nekoyume.UI.Module
                 var query =
                     @"query {
                         stageRanking(limit: 100, mimisbrunnr: true) {
+                            ranking
                             avatarAddress
                             clearedStageId
                             name
@@ -194,7 +212,6 @@ namespace Nekoyume.UI.Module
                     }";
 
                 var response = await client.GetObjectAsync<StageRankingResponse>(query);
-                var rankOffset = 1;
                 MimisbrunnrRankingInfos =
                     response.StageRanking
                     .Select(x =>
@@ -209,37 +226,45 @@ namespace Nekoyume.UI.Module
                             AvatarState = avatarState,
                             ClearedStageId = x.ClearedStageId > 0 ?
                                 x.ClearedStageId - GameConfig.MimisbrunnrStartStageId + 1 : 0,
-                            Rank = rankOffset++,
+                            Rank = x.Ranking,
                         };
                     }).ToList();
 
                 foreach (var pair in States.Instance.AvatarStates)
                 {
                     var myInfoQuery =
-                        @"query {
-                        stageRanking(limit: 100, mimisbrunnr: true) {
-                            avatarAddress
-                            clearedStageId
-                            name
-                        }
-                    }";
+                        $@"query {{
+                            stageRanking(avatarAddress: ""{pair.Value.address}"", mimisbrunnr: true) {{
+                                ranking
+                                avatarAddress
+                                clearedStageId
+                                name
+                            }}
+                        }}";
 
-                    var myInfoResponse = await client.GetObjectAsync<StageRankingRecord>(myInfoQuery);
+                    var myInfoResponse = await client.GetObjectAsync<StageRankingResponse>(myInfoQuery);
                     if (myInfoResponse is null)
                     {
-                        Debug.LogError("Failed getting ranking via API.");
+                        Debug.LogError("Failed getting my ranking record.");
                         return;
                     }
 
-                    var addressString = myInfoResponse.AvatarAddress.Substring(2);
+                    var myRecord = myInfoResponse.StageRanking.FirstOrDefault();
+                    if (myRecord is null)
+                    {
+                        Debug.LogWarning($"Mimisbrunnr {nameof(StageRankingRecord)} not exists.");
+                        return;
+                    }
+
+                    var addressString = myRecord.AvatarAddress.Substring(2);
                     var address = new Address(addressString);
                     var iValue = Game.Game.instance.Agent.GetState(address);
                     var avatarState = new AvatarState((Bencodex.Types.Dictionary)iValue);
                     AgentMimisbrunnrRankingInfos[pair.Key] = new StageRankingModel
                     {
                         AvatarState = avatarState,
-                        ClearedStageId = myInfoResponse.ClearedStageId > 0 ?
-                                myInfoResponse.ClearedStageId - GameConfig.MimisbrunnrStartStageId + 1 : 0,
+                        ClearedStageId = myRecord.ClearedStageId - GameConfig.MimisbrunnrStartStageId + 1,
+                        Rank = myRecord.Ranking,
                     };
                 }
             }
@@ -250,16 +275,7 @@ namespace Nekoyume.UI.Module
         private static Task RankLoadingTask = null;
 
         [SerializeField]
-        private Transform cellViewParent = null;
-
-        [SerializeField]
         private List<Toggle> toggles = new List<Toggle>();
-
-        [SerializeField]
-        private GameObject rankCellPrefab = null;
-
-        [SerializeField]
-        private GameObject myInfoPrefab = null;
 
         [SerializeField]
         private TextMeshProUGUI firstColumnText = null;
@@ -473,9 +489,24 @@ namespace Nekoyume.UI.Module
             }
 
             var firstCategory = _rankColumnMap[category].Item1;
-            firstColumnText.text = firstCategory.StartsWith("UI_") ? L10nManager.Localize(firstCategory) : firstCategory;
+            if (firstCategory is null)
+            {
+                firstColumnText.text = string.Empty;
+            }
+            else
+            {
+                firstColumnText.text = firstCategory.StartsWith("UI_") ? L10nManager.Localize(firstCategory) : firstCategory;
+            }
+
             var secondCategory = _rankColumnMap[category].Item2;
-            secondColumnText.text = secondCategory.StartsWith("UI_") ? L10nManager.Localize(secondCategory) : secondCategory;
+            if (secondCategory is null)
+            {
+                firstColumnText.text = string.Empty;
+            }
+            else
+            {
+                secondColumnText.text = secondCategory.StartsWith("UI_") ? L10nManager.Localize(secondCategory) : secondCategory;
+            }
         }
     }
 }
