@@ -28,5 +28,6 @@ namespace Nekoyume.L10n
         Tutorial,
         RewardText,
         Paper,
+        PopupTitle,
     }
 }
