@@ -7,9 +7,9 @@ using System;
 namespace Nekoyume.UI.Module
 {
     [Serializable]
-    public class NCToggleDropdown : NCToggle
+    public class ToggleDropdown : Toggle
     {
-        public List<NCToggle> items = new List<NCToggle>();
+        public List<Toggle> items = new List<Toggle>();
         public float duration;
 
         private List<RectTransform> _itemRectTransforms = new List<RectTransform>();

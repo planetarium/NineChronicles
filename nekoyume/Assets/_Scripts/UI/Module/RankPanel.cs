@@ -222,7 +222,7 @@ namespace Nekoyume.UI.Module
         private Transform cellViewParent = null;
 
         [SerializeField]
-        private List<NCToggle> toggles = new List<NCToggle>();
+        private List<Toggle> toggles = new List<Toggle>();
 
         [SerializeField]
         private GameObject rankCellPrefab = null;
@@ -276,7 +276,7 @@ namespace Nekoyume.UI.Module
             foreach (var toggle in toggles)
             {
                 var innerCategory = currentCategory;
-                if (toggle is NCToggleDropdown toggleDropdown)
+                if (toggle is ToggleDropdown toggleDropdown)
                 {
                     var subElements = toggleDropdown.items;
                     foreach (var element in subElements)
@@ -343,11 +343,11 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
-            if (firstElement is NCToggle)
+            if (firstElement is Toggle)
             {
                 firstElement.isOn = true;
             }
-            else if (firstElement is NCToggleDropdown dropdown)
+            else if (firstElement is ToggleDropdown dropdown)
             {
                 var firstSubElement = dropdown.items.First();
                 if (firstSubElement is null)

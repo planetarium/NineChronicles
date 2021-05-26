@@ -5,8 +5,8 @@ using UnityEngine;
 
 namespace Editor
 {
-    [CustomEditor(typeof(NCToggle))]
-    public class NKToggleEditor : ToggleEditor
+    [CustomEditor(typeof(Toggle))]
+    public class ToggleEditor : UnityEditor.UI.ToggleEditor
     {
         public override void OnInspectorGUI()
         {

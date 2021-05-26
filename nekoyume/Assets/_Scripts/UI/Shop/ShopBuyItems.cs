@@ -17,7 +17,7 @@ namespace Nekoyume.UI.Module
     {
         public List<ShopItemView> Items { get; } = new List<ShopItemView>();
 
-        [SerializeField] private List<NCToggleDropdown> toggleDropdowns = new List<NCToggleDropdown>();
+        [SerializeField] private List<ToggleDropdown> toggleDropdowns = new List<ToggleDropdown>();
         [SerializeField] private TextMeshProUGUI pageText = null;
         [SerializeField] private Button previousPageButton = null;
         [SerializeField] private Button nextPageButton = null;
