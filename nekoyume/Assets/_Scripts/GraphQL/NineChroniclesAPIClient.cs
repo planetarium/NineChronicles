@@ -8,28 +8,18 @@ namespace Nekoyume.GraphQL
 {
     public class NineChroniclesAPIClient
     {
-        public static NineChroniclesAPIClient Instance
-        {
-            get
-            {
-                if (instance is null)
-                {
-                    instance = new NineChroniclesAPIClient();
-                }
-
-                return instance;
-            }
-        }
-
-        private static NineChroniclesAPIClient instance = null;
+        public bool IsInitialized => _client != null;
 
         private GraphQLHttpClient _client = null;
 
-        private readonly string endpointURL = "https://api.9c.gg/graphql";
-
-        private NineChroniclesAPIClient()
+        public NineChroniclesAPIClient(string host)
         {
-            _client = new GraphQLHttpClient(endpointURL, new NewtonsoftJsonSerializer());
+            if (string.IsNullOrEmpty(host))
+            {
+                return;
+            }
+
+            _client = new GraphQLHttpClient(host, new NewtonsoftJsonSerializer());
         }
 
         public async Task<T> GetObjectAsync<T>(string query) where T : class

@@ -30,6 +30,7 @@ using Menu = Nekoyume.UI.Menu;
 
 namespace Nekoyume.Game
 {
+    using Nekoyume.GraphQL;
     using UniRx;
 
     [RequireComponent(typeof(Agent), typeof(RPCAgent))]
@@ -69,9 +70,13 @@ namespace Nekoyume.Game
 
         public const string AddressableAssetsContainerPath = nameof(AddressableAssetsContainer);
 
+        public NineChroniclesAPIClient ApiClient => _apiClient;
+
         private CommandLineOptions _options;
 
         private AmazonCloudWatchLogsClient _logsClient;
+
+        private NineChroniclesAPIClient _apiClient;
 
         private string _msg;
 
@@ -163,6 +168,8 @@ namespace Nekoyume.Game
             yield return StartCoroutine(CoSyncTableSheets());
             // Initialize MainCanvas second
             yield return StartCoroutine(MainCanvas.instance.InitializeSecond());
+            // Initialize NineChroniclesAPIClient.
+            _apiClient = new NineChroniclesAPIClient(_options.ApiServerHost);
             // Initialize Rank.SharedModel
             RankPanel.UpdateSharedModel();
             // Initialize Stage

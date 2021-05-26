@@ -22,6 +22,8 @@ namespace Nekoyume.UI.Module
     {
         public class Model
         {
+            public bool IsInitialized { get; private set; } = false;
+
             private HashSet<Nekoyume.Model.State.RankingInfo> _rankingInfoSet = null;
 
             public List<AbilityRankingModel> AbilityRankingInfos = null;
@@ -51,13 +53,18 @@ namespace Nekoyume.UI.Module
                 }
 
                 Debug.LogWarning($"total user count : {_rankingInfoSet.Count()}");
+                var apiClient = Game.Game.instance.ApiClient;
 
                 var sw = new Stopwatch();
                 sw.Start();
 
-                LoadAbilityRankingInfos();
-                await LoadStageRankingInfos();
-                await LoadMimisbrunnrRankingInfos();
+                if (apiClient.IsInitialized)
+                {
+                    LoadAbilityRankingInfos();
+                    await LoadStageRankingInfos(apiClient);
+                    await LoadMimisbrunnrRankingInfos(apiClient);
+                    IsInitialized = true;
+                }
 
                 sw.Stop();
                 UnityEngine.Debug.LogWarning($"total elapsed : {sw.Elapsed}");
@@ -121,20 +128,19 @@ namespace Nekoyume.UI.Module
                 }
             }
 
-            private async Task LoadStageRankingInfos()
+            private async Task LoadStageRankingInfos(NineChroniclesAPIClient apiClient)
             {
-                var client = NineChroniclesAPIClient.Instance;
                 var query =
-                    @"query {
-                        stageRanking(limit: 100) {
+                    $@"query {{
+                        stageRanking(limit: {RankingBoardDisplayCount}) {{
                             ranking
                             avatarAddress
                             clearedStageId
                             name
-                        }
-                    }";
+                        }}
+                    }}";
 
-                var response = await client.GetObjectAsync<StageRankingResponse>(query);
+                var response = await apiClient.GetObjectAsync<StageRankingResponse>(query);
                 StageRankingInfos =
                     response.StageRanking
                     .Select(x =>
@@ -171,7 +177,7 @@ namespace Nekoyume.UI.Module
                             }}
                         }}";
 
-                    var myInfoResponse = await client.GetObjectAsync<StageRankingResponse>(myInfoQuery);
+                    var myInfoResponse = await apiClient.GetObjectAsync<StageRankingResponse>(myInfoQuery);
                     if (myInfoResponse is null)
                     {
                         Debug.LogError("Failed getting my ranking record.");
@@ -198,20 +204,19 @@ namespace Nekoyume.UI.Module
                 }
             }
 
-            private async Task LoadMimisbrunnrRankingInfos()
+            private async Task LoadMimisbrunnrRankingInfos(NineChroniclesAPIClient apiClient)
             {
-                var client = NineChroniclesAPIClient.Instance;
                 var query =
-                    @"query {
-                        stageRanking(limit: 100, mimisbrunnr: true) {
+                    $@"query {{
+                        stageRanking(limit: {RankingBoardDisplayCount}, mimisbrunnr: true) {{
                             ranking
                             avatarAddress
                             clearedStageId
                             name
-                        }
-                    }";
+                        }}
+                    }}";
 
-                var response = await client.GetObjectAsync<StageRankingResponse>(query);
+                var response = await apiClient.GetObjectAsync<StageRankingResponse>(query);
                 MimisbrunnrRankingInfos =
                     response.StageRanking
                     .Select(x =>
@@ -242,7 +247,7 @@ namespace Nekoyume.UI.Module
                             }}
                         }}";
 
-                    var myInfoResponse = await client.GetObjectAsync<StageRankingResponse>(myInfoQuery);
+                    var myInfoResponse = await apiClient.GetObjectAsync<StageRankingResponse>(myInfoQuery);
                     if (myInfoResponse is null)
                     {
                         Debug.LogError("Failed getting my ranking record.");
@@ -421,6 +426,13 @@ namespace Nekoyume.UI.Module
             if (!RankLoadingTask.IsCompleted)
             {
                 await RankLoadingTask;
+            }
+
+            if (!SharedModel.IsInitialized)
+            {
+                Widget.Find<SystemPopup>().Show("UI_ERROR",
+                    "Couldn't get ranking information via API host. Please check if apiServerHost option is properly assigned in command line options.", "UI_OK", false);
+                return;
             }
 
             var states = States.Instance;
