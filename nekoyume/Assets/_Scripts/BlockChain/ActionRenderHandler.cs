@@ -491,7 +491,7 @@ namespace Nekoyume.BlockChain
                             items.First().item.GetLocalizedName());
                     }
 
-                    UI.Notification.Push(MailType.Auction, message);
+                    OneLinePopup.Push(MailType.Auction, message);
                 }
                 else
                 {
@@ -516,7 +516,7 @@ namespace Nekoyume.BlockChain
                 LocalLayerModifier.RemoveItem(avatarAddress, tradableItem.TradableId, count);
                 LocalLayerModifier.AddNewAttachmentMail(avatarAddress, result.id);
                 var format = L10nManager.Localize("NOTIFICATION_SELL_CANCEL_COMPLETE");
-                UI.Notification.Push(MailType.Auction, string.Format(format, itemBase.GetLocalizedName()));
+                OneLinePopup.Push(MailType.Auction, string.Format(format, itemBase.GetLocalizedName()));
                 UpdateCurrentAvatarState(eval);
             }
         }
@@ -548,7 +548,6 @@ namespace Nekoyume.BlockChain
 
                             // Push notification
                             var format = L10nManager.Localize("NOTIFICATION_BUY_BUYER_COMPLETE");
-
                             OneLinePopup.Push(MailType.Auction, string.Format(format, itemBase.GetLocalizedName(), price));
 
                             // Analytics

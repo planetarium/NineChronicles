@@ -421,7 +421,7 @@ namespace Nekoyume.UI
                 message = string.Format(L10nManager.Localize("NOTIFICATION_SELL_START"),
                     item.ItemBase.Value.GetLocalizedName());
             }
-            Notification.Push(MailType.Auction, message);
+            OneLinePopup.Push(MailType.Auction, message);
         }
 
         private void ResponseSellCancellation(ShopItem shopItem)
@@ -432,7 +432,7 @@ namespace Nekoyume.UI
 
             AudioController.instance.PlaySfx(AudioController.SfxCode.InputItem);
             var format = L10nManager.Localize("NOTIFICATION_SELL_CANCEL_START");
-            Notification.Push(MailType.Auction,
+            OneLinePopup.Push(MailType.Auction,
                 string.Format(format, shopItem.ItemBase.Value.GetLocalizedName()));
         }
 
