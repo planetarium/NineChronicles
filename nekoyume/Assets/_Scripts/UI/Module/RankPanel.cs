@@ -428,14 +428,15 @@ namespace Nekoyume.UI.Module
                 await RankLoadingTask;
             }
 
+            var states = States.Instance;
+
             if (!SharedModel.IsInitialized)
             {
                 Widget.Find<SystemPopup>().Show("UI_ERROR",
                     "Couldn't get ranking information via API host. Please check if apiServerHost option is properly assigned in command line options.", "UI_OK", false);
+                myInfoCell.SetEmpty(states.CurrentAvatarState);
                 return;
             }
-
-            var states = States.Instance;
 
             if (states.CurrentAvatarState is null)
             {
