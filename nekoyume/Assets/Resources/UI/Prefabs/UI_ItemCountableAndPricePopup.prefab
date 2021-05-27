@@ -286,6 +286,7 @@ MonoBehaviour:
   addCountButton: {fileID: 2708281601089831345}
   addMaximumCountButton: {fileID: 7034375784297003482}
   removeCountButton: {fileID: 303096996114411661}
+  resetPriceButton: {fileID: 3744985692383924962}
   addPriceButton:
   - {fileID: 5844122969988791754}
   - {fileID: 5580023071215899029}
@@ -293,6 +294,8 @@ MonoBehaviour:
   - {fileID: 2158427294266635274}
   - {fileID: 5186842526527172084}
   totalPrice: {fileID: 6711802046834761149}
+  positiveMessage: {fileID: 7327277624733645331}
+  warningMessage: {fileID: 2922145278258723667}
 --- !u!1 &19833193104340809
 GameObject:
   m_ObjectHideFlags: 0
@@ -853,7 +856,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\uCD1D \uAC00\uACA9\uC740 10 \uC774\uC0C1\uC758 \uC815\uC218\uB9CC \uAC00\uB2A5\uD569\uB2C8\uB2E4."
+  m_text: UI_TOTAL_PRICE_WARINING
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: ee85c922f6a7b4b5ba900ec7f0dedb49, type: 2}
   m_sharedMaterial: {fileID: 7349983812062843314, guid: ee85c922f6a7b4b5ba900ec7f0dedb49,
@@ -940,7 +943,7 @@ MonoBehaviour:
   fixedFontSizeOffset: 0
   fixedSpacingOption: 0
   fontMaterialType: 0
-  l10nKey: 
+  l10nKey: UI_TOTAL_PRICE_WARINING
   fontMaterialIndexInitialized: 0
   fontMaterialIndex: 0
   defaultFontStylesInitialized: 0
@@ -6092,7 +6095,7 @@ MonoBehaviour:
   m_LineType: 0
   m_HideMobileInput: 0
   m_HideSoftKeyboard: 0
-  m_CharacterValidation: 1
+  m_CharacterValidation: 3
   m_RegexValue: 
   m_GlobalPointSize: 18
   m_CharacterLimit: 8
@@ -6466,7 +6469,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\uCD1D \uAC00\uACA9\uC774 \uC54C\uB9DE\uAC8C \uC785\uB825\uB418\uC5C8\uC2B5\uB2C8\uB2E4."
+  m_text: UI_TOTAL_PRICE_VALID
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: ee85c922f6a7b4b5ba900ec7f0dedb49, type: 2}
   m_sharedMaterial: {fileID: 7349983812062843314, guid: ee85c922f6a7b4b5ba900ec7f0dedb49,
@@ -6553,7 +6556,7 @@ MonoBehaviour:
   fixedFontSizeOffset: 0
   fixedSpacingOption: 0
   fontMaterialType: 0
-  l10nKey: 
+  l10nKey: UI_TOTAL_PRICE_VALID
   fontMaterialIndexInitialized: 0
   fontMaterialIndex: 0
   defaultFontStylesInitialized: 0
@@ -7298,6 +7301,12 @@ PrefabInstance:
     - {fileID: 5150926840730230897, guid: f7054cc9c15e14f0fa1e5cbc714e3845, type: 3}
     - {fileID: 1481777689759399775, guid: f7054cc9c15e14f0fa1e5cbc714e3845, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: f7054cc9c15e14f0fa1e5cbc714e3845, type: 3}
+--- !u!1 &1724844193247563348 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8829394730994905627, guid: f7054cc9c15e14f0fa1e5cbc714e3845,
+    type: 3}
+  m_PrefabInstance: {fileID: 7883462216081652815}
+  m_PrefabAsset: {fileID: 0}
 --- !u!224 &4673954103993736868 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 3295112531194159851, guid: f7054cc9c15e14f0fa1e5cbc714e3845,
@@ -7316,9 +7325,3 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f684d775db2041a18a3fce87cb6bd40a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!1 &1724844193247563348 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 8829394730994905627, guid: f7054cc9c15e14f0fa1e5cbc714e3845,
-    type: 3}
-  m_PrefabInstance: {fileID: 7883462216081652815}
-  m_PrefabAsset: {fileID: 0}

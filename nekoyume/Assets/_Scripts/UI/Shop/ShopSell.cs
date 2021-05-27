@@ -1,4 +1,5 @@
 using System;
+using DecimalMath;
 using Libplanet.Assets;
 using mixpanel;
 using Nekoyume.Action;
@@ -287,17 +288,20 @@ namespace Nekoyume.UI
             UpdateTotalPrice(PriorityType.Count);
         }
 
-        private void SubscribeSellPopupPrice(int price)
+        private void SubscribeSellPopupPrice(decimal price)
         {
-            var priceModel = SharedModel.ItemCountableAndPricePopup.Value.Price;
-            priceModel.Value = new FungibleAssetValue(priceModel.Value.Currency, price, 0);
+            var majorUnit = (int) price;
+            var minorUnit = (int)((Math.Truncate((price - majorUnit) * 100) / 100) * 100);
+            var model = SharedModel.ItemCountableAndPricePopup.Value;
+            model.Price.SetValueAndForceNotify(new FungibleAssetValue(model.Price.Value.Currency,
+                majorUnit, minorUnit));
             UpdateTotalPrice(PriorityType.Price);
         }
 
         private void UpdateTotalPrice(PriorityType priorityType)
         {
             var model = SharedModel.ItemCountableAndPricePopup.Value;
-            var price = Convert.ToInt32(model.Price.Value.GetQuantityString());
+            var price = Convert.ToDecimal(model.Price.Value.GetQuantityString());
             var count = model.Count.Value;
             var totalPrice = price * count;
 
@@ -307,21 +311,25 @@ namespace Nekoyume.UI
                 {
                     case PriorityType.Price:
                         price = LimitPrice / model.Count.Value;
-                        model.Price.Value = new FungibleAssetValue(model.Price.Value.Currency, price, 0);
+                        var majorUnit = (int) price;
+                        var minorUnit = (int)((price - majorUnit) * 100);
+                        model.Price.Value = new FungibleAssetValue(model.Price.Value.Currency, majorUnit, minorUnit);
                         break;
                     case PriorityType.Count:
-                        count = LimitPrice / price;
+                        count = LimitPrice / (int)price;
                         model.Count.Value = count;
                         break;
                 }
 
-                totalPrice = price * count;
-
                 OneLinePopup.Push(MailType.System, L10nManager.Localize("UI_SELL_LIMIT_EXCEEDED"));
             }
 
-            model.TotalPrice.Value =
-                new FungibleAssetValue(model.TotalPrice.Value.Currency, totalPrice, 0);
+            var currency = model.TotalPrice.Value.Currency;
+            var sum = price * count;
+            var major = (int) sum;
+            var minor = (int) ((sum - (int) sum) * 100);
+            var fungibleAsset = new FungibleAssetValue(currency, major, minor);
+            model.TotalPrice.SetValueAndForceNotify(fungibleAsset);
         }
 
         // sell cancellation
@@ -351,7 +359,7 @@ namespace Nekoyume.UI
                 tradableItem.TradableId,
                 out var shopItem))
             {
-                if (model.Price.Value.Sign * model.Price.Value.MajorUnit < Model.Shop.MinimumPrice)
+                if (model.Price.Value.Sign * model.Price.Value.MajorUnit < Shop.MinimumPrice)
                 {
                     throw new InvalidSellingPriceException(model);
                 }
