@@ -15,11 +15,12 @@ using Nekoyume.Model.Skill;
 using Nekoyume.Model.Stat;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
+using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("combination_equipment5")]
+    [ActionType("combination_equipment6")]
     public class CombinationEquipment : GameAction
     {
         public static readonly Address BlacksmithAddress = ItemEnhancement.BlacksmithAddress;
@@ -40,18 +41,24 @@ namespace Nekoyume.Action
                     SlotIndex
                 )
             );
+            var inventoryAddress = AvatarAddress.Derive(LegacyInventoryKey);
+            var worldInformationAddress = AvatarAddress.Derive(LegacyWorldInformationKey);
+            var questListAddress = AvatarAddress.Derive(LegacyQuestListKey);
             if (ctx.Rehearsal)
             {
                 return states
                     .SetState(AvatarAddress, MarkChanged)
                     .SetState(slotAddress, MarkChanged)
                     .SetState(ctx.Signer, MarkChanged)
+                    .SetState(inventoryAddress, MarkChanged)
+                    .SetState(worldInformationAddress, MarkChanged)
+                    .SetState(questListAddress, MarkChanged)
                     .MarkBalanceChanged(GoldCurrencyMock, ctx.Signer, BlacksmithAddress);
             }
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, AvatarAddress);
 
-            if (!states.TryGetAgentAvatarStates(ctx.Signer, AvatarAddress, out var agentState,
+            if (!states.TryGetAgentAvatarStatesV2(ctx.Signer, AvatarAddress, out var agentState,
                 out var avatarState))
             {
                 throw new FailedLoadStateException($"{addressesHex}Aborted as the avatar state of the signer was failed to load.");
@@ -223,7 +230,10 @@ namespace Nekoyume.Action
             avatarState.UpdateFromCombination(equipment);
             avatarState.UpdateQuestRewards(materialSheet);
             return states
-                .SetState(AvatarAddress, avatarState.Serialize())
+                .SetState(AvatarAddress, avatarState.SerializeV2())
+                .SetState(inventoryAddress, avatarState.inventory.Serialize())
+                .SetState(worldInformationAddress, avatarState.worldInformation.Serialize())
+                .SetState(questListAddress, avatarState.questList.Serialize())
                 .SetState(slotAddress, slotState.Serialize())
                 .SetState(ctx.Signer, agentState.Serialize());
         }

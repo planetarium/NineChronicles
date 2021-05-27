@@ -1,6 +1,7 @@
 namespace Lib9c.Tests.Action
 {
     using System.Collections.Generic;
+    using System.Collections.Immutable;
     using System.Globalization;
     using System.Linq;
     using Libplanet;
@@ -14,6 +15,7 @@ namespace Lib9c.Tests.Action
     using Serilog;
     using Xunit;
     using Xunit.Abstractions;
+    using static SerializeKeys;
 
     public class CombinationEquipmentTest
     {
@@ -76,8 +78,10 @@ namespace Lib9c.Tests.Action
             }
         }
 
-        [Fact]
-        public void Execute()
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public void Execute(bool backWard)
         {
             var row = _tableSheets.EquipmentItemRecipeSheet[109];
             var materialRow = _tableSheets.MaterialItemSheet[row.MaterialId];
@@ -122,7 +126,18 @@ namespace Lib9c.Tests.Action
                 _avatarState.Update(mail);
             }
 
-            _initialState = _initialState.SetState(_avatarAddress, _avatarState.Serialize());
+            if (backWard)
+            {
+                _initialState = _initialState.SetState(_avatarAddress, _avatarState.Serialize());
+            }
+            else
+            {
+                _initialState = _initialState
+                    .SetState(_avatarAddress.Derive(LegacyInventoryKey), _avatarState.inventory.Serialize())
+                    .SetState(_avatarAddress.Derive(LegacyWorldInformationKey), _avatarState.worldInformation.Serialize())
+                    .SetState(_avatarAddress.Derive(LegacyQuestListKey), _avatarState.questList.Serialize())
+                    .SetState(_avatarAddress, _avatarState.SerializeV2());
+            }
 
             var action = new CombinationEquipment()
             {
@@ -145,7 +160,7 @@ namespace Lib9c.Tests.Action
             Assert.NotNull(slotState.Result);
             Assert.NotNull(slotState.Result.itemUsable);
 
-            var nextAvatarState = nextState.GetAvatarState(_avatarAddress);
+            var nextAvatarState = nextState.GetAvatarStateV2(_avatarAddress);
 
             Assert.Equal(30, nextAvatarState.mailBox.Count);
             Assert.Equal(2, slotState.Result.itemUsable.GetOptionCount());
@@ -200,6 +215,48 @@ namespace Lib9c.Tests.Action
                 Signer = _agentAddress,
                 Random = new TestRandom(),
             }));
+        }
+
+        [Fact]
+        public void Rehearsal()
+        {
+            var action = new CombinationEquipment()
+            {
+                AvatarAddress = _avatarAddress,
+                RecipeId = 1,
+                SlotIndex = 0,
+                SubRecipeId = 255,
+            };
+            var slotAddress = _avatarAddress.Derive(
+                string.Format(
+                    CultureInfo.InvariantCulture,
+                    CombinationSlotState.DeriveFormat,
+                    0
+                )
+            );
+
+            var updatedAddresses = new List<Address>()
+            {
+                _agentAddress,
+                _avatarAddress,
+                slotAddress,
+                _avatarAddress.Derive(LegacyInventoryKey),
+                _avatarAddress.Derive(LegacyWorldInformationKey),
+                _avatarAddress.Derive(LegacyQuestListKey),
+                Addresses.Blacksmith,
+            };
+
+            var state = new State();
+
+            var nextState = action.Execute(new ActionContext()
+            {
+                PreviousStates = state,
+                Signer = _agentAddress,
+                BlockIndex = 0,
+                Rehearsal = true,
+            });
+
+            Assert.Equal(updatedAddresses.ToImmutableHashSet(), nextState.UpdatedAddresses);
         }
 
         [Fact]
