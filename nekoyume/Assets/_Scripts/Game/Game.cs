@@ -171,7 +171,7 @@ namespace Nekoyume.Game
             // Initialize NineChroniclesAPIClient.
             _apiClient = new NineChroniclesAPIClient(_options.ApiServerHost);
             // Initialize Rank.SharedModel
-            RankPanel.UpdateSharedModel();
+            Rank.UpdateSharedModel();
             // Initialize Stage
             Stage.Initialize();
 
