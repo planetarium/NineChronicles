@@ -173,10 +173,12 @@ namespace Nekoyume.Action
             {
                 var keyAddress = address.Derive(key);
                 var serialized = states.GetState(keyAddress);
-                if (!(serialized is null))
+                if (serialized is null)
                 {
-                    serializedAvatar = serializedAvatar.SetItem(key, serialized);
+                    throw new FailedLoadStateException($"failed to load {key}.");
                 }
+
+                serializedAvatar = serializedAvatar.SetItem(key, serialized);
             }
             try
             {
@@ -230,6 +232,41 @@ namespace Nekoyume.Action
             }
         }
 
+        public static bool TryGetAvatarStateV2(
+            this IAccountStateDelta states,
+            Address agentAddress,
+            Address avatarAddress,
+            out AvatarState avatarState
+        )
+        {
+            avatarState = null;
+            if (states.GetState(avatarAddress) is Dictionary serializedAvatar)
+            {
+                try
+                {
+                    if (serializedAvatar[AgentAddressKey].ToAddress() != agentAddress)
+                    {
+                        return false;
+                    }
+
+                    avatarState = GetAvatarStateV2(states, avatarAddress);
+                    return true;
+                }
+                catch (Exception e)
+                {
+                    // BackWardCompatible.
+                    if (e is KeyNotFoundException || e is FailedLoadStateException)
+                    {
+                        return states.TryGetAvatarState(agentAddress, avatarAddress, out avatarState);
+                    }
+
+                    return false;
+                }
+            }
+
+            return false;
+        }
+
         public static bool TryGetAgentAvatarStates(
             this IAccountStateDelta states,
             Address agentAddress,
@@ -274,7 +311,15 @@ namespace Nekoyume.Action
                     $"The avatar {avatarAddress.ToHex()} does not belong to the agent {agentAddress.ToHex()}.");
             }
 
-            avatarState = states.GetAvatarStateV2(avatarAddress);
+            try
+            {
+                avatarState = states.GetAvatarStateV2(avatarAddress);
+            }
+            catch (FailedLoadStateException)
+            {
+                // BackWardCompatible.
+                avatarState = states.GetAvatarState(avatarAddress);
+            }
             return !(avatarState is null);
         }
 
