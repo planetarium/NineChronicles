@@ -6,6 +6,7 @@ namespace Lib9c.Tests.Action
     using Nekoyume.Action;
     using Nekoyume.Model.State;
     using Xunit;
+    using static SerializeKeys;
 
     public class AccountStateDeltaExtensionsTest
     {
@@ -81,6 +82,32 @@ namespace Lib9c.Tests.Action
             var states = new State().SetState(default, avatarState.Serialize());
 
             Assert.False(states.TryGetAvatarState(Addresses.GameConfig, default, out _));
+        }
+
+        [Fact]
+        public void GetAvatarStateV2()
+        {
+            var states = new State();
+            var sheets = new TableSheets(TableSheetsImporter.ImportSheets());
+            Address avatarAddress = default;
+            var avatarState = new AvatarState(
+                avatarAddress,
+                default,
+                0,
+                sheets.GetAvatarSheets(),
+                new GameConfigState(),
+                default
+            );
+            states = (State)states
+                .SetState(avatarAddress, avatarState.SerializeV2())
+                .SetState(avatarAddress.Derive(LegacyInventoryKey), avatarState.inventory.Serialize())
+                .SetState(avatarAddress.Derive(LegacyWorldInformationKey), avatarState.worldInformation.Serialize())
+                .SetState(avatarAddress.Derive(LegacyQuestListKey), avatarState.questList.Serialize());
+
+            var v2 = states.GetAvatarStateV2(default);
+            Assert.NotNull(v2.inventory);
+            Assert.NotNull(v2.worldInformation);
+            Assert.NotNull(v2.questList);
         }
     }
 }

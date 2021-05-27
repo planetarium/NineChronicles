@@ -12,6 +12,7 @@ using LruCacheNet;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using Serilog;
+using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Action
 {
@@ -153,6 +154,47 @@ namespace Nekoyume.Action
             }
         }
 
+        public static AvatarState GetAvatarStateV2(this IAccountStateDelta states, Address address)
+        {
+            if (!(states.GetState(address) is Dictionary serializedAvatar))
+            {
+                Log.Warning("No avatar state ({0})", address.ToHex());
+                return null;
+            }
+
+            string[] keys =
+            {
+                LegacyInventoryKey,
+                LegacyWorldInformationKey,
+                LegacyQuestListKey,
+            };
+
+            foreach (var key in keys)
+            {
+                var keyAddress = address.Derive(key);
+                var serialized = states.GetState(keyAddress);
+                if (!(serialized is null))
+                {
+                    serializedAvatar = serializedAvatar.SetItem(key, serialized);
+                }
+            }
+            try
+            {
+                return new AvatarState(serializedAvatar);
+            }
+            catch (InvalidCastException e)
+            {
+                Log.Error(
+                    e,
+                    "Invalid avatar state ({0}): {1}",
+                    address.ToHex(),
+                    serializedAvatar
+                );
+
+                return null;
+            }
+        }
+
         public static bool TryGetAvatarState(
             this IAccountStateDelta states,
             Address agentAddress,
@@ -209,6 +251,30 @@ namespace Nekoyume.Action
             }
 
             avatarState = states.GetAvatarState(avatarAddress);
+            return !(avatarState is null);
+        }
+
+        public static bool TryGetAgentAvatarStatesV2(
+            this IAccountStateDelta states,
+            Address agentAddress,
+            Address avatarAddress,
+            out AgentState agentState,
+            out AvatarState avatarState
+        )
+        {
+            avatarState = null;
+            agentState = states.GetAgentState(agentAddress);
+            if (agentState is null)
+            {
+                return false;
+            }
+            if (!agentState.avatarAddresses.ContainsValue(avatarAddress))
+            {
+                throw new AgentStateNotContainsAvatarAddressException(
+                    $"The avatar {avatarAddress.ToHex()} does not belong to the agent {agentAddress.ToHex()}.");
+            }
+
+            avatarState = states.GetAvatarStateV2(avatarAddress);
             return !(avatarState is null);
         }
 

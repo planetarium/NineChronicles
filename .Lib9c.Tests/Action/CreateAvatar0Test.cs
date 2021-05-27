@@ -13,24 +13,26 @@ namespace Lib9c.Tests.Action
     using Nekoyume.Model.State;
     using Nekoyume.TableData;
     using Xunit;
-    using static SerializeKeys;
 
-    public class CreateAvatarTest
+    public class CreateAvatar0Test
     {
         private readonly Address _agentAddress;
+        private readonly Address _avatarAddress;
         private readonly TableSheets _tableSheets;
 
-        public CreateAvatarTest()
+        public CreateAvatar0Test()
         {
             _agentAddress = default;
+            _avatarAddress = _agentAddress.Derive("avatar");
             _tableSheets = new TableSheets(TableSheetsImporter.ImportSheets());
         }
 
         [Fact]
         public void Execute()
         {
-            var action = new CreateAvatar()
+            var action = new CreateAvatar0()
             {
+                avatarAddress = _avatarAddress,
                 index = 0,
                 hair = 0,
                 ear = 0,
@@ -76,23 +78,15 @@ namespace Lib9c.Tests.Action
                 0,
                 nextState.GetBalance(default, gold.Currency).MajorUnit
             );
-
-            var avatarAddress = _agentAddress.Derive(
-                string.Format(
-                    CultureInfo.InvariantCulture,
-                    CreateAvatar2.DeriveFormat,
-                    0
-                )
-            );
-            Assert.True(nextState.TryGetAgentAvatarStatesV2(
+            Assert.True(nextState.TryGetAgentAvatarStates(
                 default,
-                avatarAddress,
+                _avatarAddress,
                 out var agentState,
                 out var nextAvatarState)
             );
             Assert.True(agentState.avatarAddresses.Any());
             Assert.Equal("test", nextAvatarState.name);
-            Assert.Equal(avatarAddress, nextState.GetRankingState().RankingMap[nextAvatarState.RankingMapAddress].First());
+            Assert.Equal(_avatarAddress, nextState.GetRankingState().RankingMap[nextAvatarState.RankingMapAddress].First());
         }
 
         [Theory]
@@ -101,9 +95,11 @@ namespace Lib9c.Tests.Action
         public void ExecuteThrowInvalidNamePatterException(string nickName)
         {
             var agentAddress = default(Address);
+            var avatarAddress = agentAddress.Derive("avatar");
 
-            var action = new CreateAvatar()
+            var action = new CreateAvatar0()
             {
+                avatarAddress = avatarAddress,
                 index = 0,
                 hair = 0,
                 ear = 0,
@@ -126,16 +122,8 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void ExecuteThrowInvalidAddressException()
         {
-            var avatarAddress = _agentAddress.Derive(
-                string.Format(
-                    CultureInfo.InvariantCulture,
-                    CreateAvatar2.DeriveFormat,
-                    0
-                )
-            );
-
             var avatarState = new AvatarState(
-                avatarAddress,
+                _avatarAddress,
                 _agentAddress,
                 0,
                 _tableSheets.GetAvatarSheets(),
@@ -143,8 +131,9 @@ namespace Lib9c.Tests.Action
                 default
             );
 
-            var action = new CreateAvatar()
+            var action = new CreateAvatar0()
             {
+                avatarAddress = _avatarAddress,
                 index = 0,
                 hair = 0,
                 ear = 0,
@@ -153,7 +142,7 @@ namespace Lib9c.Tests.Action
                 name = "test",
             };
 
-            var state = new State().SetState(avatarAddress, avatarState.Serialize());
+            var state = new State().SetState(_avatarAddress, avatarState.Serialize());
 
             Assert.Throws<InvalidAddressException>(() => action.Execute(new ActionContext()
                 {
@@ -171,8 +160,9 @@ namespace Lib9c.Tests.Action
         {
             var agentState = new AgentState(_agentAddress);
             var state = new State().SetState(_agentAddress, agentState.Serialize());
-            var action = new CreateAvatar()
+            var action = new CreateAvatar0()
             {
+                avatarAddress = _avatarAddress,
                 index = index,
                 hair = 0,
                 ear = 0,
@@ -197,18 +187,12 @@ namespace Lib9c.Tests.Action
         public void ExecuteThrowAvatarIndexAlreadyUsedException(int index)
         {
             var agentState = new AgentState(_agentAddress);
-            var avatarAddress = _agentAddress.Derive(
-                string.Format(
-                    CultureInfo.InvariantCulture,
-                    CreateAvatar2.DeriveFormat,
-                    0
-                )
-            );
-            agentState.avatarAddresses[index] = avatarAddress;
+            agentState.avatarAddresses[index] = _avatarAddress;
             var state = new State().SetState(_agentAddress, agentState.Serialize());
 
-            var action = new CreateAvatar()
+            var action = new CreateAvatar0()
             {
+                avatarAddress = _avatarAddress,
                 index = index,
                 hair = 0,
                 ear = 0,
@@ -226,24 +210,16 @@ namespace Lib9c.Tests.Action
             );
         }
 
-        [Theory]
-        [InlineData(0)]
-        [InlineData(1)]
-        [InlineData(2)]
-        public void Rehearsal(int index)
+        [Fact]
+        public void Rehearsal()
         {
             var agentAddress = default(Address);
-            var avatarAddress = _agentAddress.Derive(
-                string.Format(
-                    CultureInfo.InvariantCulture,
-                    CreateAvatar2.DeriveFormat,
-                    index
-                )
-            );
+            var avatarAddress = agentAddress.Derive("avatar");
 
-            var action = new CreateAvatar()
+            var action = new CreateAvatar0()
             {
-                index = index,
+                avatarAddress = avatarAddress,
+                index = 0,
                 hair = 0,
                 ear = 0,
                 lens = 0,
@@ -258,9 +234,6 @@ namespace Lib9c.Tests.Action
                 avatarAddress,
                 Addresses.GoldCurrency,
                 Addresses.Ranking,
-                avatarAddress.Derive(LegacyInventoryKey),
-                avatarAddress.Derive(LegacyQuestListKey),
-                avatarAddress.Derive(LegacyWorldInformationKey),
             };
             for (var i = 0; i < AvatarState.CombinationSlotCapacity; i++)
             {
@@ -293,11 +266,12 @@ namespace Lib9c.Tests.Action
         }
 
         [Fact]
-        public void Serialize_With_DotnetAPI()
+        public void SerializeWithDotnetAPI()
         {
             var formatter = new BinaryFormatter();
-            var action = new CreateAvatar()
+            var action = new CreateAvatar0()
             {
+                avatarAddress = default,
                 index = 2,
                 hair = 1,
                 ear = 4,
@@ -310,8 +284,9 @@ namespace Lib9c.Tests.Action
             formatter.Serialize(ms, action);
 
             ms.Seek(0, SeekOrigin.Begin);
-            var deserialized = (CreateAvatar)formatter.Deserialize(ms);
+            var deserialized = (CreateAvatar0)formatter.Deserialize(ms);
 
+            Assert.Equal(default, deserialized.avatarAddress);
             Assert.Equal(2, deserialized.index);
             Assert.Equal(1, deserialized.hair);
             Assert.Equal(4, deserialized.ear);
