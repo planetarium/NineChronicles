@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.IO;
+    using System.Linq;
     using System.Runtime.Serialization.Formatters.Binary;
     using Bencodex.Types;
     using Libplanet;
@@ -10,16 +11,17 @@
     using Libplanet.Crypto;
     using Nekoyume.Model.Item;
     using Xunit;
+    using BxDictionary = Bencodex.Types.Dictionary;
 
     public class ShopItemTest
     {
-        private static readonly Currency Currency;
-        private static readonly TableSheets TableSheets;
+        private static Currency _currency;
+        private static TableSheets _tableSheets;
 
-        static ShopItemTest()
+        public ShopItemTest()
         {
-            Currency = new Currency("NCG", 2, minters: null);
-            TableSheets = new TableSheets(TableSheetsImporter.ImportSheets());
+            _currency = new Currency("NCG", 2, minters: null);
+            _tableSheets = new TableSheets(TableSheetsImporter.ImportSheets());
         }
 
         public static IEnumerable<object[]> GetShopItems() => new List<object[]>
@@ -28,6 +30,7 @@
             {
                 GetShopItemWithFirstCostume(),
                 GetShopItemWithFirstEquipment(),
+                GetShopItemWithFirstMaterial(),
             },
         };
 
@@ -38,7 +41,7 @@
             foreach (var shopItem in shopItems)
             {
                 var serialized = shopItem.Serialize();
-                var deserialized = new ShopItem((Bencodex.Types.Dictionary)serialized);
+                var deserialized = new ShopItem((BxDictionary)serialized);
 
                 Assert.Equal(shopItem, deserialized);
             }
@@ -46,7 +49,7 @@
 
         [Theory]
         [MemberData(nameof(GetShopItems))]
-        public void SerializeWithDotNetAPI(params ShopItem[] shopItems)
+        public void Serialize_With_DotNet_Api(params ShopItem[] shopItems)
         {
             foreach (var shopItem in shopItems)
             {
@@ -67,9 +70,9 @@
         {
             var shopItem = GetShopItemWithFirstEquipment();
             var serializedBackup1 = shopItem.SerializeBackup1();
-            var deserializedBackup1 = new ShopItem((Dictionary)serializedBackup1);
+            var deserializedBackup1 = new ShopItem((BxDictionary)serializedBackup1);
             var serialized = shopItem.Serialize();
-            var deserialized = new ShopItem((Dictionary)serialized);
+            var deserialized = new ShopItem((BxDictionary)serialized);
             Assert.Equal(serializedBackup1, serialized);
             Assert.Equal(deserializedBackup1, deserialized);
         }
@@ -77,20 +80,20 @@
         [Theory]
         [InlineData(0, false)]
         [InlineData(10, true)]
-        public void SerializeWithExpiredBlockIndex(long expiredBlockIndex, bool contain)
+        public void Serialize_With_ExpiredBlockIndex(long expiredBlockIndex, bool contain)
         {
-            var equipmentRow = TableSheets.EquipmentItemSheet.First;
+            var equipmentRow = _tableSheets.EquipmentItemSheet.First;
             var equipment = new Equipment(equipmentRow, Guid.NewGuid(), 0);
             var shopItem = new ShopItem(
                 new PrivateKey().ToAddress(),
                 new PrivateKey().ToAddress(),
                 Guid.NewGuid(),
-                new FungibleAssetValue(Currency, 100, 0),
+                new FungibleAssetValue(_currency, 100, 0),
                 expiredBlockIndex,
                 equipment);
             Assert.Null(shopItem.Costume);
             Assert.NotNull(shopItem.ItemUsable);
-            Dictionary serialized = (Dictionary)shopItem.Serialize();
+            var serialized = (BxDictionary)shopItem.Serialize();
 
             Assert.Equal(contain, serialized.ContainsKey(ShopItem.ExpiredBlockIndexKey));
 
@@ -101,13 +104,13 @@
         [Fact]
         public void ThrowArgumentOurOfRangeException()
         {
-            var equipmentRow = TableSheets.EquipmentItemSheet.First;
+            var equipmentRow = _tableSheets.EquipmentItemSheet.First;
             var equipment = new Equipment(equipmentRow, Guid.NewGuid(), 0);
             Assert.Throws<ArgumentOutOfRangeException>(() => new ShopItem(
                 new PrivateKey().ToAddress(),
                 new PrivateKey().ToAddress(),
                 Guid.NewGuid(),
-                new FungibleAssetValue(Currency, 100, 0),
+                new FungibleAssetValue(_currency, 100, 0),
                 -1,
                 equipment));
         }
@@ -115,13 +118,13 @@
         [Fact]
         public void DeserializeThrowArgumentOurOfRangeException()
         {
-            var equipmentRow = TableSheets.EquipmentItemSheet.First;
+            var equipmentRow = _tableSheets.EquipmentItemSheet.First;
             var equipment = new Equipment(equipmentRow, Guid.NewGuid(), 0);
             var shopItem = new ShopItem(
                 new PrivateKey().ToAddress(),
                 new PrivateKey().ToAddress(),
                 Guid.NewGuid(),
-                new FungibleAssetValue(Currency, 100, 0),
+                new FungibleAssetValue(_currency, 100, 0),
                 0,
                 equipment);
             Dictionary serialized = (Dictionary)shopItem.Serialize();
@@ -131,26 +134,65 @@
 
         private static ShopItem GetShopItemWithFirstCostume()
         {
-            var costumeRow = TableSheets.CostumeItemSheet.First;
+            var costumeRow = _tableSheets.CostumeItemSheet.First;
             var costume = new Costume(costumeRow, Guid.NewGuid());
             return new ShopItem(
                 new PrivateKey().ToAddress(),
                 new PrivateKey().ToAddress(),
                 Guid.NewGuid(),
-                new FungibleAssetValue(Currency, 100, 0),
+                new FungibleAssetValue(_currency, 100, 0),
                 costume);
         }
 
         private static ShopItem GetShopItemWithFirstEquipment()
         {
-            var equipmentRow = TableSheets.EquipmentItemSheet.First;
+            var equipmentRow = _tableSheets.EquipmentItemSheet.First;
             var equipment = new Equipment(equipmentRow, Guid.NewGuid(), 0);
             return new ShopItem(
                 new PrivateKey().ToAddress(),
                 new PrivateKey().ToAddress(),
                 Guid.NewGuid(),
-                new FungibleAssetValue(Currency, 100, 0),
+                new FungibleAssetValue(_currency, 100, 0),
                 equipment);
+        }
+
+        private static ShopItem GetShopItemWithFirstMaterial()
+        {
+            var row = _tableSheets.MaterialItemSheet.First;
+            var tradableMaterial = new TradableMaterial(row);
+            return new ShopItem(
+                new PrivateKey().ToAddress(),
+                new PrivateKey().ToAddress(),
+                Guid.NewGuid(),
+                new FungibleAssetValue(_currency, 100, 0),
+                1,
+                tradableMaterial,
+                0);
+        }
+
+        private static IEnumerable<object[]> GetShopItemsWithTradableMaterial()
+        {
+            var objects = new object[2];
+            var index = 0;
+            foreach (var row in _tableSheets.MaterialItemSheet.OrderedList
+                .Where(e => e.ItemSubType == ItemSubType.Hourglass || e.ItemSubType == ItemSubType.ApStone))
+            {
+                var tradableMaterial = new TradableMaterial(row);
+                var shopItem = new ShopItem(
+                    new PrivateKey().ToAddress(),
+                    new PrivateKey().ToAddress(),
+                    Guid.NewGuid(),
+                    new FungibleAssetValue(_currency, 100, 0),
+                    1,
+                    tradableMaterial,
+                    0);
+                objects[index++] = shopItem;
+            }
+
+            return new List<object[]>
+            {
+                objects,
+            };
         }
     }
 }

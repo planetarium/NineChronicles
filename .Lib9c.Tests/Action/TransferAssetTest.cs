@@ -35,6 +35,13 @@ namespace Lib9c.Tests.Action
         private static readonly Currency _currency = new Currency("NCG", 2, default(Address?));
 
         [Fact]
+        public void Constructor_ThrowsMemoLengthOverflowException()
+        {
+            Assert.Throws<MemoLengthOverflowException>(() =>
+                new TransferAsset(_sender, _recipient, _currency * 100, new string(' ', 100)));
+        }
+
+        [Fact]
         public void Execute()
         {
             var balance = ImmutableDictionary<(Address, Currency), FungibleAssetValue>.Empty
@@ -249,41 +256,71 @@ namespace Lib9c.Tests.Action
                 nextState.UpdatedFungibleAssets.Values.SelectMany(v => v).ToImmutableHashSet());
         }
 
-        [Fact]
-        public void PlainValue()
+        [Theory]
+        [InlineData(null)]
+        [InlineData("Nine Chronicles")]
+        public void PlainValue(string memo)
         {
-            var action = new TransferAsset(_sender, _recipient, _currency * 100);
+            var action = new TransferAsset(_sender, _recipient, _currency * 100, memo);
             Dictionary plainValue = (Dictionary)action.PlainValue;
 
             Assert.Equal(_sender, plainValue["sender"].ToAddress());
             Assert.Equal(_recipient, plainValue["recipient"].ToAddress());
             Assert.Equal(_currency * 100, plainValue["amount"].ToFungibleAssetValue());
+            if (!(memo is null))
+            {
+                Assert.Equal(memo, plainValue["memo"].ToDotnetString());
+            }
         }
 
-        [Fact]
-        public void LoadPlainValue()
+        [Theory]
+        [InlineData(null)]
+        [InlineData("Nine Chronicles")]
+        public void LoadPlainValue(string memo)
         {
-            var plainValue = new Dictionary(
-                new[]
-                {
-                    new KeyValuePair<IKey, IValue>((Text)"sender", _sender.Serialize()),
-                    new KeyValuePair<IKey, IValue>((Text)"recipient", _recipient.Serialize()),
-                    new KeyValuePair<IKey, IValue>((Text)"amount", (_currency * 100).Serialize()),
-                }
-            );
+            IEnumerable<KeyValuePair<IKey, IValue>> pairs = new[]
+            {
+                new KeyValuePair<IKey, IValue>((Text)"sender", _sender.Serialize()),
+                new KeyValuePair<IKey, IValue>((Text)"recipient", _recipient.Serialize()),
+                new KeyValuePair<IKey, IValue>((Text)"amount", (_currency * 100).Serialize()),
+            };
+            if (!(memo is null))
+            {
+                pairs = pairs.Append(new KeyValuePair<IKey, IValue>((Text)"memo", memo.Serialize()));
+            }
+
+            var plainValue = new Dictionary(pairs);
             var action = new TransferAsset();
             action.LoadPlainValue(plainValue);
 
             Assert.Equal(_sender, action.Sender);
             Assert.Equal(_recipient, action.Recipient);
             Assert.Equal(_currency * 100, action.Amount);
+            Assert.Equal(memo, action.Memo);
         }
 
         [Fact]
-        public void SerializeWithDotnetAPI()
+        public void LoadPlainValue_ThrowsMemoLengthOverflowException()
+        {
+            var action = new TransferAsset();
+            var plainValue = new Dictionary(new[]
+            {
+                new KeyValuePair<IKey, IValue>((Text)"sender", _sender.Serialize()),
+                new KeyValuePair<IKey, IValue>((Text)"recipient", _recipient.Serialize()),
+                new KeyValuePair<IKey, IValue>((Text)"amount", (_currency * 100).Serialize()),
+                new KeyValuePair<IKey, IValue>((Text)"memo", new string(' ', 81).Serialize()),
+            });
+
+            Assert.Throws<MemoLengthOverflowException>(() => action.LoadPlainValue(plainValue));
+        }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("Nine Chronicles")]
+        public void SerializeWithDotnetAPI(string memo)
         {
             var formatter = new BinaryFormatter();
-            var action = new TransferAsset(_sender, _recipient, _currency * 100);
+            var action = new TransferAsset(_sender, _recipient, _currency * 100, memo);
 
             using var ms = new MemoryStream();
             formatter.Serialize(ms, action);
@@ -294,6 +331,7 @@ namespace Lib9c.Tests.Action
             Assert.Equal(_sender, deserialized.Sender);
             Assert.Equal(_recipient, deserialized.Recipient);
             Assert.Equal(_currency * 100, deserialized.Amount);
+            Assert.Equal(memo, deserialized.Memo);
         }
     }
 }

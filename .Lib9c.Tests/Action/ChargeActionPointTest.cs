@@ -2,8 +2,8 @@ namespace Lib9c.Tests.Action
 {
     using System.Collections.Generic;
     using System.Linq;
-    using Bencodex.Types;
     using Libplanet;
+    using Libplanet.Action;
     using Libplanet.Crypto;
     using Nekoyume;
     using Nekoyume.Action;
@@ -16,25 +16,24 @@ namespace Lib9c.Tests.Action
     {
         private readonly Dictionary<string, string> _sheets;
         private readonly TableSheets _tableSheets;
+        private readonly Address _agentAddress;
+        private readonly Address _avatarAddress;
+        private readonly IAccountStateDelta _initialState;
 
         public ChargeActionPointTest()
         {
             _sheets = TableSheetsImporter.ImportSheets();
             _tableSheets = new TableSheets(_sheets);
-        }
 
-        [Fact]
-        public void Execute()
-        {
             var privateKey = new PrivateKey();
-            var agentAddress = privateKey.PublicKey.ToAddress();
-            var agent = new AgentState(agentAddress);
+            _agentAddress = privateKey.PublicKey.ToAddress();
+            var agent = new AgentState(_agentAddress);
 
-            var avatarAddress = agentAddress.Derive("avatar");
+            _avatarAddress = _agentAddress.Derive("avatar");
             var gameConfigState = new GameConfigState(_sheets[nameof(GameConfigSheet)]);
             var avatarState = new AvatarState(
-                avatarAddress,
-                agentAddress,
+                _avatarAddress,
+                _agentAddress,
                 0,
                 _tableSheets.GetAvatarSheets(),
                 gameConfigState,
@@ -43,20 +42,40 @@ namespace Lib9c.Tests.Action
             {
                 actionPoint = 0,
             };
-            agent.avatarAddresses.Add(0, avatarAddress);
+            agent.avatarAddresses.Add(0, _avatarAddress);
 
-            var apStone =
-                ItemFactory.CreateItem(
-                    _tableSheets.MaterialItemSheet.Values.First(r => r.ItemSubType == ItemSubType.ApStone),
-                    new TestRandom());
-            avatarState.inventory.AddItem(apStone);
+            _initialState = new State()
+                .SetState(Addresses.GameConfig, gameConfigState.Serialize())
+                .SetState(_agentAddress, agent.Serialize())
+                .SetState(_avatarAddress, avatarState.Serialize());
+
+            foreach (var (key, value) in _sheets)
+            {
+                _initialState = _initialState.SetState(Addresses.TableSheet.Derive(key), value.Serialize());
+            }
+        }
+
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public void Execute(bool useTradable)
+        {
+            var avatarState = _initialState.GetAvatarState(_avatarAddress);
+            var row = _tableSheets.MaterialItemSheet.Values.First(r => r.ItemSubType == ItemSubType.ApStone);
+            if (useTradable)
+            {
+                var apStone = ItemFactory.CreateTradableMaterial(row);
+                avatarState.inventory.AddItem(apStone);
+            }
+            else
+            {
+                var apStone = ItemFactory.CreateItem(row, new TestRandom());
+                avatarState.inventory.AddItem(apStone);
+            }
 
             Assert.Equal(0, avatarState.actionPoint);
 
-            var state = new State()
-                .SetState(Addresses.GameConfig, gameConfigState.Serialize())
-                .SetState(agentAddress, agent.Serialize())
-                .SetState(avatarAddress, avatarState.Serialize());
+            var state = _initialState.SetState(_avatarAddress, avatarState.Serialize());
 
             foreach (var (key, value) in _sheets)
             {
@@ -65,20 +84,72 @@ namespace Lib9c.Tests.Action
 
             var action = new ChargeActionPoint()
             {
-                avatarAddress = avatarAddress,
+                avatarAddress = _avatarAddress,
             };
 
             var nextState = action.Execute(new ActionContext()
             {
                 PreviousStates = state,
-                Signer = agentAddress,
+                Signer = _agentAddress,
                 Random = new TestRandom(),
                 Rehearsal = false,
             });
 
-            var nextAvatarState = nextState.GetAvatarState(avatarAddress);
-
+            var nextAvatarState = nextState.GetAvatarState(_avatarAddress);
+            var gameConfigState = nextState.GetGameConfigState();
             Assert.Equal(gameConfigState.ActionPointMax, nextAvatarState.actionPoint);
+        }
+
+        [Fact]
+        public void Execute_Throw_FailedLoadStateException()
+        {
+            var action = new ChargeActionPoint
+            {
+                avatarAddress = default,
+            };
+
+            Assert.Throws<FailedLoadStateException>(() => action.Execute(new ActionContext()
+                {
+                    BlockIndex = 0,
+                    PreviousStates = new State(),
+                    Random = new TestRandom(),
+                    Signer = default,
+                })
+            );
+        }
+
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public void Execute_Throw_NotEnoughMaterialException(bool useTradable)
+        {
+            var avatarState = _initialState.GetAvatarState(_avatarAddress);
+
+            if (useTradable)
+            {
+                var row = _tableSheets.MaterialItemSheet.Values.First(r => r.ItemSubType == ItemSubType.ApStone);
+                var apStone = ItemFactory.CreateTradableMaterial(row);
+                apStone.RequiredBlockIndex = 10;
+                avatarState.inventory.AddItem(apStone);
+            }
+
+            Assert.Equal(0, avatarState.actionPoint);
+
+            var state = _initialState.SetState(_avatarAddress, avatarState.Serialize());
+
+            var action = new ChargeActionPoint()
+            {
+                avatarAddress = _avatarAddress,
+            };
+
+            Assert.Throws<NotEnoughMaterialException>(() => action.Execute(new ActionContext()
+                {
+                    PreviousStates = state,
+                    Signer = _agentAddress,
+                    Random = new TestRandom(),
+                    Rehearsal = false,
+                })
+            );
         }
     }
 }

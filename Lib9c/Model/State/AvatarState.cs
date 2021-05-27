@@ -162,7 +162,7 @@ namespace Nekoyume.Model.State
             inventory = new Inventory((List)serialized["inventory"]);
             worldInformation = new WorldInformation((Dictionary)serialized["worldInformation"]);
             updatedAt = serialized["updatedAt"].ToLong();
-            agentAddress = new Address(((Binary)serialized["agentAddress"]).Value);
+            agentAddress = new Address(((Binary)serialized["agentAddress"]).ToByteArray());
             questList = new QuestList((Dictionary) serialized["questList"]);
             mailBox = new MailBox((List)serialized["mailBox"]);
             blockIndex = (long)((Integer)serialized["blockIndex"]).Value;
@@ -243,7 +243,7 @@ namespace Nekoyume.Model.State
             mailBox.Add(mail);
             mailBox.CleanUp();
         }
-        
+
         public void UpdateV3(Mail.Mail mail)
         {
             mailBox.Add(mail);
@@ -334,10 +334,10 @@ namespace Nekoyume.Model.State
 
             UpdateCompletedQuest();
         }
-        
+
         public void UpdateFromAddItem(ItemBase itemUsable, int count, bool canceled)
         {
-            var pair = inventory.AddItem(itemUsable, count);
+            var pair = inventory.AddItem(itemUsable, count: count);
             itemMap.Add(pair);
 
             if (!canceled)
@@ -363,7 +363,7 @@ namespace Nekoyume.Model.State
             {
                 var row = materialItemSheet.OrderedList.First(itemRow => itemRow.Id == pair.Key);
                 var item = ItemFactory.CreateMaterial(row);
-                var map = inventory.AddItem(item, pair.Value);
+                var map = inventory.AddItem(item, count: pair.Value);
                 itemMap.Add(map);
                 items.Add(item);
             }
@@ -568,7 +568,7 @@ namespace Nekoyume.Model.State
                 }
             }
         }
-        
+
         public void ValidateCostume(IEnumerable<Guid> costumeIds)
         {
             var subTypes = new List<ItemSubType>();
@@ -583,9 +583,9 @@ namespace Nekoyume.Model.State
                 {
                     throw new DuplicateCostumeException($"can't equip duplicate costume type : {costume.ItemSubType}");
                 }
-                
+
                 subTypes.Add(costume.ItemSubType);
-       
+
                 int requiredLevel;
                 switch (costume.ItemSubType)
                 {
@@ -618,13 +618,15 @@ namespace Nekoyume.Model.State
                 }
             }
         }
-        
+
         public void ValidateCostume(HashSet<int> costumeIds)
         {
             var subTypes = new List<ItemSubType>();
             foreach (var costumeId in costumeIds.OrderBy(i => i))
             {
+#pragma warning disable 618
                 if (!inventory.TryGetCostume(costumeId, out var costume))
+#pragma warning restore 618
                 {
                     continue;
                 }
@@ -682,7 +684,7 @@ namespace Nekoyume.Model.State
             {
                 equippableItem.Unequip();
             }
-            
+
             // Equip items.
             foreach (var itemId in itemIds)
             {
@@ -709,23 +711,25 @@ namespace Nekoyume.Model.State
             foreach (var costume in inventoryCostumes)
 #pragma warning restore LAA1002
             {
-                // FIXME: Use `costume.Unequip()` 
+                // FIXME: Use `costume.Unequip()`
                 costume.equipped = false;
             }
 
             // 코스튬 장착.
             foreach (var costumeId in costumeIds.OrderBy(i => i))
             {
+#pragma warning disable 618
                 if (!inventory.TryGetCostume(costumeId, out var costume))
+#pragma warning restore 618
                 {
                     continue;
                 }
 
-                // FIXME: Use `costume.Unequip()` 
+                // FIXME: Use `costume.Unequip()`
                 costume.equipped = true;
             }
         }
-        
+
         // FIXME: Use `EquipItems(IEnumerable<Guid>)` instead of this.
         public void EquipEquipments(List<Guid> equipmentIds)
         {

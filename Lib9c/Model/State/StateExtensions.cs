@@ -66,7 +66,7 @@ namespace Nekoyume.Model.State
             Serialize(Serialize, address);
 
         public static Address ToAddress(this IValue serialized) =>
-            new Address(((Binary)serialized).Value);
+            new Address(((Binary)serialized).ToByteArray());
 
         public static Address? ToNullableAddress(this IValue serialized) =>
             Deserialize(ToAddress, serialized);
@@ -174,7 +174,7 @@ namespace Nekoyume.Model.State
 
         public static DateTimeOffset ToDateTimeOffset(this IValue serialized) =>
             DateTimeOffset.Parse(
-                Encoding.ASCII.GetString(((Binary)serialized).Value),
+                Encoding.ASCII.GetString(((Binary)serialized).ToByteArray()),
                 null,
                 DateTimeStyles.RoundtripKind
             );
@@ -193,7 +193,7 @@ namespace Nekoyume.Model.State
             Serialize(Serialize, number);
 
         public static Guid ToGuid(this IValue serialized) =>
-            new Guid(((Binary)serialized).Value);
+            new Guid(((Binary)serialized).ToByteArray());
 
         public static Guid? ToNullableGuid(this IValue serialized) =>
             Deserialize(ToGuid, serialized);
@@ -332,7 +332,7 @@ namespace Nekoyume.Model.State
 
         public static PublicKey ToPublicKey(this IValue serialized)
         {
-            var bin = ((Binary) serialized).Value;
+            var bin = ((Binary) serialized).ToByteArray();
             return new PublicKey(bin);
         }
 
@@ -358,7 +358,7 @@ namespace Nekoyume.Model.State
 
         public static HashDigest<SHA256> ToItemId(this IValue serialized)
         {
-            return new HashDigest<SHA256>(((Binary)serialized).Value);
+            return new HashDigest<SHA256>(((Binary)serialized).ToByteArray());
         }
 
         #endregion
@@ -368,7 +368,7 @@ namespace Nekoyume.Model.State
         public static IValue Serialize(this FungibleAssetValue value) =>
             new Bencodex.Types.List(new IValue[]
             {
-                value.Currency.Serialize(),
+                CurrencyExtensions.Serialize(value.Currency),
                 value.RawValue.Serialize(),
             });
 

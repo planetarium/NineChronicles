@@ -77,7 +77,7 @@ namespace Lib9c.Tests.Action
             var row = _tableSheets.EquipmentItemRecipeSheet.Values.First();
             var materialRow = _tableSheets.MaterialItemSheet[row.MaterialId];
             var material = ItemFactory.CreateItem(materialRow, _random);
-            _avatarState.inventory.AddItem(material, row.MaterialCount);
+            _avatarState.inventory.AddItem(material, count: row.MaterialCount);
 
             const int requiredStage = GameConfig.RequireClearedStageLevel.CombinationEquipmentAction;
             for (var i = 1; i < requiredStage + 1; i++)

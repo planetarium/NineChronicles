@@ -21,6 +21,8 @@ namespace Nekoyume.Model.State
                 case ItemSubType.Necklace:
                 case ItemSubType.Ring:
                 case ItemSubType.Food:
+                case ItemSubType.Hourglass:
+                case ItemSubType.ApStone:
                     string nonce = productId.ToString().Substring(0, 1);
                     return DeriveAddress(itemSubType, nonce);
                 case ItemSubType.FullCostume:
@@ -65,6 +67,8 @@ namespace Nekoyume.Model.State
                 case ItemSubType.Necklace:
                 case ItemSubType.Ring:
                 case ItemSubType.Food:
+                case ItemSubType.Hourglass:
+                case ItemSubType.ApStone:
                     return Addresses.Shop.Derive($"{itemSubType}-{nonce}");
                 case ItemSubType.FullCostume:
                 case ItemSubType.HairCostume:
@@ -77,7 +81,6 @@ namespace Nekoyume.Model.State
                     throw new InvalidItemTypeException($"Unsupported ItemType: {itemSubType}");
             }
         }
-
 
         public readonly Dictionary<Guid, ShopItem> Products = new Dictionary<Guid, ShopItem>();
 

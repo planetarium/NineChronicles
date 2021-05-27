@@ -6,6 +6,7 @@ using Libplanet.Assets;
 using Nekoyume.Model.State;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.Serialization;
 
 namespace Nekoyume.Action
@@ -14,15 +15,20 @@ namespace Nekoyume.Action
     [ActionType("transfer_asset")]
     public class TransferAsset : ActionBase, ISerializable
     {
+        private const int MemoMaxLength = 80;
+
         public TransferAsset()
         {
         }
 
-        public TransferAsset(Address sender, Address recipient, FungibleAssetValue amount)
+        public TransferAsset(Address sender, Address recipient, FungibleAssetValue amount, string memo = null)
         {
             Sender = sender;
             Recipient = recipient;
             Amount = amount;
+
+            CheckMemoLength(memo);
+            Memo = memo;
         }
 
         protected TransferAsset(SerializationInfo info, StreamingContext context)
@@ -36,15 +42,27 @@ namespace Nekoyume.Action
         public Address Sender { get; private set; }
         public Address Recipient { get; private set; }
         public FungibleAssetValue Amount { get; private set; }
+        public string Memo { get; private set; }
 
-        public override IValue PlainValue => new Dictionary(
-            new[]
+        public override IValue PlainValue
+        {
+            get
             {
-                new KeyValuePair<IKey, IValue>((Text) "sender", Sender.Serialize()),
-                new KeyValuePair<IKey, IValue>((Text) "recipient", Recipient.Serialize()),
-                new KeyValuePair<IKey, IValue>((Text) "amount", Amount.Serialize()),
+                IEnumerable<KeyValuePair<IKey, IValue>> pairs = new[]
+                {
+                    new KeyValuePair<IKey, IValue>((Text) "sender", Sender.Serialize()),
+                    new KeyValuePair<IKey, IValue>((Text) "recipient", Recipient.Serialize()),
+                    new KeyValuePair<IKey, IValue>((Text) "amount", Amount.Serialize()),
+                };
+
+                if (!(Memo is null))
+                {
+                    pairs = pairs.Append(new KeyValuePair<IKey, IValue>((Text) "memo", Memo.Serialize()));
+                }
+
+                return new Dictionary(pairs);
             }
-        );
+        }
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
@@ -87,11 +105,24 @@ namespace Nekoyume.Action
             Sender = asDict["sender"].ToAddress();
             Recipient = asDict["recipient"].ToAddress();
             Amount = asDict["amount"].ToFungibleAssetValue();
+            Memo = asDict.TryGetValue((Text) "memo", out IValue memo) ? memo.ToDotnetString() : null;
+
+            CheckMemoLength(Memo);
         }
 
         public void GetObjectData(SerializationInfo info, StreamingContext context)
         {
             info.AddValue("serialized", new Codec().Encode(PlainValue));
+        }
+
+        private void CheckMemoLength(string memo)
+        {
+            if (memo?.Length > MemoMaxLength)
+            {
+                string msg = $"The length of the memo, {memo.Length}, " +
+                             $"is overflowed than the max length, {MemoMaxLength}.";
+                throw new MemoLengthOverflowException(msg);
+            }
         }
     }
 }

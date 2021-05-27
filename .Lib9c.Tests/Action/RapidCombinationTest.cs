@@ -72,16 +72,17 @@ namespace Lib9c.Tests.Action
                 _initialState.GetSheet<WorldSheet>(),
                 slotStateUnlockStage);
 
-            var material = ItemFactory.CreateMaterial(
-                _tableSheets.MaterialItemSheet.Values.First(r =>
-                    r.ItemSubType == ItemSubType.Hourglass));
-            avatarState.inventory.AddItem(material);
+            var row = _tableSheets.MaterialItemSheet.Values.First(r =>
+                r.ItemSubType == ItemSubType.Hourglass);
+            avatarState.inventory.AddItem(ItemFactory.CreateMaterial(row));
+            avatarState.inventory.AddItem(ItemFactory.CreateTradableMaterial(row));
+            Assert.True(avatarState.inventory.HasFungibleItem(row.ItemId, 0, 2));
 
             var firstEquipmentRow = _tableSheets.EquipmentItemSheet.First;
             Assert.NotNull(firstEquipmentRow);
 
             var gameConfigState = _initialState.GetGameConfigState();
-            var requiredBlockIndex = gameConfigState.HourglassPerBlock;
+            var requiredBlockIndex = gameConfigState.HourglassPerBlock * 2;
             var equipment = (Equipment)ItemFactory.CreateItemUsable(
                 firstEquipmentRow,
                 Guid.NewGuid(),
@@ -107,7 +108,7 @@ namespace Lib9c.Tests.Action
                 CombinationSlotState.DeriveFormat,
                 0));
             var slotState = new CombinationSlotState(slotAddress, slotStateUnlockStage);
-            slotState.Update(result, 0, 0);
+            slotState.Update(result, 0, requiredBlockIndex);
 
             var tempState = _initialState
                 .SetState(_avatarAddress, avatarState.Serialize())
@@ -135,7 +136,7 @@ namespace Lib9c.Tests.Action
         }
 
         [Fact]
-        public void ExecuteThrowCombinationSlotResultNullException()
+        public void Execute_Throw_CombinationSlotResultNullException()
         {
             var slotAddress = _avatarAddress.Derive(string.Format(
                 CultureInfo.InvariantCulture,
@@ -164,7 +165,7 @@ namespace Lib9c.Tests.Action
         [Theory]
         [InlineData(0, 1)]
         [InlineData(1, 2)]
-        public void ExecuteThrowCombinationSlotUnlockException(int avatarClearedStage, int slotStateUnlockStage)
+        public void Execute_Throw_NotEnoughClearedStageLevelException(int avatarClearedStage, int slotStateUnlockStage)
         {
             var avatarState = _initialState.GetAvatarState(_avatarAddress);
             avatarState.worldInformation = new WorldInformation(
@@ -178,7 +179,7 @@ namespace Lib9c.Tests.Action
             var equipment = (Equipment)ItemFactory.CreateItemUsable(
                 firstEquipmentRow,
                 Guid.NewGuid(),
-                0);
+                100);
 
             var result = new CombinationConsumable.ResultModel
             {
@@ -207,7 +208,7 @@ namespace Lib9c.Tests.Action
                 slotIndex = 0,
             };
 
-            Assert.Throws<CombinationSlotUnlockException>(() => action.Execute(new ActionContext
+            Assert.Throws<NotEnoughClearedStageLevelException>(() => action.Execute(new ActionContext
             {
                 PreviousStates = tempState,
                 Signer = _agentAddress,
@@ -218,7 +219,7 @@ namespace Lib9c.Tests.Action
         [Theory]
         [InlineData(0, 0)]
         [InlineData(10, 100)]
-        public void ExecuteThrowRequiredBlockIndexException(int itemRequiredBlockIndex, int contextBlockIndex)
+        public void Execute_Throw_RequiredBlockIndexException(int itemRequiredBlockIndex, int contextBlockIndex)
         {
             const int avatarClearedStage = 1;
 
@@ -272,9 +273,13 @@ namespace Lib9c.Tests.Action
         }
 
         [Theory]
-        [InlineData(0, 1)]
-        [InlineData(100, 101)]
-        public void ExecuteThrowNotEnoughMaterialException(int alreadyHasCount, int requiredCount)
+        [InlineData(0, 0, 0, 1)]
+        [InlineData(0, 1, 2, 1)]
+        [InlineData(100, 0, 0, 101)]
+        [InlineData(0, 100, 0, 101)]
+        [InlineData(0, 100, 2, 101)]
+        [InlineData(1, 99, 2, 101)]
+        public void Execute_Throw_NotEnoughMaterialException(int materialCount, int tradableCount, long blockIndex, int requiredCount)
         {
             const int slotStateUnlockStage = 1;
 
@@ -284,10 +289,14 @@ namespace Lib9c.Tests.Action
                 _initialState.GetSheet<WorldSheet>(),
                 slotStateUnlockStage);
 
-            var material = ItemFactory.CreateMaterial(
-                _tableSheets.MaterialItemSheet.Values.First(r =>
-                    r.ItemSubType == ItemSubType.Hourglass));
-            avatarState.inventory.AddItem(material, alreadyHasCount);
+            var row = _tableSheets.MaterialItemSheet.Values.First(r => r.ItemSubType == ItemSubType.Hourglass);
+            avatarState.inventory.AddItem(ItemFactory.CreateMaterial(row), count: materialCount);
+            if (tradableCount > 0)
+            {
+                var material = ItemFactory.CreateTradableMaterial(row);
+                material.RequiredBlockIndex = blockIndex;
+                avatarState.inventory.AddItem(material, count: tradableCount);
+            }
 
             var firstEquipmentRow = _tableSheets.EquipmentItemSheet.First;
             Assert.NotNull(firstEquipmentRow);
@@ -367,7 +376,7 @@ namespace Lib9c.Tests.Action
                 },
                 itemUsable = itemUsable,
             };
-            var result = new RapidCombination.ResultModel((Dictionary)r.Serialize())
+            var result = new RapidCombination0.ResultModel((Dictionary)r.Serialize())
             {
                 cost = new Dictionary<Material, int>
                 {
@@ -391,7 +400,7 @@ namespace Lib9c.Tests.Action
                 itemUsable = itemUsable,
             };
 
-            var result2 = new RapidCombination.ResultModel((Dictionary)r2.Serialize())
+            var result2 = new RapidCombination0.ResultModel((Dictionary)r2.Serialize())
             {
                 cost = new Dictionary<Material, int>
                 {

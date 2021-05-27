@@ -5,26 +5,31 @@ using Bencodex.Types;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using Serilog;
+using BxDictionary = Bencodex.Types.Dictionary;
+using BxText = Bencodex.Types.Text;
 
 namespace Nekoyume.Action
 {
     [Serializable]
     public abstract class AttachmentActionResult : IState
     {
-        private static readonly Dictionary<string, Func<Dictionary, AttachmentActionResult>>
-            Deserializers = new Dictionary<string, Func<Dictionary, AttachmentActionResult>>
+        private static readonly Dictionary<string, Func<BxDictionary, AttachmentActionResult>>
+            Deserializers = new Dictionary<string, Func<BxDictionary, AttachmentActionResult>>
             {
                 ["buy.buyerResult"] = d => new Buy.BuyerResult(d),
                 ["buy.sellerResult"] = d => new Buy.SellerResult(d),
                 ["combination.result-model"] = d => new CombinationConsumable.ResultModel(d),
                 ["itemEnhancement.result"] = d => new ItemEnhancement.ResultModel(d),
                 ["sellCancellation.result"] = d => new SellCancellation.Result(d),
-                ["rapidCombination.result"] = d => new RapidCombination.ResultModel(d),
+                ["rapidCombination.result"] = d => new RapidCombination0.ResultModel(d),
                 ["dailyReward.dailyRewardResult"] = d => new DailyReward.DailyRewardResult(d),
+                ["monsterCollection.result"] = d => new MonsterCollectionResult(d),
             };
 
         public ItemUsable itemUsable;
-        public Costume costume; 
+        public Costume costume;
+        public ITradableFungibleItem tradableFungibleItem;
+        public int tradableFungibleItemCount;
 
         protected abstract string TypeId { get; }
 
@@ -38,54 +43,71 @@ namespace Nekoyume.Action
             }
         }
 
-        protected AttachmentActionResult(Dictionary serialized)
+        protected AttachmentActionResult(BxDictionary serialized)
         {
             itemUsable = serialized.ContainsKey("itemUsable")
-               ? (ItemUsable) ItemFactory.Deserialize((Dictionary) serialized["itemUsable"])
+               ? (ItemUsable) ItemFactory.Deserialize((BxDictionary) serialized["itemUsable"])
                : null;
             costume = serialized.ContainsKey("costume")
-                ? (Costume) ItemFactory.Deserialize((Dictionary) serialized["costume"])
+                ? (Costume) ItemFactory.Deserialize((BxDictionary) serialized["costume"])
                 : null;
+            tradableFungibleItem = serialized.ContainsKey("tradableFungibleItem")
+                ? (ITradableFungibleItem) ItemFactory.Deserialize(
+                    (BxDictionary) serialized["tradableFungibleItem"])
+                : null;
+            tradableFungibleItemCount = serialized.ContainsKey("tradableFungibleItemCount")
+                ? serialized["tradableFungibleItemCount"].ToInteger()
+                : default;
         }
 
         public virtual IValue Serialize()
         {
             var innerDictionary = new Dictionary<IKey, IValue>
             {
-                [(Text) "typeId"] = (Text) TypeId, 
+                [(BxText) "typeId"] = (BxText) TypeId,
             };
-            
+
             if (itemUsable != null)
             {
-                innerDictionary.Add((Text) "itemUsable", itemUsable.Serialize());
+                innerDictionary.Add((BxText) "itemUsable", itemUsable.Serialize());
             }
 
             if (costume != null)
             {
-                innerDictionary.Add((Text) "costume", costume.Serialize());
+                innerDictionary.Add((BxText) "costume", costume.Serialize());
             }
-            
-            return new Dictionary(innerDictionary);
-        }
-        
-        public virtual IValue SerializeBackup1() =>
-            new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
+
+            if (tradableFungibleItem != null)
             {
-                [(Text) "typeId"] = (Text) TypeId,
-                [(Text) "itemUsable"] = itemUsable.Serialize(),
+                innerDictionary.Add(
+                    (BxText) "tradableFungibleItem",
+                    tradableFungibleItem.Serialize());
+                innerDictionary.Add(
+                    (BxText) "tradableFungibleItemCount",
+                    tradableFungibleItemCount.Serialize());
+            }
+
+            return new BxDictionary(innerDictionary);
+        }
+
+        public virtual IValue SerializeBackup1() =>
+            new BxDictionary(new Dictionary<IKey, IValue>
+            {
+                [(BxText) "typeId"] = (BxText) TypeId,
+                [(BxText) "itemUsable"] = itemUsable.Serialize(),
             });
 
-        public static AttachmentActionResult Deserialize(Bencodex.Types.Dictionary serialized)
+        public static AttachmentActionResult Deserialize(BxDictionary serialized)
         {
-            string typeId = ((Text) serialized["typeId"]).Value;
-            Func<Dictionary, AttachmentActionResult> deserializer;
+            var typeId = ((BxText) serialized["typeId"]).Value;
+            Func<BxDictionary, AttachmentActionResult> deserializer;
             try
             {
                 deserializer = Deserializers[typeId];
             }
             catch (KeyNotFoundException)
             {
-                string typeIds = string.Join(
+                var typeIds = string.Join(
                     ", ",
                     Deserializers.Keys.OrderBy(k => k, StringComparer.InvariantCulture)
                 );
@@ -100,7 +122,10 @@ namespace Nekoyume.Action
             }
             catch (Exception e)
             {
-                Log.Error("{0} was raised during deserialize: {1}", e.GetType().FullName, serialized);
+                Log.Error(
+                    "{0} was raised during deserialize: {1}",
+                    e.GetType().FullName,
+                    serialized);
                 throw;
             }
         }

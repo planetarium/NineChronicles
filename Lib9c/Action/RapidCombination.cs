@@ -9,38 +9,13 @@ using Libplanet.Action;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
-using Serilog;
 
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("rapid_combination")]
+    [ActionType("rapid_combination3")]
     public class RapidCombination : GameAction
     {
-        [Serializable]
-        public class ResultModel : CombinationConsumable.ResultModel
-        {
-            public Dictionary<Material, int> cost;
-
-            protected override string TypeId => "rapidCombination.result";
-
-            public ResultModel(Dictionary serialized) : base(serialized)
-            {
-                if (serialized.TryGetValue((Text) "cost", out var value))
-                {
-                    cost = value.ToDictionary_Material_int();
-                }
-            }
-
-            public override IValue Serialize() =>
-#pragma warning disable LAA1002
-                new Dictionary(new Dictionary<IKey, IValue>
-                {
-                    [(Text) "cost"] = cost.Serialize(),
-                }.Union((Dictionary) base.Serialize()));
-#pragma warning restore LAA1002
-        }
-
         public Address avatarAddress;
         public int slotIndex;
 
@@ -63,7 +38,6 @@ namespace Nekoyume.Action
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
 
-            Log.Warning("{AddressesHex}rapid_combination is deprecated. Please use rapid_combination2", addressesHex);
             if (!states.TryGetAgentAvatarStates(
                 context.Signer,
                 avatarAddress,
@@ -79,10 +53,10 @@ namespace Nekoyume.Action
                 throw new CombinationSlotResultNullException($"{addressesHex}CombinationSlot Result is null. ({avatarAddress}), ({slotIndex})");
             }
 
-            if (!slotState.Validate(avatarState, context.BlockIndex))
+            if(!avatarState.worldInformation.IsStageCleared(slotState.UnlockStage))
             {
-                throw new CombinationSlotUnlockException(
-                    $"{addressesHex}Aborted as the slot state is invalid. slot index: {slotIndex}, context block index: {context.BlockIndex}");
+                avatarState.worldInformation.TryGetLastClearedStageId(out var current);
+                throw new NotEnoughClearedStageLevelException(addressesHex, slotState.UnlockStage, current);
             }
 
             var diff = slotState.Result.itemUsable.RequiredBlockIndex - context.BlockIndex;
@@ -97,11 +71,11 @@ namespace Nekoyume.Action
                 throw new FailedLoadStateException($"{addressesHex}Aborted as the GameConfigState was failed to load.");
             }
 
-            var count = CalculateHourglassCount(gameConfigState, diff);
+            var count = RapidCombination0.CalculateHourglassCount(gameConfigState, diff);
             var materialItemSheet = states.GetSheet<MaterialItemSheet>();
             var row = materialItemSheet.Values.First(r => r.ItemSubType == ItemSubType.Hourglass);
             var hourGlass = ItemFactory.CreateMaterial(row);
-            if (!avatarState.inventory.RemoveFungibleItem(hourGlass, count))
+            if (!avatarState.inventory.RemoveFungibleItemV2(hourGlass, context.BlockIndex, count))
             {
                 throw new NotEnoughMaterialException(
                     $"{addressesHex}Aborted as the player has no enough material ({row.Id} * {count})");
@@ -128,17 +102,6 @@ namespace Nekoyume.Action
         {
             avatarAddress = plainValue["avatarAddress"].ToAddress();
             slotIndex = plainValue["slotIndex"].ToInteger();
-        }
-
-        public static int CalculateHourglassCount(GameConfigState state, long diff)
-        {
-            if (diff <= 0)
-            {
-                return 0;
-            }
-
-            var cost = Math.Ceiling((decimal) diff / state.HourglassPerBlock);
-            return Math.Max(1, (int) cost);
         }
     }
 }

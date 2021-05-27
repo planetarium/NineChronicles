@@ -71,7 +71,7 @@ namespace Nekoyume.Action
                 throw new FailedLoadStateException($"{addressesHex}Aborted as the GameConfigState was failed to load.");
             }
 
-            var count = RapidCombination.CalculateHourglassCount(gameConfigState, diff);
+            var count = RapidCombination0.CalculateHourglassCount(gameConfigState, diff);
             var materialItemSheet = states.GetSheet<MaterialItemSheet>();
             var row = materialItemSheet.Values.First(r => r.ItemSubType == ItemSubType.Hourglass);
             var hourGlass = ItemFactory.CreateMaterial(row);

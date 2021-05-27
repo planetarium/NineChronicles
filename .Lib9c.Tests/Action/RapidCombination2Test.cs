@@ -287,7 +287,7 @@ namespace Lib9c.Tests.Action
             var material = ItemFactory.CreateMaterial(
                 _tableSheets.MaterialItemSheet.Values.First(r =>
                     r.ItemSubType == ItemSubType.Hourglass));
-            avatarState.inventory.AddItem(material, alreadyHasCount);
+            avatarState.inventory.AddItem(material, count: alreadyHasCount);
 
             var firstEquipmentRow = _tableSheets.EquipmentItemSheet.First;
             Assert.NotNull(firstEquipmentRow);
@@ -367,7 +367,7 @@ namespace Lib9c.Tests.Action
                 },
                 itemUsable = itemUsable,
             };
-            var result = new RapidCombination.ResultModel((Dictionary)r.Serialize())
+            var result = new RapidCombination0.ResultModel((Dictionary)r.Serialize())
             {
                 cost = new Dictionary<Material, int>
                 {
@@ -391,7 +391,7 @@ namespace Lib9c.Tests.Action
                 itemUsable = itemUsable,
             };
 
-            var result2 = new RapidCombination.ResultModel((Dictionary)r2.Serialize())
+            var result2 = new RapidCombination0.ResultModel((Dictionary)r2.Serialize())
             {
                 cost = new Dictionary<Material, int>
                 {

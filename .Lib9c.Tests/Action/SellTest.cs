@@ -1,7 +1,6 @@
 namespace Lib9c.Tests.Action
 {
     using System;
-    using System.Collections.Generic;
     using System.Linq;
     using Bencodex.Types;
     using Libplanet;
@@ -70,23 +69,6 @@ namespace Lib9c.Tests.Action
             };
             agentState.avatarAddresses[0] = _avatarAddress;
 
-            var equipment = ItemFactory.CreateItemUsable(
-                _tableSheets.EquipmentItemSheet.First,
-                Guid.NewGuid(),
-                0);
-            _avatarState.inventory.AddItem(equipment);
-
-            var consumable = ItemFactory.CreateItemUsable(
-                _tableSheets.ConsumableItemSheet.First,
-                Guid.NewGuid(),
-                0);
-            _avatarState.inventory.AddItem(consumable);
-
-            var costume = ItemFactory.CreateCostume(
-                _tableSheets.CostumeItemSheet.First,
-                Guid.NewGuid());
-            _avatarState.inventory.AddItem(costume);
-
             _initialState = _initialState
                 .SetState(GoldCurrencyState.Address, goldCurrencyState.Serialize())
                 .SetState(Addresses.Shop, shopState.Serialize())
@@ -95,64 +77,102 @@ namespace Lib9c.Tests.Action
         }
 
         [Theory]
-        [InlineData(ItemType.Consumable, true, 2)]
-        [InlineData(ItemType.Costume, true, 2)]
-        [InlineData(ItemType.Equipment, true, 2)]
-        [InlineData(ItemType.Consumable, false, 0)]
-        [InlineData(ItemType.Costume, false, 0)]
-        [InlineData(ItemType.Equipment, false, 0)]
-        public void Execute(ItemType itemType, bool shopItemExist, int blockIndex)
+        [InlineData(ItemType.Consumable, true, 2, 1, 1, 1)]
+        [InlineData(ItemType.Costume, true, 2, 1, 1, 1)]
+        [InlineData(ItemType.Equipment, true, 2, 1, 1, 1)]
+        [InlineData(ItemType.Consumable, false, 0, 1, 1, 1)]
+        [InlineData(ItemType.Costume, false, 0, 1, 1, 1)]
+        [InlineData(ItemType.Equipment, false, 0, 1, 1, 1)]
+        [InlineData(ItemType.Material, true, 1, 2, 1, 1)]
+        [InlineData(ItemType.Material, true, 1, 1, 2, 1)]
+        [InlineData(ItemType.Material, true, 2, 1, 2, 2)]
+        [InlineData(ItemType.Material, true, 3, 2, 2, 2)]
+        [InlineData(ItemType.Material, false, 1, 1, 1, 1)]
+        public void Execute(
+            ItemType itemType,
+            bool shopItemExist,
+            long blockIndex,
+            int itemCount,
+            int prevCount,
+            int expectedProductsCount
+        )
         {
             var avatarState = _initialState.GetAvatarState(_avatarAddress);
-            List<Inventory.Item> inventoryItem = avatarState.inventory.Items.Where(i => i.item.ItemType == itemType).ToList();
-            Assert.Single(inventoryItem);
+
+            ITradableItem tradableItem;
+            switch (itemType)
+            {
+                case ItemType.Consumable:
+                    tradableItem = ItemFactory.CreateItemUsable(
+                        _tableSheets.ConsumableItemSheet.First,
+                        Guid.NewGuid(),
+                        0);
+                    break;
+                case ItemType.Costume:
+                    tradableItem = ItemFactory.CreateCostume(
+                        _tableSheets.CostumeItemSheet.First,
+                        Guid.NewGuid());
+                    break;
+                case ItemType.Equipment:
+                    tradableItem = ItemFactory.CreateItemUsable(
+                        _tableSheets.EquipmentItemSheet.First,
+                        Guid.NewGuid(),
+                        0);
+                    break;
+                case ItemType.Material:
+                    var tradableMaterialRow = _tableSheets.MaterialItemSheet.OrderedList
+                        .First(row => row.ItemSubType == ItemSubType.Hourglass);
+                    tradableItem = ItemFactory.CreateTradableMaterial(tradableMaterialRow);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(itemType), itemType, null);
+            }
+
+            Assert.Equal(0, tradableItem.RequiredBlockIndex);
+            avatarState.inventory.AddItem((ItemBase)tradableItem, itemCount);
+
             var previousStates = _initialState;
+            previousStates = previousStates.SetState(_avatarAddress, avatarState.Serialize());
             var currencyState = previousStates.GetGoldCurrency();
             var price = new FungibleAssetValue(currencyState, ProductPrice, 0);
-            INonFungibleItem nonFungibleItem = (INonFungibleItem)inventoryItem.First().item;
-            nonFungibleItem.Update(blockIndex);
-            Assert.Equal(blockIndex, nonFungibleItem.RequiredBlockIndex);
-            ItemSubType itemSubType = ItemSubType.Food;
-            Guid productId = new Guid("6f460c1a-755d-48e4-ad67-65d5f519dbc8");
-            if (nonFungibleItem is ItemUsable itemUsable)
-            {
-                itemSubType = itemUsable.ItemSubType;
-            }
-            else if (nonFungibleItem is Costume costume)
-            {
-                itemSubType = costume.ItemSubType;
-            }
-
-            Address shopAddress = ShardedShopState.DeriveAddress(itemSubType, productId);
-
+            var productId = new Guid("6f460c1a755d48e4ad6765d5f519dbc8");
+            var shardedShopAddress = ShardedShopState.DeriveAddress(
+                tradableItem.ItemSubType,
+                productId);
             if (shopItemExist)
             {
-                var si = new ShopItem(
+                tradableItem.RequiredBlockIndex = blockIndex;
+                Assert.Equal(blockIndex, tradableItem.RequiredBlockIndex);
+                var shopItem = new ShopItem(
                     _agentAddress,
                     _avatarAddress,
-                    productId,
-                    new FungibleAssetValue(currencyState, 100, 0),
+                    expectedProductsCount == 2 ? Guid.NewGuid() : productId,
+                    price,
                     blockIndex,
-                    nonFungibleItem);
-                ShardedShopState shardedShopState =
-                    new ShardedShopState(shopAddress);
-                shardedShopState.Register(si);
+                    tradableItem,
+                    prevCount
+                );
+
+                var shardedShopState = new ShardedShopState(shardedShopAddress);
+                shardedShopState.Register(shopItem);
                 Assert.Single(shardedShopState.Products);
-                previousStates = previousStates.SetState(shopAddress, shardedShopState.Serialize());
+                previousStates = previousStates.SetState(
+                    shardedShopAddress,
+                    shardedShopState.Serialize());
             }
             else
             {
-                Assert.Null(previousStates.GetState(shopAddress));
+                Assert.Null(previousStates.GetState(shardedShopAddress));
             }
 
             var sellAction = new Sell
             {
-                itemId = nonFungibleItem.ItemId,
-                price = price,
                 sellerAvatarAddress = _avatarAddress,
-                itemSubType = itemSubType,
+                tradableId = tradableItem.TradableId,
+                count = itemCount,
+                price = price,
+                itemSubType = tradableItem.ItemSubType,
             };
-
             var nextState = sellAction.Execute(new ActionContext
             {
                 BlockIndex = 1,
@@ -163,30 +183,83 @@ namespace Lib9c.Tests.Action
             });
 
             const long expiredBlockIndex = Sell.ExpiredBlockIndex + 1;
+
+            // Check AvatarState and Inventory
             var nextAvatarState = nextState.GetAvatarState(_avatarAddress);
-            Assert.True(nextAvatarState.inventory.TryGetNonFungibleItem(nonFungibleItem.ItemId, out var nextItem));
-            INonFungibleItem nextNonFungibleItem = (INonFungibleItem)nextItem.item;
-            Assert.Equal(expiredBlockIndex, nextNonFungibleItem.RequiredBlockIndex);
+            Assert.Single(nextAvatarState.inventory.Items);
+            Assert.True(nextAvatarState.inventory.TryGetTradableItems(
+                tradableItem.TradableId,
+                expiredBlockIndex,
+                1,
+                out var inventoryItems));
+            Assert.Single(inventoryItems);
+            ITradableItem nextTradableItem = (ITradableItem)inventoryItems.First().item;
+            Assert.Equal(expiredBlockIndex, nextTradableItem.RequiredBlockIndex);
 
-            var nextShopState = new ShardedShopState((Dictionary)nextState.GetState(shopAddress));
+            // Check ShardedShopState and ShopItem
+            var nextSerializedShardedShopState = nextState.GetState(shardedShopAddress);
+            Assert.NotNull(nextSerializedShardedShopState);
+            var nextShardedShopState =
+                new ShardedShopState((Dictionary)nextSerializedShardedShopState);
+            Assert.Equal(expectedProductsCount, nextShardedShopState.Products.Count);
 
-            Assert.Single(nextShopState.Products);
+            var nextShopItem = nextShardedShopState.Products.Values.First(s => s.ExpiredBlockIndex == expiredBlockIndex);
+            ITradableItem nextTradableItemInShopItem;
+            switch (itemType)
+            {
+                case ItemType.Consumable:
+                case ItemType.Equipment:
+                    nextTradableItemInShopItem = nextShopItem.ItemUsable;
+                    break;
+                case ItemType.Costume:
+                    nextTradableItemInShopItem = nextShopItem.Costume;
+                    break;
+                case ItemType.Material:
+                    nextTradableItemInShopItem = nextShopItem.TradableFungibleItem;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(itemType), itemType, null);
+            }
 
-            var products = nextShopState.Products.Values;
-
-            var shopItem = products.First();
-            INonFungibleItem item = itemType == ItemType.Costume ? (INonFungibleItem)shopItem.Costume : shopItem.ItemUsable;
-
-            Assert.Equal(price, shopItem.Price);
-            Assert.Equal(expiredBlockIndex, shopItem.ExpiredBlockIndex);
-            Assert.Equal(expiredBlockIndex, item.RequiredBlockIndex);
-            Assert.Equal(_agentAddress, shopItem.SellerAgentAddress);
-            Assert.Equal(_avatarAddress, shopItem.SellerAvatarAddress);
+            Assert.Equal(price, nextShopItem.Price);
+            Assert.Equal(expiredBlockIndex, nextShopItem.ExpiredBlockIndex);
+            Assert.Equal(_agentAddress, nextShopItem.SellerAgentAddress);
+            Assert.Equal(_avatarAddress, nextShopItem.SellerAvatarAddress);
+            Assert.Equal(expiredBlockIndex, nextTradableItemInShopItem.RequiredBlockIndex);
 
             var mailList = nextAvatarState.mailBox.Where(m => m is SellCancelMail).ToList();
             Assert.Single(mailList);
+            var mail = mailList.First() as SellCancelMail;
+            Assert.NotNull(mail);
+            Assert.Equal(expiredBlockIndex, mail.requiredBlockIndex);
 
-            Assert.Equal(expiredBlockIndex, mailList.First().requiredBlockIndex);
+            ITradableItem attachmentItem;
+            int attachmentCount = 0;
+            switch (itemType)
+            {
+                case ItemType.Consumable:
+                case ItemType.Equipment:
+                    Assert.NotNull(mail.attachment.itemUsable);
+                    attachmentItem = mail.attachment.itemUsable;
+                    Assert.Equal(tradableItem, mail.attachment.itemUsable);
+                    break;
+                case ItemType.Costume:
+                    Assert.NotNull(mail.attachment.costume);
+                    attachmentItem = mail.attachment.costume;
+                    Assert.Equal(tradableItem, mail.attachment.costume);
+                    break;
+                case ItemType.Material:
+                    Assert.NotNull(mail.attachment.tradableFungibleItem);
+                    attachmentItem = mail.attachment.tradableFungibleItem;
+                    attachmentCount = mail.attachment.tradableFungibleItemCount;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(itemType), itemType, null);
+            }
+
+            Assert.Equal(attachmentCount, nextShopItem.TradableFungibleItemCount);
+            Assert.Equal(nextTradableItem, attachmentItem);
+            Assert.Equal(nextTradableItemInShopItem, attachmentItem);
         }
 
         [Fact]
@@ -194,9 +267,11 @@ namespace Lib9c.Tests.Action
         {
             var action = new Sell
             {
-                itemId = default,
-                price = -1 * _currency,
                 sellerAvatarAddress = _avatarAddress,
+                tradableId = default,
+                count = 1,
+                price = -1 * _currency,
+                itemSubType = default,
             };
 
             Assert.Throws<InvalidPriceException>(() => action.Execute(new ActionContext
@@ -212,9 +287,10 @@ namespace Lib9c.Tests.Action
         {
             var action = new Sell
             {
-                itemId = default,
-                price = 0 * _currency,
                 sellerAvatarAddress = _avatarAddress,
+                tradableId = default,
+                count = 1,
+                price = 0 * _currency,
                 itemSubType = ItemSubType.Food,
             };
 
@@ -242,9 +318,10 @@ namespace Lib9c.Tests.Action
 
             var action = new Sell
             {
-                itemId = default,
-                price = 0 * _currency,
                 sellerAvatarAddress = _avatarAddress,
+                tradableId = default,
+                count = 1,
+                price = 0 * _currency,
                 itemSubType = ItemSubType.Food,
             };
 
@@ -261,9 +338,10 @@ namespace Lib9c.Tests.Action
         {
             var action = new Sell
             {
-                itemId = default,
-                price = 0 * _currency,
                 sellerAvatarAddress = _avatarAddress,
+                tradableId = default,
+                count = 1,
+                price = 0 * _currency,
                 itemSubType = ItemSubType.Food,
             };
 
@@ -290,44 +368,16 @@ namespace Lib9c.Tests.Action
 
             var action = new Sell
             {
-                itemId = equipmentId,
-                price = 0 * _currency,
                 sellerAvatarAddress = _avatarAddress,
+                tradableId = equipmentId,
+                count = 1,
+                price = 0 * _currency,
                 itemSubType = ItemSubType.Food,
             };
 
             Assert.Throws<InvalidItemTypeException>(() => action.Execute(new ActionContext
             {
-                BlockIndex = 0,
-                PreviousStates = _initialState,
-                Signer = _agentAddress,
-                Random = new TestRandom(),
-            }));
-        }
-
-        [Fact]
-        public void Execute_Throw_RequiredBlockIndexException()
-        {
-            var equipmentId = Guid.NewGuid();
-            var equipment = ItemFactory.CreateItemUsable(
-                _tableSheets.EquipmentItemSheet.First,
-                equipmentId,
-                10);
-            _avatarState.inventory.AddItem(equipment);
-
-            _initialState = _initialState.SetState(_avatarAddress, _avatarState.Serialize());
-
-            var action = new Sell
-            {
-                itemId = equipmentId,
-                price = 0 * _currency,
-                sellerAvatarAddress = _avatarAddress,
-                itemSubType = equipment.ItemSubType,
-            };
-
-            Assert.Throws<RequiredBlockIndexException>(() => action.Execute(new ActionContext
-            {
-                BlockIndex = 0,
+                BlockIndex = 11,
                 PreviousStates = _initialState,
                 Signer = _agentAddress,
                 Random = new TestRandom(),
