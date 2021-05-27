@@ -14,6 +14,7 @@ namespace Nekoyume.UI.Model
         public readonly ReactiveProperty<bool> EnhancementEffectEnabled = new ReactiveProperty<bool>(false);
         public readonly ReactiveProperty<bool> Dimmed = new ReactiveProperty<bool>(false);
         public readonly ReactiveProperty<bool> Selected = new ReactiveProperty<bool>(false);
+        public readonly ReactiveProperty<bool> ActiveSelf = new ReactiveProperty<bool>(true);
 
         public readonly Subject<Item> OnClick = new Subject<Item>();
         public readonly Subject<Item> OnDoubleClick = new Subject<Item>();
@@ -46,6 +47,7 @@ namespace Nekoyume.UI.Model
             EnhancementEnabled.Dispose();
             EnhancementEffectEnabled.Dispose();
             Dimmed.Dispose();
+            ActiveSelf.Dispose();
             Selected.Dispose();
 
             OnClick.Dispose();

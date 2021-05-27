@@ -112,7 +112,6 @@ namespace Nekoyume.UI.Module
             }
 
             Model.Selected.SubscribeTo(selectionImage.gameObject).AddTo(_disposablesAtSetData);
-
             UpdateView();
         }
 
@@ -177,7 +176,6 @@ namespace Nekoyume.UI.Module
         {
             Model = null;
             _disposablesAtSetData.DisposeAllAndClear();
-
             UpdateView();
             base.Clear();
         }
