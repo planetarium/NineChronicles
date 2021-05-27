@@ -430,16 +430,16 @@ namespace Nekoyume.UI.Module
 
             var states = States.Instance;
 
+            if (states.CurrentAvatarState is null)
+            {
+                return;
+            }
+
             if (!SharedModel.IsInitialized)
             {
                 Widget.Find<SystemPopup>().Show("UI_ERROR",
                     "Couldn't get ranking information via API host. Please check if apiServerHost option is properly assigned in command line options.", "UI_OK", false);
                 myInfoCell.SetEmpty(states.CurrentAvatarState);
-                return;
-            }
-
-            if (states.CurrentAvatarState is null)
-            {
                 return;
             }
 
