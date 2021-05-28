@@ -23,6 +23,7 @@ using Nekoyume.L10n;
 using Nekoyume.Model.Elemental;
 using Nekoyume.Model.Mail;
 using Nekoyume.TableData;
+using Toggle = Nekoyume.UI.Module.Toggle;
 
 namespace Nekoyume.UI
 {
@@ -79,7 +80,7 @@ namespace Nekoyume.UI
         private Transform buttonStarImageTransform = null;
 
         [SerializeField]
-        private NCToggle repeatToggle;
+        private Toggle repeatToggle;
 
         [SerializeField, Range(.5f, 3.0f)]
         private float animationTime = 1f;

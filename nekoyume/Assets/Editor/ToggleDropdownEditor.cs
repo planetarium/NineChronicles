@@ -1,12 +1,11 @@
 ﻿using Nekoyume.UI.Module;
 using UnityEditor;
-using UnityEditor.UI;
 using UnityEngine;
 
 namespace Editor
 {
-    [CustomEditor(typeof(NCToggleDropdown))]
-    public class NCToggleDropdownEditor : ToggleEditor
+    [CustomEditor(typeof(ToggleDropdown))]
+    public class ToggleDropdownEditor : UnityEditor.UI.ToggleEditor
     {
         public override void OnInspectorGUI()
         {
