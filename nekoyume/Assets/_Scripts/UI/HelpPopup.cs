@@ -21,6 +21,8 @@ using System.Text.RegularExpressions;
 
 namespace Nekoyume.UI
 {
+    using UniRx;
+
     public class HelpPopup : PopupWidget
     {
         #region Models

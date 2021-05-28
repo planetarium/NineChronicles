@@ -14,6 +14,8 @@ using UnityEngine;
 
 namespace Nekoyume.UI.Module
 {
+    using UniRx;
+
     public class BottomMenu : Widget
     {
         // todo: 네비게이션 버튼들도 토글 그룹에 들어갔으니 여기서도 다뤄야 하겠음..

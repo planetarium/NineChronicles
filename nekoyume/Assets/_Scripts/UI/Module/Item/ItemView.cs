@@ -14,6 +14,8 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
 {
+    using UniRx;
+
     public class ItemView<TViewModel> : VanillaItemView
         where TViewModel : Model.Item
     {

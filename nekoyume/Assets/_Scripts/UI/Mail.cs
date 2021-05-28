@@ -11,12 +11,13 @@ using Nekoyume.State;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Scroller;
 using TMPro;
-using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
+    using UniRx;
+
     public class Mail : XTweenWidget, IMail
     {
         public enum MailTabState : int

@@ -14,6 +14,8 @@ using UnityEngine;
 
 namespace Nekoyume.UI
 {
+    using UniRx;
+
     public class StageInformation : Widget
     {
         public enum StageType

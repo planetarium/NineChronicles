@@ -13,6 +13,8 @@ using ShopItem = Nekoyume.UI.Model.ShopItem;
 
 namespace Nekoyume.UI.Module
 {
+    using UniRx;
+
     public class ShopBuyItems : MonoBehaviour
     {
         public List<ShopItemView> Items { get; } = new List<ShopItemView>();

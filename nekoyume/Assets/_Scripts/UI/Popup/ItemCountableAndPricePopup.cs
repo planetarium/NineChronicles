@@ -1,13 +1,14 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using TMPro;
-using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
+    using UniRx;
+
     public class ItemCountableAndPricePopup : ItemCountPopup<Model.ItemCountableAndPricePopup>
     {
         [SerializeField] private TMP_InputField priceInputField = null;

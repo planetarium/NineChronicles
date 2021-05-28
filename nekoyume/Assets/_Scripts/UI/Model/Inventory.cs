@@ -7,12 +7,12 @@ using Nekoyume.Battle;
 using Nekoyume.Model.Elemental;
 using Nekoyume.Model.Item;
 using Nekoyume.UI.Module;
-using UniRx;
-using UnityEngine;
 using Material = Nekoyume.Model.Item.Material;
 
 namespace Nekoyume.UI.Model
 {
+    using UniRx;
+
     public class Inventory : IDisposable
     {
         public readonly ReactiveProperty<ItemType> State =

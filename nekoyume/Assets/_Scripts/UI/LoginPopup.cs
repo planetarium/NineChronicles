@@ -9,13 +9,14 @@ using Nekoyume.EnumType;
 using Nekoyume.L10n;
 using Nekoyume.UI.Module;
 using TMPro;
-using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 using TentuPlay.Api;
 
 namespace Nekoyume.UI
 {
+    using UniRx;
+
     public class LoginPopup : Widget
     {
         public enum States

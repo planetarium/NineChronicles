@@ -6,12 +6,13 @@ using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.UI.Module;
 using TMPro;
-using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI.Scroller
 {
+    using UniRx;
+
     public class ArenaRankCell : RectCell<
         ArenaRankCell.ViewModel,
         ArenaRankScroll.ContextModel>

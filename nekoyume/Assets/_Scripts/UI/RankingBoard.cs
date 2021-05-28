@@ -20,6 +20,8 @@ using UnityEngine;
 
 namespace Nekoyume.UI
 {
+    using UniRx;
+
     public class RankingBoard : Widget
     {
         public enum StateType

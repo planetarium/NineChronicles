@@ -8,6 +8,8 @@ using UniRx;
 
 namespace Nekoyume.BlockChain
 {
+    using UniRx;
+
     public class BlockRenderHandler
     {
         private static class Singleton
