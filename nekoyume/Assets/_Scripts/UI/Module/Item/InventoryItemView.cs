@@ -1,11 +1,12 @@
 using System;
 using System.Collections.Generic;
 using Nekoyume.Model.Item;
-using UniRx;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
 {
+    using UniRx;
+
     public class InventoryItemView : CountableItemView<Model.InventoryItem>
     {
         public Image effectImage;

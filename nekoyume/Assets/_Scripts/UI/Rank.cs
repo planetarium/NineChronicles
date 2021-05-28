@@ -12,6 +12,7 @@ using TMPro;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
+using Toggle = Nekoyume.UI.Module.Toggle;
 
 namespace Nekoyume.UI
 {
@@ -37,7 +38,7 @@ namespace Nekoyume.UI
         private Model.Rank rankPanel = null;
 
         [SerializeField]
-        private List<NCToggle> toggles = new List<NCToggle>();
+        private List<Toggle> toggles = new List<Toggle>();
 
         [SerializeField]
         private TextMeshProUGUI firstColumnText = null;
@@ -77,7 +78,7 @@ namespace Nekoyume.UI
             foreach (var toggle in toggles)
             {
                 var innerCategory = currentCategory;
-                if (toggle is NCToggleDropdown toggleDropdown)
+                if (toggle is ToggleDropdown toggleDropdown)
                 {
                     var subElements = toggleDropdown.items;
                     foreach (var element in subElements)
@@ -146,11 +147,11 @@ namespace Nekoyume.UI
                 return;
             }
 
-            if (firstElement is NCToggle)
+            if (firstElement is Toggle)
             {
                 firstElement.isOn = true;
             }
-            else if (firstElement is NCToggleDropdown dropdown)
+            else if (firstElement is ToggleDropdown dropdown)
             {
                 var firstSubElement = dropdown.items.First();
                 if (firstSubElement is null)
