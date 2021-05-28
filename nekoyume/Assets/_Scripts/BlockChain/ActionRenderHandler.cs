@@ -347,7 +347,7 @@ namespace Nekoyume.BlockChain
                 }
 
                 // NOTE: 메일 레이어 씌우기.
-                LocalLayerModifier.RemoveItem(avatarAddress, result.itemUsable.ItemId);
+                LocalLayerModifier.RemoveItem(avatarAddress, result.itemUsable.ItemId, result.itemUsable.RequiredBlockIndex, 1);
                 LocalLayerModifier.AddNewAttachmentMail(avatarAddress, result.id);
                 LocalLayerModifier.ResetCombinationSlot(slot);
 
@@ -436,7 +436,7 @@ namespace Nekoyume.BlockChain
                     LocalLayerModifier.AddItem(avatarAddress, pair.Key.ItemId, pair.Value);
                 }
 
-                LocalLayerModifier.RemoveItem(avatarAddress, itemUsable.ItemId);
+                LocalLayerModifier.RemoveItem(avatarAddress, itemUsable.ItemId, itemUsable.RequiredBlockIndex, 1);
                 LocalLayerModifier.AddNewAttachmentMail(avatarAddress, result.id);
                 LocalLayerModifier.ResetCombinationSlot(slot);
 
@@ -515,7 +515,7 @@ namespace Nekoyume.BlockChain
                     ? result.tradableFungibleItemCount
                     : 1;
                 var tradableItem = (ITradableItem) itemBase;
-                LocalLayerModifier.RemoveItem(avatarAddress, tradableItem.TradableId, count);
+                LocalLayerModifier.RemoveItem(avatarAddress, tradableItem.TradableId, tradableItem.RequiredBlockIndex, count);
                 LocalLayerModifier.AddNewAttachmentMail(avatarAddress, result.id);
                 var format = L10nManager.Localize("NOTIFICATION_SELL_CANCEL_COMPLETE");
                 OneLinePopup.Push(MailType.Auction, string.Format(format, itemBase.GetLocalizedName()));
@@ -545,7 +545,7 @@ namespace Nekoyume.BlockChain
                                 : 1;
                             var tradableItem = (ITradableItem) itemBase;
                             LocalLayerModifier.ModifyAgentGold(agentAddress, price);
-                            LocalLayerModifier.RemoveItem(currentAvatarAddress, tradableItem.TradableId, count);
+                            LocalLayerModifier.RemoveItem(currentAvatarAddress, tradableItem.TradableId, tradableItem.RequiredBlockIndex, count);
                             LocalLayerModifier.AddNewAttachmentMail(currentAvatarAddress, purchaseResult.id);
 
                             // Push notification
@@ -849,15 +849,18 @@ namespace Nekoyume.BlockChain
 
                 // NOTE: 사용한 자원에 대한 레이어 벗기기.
                 LocalLayerModifier.ModifyAgentGold(agentAddress, result.gold);
-                LocalLayerModifier.AddItem(avatarAddress, itemUsable.TradableId);
+                LocalLayerModifier.AddItem(avatarAddress, itemUsable.TradableId, itemUsable.RequiredBlockIndex, 1);
                 foreach (var tradableId in result.materialItemIdList)
                 {
-                    // NOTE: 최종적으로 UpdateCurrentAvatarState()를 호출한다면, 그곳에서 상태를 새로 설정할 것이다.
-                    LocalLayerModifier.AddItem(avatarAddress, tradableId);
+                    if (avatarState.inventory.TryGetNonFungibleItem(tradableId,
+                        out ItemUsable materialItem))
+                    {
+                        LocalLayerModifier.AddItem(avatarAddress, tradableId, materialItem.RequiredBlockIndex, 1);
+                    }
                 }
 
                 // NOTE: 메일 레이어 씌우기.
-                LocalLayerModifier.RemoveItem(avatarAddress, itemUsable.TradableId);
+                LocalLayerModifier.RemoveItem(avatarAddress, itemUsable.TradableId, itemUsable.RequiredBlockIndex, 1);
                 LocalLayerModifier.AddNewAttachmentMail(avatarAddress, result.id);
 
                 // NOTE: 워크샵 슬롯의 모든 휘발성 상태 변경자를 제거하기.
@@ -956,7 +959,22 @@ namespace Nekoyume.BlockChain
                     continue;
                 }
 
-                LocalLayerModifier.RemoveItem(avatarAddress, tradableId, rewardInfo.Quantity);
+                if (!rewardInfo.ItemId.TryGetFungibleId(
+                    Game.Game.instance.TableSheets.ItemSheet,
+                    out var fungibleId))
+                {
+                    continue;
+                }
+
+                avatarState.inventory.TryGetFungibleItems(fungibleId, out var items);
+                var item = items.FirstOrDefault(x => x.item is ITradableItem);
+                if (item != null && item is ITradableItem tradableItem)
+                {
+                    LocalLayerModifier.RemoveItem(avatarAddress,
+                                                  tradableId,
+                                                  tradableItem.RequiredBlockIndex,
+                                                  rewardInfo.Quantity);
+                }
             }
 
             LocalLayerModifier.AddNewAttachmentMail(avatarAddress, mail.id);

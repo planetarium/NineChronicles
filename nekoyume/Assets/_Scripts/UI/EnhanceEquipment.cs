@@ -255,36 +255,28 @@ namespace Nekoyume.UI
 
         private void ActionEnhanceEquipment()
         {
-            var baseEquipmentGuid =
-                ((Equipment) baseMaterial.Model.ItemBase.Value).ItemId;
-            var otherEquipmentGuId = ((Equipment) otherMaterial.Model.ItemBase.Value).ItemId;
-            var otherEquipmentGuidList = new List<Guid>()
-            {
-                otherEquipmentGuId
-            };
+            var baseItem = ((Equipment) baseMaterial.Model.ItemBase.Value);
+            var baseEquipmentGuid = baseItem.ItemId;
+            var otherItem = ((Equipment) otherMaterial.Model.ItemBase.Value);
+            var otherItemGuId = otherItem.ItemId;
 
-            UpdateCurrentAvatarState(baseEquipmentGuid, otherEquipmentGuidList);
+            UpdateCurrentAvatarState(baseItem, otherItem);
             CreateItemEnhancementAction(
                 baseEquipmentGuid,
-                otherEquipmentGuId,
+                otherItemGuId,
                 Find<Combination>().selectedIndex);
             RemoveMaterialsAll();
         }
 
-        private void UpdateCurrentAvatarState(
-            Guid baseItemGuid,
-            IEnumerable<Guid> otherItemGuidList)
+        private void UpdateCurrentAvatarState(Equipment baseItem, Equipment otherItem)
         {
             var agentAddress = States.Instance.AgentState.address;
             var avatarAddress = States.Instance.CurrentAvatarState.address;
 
             LocalLayerModifier.ModifyAgentGold(agentAddress, CostNCG * -1);
             LocalLayerModifier.ModifyAvatarActionPoint(avatarAddress, -CostAP);
-            LocalLayerModifier.RemoveItem(avatarAddress, baseItemGuid);
-            foreach (var itemGuid in otherItemGuidList)
-            {
-                LocalLayerModifier.RemoveItem(avatarAddress, itemGuid);
-            }
+            LocalLayerModifier.RemoveItem(avatarAddress, baseItem.TradableId, baseItem.RequiredBlockIndex, 1);
+            LocalLayerModifier.RemoveItem(avatarAddress, otherItem.TradableId, otherItem.RequiredBlockIndex, 1);
         }
 
         private void CreateItemEnhancementAction(
