@@ -14,11 +14,12 @@ using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using Serilog;
 using Material = Nekoyume.Model.Item.Material;
+using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("combination_consumable5")]
+    [ActionType("combination_consumable6")]
     public class CombinationConsumable : GameAction
     {
         [Serializable]
@@ -108,11 +109,17 @@ namespace Nekoyume.Action
                     slotIndex
                 )
             );
+            var inventoryAddress = AvatarAddress.Derive(LegacyInventoryKey);
+            var worldInformationAddress = AvatarAddress.Derive(LegacyWorldInformationKey);
+            var questListAddress = AvatarAddress.Derive(LegacyQuestListKey);
             if (ctx.Rehearsal)
             {
                 return states
                     .SetState(AvatarAddress, MarkChanged)
                     .SetState(ctx.Signer, MarkChanged)
+                    .SetState(inventoryAddress, MarkChanged)
+                    .SetState(worldInformationAddress, MarkChanged)
+                    .SetState(questListAddress, MarkChanged)
                     .SetState(slotAddress, MarkChanged);
             }
 
@@ -123,7 +130,7 @@ namespace Nekoyume.Action
             var started = DateTimeOffset.UtcNow;
             Log.Verbose("{AddressesHex}Combination exec started", addressesHex);
 
-            if (!states.TryGetAvatarState(ctx.Signer, AvatarAddress, out AvatarState avatarState))
+            if (!states.TryGetAvatarStateV2(ctx.Signer, AvatarAddress, out AvatarState avatarState))
             {
                 throw new FailedLoadStateException($"{addressesHex}Aborted as the avatar state of the signer was failed to load.");
             }
@@ -187,7 +194,7 @@ namespace Nekoyume.Action
             Log.Verbose("{AddressesHex}Combination Remove Materials: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();
 
-            var result = new CombinationConsumable.ResultModel
+            var result = new CombinationConsumable5.ResultModel
             {
                 materials = materials,
                 itemType = ItemType.Consumable,
@@ -241,7 +248,10 @@ namespace Nekoyume.Action
 
             avatarState.updatedAt = ctx.BlockIndex;
             avatarState.blockIndex = ctx.BlockIndex;
-            states = states.SetState(AvatarAddress, avatarState.Serialize());
+            states = states.SetState(AvatarAddress, avatarState.SerializeV2())
+                    .SetState(inventoryAddress, avatarState.inventory.Serialize())
+                    .SetState(worldInformationAddress, avatarState.worldInformation.Serialize())
+                    .SetState(questListAddress, avatarState.questList.Serialize());
             slotState.Update(result, ctx.BlockIndex, requiredBlockIndex);
             sw.Stop();
             Log.Verbose("{AddressesHex}Combination Set AvatarState: {Elapsed}", addressesHex, sw.Elapsed);
