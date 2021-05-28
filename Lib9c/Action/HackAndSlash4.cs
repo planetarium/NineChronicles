@@ -74,6 +74,12 @@ namespace Nekoyume.Action
             var started = DateTimeOffset.UtcNow;
             Log.Verbose("{AddressesHex}HAS exec started", addressesHex);
 
+            // Avoid InvalidBlockStateRootHashException
+            if (ctx.BlockIndex == 680341 && Id.Equals(new Guid("030b3528-f8b2-4375-8d58-0eccaa6f7fc9")))
+            {
+                return states;
+            }
+
             if (!states.TryGetAvatarState(ctx.Signer, avatarAddress, out AvatarState avatarState))
             {
                 throw new FailedLoadStateException($"{addressesHex}Aborted as the avatar state of the signer was failed to load.");
