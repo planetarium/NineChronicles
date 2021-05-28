@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.Globalization;
 using Libplanet.Assets;
 using TMPro;
-using UniRx;
 using UnityEngine;
 
 namespace Nekoyume.UI
 {
+    using UniRx;
+
     public class ItemCountAndPricePopup : ItemCountPopup<Model.ItemCountAndPricePopup>
     {
         [SerializeField]

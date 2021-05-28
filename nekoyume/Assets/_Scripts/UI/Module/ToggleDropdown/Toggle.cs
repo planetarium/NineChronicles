@@ -5,12 +5,12 @@ using System;
 namespace Nekoyume.UI.Module
 {
     [Serializable]
-    public class NCToggle : Toggle
+    public class Toggle : UnityEngine.UI.Toggle
     {
         public GameObject onObject;
         public GameObject offObject;
 
-        protected NCToggle()
+        protected Toggle()
         {
             onValueChanged.AddListener(UpdateObject);
         }

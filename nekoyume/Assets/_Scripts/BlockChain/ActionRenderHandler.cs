@@ -23,6 +23,8 @@ using UnityEngine;
 
 namespace Nekoyume.BlockChain
 {
+    using UniRx;
+
     /// <summary>
     /// 현상태 : 각 액션의 랜더 단계에서 즉시 게임 정보에 반영시킴. 아바타를 선택하지 않은 상태에서 이전에 성공시키지 못한 액션을 재수행하고
     ///       이를 핸들링하면, 즉시 게임 정보에 반영시길 수 없기 때문에 에러가 발생함.
@@ -491,7 +493,7 @@ namespace Nekoyume.BlockChain
                             items.First().item.GetLocalizedName());
                     }
 
-                    UI.Notification.Push(MailType.Auction, message);
+                    OneLinePopup.Push(MailType.Auction, message);
                 }
                 else
                 {
@@ -516,7 +518,7 @@ namespace Nekoyume.BlockChain
                 LocalLayerModifier.RemoveItem(avatarAddress, tradableItem.TradableId, count);
                 LocalLayerModifier.AddNewAttachmentMail(avatarAddress, result.id);
                 var format = L10nManager.Localize("NOTIFICATION_SELL_CANCEL_COMPLETE");
-                UI.Notification.Push(MailType.Auction, string.Format(format, itemBase.GetLocalizedName()));
+                OneLinePopup.Push(MailType.Auction, string.Format(format, itemBase.GetLocalizedName()));
                 UpdateCurrentAvatarState(eval);
             }
         }
@@ -548,7 +550,6 @@ namespace Nekoyume.BlockChain
 
                             // Push notification
                             var format = L10nManager.Localize("NOTIFICATION_BUY_BUYER_COMPLETE");
-
                             OneLinePopup.Push(MailType.Auction, string.Format(format, itemBase.GetLocalizedName(), price));
 
                             // Analytics

@@ -14,6 +14,8 @@ using Nekoyume.Model.State;
 
 namespace Nekoyume.Game.Character
 {
+    using UniRx;
+
     // todo: 경험치 정보를 `CharacterBase`로 옮기는 것이 좋겠음.
     public class Player : CharacterBase
     {

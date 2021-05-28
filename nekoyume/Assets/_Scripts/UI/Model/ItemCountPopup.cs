@@ -1,9 +1,10 @@
 using System;
 using Nekoyume.L10n;
-using UniRx;
 
 namespace Nekoyume.UI.Model
 {
+    using UniRx;
+
     public class ItemCountPopup<T> : IDisposable where T : ItemCountPopup<T>
     {
         private int _originalCount;

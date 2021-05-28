@@ -18,6 +18,8 @@ using Nekoyume.UI.Tween;
 
 namespace Nekoyume.UI.Scroller
 {
+    using UniRx;
+
     public class RecipeCellView : MonoBehaviour
     {
         protected static readonly Color DisabledColor = new Color(0.5f, 0.5f, 0.5f);

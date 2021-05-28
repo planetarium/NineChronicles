@@ -13,7 +13,6 @@ using Nekoyume.State;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using TMPro;
-using UniRx;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.UI;
@@ -21,6 +20,8 @@ using ShopItem = Nekoyume.UI.Model.ShopItem;
 
 namespace Nekoyume.UI
 {
+    using UniRx;
+
     public class ShopSell : Widget
     {
         private enum PriorityType
@@ -105,7 +106,7 @@ namespace Nekoyume.UI
             base.Show();
             shopItems.Show();
             inventory.SharedModel.State.Value = ItemType.Equipment;
-            inventory.SharedModel.DimmedFunc.Value = inventoryItem => !(inventoryItem.ItemBase.Value is ITradableItem);
+            inventory.SharedModel.AcitveFunc.Value = inventoryItem => (inventoryItem.ItemBase.Value is ITradableItem);
             AudioController.instance.PlayMusic(AudioController.MusicCode.Shop);
         }
 
@@ -429,7 +430,7 @@ namespace Nekoyume.UI
                 message = string.Format(L10nManager.Localize("NOTIFICATION_SELL_START"),
                     item.ItemBase.Value.GetLocalizedName());
             }
-            Notification.Push(MailType.Auction, message);
+            OneLinePopup.Push(MailType.Auction, message);
         }
 
         private void ResponseSellCancellation(ShopItem shopItem)
@@ -440,7 +441,7 @@ namespace Nekoyume.UI
 
             AudioController.instance.PlaySfx(AudioController.SfxCode.InputItem);
             var format = L10nManager.Localize("NOTIFICATION_SELL_CANCEL_START");
-            Notification.Push(MailType.Auction,
+            OneLinePopup.Push(MailType.Auction,
                 string.Format(format, shopItem.ItemBase.Value.GetLocalizedName()));
         }
 

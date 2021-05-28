@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Model.Item;
@@ -10,6 +10,8 @@ using UnityEngine;
 
 namespace Nekoyume.UI
 {
+    using UniRx;
+
     public class MonsterCollectionRewardsPopup : PopupWidget
     {
         private class Model

@@ -19,6 +19,8 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
+    using UniRx;
+
     public class EnhanceEquipment : EnhancementPanel<EnhancementMaterialView>
     {
         public Image arrowImage;

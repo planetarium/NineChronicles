@@ -7,11 +7,11 @@ using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.State;
 using Nekoyume.UI.Module;
-using UniRx;
-using UnityEngine;
 
 namespace Nekoyume.UI.Model
 {
+    using UniRx;
+
     public class ShopItems : IDisposable
     {
         public readonly ReactiveProperty<Dictionary<int, List<ShopItem>>> AgentProducts =

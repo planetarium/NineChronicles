@@ -18,6 +18,8 @@ using TentuPlay.Api;
 
 namespace Nekoyume.UI
 {
+    using UniRx;
+
     public class LoginDetail : Widget
     {
         public GameObject btnLogin;

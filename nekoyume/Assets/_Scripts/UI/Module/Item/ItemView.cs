@@ -14,6 +14,8 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
 {
+    using UniRx;
+
     public class ItemView<TViewModel> : VanillaItemView
         where TViewModel : Model.Item
     {
@@ -112,7 +114,6 @@ namespace Nekoyume.UI.Module
             }
 
             Model.Selected.SubscribeTo(selectionImage.gameObject).AddTo(_disposablesAtSetData);
-
             UpdateView();
         }
 
@@ -177,7 +178,6 @@ namespace Nekoyume.UI.Module
         {
             Model = null;
             _disposablesAtSetData.DisposeAllAndClear();
-
             UpdateView();
             base.Clear();
         }

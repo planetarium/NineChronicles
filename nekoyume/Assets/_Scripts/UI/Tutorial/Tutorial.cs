@@ -4,12 +4,13 @@ using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Controller;
-using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
+    using UniRx;
+
     public class Tutorial : Widget
     {
         public override WidgetType WidgetType => WidgetType.TutorialMask;

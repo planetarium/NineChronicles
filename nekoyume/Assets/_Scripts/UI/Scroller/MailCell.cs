@@ -3,13 +3,13 @@ using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using TMPro;
-using UniRx;
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI.Scroller
 {
+    using UniRx;
+
     public class MailCell : RectCell<Nekoyume.Model.Mail.Mail, MailScroll.ContextModel>
     {
         private static readonly Vector2 LeftBottom = new Vector2(-14f, -10.5f);

@@ -11,12 +11,13 @@ using Nekoyume.State;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Scroller;
 using TMPro;
-using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
+    using UniRx;
+
     public class Mail : XTweenWidget, IMail
     {
         public enum MailTabState : int
@@ -260,32 +261,14 @@ namespace Nekoyume.UI
             var attachment = (SellCancellation.Result) mail.attachment;
             var itemBase = ShopSell.GetItemBase(attachment);
             var tradableItem = (ITradableItem) itemBase;
-            var count = attachment.tradableFungibleItemCount > 0 ?
-                attachment.tradableFungibleItemCount : 1;
 
-            var popup = Find<ItemCountAndPricePopup>();
-            var model = new UI.Model.ItemCountAndPricePopup();
-            model.TitleText.Value = L10nManager.Localize("UI_RETRIEVE");
-            model.InfoText.Value = L10nManager.Localize("UI_SELL_CANCEL_INFO");
-            model.PriceInteractable.Value = false;
-            model.Price.Value = attachment.shopItem.Price;
-            model.CountEnabled.Value = false;
-            model.Item.Value = new CountEditableItem(itemBase, count, count, count);
-
-            model.OnClickSubmit.Subscribe(_ =>
-            {
-                LocalLayerModifier.AddItem(avatarAddress, tradableItem.TradableId);
-                LocalLayerModifier.RemoveNewAttachmentMail(avatarAddress, mail.id, true);
-                popup.Close();
-            }).AddTo(gameObject);
-            model.OnClickCancel.Subscribe(_ =>
-            {
-                //TODO 재판매 처리추가되야함\
-                LocalLayerModifier.AddItem(avatarAddress, tradableItem.TradableId);
-                LocalLayerModifier.RemoveNewAttachmentMail(avatarAddress, mail.id, true);
-                popup.Close();
-            }).AddTo(gameObject);
-            popup.Pop(model);
+            Find<OneButtonPopup>().Show(L10nManager.Localize("UI_SELL_CANCEL_INFO"),
+                L10nManager.Localize("UI_YES"),
+                () =>
+                {
+                    LocalLayerModifier.AddItem(avatarAddress, tradableItem.TradableId);
+                    LocalLayerModifier.RemoveNewAttachmentMail(avatarAddress, mail.id, true);
+                });
         }
 
         public void Read(BuyerMail buyerMail)

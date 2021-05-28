@@ -5,7 +5,6 @@ using Nekoyume.Game.VFX;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
-using Nekoyume.Model.Quest;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using TMPro;
@@ -16,6 +15,8 @@ using QuestModel = Nekoyume.Model.Quest.Quest;
 
 namespace Nekoyume.UI.Scroller
 {
+    using UniRx;
+
     public class QuestCell : RectCell<QuestModel, QuestScroll.ContextModel>
     {
         [SerializeField]

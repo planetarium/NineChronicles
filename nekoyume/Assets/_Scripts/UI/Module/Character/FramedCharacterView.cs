@@ -5,12 +5,13 @@ using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
-using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
 {
+    using UniRx;
+
     public class FramedCharacterView : VanillaCharacterView
     {
         [SerializeField]

@@ -7,12 +7,12 @@ using Nekoyume.Battle;
 using Nekoyume.Model.Elemental;
 using Nekoyume.Model.Item;
 using Nekoyume.UI.Module;
-using UniRx;
-using UnityEngine;
 using Material = Nekoyume.Model.Item.Material;
 
 namespace Nekoyume.UI.Model
 {
+    using UniRx;
+
     public class Inventory : IDisposable
     {
         public readonly ReactiveProperty<ItemType> State =
@@ -42,6 +42,9 @@ namespace Nekoyume.UI.Model
         public readonly ReactiveProperty<Func<InventoryItem, bool>> EquippedEnabledFunc =
             new ReactiveProperty<Func<InventoryItem, bool>>();
 
+        public readonly ReactiveProperty<Func<InventoryItem, bool>> AcitveFunc =
+            new ReactiveProperty<Func<InventoryItem, bool>>();
+
         private ItemSubType[] _itemSubTypesForNotification =
         {
             ItemSubType.Weapon,
@@ -60,6 +63,7 @@ namespace Nekoyume.UI.Model
             DimmedFunc.Subscribe(SubscribeDimmedFunc);
             EffectEnabledFunc.Subscribe(SubscribeEffectEnabledFunc);
             EquippedEnabledFunc.Subscribe(SubscribeEquippedEnabledFunc);
+            AcitveFunc.Subscribe(SubscribeAcitveFunc);
         }
 
         public void Dispose()
@@ -558,6 +562,30 @@ namespace Nekoyume.UI.Model
             }
         }
 
+        private void SubscribeAcitveFunc(Func<InventoryItem, bool> func)
+        {
+            AcitveFunc.Value ??= DefaultAcitveFunc;
+
+            foreach (var item in Consumables)
+            {
+                item.ActiveSelf.Value = AcitveFunc.Value(item);
+            }
+
+            foreach (var item in Costumes)
+            {
+                item.ActiveSelf.Value = AcitveFunc.Value(item);
+            }
+
+            foreach (var item in Equipments)
+            {
+                item.ActiveSelf.Value = AcitveFunc.Value(item);
+            }
+
+            foreach (var item in Materials)
+            {
+                item.ActiveSelf.Value = AcitveFunc.Value(item);
+            }
+        }
         #endregion
 
         public void UpdateEquipmentNotification(List<ElementalType> elementalTypes = null)
@@ -643,6 +671,11 @@ namespace Nekoyume.UI.Model
                 default:
                     return false;
             }
+        }
+
+        private static bool DefaultAcitveFunc(InventoryItem inventoryItem)
+        {
+            return false;
         }
 
         private void SetGlowedAll(bool value)
