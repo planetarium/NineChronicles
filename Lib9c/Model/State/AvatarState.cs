@@ -339,7 +339,7 @@ namespace Nekoyume.Model.State
             UpdateCompletedQuest();
         }
 
-        public void UpdateFromRapidCombination(CombinationConsumable.ResultModel result,
+        public void UpdateFromRapidCombination(CombinationConsumable5.ResultModel result,
             long requiredIndex)
         {
             var mail = mailBox.First(m => m.id == result.id);

@@ -89,7 +89,7 @@ namespace Lib9c.Tests.Action
                 requiredBlockIndex);
             avatarState.inventory.AddItem(equipment);
 
-            var result = new CombinationConsumable.ResultModel
+            var result = new CombinationConsumable5.ResultModel
             {
                 actionPoint = 0,
                 gold = 0,
@@ -181,7 +181,7 @@ namespace Lib9c.Tests.Action
                 Guid.NewGuid(),
                 100);
 
-            var result = new CombinationConsumable.ResultModel
+            var result = new CombinationConsumable5.ResultModel
             {
                 actionPoint = 0,
                 gold = 0,
@@ -237,7 +237,7 @@ namespace Lib9c.Tests.Action
                 Guid.NewGuid(),
                 itemRequiredBlockIndex);
 
-            var result = new CombinationConsumable.ResultModel
+            var result = new CombinationConsumable5.ResultModel
             {
                 actionPoint = 0,
                 gold = 0,
@@ -309,7 +309,7 @@ namespace Lib9c.Tests.Action
                 requiredBlockIndex);
             avatarState.inventory.AddItem(equipment);
 
-            var result = new CombinationConsumable.ResultModel
+            var result = new CombinationConsumable5.ResultModel
             {
                 actionPoint = 0,
                 gold = 0,
@@ -362,7 +362,7 @@ namespace Lib9c.Tests.Action
             var material2 = ItemFactory.CreateMaterial(row2);
 
             var itemUsable = ItemFactory.CreateItemUsable(_tableSheets.EquipmentItemSheet.Values.First(), default, 0);
-            var r = new CombinationConsumable.ResultModel
+            var r = new CombinationConsumable5.ResultModel
             {
                 id = default,
                 gold = 0,
@@ -385,7 +385,7 @@ namespace Lib9c.Tests.Action
                 },
             };
 
-            var r2 = new CombinationConsumable.ResultModel
+            var r2 = new CombinationConsumable5.ResultModel
             {
                 id = default,
                 gold = 0,

@@ -83,7 +83,7 @@ namespace Nekoyume.Action
 
             slotState.Update(context.BlockIndex, hourGlass, count);
             avatarState.UpdateFromRapidCombination(
-                (CombinationConsumable.ResultModel) slotState.Result,
+                (CombinationConsumable5.ResultModel) slotState.Result,
                 context.BlockIndex
             );
             return states

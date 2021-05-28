@@ -211,7 +211,7 @@ namespace Nekoyume.Action
                 );
             }
 
-            var result = new CombinationConsumable.ResultModel
+            var result = new CombinationConsumable5.ResultModel
             {
                 actionPoint = requiredActionPoint,
                 gold = requiredGold,

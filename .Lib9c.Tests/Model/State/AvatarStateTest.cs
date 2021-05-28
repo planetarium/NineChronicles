@@ -309,7 +309,7 @@ namespace Lib9c.Tests.Model.State
             Address avatarAddress = new PrivateKey().ToAddress();
             Address agentAddress = new PrivateKey().ToAddress();
             var avatarState = GetNewAvatarState(avatarAddress, agentAddress);
-            var result = new CombinationConsumable.ResultModel()
+            var result = new CombinationConsumable5.ResultModel()
             {
                 id = default,
                 gold = 0,
@@ -334,7 +334,7 @@ namespace Lib9c.Tests.Model.State
             Address avatarAddress = new PrivateKey().ToAddress();
             Address agentAddress = new PrivateKey().ToAddress();
             var avatarState = GetNewAvatarState(avatarAddress, agentAddress);
-            var result = new CombinationConsumable.ResultModel()
+            var result = new CombinationConsumable5.ResultModel()
             {
                 id = default,
                 gold = 0,
@@ -359,7 +359,7 @@ namespace Lib9c.Tests.Model.State
         [Fact]
         public void CleanUpMail()
         {
-            var result = new CombinationConsumable.ResultModel()
+            var result = new CombinationConsumable5.ResultModel()
             {
                 id = default,
                 gold = 0,

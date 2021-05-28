@@ -150,7 +150,7 @@ namespace Lib9c.Tests.Action
 
             var mailEquipmentRow = _tableSheets.EquipmentItemSheet.Values.First();
             var mailEquipment = ItemFactory.CreateItemUsable(mailEquipmentRow, default, 0);
-            var result = new CombinationConsumable.ResultModel
+            var result = new CombinationConsumable5.ResultModel
             {
                 id = default,
                 gold = 0,

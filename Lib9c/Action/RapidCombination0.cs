@@ -18,7 +18,7 @@ namespace Nekoyume.Action
     public class RapidCombination0 : GameAction
     {
         [Serializable]
-        public class ResultModel : CombinationConsumable.ResultModel
+        public class ResultModel : CombinationConsumable5.ResultModel
         {
             public Dictionary<Material, int> cost;
 
@@ -109,7 +109,7 @@ namespace Nekoyume.Action
 
             slotState.Update(context.BlockIndex, hourGlass, count);
             avatarState.UpdateFromRapidCombination(
-                (CombinationConsumable.ResultModel) slotState.Result,
+                (CombinationConsumable5.ResultModel) slotState.Result,
                 context.BlockIndex
             );
             return states
