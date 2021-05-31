@@ -17,7 +17,7 @@ namespace Nekoyume.Action
 {
     [Serializable]
     [ActionType("mimisbrunnr_battle")]
-    public class MimisbrunnrBattle3 : GameAction
+    public class MimisbrunnrBattle0 : GameAction
     {
         public List<Guid> costumes;
         public List<Guid> equipments;
