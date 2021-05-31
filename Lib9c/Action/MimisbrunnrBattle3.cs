@@ -12,13 +12,12 @@ using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using Serilog;
-using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("mimisbrunnr_battle4")]
-    public class MimisbrunnrBattle : GameAction
+    [ActionType("mimisbrunnr_battle3")]
+    public class MimisbrunnrBattle3 : GameAction
     {
         public List<Guid> costumes;
         public List<Guid> equipments;
@@ -61,17 +60,10 @@ namespace Nekoyume.Action
         {
             IActionContext ctx = context;
             var states = ctx.PreviousStates;
-            var inventoryAddress = avatarAddress.Derive(LegacyInventoryKey);
-            var worldInformationAddress = avatarAddress.Derive(LegacyWorldInformationKey);
-            var questListAddress = avatarAddress.Derive(LegacyQuestListKey);
             if (ctx.Rehearsal)
             {
                 states = states.SetState(RankingMapAddress, MarkChanged);
-                states = states
-                    .SetState(avatarAddress, MarkChanged)
-                    .SetState(inventoryAddress, MarkChanged)
-                    .SetState(worldInformationAddress, MarkChanged)
-                    .SetState(questListAddress, MarkChanged);
+                states = states.SetState(avatarAddress, MarkChanged);
                 return states.SetState(WeeklyArenaAddress, MarkChanged);
             }
 
@@ -82,7 +74,7 @@ namespace Nekoyume.Action
             var started = DateTimeOffset.UtcNow;
             Log.Verbose("{AddressesHex}Mimisbrunnr exec started", addressesHex);
 
-            if (!states.TryGetAvatarStateV2(ctx.Signer, avatarAddress, out AvatarState avatarState))
+            if (!states.TryGetAvatarState(ctx.Signer, avatarAddress, out AvatarState avatarState))
             {
                 throw new FailedLoadStateException("Aborted as the avatar state of the signer was failed to load.");
             }
@@ -259,11 +251,7 @@ namespace Nekoyume.Action
 
             avatarState.updatedAt = ctx.BlockIndex;
             avatarState.mailBox.CleanUpV2();
-            states = states
-                .SetState(inventoryAddress, avatarState.inventory.Serialize())
-                .SetState(worldInformationAddress, avatarState.worldInformation.Serialize())
-                .SetState(questListAddress, avatarState.questList.Serialize())
-                .SetState(avatarAddress, avatarState.SerializeV2());
+            states = states.SetState(avatarAddress, avatarState.Serialize());
 
             sw.Stop();
             Log.Verbose("{AddressesHex}Mimisbrunnr Set AvatarState: {Elapsed}", addressesHex, sw.Elapsed);
