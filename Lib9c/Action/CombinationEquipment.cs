@@ -162,7 +162,7 @@ namespace Nekoyume.Action
                     materials[subMaterial] = materialInfo.Count;
                 }
 
-                optionIds = SelectOption(states.GetSheet<EquipmentItemOptionSheet>(), states.GetSheet<SkillSheet>(),
+                optionIds = CombinationEquipment4.SelectOption(states.GetSheet<EquipmentItemOptionSheet>(), states.GetSheet<SkillSheet>(),
                     subRecipe, ctx.Random, equipment);
                 equipment.Update(requiredBlockIndex);
             }
@@ -267,66 +267,6 @@ namespace Nekoyume.Action
             {
                 return null;
             }
-        }
-
-        public static HashSet<int> SelectOption(
-            EquipmentItemOptionSheet optionSheet,
-            SkillSheet skillSheet,
-            EquipmentItemSubRecipeSheet.Row subRecipe,
-            IRandom random,
-            Equipment equipment
-        )
-        {
-            var optionSelector = new WeightedSelector<EquipmentItemOptionSheet.Row>(random);
-            var optionIds = new HashSet<int>();
-
-            // Skip sort subRecipe.Options because it had been already sorted in WeightedSelector.Select();
-            foreach (var optionInfo in subRecipe.Options)
-            {
-                if (!optionSheet.TryGetValue(optionInfo.Id, out var optionRow))
-                {
-                    continue;
-                }
-
-                optionSelector.Add(optionRow, optionInfo.Ratio);
-            }
-
-            IEnumerable<EquipmentItemOptionSheet.Row> optionRows =
-                new EquipmentItemOptionSheet.Row[0];
-            try
-            {
-                optionRows = optionSelector.SelectV3(subRecipe.MaxOptionLimit);
-            }
-            catch (Exception e) when (
-                e is InvalidCountException ||
-                e is ListEmptyException
-            )
-            {
-                return optionIds;
-            }
-            finally
-            {
-                foreach (var optionRow in optionRows.OrderBy(r => r.Id))
-                {
-                    if (optionRow.StatType != StatType.NONE)
-                    {
-                        var statMap = GetStat(optionRow, random);
-                        equipment.StatsMap.AddStatAdditionalValue(statMap.StatType, statMap.Value);
-                    }
-                    else
-                    {
-                        var skill = GetSkill(optionRow, skillSheet, random);
-                        if (!(skill is null))
-                        {
-                            equipment.Skills.Add(skill);
-                        }
-                    }
-
-                    optionIds.Add(optionRow.Id);
-                }
-            }
-
-            return optionIds;
         }
     }
 }
