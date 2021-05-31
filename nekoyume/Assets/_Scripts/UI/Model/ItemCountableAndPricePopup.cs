@@ -11,7 +11,7 @@ namespace Nekoyume.UI.Model
         public readonly ReactiveProperty<int> Count = new ReactiveProperty<int>(1);
 
         public readonly Subject<int> OnChangeCount = new Subject<int>();
-        public readonly Subject<int> OnChangePrice = new Subject<int>();
+        public readonly Subject<decimal> OnChangePrice = new Subject<decimal>();
 
         public ItemCountableAndPricePopup()
         {

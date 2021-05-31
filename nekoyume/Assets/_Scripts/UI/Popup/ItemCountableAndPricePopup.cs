@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
+using Libplanet.Assets;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -17,10 +19,13 @@ namespace Nekoyume.UI
         [SerializeField] private Button addCountButton = null;
         [SerializeField] private Button addMaximumCountButton = null;
         [SerializeField] private Button removeCountButton = null;
-
+        [SerializeField] private Button resetPriceButton = null;
         [SerializeField] private List<Button> addPriceButton = null;
 
         [SerializeField] private TextMeshProUGUI totalPrice;
+
+        [SerializeField] private GameObject positiveMessage;
+        [SerializeField] private GameObject warningMessage;
 
         private readonly List<IDisposable> _disposablesForAwake = new List<IDisposable>();
         private readonly List<IDisposable> _disposablesForSetData = new List<IDisposable>();
@@ -32,30 +37,11 @@ namespace Nekoyume.UI
         protected override void Awake()
         {
             base.Awake();
-
-            // price
-            priceInputField.onValueChanged.AsObservable().Subscribe(_ =>
-            {
-                var price = InputFieldValueToField(priceInputField);
-                _data.OnChangePrice.OnNext(price);
-            }).AddTo(_disposablesForAwake);
-
-            for (int i = 0; i < addPriceButton.Count; i++)
-            {
-                int digit = i;
-                addPriceButton[i].OnClickAsObservable().Subscribe(_ =>
-                {
-                    var price = InputFieldValueToField(priceInputField) +
-                                (int) Mathf.Pow(DefaultPrice, digit + 1);
-                    _data.OnChangePrice.OnNext(price);
-                }).AddTo(_disposablesForAwake);
-            }
-
             // count
             countInputField.onValueChanged.AsObservable().Subscribe(_ =>
             {
                 var maxCount = _data.Item.Value.MaxCount.Value;
-                var count = InputFieldValueToField(countInputField);
+                var count = InputFieldValueToValue<int>(countInputField);
                 var result = Mathf.Clamp(count, 1, maxCount);
                 countInputField.text = result.ToString();
                 _data.OnChangeCount.OnNext(result);
@@ -64,7 +50,7 @@ namespace Nekoyume.UI
             addCountButton.OnClickAsObservable().Subscribe(_ =>
             {
                 var maxCount = _data.Item.Value.MaxCount.Value;
-                var count = InputFieldValueToField(countInputField) + 1;
+                var count = InputFieldValueToValue<int>(countInputField) + 1;
                 _data.OnChangeCount.OnNext(Math.Min(count, maxCount));
             }).AddTo(_disposablesForAwake);
 
@@ -76,9 +62,37 @@ namespace Nekoyume.UI
 
             removeCountButton.OnClickAsObservable().Subscribe(_ =>
             {
-                var count = InputFieldValueToField(countInputField) - 1;
+                var count = InputFieldValueToValue<int>(countInputField) - 1;
                 _data.OnChangeCount.OnNext(Math.Max(count, 1));
             }).AddTo(_disposablesForAwake);
+
+            // price
+            priceInputField.onValueChanged.AsObservable().Subscribe(_ =>
+            {
+                if (priceInputField.text.Length > 0 &&
+                    priceInputField.text.Length == priceInputField.caretPosition &&
+                    priceInputField.text[priceInputField.caretPosition - 1].Equals('.'))
+                {
+                    return;
+                }
+
+                var price = InputFieldValueToValue<decimal>(priceInputField);
+                _data.OnChangePrice.OnNext(price);
+            }).AddTo(_disposablesForAwake);
+
+            resetPriceButton.OnClickAsObservable()
+                .Subscribe(_ => _data.OnChangePrice.OnNext(Model.Shop.MinimumPrice));
+
+            for (int i = 0; i < addPriceButton.Count; i++)
+            {
+                int digit = i;
+                addPriceButton[i].OnClickAsObservable().Subscribe(_ =>
+                {
+                    var price = InputFieldValueToValue<int>(priceInputField) +
+                                (int) Mathf.Pow(DefaultPrice, digit + 1);
+                    _data.OnChangePrice.OnNext(price);
+                }).AddTo(_disposablesForAwake);
+            }
         }
 
         protected override void OnDestroy()
@@ -103,23 +117,51 @@ namespace Nekoyume.UI
             base.SetData(data);
 
             _data.Count.Value = 1;
-            _data.Price.Subscribe(value => priceInputField.text = value.GetQuantityString())
-                .AddTo(_disposablesForSetData);
+            _data.Price.Value = new FungibleAssetValue(_data.Price.Value.Currency,
+                Model.Shop.MinimumPrice, 0);
+            _data.TotalPrice.Value = new FungibleAssetValue(_data.TotalPrice.Value.Currency,
+                Model.Shop.MinimumPrice, 0);
 
             _data.Count.Subscribe(value => countInputField.text = value.ToString())
+                .AddTo(_disposablesForSetData);
+
+            _data.Price.Subscribe(value =>
+                {
+                    if (value.MinorUnit == 0 && priceInputField.text.Contains(".0"))
+                    {
+                        priceInputField.text = $"{value.MajorUnit}.{value.MinorUnit}";
+                    }
+                    else
+                    {
+                        priceInputField.text = value.GetQuantityString();
+                    }
+                })
                 .AddTo(_disposablesForSetData);
 
             _data.TotalPrice.Subscribe(value =>
                 {
                     totalPrice.text = value.GetQuantityString();
-                    var price = Convert.ToInt32(_data.Price.Value.GetQuantityString());
-                    var count = _data.Count.Value;
-                    submitButton.SetSubmittable(!(price < Model.Shop.MinimumPrice || count < 0));
+                    var isValid = IsValid();
+                    submitButton.SetSubmittable(isValid);
+                    positiveMessage.SetActive(isValid);
+                    warningMessage.SetActive(!isValid);
                 })
                 .AddTo(_disposablesForSetData);
 
             priceInputField.Select();
             countInputField.Select();
+        }
+
+        private bool IsValid()
+        {
+            var price = Convert.ToDecimal(_data.TotalPrice.Value.GetQuantityString());
+            if (price - (int) price > 0)
+            {
+                return false;
+            }
+
+            var count = _data.Count.Value;
+            return !(price < Model.Shop.MinimumPrice || count < 0);
         }
 
         protected override void Clear()
@@ -128,15 +170,31 @@ namespace Nekoyume.UI
             base.Clear();
         }
 
-        private int InputFieldValueToField(TMP_InputField inputField)
+        private T InputFieldValueToValue<T>(TMP_InputField inputField)
         {
-            if (!int.TryParse(inputField.text, NumberStyles.Number, CultureInfo.CurrentCulture,
-                out var price))
+            var result = 0;
+
+            if (typeof(T) == typeof(decimal))
             {
-                price = 0;
+                if (!decimal.TryParse(inputField.text, NumberStyles.AllowDecimalPoint, CultureInfo.CurrentCulture,
+                    out var price))
+                {
+                    price = 0;
+                }
+                return (T)Convert.ChangeType(price, typeof(T));
             }
 
-            return price;
+            if (typeof(T) == typeof(int))
+            {
+                if (!int.TryParse(inputField.text, NumberStyles.Number, CultureInfo.CurrentCulture,
+                    out var price))
+                {
+                    price = 0;
+                }
+                return (T)Convert.ChangeType(price, typeof(T));
+            }
+
+            return (T)Convert.ChangeType(result, typeof(T));
         }
     }
 }
