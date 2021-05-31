@@ -18,7 +18,7 @@ namespace Nekoyume.Action
 {
     [Serializable]
     [ActionType("item_enhancement")]
-    public class ItemEnhancement6 : GameAction
+    public class ItemEnhancement0 : GameAction
     {
         public const int RequiredBlockCount = 1;
 

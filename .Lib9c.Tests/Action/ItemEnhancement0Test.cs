@@ -15,7 +15,7 @@ namespace Lib9c.Tests.Action
     using Nekoyume.Model.State;
     using Xunit;
 
-    public class ItemEnhancement6Test
+    public class ItemEnhancement0Test
     {
         private readonly IRandom _random;
         private readonly Dictionary<string, string> _sheets;
@@ -27,7 +27,7 @@ namespace Lib9c.Tests.Action
         private readonly Currency _currency;
         private IAccountStateDelta _initialState;
 
-        public ItemEnhancement6Test()
+        public ItemEnhancement0Test()
         {
             _sheets = TableSheetsImporter.ImportSheets();
             _random = new TestRandom();
@@ -92,7 +92,7 @@ namespace Lib9c.Tests.Action
 
             _initialState = _initialState.SetState(_avatarAddress, _avatarState.Serialize());
 
-            var action = new ItemEnhancement6()
+            var action = new ItemEnhancement0()
             {
                 itemId = default,
                 materialIds = new[] { materialId },
@@ -122,7 +122,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void ExecuteThrowFailedLoadStateException()
         {
-            var action = new ItemEnhancement6()
+            var action = new ItemEnhancement0()
             {
                 itemId = default,
                 materialIds = default,
@@ -142,7 +142,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void ExecuteThrowItemDoesNotExistException()
         {
-            var action = new ItemEnhancement6()
+            var action = new ItemEnhancement0()
             {
                 itemId = default,
                 materialIds = default,
@@ -169,7 +169,7 @@ namespace Lib9c.Tests.Action
 
             _initialState = _initialState.SetState(_avatarAddress, _avatarState.Serialize());
 
-            var action = new ItemEnhancement6()
+            var action = new ItemEnhancement0()
             {
                 itemId = equipment.ItemId,
                 materialIds = default,
@@ -196,7 +196,7 @@ namespace Lib9c.Tests.Action
 
             _initialState = _initialState.SetState(_avatarAddress, _avatarState.Serialize());
 
-            var action = new ItemEnhancement6()
+            var action = new ItemEnhancement0()
             {
                 itemId = consumable.ItemId,
                 materialIds = default,
@@ -225,7 +225,7 @@ namespace Lib9c.Tests.Action
                 .SetState(_avatarAddress, _avatarState.Serialize())
                 .SetState(_slotAddress, new CombinationSlotState(_slotAddress, 100).Serialize());
 
-            var action = new ItemEnhancement6()
+            var action = new ItemEnhancement0()
             {
                 itemId = equipment.ItemId,
                 materialIds = default,
@@ -257,7 +257,7 @@ namespace Lib9c.Tests.Action
 
             _initialState = _initialState.SetState(_avatarAddress, _avatarState.Serialize());
 
-            var action = new ItemEnhancement6()
+            var action = new ItemEnhancement0()
             {
                 itemId = equipment.ItemId,
                 materialIds = new[] { materialId },
@@ -287,7 +287,7 @@ namespace Lib9c.Tests.Action
 
             _initialState = _initialState.SetState(_avatarAddress, _avatarState.Serialize());
 
-            var action = new ItemEnhancement6()
+            var action = new ItemEnhancement0()
             {
                 itemId = equipment.ItemId,
                 materialIds = new[] { materialId },
@@ -319,7 +319,7 @@ namespace Lib9c.Tests.Action
 
             _initialState = _initialState.SetState(_avatarAddress, _avatarState.Serialize());
 
-            var action = new ItemEnhancement6()
+            var action = new ItemEnhancement0()
             {
                 itemId = equipment.ItemId,
                 materialIds = new[] { materialId, materialId },
@@ -403,7 +403,7 @@ namespace Lib9c.Tests.Action
 
             _initialState = _initialState.SetState(_avatarAddress, _avatarState.Serialize());
 
-            var action = new ItemEnhancement6()
+            var action = new ItemEnhancement0()
             {
                 itemId = equipment.ItemId,
                 materialIds = new[] { materialId, materialId },
@@ -426,7 +426,7 @@ namespace Lib9c.Tests.Action
             var guid1 = new Guid("F9168C5E-CEB2-4faa-B6BF-329BF39FA1E4");
             var guid2 = new Guid("936DA01F-9ABD-4d9d-80C7-02AF85C822A8");
 
-            var action = new ItemEnhancement6()
+            var action = new ItemEnhancement0()
             {
                 itemId = default,
                 materialIds = new[] { guid1, guid2 },
@@ -434,7 +434,7 @@ namespace Lib9c.Tests.Action
                 slotIndex = 0,
             };
 
-            var action2 = new ItemEnhancement6();
+            var action2 = new ItemEnhancement0();
             action2.LoadPlainValue(action.PlainValue);
             action2.materialIds = new[] { guid2, guid1 };
 
@@ -478,7 +478,7 @@ namespace Lib9c.Tests.Action
             var slotAddress =
                 avatarAddress.Derive(string.Format(CultureInfo.InvariantCulture, CombinationSlotState.DeriveFormat, 0));
 
-            var action = new ItemEnhancement6()
+            var action = new ItemEnhancement0()
             {
                 itemId = default,
                 materialIds = new[] { Guid.NewGuid() },
