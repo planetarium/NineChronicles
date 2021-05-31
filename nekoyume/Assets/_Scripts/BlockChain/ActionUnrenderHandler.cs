@@ -282,8 +282,10 @@ namespace Nekoyume.BlockChain
             LocalLayerModifier.RemoveItem(avatarAddress, itemUsable.ItemId, itemUsable.RequiredBlockIndex, 1);
             foreach (var itemId in result.materialItemIdList)
             {
-                avatarState.inventory.TryGetNonFungibleItem(itemId, out ItemUsable materialItem);
-                LocalLayerModifier.RemoveItem(avatarAddress, itemId, materialItem.RequiredBlockIndex, 1);
+                if (avatarState.inventory.TryGetNonFungibleItem(itemId, out ItemUsable materialItem))
+                {
+                    LocalLayerModifier.RemoveItem(avatarAddress, itemId, materialItem.RequiredBlockIndex, 1);
+                }
             }
 
             // NOTE: 메일 레이어 다시 없애기.

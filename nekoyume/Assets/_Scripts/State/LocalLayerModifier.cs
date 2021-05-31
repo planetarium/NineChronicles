@@ -695,10 +695,6 @@ namespace Nekoyume.State
             var enhancementRow = Game.Game.instance.TableSheets
                 .EnhancementCostSheet.Values
                 .FirstOrDefault(x => x.Grade == equipment.Grade && x.Level == equipment.level);
-            // if (enhancementRow is null)
-            // {
-            //     return;
-            // }
 
             var result = new ItemEnhancement.ResultModel
             {

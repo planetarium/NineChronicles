@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Nekoyume.Model.State;
 
 namespace Nekoyume.State.Modifiers
@@ -10,25 +9,29 @@ namespace Nekoyume.State.Modifiers
     {
         private class InnerModel
         {
-            public Guid Guid { get; }
             public long RequiredBlockIndex { get; }
             public int Count { get; set; }
 
-            public InnerModel(Guid guid, long requiredBlockIndex, int count)
+            public InnerModel(long requiredBlockIndex, int count)
             {
-                Guid = guid;
                 RequiredBlockIndex = requiredBlockIndex;
                 Count = count;
             }
+
+            public InnerModel(InnerModel model)
+            {
+                RequiredBlockIndex = model.RequiredBlockIndex;
+                Count = model.Count;
+            }
         }
 
-        private List<InnerModel> _items = new List<InnerModel>();
+        private Dictionary<Guid, InnerModel> _items = new Dictionary<Guid, InnerModel>();
 
         public override bool IsEmpty => _items.Count == 0;
 
         public AvatarInventoryTradableItemRemover(Guid tradableId, long requiredBlockIndex, int count)
         {
-            _items.Add(new InnerModel(tradableId, requiredBlockIndex, count));
+            _items.Add(tradableId, new InnerModel(requiredBlockIndex, count));
         }
 
         public override void Add(IAccumulatableStateModifier<AvatarState> modifier)
@@ -40,14 +43,13 @@ namespace Nekoyume.State.Modifiers
 
             foreach (var item in m._items)
             {
-                var model = _items.FirstOrDefault(x => x.Guid == item.Guid);
-                if (model == null)
+                if (_items.ContainsKey(item.Key))
                 {
-                    _items.Add(item);
+                    _items[item.Key].Count += item.Value.Count;
                 }
                 else
                 {
-                    model.Count += item.Count;
+                    _items.Add(item.Key, new InnerModel(item.Value));
                 }
             }
         }
@@ -61,13 +63,12 @@ namespace Nekoyume.State.Modifiers
 
             foreach (var item in m._items)
             {
-                var model = _items.FirstOrDefault(x => x.Guid == item.Guid);
-                if (model != null)
+                if (_items.ContainsKey(item.Key))
                 {
-                    model.Count -= item.Count;
-                    if (model.Count <= 0)
+                    _items[item.Key].Count -= item.Value.Count;
+                    if (_items[item.Key].Count <= 0)
                     {
-                        _items.Remove(model);
+                        _items.Remove(item.Key);
                     }
                 }
             }
@@ -82,7 +83,7 @@ namespace Nekoyume.State.Modifiers
 
             foreach (var item in _items)
             {
-                state.inventory.RemoveTradableItem(item.Guid, item.RequiredBlockIndex, item.Count);
+                state.inventory.RemoveTradableItem(item.Key, item.Value.RequiredBlockIndex, item.Value.Count);
             }
 
             return state;
