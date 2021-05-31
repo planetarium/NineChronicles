@@ -9,13 +9,12 @@ using Libplanet.Action;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
-using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("rapid_combination4")]
-    public class RapidCombination : GameAction
+    [ActionType("rapid_combination3")]
+    public class RapidCombination3 : GameAction
     {
         public Address avatarAddress;
         public int slotIndex;
@@ -30,22 +29,16 @@ namespace Nekoyume.Action
                     slotIndex
                 )
             );
-            var inventoryAddress = avatarAddress.Derive(LegacyInventoryKey);
-            var worldInformationAddress = avatarAddress.Derive(LegacyWorldInformationKey);
-            var questListAddress = avatarAddress.Derive(LegacyQuestListKey);
             if (context.Rehearsal)
             {
                 return states
                     .SetState(avatarAddress, MarkChanged)
-                    .SetState(inventoryAddress, MarkChanged)
-                    .SetState(worldInformationAddress, MarkChanged)
-                    .SetState(questListAddress, MarkChanged)
                     .SetState(slotAddress, MarkChanged);
             }
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
 
-            if (!states.TryGetAgentAvatarStatesV2(
+            if (!states.TryGetAgentAvatarStates(
                 context.Signer,
                 avatarAddress,
                 out var agentState,
@@ -94,10 +87,7 @@ namespace Nekoyume.Action
                 context.BlockIndex
             );
             return states
-                .SetState(avatarAddress, avatarState.SerializeV2())
-                .SetState(inventoryAddress, avatarState.inventory.Serialize())
-                .SetState(worldInformationAddress, avatarState.worldInformation.Serialize())
-                .SetState(questListAddress, avatarState.questList.Serialize())
+                .SetState(avatarAddress, avatarState.Serialize())
                 .SetState(slotAddress, slotState.Serialize());
         }
 
