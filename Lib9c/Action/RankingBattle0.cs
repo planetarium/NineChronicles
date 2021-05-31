@@ -17,7 +17,7 @@ namespace Nekoyume.Action
 {
     [Serializable]
     [ActionType("ranking_battle")]
-    public class RankingBattle4 : GameAction
+    public class RankingBattle0 : GameAction
     {
         public const int StageId = 999999;
         public static readonly BigInteger EntranceFee = 100;

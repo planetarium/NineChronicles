@@ -15,7 +15,7 @@ namespace Lib9c.Tests.Action
     using Nekoyume.TableData;
     using Xunit;
 
-    public class RankingBattle4Test
+    public class RankingBattle0Test
     {
         private readonly IAccountStateDelta _initialState;
 
@@ -28,7 +28,7 @@ namespace Lib9c.Tests.Action
 
         private readonly Address _weeklyArenaAddress;
 
-        public RankingBattle4Test()
+        public RankingBattle0Test()
         {
             _initialState = new State();
 
@@ -119,7 +119,7 @@ namespace Lib9c.Tests.Action
 
             Assert.All(itemIds, id => Assert.False(previousAvatar1State.inventory.HasItem(id)));
 
-            var action = new RankingBattle4
+            var action = new RankingBattle0
             {
                 AvatarAddress = _avatar1Address,
                 EnemyAddress = _avatar2Address,
@@ -153,7 +153,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void ExecuteThrowInvalidAddressException()
         {
-            var action = new RankingBattle4
+            var action = new RankingBattle0
             {
                 AvatarAddress = _avatar1Address,
                 EnemyAddress = _avatar1Address,
@@ -198,7 +198,7 @@ namespace Lib9c.Tests.Action
                     break;
             }
 
-            var action = new RankingBattle4
+            var action = new RankingBattle0
             {
                 AvatarAddress = avatarAddress,
                 EnemyAddress = enemyAddress,
@@ -233,7 +233,7 @@ namespace Lib9c.Tests.Action
                 _avatar1Address,
                 previousAvatar1State.Serialize());
 
-            var action = new RankingBattle4
+            var action = new RankingBattle0
             {
                 AvatarAddress = _avatar1Address,
                 EnemyAddress = _avatar2Address,
@@ -265,7 +265,7 @@ namespace Lib9c.Tests.Action
                 _weeklyArenaAddress,
                 previousWeeklyArenaState.Serialize());
 
-            var action = new RankingBattle4
+            var action = new RankingBattle0
             {
                 AvatarAddress = _avatar1Address,
                 EnemyAddress = _avatar2Address,
@@ -311,7 +311,7 @@ namespace Lib9c.Tests.Action
                 _weeklyArenaAddress,
                 previousWeeklyArenaState.Serialize());
 
-            var action = new RankingBattle4
+            var action = new RankingBattle0
             {
                 AvatarAddress = _avatar1Address,
                 EnemyAddress = _avatar2Address,
@@ -352,7 +352,7 @@ namespace Lib9c.Tests.Action
                 _weeklyArenaAddress,
                 previousWeeklyArenaState.Serialize());
 
-            var action = new RankingBattle4
+            var action = new RankingBattle0
             {
                 AvatarAddress = _avatar1Address,
                 EnemyAddress = _avatar2Address,
@@ -398,7 +398,7 @@ namespace Lib9c.Tests.Action
                     previousAgentGoldState);
             }
 
-            var action = new RankingBattle4
+            var action = new RankingBattle0
             {
                 AvatarAddress = _avatar1Address,
                 EnemyAddress = _avatar2Address,
