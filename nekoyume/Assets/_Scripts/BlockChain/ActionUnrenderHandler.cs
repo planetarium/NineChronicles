@@ -172,7 +172,7 @@ namespace Nekoyume.BlockChain
                             : 1;
                         var tradableItem = (ITradableItem) itemBase;
                         LocalLayerModifier.ModifyAgentGold(agentAddress, -price);
-                        LocalLayerModifier.AddItem(currentAvatarAddress, tradableItem.TradableId, count);
+                        LocalLayerModifier.AddItem(currentAvatarAddress, tradableItem.TradableId, tradableItem.RequiredBlockIndex, count);
                         LocalLayerModifier.RemoveNewAttachmentMail(currentAvatarAddress, purchaseResult.id);
                     }
                     else
@@ -225,8 +225,9 @@ namespace Nekoyume.BlockChain
 
             var avatarAddress = eval.Action.sellerAvatarAddress;
             var itemId = eval.Action.tradableId;
-
-            LocalLayerModifier.RemoveItem(avatarAddress, itemId);
+            var blockIndex = Game.Game.instance.Agent.BlockIndex;
+            var count = eval.Action.count;
+            LocalLayerModifier.RemoveItem(avatarAddress, itemId, blockIndex, count);
             UpdateCurrentAvatarState(eval);
         }
 
@@ -245,7 +246,7 @@ namespace Nekoyume.BlockChain
                 : 1;
             var tradableItem = (ITradableItem) itemBase;
 
-            LocalLayerModifier.AddItem(avatarAddress, tradableItem.TradableId, count);
+            LocalLayerModifier.AddItem(avatarAddress, tradableItem.TradableId, tradableItem.RequiredBlockIndex, count);
             UpdateCurrentAvatarState(eval);
         }
 
@@ -278,15 +279,17 @@ namespace Nekoyume.BlockChain
 
             // NOTE: 사용한 자원에 대한 레이어 다시 추가하기.
             LocalLayerModifier.ModifyAgentGold(agentAddress, -result.gold);
-            LocalLayerModifier.RemoveItem(avatarAddress, itemUsable.ItemId);
+            LocalLayerModifier.RemoveItem(avatarAddress, itemUsable.ItemId, itemUsable.RequiredBlockIndex, 1);
             foreach (var itemId in result.materialItemIdList)
             {
-                // NOTE: 최종적으로 UpdateCurrentAvatarState()를 호출한다면, 그곳에서 상태를 새로 설정할 것이다.
-                LocalLayerModifier.RemoveItem(avatarAddress, itemId);
+                if (avatarState.inventory.TryGetNonFungibleItem(itemId, out ItemUsable materialItem))
+                {
+                    LocalLayerModifier.RemoveItem(avatarAddress, itemId, materialItem.RequiredBlockIndex, 1);
+                }
             }
 
             // NOTE: 메일 레이어 다시 없애기.
-            LocalLayerModifier.AddItem(avatarAddress, itemUsable.NonFungibleId);
+            LocalLayerModifier.AddItem(avatarAddress, itemUsable.TradableId, itemUsable.RequiredBlockIndex, 1);
             LocalLayerModifier.RemoveNewAttachmentMail(avatarAddress, result.id);
 
             // NOTE: 워크샵 슬롯의 모든 휘발성 상태 변경자를 다시 추가하기.
@@ -329,7 +332,19 @@ namespace Nekoyume.BlockChain
                     continue;
                 }
 
-                LocalLayerModifier.AddItem(avatarAddress, tradableId, rewardInfo.Quantity);
+                if (!rewardInfo.ItemId.TryGetFungibleId(
+                    Game.Game.instance.TableSheets.ItemSheet,
+                    out var fungibleId))
+                {
+                    continue;
+                }
+
+                avatarState.inventory.TryGetFungibleItems(fungibleId, out var items);
+                var item = items.FirstOrDefault(x => x.item is ITradableItem);
+                if (item != null && item is ITradableItem tradableItem)
+                {
+                    LocalLayerModifier.AddItem(avatarAddress, tradableId, tradableItem.RequiredBlockIndex, rewardInfo.Quantity);
+                }
             }
 
             LocalLayerModifier.RemoveNewAttachmentMail(avatarAddress, mail.id);

@@ -1,48 +1,37 @@
 ﻿using System;
 using System.Collections.Generic;
-using Nekoyume.JsonConvertibles;
 using Nekoyume.Model.State;
-using UnityEngine;
 
 namespace Nekoyume.State.Modifiers
 {
     [Serializable]
     public class AvatarInventoryTradableItemRemover : AvatarStateModifier
     {
-        [Serializable]
-        public class InnerDictionary : JsonConvertibleDictionary<JsonConvertibleGuid, int>
+        private class InnerModel
         {
-        }
+            public long RequiredBlockIndex { get; }
+            public int Count { get; set; }
 
-        [SerializeField]
-        private InnerDictionary innerDictionary;
-
-        public override bool IsEmpty => innerDictionary.Value.Count == 0;
-
-        public AvatarInventoryTradableItemRemover(Guid tradableId, int count = 1)
-        {
-            if (count is 0)
+            public InnerModel(long requiredBlockIndex, int count)
             {
-                innerDictionary = new InnerDictionary();
-                return;
+                RequiredBlockIndex = requiredBlockIndex;
+                Count = count;
             }
 
-            innerDictionary = new InnerDictionary();
-            innerDictionary.Value.Add(new JsonConvertibleGuid(tradableId), count);
+            public InnerModel(InnerModel model)
+            {
+                RequiredBlockIndex = model.RequiredBlockIndex;
+                Count = model.Count;
+            }
         }
 
-        public AvatarInventoryTradableItemRemover(Dictionary<Guid, int> dictionary)
-        {
-            innerDictionary = new InnerDictionary();
-            foreach (var pair in dictionary)
-            {
-                if (pair.Value is 0)
-                {
-                    continue;
-                }
+        private Dictionary<Guid, InnerModel> _items = new Dictionary<Guid, InnerModel>();
 
-                innerDictionary.Value.Add(new JsonConvertibleGuid(pair.Key), pair.Value);
-            }
+        public override bool IsEmpty => _items.Count == 0;
+
+        public AvatarInventoryTradableItemRemover(Guid tradableId, long requiredBlockIndex, int count)
+        {
+            _items.Add(tradableId, new InnerModel(requiredBlockIndex, count));
         }
 
         public override void Add(IAccumulatableStateModifier<AvatarState> modifier)
@@ -52,16 +41,15 @@ namespace Nekoyume.State.Modifiers
                 return;
             }
 
-            foreach (var pair in m.innerDictionary.Value)
+            foreach (var item in m._items)
             {
-                var key = pair.Key;
-                if (innerDictionary.Value.ContainsKey(key))
+                if (_items.ContainsKey(item.Key))
                 {
-                    innerDictionary.Value[key] += pair.Value;
+                    _items[item.Key].Count += item.Value.Count;
                 }
                 else
                 {
-                    innerDictionary.Value.Add(key, pair.Value);
+                    _items.Add(item.Key, new InnerModel(item.Value));
                 }
             }
         }
@@ -73,18 +61,15 @@ namespace Nekoyume.State.Modifiers
                 return;
             }
 
-            foreach (var pair in m.innerDictionary.Value)
+            foreach (var item in m._items)
             {
-                var key = pair.Key;
-                if (!innerDictionary.Value.ContainsKey(key))
+                if (_items.ContainsKey(item.Key))
                 {
-                    continue;
-                }
-
-                innerDictionary.Value[key] -= pair.Value;
-                if (innerDictionary.Value[key] <= 0)
-                {
-                    innerDictionary.Value.Remove(key);
+                    _items[item.Key].Count -= item.Value.Count;
+                    if (_items[item.Key].Count <= 0)
+                    {
+                        _items.Remove(item.Key);
+                    }
                 }
             }
         }
@@ -96,9 +81,9 @@ namespace Nekoyume.State.Modifiers
                 return null;
             }
 
-            foreach (var pair in innerDictionary.Value)
+            foreach (var item in _items)
             {
-                state.inventory.RemoveTradableItem(pair.Key.Value, pair.Value);
+                state.inventory.RemoveTradableItem(item.Key, item.Value.RequiredBlockIndex, item.Value.Count);
             }
 
             return state;

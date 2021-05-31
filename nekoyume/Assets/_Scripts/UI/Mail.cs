@@ -244,7 +244,7 @@ namespace Nekoyume.UI
             };
             model.OnClickSubmit.Subscribe(_ =>
             {
-                LocalLayerModifier.AddItem(avatarAddress, tradableItem.TradableId);
+                LocalLayerModifier.AddItem(avatarAddress, tradableItem.TradableId, tradableItem.RequiredBlockIndex,1);
                 LocalLayerModifier.RemoveNewAttachmentMail(avatarAddress, mail.id);
                 LocalLayerModifier.RemoveAttachmentResult(avatarAddress, mail.id, true);
                 LocalLayerModifier.ModifyAvatarItemRequiredIndex(
@@ -266,7 +266,7 @@ namespace Nekoyume.UI
                 L10nManager.Localize("UI_YES"),
                 () =>
                 {
-                    LocalLayerModifier.AddItem(avatarAddress, tradableItem.TradableId);
+                    LocalLayerModifier.AddItem(avatarAddress, tradableItem.TradableId, tradableItem.RequiredBlockIndex, 1);
                     LocalLayerModifier.RemoveNewAttachmentMail(avatarAddress, mail.id, true);
                 });
         }
@@ -287,7 +287,7 @@ namespace Nekoyume.UI
             };
             model.OnClickSubmit.Subscribe(_ =>
             {
-                LocalLayerModifier.AddItem(avatarAddress, tradableItem.TradableId, count);
+                LocalLayerModifier.AddItem(avatarAddress, tradableItem.TradableId, tradableItem.RequiredBlockIndex, count);
                 LocalLayerModifier.RemoveNewAttachmentMail(avatarAddress, buyerMail.id, true);
             }).AddTo(gameObject);
             popup.Pop(model);
@@ -316,7 +316,7 @@ namespace Nekoyume.UI
             };
             model.OnClickSubmit.Subscribe(_ =>
             {
-                LocalLayerModifier.AddItem(avatarAddress, tradableItem.TradableId);
+                LocalLayerModifier.AddItem(avatarAddress, tradableItem.TradableId, tradableItem.RequiredBlockIndex, 1);
                 LocalLayerModifier.RemoveNewAttachmentMail(avatarAddress, itemEnhanceMail.id, true);
             });
             popup.Pop(model);
@@ -363,7 +363,24 @@ namespace Nekoyume.UI
                         continue;
                     }
 
-                    LocalLayerModifier.AddItem(monsterCollectionResult.avatarAddress, tradableId, rewardInfo.Quantity);
+
+                    if (!rewardInfo.ItemId.TryGetFungibleId(
+                        Game.Game.instance.TableSheets.ItemSheet,
+                        out var fungibleId))
+                    {
+                        continue;
+                    }
+
+                    var avatarState = States.Instance.CurrentAvatarState;
+                    avatarState.inventory.TryGetFungibleItems(fungibleId, out var items);
+                    var item = items.FirstOrDefault(x => x.item is ITradableItem);
+                    if (item != null && item is ITradableItem tradableItem)
+                    {
+                        LocalLayerModifier.AddItem(monsterCollectionResult.avatarAddress,
+                                                   tradableId,
+                                                   tradableItem.RequiredBlockIndex,
+                                                   rewardInfo.Quantity);
+                    }
                 }
 
                 LocalLayerModifier.RemoveNewAttachmentMail(monsterCollectionResult.avatarAddress, monsterCollectionMail.id, true);

@@ -268,7 +268,7 @@ public class BattleSimulator : Widget
             AddOption(skillSheet, equipment, optionRows, random);
             avatarState.inventory.AddItem(equipment);
             equipment.Equip();
-            LocalLayerModifier.AddItem(avatarState.agentAddress, equipment.ItemId, 1, false);
+            LocalLayerModifier.AddItem(avatarState.agentAddress, equipment.ItemId, equipment.RequiredBlockIndex,1, false);
         }
 
         private static HashSet<int> AddOption(
