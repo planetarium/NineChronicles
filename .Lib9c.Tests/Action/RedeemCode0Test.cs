@@ -9,13 +9,13 @@ namespace Lib9c.Tests.Action
     using Libplanet.Crypto;
     using Nekoyume;
     using Nekoyume.Action;
+    using Nekoyume.Model.Item;
     using Nekoyume.Model.State;
     using Nekoyume.TableData;
     using Xunit;
     using static Nekoyume.Model.State.RedeemCodeState;
-    using static SerializeKeys;
 
-    public class RedeemCodeTest
+    public class RedeemCode0Test
     {
         private readonly Address _agentAddress = new Address(new byte[]
         {
@@ -36,16 +36,14 @@ namespace Lib9c.Tests.Action
         private readonly Dictionary<string, string> _sheets;
         private readonly TableSheets _tableSheets;
 
-        public RedeemCodeTest()
+        public RedeemCode0Test()
         {
             _sheets = TableSheetsImporter.ImportSheets();
             _tableSheets = new TableSheets(_sheets);
         }
 
-        [Theory]
-        [InlineData(true)]
-        [InlineData(false)]
-        public void Execute(bool backWard)
+        [Fact]
+        public void Execute()
         {
             var privateKey = new PrivateKey();
             PublicKey publicKey = privateKey.PublicKey;
@@ -69,22 +67,10 @@ namespace Lib9c.Tests.Action
 
             var initialState = new State()
                 .SetState(_agentAddress, agentState.Serialize())
+                .SetState(_avatarAddress, avatarState.Serialize())
                 .SetState(RedeemCodeState.Address, prevRedeemCodesState.Serialize())
                 .SetState(GoldCurrencyState.Address, goldState.Serialize())
                 .MintAsset(GoldCurrencyState.Address, goldState.Currency * 100000000);
-
-            if (backWard)
-            {
-                initialState = initialState.SetState(_avatarAddress, avatarState.Serialize());
-            }
-            else
-            {
-                initialState = initialState
-                    .SetState(_avatarAddress.Derive(LegacyInventoryKey), avatarState.inventory.Serialize())
-                    .SetState(_avatarAddress.Derive(LegacyWorldInformationKey), avatarState.worldInformation.Serialize())
-                    .SetState(_avatarAddress.Derive(LegacyQuestListKey), avatarState.questList.Serialize())
-                    .SetState(_avatarAddress, avatarState.SerializeV2());
-            }
 
             foreach (var (key, value) in _sheets)
             {
@@ -94,7 +80,7 @@ namespace Lib9c.Tests.Action
                 );
             }
 
-            var redeemCode = new RedeemCode(
+            var redeemCode = new RedeemCode0(
                 ByteUtil.Hex(privateKey.ByteArray),
                 _avatarAddress
             );
@@ -110,7 +96,7 @@ namespace Lib9c.Tests.Action
             });
 
             // Check target avatar & agent
-            AvatarState nextAvatarState = nextState.GetAvatarStateV2(_avatarAddress);
+            AvatarState nextAvatarState = nextState.GetAvatarState(_avatarAddress);
             // See also Data/TableCSV/RedeemRewardSheet.csv
             ItemSheet itemSheet = initialState.GetItemSheet();
             HashSet<int> expectedItems = new[] { 100000, 40100000 }.ToHashSet();
@@ -132,7 +118,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Rehearsal()
         {
-            var redeemCode = new RedeemCode(
+            var redeemCode = new RedeemCode0(
                 string.Empty,
                 _avatarAddress
             );
@@ -147,17 +133,8 @@ namespace Lib9c.Tests.Action
             });
 
             Assert.Equal(
-                new[]
-                {
-                    _avatarAddress,
-                    _agentAddress,
-                    RedeemCodeState.Address,
-                    GoldCurrencyState.Address,
-                    _avatarAddress.Derive(LegacyInventoryKey),
-                    _avatarAddress.Derive(LegacyWorldInformationKey),
-                    _avatarAddress.Derive(LegacyQuestListKey),
-                }.ToImmutableHashSet(),
-                nextState.UpdatedAddresses
+                nextState.UpdatedAddresses,
+                new[] { _avatarAddress, _agentAddress, RedeemCodeState.Address, GoldCurrencyState.Address }.ToImmutableHashSet()
             );
         }
     }
