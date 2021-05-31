@@ -2,7 +2,6 @@ namespace Lib9c.Tests.Action
 {
     using System;
     using System.Collections.Generic;
-    using System.Collections.Immutable;
     using System.Linq;
     using System.Numerics;
     using Bencodex.Types;
@@ -20,9 +19,8 @@ namespace Lib9c.Tests.Action
     using Serilog;
     using Xunit;
     using Xunit.Abstractions;
-    using static SerializeKeys;
 
-    public class BuyTest
+    public class Buy6Test
     {
         private readonly Address _sellerAgentAddress;
         private readonly Address _sellerAvatarAddress;
@@ -34,7 +32,7 @@ namespace Lib9c.Tests.Action
         private readonly Guid _productId;
         private IAccountStateDelta _initialState;
 
-        public BuyTest(ITestOutputHelper outputHelper)
+        public Buy6Test(ITestOutputHelper outputHelper)
         {
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Verbose()
@@ -309,7 +307,7 @@ namespace Lib9c.Tests.Action
                 Assert.True(shardedShopStates.All(r => r.Value.Products.Count == 1));
             }
 
-            var buyAction = new Buy
+            var buyAction = new Buy6
             {
                 buyerAvatarAddress = _buyerAvatarAddress,
                 purchaseInfos = purchaseInfos,
@@ -367,7 +365,7 @@ namespace Lib9c.Tests.Action
                 Assert.Equal(expectedCount, inventoryItem.count);
                 Assert.Equal(expectedCount, nextBuyerAvatarState.itemMap[((ItemBase)tradableItem).Id]);
 
-                var nextSellerAvatarState = nextState.GetAvatarStateV2(purchaseInfo.sellerAvatarAddress);
+                var nextSellerAvatarState = nextState.GetAvatarState(purchaseInfo.sellerAvatarAddress);
                 Assert.False(
                     nextSellerAvatarState.inventory.TryGetTradableItems(
                         itemId,
@@ -403,7 +401,7 @@ namespace Lib9c.Tests.Action
                 ItemSubType.Food
             );
 
-            var action = new Buy
+            var action = new Buy6
             {
                 buyerAvatarAddress = _buyerAvatarAddress,
                 purchaseInfos = new[] { purchaseInfo },
@@ -433,7 +431,7 @@ namespace Lib9c.Tests.Action
                 ItemSubType.Food
             );
 
-            var action = new Buy
+            var action = new Buy6
             {
                 buyerAvatarAddress = default,
                 purchaseInfos = new[] { purchaseInfo },
@@ -469,7 +467,7 @@ namespace Lib9c.Tests.Action
                 ItemSubType.Food
             );
 
-            var action = new Buy
+            var action = new Buy6
             {
                 buyerAvatarAddress = _buyerAvatarAddress,
                 purchaseInfos = new[] { purchaseInfo },
@@ -495,7 +493,7 @@ namespace Lib9c.Tests.Action
                 ItemSubType.Weapon
             );
 
-            var action = new Buy
+            var action = new Buy6
             {
                 buyerAvatarAddress = _buyerAvatarAddress,
                 purchaseInfos = new[] { purchaseInfo },
@@ -544,7 +542,7 @@ namespace Lib9c.Tests.Action
 
             _initialState = _initialState.SetState(shardedShopAddress, shopState.Serialize());
 
-            var action = new Buy
+            var action = new Buy6
             {
                 buyerAvatarAddress = _buyerAvatarAddress,
                 purchaseInfos = new[] { purchaseInfo },
@@ -595,7 +593,7 @@ namespace Lib9c.Tests.Action
                 ItemSubType.Weapon
             );
 
-            var action = new Buy
+            var action = new Buy6
             {
                 buyerAvatarAddress = _buyerAvatarAddress,
                 purchaseInfos = new[] { purchaseInfo },
@@ -677,7 +675,7 @@ namespace Lib9c.Tests.Action
                 tradableItem.ItemSubType
             );
 
-            var action = new Buy
+            var action = new Buy6
             {
                 buyerAvatarAddress = _buyerAvatarAddress,
                 purchaseInfos = new[] { purchaseInfo },
@@ -727,7 +725,7 @@ namespace Lib9c.Tests.Action
                 ItemSubType.Weapon
             );
 
-            var action = new Buy
+            var action = new Buy6
             {
                 buyerAvatarAddress = _buyerAvatarAddress,
                 purchaseInfos = new[] { purchaseInfo },
@@ -745,52 +743,6 @@ namespace Lib9c.Tests.Action
                 Buy.ErrorCodeShopItemExpired,
                 action.buyerMultipleResult.purchaseResults.Select(r => r.errorCode)
             );
-        }
-
-        [Fact]
-        public void Rehearsal()
-        {
-            PurchaseInfo purchaseInfo = new PurchaseInfo(
-                _productId,
-                _sellerAgentAddress,
-                _sellerAvatarAddress,
-                ItemSubType.Weapon
-            );
-
-            var action = new Buy
-            {
-                buyerAvatarAddress = _buyerAvatarAddress,
-                purchaseInfos = new[] { purchaseInfo },
-            };
-
-            var updatedAddresses = new List<Address>()
-            {
-                _sellerAgentAddress,
-                _sellerAvatarAddress,
-                _sellerAvatarAddress.Derive(LegacyInventoryKey),
-                _sellerAvatarAddress.Derive(LegacyWorldInformationKey),
-                _sellerAvatarAddress.Derive(LegacyQuestListKey),
-                _buyerAgentAddress,
-                _buyerAvatarAddress,
-                _buyerAvatarAddress.Derive(LegacyInventoryKey),
-                _buyerAvatarAddress.Derive(LegacyWorldInformationKey),
-                _buyerAvatarAddress.Derive(LegacyQuestListKey),
-                Addresses.Shop,
-                Addresses.GoldCurrency,
-                ShardedShopState.DeriveAddress(ItemSubType.Weapon, _productId),
-            };
-
-            var state = new State();
-
-            var nextState = action.Execute(new ActionContext()
-            {
-                PreviousStates = state,
-                Signer = _buyerAgentAddress,
-                BlockIndex = 0,
-                Rehearsal = true,
-            });
-
-            Assert.Equal(updatedAddresses.ToImmutableHashSet(), nextState.UpdatedAddresses);
         }
 
         private (AvatarState avatarState, AgentState agentState) CreateAvatarState(
