@@ -277,7 +277,7 @@ namespace Nekoyume.UI
                 return;
             }
 
-            var (_, arenaInfo) = _weeklyCachedInfo[0];
+            var arenaInfo = _weeklyCachedInfo[0].arenaInfo;
             if (!arenaInfo.Active)
             {
                 currentAvatarCellView.ShowMyDefaultInfo();
