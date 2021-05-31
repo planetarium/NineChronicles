@@ -1,22 +1,24 @@
-﻿namespace Lib9c.Tests.Action
+namespace Lib9c.Tests.Action
 {
+    using System.Linq;
     using Libplanet;
     using Libplanet.Action;
     using Libplanet.Crypto;
     using Nekoyume;
     using Nekoyume.Action;
+    using Nekoyume.Model.Mail;
     using Nekoyume.Model.State;
     using Serilog;
     using Xunit;
     using Xunit.Abstractions;
 
-    public class DailyRewardTest2
+    public class DailyReward2Test
     {
         private readonly IAccountStateDelta _initialState;
         private readonly Address _agentAddress;
         private readonly Address _avatarAddress;
 
-        public DailyRewardTest2(ITestOutputHelper outputHelper)
+        public DailyReward2Test(ITestOutputHelper outputHelper)
         {
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Verbose()
@@ -66,6 +68,7 @@
             {
                 BlockIndex = 0,
                 PreviousStates = _initialState,
+                Random = new TestRandom(),
                 Rehearsal = false,
                 Signer = _agentAddress,
             });
@@ -73,6 +76,16 @@
             var gameConfigState = nextState.GetGameConfigState();
             var nextAvatarState = nextState.GetAvatarState(_avatarAddress);
             Assert.Equal(gameConfigState.ActionPointMax, nextAvatarState.actionPoint);
+            Assert.Single(nextAvatarState.mailBox);
+            var mail = nextAvatarState.mailBox.First();
+            var rewardMail = mail as DailyRewardMail;
+            Assert.NotNull(rewardMail);
+            var rewardResult = rewardMail.attachment as DailyReward.DailyRewardResult;
+            Assert.NotNull(rewardResult);
+            Assert.Single(rewardResult.materials);
+            var material = rewardResult.materials.First();
+            Assert.Equal(400000, material.Key.Id);
+            Assert.Equal(10, material.Value);
         }
 
         [Fact]
