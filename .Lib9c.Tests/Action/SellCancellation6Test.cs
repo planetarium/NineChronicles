@@ -2,7 +2,6 @@ namespace Lib9c.Tests.Action
 {
     using System;
     using System.Collections.Generic;
-    using System.Collections.Immutable;
     using System.Linq;
     using Bencodex.Types;
     using Libplanet;
@@ -19,9 +18,8 @@ namespace Lib9c.Tests.Action
     using Serilog;
     using Xunit;
     using Xunit.Abstractions;
-    using static SerializeKeys;
 
-    public class SellCancellationTest
+    public class SellCancellation6Test
     {
         private readonly IAccountStateDelta _initialState;
         private readonly Address _agentAddress;
@@ -29,7 +27,7 @@ namespace Lib9c.Tests.Action
         private readonly GoldCurrencyState _goldCurrencyState;
         private readonly TableSheets _tableSheets;
 
-        public SellCancellationTest(ITestOutputHelper outputHelper)
+        public SellCancellation6Test(ITestOutputHelper outputHelper)
         {
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Verbose()
@@ -76,30 +74,14 @@ namespace Lib9c.Tests.Action
         }
 
         [Theory]
-        [InlineData(ItemType.Equipment, "F9168C5E-CEB2-4faa-B6BF-329BF39FA1E4", true, 1, 1, 1, 1, true)]
-        [InlineData(ItemType.Costume, "936DA01F-9ABD-4d9d-80C7-02AF85C822A8", true, 1, 1, 1, 1, true)]
-        [InlineData(ItemType.Material, "15396359-04db-68d5-f24a-d89c18665900", true, 1, 1, 1, 1, true)]
-        [InlineData(ItemType.Material, "15396359-04db-68d5-f24a-d89c18665900", true, 2, 1, 2, 2, true)]
-        [InlineData(ItemType.Material, "15396359-04db-68d5-f24a-d89c18665900", true, 2, 2, 3, 3, true)]
-        [InlineData(ItemType.Equipment, "F9168C5E-CEB2-4faa-B6BF-329BF39FA1E4", false, 1, 1, 0, 1, true)]
-        [InlineData(ItemType.Costume, "936DA01F-9ABD-4d9d-80C7-02AF85C822A8", false, 1, 1, 0, 1, true)]
-        [InlineData(ItemType.Equipment, "F9168C5E-CEB2-4faa-B6BF-329BF39FA1E4", true, 1, 1, 1, 1, false)]
-        [InlineData(ItemType.Costume, "936DA01F-9ABD-4d9d-80C7-02AF85C822A8", true, 1, 1, 1, 1, false)]
-        [InlineData(ItemType.Material, "15396359-04db-68d5-f24a-d89c18665900", true, 1, 1, 1, 1, false)]
-        [InlineData(ItemType.Material, "15396359-04db-68d5-f24a-d89c18665900", true, 2, 1, 2, 2, false)]
-        [InlineData(ItemType.Material, "15396359-04db-68d5-f24a-d89c18665900", true, 2, 2, 3, 3, false)]
-        [InlineData(ItemType.Equipment, "F9168C5E-CEB2-4faa-B6BF-329BF39FA1E4", false, 1, 1, 0, 1, false)]
-        [InlineData(ItemType.Costume, "936DA01F-9ABD-4d9d-80C7-02AF85C822A8", false, 1, 1, 0, 1, false)]
-        public void Execute(
-            ItemType itemType,
-            string guid,
-            bool contain,
-            int itemCount,
-            int inventoryCount,
-            int prevCount,
-            int expectedCount,
-            bool backWard
-        )
+        [InlineData(ItemType.Equipment, "F9168C5E-CEB2-4faa-B6BF-329BF39FA1E4", true, 1, 1, 1, 1)]
+        [InlineData(ItemType.Costume, "936DA01F-9ABD-4d9d-80C7-02AF85C822A8", true, 1, 1, 1, 1)]
+        [InlineData(ItemType.Material, "15396359-04db-68d5-f24a-d89c18665900", true, 1, 1, 1, 1)]
+        [InlineData(ItemType.Material, "15396359-04db-68d5-f24a-d89c18665900", true, 2, 1, 2, 2)]
+        [InlineData(ItemType.Material, "15396359-04db-68d5-f24a-d89c18665900", true, 2, 2, 3, 3)]
+        [InlineData(ItemType.Equipment, "F9168C5E-CEB2-4faa-B6BF-329BF39FA1E4", false, 1, 1, 0, 1)]
+        [InlineData(ItemType.Costume, "936DA01F-9ABD-4d9d-80C7-02AF85C822A8", false, 1, 1, 0, 1)]
+        public void Execute(ItemType itemType, string guid, bool contain, int itemCount, int inventoryCount, int prevCount, int expectedCount)
         {
             var avatarState = _initialState.GetAvatarState(_avatarAddress);
             ITradableItem tradableItem;
@@ -194,25 +176,12 @@ namespace Lib9c.Tests.Action
                 avatarState.inventory.TryGetTradableItems(itemId, requiredBlockIndex, itemCount, out _)
             );
 
-            IAccountStateDelta prevState = _initialState;
-            if (backWard)
-            {
-                prevState = prevState.SetState(_avatarAddress, avatarState.Serialize());
-            }
-            else
-            {
-                prevState = prevState
-                    .SetState(_avatarAddress.Derive(LegacyInventoryKey), avatarState.inventory.Serialize())
-                    .SetState(_avatarAddress.Derive(LegacyWorldInformationKey), avatarState.worldInformation.Serialize())
-                    .SetState(_avatarAddress.Derive(LegacyQuestListKey), avatarState.questList.Serialize())
-                    .SetState(_avatarAddress, avatarState.SerializeV2());
-            }
-
-            prevState = prevState
+            IAccountStateDelta prevState = _initialState
+                .SetState(_avatarAddress, avatarState.Serialize())
                 .SetState(Addresses.Shop, legacyShopState.Serialize())
                 .SetState(shardedShopAddress, shopState.Serialize());
 
-            var sellCancellationAction = new SellCancellation
+            var sellCancellationAction = new SellCancellation6
             {
                 productId = shopItem.ProductId,
                 sellerAvatarAddress = _avatarAddress,
@@ -230,7 +199,7 @@ namespace Lib9c.Tests.Action
             ShardedShopState nextShopState = new ShardedShopState((Dictionary)nextState.GetState(shardedShopAddress));
             Assert.Empty(nextShopState.Products);
 
-            var nextAvatarState = nextState.GetAvatarStateV2(_avatarAddress);
+            var nextAvatarState = nextState.GetAvatarState(_avatarAddress);
             Assert.Equal(expectedCount, nextAvatarState.inventory.Items.Sum(i => i.count));
             Assert.False(nextAvatarState.inventory.TryGetTradableItems(
                 itemId,
@@ -259,7 +228,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Execute_Throw_FailedLoadStateException()
         {
-            var action = new SellCancellation
+            var action = new SellCancellation6
             {
                 productId = default,
                 sellerAvatarAddress = default,
@@ -290,7 +259,7 @@ namespace Lib9c.Tests.Action
 
             IAccountStateDelta prevState = _initialState.SetState(_avatarAddress, avatarState.Serialize());
 
-            var action = new SellCancellation
+            var action = new SellCancellation6
             {
                 productId = default,
                 sellerAvatarAddress = _avatarAddress,
@@ -359,7 +328,7 @@ namespace Lib9c.Tests.Action
             IAccountStateDelta prevState = _initialState
                 .SetState(shardedShopAddress, shopState.Serialize());
 
-            var action = new SellCancellation
+            var action = new SellCancellation6
             {
                 productId = shopItem.ProductId,
                 sellerAvatarAddress = _avatarAddress,
@@ -400,7 +369,7 @@ namespace Lib9c.Tests.Action
             IAccountStateDelta prevState = _initialState
                 .SetState(shardedShopAddress, shopState.Serialize());
 
-            var action = new SellCancellation
+            var action = new SellCancellation6
             {
                 productId = shopItem.ProductId,
                 sellerAvatarAddress = _avatarAddress,
@@ -440,7 +409,7 @@ namespace Lib9c.Tests.Action
             IAccountStateDelta prevState = _initialState
                 .SetState(shardedShopAddress, shopState.Serialize());
 
-            var action = new SellCancellation
+            var action = new SellCancellation6
             {
                 productId = shopItem.ProductId,
                 sellerAvatarAddress = _avatarAddress,
@@ -455,39 +424,6 @@ namespace Lib9c.Tests.Action
                     Signer = _agentAddress,
                 })
             );
-        }
-
-        [Fact]
-        public void Rehearsal()
-        {
-            var action = new SellCancellation()
-            {
-                sellerAvatarAddress = _avatarAddress,
-                productId = default,
-                itemSubType = ItemSubType.Weapon,
-            };
-
-            var updatedAddresses = new List<Address>()
-            {
-                _avatarAddress,
-                _avatarAddress.Derive(LegacyInventoryKey),
-                _avatarAddress.Derive(LegacyWorldInformationKey),
-                _avatarAddress.Derive(LegacyQuestListKey),
-                Addresses.Shop,
-                ShardedShopState.DeriveAddress(ItemSubType.Weapon, default(Guid)),
-            };
-
-            var state = new State();
-
-            var nextState = action.Execute(new ActionContext()
-            {
-                PreviousStates = state,
-                Signer = _agentAddress,
-                BlockIndex = 0,
-                Rehearsal = true,
-            });
-
-            Assert.Equal(updatedAddresses.ToImmutableHashSet(), nextState.UpdatedAddresses);
         }
     }
 }

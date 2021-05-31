@@ -17,41 +17,13 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("sell_cancellation7")]
-    public class SellCancellation : GameAction
+    [ActionType("sell_cancellation6")]
+    public class SellCancellation6 : GameAction
     {
         public Guid productId;
         public Address sellerAvatarAddress;
-        public Result result;
+        public SellCancellation.Result result;
         public ItemSubType itemSubType;
-
-        [Serializable]
-        public class Result : AttachmentActionResult
-        {
-            public ShopItem shopItem;
-            public Guid id;
-
-            protected override string TypeId => "sellCancellation.result";
-
-            public Result()
-            {
-            }
-
-            public Result(BxDictionary serialized) : base(serialized)
-            {
-                shopItem = new ShopItem((BxDictionary) serialized["shopItem"]);
-                id = serialized["id"].ToGuid();
-            }
-
-            public override IValue Serialize() =>
-#pragma warning disable LAA1002
-                new BxDictionary(new Dictionary<IKey, IValue>
-                {
-                    [(Text) "shopItem"] = shopItem.Serialize(),
-                    [(Text) "id"] = id.Serialize()
-                }.Union((BxDictionary) base.Serialize()));
-#pragma warning restore LAA1002
-        }
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal => new Dictionary<string, IValue>
         {
@@ -71,17 +43,11 @@ namespace Nekoyume.Action
         {
             var states = context.PreviousStates;
             var shardedShopAddress = ShardedShopState.DeriveAddress(itemSubType, productId);
-            var inventoryAddress = sellerAvatarAddress.Derive(LegacyInventoryKey);
-            var worldInformationAddress = sellerAvatarAddress.Derive(LegacyWorldInformationKey);
-            var questListAddress = sellerAvatarAddress.Derive(LegacyQuestListKey);
             if (context.Rehearsal)
             {
                 states = states.SetState(shardedShopAddress, MarkChanged);
                 return states
                     .SetState(Addresses.Shop, MarkChanged)
-                    .SetState(inventoryAddress, MarkChanged)
-                    .SetState(worldInformationAddress, MarkChanged)
-                    .SetState(questListAddress, MarkChanged)
                     .SetState(sellerAvatarAddress, MarkChanged);
             }
 
@@ -91,7 +57,7 @@ namespace Nekoyume.Action
             var started = DateTimeOffset.UtcNow;
             Log.Verbose("{AddressesHex}Sell Cancel exec started", addressesHex);
 
-            if (!states.TryGetAvatarStateV2(context.Signer, sellerAvatarAddress, out var avatarState))
+            if (!states.TryGetAvatarState(context.Signer, sellerAvatarAddress, out var avatarState))
             {
                 throw new FailedLoadStateException(
                     $"{addressesHex}Aborted as the avatar state of the seller failed to load.");
@@ -216,7 +182,7 @@ namespace Nekoyume.Action
             }
 
             // 메일에 아이템을 넣는다.
-            result = new Result
+            result = new SellCancellation.Result
             {
                 shopItem = shopItem,
                 itemUsable = shopItem.ItemUsable,
@@ -235,11 +201,7 @@ namespace Nekoyume.Action
             Log.Verbose("{AddressesHex}Sell Cancel Update AvatarState: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();
 
-            states = states
-                .SetState(inventoryAddress,avatarState.inventory.Serialize())
-                .SetState(worldInformationAddress, avatarState.worldInformation.Serialize())
-                .SetState(questListAddress, avatarState.questList.Serialize())
-                .SetState(sellerAvatarAddress, avatarState.SerializeV2());
+            states = states.SetState(sellerAvatarAddress, avatarState.Serialize());
             sw.Stop();
             Log.Verbose("{AddressesHex}Sell Cancel Set AvatarState: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();
