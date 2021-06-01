@@ -208,8 +208,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 2}
+  m_SizeDelta: {x: 0, y: 4}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &147336592559879005
 CanvasRenderer:
@@ -943,8 +943,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 2}
+  m_SizeDelta: {x: 0, y: 4}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2616424138787943931
 CanvasRenderer:
@@ -1183,8 +1183,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 2}
+  m_SizeDelta: {x: 0, y: 4}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4106076167335161600
 CanvasRenderer:
@@ -1579,8 +1579,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 2}
+  m_SizeDelta: {x: 0, y: 4}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3839496947739307331
 CanvasRenderer:
@@ -2462,6 +2462,7 @@ MonoBehaviour:
   button: {fileID: 6917431728180626340}
   normalObject: {fileID: 7626739275307941024}
   selectedObject: {fileID: 8801601097976366599}
+  hasNotificationImage: {fileID: 0}
 --- !u!1 &6378971474403005808
 GameObject:
   m_ObjectHideFlags: 0
@@ -2841,6 +2842,7 @@ MonoBehaviour:
   button: {fileID: 7547035141826747834}
   normalObject: {fileID: 6815156860673319614}
   selectedObject: {fileID: 5577218206618212377}
+  hasNotificationImage: {fileID: 0}
 --- !u!1 &6960732449617109810
 GameObject:
   m_ObjectHideFlags: 0
@@ -3197,6 +3199,7 @@ MonoBehaviour:
   button: {fileID: 7282145624642691065}
   normalObject: {fileID: 5991856421027242237}
   selectedObject: {fileID: 4671735629365041754}
+  hasNotificationImage: {fileID: 0}
 --- !u!1 &8149147246134076347
 GameObject:
   m_ObjectHideFlags: 0
@@ -3324,6 +3327,7 @@ MonoBehaviour:
   button: {fileID: 8771800121722389762}
   normalObject: {fileID: 5734077158464895494}
   selectedObject: {fileID: 6656750902140272801}
+  hasNotificationImage: {fileID: 0}
 --- !u!1 &8383733403596211479
 GameObject:
   m_ObjectHideFlags: 0
@@ -3618,6 +3622,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: ToggleableButton (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 420456160272647716, guid: ab3e37dfe7c3b1e49bc593b81dcc91d9,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2099635483518142312, guid: ab3e37dfe7c3b1e49bc593b81dcc91d9,
         type: 3}
       propertyPath: m_Pivot.x
@@ -3757,6 +3766,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: ToggleableButton (3)
+      objectReference: {fileID: 0}
+    - target: {fileID: 420456160272647716, guid: ab3e37dfe7c3b1e49bc593b81dcc91d9,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2099635483518142312, guid: ab3e37dfe7c3b1e49bc593b81dcc91d9,
         type: 3}
@@ -4022,6 +4036,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: ToggleableButton (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 420456160272647716, guid: ab3e37dfe7c3b1e49bc593b81dcc91d9,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2099635483518142312, guid: ab3e37dfe7c3b1e49bc593b81dcc91d9,
         type: 3}
