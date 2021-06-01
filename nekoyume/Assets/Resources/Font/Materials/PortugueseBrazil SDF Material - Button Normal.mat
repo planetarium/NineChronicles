@@ -68,9 +68,9 @@ Material:
     - _OutlineWidth: 0
     - _PerspectiveFilter: 0.875
     - _Reflectivity: 10
-    - _ScaleRatioA: 0.9
-    - _ScaleRatioB: 0.388125
-    - _ScaleRatioC: 0.5544643
+    - _ScaleRatioA: 0.875
+    - _ScaleRatioB: 0.37734374
+    - _ScaleRatioC: 0.5390625
     - _ScaleX: 1
     - _ScaleY: 1
     - _ShaderFlags: 0
@@ -101,4 +101,5 @@ Material:
     - _ReflectFaceColor: {r: 0, g: 0, b: 0, a: 1}
     - _ReflectOutlineColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecularColor: {r: 0, g: 0, b: 0, a: 1}
-    - _UnderlayColor: {r: 0, g: 0, b: 0, a: 1}
+    - _UnderlayColor: {r: 0, g: 0, b: 0, a: 0.47058824}
+  m_BuildTextureStacks: []
