@@ -9,6 +9,7 @@ using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.UI.Model;
+using Nekoyume.UI.Module;
 using Nekoyume.UI.Scroller;
 using TMPro;
 using UnityEngine;
@@ -24,53 +25,27 @@ namespace Nekoyume.UI
         {
             All,
             Workshop,
-            Auction,
+            Market,
             System
-        }
-
-        [Serializable]
-        public class TabButton
-        {
-            private static readonly Vector2 LeftBottom = new Vector2(-15f, -10.5f);
-            private static readonly Vector2 MinusRightTop = new Vector2(15f, 13f);
-
-            public Sprite highlightedSprite;
-            public Button button;
-            public Image hasNotificationImage;
-            public Image image;
-            public Image icon;
-            public TextMeshProUGUI text;
-            public TextMeshProUGUI textSelected;
-
-            public void Init(string localizationKey)
-            {
-                if (!button) return;
-                var localized = L10nManager.Localize(localizationKey);
-                var content = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(localized.ToLower());
-                text.text = content;
-                textSelected.text = content;
-            }
-
-            public void ChangeColor(bool isHighlighted = false)
-            {
-                image.overrideSprite = isHighlighted ? _selectedButtonSprite : null;
-                var imageRectTransform = image.rectTransform;
-                imageRectTransform.offsetMin = isHighlighted ? LeftBottom : Vector2.zero;
-                imageRectTransform.offsetMax = isHighlighted ? MinusRightTop : Vector2.zero;
-                icon.overrideSprite = isHighlighted ? highlightedSprite : null;
-                text.gameObject.SetActive(!isHighlighted);
-                textSelected.gameObject.SetActive(isHighlighted);
-            }
         }
 
         [SerializeField]
         private MailTabState tabState = default;
 
         [SerializeField]
-        private MailScroll scroll = null;
+        private CategoryTabButton allButton = null;
 
         [SerializeField]
-        private TabButton[] tabButtons = null;
+        private CategoryTabButton workshopButton = null;
+
+        [SerializeField]
+        private CategoryTabButton marketButton = null;
+
+        [SerializeField]
+        private CategoryTabButton systemButton = null;
+
+        [SerializeField]
+        private MailScroll scroll = null;
 
         [SerializeField]
         private GameObject emptyImage = null;
@@ -84,6 +59,8 @@ namespace Nekoyume.UI
         [SerializeField]
         private Blur blur = null;
 
+        private readonly Module.ToggleGroup _toggleGroup = new Module.ToggleGroup();
+
         private static Sprite _selectedButtonSprite;
 
         private const int TutorialEquipmentId = 10110000;
@@ -92,15 +69,20 @@ namespace Nekoyume.UI
 
         #region override
 
+        protected override void Awake()
+        {
+            base.Awake();
+            _toggleGroup.RegisterToggleable(allButton);
+            _toggleGroup.RegisterToggleable(workshopButton);
+            _toggleGroup.RegisterToggleable(marketButton);
+            _toggleGroup.RegisterToggleable(systemButton);
+        }
+
         public override void Initialize()
         {
             base.Initialize();
             _selectedButtonSprite = Resources.Load<Sprite>("UI/Textures/button_yellow_02");
 
-            tabButtons[0].Init("ALL");
-            tabButtons[1].Init("UI_COMBINATION");
-            tabButtons[2].Init("UI_SHOP");
-            tabButtons[3].Init("SYSTEM");
             ReactiveAvatarState.MailBox?.Subscribe(SetList).AddTo(gameObject);
             Game.Game.instance.Agent.BlockIndexSubject
                 .ObserveOnMainThread()
@@ -114,7 +96,8 @@ namespace Nekoyume.UI
         {
             tabState = MailTabState.All;
             MailBox = States.Instance.CurrentAvatarState.mailBox;
-            ChangeState(0);
+            _toggleGroup.SetToggledOffAll();
+            allButton.SetToggledOn();
             UpdateTabs();
             base.Show(ignoreShowAnimation);
 
@@ -138,12 +121,7 @@ namespace Nekoyume.UI
 
         public void ChangeState(int state)
         {
-            tabState = (MailTabState)state;
-
-            for (var i = 0; i < tabButtons.Length; ++i)
-            {
-                tabButtons[i].ChangeColor(i == state);
-            }
+            tabState = (MailTabState) state;
 
             var blockIndex = Game.Game.instance.Agent.BlockIndex;
             UpdateMailList(blockIndex);
@@ -199,16 +177,20 @@ namespace Nekoyume.UI
             }
 
             // 전체 탭
-            tabButtons[0].hasNotificationImage.enabled = MailBox
+            allButton.HasNotification.Value = MailBox
                 .Any(mail => mail.New && mail.requiredBlockIndex <= blockIndex);
 
-            for (var i = 1; i < tabButtons.Length; ++i)
-            {
-                var list = GetAvailableMailList(blockIndex.Value, (MailTabState) i);
-                var recent = list?.FirstOrDefault();
-                tabButtons[i].hasNotificationImage.enabled = recent is null ?
-                    false : recent.New;
-            }
+            var list = GetAvailableMailList(blockIndex.Value, MailTabState.Workshop);
+            var recent = list?.FirstOrDefault();
+            workshopButton.HasNotification.Value = recent is null ? false : recent.New;
+
+            list = GetAvailableMailList(blockIndex.Value, MailTabState.Market);
+            recent = list?.FirstOrDefault();
+            marketButton.HasNotification.Value = recent is null ? false : recent.New;
+
+            list = GetAvailableMailList(blockIndex.Value, MailTabState.System);
+            recent = list?.FirstOrDefault();
+            systemButton.HasNotification.Value = recent is null ? false : recent.New;
         }
 
         private void SetList(MailBox mailBox)
