@@ -42,7 +42,7 @@ namespace Nekoyume.UI.Model
         public readonly ReactiveProperty<Func<InventoryItem, bool>> EquippedEnabledFunc =
             new ReactiveProperty<Func<InventoryItem, bool>>();
 
-        public readonly ReactiveProperty<Func<InventoryItem, bool>> AcitveFunc =
+        public readonly ReactiveProperty<Func<InventoryItem, bool>> ActiveFunc =
             new ReactiveProperty<Func<InventoryItem, bool>>();
 
         private ItemSubType[] _itemSubTypesForNotification =
@@ -63,7 +63,7 @@ namespace Nekoyume.UI.Model
             DimmedFunc.Subscribe(SubscribeDimmedFunc);
             EffectEnabledFunc.Subscribe(SubscribeEffectEnabledFunc);
             EquippedEnabledFunc.Subscribe(SubscribeEquippedEnabledFunc);
-            AcitveFunc.Subscribe(SubscribeAcitveFunc);
+            ActiveFunc.Subscribe(SubscribeAcitveFunc);
         }
 
         public void Dispose()
@@ -564,26 +564,26 @@ namespace Nekoyume.UI.Model
 
         private void SubscribeAcitveFunc(Func<InventoryItem, bool> func)
         {
-            AcitveFunc.Value ??= DefaultAcitveFunc;
+            ActiveFunc.Value ??= DefaultAcitveFunc;
 
             foreach (var item in Consumables)
             {
-                item.ActiveSelf.Value = AcitveFunc.Value(item);
+                item.ActiveSelf.Value = ActiveFunc.Value(item);
             }
 
             foreach (var item in Costumes)
             {
-                item.ActiveSelf.Value = AcitveFunc.Value(item);
+                item.ActiveSelf.Value = ActiveFunc.Value(item);
             }
 
             foreach (var item in Equipments)
             {
-                item.ActiveSelf.Value = AcitveFunc.Value(item);
+                item.ActiveSelf.Value = ActiveFunc.Value(item);
             }
 
             foreach (var item in Materials)
             {
-                item.ActiveSelf.Value = AcitveFunc.Value(item);
+                item.ActiveSelf.Value = ActiveFunc.Value(item);
             }
         }
         #endregion
