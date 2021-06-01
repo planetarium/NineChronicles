@@ -177,10 +177,7 @@ namespace Nekoyume.UI
             stage.LoadBackground("ranking");
             _player = stage.GetPlayer();
             _player.gameObject.SetActive(false);
-            if (_weeklyCachedInfo.Count < 4)
-            {
-                UpdateWeeklyCache(States.Instance.WeeklyArenaState);
-            }
+            UpdateWeeklyCache(States.Instance.WeeklyArenaState);
 
             _state.SetValueAndForceNotify(stateType);
 
@@ -200,13 +197,8 @@ namespace Nekoyume.UI
             _npc.gameObject.SetActive(false);
 
             AudioController.instance.PlayMusic(AudioController.MusicCode.Ranking);
-
             WeeklyArenaStateSubject.WeeklyArenaState
-                .Subscribe(state =>
-                {
-                    UpdateWeeklyCache(state);
-                    UpdateArena();
-                })
+                .Subscribe(SubscribeWeeklyArenaState)
                 .AddTo(_disposablesFromShow);
         }
 
@@ -257,6 +249,12 @@ namespace Nekoyume.UI
             }
         }
 
+        private void SubscribeWeeklyArenaState(WeeklyArenaState state)
+        {
+            UpdateWeeklyCache(state);
+            UpdateArena();
+        }
+
         private void UpdateArena()
         {
             var weeklyArenaState = States.Instance.WeeklyArenaState;
@@ -279,12 +277,8 @@ namespace Nekoyume.UI
                 return;
             }
 
-            var (rank, arenaInfo) = _weeklyCachedInfo[0];
-            if (arenaInfo.Active)
-            {
-                currentAvatarCellView.Show((rank, arenaInfo, arenaInfo));
-            }
-            else
+            var arenaInfo = _weeklyCachedInfo[0].arenaInfo;
+            if (!arenaInfo.Active)
             {
                 currentAvatarCellView.ShowMyDefaultInfo();
                 LocalLayerModifier.AddWeeklyArenaInfoActivator(Game.Game.instance.TableSheets.CharacterSheet);
@@ -335,8 +329,7 @@ namespace Nekoyume.UI
                     return;
                 }
 
-                var (currentAvatarRank, currentAvatarArenaInfo) = weeklyArenaState
-                    .GetArenaInfos(currentAvatarAddress.Value, 0, 0)
+                var (currentAvatarRank, currentAvatarArenaInfo) = _weeklyCachedInfo
                     .FirstOrDefault(info =>
                         info.arenaInfo.AvatarAddress.Equals(currentAvatarAddress));
 
