@@ -40,7 +40,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 50}
+  m_SizeDelta: {x: 0, y: 46}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1089665481493594102
 CanvasRenderer:
@@ -63,15 +63,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0, g: 0, b: 0, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 05217609a23df489a8a22d4447faa0c7, type: 3}
-  m_Type: 1
+  m_Sprite: {fileID: 21300000, guid: d968e1059bd9444779a5ef05b40abc8e, type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -93,8 +93,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Padding:
-    m_Left: 14
-    m_Right: 14
+    m_Left: 60
+    m_Right: 60
     m_Top: 0
     m_Bottom: 0
   m_ChildAlignment: 4
@@ -207,7 +207,7 @@ MonoBehaviour:
   delayForPlayReverse: 0
   easeForPlayReverse: 20
   end: 0
-  duration: 0.5
+  duration: 0.25
   isFrom: 1
   playOnAwake: 0
   playOnEnable: 0
@@ -224,7 +224,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   startDelay: 0
-  end: 15
+  end: 3
   duration: 0.5
   snapping: 0
   showEase: 21
@@ -249,7 +249,7 @@ MonoBehaviour:
   delayForPlayReverse: 0
   easeForPlayReverse: 21
   end: 0
-  duration: 0.5
+  duration: 0.25
   isFrom: 0
   playOnAwake: 0
   playOnEnable: 0
@@ -266,7 +266,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   startDelay: 0
-  end: 15
+  end: 3
   duration: 0.5
   snapping: 0
   showEase: 20
@@ -368,7 +368,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 50}
+  m_SizeDelta: {x: 0, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7229920985508777788
 CanvasRenderer:
@@ -426,8 +426,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 22
-  m_fontSizeBase: 22
+  m_fontSize: 18
+  m_fontSizeBase: 18
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 12
@@ -610,7 +610,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 30, y: 30}
+  m_SizeDelta: {x: 28, y: 28}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8175650700997629427
 CanvasRenderer:
