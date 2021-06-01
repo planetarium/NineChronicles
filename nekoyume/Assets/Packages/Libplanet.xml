@@ -133,8 +133,8 @@
             Executes the <paramref name="actions"/> step by step, and emits
             <see cref="T:Libplanet.Action.ActionEvaluation"/> for each step.
             </summary>
-            <param name="blockHash">The <see cref="P:Libplanet.Blocks.Block`1.Hash"/> of <see cref="T:Libplanet.Blocks.Block`1"/> that
-            <paramref name="actions"/> belongs to.</param>
+            <param name="preEvaluationHash">The <see cref="P:Libplanet.Blocks.Block`1.PreEvaluationHash"/> of
+            <see cref="T:Libplanet.Blocks.Block`1"/> that <paramref name="actions"/> belongs to.</param>
             <param name="blockIndex">The <see cref="P:Libplanet.Blocks.Block`1.Index"/> of <see cref="T:Libplanet.Blocks.Block`1"/> that
             <paramref name="actions"/> belongs to.</param>
             <param name="txid">The <see cref="P:Libplanet.Tx.Transaction`1.Id"/> of <see cref="T:Libplanet.Tx.Transaction`1"/>
@@ -635,12 +635,6 @@
         <member name="P:Libplanet.Action.IActionContext.Miner">
             <summary>
             <see cref="T:Libplanet.Address"/> of a block miner account.
-            </summary>
-        </member>
-        <member name="P:Libplanet.Action.IActionContext.BlockHash">
-            <summary>
-            <see cref="T:Libplanet.Blocks.Block`1"/>.<see cref="P:Libplanet.Blocks.Block`1.Hash"/> of a transaction that an executed
-            <see cref="T:Libplanet.Action.IAction"/> belongs to.
             </summary>
         </member>
         <member name="P:Libplanet.Action.IActionContext.BlockIndex">
@@ -2229,6 +2223,14 @@
             Calculates and complements a block's incomplete states on the fly.
             </summary>
             <param name="blockHash">The hash of a block which has incomplete states.</param>
+        </member>
+        <member name="M:Libplanet.Blockchain.BlockChain`1.MakeTxExecutions(Libplanet.Blocks.Block{`0},System.Collections.Generic.IReadOnlyList{Libplanet.Action.ActionEvaluation})">
+            <summary>
+            Makes <see cref="T:Libplanet.Tx.TxExecution"/> instances from the given <paramref name="evaluations"/>.
+            </summary>
+            <param name="block">The block that evaluated actions belong to.</param>
+            <param name="evaluations">The result of evaluated actions.</param>
+            <returns>The corresponding <see cref="T:Libplanet.Tx.TxExecution"/>s.</returns>
         </member>
         <member name="T:Libplanet.Blockchain.BlockPerception">
             <summary>
