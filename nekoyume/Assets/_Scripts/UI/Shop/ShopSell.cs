@@ -106,7 +106,7 @@ namespace Nekoyume.UI
             base.Show();
             shopItems.Show();
             inventory.SharedModel.State.Value = ItemType.Equipment;
-            inventory.SharedModel.AcitveFunc.Value = inventoryItem => (inventoryItem.ItemBase.Value is ITradableItem);
+            inventory.SharedModel.ActiveFunc.SetValueAndForceNotify(inventoryItem => (inventoryItem.ItemBase.Value is ITradableItem));
             AudioController.instance.PlayMusic(AudioController.MusicCode.Shop);
         }
 
