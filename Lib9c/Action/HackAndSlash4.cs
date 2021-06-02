@@ -228,24 +228,21 @@ namespace Nekoyume.Action
             Log.Verbose("{AddressesHex}HAS Set AvatarState: {Elapsed}", addressesHex, sw.Elapsed);
 
             sw.Restart();
-            var addressKey = (IKey) avatarAddress.Serialize();
-            var mapKey = (IKey) "map".Serialize();
             if (states.TryGetState(RankingMapAddress, out Dictionary d) && simulator.Log.IsClear)
             {
-                var rawMap = (Dictionary) d["map"];
-                var info = new RankingInfo(avatarState);
-                rawMap = (Dictionary) rawMap.SetItem(addressKey, info.Serialize());
+                var ranking = new RankingMapState(d);
+                ranking.Update(avatarState);
 
                 sw.Stop();
                 Log.Verbose("{AddressesHex}HAS Update RankingState: {Elapsed}", addressesHex, sw.Elapsed);
                 sw.Restart();
 
-                d = (Dictionary) d.SetItem(mapKey, rawMap);
+                var serialized = ranking.Serialize();
 
                 sw.Stop();
                 Log.Verbose("{AddressesHex}HAS Serialize RankingState: {Elapsed}", addressesHex, sw.Elapsed);
                 sw.Restart();
-                states = states.SetState(RankingMapAddress, d);
+                states = states.SetState(RankingMapAddress, serialized);
             }
 
             sw.Stop();
@@ -256,40 +253,29 @@ namespace Nekoyume.Action
                 simulator.Log.IsClear &&
                 states.TryGetState(WeeklyArenaAddress, out Dictionary weeklyDict))
             {
-                var arenaEnded = (Bencodex.Types.Boolean) weeklyDict["ended"];
-                if (!arenaEnded)
+                var weekly = new WeeklyArenaState(weeklyDict);
+                if (!weekly.Ended)
                 {
-                    var weeklyRawMap = (Dictionary)weeklyDict["map"];
-                    Dictionary infoSerialized;
-                    if (weeklyRawMap.ContainsKey(addressKey))
+                    if (weekly.ContainsKey(avatarAddress))
                     {
-                        infoSerialized = (Dictionary) weeklyRawMap[addressKey];
-                        IKey armorKey = (Text) "armorId";
-                        IKey levelKey = (Text) "level";
-                        IKey cpKey = (Text) "combatPoint";
-                        infoSerialized = (Dictionary) infoSerialized
-                            .SetItem(armorKey, avatarState.GetArmorId().Serialize())
-                            .SetItem(levelKey, avatarState.level.Serialize())
-                            .SetItem(cpKey, CPHelper.GetCP(avatarState, characterSheet).Serialize());
+                        var info = weekly[avatarAddress];
+                        info.Update(avatarState, characterSheet, costumeStatSheet);
+                        weekly.Update(info);
                     }
                     else
                     {
-                        infoSerialized =
-                            (Dictionary) new ArenaInfo(avatarState, characterSheet, costumeStatSheet, false)
-                                .Serialize();
+                        weekly.SetV2(avatarState, characterSheet, costumeStatSheet);
                     }
-
-                    weeklyRawMap = (Dictionary) weeklyRawMap.SetItem(addressKey, infoSerialized);
 
                     sw.Stop();
                     Log.Verbose("{AddressesHex}HAS Update WeeklyArenaState: {Elapsed}", addressesHex, sw.Elapsed);
 
                     sw.Restart();
-                    weeklyDict = (Dictionary) weeklyDict.SetItem(mapKey, weeklyRawMap);
+                    var weeklySerialized = weekly.Serialize();
                     sw.Stop();
                     Log.Verbose("{AddressesHex}HAS Serialize RankingState: {Elapsed}", addressesHex, sw.Elapsed);
 
-                    states = states.SetState(WeeklyArenaAddress, weeklyDict);
+                    states = states.SetState(weekly.address, weeklySerialized);
                 }
             }
 
