@@ -396,7 +396,11 @@ namespace Nekoyume.UI
                 return;
             }
 
-            LocalLayerModifier.RemoveItem(avatarAddress, tradableItem.TradableId, tradableItem.RequiredBlockIndex, count);
+            if (!(tradableItem is TradableMaterial))
+            {
+                LocalLayerModifier.RemoveItem(avatarAddress, tradableItem.TradableId, tradableItem.RequiredBlockIndex, count);
+            }
+
             AudioController.instance.PlaySfx(AudioController.SfxCode.InputItem);
 
             string message = string.Empty;
