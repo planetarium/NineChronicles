@@ -66,7 +66,7 @@ namespace Lib9c.Tests.Action
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
-        public void Execute(bool backWard)
+        public void Execute(bool backward)
         {
             var row = _tableSheets.ConsumableItemRecipeSheet.Values.First();
             foreach (var materialInfo in row.Materials)
@@ -108,7 +108,7 @@ namespace Lib9c.Tests.Action
 
             _initialState = _initialState.SetState(_slotAddress, new CombinationSlotState(_slotAddress, requiredStage).Serialize());
 
-            if (backWard)
+            if (backward)
             {
                 _initialState = _initialState.SetState(_avatarAddress, _avatarState.Serialize());
             }

@@ -45,7 +45,7 @@ namespace Lib9c.Tests.Action
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
-        public void Execute(bool backWard)
+        public void Execute(bool backward)
         {
             var privateKey = new PrivateKey();
             PublicKey publicKey = privateKey.PublicKey;
@@ -73,7 +73,7 @@ namespace Lib9c.Tests.Action
                 .SetState(GoldCurrencyState.Address, goldState.Serialize())
                 .MintAsset(GoldCurrencyState.Address, goldState.Currency * 100000000);
 
-            if (backWard)
+            if (backward)
             {
                 initialState = initialState.SetState(_avatarAddress, avatarState.Serialize());
             }

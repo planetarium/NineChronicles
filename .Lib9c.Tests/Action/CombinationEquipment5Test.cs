@@ -209,8 +209,7 @@ namespace Lib9c.Tests.Action
             var subRecipe = _tableSheets.EquipmentItemSubRecipeSheet[255];
             var equipment =
                 (Necklace)ItemFactory.CreateItemUsable(_tableSheets.EquipmentItemSheet[10411000], default, 0);
-            var i = 0;
-            while (i < 10000)
+            for (int i = 0; i < 10000; i++)
             {
                 var ids = CombinationEquipment4.SelectOption(
                     _tableSheets.EquipmentItemOptionSheet,
@@ -231,8 +230,6 @@ namespace Lib9c.Tests.Action
                         options[id] = 1;
                     }
                 }
-
-                i++;
             }
 
             var optionIds = options

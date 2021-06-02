@@ -119,7 +119,7 @@ namespace Lib9c.Tests.Action
         [InlineData(false, true, false)]
         [InlineData(false, false, true)]
         [InlineData(false, false, false)]
-        public void Execute(bool isNew, bool avatarBackWard, bool enemyBackWard)
+        public void Execute(bool isNew, bool avatarBackward, bool enemyBackward)
         {
             var previousWeeklyState = _initialState.GetWeeklyArenaState(0);
             var previousAvatar1State = _initialState.GetAvatarState(_avatar1Address);
@@ -153,7 +153,7 @@ namespace Lib9c.Tests.Action
             var enemyAvatarState = _initialState.GetAvatarState(_avatar2Address);
             enemyAvatarState.inventory.AddItem(enemyCostume);
 
-            if (avatarBackWard)
+            if (avatarBackward)
             {
                 previousState = previousState.SetState(_avatar1Address, previousAvatar1State.Serialize());
             }
@@ -166,7 +166,7 @@ namespace Lib9c.Tests.Action
                     .SetState(_avatar1Address, previousAvatar1State.SerializeV2());
             }
 
-            if (enemyBackWard)
+            if (enemyBackward)
             {
                 previousState = previousState.SetState(_avatar2Address, enemyAvatarState.Serialize());
             }

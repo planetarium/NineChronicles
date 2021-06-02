@@ -62,7 +62,7 @@ namespace Lib9c.Tests.Action
         [InlineData(false, true)]
         [InlineData(true, false)]
         [InlineData(false, false)]
-        public void Execute(bool useTradable, bool backWard)
+        public void Execute(bool useTradable, bool backward)
         {
             var avatarState = _initialState.GetAvatarState(_avatarAddress);
             var row = _tableSheets.MaterialItemSheet.Values.First(r => r.ItemSubType == ItemSubType.ApStone);
@@ -80,7 +80,7 @@ namespace Lib9c.Tests.Action
             Assert.Equal(0, avatarState.actionPoint);
 
             IAccountStateDelta state;
-            if (backWard)
+            if (backward)
             {
                 state = _initialState.SetState(_avatarAddress, avatarState.Serialize());
             }

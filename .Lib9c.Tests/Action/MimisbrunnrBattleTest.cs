@@ -77,7 +77,7 @@
         [InlineData(400, GameConfig.MimisbrunnrWorldId, GameConfig.MimisbrunnrStartStageId, 100, true)]
         [InlineData(200, GameConfig.MimisbrunnrWorldId, GameConfig.MimisbrunnrStartStageId, 140, false)]
         [InlineData(400, GameConfig.MimisbrunnrWorldId, GameConfig.MimisbrunnrStartStageId, 100, false)]
-        public void Execute(int avatarLevel, int worldId, int stageId, int clearStageId, bool backWard)
+        public void Execute(int avatarLevel, int worldId, int stageId, int clearStageId, bool backward)
         {
             Assert.True(_tableSheets.WorldSheet.TryGetValue(worldId, out var worldRow));
             Assert.True(stageId >= worldRow.StageBegin);
@@ -136,7 +136,7 @@
             }
 
             var state = _initialState;
-            if (backWard)
+            if (backward)
             {
                 state = _initialState.SetState(_avatarAddress, previousAvatarState.Serialize());
             }

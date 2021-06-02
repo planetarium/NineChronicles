@@ -111,12 +111,12 @@ namespace Lib9c.Tests.Action
             if (avatarLevel >= GameConfig.RequireCharacterLevel.CharacterEquipmentSlotWeapon)
             {
                 var weaponId = _tableSheets
-                .EquipmentItemSheet
-                .Values
-                .Where(r => r.ItemSubType == ItemSubType.Weapon)
-                .OrderBy(r => r.Stat.ValueAsInt)
-                .Last()
-                .Id;
+                    .EquipmentItemSheet
+                    .Values
+                    .Where(r => r.ItemSubType == ItemSubType.Weapon)
+                    .OrderBy(r => r.Stat.ValueAsInt)
+                    .Last()
+                    .Id;
 
                 var weapon = ItemFactory.CreateItem(
                     _tableSheets.EquipmentItemSheet[weaponId],
@@ -129,12 +129,12 @@ namespace Lib9c.Tests.Action
             if (avatarLevel >= GameConfig.RequireCharacterLevel.CharacterEquipmentSlotArmor)
             {
                 var armorId = _tableSheets
-                .EquipmentItemSheet
-                .Values
-                .Where(r => r.ItemSubType == ItemSubType.Armor)
-                .OrderBy(r => r.Stat.ValueAsInt)
-                .Last()
-                .Id;
+                    .EquipmentItemSheet
+                    .Values
+                    .Where(r => r.ItemSubType == ItemSubType.Armor)
+                    .OrderBy(r => r.Stat.ValueAsInt)
+                    .Last()
+                    .Id;
 
                 var armor = ItemFactory.CreateItem(
                     _tableSheets.EquipmentItemSheet[armorId],

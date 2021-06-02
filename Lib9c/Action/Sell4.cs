@@ -142,9 +142,9 @@ namespace Nekoyume.Action
             }
 #pragma warning disable LAA1002
                 Dictionary productSerialized = products
-                .Select(p => (Dictionary) p)
-                .FirstOrDefault(p =>
-                    ((Dictionary) p[productKey])[itemIdKey].Equals(nonFungibleItem.NonFungibleId.Serialize()));
+                    .Select(p => (Dictionary) p)
+                    .FirstOrDefault(p =>
+                        ((Dictionary) p[productKey])[itemIdKey].Equals(nonFungibleItem.NonFungibleId.Serialize()));
 #pragma warning restore LAA1002
 
             // Register new ShopItem

@@ -80,7 +80,7 @@ namespace Lib9c.Tests.Action
         [InlineData(GameConfig.RequireCharacterLevel.CharacterFullCostumeSlot, 1, 1, false, true)]
         [InlineData(200, 1, GameConfig.RequireClearedStageLevel.ActionsInRankingBoard, true, false)]
         [InlineData(200, 1, GameConfig.RequireClearedStageLevel.ActionsInRankingBoard, true, true)]
-        public void Execute(int avatarLevel, int worldId, int stageId, bool contains, bool backWard)
+        public void Execute(int avatarLevel, int worldId, int stageId, bool contains, bool backward)
         {
             Assert.True(_tableSheets.WorldSheet.TryGetValue(worldId, out var worldRow));
             Assert.True(stageId >= worldRow.StageBegin);
@@ -166,7 +166,7 @@ namespace Lib9c.Tests.Action
             }
 
             IAccountStateDelta state;
-            if (backWard)
+            if (backward)
             {
                 state = _initialState.SetState(_avatarAddress, previousAvatarState.Serialize());
             }
@@ -380,7 +380,7 @@ namespace Lib9c.Tests.Action
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
-        public void Execute_Throw_FailedLoadStateException(bool backWard)
+        public void Execute_Throw_FailedLoadStateException(bool backward)
         {
             var action = new HackAndSlash()
             {
@@ -395,8 +395,8 @@ namespace Lib9c.Tests.Action
 
             Assert.Null(action.Result);
 
-            IAccountStateDelta state = backWard ? new State() : _initialState;
-            if (!backWard)
+            IAccountStateDelta state = backward ? new State() : _initialState;
+            if (!backward)
             {
                 state = _initialState
                     .SetState(_avatarAddress, _avatarState.SerializeV2())

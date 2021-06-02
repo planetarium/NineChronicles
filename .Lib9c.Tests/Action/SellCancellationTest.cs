@@ -98,7 +98,7 @@ namespace Lib9c.Tests.Action
             int inventoryCount,
             int prevCount,
             int expectedCount,
-            bool backWard
+            bool backward
         )
         {
             var avatarState = _initialState.GetAvatarState(_avatarAddress);
@@ -195,7 +195,7 @@ namespace Lib9c.Tests.Action
             );
 
             IAccountStateDelta prevState = _initialState;
-            if (backWard)
+            if (backward)
             {
                 prevState = prevState.SetState(_avatarAddress, avatarState.Serialize());
             }

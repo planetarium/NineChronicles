@@ -109,7 +109,7 @@ namespace Lib9c.Tests.Action
             int itemCount,
             int prevCount,
             int expectedProductsCount,
-            bool backWard
+            bool backward
         )
         {
             var avatarState = _initialState.GetAvatarState(_avatarAddress);
@@ -147,7 +147,7 @@ namespace Lib9c.Tests.Action
             avatarState.inventory.AddItem((ItemBase)tradableItem, itemCount);
 
             var previousStates = _initialState;
-            if (backWard)
+            if (backward)
             {
                 previousStates = previousStates.SetState(_avatarAddress, avatarState.Serialize());
             }

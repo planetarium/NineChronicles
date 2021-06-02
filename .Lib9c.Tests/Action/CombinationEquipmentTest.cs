@@ -81,7 +81,7 @@ namespace Lib9c.Tests.Action
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
-        public void Execute(bool backWard)
+        public void Execute(bool backward)
         {
             var row = _tableSheets.EquipmentItemRecipeSheet[109];
             var materialRow = _tableSheets.MaterialItemSheet[row.MaterialId];
@@ -126,7 +126,7 @@ namespace Lib9c.Tests.Action
                 _avatarState.Update(mail);
             }
 
-            if (backWard)
+            if (backward)
             {
                 _initialState = _initialState.SetState(_avatarAddress, _avatarState.Serialize());
             }

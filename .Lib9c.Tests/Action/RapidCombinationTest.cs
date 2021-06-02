@@ -66,7 +66,7 @@ namespace Lib9c.Tests.Action
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
-        public void Execute(bool backWard)
+        public void Execute(bool backward)
         {
             const int slotStateUnlockStage = 1;
 
@@ -116,7 +116,7 @@ namespace Lib9c.Tests.Action
 
             var tempState = _initialState.SetState(slotAddress, slotState.Serialize());
 
-            if (backWard)
+            if (backward)
             {
                 tempState = tempState.SetState(_avatarAddress, avatarState.Serialize());
             }

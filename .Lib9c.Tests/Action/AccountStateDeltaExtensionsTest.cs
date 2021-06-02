@@ -125,10 +125,10 @@ namespace Lib9c.Tests.Action
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
-        public void TryGetAvatarStateV2(bool backWard)
+        public void TryGetAvatarStateV2(bool backward)
         {
             var states = new State();
-            if (backWard)
+            if (backward)
             {
                 states = (State)states
                     .SetState(_avatarAddress, _avatarState.Serialize());
@@ -148,11 +148,11 @@ namespace Lib9c.Tests.Action
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
-        public void TryGetAgentAvatarStatesV2(bool backWard)
+        public void TryGetAgentAvatarStatesV2(bool backward)
         {
             var states = new State().SetState(_agentAddress, _agentState.Serialize());
 
-            if (backWard)
+            if (backward)
             {
                 states = (State)states
                     .SetState(_avatarAddress, _avatarState.Serialize());

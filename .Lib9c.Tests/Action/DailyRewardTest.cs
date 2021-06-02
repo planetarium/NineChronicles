@@ -63,13 +63,13 @@ namespace Lib9c.Tests.Action
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
-        public void Execute(bool backWard)
+        public void Execute(bool backward)
         {
             var dailyRewardAction = new DailyReward
             {
                 avatarAddress = _avatarAddress,
             };
-            if (!backWard)
+            if (!backward)
             {
                 AvatarState avatarState = _initialState.GetAvatarState(_avatarAddress);
                 _initialState = _initialState

@@ -77,7 +77,7 @@ namespace Lib9c.Tests.Action
         [InlineData(3, 4, 0, true)]
         [InlineData(0, 1, 1000, false)]
         [InlineData(3, 4, 0, false)]
-        public void Execute(int level, int expectedLevel, int expectedGold, bool backWard)
+        public void Execute(int level, int expectedLevel, int expectedGold, bool backward)
         {
             var row = _tableSheets.EquipmentItemSheet.Values.First(r => r.Grade == 1);
             var equipment = (Equipment)ItemFactory.CreateItemUsable(row, default, 0, level);
@@ -110,7 +110,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Equal(level, equipment.level);
 
-            if (backWard)
+            if (backward)
             {
                 _initialState = _initialState.SetState(_avatarAddress, _avatarState.Serialize());
             }
