@@ -188,6 +188,11 @@ namespace Nekoyume.UI.Model
                 var addressString = myRecord.AvatarAddress.Substring(2);
                 var address = new Address(addressString);
                 var iValue = Game.Game.instance.Agent.GetState(address);
+                if (iValue is Bencodex.Types.Null || iValue is null)
+                {
+                    Debug.LogError($"Failed to get state of user {address}.");
+                    return;
+                }
                 var avatarState = new AvatarState((Bencodex.Types.Dictionary)iValue);
                 AgentStageRankingInfos[pair.Key] = new StageRankingModel
                 {
@@ -218,6 +223,11 @@ namespace Nekoyume.UI.Model
                     var addressString = x.AvatarAddress.Substring(2);
                     var address = new Address(addressString);
                     var iValue = Game.Game.instance.Agent.GetState(address);
+                    if (iValue is Bencodex.Types.Null || iValue is null)
+                    {
+                        Debug.LogError($"Failed to get state of user {address}.");
+                        return null;
+                    }
                     var avatarState = new AvatarState((Bencodex.Types.Dictionary)iValue);
 
                     return new StageRankingModel
@@ -227,7 +237,9 @@ namespace Nekoyume.UI.Model
                             x.ClearedStageId - GameConfig.MimisbrunnrStartStageId + 1 : 0,
                         Rank = x.Ranking,
                     };
-                }).ToList();
+                })
+                .Where(x => x != null)
+                .ToList();
 
             foreach (var pair in States.Instance.AvatarStates)
             {
@@ -258,6 +270,11 @@ namespace Nekoyume.UI.Model
                 var addressString = myRecord.AvatarAddress.Substring(2);
                 var address = new Address(addressString);
                 var iValue = Game.Game.instance.Agent.GetState(address);
+                if (iValue is Bencodex.Types.Null || iValue is null)
+                {
+                    Debug.LogError($"Failed to get state of user {address}.");
+                    return;
+                }
                 var avatarState = new AvatarState((Bencodex.Types.Dictionary)iValue);
                 AgentMimisbrunnrRankingInfos[pair.Key] = new StageRankingModel
                 {
