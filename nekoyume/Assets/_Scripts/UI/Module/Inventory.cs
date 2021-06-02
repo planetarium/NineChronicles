@@ -12,9 +12,6 @@ namespace Nekoyume.UI.Module
 
     public class Inventory : MonoBehaviour
     {
-        private static readonly Vector2 BtnHighlightSize = new Vector2(122f, 60f);
-        private static readonly Vector2 BtnSize = new Vector2(95f, 36f);
-
         [SerializeField]
         private CategoryTabButton equipmentButton = null;
 
