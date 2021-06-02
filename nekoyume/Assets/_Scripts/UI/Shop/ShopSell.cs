@@ -226,24 +226,6 @@ namespace Nekoyume.UI
                 shopItem.Count.Value);
         }
 
-        private void ShowActionPopup(CountableItem viewModel)
-        {
-            if (viewModel is null ||
-                viewModel.Dimmed.Value)
-                return;
-
-            switch (viewModel)
-            {
-                case InventoryItem inventoryItem:
-                    ShowSellPopup(inventoryItem);
-                    break;
-
-                case ShopItem shopItem:
-                    ShowRetrievePopup(shopItem);
-                    break;
-            }
-        }
-
         // sell
         private void SubscribeSellPopup(CountableItem data)
         {
@@ -409,7 +391,6 @@ namespace Nekoyume.UI
             var item = SharedModel.ItemCountableAndPricePopup.Value.Item.Value;
             var count = SharedModel.ItemCountableAndPricePopup.Value.Count.Value;
             SharedModel.ItemCountableAndPricePopup.Value.Item.Value = null;
-
             if (!(item.ItemBase.Value is ITradableItem tradableItem))
             {
                 return;
@@ -431,6 +412,7 @@ namespace Nekoyume.UI
                     item.ItemBase.Value.GetLocalizedName());
             }
             OneLinePopup.Push(MailType.Auction, message);
+            inventory.SharedModel.ActiveFunc.SetValueAndForceNotify(inventoryItem => (inventoryItem.ItemBase.Value is ITradableItem));
         }
 
         private void ResponseSellCancellation(ShopItem shopItem)
