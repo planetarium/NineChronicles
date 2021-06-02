@@ -36,7 +36,7 @@ namespace Nekoyume.UI.Model
 
         private HashSet<Nekoyume.Model.State.RankingInfo> _rankingInfoSet = null;
 
-        public async Task Update(int displayCount)
+        public Task Update(int displayCount)
         {
             var rankingMapStates = States.Instance.RankingMapStates;
             _rankingInfoSet = new HashSet<Nekoyume.Model.State.RankingInfo>();
@@ -49,19 +49,25 @@ namespace Nekoyume.UI.Model
             Debug.LogWarning($"total user count : {_rankingInfoSet.Count()}");
             var apiClient = Game.Game.instance.ApiClient;
 
-            var sw = new Stopwatch();
-            sw.Start();
-
             if (apiClient.IsInitialized)
             {
-                LoadAbilityRankingInfos(displayCount);
-                await LoadStageRankingInfos(apiClient, displayCount);
-                await LoadMimisbrunnrRankingInfos(apiClient, displayCount);
-                IsInitialized = true;
+                return Task.Run(async () =>
+                {
+                    var sw = new Stopwatch();
+                    sw.Start();
+
+                    LoadAbilityRankingInfos(displayCount);
+                    await Task.WhenAll(
+                        LoadStageRankingInfos(apiClient, displayCount),
+                        LoadMimisbrunnrRankingInfos(apiClient, displayCount)
+                    );
+                    IsInitialized = true;
+                    sw.Stop();
+                    UnityEngine.Debug.LogWarning($"total elapsed : {sw.Elapsed}");
+                });
             }
 
-            sw.Stop();
-            UnityEngine.Debug.LogWarning($"total elapsed : {sw.Elapsed}");
+            return Task.CompletedTask;
         }
 
         private void LoadAbilityRankingInfos(int displayCount)
