@@ -128,7 +128,7 @@ namespace Nekoyume.Action
 
             var rankingMapAddress = rankingState.UpdateRankingMap(avatarAddress);
 
-            avatarState = CreateAvatar.CreateAvatarState(name, avatarAddress, ctx, materialItemSheet, rankingMapAddress);
+            avatarState = CreateAvatar0.CreateAvatarState(name, avatarAddress, ctx, materialItemSheet, rankingMapAddress);
 
             if (hair < 0) hair = 0;
             if (lens < 0) lens = 0;

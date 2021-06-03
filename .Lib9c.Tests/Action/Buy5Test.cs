@@ -246,7 +246,7 @@ namespace Lib9c.Tests.Action
             Assert.Single(legacyShopState.Products);
             Assert.True(shardedShopStates.All(r => r.Value.Products.Count == 1));
 
-            var buyAction = new Buy
+            var buyAction = new Buy5
             {
                 buyerAvatarAddress = _buyerAvatarAddress,
                 purchaseInfos = purchaseInfos,
@@ -322,7 +322,7 @@ namespace Lib9c.Tests.Action
                 ItemSubType.Food
             );
 
-            var action = new Buy
+            var action = new Buy5
             {
                 buyerAvatarAddress = _buyerAvatarAddress,
                 purchaseInfos = new[] { purchaseInfo },
@@ -352,7 +352,7 @@ namespace Lib9c.Tests.Action
                 ItemSubType.Food
             );
 
-            var action = new Buy
+            var action = new Buy5
             {
                 buyerAvatarAddress = default,
                 purchaseInfos = new[] { purchaseInfo },
@@ -388,7 +388,7 @@ namespace Lib9c.Tests.Action
                 ItemSubType.Food
             );
 
-            var action = new Buy
+            var action = new Buy5
             {
                 buyerAvatarAddress = _buyerAvatarAddress,
                 purchaseInfos = new[] { purchaseInfo },
@@ -414,7 +414,7 @@ namespace Lib9c.Tests.Action
                 ItemSubType.Weapon
             );
 
-            var action = new Buy
+            var action = new Buy5
             {
                 buyerAvatarAddress = _buyerAvatarAddress,
                 purchaseInfos = new[] { purchaseInfo },
@@ -465,7 +465,7 @@ namespace Lib9c.Tests.Action
                 ItemSubType.Weapon
             );
 
-            var action = new Buy
+            var action = new Buy5
             {
                 buyerAvatarAddress = _buyerAvatarAddress,
                 purchaseInfos = new[] { purchaseInfo },
@@ -516,7 +516,7 @@ namespace Lib9c.Tests.Action
                 ItemSubType.Weapon
             );
 
-            var action = new Buy
+            var action = new Buy5
             {
                 buyerAvatarAddress = _buyerAvatarAddress,
                 purchaseInfos = new[] { purchaseInfo },
@@ -566,7 +566,7 @@ namespace Lib9c.Tests.Action
                 ItemSubType.Weapon
             );
 
-            var action = new Buy
+            var action = new Buy5
             {
                 buyerAvatarAddress = _buyerAvatarAddress,
                 purchaseInfos = new[] { purchaseInfo },

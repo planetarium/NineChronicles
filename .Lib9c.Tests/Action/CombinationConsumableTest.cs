@@ -11,6 +11,7 @@ namespace Lib9c.Tests.Action
     using Nekoyume.Model.Mail;
     using Nekoyume.Model.State;
     using Xunit;
+    using static SerializeKeys;
 
     public class CombinationConsumableTest
     {
@@ -62,8 +63,10 @@ namespace Lib9c.Tests.Action
             }
         }
 
-        [Fact]
-        public void Execute()
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public void Execute(bool backward)
         {
             var row = _tableSheets.ConsumableItemRecipeSheet.Values.First();
             foreach (var materialInfo in row.Materials)
@@ -87,7 +90,7 @@ namespace Lib9c.Tests.Action
 
             var equipment = ItemFactory.CreateItemUsable(_tableSheets.EquipmentItemSheet.First, default, 0);
 
-            var result = new CombinationConsumable.ResultModel()
+            var result = new CombinationConsumable5.ResultModel()
             {
                 id = default,
                 gold = 0,
@@ -103,9 +106,20 @@ namespace Lib9c.Tests.Action
                 _avatarState.Update(mail);
             }
 
-            _initialState = _initialState
-                .SetState(_avatarAddress, _avatarState.Serialize())
-                .SetState(_slotAddress, new CombinationSlotState(_slotAddress, requiredStage).Serialize());
+            _initialState = _initialState.SetState(_slotAddress, new CombinationSlotState(_slotAddress, requiredStage).Serialize());
+
+            if (backward)
+            {
+                _initialState = _initialState.SetState(_avatarAddress, _avatarState.Serialize());
+            }
+            else
+            {
+                _initialState = _initialState
+                    .SetState(_avatarAddress.Derive(LegacyInventoryKey), _avatarState.inventory.Serialize())
+                    .SetState(_avatarAddress.Derive(LegacyWorldInformationKey), _avatarState.worldInformation.Serialize())
+                    .SetState(_avatarAddress.Derive(LegacyQuestListKey), _avatarState.questList.Serialize())
+                    .SetState(_avatarAddress, _avatarState.SerializeV2());
+            }
 
             var action = new CombinationConsumable()
             {
@@ -129,7 +143,7 @@ namespace Lib9c.Tests.Action
             var consumable = (Consumable)slotState.Result.itemUsable;
             Assert.NotNull(consumable);
 
-            var nextAvatarState = nextState.GetAvatarState(_avatarAddress);
+            var nextAvatarState = nextState.GetAvatarStateV2(_avatarAddress);
 
             Assert.Equal(30, nextAvatarState.mailBox.Count);
             Assert.IsType<CombinationMail>(nextAvatarState.mailBox.First());

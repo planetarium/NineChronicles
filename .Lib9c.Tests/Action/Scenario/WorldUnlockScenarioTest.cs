@@ -179,7 +179,7 @@ namespace Lib9c.Tests.Action.Scenario
             Assert.False(avatarState.worldInformation.IsWorldUnlocked(worldIdToUnlock));
 
             var nextState = _initialState.SetState(_avatarAddress, avatarState.Serialize());
-            var mimisbrunnrBattle = new MimisbrunnrBattle()
+            var mimisbrunnrBattle = new MimisbrunnrBattle3()
             {
                 worldId = worldIdToUnlock,
                 stageId = stageIdToUnlock,

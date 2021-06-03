@@ -19,7 +19,7 @@ using Nekoyume.TableData;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("combination_equipment")]
+    [ActionType("combination_equipment5")]
     public class CombinationEquipment5 : GameAction
     {
         public static readonly Address BlacksmithAddress = ItemEnhancement.BlacksmithAddress;
@@ -73,7 +73,7 @@ namespace Nekoyume.Action
             var materialSheet = states.GetSheet<MaterialItemSheet>();
             var materials = new Dictionary<Material, int>();
 
-            // 레시피 검증
+            // Validate recipe.
             if (!recipeSheet.TryGetValue(RecipeId, out var recipe))
             {
                 throw new SheetRowNotFoundException(addressesHex, nameof(EquipmentItemRecipeSheet), RecipeId);
@@ -89,7 +89,7 @@ namespace Nekoyume.Action
                 }
             }
 
-            // 메인 레시피 해금 검사.
+            // Validate main recipe is unlocked.
             if (!avatarState.worldInformation.IsStageCleared(recipe.UnlockStage))
             {
                 avatarState.worldInformation.TryGetLastClearedStageId(out var current);
@@ -115,7 +115,7 @@ namespace Nekoyume.Action
             var requiredActionPoint = recipe.RequiredActionPoint;
             var equipmentItemSheet = states.GetSheet<EquipmentItemSheet>();
 
-            // 장비 제작
+            // Validate equipment id.
             if (!equipmentItemSheet.TryGetValue(recipe.ResultEquipmentId, out var equipRow))
             {
                 throw new SheetRowNotFoundException(addressesHex, nameof(equipmentItemSheet), recipe.ResultEquipmentId);
@@ -128,7 +128,7 @@ namespace Nekoyume.Action
                 requiredBlockIndex
             );
 
-            // 서브 레시피 검증
+            // Validate sub recipe.
             HashSet<int> optionIds = null;
             if (SubRecipeId.HasValue)
             {
@@ -167,9 +167,18 @@ namespace Nekoyume.Action
                 equipment.Update(requiredBlockIndex);
             }
 
-            // 자원 검증
+            // Validate NCG.
             FungibleAssetValue agentBalance = states.GetBalance(ctx.Signer, states.GetGoldCurrency());
-            if (agentBalance < (states.GetGoldCurrency() * requiredGold) || avatarState.actionPoint < requiredActionPoint)
+            if (agentBalance < states.GetGoldCurrency() * requiredGold)
+            {
+                throw new InsufficientBalanceException(
+                    ctx.Signer,
+                    agentBalance,
+                    $"{addressesHex}Aborted as the agent ({ctx.Signer}) has no sufficient gold: {agentBalance} < {requiredGold}"
+                );
+            }
+
+            if (avatarState.actionPoint < requiredActionPoint)
             {
                 throw new NotEnoughActionPointException(
                     $"{addressesHex}Aborted due to insufficient action point: {avatarState.actionPoint} < {requiredActionPoint}"
@@ -185,7 +194,7 @@ namespace Nekoyume.Action
                 }
             }
 
-            // FIXME: BlacksmithAddress 계좌로 돈이 쌓이기만 하는데 이걸 어떻게 순환시킬지 기획이 필요.
+            // FIXME: BlacksmithAddress just accumulate NCG. we need plan how to circulate this.
             if (requiredGold > 0)
             {
                 states = states.TransferAsset(
@@ -195,7 +204,7 @@ namespace Nekoyume.Action
                 );
             }
 
-            var result = new CombinationConsumable.ResultModel
+            var result = new CombinationConsumable5.ResultModel
             {
                 actionPoint = requiredActionPoint,
                 gold = requiredGold,
@@ -209,7 +218,7 @@ namespace Nekoyume.Action
             var mail = new CombinationMail(result, ctx.BlockIndex, ctx.Random.GenerateRandomGuid(),
                 requiredBlockIndex);
             result.id = mail.id;
-            avatarState.Update(mail);
+            avatarState.UpdateV3(mail);
             avatarState.questList.UpdateCombinationEquipmentQuest(RecipeId);
             avatarState.UpdateFromCombination(equipment);
             avatarState.UpdateQuestRewards(materialSheet);

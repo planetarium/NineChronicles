@@ -5,16 +5,16 @@ using System.Linq;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
-using Libplanet.Assets;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using Serilog;
+using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("redeem_code")]
+    [ActionType("redeem_code2")]
     public class RedeemCode : GameAction
     {
         public string Code { get; internal set; }
@@ -34,19 +34,25 @@ namespace Nekoyume.Action
         public override IAccountStateDelta Execute(IActionContext context)
         {
             var states = context.PreviousStates;
+            var inventoryAddress = AvatarAddress.Derive(LegacyInventoryKey);
+            var worldInformationAddress = AvatarAddress.Derive(LegacyWorldInformationKey);
+            var questListAddress = AvatarAddress.Derive(LegacyQuestListKey);
             if (context.Rehearsal)
             {
-                states = states.SetState(RedeemCodeState.Address, MarkChanged);
-                states = states.SetState(AvatarAddress, MarkChanged);
-                states = states.SetState(context.Signer, MarkChanged);
-                states = states.MarkBalanceChanged(GoldCurrencyMock, GoldCurrencyState.Address);
-                states = states.MarkBalanceChanged(GoldCurrencyMock, context.Signer);
-                return states;
+                return states
+                    .SetState(RedeemCodeState.Address, MarkChanged)
+                    .SetState(inventoryAddress, MarkChanged)
+                    .SetState(worldInformationAddress, MarkChanged)
+                    .SetState(questListAddress, MarkChanged)
+                    .SetState(AvatarAddress, MarkChanged)
+                    .SetState(context.Signer, MarkChanged)
+                    .MarkBalanceChanged(GoldCurrencyMock, GoldCurrencyState.Address)
+                    .MarkBalanceChanged(GoldCurrencyMock, context.Signer);
             }
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, AvatarAddress);
 
-            if (!states.TryGetAvatarState(context.Signer, AvatarAddress, out AvatarState avatarState))
+            if (!states.TryGetAvatarStateV2(context.Signer, AvatarAddress, out AvatarState avatarState))
             {
                 return states;
             }
@@ -104,9 +110,12 @@ namespace Nekoyume.Action
                         break;
                 }
             }
-            states = states.SetState(AvatarAddress, avatarState.Serialize());
-            states = states.SetState(RedeemCodeState.Address, redeemState.Serialize());
-            return states;
+            return states
+                .SetState(AvatarAddress, avatarState.SerializeV2())
+                .SetState(inventoryAddress, avatarState.inventory.Serialize())
+                .SetState(worldInformationAddress, avatarState.worldInformation.Serialize())
+                .SetState(questListAddress, avatarState.questList.Serialize())
+                .SetState(RedeemCodeState.Address, redeemState.Serialize());
         }
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>

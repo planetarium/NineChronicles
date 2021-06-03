@@ -13,7 +13,7 @@ using Nekoyume.TableData;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("daily_reward2")]
+    [ActionType("daily_reward3")]
     public class DailyReward3 : GameAction
     {
         public Address avatarAddress;
@@ -29,7 +29,7 @@ namespace Nekoyume.Action
             {
                 return states.SetState(avatarAddress, MarkChanged);
             }
-            
+
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
 
             if (!states.TryGetAgentAvatarStates(ctx.Signer, avatarAddress, out _, out AvatarState avatarState))

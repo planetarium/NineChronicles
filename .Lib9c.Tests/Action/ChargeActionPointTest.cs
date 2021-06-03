@@ -1,6 +1,7 @@
 namespace Lib9c.Tests.Action
 {
     using System.Collections.Generic;
+    using System.Collections.Immutable;
     using System.Linq;
     using Libplanet;
     using Libplanet.Action;
@@ -11,6 +12,7 @@ namespace Lib9c.Tests.Action
     using Nekoyume.Model.State;
     using Nekoyume.TableData;
     using Xunit;
+    using static SerializeKeys;
 
     public class ChargeActionPointTest
     {
@@ -56,9 +58,11 @@ namespace Lib9c.Tests.Action
         }
 
         [Theory]
-        [InlineData(true)]
-        [InlineData(false)]
-        public void Execute(bool useTradable)
+        [InlineData(true, true)]
+        [InlineData(false, true)]
+        [InlineData(true, false)]
+        [InlineData(false, false)]
+        public void Execute(bool useTradable, bool backward)
         {
             var avatarState = _initialState.GetAvatarState(_avatarAddress);
             var row = _tableSheets.MaterialItemSheet.Values.First(r => r.ItemSubType == ItemSubType.ApStone);
@@ -75,7 +79,19 @@ namespace Lib9c.Tests.Action
 
             Assert.Equal(0, avatarState.actionPoint);
 
-            var state = _initialState.SetState(_avatarAddress, avatarState.Serialize());
+            IAccountStateDelta state;
+            if (backward)
+            {
+                state = _initialState.SetState(_avatarAddress, avatarState.Serialize());
+            }
+            else
+            {
+                state = _initialState
+                    .SetState(_avatarAddress.Derive(LegacyInventoryKey), avatarState.inventory.Serialize())
+                    .SetState(_avatarAddress.Derive(LegacyWorldInformationKey), avatarState.worldInformation.Serialize())
+                    .SetState(_avatarAddress.Derive(LegacyQuestListKey), avatarState.questList.Serialize())
+                    .SetState(_avatarAddress, avatarState.SerializeV2());
+            }
 
             foreach (var (key, value) in _sheets)
             {
@@ -95,7 +111,7 @@ namespace Lib9c.Tests.Action
                 Rehearsal = false,
             });
 
-            var nextAvatarState = nextState.GetAvatarState(_avatarAddress);
+            var nextAvatarState = nextState.GetAvatarStateV2(_avatarAddress);
             var gameConfigState = nextState.GetGameConfigState();
             Assert.Equal(gameConfigState.ActionPointMax, nextAvatarState.actionPoint);
         }
@@ -150,6 +166,35 @@ namespace Lib9c.Tests.Action
                     Rehearsal = false,
                 })
             );
+        }
+
+        [Fact]
+        public void Rehearsal()
+        {
+            var action = new ChargeActionPoint
+            {
+                avatarAddress = _avatarAddress,
+            };
+
+            var updatedAddresses = new List<Address>()
+            {
+                _avatarAddress,
+                _avatarAddress.Derive(LegacyInventoryKey),
+                _avatarAddress.Derive(LegacyWorldInformationKey),
+                _avatarAddress.Derive(LegacyQuestListKey),
+            };
+
+            var state = new State();
+
+            var nextState = action.Execute(new ActionContext()
+            {
+                PreviousStates = state,
+                Signer = _agentAddress,
+                BlockIndex = 0,
+                Rehearsal = true,
+            });
+
+            Assert.Equal(updatedAddresses.ToImmutableHashSet(), nextState.UpdatedAddresses);
         }
     }
 }

@@ -17,7 +17,7 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("sell_cancellation6")]
+    [ActionType("sell_cancellation7")]
     public class SellCancellation : GameAction
     {
         public Guid productId;
@@ -71,11 +71,17 @@ namespace Nekoyume.Action
         {
             var states = context.PreviousStates;
             var shardedShopAddress = ShardedShopState.DeriveAddress(itemSubType, productId);
+            var inventoryAddress = sellerAvatarAddress.Derive(LegacyInventoryKey);
+            var worldInformationAddress = sellerAvatarAddress.Derive(LegacyWorldInformationKey);
+            var questListAddress = sellerAvatarAddress.Derive(LegacyQuestListKey);
             if (context.Rehearsal)
             {
                 states = states.SetState(shardedShopAddress, MarkChanged);
                 return states
                     .SetState(Addresses.Shop, MarkChanged)
+                    .SetState(inventoryAddress, MarkChanged)
+                    .SetState(worldInformationAddress, MarkChanged)
+                    .SetState(questListAddress, MarkChanged)
                     .SetState(sellerAvatarAddress, MarkChanged);
             }
 
@@ -85,7 +91,7 @@ namespace Nekoyume.Action
             var started = DateTimeOffset.UtcNow;
             Log.Verbose("{AddressesHex}Sell Cancel exec started", addressesHex);
 
-            if (!states.TryGetAvatarState(context.Signer, sellerAvatarAddress, out var avatarState))
+            if (!states.TryGetAvatarStateV2(context.Signer, sellerAvatarAddress, out var avatarState))
             {
                 throw new FailedLoadStateException(
                     $"{addressesHex}Aborted as the avatar state of the seller failed to load.");
@@ -229,7 +235,11 @@ namespace Nekoyume.Action
             Log.Verbose("{AddressesHex}Sell Cancel Update AvatarState: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();
 
-            states = states.SetState(sellerAvatarAddress, avatarState.Serialize());
+            states = states
+                .SetState(inventoryAddress,avatarState.inventory.Serialize())
+                .SetState(worldInformationAddress, avatarState.worldInformation.Serialize())
+                .SetState(questListAddress, avatarState.questList.Serialize())
+                .SetState(sellerAvatarAddress, avatarState.SerializeV2());
             sw.Stop();
             Log.Verbose("{AddressesHex}Sell Cancel Set AvatarState: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();
