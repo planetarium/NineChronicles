@@ -358,10 +358,10 @@ namespace Nekoyume.UI
             }
 
             Mixpanel.Track("Unity/Sell Cancellation");
-            Game.Game.instance.ActionManager.SellCancellation(
-                shopItem.SellerAvatarAddress.Value,
-                shopItem.ProductId.Value,
-                shopItem.ItemSubType.Value);
+            // Game.Game.instance.ActionManager.SellCancellation(
+            //     shopItem.SellerAvatarAddress.Value,
+            //     shopItem.ProductId.Value,
+            //     shopItem.ItemSubType.Value);
             ResponseSellCancellation(shopItem);
         }
 
