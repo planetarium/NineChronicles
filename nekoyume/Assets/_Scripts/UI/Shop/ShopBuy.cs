@@ -239,8 +239,8 @@ namespace Nekoyume.UI
         private void Buy(ShopItem shopItem)
         {
             var purchaseInfos = new List<PurchaseInfo> { GetPurchseInfo(shopItem) };
-            Game.Game.instance.ActionManager.Buy(purchaseInfos,
-                new List<ShopItem> {shopItem});
+            // Game.Game.instance.ActionManager.Buy(purchaseInfos,
+            //     new List<ShopItem> {shopItem});
 
             var countProps = new Value
             {
