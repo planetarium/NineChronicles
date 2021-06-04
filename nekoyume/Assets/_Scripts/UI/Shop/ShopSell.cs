@@ -188,6 +188,17 @@ namespace Nekoyume.UI
                 return;
             }
 
+            if (inventoryItem.ItemBase.Value is TradableMaterial)
+            {
+                Find<SystemPopup>().Show(
+                    L10nManager.Localize("UI_MAINTENANCE"),
+                    L10nManager.Localize("UI_MAINTENANCE_CONTENT"),
+                    L10nManager.Localize("UI_OK"),
+                    false
+                );
+                return;
+            }
+
             var data = SharedModel.ItemCountableAndPricePopup.Value;
             data.TitleText.Value = inventoryItem.ItemBase.Value.GetLocalizedName();
             data.InfoText.Value = string.Empty;
