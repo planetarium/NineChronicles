@@ -87,15 +87,6 @@ namespace Nekoyume.UI
 
         public override void Show(bool ignoreShowAnimation = false)
         {
-            // todo : temp code
-            Find<SystemPopup>().Show(
-                L10nManager.Localize("UI_MAINTENANCE"),
-                L10nManager.Localize("UI_MAINTENANCE_CONTENT"),
-                L10nManager.Localize("UI_OK"),
-                false
-            );
-            return;
-
             AsyncShow();
         }
 
