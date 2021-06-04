@@ -105,8 +105,8 @@ namespace Nekoyume.UI
         private void BuyMultiple()
         {
             var purchaseInfos = shopItems.SharedModel.wishItems.Select(ShopBuy.GetPurchseInfo).ToList();
-            // Game.Game.instance.ActionManager.Buy(purchaseInfos,
-            //     shopItems.SharedModel.wishItems.ToList());
+            Game.Game.instance.ActionManager.Buy(purchaseInfos,
+                shopItems.SharedModel.wishItems.ToList());
 
             if (shopItems.SharedModel.wishItems != null &&
                 shopItems.SharedModel.wishItems.Count > 0)

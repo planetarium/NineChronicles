@@ -270,7 +270,7 @@ namespace Nekoyume.UI
             var totalPrice = data.TotalPrice.Value;
             var count = data.Count.Value;
             var itemSubType = data.Item.Value.ItemBase.Value.ItemSubType;
-            // Game.Game.instance.ActionManager.Sell(tradableId, totalPrice, count, itemSubType);
+            Game.Game.instance.ActionManager.Sell(tradableId, totalPrice, count, itemSubType);
             Mixpanel.Track("Unity/Sell");
             ResponseSell();
         }
@@ -358,10 +358,10 @@ namespace Nekoyume.UI
             }
 
             Mixpanel.Track("Unity/Sell Cancellation");
-            // Game.Game.instance.ActionManager.SellCancellation(
-            //     shopItem.SellerAvatarAddress.Value,
-            //     shopItem.ProductId.Value,
-            //     shopItem.ItemSubType.Value);
+            Game.Game.instance.ActionManager.SellCancellation(
+                shopItem.SellerAvatarAddress.Value,
+                shopItem.ProductId.Value,
+                shopItem.ItemSubType.Value);
             ResponseSellCancellation(shopItem);
         }
 
