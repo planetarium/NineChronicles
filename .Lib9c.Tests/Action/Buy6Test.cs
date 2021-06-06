@@ -20,7 +20,7 @@ namespace Lib9c.Tests.Action
     using Xunit;
     using Xunit.Abstractions;
 
-    public class BuyTest
+    public class Buy6Test
     {
         private readonly Address _sellerAgentAddress;
         private readonly Address _sellerAvatarAddress;
@@ -32,7 +32,7 @@ namespace Lib9c.Tests.Action
         private readonly Guid _productId;
         private IAccountStateDelta _initialState;
 
-        public BuyTest(ITestOutputHelper outputHelper)
+        public Buy6Test(ITestOutputHelper outputHelper)
         {
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Verbose()
@@ -307,7 +307,7 @@ namespace Lib9c.Tests.Action
                 Assert.True(shardedShopStates.All(r => r.Value.Products.Count == 1));
             }
 
-            var buyAction = new Buy
+            var buyAction = new Buy6
             {
                 buyerAvatarAddress = _buyerAvatarAddress,
                 purchaseInfos = purchaseInfos,
@@ -401,7 +401,7 @@ namespace Lib9c.Tests.Action
                 ItemSubType.Food
             );
 
-            var action = new Buy
+            var action = new Buy6
             {
                 buyerAvatarAddress = _buyerAvatarAddress,
                 purchaseInfos = new[] { purchaseInfo },
@@ -431,7 +431,7 @@ namespace Lib9c.Tests.Action
                 ItemSubType.Food
             );
 
-            var action = new Buy
+            var action = new Buy6
             {
                 buyerAvatarAddress = default,
                 purchaseInfos = new[] { purchaseInfo },
@@ -467,7 +467,7 @@ namespace Lib9c.Tests.Action
                 ItemSubType.Food
             );
 
-            var action = new Buy
+            var action = new Buy6
             {
                 buyerAvatarAddress = _buyerAvatarAddress,
                 purchaseInfos = new[] { purchaseInfo },
@@ -493,7 +493,7 @@ namespace Lib9c.Tests.Action
                 ItemSubType.Weapon
             );
 
-            var action = new Buy
+            var action = new Buy6
             {
                 buyerAvatarAddress = _buyerAvatarAddress,
                 purchaseInfos = new[] { purchaseInfo },
@@ -542,77 +542,7 @@ namespace Lib9c.Tests.Action
 
             _initialState = _initialState.SetState(shardedShopAddress, shopState.Serialize());
 
-            var action = new Buy
-            {
-                buyerAvatarAddress = _buyerAvatarAddress,
-                purchaseInfos = new[] { purchaseInfo },
-            };
-
-            action.Execute(new ActionContext()
-            {
-                BlockIndex = 0,
-                PreviousStates = _initialState,
-                Random = new TestRandom(),
-                Signer = _buyerAgentAddress,
-            });
-
-            Assert.Contains(
-                Buy.ErrorCodeItemDoesNotExist,
-                action.buyerMultipleResult.purchaseResults.Select(r => r.errorCode)
-            );
-        }
-
-        [Theory]
-        [InlineData(ItemSubType.Weapon, false, false)]
-        [InlineData(ItemSubType.Hourglass, false, false)]
-        [InlineData(ItemSubType.ApStone, false, false)]
-        [InlineData(ItemSubType.Weapon, true, false)]
-        [InlineData(ItemSubType.Hourglass, true, false)]
-        [InlineData(ItemSubType.ApStone, true, false)]
-        [InlineData(ItemSubType.Weapon, false, true)]
-        [InlineData(ItemSubType.Hourglass, false, true)]
-        [InlineData(ItemSubType.ApStone, false, true)]
-        public void Execute_ErrorCode_ItemDoesNotExist_20210604(ItemSubType itemSubType, bool useAgentAddress, bool useAvatarAddress)
-        {
-            ITradableItem tradableItem = null;
-            switch (itemSubType)
-            {
-                case ItemSubType.Hourglass:
-                case ItemSubType.ApStone:
-                    tradableItem = ItemFactory.CreateTradableMaterial(
-                        _tableSheets.MaterialItemSheet.OrderedList.First(r => r.ItemSubType == itemSubType));
-                    break;
-                case ItemSubType.Weapon:
-                    tradableItem = (ITradableItem)ItemFactory.CreateItem(
-                        _tableSheets.EquipmentItemSheet.OrderedList.First(r => r.ItemSubType == itemSubType),
-                        new TestRandom());
-                    break;
-            }
-
-            Address agentAddress = useAgentAddress ? _sellerAgentAddress : default;
-            Address avatarAddress = useAvatarAddress ? _sellerAvatarAddress : default;
-            PurchaseInfo purchaseInfo = new PurchaseInfo(
-                default,
-                agentAddress,
-                avatarAddress,
-                itemSubType
-            );
-
-            var shopItem = new ShopItem(
-                _sellerAgentAddress,
-                _sellerAvatarAddress,
-                _productId,
-                new FungibleAssetValue(_goldCurrencyState.Currency, 100, 0),
-                Sell.ExpiredBlockIndex,
-                tradableItem);
-
-            Address shardedShopAddress = ShardedShopState.DeriveAddress(itemSubType, _productId);
-            ShardedShopState shopState = new ShardedShopState(shardedShopAddress);
-            shopState.Register(shopItem);
-
-            _initialState = _initialState.SetState(shardedShopAddress, shopState.Serialize());
-
-            var action = new Buy
+            var action = new Buy6
             {
                 buyerAvatarAddress = _buyerAvatarAddress,
                 purchaseInfos = new[] { purchaseInfo },
@@ -663,7 +593,7 @@ namespace Lib9c.Tests.Action
                 ItemSubType.Weapon
             );
 
-            var action = new Buy
+            var action = new Buy6
             {
                 buyerAvatarAddress = _buyerAvatarAddress,
                 purchaseInfos = new[] { purchaseInfo },
@@ -745,7 +675,7 @@ namespace Lib9c.Tests.Action
                 tradableItem.ItemSubType
             );
 
-            var action = new Buy
+            var action = new Buy6
             {
                 buyerAvatarAddress = _buyerAvatarAddress,
                 purchaseInfos = new[] { purchaseInfo },
@@ -795,7 +725,7 @@ namespace Lib9c.Tests.Action
                 ItemSubType.Weapon
             );
 
-            var action = new Buy
+            var action = new Buy6
             {
                 buyerAvatarAddress = _buyerAvatarAddress,
                 purchaseInfos = new[] { purchaseInfo },
