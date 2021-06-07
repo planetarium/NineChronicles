@@ -101,6 +101,15 @@ namespace Nekoyume.UI
 
         public void Show()
         {
+            // Temporarily locked.
+            Find<SystemPopup>().Show(
+                L10nManager.Localize("UI_MAINTENANCE"),
+                L10nManager.Localize("UI_MAINTENANCE_CONTENT"),
+                L10nManager.Localize("UI_OK"),
+                false
+            );
+            return;
+
             base.Show();
             shopItems.Show();
             inventory.SharedModel.State.Value = ItemType.Equipment;
