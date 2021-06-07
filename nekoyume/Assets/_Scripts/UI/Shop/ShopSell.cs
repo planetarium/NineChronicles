@@ -104,7 +104,7 @@ namespace Nekoyume.UI
             // Temporarily locked.
             Find<SystemPopup>().Show(
                 L10nManager.Localize("UI_MAINTENANCE"),
-                L10nManager.Localize("UI_MAINTENANCE_CONTENT"),
+                L10nManager.Localize("UI_MARKET_MAINTENANCE"),
                 L10nManager.Localize("UI_OK"),
                 false
             );
