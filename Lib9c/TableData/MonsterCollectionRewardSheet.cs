@@ -44,6 +44,12 @@ namespace Nekoyume.TableData
                 Quantity = ParseInt(fields[1]);
             }
 
+            public RewardInfo(int itemId, int quantity)
+            {
+                ItemId = itemId;
+                Quantity = quantity;
+            }
+
             public RewardInfo(Dictionary dictionary)
             {
                 ItemId = dictionary[IdKey].ToInteger();

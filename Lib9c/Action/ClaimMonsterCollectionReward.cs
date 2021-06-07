@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Linq;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
-using Libplanet.Assets;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
@@ -14,25 +14,24 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("claim_monster_collection_reward")]
+    [ActionType("claim_monster_collection_reward2")]
     public class ClaimMonsterCollectionReward : GameAction
     {
         public Address avatarAddress;
-        public int collectionRound;
         public override IAccountStateDelta Execute(IActionContext context)
         {
             IAccountStateDelta states = context.PreviousStates;
-            Address collectionAddress = MonsterCollectionState.DeriveAddress(context.Signer, collectionRound);
-
+            Address collectionAddress = MonsterCollectionState.DeriveAddress(context.Signer, 0);
+            Address inventoryAddress = avatarAddress.Derive(LegacyInventoryKey);
             if (context.Rehearsal)
             {
                 return states
-                    .SetState(context.Signer, MarkChanged)
                     .SetState(avatarAddress, MarkChanged)
+                    .SetState(inventoryAddress, MarkChanged)
                     .SetState(collectionAddress, MarkChanged);
             }
 
-            if (!states.TryGetAgentAvatarStates(context.Signer, avatarAddress, out AgentState agentState, out AvatarState avatarState))
+            if (!states.TryGetAvatarStateV2(context.Signer, avatarAddress, out AvatarState avatarState))
             {
                 throw new FailedLoadStateException($"Aborted as the avatar state of the signer failed to load.");
             }
@@ -43,10 +42,6 @@ namespace Nekoyume.Action
             }
 
             MonsterCollectionState monsterCollectionState = new MonsterCollectionState(stateDict);
-            if (monsterCollectionState.End)
-            {
-                throw new MonsterCollectionExpiredException($"{collectionAddress} has already expired on {monsterCollectionState.ExpiredBlockIndex}");
-            }
 
             if (!monsterCollectionState.CanReceive(context.BlockIndex))
             {
@@ -54,67 +49,61 @@ namespace Nekoyume.Action
                     $"{collectionAddress} is not available yet; it will be available after {Math.Max(monsterCollectionState.StartedBlockIndex, monsterCollectionState.ReceivedBlockIndex) + MonsterCollectionState.RewardInterval}");
             }
 
-            long rewardLevel = monsterCollectionState.GetRewardLevel(context.BlockIndex);
+            monsterCollectionState.Receive(context.BlockIndex);
+            int rewardLevel = (int) ((context.BlockIndex - monsterCollectionState.ReceivedBlockIndex) /
+                                     MonsterCollectionState.RewardInterval);
             ItemSheet itemSheet = states.GetItemSheet();
-            for (int i = 0; i < rewardLevel; i++)
+            MonsterCollectionRewardSheet monsterCollectionRewardSheet = states.GetSheet<MonsterCollectionRewardSheet>();
+            int level = monsterCollectionState.Level;
+            List<MonsterCollectionRewardSheet.RewardInfo> rewardInfos = monsterCollectionRewardSheet[level].Rewards;
+            Dictionary<int, int> map = new Dictionary<int, int>();
+            foreach (var rewardInfo in rewardInfos)
             {
-                int level = i + 1;
-                if (level <= monsterCollectionState.RewardLevel)
+                int itemId = rewardInfo.ItemId;
+                int quantity = rewardInfo.Quantity * rewardLevel;
+                if (map.ContainsKey(itemId))
                 {
-                    continue;
+                    map[itemId] += quantity;
                 }
-
-                List<MonsterCollectionRewardSheet.RewardInfo> rewards = monsterCollectionState.RewardLevelMap[level];
-                Guid id = context.Random.GenerateRandomGuid();
-                MonsterCollectionResult result = new MonsterCollectionResult(id, avatarAddress, rewards);
-                MonsterCollectionMail mail = new MonsterCollectionMail(result, context.BlockIndex, id, context.BlockIndex);
-                avatarState.UpdateV3(mail);
-                foreach (var rewardInfo in rewards)
+                else
                 {
-                    var row = itemSheet[rewardInfo.ItemId];
-                    var item = row is MaterialItemSheet.Row materialRow
-                        ? ItemFactory.CreateTradableMaterial(materialRow)
-                        : ItemFactory.CreateItem(row, context.Random);
-                    avatarState.inventory.AddItem(item, rewardInfo.Quantity);
+                    map[itemId] = quantity;
                 }
-                monsterCollectionState.UpdateRewardMap(level, result, context.BlockIndex);
             }
 
-            // Return gold at the end of monster collect.
-            if (rewardLevel == 4)
+            List<MonsterCollectionRewardSheet.RewardInfo> rewards = map
+                .OrderBy(i => i.Key)
+                .Select(i =>
+                    new MonsterCollectionRewardSheet.RewardInfo(i.Key, i.Value)
+                )
+                .ToList();
+            Guid id = context.Random.GenerateRandomGuid();
+            MonsterCollectionResult result = new MonsterCollectionResult(id, avatarAddress, rewards);
+            MonsterCollectionMail mail = new MonsterCollectionMail(result, context.BlockIndex, id, context.BlockIndex);
+            avatarState.UpdateV3(mail);
+            foreach (var rewardInfo in rewards)
             {
-                MonsterCollectionSheet monsterCollectionSheet = states.GetSheet<MonsterCollectionSheet>();
-                Currency currency = states.GetGoldCurrency();
-                // Set default gold value.
-                FungibleAssetValue gold = currency * 0;
-                for (int i = 0; i < monsterCollectionState.Level; i++)
-                {
-                    int level = i + 1;
-                    gold += currency * monsterCollectionSheet[level].RequiredGold;
-                }
-                agentState.IncreaseCollectionRound();
-                states = states.SetState(context.Signer, agentState.Serialize());
-                if (gold > currency * 0)
-                {
-                    states = states.TransferAsset(collectionAddress, context.Signer, gold);
-                }
+                var row = itemSheet[rewardInfo.ItemId];
+                var item = row is MaterialItemSheet.Row materialRow
+                    ? ItemFactory.CreateTradableMaterial(materialRow)
+                    : ItemFactory.CreateItem(row, context.Random);
+                avatarState.inventory.AddItem(item, rewardInfo.Quantity);
             }
 
             return states
-                .SetState(avatarAddress, avatarState.Serialize())
-                .SetState(collectionAddress, monsterCollectionState.Serialize());
+                .SetState(avatarAddress, avatarState.SerializeV2())
+                .SetState(inventoryAddress, avatarState.inventory.Serialize())
+                .SetState(collectionAddress, monsterCollectionState.SerializeV2());
         }
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal => new Dictionary<string, IValue>
         {
             [AvatarAddressKey] = avatarAddress.Serialize(),
-            [MonsterCollectionRoundKey] = collectionRound.Serialize(),
         }.ToImmutableDictionary();
 
         protected override void LoadPlainValueInternal(IImmutableDictionary<string, IValue> plainValue)
         {
             avatarAddress = plainValue[AvatarAddressKey].ToAddress();
-            collectionRound = plainValue[MonsterCollectionRoundKey].ToInteger();
         }
     }
 }
