@@ -103,15 +103,6 @@ namespace Nekoyume.UI
 
         public void Show()
         {
-            // Temporarily locked.
-            Find<SystemPopup>().Show(
-                L10nManager.Localize("UI_MAINTENANCE"),
-                L10nManager.Localize("UI_MARKET_MAINTENANCE"),
-                L10nManager.Localize("UI_OK"),
-                false
-            );
-            return;
-
             base.Show();
             shopItems.Show();
             inventory.SharedModel.State.Value = ItemType.Equipment;
@@ -196,17 +187,6 @@ namespace Nekoyume.UI
             if (inventoryItem is null ||
                 inventoryItem.Dimmed.Value)
             {
-                return;
-            }
-
-            if (inventoryItem.ItemBase.Value is TradableMaterial)
-            {
-                Find<SystemPopup>().Show(
-                    L10nManager.Localize("UI_MAINTENANCE"),
-                    L10nManager.Localize("UI_MAINTENANCE_CONTENT"),
-                    L10nManager.Localize("UI_OK"),
-                    false
-                );
                 return;
             }
 
