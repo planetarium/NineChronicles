@@ -18,8 +18,8 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("buy7")]
-    public class Buy : GameAction
+    [ActionType("buy6")]
+    public class Buy6 : GameAction
     {
         public const int TaxRate = 8;
         public const int ErrorCodeFailedLoadingState = 1;
@@ -27,149 +27,11 @@ namespace Nekoyume.Action
         public const int ErrorCodeShopItemExpired = 3;
         public const int ErrorCodeInsufficientBalance = 4;
         public const int ErrorCodeInvalidAddress = 5;
-        public const int ErrorCodeInvalidPrice = 6;
 
         public Address buyerAvatarAddress;
         public IEnumerable<PurchaseInfo> purchaseInfos;
-        public BuyerMultipleResult buyerMultipleResult;
-        public SellerMultipleResult sellerMultipleResult;
-
-        [Serializable]
-        public class BuyerResult : AttachmentActionResult
-        {
-            public ShopItem shopItem;
-            public Guid id;
-
-            protected override string TypeId => "buy.buyerResult";
-
-            public BuyerResult()
-            {
-            }
-
-            public BuyerResult(Bencodex.Types.Dictionary serialized) : base(serialized)
-            {
-                shopItem = new ShopItem((Bencodex.Types.Dictionary) serialized["shopItem"]);
-                id = serialized["id"].ToGuid();
-            }
-
-            public override IValue Serialize() =>
-#pragma warning disable LAA1002
-                new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
-                {
-                    [(Text) "shopItem"] = shopItem.Serialize(),
-                    [(Text) "id"] = id.Serialize(),
-                }.Union((Bencodex.Types.Dictionary) base.Serialize()));
-#pragma warning restore LAA1002
-        }
-
-        [Serializable]
-        public class SellerResult : AttachmentActionResult
-        {
-            public ShopItem shopItem;
-            public Guid id;
-            public FungibleAssetValue gold;
-
-            protected override string TypeId => "buy.sellerResult";
-
-            public SellerResult()
-            {
-            }
-
-            public SellerResult(Bencodex.Types.Dictionary serialized) : base(serialized)
-            {
-                shopItem = new ShopItem((Bencodex.Types.Dictionary) serialized["shopItem"]);
-                id = serialized["id"].ToGuid();
-                gold = serialized["gold"].ToFungibleAssetValue();
-            }
-
-            public override IValue Serialize() =>
-#pragma warning disable LAA1002
-                new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
-                {
-                    [(Text) "shopItem"] = shopItem.Serialize(),
-                    [(Text) "id"] = id.Serialize(),
-                    [(Text) "gold"] = gold.Serialize(),
-                }.Union((Bencodex.Types.Dictionary) base.Serialize()));
-#pragma warning restore LAA1002
-        }
-
-        [Serializable]
-        public class PurchaseResult : BuyerResult
-        {
-            public int errorCode = 0;
-            public readonly Guid productId;
-
-            public PurchaseResult(Guid shopProductId)
-            {
-                productId = shopProductId;
-            }
-
-            public PurchaseResult(Bencodex.Types.Dictionary serialized) : base(serialized)
-            {
-                errorCode = serialized[ErrorCodeKey].ToInteger();
-                productId = serialized[ProductIdKey].ToGuid();
-            }
-
-            public override IValue Serialize() =>
-#pragma warning disable LAA1002
-                new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
-                {
-                    [(Text) ErrorCodeKey] = errorCode.Serialize(),
-                    [(Text) ProductIdKey] = productId.Serialize(),
-                }.Union((Bencodex.Types.Dictionary)base.Serialize()));
-#pragma warning restore LAA1002
-        }
-
-        [Serializable]
-        public class BuyerMultipleResult
-        {
-            public IEnumerable<PurchaseResult> purchaseResults;
-
-            public BuyerMultipleResult()
-            {
-            }
-
-            public BuyerMultipleResult(Bencodex.Types.Dictionary serialized)
-            {
-                purchaseResults = serialized[PurchaseResultsKey].ToList(StateExtensions.ToPurchaseResult);
-            }
-
-            public IValue Serialize() =>
-#pragma warning disable LAA1002
-                new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
-                {
-                    [(Text) PurchaseResultsKey] = purchaseResults
-                        .OrderBy(i => i)
-                        .Select(g => g.Serialize()).Serialize()
-                });
-#pragma warning restore LAA1002
-        }
-
-        [Serializable]
-        public class SellerMultipleResult
-        {
-            public IEnumerable<SellerResult> sellerResults;
-
-            public SellerMultipleResult()
-            {
-            }
-
-            public SellerMultipleResult(Bencodex.Types.Dictionary serialized)
-            {
-                sellerResults = serialized[SellerResultsKey].ToList(StateExtensions.ToSellerResult);
-            }
-
-            public IValue Serialize() =>
-#pragma warning disable LAA1002
-                new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
-                {
-                    [(Text) SellerResultsKey] = sellerResults
-                        .OrderBy(i => i)
-                        .Select(g => g.Serialize()).Serialize()
-                });
-#pragma warning restore LAA1002
-        }
-
+        public Buy.BuyerMultipleResult buyerMultipleResult;
+        public Buy.SellerMultipleResult sellerMultipleResult;
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal => new Dictionary<string, IValue>
         {
@@ -235,15 +97,15 @@ namespace Nekoyume.Action
                     GameConfig.RequireClearedStageLevel.ActionsInShop, current);
             }
 
-            List<PurchaseResult> purchaseResults = new List<PurchaseResult>();
-            List<SellerResult> sellerResults = new List<SellerResult>();
+            List<Buy.PurchaseResult> purchaseResults = new List<Buy.PurchaseResult>();
+            List<Buy.SellerResult> sellerResults = new List<Buy.SellerResult>();
             MaterialItemSheet materialSheet = states.GetSheet<MaterialItemSheet>();
-            buyerMultipleResult = new BuyerMultipleResult();
-            sellerMultipleResult = new SellerMultipleResult();
+            buyerMultipleResult = new Buy.BuyerMultipleResult();
+            sellerMultipleResult = new Buy.SellerMultipleResult();
 
             foreach (var purchaseInfo in purchaseInfos)
             {
-                PurchaseResult purchaseResult = new PurchaseResult(purchaseInfo.productId);
+                Buy.PurchaseResult purchaseResult = new Buy.PurchaseResult(purchaseInfo.productId);
                 Address shardedShopAddress =
                     ShardedShopState.DeriveAddress(purchaseInfo.itemSubType, purchaseInfo.productId);
                 Address sellerAgentAddress = purchaseInfo.sellerAgentAddress;
@@ -277,12 +139,10 @@ namespace Nekoyume.Action
                 List products = (List) shopStateDict[ProductsKey];
                 IValue productIdSerialized = productId.Serialize();
                 IValue sellerAgentSerialized = purchaseInfo.sellerAgentAddress.Serialize();
-                IValue sellerAvatarSerialized = purchaseInfo.sellerAvatarAddress.Serialize();
                 Dictionary productSerialized = products
                     .Select(p => (Dictionary) p)
                     .FirstOrDefault(p =>
                         p[LegacyProductIdKey].Equals(productIdSerialized) &&
-                        p[LegacySellerAvatarAddressKey].Equals(sellerAvatarSerialized) &&
                         p[LegacySellerAgentAddressKey].Equals(sellerAgentSerialized));
 
                 bool fromLegacy = false;
@@ -333,12 +193,6 @@ namespace Nekoyume.Action
                     continue;
                 }
 
-                if (!shopItem.Price.Equals(purchaseInfo.price))
-                {
-                    purchaseResult.errorCode = ErrorCodeInvalidPrice;
-                    continue;
-                }
-
                 if (!states.TryGetAvatarState(sellerAgentAddress, sellerAvatarAddress, out var sellerAvatarState))
                 {
                     purchaseResult.errorCode = ErrorCodeFailedLoadingState;
@@ -357,7 +211,25 @@ namespace Nekoyume.Action
                     continue;
                 }
 
-                // Check Seller inventory.
+                var tax = shopItem.Price.DivRem(100, out _) * TaxRate;
+                var taxedPrice = shopItem.Price - tax;
+
+                // Transfer tax.
+                states = states.TransferAsset(
+                    context.Signer,
+                    GoldCurrencyState.Address,
+                    tax);
+
+                // Transfer seller.
+                states = states.TransferAsset(
+                    context.Signer,
+                    sellerAgentAddress,
+                    taxedPrice
+                );
+
+                products = (List) products.Remove(productSerialized);
+                shopStateDict = shopStateDict.SetItem(ProductsKey, new List<IValue>(products));
+
                 ITradableItem tradableItem;
                 int count = 1;
                 if (!(shopItem.ItemUsable is null))
@@ -382,25 +254,6 @@ namespace Nekoyume.Action
 
                 tradableItem.RequiredBlockIndex = context.BlockIndex;
 
-                var tax = shopItem.Price.DivRem(100, out _) * TaxRate;
-                var taxedPrice = shopItem.Price - tax;
-
-                // Transfer tax.
-                states = states.TransferAsset(
-                    context.Signer,
-                    GoldCurrencyState.Address,
-                    tax);
-
-                // Transfer seller.
-                states = states.TransferAsset(
-                    context.Signer,
-                    sellerAgentAddress,
-                    taxedPrice
-                );
-
-                products = (List) products.Remove(productSerialized);
-                shopStateDict = shopStateDict.SetItem(ProductsKey, new List<IValue>(products));
-
                 // Send result mail for buyer, seller.
                 purchaseResult.shopItem = shopItem;
                 purchaseResult.itemUsable = shopItem.ItemUsable;
@@ -411,7 +264,7 @@ namespace Nekoyume.Action
                     ctx.BlockIndex);
                 purchaseResult.id = buyerMail.id;
 
-                var sellerResult = new SellerResult
+                var sellerResult = new Buy.SellerResult
                 {
                     shopItem = shopItem,
                     itemUsable = shopItem.ItemUsable,

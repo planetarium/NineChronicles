@@ -10,7 +10,6 @@ using Libplanet.Assets;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
-using Nekoyume.TableData;
 using Serilog;
 using BxDictionary = Bencodex.Types.Dictionary;
 using BxList = Bencodex.Types.List;
@@ -19,7 +18,7 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("sell5")]
+    [ActionType("sell6")]
     public class Sell : GameAction
     {
         public const long ExpiredBlockIndex = 16000;
@@ -171,24 +170,20 @@ namespace Nekoyume.Action
             var serializedProductList = (BxList) serializedSharedShopState[ProductsKey];
             string productKey;
             string itemIdKey;
-            string requiredBlockIndexKey;
             switch (tradableItem.ItemType)
             {
                 case ItemType.Consumable:
                 case ItemType.Equipment:
                     productKey = LegacyItemUsableKey;
                     itemIdKey = LegacyItemIdKey;
-                    requiredBlockIndexKey = LegacyRequiredBlockIndexKey;
                     break;
                 case ItemType.Costume:
                     productKey = LegacyCostumeKey;
                     itemIdKey = LegacyCostumeItemIdKey;
-                    requiredBlockIndexKey = RequiredBlockIndexKey;
                     break;
                 case ItemType.Material:
                     productKey = TradableFungibleItemKey;
                     itemIdKey = LegacyCostumeItemIdKey;
-                    requiredBlockIndexKey = RequiredBlockIndexKey;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -205,8 +200,12 @@ namespace Nekoyume.Action
                         var materialItemId =
                             ((BxDictionary) p[productKey])[itemIdKey].ToItemId();
                         var requiredBlockIndex = p[ExpiredBlockIndexKey].ToLong();
-                        return TradableMaterial.DeriveTradableId(materialItemId)
-                            .Equals(tradableItem.TradableId) && requiredBlockIndex <= context.BlockIndex;
+                        var sellerAgentAddress = p[LegacySellerAgentAddressKey].ToAddress();
+                        var avatarAddress = p[LegacySellerAvatarAddressKey].ToAddress();
+                        return TradableMaterial.DeriveTradableId(materialItemId).Equals(tradableItem.TradableId) &&
+                               requiredBlockIndex <= context.BlockIndex &&
+                               context.Signer.Equals(sellerAgentAddress) &&
+                               sellerAvatarAddress.Equals(avatarAddress);
                     });
             }
             else
@@ -215,52 +214,30 @@ namespace Nekoyume.Action
                 serializedProductDictionary = serializedProductList
                     .Select(p => (BxDictionary) p)
                     .FirstOrDefault(p =>
-                        ((BxDictionary) p[productKey])[itemIdKey].Equals(serializedTradeId));
+                    {
+                        var sellerAgentAddress = p[LegacySellerAgentAddressKey].ToAddress();
+                        var avatarAddress = p[LegacySellerAvatarAddressKey].ToAddress();
+                        return ((BxDictionary) p[productKey])[itemIdKey].Equals(serializedTradeId) &&
+                               context.Signer.Equals(sellerAgentAddress) &&
+                               sellerAvatarAddress.Equals(avatarAddress);
+                    });
             }
 
-            ShopItem shopItem;
-            // Register new ShopItem
-            if (serializedProductDictionary.Equals(BxDictionary.Empty))
+            // Remove expired ShopItem to prevent copy.
+            if (!serializedProductDictionary.Equals(BxDictionary.Empty))
             {
-                shopItem = new ShopItem(
-                    context.Signer,
-                    sellerAvatarAddress,
-                    productId,
-                    price,
-                    expiredBlockIndex,
-                    tradableItem,
-                    count);
-                var serializedShopItem = shopItem.Serialize();
-                serializedProductList = serializedProductList.Add(serializedShopItem);
+                serializedProductList = (BxList) serializedProductList.Remove(serializedProductDictionary);
             }
-            // Update Registered ShopItem
-            else
-            {
-                // Delete current ShopItem
-                serializedProductList =
-                    (BxList) serializedProductList.Remove(serializedProductDictionary);
-
-                // Update ITradableItem.RequiredBlockIndex
-                var inChainShopItem = (BxDictionary) serializedProductDictionary[productKey];
-                inChainShopItem = inChainShopItem
-                    .SetItem(requiredBlockIndexKey, expiredBlockIndex.Serialize());
-
-                // Update ShopItem.ExpiredBlockIndex
-                serializedProductDictionary = serializedProductDictionary
-                    .SetItem(ExpiredBlockIndexKey, expiredBlockIndex.Serialize())
-                    .SetItem(productKey, inChainShopItem);
-
-                // Update only Material for backwardCompatible.
-                if (tradableItem.ItemType == ItemType.Material)
-                {
-                    serializedProductDictionary = serializedProductDictionary
-                        .SetItem(TradableFungibleItemCountKey, count.Serialize());
-                }
-
-                serializedProductList = serializedProductList.Add(serializedProductDictionary);
-                shopItem = new ShopItem(serializedProductDictionary);
-            }
-
+            var shopItem = new ShopItem(
+                context.Signer,
+                sellerAvatarAddress,
+                productId,
+                price,
+                expiredBlockIndex,
+                tradableItem,
+                count);
+            var serializedShopItem = shopItem.Serialize();
+            serializedProductList = serializedProductList.Add(serializedShopItem);
             serializedSharedShopState = serializedSharedShopState.SetItem(
                 ProductsKey,
                 new List<IValue>(serializedProductList));
