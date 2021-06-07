@@ -285,7 +285,8 @@ namespace Lib9c.Tests.Action
                     shopItem.ProductId,
                     shopItem.SellerAgentAddress,
                     shopItem.SellerAvatarAddress,
-                    itemSubType
+                    itemSubType,
+                    shopItem.Price
                 );
                 purchaseInfos.Add(purchaseInfo);
 
@@ -660,7 +661,8 @@ namespace Lib9c.Tests.Action
                 _productId,
                 _sellerAgentAddress,
                 _sellerAvatarAddress,
-                ItemSubType.Weapon
+                ItemSubType.Weapon,
+                new FungibleAssetValue(_goldCurrencyState.Currency, 100, 0)
             );
 
             var action = new Buy
@@ -742,7 +744,8 @@ namespace Lib9c.Tests.Action
                 _productId,
                 _sellerAgentAddress,
                 _sellerAvatarAddress,
-                tradableItem.ItemSubType
+                tradableItem.ItemSubType,
+                new FungibleAssetValue(_goldCurrencyState.Currency, 100, 0)
             );
 
             var action = new Buy
@@ -763,10 +766,6 @@ namespace Lib9c.Tests.Action
                 Buy.ErrorCodeItemDoesNotExist,
                 action.buyerMultipleResult.purchaseResults.Select(r => r.errorCode)
             );
-            FungibleAssetValue prevBuyerBalance = _initialState.GetBalance(_buyerAgentAddress, _goldCurrencyState.Currency);
-            FungibleAssetValue prevSellerBalance = _initialState.GetBalance(_sellerAgentAddress, _goldCurrencyState.Currency);
-            FungibleAssetValue prevCurrencyBalance =
-                _initialState.GetBalance(Addresses.GoldCurrency, _goldCurrencyState.Currency);
             foreach (var address in new[] { _buyerAgentAddress, _sellerAgentAddress, Addresses.GoldCurrency })
             {
                 Assert.Equal(
@@ -824,6 +823,58 @@ namespace Lib9c.Tests.Action
                 Buy.ErrorCodeShopItemExpired,
                 action.buyerMultipleResult.purchaseResults.Select(r => r.errorCode)
             );
+        }
+
+        [Theory]
+        [InlineData(100, 10)]
+        [InlineData(10, 20)]
+        public void Execute_ErrorCode_InvalidPrice(int shopPrice, int price)
+        {
+            IAccountStateDelta previousStates = _initialState;
+            Address shardedShopStateAddress = ShardedShopState.DeriveAddress(ItemSubType.Weapon, _productId);
+            ShardedShopState shopState = new ShardedShopState(shardedShopStateAddress);
+            Weapon itemUsable = (Weapon)ItemFactory.CreateItemUsable(
+                _tableSheets.EquipmentItemSheet.First,
+                Guid.NewGuid(),
+                10);
+            var shopItem = new ShopItem(
+                _sellerAgentAddress,
+                _sellerAvatarAddress,
+                _productId,
+                new FungibleAssetValue(_goldCurrencyState.Currency, shopPrice, 0),
+                10,
+                itemUsable);
+
+            shopState.Register(shopItem);
+            previousStates = previousStates.SetState(shardedShopStateAddress, shopState.Serialize());
+
+            Assert.True(shopState.Products.ContainsKey(_productId));
+
+            PurchaseInfo purchaseInfo = new PurchaseInfo(
+                _productId,
+                _sellerAgentAddress,
+                _sellerAvatarAddress,
+                ItemSubType.Weapon,
+                new FungibleAssetValue(_goldCurrencyState.Currency, price, 0)
+            );
+
+            var action = new Buy
+            {
+                buyerAvatarAddress = _buyerAvatarAddress,
+                purchaseInfos = new[] { purchaseInfo },
+            };
+
+            action.Execute(new ActionContext()
+            {
+                BlockIndex = 10,
+                PreviousStates = previousStates,
+                Random = new TestRandom(),
+                Signer = _buyerAgentAddress,
+            });
+
+            Assert.Single(action.buyerMultipleResult.purchaseResults);
+            Buy.PurchaseResult purchaseResult = action.buyerMultipleResult.purchaseResults.First();
+            Assert.Equal(Buy.ErrorCodeInvalidPrice, purchaseResult.errorCode);
         }
 
         private (AvatarState avatarState, AgentState agentState) CreateAvatarState(

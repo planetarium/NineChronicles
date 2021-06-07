@@ -232,7 +232,8 @@ namespace Lib9c.Tests.Action
                     shopItem.ProductId,
                     shopItem.SellerAgentAddress,
                     shopItem.SellerAvatarAddress,
-                    itemSubType
+                    itemSubType,
+                    shopItem.Price
                 );
                 purchaseInfos.Add(purchaseInfo);
 
@@ -462,7 +463,8 @@ namespace Lib9c.Tests.Action
                 _productId,
                 _sellerAgentAddress,
                 _sellerAvatarAddress,
-                ItemSubType.Weapon
+                ItemSubType.Weapon,
+                new FungibleAssetValue(_goldCurrencyState.Currency, 100, 0)
             );
 
             var action = new Buy
@@ -513,7 +515,8 @@ namespace Lib9c.Tests.Action
                 _productId,
                 _sellerAgentAddress,
                 _sellerAvatarAddress,
-                ItemSubType.Weapon
+                ItemSubType.Weapon,
+                shopItem.Price
             );
 
             var action = new Buy

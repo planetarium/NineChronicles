@@ -27,6 +27,7 @@ namespace Nekoyume.Action
         public const int ErrorCodeShopItemExpired = 3;
         public const int ErrorCodeInsufficientBalance = 4;
         public const int ErrorCodeInvalidAddress = 5;
+        public const int ErrorCodeInvalidPrice = 6;
 
         public Address buyerAvatarAddress;
         public IEnumerable<PurchaseInfo> purchaseInfos;
@@ -329,6 +330,12 @@ namespace Nekoyume.Action
                 if (0 < shopItem.ExpiredBlockIndex && shopItem.ExpiredBlockIndex < context.BlockIndex)
                 {
                     purchaseResult.errorCode = ErrorCodeShopItemExpired;
+                    continue;
+                }
+
+                if (!shopItem.Price.Equals(purchaseInfo.price))
+                {
+                    purchaseResult.errorCode = ErrorCodeInvalidPrice;
                     continue;
                 }
 
