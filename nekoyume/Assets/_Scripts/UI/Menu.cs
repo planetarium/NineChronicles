@@ -252,6 +252,15 @@ namespace Nekoyume.UI
                 return;
             }
 
+            // Temporarily locked.
+            Find<SystemPopup>().Show(
+                L10nManager.Localize("UI_MAINTENANCE"),
+                L10nManager.Localize("UI_MARKET_MAINTENANCE"),
+                L10nManager.Localize("UI_OK"),
+                false
+            );
+            return;
+
             if (shopExclamationMark.gameObject.activeSelf)
             {
                 var addressHax = ReactiveAvatarState.Address.Value.ToHex();
