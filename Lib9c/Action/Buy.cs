@@ -350,25 +350,7 @@ namespace Nekoyume.Action
                     continue;
                 }
 
-                var tax = shopItem.Price.DivRem(100, out _) * TaxRate;
-                var taxedPrice = shopItem.Price - tax;
-
-                // Transfer tax.
-                states = states.TransferAsset(
-                    context.Signer,
-                    GoldCurrencyState.Address,
-                    tax);
-
-                // Transfer seller.
-                states = states.TransferAsset(
-                    context.Signer,
-                    sellerAgentAddress,
-                    taxedPrice
-                );
-
-                products = (List) products.Remove(productSerialized);
-                shopStateDict = shopStateDict.SetItem(ProductsKey, new List<IValue>(products));
-
+                // Check Seller inventory.
                 ITradableItem tradableItem;
                 int count = 1;
                 if (!(shopItem.ItemUsable is null))
@@ -392,6 +374,25 @@ namespace Nekoyume.Action
                 }
 
                 tradableItem.RequiredBlockIndex = context.BlockIndex;
+
+                var tax = shopItem.Price.DivRem(100, out _) * TaxRate;
+                var taxedPrice = shopItem.Price - tax;
+
+                // Transfer tax.
+                states = states.TransferAsset(
+                    context.Signer,
+                    GoldCurrencyState.Address,
+                    tax);
+
+                // Transfer seller.
+                states = states.TransferAsset(
+                    context.Signer,
+                    sellerAgentAddress,
+                    taxedPrice
+                );
+
+                products = (List) products.Remove(productSerialized);
+                shopStateDict = shopStateDict.SetItem(ProductsKey, new List<IValue>(products));
 
                 // Send result mail for buyer, seller.
                 purchaseResult.shopItem = shopItem;

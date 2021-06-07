@@ -751,7 +751,7 @@ namespace Lib9c.Tests.Action
                 purchaseInfos = new[] { purchaseInfo },
             };
 
-            action.Execute(new ActionContext()
+            var nextState = action.Execute(new ActionContext()
             {
                 BlockIndex = 0,
                 PreviousStates = _initialState,
@@ -763,6 +763,17 @@ namespace Lib9c.Tests.Action
                 Buy.ErrorCodeItemDoesNotExist,
                 action.buyerMultipleResult.purchaseResults.Select(r => r.errorCode)
             );
+            FungibleAssetValue prevBuyerBalance = _initialState.GetBalance(_buyerAgentAddress, _goldCurrencyState.Currency);
+            FungibleAssetValue prevSellerBalance = _initialState.GetBalance(_sellerAgentAddress, _goldCurrencyState.Currency);
+            FungibleAssetValue prevCurrencyBalance =
+                _initialState.GetBalance(Addresses.GoldCurrency, _goldCurrencyState.Currency);
+            foreach (var address in new[] { _buyerAgentAddress, _sellerAgentAddress, Addresses.GoldCurrency })
+            {
+                Assert.Equal(
+                    _initialState.GetBalance(address, _goldCurrencyState.Currency),
+                    nextState.GetBalance(address, _goldCurrencyState.Currency)
+                );
+            }
         }
 
         [Fact]
