@@ -55,6 +55,9 @@ namespace Nekoyume.UI
         [SerializeField]
         private GameObject emptyObject = null;
 
+        [SerializeField]
+        private TextMeshProUGUI emptyText = null;
+
         public const int RankingBoardDisplayCount = 100;
 
         private RankCategory CurrentCategory
@@ -182,6 +185,7 @@ namespace Nekoyume.UI
 
             if (!RankLoadingTask.IsCompleted)
             {
+                emptyText.text = L10nManager.Localize("UI_PRELOADING_MESSAGE");
                 await RankLoadingTask;
             }
 
@@ -192,13 +196,14 @@ namespace Nekoyume.UI
                 return;
             }
 
-            if (!SharedModel.IsInitialized)
+            var isApiLoaded = SharedModel.IsInitialized;
+            emptyObject.SetActive(!isApiLoaded);
+            if (!isApiLoaded)
             {
-                emptyObject.SetActive(true);
+                emptyText.text = L10nManager.Localize("UI_RANKING_API_MISSING");
                 myInfoCell.SetEmpty(states.CurrentAvatarState);
                 return;
             }
-            emptyObject.SetActive(false);
 
             switch (category)
             {
