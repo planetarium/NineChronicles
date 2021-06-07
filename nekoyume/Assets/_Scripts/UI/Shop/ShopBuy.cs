@@ -87,15 +87,6 @@ namespace Nekoyume.UI
 
         public override void Show(bool ignoreShowAnimation = false)
         {
-            // Temporarily locked.
-            Find<SystemPopup>().Show(
-                L10nManager.Localize("UI_MAINTENANCE"),
-                L10nManager.Localize("UI_MARKET_MAINTENANCE"),
-                L10nManager.Localize("UI_OK"),
-                false
-            );
-            return;
-
             AsyncShow();
         }
 
@@ -334,7 +325,8 @@ namespace Nekoyume.UI
             return new PurchaseInfo(shopItem.ProductId.Value,
                 shopItem.SellerAgentAddress.Value,
                 shopItem.SellerAvatarAddress.Value,
-                shopItem.ItemSubType.Value);
+                shopItem.ItemSubType.Value,
+                shopItem.Price.Value);
         }
 
         public static ItemBase GetItemBase(Buy.PurchaseResult result)
