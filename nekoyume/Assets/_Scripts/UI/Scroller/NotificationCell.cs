@@ -8,13 +8,14 @@ using Nekoyume.Helper;
 using Nekoyume.Model.Mail;
 using Nekoyume.UI.Tween;
 using TMPro;
-using UniRx;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI.Scroller
 {
+    using UniRx;
+
     public class NotificationCell : FancyCell<
         NotificationCell.ViewModel,
         NotificationScroll.DefaultContext>

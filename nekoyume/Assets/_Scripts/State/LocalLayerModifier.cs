@@ -106,15 +106,16 @@ namespace Nekoyume.State
         public static void AddItem(
             Address avatarAddress,
             Guid tradableId,
-            int count = 1,
-            bool resetState = default)
+            long requiredBlockIndex,
+            int count,
+            bool resetState = true)
         {
             if (count is 0)
             {
                 return;
             }
-            
-            var modifier = new AvatarInventoryTradableItemRemover(tradableId, count);
+
+            var modifier = new AvatarInventoryTradableItemRemover(tradableId, requiredBlockIndex, count);
             LocalLayer.Instance.Remove(avatarAddress, modifier);
 
             if (!resetState)
@@ -129,7 +130,7 @@ namespace Nekoyume.State
             Address avatarAddress,
             HashDigest<SHA256> fungibleId,
             int count = 1,
-            bool resetState = default)
+            bool resetState = true)
         {
             if (count is 0)
             {
@@ -151,9 +152,9 @@ namespace Nekoyume.State
 
         #region Avatar / RemoveItem
 
-        public static void RemoveItem(Address avatarAddress, Guid tradableId, int count = 1)
+        public static void RemoveItem(Address avatarAddress, Guid tradableId, long requiredBlockIndex, int count)
         {
-            var modifier = new AvatarInventoryTradableItemRemover(tradableId, count);
+            var modifier = new AvatarInventoryTradableItemRemover(tradableId, requiredBlockIndex, count);
             LocalLayer.Instance.Add(avatarAddress, modifier);
             RemoveItemInternal(avatarAddress, modifier);
         }
@@ -169,6 +170,7 @@ namespace Nekoyume.State
             LocalLayer.Instance.Add(avatarAddress, modifier);
             RemoveItemInternal(avatarAddress, modifier);
         }
+
 
         private static void RemoveItemInternal(Address avatarAddress, AvatarStateModifier modifier)
         {
@@ -264,7 +266,7 @@ namespace Nekoyume.State
         public static void RemoveNewAttachmentMail(
             Address avatarAddress,
             Guid mailId,
-            bool resetState = default)
+            bool resetState = true)
         {
             var modifier = new AvatarAttachmentMailNewSetter(mailId);
             LocalLayer.Instance.Remove(avatarAddress, modifier);
@@ -280,7 +282,7 @@ namespace Nekoyume.State
         public static void RemoveAttachmentResult(
             Address avatarAddress,
             Guid mailId,
-            bool resetState = default)
+            bool resetState = true)
         {
             var resultModifier = new AvatarAttachmentMailResultSetter(mailId);
             LocalLayer.Instance.Remove(avatarAddress, resultModifier);
@@ -336,7 +338,7 @@ namespace Nekoyume.State
         public static void RemoveReceivableQuest(
             Address avatarAddress,
             int id,
-            bool resetState = default)
+            bool resetState = true)
         {
             var modifier = new AvatarQuestIsReceivableSetter(id);
             LocalLayer.Instance.Remove(avatarAddress, modifier);
@@ -364,7 +366,7 @@ namespace Nekoyume.State
             Address avatarAddress,
             Guid nonFungibleId,
             bool equip,
-            bool resetState = default)
+            bool resetState = true)
         {
             var modifier = new AvatarInventoryItemEquippedModifier(nonFungibleId, equip);
             LocalLayer.Instance.Add(avatarAddress, modifier);
@@ -687,16 +689,12 @@ namespace Nekoyume.State
                 return;
             }
 
+            equipment.LevelUp();
+            equipment.Update(requiredBlockIndex);
+
             var enhancementRow = Game.Game.instance.TableSheets
                 .EnhancementCostSheet.Values
                 .FirstOrDefault(x => x.Grade == equipment.Grade && x.Level == equipment.level);
-            if (enhancementRow is null)
-            {
-                return;
-            }
-
-            equipment.LevelUp();
-            equipment.Update(requiredBlockIndex);
 
             var result = new ItemEnhancement.ResultModel
             {

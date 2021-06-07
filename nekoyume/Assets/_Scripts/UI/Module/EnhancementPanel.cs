@@ -1,15 +1,15 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Numerics;
 using Nekoyume.Model.Item;
 using Nekoyume.State;
 using Nekoyume.UI.Model;
-using UniRx;
 using Material = Nekoyume.Model.Item.Material;
 
 namespace Nekoyume.UI.Module
 {
+    using UniRx;
+
     public class EnhancementPanel<TMaterialView> : Widget, ICombinationPanel
         where TMaterialView : CombinationMaterialView
     {

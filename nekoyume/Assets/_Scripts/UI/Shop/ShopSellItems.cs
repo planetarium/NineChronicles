@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.L10n;
@@ -12,6 +12,8 @@ using ShopItem = Nekoyume.UI.Model.ShopItem;
 
 namespace Nekoyume.UI.Module
 {
+    using UniRx;
+
     public class ShopSellItems : MonoBehaviour
     {
         public const int shopItemsCountOfOnePage = 20;

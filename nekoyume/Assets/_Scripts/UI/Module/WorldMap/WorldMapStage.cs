@@ -6,12 +6,13 @@ using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.TableData;
 using TMPro;
-using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
 {
+    using UniRx;
+
     public class WorldMapStage : MonoBehaviour
     {
         public enum State

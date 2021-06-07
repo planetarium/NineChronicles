@@ -9,12 +9,13 @@ using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.UI.Model;
 using TMPro;
-using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
 {
+    using UniRx;
+
     public class CombinationSlot : MonoBehaviour
     {
         public Slider progressBar;

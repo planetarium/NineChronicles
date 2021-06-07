@@ -203,6 +203,7 @@ namespace Nekoyume.Game.Character
                 InitializeHpBar();
                 HudContainer.UpdateAlpha(1);
             }
+
             HudContainer.UpdatePosition(gameObject, HUDOffset);
             HPBar.Set(CurrentHP, CharacterModel.Stats.BuffStats.HP, HP);
             HPBar.SetBuffs(CharacterModel.Buffs);
@@ -461,6 +462,16 @@ namespace Nekoyume.Game.Character
                 SpeechBubble.gameObject.SetActive(false);
                 Destroy(SpeechBubble.gameObject, SpeechBubble.destroyTime);
                 SpeechBubble = null;
+            }
+        }
+
+        public void DisableHudContainer()
+        {
+            if (HudContainer)
+            {
+                HudContainer.UpdateAlpha(0);
+                HudContainer.gameObject.SetActive(false);
+                HudContainer = null;
             }
         }
 

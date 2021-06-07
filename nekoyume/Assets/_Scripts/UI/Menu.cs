@@ -14,6 +14,7 @@ using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
 using System.Collections.Generic;
+using Nekoyume.Game.Character;
 using Nekoyume.State.Subjects;
 using UnityEngine.UI;
 
@@ -553,7 +554,11 @@ namespace Nekoyume.UI
             GoToCombinationEquipmentRecipe(firstRecipeRow.Id);
         }
 
-        public void TutorialActionClickGuidedQuestWorldStage2() =>
+        public void TutorialActionClickGuidedQuestWorldStage2()
+        {
+            var player = Game.Game.instance.Stage.GetPlayer();
+            player.DisableHudContainer();
             HackAndSlash(GuidedQuest.WorldQuest?.Goal ?? 4);
+        }
     }
 }

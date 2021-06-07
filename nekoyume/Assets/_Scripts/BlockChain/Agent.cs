@@ -45,6 +45,8 @@ using UnityEngine.Assertions;
 
 namespace Nekoyume.BlockChain
 {
+    using UniRx;
+
     /// <summary>
     /// 블록체인 노드 관련 로직을 처리
     /// </summary>

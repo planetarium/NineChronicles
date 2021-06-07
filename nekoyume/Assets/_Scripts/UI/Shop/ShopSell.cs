@@ -1,4 +1,5 @@
 using System;
+using DecimalMath;
 using Libplanet.Assets;
 using mixpanel;
 using Nekoyume.Action;
@@ -12,7 +13,6 @@ using Nekoyume.State;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using TMPro;
-using UniRx;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.UI;
@@ -20,6 +20,8 @@ using ShopItem = Nekoyume.UI.Model.ShopItem;
 
 namespace Nekoyume.UI
 {
+    using UniRx;
+
     public class ShopSell : Widget
     {
         private enum PriorityType
@@ -113,7 +115,7 @@ namespace Nekoyume.UI
             base.Show();
             shopItems.Show();
             inventory.SharedModel.State.Value = ItemType.Equipment;
-            inventory.SharedModel.DimmedFunc.Value = inventoryItem => !(inventoryItem.ItemBase.Value is ITradableItem);
+            inventory.SharedModel.ActiveFunc.SetValueAndForceNotify(inventoryItem => (inventoryItem.ItemBase.Value is ITradableItem));
             AudioController.instance.PlayMusic(AudioController.MusicCode.Shop);
         }
 
@@ -244,24 +246,6 @@ namespace Nekoyume.UI
                 shopItem.Count.Value);
         }
 
-        private void ShowActionPopup(CountableItem viewModel)
-        {
-            if (viewModel is null ||
-                viewModel.Dimmed.Value)
-                return;
-
-            switch (viewModel)
-            {
-                case InventoryItem inventoryItem:
-                    ShowSellPopup(inventoryItem);
-                    break;
-
-                case ShopItem shopItem:
-                    ShowRetrievePopup(shopItem);
-                    break;
-            }
-        }
-
         // sell
         private void SubscribeSellPopup(CountableItem data)
         {
@@ -307,17 +291,20 @@ namespace Nekoyume.UI
             UpdateTotalPrice(PriorityType.Count);
         }
 
-        private void SubscribeSellPopupPrice(int price)
+        private void SubscribeSellPopupPrice(decimal price)
         {
-            var priceModel = SharedModel.ItemCountableAndPricePopup.Value.Price;
-            priceModel.Value = new FungibleAssetValue(priceModel.Value.Currency, price, 0);
+            var majorUnit = (int) price;
+            var minorUnit = (int)((Math.Truncate((price - majorUnit) * 100) / 100) * 100);
+            var model = SharedModel.ItemCountableAndPricePopup.Value;
+            model.Price.SetValueAndForceNotify(new FungibleAssetValue(model.Price.Value.Currency,
+                majorUnit, minorUnit));
             UpdateTotalPrice(PriorityType.Price);
         }
 
         private void UpdateTotalPrice(PriorityType priorityType)
         {
             var model = SharedModel.ItemCountableAndPricePopup.Value;
-            var price = Convert.ToInt32(model.Price.Value.GetQuantityString());
+            var price = Convert.ToDecimal(model.Price.Value.GetQuantityString());
             var count = model.Count.Value;
             var totalPrice = price * count;
 
@@ -327,21 +314,25 @@ namespace Nekoyume.UI
                 {
                     case PriorityType.Price:
                         price = LimitPrice / model.Count.Value;
-                        model.Price.Value = new FungibleAssetValue(model.Price.Value.Currency, price, 0);
+                        var majorUnit = (int) price;
+                        var minorUnit = (int)((price - majorUnit) * 100);
+                        model.Price.Value = new FungibleAssetValue(model.Price.Value.Currency, majorUnit, minorUnit);
                         break;
                     case PriorityType.Count:
-                        count = LimitPrice / price;
+                        count = LimitPrice / (int)price;
                         model.Count.Value = count;
                         break;
                 }
 
-                totalPrice = price * count;
-
                 OneLinePopup.Push(MailType.System, L10nManager.Localize("UI_SELL_LIMIT_EXCEEDED"));
             }
 
-            model.TotalPrice.Value =
-                new FungibleAssetValue(model.TotalPrice.Value.Currency, totalPrice, 0);
+            var currency = model.TotalPrice.Value.Currency;
+            var sum = price * count;
+            var major = (int) sum;
+            var minor = (int) ((sum - (int) sum) * 100);
+            var fungibleAsset = new FungibleAssetValue(currency, major, minor);
+            model.TotalPrice.SetValueAndForceNotify(fungibleAsset);
         }
 
         // sell cancellation
@@ -371,7 +362,7 @@ namespace Nekoyume.UI
                 tradableItem.TradableId,
                 out var shopItem))
             {
-                if (model.Price.Value.Sign * model.Price.Value.MajorUnit < Model.Shop.MinimumPrice)
+                if (model.Price.Value.Sign * model.Price.Value.MajorUnit < Shop.MinimumPrice)
                 {
                     throw new InvalidSellingPriceException(model);
                 }
@@ -420,13 +411,16 @@ namespace Nekoyume.UI
             var item = SharedModel.ItemCountableAndPricePopup.Value.Item.Value;
             var count = SharedModel.ItemCountableAndPricePopup.Value.Count.Value;
             SharedModel.ItemCountableAndPricePopup.Value.Item.Value = null;
-
             if (!(item.ItemBase.Value is ITradableItem tradableItem))
             {
                 return;
             }
 
-            LocalLayerModifier.RemoveItem(avatarAddress, tradableItem.TradableId, count);
+            if (!(tradableItem is TradableMaterial))
+            {
+                LocalLayerModifier.RemoveItem(avatarAddress, tradableItem.TradableId, tradableItem.RequiredBlockIndex, count);
+            }
+
             AudioController.instance.PlaySfx(AudioController.SfxCode.InputItem);
 
             string message = string.Empty;
@@ -441,7 +435,8 @@ namespace Nekoyume.UI
                 message = string.Format(L10nManager.Localize("NOTIFICATION_SELL_START"),
                     item.ItemBase.Value.GetLocalizedName());
             }
-            Notification.Push(MailType.Auction, message);
+            OneLinePopup.Push(MailType.Auction, message);
+            inventory.SharedModel.ActiveFunc.SetValueAndForceNotify(inventoryItem => (inventoryItem.ItemBase.Value is ITradableItem));
         }
 
         private void ResponseSellCancellation(ShopItem shopItem)
@@ -452,7 +447,7 @@ namespace Nekoyume.UI
 
             AudioController.instance.PlaySfx(AudioController.SfxCode.InputItem);
             var format = L10nManager.Localize("NOTIFICATION_SELL_CANCEL_START");
-            Notification.Push(MailType.Auction,
+            OneLinePopup.Push(MailType.Auction,
                 string.Format(format, shopItem.ItemBase.Value.GetLocalizedName()));
         }
 

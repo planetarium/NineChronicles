@@ -10,9 +10,10 @@ namespace Nekoyume.UI.Model
         public readonly ReactiveProperty<bool> GlowEnabled = new ReactiveProperty<bool>(false);
         public readonly ReactiveProperty<bool> EquippedEnabled = new ReactiveProperty<bool>(false);
         public readonly ReactiveProperty<bool> HasNotification = new ReactiveProperty<bool>(false);
+        public readonly ReactiveProperty<bool> IsTradable = new ReactiveProperty<bool>(false);
 
         public InventoryItemView View;
-        
+
         public InventoryItem(ItemBase item, int count) : base(item, count)
         {
         }

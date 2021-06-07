@@ -4,13 +4,14 @@ using Nekoyume.State;
 using Nekoyume.State.Subjects;
 using Nekoyume.UI.Module.Common;
 using TMPro;
-using UniRx;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
 {
+    using UniRx;
+
     public class ActionPoint : AlphaAnimateModule
     {
         [SerializeField]

@@ -162,6 +162,7 @@ namespace Nekoyume.UI
                 // 팝업 영역.
                 Widget.Create<Settings>(),
                 Widget.Create<Confirm>(),
+                Widget.Create<OneButtonPopup>(),
                 Widget.Create<TwoButtonPopup>(),
 
                 // 팝업 영역: 알림.

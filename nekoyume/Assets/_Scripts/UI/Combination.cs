@@ -32,6 +32,8 @@ using Nekoyume.UI.Model;
 
 namespace Nekoyume.UI
 {
+    using UniRx;
+
     public class Combination : Widget
     {
         public enum StateType

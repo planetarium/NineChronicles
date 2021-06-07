@@ -23,6 +23,8 @@ using UnityEngine;
 
 namespace Nekoyume.BlockChain
 {
+    using UniRx;
+
     /// <summary>
     /// 현상태 : 각 액션의 랜더 단계에서 즉시 게임 정보에 반영시킴. 아바타를 선택하지 않은 상태에서 이전에 성공시키지 못한 액션을 재수행하고
     ///       이를 핸들링하면, 즉시 게임 정보에 반영시길 수 없기 때문에 에러가 발생함.
@@ -148,7 +150,7 @@ namespace Nekoyume.BlockChain
 
         private void HackAndSlash()
         {
-            _renderer.EveryRender<HackAndSlash4>()
+            _renderer.EveryRender<HackAndSlash>()
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseHackAndSlash).AddTo(_disposables);
@@ -157,7 +159,7 @@ namespace Nekoyume.BlockChain
 
         private void MimisbrunnrBattle()
         {
-            _renderer.EveryRender<MimisbrunnrBattle2>()
+            _renderer.EveryRender<MimisbrunnrBattle>()
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseMimisbrunnr).AddTo(_disposables);
@@ -165,7 +167,7 @@ namespace Nekoyume.BlockChain
 
         private void CombinationConsumable()
         {
-            _renderer.EveryRender<CombinationConsumable3>()
+            _renderer.EveryRender<CombinationConsumable>()
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseCombinationConsumable).AddTo(_disposables);
@@ -196,7 +198,7 @@ namespace Nekoyume.BlockChain
 
         private void ItemEnhancement()
         {
-            _renderer.EveryRender<ItemEnhancement5>()
+            _renderer.EveryRender<ItemEnhancement>()
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseItemEnhancement).AddTo(_disposables);
@@ -204,7 +206,7 @@ namespace Nekoyume.BlockChain
 
         private void DailyReward()
         {
-            _renderer.EveryRender<DailyReward3>()
+            _renderer.EveryRender<DailyReward>()
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(eval =>
@@ -241,7 +243,7 @@ namespace Nekoyume.BlockChain
 
         private void CombinationEquipment()
         {
-            _renderer.EveryRender<CombinationEquipment4>()
+            _renderer.EveryRender<CombinationEquipment>()
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseCombinationEquipment).AddTo(_disposables);
@@ -326,7 +328,7 @@ namespace Nekoyume.BlockChain
             }
         }
 
-        private void ResponseCombinationEquipment(ActionBase.ActionEvaluation<CombinationEquipment4> eval)
+        private void ResponseCombinationEquipment(ActionBase.ActionEvaluation<CombinationEquipment> eval)
         {
             if (eval.Exception is null)
             {
@@ -345,7 +347,7 @@ namespace Nekoyume.BlockChain
                 }
 
                 // NOTE: 메일 레이어 씌우기.
-                LocalLayerModifier.RemoveItem(avatarAddress, result.itemUsable.ItemId);
+                LocalLayerModifier.RemoveItem(avatarAddress, result.itemUsable.ItemId, result.itemUsable.RequiredBlockIndex, 1);
                 LocalLayerModifier.AddNewAttachmentMail(avatarAddress, result.id);
                 LocalLayerModifier.ResetCombinationSlot(slot);
 
@@ -416,7 +418,7 @@ namespace Nekoyume.BlockChain
             }
         }
 
-        private void ResponseCombinationConsumable(ActionBase.ActionEvaluation<CombinationConsumable3> eval)
+        private void ResponseCombinationConsumable(ActionBase.ActionEvaluation<CombinationConsumable> eval)
         {
             if (eval.Exception is null)
             {
@@ -434,7 +436,7 @@ namespace Nekoyume.BlockChain
                     LocalLayerModifier.AddItem(avatarAddress, pair.Key.ItemId, pair.Value);
                 }
 
-                LocalLayerModifier.RemoveItem(avatarAddress, itemUsable.ItemId);
+                LocalLayerModifier.RemoveItem(avatarAddress, itemUsable.ItemId, itemUsable.RequiredBlockIndex, 1);
                 LocalLayerModifier.AddNewAttachmentMail(avatarAddress, result.id);
                 LocalLayerModifier.ResetCombinationSlot(slot);
 
@@ -491,7 +493,7 @@ namespace Nekoyume.BlockChain
                             items.First().item.GetLocalizedName());
                     }
 
-                    UI.Notification.Push(MailType.Auction, message);
+                    OneLinePopup.Push(MailType.Auction, message);
                 }
                 else
                 {
@@ -513,10 +515,10 @@ namespace Nekoyume.BlockChain
                     ? result.tradableFungibleItemCount
                     : 1;
                 var tradableItem = (ITradableItem) itemBase;
-                LocalLayerModifier.RemoveItem(avatarAddress, tradableItem.TradableId, count);
+                LocalLayerModifier.RemoveItem(avatarAddress, tradableItem.TradableId, tradableItem.RequiredBlockIndex, count);
                 LocalLayerModifier.AddNewAttachmentMail(avatarAddress, result.id);
                 var format = L10nManager.Localize("NOTIFICATION_SELL_CANCEL_COMPLETE");
-                UI.Notification.Push(MailType.Auction, string.Format(format, itemBase.GetLocalizedName()));
+                OneLinePopup.Push(MailType.Auction, string.Format(format, itemBase.GetLocalizedName()));
                 UpdateCurrentAvatarState(eval);
             }
         }
@@ -543,12 +545,11 @@ namespace Nekoyume.BlockChain
                                 : 1;
                             var tradableItem = (ITradableItem) itemBase;
                             LocalLayerModifier.ModifyAgentGold(agentAddress, price);
-                            LocalLayerModifier.RemoveItem(currentAvatarAddress, tradableItem.TradableId, count);
+                            LocalLayerModifier.RemoveItem(currentAvatarAddress, tradableItem.TradableId, tradableItem.RequiredBlockIndex, count);
                             LocalLayerModifier.AddNewAttachmentMail(currentAvatarAddress, purchaseResult.id);
 
                             // Push notification
                             var format = L10nManager.Localize("NOTIFICATION_BUY_BUYER_COMPLETE");
-
                             OneLinePopup.Push(MailType.Auction, string.Format(format, itemBase.GetLocalizedName(), price));
 
                             // Analytics
@@ -665,7 +666,7 @@ namespace Nekoyume.BlockChain
             }
         }
 
-        private void ResponseHackAndSlash(ActionBase.ActionEvaluation<HackAndSlash4> eval)
+        private void ResponseHackAndSlash(ActionBase.ActionEvaluation<HackAndSlash> eval)
         {
             if (eval.Exception is null)
             {
@@ -719,7 +720,7 @@ namespace Nekoyume.BlockChain
             }
         }
 
-        private void ResponseMimisbrunnr(ActionBase.ActionEvaluation<MimisbrunnrBattle2> eval)
+        private void ResponseMimisbrunnr(ActionBase.ActionEvaluation<MimisbrunnrBattle> eval)
         {
             if (eval.Exception is null)
             {
@@ -835,7 +836,7 @@ namespace Nekoyume.BlockChain
             }
         }
 
-        private void ResponseItemEnhancement(ActionBase.ActionEvaluation<ItemEnhancement5> eval)
+        private void ResponseItemEnhancement(ActionBase.ActionEvaluation<ItemEnhancement> eval)
         {
             if (eval.Exception is null)
             {
@@ -848,15 +849,18 @@ namespace Nekoyume.BlockChain
 
                 // NOTE: 사용한 자원에 대한 레이어 벗기기.
                 LocalLayerModifier.ModifyAgentGold(agentAddress, result.gold);
-                LocalLayerModifier.AddItem(avatarAddress, itemUsable.TradableId);
+                LocalLayerModifier.AddItem(avatarAddress, itemUsable.TradableId, itemUsable.RequiredBlockIndex, 1);
                 foreach (var tradableId in result.materialItemIdList)
                 {
-                    // NOTE: 최종적으로 UpdateCurrentAvatarState()를 호출한다면, 그곳에서 상태를 새로 설정할 것이다.
-                    LocalLayerModifier.AddItem(avatarAddress, tradableId);
+                    if (avatarState.inventory.TryGetNonFungibleItem(tradableId,
+                        out ItemUsable materialItem))
+                    {
+                        LocalLayerModifier.AddItem(avatarAddress, tradableId, materialItem.RequiredBlockIndex, 1);
+                    }
                 }
 
                 // NOTE: 메일 레이어 씌우기.
-                LocalLayerModifier.RemoveItem(avatarAddress, itemUsable.TradableId);
+                LocalLayerModifier.RemoveItem(avatarAddress, itemUsable.TradableId, itemUsable.RequiredBlockIndex, 1);
                 LocalLayerModifier.AddNewAttachmentMail(avatarAddress, result.id);
 
                 // NOTE: 워크샵 슬롯의 모든 휘발성 상태 변경자를 제거하기.
@@ -955,7 +959,22 @@ namespace Nekoyume.BlockChain
                     continue;
                 }
 
-                LocalLayerModifier.RemoveItem(avatarAddress, tradableId, rewardInfo.Quantity);
+                if (!rewardInfo.ItemId.TryGetFungibleId(
+                    Game.Game.instance.TableSheets.ItemSheet,
+                    out var fungibleId))
+                {
+                    continue;
+                }
+
+                avatarState.inventory.TryGetFungibleItems(fungibleId, out var items);
+                var item = items.FirstOrDefault(x => x.item is ITradableItem);
+                if (item != null && item is ITradableItem tradableItem)
+                {
+                    LocalLayerModifier.RemoveItem(avatarAddress,
+                                                  tradableId,
+                                                  tradableItem.RequiredBlockIndex,
+                                                  rewardInfo.Quantity);
+                }
             }
 
             LocalLayerModifier.AddNewAttachmentMail(avatarAddress, mail.id);

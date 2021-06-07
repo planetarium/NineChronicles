@@ -21,6 +21,8 @@ using UnityEngine;
 
 namespace Nekoyume.UI
 {
+    using UniRx;
+
     public class AvatarInfo : XTweenWidget
     {
         public bool HasNotification =>

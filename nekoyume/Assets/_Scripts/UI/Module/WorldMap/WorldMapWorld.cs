@@ -11,6 +11,8 @@ using UnityEngine.UI.Extensions;
 
 namespace Nekoyume.UI.Module
 {
+    using UniRx;
+
     public class WorldMapWorld : MonoBehaviour
     {
         public class ViewModel : IDisposable
