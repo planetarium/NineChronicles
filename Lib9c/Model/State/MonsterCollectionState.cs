@@ -28,6 +28,7 @@ namespace Nekoyume.Model.State
         public const long ExpirationIndex = RewardInterval * RewardCapacity;
         public const int RewardCapacity = 4;
         public const long RewardInterval = 50400;
+        public const long LockUpInterval = 50400 * 4;
 
         public int Level { get; private set; }
         public long ExpiredBlockIndex { get; private set; }
@@ -37,6 +38,12 @@ namespace Nekoyume.Model.State
         public Dictionary<long, MonsterCollectionResult> RewardMap { get; private set; }
         public bool End { get; private set; }
         public Dictionary<long, List<MonsterCollectionRewardSheet.RewardInfo>> RewardLevelMap { get; private set; }
+
+        public MonsterCollectionState(Address address, int level, long blockIndex) : base(address)
+        {
+            Level = level;
+            StartedBlockIndex = blockIndex;
+        }
 
         public MonsterCollectionState(Address address, int level, long blockIndex,
             MonsterCollectionRewardSheet monsterCollectionRewardSheet) : base(address)
@@ -58,24 +65,44 @@ namespace Nekoyume.Model.State
         public MonsterCollectionState(Dictionary serialized) : base(serialized)
         {
             Level = serialized[LevelKey].ToInteger();
-            ExpiredBlockIndex = serialized[ExpiredBlockIndexKey].ToLong();
             StartedBlockIndex = serialized[StartedBlockIndexKey].ToLong();
             ReceivedBlockIndex = serialized[ReceivedBlockIndexKey].ToLong();
-            RewardLevel = serialized[RewardLevelKey].ToLong();
-            RewardMap = ((Dictionary) serialized[RewardMapKey]).ToDictionary(
-                kv => kv.Key.ToLong(),
-                kv => new MonsterCollectionResult((Dictionary)kv.Value)
-            );
-            End = serialized[EndKey].ToBoolean();
-            RewardLevelMap = ((Dictionary) serialized[RewardLevelMapKey])
-                .OrderBy(r => r.Key)
-                .ToDictionary(
+
+            if (serialized.ContainsKey(ExpiredBlockIndexKey))
+            {
+                ExpiredBlockIndex = serialized[ExpiredBlockIndexKey].ToLong();
+            }
+
+            if (serialized.ContainsKey(RewardLevelKey))
+            {
+                RewardLevel = serialized[RewardLevelKey].ToLong();
+            }
+
+            if (serialized.ContainsKey(RewardMapKey))
+            {
+                RewardMap = ((Dictionary) serialized[RewardMapKey]).ToDictionary(
                     kv => kv.Key.ToLong(),
-                    kv => kv.Value
-                        .ToList(v => new MonsterCollectionRewardSheet.RewardInfo((Dictionary)v))
-                        .OrderBy(r => r.ItemId)
-                        .ToList()
+                    kv => new MonsterCollectionResult((Dictionary)kv.Value)
                 );
+            }
+
+            if (serialized.ContainsKey(EndKey))
+            {
+                End = serialized[EndKey].ToBoolean();
+            }
+
+            if (serialized.ContainsKey(RewardLevelMapKey))
+            {
+                RewardLevelMap = ((Dictionary) serialized[RewardLevelMapKey])
+                    .OrderBy(r => r.Key)
+                    .ToDictionary(
+                        kv => kv.Key.ToLong(),
+                        kv => kv.Value
+                            .ToList(v => new MonsterCollectionRewardSheet.RewardInfo((Dictionary)v))
+                            .OrderBy(r => r.ItemId)
+                            .ToList()
+                    );
+            }
         }
 
         public void Update(int level, long rewardLevel, MonsterCollectionRewardSheet monsterCollectionRewardSheet)
@@ -118,6 +145,16 @@ namespace Nekoyume.Model.State
             return blockIndex - Math.Max(StartedBlockIndex, ReceivedBlockIndex) >= RewardInterval;
         }
 
+        public bool IsLock(long blockIndex)
+        {
+            return StartedBlockIndex +  LockUpInterval > blockIndex;
+        }
+
+        public void Receive(long blockIndex)
+        {
+            ReceivedBlockIndex = blockIndex;
+        }
+
         public override IValue Serialize()
         {
 #pragma warning disable LAA1002
@@ -146,6 +183,18 @@ namespace Nekoyume.Model.State
                     )
                 ),
             }.Union((Dictionary) base.Serialize()));
+#pragma warning restore LAA1002
+        }
+
+        public override IValue SerializeV2()
+        {
+#pragma warning disable LAA1002
+            return new Dictionary(new Dictionary<IKey, IValue>
+            {
+                [(Text) LevelKey] = Level.Serialize(),
+                [(Text) StartedBlockIndexKey] = StartedBlockIndex.Serialize(),
+                [(Text) ReceivedBlockIndexKey] = ReceivedBlockIndex.Serialize(),
+            }.Union((Dictionary) base.SerializeV2()));
 #pragma warning restore LAA1002
         }
 

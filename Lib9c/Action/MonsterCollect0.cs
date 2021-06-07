@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Diagnostics;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
@@ -13,14 +12,15 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("monster_collect2")]
-    public class MonsterCollect : GameAction
+    [ActionType("monster_collect")]
+    public class MonsterCollect0 : GameAction
     {
         public int level;
+        public int collectionRound;
         public override IAccountStateDelta Execute(IActionContext context)
         {
             IAccountStateDelta states = context.PreviousStates;
-            Address monsterCollectionAddress = MonsterCollectionState.DeriveAddress(context.Signer, 0);
+            Address monsterCollectionAddress = MonsterCollectionState.DeriveAddress(context.Signer, collectionRound);
             if (context.Rehearsal)
             {
                 return states
@@ -37,7 +37,13 @@ namespace Nekoyume.Action
                 throw new FailedLoadStateException("Aborted as the agent state failed to load.");
             }
 
-            if (level < 0 || level > 0 && !monsterCollectionSheet.TryGetValue(level, out MonsterCollectionSheet.Row _))
+            if (agentState.MonsterCollectionRound != collectionRound)
+            {
+                throw new InvalidMonsterCollectionRoundException(
+                    $"Expected collection round is {agentState.MonsterCollectionRound}, but actual collection round is {collectionRound}.");
+            }
+
+            if (!monsterCollectionSheet.TryGetValue(level, out MonsterCollectionSheet.Row _))
             {
                 throw new SheetRowNotFoundException(nameof(MonsterCollectionSheet), level);
             }
@@ -48,30 +54,35 @@ namespace Nekoyume.Action
             FungibleAssetValue balance = states.GetBalance(context.Signer, states.GetGoldCurrency());
 
             MonsterCollectionState monsterCollectionState;
+            int currentLevel = 1;
+            MonsterCollectionRewardSheet monsterCollectionRewardSheet = states.GetSheet<MonsterCollectionRewardSheet>();
             if (states.TryGetState(monsterCollectionAddress, out Dictionary stateDict))
             {
                 monsterCollectionState = new MonsterCollectionState(stateDict);
-                int currentLevel = monsterCollectionState.Level;
-                // 락업 확인
-                if (level < currentLevel && monsterCollectionState.IsLock(context.BlockIndex))
+
+                if (monsterCollectionState.ExpiredBlockIndex < context.BlockIndex)
                 {
-                    throw new RequiredBlockIndexException();
+                    throw new MonsterCollectionExpiredException(
+                        $"{monsterCollectionAddress} has already expired on {monsterCollectionState.ExpiredBlockIndex}");
                 }
 
-                // 언스테이킹
-                FungibleAssetValue gold = currency * 0;
-                for (int i = currentLevel; i > 0; i--)
+                if (monsterCollectionState.Level >= level)
                 {
-                    gold += currency * monsterCollectionSheet[i].RequiredGold;
+                    throw new InvalidLevelException($"The level must be greater than {monsterCollectionState.Level}.");
                 }
-                states = states.TransferAsset(monsterCollectionAddress, context.Signer, gold);
-                Debug.Assert(states.GetBalance(monsterCollectionAddress, currency).Equals(0 * currency));
+
+                currentLevel = monsterCollectionState.Level + 1;
+                long rewardLevel = monsterCollectionState.GetRewardLevel(context.BlockIndex);
+                monsterCollectionState.Update(level, rewardLevel, monsterCollectionRewardSheet);
             }
-            monsterCollectionState = new MonsterCollectionState(monsterCollectionAddress, level, context.BlockIndex);
-
-            for (int i = 0; i < level; i++)
+            else
             {
-                requiredGold += currency * monsterCollectionSheet[i + 1].RequiredGold;
+                monsterCollectionState = new MonsterCollectionState(monsterCollectionAddress, level, context.BlockIndex, monsterCollectionRewardSheet);
+            }
+
+            for (int i = currentLevel; i < level + 1; i++)
+            {
+                requiredGold += currency * monsterCollectionSheet[i].RequiredGold;
             }
 
             if (balance < requiredGold)
@@ -80,18 +91,20 @@ namespace Nekoyume.Action
                     $"There is no sufficient balance for {context.Signer}: {balance} < {requiredGold}");
             }
             states = states.TransferAsset(context.Signer, monsterCollectionAddress, requiredGold);
-            states = states.SetState(monsterCollectionAddress, monsterCollectionState.SerializeV2());
+            states = states.SetState(monsterCollectionAddress, monsterCollectionState.Serialize());
             return states;
         }
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal => new Dictionary<string, IValue>
         {
             [LevelKey] = level.Serialize(),
+            [MonsterCollectionRoundKey] = collectionRound.Serialize(),
         }.ToImmutableDictionary();
 
         protected override void LoadPlainValueInternal(IImmutableDictionary<string, IValue> plainValue)
         {
             level = plainValue[LevelKey].ToInteger();
+            collectionRound = plainValue[MonsterCollectionRoundKey].ToInteger();
         }
     }
 }

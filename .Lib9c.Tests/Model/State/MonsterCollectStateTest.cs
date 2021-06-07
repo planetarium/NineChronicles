@@ -45,6 +45,28 @@ namespace Lib9c.Tests.Model.State
             Assert.Equal(monsterCollectionState.Serialize(), deserialized.Serialize());
         }
 
+        [Fact]
+        public void SerializeV2()
+        {
+            MonsterCollectionState monsterCollectionState = new MonsterCollectionState(_address, 1, 10000);
+            Dictionary serialized = (Dictionary)monsterCollectionState.SerializeV2();
+            Assert.Equal(serialized, new MonsterCollectionState(serialized).SerializeV2());
+        }
+
+        [Fact]
+        public void SerializeV2_DotNet_API()
+        {
+            MonsterCollectionState monsterCollectionState = new MonsterCollectionState(_address, 1, 10000);
+            var formatter = new BinaryFormatter();
+            using var ms = new MemoryStream();
+            formatter.Serialize(ms, monsterCollectionState);
+            ms.Seek(0, SeekOrigin.Begin);
+
+            var deserialized = (MonsterCollectionState)formatter.Deserialize(ms);
+
+            Assert.Equal(monsterCollectionState.SerializeV2(), deserialized.SerializeV2());
+        }
+
         [Theory]
         [InlineData(0)]
         [InlineData(1)]
@@ -133,6 +155,16 @@ namespace Lib9c.Tests.Model.State
             Assert.Equal(receivedBlockIndex, monsterCollectionState.ReceivedBlockIndex);
             Assert.Equal(startedBlockIndex, monsterCollectionState.StartedBlockIndex);
             Assert.Equal(expected, monsterCollectionState.CanReceive(blockIndex));
+        }
+
+        [Theory]
+        [InlineData(MonsterCollectionState.LockUpInterval - 1, true)]
+        [InlineData(MonsterCollectionState.LockUpInterval, false)]
+        [InlineData(MonsterCollectionState.LockUpInterval + 1, false)]
+        public void IsLock(long blockIndex, bool expected)
+        {
+            MonsterCollectionState monsterCollectionState = new MonsterCollectionState(_address, 1, 0);
+            Assert.Equal(expected, monsterCollectionState.IsLock(blockIndex));
         }
     }
 }
