@@ -42,9 +42,20 @@ namespace Nekoyume.UI
             {
                 var maxCount = _data.Item.Value.MaxCount.Value;
                 var count = InputFieldValueToValue<int>(countInputField);
-                var result = Mathf.Clamp(count, 1, maxCount);
-                countInputField.text = result.ToString();
-                _data.OnChangeCount.OnNext(result);
+
+                if (countInputField.text.Equals(string.Empty) ||
+                    countInputField.text.Equals("0"))
+                {
+                    countInputField.text = string.Empty;
+                    _data.OnChangeCount.OnNext(0);
+                }
+                else
+                {
+                    var result = Mathf.Clamp(count, 1, maxCount);
+                    countInputField.text = result.ToString();
+                    _data.OnChangeCount.OnNext(result);
+                }
+
             }).AddTo(_disposablesForAwake);
 
             addCountButton.OnClickAsObservable().Subscribe(_ =>
@@ -76,8 +87,18 @@ namespace Nekoyume.UI
                     return;
                 }
 
-                var price = InputFieldValueToValue<decimal>(priceInputField);
-                _data.OnChangePrice.OnNext(price);
+                if (priceInputField.text.Equals(string.Empty) ||
+                    priceInputField.text.Equals("0"))
+                {
+                    priceInputField.text = string.Empty;
+                    _data.OnChangePrice.OnNext(0);
+                }
+                else
+                {
+                    var price = InputFieldValueToValue<decimal>(priceInputField);
+                    _data.OnChangePrice.OnNext(price);
+                }
+
             }).AddTo(_disposablesForAwake);
 
             resetPriceButton.OnClickAsObservable()
@@ -116,6 +137,8 @@ namespace Nekoyume.UI
             _disposablesForSetData.DisposeAllAndClear();
             base.SetData(data);
 
+            priceInputField.text = "10";
+            countInputField.text = "1";
             _data.Count.Value = 1;
             _data.Price.Value = new FungibleAssetValue(_data.Price.Value.Currency,
                 Model.Shop.MinimumPrice, 0);
@@ -130,6 +153,10 @@ namespace Nekoyume.UI
                     if (value.MinorUnit == 0 && priceInputField.text.Contains(".0"))
                     {
                         priceInputField.text = $"{value.MajorUnit}.{value.MinorUnit}";
+                    }
+                    else if (value.MajorUnit == 0 && value.MinorUnit == 0)
+                    {
+                        priceInputField.text = string.Empty;
                     }
                     else
                     {

@@ -501,6 +501,7 @@ namespace Nekoyume.BlockChain
                 }
 
                 UpdateCurrentAvatarState(eval);
+                Widget.Find<ShopSell>().ForceNotifyActiveFunc();
             }
         }
 
@@ -520,6 +521,7 @@ namespace Nekoyume.BlockChain
                 var format = L10nManager.Localize("NOTIFICATION_SELL_CANCEL_COMPLETE");
                 OneLinePopup.Push(MailType.Auction, string.Format(format, itemBase.GetLocalizedName()));
                 UpdateCurrentAvatarState(eval);
+                Widget.Find<ShopSell>().ForceNotifyActiveFunc();
             }
         }
 
