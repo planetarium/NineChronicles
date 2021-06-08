@@ -39,36 +39,40 @@ namespace Nekoyume.Action
 
             if (level < 0 || level > 0 && !monsterCollectionSheet.TryGetValue(level, out MonsterCollectionSheet.Row _))
             {
-                throw new SheetRowNotFoundException(nameof(MonsterCollectionSheet), level);
+                throw new MonsterCollectionLevelException();
             }
 
             Currency currency = states.GetGoldCurrency();
             // Set default gold value.
             FungibleAssetValue requiredGold = currency * 0;
-            FungibleAssetValue balance = states.GetBalance(context.Signer, states.GetGoldCurrency());
+            FungibleAssetValue balance = states.GetBalance(context.Signer, currency);
 
-            MonsterCollectionState monsterCollectionState;
             if (states.TryGetState(monsterCollectionAddress, out Dictionary stateDict))
             {
-                monsterCollectionState = new MonsterCollectionState(stateDict);
-                int currentLevel = monsterCollectionState.Level;
+                var existingStates = new MonsterCollectionState(stateDict);
+                int previousLevel = existingStates.Level;
                 // 락업 확인
-                if (level < currentLevel && monsterCollectionState.IsLock(context.BlockIndex))
+                if (level < previousLevel && existingStates.IsLock(context.BlockIndex))
                 {
                     throw new RequiredBlockIndexException();
                 }
 
-                // 언스테이킹
-                FungibleAssetValue gold = currency * 0;
-                for (int i = currentLevel; i > 0; i--)
+                if (level == previousLevel)
                 {
-                    gold += currency * monsterCollectionSheet[i].RequiredGold;
+                    throw new MonsterCollectionLevelException();
                 }
-                states = states.TransferAsset(monsterCollectionAddress, context.Signer, gold);
-                Debug.Assert(states.GetBalance(monsterCollectionAddress, currency).Equals(0 * currency));
-            }
-            monsterCollectionState = new MonsterCollectionState(monsterCollectionAddress, level, context.BlockIndex);
 
+                // 언스테이킹
+                FungibleAssetValue gold = states.GetBalance(monsterCollectionAddress, currency);
+                states = states.TransferAsset(monsterCollectionAddress, context.Signer, gold);
+            }
+
+            if (level == 0)
+            {
+                return states.SetState(monsterCollectionAddress, new Null());
+            }
+
+            var monsterCollectionState = new MonsterCollectionState(monsterCollectionAddress, level, context.BlockIndex);
             for (int i = 0; i < level; i++)
             {
                 requiredGold += currency * monsterCollectionSheet[i + 1].RequiredGold;

@@ -1,5 +1,6 @@
 namespace Lib9c.Tests.Action
 {
+    using System;
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using Bencodex.Types;
@@ -36,59 +37,87 @@ namespace Lib9c.Tests.Action
         }
 
         [Theory]
-        [InlineData(true, 2, 1, MonsterCollectionState.LockUpInterval)]
-        [InlineData(true, 5, 2, MonsterCollectionState.LockUpInterval + 1)]
-        [InlineData(false, 1, 3, 1)]
-        [InlineData(false, 3, 4, MonsterCollectionState.RewardInterval * 3)]
-        public void Execute(bool exist, int level, int prevLevel, long blockIndex)
+        [InlineData(1, 2, MonsterCollectionState.LockUpInterval, null, 500 + 1800)]
+        [InlineData(2, 4, 1, null, 500 + 1800 + 7200 + 54000)]
+        [InlineData(2, 4, MonsterCollectionState.LockUpInterval, null, 500 + 1800 + 7200 + 54000)]
+        [InlineData(3, 2, 1, typeof(RequiredBlockIndexException), null)]
+        [InlineData(3, 2, MonsterCollectionState.LockUpInterval, null, 500 + 1800)]
+        [InlineData(3, 3, MonsterCollectionState.LockUpInterval, typeof(MonsterCollectionLevelException), null)]
+        [InlineData(3, 0, 1, typeof(RequiredBlockIndexException), null)]
+        [InlineData(3, 0, MonsterCollectionState.LockUpInterval, null, 0)]
+        [InlineData(null, 1, 1, null, 500)]
+        [InlineData(null, 3, MonsterCollectionState.LockUpInterval, null, 500 + 1800 + 7200)]
+        [InlineData(null, -1, 1, typeof(MonsterCollectionLevelException), null)]
+        [InlineData(null, 100, 1, typeof(MonsterCollectionLevelException), null)]
+        [InlineData(null, 0, 1, null, 0)]
+        public void Execute(int? prevLevel, int level, long blockIndex, Type exc, int? expectedStakings)
         {
             Address monsterCollectionAddress = MonsterCollectionState.DeriveAddress(_signer, 0);
             Currency currency = _initialState.GetGoldCurrency();
-            FungibleAssetValue balance = 0 * currency;
-            FungibleAssetValue requiredGold = 0 * currency;
-            if (exist)
+            FungibleAssetValue balance = currency * 10000000;
+            FungibleAssetValue staked = currency * 0;
+            if (prevLevel is { } prevLevelNotNull)
             {
-                List<MonsterCollectionRewardSheet.RewardInfo> rewards = _tableSheets.MonsterCollectionRewardSheet[prevLevel].Rewards;
-                MonsterCollectionState prevMonsterCollectionState = new MonsterCollectionState(monsterCollectionAddress, prevLevel, 0, _tableSheets.MonsterCollectionRewardSheet);
+                List<MonsterCollectionRewardSheet.RewardInfo> rewards = _tableSheets.MonsterCollectionRewardSheet[prevLevelNotNull].Rewards;
+                var prevMonsterCollectionState = new MonsterCollectionState(
+                    address: monsterCollectionAddress,
+                    level: prevLevelNotNull,
+                    blockIndex: 0,
+                    monsterCollectionRewardSheet: _tableSheets.MonsterCollectionRewardSheet
+                );
                 _initialState = _initialState.SetState(monsterCollectionAddress, prevMonsterCollectionState.Serialize());
                 for (int i = 0; i < prevLevel; i++)
                 {
                     MonsterCollectionSheet.Row row = _tableSheets.MonsterCollectionSheet[i + 1];
-                    balance += row.RequiredGold * currency;
+                    staked += row.RequiredGold * currency;
                     _initialState = _initialState.MintAsset(monsterCollectionAddress, row.RequiredGold * currency);
                 }
 
                 Assert.All(prevMonsterCollectionState.RewardLevelMap, kv => Assert.Equal(rewards, kv.Value));
             }
 
-            for (int i = 1; i < level + 1; i++)
-            {
-                MonsterCollectionSheet.Row row = _tableSheets.MonsterCollectionSheet[i];
-                requiredGold += row.RequiredGold * currency;
-                _initialState = _initialState.MintAsset(_signer, row.RequiredGold * currency);
-            }
+            balance = balance - staked;
 
+            _initialState = _initialState.MintAsset(_signer, balance);
             MonsterCollect action = new MonsterCollect
             {
                 level = level,
             };
 
-            IAccountStateDelta nextState = action.Execute(new ActionContext
+            if (exc is { } excType)
             {
-                PreviousStates = _initialState,
-                Signer = _signer,
-                BlockIndex = blockIndex,
-            });
+                Assert.Throws(excType, () => action.Execute(new ActionContext
+                {
+                    PreviousStates = _initialState,
+                    Signer = _signer,
+                    BlockIndex = blockIndex,
+                }));
+            }
+            else
+            {
+                IAccountStateDelta nextState = action.Execute(new ActionContext
+                {
+                    PreviousStates = _initialState,
+                    Signer = _signer,
+                    BlockIndex = blockIndex,
+                });
 
-            MonsterCollectionState nextMonsterCollectionState = new MonsterCollectionState((Dictionary)nextState.GetState(monsterCollectionAddress));
-            AgentState nextAgentState = nextState.GetAgentState(_signer);
-            Assert.Equal(level, nextMonsterCollectionState.Level);
-            Assert.Equal(blockIndex, nextMonsterCollectionState.StartedBlockIndex);
-            Assert.Equal(0, nextMonsterCollectionState.ReceivedBlockIndex);
-            Assert.Equal(0, nextMonsterCollectionState.ExpiredBlockIndex);
-            Assert.Equal(requiredGold, nextState.GetBalance(monsterCollectionAddress, currency));
-            Assert.Equal(balance, nextState.GetBalance(_signer, currency));
-            Assert.Equal(0, nextAgentState.MonsterCollectionRound);
+                Assert.Equal(expectedStakings * currency, nextState.GetBalance(monsterCollectionAddress, currency));
+                Assert.Equal(balance + staked - (expectedStakings * currency), nextState.GetBalance(_signer, currency));
+
+                if (level == 0)
+                {
+                    Assert.Equal(default(Null), nextState.GetState(monsterCollectionAddress));
+                }
+                else
+                {
+                    var nextMonsterCollectionState = new MonsterCollectionState((Dictionary)nextState.GetState(monsterCollectionAddress));
+                    Assert.Equal(level, nextMonsterCollectionState.Level);
+                    Assert.Equal(blockIndex, nextMonsterCollectionState.StartedBlockIndex);
+                    Assert.Equal(0, nextMonsterCollectionState.ReceivedBlockIndex);
+                    Assert.Equal(0, nextMonsterCollectionState.ExpiredBlockIndex);
+                }
+            }
         }
 
         [Fact]
@@ -107,26 +136,6 @@ namespace Lib9c.Tests.Action
             }));
         }
 
-        [Theory]
-        [InlineData(-1)]
-        [InlineData(100)]
-        public void Execute_Throw_SheetRowNotFoundException(int level)
-        {
-            Assert.False(_tableSheets.MonsterCollectionSheet.Keys.Contains(level));
-
-            MonsterCollect action = new MonsterCollect
-            {
-                level = level,
-            };
-
-            Assert.Throws<SheetRowNotFoundException>(() => action.Execute(new ActionContext
-            {
-                PreviousStates = _initialState,
-                Signer = _signer,
-                BlockIndex = 1,
-            }));
-        }
-
         [Fact]
         public void Execute_Throw_InsufficientBalanceException()
         {
@@ -140,28 +149,6 @@ namespace Lib9c.Tests.Action
                 PreviousStates = _initialState,
                 Signer = _signer,
                 BlockIndex = 1,
-            }));
-        }
-
-        [Theory]
-        [InlineData(2, 1, 1)]
-        [InlineData(3, 0, MonsterCollectionState.ExpirationIndex - 1)]
-        public void Execute_Throw_RequiredBlockIndexException(int prevLevel, int level, long blockIndex)
-        {
-            Address collectionAddress = MonsterCollectionState.DeriveAddress(_signer, 0);
-            MonsterCollectionState prevMonsterCollectionState = new MonsterCollectionState(collectionAddress, prevLevel, 0, _tableSheets.MonsterCollectionRewardSheet);
-            _initialState = _initialState.SetState(collectionAddress, prevMonsterCollectionState.Serialize());
-
-            MonsterCollect action = new MonsterCollect
-            {
-                level = level,
-            };
-
-            Assert.Throws<RequiredBlockIndexException>(() => action.Execute(new ActionContext
-            {
-                PreviousStates = _initialState,
-                Signer = _signer,
-                BlockIndex = blockIndex,
             }));
         }
 
