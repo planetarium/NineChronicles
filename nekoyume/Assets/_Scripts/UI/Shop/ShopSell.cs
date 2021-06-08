@@ -429,6 +429,7 @@ namespace Nekoyume.UI
             var format = L10nManager.Localize("NOTIFICATION_SELL_CANCEL_START");
             OneLinePopup.Push(MailType.Auction,
                 string.Format(format, shopItem.ItemBase.Value.GetLocalizedName()));
+            inventory.SharedModel.ActiveFunc.SetValueAndForceNotify(inventoryItem => (inventoryItem.ItemBase.Value is ITradableItem));
         }
 
         private void ShowSpeech(string key,
@@ -454,6 +455,11 @@ namespace Nekoyume.UI
             }
 
             return (ItemBase)result.tradableFungibleItem;
+        }
+
+        public void ForceNotifyActiveFunc()
+        {
+            inventory.SharedModel.ActiveFunc.SetValueAndForceNotify(inventoryItem => (inventoryItem.ItemBase.Value is ITradableItem));
         }
     }
 }
