@@ -82,9 +82,9 @@ MonoBehaviour:
   tutorialTargets: []
   tutorialActions: 
   blur: {fileID: 5774291252606785824}
-  characterSelectButtonListener: {fileID: 7535856757583839080}
-  quitButtonListener: {fileID: 1326065327301512574}
-  closeButtonListener: {fileID: 4555298465138176466}
+  characterSelectEventListener: {fileID: 7535856757583839080}
+  quitEventListener: {fileID: 1326065327301512574}
+  closeEventListener: {fileID: 4555298465138176466}
 --- !u!1 &2500250355488013908
 GameObject:
   m_ObjectHideFlags: 0
@@ -536,6 +536,46 @@ PrefabInstance:
       propertyPath: m_AnimationTriggers.m_SelectedTrigger
       value: Selected
       objectReference: {fileID: 0}
+    - target: {fileID: 3855642395857479374, guid: f1cfee54643744dc88e701ed6daeff97,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3855642395857479374, guid: f1cfee54643744dc88e701ed6daeff97,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 3855642395857479374, guid: f1cfee54643744dc88e701ed6daeff97,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 7239128174846200732}
+    - target: {fileID: 3855642395857479374, guid: f1cfee54643744dc88e701ed6daeff97,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3855642395857479374, guid: f1cfee54643744dc88e701ed6daeff97,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: SetTrigger
+      objectReference: {fileID: 0}
+    - target: {fileID: 3855642395857479374, guid: f1cfee54643744dc88e701ed6daeff97,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: UnityEngine.Animator, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 3855642395857479374, guid: f1cfee54643744dc88e701ed6daeff97,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_StringArgument
+      value: Clicked
+      objectReference: {fileID: 0}
+    - target: {fileID: 3855642395857479374, guid: f1cfee54643744dc88e701ed6daeff97,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
     - target: {fileID: 5239735408611523091, guid: f1cfee54643744dc88e701ed6daeff97,
         type: 3}
       propertyPath: m_Sprite
@@ -701,6 +741,12 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 177115883465734423}
   m_PrefabAsset: {fileID: 0}
+--- !u!95 &7239128174846200732 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 7350913962532614795, guid: f1cfee54643744dc88e701ed6daeff97,
+    type: 3}
+  m_PrefabInstance: {fileID: 177115883465734423}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &624474878054840372
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -722,6 +768,46 @@ PrefabInstance:
         type: 3}
       propertyPath: m_AnimationTriggers.m_SelectedTrigger
       value: Selected
+      objectReference: {fileID: 0}
+    - target: {fileID: 3855642395857479374, guid: f1cfee54643744dc88e701ed6daeff97,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3855642395857479374, guid: f1cfee54643744dc88e701ed6daeff97,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 3855642395857479374, guid: f1cfee54643744dc88e701ed6daeff97,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 7973946236064107199}
+    - target: {fileID: 3855642395857479374, guid: f1cfee54643744dc88e701ed6daeff97,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3855642395857479374, guid: f1cfee54643744dc88e701ed6daeff97,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: SetTrigger
+      objectReference: {fileID: 0}
+    - target: {fileID: 3855642395857479374, guid: f1cfee54643744dc88e701ed6daeff97,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: UnityEngine.Animator, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 3855642395857479374, guid: f1cfee54643744dc88e701ed6daeff97,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_StringArgument
+      value: Clicked
+      objectReference: {fileID: 0}
+    - target: {fileID: 3855642395857479374, guid: f1cfee54643744dc88e701ed6daeff97,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     - target: {fileID: 5239735408611523091, guid: f1cfee54643744dc88e701ed6daeff97,
         type: 3}
@@ -870,6 +956,12 @@ GameObject:
 --- !u!224 &7126197427870245628 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 7660555183555812040, guid: f1cfee54643744dc88e701ed6daeff97,
+    type: 3}
+  m_PrefabInstance: {fileID: 624474878054840372}
+  m_PrefabAsset: {fileID: 0}
+--- !u!95 &7973946236064107199 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 7350913962532614795, guid: f1cfee54643744dc88e701ed6daeff97,
     type: 3}
   m_PrefabInstance: {fileID: 624474878054840372}
   m_PrefabAsset: {fileID: 0}
@@ -1065,6 +1157,46 @@ PrefabInstance:
       propertyPath: m_AnimationTriggers.m_SelectedTrigger
       value: Selected
       objectReference: {fileID: 0}
+    - target: {fileID: 3855642395857479374, guid: f1cfee54643744dc88e701ed6daeff97,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3855642395857479374, guid: f1cfee54643744dc88e701ed6daeff97,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 3855642395857479374, guid: f1cfee54643744dc88e701ed6daeff97,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 6453383753339250177}
+    - target: {fileID: 3855642395857479374, guid: f1cfee54643744dc88e701ed6daeff97,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3855642395857479374, guid: f1cfee54643744dc88e701ed6daeff97,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: SetTrigger
+      objectReference: {fileID: 0}
+    - target: {fileID: 3855642395857479374, guid: f1cfee54643744dc88e701ed6daeff97,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: UnityEngine.Animator, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 3855642395857479374, guid: f1cfee54643744dc88e701ed6daeff97,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_StringArgument
+      value: Clicked
+      objectReference: {fileID: 0}
+    - target: {fileID: 3855642395857479374, guid: f1cfee54643744dc88e701ed6daeff97,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
     - target: {fileID: 5239735408611523091, guid: f1cfee54643744dc88e701ed6daeff97,
         type: 3}
       propertyPath: m_Sprite
@@ -1245,6 +1377,12 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 4579236236415669386}
   m_PrefabAsset: {fileID: 0}
+--- !u!95 &6453383753339250177 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 7350913962532614795, guid: f1cfee54643744dc88e701ed6daeff97,
+    type: 3}
+  m_PrefabInstance: {fileID: 4579236236415669386}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &8404421819794590166
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1378,12 +1516,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 087d608eb50946b409525e83801de9d2, type: 3}
---- !u!224 &8628194316932217224 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 224898616830980190, guid: 087d608eb50946b409525e83801de9d2,
-    type: 3}
-  m_PrefabInstance: {fileID: 8404421819794590166}
-  m_PrefabAsset: {fileID: 0}
 --- !u!114 &5774291252606785824 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 2630355418658099446, guid: 087d608eb50946b409525e83801de9d2,
@@ -1396,3 +1528,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0398d8905be44004b803f2412d77ef52, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!224 &8628194316932217224 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 224898616830980190, guid: 087d608eb50946b409525e83801de9d2,
+    type: 3}
+  m_PrefabInstance: {fileID: 8404421819794590166}
+  m_PrefabAsset: {fileID: 0}
