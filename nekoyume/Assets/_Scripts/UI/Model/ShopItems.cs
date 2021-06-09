@@ -408,13 +408,13 @@ namespace Nekoyume.UI.Model
 
         #endregion
 
-        public bool TryGetShopItemFromAgentProducts(Guid tradableId, out ShopItem shopItem)
+        public bool TryGetShopItemFromAgentProducts(ITradableItem tradableItem, out ShopItem shopItem)
         {
             shopItem = AgentProducts.Value.Values
                 .SelectMany(list => list)
                 .Where(item => item.ItemBase.Value is ITradableItem)
                 .FirstOrDefault(item =>
-                    ((ITradableItem) item.ItemBase.Value).TradableId.Equals(tradableId));
+                    ((ITradableItem) item.ItemBase.Value).Equals(tradableItem));
 
             return !(shopItem is null);
         }

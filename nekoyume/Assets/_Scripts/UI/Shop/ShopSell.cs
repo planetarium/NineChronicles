@@ -359,7 +359,7 @@ namespace Nekoyume.UI
             }
 
             if (!shopItems.SharedModel.TryGetShopItemFromAgentProducts(
-                tradableItem.TradableId,
+                tradableItem,
                 out var shopItem))
             {
                 if (model.Price.Value.Sign * model.Price.Value.MajorUnit < Shop.MinimumPrice)
