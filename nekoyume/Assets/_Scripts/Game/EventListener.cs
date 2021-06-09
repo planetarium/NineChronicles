@@ -5,7 +5,7 @@ namespace Nekoyume.Game
 {
     public class EventListener : MonoBehaviour
     {
-        public Dictionary<string, List<System.Action>> CallbackMap { get; private set; }
+        public Dictionary<string, List<System.Action>> CallbackMap { get; }
             = new Dictionary<string, List<System.Action>>();
 
         public void AddEvent(string key, System.Action action)
