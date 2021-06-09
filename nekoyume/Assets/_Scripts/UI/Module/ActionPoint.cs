@@ -56,7 +56,24 @@ namespace Nekoyume.UI.Module
                 .Subscribe(state => sliderAnimator.SetMaxValue(state.ActionPointMax))
                 .AddTo(gameObject);
 
-            GameConfigStateSubject.IsChargingActionPoint.Subscribe(SetActiveLoading).AddTo(gameObject);
+            GameConfigStateSubject.ActionPointState.ObserveAdd().Subscribe(x =>
+            {
+                var address = States.Instance.CurrentAvatarState.address;
+                if (x.Key == address)
+                {
+                    Charger(true);
+                }
+
+            }).AddTo(gameObject);
+
+            GameConfigStateSubject.ActionPointState.ObserveRemove().Subscribe(x =>
+            {
+                var address = States.Instance.CurrentAvatarState.address;
+                if (x.Key == address)
+                {
+                    Charger(false);
+                }
+            }).AddTo(gameObject);
         }
 
         protected override void OnEnable()
@@ -71,12 +88,32 @@ namespace Nekoyume.UI.Module
                 SetActionPoint(States.Instance.CurrentAvatarState.actionPoint, false);
             }
 
+
             ReactiveAvatarState.ActionPoint
                 .Subscribe(x => SetActionPoint(x, true))
                 .AddTo(_disposables);
 
             OnSliderChange();
-            SetActiveLoading(GameConfigStateSubject.IsChargingActionPoint.Value);
+
+            if (States.Instance.CurrentAvatarState is null)
+            {
+                Charger(false);
+            }
+            else
+            {
+                var address = States.Instance.CurrentAvatarState.address;
+                if (GameConfigStateSubject.ActionPointState.ContainsKey(address))
+                {
+                    var value = GameConfigStateSubject.ActionPointState[address];
+                    loading.SetActive(value);
+                    text.enabled = !value;
+                }
+                else
+                {
+                    Charger(false);
+                }
+            }
+
         }
 
         protected override void OnDisable()
@@ -125,10 +162,10 @@ namespace Nekoyume.UI.Module
             eventTrigger.enabled = value;
         }
 
-        private void SetActiveLoading(bool value)
+        private void Charger(bool isCharging)
         {
-            loading.SetActive(value);
-            text.enabled = !value;
+            loading.SetActive(isCharging);
+            text.enabled = !isCharging;
         }
     }
 }
