@@ -552,6 +552,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: QuitButton
       objectReference: {fileID: 0}
+    - target: {fileID: 7350913962532614795, guid: f1cfee54643744dc88e701ed6daeff97,
+        type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: 0ab9f6e0d0d8649f1b72507dd329a5c1, type: 2}
     - target: {fileID: 7660555183555812040, guid: f1cfee54643744dc88e701ed6daeff97,
         type: 3}
       propertyPath: m_Pivot.x
@@ -1066,6 +1071,21 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 21300000, guid: 0c2ed0f79d8d543699b1c942e15eb8ea,
         type: 3}
+    - target: {fileID: 5239735408611523091, guid: f1cfee54643744dc88e701ed6daeff97,
+        type: 3}
+      propertyPath: m_Color.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5239735408611523091, guid: f1cfee54643744dc88e701ed6daeff97,
+        type: 3}
+      propertyPath: m_Color.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5239735408611523091, guid: f1cfee54643744dc88e701ed6daeff97,
+        type: 3}
+      propertyPath: m_Color.r
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6652121512244350789, guid: f1cfee54643744dc88e701ed6daeff97,
         type: 3}
       propertyPath: l10nKey
@@ -1076,6 +1096,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: CharacterSelectButton
       objectReference: {fileID: 0}
+    - target: {fileID: 7350913962532614795, guid: f1cfee54643744dc88e701ed6daeff97,
+        type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: 0ab9f6e0d0d8649f1b72507dd329a5c1, type: 2}
     - target: {fileID: 7660555183555812040, guid: f1cfee54643744dc88e701ed6daeff97,
         type: 3}
       propertyPath: m_Pivot.x
