@@ -10,13 +10,13 @@ namespace Nekoyume.UI
         private Blur blur = null;
 
         [SerializeField]
-        private AnimationEventListener characterSelectButtonListener = null;
+        private ButtonAnimationEventListener characterSelectButtonListener = null;
 
         [SerializeField]
-        private AnimationEventListener quitButtonListener = null;
+        private ButtonAnimationEventListener quitButtonListener = null;
 
         [SerializeField]
-        private AnimationEventListener closeButtonListener = null;
+        private ButtonAnimationEventListener closeButtonListener = null;
 
         protected override void Awake()
         {

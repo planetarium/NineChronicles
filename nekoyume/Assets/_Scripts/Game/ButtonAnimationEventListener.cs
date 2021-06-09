@@ -1,11 +1,24 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Nekoyume.Game
 {
-    public class AnimationEventListener : MonoBehaviour
+    [RequireComponent(typeof(Button))]
+    [RequireComponent(typeof(Animator))]
+    public class ButtonAnimationEventListener : MonoBehaviour
     {
+        private Button _button = null;
+        private Animator _animator = null;
+
+        private void Awake()
+        {
+            _button = GetComponent<Button>();
+            _animator = GetComponent<Animator>();
+            _button.onClick.AddListener(SubscribeOnClick);
+        }
+
         public Dictionary<string, System.Action> CallbackMap { get; private set; }
             = new Dictionary<string, System.Action>();
 
@@ -28,6 +41,11 @@ namespace Nekoyume.Game
             }
 
             CallbackMap[key].Invoke();
+        }
+
+        protected virtual void SubscribeOnClick()
+        {
+
         }
     }
 }
