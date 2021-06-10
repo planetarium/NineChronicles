@@ -257,10 +257,12 @@ namespace Nekoyume.BlockChain
                 return;
             }
 
-            if (!GameConfigStateSubject.ActionPointState.ContainsKey(eval.Action.avatarAddress))
+            // This should be not inversed with `ActionRenderHandler`.
+            // When DailyReward is unrendered, use of ActionPoint is cancelled. So loading indicator should not appear.
+            if (GameConfigStateSubject.ActionPointState.ContainsKey(eval.Action.avatarAddress))
             {
-                GameConfigStateSubject.ActionPointState.Add(
-                    eval.Action.avatarAddress, true);
+                GameConfigStateSubject.ActionPointState.Remove(
+                    eval.Action.avatarAddress);
             }
 
             if (eval.Action.avatarAddress != States.Instance.CurrentAvatarState.address)
