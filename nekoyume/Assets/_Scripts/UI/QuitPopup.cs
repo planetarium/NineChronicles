@@ -1,5 +1,6 @@
 using Nekoyume.Game;
 using UnityEngine;
+using UniRx;
 
 namespace Nekoyume.UI
 {
@@ -9,20 +10,26 @@ namespace Nekoyume.UI
         private Blur blur = null;
 
         [SerializeField]
-        private EventListener characterSelectEventListener = null;
+        private EventSubject characterSelectEventSubject = null;
 
         [SerializeField]
-        private EventListener quitEventListener = null;
+        private EventSubject quitEventSubject = null;
 
         [SerializeField]
-        private EventListener closeEventListener = null;
+        private EventSubject closeEventSubject = null;
 
         protected override void Awake()
         {
             base.Awake();
-            characterSelectEventListener.AddEvent("Click", SelectCharacter);
-            quitEventListener.AddEvent("Click", Quit);
-            closeEventListener.AddEvent("Click", () => Close());
+            characterSelectEventSubject.GetEvent("Click")
+                .Subscribe(_ => SelectCharacter())
+                .AddTo(gameObject);
+            quitEventSubject.GetEvent("Click")
+                .Subscribe(_ => Quit())
+                .AddTo(gameObject);
+            closeEventSubject.GetEvent("Click")
+                .Subscribe(_ => Close())
+                .AddTo(gameObject);
         }
 
         public void Show(float blurRadius = 2, bool ignoreShowAnimation = false)
