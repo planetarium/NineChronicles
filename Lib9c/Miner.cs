@@ -47,51 +47,46 @@ namespace Nekoyume.BlockChain
             var txs = new HashSet<Transaction<PolymorphicAction<ActionBase>>>();
             var invalidTxs = txs;
 
-            Transaction<PolymorphicAction<ActionBase>> authProof = null;
             Block<PolymorphicAction<ActionBase>> block = null;
             try
             {
-                if (AuthorizedMiner)
+                if (!AuthorizedMiner)
                 {
-                    authProof = StageProofTransaction();
-                }
-                block = await _chain.MineBlock(
-                    Address,
-                    DateTimeOffset.UtcNow,
-                    cancellationToken: cancellationToken,
-                    maxTransactions: maxTransactions,
-                    append: false);
-
-                if (authProof is Transaction<PolymorphicAction<ActionBase>> proof &&
-                    !block.Transactions.Contains(proof))
-                {
-                    // For any reason, if the proof tx is not contained mine a new block again
-                    // without any transactions except for the proof tx.
-                    block = Block<PolymorphicAction<ActionBase>>.Mine(
-                        block.Index,
-                        block.Difficulty,
-                        block.TotalDifficulty - block.Difficulty,
+                    block = await _chain.MineBlock(
                         Address,
-                        block.PreviousHash,
                         DateTimeOffset.UtcNow,
-                        new[] { proof },
-                        block.ProtocolVersion,
-                        cancellationToken);
+                        cancellationToken: cancellationToken,
+                        maxTransactions: maxTransactions,
+                        append: false);
                 }
-
-                if (AuthorizedMiner && _chain.Policy is BlockPolicy policy)
+                else
                 {
-                    var miners = policy.AuthorizedMinersState.Miners.OrderBy(miner => miner).ToList();
-                    var index = miners.IndexOf(Address);
-                    var interval = policy.BlockInterval.Seconds;
-                    if (interval > 0)
+                    Transaction<PolymorphicAction<ActionBase>> authProof = StageProofTransaction();
+                    block = Block<PolymorphicAction<ActionBase>>.Mine(
+                        _chain.Tip.Index + 1,
+                        _chain.Policy.GetNextBlockDifficulty(_chain),
+                        _chain.Tip.TotalDifficulty,
+                        Address,
+                        _chain.Tip.Hash,
+                        DateTimeOffset.UtcNow,
+                        new[] { authProof },
+                        Block<PolymorphicAction<ActionBase>>.CurrentProtocolVersion,
+                        cancellationToken);
+
+                    if (_chain.Policy is BlockPolicy policy)
                     {
-                        var currentTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
-                        var modulo = (interval * (index + 1)) - (currentTime % (interval * miners.Count));
-                        var delay = modulo < 0
-                            ? modulo + (interval * miners.Count)
-                            : modulo;
-                        Thread.Sleep((int)delay * 1000);
+                        List<Address> miners = policy.AuthorizedMinersState.Miners.OrderBy(miner => miner).ToList();
+                        int index = miners.IndexOf(Address);
+                        int interval = policy.BlockInterval.Seconds;
+                        if (interval > 0)
+                        {
+                            long currentTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+                            int modulo = (interval * (index + 1)) - (int)(currentTime % (interval * miners.Count));
+                            int delay = modulo < 0
+                                ? modulo + (interval * miners.Count)
+                                : modulo;
+                            Thread.Sleep(delay * 1000);
+                        }
                     }
                 }
 
