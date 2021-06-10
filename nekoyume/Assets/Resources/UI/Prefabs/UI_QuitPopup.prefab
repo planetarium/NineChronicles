@@ -82,9 +82,9 @@ MonoBehaviour:
   tutorialTargets: []
   tutorialActions: 
   blur: {fileID: 5774291252606785824}
-  characterSelectEventListener: {fileID: 7535856757583839080}
-  quitEventListener: {fileID: 1326065327301512574}
-  closeEventListener: {fileID: 4555298465138176466}
+  characterSelectEventSubject: {fileID: 7535856757583839080}
+  quitEventSubject: {fileID: 1326065327301512574}
+  closeEventSubject: {fileID: 4555298465138176466}
 --- !u!1 &2500250355488013908
 GameObject:
   m_ObjectHideFlags: 0
