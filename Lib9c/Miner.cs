@@ -76,8 +76,23 @@ namespace Nekoyume.BlockChain
                         DateTimeOffset.UtcNow,
                         new[] { proof },
                         block.ProtocolVersion,
-                        cancellationToken
-                    );
+                        cancellationToken);
+                }
+
+                if (AuthorizedMiner && _chain.Policy is BlockPolicy policy)
+                {
+                    var miners = policy.AuthorizedMinersState.Miners.OrderBy(miner => miner).ToList();
+                    var index = miners.IndexOf(Address);
+                    var interval = policy.BlockInterval.Seconds;
+                    if (interval > 0)
+                    {
+                        var currentTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+                        var modulo = (interval * (index + 1)) - (currentTime % (interval * miners.Count));
+                        var delay = modulo < 0
+                            ? modulo + (interval * miners.Count)
+                            : modulo;
+                        Thread.Sleep((int)delay * 1000);
+                    }
                 }
 
                 _chain.Append(block);
