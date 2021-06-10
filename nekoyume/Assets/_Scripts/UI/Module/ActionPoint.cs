@@ -88,7 +88,6 @@ namespace Nekoyume.UI.Module
                 SetActionPoint(States.Instance.CurrentAvatarState.actionPoint, false);
             }
 
-
             ReactiveAvatarState.ActionPoint
                 .Subscribe(x => SetActionPoint(x, true))
                 .AddTo(_disposables);
@@ -105,8 +104,7 @@ namespace Nekoyume.UI.Module
                 if (GameConfigStateSubject.ActionPointState.ContainsKey(address))
                 {
                     var value = GameConfigStateSubject.ActionPointState[address];
-                    loading.SetActive(value);
-                    text.enabled = !value;
+                    Charger(value);
                 }
                 else
                 {

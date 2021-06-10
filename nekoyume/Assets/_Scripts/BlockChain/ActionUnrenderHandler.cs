@@ -257,10 +257,10 @@ namespace Nekoyume.BlockChain
                 return;
             }
 
-            if (GameConfigStateSubject.ActionPointState.ContainsKey(eval.Action.avatarAddress))
+            if (!GameConfigStateSubject.ActionPointState.ContainsKey(eval.Action.avatarAddress))
             {
-                GameConfigStateSubject.ActionPointState.Remove(
-                    eval.Action.avatarAddress);
+                GameConfigStateSubject.ActionPointState.Add(
+                    eval.Action.avatarAddress, true);
             }
 
             if (eval.Action.avatarAddress != States.Instance.CurrentAvatarState.address)

@@ -209,34 +209,7 @@ namespace Nekoyume.BlockChain
             _renderer.EveryRender<DailyReward>()
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
-                .Subscribe(eval =>
-                {
-                    if (GameConfigStateSubject.ActionPointState.ContainsKey(eval.Action.avatarAddress))
-                    {
-                        GameConfigStateSubject.ActionPointState.Remove(
-                            eval.Action.avatarAddress);
-                    }
-
-                    if (eval.Exception is null &&
-                        eval.Action.avatarAddress == States.Instance.CurrentAvatarState.address)
-                    {
-                        LocalLayer.Instance
-                            .ClearAvatarModifiers<AvatarDailyRewardReceivedIndexModifier>(
-                                eval.Action.avatarAddress);
-
-                        UpdateCurrentAvatarState(eval);
-
-                        UI.Notification.Push(
-                            Nekoyume.Model.Mail.MailType.System,
-                            L10nManager.Localize("UI_RECEIVED_DAILY_REWARD"));
-                        var avatarAddress = eval.Action.avatarAddress;
-                        var itemId = eval.Action.dailyRewardResult.materials.First().Key.ItemId;
-                        var itemCount = eval.Action.dailyRewardResult.materials.First().Value;
-                        LocalLayerModifier.RemoveItem(avatarAddress, itemId, itemCount);
-                        LocalLayerModifier.AddNewAttachmentMail(avatarAddress, eval.Action.dailyRewardResult.id);
-                    }
-
-                }).AddTo(_disposables);
+                .Subscribe(ResponseDailyReward).AddTo(_disposables);
         }
 
         private void RankingBattle()
@@ -671,6 +644,34 @@ namespace Nekoyume.BlockChain
             else
             {
                 Debug.Log(eval.Exception);
+            }
+        }
+
+        private void ResponseDailyReward(ActionBase.ActionEvaluation<DailyReward> eval)
+        {
+            if (GameConfigStateSubject.ActionPointState.ContainsKey(eval.Action.avatarAddress))
+            {
+                GameConfigStateSubject.ActionPointState.Remove(
+                    eval.Action.avatarAddress);
+            }
+
+            if (eval.Exception is null &&
+                eval.Action.avatarAddress == States.Instance.CurrentAvatarState.address)
+            {
+                LocalLayer.Instance
+                    .ClearAvatarModifiers<AvatarDailyRewardReceivedIndexModifier>(
+                        eval.Action.avatarAddress);
+
+                UpdateCurrentAvatarState(eval);
+
+                UI.Notification.Push(
+                    Nekoyume.Model.Mail.MailType.System,
+                    L10nManager.Localize("UI_RECEIVED_DAILY_REWARD"));
+                var avatarAddress = eval.Action.avatarAddress;
+                var itemId = eval.Action.dailyRewardResult.materials.First().Key.ItemId;
+                var itemCount = eval.Action.dailyRewardResult.materials.First().Value;
+                LocalLayerModifier.RemoveItem(avatarAddress, itemId, itemCount);
+                LocalLayerModifier.AddNewAttachmentMail(avatarAddress, eval.Action.dailyRewardResult.id);
             }
         }
 
