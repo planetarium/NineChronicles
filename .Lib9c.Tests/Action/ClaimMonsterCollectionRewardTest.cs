@@ -1,5 +1,7 @@
 namespace Lib9c.Tests.Action
 {
+    using System;
+    using System.Collections;
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.Linq;
@@ -15,6 +17,7 @@ namespace Lib9c.Tests.Action
     using Serilog;
     using Xunit;
     using Xunit.Abstractions;
+    using static Nekoyume.Model.Item.Inventory;
     using static SerializeKeys;
 
     public class ClaimMonsterCollectionRewardTest
@@ -66,18 +69,16 @@ namespace Lib9c.Tests.Action
         }
 
         [Theory]
-        [InlineData(MonsterCollectionState.RewardInterval, 1, 0)]
-        [InlineData(MonsterCollectionState.RewardInterval * 2, 2, MonsterCollectionState.RewardInterval)]
-        [InlineData(MonsterCollectionState.RewardInterval * 3, 3, MonsterCollectionState.RewardInterval)]
-        [InlineData(MonsterCollectionState.RewardInterval * 4, 4, MonsterCollectionState.RewardInterval)]
-        [InlineData(MonsterCollectionState.RewardInterval * 5, 5, MonsterCollectionState.RewardInterval)]
-        [InlineData(MonsterCollectionState.RewardInterval * 6, 6, MonsterCollectionState.RewardInterval)]
-        [InlineData(MonsterCollectionState.RewardInterval * 7, 7, MonsterCollectionState.RewardInterval)]
-        public void Execute(long blockIndex, int collectionLevel, long receivedBlockIndex)
+        [ClassData(typeof(ExecuteFixture))]
+        public void Execute(int collectionLevel, long claimBlockIndex, long? receivedBlockIndex, (int, int)[] expectedRewards, Type exc)
         {
             Address collectionAddress = MonsterCollectionState.DeriveAddress(_signer, 0);
-            MonsterCollectionState monsterCollectionState = new MonsterCollectionState(collectionAddress, collectionLevel, 0);
-            monsterCollectionState.Receive(receivedBlockIndex);
+            var monsterCollectionState = new MonsterCollectionState(collectionAddress, collectionLevel, 0);
+            if (receivedBlockIndex is { } receivedBlockIndexNotNull)
+            {
+                monsterCollectionState.Receive(receivedBlockIndexNotNull);
+            }
+
             AvatarState prevAvatarState = _state.GetAvatarStateV2(_avatarAddress);
             Assert.Empty(prevAvatarState.mailBox);
 
@@ -94,33 +95,51 @@ namespace Lib9c.Tests.Action
                 avatarAddress = _avatarAddress,
             };
 
-            IAccountStateDelta nextState = action.Execute(new ActionContext
+            if (exc is { })
             {
-                PreviousStates = _state,
-                Signer = _signer,
-                BlockIndex = blockIndex,
-                Random = new TestRandom(),
-            });
-
-            MonsterCollectionState nextMonsterCollectionState = new MonsterCollectionState((Dictionary)nextState.GetState(collectionAddress));
-            Assert.Equal(0, nextMonsterCollectionState.RewardLevel);
-
-            AvatarState nextAvatarState = nextState.GetAvatarStateV2(_avatarAddress);
-            Assert.Single(nextAvatarState.mailBox);
-            Mail mail = nextAvatarState.mailBox.First();
-            Assert.IsType<MonsterCollectionMail>(mail);
-            MonsterCollectionMail monsterCollectionMail = (MonsterCollectionMail)mail;
-            Assert.IsType<MonsterCollectionResult>(monsterCollectionMail.attachment);
-            MonsterCollectionResult result = (MonsterCollectionResult)monsterCollectionMail.attachment;
-            Assert.Equal(result.id, mail.id);
-            Assert.Equal(0, nextMonsterCollectionState.StartedBlockIndex);
-            Assert.Equal(blockIndex, nextMonsterCollectionState.ReceivedBlockIndex);
-            Assert.Equal(0 * currency, nextState.GetBalance(_signer, currency));
-            Assert.Equal(0, nextState.GetAgentState(_signer).MonsterCollectionRound);
-
-            foreach (var rewardInfo in result.rewards)
+                Assert.Throws(exc, () =>
+                {
+                    action.Execute(new ActionContext
+                    {
+                        PreviousStates = _state,
+                        Signer = _signer,
+                        BlockIndex = claimBlockIndex,
+                        Random = new TestRandom(),
+                    });
+                });
+            }
+            else
             {
-                Assert.True(nextAvatarState.inventory.HasItem(rewardInfo.ItemId, rewardInfo.Quantity));
+                IAccountStateDelta nextState = action.Execute(new ActionContext
+                {
+                    PreviousStates = _state,
+                    Signer = _signer,
+                    BlockIndex = claimBlockIndex,
+                    Random = new TestRandom(),
+                });
+
+                var nextMonsterCollectionState = new MonsterCollectionState(
+                    (Dictionary)nextState.GetState(collectionAddress)
+                );
+                Assert.Equal(0, nextMonsterCollectionState.RewardLevel);
+
+                AvatarState nextAvatarState = nextState.GetAvatarStateV2(_avatarAddress);
+                Assert.Single(nextAvatarState.mailBox);
+                Mail mail = nextAvatarState.mailBox.First();
+                MonsterCollectionMail monsterCollectionMail = Assert.IsType<MonsterCollectionMail>(mail);
+                MonsterCollectionResult result =
+                    Assert.IsType<MonsterCollectionResult>(monsterCollectionMail.attachment);
+                Assert.Equal(result.id, mail.id);
+                Assert.Equal(0, nextMonsterCollectionState.StartedBlockIndex);
+                Assert.Equal(claimBlockIndex, nextMonsterCollectionState.ReceivedBlockIndex);
+                Assert.Equal(0 * currency, nextState.GetBalance(_signer, currency));
+                Assert.Equal(0, nextState.GetAgentState(_signer).MonsterCollectionRound);
+
+                foreach ((int id, int quantity) in expectedRewards)
+                {
+                    Assert.True(nextAvatarState.inventory.TryGetItem(id, out Item item));
+                    Assert.Equal(quantity, item.count);
+                }
             }
         }
 
@@ -203,6 +222,150 @@ namespace Lib9c.Tests.Action
                 MonsterCollectionState.DeriveAddress(_signer, 0),
             };
             Assert.Equal(updatedAddresses.ToImmutableHashSet(), nextState.UpdatedAddresses);
+        }
+
+        private class ExecuteFixture : IEnumerable<object[]>
+        {
+            private readonly List<object[]> _data = new List<object[]>
+            {
+                new object[]
+                {
+                    1,
+                    MonsterCollectionState.RewardInterval,
+                    null,
+                    new (int, int)[]
+                    {
+                        (400000, 80),
+                    },
+                    null,
+                },
+                new object[]
+                {
+                    2,
+                    MonsterCollectionState.RewardInterval,
+                    null,
+                    new (int, int)[]
+                    {
+                        (400000, 265),
+                        (500000, 1),
+                    },
+                    null,
+                },
+                new object[]
+                {
+                    3,
+                    MonsterCollectionState.RewardInterval,
+                    null,
+                    new (int, int)[]
+                    {
+                        (400000, 1265),
+                        (500000, 4),
+                    },
+                    null,
+                },
+                new object[]
+                {
+                    4,
+                    MonsterCollectionState.RewardInterval,
+                    null,
+                    new (int, int)[]
+                    {
+                        (400000, 8465),
+                        (500000, 30),
+                    },
+                    null,
+                },
+                new object[]
+                {
+                    5,
+                    MonsterCollectionState.RewardInterval,
+                    null,
+                    new (int, int)[]
+                    {
+                        (400000, 45965),
+                        (500000, 160),
+                    },
+                    null,
+                },
+                new object[]
+                {
+                    6,
+                    MonsterCollectionState.RewardInterval,
+                    null,
+                    new (int, int)[]
+                    {
+                        (400000, 120965),
+                        (500000, 360),
+                    },
+                    null,
+                },
+                new object[]
+                {
+                    7,
+                    MonsterCollectionState.RewardInterval,
+                    null,
+                    new (int, int)[]
+                    {
+                        (400000, 350965),
+                        (500000, 1120),
+                    },
+                    null,
+                },
+                new object[]
+                {
+                    1,
+                    MonsterCollectionState.RewardInterval * 2,
+                    null,
+                    new (int, int)[]
+                    {
+                        (400000, 80 * 2),
+                    },
+                    null,
+                },
+                new object[]
+                {
+                    2,
+                    MonsterCollectionState.RewardInterval * 2,
+                    null,
+                    new (int, int)[]
+                    {
+                        (400000, 265 * 2),
+                        (500000, 1 * 2),
+                    },
+                    null,
+                },
+                new object[]
+                {
+                    1,
+                    MonsterCollectionState.RewardInterval * 2,
+                    MonsterCollectionState.RewardInterval * 2 - 1,
+                    new (int, int)[]
+                    {
+                        (400000, 80),
+                    },
+                    null,
+                },
+                new object[]
+                {
+                    1,
+                    1,
+                    null,
+                    new (int, int)[] { },
+                    typeof(RequiredBlockIndexException),
+                },
+                new object[]
+                {
+                    1,
+                    MonsterCollectionState.RewardInterval + 1,
+                    MonsterCollectionState.RewardInterval,
+                    new (int, int)[] { },
+                    typeof(RequiredBlockIndexException),
+                },
+            };
+
+            public IEnumerator<object[]> GetEnumerator() => _data.GetEnumerator();
+
+            IEnumerator IEnumerable.GetEnumerator() => _data.GetEnumerator();
         }
     }
 }

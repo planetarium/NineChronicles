@@ -41,54 +41,52 @@ namespace Nekoyume.Action
                 throw new FailedLoadStateException($"Aborted as the monster collection state failed to load.");
             }
 
-            MonsterCollectionState monsterCollectionState = new MonsterCollectionState(stateDict);
+            var monsterCollectionState = new MonsterCollectionState(stateDict);
 
-            if (!monsterCollectionState.CanReceive(context.BlockIndex))
+            int step = (int)Math.DivRem(
+                context.BlockIndex - monsterCollectionState.StartedBlockIndex,
+                MonsterCollectionState.RewardInterval,
+                out _
+            );
+            if (monsterCollectionState.ReceivedBlockIndex > 0)
             {
-                throw new RequiredBlockIndexException(
-                    $"{collectionAddress} is not available yet; it will be available after {Math.Max(monsterCollectionState.StartedBlockIndex, monsterCollectionState.ReceivedBlockIndex) + MonsterCollectionState.RewardInterval}");
+                int previousStep = (int)Math.DivRem(
+                    monsterCollectionState.ReceivedBlockIndex - monsterCollectionState.StartedBlockIndex,
+                    MonsterCollectionState.RewardInterval,
+                    out _
+                );
+                step -= previousStep;
             }
 
-            monsterCollectionState.Receive(context.BlockIndex);
-            int rewardLevel = (int) ((context.BlockIndex - monsterCollectionState.ReceivedBlockIndex) /
-                                     MonsterCollectionState.RewardInterval);
-            ItemSheet itemSheet = states.GetItemSheet();
-            MonsterCollectionRewardSheet monsterCollectionRewardSheet = states.GetSheet<MonsterCollectionRewardSheet>();
-            int level = monsterCollectionState.Level;
-            List<MonsterCollectionRewardSheet.RewardInfo> rewardInfos = monsterCollectionRewardSheet[level].Rewards;
-            Dictionary<int, int> map = new Dictionary<int, int>();
-            foreach (var rewardInfo in rewardInfos)
+            if (step < 1)
             {
-                int itemId = rewardInfo.ItemId;
-                int quantity = rewardInfo.Quantity * rewardLevel;
-                if (map.ContainsKey(itemId))
-                {
-                    map[itemId] += quantity;
-                }
-                else
-                {
-                    map[itemId] = quantity;
-                }
+                throw new RequiredBlockIndexException($"{collectionAddress} is not available yet");
             }
 
-            List<MonsterCollectionRewardSheet.RewardInfo> rewards = map
-                .OrderBy(i => i.Key)
-                .Select(i =>
-                    new MonsterCollectionRewardSheet.RewardInfo(i.Key, i.Value)
-                )
+            MonsterCollectionRewardSheet monsterCollectionRewardSheet = 
+                states.GetSheet<MonsterCollectionRewardSheet>();
+            List<MonsterCollectionRewardSheet.RewardInfo> rewards =
+                monsterCollectionRewardSheet[monsterCollectionState.Level].Rewards
+                .GroupBy(ri => ri.ItemId)
+                .Select(g => new MonsterCollectionRewardSheet.RewardInfo(
+                        g.Key,
+                        g.Sum(ri => ri.Quantity) * step))
                 .ToList();
             Guid id = context.Random.GenerateRandomGuid();
-            MonsterCollectionResult result = new MonsterCollectionResult(id, avatarAddress, rewards);
-            MonsterCollectionMail mail = new MonsterCollectionMail(result, context.BlockIndex, id, context.BlockIndex);
+            var result = new MonsterCollectionResult(id, avatarAddress, rewards);
+            var mail = new MonsterCollectionMail(result, context.BlockIndex, id, context.BlockIndex);
             avatarState.UpdateV3(mail);
-            foreach (var rewardInfo in rewards)
+
+            ItemSheet itemSheet = states.GetItemSheet();
+            foreach (MonsterCollectionRewardSheet.RewardInfo rewardInfo in rewards)
             {
-                var row = itemSheet[rewardInfo.ItemId];
-                var item = row is MaterialItemSheet.Row materialRow
+                ItemSheet.Row row = itemSheet[rewardInfo.ItemId];
+                ItemBase item = row is MaterialItemSheet.Row materialRow
                     ? ItemFactory.CreateTradableMaterial(materialRow)
                     : ItemFactory.CreateItem(row, context.Random);
                 avatarState.inventory.AddItem(item, rewardInfo.Quantity);
             }
+            monsterCollectionState.Receive(context.BlockIndex);
 
             return states
                 .SetState(avatarAddress, avatarState.SerializeV2())
