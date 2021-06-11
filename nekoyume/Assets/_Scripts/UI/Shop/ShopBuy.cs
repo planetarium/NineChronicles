@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Lib9c.Model.Order;
@@ -17,6 +18,7 @@ using Nekoyume.UI.Module;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
+using Debug = UnityEngine.Debug;
 using ShopItem = Nekoyume.UI.Model.ShopItem;
 
 namespace Nekoyume.UI
@@ -99,26 +101,46 @@ namespace Nekoyume.UI
         private async void AsyncShow(bool ignoreShowAnimation = false)
         {
             Find<DataLoadingScreen>().Show();
-            Game.Game.instance.Stage.GetPlayer().gameObject.SetActive(false);
+            
+            var game = Game.Game.instance;
+            game.Stage.GetPlayer().gameObject.SetActive(false);
 
+            var sw1 = new Stopwatch();
+            sw1.Start();
             var task = Task.Run(() =>
             {
-                var game = Game.Game.instance;
-                var shopState = new ShopState(
-                    (Bencodex.Types.Dictionary) game.Agent.GetState(Addresses.Shop));
-
+                var sw2 = new Stopwatch();
+                sw2.Start();
+                var shopStateDict = (Bencodex.Types.Dictionary) game.Agent.GetState(Addresses.Shop);
+                sw2.Stop();
+                Debug.Log($"ShopBuy.AsyncShow() GetState(Addresses.Shop): {sw2.Elapsed}");
+                sw2.Restart();
+                var shopState = new ShopState(shopStateDict);
+                sw2.Stop();
+                Debug.Log($"ShopBuy.AsyncShow() new ShopState(): {sw2.Elapsed}");
+                sw2.Restart();
                 var shardedProducts = new List<Nekoyume.Model.Item.ShopItem>();
-                Game.Game.instance.ShopProducts.UpdateProducts();
+                game.ShopProducts.UpdateProducts();
+                sw2.Stop();
+                Debug.Log($"ShopBuy.AsyncShow() game.ShopProducts.UpdateProducts(): {sw2.Elapsed}");
+                sw2.Restart();
                 foreach (var items in game.ShopProducts.Products.Select(i => i.Value))
                 {
                     shardedProducts.AddRange(items);
                 }
+                sw2.Stop();
+                Debug.Log($"ShopBuy.AsyncShow() shardedProducts.AddRange(): {sw2.Elapsed}");
+                sw2.Restart();
                 ReactiveShopState.Initialize(shopState, shardedProducts);
+                sw2.Stop();
+                Debug.Log($"ShopBuy.AsyncShow() ReactiveShopState.Initialize(): {sw2.Elapsed}");
 
                 return true;
             });
 
             var result = await task;
+            sw1.Stop();
+            Debug.Log($"ShopBuy.AsyncShow() task: {sw1.Elapsed}");
             if (result)
             {
                 base.Show(ignoreShowAnimation);
@@ -136,8 +158,10 @@ namespace Nekoyume.UI
 
                 AudioController.instance.PlayMusic(AudioController.MusicCode.Shop);
                 shopBuyBoard.ShowDefaultView();
+                sw1.Restart();
                 shopItems.Show();
-
+                sw1.Stop();
+                Debug.Log($"ShopBuy.AsyncShow() shopItems.Show(): {sw1.Elapsed}");
                 Reset();
                 Find<ShopSell>().gameObject.SetActive(false);
                 Find<DataLoadingScreen>().Close();
@@ -148,26 +172,46 @@ namespace Nekoyume.UI
         private async void AsyncShowV2(bool ignoreShowAnimation = false)
         {
             Find<DataLoadingScreen>().Show();
-            Game.Game.instance.Stage.GetPlayer().gameObject.SetActive(false);
+            
+            var game = Game.Game.instance;
+            game.Stage.GetPlayer().gameObject.SetActive(false);
 
+            var sw1 = new Stopwatch();
+            sw1.Start();
             var task = Task.Run(() =>
             {
-                var game = Game.Game.instance;
-                var shopState = new ShopState(
-                    (Bencodex.Types.Dictionary) game.Agent.GetState(Addresses.Shop));
-
+                var sw2 = new Stopwatch();
+                sw2.Start();
+                var shopStateDict = (Bencodex.Types.Dictionary) game.Agent.GetState(Addresses.Shop);
+                sw2.Stop();
+                Debug.Log($"ShopBuy.AsyncShowV2() GetState(Addresses.Shop): {sw2.Elapsed}");
+                sw2.Restart();
+                var shopState = new ShopState(shopStateDict);
+                sw2.Stop();
+                Debug.Log($"ShopBuy.AsyncShowV2() new ShopState(): {sw2.Elapsed}");
+                sw2.Restart();
                 var shardedProductsV2 = new List<Order>();
-                Game.Game.instance.ShopProductsV2.UpdateProductsV2();
+                game.ShopProductsV2.UpdateProductsV2();
+                sw2.Stop();
+                Debug.Log($"ShopBuy.AsyncShowV2() game.ShopProductsV2.UpdateProductsV2(): {sw2.Elapsed}");
+                sw2.Restart();
                 foreach (var items in game.ShopProductsV2.ProductsV2.Select(i => i.Value))
                 {
                     shardedProductsV2.AddRange(items);
                 }
+                sw2.Stop();
+                Debug.Log($"ShopBuy.AsyncShowV2() shardedProductsV2.AddRange(): {sw2.Elapsed}");
+                sw2.Restart();
                 ReactiveShopState.InitializeV2(shopState, shardedProductsV2);
+                sw2.Stop();
+                Debug.Log($"ShopBuy.AsyncShowV2() ReactiveShopState.InitializeV2(): {sw2.Elapsed}");
                 
                 return true;
             });
 
             var result = await task;
+            sw1.Stop();
+            Debug.Log($"ShopBuy.AsyncShowV2() task: {sw1.Elapsed}");
             if (result)
             {
                 base.Show(ignoreShowAnimation);
@@ -185,8 +229,10 @@ namespace Nekoyume.UI
 
                 AudioController.instance.PlayMusic(AudioController.MusicCode.Shop);
                 shopBuyBoard.ShowDefaultView();
+                sw1.Restart();
                 shopItems.ShowV2();
-
+                sw1.Stop();
+                Debug.Log($"ShopBuy.AsyncShowV2() shopItems.ShowV2(): {sw1.Elapsed}");
                 Reset();
                 Find<ShopSell>().gameObject.SetActive(false);
                 Find<DataLoadingScreen>().Close();
