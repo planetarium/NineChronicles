@@ -53,6 +53,8 @@ namespace Nekoyume.State
                     {
                         var address = ShardedShopState.DeriveAddress(itemSubType, addressKey);
                         AddProduct(address);
+                        
+                        break;
                     }
                 }
                 else
@@ -60,6 +62,8 @@ namespace Nekoyume.State
                     var address = ShardedShopState.DeriveAddress(itemSubType, string.Empty);
                     AddProduct(address);
                 }
+                
+                break;
             }
         }
         
@@ -74,6 +78,8 @@ namespace Nekoyume.State
                     {
                         var address = ShardedShopStateV2.DeriveAddress(itemSubType, addressKey);
                         AddProductV2(address);
+                        
+                        break;
                     }
                 }
                 else
@@ -81,6 +87,8 @@ namespace Nekoyume.State
                     var address = ShardedShopStateV2.DeriveAddress(itemSubType, string.Empty);
                     AddProductV2(address);
                 }
+
+                break;
             }
         }
 
