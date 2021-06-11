@@ -157,8 +157,8 @@ namespace Nekoyume.UI
                     (Bencodex.Types.Dictionary) game.Agent.GetState(Addresses.Shop));
 
                 var shardedProductsV2 = new List<Order>();
-                Game.Game.instance.ShopProducts.UpdateProductsV2();
-                foreach (var items in game.ShopProducts.ProductsV2.Select(i => i.Value))
+                Game.Game.instance.ShopProductsV2.UpdateProductsV2();
+                foreach (var items in game.ShopProductsV2.ProductsV2.Select(i => i.Value))
                 {
                     shardedProductsV2.AddRange(items);
                 }
