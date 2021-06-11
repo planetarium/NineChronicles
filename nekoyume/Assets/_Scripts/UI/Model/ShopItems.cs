@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Lib9c.Model.Order;
 using Libplanet;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
@@ -14,6 +15,8 @@ namespace Nekoyume.UI.Model
 
     public class ShopItems : IDisposable
     {
+        private const int WishListSize = 8;
+        
         public readonly ReactiveProperty<Dictionary<int, List<ShopItem>>> AgentProducts =
             new ReactiveProperty<Dictionary<int, List<ShopItem>>>();
 
@@ -35,8 +38,8 @@ namespace Nekoyume.UI.Model
         public bool isMultiplePurchase = false;
 
         private IReadOnlyDictionary<
-            Address, Dictionary<
-                ItemSubTypeFilter, Dictionary<ShopSortFilter, Dictionary<int, List<ShopItem>>>>>
+                Address, Dictionary<
+                    ItemSubTypeFilter, Dictionary<ShopSortFilter, Dictionary<int, List<ShopItem>>>>>
             _agentProducts;
 
         private IReadOnlyDictionary<
@@ -44,8 +47,6 @@ namespace Nekoyume.UI.Model
             _itemSubTypeProducts;
 
         public readonly List<ShopItem> wishItems = new List<ShopItem>();
-
-        public readonly int WishListSize = 8;
 
         public void Dispose()
         {
@@ -74,6 +75,24 @@ namespace Nekoyume.UI.Model
             ResetAgentProducts();
         }
 
+        public void ResetAgentProductsV2(IReadOnlyDictionary<
+            Address, Dictionary<
+                ItemSubTypeFilter, Dictionary<
+                    ShopSortFilter, Dictionary<
+                        int, List<(Order, ItemBase)>>>>> products)
+        {
+            _agentProducts = products is null
+                ? new Dictionary<
+                    Address, Dictionary<
+                        ItemSubTypeFilter, Dictionary<
+                            ShopSortFilter, Dictionary<int, List<ShopItem>>>>>()
+                : products.ToDictionary(
+                    pair => pair.Key,
+                    pair => ModelToViewModelV2(pair.Value));
+
+            ResetAgentProducts();
+        }
+
         public void ResetItemSubTypeProducts(IReadOnlyDictionary<
                 ItemSubTypeFilter, Dictionary<
                     ShopSortFilter, Dictionary<int, List<Nekoyume.Model.Item.ShopItem>>
@@ -86,6 +105,20 @@ namespace Nekoyume.UI.Model
                         ShopSortFilter, Dictionary<int, List<ShopItem>>>>()
                 : ModelToViewModel(products);
 
+            ResetItemSubTypeProducts();
+        }
+
+        public void ResetItemSubTypeProductsV2(IReadOnlyDictionary<
+                ItemSubTypeFilter, Dictionary<
+                    ShopSortFilter, Dictionary<int, List<(Order, ItemBase)>>
+                >>
+            products)
+        {
+            _itemSubTypeProducts = products is null
+                ? new Dictionary<
+                    ItemSubTypeFilter, Dictionary<
+                        ShopSortFilter, Dictionary<int, List<ShopItem>>>>()
+                : ModelToViewModelV2(products);
 
             ResetItemSubTypeProducts();
         }
@@ -105,6 +138,23 @@ namespace Nekoyume.UI.Model
                     pair2 => pair2.Value.ToDictionary(
                         pair3 => pair3.Key,
                         pair3 => pair3.Value.Select(CreateShopItem).ToList())));
+        }
+
+        private Dictionary<
+                ItemSubTypeFilter, Dictionary<
+                    ShopSortFilter, Dictionary<int, List<ShopItem>>>>
+            ModelToViewModelV2(IReadOnlyDictionary<
+                ItemSubTypeFilter, Dictionary<
+                    ShopSortFilter, Dictionary<
+                        int, List<(Order, ItemBase)>>>> shopItems)
+        {
+            return shopItems.ToDictionary(
+                pair => pair.Key,
+                pair => pair.Value.ToDictionary(
+                    pair2 => pair2.Key,
+                    pair2 => pair2.Value.ToDictionary(
+                        pair3 => pair3.Key,
+                        pair3 => pair3.Value.Select(CreateShopItemV2).ToList())));
         }
 
         private void SubscribeItemOnClick(ShopItemView view)
@@ -384,7 +434,7 @@ namespace Nekoyume.UI.Model
                 var items = shopItems.GetRange(index, count);
                 result.Add(page, items);
                 index += count;
-                page ++;
+                page++;
             }
 
             return result;
@@ -404,6 +454,24 @@ namespace Nekoyume.UI.Model
             });
 
             return item;
+        }
+
+        private ShopItem CreateShopItemV2((Order, ItemBase) tuple)
+        {
+            if (ShopItem.TryConstruct(tuple, out var shopItem))
+            {
+                shopItem.OnClick.Subscribe(model =>
+                {
+                    if (!(model is ShopItem shopItemViewModel))
+                    {
+                        return;
+                    }
+
+                    SubscribeItemOnClick(shopItemViewModel.View);
+                });
+            }
+
+            return shopItem;
         }
 
         #endregion

@@ -41,7 +41,7 @@ namespace Nekoyume.UI.Module
         private readonly int _hashDisabled = Animator.StringToHash("Disabled");
 
         private int _filteredPageIndex = 0;
-        private readonly List<IDisposable> _disposablesAtOnEnable = new List<IDisposable>();
+        private readonly List<IDisposable> _disposablesForClose = new List<IDisposable>();
         private readonly List<ItemSubTypeFilter> _toggleTypes = new List<ItemSubTypeFilter>()
         {
             ItemSubTypeFilter.Equipment,
@@ -187,16 +187,29 @@ namespace Nekoyume.UI.Module
 
             ReactiveShopState.AgentProducts
                 .Subscribe(SharedModel.ResetAgentProducts)
-                .AddTo(_disposablesAtOnEnable);
+                .AddTo(_disposablesForClose);
 
             ReactiveShopState.ItemSubTypeProducts
                 .Subscribe(SharedModel.ResetItemSubTypeProducts)
-                .AddTo(_disposablesAtOnEnable);
+                .AddTo(_disposablesForClose);
+        }
+        
+        public void ShowV2()
+        {
+            Reset();
+
+            ReactiveShopState.AgentProductsV2
+                .Subscribe(SharedModel.ResetAgentProductsV2)
+                .AddTo(_disposablesForClose);
+
+            ReactiveShopState.ItemSubTypeProductsV2
+                .Subscribe(SharedModel.ResetItemSubTypeProductsV2)
+                .AddTo(_disposablesForClose);
         }
 
         public void Close()
         {
-            _disposablesAtOnEnable.DisposeAllAndClear();
+            _disposablesForClose.DisposeAllAndClear();
         }
 
         private void OnDestroy()

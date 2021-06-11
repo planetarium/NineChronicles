@@ -261,7 +261,17 @@ namespace Nekoyume.UI
             }
 
             Close();
-            Find<ShopBuy>().Show();
+            if (Input.GetKey(KeyCode.LeftAlt))
+            {
+                Debug.Log($"ShopBuy.ShowV2(): {Time.timeSinceLevelLoad}");
+                Find<ShopBuy>().ShowV2();
+            }
+            else
+            {
+                Debug.Log($"ShopBuy.Show(): {Time.timeSinceLevelLoad}");
+                Find<ShopBuy>().Show();    
+            }
+            
             AudioController.PlayClick();
         }
 

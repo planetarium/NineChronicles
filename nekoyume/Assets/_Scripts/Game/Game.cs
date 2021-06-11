@@ -65,6 +65,7 @@ namespace Nekoyume.Game
         public bool IsInitialized { get; private set; }
 
         public ShopProducts ShopProducts;
+        public ShopProducts ShopProductsV2;
 
         public Prologue Prologue => prologue;
 
@@ -163,6 +164,7 @@ namespace Nekoyume.Game
 
             yield return new WaitUntil(() => agentInitialized);
             ShopProducts = new ShopProducts();
+            ShopProductsV2 = new ShopProducts();
             // NOTE: Create ActionManager after Agent initialized.
             ActionManager = new ActionManager(Agent);
             yield return StartCoroutine(CoSyncTableSheets());

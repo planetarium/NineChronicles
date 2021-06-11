@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Lib9c.Model.Order;
 using mixpanel;
 using Nekoyume.Action;
 using Nekoyume.EnumType;
@@ -89,6 +90,11 @@ namespace Nekoyume.UI
         {
             AsyncShow();
         }
+        
+        public void ShowV2(bool ignoreShowAnimation = false)
+        {
+            AsyncShowV2();
+        }
 
         private async void AsyncShow(bool ignoreShowAnimation = false)
         {
@@ -108,6 +114,7 @@ namespace Nekoyume.UI
                     shardedProducts.AddRange(items);
                 }
                 ReactiveShopState.Initialize(shopState, shardedProducts);
+
                 return true;
             });
 
@@ -135,8 +142,58 @@ namespace Nekoyume.UI
                 Find<ShopSell>().gameObject.SetActive(false);
                 Find<DataLoadingScreen>().Close();
             }
+            Debug.Log($"ShopBuy.AsyncShow() end. {Time.timeSinceLevelLoad}");
         }
+        
+        private async void AsyncShowV2(bool ignoreShowAnimation = false)
+        {
+            Find<DataLoadingScreen>().Show();
+            Game.Game.instance.Stage.GetPlayer().gameObject.SetActive(false);
 
+            var task = Task.Run(() =>
+            {
+                var game = Game.Game.instance;
+                var shopState = new ShopState(
+                    (Bencodex.Types.Dictionary) game.Agent.GetState(Addresses.Shop));
+
+                var shardedProductsV2 = new List<Order>();
+                Game.Game.instance.ShopProducts.UpdateProductsV2();
+                foreach (var items in game.ShopProducts.ProductsV2.Select(i => i.Value))
+                {
+                    shardedProductsV2.AddRange(items);
+                }
+                ReactiveShopState.InitializeV2(shopState, shardedProductsV2);
+                
+                return true;
+            });
+
+            var result = await task;
+            if (result)
+            {
+                base.Show(ignoreShowAnimation);
+
+                Find<BottomMenu>().Show(
+                    UINavigator.NavigationType.Back,
+                    SubscribeBackButtonClick,
+                    true,
+                    BottomMenu.ToggleableType.Mail,
+                    BottomMenu.ToggleableType.Quest,
+                    BottomMenu.ToggleableType.Chat,
+                    BottomMenu.ToggleableType.IllustratedBook,
+                    BottomMenu.ToggleableType.Ranking,
+                    BottomMenu.ToggleableType.Character);
+
+                AudioController.instance.PlayMusic(AudioController.MusicCode.Shop);
+                shopBuyBoard.ShowDefaultView();
+                shopItems.ShowV2();
+
+                Reset();
+                Find<ShopSell>().gameObject.SetActive(false);
+                Find<DataLoadingScreen>().Close();
+            }
+            
+            Debug.Log($"ShopBuy.AsyncShowV2() end. {Time.timeSinceLevelLoad}");
+        }
 
         private void Reset()
         {
@@ -146,6 +203,7 @@ namespace Nekoyume.UI
         public void Open()
         {
             ReactiveShopState.Update();
+            ReactiveShopState.UpdateV2();
             shopItems.Reset();
             Reset();
         }
