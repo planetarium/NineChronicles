@@ -80,7 +80,7 @@ namespace Nekoyume.State
 
             // It uses shaded shop state with the old store state.
             // Later, only shaded shop state will be used.
-            _products = state.Products.Values.ToList();
+            // _products = state.Products.Values.ToList();
             _products.AddRange(shardedProducts);
 
             Update();
@@ -126,80 +126,83 @@ namespace Nekoyume.State
         public static void Update()
         {
             // AgentProducts.
-            {
-                var agentProducts = new Dictionary<Address, List<ShopItem>>();
-                foreach (var product in _products)
-                {
-                    var agentAddress = product.SellerAgentAddress;
-                    if (!agentProducts.ContainsKey(agentAddress))
-                    {
-                        agentProducts.Add(agentAddress, new List<ShopItem>());
-                    }
-
-                    if (Game.Game.instance.Agent.Address == agentAddress)
-                    {
-                        if (product.SellerAvatarAddress == States.Instance.CurrentAvatarState.address)
-                        {
-                            agentProducts[agentAddress].Add(product);
-                        }
-                    }
-                    else
-                    {
-                        agentProducts[agentAddress].Add(product);
-                    }
-                }
-
-                var filteredAgentProducts = new Dictionary<
-                    Address,
-                    Dictionary<ItemSubTypeFilter, Dictionary<ShopSortFilter, Dictionary<int, List<ShopItem>>>>>();
-                foreach (var pair in agentProducts)
-                {
-                    filteredAgentProducts.Add(pair.Key, GetGroupedShopItemsByItemSubTypeFilter(pair.Value, sellItemsPerPage));
-                }
-
-                AgentProducts.Value = filteredAgentProducts;
-            }
+            // {
+            //     var agentProducts = new Dictionary<Address, List<ShopItem>>();
+            //     foreach (var product in _products)
+            //     {
+            //         var agentAddress = product.SellerAgentAddress;
+            //         if (!agentProducts.ContainsKey(agentAddress))
+            //         {
+            //             agentProducts.Add(agentAddress, new List<ShopItem>());
+            //         }
+            //
+            //         if (Game.Game.instance.Agent.Address == agentAddress)
+            //         {
+            //             if (product.SellerAvatarAddress == States.Instance.CurrentAvatarState.address)
+            //             {
+            //                 agentProducts[agentAddress].Add(product);
+            //             }
+            //         }
+            //         else
+            //         {
+            //             agentProducts[agentAddress].Add(product);
+            //         }
+            //     }
+            //
+            //     var filteredAgentProducts = new Dictionary<
+            //         Address,
+            //         Dictionary<ItemSubTypeFilter, Dictionary<ShopSortFilter, Dictionary<int, List<ShopItem>>>>>();
+            //     foreach (var pair in agentProducts)
+            //     {
+            //         filteredAgentProducts.Add(pair.Key, GetGroupedShopItemsByItemSubTypeFilter(pair.Value, sellItemsPerPage));
+            //     }
+            //
+            //     AgentProducts.Value = filteredAgentProducts;
+            // }
 
             // ItemSubTypeProducts.
             {
                 var agentAddress = States.Instance.AgentState.address;
-                ItemSubTypeProducts.Value = GetGroupedShopItemsByItemSubTypeFilter(_products
-                    .Where(product => !product.SellerAgentAddress.Equals(agentAddress)).ToList(), buyItemsPerPage);
+                ItemSubTypeProducts.Value = GetGroupedShopItemsByItemSubTypeFilter(
+                    _products
+                    .Where(product => !product.SellerAgentAddress.Equals(agentAddress))
+                    .ToList(),
+                    buyItemsPerPage);
             }
         }
         
         public static void UpdateV2()
         {
             // AgentProducts.
-            {
-                var agentProducts = new Dictionary<Address, List<(Order, ItemBase)>>();
-                foreach (var tuple in _productsV2)
-                {
-                    var (order, tradableItem) = tuple;
-                    var agentAddress = order.SellerAgentAddress;
-                    if (!agentProducts.ContainsKey(agentAddress))
-                    {
-                        agentProducts.Add(agentAddress, new List<(Order, ItemBase)>());
-                    }
-
-                    if (Game.Game.instance.Agent.Address == agentAddress)
-                    {
-                        if (order.SellerAvatarAddress == States.Instance.CurrentAvatarState.address)
-                        {
-                            agentProducts[agentAddress].Add((order, tradableItem));
-                        }
-                    }
-                    else
-                    {
-                        agentProducts[agentAddress].Add((order, tradableItem));
-                    }
-                }
-
-                AgentProductsV2.Value = agentProducts
-                    .ToDictionary(
-                        pair => pair.Key,
-                        pair => GetGroupedShopItemsByItemSubTypeFilterV2(pair.Value, sellItemsPerPage));
-            }
+            // {
+            //     var agentProducts = new Dictionary<Address, List<(Order, ItemBase)>>();
+            //     foreach (var tuple in _productsV2)
+            //     {
+            //         var (order, tradableItem) = tuple;
+            //         var agentAddress = order.SellerAgentAddress;
+            //         if (!agentProducts.ContainsKey(agentAddress))
+            //         {
+            //             agentProducts.Add(agentAddress, new List<(Order, ItemBase)>());
+            //         }
+            //
+            //         if (Game.Game.instance.Agent.Address == agentAddress)
+            //         {
+            //             if (order.SellerAvatarAddress == States.Instance.CurrentAvatarState.address)
+            //             {
+            //                 agentProducts[agentAddress].Add((order, tradableItem));
+            //             }
+            //         }
+            //         else
+            //         {
+            //             agentProducts[agentAddress].Add((order, tradableItem));
+            //         }
+            //     }
+            //
+            //     AgentProductsV2.Value = agentProducts
+            //         .ToDictionary(
+            //             pair => pair.Key,
+            //             pair => GetGroupedShopItemsByItemSubTypeFilterV2(pair.Value, sellItemsPerPage));
+            // }
 
             // ItemSubTypeProducts.
             {
