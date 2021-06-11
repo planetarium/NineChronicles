@@ -38,11 +38,8 @@ namespace Nekoyume.UI
         {
             base.Awake();
             // count
-            countInputField.onValueChanged.AsObservable().Subscribe(_ =>
+            countInputField.onEndEdit.AsObservable().Subscribe(_ =>
             {
-                var maxCount = _data.Item.Value.MaxCount.Value;
-                var count = InputFieldValueToValue<int>(countInputField);
-
                 if (countInputField.text.Equals(string.Empty) ||
                     countInputField.text.Equals("0"))
                 {
@@ -51,6 +48,9 @@ namespace Nekoyume.UI
                 }
                 else
                 {
+                    var maxCount = _data.Item.Value.MaxCount.Value;
+                    var count = InputFieldValueToValue<int>(countInputField);
+
                     var result = Mathf.Clamp(count, 1, maxCount);
                     countInputField.text = result.ToString();
                     _data.OnChangeCount.OnNext(result);
@@ -78,7 +78,7 @@ namespace Nekoyume.UI
             }).AddTo(_disposablesForAwake);
 
             // price
-            priceInputField.onValueChanged.AsObservable().Subscribe(_ =>
+            priceInputField.onEndEdit.AsObservable().Subscribe(_ =>
             {
                 if (priceInputField.text.Length > 0 &&
                     priceInputField.text.Length == priceInputField.caretPosition &&
