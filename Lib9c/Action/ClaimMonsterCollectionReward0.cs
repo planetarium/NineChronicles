@@ -22,7 +22,7 @@ namespace Nekoyume.Action
         public override IAccountStateDelta Execute(IActionContext context)
         {
             IAccountStateDelta states = context.PreviousStates;
-            Address collectionAddress = MonsterCollectionState.DeriveAddress(context.Signer, collectionRound);
+            Address collectionAddress = MonsterCollectionState0.DeriveAddress(context.Signer, collectionRound);
 
             if (context.Rehearsal)
             {
@@ -42,7 +42,7 @@ namespace Nekoyume.Action
                 throw new FailedLoadStateException($"Aborted as the monster collection state failed to load.");
             }
 
-            MonsterCollectionState monsterCollectionState = new MonsterCollectionState(stateDict);
+            MonsterCollectionState0 monsterCollectionState = new MonsterCollectionState0(stateDict);
             if (monsterCollectionState.End)
             {
                 throw new MonsterCollectionExpiredException($"{collectionAddress} has already expired on {monsterCollectionState.ExpiredBlockIndex}");
@@ -51,7 +51,7 @@ namespace Nekoyume.Action
             if (!monsterCollectionState.CanReceive(context.BlockIndex))
             {
                 throw new RequiredBlockIndexException(
-                    $"{collectionAddress} is not available yet; it will be available after {Math.Max(monsterCollectionState.StartedBlockIndex, monsterCollectionState.ReceivedBlockIndex) + MonsterCollectionState.RewardInterval}");
+                    $"{collectionAddress} is not available yet; it will be available after {Math.Max(monsterCollectionState.StartedBlockIndex, monsterCollectionState.ReceivedBlockIndex) + MonsterCollectionState0.RewardInterval}");
             }
 
             long rewardLevel = monsterCollectionState.GetRewardLevel(context.BlockIndex);

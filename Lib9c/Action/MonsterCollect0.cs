@@ -20,7 +20,7 @@ namespace Nekoyume.Action
         public override IAccountStateDelta Execute(IActionContext context)
         {
             IAccountStateDelta states = context.PreviousStates;
-            Address monsterCollectionAddress = MonsterCollectionState.DeriveAddress(context.Signer, collectionRound);
+            Address monsterCollectionAddress = MonsterCollectionState0.DeriveAddress(context.Signer, collectionRound);
             if (context.Rehearsal)
             {
                 return states
@@ -53,12 +53,12 @@ namespace Nekoyume.Action
             FungibleAssetValue requiredGold = currency * 0;
             FungibleAssetValue balance = states.GetBalance(context.Signer, states.GetGoldCurrency());
 
-            MonsterCollectionState monsterCollectionState;
+            MonsterCollectionState0 monsterCollectionState;
             int currentLevel = 1;
             MonsterCollectionRewardSheet monsterCollectionRewardSheet = states.GetSheet<MonsterCollectionRewardSheet>();
             if (states.TryGetState(monsterCollectionAddress, out Dictionary stateDict))
             {
-                monsterCollectionState = new MonsterCollectionState(stateDict);
+                monsterCollectionState = new MonsterCollectionState0(stateDict);
 
                 if (monsterCollectionState.ExpiredBlockIndex < context.BlockIndex)
                 {
@@ -77,7 +77,7 @@ namespace Nekoyume.Action
             }
             else
             {
-                monsterCollectionState = new MonsterCollectionState(monsterCollectionAddress, level, context.BlockIndex, monsterCollectionRewardSheet);
+                monsterCollectionState = new MonsterCollectionState0(monsterCollectionAddress, level, context.BlockIndex, monsterCollectionRewardSheet);
             }
 
             for (int i = currentLevel; i < level + 1; i++)

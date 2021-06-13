@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Diagnostics;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
@@ -20,7 +19,7 @@ namespace Nekoyume.Action
         public override IAccountStateDelta Execute(IActionContext context)
         {
             IAccountStateDelta states = context.PreviousStates;
-            Address monsterCollectionAddress = MonsterCollectionState.DeriveAddress(context.Signer, 0);
+            Address monsterCollectionAddress = MonsterCollectionState.DeriveAddress(context.Signer);
             if (context.Rehearsal)
             {
                 return states
@@ -52,7 +51,7 @@ namespace Nekoyume.Action
                 var existingStates = new MonsterCollectionState(stateDict);
                 int previousLevel = existingStates.Level;
                 // 락업 확인
-                if (level < previousLevel && existingStates.IsLock(context.BlockIndex))
+                if (level < previousLevel && existingStates.IsLocked(context.BlockIndex))
                 {
                     throw new RequiredBlockIndexException();
                 }
@@ -84,7 +83,7 @@ namespace Nekoyume.Action
                     $"There is no sufficient balance for {context.Signer}: {balance} < {requiredGold}");
             }
             states = states.TransferAsset(context.Signer, monsterCollectionAddress, requiredGold);
-            states = states.SetState(monsterCollectionAddress, monsterCollectionState.SerializeV2());
+            states = states.SetState(monsterCollectionAddress, monsterCollectionState.Serialize());
             return states;
         }
 

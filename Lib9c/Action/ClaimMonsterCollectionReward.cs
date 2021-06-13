@@ -21,7 +21,7 @@ namespace Nekoyume.Action
         public override IAccountStateDelta Execute(IActionContext context)
         {
             IAccountStateDelta states = context.PreviousStates;
-            Address collectionAddress = MonsterCollectionState.DeriveAddress(context.Signer, 0);
+            Address collectionAddress = MonsterCollectionState.DeriveAddress(context.Signer);
             Address inventoryAddress = avatarAddress.Derive(LegacyInventoryKey);
             if (context.Rehearsal)
             {
@@ -43,21 +43,7 @@ namespace Nekoyume.Action
 
             var monsterCollectionState = new MonsterCollectionState(stateDict);
 
-            int step = (int)Math.DivRem(
-                context.BlockIndex - monsterCollectionState.StartedBlockIndex,
-                MonsterCollectionState.RewardInterval,
-                out _
-            );
-            if (monsterCollectionState.ReceivedBlockIndex > 0)
-            {
-                int previousStep = (int)Math.DivRem(
-                    monsterCollectionState.ReceivedBlockIndex - monsterCollectionState.StartedBlockIndex,
-                    MonsterCollectionState.RewardInterval,
-                    out _
-                );
-                step -= previousStep;
-            }
-
+            int step = monsterCollectionState.CalculateStep(context.BlockIndex);
             if (step < 1)
             {
                 throw new RequiredBlockIndexException($"{collectionAddress} is not available yet");
@@ -86,12 +72,12 @@ namespace Nekoyume.Action
                     : ItemFactory.CreateItem(row, context.Random);
                 avatarState.inventory.AddItem(item, rewardInfo.Quantity);
             }
-            monsterCollectionState.Receive(context.BlockIndex);
+            monsterCollectionState.Claim(context.BlockIndex);
 
             return states
                 .SetState(avatarAddress, avatarState.SerializeV2())
                 .SetState(inventoryAddress, avatarState.inventory.Serialize())
-                .SetState(collectionAddress, monsterCollectionState.SerializeV2());
+                .SetState(collectionAddress, monsterCollectionState.Serialize());
         }
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal => new Dictionary<string, IValue>

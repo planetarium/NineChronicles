@@ -72,11 +72,11 @@ namespace Lib9c.Tests.Action
         [ClassData(typeof(ExecuteFixture))]
         public void Execute(int collectionLevel, long claimBlockIndex, long? receivedBlockIndex, (int, int)[] expectedRewards, Type exc)
         {
-            Address collectionAddress = MonsterCollectionState.DeriveAddress(_signer, 0);
+            Address collectionAddress = MonsterCollectionState.DeriveAddress(_signer);
             var monsterCollectionState = new MonsterCollectionState(collectionAddress, collectionLevel, 0);
             if (receivedBlockIndex is { } receivedBlockIndexNotNull)
             {
-                monsterCollectionState.Receive(receivedBlockIndexNotNull);
+                monsterCollectionState.Claim(receivedBlockIndexNotNull);
             }
 
             AvatarState prevAvatarState = _state.GetAvatarStateV2(_avatarAddress);
@@ -84,7 +84,7 @@ namespace Lib9c.Tests.Action
 
             Currency currency = _state.GetGoldCurrency();
 
-            _state = _state.SetState(collectionAddress, monsterCollectionState.SerializeV2());
+            _state = _state.SetState(collectionAddress, monsterCollectionState.Serialize());
 
             Assert.Equal(0, _state.GetAgentState(_signer).MonsterCollectionRound);
             Assert.Equal(0 * currency, _state.GetBalance(_signer, currency));
@@ -180,9 +180,9 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Execute_Throw_RequiredBlockIndexException()
         {
-            Address collectionAddress = MonsterCollectionState.DeriveAddress(_signer, 0);
-            MonsterCollectionState monsterCollectionState = new MonsterCollectionState(collectionAddress, 1, 0);
-            _state = _state.SetState(collectionAddress, monsterCollectionState.SerializeV2());
+            Address collectionAddress = MonsterCollectionState.DeriveAddress(_signer);
+            var monsterCollectionState = new MonsterCollectionState(collectionAddress, 1, 0);
+            _state = _state.SetState(collectionAddress, monsterCollectionState.Serialize());
 
             ClaimMonsterCollectionReward action = new ClaimMonsterCollectionReward
             {
@@ -219,7 +219,7 @@ namespace Lib9c.Tests.Action
             {
                 _avatarAddress,
                 _avatarAddress.Derive(LegacyInventoryKey),
-                MonsterCollectionState.DeriveAddress(_signer, 0),
+                MonsterCollectionState.DeriveAddress(_signer),
             };
             Assert.Equal(updatedAddresses.ToImmutableHashSet(), nextState.UpdatedAddresses);
         }
