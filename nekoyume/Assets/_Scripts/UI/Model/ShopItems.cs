@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Numerics;
 using Libplanet;
+using Libplanet.Assets;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
@@ -411,7 +411,7 @@ namespace Nekoyume.UI.Model
 
         public bool TryGetShopItemFromAgentProducts(Guid tradableId,
                                                     long requiredBlockIndex,
-                                                    BigInteger price,
+                                                    FungibleAssetValue price,
                                                     int count,
                                                      out ShopItem shopItem)
         {
@@ -421,7 +421,7 @@ namespace Nekoyume.UI.Model
                 .FirstOrDefault(item =>
                     ((ITradableItem) item.ItemBase.Value).TradableId.Equals(tradableId) &&
                     item.ExpiredBlockIndex.Value == requiredBlockIndex &&
-                    item.Price.Value.MajorUnit == price &&
+                    item.Price.Value.Equals(price)  &&
                     item.Count.Value == count);
 
             return !(shopItem is null);

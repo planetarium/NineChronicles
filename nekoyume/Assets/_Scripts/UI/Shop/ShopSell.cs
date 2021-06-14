@@ -340,7 +340,7 @@ namespace Nekoyume.UI
 
             var tradableId = tradableItem.TradableId;
             var requiredBlockIndex = tradableItem.RequiredBlockIndex;
-            var price = model.Price.Value.MajorUnit;
+            var price = model.Price.Value;
             var count = model.Item.Value.Count.Value;
 
             if (!shopItems.SharedModel.TryGetShopItemFromAgentProducts(
