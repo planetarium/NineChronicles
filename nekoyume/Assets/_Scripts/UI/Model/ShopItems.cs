@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using Libplanet;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
@@ -408,13 +409,20 @@ namespace Nekoyume.UI.Model
 
         #endregion
 
-        public bool TryGetShopItemFromAgentProducts(ITradableItem tradableItem, out ShopItem shopItem)
+        public bool TryGetShopItemFromAgentProducts(Guid tradableId,
+                                                    long requiredBlockIndex,
+                                                    BigInteger price,
+                                                    int count,
+                                                     out ShopItem shopItem)
         {
             shopItem = AgentProducts.Value.Values
                 .SelectMany(list => list)
                 .Where(item => item.ItemBase.Value is ITradableItem)
                 .FirstOrDefault(item =>
-                    ((ITradableItem) item.ItemBase.Value).Equals(tradableItem));
+                    ((ITradableItem) item.ItemBase.Value).TradableId.Equals(tradableId) &&
+                    item.ExpiredBlockIndex.Value == requiredBlockIndex &&
+                    item.Price.Value.MajorUnit == price &&
+                    item.Count.Value == count);
 
             return !(shopItem is null);
         }
