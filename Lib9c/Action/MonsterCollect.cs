@@ -50,7 +50,7 @@ namespace Nekoyume.Action
             {
                 var existingStates = new MonsterCollectionState(stateDict);
                 int previousLevel = existingStates.Level;
-                // 락업 확인
+                // Check collection level and required block index
                 if (level < previousLevel && existingStates.IsLocked(context.BlockIndex))
                 {
                     throw new RequiredBlockIndexException();
