@@ -338,9 +338,13 @@ namespace Nekoyume.UI
                 return;
             }
 
+            var tradableId = tradableItem.TradableId;
+            var requiredBlockIndex = tradableItem.RequiredBlockIndex;
+            var price = model.Price.Value;
+            var count = model.Item.Value.Count.Value;
+
             if (!shopItems.SharedModel.TryGetShopItemFromAgentProducts(
-                tradableItem,
-                out var shopItem))
+                tradableId, requiredBlockIndex, price, count, out var shopItem))
             {
                 if (model.Price.Value.Sign * model.Price.Value.MajorUnit < Shop.MinimumPrice)
                 {
