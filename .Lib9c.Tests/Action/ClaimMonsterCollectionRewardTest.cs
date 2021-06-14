@@ -219,6 +219,8 @@ namespace Lib9c.Tests.Action
             {
                 _avatarAddress,
                 _avatarAddress.Derive(LegacyInventoryKey),
+                _avatarAddress.Derive(LegacyWorldInformationKey),
+                _avatarAddress.Derive(LegacyQuestListKey),
                 MonsterCollectionState.DeriveAddress(_signer),
             };
             Assert.Equal(updatedAddresses.ToImmutableHashSet(), nextState.UpdatedAddresses);

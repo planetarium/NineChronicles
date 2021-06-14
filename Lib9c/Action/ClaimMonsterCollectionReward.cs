@@ -23,12 +23,17 @@ namespace Nekoyume.Action
             IAccountStateDelta states = context.PreviousStates;
             Address collectionAddress = MonsterCollectionState.DeriveAddress(context.Signer);
             Address inventoryAddress = avatarAddress.Derive(LegacyInventoryKey);
+            Address worldInformationAddress = avatarAddress.Derive(LegacyWorldInformationKey);
+            Address questListAddress = avatarAddress.Derive(LegacyQuestListKey);
+
             if (context.Rehearsal)
             {
                 return states
                     .SetState(avatarAddress, MarkChanged)
                     .SetState(inventoryAddress, MarkChanged)
-                    .SetState(collectionAddress, MarkChanged);
+                    .SetState(collectionAddress, MarkChanged)
+                    .SetState(worldInformationAddress, MarkChanged)
+                    .SetState(questListAddress, MarkChanged);
             }
 
             if (!states.TryGetAvatarStateV2(context.Signer, avatarAddress, out AvatarState avatarState))
@@ -77,6 +82,8 @@ namespace Nekoyume.Action
             return states
                 .SetState(avatarAddress, avatarState.SerializeV2())
                 .SetState(inventoryAddress, avatarState.inventory.Serialize())
+                .SetState(worldInformationAddress, avatarState.worldInformation.Serialize())
+                .SetState(questListAddress, avatarState.questList.Serialize())
                 .SetState(collectionAddress, monsterCollectionState.Serialize());
         }
 
