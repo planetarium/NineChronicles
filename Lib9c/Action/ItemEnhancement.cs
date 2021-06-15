@@ -13,11 +13,12 @@ using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using Serilog;
+using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("item_enhancement6")]
+    [ActionType("item_enhancement7")]
     public class ItemEnhancement : GameAction
     {
         public const int RequiredBlockCount = 1;
@@ -76,11 +77,17 @@ namespace Nekoyume.Action
                     slotIndex
                 )
             );
+            var inventoryAddress = avatarAddress.Derive(LegacyInventoryKey);
+            var worldInformationAddress = avatarAddress.Derive(LegacyWorldInformationKey);
+            var questListAddress = avatarAddress.Derive(LegacyQuestListKey);
             if (ctx.Rehearsal)
             {
                 return states
                     .MarkBalanceChanged(GoldCurrencyMock, ctx.Signer, BlacksmithAddress)
                     .SetState(avatarAddress, MarkChanged)
+                    .SetState(inventoryAddress, MarkChanged)
+                    .SetState(worldInformationAddress, MarkChanged)
+                    .SetState(questListAddress, MarkChanged)
                     .SetState(slotAddress, MarkChanged);
             }
 
@@ -91,7 +98,7 @@ namespace Nekoyume.Action
             var started = DateTimeOffset.UtcNow;
             Log.Verbose("{AddressesHex}ItemEnhancement exec started", addressesHex);
 
-            if (!states.TryGetAgentAvatarStates(ctx.Signer, avatarAddress, out AgentState agentState,
+            if (!states.TryGetAgentAvatarStatesV2(ctx.Signer, avatarAddress, out AgentState agentState,
                 out AvatarState avatarState))
             {
                 throw new FailedLoadStateException($"{addressesHex}Aborted as the avatar state of the signer was failed to load.");
@@ -261,7 +268,11 @@ namespace Nekoyume.Action
             sw.Stop();
             Log.Verbose("{AddressesHex}ItemEnhancement Update AvatarState: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();
-            states = states.SetState(avatarAddress, avatarState.Serialize());
+            states = states
+                .SetState(inventoryAddress, avatarState.inventory.Serialize())
+                .SetState(worldInformationAddress, avatarState.worldInformation.Serialize())
+                .SetState(questListAddress, avatarState.questList.Serialize())
+                .SetState(avatarAddress, avatarState.SerializeV2());
             sw.Stop();
             Log.Verbose("{AddressesHex}ItemEnhancement Set AvatarState: {Elapsed}", addressesHex, sw.Elapsed);
             var ended = DateTimeOffset.UtcNow;

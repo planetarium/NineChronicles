@@ -1,12 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
-using Libplanet.Assets;
 using Nekoyume.Battle;
 using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.State;
@@ -16,7 +16,7 @@ using Serilog;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("ranking_battle")]
+    [ActionType("ranking_battle4")]
     public class RankingBattle4 : GameAction
     {
         public const int StageId = 999999;
@@ -25,7 +25,7 @@ namespace Nekoyume.Action
         public Address AvatarAddress;
         public Address EnemyAddress;
         public Address WeeklyArenaAddress;
-        public List<int> costumeIds;
+        public List<Guid> costumeIds;
         public List<Guid> equipmentIds;
         public List<Guid> consumableIds;
         public BattleLog Result { get; private set; }
@@ -42,29 +42,54 @@ namespace Nekoyume.Action
                     .SetState(ctx.Signer, MarkChanged)
                     .MarkBalanceChanged(GoldCurrencyMock, ctx.Signer, WeeklyArenaAddress);
             }
-            
+
+            // Avoid InvalidBlockStateRootHashException
+            if (ctx.BlockIndex == 680341 && Id.Equals(new Guid("df37dbd8-5703-4dff-918b-ad22ee4c34c6")))
+            {
+                return states;
+            }
+
             var addressesHex = GetSignerAndOtherAddressesHex(context, AvatarAddress, EnemyAddress);
 
-            Log.Warning("ranking_battle is deprecated. Please use ranking_battle2");
+            var sw = new Stopwatch();
+            sw.Start();
+            var started = DateTimeOffset.UtcNow;
+            Log.Verbose(
+                "{AddressesHex}RankingBattle exec started. costume: ({CostumeIds}), equipment: ({EquipmentIds})",
+                addressesHex,
+                string.Join(",", costumeIds),
+                string.Join(",", equipmentIds)
+            );
+
             if (AvatarAddress.Equals(EnemyAddress))
             {
                 throw new InvalidAddressException($"{addressesHex}Aborted as the signer tried to battle for themselves.");
             }
 
-            if (!states.TryGetAgentAvatarStates(
-                ctx.Signer,
-                AvatarAddress,
-                out var agentState,
-                out var avatarState))
+            if (!states.TryGetAvatarState(ctx.Signer, AvatarAddress, out var avatarState))
             {
                 throw new FailedLoadStateException($"{addressesHex}Aborted as the avatar state of the signer was failed to load.");
             }
 
-            var costumes = new HashSet<int>(costumeIds);
+            sw.Stop();
+            Log.Verbose("{AddressesHex}RankingBattle Get AgentAvatarStates: {Elapsed}", addressesHex, sw.Elapsed);
+            sw.Restart();
 
-            avatarState.ValidateEquipments(equipmentIds, context.BlockIndex);
+            var items = equipmentIds.Concat(costumeIds);
+
+            avatarState.ValidateEquipmentsV2(equipmentIds, context.BlockIndex);
             avatarState.ValidateConsumable(consumableIds, context.BlockIndex);
-            avatarState.ValidateCostume(costumes);
+            avatarState.ValidateCostume(costumeIds);
+
+            sw.Stop();
+            Log.Verbose("{AddressesHex}RankingBattle Validate Equipments: {Elapsed}", addressesHex, sw.Elapsed);
+            sw.Restart();
+
+            avatarState.EquipItems(items);
+
+            sw.Stop();
+            Log.Verbose("{AddressesHex}RankingBattle Equip Equipments: {Elapsed}", addressesHex, sw.Elapsed);
+            sw.Restart();
 
             if (!avatarState.worldInformation.TryGetUnlockedWorldByStageClearedBlockIndex(out var world) ||
                 world.StageClearedId < GameConfig.RequireClearedStageLevel.ActionsInRankingBoard)
@@ -75,26 +100,40 @@ namespace Nekoyume.Action
                     world.StageClearedId);
             }
 
-            avatarState.EquipCostumes(costumes);
-            avatarState.EquipEquipments(equipmentIds);
-
             var enemyAvatarState = states.GetAvatarState(EnemyAddress);
             if (enemyAvatarState is null)
             {
                 throw new FailedLoadStateException($"{addressesHex}Aborted as the avatar state of the opponent ({EnemyAddress}) was failed to load.");
             }
 
+            sw.Stop();
+            Log.Verbose("{AddressesHex}RankingBattle Get Enemy AvatarState: {Elapsed}", addressesHex, sw.Elapsed);
+            sw.Restart();
+
             var weeklyArenaState = states.GetWeeklyArenaState(WeeklyArenaAddress);
+
+            sw.Stop();
+            Log.Verbose("{AddressesHex}RankingBattle Get WeeklyArenaState ({Address}): {Elapsed}", addressesHex, WeeklyArenaAddress, sw.Elapsed);
+            sw.Restart();
 
             if (weeklyArenaState.Ended)
             {
-                throw new WeeklyArenaStateAlreadyEndedException(
-                    addressesHex + WeeklyArenaStateAlreadyEndedException.BaseMessage);
+                throw new WeeklyArenaStateAlreadyEndedException();
             }
+
+            var costumeStatSheet = states.GetSheet<CostumeStatSheet>();
+
+            sw.Stop();
+            Log.Verbose("{AddressesHex}RankingBattle Get CostumeStatSheet: {Elapsed}", addressesHex, sw.Elapsed);
+            sw.Restart();
 
             if (!weeklyArenaState.ContainsKey(AvatarAddress))
             {
-                throw new WeeklyArenaStateNotContainsAvatarAddressException(addressesHex, AvatarAddress);
+                var characterSheet = states.GetSheet<CharacterSheet>();
+                weeklyArenaState.SetV2(avatarState, characterSheet, costumeStatSheet);
+                sw.Stop();
+                Log.Verbose("{AddressesHex}RankingBattle Set AvatarInfo: {Elapsed}", addressesHex, sw.Elapsed);
+                sw.Restart();
             }
 
             var arenaInfo = weeklyArenaState[AvatarAddress];
@@ -107,33 +146,7 @@ namespace Nekoyume.Action
 
             if (!arenaInfo.Active)
             {
-                FungibleAssetValue agentBalance = default;
-                try
-                {
-                    agentBalance = states.GetBalance(ctx.Signer, states.GetGoldCurrency());
-                }
-                catch (InvalidOperationException)
-                {
-                    throw new NotEnoughFungibleAssetValueException(addressesHex, EntranceFee, agentBalance);
-                }
-
-                if (agentBalance >= new FungibleAssetValue(agentBalance.Currency, EntranceFee, 0))
-                {
-                    states = states.TransferAsset(
-                        ctx.Signer,
-                        WeeklyArenaAddress,
-                        new FungibleAssetValue(
-                            states.GetGoldCurrency(),
-                            EntranceFee,
-                            0
-                        )
-                    );
-                    arenaInfo.Activate();
-                }
-                else
-                {
-                    throw new NotEnoughFungibleAssetValueException(addressesHex, EntranceFee, agentBalance);
-                }
+                arenaInfo.Activate();
             }
 
             if (!weeklyArenaState.ContainsKey(EnemyAddress))
@@ -143,6 +156,10 @@ namespace Nekoyume.Action
 
             Log.Verbose("{WeeklyArenaStateAddress}", weeklyArenaState.address.ToHex());
 
+            sw.Stop();
+            Log.Verbose("{AddressesHex}RankingBattle Validate ArenaInfo: {Elapsed}", addressesHex, sw.Elapsed);
+            sw.Restart();
+
             var simulator = new RankingSimulator(
                 ctx.Random,
                 avatarState,
@@ -151,21 +168,56 @@ namespace Nekoyume.Action
                 states.GetRankingSimulatorSheets(),
                 StageId,
                 arenaInfo,
-                weeklyArenaState[EnemyAddress]);
+                weeklyArenaState[EnemyAddress],
+                costumeStatSheet);
 
-            simulator.Simulate();
+            simulator.SimulateV2();
+
+            sw.Stop();
+            Log.Verbose(
+                "{AddressesHex}RankingBattle Simulate() with equipment:({Equipment}), costume:({Costume}): {Elapsed}",
+                addressesHex,
+                string.Join(",", simulator.Player.Equipments.Select(r => r.ItemId)),
+                string.Join(",", simulator.Player.Costumes.Select(r => r.ItemId)),
+                sw.Elapsed
+            );
+
+            Log.Verbose(
+                "{AddressesHex}Execute RankingBattle({AvatarAddress}); result: {Result} event count: {EventCount}",
+                addressesHex,
+                AvatarAddress,
+                simulator.Log.result,
+                simulator.Log.Count
+            );
+            sw.Restart();
 
             Result = simulator.Log;
 
             foreach (var itemBase in simulator.Reward.OrderBy(i => i.Id))
             {
+                Log.Verbose(
+                    "{AddressesHex}RankingBattle Add Reward Item({ItemBaseId}): {Elapsed}",
+                    addressesHex,
+                    itemBase.Id,
+                    sw.Elapsed);
                 avatarState.inventory.AddItem(itemBase);
             }
 
-            return states
-                .SetState(ctx.Signer, agentState.Serialize())
-                .SetState(WeeklyArenaAddress, weeklyArenaState.Serialize())
-                .SetState(AvatarAddress, avatarState.Serialize());
+            states = states.SetState(WeeklyArenaAddress, weeklyArenaState.Serialize());
+
+            sw.Stop();
+            Log.Verbose("{AddressesHex}RankingBattle Serialize WeeklyArenaState: {Elapsed}", addressesHex, sw.Elapsed);
+            sw.Restart();
+
+            states = states.SetState(AvatarAddress, avatarState.Serialize());
+
+            sw.Stop();
+            Log.Verbose("{AddressesHex}RankingBattle Serialize AvatarState: {Elapsed}", addressesHex, sw.Elapsed);
+            sw.Restart();
+
+            var ended = DateTimeOffset.UtcNow;
+            Log.Verbose("{AddressesHex}RankingBattle Total Executed Time: {Elapsed}", addressesHex, ended - started);
+            return states;
         }
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
@@ -174,13 +226,13 @@ namespace Nekoyume.Action
                 ["avatarAddress"] = AvatarAddress.Serialize(),
                 ["enemyAddress"] = EnemyAddress.Serialize(),
                 ["weeklyArenaAddress"] = WeeklyArenaAddress.Serialize(),
-                ["costume_ids"] = new Bencodex.Types.List(costumeIds
+                ["costume_ids"] = new List(costumeIds
                     .OrderBy(element => element)
                     .Select(e => e.Serialize())),
-                ["equipment_ids"] = new Bencodex.Types.List(equipmentIds
+                ["equipment_ids"] = new List(equipmentIds
                     .OrderBy(element => element)
                     .Select(e => e.Serialize())),
-                ["consumable_ids"] = new Bencodex.Types.List(consumableIds
+                ["consumable_ids"] = new List(consumableIds
                     .OrderBy(element => element)
                     .Select(e => e.Serialize())),
             }.ToImmutableDictionary();
@@ -190,13 +242,13 @@ namespace Nekoyume.Action
             AvatarAddress = plainValue["avatarAddress"].ToAddress();
             EnemyAddress = plainValue["enemyAddress"].ToAddress();
             WeeklyArenaAddress = plainValue["weeklyArenaAddress"].ToAddress();
-            costumeIds = ((Bencodex.Types.List) plainValue["costume_ids"])
-                .Select(e => e.ToInteger())
-                .ToList();
-            equipmentIds = ((Bencodex.Types.List) plainValue["equipment_ids"])
+            costumeIds = ((List) plainValue["costume_ids"])
                 .Select(e => e.ToGuid())
                 .ToList();
-            consumableIds = ((Bencodex.Types.List) plainValue["consumable_ids"])
+            equipmentIds = ((List) plainValue["equipment_ids"])
+                .Select(e => e.ToGuid())
+                .ToList();
+            consumableIds = ((List) plainValue["consumable_ids"])
                 .Select(e => e.ToGuid())
                 .ToList();
         }

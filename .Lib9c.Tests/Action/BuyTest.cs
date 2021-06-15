@@ -2,6 +2,7 @@ namespace Lib9c.Tests.Action
 {
     using System;
     using System.Collections.Generic;
+    using System.Collections.Immutable;
     using System.Linq;
     using System.Numerics;
     using Bencodex.Types;
@@ -19,6 +20,7 @@ namespace Lib9c.Tests.Action
     using Serilog;
     using Xunit;
     using Xunit.Abstractions;
+    using static SerializeKeys;
 
     public class BuyTest
     {
@@ -366,7 +368,7 @@ namespace Lib9c.Tests.Action
                 Assert.Equal(expectedCount, inventoryItem.count);
                 Assert.Equal(expectedCount, nextBuyerAvatarState.itemMap[((ItemBase)tradableItem).Id]);
 
-                var nextSellerAvatarState = nextState.GetAvatarState(purchaseInfo.sellerAvatarAddress);
+                var nextSellerAvatarState = nextState.GetAvatarStateV2(purchaseInfo.sellerAvatarAddress);
                 Assert.False(
                     nextSellerAvatarState.inventory.TryGetTradableItems(
                         itemId,
@@ -875,6 +877,53 @@ namespace Lib9c.Tests.Action
             Assert.Single(action.buyerMultipleResult.purchaseResults);
             Buy.PurchaseResult purchaseResult = action.buyerMultipleResult.purchaseResults.First();
             Assert.Equal(Buy.ErrorCodeInvalidPrice, purchaseResult.errorCode);
+        }
+
+        [Fact]
+        public void Rehearsal()
+        {
+            PurchaseInfo purchaseInfo = new PurchaseInfo(
+                _productId,
+                _sellerAgentAddress,
+                _sellerAvatarAddress,
+                ItemSubType.Weapon,
+                new FungibleAssetValue(_goldCurrencyState.Currency, 10, 0)
+            );
+
+            var action = new Buy
+            {
+                buyerAvatarAddress = _buyerAvatarAddress,
+                purchaseInfos = new[] { purchaseInfo },
+            };
+
+            var updatedAddresses = new List<Address>()
+            {
+                _sellerAgentAddress,
+                _sellerAvatarAddress,
+                _sellerAvatarAddress.Derive(LegacyInventoryKey),
+                _sellerAvatarAddress.Derive(LegacyWorldInformationKey),
+                _sellerAvatarAddress.Derive(LegacyQuestListKey),
+                _buyerAgentAddress,
+                _buyerAvatarAddress,
+                _buyerAvatarAddress.Derive(LegacyInventoryKey),
+                _buyerAvatarAddress.Derive(LegacyWorldInformationKey),
+                _buyerAvatarAddress.Derive(LegacyQuestListKey),
+                Addresses.Shop,
+                Addresses.GoldCurrency,
+                ShardedShopState.DeriveAddress(ItemSubType.Weapon, _productId),
+            };
+
+            var state = new State();
+
+            var nextState = action.Execute(new ActionContext()
+            {
+                PreviousStates = state,
+                Signer = _buyerAgentAddress,
+                BlockIndex = 0,
+                Rehearsal = true,
+            });
+
+            Assert.Equal(updatedAddresses.ToImmutableHashSet(), nextState.UpdatedAddresses);
         }
 
         private (AvatarState avatarState, AgentState agentState) CreateAvatarState(

@@ -82,7 +82,7 @@ namespace Lib9c.Tests.Action
             _avatarState.inventory.AddItem(equipment, count: 1);
             _avatarState.inventory.AddItem(material, count: 1);
 
-            var result = new CombinationConsumable.ResultModel()
+            var result = new CombinationConsumable5.ResultModel()
             {
                 id = default,
                 gold = 0,

@@ -10,13 +10,13 @@
     using Xunit;
     using Xunit.Abstractions;
 
-    public class DailyRewardTest2
+    public class DailyReward0Test
     {
         private readonly IAccountStateDelta _initialState;
         private readonly Address _agentAddress;
         private readonly Address _avatarAddress;
 
-        public DailyRewardTest2(ITestOutputHelper outputHelper)
+        public DailyReward0Test(ITestOutputHelper outputHelper)
         {
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Verbose()
@@ -58,7 +58,7 @@
         [Fact]
         public void Execute()
         {
-            var dailyRewardAction = new DailyReward2
+            var dailyRewardAction = new DailyReward0
             {
                 avatarAddress = _avatarAddress,
             };
@@ -78,7 +78,7 @@
         [Fact]
         public void ExecuteThrowFailedLoadStateException()
         {
-            var action = new DailyReward2
+            var action = new DailyReward0
             {
                 avatarAddress = _avatarAddress,
             };
