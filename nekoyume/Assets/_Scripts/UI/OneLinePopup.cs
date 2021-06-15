@@ -32,7 +32,7 @@ namespace Nekoyume.UI
         }
 
         private const float InternalTimeToAddOrRemoveCell = 1f;
-        private const float LifeTimeOfEachNotification = 6f;
+        private const float LifeTimeOfEachNotification = 1.5f;
 
         private static State _state = State.None;
 

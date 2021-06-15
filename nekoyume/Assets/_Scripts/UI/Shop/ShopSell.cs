@@ -103,15 +103,6 @@ namespace Nekoyume.UI
 
         public void Show()
         {
-            // Temporarily locked.
-            Find<SystemPopup>().Show(
-                L10nManager.Localize("UI_MAINTENANCE"),
-                L10nManager.Localize("UI_MARKET_MAINTENANCE"),
-                L10nManager.Localize("UI_OK"),
-                false
-            );
-            return;
-
             base.Show();
             shopItems.Show();
             inventory.SharedModel.State.Value = ItemType.Equipment;
@@ -196,17 +187,6 @@ namespace Nekoyume.UI
             if (inventoryItem is null ||
                 inventoryItem.Dimmed.Value)
             {
-                return;
-            }
-
-            if (inventoryItem.ItemBase.Value is TradableMaterial)
-            {
-                Find<SystemPopup>().Show(
-                    L10nManager.Localize("UI_MAINTENANCE"),
-                    L10nManager.Localize("UI_MAINTENANCE_CONTENT"),
-                    L10nManager.Localize("UI_OK"),
-                    false
-                );
                 return;
             }
 
@@ -358,9 +338,13 @@ namespace Nekoyume.UI
                 return;
             }
 
+            var tradableId = tradableItem.TradableId;
+            var requiredBlockIndex = tradableItem.RequiredBlockIndex;
+            var price = model.Price.Value;
+            var count = model.Item.Value.Count.Value;
+
             if (!shopItems.SharedModel.TryGetShopItemFromAgentProducts(
-                tradableItem.TradableId,
-                out var shopItem))
+                tradableId, requiredBlockIndex, price, count, out var shopItem))
             {
                 if (model.Price.Value.Sign * model.Price.Value.MajorUnit < Shop.MinimumPrice)
                 {
@@ -449,6 +433,7 @@ namespace Nekoyume.UI
             var format = L10nManager.Localize("NOTIFICATION_SELL_CANCEL_START");
             OneLinePopup.Push(MailType.Auction,
                 string.Format(format, shopItem.ItemBase.Value.GetLocalizedName()));
+            inventory.SharedModel.ActiveFunc.SetValueAndForceNotify(inventoryItem => (inventoryItem.ItemBase.Value is ITradableItem));
         }
 
         private void ShowSpeech(string key,
@@ -474,6 +459,11 @@ namespace Nekoyume.UI
             }
 
             return (ItemBase)result.tradableFungibleItem;
+        }
+
+        public void ForceNotifyActiveFunc()
+        {
+            inventory.SharedModel.ActiveFunc.SetValueAndForceNotify(inventoryItem => (inventoryItem.ItemBase.Value is ITradableItem));
         }
     }
 }

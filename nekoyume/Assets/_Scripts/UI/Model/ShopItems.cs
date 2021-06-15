@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Libplanet;
+using Libplanet.Assets;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
@@ -408,13 +409,20 @@ namespace Nekoyume.UI.Model
 
         #endregion
 
-        public bool TryGetShopItemFromAgentProducts(Guid tradableId, out ShopItem shopItem)
+        public bool TryGetShopItemFromAgentProducts(Guid tradableId,
+                                                    long requiredBlockIndex,
+                                                    FungibleAssetValue price,
+                                                    int count,
+                                                     out ShopItem shopItem)
         {
             shopItem = AgentProducts.Value.Values
                 .SelectMany(list => list)
                 .Where(item => item.ItemBase.Value is ITradableItem)
                 .FirstOrDefault(item =>
-                    ((ITradableItem) item.ItemBase.Value).TradableId.Equals(tradableId));
+                    ((ITradableItem) item.ItemBase.Value).TradableId.Equals(tradableId) &&
+                    item.ExpiredBlockIndex.Value == requiredBlockIndex &&
+                    item.Price.Value.Equals(price)  &&
+                    item.Count.Value == count);
 
             return !(shopItem is null);
         }

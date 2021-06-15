@@ -203,8 +203,9 @@ namespace Nekoyume.State
 
             if (isNew)
             {
-                // NOTE: 새로운 아바타를 처음 선택할 때에는 모든 워크샵 슬롯을 업데이트 합니다.
-                SetCombinationSlotStates(avatarState);
+                var curAvatarState = new AvatarState((Dictionary) Game.Game.instance.Agent.GetState(avatarState.address));
+                AddOrReplaceAvatarState(curAvatarState, CurrentAvatarKey);
+                SetCombinationSlotStates(curAvatarState);
             }
 
             if (Game.Game.instance.Agent is RPCAgent agent)

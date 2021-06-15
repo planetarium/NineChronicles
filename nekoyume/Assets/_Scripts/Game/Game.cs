@@ -397,42 +397,14 @@ namespace Nekoyume.Game
 
         public static void Quit()
         {
-            var confirm = Widget.Find<Confirm>();
-
-            if (confirm.gameObject.activeSelf &&
-                confirm.title.text == L10nManager.Localize("UI_CONFIRM_QUIT_TITLE"))
+            var popup = Widget.Find<QuitPopup>();
+            if (popup.gameObject.activeSelf)
             {
-                confirm.Close();
+                popup.Close();
                 return;
             }
 
-
-            confirm.CloseCallback = result =>
-            {
-                if (result == ConfirmResult.Yes)
-                {
-#if UNITY_EDITOR
-                    UnityEditor.EditorApplication.isPlaying = false;
-#else
-                    Application.Quit();
-#endif
-                    return;
-                }
-
-                confirm.CloseCallback = null;
-
-                Event.OnNestEnter.Invoke();
-                Widget.Find<Login>().Show();
-                Widget.Find<Menu>().Close();
-            };
-
-            confirm.Show(
-                "UI_CONFIRM_QUIT_TITLE",
-                "UI_CONFIRM_QUIT_CONTENT",
-                "UI_QUIT",
-                "UI_CHARACTER_SELECT",
-                blurRadius: 2,
-                submittable: false);
+            popup.Show();
         }
 
         private static void PlayMouseOnClickVFX(Vector3 position)

@@ -1,7 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using JetBrains.Annotations;
+using Libplanet;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
 using Nekoyume.L10n;
@@ -187,7 +189,14 @@ namespace Nekoyume.UI.Module
                 L10nManager.Localize("UI_RECEIVING_DAILY_REWARD"));
 
             Game.Game.instance.ActionManager.DailyReward();
-            GameConfigStateSubject.IsChargingActionPoint.SetValueAndForceNotify(true);
+
+            var address = States.Instance.CurrentAvatarState.address;
+            if (GameConfigStateSubject.ActionPointState.ContainsKey(address))
+            {
+                GameConfigStateSubject.ActionPointState.Remove(address);
+            }
+            GameConfigStateSubject.ActionPointState.Add(address, true);
+
             StartCoroutine(CoGetDailyRewardAnimation());
         }
 
