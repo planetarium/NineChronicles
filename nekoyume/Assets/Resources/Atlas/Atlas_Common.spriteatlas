@@ -47,7 +47,7 @@ SpriteAtlas:
     - {fileID: 102900000, guid: f4ec4f8b49db5487fae145d395ec1611, type: 3}
     - {fileID: 102900000, guid: 9c67e02a967534297bd452ad80ca3261, type: 3}
     - {fileID: 102900000, guid: 77aad0043bc7d4ee3a9fda3a23e966a8, type: 3}
-    totalSpriteSurfaceArea: 165245
+    totalSpriteSurfaceArea: 167277
     bindAsDefault: 1
     isAtlasV2: 0
     cachedData: {fileID: 0}
@@ -94,6 +94,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 33af5ea99a98444f9a1f3a2b7ad7d0be, type: 3}
   - {fileID: 21300000, guid: 8b6e1fd9bd10048279d3f98091872831, type: 3}
   - {fileID: 21300000, guid: bcc017e9936a54274b18aa604bd76df3, type: 3}
+  - {fileID: 21300000, guid: 801939e9c8bca4fd480e1d967b397c57, type: 3}
   - {fileID: 21300000, guid: a94d2be9dc0ea43feb0f058c8287713c, type: 3}
   - {fileID: 21300000, guid: fbecd0f9ef95e4cc684ee965e927d8cb, type: 3}
   - {fileID: 21300000, guid: 0c175a1a794b74cba9eba69dd1347f41, type: 3}
@@ -158,6 +159,7 @@ SpriteAtlas:
   - Ani_Workshop_03
   - UI_popup_title_bg
   - Ani_Workshop_06
+  - UI_Gradiant_bg_01
   - item_bg_Plus
   - Ani_Workshop_05
   - Ani_Workshop_17

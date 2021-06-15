@@ -420,8 +420,8 @@ namespace Nekoyume.UI.Model
                 .Where(item => item.ItemBase.Value is ITradableItem)
                 .FirstOrDefault(item =>
                     ((ITradableItem) item.ItemBase.Value).TradableId.Equals(tradableId) &&
-                    item.ExpiredBlockIndex.Value == requiredBlockIndex &&
-                    item.Price.Value.Equals(price)  &&
+                    (item.ExpiredBlockIndex.Value == 0 || item.ExpiredBlockIndex.Value == requiredBlockIndex) &&
+                    item.Price.Value.Equals(price) &&
                     item.Count.Value == count);
 
             return !(shopItem is null);
