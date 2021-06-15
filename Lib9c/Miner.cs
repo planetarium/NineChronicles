@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -61,17 +62,18 @@ namespace Nekoyume.BlockChain
                 }
                 else
                 {
-                    Transaction<PolymorphicAction<ActionBase>> authProof = StageProofTransaction();
-                    block = Block<PolymorphicAction<ActionBase>>.Mine(
-                        _chain.Tip.Index + 1,
-                        _chain.Policy.GetNextBlockDifficulty(_chain),
-                        _chain.Tip.TotalDifficulty,
+                    _chain
+                        .GetStagedTransactionIds()
+                        .Select(txid => _chain.GetTransaction(txid)).ToList()
+                        .ForEach(tx => _chain.UnstageTransaction(tx));
+                    StageProofTransaction();
+
+                    block = await _chain.MineBlock(
                         Address,
-                        _chain.Tip.Hash,
                         DateTimeOffset.UtcNow,
-                        new[] { authProof },
-                        Block<PolymorphicAction<ActionBase>>.CurrentProtocolVersion,
-                        cancellationToken);
+                        cancellationToken: cancellationToken,
+                        maxTransactions: maxTransactions,
+                        append: false);
 
                     if (_chain.Policy is BlockPolicy policy)
                     {
