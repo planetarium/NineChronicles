@@ -15,11 +15,12 @@ namespace Lib9c.Tests.Action
     using Nekoyume.Model.Item;
     using Nekoyume.Model.Mail;
     using Nekoyume.Model.State;
+    using Nekoyume.TableData;
     using Serilog;
     using Xunit;
     using Xunit.Abstractions;
 
-    public class Buy5Test
+    public class Buy7Test
     {
         private readonly Address _sellerAgentAddress;
         private readonly Address _sellerAvatarAddress;
@@ -31,7 +32,7 @@ namespace Lib9c.Tests.Action
         private readonly Guid _productId;
         private IAccountStateDelta _initialState;
 
-        public Buy5Test(ITestOutputHelper outputHelper)
+        public Buy7Test(ITestOutputHelper outputHelper)
         {
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Verbose()
@@ -107,21 +108,25 @@ namespace Lib9c.Tests.Action
                 {
                     ItemType = ItemType.Equipment,
                     ItemId = Guid.NewGuid(),
+                    ProductId = Guid.NewGuid(),
                     SellerAgentAddress = new PrivateKey().ToAddress(),
                     SellerAvatarAddress = new PrivateKey().ToAddress(),
                     RequiredBlockIndex = Sell.ExpiredBlockIndex,
                     Price = 10,
                     ContainsInInventory = true,
+                    ItemCount = 1,
                 },
                 new ShopItemData()
                 {
                     ItemType = ItemType.Costume,
                     ItemId = Guid.NewGuid(),
+                    ProductId = Guid.NewGuid(),
                     SellerAgentAddress = new PrivateKey().ToAddress(),
                     SellerAvatarAddress = new PrivateKey().ToAddress(),
                     RequiredBlockIndex = 0,
                     Price = 20,
                     ContainsInInventory = false,
+                    ItemCount = 1,
                 },
             };
             yield return new object[]
@@ -130,21 +135,52 @@ namespace Lib9c.Tests.Action
                 {
                     ItemType = ItemType.Costume,
                     ItemId = Guid.NewGuid(),
+                    ProductId = Guid.NewGuid(),
                     SellerAgentAddress = new PrivateKey().ToAddress(),
                     SellerAvatarAddress = new PrivateKey().ToAddress(),
                     RequiredBlockIndex = 0,
                     Price = 10,
                     ContainsInInventory = false,
+                    ItemCount = 1,
                 },
                 new ShopItemData()
                 {
                     ItemType = ItemType.Equipment,
                     ItemId = Guid.NewGuid(),
+                    ProductId = Guid.NewGuid(),
                     SellerAgentAddress = new PrivateKey().ToAddress(),
                     SellerAvatarAddress = new PrivateKey().ToAddress(),
                     RequiredBlockIndex = Sell.ExpiredBlockIndex,
                     Price = 50,
                     ContainsInInventory = true,
+                    ItemCount = 1,
+                },
+            };
+            yield return new object[]
+            {
+                new ShopItemData()
+                {
+                    ItemType = ItemType.Material,
+                    ItemId = new Guid("15396359-04db-68d5-f24a-d89c18665900"),
+                    ProductId = Guid.NewGuid(),
+                    SellerAgentAddress = new PrivateKey().ToAddress(),
+                    SellerAvatarAddress = new PrivateKey().ToAddress(),
+                    RequiredBlockIndex = Sell.ExpiredBlockIndex,
+                    Price = 50,
+                    ContainsInInventory = true,
+                    ItemCount = 1,
+                },
+                new ShopItemData()
+                {
+                    ItemType = ItemType.Material,
+                    ItemId = new Guid("15396359-04db-68d5-f24a-d89c18665900"),
+                    ProductId = Guid.NewGuid(),
+                    SellerAgentAddress = new PrivateKey().ToAddress(),
+                    SellerAvatarAddress = new PrivateKey().ToAddress(),
+                    RequiredBlockIndex = 0,
+                    Price = 10,
+                    ContainsInInventory = true,
+                    ItemCount = 2,
                 },
             };
         }
@@ -163,25 +199,34 @@ namespace Lib9c.Tests.Action
                     shopItemData.SellerAgentAddress,
                     shopItemData.SellerAvatarAddress
                 );
-                INonFungibleItem nonFungibleItem;
-                Guid productId = shopItemData.ItemId;
+                ITradableItem tradableItem;
+                Guid productId = shopItemData.ProductId;
+                Guid itemId = shopItemData.ItemId;
                 long requiredBlockIndex = shopItemData.RequiredBlockIndex;
                 ItemSubType itemSubType;
                 if (shopItemData.ItemType == ItemType.Equipment)
                 {
                     var itemUsable = ItemFactory.CreateItemUsable(
                         _tableSheets.EquipmentItemSheet.First,
-                        productId,
+                        itemId,
                         requiredBlockIndex);
-                    nonFungibleItem = itemUsable;
+                    tradableItem = itemUsable;
                     itemSubType = itemUsable.ItemSubType;
+                }
+                else if (shopItemData.ItemType == ItemType.Costume)
+                {
+                    var costume = ItemFactory.CreateCostume(_tableSheets.CostumeItemSheet.First, itemId);
+                    costume.Update(requiredBlockIndex);
+                    tradableItem = costume;
+                    itemSubType = costume.ItemSubType;
                 }
                 else
                 {
-                    var costume = ItemFactory.CreateCostume(_tableSheets.CostumeItemSheet.First, productId);
-                    costume.Update(requiredBlockIndex);
-                    nonFungibleItem = costume;
-                    itemSubType = costume.ItemSubType;
+                    var material = ItemFactory.CreateTradableMaterial(
+                        _tableSheets.MaterialItemSheet.OrderedList.First(r => r.ItemSubType == ItemSubType.Hourglass));
+                    material.RequiredBlockIndex = requiredBlockIndex;
+                    tradableItem = material;
+                    itemSubType = ItemSubType.Hourglass;
                 }
 
                 var result = new DailyReward.DailyRewardResult()
@@ -207,14 +252,16 @@ namespace Lib9c.Tests.Action
                     productId,
                     new FungibleAssetValue(_goldCurrencyState.Currency, shopItemData.Price, 0),
                     requiredBlockIndex,
-                    nonFungibleItem);
+                    tradableItem,
+                    shopItemData.ItemCount
+                );
 
                 // Case for backward compatibility.
                 if (shopItemData.ContainsInInventory)
                 {
                     shopState.Register(shopItem);
                     shardedShopStates[shardedShopAddress] = shopState;
-                    sellerAvatarState.inventory.AddItem((ItemBase)nonFungibleItem);
+                    sellerAvatarState.inventory.AddItem((ItemBase)tradableItem, shopItemData.ItemCount);
                     _initialState = _initialState.SetState(shardedShopAddress, shopState.Serialize());
                 }
                 else
@@ -222,11 +269,17 @@ namespace Lib9c.Tests.Action
                     legacyShopState.Register(shopItem);
                 }
 
-                Assert.Equal(requiredBlockIndex, nonFungibleItem.RequiredBlockIndex);
+                Assert.Equal(requiredBlockIndex, tradableItem.RequiredBlockIndex);
                 Assert.Equal(
                     shopItemData.ContainsInInventory,
-                    sellerAvatarState.inventory.TryGetNonFungibleItem(productId, out _)
+                    sellerAvatarState.inventory.TryGetTradableItems(
+                        shopItemData.ItemId,
+                        shopItemData.RequiredBlockIndex,
+                        shopItemData.ItemCount,
+                        out _
+                    )
                 );
+                Assert.DoesNotContain(((ItemBase)tradableItem).Id, buyerAvatarState.itemMap.Keys);
 
                 var purchaseInfo = new PurchaseInfo(
                     shopItem.ProductId,
@@ -244,10 +297,18 @@ namespace Lib9c.Tests.Action
                     .SetState(Addresses.Shop, legacyShopState.Serialize());
             }
 
-            Assert.Single(legacyShopState.Products);
-            Assert.True(shardedShopStates.All(r => r.Value.Products.Count == 1));
+            if (shopItemMembers.Any(i => i.ItemType == ItemType.Material))
+            {
+                Assert.Empty(legacyShopState.Products);
+                Assert.Equal(2, shardedShopStates.Sum(r => r.Value.Products.Count));
+            }
+            else
+            {
+                Assert.Single(legacyShopState.Products);
+                Assert.True(shardedShopStates.All(r => r.Value.Products.Count == 1));
+            }
 
-            var buyAction = new Buy5
+            var buyAction = new Buy7
             {
                 buyerAvatarAddress = _buyerAvatarAddress,
                 purchaseInfos = purchaseInfos,
@@ -274,26 +335,44 @@ namespace Lib9c.Tests.Action
                     ShardedShopState.DeriveAddress(purchaseInfo.itemSubType, purchaseInfo.productId);
                 var nextShopState = new ShardedShopState((Dictionary)nextState.GetState(shardedShopAddress));
                 Assert.Empty(nextShopState.Products);
-                Guid itemId = purchaseInfo.productId;
-                Buy.PurchaseResult pr = buyAction.buyerMultipleResult.purchaseResults.First(r => r.productId == itemId);
+                Guid itemId = shopItemMembers
+                    .Where(i => i.ProductId == purchaseInfo.productId)
+                    .Select(i => i.ItemId).First();
+                Buy.PurchaseResult pr =
+                    buyAction.buyerMultipleResult.purchaseResults.First(r => r.productId == purchaseInfo.productId);
                 ShopItem shopItem = pr.shopItem;
                 FungibleAssetValue tax = shopItem.Price.DivRem(100, out _) * Buy.TaxRate;
                 FungibleAssetValue taxedPrice = shopItem.Price - tax;
                 totalTax += tax;
                 totalPrice += shopItem.Price;
 
+                int itemCount = shopItem.TradableFungibleItemCount == 0 ? 1 : shopItem.TradableFungibleItemCount;
+                Assert.Equal(shopItem.TradableFungibleItemCount == 0, pr.tradableFungibleItem is null);
+                Assert.Equal(shopItem.TradableFungibleItemCount, pr.tradableFungibleItemCount);
                 Assert.True(
-                    nextBuyerAvatarState.inventory.TryGetNonFungibleItem(
+                    nextBuyerAvatarState.inventory.TryGetTradableItems(
                         itemId,
-                        out INonFungibleItem outNonFungibleItem)
+                        1,
+                        itemCount,
+                        out List<Inventory.Item> inventoryItems)
                 );
-                Assert.Equal(1, outNonFungibleItem.RequiredBlockIndex);
+                Assert.Single(inventoryItems);
+                Inventory.Item inventoryItem = inventoryItems.First();
+                ITradableItem tradableItem = (ITradableItem)inventoryItem.item;
+                Assert.Equal(1, tradableItem.RequiredBlockIndex);
+                int expectedCount = tradableItem is TradableMaterial
+                    ? shopItemMembers.Sum(i => i.ItemCount)
+                    : itemCount;
+                Assert.Equal(expectedCount, inventoryItem.count);
+                Assert.Equal(expectedCount, nextBuyerAvatarState.itemMap[((ItemBase)tradableItem).Id]);
 
                 var nextSellerAvatarState = nextState.GetAvatarState(purchaseInfo.sellerAvatarAddress);
                 Assert.False(
-                    nextSellerAvatarState.inventory.TryGetNonFungibleItem(
+                    nextSellerAvatarState.inventory.TryGetTradableItems(
                         itemId,
-                        out INonFungibleItem _)
+                        1,
+                        itemCount,
+                        out _)
                 );
                 Assert.Equal(30, nextSellerAvatarState.mailBox.Count);
 
@@ -323,7 +402,7 @@ namespace Lib9c.Tests.Action
                 ItemSubType.Food
             );
 
-            var action = new Buy5
+            var action = new Buy7
             {
                 buyerAvatarAddress = _buyerAvatarAddress,
                 purchaseInfos = new[] { purchaseInfo },
@@ -353,7 +432,7 @@ namespace Lib9c.Tests.Action
                 ItemSubType.Food
             );
 
-            var action = new Buy5
+            var action = new Buy7
             {
                 buyerAvatarAddress = default,
                 purchaseInfos = new[] { purchaseInfo },
@@ -389,7 +468,7 @@ namespace Lib9c.Tests.Action
                 ItemSubType.Food
             );
 
-            var action = new Buy5
+            var action = new Buy7
             {
                 buyerAvatarAddress = _buyerAvatarAddress,
                 purchaseInfos = new[] { purchaseInfo },
@@ -410,12 +489,131 @@ namespace Lib9c.Tests.Action
         {
             PurchaseInfo purchaseInfo = new PurchaseInfo(
                 default,
-                _sellerAgentAddress,
+                default,
                 _sellerAvatarAddress,
                 ItemSubType.Weapon
             );
 
-            var action = new Buy5
+            var action = new Buy7
+            {
+                buyerAvatarAddress = _buyerAvatarAddress,
+                purchaseInfos = new[] { purchaseInfo },
+            };
+
+            action.Execute(new ActionContext()
+            {
+                BlockIndex = 0,
+                PreviousStates = _initialState,
+                Random = new TestRandom(),
+                Signer = _buyerAgentAddress,
+            });
+
+            Assert.Contains(
+                Buy.ErrorCodeItemDoesNotExist,
+                action.buyerMultipleResult.purchaseResults.Select(r => r.errorCode)
+            );
+        }
+
+        [Theory]
+        [InlineData(ItemSubType.Hourglass)]
+        [InlineData(ItemSubType.ApStone)]
+        public void Execute_ErrorCode_ItemDoesNotExist_Material(ItemSubType itemSubType)
+        {
+            TradableMaterial material =
+                ItemFactory.CreateTradableMaterial(
+                    _tableSheets.MaterialItemSheet.OrderedList.First(r => r.ItemSubType == itemSubType));
+            PurchaseInfo purchaseInfo = new PurchaseInfo(
+                default,
+                default,
+                _sellerAvatarAddress,
+                itemSubType
+            );
+
+            var shopItem = new ShopItem(
+                _sellerAgentAddress,
+                _sellerAvatarAddress,
+                _productId,
+                new FungibleAssetValue(_goldCurrencyState.Currency, 100, 0),
+                Sell.ExpiredBlockIndex,
+                material);
+
+            Address shardedShopAddress = ShardedShopState.DeriveAddress(itemSubType, _productId);
+            ShardedShopState shopState = new ShardedShopState(shardedShopAddress);
+            shopState.Register(shopItem);
+
+            _initialState = _initialState.SetState(shardedShopAddress, shopState.Serialize());
+
+            var action = new Buy7
+            {
+                buyerAvatarAddress = _buyerAvatarAddress,
+                purchaseInfos = new[] { purchaseInfo },
+            };
+
+            action.Execute(new ActionContext()
+            {
+                BlockIndex = 0,
+                PreviousStates = _initialState,
+                Random = new TestRandom(),
+                Signer = _buyerAgentAddress,
+            });
+
+            Assert.Contains(
+                Buy.ErrorCodeItemDoesNotExist,
+                action.buyerMultipleResult.purchaseResults.Select(r => r.errorCode)
+            );
+        }
+
+        [Theory]
+        [InlineData(ItemSubType.Weapon, false, false)]
+        [InlineData(ItemSubType.Hourglass, false, false)]
+        [InlineData(ItemSubType.ApStone, false, false)]
+        [InlineData(ItemSubType.Weapon, true, false)]
+        [InlineData(ItemSubType.Hourglass, true, false)]
+        [InlineData(ItemSubType.ApStone, true, false)]
+        [InlineData(ItemSubType.Weapon, false, true)]
+        [InlineData(ItemSubType.Hourglass, false, true)]
+        [InlineData(ItemSubType.ApStone, false, true)]
+        public void Execute_ErrorCode_ItemDoesNotExist_20210604(ItemSubType itemSubType, bool useAgentAddress, bool useAvatarAddress)
+        {
+            ITradableItem tradableItem = null;
+            switch (itemSubType)
+            {
+                case ItemSubType.Hourglass:
+                case ItemSubType.ApStone:
+                    tradableItem = ItemFactory.CreateTradableMaterial(
+                        _tableSheets.MaterialItemSheet.OrderedList.First(r => r.ItemSubType == itemSubType));
+                    break;
+                case ItemSubType.Weapon:
+                    tradableItem = (ITradableItem)ItemFactory.CreateItem(
+                        _tableSheets.EquipmentItemSheet.OrderedList.First(r => r.ItemSubType == itemSubType),
+                        new TestRandom());
+                    break;
+            }
+
+            Address agentAddress = useAgentAddress ? _sellerAgentAddress : default;
+            Address avatarAddress = useAvatarAddress ? _sellerAvatarAddress : default;
+            PurchaseInfo purchaseInfo = new PurchaseInfo(
+                default,
+                agentAddress,
+                avatarAddress,
+                itemSubType
+            );
+
+            var shopItem = new ShopItem(
+                _sellerAgentAddress,
+                _sellerAvatarAddress,
+                _productId,
+                new FungibleAssetValue(_goldCurrencyState.Currency, 100, 0),
+                Sell.ExpiredBlockIndex,
+                tradableItem);
+
+            Address shardedShopAddress = ShardedShopState.DeriveAddress(itemSubType, _productId);
+            ShardedShopState shopState = new ShardedShopState(shardedShopAddress);
+            shopState.Register(shopItem);
+
+            _initialState = _initialState.SetState(shardedShopAddress, shopState.Serialize());
+
+            var action = new Buy7
             {
                 buyerAvatarAddress = _buyerAvatarAddress,
                 purchaseInfos = new[] { purchaseInfo },
@@ -467,7 +665,7 @@ namespace Lib9c.Tests.Action
                 new FungibleAssetValue(_goldCurrencyState.Currency, 100, 0)
             );
 
-            var action = new Buy5
+            var action = new Buy7
             {
                 buyerAvatarAddress = _buyerAvatarAddress,
                 purchaseInfos = new[] { purchaseInfo },
@@ -487,14 +685,46 @@ namespace Lib9c.Tests.Action
             );
         }
 
-        [Fact]
-        public void Execute_ErrorCode_ItemDoesNotExist_By_SellerAvatar()
+        [Theory]
+        [InlineData(ItemType.Equipment)]
+        [InlineData(ItemType.Consumable)]
+        [InlineData(ItemType.Costume)]
+        [InlineData(ItemType.Material)]
+        public void Execute_ErrorCode_ItemDoesNotExist_By_SellerAvatar(ItemType itemType)
         {
-            Address shardedShopAddress = ShardedShopState.DeriveAddress(ItemSubType.Weapon, _productId);
-            var itemUsable = ItemFactory.CreateItemUsable(
-                _tableSheets.EquipmentItemSheet.First,
-                Guid.NewGuid(),
-                Sell.ExpiredBlockIndex);
+            ITradableItem tradableItem;
+            ItemSheet.Row row;
+            switch (itemType)
+            {
+                case ItemType.Consumable:
+                    row = _tableSheets.ConsumableItemSheet.First;
+                    break;
+                case ItemType.Costume:
+                    row = _tableSheets.CostumeItemSheet.First;
+                    break;
+                case ItemType.Equipment:
+                    row = _tableSheets.EquipmentItemSheet.First;
+                    break;
+                case ItemType.Material:
+                    row = _tableSheets.MaterialItemSheet.OrderedList
+                        .First(r => r.ItemSubType == ItemSubType.Hourglass);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(itemType), itemType, null);
+            }
+
+            if (itemType == ItemType.Material)
+            {
+                tradableItem = ItemFactory.CreateTradableMaterial((MaterialItemSheet.Row)row);
+            }
+            else
+            {
+                tradableItem = (ITradableItem)ItemFactory.CreateItem(row, new TestRandom());
+            }
+
+            tradableItem.RequiredBlockIndex = Sell.ExpiredBlockIndex;
+
+            Address shardedShopAddress = ShardedShopState.DeriveAddress(tradableItem.ItemSubType, _productId);
 
             var shopItem = new ShopItem(
                 _sellerAgentAddress,
@@ -502,30 +732,29 @@ namespace Lib9c.Tests.Action
                 _productId,
                 new FungibleAssetValue(_goldCurrencyState.Currency, 100, 0),
                 Sell.ExpiredBlockIndex,
-                itemUsable);
+                tradableItem);
 
             ShardedShopState shopState = new ShardedShopState(shardedShopAddress);
             shopState.Register(shopItem);
             _initialState = _initialState.SetState(shardedShopAddress, shopState.Serialize());
 
             Assert.True(shopItem.ExpiredBlockIndex > 0);
-            Assert.True(shopItem.ItemUsable.RequiredBlockIndex > 0);
 
             PurchaseInfo purchaseInfo = new PurchaseInfo(
                 _productId,
                 _sellerAgentAddress,
                 _sellerAvatarAddress,
-                ItemSubType.Weapon,
-                shopItem.Price
+                tradableItem.ItemSubType,
+                new FungibleAssetValue(_goldCurrencyState.Currency, 100, 0)
             );
 
-            var action = new Buy5
+            var action = new Buy7
             {
                 buyerAvatarAddress = _buyerAvatarAddress,
                 purchaseInfos = new[] { purchaseInfo },
             };
 
-            action.Execute(new ActionContext()
+            var nextState = action.Execute(new ActionContext()
             {
                 BlockIndex = 0,
                 PreviousStates = _initialState,
@@ -537,6 +766,13 @@ namespace Lib9c.Tests.Action
                 Buy.ErrorCodeItemDoesNotExist,
                 action.buyerMultipleResult.purchaseResults.Select(r => r.errorCode)
             );
+            foreach (var address in new[] { _buyerAgentAddress, _sellerAgentAddress, Addresses.GoldCurrency })
+            {
+                Assert.Equal(
+                    _initialState.GetBalance(address, _goldCurrencyState.Currency),
+                    nextState.GetBalance(address, _goldCurrencyState.Currency)
+                );
+            }
         }
 
         [Fact]
@@ -569,7 +805,7 @@ namespace Lib9c.Tests.Action
                 ItemSubType.Weapon
             );
 
-            var action = new Buy5
+            var action = new Buy7
             {
                 buyerAvatarAddress = _buyerAvatarAddress,
                 purchaseInfos = new[] { purchaseInfo },
@@ -587,6 +823,58 @@ namespace Lib9c.Tests.Action
                 Buy.ErrorCodeShopItemExpired,
                 action.buyerMultipleResult.purchaseResults.Select(r => r.errorCode)
             );
+        }
+
+        [Theory]
+        [InlineData(100, 10)]
+        [InlineData(10, 20)]
+        public void Execute_ErrorCode_InvalidPrice(int shopPrice, int price)
+        {
+            IAccountStateDelta previousStates = _initialState;
+            Address shardedShopStateAddress = ShardedShopState.DeriveAddress(ItemSubType.Weapon, _productId);
+            ShardedShopState shopState = new ShardedShopState(shardedShopStateAddress);
+            Weapon itemUsable = (Weapon)ItemFactory.CreateItemUsable(
+                _tableSheets.EquipmentItemSheet.First,
+                Guid.NewGuid(),
+                10);
+            var shopItem = new ShopItem(
+                _sellerAgentAddress,
+                _sellerAvatarAddress,
+                _productId,
+                new FungibleAssetValue(_goldCurrencyState.Currency, shopPrice, 0),
+                10,
+                itemUsable);
+
+            shopState.Register(shopItem);
+            previousStates = previousStates.SetState(shardedShopStateAddress, shopState.Serialize());
+
+            Assert.True(shopState.Products.ContainsKey(_productId));
+
+            PurchaseInfo purchaseInfo = new PurchaseInfo(
+                _productId,
+                _sellerAgentAddress,
+                _sellerAvatarAddress,
+                ItemSubType.Weapon,
+                new FungibleAssetValue(_goldCurrencyState.Currency, price, 0)
+            );
+
+            var action = new Buy7
+            {
+                buyerAvatarAddress = _buyerAvatarAddress,
+                purchaseInfos = new[] { purchaseInfo },
+            };
+
+            action.Execute(new ActionContext()
+            {
+                BlockIndex = 10,
+                PreviousStates = previousStates,
+                Random = new TestRandom(),
+                Signer = _buyerAgentAddress,
+            });
+
+            Assert.Single(action.buyerMultipleResult.purchaseResults);
+            Buy.PurchaseResult purchaseResult = action.buyerMultipleResult.purchaseResults.First();
+            Assert.Equal(Buy.ErrorCodeInvalidPrice, purchaseResult.errorCode);
         }
 
         private (AvatarState avatarState, AgentState agentState) CreateAvatarState(
@@ -622,6 +910,8 @@ namespace Lib9c.Tests.Action
 
             public Guid ItemId { get; set; }
 
+            public Guid ProductId { get; set; }
+
             public Address SellerAgentAddress { get; set; }
 
             public Address SellerAvatarAddress { get; set; }
@@ -631,6 +921,8 @@ namespace Lib9c.Tests.Action
             public long RequiredBlockIndex { get; set; }
 
             public bool ContainsInInventory { get; set; }
+
+            public int ItemCount { get; set; }
         }
     }
 }

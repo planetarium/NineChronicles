@@ -287,7 +287,8 @@ namespace Lib9c.Tests.Action
                     shopItem.ProductId,
                     shopItem.SellerAgentAddress,
                     shopItem.SellerAvatarAddress,
-                    itemSubType
+                    itemSubType,
+                    shopItem.Price
                 );
                 purchaseInfos.Add(purchaseInfo);
 
@@ -564,6 +565,76 @@ namespace Lib9c.Tests.Action
             );
         }
 
+        [Theory]
+        [InlineData(ItemSubType.Weapon, false, false)]
+        [InlineData(ItemSubType.Hourglass, false, false)]
+        [InlineData(ItemSubType.ApStone, false, false)]
+        [InlineData(ItemSubType.Weapon, true, false)]
+        [InlineData(ItemSubType.Hourglass, true, false)]
+        [InlineData(ItemSubType.ApStone, true, false)]
+        [InlineData(ItemSubType.Weapon, false, true)]
+        [InlineData(ItemSubType.Hourglass, false, true)]
+        [InlineData(ItemSubType.ApStone, false, true)]
+        public void Execute_ErrorCode_ItemDoesNotExist_20210604(ItemSubType itemSubType, bool useAgentAddress, bool useAvatarAddress)
+        {
+            ITradableItem tradableItem = null;
+            switch (itemSubType)
+            {
+                case ItemSubType.Hourglass:
+                case ItemSubType.ApStone:
+                    tradableItem = ItemFactory.CreateTradableMaterial(
+                        _tableSheets.MaterialItemSheet.OrderedList.First(r => r.ItemSubType == itemSubType));
+                    break;
+                case ItemSubType.Weapon:
+                    tradableItem = (ITradableItem)ItemFactory.CreateItem(
+                        _tableSheets.EquipmentItemSheet.OrderedList.First(r => r.ItemSubType == itemSubType),
+                        new TestRandom());
+                    break;
+            }
+
+            Address agentAddress = useAgentAddress ? _sellerAgentAddress : default;
+            Address avatarAddress = useAvatarAddress ? _sellerAvatarAddress : default;
+            PurchaseInfo purchaseInfo = new PurchaseInfo(
+                default,
+                agentAddress,
+                avatarAddress,
+                itemSubType
+            );
+
+            var shopItem = new ShopItem(
+                _sellerAgentAddress,
+                _sellerAvatarAddress,
+                _productId,
+                new FungibleAssetValue(_goldCurrencyState.Currency, 100, 0),
+                Sell.ExpiredBlockIndex,
+                tradableItem);
+
+            Address shardedShopAddress = ShardedShopState.DeriveAddress(itemSubType, _productId);
+            ShardedShopState shopState = new ShardedShopState(shardedShopAddress);
+            shopState.Register(shopItem);
+
+            _initialState = _initialState.SetState(shardedShopAddress, shopState.Serialize());
+
+            var action = new Buy
+            {
+                buyerAvatarAddress = _buyerAvatarAddress,
+                purchaseInfos = new[] { purchaseInfo },
+            };
+
+            action.Execute(new ActionContext()
+            {
+                BlockIndex = 0,
+                PreviousStates = _initialState,
+                Random = new TestRandom(),
+                Signer = _buyerAgentAddress,
+            });
+
+            Assert.Contains(
+                Buy.ErrorCodeItemDoesNotExist,
+                action.buyerMultipleResult.purchaseResults.Select(r => r.errorCode)
+            );
+        }
+
         [Fact]
         public void Execute_ErrorCode_InsufficientBalance()
         {
@@ -592,7 +663,8 @@ namespace Lib9c.Tests.Action
                 _productId,
                 _sellerAgentAddress,
                 _sellerAvatarAddress,
-                ItemSubType.Weapon
+                ItemSubType.Weapon,
+                new FungibleAssetValue(_goldCurrencyState.Currency, 100, 0)
             );
 
             var action = new Buy
@@ -674,7 +746,8 @@ namespace Lib9c.Tests.Action
                 _productId,
                 _sellerAgentAddress,
                 _sellerAvatarAddress,
-                tradableItem.ItemSubType
+                tradableItem.ItemSubType,
+                new FungibleAssetValue(_goldCurrencyState.Currency, 100, 0)
             );
 
             var action = new Buy
@@ -683,7 +756,7 @@ namespace Lib9c.Tests.Action
                 purchaseInfos = new[] { purchaseInfo },
             };
 
-            action.Execute(new ActionContext()
+            var nextState = action.Execute(new ActionContext()
             {
                 BlockIndex = 0,
                 PreviousStates = _initialState,
@@ -695,6 +768,13 @@ namespace Lib9c.Tests.Action
                 Buy.ErrorCodeItemDoesNotExist,
                 action.buyerMultipleResult.purchaseResults.Select(r => r.errorCode)
             );
+            foreach (var address in new[] { _buyerAgentAddress, _sellerAgentAddress, Addresses.GoldCurrency })
+            {
+                Assert.Equal(
+                    _initialState.GetBalance(address, _goldCurrencyState.Currency),
+                    nextState.GetBalance(address, _goldCurrencyState.Currency)
+                );
+            }
         }
 
         [Fact]
@@ -747,6 +827,58 @@ namespace Lib9c.Tests.Action
             );
         }
 
+        [Theory]
+        [InlineData(100, 10)]
+        [InlineData(10, 20)]
+        public void Execute_ErrorCode_InvalidPrice(int shopPrice, int price)
+        {
+            IAccountStateDelta previousStates = _initialState;
+            Address shardedShopStateAddress = ShardedShopState.DeriveAddress(ItemSubType.Weapon, _productId);
+            ShardedShopState shopState = new ShardedShopState(shardedShopStateAddress);
+            Weapon itemUsable = (Weapon)ItemFactory.CreateItemUsable(
+                _tableSheets.EquipmentItemSheet.First,
+                Guid.NewGuid(),
+                10);
+            var shopItem = new ShopItem(
+                _sellerAgentAddress,
+                _sellerAvatarAddress,
+                _productId,
+                new FungibleAssetValue(_goldCurrencyState.Currency, shopPrice, 0),
+                10,
+                itemUsable);
+
+            shopState.Register(shopItem);
+            previousStates = previousStates.SetState(shardedShopStateAddress, shopState.Serialize());
+
+            Assert.True(shopState.Products.ContainsKey(_productId));
+
+            PurchaseInfo purchaseInfo = new PurchaseInfo(
+                _productId,
+                _sellerAgentAddress,
+                _sellerAvatarAddress,
+                ItemSubType.Weapon,
+                new FungibleAssetValue(_goldCurrencyState.Currency, price, 0)
+            );
+
+            var action = new Buy
+            {
+                buyerAvatarAddress = _buyerAvatarAddress,
+                purchaseInfos = new[] { purchaseInfo },
+            };
+
+            action.Execute(new ActionContext()
+            {
+                BlockIndex = 10,
+                PreviousStates = previousStates,
+                Random = new TestRandom(),
+                Signer = _buyerAgentAddress,
+            });
+
+            Assert.Single(action.buyerMultipleResult.purchaseResults);
+            Buy.PurchaseResult purchaseResult = action.buyerMultipleResult.purchaseResults.First();
+            Assert.Equal(Buy.ErrorCodeInvalidPrice, purchaseResult.errorCode);
+        }
+
         [Fact]
         public void Rehearsal()
         {
@@ -754,7 +886,8 @@ namespace Lib9c.Tests.Action
                 _productId,
                 _sellerAgentAddress,
                 _sellerAvatarAddress,
-                ItemSubType.Weapon
+                ItemSubType.Weapon,
+                new FungibleAssetValue(_goldCurrencyState.Currency, 10, 0)
             );
 
             var action = new Buy

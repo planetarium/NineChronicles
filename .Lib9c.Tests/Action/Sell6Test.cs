@@ -1,8 +1,6 @@
 namespace Lib9c.Tests.Action
 {
     using System;
-    using System.Collections.Generic;
-    using System.Collections.Immutable;
     using System.Linq;
     using Bencodex.Types;
     using Libplanet;
@@ -18,9 +16,8 @@ namespace Lib9c.Tests.Action
     using Serilog;
     using Xunit;
     using Xunit.Abstractions;
-    using static SerializeKeys;
 
-    public class SellTest
+    public class Sell6Test
     {
         private const long ProductPrice = 100;
 
@@ -31,7 +28,7 @@ namespace Lib9c.Tests.Action
         private readonly TableSheets _tableSheets;
         private IAccountStateDelta _initialState;
 
-        public SellTest(ITestOutputHelper outputHelper)
+        public Sell6Test(ITestOutputHelper outputHelper)
         {
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Verbose()
@@ -80,36 +77,24 @@ namespace Lib9c.Tests.Action
         }
 
         [Theory]
-        [InlineData(ItemType.Consumable, true, 2, 1, 1, 1, true)]
-        [InlineData(ItemType.Costume, true, 2, 1, 1, 1, true)]
-        [InlineData(ItemType.Equipment, true, 2, 1, 1, 1, true)]
-        [InlineData(ItemType.Consumable, false, 0, 1, 1, 1, true)]
-        [InlineData(ItemType.Costume, false, 0, 1, 1, 1, true)]
-        [InlineData(ItemType.Equipment, false, 0, 1, 1, 1, true)]
-        [InlineData(ItemType.Material, true, 1, 2, 1, 1, true)]
-        [InlineData(ItemType.Material, true, 1, 1, 2, 1, true)]
-        [InlineData(ItemType.Material, true, 2, 1, 2, 2, true)]
-        [InlineData(ItemType.Material, true, 3, 2, 2, 2, true)]
-        [InlineData(ItemType.Material, false, 1, 1, 1, 1, true)]
-        [InlineData(ItemType.Consumable, true, 2, 1, 1, 1, false)]
-        [InlineData(ItemType.Costume, true, 2, 1, 1, 1, false)]
-        [InlineData(ItemType.Equipment, true, 2, 1, 1, 1, false)]
-        [InlineData(ItemType.Consumable, false, 0, 1, 1, 1, false)]
-        [InlineData(ItemType.Costume, false, 0, 1, 1, 1, false)]
-        [InlineData(ItemType.Equipment, false, 0, 1, 1, 1, false)]
-        [InlineData(ItemType.Material, true, 1, 2, 1, 1, false)]
-        [InlineData(ItemType.Material, true, 1, 1, 2, 1, false)]
-        [InlineData(ItemType.Material, true, 2, 1, 2, 2, false)]
-        [InlineData(ItemType.Material, true, 3, 2, 2, 2, false)]
-        [InlineData(ItemType.Material, false, 1, 1, 1, 1, false)]
+        [InlineData(ItemType.Consumable, true, 2, 1, 1, 1)]
+        [InlineData(ItemType.Costume, true, 2, 1, 1, 1)]
+        [InlineData(ItemType.Equipment, true, 2, 1, 1, 1)]
+        [InlineData(ItemType.Consumable, false, 0, 1, 1, 1)]
+        [InlineData(ItemType.Costume, false, 0, 1, 1, 1)]
+        [InlineData(ItemType.Equipment, false, 0, 1, 1, 1)]
+        [InlineData(ItemType.Material, true, 1, 2, 1, 1)]
+        [InlineData(ItemType.Material, true, 1, 1, 2, 1)]
+        [InlineData(ItemType.Material, true, 2, 1, 2, 2)]
+        [InlineData(ItemType.Material, true, 3, 2, 2, 2)]
+        [InlineData(ItemType.Material, false, 1, 1, 1, 1)]
         public void Execute(
             ItemType itemType,
             bool shopItemExist,
             long blockIndex,
             int itemCount,
             int prevCount,
-            int expectedProductsCount,
-            bool backward
+            int expectedProductsCount
         )
         {
             var avatarState = _initialState.GetAvatarState(_avatarAddress);
@@ -147,19 +132,7 @@ namespace Lib9c.Tests.Action
             avatarState.inventory.AddItem((ItemBase)tradableItem, itemCount);
 
             var previousStates = _initialState;
-            if (backward)
-            {
-                previousStates = previousStates.SetState(_avatarAddress, avatarState.Serialize());
-            }
-            else
-            {
-                previousStates = previousStates
-                    .SetState(_avatarAddress.Derive(LegacyInventoryKey), avatarState.inventory.Serialize())
-                    .SetState(_avatarAddress.Derive(LegacyWorldInformationKey), avatarState.worldInformation.Serialize())
-                    .SetState(_avatarAddress.Derive(LegacyQuestListKey), avatarState.questList.Serialize())
-                    .SetState(_avatarAddress, avatarState.SerializeV2());
-            }
-
+            previousStates = previousStates.SetState(_avatarAddress, avatarState.Serialize());
             var currencyState = previousStates.GetGoldCurrency();
             var price = new FungibleAssetValue(currencyState, ProductPrice, 0);
             var expectedProductId = new Guid("6f460c1a755d48e4ad6765d5f519dbc8");
@@ -193,7 +166,7 @@ namespace Lib9c.Tests.Action
                 Assert.Null(previousStates.GetState(shardedShopAddress));
             }
 
-            var sellAction = new Sell
+            var sellAction = new Sell6
             {
                 sellerAvatarAddress = _avatarAddress,
                 tradableId = tradableItem.TradableId,
@@ -213,7 +186,7 @@ namespace Lib9c.Tests.Action
             const long expiredBlockIndex = Sell.ExpiredBlockIndex + 1;
 
             // Check AvatarState and Inventory
-            var nextAvatarState = nextState.GetAvatarStateV2(_avatarAddress);
+            var nextAvatarState = nextState.GetAvatarState(_avatarAddress);
             Assert.Single(nextAvatarState.inventory.Items);
             Assert.True(nextAvatarState.inventory.TryGetTradableItems(
                 tradableItem.TradableId,
@@ -524,7 +497,7 @@ namespace Lib9c.Tests.Action
                 shardedShopAddress,
                 shardedShopState.Serialize());
 
-            var sellAction = new Sell
+            var sellAction = new Sell6
             {
                 sellerAvatarAddress = _avatarAddress,
                 tradableId = tradableItem.TradableId,
@@ -542,7 +515,7 @@ namespace Lib9c.Tests.Action
             });
 
             // Check AvatarState and Inventory
-            var nextAvatarState = nextState.GetAvatarStateV2(_avatarAddress);
+            var nextAvatarState = nextState.GetAvatarState(_avatarAddress);
             Assert.Single(nextAvatarState.inventory.Items);
             Assert.True(nextAvatarState.inventory.TryGetTradableItems(
                 tradableItem.TradableId,
@@ -595,7 +568,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Execute_Throw_InvalidPriceException()
         {
-            var action = new Sell
+            var action = new Sell6
             {
                 sellerAvatarAddress = _avatarAddress,
                 tradableId = default,
@@ -615,7 +588,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Execute_Throw_FailedLoadStateException()
         {
-            var action = new Sell
+            var action = new Sell6
             {
                 sellerAvatarAddress = _avatarAddress,
                 tradableId = default,
@@ -646,7 +619,7 @@ namespace Lib9c.Tests.Action
 
             _initialState = _initialState.SetState(_avatarAddress, avatarState.Serialize());
 
-            var action = new Sell
+            var action = new Sell6
             {
                 sellerAvatarAddress = _avatarAddress,
                 tradableId = default,
@@ -666,7 +639,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Execute_Throw_ItemDoesNotExistException()
         {
-            var action = new Sell
+            var action = new Sell6
             {
                 sellerAvatarAddress = _avatarAddress,
                 tradableId = default,
@@ -696,7 +669,7 @@ namespace Lib9c.Tests.Action
 
             _initialState = _initialState.SetState(_avatarAddress, _avatarState.Serialize());
 
-            var action = new Sell
+            var action = new Sell6
             {
                 sellerAvatarAddress = _avatarAddress,
                 tradableId = equipmentId,
@@ -712,44 +685,6 @@ namespace Lib9c.Tests.Action
                 Signer = _agentAddress,
                 Random = new TestRandom(),
             }));
-        }
-
-        [Fact]
-        public void Rehearsal()
-        {
-            var action = new Sell()
-            {
-                sellerAvatarAddress = _avatarAddress,
-                tradableId = default,
-                count = 1,
-                price = 0 * _currency,
-                itemSubType = ItemSubType.Food,
-            };
-
-            var updatedAddresses = new List<Address>()
-            {
-                _agentAddress,
-                _avatarAddress,
-                _avatarAddress.Derive(LegacyInventoryKey),
-                _avatarAddress.Derive(LegacyWorldInformationKey),
-                _avatarAddress.Derive(LegacyQuestListKey),
-            };
-            updatedAddresses.AddRange(ShardedShopState.AddressKeys.Select(key => ShardedShopState.DeriveAddress(ItemSubType.Food, key)));
-
-            var state = new State();
-
-            var nextState = action.Execute(new ActionContext()
-            {
-                PreviousStates = state,
-                Signer = _agentAddress,
-                BlockIndex = 0,
-                Rehearsal = true,
-            });
-
-            Assert.Equal(
-                updatedAddresses.ToImmutableHashSet(),
-                nextState.UpdatedAddresses
-            );
         }
     }
 }
