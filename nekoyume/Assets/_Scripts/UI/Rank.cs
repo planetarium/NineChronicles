@@ -55,9 +55,27 @@ namespace Nekoyume.UI
         [SerializeField]
         private GameObject emptyObject = null;
 
+        [SerializeField]
+        private TextMeshProUGUI emptyText = null;
+
         public const int RankingBoardDisplayCount = 100;
 
-        private readonly ReactiveProperty<RankCategory> _currentCategory = new ReactiveProperty<RankCategory>();
+        private RankCategory CurrentCategory
+        {
+            get => _currentCategory;
+            set
+            {
+                _previousCategory = _currentCategory;
+                _currentCategory = value;
+                UpdateCategory(_currentCategory);
+            }
+        }
+
+        private RankCategory _currentCategory;
+
+        private RankCategory _previousCategory;
+
+        private readonly Dictionary<RankCategory, Toggle> _toggleMap = new Dictionary<RankCategory, Toggle>();
 
         private readonly Dictionary<RankCategory, (string, string)> _rankColumnMap = new Dictionary<RankCategory, (string, string)>
         {
@@ -71,9 +89,6 @@ namespace Nekoyume.UI
         {
             base.Initialize();
 
-            _currentCategory.Subscribe(UpdateCategory)
-                .AddTo(gameObject);
-
             var currentCategory = RankCategory.Ability;
             foreach (var toggle in toggles)
             {
@@ -81,50 +96,61 @@ namespace Nekoyume.UI
                 if (toggle is ToggleDropdown toggleDropdown)
                 {
                     var subElements = toggleDropdown.items;
-                    foreach (var element in subElements)
+                    if (subElements is null || !subElements.Any())
                     {
-                        var innerCategory2 = innerCategory;
-                        element.onValueChanged.AddListener(value =>
+                        _toggleMap[innerCategory] = toggleDropdown;
+                        toggleDropdown.onValueChanged.AddListener(value =>
                         {
                             if (value)
                             {
-                                _currentCategory.SetValueAndForceNotify(innerCategory2);
+                                CurrentCategory = innerCategory;
                             }
                         });
-                        ++innerCategory;
                         ++currentCategory;
                     }
-
-                    toggleDropdown.onValueChanged.AddListener(value =>
+                    else
                     {
-                        if (value)
+                        foreach (var element in subElements)
                         {
-                            if (subElements is null || !subElements.Any())
+                            var innerCategory2 = innerCategory;
+                            _toggleMap[innerCategory2] = element;
+                            element.onValueChanged.AddListener(value =>
                             {
-                                Debug.LogError($"No sub element exists in {toggleDropdown.name}.");
-                                return;
-                            }
-
-                            var firstElement = subElements.First();
-
-                            if (firstElement.isOn)
-                            {
-                                firstElement.onValueChanged.Invoke(true);
-                            }
-                            else
-                            {
-                                firstElement.isOn = true;
-                            }
+                                if (value)
+                                {
+                                    CurrentCategory = innerCategory2;
+                                }
+                            });
+                            ++innerCategory;
+                            ++currentCategory;
                         }
-                    });
+
+                        toggleDropdown.onValueChanged.AddListener(value =>
+                        {
+                            if (value)
+                            {
+                                var firstElement = subElements.First();
+
+                                if (firstElement.isOn)
+                                {
+                                    firstElement.onValueChanged.Invoke(true);
+                                }
+                                else
+                                {
+                                    firstElement.isOn = true;
+                                }
+                            }
+                        });
+                    }
                 }
                 else
                 {
+                    _toggleMap[innerCategory] = toggle;
                     toggle.onValueChanged.AddListener(value =>
                     {
                         if (value)
                         {
-                            _currentCategory.SetValueAndForceNotify(innerCategory);
+                            CurrentCategory = innerCategory;
                         }
                     });
                     ++currentCategory;
@@ -135,44 +161,21 @@ namespace Nekoyume.UI
         public override void Show(bool ignoreShowAnimation = false)
         {
             base.Show(ignoreShowAnimation);
-            ToggleFirstElement();
+            UpdateCategory(RankCategory.Ability, true);
         }
 
-        private void ToggleFirstElement()
+        private void UpdateCategory(RankCategory category, bool toggleOn = false)
         {
-            var firstElement = toggles.First();
-            if (firstElement is null)
-            {
-                Debug.LogError($"No element exists in {name}");
-                return;
-            }
-
-            if (firstElement is Toggle)
-            {
-                firstElement.isOn = true;
-            }
-            else if (firstElement is ToggleDropdown dropdown)
-            {
-                var firstSubElement = dropdown.items.First();
-                if (firstSubElement is null)
-                {
-                    Debug.LogError($"No sub element exists in {dropdown.name}");
-                    return;
-                }
-
-                firstSubElement.isOn = true;
-            }
-
-            _currentCategory.SetValueAndForceNotify(RankCategory.Ability);
+            UpdateCategoryAsync(category, toggleOn);
         }
 
-        private void UpdateCategory(RankCategory category)
+        private async void UpdateCategoryAsync(RankCategory category, bool toggleOn)
         {
-            UpdateCategoryAsync(category);
-        }
+            if (toggleOn)
+            {
+                ToggleCategory(category);
+            }
 
-        private async void UpdateCategoryAsync(RankCategory category)
-        {
             await UniTask.WaitWhile(() => RankLoadingTask is null);
             if (RankLoadingTask.IsFaulted)
             {
@@ -182,6 +185,7 @@ namespace Nekoyume.UI
 
             if (!RankLoadingTask.IsCompleted)
             {
+                emptyText.text = L10nManager.Localize("UI_PRELOADING_MESSAGE");
                 await RankLoadingTask;
             }
 
@@ -192,13 +196,14 @@ namespace Nekoyume.UI
                 return;
             }
 
-            if (!SharedModel.IsInitialized)
+            var isApiLoaded = SharedModel.IsInitialized;
+            emptyObject.SetActive(!isApiLoaded);
+            if (!isApiLoaded)
             {
-                emptyObject.SetActive(true);
+                emptyText.text = L10nManager.Localize("UI_RANKING_API_MISSING");
                 myInfoCell.SetEmpty(states.CurrentAvatarState);
                 return;
             }
-            emptyObject.SetActive(false);
 
             switch (category)
             {
@@ -248,8 +253,9 @@ namespace Nekoyume.UI
                     var weaponRankingInfos = SharedModel.WeaponRankingModel;
                     if (weaponRankingInfos is null)
                     {
-                        ToggleFirstElement();
                         Find<SystemPopup>().Show("UI_ALERT_NOT_IMPLEMENTED_TITLE", "UI_ALERT_NOT_IMPLEMENTED_CONTENT");
+                        CurrentCategory = _previousCategory;
+                        ToggleCategory(CurrentCategory);
                         return;
                     }
 
@@ -276,6 +282,32 @@ namespace Nekoyume.UI
             else
             {
                 secondColumnText.text = secondCategory.StartsWith("UI_") ? L10nManager.Localize(secondCategory) : secondCategory;
+            }
+        }
+
+        private void ToggleCategory(RankCategory category)
+        {
+            var toggle = _toggleMap[category];
+
+            if (toggle is Toggle)
+            {
+                var dropdown = toggle.GetComponentInParent<ToggleDropdown>();
+                if (dropdown)
+                {
+                    dropdown.isOn = true;
+                }
+                toggle.isOn = true;
+            }
+            else if (toggle is ToggleDropdown dropdown)
+            {
+                var firstSubElement = dropdown.items.FirstOrDefault();
+                if (firstSubElement is null)
+                {
+                    Debug.LogError($"No sub element exists in {dropdown.name}");
+                    return;
+                }
+
+                firstSubElement.isOn = true;
             }
         }
     }

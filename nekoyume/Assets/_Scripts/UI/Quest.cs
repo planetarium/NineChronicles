@@ -54,10 +54,10 @@ namespace Nekoyume.UI
 
         public override void Show(bool ignoreShowAnimation = false)
         {
-            filterType = QuestType.Adventure;
             _questList = States.Instance.CurrentAvatarState.questList;
             _toggleGroup.SetToggledOffAll();
             adventureButton.SetToggledOn();
+            ChangeState(0);
             UpdateTabs();
             base.Show(ignoreShowAnimation);
 

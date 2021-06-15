@@ -237,24 +237,6 @@ namespace Nekoyume.UI
                 shopItem.Count.Value);
         }
 
-        private void ShowActionPopup(CountableItem viewModel)
-        {
-            if (viewModel is null ||
-                viewModel.Dimmed.Value)
-                return;
-
-            switch (viewModel)
-            {
-                case InventoryItem inventoryItem:
-                    ShowSellPopup(inventoryItem);
-                    break;
-
-                case ShopItem shopItem:
-                    ShowRetrievePopup(shopItem);
-                    break;
-            }
-        }
-
         // sell
         private void SubscribeSellPopup(CountableItem data)
         {
@@ -367,9 +349,13 @@ namespace Nekoyume.UI
                 return;
             }
 
+            var tradableId = tradableItem.TradableId;
+            var requiredBlockIndex = tradableItem.RequiredBlockIndex;
+            var price = model.Price.Value;
+            var count = model.Item.Value.Count.Value;
+
             if (!shopItems.SharedModel.TryGetShopItemFromAgentProducts(
-                tradableItem.TradableId,
-                out var shopItem))
+                tradableId, requiredBlockIndex, price, count, out var shopItem))
             {
                 if (model.Price.Value.Sign * model.Price.Value.MajorUnit < Shop.MinimumPrice)
                 {
@@ -420,13 +406,16 @@ namespace Nekoyume.UI
             var item = SharedModel.ItemCountableAndPricePopup.Value.Item.Value;
             var count = SharedModel.ItemCountableAndPricePopup.Value.Count.Value;
             SharedModel.ItemCountableAndPricePopup.Value.Item.Value = null;
-
             if (!(item.ItemBase.Value is ITradableItem tradableItem))
             {
                 return;
             }
 
-            LocalLayerModifier.RemoveItem(avatarAddress, tradableItem.TradableId, tradableItem.RequiredBlockIndex, count);
+            if (!(tradableItem is TradableMaterial))
+            {
+                LocalLayerModifier.RemoveItem(avatarAddress, tradableItem.TradableId, tradableItem.RequiredBlockIndex, count);
+            }
+
             AudioController.instance.PlaySfx(AudioController.SfxCode.InputItem);
 
             string message = string.Empty;
@@ -442,6 +431,7 @@ namespace Nekoyume.UI
                     item.ItemBase.Value.GetLocalizedName());
             }
             OneLinePopup.Push(MailType.Auction, message);
+            inventory.SharedModel.ActiveFunc.SetValueAndForceNotify(inventoryItem => (inventoryItem.ItemBase.Value is ITradableItem));
         }
 
         private void ResponseSellCancellation(ShopItem shopItem)
@@ -454,6 +444,7 @@ namespace Nekoyume.UI
             var format = L10nManager.Localize("NOTIFICATION_SELL_CANCEL_START");
             OneLinePopup.Push(MailType.Auction,
                 string.Format(format, shopItem.ItemBase.Value.GetLocalizedName()));
+            inventory.SharedModel.ActiveFunc.SetValueAndForceNotify(inventoryItem => (inventoryItem.ItemBase.Value is ITradableItem));
         }
 
         private void ShowSpeech(string key,
@@ -479,6 +470,11 @@ namespace Nekoyume.UI
             }
 
             return (ItemBase)result.tradableFungibleItem;
+        }
+
+        public void ForceNotifyActiveFunc()
+        {
+            inventory.SharedModel.ActiveFunc.SetValueAndForceNotify(inventoryItem => (inventoryItem.ItemBase.Value is ITradableItem));
         }
     }
 }

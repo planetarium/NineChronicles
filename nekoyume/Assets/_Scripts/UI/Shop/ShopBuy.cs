@@ -325,7 +325,8 @@ namespace Nekoyume.UI
             return new PurchaseInfo(shopItem.ProductId.Value,
                 shopItem.SellerAgentAddress.Value,
                 shopItem.SellerAvatarAddress.Value,
-                shopItem.ItemSubType.Value);
+                shopItem.ItemSubType.Value,
+                shopItem.Price.Value);
         }
 
         public static ItemBase GetItemBase(Buy.PurchaseResult result)

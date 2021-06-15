@@ -123,7 +123,7 @@ namespace Nekoyume.UI.Module
                 .Subscribe(_ => SubscribeNavigationButtonClick())
                 .AddTo(gameObject);
 
-            quitButton.SetWidgetType<Confirm>();
+            quitButton.SetWidgetType<QuitPopup>();
             exitButton.SetWidgetType<Confirm>();
             mailButton.SetWidgetType<Mail>();
             questButton.SetWidgetType<Quest>();

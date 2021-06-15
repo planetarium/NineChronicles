@@ -36,7 +36,7 @@ namespace Nekoyume.UI.Model
 
         private HashSet<Nekoyume.Model.State.RankingInfo> _rankingInfoSet = null;
 
-        public async Task Update(int displayCount)
+        public Task Update(int displayCount)
         {
             var rankingMapStates = States.Instance.RankingMapStates;
             _rankingInfoSet = new HashSet<Nekoyume.Model.State.RankingInfo>();
@@ -49,19 +49,25 @@ namespace Nekoyume.UI.Model
             Debug.LogWarning($"total user count : {_rankingInfoSet.Count()}");
             var apiClient = Game.Game.instance.ApiClient;
 
-            var sw = new Stopwatch();
-            sw.Start();
-
             if (apiClient.IsInitialized)
             {
-                LoadAbilityRankingInfos(displayCount);
-                await LoadStageRankingInfos(apiClient, displayCount);
-                await LoadMimisbrunnrRankingInfos(apiClient, displayCount);
-                IsInitialized = true;
+                return Task.Run(async () =>
+                {
+                    var sw = new Stopwatch();
+                    sw.Start();
+
+                    LoadAbilityRankingInfos(displayCount);
+                    await Task.WhenAll(
+                        LoadStageRankingInfos(apiClient, displayCount),
+                        LoadMimisbrunnrRankingInfos(apiClient, displayCount)
+                    );
+                    IsInitialized = true;
+                    sw.Stop();
+                    UnityEngine.Debug.LogWarning($"total elapsed : {sw.Elapsed}");
+                });
             }
 
-            sw.Stop();
-            UnityEngine.Debug.LogWarning($"total elapsed : {sw.Elapsed}");
+            return Task.CompletedTask;
         }
 
         private void LoadAbilityRankingInfos(int displayCount)
@@ -188,6 +194,11 @@ namespace Nekoyume.UI.Model
                 var addressString = myRecord.AvatarAddress.Substring(2);
                 var address = new Address(addressString);
                 var iValue = Game.Game.instance.Agent.GetState(address);
+                if (iValue is Bencodex.Types.Null || iValue is null)
+                {
+                    Debug.LogError($"Failed to get state of user {address}.");
+                    return;
+                }
                 var avatarState = new AvatarState((Bencodex.Types.Dictionary)iValue);
                 AgentStageRankingInfos[pair.Key] = new StageRankingModel
                 {
@@ -218,6 +229,11 @@ namespace Nekoyume.UI.Model
                     var addressString = x.AvatarAddress.Substring(2);
                     var address = new Address(addressString);
                     var iValue = Game.Game.instance.Agent.GetState(address);
+                    if (iValue is Bencodex.Types.Null || iValue is null)
+                    {
+                        Debug.LogError($"Failed to get state of user {address}.");
+                        return null;
+                    }
                     var avatarState = new AvatarState((Bencodex.Types.Dictionary)iValue);
 
                     return new StageRankingModel
@@ -227,7 +243,9 @@ namespace Nekoyume.UI.Model
                             x.ClearedStageId - GameConfig.MimisbrunnrStartStageId + 1 : 0,
                         Rank = x.Ranking,
                     };
-                }).ToList();
+                })
+                .Where(x => x != null)
+                .ToList();
 
             foreach (var pair in States.Instance.AvatarStates)
             {
@@ -258,6 +276,11 @@ namespace Nekoyume.UI.Model
                 var addressString = myRecord.AvatarAddress.Substring(2);
                 var address = new Address(addressString);
                 var iValue = Game.Game.instance.Agent.GetState(address);
+                if (iValue is Bencodex.Types.Null || iValue is null)
+                {
+                    Debug.LogError($"Failed to get state of user {address}.");
+                    return;
+                }
                 var avatarState = new AvatarState((Bencodex.Types.Dictionary)iValue);
                 AgentMimisbrunnrRankingInfos[pair.Key] = new StageRankingModel
                 {

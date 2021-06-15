@@ -415,7 +415,7 @@ MonoBehaviour:
   - {fileID: 2734719682443097366}
   - {fileID: 8314903154402054085}
   - {fileID: 5596459129179674046}
-  titleText: {fileID: 131241098454667857}
+  titleText: {fileID: 7519326184807932133}
   optionText: {fileID: 7459034310123260515}
   itemView: {fileID: 190074142039249507}
   lockParent: {fileID: 746576115353193081}
@@ -710,7 +710,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &6743707100105675287
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2597,7 +2597,7 @@ PrefabInstance:
     - target: {fileID: 8990862484493702198, guid: 7be548df9809bfa49b4378b1228575d6,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: 32.3
       objectReference: {fileID: 0}
     - target: {fileID: 8990862484493702198, guid: 7be548df9809bfa49b4378b1228575d6,
         type: 3}
@@ -2618,6 +2618,11 @@ PrefabInstance:
         type: 3}
       propertyPath: endDelay
       value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 8990862485258832137, guid: 7be548df9809bfa49b4378b1228575d6,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8990862485258832137, guid: 7be548df9809bfa49b4378b1228575d6,
         type: 3}
@@ -2722,7 +2727,7 @@ PrefabInstance:
     - target: {fileID: 8990862485258832140, guid: 7be548df9809bfa49b4378b1228575d6,
         type: 3}
       propertyPath: m_Enabled
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8990862485258832140, guid: 7be548df9809bfa49b4378b1228575d6,
         type: 3}
@@ -2834,25 +2839,23 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8990862485258832143, guid: 7be548df9809bfa49b4378b1228575d6,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8990862485258832178, guid: 7be548df9809bfa49b4378b1228575d6,
         type: 3}
       propertyPath: m_Name
       value: MaskedTextDisplay
       objectReference: {fileID: 0}
+    - target: {fileID: 8990862485258832178, guid: 7be548df9809bfa49b4378b1228575d6,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7be548df9809bfa49b4378b1228575d6, type: 3}
---- !u!114 &131241098454667857 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 8990862484493702195, guid: 7be548df9809bfa49b4378b1228575d6,
-    type: 3}
-  m_PrefabInstance: {fileID: 9013874244507960930}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!224 &131241098160738159 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 8990862485258832141, guid: 7be548df9809bfa49b4378b1228575d6,

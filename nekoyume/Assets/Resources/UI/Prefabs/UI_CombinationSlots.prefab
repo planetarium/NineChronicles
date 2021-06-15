@@ -735,6 +735,7 @@ GameObject:
   - component: {fileID: 8651601266121105031}
   - component: {fileID: 8651601266121105030}
   - component: {fileID: 9135418226048624251}
+  - component: {fileID: 7574588621544307222}
   m_Layer: 5
   m_Name: Board
   m_TagString: Untagged
@@ -792,7 +793,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 7874eaeb53173468f978a8fe8074f7e3, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 9f75d744293854a12a5c5c347fa4a366, type: 3}
   m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -814,6 +815,32 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
+--- !u!114 &7574588621544307222
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8651601266121105028}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f19b7e2285c104f6ca47d583f3e5444f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_EffectFactor: 0.527
+  m_Width: 0.444
+  m_Rotation: 0
+  m_Softness: 1
+  m_Brightness: 0.24
+  m_Gloss: 1
+  m_EffectArea: 0
+  m_Player:
+    play: 0
+    initialPlayDelay: 0
+    duration: 1
+    loop: 0
+    loopDelay: 0
+    updateMode: 0
 --- !u!1001 &520974121180807040
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1487,12 +1514,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: eeeffb220c339d847b17be5d29a0e84d, type: 3}
---- !u!224 &8743050267115336019 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 7778286864631315859, guid: eeeffb220c339d847b17be5d29a0e84d,
-    type: 3}
-  m_PrefabInstance: {fileID: 1344196206815120576}
-  m_PrefabAsset: {fileID: 0}
 --- !u!114 &8174717150636554073 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 7193909674273979289, guid: eeeffb220c339d847b17be5d29a0e84d,
@@ -1505,6 +1526,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 275dd9be7e0640acb94dee79471df097, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!224 &8743050267115336019 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 7778286864631315859, guid: eeeffb220c339d847b17be5d29a0e84d,
+    type: 3}
+  m_PrefabInstance: {fileID: 1344196206815120576}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1722092111740224315
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1889,12 +1916,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: eeeffb220c339d847b17be5d29a0e84d, type: 3}
---- !u!224 &8940805348070588072 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 7778286864631315859, guid: eeeffb220c339d847b17be5d29a0e84d,
-    type: 3}
-  m_PrefabInstance: {fileID: 1722092111740224315}
-  m_PrefabAsset: {fileID: 0}
 --- !u!114 &8373316632627378338 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 7193909674273979289, guid: eeeffb220c339d847b17be5d29a0e84d,
@@ -1907,6 +1928,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 275dd9be7e0640acb94dee79471df097, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!224 &8940805348070588072 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 7778286864631315859, guid: eeeffb220c339d847b17be5d29a0e84d,
+    type: 3}
+  m_PrefabInstance: {fileID: 1722092111740224315}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1823791509454342725
 PrefabInstance:
   m_ObjectHideFlags: 0

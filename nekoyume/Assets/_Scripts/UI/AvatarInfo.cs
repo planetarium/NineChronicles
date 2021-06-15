@@ -628,7 +628,14 @@ namespace Nekoyume.UI
                         case ItemSubType.ApStone:
                             submitEnabledFunc = DimmedFuncForChargeActionPoint;
                             submitText = L10nManager.Localize("UI_CHARGE_AP");
-                            onSubmit = ChargeActionPoint;
+                            if (States.Instance.CurrentAvatarState.actionPoint > 0)
+                            {
+                                onSubmit = ShowRefillConfirmPopup;
+                            }
+                            else
+                            {
+                                onSubmit = ChargeActionPoint;
+                            }
                             break;
                     }
 
@@ -638,6 +645,21 @@ namespace Nekoyume.UI
             }
 
             return (submitEnabledFunc, submitText, onSubmit);
+        }
+
+        private void ShowRefillConfirmPopup(CountableItem item)
+        {
+            var confirm = Widget.Find<Confirm>();
+            confirm.Show("UI_CONFIRM", "UI_AP_REFILL_CONFIRM_CONTENT");
+            confirm.CloseCallback = result =>
+            {
+                if (result == ConfirmResult.No)
+                {
+                    return;
+                }
+
+                ChargeActionPoint(item);
+            };
         }
 
         private bool DimmedFuncForChargeActionPoint(CountableItem item)

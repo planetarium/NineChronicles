@@ -94,10 +94,10 @@ namespace Nekoyume.UI
 
         public override void Show(bool ignoreShowAnimation = false)
         {
-            tabState = MailTabState.All;
             MailBox = States.Instance.CurrentAvatarState.mailBox;
             _toggleGroup.SetToggledOffAll();
             allButton.SetToggledOn();
+            ChangeState(0);
             UpdateTabs();
             base.Show(ignoreShowAnimation);
 
