@@ -162,6 +162,16 @@ namespace Nekoyume.BlockChain
                     miner
                 );
             }
+            
+            // To prevent selfish mining, we define a consensus that blocks with no transactions are do not accepted. 
+            if (block.Transactions.Count <= 0)
+            {
+                return new InvalidMinerException(
+                    $"The block #{block.Index} {block.Hash}'s miner {miner} should be proven by " +
+                    "including a least one of transaction.",
+                    miner
+                );
+            }
 
             // Authority should be proven through a no-op transaction (= txs with zero actions).
             // (For backward compatibility, blocks before 1,200,000th don't have to be proven.
