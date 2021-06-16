@@ -85,5 +85,10 @@ namespace Nekoyume.Model.Item
                    $", {nameof(TradableId)}: {TradableId}" +
                    $", {nameof(RequiredBlockIndex)}: {RequiredBlockIndex}";
         }
+
+        public object Clone()
+        {
+            return MemberwiseClone();
+        }
     }
 }
