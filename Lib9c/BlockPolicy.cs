@@ -148,7 +148,10 @@ namespace Nekoyume.BlockChain
             }
 
             // To prevent selfish mining, we define a consensus that blocks with no transactions are do not accepted. 
-            if (block.Transactions.Count <= 0)
+            // (For backward compatibility, blocks before 1,711,631th don't have to be proven.
+            // Note that as of Jun 16, 2021, there are about 1,710,000+ blocks.)
+            if (block.Transactions.Count <= 0 &&
+                (IgnoreHardcodedIndicesForBackwardCompatibility || block.Index > 1_711_631))
             {
                 return new InvalidMinerException(
                     $"The block #{block.Index} {block.Hash} (mined by {miner}) should " +
