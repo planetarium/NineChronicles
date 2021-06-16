@@ -65,6 +65,7 @@ namespace Lib9c.Model.Order
         {
             ItemBase item;
             int cp = 0;
+            int count = 1;
             if (!(shopItem.ItemUsable is null))
             {
                 item = shopItem.ItemUsable;
@@ -78,6 +79,7 @@ namespace Lib9c.Model.Order
             else
             {
                 item = (ItemBase)shopItem.TradableFungibleItem;
+                count = shopItem.TradableFungibleItemCount;
             }
 
             int level = shopItem.ItemUsable is Equipment equipment ? equipment.level : 0;
@@ -90,7 +92,8 @@ namespace Lib9c.Model.Order
                 Price,
                 cp,
                 level,
-                item.Id
+                item.Id,
+                count
             );
         }
 

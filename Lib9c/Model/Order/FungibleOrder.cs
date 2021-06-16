@@ -121,7 +121,8 @@ namespace Lib9c.Model.Order
                     Price,
                     cp,
                     level,
-                    item.Id
+                    item.Id,
+                    ItemCount
                 );
             }
 

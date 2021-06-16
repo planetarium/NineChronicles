@@ -62,6 +62,7 @@ namespace Lib9c.Tests.Model.State
                 _price,
                 0,
                 0,
+                1,
                 1
             );
             shardedShopState.Add(orderDigest, 0);
@@ -78,7 +79,8 @@ namespace Lib9c.Tests.Model.State
                 _price,
                 0,
                 0,
-                2
+                2,
+                1
             );
             shardedShopState.Add(orderDigest2, 3);
             Assert.Single(shardedShopState.OrderDigestList);
@@ -100,7 +102,8 @@ namespace Lib9c.Tests.Model.State
                     _price,
                     0,
                     0,
-                    i
+                    i,
+                    1
                 );
                 shardedShopState.Add(orderDigest, 0);
             }
@@ -129,7 +132,8 @@ namespace Lib9c.Tests.Model.State
                     _price,
                     0,
                     0,
-                    i
+                    i,
+                    1
                 );
                 shardedShopState.Add(orderDigest, 0);
             }

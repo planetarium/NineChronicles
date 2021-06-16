@@ -29,7 +29,8 @@ namespace Lib9c.Tests.Model.Order
                 new FungibleAssetValue(_currency, 100, 0),
                 1,
                 3,
-                100
+                100,
+                1
             );
             Dictionary serialized = (Dictionary)digest.Serialize();
             Assert.Equal(digest, new OrderDigest(serialized));
@@ -47,7 +48,8 @@ namespace Lib9c.Tests.Model.Order
                 new FungibleAssetValue(_currency, 100, 0),
                 1,
                 3,
-                100
+                100,
+                1
             );
 
             BinaryFormatter formatter = new BinaryFormatter();

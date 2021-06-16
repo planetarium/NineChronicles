@@ -16,6 +16,7 @@ namespace Lib9c.Model.Order
         public readonly int CombatPoint;
         public readonly int Level;
         public readonly int ItemId;
+        public readonly int ItemCount;
 
         public OrderDigest(
             Address sellerAgentAddress,
@@ -26,7 +27,8 @@ namespace Lib9c.Model.Order
             FungibleAssetValue price,
             int combatPoint,
             int level,
-            int itemId
+            int itemId,
+            int itemCount
         ) : base(orderId, tradableId, startedBlockIndex, expiredBlockIndex)
         {
             SellerAgentAddress = sellerAgentAddress;
@@ -34,6 +36,7 @@ namespace Lib9c.Model.Order
             CombatPoint = combatPoint;
             Level = level;
             ItemId = itemId;
+            ItemCount = itemCount;
         }
 
         public OrderDigest(Dictionary serialized) : base(serialized)
@@ -43,6 +46,7 @@ namespace Lib9c.Model.Order
             CombatPoint = serialized[CombatPointKey].ToInteger();
             Level = serialized[LevelKey].ToInteger();
             ItemId = serialized[ItemIdKey].ToInteger();
+            ItemCount = serialized[ItemCountKey].ToInteger();
         }
 
         public override IValue Serialize()
@@ -52,7 +56,8 @@ namespace Lib9c.Model.Order
                 .SetItem(PriceKey, Price.Serialize())
                 .SetItem(CombatPointKey, CombatPoint.Serialize())
                 .SetItem(LevelKey, Level.Serialize())
-                .SetItem(ItemIdKey, ItemId.Serialize());
+                .SetItem(ItemIdKey, ItemId.Serialize())
+                .SetItem(ItemCountKey, ItemCount.Serialize());
 
             return new Dictionary(innerDict);
         }
@@ -64,7 +69,8 @@ namespace Lib9c.Model.Order
                    Price.Equals(other.Price) &&
                    CombatPoint == other.CombatPoint &&
                    Level == other.Level &&
-                   ItemId == other.ItemId;
+                   ItemId == other.ItemId &&
+                   ItemCount == other.ItemCount;
         }
 
         public override bool Equals(object obj)
@@ -88,6 +94,7 @@ namespace Lib9c.Model.Order
                 hashCode = (hashCode * 397) ^ Level;
                 hashCode = (hashCode * 397) ^ ItemId;
                 hashCode = (hashCode * 397) ^ SellerAgentAddress.GetHashCode();
+                hashCode = (hashCode * 397) ^ ItemCount;
                 return hashCode;
             }
         }
