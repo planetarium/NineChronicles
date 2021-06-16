@@ -310,11 +310,11 @@ namespace Nekoyume.Model
                 return;
             }
 
-            Level = newLevel;
             if (Level < newLevel)
             {
                 eventMap?.Add(new KeyValuePair<int, int>((int) QuestEventType.Level, newLevel - Level));
             }
+            Level = newLevel;
 
             UpdateExp();
         }
