@@ -107,10 +107,16 @@ namespace Nekoyume.UI.Module
             inputPlaceholder.SetAsLastSibling();
 
             SharedModel = new Model.ShopItems();
-            SharedModel.AgentProducts
+            // SharedModel.AgentProducts
+            //     .Subscribe(_ => UpdateView())
+            //     .AddTo(gameObject);
+            // SharedModel.ItemSubTypeProducts
+            //     .Subscribe(_ => UpdateView())
+            //     .AddTo(gameObject);
+            SharedModel.AgentDigests
                 .Subscribe(_ => UpdateView())
                 .AddTo(gameObject);
-            SharedModel.ItemSubTypeProducts
+            SharedModel.ItemSubTypeDigests
                 .Subscribe(_ => UpdateView())
                 .AddTo(gameObject);
 
@@ -176,8 +182,9 @@ namespace Nekoyume.UI.Module
             SharedModel.isReverseOrder = false;
             SharedModel.searchIds = new List<int>();
             SharedModel.SetMultiplePurchase(false);
-            SharedModel.ResetAgentProducts();
-            SharedModel.ResetItemSubTypeProducts();
+            // SharedModel.ResetAgentProducts();
+            // SharedModel.ResetItemSubTypeProducts();
+            SharedModel.ResetItemSubTypeDigests();
             UpdateSort();
         }
 
@@ -185,12 +192,19 @@ namespace Nekoyume.UI.Module
         {
             Reset();
 
-            ReactiveShopState.AgentProducts
-                .Subscribe(SharedModel.ResetAgentProducts)
+            // ReactiveShopState.AgentProducts
+            //     .Subscribe(SharedModel.ResetAgentProducts)
+            //     .AddTo(_disposablesAtOnEnable);
+
+            // ReactiveShopState.ItemSubTypeProducts
+            //     .Subscribe(SharedModel.ResetItemSubTypeProducts)
+            //     .AddTo(_disposablesAtOnEnable);
+            ReactiveShopState.AgentDigests
+                .Subscribe(SharedModel.ResetAgentDigests)
                 .AddTo(_disposablesAtOnEnable);
 
-            ReactiveShopState.ItemSubTypeProducts
-                .Subscribe(SharedModel.ResetItemSubTypeProducts)
+            ReactiveShopState.ItemSubTypeDigests
+                .Subscribe(SharedModel.ResetItemSubTypeDigests)
                 .AddTo(_disposablesAtOnEnable);
         }
 
@@ -219,7 +233,8 @@ namespace Nekoyume.UI.Module
             }
 
             _filteredPageIndex = 0;
-            UpdateViewWithFilteredPageIndex(SharedModel.ItemSubTypeProducts.Value);
+            // UpdateViewWithFilteredPageIndex(SharedModel.ItemSubTypeProducts.Value);
+            UpdateViewWithFilteredPageIndex(SharedModel.ItemSubTypeDigests.Value);
         }
 
         private void UpdateViewWithFilteredPageIndex(
@@ -262,14 +277,18 @@ namespace Nekoyume.UI.Module
 
         private void OnItemSubTypeFilterChanged()
         {
-            SharedModel.ResetAgentProducts();
-            SharedModel.ResetItemSubTypeProducts();
+            // SharedModel.ResetAgentProducts();
+            // SharedModel.ResetItemSubTypeProducts();
+            SharedModel.ResetAgentDigests();
+            SharedModel.ResetItemSubTypeDigests();
         }
 
         private void OnSortFilterChanged()
         {
-            SharedModel.ResetAgentProducts();
-            SharedModel.ResetItemSubTypeProducts();
+            // SharedModel.ResetAgentProducts();
+            // SharedModel.ResetItemSubTypeProducts();
+            SharedModel.ResetAgentDigests();
+            SharedModel.ResetItemSubTypeDigests();
         }
 
         private void OnClickPreviousPage(Unit unit)
@@ -288,12 +307,14 @@ namespace Nekoyume.UI.Module
                 previousPageButton.gameObject.SetActive(false);
             }
 
-            UpdateViewWithFilteredPageIndex(SharedModel.ItemSubTypeProducts.Value);
+            // UpdateViewWithFilteredPageIndex(SharedModel.ItemSubTypeProducts.Value);
+            UpdateViewWithFilteredPageIndex(SharedModel.ItemSubTypeDigests.Value);
         }
 
         private void OnClickNextPage(Unit unit)
         {
-            var count = SharedModel.ItemSubTypeProducts.Value.Count;
+            // var count = SharedModel.ItemSubTypeProducts.Value.Count;
+            var count = SharedModel.ItemSubTypeDigests.Value.Count;
 
             if (_filteredPageIndex + 1 >= count)
             {
@@ -309,7 +330,8 @@ namespace Nekoyume.UI.Module
                 nextPageButton.gameObject.SetActive(false);
             }
 
-            UpdateViewWithFilteredPageIndex(SharedModel.ItemSubTypeProducts.Value);
+            // UpdateViewWithFilteredPageIndex(SharedModel.ItemSubTypeProducts.Value);
+            UpdateViewWithFilteredPageIndex(SharedModel.ItemSubTypeDigests.Value);
         }
 
         private void OnClickSort(Unit unit)

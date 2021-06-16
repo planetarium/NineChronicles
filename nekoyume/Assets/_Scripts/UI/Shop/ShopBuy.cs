@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Lib9c.Model.Order;
 using mixpanel;
 using Nekoyume.Action;
 using Nekoyume.EnumType;
@@ -101,13 +102,19 @@ namespace Nekoyume.UI
                 var shopState = new ShopState(
                     (Bencodex.Types.Dictionary) game.Agent.GetState(Addresses.Shop));
 
-                var shardedProducts = new List<Nekoyume.Model.Item.ShopItem>();
                 Game.Game.instance.ShopProducts.UpdateProducts();
-                foreach (var items in game.ShopProducts.Products.Select(i => i.Value))
+                // var shardedProducts = new List<Nekoyume.Model.Item.ShopItem>();
+                // foreach (var items in game.ShopProducts.Products.Select(i => i.Value))
+                // {
+                //     shardedProducts.AddRange(items);
+                // }
+                // ReactiveShopState.Initialize(shopState, shardedProducts);
+                var digests = new List<OrderDigest>();
+                foreach (var items in game.ShopProducts.OrderDigests.Select(i => i.Value))
                 {
-                    shardedProducts.AddRange(items);
+                    digests.AddRange(items);
                 }
-                ReactiveShopState.Initialize(shopState, shardedProducts);
+                ReactiveShopState.Initialize(digests);
                 return true;
             });
 

@@ -1,5 +1,6 @@
 using System;
 using System.Numerics;
+using Lib9c.Model.Order;
 using Libplanet;
 using Libplanet.Assets;
 using Nekoyume.Model.Item;
@@ -40,6 +41,10 @@ namespace Nekoyume.UI.Model
             ExpiredBlockIndex.Value = expiredBlockIndex;
         }
 
+        public ShopItem(OrderDigest orderDigest) : this(orderDigest.SellerAgentAddress, orderDigest.SellerAgentAddress, orderDigest.Price, orderDigest.OrderId, orderDigest.ItemCount, GetItemBase(orderDigest), orderDigest.ExpiredBlockIndex)
+        {
+        }
+
         public override void Dispose()
         {
             SellerAgentAddress.Dispose();
@@ -64,5 +69,13 @@ namespace Nekoyume.UI.Model
 
             return (ItemBase) item.TradableFungibleItem;
         }
+
+        private static ItemBase GetItemBase(OrderDigest digest)
+        {
+            var row = Game.Game.instance.TableSheets.ItemSheet[digest.ItemId];
+            var item = ItemFactory.CreateItem(row, new Cheat.DebugRandom());
+            return item;
+        }
+
     }
 }

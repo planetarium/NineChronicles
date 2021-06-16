@@ -51,10 +51,16 @@ namespace Nekoyume.UI.Module
         private void Awake()
         {
             SharedModel = new Model.ShopItems();
-            SharedModel.AgentProducts
+            // SharedModel.AgentProducts
+            //     .Subscribe(_ => UpdateView())
+            //     .AddTo(gameObject);
+            // SharedModel.ItemSubTypeProducts
+            //     .Subscribe(_ => UpdateView())
+            //     .AddTo(gameObject);
+            SharedModel.AgentDigests
                 .Subscribe(_ => UpdateView())
                 .AddTo(gameObject);
-            SharedModel.ItemSubTypeProducts
+            SharedModel.ItemSubTypeDigests
                 .Subscribe(_ => UpdateView())
                 .AddTo(gameObject);
 
@@ -142,13 +148,19 @@ namespace Nekoyume.UI.Module
             sortFilter.SetValueWithoutNotify(0);
             SharedModel.sortFilter = 0;
 
-            ReactiveShopState.AgentProducts
-                .Subscribe(SharedModel.ResetAgentProducts)
-                .AddTo(_disposablesAtOnEnable);
+            // ReactiveShopState.AgentProducts
+            //     .Subscribe(SharedModel.ResetAgentProducts)
+            //     .AddTo(_disposablesAtOnEnable);
+            // ReactiveShopState.ItemSubTypeProducts
+            //     .Subscribe(SharedModel.ResetItemSubTypeProducts)
+            //     .AddTo(_disposablesAtOnEnable);
 
-            ReactiveShopState.ItemSubTypeProducts
-                .Subscribe(SharedModel.ResetItemSubTypeProducts)
+            ReactiveShopState.AgentDigests
+                .Subscribe(SharedModel.ResetAgentDigests)
                 .AddTo(_disposablesAtOnEnable);
+            ReactiveShopState.ItemSubTypeDigests
+                .Subscribe(SharedModel.ResetItemSubTypeDigests)
+            .AddTo(_disposablesAtOnEnable);
         }
 
         public void Close()
@@ -177,7 +189,8 @@ namespace Nekoyume.UI.Module
             }
 
             _filteredPageIndex = 0;
-            UpdateViewWithFilteredPageIndex(SharedModel.AgentProducts.Value);
+            // UpdateViewWithFilteredPageIndex(SharedModel.AgentProducts.Value);
+            UpdateViewWithFilteredPageIndex(SharedModel.AgentDigests.Value);
             refreshButton.gameObject.SetActive(false);
         }
 
@@ -233,14 +246,18 @@ namespace Nekoyume.UI.Module
 
         private void OnItemSubTypeFilterChanged()
         {
-            SharedModel.ResetAgentProducts();
-            SharedModel.ResetItemSubTypeProducts();
+            // SharedModel.ResetAgentProducts();
+            // SharedModel.ResetItemSubTypeProducts();
+            SharedModel.ResetAgentDigests();
+            SharedModel.ResetItemSubTypeDigests();
         }
 
         private void OnSortFilterChanged()
         {
-            SharedModel.ResetAgentProducts();
-            SharedModel.ResetItemSubTypeProducts();
+            // SharedModel.ResetAgentProducts();
+            // SharedModel.ResetItemSubTypeProducts();
+            SharedModel.ResetAgentDigests();
+            SharedModel.ResetItemSubTypeDigests();
         }
 
         private void OnPreviousPageButtonClick(Unit unit)
@@ -259,12 +276,14 @@ namespace Nekoyume.UI.Module
                 previousPageButtonInteractableSwitch.SetSwitchOff();
             }
 
-            UpdateViewWithFilteredPageIndex(SharedModel.AgentProducts.Value);
+            // UpdateViewWithFilteredPageIndex(SharedModel.AgentProducts.Value);
+            UpdateViewWithFilteredPageIndex(SharedModel.AgentDigests.Value);
         }
 
         private void OnNextPageButtonClick(Unit unit)
         {
-            var count = SharedModel.AgentProducts.Value.Count;
+            // var count = SharedModel.AgentProducts.Value.Count;
+            var count = SharedModel.AgentDigests.Value.Count;
 
 
             if (_filteredPageIndex + 1 >= count)
@@ -281,7 +300,8 @@ namespace Nekoyume.UI.Module
                 nextPageButtonInteractableSwitch.SetSwitchOff();
             }
 
-            UpdateViewWithFilteredPageIndex(SharedModel.AgentProducts.Value);
+            // UpdateViewWithFilteredPageIndex(SharedModel.AgentProducts.Value);
+            UpdateViewWithFilteredPageIndex(SharedModel.AgentDigests.Value);
         }
     }
 }

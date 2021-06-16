@@ -25,7 +25,7 @@ namespace Nekoyume.UI
         {
             remainTimeSlider.OnValueChangedAsObservable().Subscribe(OnSliderChange)
                 .AddTo(gameObject);
-            remainTimeSlider.maxValue = Sell.ExpiredBlockIndex;
+            remainTimeSlider.maxValue = Sell6.ExpiredBlockIndex;
             remainTimeSlider.value = 0;
         }
 

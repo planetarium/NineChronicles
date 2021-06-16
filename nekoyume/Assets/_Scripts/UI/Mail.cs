@@ -373,6 +373,11 @@ namespace Nekoyume.UI
             popup.Pop(monsterCollectionResult.rewards);
         }
 
+        public void Read(OrderExpirationMail orderExpirationMail)
+        {
+            throw new NotImplementedException();
+        }
+
         public void TutorialActionClickFirstCombinationMailSubmitButton()
         {
             if (MailBox.Count == 0)
