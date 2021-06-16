@@ -136,5 +136,10 @@ namespace Lib9c
         public const string LegacyCombinationSlotAddressesKey = "combinationSlotAddresses";
         public const string LegacyNonceKey = "nonce";
         public const string LegacyRankingMapAddressKey = "ranking_map_address";
+        public const string OrderIdKey = "oi";
+        public const string OrderTypeKey = "ot";
+        public const string CombatPointKey = "cp";
+        public const string OrderDigestListKey = "odl";
+        public const string TradableIdKey = "ti";
     }
 }
