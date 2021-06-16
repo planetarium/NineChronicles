@@ -4,8 +4,10 @@ using Lib9c.Model.Order;
 using Libplanet;
 using Libplanet.Assets;
 using Nekoyume.Model.Item;
+using Nekoyume.TableData;
 using Nekoyume.UI.Module;
 using UniRx;
+using BxDictionary = Bencodex.Types.Dictionary;
 
 namespace Nekoyume.UI.Model
 {
@@ -20,23 +22,26 @@ namespace Nekoyume.UI.Model
 
         public ShopItemView View;
 
-        public static bool TryConstruct((Order, ItemBase) tuple, out ShopItem shopItem)
+        public static bool TryConstruct((OrderDigest, ItemSheet.Row) tuple, out ShopItem shopItem)
         {
-            var (order, itemBase) = tuple;
-            if (order is FungibleOrder fungibleOrder)
+            var (orderDigest, itemRow) = tuple;
+            var itemBase = ItemFactory.CreateItem(itemRow, new Cheat.DebugRandom());
+            var agent = Game.Game.instance.Agent;
+            var orderAddress = Order.DeriveAddress(orderDigest.OrderId);
+            var orderValue = agent.GetState(orderAddress);
+            var order = OrderFactory.Deserialize((BxDictionary) orderValue);
+            switch (order)
             {
-                shopItem = new ShopItem((fungibleOrder, itemBase));
-                return true;
+                case FungibleOrder fungibleOrder:
+                    shopItem = new ShopItem((fungibleOrder, itemBase));
+                    return true;
+                case NonFungibleOrder nonFungibleOrder:
+                    shopItem = new ShopItem((nonFungibleOrder, itemBase));
+                    return true;
+                default:
+                    shopItem = default;
+                    return false;
             }
-
-            if (order is NonFungibleOrder nonFungibleOrder)
-            {
-                shopItem = new ShopItem((nonFungibleOrder, itemBase));
-                return true;
-            }
-
-            shopItem = default;
-            return false;
         }
 
         public ShopItem(Nekoyume.Model.Item.ShopItem item)

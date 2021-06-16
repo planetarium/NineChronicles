@@ -7,12 +7,15 @@ using Nekoyume.Battle;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Stat;
 using Nekoyume.Model.State;
+using Nekoyume.TableData;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using UniRx;
 using UnityEngine;
+using static Lib9c.SerializeKeys;
 using ShopItem = Nekoyume.Model.Item.ShopItem;
 using BxDictionary = Bencodex.Types.Dictionary;
+using BxText = Bencodex.Types.Text;
 
 namespace Nekoyume.State
 {
@@ -39,12 +42,12 @@ namespace Nekoyume.State
         
         public static readonly ReactiveProperty<Dictionary<
                 Address, Dictionary<ItemSubTypeFilter, Dictionary<
-                    ShopSortFilter, Dictionary<int, List<(Order, ItemBase)>>>>>>
+                    ShopSortFilter, Dictionary<int, List<(OrderDigest, ItemSheet.Row)>>>>>>
             AgentProductsV2 =
                 new ReactiveProperty<Dictionary<
                     Address, Dictionary<
                         ItemSubTypeFilter,
-                        Dictionary<ShopSortFilter, Dictionary<int, List<(Order, ItemBase)>>>>>>();
+                        Dictionary<ShopSortFilter, Dictionary<int, List<(OrderDigest, ItemSheet.Row)>>>>>>();
 
         public static readonly ReactiveProperty<IReadOnlyDictionary<
                 ItemSubTypeFilter, Dictionary<
@@ -55,16 +58,16 @@ namespace Nekoyume.State
         
         public static readonly ReactiveProperty<IReadOnlyDictionary<
                 ItemSubTypeFilter, Dictionary<
-                    ShopSortFilter, Dictionary<int, List<(Order, ItemBase)>>>>>
+                    ShopSortFilter, Dictionary<int, List<(OrderDigest, ItemSheet.Row)>>>>>
             ItemSubTypeProductsV2 = new ReactiveProperty<IReadOnlyDictionary<
                 ItemSubTypeFilter, Dictionary<
-                    ShopSortFilter, Dictionary<int, List<(Order, ItemBase)>>>>>();
+                    ShopSortFilter, Dictionary<int, List<(OrderDigest, ItemSheet.Row)>>>>>();
 
         public static readonly Dictionary<Guid, List<Nekoyume.UI.Model.ShopItem>> PurchaseHistory =
             new Dictionary<Guid, List<Nekoyume.UI.Model.ShopItem>>();
 
         private static List<ShopItem> _products = new List<ShopItem>();
-        private static List<(Order, ItemBase)> _productsV2 = new List<(Order, ItemBase)>();
+        private static List<(OrderDigest, ItemSheet.Row)> _productsV2 = new List<(OrderDigest, ItemSheet.Row)>();
 
 
         private const int buyItemsPerPage = 24;
@@ -85,29 +88,29 @@ namespace Nekoyume.State
 
             Update();
         }
-        
-        public static void InitializeV2(ShopState state, IEnumerable<Order> shardedProductsV2)
+
+        public static void InitializeV2(ShopState state, IEnumerable<OrderDigest> shardedProductsV2)
         {
             if (state is null)
             {
                 return;
             }
 
-            var agent = Game.Game.instance.Agent;
-            var tuples = shardedProductsV2.Select(order =>
-            {
-                var itemAddress = Addresses.GetItemAddress(order.TradableId);
-                var itemValue = agent.GetState(itemAddress);
-                if (!(itemValue is BxDictionary itemDict))
+            var itemSheet = Game.Game.instance.TableSheets.ItemSheet;
+            var tuples = shardedProductsV2
+                .Select(orderDigest =>
                 {
-                    return (order, null);
-                }
+                    if (!itemSheet.TryGetValue(orderDigest.ItemId, out var itemRow))
+                    {
+                        Debug.LogWarning($"Not found item sheet row. {orderDigest.ItemId}");
+                        return (orderDigest, (ItemSheet.Row) null);
+                    }
 
-                return (order, ItemFactory.Deserialize(itemDict));
-            });
-            
+                    return (orderDigest, itemRow);
+                })
+                .Where(tuple => !(tuple.Item2 is null));
+
             _productsV2.AddRange(tuples);
-
             UpdateV2();
         }
 
@@ -173,6 +176,22 @@ namespace Nekoyume.State
         
         public static void UpdateV2()
         {
+            var agent = Game.Game.instance.Agent;
+            var agentOrderIds = States.Instance.AvatarStates.Values
+                .Select(avatarState =>
+                {
+                    var orderReceiptListAddress = OrderReceiptList.DeriveAddress(avatarState.address);
+                    var orderReceiptListValue = agent.GetState(orderReceiptListAddress);
+                    if (!(orderReceiptListValue is BxDictionary serialized) ||
+                        !serialized.TryGetValue((BxText) OrderIdKey, out var value))
+                    {
+                        return Guid.Empty;
+                    }
+
+                    return value.ToGuid();
+                })
+                .Where(guid => !guid.Equals(Guid.Empty));
+            
             // AgentProducts.
             // {
             //     var agentProducts = new Dictionary<Address, List<(Order, ItemBase)>>();
@@ -206,10 +225,9 @@ namespace Nekoyume.State
 
             // ItemSubTypeProducts.
             {
-                var agentAddress = States.Instance.AgentState.address;
                 ItemSubTypeProductsV2.Value = GetGroupedShopItemsByItemSubTypeFilterV2(
                     _productsV2
-                        .Where(tuple => !tuple.Item1.SellerAgentAddress.Equals(agentAddress))
+                        .Where(tuple => !agentOrderIds.Contains(tuple.Item1.OrderId))
                         .ToList(),
                     buyItemsPerPage);
             }
@@ -350,126 +368,123 @@ namespace Nekoyume.State
         
         private static Dictionary<
                 ItemSubTypeFilter, Dictionary<
-                    ShopSortFilter, Dictionary<int, List<(Order, ItemBase)>>>>
-            GetGroupedShopItemsByItemSubTypeFilterV2(IReadOnlyCollection<(Order, ItemBase)> tuples, int ordersPerPage)
+                    ShopSortFilter, Dictionary<int, List<(OrderDigest, ItemSheet.Row)>>>>
+            GetGroupedShopItemsByItemSubTypeFilterV2(IReadOnlyCollection<(OrderDigest, ItemSheet.Row)> tuples, int ordersPerPage)
         {
-            var equipments = new List<(Order, ItemBase)>();
-            var foods = new List<(Order, ItemBase)>();
-            var costumes = new List<(Order, ItemBase)>();
-            var weapons = new List<(Order, ItemBase)>();
-            var armors = new List<(Order, ItemBase)>();
-            var belts = new List<(Order, ItemBase)>();
-            var necklaces = new List<(Order, ItemBase)>();
-            var rings = new List<(Order, ItemBase)>();
-            var foodsHp = new List<(Order, ItemBase)>();
-            var foodsAtk = new List<(Order, ItemBase)>();
-            var foodsDef = new List<(Order, ItemBase)>();
-            var foodsCri = new List<(Order, ItemBase)>();
-            var foodsHit = new List<(Order, ItemBase)>();
-            var fullCostumes = new List<(Order, ItemBase)>();
-            var hairCostumes = new List<(Order, ItemBase)>();
-            var earCostumes = new List<(Order, ItemBase)>();
-            var eyeCostumes = new List<(Order, ItemBase)>();
-            var tailCostumes = new List<(Order, ItemBase)>();
-            var titles = new List<(Order, ItemBase)>();
-            var materials = new List<(Order, ItemBase)>();
-
-            var agent = Game.Game.instance.Agent;
+            var equipments = new List<(OrderDigest, ItemSheet.Row)>();
+            var foods = new List<(OrderDigest, ItemSheet.Row)>();
+            var costumes = new List<(OrderDigest, ItemSheet.Row)>();
+            var weapons = new List<(OrderDigest, ItemSheet.Row)>();
+            var armors = new List<(OrderDigest, ItemSheet.Row)>();
+            var belts = new List<(OrderDigest, ItemSheet.Row)>();
+            var necklaces = new List<(OrderDigest, ItemSheet.Row)>();
+            var rings = new List<(OrderDigest, ItemSheet.Row)>();
+            var foodsHp = new List<(OrderDigest, ItemSheet.Row)>();
+            var foodsAtk = new List<(OrderDigest, ItemSheet.Row)>();
+            var foodsDef = new List<(OrderDigest, ItemSheet.Row)>();
+            var foodsCri = new List<(OrderDigest, ItemSheet.Row)>();
+            var foodsHit = new List<(OrderDigest, ItemSheet.Row)>();
+            var fullCostumes = new List<(OrderDigest, ItemSheet.Row)>();
+            var hairCostumes = new List<(OrderDigest, ItemSheet.Row)>();
+            var earCostumes = new List<(OrderDigest, ItemSheet.Row)>();
+            var eyeCostumes = new List<(OrderDigest, ItemSheet.Row)>();
+            var tailCostumes = new List<(OrderDigest, ItemSheet.Row)>();
+            var titles = new List<(OrderDigest, ItemSheet.Row)>();
+            var materials = new List<(OrderDigest, ItemSheet.Row)>();
+            var itemSheet = Game.Game.instance.TableSheets.ItemSheet;
             foreach (var tuple in tuples)
             {
-                var (order, tradableItem) = tuple;
-                var itemAddress = Addresses.GetItemAddress(order.TradableId);
-                var itemValue = agent.GetState(itemAddress);
-                if (itemValue is null ||
-                    !(itemValue is BxDictionary itemDict))
+                var (orderDigest, _) = tuple;
+                if (!itemSheet.TryGetValue(orderDigest.ItemId, out var row))
                 {
-                    Debug.LogWarning($"item is null. {itemAddress}");
+                    Debug.LogWarning($"Not found item row. {orderDigest.ItemId}");
                     continue;
                 }
-
-                var itemBase = ItemFactory.Deserialize(itemDict);
-                if (itemBase is ItemUsable itemUsable)
+                
+                switch (row.ItemSubType)
                 {
-                    if (itemUsable.ItemSubType == ItemSubType.Food)
-                    {
-                        foods.Add(tuple);
-                        var state = itemUsable.StatsMap.GetStats().First();
-                        switch (state.StatType)
-                        {
-                            case StatType.HP:
-                                foodsHp.Add(tuple);
-                                break;
-                            case StatType.ATK:
-                                foodsAtk.Add(tuple);
-                                break;
-                            case StatType.DEF:
-                                foodsDef.Add(tuple);
-                                break;
-                            case StatType.CRI:
-                                foodsCri.Add(tuple);
-                                break;
-                            case StatType.HIT:
-                                foodsHit.Add(tuple);
-                                break;
-                        }
-                    }
-                    else
-                    {
+                    case ItemSubType.Weapon:
                         equipments.Add(tuple);
-                        switch (itemUsable.ItemSubType)
-                        {
-                            case ItemSubType.Weapon:
-                                weapons.Add(tuple);
-                                break;
-                            case ItemSubType.Armor:
-                                armors.Add(tuple);
-                                break;
-                            case ItemSubType.Belt:
-                                belts.Add(tuple);
-                                break;
-                            case ItemSubType.Necklace:
-                                necklaces.Add(tuple);
-                                break;
-                            case ItemSubType.Ring:
-                                rings.Add(tuple);
-                                break;
-                        }
-                    }
-                }
-                else if (itemBase is Costume costume)
-                {
-                    costumes.Add(tuple);
-                    switch (costume.ItemSubType)
-                    {
-                        case ItemSubType.FullCostume:
-                            fullCostumes.Add(tuple);
-                            break;
-                        case ItemSubType.HairCostume:
-                            hairCostumes.Add(tuple);
-                            break;
-                        case ItemSubType.EarCostume:
-                            earCostumes.Add(tuple);
-                            break;
-                        case ItemSubType.EyeCostume:
-                            eyeCostumes.Add(tuple);
-                            break;
-                        case ItemSubType.TailCostume:
-                            tailCostumes.Add(tuple);
-                            break;
-                        case ItemSubType.Title:
-                            titles.Add(tuple);
-                            break;
-                    }
-                }
-                else
-                {
-                    // Currently, there are only hourglass and AP potions.
-                    materials.Add(tuple);
+                        weapons.Add(tuple);
+                        break;
+                    case ItemSubType.Armor:
+                        equipments.Add(tuple);
+                        armors.Add(tuple);
+                        break;
+                    case ItemSubType.Belt:
+                        equipments.Add(tuple);
+                        belts.Add(tuple);
+                        break;
+                    case ItemSubType.Necklace:
+                        equipments.Add(tuple);
+                        necklaces.Add(tuple);
+                        break;
+                    case ItemSubType.Ring:
+                        equipments.Add(tuple);
+                        rings.Add(tuple);
+                        break;
+                    case ItemSubType.Food:
+                        foods.Add(tuple);
+                        // switch (orderDigest.UniqueStatType)
+                        // {
+                        //     case StatType.HP:
+                        //         foodsHp.Add(tuple);
+                        //         break;
+                        //     case StatType.ATK:
+                        //         foodsAtk.Add(tuple);
+                        //         break;
+                        //     case StatType.DEF:
+                        //         foodsDef.Add(tuple);
+                        //         break;
+                        //     case StatType.CRI:
+                        //         foodsCri.Add(tuple);
+                        //         break;
+                        //     case StatType.HIT:
+                        //         foodsHit.Add(tuple);
+                        //         break;
+                        //     default:
+                        //         throw new ArgumentOutOfRangeException();
+                        // }
+                        break;
+                    case ItemSubType.Hourglass:
+                    case ItemSubType.ApStone:
+                    case ItemSubType.EquipmentMaterial:
+                    case ItemSubType.FoodMaterial:
+                    case ItemSubType.MonsterPart:
+                    case ItemSubType.NormalMaterial:
+                        materials.Add(tuple);
+                        break;
+                    case ItemSubType.FullCostume:
+                        costumes.Add(tuple);
+                        fullCostumes.Add(tuple);
+                        break;
+                    case ItemSubType.HairCostume:
+                        costumes.Add(tuple);
+                        hairCostumes.Add(tuple);
+                        break;
+                    case ItemSubType.EarCostume:
+                        costumes.Add(tuple);
+                        earCostumes.Add(tuple);
+                        break;
+                    case ItemSubType.EyeCostume:
+                        costumes.Add(tuple);
+                        eyeCostumes.Add(tuple);
+                        break;
+                    case ItemSubType.TailCostume:
+                        costumes.Add(tuple);
+                        tailCostumes.Add(tuple);
+                        break;
+                    case ItemSubType.Title:
+                        costumes.Add(tuple);
+                        titles.Add(tuple);
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
                 }
             }
 
             var groupedShopItems = new Dictionary<
-                ItemSubTypeFilter, Dictionary<ShopSortFilter, Dictionary<int, List<(Order, ItemBase)>>>>
+                ItemSubTypeFilter, Dictionary<ShopSortFilter, Dictionary<int, List<(OrderDigest, ItemSheet.Row)>>>>
             {
                 {ItemSubTypeFilter.All, GetGroupedShopItemsBySortFilterV2(tuples, ordersPerPage)},
                 {ItemSubTypeFilter.Weapon, GetGroupedShopItemsBySortFilterV2(weapons, ordersPerPage)},
@@ -514,10 +529,10 @@ namespace Nekoyume.State
             };
         }
         
-        private static Dictionary<ShopSortFilter, Dictionary<int, List<(Order, ItemBase)>>>
-            GetGroupedShopItemsBySortFilterV2(IReadOnlyCollection<(Order, ItemBase)> tuples, int shopItemsPerPage)
+        private static Dictionary<ShopSortFilter, Dictionary<int, List<(OrderDigest, ItemSheet.Row)>>>
+            GetGroupedShopItemsBySortFilterV2(IReadOnlyCollection<(OrderDigest, ItemSheet.Row)> tuples, int shopItemsPerPage)
         {
-            return new Dictionary<ShopSortFilter, Dictionary<int, List<(Order, ItemBase)>>>
+            return new Dictionary<ShopSortFilter, Dictionary<int, List<(OrderDigest, ItemSheet.Row)>>>
             {
                 {
                     ShopSortFilter.Class,
@@ -547,17 +562,22 @@ namespace Nekoyume.State
             return result;
         }
         
-        private static List<(Order, ItemBase)> GetSortedShopItemsV2(
-            IReadOnlyCollection<(Order, ItemBase)> tuples,
+        private static List<(OrderDigest, ItemSheet.Row)> GetSortedShopItemsV2(
+            IReadOnlyCollection<(OrderDigest, ItemSheet.Row)> tuples,
             SortType type)
         {
-            var result = new List<(Order, ItemBase)>();
-            result.AddRange(tuples.Where(tuple => tuple.Item2 is Costume)
-                .OrderByDescending(tuple => GetTypeValue(tuple.Item2, type)));
-            result.AddRange(tuples.Where(tuple => tuple.Item2 is ItemUsable)
-                .OrderByDescending(tuple => GetTypeValue(tuple.Item2, type)));
-            result.AddRange(tuples.Where(tuple => tuple.Item2 is ITradableFungibleItem)
-                .OrderByDescending(tuple => GetTypeValue(tuple.Item2, type)));
+            var result = new List<(OrderDigest, ItemSheet.Row)>();
+            result.AddRange(tuples
+                .Where(tuple => tuple.Item2.ItemType == ItemType.Costume)
+                .OrderByDescending(tuple => GetTypeValueV2(tuple.Item2, type)));
+            result.AddRange(tuples
+                .Where(tuple =>
+                    tuple.Item2.ItemType == ItemType.Equipment ||
+                    tuple.Item2.ItemType == ItemType.Consumable)
+                .OrderByDescending(tuple => GetTypeValueV2(tuple.Item2, type)));
+            result.AddRange(tuples
+                .Where(tuple => tuple.Item2.ItemType == ItemType.Material)
+                .OrderByDescending(tuple => GetTypeValueV2(tuple.Item2, type)));
             return result;
         }
 
@@ -588,6 +608,35 @@ namespace Nekoyume.State
             }
             throw new ArgumentOutOfRangeException(nameof(type), type, null);
         }
+        
+        private static int GetTypeValueV2(ItemSheet.Row itemRow, SortType type)
+        {
+            switch (type)
+            {
+                case SortType.Grade:
+                    return itemRow.Grade;
+                case SortType.Cp:
+                    // FIXME
+                    // switch (itemRow)
+                    // {
+                    //     case ItemUsable itemUsable:
+                    //         return CPHelper.GetCP(itemUsable);
+                    //     case Costume costume:
+                    //     {
+                    //         var costumeSheet = Game.Game.instance.TableSheets.CostumeStatSheet;
+                    //         return CPHelper.GetCP(costume, costumeSheet);
+                    //     }
+                    //     default:
+                    //         return 0;
+                    // }
+                    return 0;
+                case SortType.None:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(type), type, null);
+            }
+            throw new ArgumentOutOfRangeException(nameof(type), type, null);
+        }
 
         private static Dictionary<int, List<ShopItem>> GetGroupedShopItemsByPage(
             List<ShopItem> shopItems,
@@ -610,11 +659,11 @@ namespace Nekoyume.State
             return result;
         }
         
-        private static Dictionary<int, List<(Order, ItemBase)>> GetGroupedShopItemsByPageV2(
-            List<(Order, ItemBase)> tuples,
+        private static Dictionary<int, List<(OrderDigest, ItemSheet.Row)>> GetGroupedShopItemsByPageV2(
+            List<(OrderDigest, ItemSheet.Row)> tuples,
             int shopItemsPerPage)
         {
-            var result = new Dictionary<int, List<(Order, ItemBase)>>();
+            var result = new Dictionary<int, List<(OrderDigest, ItemSheet.Row)>>();
             var remainCount = tuples.Count;
             var listIndex = 0;
             var pageIndex = 0;

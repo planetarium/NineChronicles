@@ -7,6 +7,7 @@ using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.State;
+using Nekoyume.TableData;
 using Nekoyume.UI.Module;
 
 namespace Nekoyume.UI.Model
@@ -79,7 +80,7 @@ namespace Nekoyume.UI.Model
             Address, Dictionary<
                 ItemSubTypeFilter, Dictionary<
                     ShopSortFilter, Dictionary<
-                        int, List<(Order, ItemBase)>>>>> products)
+                        int, List<(OrderDigest, ItemSheet.Row)>>>>> products)
         {
             _agentProducts = products is null
                 ? new Dictionary<
@@ -110,7 +111,7 @@ namespace Nekoyume.UI.Model
 
         public void ResetItemSubTypeProductsV2(IReadOnlyDictionary<
                 ItemSubTypeFilter, Dictionary<
-                    ShopSortFilter, Dictionary<int, List<(Order, ItemBase)>>
+                    ShopSortFilter, Dictionary<int, List<(OrderDigest, ItemSheet.Row)>>
                 >>
             products)
         {
@@ -146,7 +147,7 @@ namespace Nekoyume.UI.Model
             ModelToViewModelV2(IReadOnlyDictionary<
                 ItemSubTypeFilter, Dictionary<
                     ShopSortFilter, Dictionary<
-                        int, List<(Order, ItemBase)>>>> shopItems)
+                        int, List<(OrderDigest, ItemSheet.Row)>>>> shopItems)
         {
             return shopItems.ToDictionary(
                 pair => pair.Key,
@@ -456,7 +457,7 @@ namespace Nekoyume.UI.Model
             return item;
         }
 
-        private ShopItem CreateShopItemV2((Order, ItemBase) tuple)
+        private ShopItem CreateShopItemV2((OrderDigest, ItemSheet.Row) tuple)
         {
             if (ShopItem.TryConstruct(tuple, out var shopItem))
             {

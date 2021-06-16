@@ -190,19 +190,11 @@ namespace Nekoyume.UI
                 sw2.Stop();
                 Debug.Log($"ShopBuy.AsyncShowV2() new ShopState(): {sw2.Elapsed}");
                 sw2.Restart();
-                var shardedProductsV2 = new List<Order>();
                 game.ShopProductsV2.UpdateProductsV2();
                 sw2.Stop();
                 Debug.Log($"ShopBuy.AsyncShowV2() game.ShopProductsV2.UpdateProductsV2(): {sw2.Elapsed}");
                 sw2.Restart();
-                foreach (var items in game.ShopProductsV2.ProductsV2.Select(i => i.Value))
-                {
-                    shardedProductsV2.AddRange(items);
-                }
-                sw2.Stop();
-                Debug.Log($"ShopBuy.AsyncShowV2() shardedProductsV2.AddRange(): {sw2.Elapsed}");
-                sw2.Restart();
-                ReactiveShopState.InitializeV2(shopState, shardedProductsV2);
+                ReactiveShopState.InitializeV2(shopState, game.ShopProductsV2.ProductsV2);
                 sw2.Stop();
                 Debug.Log($"ShopBuy.AsyncShowV2() ReactiveShopState.InitializeV2(): {sw2.Elapsed}");
                 

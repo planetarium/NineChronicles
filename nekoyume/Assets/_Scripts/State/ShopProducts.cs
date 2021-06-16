@@ -1,16 +1,18 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Bencodex.Types;
 using Lib9c.Model.Order;
 using Libplanet;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
+using BxDictionary = Bencodex.Types.Dictionary;
 
 namespace Nekoyume.State
 {
     public class ShopProducts
     {
         public readonly Dictionary<Address, List<ShopItem>> Products = new Dictionary<Address, List<ShopItem>>();
-        public readonly Dictionary<Address, List<Order>> ProductsV2 = new Dictionary<Address, List<Order>>();
+        public readonly List<OrderDigest> ProductsV2 = new List<OrderDigest>();
 
         private readonly List<ItemSubType> _itemSubTypes = new List<ItemSubType>()
         {
@@ -74,7 +76,7 @@ namespace Nekoyume.State
             {
                 if (_shardedSubTypes.Contains(itemSubType))
                 {
-                    foreach (var addressKey in ShardedShopStateV2.AddressKeys)
+                    foreach (var addressKey in ShardedShopState.AddressKeys)
                     {
                         var address = ShardedShopStateV2.DeriveAddress(itemSubType, addressKey);
                         AddProductV2(address);
@@ -116,23 +118,18 @@ namespace Nekoyume.State
         
         private void AddProductV2(Address address)
         {
-            var shardedShopState = Game.Game.instance.Agent.GetState(address);
-            if (shardedShopState is Dictionary dictionary)
+            var shardedShopValue = Game.Game.instance.Agent.GetState(address);
+            if (!(shardedShopValue is BxDictionary serialized))
             {
-                var state = new ShardedShopStateV2(dictionary);
-                foreach (var order in state.OrderList)
-                {
-                    if (order.ExpiredBlockIndex != 0 && order.ExpiredBlockIndex > Game.Game.instance.Agent.BlockIndex)
-                    {
-                        var agentAddress = order.SellerAgentAddress;
-                        if (!ProductsV2.ContainsKey(agentAddress))
-                        {
-                            ProductsV2.Add(agentAddress, new List<Order>());
-                        }
-
-                        ProductsV2[agentAddress].Add(order);
-                    }
-                }
+                return;
+            }
+            
+            var state = new ShardedShopStateV2(serialized);
+            foreach (var orderDigest in state.OrderDigestList.Where(orderDigest =>
+                orderDigest.ExpiredBlockIndex != 0 &&
+                orderDigest.ExpiredBlockIndex > Game.Game.instance.Agent.BlockIndex))
+            {
+                ProductsV2.Add(orderDigest);
             }
         }
     }
