@@ -167,8 +167,8 @@ namespace Nekoyume.BlockChain
             if (block.Transactions.Count <= 0)
             {
                 return new InvalidMinerException(
-                    $"The block #{block.Index} {block.Hash}'s miner {miner} should be proven by " +
-                    "including a least one of transaction.",
+                    $"The block #{block.Index} {block.Hash} (mined by {miner}) should " +
+                    "include at least one transaction.",
                     miner
                 );
             }
