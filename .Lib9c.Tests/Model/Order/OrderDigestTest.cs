@@ -21,6 +21,7 @@ namespace Lib9c.Tests.Model.Order
         public void Serialize()
         {
             var digest = new OrderDigest(
+                default,
                 1,
                 2,
                 Guid.NewGuid(),
@@ -38,6 +39,7 @@ namespace Lib9c.Tests.Model.Order
         public void Serialize_DotNet_Api()
         {
             var digest = new OrderDigest(
+                default,
                 1,
                 2,
                 Guid.NewGuid(),

@@ -113,6 +113,7 @@ namespace Lib9c.Model.Order
                 int cp = CPHelper.GetCP((ITradableItem) item, costumeStatSheet);
                 int level = item is Equipment equipment ? equipment.level : 0;
                 return new OrderDigest(
+                    SellerAgentAddress,
                     StartedBlockIndex,
                     ExpiredBlockIndex,
                     OrderId,

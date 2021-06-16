@@ -54,6 +54,7 @@ namespace Lib9c.Tests.Model.State
             Assert.Empty(shardedShopState.OrderDigestList);
 
             var orderDigest = new OrderDigest(
+                default,
                 1,
                 2,
                 orderId,
@@ -69,6 +70,7 @@ namespace Lib9c.Tests.Model.State
             Assert.Throws<DuplicateOrderIdException>(() => shardedShopState.Add(orderDigest, 0));
 
             var orderDigest2 = new OrderDigest(
+                default,
                 2,
                 3,
                 orderId2,
@@ -90,6 +92,7 @@ namespace Lib9c.Tests.Model.State
             for (int i = 0; i < 4; i++)
             {
                 var orderDigest = new OrderDigest(
+                    default,
                     i,
                     i + 1,
                     Guid.NewGuid(),
@@ -118,6 +121,7 @@ namespace Lib9c.Tests.Model.State
             for (int i = 0; i < 4; i++)
             {
                 var orderDigest = new OrderDigest(
+                    default,
                     i,
                     i + 1,
                     Guid.NewGuid(),

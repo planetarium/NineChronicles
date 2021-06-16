@@ -1,5 +1,6 @@
 using System;
 using Bencodex.Types;
+using Libplanet;
 using Libplanet.Assets;
 using Nekoyume.Model.State;
 using static Lib9c.SerializeKeys;
@@ -10,12 +11,15 @@ namespace Lib9c.Model.Order
     public class OrderDigest : OrderBase
     {
         // Client filter data
+        public readonly Address SellerAgentAddress;
         public readonly FungibleAssetValue Price;
         public readonly int CombatPoint;
         public readonly int Level;
         public readonly int ItemId;
 
-        public OrderDigest(long startedBlockIndex,
+        public OrderDigest(
+            Address sellerAgentAddress,
+            long startedBlockIndex,
             long expiredBlockIndex,
             Guid orderId,
             Guid tradableId,
@@ -25,6 +29,7 @@ namespace Lib9c.Model.Order
             int itemId
         ) : base(orderId, tradableId, startedBlockIndex, expiredBlockIndex)
         {
+            SellerAgentAddress = sellerAgentAddress;
             Price = price;
             CombatPoint = combatPoint;
             Level = level;
@@ -33,6 +38,7 @@ namespace Lib9c.Model.Order
 
         public OrderDigest(Dictionary serialized) : base(serialized)
         {
+            SellerAgentAddress = serialized[SellerAgentAddressKey].ToAddress();
             Price = serialized[PriceKey].ToFungibleAssetValue();
             CombatPoint = serialized[CombatPointKey].ToInteger();
             Level = serialized[LevelKey].ToInteger();
@@ -42,6 +48,7 @@ namespace Lib9c.Model.Order
         public override IValue Serialize()
         {
             var innerDict = ((Dictionary) base.Serialize())
+                .SetItem(SellerAgentAddressKey, SellerAgentAddress.Serialize())
                 .SetItem(PriceKey, Price.Serialize())
                 .SetItem(CombatPointKey, CombatPoint.Serialize())
                 .SetItem(LevelKey, Level.Serialize())
@@ -53,6 +60,7 @@ namespace Lib9c.Model.Order
         protected bool Equals(OrderDigest other)
         {
             return base.Equals(other) &&
+                   SellerAgentAddress.Equals(other.SellerAgentAddress) &&
                    Price.Equals(other.Price) &&
                    CombatPoint == other.CombatPoint &&
                    Level == other.Level &&
@@ -79,6 +87,7 @@ namespace Lib9c.Model.Order
                 hashCode = (hashCode * 397) ^ CombatPoint;
                 hashCode = (hashCode * 397) ^ Level;
                 hashCode = (hashCode * 397) ^ ItemId;
+                hashCode = (hashCode * 397) ^ SellerAgentAddress.GetHashCode();
                 return hashCode;
             }
         }
