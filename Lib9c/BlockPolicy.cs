@@ -85,7 +85,9 @@ namespace Nekoyume.BlockChain
             BlockChain<NCAction> blocks,
             Block<NCAction> nextBlock
         ) =>
-            ValidateMinerAuthority(nextBlock) ?? base.ValidateNextBlock(blocks, nextBlock);
+            ValidateBlock(nextBlock) 
+            ?? ValidateMinerAuthority(nextBlock) 
+            ?? base.ValidateNextBlock(blocks, nextBlock);
 
         public override long GetNextBlockDifficulty(BlockChain<NCAction> blocks)
         {
@@ -138,6 +140,26 @@ namespace Nekoyume.BlockChain
             return Math.Max(nextDifficulty, _minimumDifficulty);
         }
 
+        private InvalidBlockException ValidateBlock(Block<NCAction> block)
+        {
+            if (!(block.Miner is Address miner))
+            {
+                return null;
+            }
+
+            // To prevent selfish mining, we define a consensus that blocks with no transactions are do not accepted. 
+            if (block.Transactions.Count <= 0)
+            {
+                return new InvalidMinerException(
+                    $"The block #{block.Index} {block.Hash} (mined by {miner}) should " +
+                    "include at least one transaction.",
+                    miner
+                );
+            }
+
+            return null;
+        }
+        
         private InvalidBlockException ValidateMinerAuthority(Block<NCAction> block)
         {
             if (AuthorizedMinersState is null)
@@ -162,6 +184,7 @@ namespace Nekoyume.BlockChain
                     miner
                 );
             }
+            
 
             // Authority should be proven through a no-op transaction (= txs with zero actions).
             // (For backward compatibility, blocks before 1,200,000th don't have to be proven.
