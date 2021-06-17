@@ -61,7 +61,12 @@ namespace Nekoyume.Action
                     throw new MonsterCollectionLevelException();
                 }
 
-                // 언스테이킹
+                if (existingStates.CalculateStep(context.BlockIndex) > 0)
+                {
+                    throw new MonsterCollectionExistingClaimableException();
+                }
+
+                // Refund holding NCG to user
                 FungibleAssetValue gold = states.GetBalance(monsterCollectionAddress, currency);
                 states = states.TransferAsset(monsterCollectionAddress, context.Signer, gold);
             }
