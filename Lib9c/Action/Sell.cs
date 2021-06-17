@@ -58,7 +58,7 @@ namespace Nekoyume.Action
             Address shopAddress = ShardedShopStateV2.DeriveAddress(itemSubType, orderId);
             Address itemAddress = Addresses.GetItemAddress(tradableId);
             Address orderAddress = Order.DeriveAddress(orderId);
-            Address orderReceiptAddress = OrderReceiptList.DeriveAddress(sellerAvatarAddress);
+            Address orderReceiptAddress = OrderDigestListState.DeriveAddress(sellerAvatarAddress);
             if (context.Rehearsal)
             {
                 return states
@@ -135,7 +135,8 @@ namespace Nekoyume.Action
             sw.Restart();
 
             var costumeStatSheet = states.GetSheet<CostumeStatSheet>();
-            shardedShopState.Add(order.Digest(avatarState, costumeStatSheet), context.BlockIndex);
+            OrderDigest orderDigest = order.Digest(avatarState, costumeStatSheet);
+            shardedShopState.Add(orderDigest, context.BlockIndex);
 
             avatarState.updatedAt = context.BlockIndex;
             avatarState.blockIndex = context.BlockIndex;
@@ -149,9 +150,9 @@ namespace Nekoyume.Action
             avatarState.UpdateV3(mail);
 
             var orderReceiptList = states.TryGetState(orderReceiptAddress, out Dictionary receiptDict)
-                ? new OrderReceiptList(receiptDict)
-                : new OrderReceiptList(orderReceiptAddress);
-            orderReceiptList.Add(order, context.BlockIndex);
+                ? new OrderDigestListState(receiptDict)
+                : new OrderDigestListState(orderReceiptAddress);
+            orderReceiptList.Add(orderDigest, context.BlockIndex);
 
             states = states.SetState(orderReceiptAddress, orderReceiptList.Serialize());
             states = states

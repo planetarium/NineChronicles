@@ -10,29 +10,29 @@ using static Lib9c.SerializeKeys;
 namespace Lib9c.Model.Order
 {
     [Serializable]
-    public class OrderReceiptList
+    public class OrderDigestListState
     {
         public static Address DeriveAddress(Address avatarAddress)
         {
-            return avatarAddress.Derive(nameof(OrderReceiptList));
+            return avatarAddress.Derive(nameof(OrderDigestListState));
         }
 
         public readonly Address Address;
 
-        private List<OrderReceipt> _receiptList = new List<OrderReceipt>();
+        private List<OrderDigest> _orderDigestList = new List<OrderDigest>();
 
-        public IReadOnlyList<OrderReceipt> ReceiptList => _receiptList;
+        public IReadOnlyList<OrderDigest> OrderDigestList => _orderDigestList;
 
-        public OrderReceiptList(Address address)
+        public OrderDigestListState(Address address)
         {
             Address = address;
         }
 
-        public OrderReceiptList(Dictionary serialized)
+        public OrderDigestListState(Dictionary serialized)
         {
             Address = serialized[AddressKey].ToAddress();
-            _receiptList = serialized[OrderReceiptListKey]
-                .ToList(m => new OrderReceipt((Dictionary)m))
+            _orderDigestList = serialized[OrderReceiptListKey]
+                .ToList(m => new OrderDigest((Dictionary)m))
                 .OrderBy(o => o.OrderId)
                 .ToList();
         }
@@ -42,30 +42,29 @@ namespace Lib9c.Model.Order
             var innerDict = new Dictionary<IKey, IValue>
             {
                 [(Text) AddressKey] = Address.Serialize(),
-                [(Text) OrderReceiptListKey] = new List(_receiptList.Select(m => m.Serialize())),
+                [(Text) OrderReceiptListKey] = new List(_orderDigestList.Select(m => m.Serialize())),
             };
 
             return new Dictionary(innerDict);
         }
 
-        public void Add(Order order, long blockIndex)
+        public void Add(OrderDigest orderDigest, long blockIndex)
         {
-            OrderReceipt receipt = order.Receipt();
-            if (_receiptList.Contains(receipt))
+            if (_orderDigestList.Contains(orderDigest))
             {
-                throw new DuplicateOrderIdException($"{order.OrderId} already exist.");
+                throw new DuplicateOrderIdException($"{orderDigest.OrderId} already exist.");
             }
-            _receiptList.Add(receipt);
+            _orderDigestList.Add(orderDigest);
 
-            _receiptList = _receiptList
+            _orderDigestList = _orderDigestList
                 .Where(r => r.ExpiredBlockIndex >= blockIndex)
                 .OrderBy(r => r.StartedBlockIndex)
                 .ToList();
         }
 
-        protected bool Equals(OrderReceiptList other)
+        protected bool Equals(OrderDigestListState other)
         {
-            return Address.Equals(other.Address) && _receiptList.SequenceEqual(other._receiptList);
+            return Address.Equals(other.Address) && _orderDigestList.SequenceEqual(other._orderDigestList);
         }
 
         public override bool Equals(object obj)
@@ -73,14 +72,14 @@ namespace Lib9c.Model.Order
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != this.GetType()) return false;
-            return Equals((OrderReceiptList) obj);
+            return Equals((OrderDigestListState) obj);
         }
 
         public override int GetHashCode()
         {
             unchecked
             {
-                return (Address.GetHashCode() * 397) ^ (_receiptList != null ? _receiptList.GetHashCode() : 0);
+                return (Address.GetHashCode() * 397) ^ (_orderDigestList != null ? _orderDigestList.GetHashCode() : 0);
             }
         }
     }

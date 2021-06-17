@@ -97,11 +97,6 @@ namespace Lib9c.Model.Order
             );
         }
 
-        public OrderReceipt Receipt()
-        {
-            return new OrderReceipt(this);
-        }
-
         public virtual void Validate(AvatarState avatarState, int count)
         {
             if (!avatarState.address.Equals(SellerAvatarAddress) || !avatarState.agentAddress.Equals(SellerAgentAddress))
