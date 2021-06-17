@@ -10,12 +10,14 @@ namespace Nekoyume.Model.Mail
     public class OrderExpirationMail : Mail
     {
         public readonly Guid OrderId;
-        public OrderExpirationMail(long blockIndex, Guid id, long requiredBlockIndex, Guid orderId) : base(blockIndex, id, requiredBlockIndex)
+        public OrderExpirationMail(long blockIndex, Guid id, long requiredBlockIndex, Guid orderId) 
+            : base(blockIndex, id, requiredBlockIndex)
         {
             OrderId = orderId;
         }
 
-        public OrderExpirationMail(Dictionary serialized) : base(serialized)
+        public OrderExpirationMail(Dictionary serialized) 
+            : base(serialized)
         {
             OrderId = serialized[OrderIdKey].ToGuid();
         }
