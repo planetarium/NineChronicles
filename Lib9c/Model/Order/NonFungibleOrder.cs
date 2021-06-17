@@ -125,5 +125,15 @@ namespace Lib9c.Model.Order
             }
         }
 
+        public override ITradableItem Cancel(AvatarState avatarState, long blockIndex)
+        {
+            if (avatarState.inventory.TryGetNonFungibleItem(TradableId, out INonFungibleItem nonFungibleItem))
+            {
+                nonFungibleItem.RequiredBlockIndex = blockIndex;
+                return nonFungibleItem;
+            }
+            throw new ItemDoesNotExistException(
+                $"Aborted because the tradable item({TradableId}) was failed to load from avatar's inventory.");
+        }
     }
 }

@@ -291,6 +291,62 @@ namespace Lib9c.Tests.Model.Order
             }
         }
 
+        [Theory]
+        [InlineData(ItemSubType.Weapon, 1, true, null)]
+        [InlineData(ItemSubType.Weapon, 0, false, typeof(ItemDoesNotExistException))]
+        [InlineData(ItemSubType.FullCostume, 2, true, null)]
+        public void Cancel(ItemSubType itemSubType, long blockIndex, bool add, Type exc)
+        {
+            var row = _tableSheets.ItemSheet.OrderedList.First(r => r.ItemSubType == itemSubType);
+            ItemBase item = ItemFactory.CreateItem(row, new TestRandom());
+            Guid orderId = new Guid("15396359-04db-68d5-f24a-d89c18665900");
+            ITradableItem tradableItem = (ITradableItem)item;
+            tradableItem.RequiredBlockIndex = 1;
+            NonFungibleOrder order = OrderFactory.CreateNonFungibleOrder(
+                _avatarState.agentAddress,
+                _avatarState.address,
+                orderId,
+                new FungibleAssetValue(_currency, 10, 0),
+                tradableItem.TradableId,
+                1,
+                itemSubType
+            );
+
+            if (add)
+            {
+                _avatarState.inventory.AddNonFungibleItem(item);
+                order.Sell(_avatarState);
+            }
+
+            if (exc is null)
+            {
+                Assert.True(
+                    _avatarState.inventory.TryGetNonFungibleItem(
+                        tradableItem.TradableId,
+                        out INonFungibleItem nonFungibleItem
+                    )
+                );
+                Assert.Equal(order.ExpiredBlockIndex, nonFungibleItem.RequiredBlockIndex);
+
+                ITradableItem result = order.Cancel(_avatarState, blockIndex);
+
+                Assert.Equal(blockIndex, result.RequiredBlockIndex);
+                Assert.Equal(itemSubType, result.ItemSubType);
+                Assert.Equal(tradableItem.TradableId, result.TradableId);
+                Assert.True(
+                    _avatarState.inventory.TryGetNonFungibleItem(
+                        tradableItem.TradableId,
+                        out INonFungibleItem nextNonFungibleItem
+                    )
+                );
+                Assert.Equal(blockIndex, nextNonFungibleItem.RequiredBlockIndex);
+            }
+            else
+            {
+                Assert.Throws(exc, () => order.Cancel(_avatarState, blockIndex));
+            }
+        }
+
 #pragma warning disable SA1204
         public static IEnumerable<object[]> ValidateMemberData() => new List<object[]>
         {

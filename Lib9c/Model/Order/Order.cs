@@ -61,6 +61,8 @@ namespace Lib9c.Model.Order
 
         public abstract ITradableItem Sell(AvatarState avatarState);
 
+        public abstract ITradableItem Cancel(AvatarState avatarState, long blockIndex);
+
         public OrderDigest Digest(ShopItem shopItem, CostumeStatSheet costumeStatSheet)
         {
             ItemBase item;

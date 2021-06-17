@@ -286,6 +286,57 @@ namespace Lib9c.Tests.Model.Order
             }
         }
 
+        [Theory]
+        [InlineData(ItemSubType.ApStone, true, true, 1, 1, null)]
+        [InlineData(ItemSubType.Hourglass, true, false, 2, 1, null)]
+        [InlineData(ItemSubType.ApStone, false, false, 1, 1, typeof(ItemDoesNotExistException))]
+        public void Cancel(ItemSubType itemSubType, bool add, bool exist, long blockIndex, int itemCount, Type exc)
+        {
+            var row = _tableSheets.MaterialItemSheet.OrderedList.First(r => r.ItemSubType == itemSubType);
+            TradableMaterial item = ItemFactory.CreateTradableMaterial(row);
+            Guid orderId = new Guid("15396359-04db-68d5-f24a-d89c18665900");
+            item.RequiredBlockIndex = 1;
+            FungibleOrder order = OrderFactory.CreateFungibleOrder(
+                _avatarState.agentAddress,
+                _avatarState.address,
+                orderId,
+                new FungibleAssetValue(_currency, 10, 0),
+                item.TradableId,
+                blockIndex,
+                itemCount,
+                itemSubType
+            );
+
+            if (add)
+            {
+                _avatarState.inventory.AddItem(item, itemCount);
+                order.Sell(_avatarState);
+
+                if (exist)
+                {
+                    _avatarState.inventory.AddItem(item);
+                }
+            }
+
+            if (exc is null)
+            {
+                Assert.True(_avatarState.inventory.TryGetTradableItem(item.TradableId, order.ExpiredBlockIndex, itemCount, out _));
+                Assert.Equal(exist, _avatarState.inventory.TryGetTradableItem(item.TradableId, blockIndex, 1, out _));
+
+                ITradableItem result = order.Cancel(_avatarState, blockIndex);
+
+                Assert.Equal(item.TradableId, result.TradableId);
+                Assert.Equal(blockIndex, result.RequiredBlockIndex);
+                int expectedCount = exist ? itemCount + 1 : 1;
+                Assert.False(_avatarState.inventory.TryGetTradableItem(item.TradableId, order.ExpiredBlockIndex, 1, out _));
+                Assert.True(_avatarState.inventory.TryGetTradableItem(item.TradableId, blockIndex, expectedCount, out _));
+            }
+            else
+            {
+                Assert.Throws(exc, () => order.Cancel(_avatarState, blockIndex));
+            }
+        }
+
 #pragma warning disable SA1204
         public static IEnumerable<object[]> ValidateMemberData() => new List<object[]>
         {

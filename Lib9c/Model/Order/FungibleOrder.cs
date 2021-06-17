@@ -152,6 +152,21 @@ namespace Lib9c.Model.Order
             }
         }
 
+        public override ITradableItem Cancel(AvatarState avatarState, long blockIndex)
+        {
+            if (avatarState.inventory.TryGetTradableItem(TradableId, ExpiredBlockIndex, ItemCount,
+                out Inventory.Item inventoryItem))
+            {
+                ITradableFungibleItem copy = (ITradableFungibleItem) ((ITradableFungibleItem) inventoryItem.item).Clone();
+                avatarState.inventory.RemoveTradableItem(TradableId, ExpiredBlockIndex, ItemCount);
+                copy.RequiredBlockIndex = blockIndex;
+                avatarState.inventory.AddItem((ItemBase) copy, ItemCount);
+                return copy;
+            }
+            throw new ItemDoesNotExistException(
+                $"Aborted because the tradable item({TradableId}) was failed to load from avatar's inventory.");
+        }
+
         protected bool Equals(FungibleOrder other)
         {
             return base.Equals(other) && ItemCount == other.ItemCount;
