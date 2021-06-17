@@ -152,7 +152,7 @@ namespace Nekoyume.Action
             var orderReceiptList = states.TryGetState(orderReceiptAddress, out Dictionary receiptDict)
                 ? new OrderDigestListState(receiptDict)
                 : new OrderDigestListState(orderReceiptAddress);
-            orderReceiptList.Add(orderDigest, context.BlockIndex);
+            orderReceiptList.Add(orderDigest);
 
             states = states.SetState(orderReceiptAddress, orderReceiptList.Serialize());
             states = states

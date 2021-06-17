@@ -177,11 +177,11 @@ namespace Nekoyume.Action
                                 continue;
                             }
 
-                            var receiptAddress = OrderReceiptList.DeriveAddress(order.SellerAvatarAddress);
-                            var receiptList = states.TryGetState(receiptAddress, out Dictionary receiptDict)
-                                ? new OrderReceiptList(receiptDict)
-                                : new OrderReceiptList(receiptAddress);
-                            receiptList.Add(order, ctx.BlockIndex);
+                            var digestListAddress = OrderDigestListState.DeriveAddress(order.SellerAvatarAddress);
+                            var digestList = states.TryGetState(digestListAddress, out Dictionary receiptDict)
+                                ? new OrderDigestListState(receiptDict)
+                                : new OrderDigestListState(digestListAddress);
+                            digestList.Add(orderDigest);
 
                             shardedShopStateV2.Add(orderDigest, ctx.BlockIndex);
 
@@ -198,7 +198,7 @@ namespace Nekoyume.Action
                                 states = states.SetState(itemAddress, shopItem.TradableFungibleItem.Serialize());
                             }
                             states = states.SetState(orderAddress, order.Serialize());
-                            states = states.SetState(receiptAddress, receiptList.Serialize());
+                            states = states.SetState(digestListAddress, digestList.Serialize());
                             states = states.SetState(v2Address, shardedShopStateV2.Serialize());
                         }
                     }

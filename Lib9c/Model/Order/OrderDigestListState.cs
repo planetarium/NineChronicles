@@ -48,18 +48,13 @@ namespace Lib9c.Model.Order
             return new Dictionary(innerDict);
         }
 
-        public void Add(OrderDigest orderDigest, long blockIndex)
+        public void Add(OrderDigest orderDigest)
         {
             if (_orderDigestList.Contains(orderDigest))
             {
                 throw new DuplicateOrderIdException($"{orderDigest.OrderId} already exist.");
             }
             _orderDigestList.Add(orderDigest);
-
-            _orderDigestList = _orderDigestList
-                .Where(r => r.ExpiredBlockIndex >= blockIndex)
-                .OrderBy(r => r.StartedBlockIndex)
-                .ToList();
         }
 
         protected bool Equals(OrderDigestListState other)

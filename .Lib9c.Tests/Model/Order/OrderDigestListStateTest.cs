@@ -37,13 +37,13 @@ namespace Lib9c.Tests.Model.Order
         {
             var address = OrderDigestListState.DeriveAddress(default);
             var orderDigestList = new OrderDigestListState(address);
-            orderDigestList.Add(_orderDigest, 0);
+            orderDigestList.Add(_orderDigest);
 
             Assert.Single(orderDigestList.OrderDigestList);
             OrderDigest orderDigest = orderDigestList.OrderDigestList.First();
             Assert.Equal(_orderDigest, orderDigest);
 
-            Assert.Throws<DuplicateOrderIdException>(() => orderDigestList.Add(_orderDigest, 0));
+            Assert.Throws<DuplicateOrderIdException>(() => orderDigestList.Add(_orderDigest));
         }
 
         [Fact]
@@ -51,7 +51,7 @@ namespace Lib9c.Tests.Model.Order
         {
             var address = OrderDigestListState.DeriveAddress(default);
             var orderDigestList = new OrderDigestListState(address);
-            orderDigestList.Add(_orderDigest, 0);
+            orderDigestList.Add(_orderDigest);
 
             Dictionary serialized = (Dictionary)orderDigestList.Serialize();
             Assert.Equal(orderDigestList, new OrderDigestListState(serialized));
@@ -62,7 +62,7 @@ namespace Lib9c.Tests.Model.Order
         {
             var address = OrderDigestListState.DeriveAddress(default);
             var orderDigestList = new OrderDigestListState(address);
-            orderDigestList.Add(_orderDigest, 0);
+            orderDigestList.Add(_orderDigest);
 
             var formatter = new BinaryFormatter();
             using var ms = new MemoryStream();
