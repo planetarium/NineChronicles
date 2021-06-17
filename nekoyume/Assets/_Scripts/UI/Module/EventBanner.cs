@@ -28,7 +28,7 @@ namespace Nekoyume.UI.Module
                     return;
                 }
 
-                Application.OpenURL(address.ToString());
+                Application.OpenURL("https://nine-chronicles.com/");
             };
             confirm.Show("UI_PROCEED_EVENTPAGE", address.ToString(), blurRadius: 2);
         }
