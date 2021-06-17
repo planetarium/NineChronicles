@@ -7,6 +7,7 @@ using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Model.Mail
 {
+    [Serializable]
     public class OrderExpirationMail : Mail
     {
         public readonly Guid OrderId;
