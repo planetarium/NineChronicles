@@ -10,5 +10,6 @@ namespace Nekoyume.Model.Mail
         void Read(DailyRewardMail dailyRewardMail);
         void Read(MonsterCollectionMail monsterCollectionMail);
         void Read(OrderExpirationMail orderExpirationMail);
+        void Read(CancelOrderMail cancelOrderMail);
     }
 }

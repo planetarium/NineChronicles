@@ -6,11 +6,13 @@ namespace Lib9c.Tests.Model.State
     using System.Runtime.Serialization.Formatters.Binary;
     using Bencodex.Types;
     using Lib9c.Model.Order;
+    using Lib9c.Tests.Action;
     using Libplanet;
     using Libplanet.Assets;
     using Nekoyume.Action;
     using Nekoyume.Model.Item;
     using Nekoyume.Model.State;
+    using Nekoyume.TableData;
     using Xunit;
 
     public class ShardedShopStateV2Test
@@ -148,6 +150,71 @@ namespace Lib9c.Tests.Model.State
             var deserialized = (ShardedShopStateV2)formatter.Deserialize(ms);
 
             Assert.Equal(shardedShopState.Serialize(), deserialized.Serialize());
+        }
+
+        [Fact]
+        public void Remove()
+        {
+            var tableSheets = new TableSheets(TableSheetsImporter.ImportSheets());
+            var avatarState = new AvatarState(
+                default,
+                default,
+                0,
+                tableSheets.GetAvatarSheets(),
+                new GameConfigState(),
+                default
+            );
+            var random = new TestRandom();
+            var item = (Weapon)ItemFactory.CreateItem(
+                tableSheets.ItemSheet.Values.First(r => r.ItemSubType == ItemSubType.Weapon),
+                random);
+            var item2 = (Weapon)ItemFactory.CreateItem(
+                tableSheets.ItemSheet.Values.First(r => r.ItemSubType == ItemSubType.Weapon),
+                random);
+            avatarState.inventory.AddItem(item);
+            avatarState.inventory.AddItem(item2);
+
+            var orderId = new Guid("F9168C5E-CEB2-4faa-B6BF-329BF39FA1E4");
+            var orderId2 = new Guid("936DA01F-9ABD-4d9d-80C7-02AF85C822A8");
+
+            ShardedShopStateV2 shardedShopState = new ShardedShopStateV2(default(Address));
+            Assert.Empty(shardedShopState.OrderDigestList);
+
+            var order = OrderFactory.Create(
+                default,
+                default,
+                orderId,
+                _price,
+                item.TradableId,
+                1,
+                ItemSubType.Weapon,
+                1
+            );
+            var order2 = OrderFactory.Create(
+                default,
+                default,
+                orderId2,
+                _price,
+                item2.TradableId,
+                1,
+                ItemSubType.Weapon,
+                1
+            );
+            var orderDigest = order.Digest(avatarState, new CostumeStatSheet());
+            var orderDigest2 = order2.Digest(avatarState, new CostumeStatSheet());
+            shardedShopState.Add(orderDigest, 0);
+            shardedShopState.Add(orderDigest2, 0);
+            Assert.Equal(2, shardedShopState.OrderDigestList.Count);
+
+            shardedShopState.Remove(order, 0);
+            Assert.Single(shardedShopState.OrderDigestList);
+            Assert.Equal(order2.OrderId, shardedShopState.OrderDigestList.First().OrderId);
+
+            Assert.Throws<OrderIdDoesNotExistException>(() => shardedShopState.Remove(order, 0));
+
+            shardedShopState.Add(orderDigest, 1);
+            shardedShopState.Remove(order2, order.ExpiredBlockIndex + 1);
+            Assert.Empty(shardedShopState.OrderDigestList);
         }
     }
 }

@@ -64,10 +64,30 @@ namespace Nekoyume.Model.State
                 throw new DuplicateOrderIdException($"{orderDigest.OrderId} Already Exist.");
             }
             _orderDigestList.Add(orderDigest);
+            CleanUp(blockIndex);
+        }
+
+        public void Remove(Order order, long blockIndex)
+        {
+            OrderDigest orderDigest = _orderDigestList
+                .FirstOrDefault(o =>
+                    o.OrderId.Equals(order.OrderId) &&
+                    o.SellerAgentAddress.Equals(order.SellerAgentAddress) &&
+                    o.TradableId.Equals(order.TradableId)
+                );
+            if (orderDigest is null)
+            {
+                throw new OrderIdDoesNotExistException($"Can't find {nameof(OrderDigest)}: {order.OrderId}");
+            }
+            _orderDigestList.Remove(orderDigest);
+            CleanUp(blockIndex);
+        }
+
+        private void CleanUp(long blockIndex)
+        {
             _orderDigestList = OrderDigestList
                 .Where(o => o.ExpiredBlockIndex >= blockIndex)
                 .OrderBy(o => o.StartedBlockIndex).ToList();
-
         }
 
         public override IValue Serialize() =>

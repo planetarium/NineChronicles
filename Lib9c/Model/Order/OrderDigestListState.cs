@@ -57,6 +57,17 @@ namespace Lib9c.Model.Order
             _orderDigestList.Add(orderDigest);
         }
 
+        public void Remove(Guid orderId)
+        {
+            var target = _orderDigestList.SingleOrDefault(o => o.OrderId.Equals(orderId));
+            if (target is null)
+            {
+                throw new OrderIdDoesNotExistException($"Can't find {nameof(OrderDigest)}: {orderId}");
+            }
+
+            _orderDigestList.Remove(target);
+        }
+
         protected bool Equals(OrderDigestListState other)
         {
             return Address.Equals(other.Address) && _orderDigestList.SequenceEqual(other._orderDigestList);
