@@ -214,21 +214,75 @@ namespace Lib9c.Tests.Model.Order
             if (add)
             {
                 _avatarState.inventory.AddNonFungibleItem(item);
-
                 order.Sell(_avatarState);
-                OrderDigest digest = order.Digest(_avatarState, _tableSheets.CostumeStatSheet);
+            }
 
-                Assert.Equal(orderId, digest.OrderId);
-                Assert.Equal(order.StartedBlockIndex, digest.StartedBlockIndex);
-                Assert.Equal(order.ExpiredBlockIndex, digest.ExpiredBlockIndex);
-                Assert.Equal(order.Price, digest.Price);
-                Assert.Equal(row.Id, digest.ItemId);
-                Assert.Equal(0, digest.CombatPoint);
-                Assert.Equal(0, digest.Level);
+            if (exc is null)
+            {
+                Assert.True(_avatarState.inventory.TryGetTradableItem(order.TradableId, order.ExpiredBlockIndex, 1, out _));
+                Assert.False(_avatarState.inventory.TryGetTradableItem(order.TradableId, 1, 1, out _));
+
+                ITradableItem result = order.Cancel(_avatarState, 1);
+
+                Assert.False(_avatarState.inventory.TryGetTradableItem(order.TradableId, order.ExpiredBlockIndex, 1, out _));
+                Assert.True(_avatarState.inventory.TryGetTradableItem(order.TradableId, 1, 1, out _));
             }
             else
             {
                 Assert.Throws(exc, () => order.Digest(_avatarState, _tableSheets.CostumeStatSheet));
+            }
+        }
+
+        [Theory]
+        [InlineData(false, false, false, false, ItemSubType.Hourglass, ItemSubType.Hourglass, 1, 1, typeof(InvalidAddressException))]
+        [InlineData(true, false, false, false, ItemSubType.Hourglass, ItemSubType.Hourglass, 1, 1, typeof(InvalidAddressException))]
+        [InlineData(true, true, false, false, ItemSubType.Hourglass, ItemSubType.Hourglass, 1, 1, typeof(InvalidTradableIdException))]
+        [InlineData(true, true, true, false, ItemSubType.Hourglass, ItemSubType.Hourglass, 1, 1, typeof(ItemDoesNotExistException))]
+        [InlineData(true, true, true, true, ItemSubType.ApStone, ItemSubType.ApStone, 1, 2, typeof(ItemDoesNotExistException))]
+        [InlineData(true, true, true, true, ItemSubType.Hourglass, ItemSubType.ApStone, 1, 1, typeof(InvalidItemTypeException))]
+        [InlineData(true, true, true, true, ItemSubType.ApStone, ItemSubType.ApStone, 1, 1, null)]
+        public void ValidateCancelOrder(
+            bool useAgentAddress,
+            bool useAvatarAddress,
+            bool useTradableId,
+            bool add,
+            ItemSubType itemSubType,
+            ItemSubType orderItemSubType,
+            int itemCount,
+            int orderItemCount,
+            Type exc
+        )
+        {
+            var row = _tableSheets.MaterialItemSheet.OrderedList.First(r => r.ItemSubType == itemSubType);
+            TradableMaterial item = ItemFactory.CreateTradableMaterial(row);
+            item.RequiredBlockIndex = 1;
+            Guid orderId = new Guid("15396359-04db-68d5-f24a-d89c18665900");
+            var agentAddress = useAgentAddress ? _avatarState.agentAddress : default;
+            var avatarAddress = useAvatarAddress ? _avatarState.address : default;
+            var tradableId = useTradableId ? item.TradableId : default;
+            FungibleOrder order = OrderFactory.CreateFungibleOrder(
+                agentAddress,
+                avatarAddress,
+                orderId,
+                new FungibleAssetValue(_currency, 10, 0),
+                item.TradableId,
+                1,
+                1,
+                orderItemSubType
+            );
+
+            if (add)
+            {
+                _avatarState.inventory.AddItem(item, 1);
+            }
+
+            if (exc is null)
+            {
+                order.ValidateCancelOrder(_avatarState, tradableId);
+            }
+            else
+            {
+                Assert.Throws(exc, () => order.ValidateCancelOrder(_avatarState, tradableId));
             }
         }
 

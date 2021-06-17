@@ -177,7 +177,7 @@ namespace Lib9c.Tests.Model.Order
 
             Assert.Equal(add, _avatarState.inventory.TryGetTradableItems(tradableItem.TradableId, order.StartedBlockIndex, 1, out _));
 
-            if (add)
+            if (exc is null)
             {
                 ITradableItem result = order.Sell(_avatarState);
                 Assert.Equal(order.ExpiredBlockIndex, result.RequiredBlockIndex);
@@ -220,7 +220,10 @@ namespace Lib9c.Tests.Model.Order
             if (add)
             {
                 _avatarState.inventory.AddNonFungibleItem(item);
+            }
 
+            if (exc is null)
+            {
                 int cp = CPHelper.GetCP(tradableItem, _tableSheets.CostumeStatSheet);
                 Assert.True(cp > 0);
                 OrderDigest digest = order.Digest(_avatarState, _tableSheets.CostumeStatSheet);
@@ -236,6 +239,55 @@ namespace Lib9c.Tests.Model.Order
             else
             {
                 Assert.Throws(exc, () => order.Digest(_avatarState, _tableSheets.CostumeStatSheet));
+            }
+        }
+
+        [Theory]
+        [InlineData(false, false, false, false, ItemSubType.Weapon, ItemSubType.Weapon, typeof(InvalidAddressException))]
+        [InlineData(true, false, false, false, ItemSubType.Weapon, ItemSubType.Weapon, typeof(InvalidAddressException))]
+        [InlineData(true, true, false, false, ItemSubType.Weapon, ItemSubType.Weapon, typeof(InvalidTradableIdException))]
+        [InlineData(true, true, true, false, ItemSubType.Weapon, ItemSubType.Weapon, typeof(ItemDoesNotExistException))]
+        [InlineData(true, true, true, true, ItemSubType.Weapon, ItemSubType.Armor, typeof(InvalidItemTypeException))]
+        [InlineData(true, true, true, true, ItemSubType.Armor, ItemSubType.Armor, null)]
+        public void ValidateCancelOrder(
+            bool useAgentAddress,
+            bool useAvatarAddress,
+            bool useTradableId,
+            bool add,
+            ItemSubType itemSubType,
+            ItemSubType orderItemSubType,
+            Type exc
+        )
+        {
+            var row = _tableSheets.ItemSheet.OrderedList.First(r => r.ItemSubType == itemSubType);
+            ItemBase item = ItemFactory.CreateItem(row, new TestRandom());
+            Guid orderId = new Guid("15396359-04db-68d5-f24a-d89c18665900");
+            ITradableItem tradableItem = (ITradableItem)item;
+            tradableItem.RequiredBlockIndex = 1;
+            var agentAddress = useAgentAddress ? _avatarState.agentAddress : default;
+            var avatarAddress = useAvatarAddress ? _avatarState.address : default;
+            var tradableId = useTradableId ? tradableItem.TradableId : default;
+            NonFungibleOrder order = OrderFactory.CreateNonFungibleOrder(
+                agentAddress,
+                avatarAddress,
+                orderId,
+                new FungibleAssetValue(_currency, 10, 0),
+                tradableItem.TradableId,
+                1,
+                orderItemSubType
+            );
+            if (add)
+            {
+                _avatarState.inventory.AddNonFungibleItem(item);
+            }
+
+            if (exc is null)
+            {
+                order.ValidateCancelOrder(_avatarState, tradableId);
+            }
+            else
+            {
+                Assert.Throws(exc, () => order.ValidateCancelOrder(_avatarState, tradableId));
             }
         }
 

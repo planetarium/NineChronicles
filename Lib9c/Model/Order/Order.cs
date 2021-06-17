@@ -110,6 +110,19 @@ namespace Lib9c.Model.Order
             }
         }
 
+        public virtual void ValidateCancelOrder(AvatarState avatarState, Guid tradableId)
+        {
+            if (!avatarState.address.Equals(SellerAvatarAddress) || !avatarState.agentAddress.Equals(SellerAgentAddress))
+            {
+                throw new InvalidAddressException();
+            }
+
+            if (!TradableId.Equals(tradableId))
+            {
+                throw new InvalidTradableIdException($"{tradableId} is not equals {OrderId}");
+            }
+        }
+
         public override IValue Serialize()
         {
             var innerDictionary = ((Dictionary) base.Serialize())

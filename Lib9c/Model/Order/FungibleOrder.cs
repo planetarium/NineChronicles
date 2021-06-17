@@ -130,6 +130,28 @@ namespace Lib9c.Model.Order
                 $"Aborted because the tradable item({TradableId}) was failed to load from avatar's inventory.");
         }
 
+        public override void ValidateCancelOrder(AvatarState avatarState, Guid tradableId)
+        {
+            base.ValidateCancelOrder(avatarState, tradableId);
+
+            if (!avatarState.inventory.TryGetTradableItems(TradableId, ExpiredBlockIndex, ItemCount, out List<Inventory.Item> inventoryItems))
+            {
+                throw new ItemDoesNotExistException(
+                    $"Aborted because the tradable item({TradableId}) was failed to load from avatar's inventory.");
+            }
+
+            IEnumerable<ITradableItem> tradableItems = inventoryItems.Select(i => (ITradableItem)i.item).ToList();
+
+            foreach (var tradableItem in tradableItems)
+            {
+                if (!tradableItem.ItemSubType.Equals(ItemSubType))
+                {
+                    throw new InvalidItemTypeException(
+                        $"Expected ItemSubType: {tradableItem.ItemSubType}. Actual ItemSubType: {ItemSubType}");
+                }
+            }
+        }
+
         protected bool Equals(FungibleOrder other)
         {
             return base.Equals(other) && ItemCount == other.ItemCount;

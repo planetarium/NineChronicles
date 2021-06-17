@@ -107,5 +107,23 @@ namespace Lib9c.Model.Order
             throw new ItemDoesNotExistException(
                 $"Aborted because the tradable item({TradableId}) was failed to load from avatar's inventory.");
         }
+
+        public override void ValidateCancelOrder(AvatarState avatarState, Guid tradableId)
+        {
+            base.ValidateCancelOrder(avatarState, tradableId);
+
+            if (!avatarState.inventory.TryGetNonFungibleItem(TradableId, out INonFungibleItem nonFungibleItem))
+            {
+                throw new ItemDoesNotExistException(
+                    $"Aborted because the tradable item({TradableId}) was failed to load from avatar's inventory.");
+            }
+
+            if (!nonFungibleItem.ItemSubType.Equals(ItemSubType))
+            {
+                throw new InvalidItemTypeException(
+                    $"Expected ItemSubType: {nonFungibleItem.ItemSubType}. Actual ItemSubType: {ItemSubType}");
+            }
+        }
+
     }
 }
