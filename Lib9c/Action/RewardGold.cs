@@ -31,7 +31,7 @@ namespace Nekoyume.Action
             var states = context.PreviousStates;
             states = GenesisGoldDistribution(context, states);
             states = WeeklyArenaRankingBoard(context, states);
-            // FIXME Separate action before V100050 release
+            // FIXME Separate action before new shop release
             // Log.Debug("Start Migration");
             // states = MigrateOrder(context, states);
             // Log.Debug("Complete Migration");
