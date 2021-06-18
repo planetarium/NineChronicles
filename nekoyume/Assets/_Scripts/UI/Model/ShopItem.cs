@@ -14,35 +14,30 @@ namespace Nekoyume.UI.Model
         public readonly ReactiveProperty<Address> SellerAgentAddress = new ReactiveProperty<Address>();
         public readonly ReactiveProperty<Address> SellerAvatarAddress = new ReactiveProperty<Address>();
         public readonly ReactiveProperty<FungibleAssetValue> Price = new ReactiveProperty<FungibleAssetValue>();
-        public readonly ReactiveProperty<Guid> ProductId = new ReactiveProperty<Guid>();
+        public readonly ReactiveProperty<Guid> OrderId = new ReactiveProperty<Guid>();
+        public readonly ReactiveProperty<Guid> TradableId = new ReactiveProperty<Guid>();
         public readonly ReactiveProperty<ItemSubType> ItemSubType = new ReactiveProperty<ItemSubType>();
         public readonly ReactiveProperty<long> ExpiredBlockIndex = new ReactiveProperty<long>();
+        public readonly ReactiveProperty<int> Level = new ReactiveProperty<int>();
 
         public ShopItemView View;
 
-        public ShopItem(Nekoyume.Model.Item.ShopItem item)
-            : this(item.SellerAgentAddress, item.SellerAvatarAddress, item.Price, item.ProductId,
-                item.TradableFungibleItemCount, GetItemBase(item), item.ExpiredBlockIndex)
+        public ShopItem(OrderDigest orderDigest) : this(orderDigest, GetItemBase(orderDigest.ItemId))
         {
-
         }
 
-        private ShopItem(Address sellerAgentAddress, Address sellerAvatarAddress,
-                         FungibleAssetValue price, Guid productId, int count,
-                         ItemBase item, long expiredBlockIndex) : base(item, 1)
+        private ShopItem(OrderDigest orderDigest, ItemBase item) : base(item, 1)
         {
             GradeEnabled.Value = true;
-            SellerAgentAddress.Value = sellerAgentAddress;
-            SellerAvatarAddress.Value = sellerAvatarAddress;
-            Price.Value = price;
-            Count.Value = count;
-            ProductId.Value = productId;
+            SellerAgentAddress.Value = orderDigest.SellerAgentAddress;
+            SellerAvatarAddress.Value = orderDigest.SellerAgentAddress; // todo : 아바타 넣어줘야됨
+            Price.Value = orderDigest.Price;
+            Count.Value = orderDigest.ItemCount;
+            OrderId.Value = orderDigest.OrderId;
+            TradableId.Value = orderDigest.TradableId;
+            ExpiredBlockIndex.Value = orderDigest.ExpiredBlockIndex;
+            Level.Value = orderDigest.Level;
             ItemSubType.Value = item.ItemSubType;
-            ExpiredBlockIndex.Value = expiredBlockIndex;
-        }
-
-        public ShopItem(OrderDigest orderDigest) : this(orderDigest.SellerAgentAddress, orderDigest.SellerAgentAddress, orderDigest.Price, orderDigest.OrderId, orderDigest.ItemCount, GetItemBase(orderDigest), orderDigest.ExpiredBlockIndex)
-        {
         }
 
         public override void Dispose()
@@ -50,32 +45,15 @@ namespace Nekoyume.UI.Model
             SellerAgentAddress.Dispose();
             SellerAvatarAddress.Dispose();
             Price.Dispose();
-            ProductId.Dispose();
+            OrderId.Dispose();
             base.Dispose();
         }
 
-
-        private static ItemBase GetItemBase(Nekoyume.Model.Item.ShopItem item)
+        private static ItemBase GetItemBase(int itemId)
         {
-            if (item.ItemUsable != null)
-            {
-                return item.ItemUsable;
-            }
-
-            if (item.Costume != null)
-            {
-                return item.Costume;
-            }
-
-            return (ItemBase) item.TradableFungibleItem;
-        }
-
-        private static ItemBase GetItemBase(OrderDigest digest)
-        {
-            var row = Game.Game.instance.TableSheets.ItemSheet[digest.ItemId];
+            var row = Game.Game.instance.TableSheets.ItemSheet[itemId];
             var item = ItemFactory.CreateItem(row, new Cheat.DebugRandom());
             return item;
         }
-
     }
 }

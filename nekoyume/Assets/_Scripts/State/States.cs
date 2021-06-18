@@ -8,6 +8,7 @@ using Nekoyume.BlockChain;
 using Nekoyume.Model.State;
 using Nekoyume.State.Subjects;
 using Debug = UnityEngine.Debug;
+using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.State
 {
@@ -122,9 +123,30 @@ namespace Nekoyume.State
 
         public AvatarState AddOrReplaceAvatarState(Address avatarAddress, int index, bool initializeReactiveState = true)
         {
-            var avatarState =
-                new AvatarState((Bencodex.Types.Dictionary) Game.Game.instance.Agent.GetState(avatarAddress));
-            return AddOrReplaceAvatarState(avatarState, index, initializeReactiveState);
+            var state = GetAvatarStateV2(avatarAddress);
+            return AddOrReplaceAvatarState(state, index, initializeReactiveState);
+        }
+
+        private static AvatarState GetAvatarStateV2(Address address)
+        {
+            string[] keys =
+            {
+                LegacyInventoryKey,
+                LegacyWorldInformationKey,
+                LegacyQuestListKey,
+            };
+
+            var state = (Dictionary) Game.Game.instance.Agent.GetState(address);
+            foreach (var key in keys)
+            {
+                if (!state.ContainsKey(key))
+                {
+                    var keyAddress = address.Derive(key);
+                    var serialized = Game.Game.instance.Agent.GetState(keyAddress);
+                    state = state.SetItem(key, serialized);
+                }
+            }
+            return  new AvatarState(state);
         }
 
         /// <summary>
@@ -203,7 +225,8 @@ namespace Nekoyume.State
 
             if (isNew)
             {
-                var curAvatarState = new AvatarState((Dictionary) Game.Game.instance.Agent.GetState(avatarState.address));
+                var state = GetAvatarStateV2(avatarState.address);
+                var curAvatarState = new AvatarState(state);
                 AddOrReplaceAvatarState(curAvatarState, CurrentAvatarKey);
                 SetCombinationSlotStates(curAvatarState);
             }
