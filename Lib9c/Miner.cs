@@ -51,46 +51,21 @@ namespace Nekoyume.BlockChain
             Block<PolymorphicAction<ActionBase>> block = null;
             try
             {
-                if (!AuthorizedMiner)
-                {
-                    block = await _chain.MineBlock(
-                        Address,
-                        DateTimeOffset.UtcNow,
-                        cancellationToken: cancellationToken,
-                        maxTransactions: maxTransactions,
-                        append: false);
-                }
-                else
+                if (AuthorizedMiner)
                 {
                     _chain
                         .GetStagedTransactionIds()
                         .Select(txid => _chain.GetTransaction(txid)).ToList()
                         .ForEach(tx => _chain.UnstageTransaction(tx));
                     StageProofTransaction();
-
-                    block = await _chain.MineBlock(
-                        Address,
-                        DateTimeOffset.UtcNow,
-                        cancellationToken: cancellationToken,
-                        maxTransactions: maxTransactions,
-                        append: false);
-
-                    if (_chain.Policy is BlockPolicy policy)
-                    {
-                        List<Address> miners = policy.AuthorizedMinersState.Miners.OrderBy(miner => miner).ToList();
-                        int index = miners.IndexOf(Address);
-                        int interval = policy.BlockInterval.Seconds;
-                        if (interval > 0)
-                        {
-                            long currentTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
-                            int modulo = (interval * (index + 1)) - (int)(currentTime % (interval * miners.Count));
-                            int delay = modulo < 0
-                                ? modulo + (interval * miners.Count)
-                                : modulo;
-                            Thread.Sleep(delay * 1000);
-                        }
-                    }
                 }
+
+                block = await _chain.MineBlock(
+                    Address,
+                    DateTimeOffset.UtcNow,
+                    cancellationToken: cancellationToken,
+                    maxTransactions: maxTransactions,
+                    append: false);
 
                 _chain.Append(block);
                 if (_swarm is Swarm<PolymorphicAction<ActionBase>> s && s.Running)
