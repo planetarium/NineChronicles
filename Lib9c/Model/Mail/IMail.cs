@@ -1,3 +1,5 @@
+using Lib9c.Model.Order;
+
 namespace Nekoyume.Model.Mail
 {
     public interface IMail
@@ -11,5 +13,7 @@ namespace Nekoyume.Model.Mail
         void Read(MonsterCollectionMail monsterCollectionMail);
         void Read(OrderExpirationMail orderExpirationMail);
         void Read(CancelOrderMail cancelOrderMail);
+        void Read(OrderBuyerMail orderBuyerMail);
+        void Read(OrderSellerMail orderSellerMail);
     }
 }

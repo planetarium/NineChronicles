@@ -29,6 +29,8 @@ namespace Nekoyume.Model.Mail
                 ["monsterCollectionMail"] = d => new MonsterCollectionMail(d),
                 [nameof(OrderExpirationMail)] = d => new OrderExpirationMail(d),
                 [nameof(CancelOrderMail)] = d => new CancelOrderMail(d),
+                [nameof(OrderBuyerMail)] = d => new OrderBuyerMail(d),
+                [nameof(OrderSellerMail)] = d => new OrderSellerMail(d),
             };
 
         public Guid id;
