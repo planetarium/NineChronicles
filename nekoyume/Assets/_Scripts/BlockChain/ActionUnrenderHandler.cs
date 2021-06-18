@@ -153,12 +153,16 @@ namespace Nekoyume.BlockChain
                 return;
             }
 
-            var currentAvatarAddress = States.Instance.CurrentAvatarState.address;
-            var currentAvatarState = eval.OutputStates.GetAvatarState(currentAvatarAddress);
-
-            if (eval.Action.buyerAvatarAddress == currentAvatarAddress)
+            var agentAddress = States.Instance.AgentState.address;
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+            if (!eval.OutputStates.TryGetAvatarStateV2(agentAddress, avatarAddress,
+                out var avatarState))
             {
-                var agentAddress = States.Instance.AgentState.address;
+                return;
+            }
+
+            if (eval.Action.buyerAvatarAddress == avatarAddress)
+            {
                 var purchaseResults = eval.Action.buyerMultipleResult.purchaseResults;
                 foreach (var purchaseResult in purchaseResults)
                 {
@@ -172,8 +176,8 @@ namespace Nekoyume.BlockChain
                             : 1;
                         var tradableItem = (ITradableItem) itemBase;
                         LocalLayerModifier.ModifyAgentGold(agentAddress, -price);
-                        LocalLayerModifier.AddItem(currentAvatarAddress, tradableItem.TradableId, tradableItem.RequiredBlockIndex, count);
-                        LocalLayerModifier.RemoveNewAttachmentMail(currentAvatarAddress, purchaseResult.id);
+                        LocalLayerModifier.AddItem(avatarAddress, tradableItem.TradableId, tradableItem.RequiredBlockIndex, count);
+                        LocalLayerModifier.RemoveNewAttachmentMail(avatarAddress, purchaseResult.id);
                     }
                     else
                     {
@@ -184,7 +188,7 @@ namespace Nekoyume.BlockChain
                         }
 
                         var purchaseHistory = ReactiveShopState.PurchaseHistory[eval.Action.Id];
-                        var item = purchaseHistory.FirstOrDefault(x => x.ProductId.Value == purchaseResult.productId);
+                        var item = purchaseHistory.FirstOrDefault(x => x.OrderId.Value == purchaseResult.productId);
                         if (item is null)
                         {
                             continue;
@@ -200,20 +204,20 @@ namespace Nekoyume.BlockChain
             {
                 foreach (var sellerResult in eval.Action.sellerMultipleResult.sellerResults)
                 {
-                    if (sellerResult.shopItem.SellerAvatarAddress != currentAvatarAddress)
+                    if (sellerResult.shopItem.SellerAvatarAddress != avatarAddress)
                     {
                         continue;
                     }
 
                     // Local layer
-                    LocalLayerModifier.ModifyAgentGold(currentAvatarAddress, sellerResult.gold);
-                    LocalLayerModifier.RemoveNewAttachmentMail(currentAvatarAddress, sellerResult.id);
+                    LocalLayerModifier.ModifyAgentGold(avatarAddress, sellerResult.gold);
+                    LocalLayerModifier.RemoveNewAttachmentMail(avatarAddress, sellerResult.id);
                 }
             }
 
             UpdateAgentState(eval);
             UpdateCurrentAvatarState(eval);
-            UnrenderQuest(currentAvatarAddress, currentAvatarState.questList.completedQuestIds);
+            UnrenderQuest(avatarAddress, avatarState.questList.completedQuestIds);
         }
 
         private void ResponseSell(ActionBase.ActionEvaluation<Sell> eval)
@@ -270,11 +274,16 @@ namespace Nekoyume.BlockChain
                 return;
             }
 
+            var agentAddress = States.Instance.AgentState.address;
             var avatarAddress = eval.Action.avatarAddress;
             var fungibleId = eval.Action.dailyRewardResult.materials.First().Key.ItemId;
             var itemCount = eval.Action.dailyRewardResult.materials.First().Value;
             LocalLayerModifier.AddItem(avatarAddress, fungibleId, itemCount);
-            var avatarState = eval.OutputStates.GetAvatarState(avatarAddress);
+            if (!eval.OutputStates.TryGetAvatarStateV2(agentAddress, avatarAddress,
+                out var avatarState))
+            {
+                return;
+            }
             ReactiveAvatarState.DailyRewardReceivedIndex.SetValueAndForceNotify(
                 avatarState.dailyRewardReceivedIndex);
 
@@ -288,7 +297,11 @@ namespace Nekoyume.BlockChain
             var slot = eval.OutputStates.GetCombinationSlotState(avatarAddress, eval.Action.slotIndex);
             var result = (ItemEnhancement.ResultModel)slot.Result;
             var itemUsable = result.itemUsable;
-            var avatarState = eval.OutputStates.GetAvatarState(avatarAddress);
+            if (!eval.OutputStates.TryGetAvatarStateV2(agentAddress, avatarAddress,
+                out var avatarState))
+            {
+                return;
+            }
 
             // NOTE: 사용한 자원에 대한 레이어 다시 추가하기.
             LocalLayerModifier.ModifyAgentGold(agentAddress, -result.gold);
@@ -325,8 +338,14 @@ namespace Nekoyume.BlockChain
                 return;
             }
 
+            var agentAddress = States.Instance.AgentState.address;
             var avatarAddress = eval.Action.avatarAddress;
-            var avatarState = eval.OutputStates.GetAvatarState(avatarAddress);
+            if (!eval.OutputStates.TryGetAvatarStateV2(agentAddress, avatarAddress,
+                out var avatarState))
+            {
+                return;
+            }
+
             var mail = avatarState.mailBox.FirstOrDefault(e => e is MonsterCollectionMail);
             if (!(mail is MonsterCollectionMail {attachment: MonsterCollectionResult monsterCollectionResult}))
             {

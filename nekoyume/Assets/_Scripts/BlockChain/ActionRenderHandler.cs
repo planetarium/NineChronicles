@@ -286,20 +286,25 @@ namespace Nekoyume.BlockChain
                 //[TentuPlay] RapidCombinationConsumable 합성에 사용한 골드 기록
                 //Local에서 변경하는 States.Instance 보다는 블락에서 꺼내온 eval.OutputStates를 사용
                 var agentAddress = eval.Signer;
-                var qty = eval.OutputStates.GetAvatarState(avatarAddress).inventory.Materials
-                    .Count(i => i.ItemSubType == ItemSubType.Hourglass);
-                var prevQty = eval.PreviousStates.GetAvatarState(avatarAddress).inventory.Materials
-                    .Count(i => i.ItemSubType == ItemSubType.Hourglass);
-                new TPStashEvent().CharacterItemUse(
-                    player_uuid: agentAddress.ToHex(),
-                    character_uuid: States.Instance.CurrentAvatarState.address.ToHex().Substring(0, 4),
-                    item_category: itemCategory.Consumable,
-                    item_slug: "hourglass",
-                    item_quantity: (float)(prevQty - qty),
-                    reference_entity: entity.Items,
-                    reference_category_slug: "consumables_rapid_combination",
-                    reference_slug: slot.Result.itemUsable.Id.ToString()
-                );
+
+                if (eval.OutputStates.TryGetAvatarStateV2(agentAddress, avatarAddress, out var avatarState) &&
+                    eval.PreviousStates.TryGetAvatarStateV2(agentAddress, avatarAddress, out var preAvatarState))
+                {
+                    var qty = avatarState.inventory.Materials
+                        .Count(i => i.ItemSubType == ItemSubType.Hourglass);
+                    var prevQty = preAvatarState.inventory.Materials
+                        .Count(i => i.ItemSubType == ItemSubType.Hourglass);
+                    new TPStashEvent().CharacterItemUse(
+                        player_uuid: agentAddress.ToHex(),
+                        character_uuid: States.Instance.CurrentAvatarState.address.ToHex().Substring(0, 4),
+                        item_category: itemCategory.Consumable,
+                        item_slug: "hourglass",
+                        item_quantity: (float)(prevQty - qty),
+                        reference_entity: entity.Items,
+                        reference_category_slug: "consumables_rapid_combination",
+                        reference_slug: slot.Result.itemUsable.Id.ToString()
+                    );
+                }
 
                 UpdateAgentState(eval);
                 UpdateCurrentAvatarState(eval);
@@ -311,11 +316,15 @@ namespace Nekoyume.BlockChain
         {
             if (eval.Exception is null)
             {
-                var agentAddress = eval.Signer;
+                var agentAddress = States.Instance.AgentState.address;
                 var avatarAddress = eval.Action.AvatarAddress;
                 var slot = eval.OutputStates.GetCombinationSlotState(avatarAddress, eval.Action.SlotIndex);
                 var result = (CombinationConsumable.ResultModel) slot.Result;
-                var avatarState = eval.OutputStates.GetAvatarState(avatarAddress);
+
+                if (!eval.OutputStates.TryGetAvatarStateV2(agentAddress, avatarAddress, out var avatarState))
+                {
+                    return;
+                }
 
                 // NOTE: 사용한 자원에 대한 레이어 벗기기.
                 LocalLayerModifier.ModifyAgentGold(agentAddress, result.gold);
@@ -406,7 +415,10 @@ namespace Nekoyume.BlockChain
                 var slot = eval.OutputStates.GetCombinationSlotState(avatarAddress, eval.Action.slotIndex);
                 var result = (CombinationConsumable.ResultModel) slot.Result;
                 var itemUsable = result.itemUsable;
-                var avatarState = eval.OutputStates.GetAvatarState(avatarAddress);
+                if (!eval.OutputStates.TryGetAvatarStateV2(agentAddress, avatarAddress, out var avatarState))
+                {
+                    return;
+                }
 
                 LocalLayerModifier.ModifyAgentGold(agentAddress, result.gold);
                 LocalLayerModifier.ModifyAvatarActionPoint(avatarAddress, result.actionPoint);
@@ -452,32 +464,28 @@ namespace Nekoyume.BlockChain
         {
             if (eval.Exception is null)
             {
-                var avatarAddress = eval.Action.sellerAvatarAddress;
-                var tradableId = eval.Action.tradableId;
-                var blockIndex = Game.Game.instance.Agent.BlockIndex;
                 var count = eval.Action.count;
-                var avatarState = new AvatarState((Bencodex.Types.Dictionary) eval.PreviousStates.GetState(avatarAddress));
-                if (avatarState.inventory.TryGetTradableItems(tradableId, blockIndex, count, out var items))
+                var outputStates = eval.OutputStates;
+                var item = ReactiveShopState.GetItem(outputStates, eval.Action.tradableId);
+                if (item is null)
                 {
-                    string message = string.Empty;
-                    if (count > 1)
-                    {
-                        message = string.Format(L10nManager.Localize("NOTIFICATION_MULTIPLE_SELL_COMPLETE"),
-                            items.First().item.GetLocalizedName(),
-                            count);
-                    }
-                    else
-                    {
-                        message = string.Format(L10nManager.Localize("NOTIFICATION_SELL_COMPLETE"),
-                            items.First().item.GetLocalizedName());
-                    }
+                    return;
+                }
 
-                    OneLinePopup.Push(MailType.Auction, message);
+                string message = string.Empty;
+                if (count > 1)
+                {
+                    message = string.Format(L10nManager.Localize("NOTIFICATION_MULTIPLE_SELL_COMPLETE"),
+                        item.GetLocalizedName(),
+                        count);
                 }
                 else
                 {
-                    Debug.LogError("Failed to get non-fungible item from previous AvatarState.");
+                    message = string.Format(L10nManager.Localize("NOTIFICATION_SELL_COMPLETE"),
+                        item.GetLocalizedName());
                 }
+
+                OneLinePopup.Push(MailType.Auction, message);
 
                 UpdateCurrentAvatarState(eval);
                 Widget.Find<ShopSell>().ForceNotifyActiveFunc();
@@ -509,9 +517,13 @@ namespace Nekoyume.BlockChain
             if (eval.Exception is null)
             {
                 var agentAddress = States.Instance.AgentState.address;
-                var currentAvatarAddress = States.Instance.CurrentAvatarState.address;
-                var currentAvatarState = eval.OutputStates.GetAvatarState(currentAvatarAddress);
-                if (eval.Action.buyerAvatarAddress == currentAvatarAddress)
+                var avatarAddress = States.Instance.CurrentAvatarState.address;
+                if (!eval.OutputStates.TryGetAvatarStateV2(agentAddress, avatarAddress, out var avatarState))
+                {
+                    return;
+                }
+
+                if (eval.Action.buyerAvatarAddress == avatarAddress)
                 {
                     var purchaseResults = eval.Action.buyerMultipleResult.purchaseResults;
                     foreach (var purchaseResult in purchaseResults)
@@ -526,8 +538,8 @@ namespace Nekoyume.BlockChain
                                 : 1;
                             var tradableItem = (ITradableItem) itemBase;
                             LocalLayerModifier.ModifyAgentGold(agentAddress, price);
-                            LocalLayerModifier.RemoveItem(currentAvatarAddress, tradableItem.TradableId, tradableItem.RequiredBlockIndex, count);
-                            LocalLayerModifier.AddNewAttachmentMail(currentAvatarAddress, purchaseResult.id);
+                            LocalLayerModifier.RemoveItem(avatarAddress, tradableItem.TradableId, tradableItem.RequiredBlockIndex, count);
+                            LocalLayerModifier.AddNewAttachmentMail(avatarAddress, purchaseResult.id);
 
                             // Push notification
                             var format = L10nManager.Localize("NOTIFICATION_BUY_BUYER_COMPLETE");
@@ -558,7 +570,7 @@ namespace Nekoyume.BlockChain
                             }
 
                             var purchaseHistory = ReactiveShopState.PurchaseHistory[eval.Action.Id];
-                            var item = purchaseHistory.FirstOrDefault(x => x.ProductId.Value == purchaseResult.productId);
+                            var item = purchaseHistory.FirstOrDefault(x => x.OrderId.Value == purchaseResult.productId);
                             if (item is null)
                             {
                                 continue;
@@ -599,14 +611,14 @@ namespace Nekoyume.BlockChain
 
                     foreach (var sellerResult in eval.Action.sellerMultipleResult.sellerResults)
                     {
-                        if (sellerResult.shopItem.SellerAvatarAddress != currentAvatarAddress)
+                        if (sellerResult.shopItem.SellerAvatarAddress != avatarAddress)
                         {
                             continue;
                         }
 
                         // Local layer
                         LocalLayerModifier.ModifyAgentGold(agentAddress, -sellerResult.gold);
-                        LocalLayerModifier.AddNewAttachmentMail(currentAvatarAddress, sellerResult.id);
+                        LocalLayerModifier.AddNewAttachmentMail(avatarAddress, sellerResult.id);
 
                         // Push notification
                         var itemBase = sellerResult.itemUsable ?? (ItemBase) sellerResult.costume;
@@ -639,7 +651,7 @@ namespace Nekoyume.BlockChain
 
                 UpdateAgentState(eval);
                 UpdateCurrentAvatarState(eval);
-                RenderQuest(currentAvatarAddress, currentAvatarState.questList.completedQuestIds);
+                RenderQuest(avatarAddress, avatarState.questList.completedQuestIds);
             }
             else
             {
@@ -687,11 +699,14 @@ namespace Nekoyume.BlockChain
                         {
                             UpdateCurrentAvatarState(eval);
                             UpdateWeeklyArenaState(eval);
-                            var avatarState =
-                                eval.OutputStates.GetAvatarState(eval.Action.avatarAddress);
-                            RenderQuest(eval.Action.avatarAddress,
-                                avatarState.questList.completedQuestIds);
-                            _disposableForBattleEnd = null;
+                            Address agentAddress = States.Instance.AgentState.address;
+                            if (eval.OutputStates.TryGetAvatarStateV2(agentAddress, eval.Action.avatarAddress,
+                                out var avatarState))
+                            {
+                                RenderQuest(eval.Action.avatarAddress,
+                                    avatarState.questList.completedQuestIds);
+                                _disposableForBattleEnd = null;
+                            }
                         });
 
                 if (Widget.Find<LoadingScreen>().IsActive())
@@ -741,11 +756,14 @@ namespace Nekoyume.BlockChain
                         {
                             UpdateCurrentAvatarState(eval);
                             UpdateWeeklyArenaState(eval);
-                            var avatarState =
-                                eval.OutputStates.GetAvatarState(eval.Action.avatarAddress);
-                            RenderQuest(eval.Action.avatarAddress,
-                                avatarState.questList.completedQuestIds);
-                            _disposableForBattleEnd = null;
+                            Address agentAddress = States.Instance.AgentState.address;
+                            if (eval.OutputStates.TryGetAvatarStateV2(agentAddress,
+                                eval.Action.avatarAddress, out var avatarState))
+                            {
+                                RenderQuest(eval.Action.avatarAddress,
+                                    avatarState.questList.completedQuestIds);
+                                _disposableForBattleEnd = null;
+                            }
                         });
 
                 if (Widget.Find<LoadingScreen>().IsActive())
@@ -854,7 +872,10 @@ namespace Nekoyume.BlockChain
                 var slot = eval.OutputStates.GetCombinationSlotState(avatarAddress, eval.Action.slotIndex);
                 var result = (ItemEnhancement.ResultModel) slot.Result;
                 var itemUsable = result.itemUsable;
-                var avatarState = eval.OutputStates.GetAvatarState(avatarAddress);
+                if (!eval.OutputStates.TryGetAvatarStateV2(agentAddress, avatarAddress, out var avatarState))
+                {
+                    return;
+                }
 
                 // NOTE: 사용한 자원에 대한 레이어 벗기기.
                 LocalLayerModifier.ModifyAgentGold(agentAddress, result.gold);
@@ -948,8 +969,13 @@ namespace Nekoyume.BlockChain
                 return;
             }
 
+            var agentAddress = eval.Signer;
             var avatarAddress = eval.Action.avatarAddress;
-            var avatarState = eval.OutputStates.GetAvatarState(avatarAddress);
+            if (!eval.OutputStates.TryGetAvatarStateV2(agentAddress, avatarAddress, out var avatarState))
+            {
+                return;
+            }
+
             var mail = avatarState.mailBox.FirstOrDefault(e => e is MonsterCollectionMail);
             if (!(mail is MonsterCollectionMail {attachment: MonsterCollectionResult monsterCollectionResult}))
             {

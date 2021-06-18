@@ -220,9 +220,10 @@ namespace Nekoyume.BlockChain
             {
                 sellerAvatarAddress = avatarAddress,
                 tradableId = tradableId,
-                price = price,
                 count = count,
+                price = price,
                 itemSubType = itemSubType,
+                orderId = Guid.NewGuid(),
             };
             ProcessAction(action);
 
