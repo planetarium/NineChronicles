@@ -63,6 +63,8 @@ namespace Lib9c.Model.Order
 
         public abstract ITradableItem Cancel(AvatarState avatarState, long blockIndex);
 
+        public abstract OrderReceipt Transfer(AvatarState seller, AvatarState buyer, long blockIndex);
+
         public OrderDigest Digest(ShopItem shopItem, CostumeStatSheet costumeStatSheet)
         {
             ItemBase item;
@@ -97,6 +99,11 @@ namespace Lib9c.Model.Order
                 item.Id,
                 count
             );
+        }
+
+        public FungibleAssetValue GetTax()
+        {
+            return Price.DivRem(100, out _) * Buy.TaxRate;
         }
 
         public virtual void Validate(AvatarState avatarState, int count)

@@ -187,6 +187,22 @@ namespace Lib9c.Model.Order
                 : errorCode;
         }
 
+        public override OrderReceipt Transfer(AvatarState seller, AvatarState buyer, long blockIndex)
+        {
+            if (seller.inventory.TryGetTradableItem(TradableId, ExpiredBlockIndex, ItemCount,
+                out Inventory.Item inventoryItem))
+            {
+                TradableMaterial tradableItem = (TradableMaterial) inventoryItem.item;
+                seller.inventory.RemoveTradableItem(tradableItem, ItemCount);
+                TradableMaterial copy = (TradableMaterial) tradableItem.Clone();
+                copy.RequiredBlockIndex = blockIndex;
+                buyer.UpdateFromAddItem(copy, ItemCount, false);
+                return new OrderReceipt(OrderId, buyer.agentAddress, buyer.address, blockIndex);
+            }
+            throw new ItemDoesNotExistException(
+                $"Aborted because the tradable item({TradableId}) was failed to load from seller's inventory.");
+        }
+
         protected bool Equals(FungibleOrder other)
         {
             return base.Equals(other) && ItemCount == other.ItemCount;

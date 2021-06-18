@@ -151,5 +151,27 @@ namespace Lib9c.Model.Order
 
             return !nonFungibleItem.ItemSubType.Equals(ItemSubType) ? Buy.ErrorCodeInvalidItemType : errorCode;
         }
+
+        public override OrderReceipt Transfer(AvatarState seller, AvatarState buyer, long blockIndex)
+        {
+            if (seller.inventory.TryGetNonFungibleItem(TradableId, out INonFungibleItem nonFungibleItem))
+            {
+                seller.inventory.RemoveNonFungibleItem(TradableId);
+                nonFungibleItem.RequiredBlockIndex = blockIndex;
+                if (nonFungibleItem is Costume costume)
+                {
+                    buyer.UpdateFromAddCostume(costume, false);
+                }
+                else
+                {
+                    buyer.UpdateFromAddItem((ItemUsable) nonFungibleItem, false);
+                }
+
+                return new OrderReceipt(OrderId, buyer.agentAddress, buyer.address, blockIndex);
+            }
+
+            throw new ItemDoesNotExistException(
+                $"Aborted because the tradable item({TradableId}) was failed to load from avatar's inventory.");
+        }
     }
 }

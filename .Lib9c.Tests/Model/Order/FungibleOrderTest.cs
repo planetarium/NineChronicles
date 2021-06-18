@@ -389,6 +389,55 @@ namespace Lib9c.Tests.Model.Order
             Assert.Equal(expected, order.ValidateTransfer(_avatarState, tradableId, price, blockIndex));
         }
 
+        [Theory]
+        [InlineData(false, typeof(ItemDoesNotExistException))]
+        [InlineData(true, null)]
+        public void Transfer(bool add, Type exc)
+        {
+            var row = _tableSheets.MaterialItemSheet.OrderedList.First(r => r.ItemSubType == ItemSubType.Hourglass);
+            TradableMaterial item = ItemFactory.CreateTradableMaterial(row);
+            Guid orderId = new Guid("15396359-04db-68d5-f24a-d89c18665900");
+            FungibleOrder order = OrderFactory.CreateFungibleOrder(
+                _avatarState.agentAddress,
+                _avatarState.address,
+                orderId,
+                new FungibleAssetValue(_currency, 10, 0),
+                item.TradableId,
+                1,
+                1,
+                ItemSubType.Hourglass
+            );
+
+            if (add)
+            {
+                _avatarState.inventory.AddItem(item, 1);
+                order.Sell(_avatarState);
+            }
+
+            var buyer = new AvatarState(
+                Addresses.Blacksmith,
+                Addresses.Admin,
+                0,
+                _tableSheets.GetAvatarSheets(),
+                new GameConfigState(),
+                default,
+                "buyer"
+            );
+
+            if (exc is null)
+            {
+                order.Transfer(_avatarState, buyer, 100);
+                Assert.False(_avatarState.inventory.TryGetTradableItem(order.TradableId, 100, 1, out _));
+                Assert.True(buyer.inventory.TryGetTradableItem(order.TradableId, 100, 1, out Inventory.Item inventoryItem));
+                ITradableFungibleItem result = (ITradableFungibleItem)inventoryItem.item;
+                Assert.Equal(100, result.RequiredBlockIndex);
+            }
+            else
+            {
+                Assert.Throws(exc, () => order.Transfer(_avatarState, buyer, 0));
+            }
+        }
+
 #pragma warning disable SA1204
         public static IEnumerable<object[]> ValidateMemberData() => new List<object[]>
         {
