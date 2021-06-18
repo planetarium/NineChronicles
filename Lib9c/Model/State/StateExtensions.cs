@@ -390,8 +390,8 @@ namespace Nekoyume.Model.State
 
         #region Buy
 
-        public static PurchaseInfo ToPurchaseInfo(this IValue serialized) =>
-            new PurchaseInfo((Dictionary) serialized);
+        public static PurchaseInfo0 ToPurchaseInfo(this IValue serialized) =>
+            new PurchaseInfo0((Dictionary) serialized);
 
         public static BuyMultiple.PurchaseInfo ToPurchaseInfoLegacy(this IValue serialized) =>
             new BuyMultiple.PurchaseInfo((Dictionary) serialized);

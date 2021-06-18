@@ -190,7 +190,7 @@ namespace Lib9c.Tests.Action
         public void Execute(params ShopItemData[] shopItemMembers)
         {
             AvatarState buyerAvatarState = _initialState.GetAvatarState(_buyerAvatarAddress);
-            List<PurchaseInfo> purchaseInfos = new List<PurchaseInfo>();
+            List<PurchaseInfo0> purchaseInfos = new List<PurchaseInfo0>();
             Dictionary<Address, ShardedShopState> shardedShopStates = new Dictionary<Address, ShardedShopState>();
             ShopState legacyShopState = _initialState.GetShopState();
             foreach (var shopItemData in shopItemMembers)
@@ -281,7 +281,7 @@ namespace Lib9c.Tests.Action
                 );
                 Assert.DoesNotContain(((ItemBase)tradableItem).Id, buyerAvatarState.itemMap.Keys);
 
-                var purchaseInfo = new PurchaseInfo(
+                var purchaseInfo = new PurchaseInfo0(
                     shopItem.ProductId,
                     shopItem.SellerAgentAddress,
                     shopItem.SellerAvatarAddress,
@@ -395,7 +395,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Execute_ErrorCode_InvalidAddress()
         {
-            PurchaseInfo purchaseInfo = new PurchaseInfo(
+            PurchaseInfo0 purchaseInfo0 = new PurchaseInfo0(
                 default,
                 _buyerAgentAddress,
                 _sellerAvatarAddress,
@@ -405,7 +405,7 @@ namespace Lib9c.Tests.Action
             var action = new Buy7
             {
                 buyerAvatarAddress = _buyerAvatarAddress,
-                purchaseInfos = new[] { purchaseInfo },
+                purchaseInfos = new[] { purchaseInfo0 },
             };
 
             action.Execute(new ActionContext()
@@ -425,7 +425,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Execute_Throw_FailedLoadStateException()
         {
-            PurchaseInfo purchaseInfo = new PurchaseInfo(
+            PurchaseInfo0 purchaseInfo0 = new PurchaseInfo0(
                 default,
                 _buyerAgentAddress,
                 _sellerAvatarAddress,
@@ -435,7 +435,7 @@ namespace Lib9c.Tests.Action
             var action = new Buy7
             {
                 buyerAvatarAddress = default,
-                purchaseInfos = new[] { purchaseInfo },
+                purchaseInfos = new[] { purchaseInfo0 },
             };
 
             Assert.Throws<FailedLoadStateException>(() => action.Execute(new ActionContext()
@@ -461,7 +461,7 @@ namespace Lib9c.Tests.Action
             };
             _initialState = _initialState.SetState(_buyerAvatarAddress, avatarState.Serialize());
 
-            PurchaseInfo purchaseInfo = new PurchaseInfo(
+            PurchaseInfo0 purchaseInfo0 = new PurchaseInfo0(
                 default,
                 _buyerAgentAddress,
                 _sellerAvatarAddress,
@@ -471,7 +471,7 @@ namespace Lib9c.Tests.Action
             var action = new Buy7
             {
                 buyerAvatarAddress = _buyerAvatarAddress,
-                purchaseInfos = new[] { purchaseInfo },
+                purchaseInfos = new[] { purchaseInfo0 },
             };
 
             Assert.Throws<NotEnoughClearedStageLevelException>(() => action.Execute(new ActionContext()
@@ -487,7 +487,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Execute_ErrorCode_ItemDoesNotExist()
         {
-            PurchaseInfo purchaseInfo = new PurchaseInfo(
+            PurchaseInfo0 purchaseInfo0 = new PurchaseInfo0(
                 default,
                 default,
                 _sellerAvatarAddress,
@@ -497,7 +497,7 @@ namespace Lib9c.Tests.Action
             var action = new Buy7
             {
                 buyerAvatarAddress = _buyerAvatarAddress,
-                purchaseInfos = new[] { purchaseInfo },
+                purchaseInfos = new[] { purchaseInfo0 },
             };
 
             action.Execute(new ActionContext()
@@ -522,7 +522,7 @@ namespace Lib9c.Tests.Action
             TradableMaterial material =
                 ItemFactory.CreateTradableMaterial(
                     _tableSheets.MaterialItemSheet.OrderedList.First(r => r.ItemSubType == itemSubType));
-            PurchaseInfo purchaseInfo = new PurchaseInfo(
+            PurchaseInfo0 purchaseInfo0 = new PurchaseInfo0(
                 default,
                 default,
                 _sellerAvatarAddress,
@@ -546,7 +546,7 @@ namespace Lib9c.Tests.Action
             var action = new Buy7
             {
                 buyerAvatarAddress = _buyerAvatarAddress,
-                purchaseInfos = new[] { purchaseInfo },
+                purchaseInfos = new[] { purchaseInfo0 },
             };
 
             action.Execute(new ActionContext()
@@ -592,7 +592,7 @@ namespace Lib9c.Tests.Action
 
             Address agentAddress = useAgentAddress ? _sellerAgentAddress : default;
             Address avatarAddress = useAvatarAddress ? _sellerAvatarAddress : default;
-            PurchaseInfo purchaseInfo = new PurchaseInfo(
+            PurchaseInfo0 purchaseInfo0 = new PurchaseInfo0(
                 default,
                 agentAddress,
                 avatarAddress,
@@ -616,7 +616,7 @@ namespace Lib9c.Tests.Action
             var action = new Buy7
             {
                 buyerAvatarAddress = _buyerAvatarAddress,
-                purchaseInfos = new[] { purchaseInfo },
+                purchaseInfos = new[] { purchaseInfo0 },
             };
 
             action.Execute(new ActionContext()
@@ -657,7 +657,7 @@ namespace Lib9c.Tests.Action
             _initialState = _initialState.BurnAsset(_buyerAgentAddress, balance)
                 .SetState(shardedShopAddress, shopState.Serialize());
 
-            PurchaseInfo purchaseInfo = new PurchaseInfo(
+            PurchaseInfo0 purchaseInfo0 = new PurchaseInfo0(
                 _productId,
                 _sellerAgentAddress,
                 _sellerAvatarAddress,
@@ -668,7 +668,7 @@ namespace Lib9c.Tests.Action
             var action = new Buy7
             {
                 buyerAvatarAddress = _buyerAvatarAddress,
-                purchaseInfos = new[] { purchaseInfo },
+                purchaseInfos = new[] { purchaseInfo0 },
             };
 
             action.Execute(new ActionContext()
@@ -740,7 +740,7 @@ namespace Lib9c.Tests.Action
 
             Assert.True(shopItem.ExpiredBlockIndex > 0);
 
-            PurchaseInfo purchaseInfo = new PurchaseInfo(
+            PurchaseInfo0 purchaseInfo0 = new PurchaseInfo0(
                 _productId,
                 _sellerAgentAddress,
                 _sellerAvatarAddress,
@@ -751,7 +751,7 @@ namespace Lib9c.Tests.Action
             var action = new Buy7
             {
                 buyerAvatarAddress = _buyerAvatarAddress,
-                purchaseInfos = new[] { purchaseInfo },
+                purchaseInfos = new[] { purchaseInfo0 },
             };
 
             var nextState = action.Execute(new ActionContext()
@@ -798,7 +798,7 @@ namespace Lib9c.Tests.Action
 
             Assert.True(shopState.Products.ContainsKey(_productId));
 
-            PurchaseInfo purchaseInfo = new PurchaseInfo(
+            PurchaseInfo0 purchaseInfo0 = new PurchaseInfo0(
                 _productId,
                 _sellerAgentAddress,
                 _sellerAvatarAddress,
@@ -808,7 +808,7 @@ namespace Lib9c.Tests.Action
             var action = new Buy7
             {
                 buyerAvatarAddress = _buyerAvatarAddress,
-                purchaseInfos = new[] { purchaseInfo },
+                purchaseInfos = new[] { purchaseInfo0 },
             };
 
             action.Execute(new ActionContext()
@@ -850,7 +850,7 @@ namespace Lib9c.Tests.Action
 
             Assert.True(shopState.Products.ContainsKey(_productId));
 
-            PurchaseInfo purchaseInfo = new PurchaseInfo(
+            PurchaseInfo0 purchaseInfo0 = new PurchaseInfo0(
                 _productId,
                 _sellerAgentAddress,
                 _sellerAvatarAddress,
@@ -861,7 +861,7 @@ namespace Lib9c.Tests.Action
             var action = new Buy7
             {
                 buyerAvatarAddress = _buyerAvatarAddress,
-                purchaseInfos = new[] { purchaseInfo },
+                purchaseInfos = new[] { purchaseInfo0 },
             };
 
             action.Execute(new ActionContext()

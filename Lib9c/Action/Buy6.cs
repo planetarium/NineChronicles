@@ -29,7 +29,7 @@ namespace Nekoyume.Action
         public const int ErrorCodeInvalidAddress = 5;
 
         public Address buyerAvatarAddress;
-        public IEnumerable<PurchaseInfo> purchaseInfos;
+        public IEnumerable<PurchaseInfo0> purchaseInfos;
         public Buy.BuyerMultipleResult buyerMultipleResult;
         public Buy.SellerMultipleResult sellerMultipleResult;
 
