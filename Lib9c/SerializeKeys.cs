@@ -142,5 +142,6 @@ namespace Lib9c
         public const string OrderDigestListKey = "odl";
         public const string TradableIdKey = "ti";
         public const string OrderReceiptListKey = "orl";
+        public const string BuyerAgentAddressKey = "bga";
     }
 }

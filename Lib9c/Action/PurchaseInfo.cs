@@ -25,7 +25,12 @@ namespace Nekoyume.Action
 
         protected bool Equals(PurchaseInfo other)
         {
-            return productId.Equals(other.productId) && sellerAgentAddress.Equals(other.sellerAgentAddress) && sellerAvatarAddress.Equals(other.sellerAvatarAddress) && itemSubType == other.itemSubType && price.Equals(other.price);
+            return OrderId.Equals(other.OrderId) &&
+                   TradableId.Equals(other.TradableId) &&
+                   SellerAgentAddress.Equals(other.SellerAgentAddress) &&
+                   SellerAvatarAddress.Equals(other.SellerAvatarAddress) &&
+                   ItemSubType == other.ItemSubType &&
+                   Price.Equals(other.Price);
         }
 
         public override bool Equals(object obj)
@@ -40,64 +45,66 @@ namespace Nekoyume.Action
         {
             unchecked
             {
-                var hashCode = productId.GetHashCode();
-                hashCode = (hashCode * 397) ^ sellerAgentAddress.GetHashCode();
-                hashCode = (hashCode * 397) ^ sellerAvatarAddress.GetHashCode();
-                hashCode = (hashCode * 397) ^ (int) itemSubType;
-                hashCode = (hashCode * 397) ^ price.GetHashCode();
+                var hashCode = OrderId.GetHashCode();
+                hashCode = (hashCode * 397) ^ TradableId.GetHashCode();
+                hashCode = (hashCode * 397) ^ SellerAgentAddress.GetHashCode();
+                hashCode = (hashCode * 397) ^ SellerAvatarAddress.GetHashCode();
+                hashCode = (hashCode * 397) ^ (int) ItemSubType;
+                hashCode = (hashCode * 397) ^ Price.GetHashCode();
                 return hashCode;
             }
         }
 
-        public readonly Guid productId;
-        public readonly Address sellerAgentAddress;
-        public readonly Address sellerAvatarAddress;
-        public readonly ItemSubType itemSubType;
-        public readonly FungibleAssetValue price;
+        public readonly Guid OrderId;
+        public readonly Guid TradableId;
+        public readonly Address SellerAgentAddress;
+        public readonly Address SellerAvatarAddress;
+        public readonly ItemSubType ItemSubType;
+        public readonly FungibleAssetValue Price;
 
-        public PurchaseInfo(Guid id, Address agentAddress, Address avatarAddress, ItemSubType type, FungibleAssetValue itemPrice = default)
+        public PurchaseInfo(
+            Guid orderId,
+            Guid tradableId,
+            Address agentAddress,
+            Address avatarAddress,
+            ItemSubType type,
+            FungibleAssetValue itemPrice
+        )
         {
-            productId = id;
-            sellerAgentAddress = agentAddress;
-            sellerAvatarAddress = avatarAddress;
-            itemSubType = type;
-            if (!itemPrice.Equals(default))
-            {
-                price = itemPrice;
-            }
+            OrderId = orderId;
+            SellerAgentAddress = agentAddress;
+            SellerAvatarAddress = avatarAddress;
+            ItemSubType = type;
+            TradableId = tradableId;
+            Price = itemPrice;
         }
 
         public PurchaseInfo(Bencodex.Types.Dictionary serialized)
         {
-            productId = serialized[ProductIdKey].ToGuid();
-            sellerAvatarAddress = serialized[SellerAvatarAddressKey].ToAddress();
-            sellerAgentAddress = serialized[SellerAgentAddressKey].ToAddress();
-            itemSubType = serialized[ItemSubTypeKey].ToEnum<ItemSubType>();
-            if (serialized.ContainsKey(PriceKey))
-            {
-                price = serialized[PriceKey].ToFungibleAssetValue();
-            }
+            TradableId = serialized[TradableIdKey].ToGuid();
+            OrderId = serialized[OrderIdKey].ToGuid();
+            SellerAvatarAddress = serialized[SellerAvatarAddressKey].ToAddress();
+            SellerAgentAddress = serialized[SellerAgentAddressKey].ToAddress();
+            ItemSubType = serialized[ItemSubTypeKey].ToEnum<ItemSubType>();
+            Price = serialized[PriceKey].ToFungibleAssetValue();
         }
 
         public IValue Serialize()
         {
             var dictionary = new Dictionary<IKey, IValue>
             {
-                [(Text) ProductIdKey] = productId.Serialize(),
-                [(Text) SellerAvatarAddressKey] = sellerAvatarAddress.Serialize(),
-                [(Text) SellerAgentAddressKey] = sellerAgentAddress.Serialize(),
-                [(Text) ItemSubTypeKey] = itemSubType.Serialize(),
+                [(Text) OrderIdKey] = OrderId.Serialize(),
+                [(Text) SellerAvatarAddressKey] = SellerAvatarAddress.Serialize(),
+                [(Text) SellerAgentAddressKey] = SellerAgentAddress.Serialize(),
+                [(Text) ItemSubTypeKey] = ItemSubType.Serialize(),
+                [(Text) PriceKey] = Price.Serialize(),
             };
-            if (!price.Equals(default))
-            {
-                dictionary[(Text) PriceKey] = price.Serialize();
-            }
             return new Bencodex.Types.Dictionary(dictionary);
         }
 
         public int CompareTo(PurchaseInfo other)
         {
-            return productId.CompareTo(other.productId);
+            return OrderId.CompareTo(other.OrderId);
         }
 
         public int CompareTo(object obj)

@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
 using Bencodex.Types;
+using Lib9c.Model.Order;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Assets;
@@ -31,18 +32,17 @@ namespace Nekoyume.Action
         public const int ErrorCodeInvalidOrderId = 7;
         public const int ErrorCodeInvalidTradableId = 8;
         public const int ErrorCodeInvalidItemType = 9;
+        public const int ErrorCodeDuplicateSell = 10;
 
         public Address buyerAvatarAddress;
+        public List<(Guid orderId, int errorCode)> errors = new List<(Guid orderId, int errorCode)>();
         public IEnumerable<PurchaseInfo> purchaseInfos;
-        public BuyerMultipleResult buyerMultipleResult;
-        public SellerMultipleResult sellerMultipleResult;
-
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal => new Dictionary<string, IValue>
         {
             [BuyerAvatarAddressKey] = buyerAvatarAddress.Serialize(),
             [PurchaseInfosKey] = purchaseInfos
-                .OrderBy(p => p.productId)
+                .OrderBy(p => p.OrderId)
                 .Select(p => p.Serialize())
                 .Serialize(),
         }.ToImmutableDictionary();
@@ -50,7 +50,7 @@ namespace Nekoyume.Action
         protected override void LoadPlainValueInternal(IImmutableDictionary<string, IValue> plainValue)
         {
             buyerAvatarAddress = plainValue[BuyerAvatarAddressKey].ToAddress();
-            purchaseInfos = plainValue[PurchaseInfosKey].ToList(StateExtensions.ToPurchaseInfo);
+            purchaseInfos = plainValue[PurchaseInfosKey].ToList(value => new PurchaseInfo((Dictionary)value));
         }
 
         public override IAccountStateDelta Execute(IActionContext context)
@@ -64,31 +64,33 @@ namespace Nekoyume.Action
             {
                 foreach (var purchaseInfo in purchaseInfos)
                 {
-                    var sellerAvatarAddress = purchaseInfo.sellerAvatarAddress;
+                    var sellerAvatarAddress = purchaseInfo.SellerAvatarAddress;
                     var sellerInventoryAddress = sellerAvatarAddress.Derive(LegacyInventoryKey);
                     var sellerWorldInformationAddress = sellerAvatarAddress.Derive(LegacyWorldInformationKey);
                     var sellerQuestListAddress = sellerAvatarAddress.Derive(LegacyQuestListKey);
                     Address shardedShopAddress =
-                        ShardedShopState.DeriveAddress(purchaseInfo.itemSubType, purchaseInfo.productId);
+                        ShardedShopStateV2.DeriveAddress(purchaseInfo.ItemSubType, purchaseInfo.OrderId);
+                    Address orderReceiptAddress = OrderReceipt.DeriveAddress(purchaseInfo.OrderId);
                     states = states
                         .SetState(shardedShopAddress, MarkChanged)
                         .SetState(sellerAvatarAddress, MarkChanged)
                         .SetState(sellerInventoryAddress, MarkChanged)
                         .SetState(sellerWorldInformationAddress, MarkChanged)
                         .SetState(sellerQuestListAddress, MarkChanged)
+                        .SetState(orderReceiptAddress, MarkChanged)
                         .MarkBalanceChanged(
                             GoldCurrencyMock,
                             ctx.Signer,
-                            purchaseInfo.sellerAgentAddress,
+                            purchaseInfo.SellerAgentAddress,
                             GoldCurrencyState.Address);
                 }
+
                 return states
                     .SetState(buyerAvatarAddress, MarkChanged)
                     .SetState(buyerInventoryAddress, MarkChanged)
                     .SetState(buyerWorldInformationAddress, MarkChanged)
                     .SetState(buyerQuestListAddress, MarkChanged)
-                    .SetState(ctx.Signer, MarkChanged)
-                    .SetState(Addresses.Shop, MarkChanged);
+                    .SetState(ctx.Signer, MarkChanged);
             }
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, buyerAvatarAddress);
@@ -115,36 +117,50 @@ namespace Nekoyume.Action
                     GameConfig.RequireClearedStageLevel.ActionsInShop, current);
             }
 
-            List<PurchaseResult> purchaseResults = new List<PurchaseResult>();
-            List<SellerResult> sellerResults = new List<SellerResult>();
             MaterialItemSheet materialSheet = states.GetSheet<MaterialItemSheet>();
-            buyerMultipleResult = new BuyerMultipleResult();
-            sellerMultipleResult = new SellerMultipleResult();
 
             foreach (var purchaseInfo in purchaseInfos)
             {
-                PurchaseResult purchaseResult = new PurchaseResult(purchaseInfo.productId);
                 Address shardedShopAddress =
-                    ShardedShopState.DeriveAddress(purchaseInfo.itemSubType, purchaseInfo.productId);
-                Address sellerAgentAddress = purchaseInfo.sellerAgentAddress;
-                Address sellerAvatarAddress = purchaseInfo.sellerAvatarAddress;
+                    ShardedShopStateV2.DeriveAddress(purchaseInfo.ItemSubType, purchaseInfo.OrderId);
+                Address sellerAgentAddress = purchaseInfo.SellerAgentAddress;
+                Address sellerAvatarAddress = purchaseInfo.SellerAvatarAddress;
                 Address sellerInventoryAddress = sellerAvatarAddress.Derive(LegacyInventoryKey);
                 var sellerWorldInformationAddress = sellerAvatarAddress.Derive(LegacyWorldInformationKey);
                 Address sellerQuestListAddress = sellerAvatarAddress.Derive(LegacyQuestListKey);
-                Guid productId = purchaseInfo.productId;
+                Guid orderId = purchaseInfo.OrderId;
+                Address orderAddress = Order.DeriveAddress(orderId);
 
-                purchaseResults.Add(purchaseResult);
-
-                if (purchaseInfo.sellerAgentAddress == ctx.Signer)
+                if (purchaseInfo.SellerAgentAddress == ctx.Signer)
                 {
-                    purchaseResult.errorCode = ErrorCodeInvalidAddress;
+                    errors.Add((orderId, ErrorCodeInvalidAddress));
                     continue;
                 }
 
                 if (!states.TryGetState(shardedShopAddress, out Bencodex.Types.Dictionary shopStateDict))
                 {
-                    ShardedShopState shardedShopState = new ShardedShopState(shardedShopAddress);
-                    shopStateDict = (Dictionary) shardedShopState.Serialize();
+                    errors.Add((orderId, ErrorCodeFailedLoadingState));
+                    continue;
+                }
+
+                if (!states.TryGetState(orderAddress, out Dictionary rawOrder))
+                {
+                    errors.Add((orderId, ErrorCodeInvalidOrderId));
+                    continue;
+                }
+
+                Order order = OrderFactory.Deserialize(rawOrder);
+
+                var shardedShopState = new ShardedShopStateV2(shopStateDict);
+
+                try
+                {
+                    shardedShopState.Remove(order, context.BlockIndex);
+                }
+                catch (OrderIdDoesNotExistException)
+                {
+                    errors.Add((orderId, ErrorCodeInvalidOrderId));
+                    continue;
                 }
 
                 sw.Stop();
@@ -156,75 +172,11 @@ namespace Nekoyume.Action
                     addressesHex,
                     buyerAvatarAddress,
                     sellerAvatarAddress);
-                // Find product from ShardedShopState.
-                List products = (List) shopStateDict[ProductsKey];
-                IValue productIdSerialized = productId.Serialize();
-                IValue sellerAgentSerialized = purchaseInfo.sellerAgentAddress.Serialize();
-                IValue sellerAvatarSerialized = purchaseInfo.sellerAvatarAddress.Serialize();
-                Dictionary productSerialized = products
-                    .Select(p => (Dictionary) p)
-                    .FirstOrDefault(p =>
-                        p[LegacyProductIdKey].Equals(productIdSerialized) &&
-                        p[LegacySellerAvatarAddressKey].Equals(sellerAvatarSerialized) &&
-                        p[LegacySellerAgentAddressKey].Equals(sellerAgentSerialized));
 
-                bool fromLegacy = false;
-                if (productSerialized.Equals(Dictionary.Empty))
-                {
-                    if (purchaseInfo.itemSubType == ItemSubType.Hourglass ||
-                        purchaseInfo.itemSubType == ItemSubType.ApStone)
-                    {
-                        purchaseResult.errorCode = ErrorCodeItemDoesNotExist;
-                        continue;
-                    }
-                    // Backward compatibility.
-                    IValue rawShop = states.GetState(Addresses.Shop);
-                    if (!(rawShop is null))
-                    {
-                        Dictionary legacyShopDict = (Dictionary) rawShop;
-                        Dictionary legacyProducts = (Dictionary) legacyShopDict[LegacyProductsKey];
-                        IKey productKey = (IKey) productId.Serialize();
-                        // SoldOut
-                        if (!legacyProducts.ContainsKey(productKey))
-                        {
-                            purchaseResult.errorCode = ErrorCodeItemDoesNotExist;
-                            continue;
-                        }
-
-                        productSerialized = (Dictionary) legacyProducts[productKey];
-                        legacyProducts = (Dictionary) legacyProducts.Remove(productKey);
-                        legacyShopDict = legacyShopDict.SetItem(LegacyProductsKey, legacyProducts);
-                        states = states.SetState(Addresses.Shop, legacyShopDict);
-                        fromLegacy = true;
-                    }
-                }
-
-                ShopItem shopItem = new ShopItem(productSerialized);
-                if (!shopItem.SellerAgentAddress.Equals(sellerAgentAddress))
-                {
-                    purchaseResult.errorCode = ErrorCodeItemDoesNotExist;
-                    continue;
-                }
-
-                sw.Stop();
-                Log.Verbose("{AddressesHex}Buy Get Item: {Elapsed}", addressesHex, sw.Elapsed);
-                sw.Restart();
-
-                if (0 < shopItem.ExpiredBlockIndex && shopItem.ExpiredBlockIndex < context.BlockIndex)
-                {
-                    purchaseResult.errorCode = ErrorCodeShopItemExpired;
-                    continue;
-                }
-
-                if (!shopItem.Price.Equals(purchaseInfo.price))
-                {
-                    purchaseResult.errorCode = ErrorCodeInvalidPrice;
-                    continue;
-                }
 
                 if (!states.TryGetAvatarStateV2(sellerAgentAddress, sellerAvatarAddress, out var sellerAvatarState))
                 {
-                    purchaseResult.errorCode = ErrorCodeFailedLoadingState;
+                    errors.Add((orderId, ErrorCodeFailedLoadingState));
                     continue;
                 }
 
@@ -232,41 +184,72 @@ namespace Nekoyume.Action
                 Log.Verbose("{AddressesHex}Buy Get Seller AgentAvatarStates: {Elapsed}", addressesHex, sw.Elapsed);
                 sw.Restart();
 
+                int errorCode = order.ValidateTransfer(sellerAvatarState, purchaseInfo.TradableId, purchaseInfo.Price, context.BlockIndex);
+
+                if (errorCode != 0)
+                {
+                    errors.Add((orderId, errorCode));
+                    continue;
+                }
+
+                sw.Stop();
+                Log.Verbose("{AddressesHex}Buy Get Item: {Elapsed}", addressesHex, sw.Elapsed);
+                sw.Restart();
+
                 // Check Balance.
                 FungibleAssetValue buyerBalance = states.GetBalance(context.Signer, states.GetGoldCurrency());
-                if (buyerBalance < shopItem.Price)
+                if (buyerBalance < order.Price)
                 {
-                    purchaseResult.errorCode = ErrorCodeInsufficientBalance;
+                    errors.Add((orderId, ErrorCodeInsufficientBalance));
                     continue;
                 }
 
-                // Check Seller inventory.
-                ITradableItem tradableItem;
-                int count = 1;
-                if (!(shopItem.ItemUsable is null))
+                OrderReceipt orderReceipt;
+                try
                 {
-                    tradableItem = shopItem.ItemUsable;
+                    orderReceipt = order.Transfer(sellerAvatarState, buyerAvatarState, context.BlockIndex);
                 }
-                else if (!(shopItem.Costume is null))
+                catch (ItemDoesNotExistException)
                 {
-                    tradableItem = shopItem.Costume;
-                }
-                else
-                {
-                    tradableItem = shopItem.TradableFungibleItem;
-                    count = shopItem.TradableFungibleItemCount;
-                }
-
-                if (!sellerAvatarState.inventory.RemoveTradableItem(tradableItem, count) && !fromLegacy)
-                {
-                    purchaseResult.errorCode = ErrorCodeItemDoesNotExist;
+                    errors.Add((orderId, ErrorCodeItemDoesNotExist));
                     continue;
                 }
 
-                tradableItem.RequiredBlockIndex = context.BlockIndex;
+                Address orderReceiptAddress = OrderReceipt.DeriveAddress(orderId);
+                if (!(states.GetState(orderReceiptAddress) is null))
+                {
+                    errors.Add((orderId, ErrorCodeDuplicateSell));
+                    continue;
+                }
 
-                var tax = shopItem.Price.DivRem(100, out _) * TaxRate;
-                var taxedPrice = shopItem.Price - tax;
+                var orderSellerMail = new OrderSellerMail(
+                    context.BlockIndex,
+                    orderId,
+                    context.BlockIndex,
+                    orderId
+                );
+                var orderBuyerMail = new OrderBuyerMail(
+                    context.BlockIndex,
+                    orderId,
+                    context.BlockIndex,
+                    orderId
+                );
+
+                buyerAvatarState.UpdateV3(orderBuyerMail);
+                sellerAvatarState.UpdateV3(orderSellerMail);
+
+                // // Update quest.
+                buyerAvatarState.questList.UpdateTradeQuest(TradeType.Buy, order.Price);
+                sellerAvatarState.questList.UpdateTradeQuest(TradeType.Sell, order.Price);
+
+                sellerAvatarState.updatedAt = ctx.BlockIndex;
+                sellerAvatarState.blockIndex = ctx.BlockIndex;
+
+                buyerAvatarState.UpdateQuestRewards(materialSheet);
+                sellerAvatarState.UpdateQuestRewards(materialSheet);
+
+                FungibleAssetValue tax = order.GetTax();
+                var taxedPrice = order.Price - tax;
 
                 // Transfer tax.
                 states = states.TransferAsset(
@@ -281,62 +264,8 @@ namespace Nekoyume.Action
                     taxedPrice
                 );
 
-                products = (List) products.Remove(productSerialized);
-                shopStateDict = shopStateDict.SetItem(ProductsKey, new List<IValue>(products));
-
-                // Send result mail for buyer, seller.
-                purchaseResult.shopItem = shopItem;
-                purchaseResult.itemUsable = shopItem.ItemUsable;
-                purchaseResult.costume = shopItem.Costume;
-                purchaseResult.tradableFungibleItem = shopItem.TradableFungibleItem;
-                purchaseResult.tradableFungibleItemCount = shopItem.TradableFungibleItemCount;
-                var buyerMail = new BuyerMail(purchaseResult, ctx.BlockIndex, ctx.Random.GenerateRandomGuid(),
-                    ctx.BlockIndex);
-                purchaseResult.id = buyerMail.id;
-
-                var sellerResult = new SellerResult
-                {
-                    shopItem = shopItem,
-                    itemUsable = shopItem.ItemUsable,
-                    costume = shopItem.Costume,
-                    tradableFungibleItem = shopItem.TradableFungibleItem,
-                    tradableFungibleItemCount = shopItem.TradableFungibleItemCount,
-                    gold = taxedPrice
-                };
-                var sellerMail = new SellerMail(sellerResult, ctx.BlockIndex, ctx.Random.GenerateRandomGuid(),
-                    ctx.BlockIndex);
-                sellerResult.id = sellerMail.id;
-                sellerResults.Add(sellerResult);
-
-                buyerAvatarState.UpdateV3(buyerMail);
-                if (purchaseResult.itemUsable != null)
-                {
-                    buyerAvatarState.UpdateFromAddItem(purchaseResult.itemUsable, false);
-                }
-
-                if (purchaseResult.costume != null)
-                {
-                    buyerAvatarState.UpdateFromAddCostume(purchaseResult.costume, false);
-                }
-
-                if (purchaseResult.tradableFungibleItem is TradableMaterial material)
-                {
-                    buyerAvatarState.UpdateFromAddItem(material, shopItem.TradableFungibleItemCount, false);
-                }
-
-                sellerAvatarState.UpdateV3(sellerMail);
-
-                // Update quest.
-                buyerAvatarState.questList.UpdateTradeQuest(TradeType.Buy, shopItem.Price);
-                sellerAvatarState.questList.UpdateTradeQuest(TradeType.Sell, shopItem.Price);
-
-                sellerAvatarState.updatedAt = ctx.BlockIndex;
-                sellerAvatarState.blockIndex = ctx.BlockIndex;
-
-                buyerAvatarState.UpdateQuestRewards(materialSheet);
-                sellerAvatarState.UpdateQuestRewards(materialSheet);
-
                 states = states
+                    .SetState(orderReceiptAddress, orderReceipt.Serialize())
                     .SetState(sellerInventoryAddress, sellerAvatarState.inventory.Serialize())
                     .SetState(sellerWorldInformationAddress, sellerAvatarState.worldInformation.Serialize())
                     .SetState(sellerQuestListAddress, sellerAvatarState.questList.Serialize())
@@ -344,13 +273,10 @@ namespace Nekoyume.Action
                 sw.Stop();
                 Log.Verbose("{AddressesHex}Buy Set Seller AvatarState: {Elapsed}", addressesHex, sw.Elapsed);
                 sw.Restart();
-                states = states.SetState(shardedShopAddress, shopStateDict);
+                states = states.SetState(shardedShopAddress, shardedShopState.Serialize());
                 sw.Stop();
                 Log.Verbose("{AddressesHex}Buy Set ShopState: {Elapsed}", addressesHex, sw.Elapsed);
             }
-
-            buyerMultipleResult.purchaseResults = purchaseResults;
-            sellerMultipleResult.sellerResults = sellerResults;
 
             buyerAvatarState.updatedAt = ctx.BlockIndex;
             buyerAvatarState.blockIndex = ctx.BlockIndex;
