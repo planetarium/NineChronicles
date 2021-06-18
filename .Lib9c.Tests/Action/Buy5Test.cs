@@ -275,7 +275,7 @@ namespace Lib9c.Tests.Action
                 var nextShopState = new ShardedShopState((Dictionary)nextState.GetState(shardedShopAddress));
                 Assert.Empty(nextShopState.Products);
                 Guid itemId = purchaseInfo.productId;
-                Buy.PurchaseResult pr = buyAction.buyerMultipleResult.purchaseResults.First(r => r.productId == itemId);
+                Buy7.PurchaseResult pr = buyAction.buyerMultipleResult.purchaseResults.First(r => r.productId == itemId);
                 ShopItem shopItem = pr.shopItem;
                 FungibleAssetValue tax = shopItem.Price.DivRem(100, out _) * Buy.TaxRate;
                 FungibleAssetValue taxedPrice = shopItem.Price - tax;

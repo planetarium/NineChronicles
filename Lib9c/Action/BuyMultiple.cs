@@ -112,7 +112,7 @@ namespace Nekoyume.Action
         }
 
         [Serializable]
-        public class PurchaseResult : Buy.BuyerResult
+        public class PurchaseResult : Buy7.BuyerResult
         {
             public int errorCode = 0;
             public Guid productId;
@@ -166,7 +166,7 @@ namespace Nekoyume.Action
         [Serializable]
         public class SellerResult
         {
-            public IEnumerable<Buy.SellerResult> sellerResults;
+            public IEnumerable<Buy7.SellerResult> sellerResults;
 
             public SellerResult()
             {
@@ -286,7 +286,7 @@ namespace Nekoyume.Action
             buyerResult = new BuyerResult();
             sellerResult = new SellerResult();
             var purchaseResults = new List<PurchaseResult>();
-            var sellerResults = new List<Buy.SellerResult>();
+            var sellerResults = new List<Buy7.SellerResult>();
             var materialSheet = states.GetSheet<MaterialItemSheet>();
 
             foreach (var productInfo in purchaseInfos)
@@ -371,7 +371,7 @@ namespace Nekoyume.Action
                 var buyerMail = new BuyerMail(purchaseResult, ctx.BlockIndex, ctx.Random.GenerateRandomGuid(), ctx.BlockIndex);
                 purchaseResult.id = buyerMail.id;
 
-                var sellerResultToAdd = new Buy.SellerResult
+                var sellerResultToAdd = new Buy7.SellerResult
                 {
                     shopItem = shopItem,
                     itemUsable = shopItem.ItemUsable,

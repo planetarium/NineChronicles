@@ -337,7 +337,7 @@ namespace Lib9c.Tests.Action
                 Guid itemId = shopItemMembers
                     .Where(i => i.ProductId == purchaseInfo.productId)
                     .Select(i => i.ItemId).First();
-                Buy.PurchaseResult pr =
+                Buy7.PurchaseResult pr =
                     buyAction.buyerMultipleResult.purchaseResults.First(r => r.productId == purchaseInfo.productId);
                 ShopItem shopItem = pr.shopItem;
                 FungibleAssetValue tax = shopItem.Price.DivRem(100, out _) * Buy.TaxRate;
