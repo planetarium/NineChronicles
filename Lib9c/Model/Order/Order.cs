@@ -125,6 +125,26 @@ namespace Lib9c.Model.Order
             }
         }
 
+        public virtual int ValidateTransfer(AvatarState avatarState, Guid tradableId, FungibleAssetValue price, long blockIndex)
+        {
+            if (!avatarState.address.Equals(SellerAvatarAddress) || !avatarState.agentAddress.Equals(SellerAgentAddress))
+            {
+                return Buy.ErrorCodeInvalidAddress;
+            }
+
+            if (!TradableId.Equals(tradableId))
+            {
+                return Buy.ErrorCodeInvalidTradableId;
+            }
+
+            if (!Price.Equals(price))
+            {
+                return Buy.ErrorCodeInvalidPrice;
+            }
+
+            return ExpiredBlockIndex < blockIndex ? Buy.ErrorCodeShopItemExpired : 0;
+        }
+
         public override IValue Serialize()
         {
             var innerDictionary = ((Dictionary) base.Serialize())

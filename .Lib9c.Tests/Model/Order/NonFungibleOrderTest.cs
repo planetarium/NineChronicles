@@ -347,6 +347,57 @@ namespace Lib9c.Tests.Model.Order
             }
         }
 
+        [Theory]
+        [InlineData(true, false, false, true, true, true, false, Buy.ErrorCodeInvalidAddress)]
+        [InlineData(true, true, false, true, true, true, false, Buy.ErrorCodeInvalidAddress)]
+        [InlineData(true, false, true, true, true, true, false, Buy.ErrorCodeInvalidAddress)]
+        [InlineData(true, true, true, false, true, true, false, Buy.ErrorCodeInvalidTradableId)]
+        [InlineData(true, true, true, true, false, true, false, Buy.ErrorCodeInvalidPrice)]
+        [InlineData(true, true, true, true, true, true, true, Buy.ErrorCodeShopItemExpired)]
+        [InlineData(true, true, true, true, true, false, false, Buy.ErrorCodeItemDoesNotExist)]
+        [InlineData(false, true, true, true, true, true, false, Buy.ErrorCodeInvalidItemType)]
+        [InlineData(true, true, true, true, true, true, false, 0)]
+        public void ValidateTransfer(
+            bool equalItemSubtype,
+            bool useAgentAddress,
+            bool useAvatarAddress,
+            bool useTradableId,
+            bool usePrice,
+            bool add,
+            bool expire,
+            int expected
+        )
+        {
+            var row = _tableSheets.ItemSheet.OrderedList.First(r => r.ItemSubType == ItemSubType.Weapon);
+            ItemBase item = ItemFactory.CreateItem(row, new TestRandom());
+            Guid orderId = new Guid("15396359-04db-68d5-f24a-d89c18665900");
+            ITradableItem tradableItem = (ITradableItem)item;
+            tradableItem.RequiredBlockIndex = 1;
+            var agentAddress = useAgentAddress ? _avatarState.agentAddress : default;
+            var avatarAddress = useAvatarAddress ? _avatarState.address : default;
+            NonFungibleOrder order = OrderFactory.CreateNonFungibleOrder(
+                agentAddress,
+                avatarAddress,
+                orderId,
+                new FungibleAssetValue(_currency, 10, 0),
+                tradableItem.TradableId,
+                1,
+                equalItemSubtype ? ItemSubType.Weapon : ItemSubType.Armor
+            );
+            FungibleAssetValue price = usePrice ? order.Price : _currency * 0;
+            Guid tradableId = useTradableId ? tradableItem.TradableId : default;
+            if (add)
+            {
+                _avatarState.inventory.AddNonFungibleItem(item);
+                order.Sell(_avatarState);
+            }
+
+            long blockIndex = expire ? order.ExpiredBlockIndex + 1 : order.ExpiredBlockIndex;
+
+            Assert.Equal(expected, order.ValidateTransfer(_avatarState, tradableId, price, blockIndex));
+        }
+        }
+
 #pragma warning disable SA1204
         public static IEnumerable<object[]> ValidateMemberData() => new List<object[]>
         {

@@ -135,5 +135,21 @@ namespace Lib9c.Model.Order
             throw new ItemDoesNotExistException(
                 $"Aborted because the tradable item({TradableId}) was failed to load from avatar's inventory.");
         }
+
+        public override int ValidateTransfer(AvatarState avatarState, Guid tradableId, FungibleAssetValue price, long blockIndex)
+        {
+            int errorCode =  base.ValidateTransfer(avatarState, tradableId, price, blockIndex);
+            if (errorCode != 0)
+            {
+                return errorCode;
+            }
+
+            if (!avatarState.inventory.TryGetNonFungibleItem(TradableId, out INonFungibleItem nonFungibleItem))
+            {
+                return Buy.ErrorCodeItemDoesNotExist;
+            }
+
+            return !nonFungibleItem.ItemSubType.Equals(ItemSubType) ? Buy.ErrorCodeInvalidItemType : errorCode;
+        }
     }
 }

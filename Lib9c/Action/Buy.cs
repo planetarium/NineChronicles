@@ -28,6 +28,9 @@ namespace Nekoyume.Action
         public const int ErrorCodeInsufficientBalance = 4;
         public const int ErrorCodeInvalidAddress = 5;
         public const int ErrorCodeInvalidPrice = 6;
+        public const int ErrorCodeInvalidOrderId = 7;
+        public const int ErrorCodeInvalidTradableId = 8;
+        public const int ErrorCodeInvalidItemType = 9;
 
         public Address buyerAvatarAddress;
         public IEnumerable<PurchaseInfo> purchaseInfos;
