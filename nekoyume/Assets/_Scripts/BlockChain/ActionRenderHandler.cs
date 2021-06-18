@@ -5,6 +5,7 @@ using System.Linq;
 using Bencodex.Types;
 using Lib9c.Renderer;
 using Libplanet;
+using Libplanet.Action;
 using Libplanet.Assets;
 using Nekoyume.Action;
 using Nekoyume.L10n;
@@ -466,7 +467,7 @@ namespace Nekoyume.BlockChain
             {
                 var count = eval.Action.count;
                 var outputStates = eval.OutputStates;
-                var item = ReactiveShopState.GetItem(outputStates, eval.Action.tradableId);
+                var item = GetItem(outputStates, eval.Action.tradableId);
                 if (item is null)
                 {
                     return;
@@ -1113,6 +1114,17 @@ namespace Nekoyume.BlockChain
                 .Find<SystemPopup>()
                 .Show(L10nManager.Localize("UI_ERROR"), errorMsg,
                     L10nManager.Localize("UI_OK"), false);
+        }
+
+        private static ItemBase GetItem(IAccountStateDelta state, Guid tradableId)
+        {
+            var address = Addresses.GetItemAddress(tradableId);
+            if (state.GetState(address) is Dictionary dictionary)
+            {
+                return ItemFactory.Deserialize(dictionary);
+            }
+
+            return null;
         }
     }
 }

@@ -1,5 +1,8 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Bencodex.Types;
+using Lib9c.Model.Order;
 using mixpanel;
 using Nekoyume.Action;
 using Nekoyume.EnumType;
@@ -14,6 +17,7 @@ using Nekoyume.UI.Module;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
+using ObservableExtensions = UniRx.ObservableExtensions;
 using ShopItem = Nekoyume.UI.Model.ShopItem;
 
 namespace Nekoyume.UI
@@ -72,15 +76,13 @@ namespace Nekoyume.UI
         {
             base.Initialize();
 
-            shopItems.SharedModel.SelectedItemView
-                .Subscribe(OnClickShopItem)
+            ObservableExtensions.Subscribe(shopItems.SharedModel.SelectedItemView, OnClickShopItem)
                 .AddTo(gameObject);
 
-            SharedModel.ItemCountAndPricePopup.Value.Item
-                .Subscribe(SubscribeItemPopup)
+            ObservableExtensions.Subscribe(SharedModel.ItemCountAndPricePopup.Value.Item, SubscribeItemPopup)
                 .AddTo(gameObject);
 
-            shopBuyBoard.OnChangeBuyType.Subscribe(SetMultiplePurchase).AddTo(gameObject);
+            ObservableExtensions.Subscribe(shopBuyBoard.OnChangeBuyType, SetMultiplePurchase).AddTo(gameObject);
         }
 
         public override void Show(bool ignoreShowAnimation = false)
@@ -214,7 +216,7 @@ namespace Nekoyume.UI
 
         private void Buy(ShopItem shopItem)
         {
-            var purchaseInfos = new List<PurchaseInfo> { GetPurchseInfo(shopItem) };
+            var purchaseInfos = new List<PurchaseInfo> { GetPurchseInfo(shopItem.OrderId.Value) };
             Game.Game.instance.ActionManager.Buy(purchaseInfos,
                 new List<ShopItem> {shopItem});
 
@@ -305,13 +307,26 @@ namespace Nekoyume.UI
             }
         }
 
-        public static PurchaseInfo GetPurchseInfo(ShopItem shopItem)
+        public static PurchaseInfo GetPurchseInfo(Guid orderId)
         {
-            return new PurchaseInfo(shopItem.OrderId.Value,
-                shopItem.SellerAgentAddress.Value,
-                shopItem.SellerAvatarAddress.Value,
-                shopItem.ItemSubType.Value,
-                shopItem.Price.Value);
+            var order = GetOrder(orderId);
+            return new PurchaseInfo(orderId,
+                order.SellerAgentAddress,
+                order.SellerAvatarAddress,
+                order.ItemSubType,
+                order.Price);
+        }
+
+        private static Order GetOrder(Guid orderId)
+        {
+            var address = Order.DeriveAddress(orderId);
+            var state = Game.Game.instance.Agent.GetState(address);
+            if (state is Dictionary dictionary)
+            {
+                return OrderFactory.Deserialize(dictionary);
+            }
+
+            return null;
         }
 
         public static ItemBase GetItemBase(Buy.PurchaseResult result)

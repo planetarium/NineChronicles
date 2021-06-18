@@ -82,13 +82,13 @@ namespace Nekoyume.State
 
         public static void InitBuyDigests()
         {
-            _buyDigests = GetOrderDigests();
+            _buyDigests = GetBuyOrderDigests();
             UpdateBuyDigests();
         }
 
         public static void InitSellDigests()
         {
-            _sellDigests = GetOrderReceipts();
+            _sellDigests = GetSellOrderDigests();
             UpdateSellDigests();
         }
 
@@ -321,7 +321,7 @@ namespace Nekoyume.State
             return result;
         }
 
-        private static List<OrderDigest> GetOrderDigests()
+        private static List<OrderDigest> GetBuyOrderDigests()
         {
             var orderDigests = new Dictionary<Address, List<OrderDigest>>();
 
@@ -374,7 +374,7 @@ namespace Nekoyume.State
             }
         }
 
-        private static List<OrderDigest> GetOrderReceipts()
+        private static List<OrderDigest> GetSellOrderDigests()
         {
             var agentAddress = States.Instance.CurrentAvatarState.address;
             var receiptAddress = OrderDigestListState.DeriveAddress(agentAddress);
@@ -387,28 +387,6 @@ namespace Nekoyume.State
             }
 
             return receipts;
-        }
-
-        public static Order GetOrder(IAccountStateDelta state, Guid orderId)
-        {
-            var address = Order.DeriveAddress(orderId);
-            if (state.GetState(address) is Dictionary dictionary)
-            {
-                return OrderFactory.Deserialize(dictionary);
-            }
-
-            return null;
-        }
-
-        public static ItemBase GetItem(IAccountStateDelta state, Guid tradableId)
-        {
-            var address = Addresses.GetItemAddress(tradableId);
-            if (state.GetState(address) is Dictionary dictionary)
-            {
-                return ItemFactory.Deserialize(dictionary);
-            }
-
-            return null;
         }
     }
 }
