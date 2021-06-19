@@ -20,7 +20,7 @@ namespace Nekoyume.Action
         public override IAccountStateDelta Execute(IActionContext context)
         {
             IAccountStateDelta states = context.PreviousStates;
-            Address collectionAddress = MonsterCollectionState.DeriveAddress(context.Signer, collectRound);
+            Address collectionAddress = MonsterCollectionState0.DeriveAddress(context.Signer, collectRound);
             if (context.Rehearsal)
             {
                 return states
@@ -39,7 +39,7 @@ namespace Nekoyume.Action
                 throw new FailedLoadStateException($"Aborted as the monster collection state failed to load.");
             }
 
-            MonsterCollectionState monsterCollectionState = new MonsterCollectionState(stateDict);
+            MonsterCollectionState0 monsterCollectionState = new MonsterCollectionState0(stateDict);
             Currency currency = states.GetGoldCurrency();
             FungibleAssetValue balance = 0 * currency;
             MonsterCollectionSheet monsterCollectionSheet = states.GetSheet<MonsterCollectionSheet>();
