@@ -51,22 +51,17 @@ namespace Nekoyume.Action
             }
 
             var monsterCollectionState = new MonsterCollectionState(stateDict);
+            List<MonsterCollectionRewardSheet.RewardInfo> rewards = 
+                monsterCollectionState.CalculateRewards(
+                    states.GetSheet<MonsterCollectionRewardSheet>(),
+                    context.BlockIndex
+                );
 
-            int step = monsterCollectionState.CalculateStep(context.BlockIndex);
-            if (step < 1)
+            if (rewards.Count == 0)
             {
                 throw new RequiredBlockIndexException($"{collectionAddress} is not available yet");
             }
 
-            MonsterCollectionRewardSheet monsterCollectionRewardSheet = 
-                states.GetSheet<MonsterCollectionRewardSheet>();
-            List<MonsterCollectionRewardSheet.RewardInfo> rewards =
-                monsterCollectionRewardSheet[monsterCollectionState.Level].Rewards
-                .GroupBy(ri => ri.ItemId)
-                .Select(g => new MonsterCollectionRewardSheet.RewardInfo(
-                        g.Key,
-                        g.Sum(ri => ri.Quantity) * step))
-                .ToList();
             Guid id = context.Random.GenerateRandomGuid();
             var result = new MonsterCollectionResult(id, avatarAddress, rewards);
             var mail = new MonsterCollectionMail(result, context.BlockIndex, id, context.BlockIndex);

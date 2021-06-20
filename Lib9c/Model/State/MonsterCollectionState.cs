@@ -97,6 +97,27 @@ namespace Nekoyume.Model.State
             return step;
         }
 
+        public List<MonsterCollectionRewardSheet.RewardInfo> CalculateRewards(
+            MonsterCollectionRewardSheet sheet,
+            long blockIndex
+        )
+        {
+            int step = CalculateStep(blockIndex);
+            if (step > 0)
+            {
+                return sheet[Level].Rewards
+                    .GroupBy(ri => ri.ItemId)
+                    .Select(g => new MonsterCollectionRewardSheet.RewardInfo(
+                                g.Key,
+                                g.Sum(ri => ri.Quantity) * step))
+                    .ToList();
+            }
+            else
+            {
+                return new List<MonsterCollectionRewardSheet.RewardInfo>();
+            }
+        }
+
         public override IValue Serialize()
         {
 #pragma warning disable LAA1002
