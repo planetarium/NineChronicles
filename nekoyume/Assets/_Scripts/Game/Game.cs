@@ -193,23 +193,51 @@ namespace Nekoyume.Game
                 return;
             }
 
+            Debug.Log("[Game]Subscribe RPCAgent");
+
             rpcAgent.OnRetryStarted
                 .ObserveOnMainThread()
-                .Subscribe(OnRPCAgentRetryStarted)
+                .Subscribe(agent =>
+                {
+                    Debug.Log($"[Game]RPCAgent OnRetryStarted. {rpcAgent.Address.ToHex()}");
+                    OnRPCAgentRetryStarted(agent);
+                })
                 .AddTo(gameObject);
 
-            // NOTE: RPCAgent가 허브에 조인을 재시도하는 것과 프리로드를 끝마쳤을 때를 구독합니다.
             rpcAgent.OnRetryEnded
-                .Zip(rpcAgent.OnPreloadEnded, (agent, agent1) => agent)
-                .First()
-                .Repeat()
                 .ObserveOnMainThread()
-                .Subscribe(OnRPCAgentRetryAndPreloadEnded)
+                .Subscribe(agent =>
+                {
+                    Debug.Log($"[Game]RPCAgent OnRetryEnded. {rpcAgent.Address.ToHex()}");
+                    OnRPCAgentRetryAndPreloadEnded(agent);
+                })
+                .AddTo(gameObject);
+
+            rpcAgent.OnPreloadStarted
+                .ObserveOnMainThread()
+                .Subscribe(agent =>
+                {
+                    Debug.Log($"[Game]RPCAgent OnPreloadStarted. {rpcAgent.Address.ToHex()}");
+                    OnRPCAgentRetryAndPreloadEnded(agent);
+                })
+                .AddTo(gameObject);
+            
+            rpcAgent.OnPreloadEnded
+                .ObserveOnMainThread()
+                .Subscribe(agent =>
+                {
+                    Debug.Log($"[Game]RPCAgent OnPreloadEnded. {rpcAgent.Address.ToHex()}");
+                    OnRPCAgentRetryAndPreloadEnded(agent);
+                })
                 .AddTo(gameObject);
 
             rpcAgent.OnDisconnected
                 .ObserveOnMainThread()
-                .Subscribe(QuitWithAgentConnectionError)
+                .Subscribe(agent =>
+                {
+                    Debug.Log($"[Game]RPCAgent OnDisconnected. {rpcAgent.Address.ToHex()}");
+                    QuitWithAgentConnectionError(agent);
+                })
                 .AddTo(gameObject);
         }
 
@@ -363,9 +391,10 @@ namespace Nekoyume.Game
 
         private void ShowNext(bool succeed)
         {
-            IsInitialized = true;
+            Debug.Log($"[Game]ShowNext({succeed}) invoked");
             if (succeed)
             {
+                IsInitialized = true;
                 var intro = Widget.Find<Intro>();
                 intro.Close();
                 Widget.Find<PreloadingScreen>().Show();
