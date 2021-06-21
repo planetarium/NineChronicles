@@ -115,7 +115,7 @@ namespace Nekoyume.Action
 
             if (!states.TryGetState(shardedShopAddress, out BxDictionary shopStateDict))
             {
-                throw new FailedLoadStateException("");
+                throw new FailedLoadStateException($"{addressesHex}failed to load {nameof(ShardedShopStateV2)}({shardedShopAddress}).");
             }
 
             sw.Stop();
@@ -124,7 +124,7 @@ namespace Nekoyume.Action
 
             if (!states.TryGetState(Order.DeriveAddress(orderId), out Dictionary orderDict))
             {
-                throw new FailedLoadStateException("");
+                throw new FailedLoadStateException($"{addressesHex}failed to load {nameof(Order)}({Order.DeriveAddress(orderId)}).");
             }
 
             Order order = OrderFactory.Deserialize(orderDict);
@@ -135,7 +135,7 @@ namespace Nekoyume.Action
             states = states.SetState(shardedShopAddress, shardedShopState.Serialize());
             if (!states.TryGetState(orderDigestListAddress, out Dictionary rawList))
             {
-                throw new FailedLoadStateException("");
+                throw new FailedLoadStateException($"{addressesHex}failed to load {nameof(OrderDigest)}({orderDigestListAddress}).");
             }
             var receiptList = new OrderDigestListState(rawList);
             receiptList.Remove(order.OrderId);

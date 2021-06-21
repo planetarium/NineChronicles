@@ -110,7 +110,7 @@ namespace Lib9c.Model.Order
         {
             if (!avatarState.address.Equals(SellerAvatarAddress) || !avatarState.agentAddress.Equals(SellerAgentAddress))
             {
-                throw new InvalidAddressException();
+                throw new InvalidAddressException($"Invalid Seller Addresses. Expected Addresses: {SellerAgentAddress}, {SellerAvatarAddress}. Actual: {avatarState.agentAddress}, {avatarState.address}");
             }
 
             if (count < 1)
@@ -123,7 +123,7 @@ namespace Lib9c.Model.Order
         {
             if (!avatarState.address.Equals(SellerAvatarAddress) || !avatarState.agentAddress.Equals(SellerAgentAddress))
             {
-                throw new InvalidAddressException();
+                throw new InvalidAddressException($"Invalid Seller Addresses. Expected Addresses: {SellerAgentAddress}, {SellerAvatarAddress}. Actual: {avatarState.agentAddress}, {avatarState.address}");
             }
 
             if (!TradableId.Equals(tradableId))
