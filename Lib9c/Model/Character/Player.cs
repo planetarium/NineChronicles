@@ -318,6 +318,28 @@ namespace Nekoyume.Model
 
             UpdateExp();
         }
+
+        public void GetExpV3(long waveExp, bool log = false)
+        {
+            if (!characterLevelSheet.TryGetLevel(Exp.Current + waveExp, out var newLevel))
+            {
+                waveExp = Exp.Max - Exp.Current - 1;
+                newLevel = Level;
+            }
+
+            Exp.Current += waveExp;
+
+            if (log)
+            {
+                var getExp = new GetExp((CharacterBase) Clone(), waveExp);
+                Simulator.Log.Add(getExp);
+            }
+
+            if (Level == newLevel)
+            {
+                return;
+            }
+
             if (Level < newLevel)
             {
                 eventMap?.Add(new KeyValuePair<int, int>((int) QuestEventType.Level, newLevel - Level));
