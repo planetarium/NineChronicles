@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Linq;
 using Nekoyume.Battle;
 using Nekoyume.EnumType;
