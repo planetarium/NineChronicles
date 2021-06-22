@@ -6,14 +6,15 @@ using mixpanel;
 using Nekoyume.Helper;
 using Nekoyume.Model.Item;
 using Nekoyume.UI;
-using UniRx;
 using UnityEngine;
 using Nekoyume.State;
-using TentuPlay.Api;
 using Nekoyume.Model.State;
 
 namespace Nekoyume.Game.Character
 {
+    // NOTE: Avoid Ambiguous invocation:
+    // System.IDisposable Subscribe<T>(this IObservable<T>, Action<T>)
+    // System.ObservableExtensions and UniRx.ObservableExtensions
     using UniRx;
 
     // todo: 경험치 정보를 `CharacterBase`로 옮기는 것이 좋겠음.
@@ -637,12 +638,6 @@ namespace Nekoyume.Game.Character
 
             if (Level != level)
             {
-                //[TentuPlay] 아바타 레벨업 기록
-                new TPStashEvent().CharacterLevelUp(
-                    player_uuid: Game.instance.Agent.Address.ToHex(),
-                    character_uuid: States.Instance.CurrentAvatarState.address.ToHex()
-                        .Substring(0, 4), level_from: (int) level, level_to: (int) Level);
-
                 Mixpanel.Track("Unity/User Level Up", new Value
                 {
                     ["code"] = level,

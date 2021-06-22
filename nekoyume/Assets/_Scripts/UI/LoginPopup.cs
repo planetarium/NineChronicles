@@ -11,7 +11,6 @@ using Nekoyume.UI.Module;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using TentuPlay.Api;
 
 namespace Nekoyume.UI
 {
@@ -245,9 +244,6 @@ namespace Nekoyume.UI
             if (Login)
             {
                 Close();
-
-                //[TentuPlay] 로그인 기록
-                new TPStashEvent().PlayerLogin(player_uuid: _privateKey.PublicKey.ToAddress().ToHex());
             }
             else
             {
@@ -559,11 +555,6 @@ namespace Nekoyume.UI
             var ppk = ProtectedPrivateKey.Protect(privateKey, passPhraseField.text);
             KeyStore.Add(ppk);
             _privateKey = privateKey;
-
-            //[TentuPlay] 가입 기록
-            TPStashEvent MyStashEvent = new TPStashEvent();
-            MyStashEvent.Join(player_uuid: _privateKey.PublicKey.ToAddress().ToHex());
-            MyStashEvent.PlayerLogin(player_uuid: _privateKey.PublicKey.ToAddress().ToHex());
         }
 
         private void SetState(States states)
