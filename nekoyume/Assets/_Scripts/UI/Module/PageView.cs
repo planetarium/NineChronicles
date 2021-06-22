@@ -63,6 +63,7 @@ namespace Nekoyume.UI.Module
             var percentage = (eventData.pressPosition.x - eventData.position.x) / contentWidth;
             var newX = _panelPosition.x;
             var pageDelta = Mathf.Abs(percentage);
+            var targetPosition = _panelPosition;
 
             if (pageDelta >= dragPercentThreshold)
             {
@@ -77,24 +78,16 @@ namespace Nekoyume.UI.Module
                 }
 
                 var x = Mathf.Clamp(newX, _xBorderMin, _xBorderMax);
-                var targetPosition = new Vector3(x, content.localPosition.y, content.localPosition.z);
+                targetPosition = new Vector3(x, content.localPosition.y, content.localPosition.z);
                 var pageDiff = Mathf.RoundToInt((_panelPosition.x - x) / contentWidth);
                 SetPageIndex(_currentIndex + pageDiff);
+            }
 
-                if (_animationCoroutine != null)
-                {
-                    StopCoroutine(_animationCoroutine);
-                }
-                _animationCoroutine = StartCoroutine(CoSmoothMovePage(content.localPosition, targetPosition));
-            }
-            else
+            if (_animationCoroutine != null)
             {
-                if (_animationCoroutine != null)
-                {
-                    StopCoroutine(_animationCoroutine);
-                }
-                _animationCoroutine = StartCoroutine(CoSmoothMovePage(content.localPosition, _panelPosition));
+                StopCoroutine(_animationCoroutine);
             }
+            _animationCoroutine = StartCoroutine(CoSmoothMovePage(content.localPosition, targetPosition));
         }
 
         private IEnumerator CoSmoothMovePage(Vector3 startPos, Vector3 endPos)
