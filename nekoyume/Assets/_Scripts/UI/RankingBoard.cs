@@ -477,22 +477,15 @@ namespace Nekoyume.UI
                 var currentAvatarAddress = States.Instance.CurrentAvatarState.address;
                 var infos2 = state.GetArenaInfos(currentAvatarAddress, 20, 20);
                 // Player does not play prev & this week arena.
-                if (!infos2.Any())
+                if (!infos2.Any() && state.OrderedArenaInfos.Any())
                 {
                     var characterSheet = Game.Game.instance.TableSheets.CharacterSheet;
                     var costumeStatSheet = Game.Game.instance.TableSheets.CostumeStatSheet;
                     var cp = CPHelper.GetCPV2(States.Instance.CurrentAvatarState, characterSheet, costumeStatSheet);
-                    Address address;
-                    try
-                    {
-                        address = state.OrderedArenaInfos.First(i => i.CombatPoint <= cp).AvatarAddress;
-                    }
-                    catch (Exception e)
-                    {
-                        address = state.OrderedArenaInfos[state.OrderedArenaInfos.Count / 2].AvatarAddress;
-                    }
+                    var address = state.OrderedArenaInfos.First(i => i.CombatPoint <= cp).AvatarAddress;
                     infos2 = state.GetArenaInfos(address, 20, 20);
                 }
+
                 infos.AddRange(infos2);
                 infos = infos.ToImmutableHashSet().OrderBy(tuple => tuple.rank).ToList();
             }
