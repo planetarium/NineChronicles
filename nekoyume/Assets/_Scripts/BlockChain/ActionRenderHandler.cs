@@ -270,7 +270,7 @@ namespace Nekoyume.BlockChain
         private void TransferAsset()
         {
             _renderer.EveryRender<TransferAsset>()
-                .Where(ValidateEvaluationForCurrentAgent)
+                .Where(HasUpdatedAssetsForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseTransferAsset).AddTo(_disposables);
         }
@@ -1014,19 +1014,27 @@ namespace Nekoyume.BlockChain
                 return;
             }
 
+            var senderAddress = eval.Action.Sender;
             var recipientAddress = eval.Action.Recipient;
             var currentAgentAddress = States.Instance.AgentState.address;
 
-            if (recipientAddress == currentAgentAddress)
+            if (senderAddress == currentAgentAddress)
             {
-                var senderAddress = eval.Action.Sender;
                 var amount = eval.Action.Amount;
-                var messageFormat = L10nManager.Localize("UI_TRANSFERASSET_NOTIFICATION");
+                var messageFormat = L10nManager.Localize("UI_TRANSFERASSET_NOTIFICATION_SENDER");
+                var message = string.Format(messageFormat, amount, recipientAddress);
+
+                OneLinePopup.Push(MailType.System, message);
+            }
+            else if (recipientAddress == currentAgentAddress)
+            {
+                var amount = eval.Action.Amount;
+                var messageFormat = L10nManager.Localize("UI_TRANSFERASSET_NOTIFICATION_RECIPIENT");
                 var message = string.Format(messageFormat, amount, senderAddress);
 
                 OneLinePopup.Push(MailType.System, message);
-                UpdateAgentState(eval);
             }
+            UpdateAgentState(eval);
         }
 
         public static void RenderQuest(Address avatarAddress, IEnumerable<int> ids)

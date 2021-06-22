@@ -150,7 +150,7 @@ namespace Nekoyume.BlockChain
         private void TransferAsset()
         {
             _renderer.EveryUnrender<TransferAsset>()
-                .Where(ValidateEvaluationForCurrentAgent)
+                .Where(HasUpdatedAssetsForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseTransferAsset)
                 .AddTo(_disposables);
