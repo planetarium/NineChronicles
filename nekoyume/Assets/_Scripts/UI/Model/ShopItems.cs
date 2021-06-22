@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Bencodex.Types;
 using Lib9c.Model.Order;
+using Nekoyume.Helper;
 using Nekoyume.Model.Item;
 using Nekoyume.State;
 using Nekoyume.UI.Module;
@@ -88,24 +89,14 @@ namespace Nekoyume.UI.Model
 
             DeselectItemView();
             _selectedItemViewModel.Value = view.Model;
-            var item = GetItem(view.Model.TradableId.Value);
+            var item = Util.GetItemBaseByTradableId(view.Model.TradableId.Value);
             _selectedItemViewModel.Value.Selected.Value = true;
             _selectedItemViewModel.Value.ItemBase.Value = item;
             SelectedItemView.SetValueAndForceNotify(view);
 
         }
 
-        private static ItemBase GetItem(Guid tradableId)
-        {
-            var address = Addresses.GetItemAddress(tradableId);
-            var state = Game.Game.instance.Agent.GetState(address);
-            if (state is Dictionary dictionary)
-            {
-                return ItemFactory.Deserialize(dictionary);
-            }
 
-            return null;
-        }
 
         public void DeselectItemView()
         {

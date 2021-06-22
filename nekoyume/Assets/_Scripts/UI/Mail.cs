@@ -1,6 +1,4 @@
-using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using Nekoyume.Action;
 using Nekoyume.L10n;
@@ -13,7 +11,6 @@ using Nekoyume.UI.Module;
 using Nekoyume.UI.Scroller;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
@@ -237,52 +234,25 @@ namespace Nekoyume.UI
             popup.Pop(model);
         }
 
-        public void Read(SellCancelMail mail)
+        public void Read(OrderBuyerMail orderBuyerMail)
         {
-            var avatarAddress = States.Instance.CurrentAvatarState.address;
-            var attachment = (SellCancellation.Result) mail.attachment;
-            var itemBase = ShopSell.GetItemBase(attachment);
-            var tradableItem = (ITradableItem) itemBase;
 
-            Find<OneButtonPopup>().Show(L10nManager.Localize("UI_SELL_CANCEL_INFO"),
-                L10nManager.Localize("UI_YES"),
-                () =>
-                {
-                    LocalLayerModifier.AddItem(avatarAddress, tradableItem.TradableId, tradableItem.RequiredBlockIndex, 1);
-                    LocalLayerModifier.RemoveNewAttachmentMail(avatarAddress, mail.id, true);
-                });
         }
 
-        public void Read(BuyerMail buyerMail)
+        public void Read(OrderSellerMail orderSellerMail)
         {
-            var avatarAddress = States.Instance.CurrentAvatarState.address;
-            var attachment = (Buy.BuyerResult) buyerMail.attachment;
-            var itemBase = ShopBuy.GetItemBase(attachment);
-            var tradableItem = (ITradableItem) itemBase;
-            var count = attachment.tradableFungibleItemCount > 0 ?
-                             attachment.tradableFungibleItemCount : 1;
-            var popup = Find<CombinationResultPopup>();
-            var model = new UI.Model.CombinationResultPopup(new CountableItem(itemBase, count))
-            {
-                isSuccess = true,
-                materialItems = new List<CombinationMaterial>()
-            };
-            model.OnClickSubmit.Subscribe(_ =>
-            {
-                LocalLayerModifier.AddItem(avatarAddress, tradableItem.TradableId, tradableItem.RequiredBlockIndex, count);
-                LocalLayerModifier.RemoveNewAttachmentMail(avatarAddress, buyerMail.id, true);
-            }).AddTo(gameObject);
-            popup.Pop(model);
+
         }
 
-        public void Read(SellerMail sellerMail)
+        public void Read(OrderExpirationMail orderExpirationMail)
         {
-            var avatarAddress = States.Instance.CurrentAvatarState.address;
-            var agentAddress = States.Instance.AgentState.address;
-            var attachment = (Buy.SellerResult) sellerMail.attachment;
-            LocalLayerModifier.ModifyAgentGold(agentAddress, attachment.gold);
-            LocalLayerModifier.RemoveNewAttachmentMail(avatarAddress, sellerMail.id);
+
         }
+
+        public void Read(CancelOrderMail cancelOrderMail)
+        {
+        }
+
 
         public void Read(ItemEnhanceMail itemEnhanceMail)
         {
@@ -373,11 +343,6 @@ namespace Nekoyume.UI
             popup.Pop(monsterCollectionResult.rewards);
         }
 
-        public void Read(OrderExpirationMail orderExpirationMail)
-        {
-            throw new NotImplementedException();
-        }
-
         public void TutorialActionClickFirstCombinationMailSubmitButton()
         {
             if (MailBox.Count == 0)
@@ -394,6 +359,21 @@ namespace Nekoyume.UI
             }
 
             Read(mail);
+        }
+
+        public void Read(SellCancelMail mail)
+        {
+            // Deprecated function
+        }
+
+        public void Read(BuyerMail buyerMail)
+        {
+            // Deprecated function
+        }
+
+        public void Read(SellerMail sellerMail)
+        {
+            // Deprecated function
         }
     }
 }

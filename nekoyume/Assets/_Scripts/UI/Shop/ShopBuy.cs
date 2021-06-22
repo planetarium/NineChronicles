@@ -8,6 +8,7 @@ using Nekoyume.Action;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
+using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
@@ -43,7 +44,7 @@ namespace Nekoyume.UI
             SharedModel = new Shop();
             CloseWidget = null;
 
-            var ratio = (float)Screen.height / (float)Screen.width;
+            var ratio = (float) Screen.height / (float) Screen.width;
             var count = Mathf.RoundToInt(10 * ratio) - 2;
 
             shopItems.Items.Clear();
@@ -79,10 +80,12 @@ namespace Nekoyume.UI
             ObservableExtensions.Subscribe(shopItems.SharedModel.SelectedItemView, OnClickShopItem)
                 .AddTo(gameObject);
 
-            ObservableExtensions.Subscribe(SharedModel.ItemCountAndPricePopup.Value.Item, SubscribeItemPopup)
+            ObservableExtensions
+                .Subscribe(SharedModel.ItemCountAndPricePopup.Value.Item, SubscribeItemPopup)
                 .AddTo(gameObject);
 
-            ObservableExtensions.Subscribe(shopBuyBoard.OnChangeBuyType, SetMultiplePurchase).AddTo(gameObject);
+            ObservableExtensions.Subscribe(shopBuyBoard.OnChangeBuyType, SetMultiplePurchase)
+                .AddTo(gameObject);
         }
 
         public override void Show(bool ignoreShowAnimation = false)
@@ -106,16 +109,10 @@ namespace Nekoyume.UI
             {
                 base.Show(ignoreShowAnimation);
 
-                Find<BottomMenu>().Show(
-                    UINavigator.NavigationType.Back,
-                    SubscribeBackButtonClick,
-                    true,
-                    BottomMenu.ToggleableType.Mail,
-                    BottomMenu.ToggleableType.Quest,
-                    BottomMenu.ToggleableType.Chat,
-                    BottomMenu.ToggleableType.IllustratedBook,
-                    BottomMenu.ToggleableType.Ranking,
-                    BottomMenu.ToggleableType.Character);
+                Find<BottomMenu>().Show(UINavigator.NavigationType.Back, SubscribeBackButtonClick,
+                    true, BottomMenu.ToggleableType.Mail, BottomMenu.ToggleableType.Quest,
+                    BottomMenu.ToggleableType.Chat, BottomMenu.ToggleableType.IllustratedBook,
+                    BottomMenu.ToggleableType.Ranking, BottomMenu.ToggleableType.Character);
 
                 AudioController.instance.PlayMusic(AudioController.MusicCode.Shop);
                 shopBuyBoard.ShowDefaultView();
@@ -157,11 +154,8 @@ namespace Nekoyume.UI
 
         private void ShowNPC()
         {
-            var go = Game.Game.instance.Stage.npcFactory.Create(
-                NPCId,
-                NPCPosition,
-                LayerType.InGameBackground,
-                3);
+            var go = Game.Game.instance.Stage.npcFactory.Create(NPCId, NPCPosition,
+                LayerType.InGameBackground, 3);
             _npc = go.GetComponent<NPC>();
             _npc.SpineController.Appear();
             go.SetActive(true);
@@ -179,10 +173,7 @@ namespace Nekoyume.UI
                 return;
             }
 
-            tooltip.ShowForShop(
-                view.RectTransform,
-                view.Model,
-                ButtonEnabledFuncForBuy,
+            tooltip.ShowForShop(view.RectTransform, view.Model, ButtonEnabledFuncForBuy,
                 L10nManager.Localize("UI_BUY"),
                 _ => ShowBuyPopup(tooltip.itemInformation.Model.item.Value as ShopItem),
                 _ => shopItems.SharedModel.DeselectItemView(), true);
@@ -197,10 +188,8 @@ namespace Nekoyume.UI
 
             var price = shopItem.Price.Value.GetQuantityString();
             var content = string.Format(L10nManager.Localize("UI_BUY_MULTIPLE_FORMAT"), 1, price);
-            Find<TwoButtonPopup>().Show(content,
-                L10nManager.Localize("UI_BUY"),
-                L10nManager.Localize("UI_CANCEL"),
-                (() => { Buy(shopItem); }));
+            Find<TwoButtonPopup>().Show(content, L10nManager.Localize("UI_BUY"),
+                L10nManager.Localize("UI_CANCEL"), (() => { Buy(shopItem); }));
         }
 
         private void SubscribeItemPopup(CountableItem data)
@@ -216,20 +205,13 @@ namespace Nekoyume.UI
 
         private void Buy(ShopItem shopItem)
         {
-            var purchaseInfos = new List<PurchaseInfo> { GetPurchseInfo(shopItem.OrderId.Value) };
-            Game.Game.instance.ActionManager.Buy(purchaseInfos,
-                new List<ShopItem> {shopItem});
+            var purchaseInfos = new List<PurchaseInfo> {GetPurchseInfo(shopItem.OrderId.Value)};
+            Game.Game.instance.ActionManager.Buy(purchaseInfos, new List<ShopItem> {shopItem});
 
-            var countProps = new Value
-            {
-                ["Count"] = 1,
-            };
+            var countProps = new Value {["Count"] = 1,};
             Mixpanel.Track("Unity/Number of Purchased Items", countProps);
 
-            var buyProps = new Value
-            {
-                ["Price"] = shopItem.Price.Value.GetQuantityString(),
-            };
+            var buyProps = new Value {["Price"] = shopItem.Price.Value.GetQuantityString(),};
             Mixpanel.Track("Unity/Buy", buyProps);
 
             SharedModel.ItemCountAndPricePopup.Value.Item.Value = null;
@@ -274,7 +256,6 @@ namespace Nekoyume.UI
         }
 
 
-
         private void OnClickShopItem(ShopItemView view)
         {
             if (!shopItems.SharedModel.isMultiplePurchase && shopBuyBoard.IsAcitveWishListView)
@@ -297,9 +278,7 @@ namespace Nekoyume.UI
             if (shopItems.SharedModel.isMultiplePurchase && shopItems.SharedModel.WishItemCount > 0)
             {
                 Widget.Find<TwoButtonPopup>().Show(L10nManager.Localize("UI_CLOSE_BUY_WISH_LIST"),
-                    L10nManager.Localize("UI_YES"),
-                    L10nManager.Localize("UI_NO"),
-                    callback);
+                    L10nManager.Localize("UI_YES"), L10nManager.Localize("UI_NO"), callback);
             }
             else
             {
@@ -309,54 +288,39 @@ namespace Nekoyume.UI
 
         public static PurchaseInfo GetPurchseInfo(Guid orderId)
         {
-            var order = GetOrder(orderId);
-            return new PurchaseInfo(orderId,
-                order.SellerAgentAddress,
-                order.SellerAvatarAddress,
-                order.ItemSubType,
-                order.Price);
+            var order = Util.GetOrder(orderId);
+            return new PurchaseInfo(orderId, order.TradableId, order.SellerAgentAddress,
+                order.SellerAvatarAddress, order.ItemSubType, order.Price);
         }
 
-        private static Order GetOrder(Guid orderId)
-        {
-            var address = Order.DeriveAddress(orderId);
-            var state = Game.Game.instance.Agent.GetState(address);
-            if (state is Dictionary dictionary)
-            {
-                return OrderFactory.Deserialize(dictionary);
-            }
-
-            return null;
-        }
-
-        public static ItemBase GetItemBase(Buy.PurchaseResult result)
-        {
-            if (result.itemUsable != null)
-            {
-                return result.itemUsable;
-            }
-
-            if (result.costume != null)
-            {
-                return result.costume;
-            }
-
-            return (ItemBase)result.tradableFungibleItem;
-        }
-
-        public static ItemBase GetItemBase(AttachmentActionResult result)
-        {
-            if (result.itemUsable != null)
-            {
-                return result.itemUsable;
-            }
-
-            if (result.costume != null)
-            {
-                return result.costume;
-            }
-
-            return (ItemBase)result.tradableFungibleItem;
-        }
+        // public static ItemBase GetItemBase(Buy.PurchaseResult result)
+        // {
+        //     if (result.itemUsable != null)
+        //     {
+        //         return result.itemUsable;
+        //     }
+        //
+        //     if (result.costume != null)
+        //     {
+        //         return result.costume;
+        //     }
+        //
+        //     return (ItemBase)result.tradableFungibleItem;
+        // }
+        //
+        // public static ItemBase GetItemBase(AttachmentActionResult result)
+        // {
+        //     if (result.itemUsable != null)
+        //     {
+        //         return result.itemUsable;
+        //     }
+        //
+        //     if (result.costume != null)
+        //     {
+        //         return result.costume;
+        //     }
+        //
+        //     return (ItemBase)result.tradableFungibleItem;
+        // }
     }
 }

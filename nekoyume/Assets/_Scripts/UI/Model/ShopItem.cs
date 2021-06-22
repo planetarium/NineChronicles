@@ -1,6 +1,7 @@
 using System;
 using Lib9c.Model.Order;
 using Libplanet.Assets;
+using Nekoyume.Helper;
 using Nekoyume.Model.Item;
 using Nekoyume.UI.Module;
 using UniRx;
@@ -17,7 +18,7 @@ namespace Nekoyume.UI.Model
 
         public ShopItemView View;
 
-        public ShopItem(OrderDigest orderDigest) : this(orderDigest, GetItemBase(orderDigest.ItemId))
+        public ShopItem(OrderDigest orderDigest) : this(orderDigest, Util.GetItemBaseByItemId(orderDigest.ItemId))
         {
         }
 
@@ -37,13 +38,6 @@ namespace Nekoyume.UI.Model
             Price.Dispose();
             OrderId.Dispose();
             base.Dispose();
-        }
-
-        private static ItemBase GetItemBase(int itemId)
-        {
-            var row = Game.Game.instance.TableSheets.ItemSheet[itemId];
-            var item = ItemFactory.CreateItem(row, new Cheat.DebugRandom());
-            return item;
         }
     }
 }
