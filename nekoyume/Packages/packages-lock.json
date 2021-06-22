@@ -1,5 +1,12 @@
 {
   "dependencies": {
+    "com.brunomikoski.animationsequencer": {
+      "version": "0.1.6",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {},
+      "url": "https://package.openupm.com"
+    },
     "com.coffee.softmask-for-ugui": {
       "version": "https://github.com/mob-sakai/SoftMaskForUGUI.git#upm",
       "depth": 0,
