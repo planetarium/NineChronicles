@@ -48,11 +48,32 @@ namespace Nekoyume.UI
                     var expiredItem = Util.GetItemBaseByOrderId(orderExpirationMail.OrderId);
                     return string.Format(L10nManager.Localize("UI_SELL_EXPIRATION_MAIL_FORMAT"),
                         GetLocalizedNonColoredName(expiredItem));
-
                 case CancelOrderMail cancelOrderMail:
                     var cancelItem = Util.GetItemBaseByOrderId(cancelOrderMail.OrderId);
                     return string.Format(L10nManager.Localize("UI_SELL_CANCEL_MAIL_FORMAT"),
                         GetLocalizedNonColoredName(cancelItem));
+
+                case BuyerMail buyerMail:
+                    return string.Format(
+                        L10nManager.Localize("UI_BUYER_MAIL_FORMAT"),
+                        GetLocalizedNonColoredName(GetItemBase(buyerMail.attachment)));
+
+                case SellerMail sellerMail:
+                    var attachment = sellerMail.attachment;
+                    if (!(attachment is Buy7.SellerResult sellerResult))
+                    {
+                        throw new InvalidCastException($"({nameof(Buy7.SellerResult)}){nameof(attachment)}");
+                    }
+                    return string.Format(
+                        L10nManager.Localize("UI_SELLER_MAIL_FORMAT"),
+                        sellerResult.gold,
+                        GetLocalizedNonColoredName(GetItemBase(attachment)));
+
+                case SellCancelMail sellCancelMail:
+                    return string.Format(
+                        L10nManager.Localize("UI_SELL_CANCEL_MAIL_FORMAT"),
+                        GetLocalizedNonColoredName(GetItemBase(sellCancelMail.attachment))
+                    );
 
                 case DailyRewardMail _:
                     return L10nManager.Localize("UI_DAILY_REWARD_MAIL_FORMAT");

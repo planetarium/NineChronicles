@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Cysharp.Threading.Tasks;
 using mixpanel;
+using Nekoyume.Action;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Controller;
 using Nekoyume.L10n;
@@ -106,7 +107,8 @@ namespace Nekoyume.UI
         private void BuyMultiple()
         {
             var wishItems = shopItems.SharedModel.GetWishItems;
-            var purchaseInfos = wishItems.Select(x => ShopBuy.GetPurchseInfo(x.OrderId.Value));
+            var purchaseInfos = new List<PurchaseInfo>();
+            purchaseInfos.AddRange(wishItems.Select(x => ShopBuy.GetPurchseInfo(x.OrderId.Value)));
             Game.Game.instance.ActionManager.Buy(purchaseInfos, wishItems);
 
             if (shopItems.SharedModel.WishItemCount > 0)

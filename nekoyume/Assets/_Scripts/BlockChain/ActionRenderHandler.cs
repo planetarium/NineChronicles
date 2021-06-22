@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using Bencodex.Types;
+using Lib9c.Model.Order;
 using Lib9c.Renderer;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Assets;
 using Nekoyume.Action;
+using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.Item;
@@ -505,7 +507,7 @@ namespace Nekoyume.BlockChain
                     : 1;
                 var tradableItem = (ITradableItem) itemBase;
                 LocalLayerModifier.RemoveItem(avatarAddress, tradableItem.TradableId, tradableItem.RequiredBlockIndex, count);
-                LocalLayerModifier.AddNewAttachmentMail(avatarAddress, result.id);
+                LocalLayerModifier.AddNewMail(avatarAddress, result.id);
                 var format = L10nManager.Localize("NOTIFICATION_SELL_CANCEL_COMPLETE");
                 OneLinePopup.Push(MailType.Auction, string.Format(format, itemBase.GetLocalizedName()));
                 UpdateCurrentAvatarState(eval);
@@ -515,149 +517,92 @@ namespace Nekoyume.BlockChain
 
         private void ResponseBuy(ActionBase.ActionEvaluation<Buy> eval)
         {
-            if (eval.Exception is null)
+            if (!(eval.Exception is null))
             {
-                var agentAddress = States.Instance.AgentState.address;
-                var avatarAddress = States.Instance.CurrentAvatarState.address;
-                if (!eval.OutputStates.TryGetAvatarStateV2(agentAddress, avatarAddress, out var avatarState))
+                Debug.Log(eval.Exception);
+                return;
+            }
+
+            var agentAddress = States.Instance.AgentState.address;
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+            if (!eval.OutputStates.TryGetAvatarStateV2(agentAddress, avatarAddress,
+                out var avatarState))
+            {
+                return;
+            }
+
+            var errors = eval.Action.errors.ToList();
+            var purchaseInfos = eval.Action.purchaseInfos;
+            if (eval.Action.buyerAvatarAddress == avatarAddress) // check error
+            {
+                foreach (var (orderId, errorCode) in errors)
                 {
-                    return;
+                    var order = Util.GetOrder(orderId);
+                    var itembase = Util.GetItemBaseByOrderId(orderId);
+                    var price = order.Price;
+                    var errorType = ((ShopErrorType) errorCode).ToString();
+                    LocalLayerModifier.ModifyAgentGold(agentAddress, price);
+                    var msg = string.Format(L10nManager.Localize("NOTIFICATION_BUY_FAIL"),
+                                                  itembase.GetLocalizedName(),
+                                                  L10nManager.Localize(errorType),
+                                                  price);
+                    OneLinePopup.Push(MailType.Auction, msg);
                 }
+            }
 
-                if (eval.Action.buyerAvatarAddress == avatarAddress)
+            foreach (var purchaseInfo in purchaseInfos)
+            {
+                if (!errors.Exists(tuple => tuple.orderId.Equals(purchaseInfo.OrderId)))
                 {
-                    var purchaseResults = eval.Action.buyerMultipleResult.purchaseResults;
-                    foreach (var purchaseResult in purchaseResults)
+                    if (eval.Action.buyerAvatarAddress == avatarAddress) // buyer
                     {
-                        if (purchaseResult.errorCode == 0)
-                        {
-                            // Local layer
-                            var price = purchaseResult.shopItem.Price;
-                            var itemBase = ShopBuy.GetItemBase(purchaseResult);
-                            var count = purchaseResult.tradableFungibleItemCount > 0
-                                ? purchaseResult.tradableFungibleItemCount
-                                : 1;
-                            var tradableItem = (ITradableItem) itemBase;
-                            LocalLayerModifier.ModifyAgentGold(agentAddress, price);
-                            LocalLayerModifier.RemoveItem(avatarAddress, tradableItem.TradableId, tradableItem.RequiredBlockIndex, count);
-                            LocalLayerModifier.AddNewAttachmentMail(avatarAddress, purchaseResult.id);
+                        var price = purchaseInfo.Price;
+                        var order = Util.GetOrder(purchaseInfo.OrderId);
+                        var itemBase = Util.GetItemBaseByOrderId(purchaseInfo.OrderId);
+                        var tradableItem = (ITradableItem) itemBase;
+                        var count = order is FungibleOrder fungibleOrder ? fungibleOrder.ItemCount : 1;
 
-                            // Push notification
-                            var format = L10nManager.Localize("NOTIFICATION_BUY_BUYER_COMPLETE");
-                            OneLinePopup.Push(MailType.Auction, string.Format(format, itemBase.GetLocalizedName(), price));
+                        LocalLayerModifier.ModifyAgentGold(agentAddress, price);
+                        LocalLayerModifier.RemoveItem(avatarAddress, tradableItem.TradableId, tradableItem.RequiredBlockIndex, count);
+                        LocalLayerModifier.AddNewMail(avatarAddress, purchaseInfo.OrderId);
 
-                            // Analytics
-                            if (eval.OutputStates.TryGetGoldBalance(agentAddress, GoldCurrency, out var buyerAgentBalance))
-                            {
-                                var total = buyerAgentBalance - price;
-                                new TPStashEvent().CharacterCurrencyUse(
-                                    player_uuid: States.Instance.AgentState.address.ToHex(),
-                                    character_uuid: States.Instance.CurrentAvatarState.address.ToHex().Substring(0, 4),
-                                    currency_slug: "gold",
-                                    currency_quantity: float.Parse(price.GetQuantityString()),
-                                    currency_total_quantity: float.Parse(total.GetQuantityString()),
-                                    reference_entity: entity.Trades,
-                                    reference_category_slug: "buy",
-                                    reference_slug: itemBase.Id.ToString()
-                                );
-                            }
-                        }
-                        else
-                        {
-                            if (!ReactiveShopState.PurchaseHistory.ContainsKey(eval.Action.Id))
-                            {
-                                Debug.LogError($"purchaseHistory is null : {eval.Action.Id}");
-                                continue;
-                            }
-
-                            var purchaseHistory = ReactiveShopState.PurchaseHistory[eval.Action.Id];
-                            var item = purchaseHistory.FirstOrDefault(x => x.OrderId.Value == purchaseResult.productId);
-                            if (item is null)
-                            {
-                                continue;
-                            }
-
-                            // Local layer
-                            var price = item.Price.Value;
-                            LocalLayerModifier.ModifyAgentGold(agentAddress, price);
-
-                            // Push notification
-                            var errorType = ((ShopErrorType) purchaseResult.errorCode).ToString();
-                            var msg = string.Format(L10nManager.Localize("NOTIFICATION_BUY_FAIL"),
-                                item.ItemBase.Value.GetLocalizedName(),
-                                L10nManager.Localize(errorType),
-                                price);
-                            OneLinePopup.Push(MailType.Auction, msg);
-                        }
+                        var format = L10nManager.Localize("NOTIFICATION_BUY_BUYER_COMPLETE");
+                        OneLinePopup.Push(MailType.Auction, string.Format(format, itemBase.GetLocalizedName(), price));
                     }
-                }
-                else
-                {
-                    var buyerAvatarAddress = eval.Action.buyerAvatarAddress;
-                    var buyerAvatarStateValue = eval.OutputStates.GetState(buyerAvatarAddress);
-                    if (buyerAvatarStateValue is null)
+                    else // seller
                     {
-                        Debug.LogError("buyerAvatarStateValue is null.");
-                        return;
-                    }
-
-                    // Make buyer name with hash
-                    // Reference AvatarState.PostConstructor()
-                    const string nameWithHashFormat = "{0} <size=80%><color=#A68F7E>#{1}</color></size>";
-                    var buyerNameWithHash = string.Format(
-                        nameWithHashFormat,
-                        ((Text) ((Dictionary) buyerAvatarStateValue)["name"]).Value,
-                        buyerAvatarAddress.ToHex().Substring(0, 4)
-                    );
-
-                    foreach (var sellerResult in eval.Action.sellerMultipleResult.sellerResults)
-                    {
-                        if (sellerResult.shopItem.SellerAvatarAddress != avatarAddress)
+                        var buyerAvatarStateValue = eval.OutputStates.GetState(eval.Action.buyerAvatarAddress);
+                        if (buyerAvatarStateValue is null)
                         {
-                            continue;
+                            Debug.LogError("buyerAvatarStateValue is null.");
+                            return;
                         }
+                        const string nameWithHashFormat = "{0} <size=80%><color=#A68F7E>#{1}</color></size>";
+                        var buyerNameWithHash = string.Format(
+                            nameWithHashFormat,
+                            ((Text) ((Dictionary) buyerAvatarStateValue)["name"]).Value,
+                            eval.Action.buyerAvatarAddress.ToHex().Substring(0, 4)
+                        );
 
-                        // Local layer
-                        LocalLayerModifier.ModifyAgentGold(agentAddress, -sellerResult.gold);
-                        LocalLayerModifier.AddNewAttachmentMail(avatarAddress, sellerResult.id);
+                        var order = Util.GetOrder(purchaseInfo.OrderId);
+                        var itemBase = Util.GetItemBaseByOrderId(purchaseInfo.OrderId);
+                        var taxedPrice = order.Price - order.GetTax();
 
-                        // Push notification
-                        var itemBase = sellerResult.itemUsable ?? (ItemBase) sellerResult.costume;
+                        LocalLayerModifier.ModifyAgentGold(agentAddress, -taxedPrice);
+                        LocalLayerModifier.AddNewMail(avatarAddress, purchaseInfo.OrderId);
+
                         var message = string.Format(
                             L10nManager.Localize("NOTIFICATION_BUY_SELLER_COMPLETE"),
                             buyerNameWithHash,
                             itemBase.GetLocalizedName());
                         OneLinePopup.Push(MailType.Auction, message);
-
-                        // Analytics
-                        if (eval.OutputStates.TryGetGoldBalance(agentAddress, GoldCurrency,
-                            out var sellerAgentBalance))
-                        {
-                            var price = sellerResult.shopItem.Price;
-                            var total = sellerAgentBalance + price;
-                            new TPStashEvent().CharacterCurrencyGet(
-                                player_uuid: agentAddress.ToHex(), // seller == 본인인지 확인필요
-                                character_uuid: States.Instance.CurrentAvatarState.address.ToHex()
-                                    .Substring(0, 4),
-                                currency_slug: "gold",
-                                currency_quantity: float.Parse(price.GetQuantityString()),
-                                currency_total_quantity: float.Parse(total.GetQuantityString()),
-                                reference_entity: entity.Trades,
-                                reference_category_slug: "sell",
-                                reference_slug: itemBase.Id.ToString() //아이템 품번
-                            );
-                        }
                     }
                 }
+            }
 
-                UpdateAgentState(eval);
-                UpdateCurrentAvatarState(eval);
-                RenderQuest(avatarAddress, avatarState.questList.completedQuestIds);
-            }
-            else
-            {
-                Debug.Log(eval.Exception);
-            }
+            UpdateAgentState(eval);
+            UpdateCurrentAvatarState(eval);
+            RenderQuest(avatarAddress, avatarState.questList.completedQuestIds);
         }
 
         private void ResponseDailyReward(ActionBase.ActionEvaluation<DailyReward> eval)

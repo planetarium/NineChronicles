@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
+using Lib9c.Model.Order;
 using Nekoyume.Action;
+using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
@@ -236,12 +238,33 @@ namespace Nekoyume.UI
 
         public void Read(OrderBuyerMail orderBuyerMail)
         {
-
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+            var order = Util.GetOrder(orderBuyerMail.OrderId);
+            var itemBase = Util.GetItemBaseByOrderId(orderBuyerMail.OrderId);
+            var tradableItem = (ITradableItem) itemBase;
+            var count = order is FungibleOrder fungibleOrder ? fungibleOrder.ItemCount : 1;
+            var popup = Find<CombinationResultPopup>();
+            var model = new UI.Model.CombinationResultPopup(new CountableItem(itemBase, count))
+            {
+                isSuccess = true,
+                materialItems = new List<CombinationMaterial>()
+            };
+            model.OnClickSubmit.Subscribe(_ =>
+            {
+                LocalLayerModifier.AddItem(avatarAddress, tradableItem.TradableId, tradableItem.RequiredBlockIndex, count);
+                LocalLayerModifier.RemoveNewMail(avatarAddress, orderBuyerMail.id, true);
+            }).AddTo(gameObject);
+            popup.Pop(model);
         }
 
         public void Read(OrderSellerMail orderSellerMail)
         {
-
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+            var agentAddress = States.Instance.AgentState.address;
+            var order = Util.GetOrder(orderSellerMail.OrderId);
+            var taxedPrice = order.Price - order.GetTax();
+            LocalLayerModifier.ModifyAgentGold(agentAddress, taxedPrice);
+            LocalLayerModifier.RemoveNewMail(avatarAddress, orderSellerMail.id);
         }
 
         public void Read(OrderExpirationMail orderExpirationMail)

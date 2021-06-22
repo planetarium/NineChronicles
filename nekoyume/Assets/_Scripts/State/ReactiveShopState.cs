@@ -71,9 +71,6 @@ namespace Nekoyume.State
                 ItemSubTypeFilter, Dictionary<
                     ShopSortFilter, Dictionary<int, List<OrderDigest>>>>>();
 
-        public static readonly Dictionary<Guid, List<Nekoyume.UI.Model.ShopItem>> PurchaseHistory =
-            new Dictionary<Guid, List<Nekoyume.UI.Model.ShopItem>>();
-
         private static List<OrderDigest> _buyDigests = new List<OrderDigest>();
         private static List<OrderDigest> _sellDigests = new List<OrderDigest>();
 

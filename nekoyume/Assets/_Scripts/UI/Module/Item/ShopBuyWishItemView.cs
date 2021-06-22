@@ -29,7 +29,7 @@ namespace Nekoyume.UI.Module
                 throw new FailedToLoadResourceException<Sprite>(row.Id.ToString());
 
             iconImage.overrideSprite = itemSprite;
-            enhancementText.text = $"+{item.Level.Value}";
+            enhancementText.text = item.Level.Value > 0 ? $"+{item.Level.Value}" : string.Empty;
 
             itemButton.onClick.RemoveAllListeners();
             itemButton.onClick.AddListener(callback.Invoke);

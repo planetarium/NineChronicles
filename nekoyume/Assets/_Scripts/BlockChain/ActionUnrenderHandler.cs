@@ -1,9 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Lib9c.Model.Order;
 using Lib9c.Renderer;
 using Libplanet;
 using Nekoyume.Action;
+using Nekoyume.Helper;
+using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
@@ -161,57 +164,37 @@ namespace Nekoyume.BlockChain
                 return;
             }
 
-            if (eval.Action.buyerAvatarAddress == avatarAddress)
+            var errors = eval.Action.errors.ToList();
+            var purchaseInfos = eval.Action.purchaseInfos;
+            foreach (var purchaseInfo in purchaseInfos)
             {
-                var purchaseResults = eval.Action.buyerMultipleResult.purchaseResults;
-                foreach (var purchaseResult in purchaseResults)
+                if (!errors.Exists(tuple => tuple.orderId.Equals(purchaseInfo.OrderId)))
                 {
-                    if (purchaseResult.errorCode == 0)
+                    if (eval.Action.buyerAvatarAddress == avatarAddress) // buyer
                     {
-                        // Local layer
-                        var price = purchaseResult.shopItem.Price;
-                        var itemBase = ShopBuy.GetItemBase(purchaseResult);
-                        var count = purchaseResult.tradableFungibleItemCount > 0
-                            ? purchaseResult.tradableFungibleItemCount
-                            : 1;
+                        var price = purchaseInfo.Price;
+                        var order = Util.GetOrder(purchaseInfo.OrderId);
+                        var itemBase = Util.GetItemBaseByOrderId(purchaseInfo.OrderId);
                         var tradableItem = (ITradableItem) itemBase;
+                        var count = order is FungibleOrder fungibleOrder ? fungibleOrder.ItemCount : 1;
                         LocalLayerModifier.ModifyAgentGold(agentAddress, -price);
                         LocalLayerModifier.AddItem(avatarAddress, tradableItem.TradableId, tradableItem.RequiredBlockIndex, count);
-                        LocalLayerModifier.RemoveNewAttachmentMail(avatarAddress, purchaseResult.id);
+                        LocalLayerModifier.RemoveNewMail(avatarAddress, purchaseInfo.OrderId);
                     }
-                    else
+                    else // seller
                     {
-                        if (!ReactiveShopState.PurchaseHistory.ContainsKey(eval.Action.Id))
+                        var buyerAvatarStateValue = eval.OutputStates.GetState(eval.Action.buyerAvatarAddress);
+                        if (buyerAvatarStateValue is null)
                         {
-                            Debug.LogError($"purchaseHistory is null : {eval.Action.Id}");
-                            continue;
+                            Debug.LogError("buyerAvatarStateValue is null.");
+                            return;
                         }
 
-                        var purchaseHistory = ReactiveShopState.PurchaseHistory[eval.Action.Id];
-                        var item = purchaseHistory.FirstOrDefault(x => x.OrderId.Value == purchaseResult.productId);
-                        if (item is null)
-                        {
-                            continue;
-                        }
-
-                        // Local layer
-                        var price = item.Price.Value;
-                        LocalLayerModifier.ModifyAgentGold(agentAddress, -price);
+                        var order = Util.GetOrder(purchaseInfo.OrderId);
+                        var taxedPrice = order.Price - order.GetTax();
+                        LocalLayerModifier.ModifyAgentGold(agentAddress, taxedPrice);
+                        LocalLayerModifier.RemoveNewMail(avatarAddress, purchaseInfo.OrderId);
                     }
-                }
-            }
-            else
-            {
-                foreach (var sellerResult in eval.Action.sellerMultipleResult.sellerResults)
-                {
-                    if (sellerResult.shopItem.SellerAvatarAddress != avatarAddress)
-                    {
-                        continue;
-                    }
-
-                    // Local layer
-                    LocalLayerModifier.ModifyAgentGold(avatarAddress, sellerResult.gold);
-                    LocalLayerModifier.RemoveNewAttachmentMail(avatarAddress, sellerResult.id);
                 }
             }
 

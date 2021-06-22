@@ -241,11 +241,12 @@ namespace Nekoyume.BlockChain
             Guid productId,
             ItemSubType itemSubType)
         {
+            // todo : 값 넣어줘야됨
             var action = new SellCancellation
             {
-                productId = productId,
-                sellerAvatarAddress = sellerAvatarAddress,
-                itemSubType = itemSubType,
+                // productId = productId,
+                // sellerAvatarAddress = sellerAvatarAddress,
+                // itemSubType = itemSubType,
             };
             ProcessAction(action);
 
@@ -266,7 +267,7 @@ namespace Nekoyume.BlockChain
                 buyerAvatarAddress = States.Instance.CurrentAvatarState.address,
                 purchaseInfos = purchaseInfos
             };
-            ReactiveShopState.PurchaseHistory.Add(action.Id, shopItems);
+
             ProcessAction(action);
             return _renderer.EveryRender<Buy>()
                 .Where(eval => eval.Action.Id.Equals(action.Id))
