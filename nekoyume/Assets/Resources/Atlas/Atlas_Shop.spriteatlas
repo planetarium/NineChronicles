@@ -47,7 +47,7 @@ SpriteAtlas:
     - {fileID: 102900000, guid: f4ec4f8b49db5487fae145d395ec1611, type: 3}
     - {fileID: 102900000, guid: 85f7dc4e2285f4e8eaa1d5143ed311b2, type: 3}
     - {fileID: 102900000, guid: 77aad0043bc7d4ee3a9fda3a23e966a8, type: 3}
-    totalSpriteSurfaceArea: 408129
+    totalSpriteSurfaceArea: 410161
     bindAsDefault: 1
     isAtlasV2: 0
     cachedData: {fileID: 0}
@@ -103,6 +103,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 4fee7d49090114040afe8abfc3c07fa9, type: 3}
   - {fileID: 21300000, guid: 42d370593facd4f2384d20d3b889b1bf, type: 3}
   - {fileID: 21300000, guid: 8b6e1fd9bd10048279d3f98091872831, type: 3}
+  - {fileID: 21300000, guid: 801939e9c8bca4fd480e1d967b397c57, type: 3}
   - {fileID: 21300000, guid: a94d2be9dc0ea43feb0f058c8287713c, type: 3}
   - {fileID: 21300000, guid: 05124d1a9966e43d5b08d3098e210f0e, type: 3}
   - {fileID: 21300000, guid: d0da429a6b5fd4f9ebb3a87c4b6a6a6b, type: 3}
@@ -188,6 +189,7 @@ SpriteAtlas:
   - Common_TabSub_Normal
   - UI_bg_Start_01
   - UI_popup_title_bg
+  - UI_Gradiant_bg_01
   - item_bg_Plus
   - Common_TabSub_Select
   - Shop_bg_23
