@@ -335,6 +335,7 @@ MonoBehaviour:
   indexDisabledImage: {fileID: 21300000, guid: 808104c7483594cdb8dcfbd83cf135d3, type: 3}
   dragPercentThreshold: 0.35
   animationTime: 0.2
+  movePageInterval: 5
 --- !u!1 &8242088530355959280
 GameObject:
   m_ObjectHideFlags: 0

@@ -30,6 +30,9 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private float animationTime;
 
+        [SerializeField]
+        private float movePageInterval;
+
         private Vector2 _panelPosition;
 
         private float _xBorderMin;
@@ -40,14 +43,21 @@ namespace Nekoyume.UI.Module
 
         private int _currentIndex;
 
+        private Vector2 _initialPosition;
+
         private void Awake()
         {
-            var topLeftPosition = content.GetAnchoredPositionOfPivot(PivotPresetType.TopLeft);
-            content.anchoredPosition = topLeftPosition;
+            _initialPosition = content.GetAnchoredPositionOfPivot(PivotPresetType.TopLeft);
+        }
+
+        private void OnEnable()
+        {
+            content.anchoredPosition = _initialPosition;
             _panelPosition = content.localPosition;
             _xBorderMax = _panelPosition.x;
             _xBorderMin = _xBorderMax - maskTransform.rect.width * (content.childCount - 1);
             SetPageIndex(0);
+            StartCoroutine(CoMovePage());
         }
 
         public void OnDrag(PointerEventData eventData)
@@ -120,5 +130,26 @@ namespace Nekoyume.UI.Module
                 indexImages[i].sprite = enabled ? indexEnabledImage : indexDisabledImage;
             }
         }
+
+        private IEnumerator CoMovePage()
+        {
+            var waitInterval = new WaitForSeconds(movePageInterval);
+            var contentWidth = maskTransform.rect.width;
+            while (gameObject.activeSelf)
+            {
+                yield return waitInterval;
+
+                if (_animationCoroutine == null)
+                {
+                    var idx = _currentIndex + 1 < indexImages.Count ?
+                        _currentIndex + 1 : 0;
+                    var x = _xBorderMax - (idx * contentWidth);
+                    var targetPosition = new Vector3(x, content.localPosition.y, content.localPosition.z);
+
+                    StartCoroutine(CoSmoothMovePage(content.localPosition, targetPosition));
+                    SetPageIndex(idx);
+                }
+            }
+        }    
     }
 }
