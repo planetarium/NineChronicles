@@ -98,6 +98,7 @@ namespace Nekoyume.Action
                 [(Text) SellerAgentAddressKey] = SellerAgentAddress.Serialize(),
                 [(Text) ItemSubTypeKey] = ItemSubType.Serialize(),
                 [(Text) PriceKey] = Price.Serialize(),
+                [(Text) TradableIdKey] = TradableId.Serialize(),
             };
             return new Bencodex.Types.Dictionary(dictionary);
         }
