@@ -62,15 +62,15 @@ namespace Nekoyume.UI.Module
                 case StatType.DEF:
                 case StatType.HIT:
                     return isSigned
-                        ? value.ToString("+0.#;-0.#")
+                        ? value.ToString("+0.##;-0.##")
                         : value.ToString();
                 case StatType.CRI:
                     return isSigned
-                        ? value.ToString("+0.#\\%;-0.#\\%")
+                        ? value.ToString("+0.##\\%;-0.##\\%")
                         : $"{value:0.#\\%}";
                 case StatType.SPD:
                     return isSigned
-                        ? (value / 100f).ToString("+0.#;-0.#", CultureInfo.InvariantCulture)
+                        ? (value / 100f).ToString("+0.##;-0.##", CultureInfo.InvariantCulture)
                         : (value / 100f).ToString(CultureInfo.InvariantCulture);
                 default:
                     throw new ArgumentOutOfRangeException(nameof(statType), statType, null);
