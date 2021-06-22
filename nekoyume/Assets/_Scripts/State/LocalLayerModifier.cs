@@ -228,6 +228,31 @@ namespace Nekoyume.State
             ReactiveAvatarState.MailBox.SetValueAndForceNotify(outAvatarState.mailBox);
         }
 
+        public static void AddNewMail(Address avatarAddress, Guid mailId)
+        {
+            var modifier = new AvatarMailNewSetter(mailId);
+            LocalLayer.Instance.Add(avatarAddress, modifier);
+
+            if (!TryGetLoadedAvatarState(
+                avatarAddress,
+                out var outAvatarState,
+                out _,
+                out var isCurrentAvatarState)
+            )
+            {
+                return;
+            }
+
+            outAvatarState = modifier.Modify(outAvatarState);
+
+            if (!isCurrentAvatarState)
+            {
+                return;
+            }
+
+            ReactiveAvatarState.MailBox.SetValueAndForceNotify(outAvatarState.mailBox);
+        }
+
         public static void AddNewResultAttachmentMail(
             Address avatarAddress,
             Guid mailId,
@@ -279,6 +304,22 @@ namespace Nekoyume.State
             TryResetLoadedAvatarState(avatarAddress, out _, out _);
         }
 
+        public static void RemoveNewMail(
+            Address avatarAddress,
+            Guid mailId,
+            bool resetState = true)
+        {
+            var modifier = new AvatarMailNewSetter(mailId);
+            LocalLayer.Instance.Remove(avatarAddress, modifier);
+
+            if (!resetState)
+            {
+                return;
+            }
+
+            TryResetLoadedAvatarState(avatarAddress, out _, out _);
+        }
+
         public static void RemoveAttachmentResult(
             Address avatarAddress,
             Guid mailId,
@@ -294,7 +335,6 @@ namespace Nekoyume.State
 
             TryResetLoadedAvatarState(avatarAddress, out _, out _);
         }
-
         #endregion
 
         #region Avatar / Quest
