@@ -1,3 +1,4 @@
+using Nekoyume.State;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
@@ -7,30 +8,29 @@ namespace Nekoyume.UI.Module
     public class EventBanner : MonoBehaviour
     {
         [SerializeField]
-        private Button playToEarnEventButton;
+        private Button playToEarnEventEarnGoldButton;
+
+        [SerializeField]
+        private Button playToEarnEventInviteFriendsButton;
+
+        private const string EventPageURLFormat = "https://onboarding.nine-chronicles.com/nc-address?prefill={0}";
 
         private void Awake()
         {
-            playToEarnEventButton.onClick.AsObservable()
+            playToEarnEventEarnGoldButton.onClick.AsObservable()
+                .Subscribe(_ => GoToEventPage())
+                .AddTo(gameObject);
+
+            playToEarnEventInviteFriendsButton.onClick.AsObservable()
                 .Subscribe(_ => GoToEventPage())
                 .AddTo(gameObject);
         }
 
         private void GoToEventPage()
         {
-            var address = Game.Game.instance.States.CurrentAvatarState.address;
-
-            var confirm = Widget.Find<Confirm>();
-            confirm.CloseCallback = result =>
-            {
-                if (result == ConfirmResult.No)
-                {
-                    return;
-                }
-
-                Application.OpenURL("https://nine-chronicles.com/");
-            };
-            confirm.Show("UI_PROCEED_EVENTPAGE", address.ToString(), blurRadius: 2);
+            var address = States.Instance.AgentState.address;
+            var url = string.Format(EventPageURLFormat, address);
+            Application.OpenURL(url);
         }
     }
 }
