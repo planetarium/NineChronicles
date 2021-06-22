@@ -390,8 +390,7 @@ namespace Nekoyume.BlockChain
 
             if (recipientAddress == currentAgentAddress)
             {
-                var amount = eval.Action.Amount;
-                LocalLayerModifier.ModifyAgentGold(currentAgentAddress, amount);
+                UpdateAgentState(eval);
             }
         }
 

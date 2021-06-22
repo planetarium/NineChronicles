@@ -1025,7 +1025,7 @@ namespace Nekoyume.BlockChain
                 var message = string.Format(messageFormat, amount, senderAddress);
 
                 OneLinePopup.Push(MailType.System, message);
-                LocalLayerModifier.ModifyAgentGold(currentAgentAddress, -amount);
+                UpdateAgentState(eval);
             }
         }
 
