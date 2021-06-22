@@ -332,7 +332,15 @@ namespace Nekoyume.UI
                 var (currentAvatarRank, currentAvatarArenaInfo) = _weeklyCachedInfo
                     .FirstOrDefault(info =>
                         info.arenaInfo.AvatarAddress.Equals(currentAvatarAddress));
-
+                if (currentAvatarArenaInfo is null)
+                {
+                    currentAvatarRank = -1;
+                    currentAvatarArenaInfo = new ArenaInfo(
+                        States.Instance.CurrentAvatarState,
+                        Game.Game.instance.TableSheets.CharacterSheet,
+                        false);
+                }
+                
                 currentAvatarCellView.Show((
                     currentAvatarRank,
                     currentAvatarArenaInfo,
