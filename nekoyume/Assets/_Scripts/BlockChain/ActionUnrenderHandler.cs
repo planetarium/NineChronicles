@@ -385,10 +385,12 @@ namespace Nekoyume.BlockChain
                 return;
             }
 
+            var senderAddress = eval.Action.Sender;
             var recipientAddress = eval.Action.Recipient;
             var currentAgentAddress = States.Instance.AgentState.address;
 
-            if (recipientAddress == currentAgentAddress)
+            if (recipientAddress == currentAgentAddress ||
+                senderAddress == currentAgentAddress)
             {
                 UpdateAgentState(eval);
             }
