@@ -4,6 +4,7 @@ using Libplanet.Blockchain.Policies;
 using Libplanet.Blocks;
 using Libplanet.Tx;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Lib9c;
 using Libplanet;
@@ -16,6 +17,7 @@ namespace Nekoyume.BlockChain
     {
         private readonly long _minimumDifficulty;
         private readonly long _difficultyBoundDivisor;
+        private AuthorizedMinersState _authorizedMinersState;
 
         /// <summary>
         /// Whether to ignore or respect hardcoded block indices to make older
@@ -70,7 +72,10 @@ namespace Nekoyume.BlockChain
                 maxTransactionsPerBlock: maxTransactionsPerBlock,
                 maxBlockBytes: maxBlockBytes,
                 maxGenesisBytes: maxGenesisBytes,
-                doesTransactionFollowPolicy: doesTransactionFollowPolicy
+                doesTransactionFollowPolicy: doesTransactionFollowPolicy,
+                canonicalChainComparer: new CanonicalChainComparer(
+                    null,
+                    blockInterval + blockInterval + blockInterval)
             )
         {
             _minimumDifficulty = minimumDifficulty;
@@ -79,7 +84,15 @@ namespace Nekoyume.BlockChain
                 ignoreHardcodedIndicesForBackwardCompatibility;
         }
 
-        public AuthorizedMinersState AuthorizedMinersState { get; set; }
+        public AuthorizedMinersState AuthorizedMinersState
+        {
+            get => _authorizedMinersState;
+            set
+            {
+                _authorizedMinersState = value;
+                ((CanonicalChainComparer)CanonicalChainComparer).AuthorizedMinersState = value;
+            }
+        }
 
         public override InvalidBlockException ValidateNextBlock(
             BlockChain<NCAction> blocks,
