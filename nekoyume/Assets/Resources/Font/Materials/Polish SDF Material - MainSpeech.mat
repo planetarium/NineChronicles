@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: English SDF Material - MainSpeech
+  m_Name: Polish SDF Material - MainSpeech
   m_Shader: {fileID: 4800000, guid: 68e6db2ebdc24f95958faec2be5558d6, type: 3}
   m_ShaderKeywords: UNDERLAY_ON
   m_LightmapFlags: 4
@@ -32,7 +32,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 2581811425775587407, guid: 8a682b7747d4a664089b7b1065aa0035,
+        m_Texture: {fileID: -964121549468592520, guid: 3f68e0bceeae246cd9d0c19d10d925b7,
           type: 2}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
@@ -62,13 +62,13 @@ Material:
     - _LightAngle: 6.28
     - _MaskSoftnessX: 0
     - _MaskSoftnessY: 0
-    - _OutlineSoftness: 0
+    - _OutlineSoftness: 1
     - _OutlineUVSpeedX: 0
     - _OutlineUVSpeedY: 0
     - _OutlineWidth: 0.6
     - _PerspectiveFilter: 0.875
     - _Reflectivity: 10
-    - _ScaleRatioA: 0.50349647
+    - _ScaleRatioA: 0.32286996
     - _ScaleRatioB: 0
     - _ScaleRatioC: 0
     - _ScaleX: 1
