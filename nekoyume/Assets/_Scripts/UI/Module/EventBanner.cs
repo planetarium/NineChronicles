@@ -8,28 +8,37 @@ namespace Nekoyume.UI.Module
     public class EventBanner : MonoBehaviour
     {
         [SerializeField]
-        private Button playToEarnEventEarnGoldButton;
+        private Button playToEarnGoldEventButton;
 
         [SerializeField]
-        private Button playToEarnEventInviteFriendsButton;
+        private Button playToEarnInviteEventButton;
 
-        private const string EventPageURLFormat = "https://onboarding.nine-chronicles.com/nc-address?prefill={0}";
+        private const string GoldEventPageURLFormat = "https://onboarding.nine-chronicles.com/earn?nc_address={0}";
+
+        private const string InvitePageURLFormat = "https://onboarding.nine-chronicles.com/invite?nc_address={0}";
 
         private void Awake()
         {
-            playToEarnEventEarnGoldButton.onClick.AsObservable()
-                .Subscribe(_ => GoToEventPage())
+            playToEarnGoldEventButton.onClick.AsObservable()
+                .Subscribe(_ => GoToGoldEventPage())
                 .AddTo(gameObject);
 
-            playToEarnEventInviteFriendsButton.onClick.AsObservable()
-                .Subscribe(_ => GoToEventPage())
+            playToEarnInviteEventButton.onClick.AsObservable()
+                .Subscribe(_ => GoToInviteEventPage())
                 .AddTo(gameObject);
         }
 
-        private void GoToEventPage()
+        private void GoToGoldEventPage()
         {
             var address = States.Instance.AgentState.address;
-            var url = string.Format(EventPageURLFormat, address);
+            var url = string.Format(GoldEventPageURLFormat, address);
+            Application.OpenURL(url);
+        }
+
+        private void GoToInviteEventPage()
+        {
+            var address = States.Instance.AgentState.address;
+            var url = string.Format(InvitePageURLFormat, address);
             Application.OpenURL(url);
         }
     }

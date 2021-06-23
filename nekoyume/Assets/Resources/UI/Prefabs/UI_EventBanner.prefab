@@ -394,8 +394,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7ffb7b9c494221a4ea547fce33c08426, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playToEarnEventEarnGoldButton: {fileID: 8050909304458839914}
-  playToEarnEventInviteFriendsButton: {fileID: 6611680544993861393}
+  playToEarnGoldEventButton: {fileID: 8050909304458839914}
+  playToEarnInviteEventButton: {fileID: 6611680544993861393}
 --- !u!114 &6611680544993861393
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -733,7 +733,7 @@ PrefabInstance:
     - target: {fileID: 940737675368886128, guid: efb387d3c31384a7faf4856cbfd160ca,
         type: 3}
       propertyPath: m_Name
-      value: Item_Banner_02
+      value: InviteEventBanner
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: efb387d3c31384a7faf4856cbfd160ca, type: 3}
@@ -876,7 +876,7 @@ PrefabInstance:
     - target: {fileID: 7617942766714573603, guid: 11f56286ccd544b41baf849780163aa0,
         type: 3}
       propertyPath: m_Name
-      value: Item_Banner_01
+      value: GoldEventBanner
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 11f56286ccd544b41baf849780163aa0, type: 3}
