@@ -24,7 +24,6 @@ namespace Nekoyume.Action
         public Guid orderId;
         public Guid tradableId;
         public Address sellerAvatarAddress;
-        public Result result;
         public ItemSubType itemSubType;
 
         [Serializable]
