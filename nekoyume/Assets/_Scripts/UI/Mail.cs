@@ -269,13 +269,33 @@ namespace Nekoyume.UI
 
         public void Read(OrderExpirationMail orderExpirationMail)
         {
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+            var itemBase = Util.GetItemBaseByOrderId(orderExpirationMail.OrderId);
+            var tradableItem = (ITradableItem) itemBase;
 
+            Find<OneButtonPopup>().Show(L10nManager.Localize("UI_SELL_CANCEL_INFO"),
+                L10nManager.Localize("UI_YES"),
+                () =>
+                {
+                    LocalLayerModifier.AddItem(avatarAddress, tradableItem.TradableId, tradableItem.RequiredBlockIndex, 1);
+                    LocalLayerModifier.RemoveNewMail(avatarAddress, orderExpirationMail.id);
+                });
         }
 
         public void Read(CancelOrderMail cancelOrderMail)
         {
-        }
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+            var itemBase = Util.GetItemBaseByOrderId(cancelOrderMail.OrderId);
+            var tradableItem = (ITradableItem) itemBase;
 
+            Find<OneButtonPopup>().Show(L10nManager.Localize("UI_SELL_CANCEL_INFO"),
+                L10nManager.Localize("UI_YES"),
+                () =>
+                {
+                    LocalLayerModifier.AddItem(avatarAddress, tradableItem.TradableId, tradableItem.RequiredBlockIndex, 1);
+                    LocalLayerModifier.RemoveNewMail(avatarAddress, cancelOrderMail.id);
+                });
+        }
 
         public void Read(ItemEnhanceMail itemEnhanceMail)
         {
