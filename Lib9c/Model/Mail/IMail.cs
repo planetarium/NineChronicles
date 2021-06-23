@@ -1,5 +1,3 @@
-using Lib9c.Model.Order;
-
 namespace Nekoyume.Model.Mail
 {
     public interface IMail

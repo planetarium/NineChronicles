@@ -26,6 +26,8 @@ namespace Nekoyume.Model.Mail
             mail.Read(this);
         }
 
+        public override MailType MailType => MailType.Auction;
+
         protected override string TypeId => nameof(OrderBuyerMail);
 
         public override IValue Serialize() =>
