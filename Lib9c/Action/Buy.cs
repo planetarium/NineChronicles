@@ -71,6 +71,7 @@ namespace Nekoyume.Action
                     Address shardedShopAddress =
                         ShardedShopStateV2.DeriveAddress(purchaseInfo.ItemSubType, purchaseInfo.OrderId);
                     Address orderReceiptAddress = OrderReceipt.DeriveAddress(purchaseInfo.OrderId);
+                    Address digestListAddress = OrderDigestListState.DeriveAddress(sellerAvatarAddress);
                     states = states
                         .SetState(shardedShopAddress, MarkChanged)
                         .SetState(sellerAvatarAddress, MarkChanged)
@@ -78,6 +79,7 @@ namespace Nekoyume.Action
                         .SetState(sellerWorldInformationAddress, MarkChanged)
                         .SetState(sellerQuestListAddress, MarkChanged)
                         .SetState(orderReceiptAddress, MarkChanged)
+                        .SetState(digestListAddress, MarkChanged)
                         .MarkBalanceChanged(
                             GoldCurrencyMock,
                             ctx.Signer,
@@ -130,6 +132,8 @@ namespace Nekoyume.Action
                 Address sellerQuestListAddress = sellerAvatarAddress.Derive(LegacyQuestListKey);
                 Guid orderId = purchaseInfo.OrderId;
                 Address orderAddress = Order.DeriveAddress(orderId);
+                Address digestListAddress = OrderDigestListState.DeriveAddress(sellerAvatarAddress);
+
 
                 if (purchaseInfo.SellerAgentAddress == ctx.Signer)
                 {
@@ -222,6 +226,15 @@ namespace Nekoyume.Action
                     continue;
                 }
 
+                if (!states.TryGetState(digestListAddress, out Dictionary rawDigestList))
+                {
+                    errors.Add((orderId, ErrorCodeFailedLoadingState));
+                    continue;
+                }
+
+                var digestList = new OrderDigestListState(rawDigestList);
+                digestList.Remove(orderId);
+
                 var orderSellerMail = new OrderSellerMail(
                     context.BlockIndex,
                     orderId,
@@ -265,6 +278,7 @@ namespace Nekoyume.Action
                 );
 
                 states = states
+                    .SetState(digestListAddress, digestList.Serialize())
                     .SetState(orderReceiptAddress, orderReceipt.Serialize())
                     .SetState(sellerInventoryAddress, sellerAvatarState.inventory.Serialize())
                     .SetState(sellerWorldInformationAddress, sellerAvatarState.worldInformation.Serialize())

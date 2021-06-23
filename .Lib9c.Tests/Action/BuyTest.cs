@@ -253,6 +253,7 @@ namespace Lib9c.Tests.Action
                 OrderDigest orderDigest = order.Digest(sellerAvatarState, _tableSheets.CostumeStatSheet);
                 var orderDigestListState =
                     new OrderDigestListState(OrderDigestListState.DeriveAddress(orderData.SellerAvatarAddress));
+                orderDigestListState.Add(orderDigest);
                 shopState.Add(orderDigest, 0);
 
                 Assert.Equal(order.ExpiredBlockIndex, sellItem.RequiredBlockIndex);
@@ -364,6 +365,11 @@ namespace Lib9c.Tests.Action
                 Assert.Equal(_buyerAgentAddress, orderReceipt.BuyerAgentAddress);
                 Assert.Equal(_buyerAvatarAddress, orderReceipt.BuyerAvatarAddress);
                 Assert.Equal(100, orderReceipt.TransferredBlockIndex);
+
+                var nextOrderDigestListState = new OrderDigestListState(
+                    (Dictionary)nextState.GetState(OrderDigestListState.DeriveAddress(purchaseInfo.SellerAvatarAddress))
+                );
+                Assert.Empty(nextOrderDigestListState.OrderDigestList);
             }
 
             Assert.Equal(30, nextBuyerAvatarState.mailBox.Count);
@@ -556,6 +562,7 @@ namespace Lib9c.Tests.Action
                 _sellerAvatarAddress.Derive(LegacyInventoryKey),
                 _sellerAvatarAddress.Derive(LegacyWorldInformationKey),
                 _sellerAvatarAddress.Derive(LegacyQuestListKey),
+                OrderDigestListState.DeriveAddress(_sellerAvatarAddress),
                 _buyerAgentAddress,
                 _buyerAvatarAddress,
                 _buyerAvatarAddress.Derive(LegacyInventoryKey),
