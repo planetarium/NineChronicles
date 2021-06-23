@@ -235,6 +235,13 @@ namespace Nekoyume.Action
                 var digestList = new OrderDigestListState(rawDigestList);
                 digestList.Remove(orderId);
 
+                var expirationMail = sellerAvatarState.mailBox.OfType<OrderExpirationMail>()
+                    .FirstOrDefault(m => m.OrderId.Equals(orderId));
+                if (!(expirationMail is null))
+                {
+                    sellerAvatarState.mailBox.Remove(expirationMail);
+                }
+
                 var orderSellerMail = new OrderSellerMail(
                     context.BlockIndex,
                     orderId,

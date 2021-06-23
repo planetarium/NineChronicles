@@ -159,6 +159,12 @@ namespace Nekoyume.Model.Mail
                 .Where(m => m.requiredBlockIndex >= blockIndex)
                 .ToList();
         }
+
+        public void Remove(Mail mail)
+        {
+            _mails.Remove(mail);
+        }
+
         public IValue Serialize() => new List(_mails
             .OrderBy(i => i.id)
             .Select(m => m.Serialize()));

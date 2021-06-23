@@ -267,6 +267,14 @@ namespace Lib9c.Tests.Action
                 );
                 Assert.DoesNotContain(((ItemBase)tradableItem).Id, buyerAvatarState.itemMap.Keys);
 
+                var expirationMail = new OrderExpirationMail(
+                    101,
+                    orderId,
+                    order.ExpiredBlockIndex,
+                    orderId
+                );
+                sellerAvatarState.mailBox.Add(expirationMail);
+
                 var purchaseInfo = new PurchaseInfo(
                     orderId,
                     tradableItem.TradableId,
@@ -347,6 +355,7 @@ namespace Lib9c.Tests.Action
                         out _)
                 );
                 Assert.Equal(30, nextSellerAvatarState.mailBox.Count);
+                Assert.Empty(nextSellerAvatarState.mailBox.OfType<OrderExpirationMail>());
                 Assert.Single(nextSellerAvatarState.mailBox.OfType<OrderSellerMail>());
                 var sellerMail = nextSellerAvatarState.mailBox.OfType<OrderSellerMail>().First();
                 Assert.Equal(order.OrderId, sellerMail.OrderId);

@@ -151,7 +151,16 @@ namespace Lib9c.Tests.Action
                 itemSubType,
                 itemCount
             );
-            var orderReceiptList = new OrderDigestListState(OrderDigestListState.DeriveAddress(_avatarAddress));
+
+            var expirationMail = new OrderExpirationMail(
+                101,
+                orderId,
+                order.ExpiredBlockIndex,
+                orderId
+            );
+            avatarState.mailBox.Add(expirationMail);
+
+            var orderDigestList = new OrderDigestListState(OrderDigestListState.DeriveAddress(_avatarAddress));
             IAccountStateDelta prevState = _initialState;
 
             if (inventoryCount > 1)
@@ -175,13 +184,13 @@ namespace Lib9c.Tests.Action
             ITradableItem sellItem = order.Sell(avatarState);
             OrderDigest orderDigest = order.Digest(avatarState, _tableSheets.CostumeStatSheet);
             shopState.Add(orderDigest, requiredBlockIndex);
-            orderReceiptList.Add(orderDigest);
+            orderDigestList.Add(orderDigest);
 
             Assert.Equal(inventoryCount, avatarState.inventory.Items.Count);
             Assert.Equal(expectedCount, avatarState.inventory.Items.Sum(i => i.count));
 
             Assert.Single(shopState.OrderDigestList);
-            Assert.Single(orderReceiptList.OrderDigestList);
+            Assert.Single(orderDigestList.OrderDigestList);
 
             Assert.Equal(requiredBlockIndex * 2, sellItem.RequiredBlockIndex);
             Assert.True(avatarState.inventory.TryGetTradableItems(itemId, requiredBlockIndex * 2, itemCount, out _));
@@ -202,7 +211,7 @@ namespace Lib9c.Tests.Action
             prevState = prevState
                 .SetState(Addresses.GetItemAddress(itemId), sellItem.Serialize())
                 .SetState(Order.DeriveAddress(order.OrderId), order.Serialize())
-                .SetState(orderReceiptList.Address, orderReceiptList.Serialize())
+                .SetState(orderDigestList.Address, orderDigestList.Serialize())
                 .SetState(shardedShopAddress, shopState.Serialize());
 
             var sellCancellationAction = new SellCancellation
@@ -245,9 +254,10 @@ namespace Lib9c.Tests.Action
             ITradableItem nextTradableItem = (ITradableItem)inventoryItem.item;
             Assert.Equal(101, nextTradableItem.RequiredBlockIndex);
             Assert.Equal(30, nextAvatarState.mailBox.Count);
+            Assert.Empty(nextAvatarState.mailBox.OfType<OrderExpirationMail>());
             var cancelMail = nextAvatarState.mailBox.OfType<CancelOrderMail>().First();
             Assert.Equal(orderId, cancelMail.OrderId);
-            var nextReceiptList = new OrderDigestListState((Dictionary)nextState.GetState(orderReceiptList.Address));
+            var nextReceiptList = new OrderDigestListState((Dictionary)nextState.GetState(orderDigestList.Address));
             Assert.Empty(nextReceiptList.OrderDigestList);
 
             var sellCancelItem = (ITradableItem)ItemFactory.Deserialize((Dictionary)nextState.GetState(Addresses.GetItemAddress(itemId)));

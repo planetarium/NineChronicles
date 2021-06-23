@@ -136,8 +136,15 @@ namespace Nekoyume.Action
             {
                 throw new FailedLoadStateException($"{addressesHex}failed to load {nameof(OrderDigest)}({orderDigestListAddress}).");
             }
-            var receiptList = new OrderDigestListState(rawList);
-            receiptList.Remove(order.OrderId);
+            var digestList = new OrderDigestListState(rawList);
+            digestList.Remove(order.OrderId);
+
+            var expirationMail = avatarState.mailBox.OfType<OrderExpirationMail>()
+                .FirstOrDefault(m => m.OrderId.Equals(orderId));
+            if (!(expirationMail is null))
+            {
+                avatarState.mailBox.Remove(expirationMail);
+            }
 
             var mail = new CancelOrderMail(
                 context.BlockIndex,
@@ -156,7 +163,7 @@ namespace Nekoyume.Action
 
             states = states
                 .SetState(itemAddress, sellItem.Serialize())
-                .SetState(orderDigestListAddress, receiptList.Serialize())
+                .SetState(orderDigestListAddress, digestList.Serialize())
                 .SetState(inventoryAddress,avatarState.inventory.Serialize())
                 .SetState(worldInformationAddress, avatarState.worldInformation.Serialize())
                 .SetState(questListAddress, avatarState.questList.Serialize())
