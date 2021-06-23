@@ -497,22 +497,22 @@ namespace Nekoyume.BlockChain
 
         private void ResponseSellCancellation(ActionBase.ActionEvaluation<SellCancellation> eval)
         {
-            if (eval.Exception is null)
+            if (!(eval.Exception is null))
             {
-                var avatarAddress = eval.Action.sellerAvatarAddress;
-                var result = eval.Action.result;
-                var itemBase = ShopSell.GetItemBase(result);
-                var count = result.tradableFungibleItemCount > 0
-                    ? result.tradableFungibleItemCount
-                    : 1;
-                var tradableItem = (ITradableItem) itemBase;
-                LocalLayerModifier.RemoveItem(avatarAddress, tradableItem.TradableId, tradableItem.RequiredBlockIndex, count);
-                LocalLayerModifier.AddNewMail(avatarAddress, result.id);
-                var format = L10nManager.Localize("NOTIFICATION_SELL_CANCEL_COMPLETE");
-                OneLinePopup.Push(MailType.Auction, string.Format(format, itemBase.GetLocalizedName()));
-                UpdateCurrentAvatarState(eval);
-                Widget.Find<ShopSell>().ForceNotifyActiveFunc();
+                return;
             }
+
+            var avatarAddress = eval.Action.sellerAvatarAddress;
+            var order = Util.GetOrder(eval.Action.orderId);
+            var itemBase = Util.GetItemBaseByOrderId(eval.Action.orderId);
+            var tradableItem = (ITradableItem) itemBase;
+            var count = order is FungibleOrder fungibleOrder ? fungibleOrder.ItemCount : 1;
+            LocalLayerModifier.RemoveItem(avatarAddress, tradableItem.TradableId, tradableItem.RequiredBlockIndex, count);
+            LocalLayerModifier.AddNewMail(avatarAddress, eval.Action.orderId);
+            var format = L10nManager.Localize("NOTIFICATION_SELL_CANCEL_COMPLETE");
+            OneLinePopup.Push(MailType.Auction, string.Format(format, itemBase.GetLocalizedName()));
+            UpdateCurrentAvatarState(eval);
+            Widget.Find<ShopSell>().ForceNotifyActiveFunc();
         }
 
         private void ResponseBuy(ActionBase.ActionEvaluation<Buy> eval)

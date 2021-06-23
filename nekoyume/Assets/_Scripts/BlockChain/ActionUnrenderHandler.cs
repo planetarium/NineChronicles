@@ -226,13 +226,10 @@ namespace Nekoyume.BlockChain
             }
 
             var avatarAddress = eval.Action.sellerAvatarAddress;
-            var result = eval.Action.result;
-            var itemBase = ShopSell.GetItemBase(result);
-            var count = result.tradableFungibleItemCount > 0
-                ? result.tradableFungibleItemCount
-                : 1;
+            var order = Util.GetOrder(eval.Action.orderId);
+            var itemBase = Util.GetItemBaseByOrderId(eval.Action.orderId);
             var tradableItem = (ITradableItem) itemBase;
-
+            var count = order is FungibleOrder fungibleOrder ? fungibleOrder.ItemCount : 1;
             LocalLayerModifier.AddItem(avatarAddress, tradableItem.TradableId, tradableItem.RequiredBlockIndex, count);
             UpdateCurrentAvatarState(eval);
         }

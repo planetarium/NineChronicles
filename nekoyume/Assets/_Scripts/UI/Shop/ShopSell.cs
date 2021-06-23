@@ -5,6 +5,7 @@ using Nekoyume.Action;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
+using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
@@ -99,8 +100,13 @@ namespace Nekoyume.UI
 
         public void Show()
         {
-            ReactiveShopState.InitSellDigests();
             base.Show();
+            Refresh();
+        }
+
+        private void Refresh()
+        {
+            ReactiveShopState.InitSellDigests();
             shopItems.Show();
             inventory.SharedModel.State.Value = ItemType.Equipment;
             inventory.SharedModel.ActiveFunc.SetValueAndForceNotify(inventoryItem => (inventoryItem.ItemBase.Value is ITradableItem));
@@ -332,25 +338,24 @@ namespace Nekoyume.UI
                 return;
             }
 
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
             var tradableId = tradableItem.TradableId;
             var requiredBlockIndex = tradableItem.RequiredBlockIndex;
             var price = model.Price.Value;
             var count = model.Item.Value.Count.Value;
-            // if (!shopItems.SharedModel.TryGetShopItemFromAgentProducts(
-            //     tradableId, requiredBlockIndex, price, count, out var shopItem))
-            // {
-            //     if (model.Price.Value.Sign * model.Price.Value.MajorUnit < Shop.MinimumPrice)
-            //     {
-            //         throw new InvalidSellingPriceException(model);
-            //     }
-            // }
+            var subType = tradableItem.ItemSubType;
 
-            // Mixpanel.Track("Unity/Sell Cancellation");
-            // Game.Game.instance.ActionManager.SellCancellation(
-            //     shopItem.SellerAvatarAddress.Value,
-            //     shopItem.ProductId.Value,
-            //     shopItem.ItemSubType.Value);
-            // ResponseSellCancellation(shopItem);
+            var digest = ReactiveShopState.GetSellDigest(tradableId, requiredBlockIndex, price, count);
+            if (digest != null)
+            {
+                Mixpanel.Track("Unity/Sell Cancellation");
+                Game.Game.instance.ActionManager.SellCancellation(
+                    avatarAddress,
+                    digest.OrderId,
+                    digest.TradableId,
+                    subType);
+                ResponseSellCancellation(digest.OrderId, digest.TradableId);
+            }
         }
 
         private void SubscribeSellCancellationPopupCancel()
@@ -416,16 +421,14 @@ namespace Nekoyume.UI
             inventory.SharedModel.ActiveFunc.SetValueAndForceNotify(inventoryItem => (inventoryItem.ItemBase.Value is ITradableItem));
         }
 
-        private void ResponseSellCancellation(ShopItem shopItem)
+        private void ResponseSellCancellation(Guid orderId, Guid tradableId)
         {
             SharedModel.ItemCountAndPricePopup.Value.Item.Value = null;
-            var productId = shopItem.OrderId.Value;
-            // shopItems.SharedModel.RemoveAgentProduct(productId);
-
+            var itemBase = Util.GetItemBaseByOrderId(orderId);
+            ReactiveShopState.RemoveSellDigest(tradableId);
             AudioController.instance.PlaySfx(AudioController.SfxCode.InputItem);
             var format = L10nManager.Localize("NOTIFICATION_SELL_CANCEL_START");
-            OneLinePopup.Push(MailType.Auction,
-                string.Format(format, shopItem.ItemBase.Value.GetLocalizedName()));
+            OneLinePopup.Push(MailType.Auction, string.Format(format, itemBase.GetLocalizedName()));
             inventory.SharedModel.ActiveFunc.SetValueAndForceNotify(inventoryItem => (inventoryItem.ItemBase.Value is ITradableItem));
         }
 
@@ -437,21 +440,6 @@ namespace Nekoyume.UI
                 : NPCAnimation.Type.Emotion_01);
 
             speechBubble.SetKey(key);
-        }
-
-        public static ItemBase GetItemBase(SellCancellation.Result result)
-        {
-            if (result.itemUsable != null)
-            {
-                return result.itemUsable;
-            }
-
-            if (result.costume != null)
-            {
-                return result.costume;
-            }
-
-            return (ItemBase)result.tradableFungibleItem;
         }
 
         public void ForceNotifyActiveFunc()

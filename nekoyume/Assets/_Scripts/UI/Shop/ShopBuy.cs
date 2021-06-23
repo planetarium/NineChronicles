@@ -221,7 +221,7 @@ namespace Nekoyume.UI
             var productId = shopItem.OrderId.Value;
 
             LocalLayerModifier.ModifyAgentGold(buyerAgentAddress, -shopItem.Price.Value);
-            ReactiveShopState.RemoveShopItem(productId);
+            ReactiveShopState.RemoveBuyDigest(productId);
 
             var format = L10nManager.Localize("NOTIFICATION_BUY_START");
             OneLinePopup.Push(MailType.Auction,

@@ -238,15 +238,16 @@ namespace Nekoyume.BlockChain
 
         public IObservable<ActionBase.ActionEvaluation<SellCancellation>> SellCancellation(
             Address sellerAvatarAddress,
-            Guid productId,
+            Guid orderId,
+            Guid tradableId,
             ItemSubType itemSubType)
         {
-            // todo : 값 넣어줘야됨
             var action = new SellCancellation
             {
-                // productId = productId,
-                // sellerAvatarAddress = sellerAvatarAddress,
-                // itemSubType = itemSubType,
+                orderId = orderId,
+                tradableId = tradableId,
+                sellerAvatarAddress = sellerAvatarAddress,
+                itemSubType = itemSubType,
             };
             ProcessAction(action);
 
