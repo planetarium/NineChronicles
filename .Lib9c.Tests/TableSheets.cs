@@ -35,6 +35,7 @@ namespace Lib9c.Tests
             }
 
             ItemSheetInitialize();
+            ItemRequirementSheetInitialize();
             QuestSheetInitialize();
         }
 
@@ -56,11 +57,17 @@ namespace Lib9c.Tests
 
         public ItemSheet ItemSheet { get; private set; }
 
+        public ItemRequirementSheet ItemRequirementSheet { get; private set; }
+
         public ConsumableItemSheet ConsumableItemSheet { get; private set; }
+
+        public ConsumableItemRequirementSheet ConsumableItemRequirementSheet { get; private set; }
 
         public CostumeItemSheet CostumeItemSheet { get; private set; }
 
         public EquipmentItemSheet EquipmentItemSheet { get; private set; }
+
+        public EquipmentItemRequirementSheet EquipmentItemRequirementSheet { get; private set; }
 
         public MaterialItemSheet MaterialItemSheet { get; private set; }
 
@@ -108,6 +115,8 @@ namespace Lib9c.Tests
 
         public EquipmentItemSubRecipeSheet EquipmentItemSubRecipeSheet { get; private set; }
 
+        public EquipmentItemSubRecipeSheetV2 EquipmentItemSubRecipeSheetV2 { get; private set; }
+
         public EquipmentItemOptionSheet EquipmentItemOptionSheet { get; private set; }
 
         public GameConfigSheet GameConfigSheet { get; private set; }
@@ -119,6 +128,8 @@ namespace Lib9c.Tests
         public CombinationEquipmentQuestSheet CombinationEquipmentQuestSheet { get; private set; }
 
         public EnhancementCostSheet EnhancementCostSheet { get; private set; }
+
+        public EnhancementCostSheetV2 EnhancementCostSheetV2 { get; private set; }
 
         public WeeklyArenaRewardSheet WeeklyArenaRewardSheet { get; internal set; }
 
@@ -135,6 +146,13 @@ namespace Lib9c.Tests
             ItemSheet.Set(CostumeItemSheet, false);
             ItemSheet.Set(EquipmentItemSheet, false);
             ItemSheet.Set(MaterialItemSheet);
+        }
+
+        public void ItemRequirementSheetInitialize()
+        {
+            ItemRequirementSheet = new ItemRequirementSheet();
+            ItemRequirementSheet.Set(ConsumableItemRequirementSheet, false);
+            ItemRequirementSheet.Set(EquipmentItemRequirementSheet);
         }
 
         public void QuestSheetInitialize()
