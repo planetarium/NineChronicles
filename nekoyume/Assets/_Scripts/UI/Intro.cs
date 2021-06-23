@@ -16,7 +16,7 @@ namespace Nekoyume.UI
 
         public void Show(string keyStorePath, string privateKey)
         {
-            indicator.Show("Mining Transactions..");
+            indicator.Show("Verifying transaction..");
             _keyStorePath = keyStorePath;
             _privateKey = privateKey;
             StartLoading();
