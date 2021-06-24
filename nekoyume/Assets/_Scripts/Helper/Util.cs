@@ -79,7 +79,7 @@ namespace Nekoyume.Helper
             return null;
         }
 
-        public static ItemBase GetItemBaseByItemId(int itemId)
+        public static ItemBase CreateItemBaseByItemId(int itemId)
         {
             var row = Game.Game.instance.TableSheets.ItemSheet[itemId];
             var item = ItemFactory.CreateItem(row, new Cheat.DebugRandom());
