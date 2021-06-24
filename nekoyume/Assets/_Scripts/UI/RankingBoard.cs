@@ -487,7 +487,7 @@ namespace Nekoyume.UI
                     {
                         address = state.OrderedArenaInfos.First(i => i.CombatPoint <= cp).AvatarAddress;
                     }
-                    catch (Exception e)
+                    catch (Exception)
                     {
                         address = state.OrderedArenaInfos[state.OrderedArenaInfos.Count / 2].AvatarAddress;
                     }

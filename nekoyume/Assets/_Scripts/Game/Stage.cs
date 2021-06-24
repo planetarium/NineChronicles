@@ -4,8 +4,12 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Bencodex.Types;
 using DG.Tweening;
+using mixpanel;
+using Nekoyume.Battle;
 using Nekoyume.BlockChain;
+using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Entrance;
 using Nekoyume.Game.Factory;
@@ -14,6 +18,7 @@ using Nekoyume.Game.Util;
 using Nekoyume.Game.VFX;
 using Nekoyume.Game.VFX.Skill;
 using Nekoyume.Helper;
+using Nekoyume.L10n;
 using Nekoyume.Model;
 using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.Item;
@@ -22,15 +27,14 @@ using Nekoyume.State;
 using Nekoyume.UI;
 using Nekoyume.UI.Model;
 using Spine.Unity;
-using UnityEngine;
-using TentuPlay.Api;
 using UniRx;
-using mixpanel;
-using Nekoyume.Battle;
-using Nekoyume.Game.Character;
-using Nekoyume.L10n;
+using UnityEngine;
 using UnityEngine.Rendering;
+using CharacterBase = Nekoyume.Model.CharacterBase;
+using Enemy = Nekoyume.Model.Enemy;
+using EnemyPlayer = Nekoyume.Model.EnemyPlayer;
 using Player = Nekoyume.Game.Character.Player;
+using Random = UnityEngine.Random;
 
 namespace Nekoyume.Game
 {
@@ -57,12 +61,12 @@ namespace Nekoyume.Game
         public bool newlyClearedStage;
         public int waveNumber;
         public int waveTurn;
-        public Character.Player selectedPlayer;
+        public Player selectedPlayer;
         public readonly Vector2 questPreparationPosition = new Vector2(2.45f, -0.35f);
         public readonly Vector2 roomPosition = new Vector2(-2.808f, -1.519f);
         public bool repeatStage;
         public bool isExitReserved;
-        public int foodCount = 0;
+        public int foodCount;
         public string zone;
         public Animator roomAnimator { get; private set; }
 
@@ -78,7 +82,7 @@ namespace Nekoyume.Game
         public TutorialController TutorialController { get; private set; }
         public bool IsInStage { get; set; }
         public bool IsShowHud { get; set; }
-        public Model.Enemy Boss { get; private set; }
+        public Enemy Boss { get; private set; }
         public AvatarState AvatarState { get; set; }
 
         public Vector3 SelectPositionBegin(int index) =>
@@ -89,12 +93,12 @@ namespace Nekoyume.Game
 
         public bool showLoadingScreen;
 
-        private Character.Player _stageRunningPlayer = null;
+        private Player _stageRunningPlayer;
         private Vector3 _playerPosition;
 
         private List<int> prevFood;
 
-        private Coroutine _positionCheckCoroutine = null;
+        private Coroutine _positionCheckCoroutine;
 
         #region Events
 
@@ -195,15 +199,15 @@ namespace Nekoyume.Game
                     playerObject.transform.DOMove(moveTo, 1.3f).SetDelay(0.2f);
                     var seqPos = new Vector3(
                         moveTo.x,
-                        moveTo.y - UnityEngine.Random.Range(0.05f, 0.1f),
+                        moveTo.y - Random.Range(0.05f, 0.1f),
                         0.0f);
                     var seq = DOTween.Sequence();
                     seq.Append(playerObject.transform.DOMove(
                         seqPos,
-                        UnityEngine.Random.Range(4.0f, 5.0f)));
+                        Random.Range(4.0f, 5.0f)));
                     seq.Append(playerObject.transform.DOMove(
                         moveTo,
-                        UnityEngine.Random.Range(4.0f, 5.0f)));
+                        Random.Range(4.0f, 5.0f)));
                     seq.Play().SetDelay(2.6f).SetLoops(-1);
                     if (!ReferenceEquals(anim, null) && !anim.Target.activeSelf)
                     {
@@ -313,33 +317,13 @@ namespace Nekoyume.Game
 
         private IEnumerator CoPlayStage(BattleLog log)
         {
-            AvatarState avatarState = States.Instance.CurrentAvatarState;
-            string stage_slug = "HackAndSlash" + "_" + log.worldId + "_" + log.stageId;
-
-            //[TentuPlay] PlayStage 시작 기록
-            OnCharacterStageStart("HackAndSlash", stage_slug, log.worldId + "_" + log.stageId);
-
-            //[TentuPlay] 전투 입장 시 사용하는 Action Point
-            new TPStashEvent().CharacterCurrencyUse(
-                player_uuid: Game.instance.Agent.Address.ToHex(),
-                character_uuid: avatarState.address.ToHex().Substring(0, 4),
-                currency_slug: "action_point",
-                currency_quantity: 5,
-                currency_total_quantity: (float)avatarState.actionPoint,
-                reference_entity: entity.Stages,
-                reference_category_slug: "HackAndSlash",
-                reference_slug: "HackAndSlash" + "_" + log.worldId + "_" + log.stageId
-                );
-
-            //[TentuPlay] PlayStage 장비 착용 기록
-            OnCharacterEquipmentPlay("HackAndSlash", stage_slug);
-
-            //[TentuPlay] PlayStage 코스튬 착용 기록
-            OnCharacterCostumePlay("HackAndSlash", stage_slug);
-
-            prevFood = avatarState.inventory.Items.Select(i => i.item).OfType<Consumable>()
-           .Where(s => s.ItemSubType == ItemSubType.Food)
-           .Select(r => r.Id).ToList();
+            var avatarState = States.Instance.CurrentAvatarState;
+            prevFood = avatarState.inventory.Items
+                .Select(i => i.item)
+                .OfType<Consumable>()
+                .Where(s => s.ItemSubType == ItemSubType.Food)
+                .Select(r => r.Id)
+                .ToList();
 
             IsInStage = true;
             yield return StartCoroutine(CoStageEnter(log));
@@ -354,15 +338,6 @@ namespace Nekoyume.Game
 
         private IEnumerator CoPlayRankingBattle(BattleLog log)
         {
-            //[TentuPlay] RankingBattle 시작 기록
-            OnCharacterStageStart("RankingBattle", "RankingBattle", null);
-
-            //[TentuPlay] RankingBattle 장비 착용 기록
-            OnCharacterEquipmentPlay("RankingBattle", "RankingBattle");
-
-            //[TentuPlay] RankingBattle 코스튬 착용 기록
-            OnCharacterCostumePlay("RankingBattle", "RankingBattle");
-
             IsInStage = true;
             yield return StartCoroutine(CoRankingBattleEnter(log));
             Widget.Find<ArenaBattleLoadingScreen>().Close();
@@ -560,7 +535,7 @@ namespace Nekoyume.Game
 
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             var avatarState = new AvatarState(
-                (Bencodex.Types.Dictionary) Game.instance.Agent.GetState(avatarAddress));
+                (Dictionary) Game.instance.Agent.GetState(avatarAddress));
             _battleResultModel.ActionPoint = avatarState.actionPoint;
             _battleResultModel.State = log.result;
             Game.instance.TableSheets.WorldSheet.TryGetValue(log.worldId, out var world);
@@ -622,9 +597,6 @@ namespace Nekoyume.Game
             Widget.Find<BattleResult>().Show(_battleResultModel);
 
             yield return null;
-            string stageSlug = $"HackAndSlash_{log.worldId}_{log.stageId}";
-            OnCharacterConsumablePlay("HackAndSlash", stageSlug);
-            OnCharacterStageEnd(log, "HackAndSlash", stageSlug, log.clearedWaveNumber);
 
             var characterSheet = Game.instance.TableSheets.CharacterSheet;
             var costumeStatSheet = Game.instance.TableSheets.CostumeStatSheet;
@@ -674,9 +646,6 @@ namespace Nekoyume.Game
             ActionRenderHandler.Instance.Pending = false;
             Widget.Find<RankingBattleResult>().Show(log, _battleResultModel.Rewards);
             yield return null;
-
-            //[TentuPlay] RankingBattle 끝 기록
-            OnCharacterStageEnd(log, "RankingBattle", "RankingBattle", log.diffScore);
         }
 
         public IEnumerator CoSpawnPlayer(Model.Player character)
@@ -715,7 +684,7 @@ namespace Nekoyume.Game
             yield return null;
         }
 
-        public IEnumerator CoSpawnEnemyPlayer(Model.EnemyPlayer character)
+        public IEnumerator CoSpawnEnemyPlayer(EnemyPlayer character)
         {
             var battle = Widget.Find<UI.Battle>();
             battle.BossStatus.Close();
@@ -730,7 +699,7 @@ namespace Nekoyume.Game
         #region Skill
 
         public IEnumerator CoNormalAttack(
-            Model.CharacterBase caster,
+            CharacterBase caster,
             IEnumerable<Skill.SkillInfo> skillInfos,
             IEnumerable<Skill.SkillInfo> buffInfos)
         {
@@ -744,7 +713,7 @@ namespace Nekoyume.Game
         }
 
         public IEnumerator CoBlowAttack(
-            Model.CharacterBase caster,
+            CharacterBase caster,
             IEnumerable<Skill.SkillInfo> skillInfos,
             IEnumerable<Skill.SkillInfo> buffInfos)
         {
@@ -758,7 +727,7 @@ namespace Nekoyume.Game
         }
 
         public IEnumerator CoDoubleAttack(
-            Model.CharacterBase caster,
+            CharacterBase caster,
             IEnumerable<Skill.SkillInfo> skillInfos,
             IEnumerable<Skill.SkillInfo> buffInfos)
         {
@@ -773,7 +742,7 @@ namespace Nekoyume.Game
         }
 
         public IEnumerator CoAreaAttack(
-            Model.CharacterBase caster,
+            CharacterBase caster,
             IEnumerable<Skill.SkillInfo> skillInfos,
             IEnumerable<Skill.SkillInfo> buffInfos)
         {
@@ -788,7 +757,7 @@ namespace Nekoyume.Game
         }
 
         public IEnumerator CoHeal(
-            Model.CharacterBase caster,
+            CharacterBase caster,
             IEnumerable<Skill.SkillInfo> skillInfos,
             IEnumerable<Skill.SkillInfo> buffInfos)
         {
@@ -802,7 +771,7 @@ namespace Nekoyume.Game
         }
 
         public IEnumerator CoBuff(
-            Model.CharacterBase caster,
+            CharacterBase caster,
             IEnumerable<Skill.SkillInfo> skillInfos,
             IEnumerable<Skill.SkillInfo> buffInfos)
         {
@@ -906,7 +875,7 @@ namespace Nekoyume.Game
                 character.StartRun();
         }
 
-        public IEnumerator CoRemoveBuffs(Model.CharacterBase caster)
+        public IEnumerator CoRemoveBuffs(CharacterBase caster)
         {
             var character = GetCharacter(caster);
             if (character)
@@ -939,7 +908,7 @@ namespace Nekoyume.Game
         public IEnumerator CoSpawnWave(
             int waveNumber,
             int waveTurn,
-            List<Model.Enemy> enemies,
+            List<Enemy> enemies,
             bool hasBoss)
         {
             this.waveNumber = waveNumber;
@@ -1020,7 +989,7 @@ namespace Nekoyume.Game
             yield return StartCoroutine(player.CoGetExp(exp));
         }
 
-        public IEnumerator CoDead(Model.CharacterBase model)
+        public IEnumerator CoDead(CharacterBase model)
         {
             var characters = GetComponentsInChildren<Character.CharacterBase>();
             yield return new WaitWhile(() => characters.Any(i => i.actions.Any()));
@@ -1029,7 +998,7 @@ namespace Nekoyume.Game
             character.Dead();
         }
 
-        public Character.Player GetPlayer(bool forceCreate = false)
+        public Player GetPlayer(bool forceCreate = false)
         {
             if (!forceCreate &&
                 selectedPlayer &&
@@ -1044,24 +1013,24 @@ namespace Nekoyume.Game
             }
 
             var go = PlayerFactory.Create(States.Instance.CurrentAvatarState);
-            selectedPlayer = go.GetComponent<Character.Player>();
+            selectedPlayer = go.GetComponent<Player>();
 
             if (selectedPlayer is null)
             {
-                throw new NotFoundComponentException<Character.Player>();
+                throw new NotFoundComponentException<Player>();
             }
 
             return selectedPlayer;
         }
 
-        public Character.Player GetPlayer(Vector2 position, bool forceCreate = false)
+        public Player GetPlayer(Vector2 position, bool forceCreate = false)
         {
             var player = GetPlayer(forceCreate);
             player.transform.position = position;
             return player;
         }
 
-        private Character.Player RunPlayer(bool chasePlayer = true)
+        private Player RunPlayer(bool chasePlayer = true)
         {
             _stageRunningPlayer = GetPlayer();
             var playerTransform = _stageRunningPlayer.transform;
@@ -1075,7 +1044,7 @@ namespace Nekoyume.Game
             return _stageRunningPlayer;
         }
 
-        public Character.Player RunPlayer(Vector2 position, bool chasePlayer = true)
+        public Player RunPlayer(Vector2 position, bool chasePlayer = true)
         {
             var player = GetPlayer(position);
             if (chasePlayer)
@@ -1105,7 +1074,7 @@ namespace Nekoyume.Game
         /// <param name="caster"></param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException"></exception>
-        public Character.CharacterBase GetCharacter(Model.CharacterBase caster)
+        public Character.CharacterBase GetCharacter(CharacterBase caster)
         {
             if (caster is null)
                 throw new ArgumentNullException(nameof(caster));
@@ -1181,163 +1150,10 @@ namespace Nekoyume.Game
             }
         }
 
-        private static void RunAndChasePlayer(Character.Player player)
+        private static void RunAndChasePlayer(Character.CharacterBase player)
         {
             player.StartRun();
             ActionCamera.instance.ChaseX(player.transform);
-        }
-
-        private void OnCharacterStageStart(string stageCategorySlug, string stageSlug, string stageLevel)
-        {
-            try
-            {
-                TPStashEvent myStashEvent = new TPStashEvent();
-                AvatarState avatarState = States.Instance.CurrentAvatarState;
-
-                myStashEvent.CharacterStage(
-                    player_uuid: Game.instance.Agent.Address.ToHex(),
-                    character_uuid: avatarState.address.ToHex().Substring(0, 4),
-                    stage_category_slug: stageCategorySlug,
-                    stage_slug: stageSlug,
-                    stage_status: stageStatus.Start,
-                    stage_level: stageLevel,
-                    is_autocombat_committed: isAutocombat.AutocombatOn
-                );
-            }
-            catch
-            {
-            }
-        }
-
-        private void OnCharacterEquipmentPlay(string stageCategorySlug, string stageSlug)
-        {
-            try
-            {
-                TPStashEvent myStashEvent = new TPStashEvent();
-                AvatarState avatarState = States.Instance.CurrentAvatarState;
-
-                List<int> allEquippedEquipmentsId = new List<int>();
-                List<int> weapon = avatarState.inventory.Items.Select(i => i.item).OfType<Weapon>().Where(e => e.equipped).Select(r => r.Id).ToList();
-                List<int> armor = avatarState.inventory.Items.Select(i => i.item).OfType<Armor>().Where(e => e.equipped).Select(r => r.Id).ToList();
-                List<int> belt = avatarState.inventory.Items.Select(i => i.item).OfType<Belt>().Where(e => e.equipped).Select(r => r.Id).ToList();
-                List<int> necklace = avatarState.inventory.Items.Select(i => i.item).OfType<Necklace>().Where(e => e.equipped).Select(r => r.Id).ToList();
-                List<int> ring = avatarState.inventory.Items.Select(i => i.item).OfType<Ring>().Where(e => e.equipped).Select(r => r.Id).ToList();
-                allEquippedEquipmentsId.AddRange(weapon);
-                allEquippedEquipmentsId.AddRange(armor);
-                allEquippedEquipmentsId.AddRange(belt);
-                allEquippedEquipmentsId.AddRange(necklace);
-                allEquippedEquipmentsId.AddRange(ring);
-                foreach (int id in allEquippedEquipmentsId)
-                {
-                    myStashEvent.CharacterItemPlay(
-                        player_uuid: Game.instance.Agent.Address.ToHex(),
-                        character_uuid: avatarState.address.ToHex().Substring(0, 4),
-                        item_category: itemCategory.Equipment,
-                        item_slug: id.ToString(),
-                        reference_entity: entity.Stages,
-                        reference_category_slug: stageCategorySlug,
-                        reference_slug: stageSlug
-                        );
-                }
-            }
-            catch
-            {
-            }
-        }
-
-        private void OnCharacterCostumePlay(string stageCategorySlug, string stageSlug)
-        {
-            try
-            {
-                TPStashEvent myStashEvent = new TPStashEvent();
-                AvatarState avatarState = States.Instance.CurrentAvatarState;
-
-                List<int> allEquippedCostumeIds = avatarState.inventory.Items.Select(i => i.item).OfType<Costume>().Where(e => e.equipped)
-                .Where(s => s.ItemSubType == ItemSubType.FullCostume || s.ItemSubType == ItemSubType.Title)
-                .Select(r => r.Id).ToList();
-                foreach (int id in allEquippedCostumeIds)
-                {
-                    myStashEvent.CharacterItemPlay(
-                        player_uuid: Game.instance.Agent.Address.ToHex(),
-                        character_uuid: avatarState.address.ToHex().Substring(0, 4),
-                        item_category: itemCategory.Cosmetics,
-                        item_slug: id.ToString(),
-                        reference_entity: entity.Stages,
-                        reference_category_slug: stageCategorySlug,
-                        reference_slug: stageSlug
-                        );
-                }
-            }
-            catch
-            {
-            }
-        }
-
-        private void OnCharacterConsumablePlay(string stageCategorySlug, string stageSlug)
-        {
-            try
-            {
-                TPStashEvent myStashEvent = new TPStashEvent();
-                AvatarState avatarState = States.Instance.CurrentAvatarState;
-
-                List<int> CurrentFood = avatarState.inventory.Items.Select(i => i.item).OfType<Consumable>()
-                    .Where(s => s.ItemSubType == ItemSubType.Food)
-                    .Select(r => r.Id).ToList();
-                foreach (int foodId in CurrentFood)
-                {
-                    prevFood.Remove(foodId);
-                }
-                foreach (int foodId in prevFood)
-                {
-                    myStashEvent.CharacterItemPlay(
-                        player_uuid: Game.instance.Agent.Address.ToHex(),
-                        character_uuid: avatarState.address.ToHex().Substring(0, 4),
-                        item_category: itemCategory.Consumable,
-                        item_slug: foodId.ToString(),
-                        reference_entity: entity.Stages,
-                        reference_category_slug: stageCategorySlug,
-                        reference_slug: stageSlug
-                        );
-                }
-            }
-            catch
-            {
-            }
-        }
-
-        private void OnCharacterStageEnd(BattleLog log, string stageCategorySlug, string stageSlug, int stageScore)
-        {
-            try
-            {
-                stageStatus stageStatus = stageStatus.Unknown;
-                switch (log.result)
-                {
-                    case BattleLog.Result.Win:
-                        stageStatus = stageStatus.Win;
-                        break;
-                    case BattleLog.Result.Lose:
-                        stageStatus = stageStatus.Lose;
-                        break;
-                    case BattleLog.Result.TimeOver:
-                        stageStatus = stageStatus.Timeout;
-                        break;
-                }
-
-                new TPStashEvent().CharacterStage(
-                    player_uuid: Game.instance.Agent.Address.ToHex(),
-                    character_uuid: States.Instance.CurrentAvatarState.address.ToHex().Substring(0, 4),
-                    stage_category_slug: stageCategorySlug,
-                    stage_slug: stageSlug,
-                    stage_status: stageStatus,
-                    stage_level: log.worldId + "_" + log.stageId,
-                    stage_score: stageScore,
-                    stage_playtime: null,
-                    is_autocombat_committed: isAutocombat.AutocombatOn
-                );
-            }
-            catch
-            {
-            }
         }
     }
 }

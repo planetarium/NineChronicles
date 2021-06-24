@@ -664,7 +664,7 @@ namespace Nekoyume.Game
                 }
                 await _logsClient.PutLogEventsAsync(request);
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 // ignored
             }

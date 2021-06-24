@@ -308,7 +308,6 @@ namespace Nekoyume.State
                         default:
                             return 0;
                     }
-                    break;
                 case SortType.None:
                     break;
                 default:
