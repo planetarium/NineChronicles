@@ -75,7 +75,7 @@ namespace Nekoyume.BlockChain
                 doesTransactionFollowPolicy: doesTransactionFollowPolicy,
                 canonicalChainComparer: new CanonicalChainComparer(
                     null,
-                    blockInterval + blockInterval + blockInterval)
+                    TimeSpan.FromTicks(blockInterval.Ticks * 10))
             )
         {
             _minimumDifficulty = minimumDifficulty;
