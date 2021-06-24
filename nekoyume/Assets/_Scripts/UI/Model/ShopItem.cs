@@ -18,7 +18,7 @@ namespace Nekoyume.UI.Model
 
         public ShopItemView View;
 
-        public ShopItem(OrderDigest orderDigest) : this(orderDigest, Util.GetItemBaseByItemId(orderDigest.ItemId))
+        public ShopItem(OrderDigest orderDigest) : this(orderDigest, Util.CreateItemBaseByItemId(orderDigest.ItemId))
         {
         }
 
