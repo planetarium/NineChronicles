@@ -1017,6 +1017,7 @@ namespace Nekoyume.BlockChain
             var senderAddress = eval.Action.Sender;
             var recipientAddress = eval.Action.Recipient;
             var currentAgentAddress = States.Instance.AgentState.address;
+            var playToEarnRewardAddress = new Address("d595f7e85e1757d6558e9e448fa9af77ab28be4c");
 
             if (senderAddress == currentAgentAddress)
             {
@@ -1029,8 +1030,17 @@ namespace Nekoyume.BlockChain
             else if (recipientAddress == currentAgentAddress)
             {
                 var amount = eval.Action.Amount;
-                var messageFormat = L10nManager.Localize("UI_TRANSFERASSET_NOTIFICATION_RECIPIENT");
-                var message = string.Format(messageFormat, amount, senderAddress);
+                string message;
+                if (senderAddress == playToEarnRewardAddress)
+                {
+                    var messageFormat = L10nManager.Localize("UI_PLAYTOEARN_NOTIFICATION_FORMAT");
+                    message = string.Format(messageFormat, amount);
+                }
+                else
+                {
+                    var messageFormat = L10nManager.Localize("UI_TRANSFERASSET_NOTIFICATION_RECIPIENT");
+                    message = string.Format(messageFormat, amount, senderAddress);
+                }
 
                 OneLinePopup.Push(MailType.System, message);
             }
