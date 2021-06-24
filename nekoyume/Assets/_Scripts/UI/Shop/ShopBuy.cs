@@ -212,10 +212,9 @@ namespace Nekoyume.UI
             shopItem.Selected.Value = false;
 
             var buyerAgentAddress = States.Instance.AgentState.address;
-            var productId = shopItem.OrderId.Value;
 
             LocalLayerModifier.ModifyAgentGold(buyerAgentAddress, -shopItem.Price.Value);
-            ReactiveShopState.RemoveBuyDigest(productId);
+            ReactiveShopState.RemoveBuyDigest(shopItem.TradableId.Value);
 
             var format = L10nManager.Localize("NOTIFICATION_BUY_START");
             OneLinePopup.Push(MailType.Auction,
