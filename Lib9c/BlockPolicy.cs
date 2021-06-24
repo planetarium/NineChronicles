@@ -155,17 +155,13 @@ namespace Nekoyume.BlockChain
 
         private InvalidBlockException ValidateBlock(Block<NCAction> block)
         {
-            if (!(block.Miner is Address miner))
-            {
-                return null;
-            }
-
             // To prevent selfish mining, we define a consensus that blocks with no transactions are do not accepted. 
             // (For backward compatibility, blocks before 1,711,631th don't have to be proven.
             // Note that as of Jun 16, 2021, there are about 1,710,000+ blocks.)
             if (block.Transactions.Count <= 0 &&
                 (IgnoreHardcodedIndicesForBackwardCompatibility || block.Index > 1_711_631))
             {
+                Address miner = block.Miner;
                 return new InvalidMinerException(
                     $"The block #{block.Index} {block.Hash} (mined by {miner}) should " +
                     "include at least one transaction.",
@@ -183,16 +179,12 @@ namespace Nekoyume.BlockChain
                 return null;
             }
 
-            if (!(block.Miner is Address miner))
-            {
-                return null;
-            }
-
             if (!IsTargetBlock(block.Index))
             {
                 return null;
             }
 
+            Address miner = block.Miner;
             if (!AuthorizedMinersState.Miners.Contains(miner))
             {
                 return new InvalidMinerException(
