@@ -1,8 +1,5 @@
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Bencodex.Types;
-using Lib9c.Model.Order;
 using mixpanel;
 using Nekoyume.Action;
 using Nekoyume.EnumType;
@@ -10,7 +7,6 @@ using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
-using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.State;
 using Nekoyume.UI.Model;
@@ -18,7 +14,6 @@ using Nekoyume.UI.Module;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
-using ObservableExtensions = UniRx.ObservableExtensions;
 using ShopItem = Nekoyume.UI.Model.ShopItem;
 
 namespace Nekoyume.UI
@@ -76,16 +71,15 @@ namespace Nekoyume.UI
         public override void Initialize()
         {
             base.Initialize();
-
-            ObservableExtensions.Subscribe(shopItems.SharedModel.SelectedItemView, OnClickShopItem)
+            shopItems.SharedModel.SelectedItemView
+                .Subscribe(OnClickShopItem)
                 .AddTo(gameObject);
 
-            ObservableExtensions
-                .Subscribe(SharedModel.ItemCountAndPricePopup.Value.Item, SubscribeItemPopup)
+            SharedModel.ItemCountAndPricePopup.Value.Item
+                .Subscribe(SubscribeItemPopup)
                 .AddTo(gameObject);
 
-            ObservableExtensions.Subscribe(shopBuyBoard.OnChangeBuyType, SetMultiplePurchase)
-                .AddTo(gameObject);
+            shopBuyBoard.OnChangeBuyType.Subscribe(SetMultiplePurchase).AddTo(gameObject);
         }
 
         public override void Show(bool ignoreShowAnimation = false)
@@ -230,7 +224,7 @@ namespace Nekoyume.UI
             AudioController.instance.PlaySfx(AudioController.SfxCode.BuyItem);
         }
 
-        private void SetMultiplePurchase(bool value)
+        public void SetMultiplePurchase(bool value)
         {
             shopItems.SharedModel.SetMultiplePurchase(value);
             if (value)
@@ -286,41 +280,11 @@ namespace Nekoyume.UI
             }
         }
 
-        public static PurchaseInfo GetPurchseInfo(Guid orderId)
+        public static PurchaseInfo GetPurchseInfo(System.Guid orderId)
         {
             var order = Util.GetOrder(orderId);
             return new PurchaseInfo(orderId, order.TradableId, order.SellerAgentAddress,
                 order.SellerAvatarAddress, order.ItemSubType, order.Price);
         }
-
-        // public static ItemBase GetItemBase(Buy.PurchaseResult result)
-        // {
-        //     if (result.itemUsable != null)
-        //     {
-        //         return result.itemUsable;
-        //     }
-        //
-        //     if (result.costume != null)
-        //     {
-        //         return result.costume;
-        //     }
-        //
-        //     return (ItemBase)result.tradableFungibleItem;
-        // }
-        //
-        // public static ItemBase GetItemBase(AttachmentActionResult result)
-        // {
-        //     if (result.itemUsable != null)
-        //     {
-        //         return result.itemUsable;
-        //     }
-        //
-        //     if (result.costume != null)
-        //     {
-        //         return result.costume;
-        //     }
-        //
-        //     return (ItemBase)result.tradableFungibleItem;
-        // }
     }
 }

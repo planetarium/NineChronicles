@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Lib9c.Model.Order;
@@ -206,7 +207,7 @@ namespace Nekoyume.UI
         public void Read(CombinationMail mail)
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
-            var attachment = (CombinationConsumable.ResultModel) mail.attachment;
+            var attachment = (CombinationConsumable5.ResultModel) mail.attachment;
             var itemBase = attachment.itemUsable ?? (ItemBase)attachment.costume;
             var tradableItem = attachment.itemUsable ?? (ITradableItem)attachment.costume;
             var popup = Find<CombinationResultPopup>();
@@ -404,19 +405,13 @@ namespace Nekoyume.UI
             Read(mail);
         }
 
-        public void Read(SellCancelMail mail)
-        {
-            // Deprecated function
-        }
+        [Obsolete]
+        public void Read(SellCancelMail mail) { }
 
-        public void Read(BuyerMail buyerMail)
-        {
-            // Deprecated function
-        }
+        [Obsolete]
+        public void Read(BuyerMail buyerMail) { }
 
-        public void Read(SellerMail sellerMail)
-        {
-            // Deprecated function
-        }
+        [Obsolete]
+        public void Read(SellerMail sellerMail) { }
     }
 }

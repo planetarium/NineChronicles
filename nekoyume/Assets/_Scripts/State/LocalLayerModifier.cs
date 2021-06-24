@@ -611,7 +611,7 @@ namespace Nekoyume.State
                 materials[material] = count;
             }
 
-            var result = new CombinationConsumable.ResultModel
+            var result = new CombinationConsumable5.ResultModel
             {
                 // id: When applying the local layer for the first time, if the id is the default, the notification is not applied.
                 id = Guid.NewGuid(),
@@ -672,7 +672,7 @@ namespace Nekoyume.State
                 materials[material] = materialInfo.Count;
             }
 
-            var result = new CombinationConsumable.ResultModel
+            var result = new CombinationConsumable5.ResultModel
             {
                 actionPoint = panel.CostAP,
                 gold = panel.CostNCG,

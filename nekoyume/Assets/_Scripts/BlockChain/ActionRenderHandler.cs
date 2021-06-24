@@ -319,10 +319,11 @@ namespace Nekoyume.BlockChain
         {
             if (eval.Exception is null)
             {
-                var agentAddress = States.Instance.AgentState.address;
+                // var agentAddress = States.Instance.AgentState.address;
+                var agentAddress = eval.Signer;
                 var avatarAddress = eval.Action.AvatarAddress;
                 var slot = eval.OutputStates.GetCombinationSlotState(avatarAddress, eval.Action.SlotIndex);
-                var result = (CombinationConsumable.ResultModel) slot.Result;
+                var result = (CombinationConsumable5.ResultModel) slot.Result;
 
                 if (!eval.OutputStates.TryGetAvatarStateV2(agentAddress, avatarAddress, out var avatarState))
                 {
@@ -416,7 +417,7 @@ namespace Nekoyume.BlockChain
                 var agentAddress = eval.Signer;
                 var avatarAddress = eval.Action.AvatarAddress;
                 var slot = eval.OutputStates.GetCombinationSlotState(avatarAddress, eval.Action.slotIndex);
-                var result = (CombinationConsumable.ResultModel) slot.Result;
+                var result = (CombinationConsumable5.ResultModel) slot.Result;
                 var itemUsable = result.itemUsable;
                 if (!eval.OutputStates.TryGetAvatarStateV2(agentAddress, avatarAddress, out var avatarState))
                 {
@@ -533,32 +534,29 @@ namespace Nekoyume.BlockChain
 
             var errors = eval.Action.errors.ToList();
             var purchaseInfos = eval.Action.purchaseInfos;
-            if (eval.Action.buyerAvatarAddress == avatarAddress) // check error
+            if (eval.Action.buyerAvatarAddress == avatarAddress) // buyer
             {
-                foreach (var (orderId, errorCode) in errors)
+                foreach (var purchaseInfo in purchaseInfos)
                 {
-                    var order = Util.GetOrder(orderId);
-                    var itembase = Util.GetItemBaseByOrderId(orderId);
-                    var price = order.Price;
-                    var errorType = ((ShopErrorType) errorCode).ToString();
-                    LocalLayerModifier.ModifyAgentGold(agentAddress, price);
-                    var msg = string.Format(L10nManager.Localize("NOTIFICATION_BUY_FAIL"),
-                                                  itembase.GetLocalizedName(),
-                                                  L10nManager.Localize(errorType),
-                                                  price);
-                    OneLinePopup.Push(MailType.Auction, msg);
-                }
-            }
+                    var order = Util.GetOrder(purchaseInfo.OrderId);
+                    var itemBase = Util.GetItemBaseByOrderId(purchaseInfo.OrderId);
+                    var price = purchaseInfo.Price;
 
-            foreach (var purchaseInfo in purchaseInfos)
-            {
-                if (!errors.Exists(tuple => tuple.orderId.Equals(purchaseInfo.OrderId)))
-                {
-                    if (eval.Action.buyerAvatarAddress == avatarAddress) // buyer
+                    if (errors.Exists(tuple => tuple.orderId.Equals(purchaseInfo.OrderId)))
                     {
-                        var price = purchaseInfo.Price;
-                        var order = Util.GetOrder(purchaseInfo.OrderId);
-                        var itemBase = Util.GetItemBaseByOrderId(purchaseInfo.OrderId);
+                        var (orderId, errorCode) =
+                            errors.FirstOrDefault(tuple => tuple.orderId == purchaseInfo.OrderId);
+
+                        var errorType = ((ShopErrorType) errorCode).ToString();
+                        LocalLayerModifier.ModifyAgentGold(agentAddress, price);
+                        var msg = string.Format(L10nManager.Localize("NOTIFICATION_BUY_FAIL"),
+                            itemBase.GetLocalizedName(),
+                            L10nManager.Localize(errorType),
+                            price);
+                        OneLinePopup.Push(MailType.Auction, msg);
+                    }
+                    else
+                    {
                         var tradableItem = (ITradableItem) itemBase;
                         var count = order is FungibleOrder fungibleOrder ? fungibleOrder.ItemCount : 1;
 
@@ -569,34 +567,37 @@ namespace Nekoyume.BlockChain
                         var format = L10nManager.Localize("NOTIFICATION_BUY_BUYER_COMPLETE");
                         OneLinePopup.Push(MailType.Auction, string.Format(format, itemBase.GetLocalizedName(), price));
                     }
-                    else // seller
+                }
+            }
+            else // seller
+            {
+                foreach (var purchaseInfo in purchaseInfos)
+                {
+                    var buyerAvatarStateValue = eval.OutputStates.GetState(eval.Action.buyerAvatarAddress);
+                    if (buyerAvatarStateValue is null)
                     {
-                        var buyerAvatarStateValue = eval.OutputStates.GetState(eval.Action.buyerAvatarAddress);
-                        if (buyerAvatarStateValue is null)
-                        {
-                            Debug.LogError("buyerAvatarStateValue is null.");
-                            return;
-                        }
-                        const string nameWithHashFormat = "{0} <size=80%><color=#A68F7E>#{1}</color></size>";
-                        var buyerNameWithHash = string.Format(
-                            nameWithHashFormat,
-                            ((Text) ((Dictionary) buyerAvatarStateValue)["name"]).Value,
-                            eval.Action.buyerAvatarAddress.ToHex().Substring(0, 4)
-                        );
-
-                        var order = Util.GetOrder(purchaseInfo.OrderId);
-                        var itemBase = Util.GetItemBaseByOrderId(purchaseInfo.OrderId);
-                        var taxedPrice = order.Price - order.GetTax();
-
-                        LocalLayerModifier.ModifyAgentGold(agentAddress, -taxedPrice);
-                        LocalLayerModifier.AddNewMail(avatarAddress, purchaseInfo.OrderId);
-
-                        var message = string.Format(
-                            L10nManager.Localize("NOTIFICATION_BUY_SELLER_COMPLETE"),
-                            buyerNameWithHash,
-                            itemBase.GetLocalizedName());
-                        OneLinePopup.Push(MailType.Auction, message);
+                        Debug.LogError("buyerAvatarStateValue is null.");
+                        return;
                     }
+                    const string nameWithHashFormat = "{0} <size=80%><color=#A68F7E>#{1}</color></size>";
+                    var buyerNameWithHash = string.Format(
+                        nameWithHashFormat,
+                        ((Text) ((Dictionary) buyerAvatarStateValue)["name"]).Value,
+                        eval.Action.buyerAvatarAddress.ToHex().Substring(0, 4)
+                    );
+
+                    var order = Util.GetOrder(purchaseInfo.OrderId);
+                    var itemBase = Util.GetItemBaseByOrderId(purchaseInfo.OrderId);
+                    var taxedPrice = order.Price - order.GetTax();
+
+                    LocalLayerModifier.ModifyAgentGold(agentAddress, -taxedPrice);
+                    LocalLayerModifier.AddNewMail(avatarAddress, purchaseInfo.OrderId);
+
+                    var message = string.Format(
+                        L10nManager.Localize("NOTIFICATION_BUY_SELLER_COMPLETE"),
+                        buyerNameWithHash,
+                        itemBase.GetLocalizedName());
+                    OneLinePopup.Push(MailType.Auction, message);
                 }
             }
 

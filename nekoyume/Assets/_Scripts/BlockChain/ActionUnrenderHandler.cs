@@ -166,35 +166,40 @@ namespace Nekoyume.BlockChain
 
             var errors = eval.Action.errors.ToList();
             var purchaseInfos = eval.Action.purchaseInfos;
-            foreach (var purchaseInfo in purchaseInfos)
+            if (eval.Action.buyerAvatarAddress == avatarAddress) // buyer
             {
-                if (!errors.Exists(tuple => tuple.orderId.Equals(purchaseInfo.OrderId)))
+                foreach (var purchaseInfo in purchaseInfos)
                 {
-                    if (eval.Action.buyerAvatarAddress == avatarAddress) // buyer
+                    if (errors.Exists(tuple => tuple.orderId.Equals(purchaseInfo.OrderId)))
                     {
-                        var price = purchaseInfo.Price;
-                        var order = Util.GetOrder(purchaseInfo.OrderId);
-                        var itemBase = Util.GetItemBaseByOrderId(purchaseInfo.OrderId);
-                        var tradableItem = (ITradableItem) itemBase;
-                        var count = order is FungibleOrder fungibleOrder ? fungibleOrder.ItemCount : 1;
-                        LocalLayerModifier.ModifyAgentGold(agentAddress, -price);
-                        LocalLayerModifier.AddItem(avatarAddress, tradableItem.TradableId, tradableItem.RequiredBlockIndex, count);
-                        LocalLayerModifier.RemoveNewMail(avatarAddress, purchaseInfo.OrderId);
+                        continue;
                     }
-                    else // seller
-                    {
-                        var buyerAvatarStateValue = eval.OutputStates.GetState(eval.Action.buyerAvatarAddress);
-                        if (buyerAvatarStateValue is null)
-                        {
-                            Debug.LogError("buyerAvatarStateValue is null.");
-                            return;
-                        }
 
-                        var order = Util.GetOrder(purchaseInfo.OrderId);
-                        var taxedPrice = order.Price - order.GetTax();
-                        LocalLayerModifier.ModifyAgentGold(agentAddress, taxedPrice);
-                        LocalLayerModifier.RemoveNewMail(avatarAddress, purchaseInfo.OrderId);
+                    var price = purchaseInfo.Price;
+                    var order = Util.GetOrder(purchaseInfo.OrderId);
+                    var itemBase = Util.GetItemBaseByOrderId(purchaseInfo.OrderId);
+                    var tradableItem = (ITradableItem) itemBase;
+                    var count = order is FungibleOrder fungibleOrder ? fungibleOrder.ItemCount : 1;
+                    LocalLayerModifier.ModifyAgentGold(agentAddress, -price);
+                    LocalLayerModifier.AddItem(avatarAddress, tradableItem.TradableId, tradableItem.RequiredBlockIndex, count);
+                    LocalLayerModifier.RemoveNewMail(avatarAddress, purchaseInfo.OrderId);
+                }
+            }
+            else // seller
+            {
+                foreach (var purchaseInfo in purchaseInfos)
+                {
+                    var buyerAvatarStateValue = eval.OutputStates.GetState(eval.Action.buyerAvatarAddress);
+                    if (buyerAvatarStateValue is null)
+                    {
+                        Debug.LogError("buyerAvatarStateValue is null.");
+                        return;
                     }
+
+                    var order = Util.GetOrder(purchaseInfo.OrderId);
+                    var taxedPrice = order.Price - order.GetTax();
+                    LocalLayerModifier.ModifyAgentGold(agentAddress, taxedPrice);
+                    LocalLayerModifier.RemoveNewMail(avatarAddress, purchaseInfo.OrderId);
                 }
             }
 
