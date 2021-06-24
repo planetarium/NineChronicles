@@ -1,20 +1,16 @@
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using Bencodex.Types;
 using Lib9c.Renderer;
 using Libplanet;
-using Libplanet.Assets;
 using Nekoyume.Action;
 using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.Item;
 using Nekoyume.State;
 using Nekoyume.UI;
-using UniRx;
 using Nekoyume.Model.State;
-using TentuPlay.Api;
 using Nekoyume.Model.Quest;
 using Nekoyume.State.Modifiers;
 using Nekoyume.State.Subjects;
@@ -57,6 +53,7 @@ namespace Nekoyume.BlockChain
             RewardGold();
             GameConfig();
             CreateAvatar();
+            TransferAsset();
 
             // Battle
             HackAndSlash();
@@ -93,28 +90,8 @@ namespace Nekoyume.BlockChain
             _renderer.EveryRender<RewardGold>()
                 .Where(HasUpdatedAssetsForCurrentAgent)
                 .ObserveOnMainThread()
-                .Subscribe(eval =>
-                {
-                    //[TentuPlay] RewardGold 기록
-                    //Local에서 변경하는 States.Instance 보다는 블락에서 꺼내온 eval.OutputStates를 사용
-                    Address agentAddress = States.Instance.AgentState.address;
-                    if (eval.OutputStates.TryGetGoldBalance(agentAddress, GoldCurrency, out var balance))
-                    {
-                        new TPStashEvent().CharacterCurrencyGet(
-                            player_uuid: agentAddress.ToHex(),
-                            // FIXME: Sometimes `States.Instance.CurrentAvatarState` is null.
-                            character_uuid: States.Instance.CurrentAvatarState?.address.ToHex().Substring(0, 4) ?? string.Empty,
-                            currency_slug: "gold",
-                            currency_quantity: float.Parse((balance - States.Instance.GoldBalanceState.Gold).GetQuantityString()),
-                            currency_total_quantity: float.Parse(balance.GetQuantityString()),
-                            reference_entity: entity.Bonuses,
-                            reference_category_slug: "reward_gold",
-                            reference_slug: "RewardGold");
-                    }
-
-                    UpdateAgentState(eval);
-
-                }).AddTo(_disposables);
+                .Subscribe(UpdateAgentState)
+                .AddTo(_disposables);
         }
 
         private void CreateAvatar()
@@ -124,25 +101,6 @@ namespace Nekoyume.BlockChain
                 .ObserveOnMainThread()
                 .Subscribe(eval =>
                 {
-                    //[TentuPlay] 캐릭터 획득
-                    Address agentAddress = States.Instance.AgentState.address;
-                    Address avatarAddress = agentAddress.Derive(
-                        string.Format(
-                            CultureInfo.InvariantCulture,
-                            CreateAvatar2.DeriveFormat,
-                            eval.Action.index
-                        )
-                    );
-                    new TPStashEvent().PlayerCharacterGet(
-                        player_uuid: agentAddress.ToHex(),
-                        character_uuid: avatarAddress.ToHex().Substring(0, 4),
-                        characterarchetype_slug: Nekoyume.GameConfig.DefaultAvatarCharacterId.ToString(), //100010 for now.
-                        //-> WARRIOR, ARCHER, MAGE, ACOLYTE를 구분할 수 있는 구분자여야한다.
-                        reference_entity: entity.Etc,
-                        reference_category_slug: null,
-                        reference_slug: null
-                    );
-
                     UpdateAgentState(eval);
                     UpdateAvatarState(eval, eval.Action.index);
                 }).AddTo(_disposables);
@@ -154,7 +112,6 @@ namespace Nekoyume.BlockChain
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseHackAndSlash).AddTo(_disposables);
-
         }
 
         private void MimisbrunnrBattle()
@@ -267,6 +224,14 @@ namespace Nekoyume.BlockChain
                 .Subscribe(ResponseClaimMonsterCollectionReward).AddTo(_disposables);
         }
 
+        private void TransferAsset()
+        {
+            _renderer.EveryRender<TransferAsset>()
+                .Where(HasUpdatedAssetsForCurrentAgent)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseTransferAsset).AddTo(_disposables);
+        }
+
         private void ResponseRapidCombination(ActionBase.ActionEvaluation<RapidCombination> eval)
         {
             if (eval.Exception is null)
@@ -282,24 +247,6 @@ namespace Nekoyume.BlockChain
                 }
                 LocalLayerModifier.RemoveAvatarItemRequiredIndex(avatarAddress, result.itemUsable.NonFungibleId);
                 LocalLayerModifier.ResetCombinationSlot(slot);
-
-                //[TentuPlay] RapidCombinationConsumable 합성에 사용한 골드 기록
-                //Local에서 변경하는 States.Instance 보다는 블락에서 꺼내온 eval.OutputStates를 사용
-                var agentAddress = eval.Signer;
-                var qty = eval.OutputStates.GetAvatarState(avatarAddress).inventory.Materials
-                    .Count(i => i.ItemSubType == ItemSubType.Hourglass);
-                var prevQty = eval.PreviousStates.GetAvatarState(avatarAddress).inventory.Materials
-                    .Count(i => i.ItemSubType == ItemSubType.Hourglass);
-                new TPStashEvent().CharacterItemUse(
-                    player_uuid: agentAddress.ToHex(),
-                    character_uuid: States.Instance.CurrentAvatarState.address.ToHex().Substring(0, 4),
-                    item_category: itemCategory.Consumable,
-                    item_slug: "hourglass",
-                    item_quantity: (float)(prevQty - qty),
-                    reference_entity: entity.Items,
-                    reference_category_slug: "consumables_rapid_combination",
-                    reference_slug: slot.Result.itemUsable.Id.ToString()
-                );
 
                 UpdateAgentState(eval);
                 UpdateCurrentAvatarState(eval);
@@ -338,24 +285,7 @@ namespace Nekoyume.BlockChain
                     slot.UnlockBlockIndex,
                     result.itemUsable.ItemId);
 
-                //[TentuPlay] Equipment 합성에 사용한 골드 기록
-                //Local에서 변경하는 States.Instance 보다는 블락에서 꺼내온 eval.OutputStates를 사용
-                if (eval.OutputStates.TryGetGoldBalance(agentAddress, GoldCurrency, out var balance))
-                {
-                    var total = balance - new FungibleAssetValue(balance.Currency, result.gold, 0);
-                    new TPStashEvent().CharacterCurrencyUse(
-                        player_uuid: agentAddress.ToHex(),
-                        character_uuid: States.Instance.CurrentAvatarState.address.ToHex().Substring(0, 4),
-                        currency_slug: "gold",
-                        currency_quantity: (float) result.gold,
-                        currency_total_quantity: float.Parse(total.GetQuantityString()),
-                        reference_entity: entity.Items,
-                        reference_category_slug: "equipments_combination",
-                        reference_slug: result.itemUsable.Id.ToString());
-                }
-
                 var gameInstance = Game.Game.instance;
-
                 var nextQuest = gameInstance.States.CurrentAvatarState.questList?
                     .OfType<CombinationEquipmentQuest>()
                     .Where(x => !x.Complete)
@@ -426,20 +356,6 @@ namespace Nekoyume.BlockChain
                     slot.UnlockBlockIndex,
                     result.itemUsable.ItemId
                 );
-
-                if (eval.OutputStates.TryGetGoldBalance(agentAddress, GoldCurrency, out var balance))
-                {
-                    var total = balance - new FungibleAssetValue(balance.Currency, result.gold, 0);
-                    new TPStashEvent().CharacterCurrencyUse(
-                        player_uuid: agentAddress.ToHex(),
-                        character_uuid: States.Instance.CurrentAvatarState.address.ToHex().Substring(0, 4),
-                        currency_slug: "gold",
-                        currency_quantity: (float)result.gold,
-                        currency_total_quantity: float.Parse(total.GetQuantityString()),
-                        reference_entity: entity.Items,
-                        reference_category_slug: "consumables_combination",
-                        reference_slug: result.itemUsable.Id.ToString());
-                }
 
                 UpdateAgentState(eval);
                 UpdateCurrentAvatarState(eval);
@@ -532,22 +448,6 @@ namespace Nekoyume.BlockChain
                             // Push notification
                             var format = L10nManager.Localize("NOTIFICATION_BUY_BUYER_COMPLETE");
                             OneLinePopup.Push(MailType.Auction, string.Format(format, itemBase.GetLocalizedName(), price));
-
-                            // Analytics
-                            if (eval.OutputStates.TryGetGoldBalance(agentAddress, GoldCurrency, out var buyerAgentBalance))
-                            {
-                                var total = buyerAgentBalance - price;
-                                new TPStashEvent().CharacterCurrencyUse(
-                                    player_uuid: States.Instance.AgentState.address.ToHex(),
-                                    character_uuid: States.Instance.CurrentAvatarState.address.ToHex().Substring(0, 4),
-                                    currency_slug: "gold",
-                                    currency_quantity: float.Parse(price.GetQuantityString()),
-                                    currency_total_quantity: float.Parse(total.GetQuantityString()),
-                                    reference_entity: entity.Trades,
-                                    reference_category_slug: "buy",
-                                    reference_slug: itemBase.Id.ToString()
-                                );
-                            }
                         }
                         else
                         {
@@ -615,25 +515,6 @@ namespace Nekoyume.BlockChain
                             buyerNameWithHash,
                             itemBase.GetLocalizedName());
                         OneLinePopup.Push(MailType.Auction, message);
-
-                        // Analytics
-                        if (eval.OutputStates.TryGetGoldBalance(agentAddress, GoldCurrency,
-                            out var sellerAgentBalance))
-                        {
-                            var price = sellerResult.shopItem.Price;
-                            var total = sellerAgentBalance + price;
-                            new TPStashEvent().CharacterCurrencyGet(
-                                player_uuid: agentAddress.ToHex(), // seller == 본인인지 확인필요
-                                character_uuid: States.Instance.CurrentAvatarState.address.ToHex()
-                                    .Substring(0, 4),
-                                currency_slug: "gold",
-                                currency_quantity: float.Parse(price.GetQuantityString()),
-                                currency_total_quantity: float.Parse(total.GetQuantityString()),
-                                reference_entity: entity.Trades,
-                                reference_category_slug: "sell",
-                                reference_slug: itemBase.Id.ToString() //아이템 품번
-                            );
-                        }
                     }
                 }
 
@@ -792,25 +673,6 @@ namespace Nekoyume.BlockChain
 
                 LocalLayerModifier.RemoveWeeklyArenaInfoActivator(weeklyArenaAddress, avatarAddress);
 
-                //[TentuPlay] RankingBattle 참가비 사용 기록 // 위의 fixme 내용과 어떻게 연결되는지?
-                //Local에서 변경하는 States.Instance 보다는 블락에서 꺼내온 eval.OutputStates를 사용
-                Address agentAddress = States.Instance.AgentState.address;
-                if (eval.OutputStates.TryGetGoldBalance(agentAddress, GoldCurrency, out var balance))
-                {
-                    var total = balance - new FungibleAssetValue(balance.Currency,
-                        Nekoyume.GameConfig.ArenaActivationCostNCG, 0);
-                    new TPStashEvent().CharacterCurrencyUse(
-                        player_uuid: agentAddress.ToHex(),
-                        character_uuid: States.Instance.CurrentAvatarState.address.ToHex().Substring(0, 4),
-                        currency_slug: "gold",
-                        currency_quantity: (float)Nekoyume.GameConfig.ArenaActivationCostNCG,
-                        currency_total_quantity: float.Parse(total.GetQuantityString()),
-                        reference_entity: entity.Quests,
-                        reference_category_slug: "arena",
-                        reference_slug: "WeeklyArenaEntryFee"
-                    );
-                }
-
                 _disposableForBattleEnd?.Dispose();
                 _disposableForBattleEnd =
                     Game.Game.instance.Stage.onEnterToStageEnd
@@ -882,23 +744,6 @@ namespace Nekoyume.BlockChain
                     string.Format(format, result.itemUsable.GetLocalizedName()),
                     slot.UnlockBlockIndex,
                     result.itemUsable.TradableId);
-
-                //[TentuPlay] 장비강화, 골드사용
-                //Local에서 변경하는 States.Instance 보다는 블락에서 꺼내온 eval.OutputStates를 사용
-                if (eval.OutputStates.TryGetGoldBalance(agentAddress, GoldCurrency, out var outAgentBalance))
-                {
-                    var total = outAgentBalance -
-                                new FungibleAssetValue(outAgentBalance.Currency, result.gold, 0);
-                    new TPStashEvent().CharacterCurrencyUse(
-                        player_uuid: agentAddress.ToHex(),
-                        character_uuid: States.Instance.CurrentAvatarState.address.ToHex().Substring(0, 4),
-                        currency_slug: "gold",
-                        currency_quantity: (float) result.gold,
-                        currency_total_quantity: float.Parse(total.GetQuantityString()),
-                        reference_entity: entity.Items, //강화가 가능하므로 장비
-                        reference_category_slug: "item_enhancement",
-                        reference_slug: itemUsable.Id.ToString());
-                }
 
                 UpdateAgentState(eval);
                 UpdateCurrentAvatarState(eval);
@@ -997,6 +842,36 @@ namespace Nekoyume.BlockChain
             UpdateAgentState(eval);
             UpdateCurrentAvatarState(eval);
             RenderQuest(avatarAddress, avatarState.questList.completedQuestIds);
+        }
+
+        private void ResponseTransferAsset(ActionBase.ActionEvaluation<TransferAsset> eval)
+        {
+            if (!(eval.Exception is null))
+            {
+                return;
+            }
+
+            var senderAddress = eval.Action.Sender;
+            var recipientAddress = eval.Action.Recipient;
+            var currentAgentAddress = States.Instance.AgentState.address;
+
+            if (senderAddress == currentAgentAddress)
+            {
+                var amount = eval.Action.Amount;
+                var messageFormat = L10nManager.Localize("UI_TRANSFERASSET_NOTIFICATION_SENDER");
+                var message = string.Format(messageFormat, amount, recipientAddress);
+
+                OneLinePopup.Push(MailType.System, message);
+            }
+            else if (recipientAddress == currentAgentAddress)
+            {
+                var amount = eval.Action.Amount;
+                var messageFormat = L10nManager.Localize("UI_TRANSFERASSET_NOTIFICATION_RECIPIENT");
+                var message = string.Format(messageFormat, amount, senderAddress);
+
+                OneLinePopup.Push(MailType.System, message);
+            }
+            UpdateAgentState(eval);
         }
 
         public static void RenderQuest(Address avatarAddress, IEnumerable<int> ids)

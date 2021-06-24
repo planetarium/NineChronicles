@@ -39,6 +39,7 @@ namespace Nekoyume.BlockChain
             _renderer = renderer;
 
             RewardGold();
+            TransferAsset();
             // GameConfig(); todo.
             // CreateAvatar(); ignore.
 
@@ -143,6 +144,15 @@ namespace Nekoyume.BlockChain
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseClaimMonsterCollectionReward)
+                .AddTo(_disposables);
+        }
+
+        private void TransferAsset()
+        {
+            _renderer.EveryUnrender<TransferAsset>()
+                .Where(HasUpdatedAssetsForCurrentAgent)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseTransferAsset)
                 .AddTo(_disposables);
         }
 
@@ -366,6 +376,24 @@ namespace Nekoyume.BlockChain
             UpdateAgentState(eval);
             UpdateCurrentAvatarState(eval);
             UnrenderQuest(avatarAddress, avatarState.questList.completedQuestIds);
+        }
+
+        private void ResponseTransferAsset(ActionBase.ActionEvaluation<TransferAsset> eval)
+        {
+            if (!(eval.Exception is null))
+            {
+                return;
+            }
+
+            var senderAddress = eval.Action.Sender;
+            var recipientAddress = eval.Action.Recipient;
+            var currentAgentAddress = States.Instance.AgentState.address;
+
+            if (recipientAddress == currentAgentAddress ||
+                senderAddress == currentAgentAddress)
+            {
+                UpdateAgentState(eval);
+            }
         }
 
         public static void UnrenderQuest(Address avatarAddress, IEnumerable<int> ids)

@@ -87,12 +87,17 @@ namespace Nekoyume.Game
 
         protected override void Awake()
         {
+            Debug.Log("[Game] Awake() invoked");
+            
             Application.targetFrameRate = 60;
             Application.SetStackTraceLogType(LogType.Log, StackTraceLogType.None);
             base.Awake();
+
             _options = CommandLineOptions.Load(
                 CommandLineOptionsJsonPath
             );
+            
+            Debug.Log("[Game] Awake() CommandLineOptions loaded");
 
 #if !UNITY_EDITOR
             // FIXME 이후 사용자가 원치 않으면 정보를 보내지 않게끔 해야 합니다.
@@ -107,6 +112,8 @@ namespace Nekoyume.Game
 
             Mixpanel.Init();
             Mixpanel.Track("Unity/Started");
+            
+            Debug.Log("[Game] Awake() Mixpanel initialized");
 #endif
 
             if (_options.RpcClient)
@@ -126,6 +133,7 @@ namespace Nekoyume.Game
 
         private IEnumerator Start()
         {
+            Debug.Log("[Game] Start() invoked");
 #if UNITY_EDITOR
             if (useSystemLanguage)
             {
@@ -138,14 +146,19 @@ namespace Nekoyume.Game
 #else
             yield return L10nManager.Initialize(LanguageTypeMapper.ISO396(_options.Language)).ToYieldInstruction();
 #endif
+            Debug.Log("[Game] Start() L10nManager initialized");
 
             // Initialize MainCanvas first
             MainCanvas.instance.InitializeFirst();
             yield return Addressables.InitializeAsync();
+            Debug.Log("[Game] Start() Addressables initialized");
             // Initialize TableSheets. This should be done before initialize the Agent.
             yield return StartCoroutine(CoInitializeTableSheets());
+            Debug.Log("[Game] Start() TableSheets initialized");
             yield return StartCoroutine(ResourcesHelper.CoInitialize());
+            Debug.Log("[Game] Start() ResourcesHelper initialized");
             AudioController.instance.Initialize();
+            Debug.Log("[Game] Start() AudioController initialized");
             yield return null;
             // Initialize Agent
             var agentInitialized = false;
@@ -162,10 +175,12 @@ namespace Nekoyume.Game
             );
 
             yield return new WaitUntil(() => agentInitialized);
+            Debug.Log("[Game] Start() Agent initialized");
             ShopProducts = new ShopProducts();
             // NOTE: Create ActionManager after Agent initialized.
             ActionManager = new ActionManager(Agent);
             yield return StartCoroutine(CoSyncTableSheets());
+            Debug.Log("[Game] Start() TableSheets synchronized");
             // Initialize MainCanvas second
             yield return StartCoroutine(MainCanvas.instance.InitializeSecond());
             // Initialize NineChroniclesAPIClient.
@@ -193,23 +208,51 @@ namespace Nekoyume.Game
                 return;
             }
 
+            Debug.Log("[Game]Subscribe RPCAgent");
+
             rpcAgent.OnRetryStarted
                 .ObserveOnMainThread()
-                .Subscribe(OnRPCAgentRetryStarted)
+                .Subscribe(agent =>
+                {
+                    Debug.Log($"[Game]RPCAgent OnRetryStarted. {rpcAgent.Address.ToHex()}");
+                    OnRPCAgentRetryStarted(agent);
+                })
                 .AddTo(gameObject);
 
-            // NOTE: RPCAgent가 허브에 조인을 재시도하는 것과 프리로드를 끝마쳤을 때를 구독합니다.
             rpcAgent.OnRetryEnded
-                .Zip(rpcAgent.OnPreloadEnded, (agent, agent1) => agent)
-                .First()
-                .Repeat()
                 .ObserveOnMainThread()
-                .Subscribe(OnRPCAgentRetryAndPreloadEnded)
+                .Subscribe(agent =>
+                {
+                    Debug.Log($"[Game]RPCAgent OnRetryEnded. {rpcAgent.Address.ToHex()}");
+                    OnRPCAgentRetryAndPreloadEnded(agent);
+                })
+                .AddTo(gameObject);
+
+            rpcAgent.OnPreloadStarted
+                .ObserveOnMainThread()
+                .Subscribe(agent =>
+                {
+                    Debug.Log($"[Game]RPCAgent OnPreloadStarted. {rpcAgent.Address.ToHex()}");
+                    OnRPCAgentRetryAndPreloadEnded(agent);
+                })
+                .AddTo(gameObject);
+            
+            rpcAgent.OnPreloadEnded
+                .ObserveOnMainThread()
+                .Subscribe(agent =>
+                {
+                    Debug.Log($"[Game]RPCAgent OnPreloadEnded. {rpcAgent.Address.ToHex()}");
+                    OnRPCAgentRetryAndPreloadEnded(agent);
+                })
                 .AddTo(gameObject);
 
             rpcAgent.OnDisconnected
                 .ObserveOnMainThread()
-                .Subscribe(QuitWithAgentConnectionError)
+                .Subscribe(agent =>
+                {
+                    Debug.Log($"[Game]RPCAgent OnDisconnected. {rpcAgent.Address.ToHex()}");
+                    QuitWithAgentConnectionError(agent);
+                })
                 .AddTo(gameObject);
         }
 
@@ -363,9 +406,10 @@ namespace Nekoyume.Game
 
         private void ShowNext(bool succeed)
         {
-            IsInitialized = true;
+            Debug.Log($"[Game]ShowNext({succeed}) invoked");
             if (succeed)
             {
+                IsInitialized = true;
                 var intro = Widget.Find<Intro>();
                 intro.Close();
                 Widget.Find<PreloadingScreen>().Show();
@@ -620,7 +664,7 @@ namespace Nekoyume.Game
                 }
                 await _logsClient.PutLogEventsAsync(request);
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 // ignored
             }

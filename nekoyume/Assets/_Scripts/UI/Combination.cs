@@ -363,9 +363,6 @@ namespace Nekoyume.UI
             selectionArea.root.SetActive(value == StateType.SelectMenu);
             leftArea.SetActive(value != StateType.SelectMenu);
 
-            var tutorialController = Game.Game.instance.Stage.TutorialController;
-            var tutorialProgress = 0;
-
             switch (value)
             {
                 case StateType.SelectMenu:

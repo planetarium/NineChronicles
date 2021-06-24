@@ -160,22 +160,24 @@ namespace Nekoyume.UI.Scroller
 
         public override void UpdateContent(ViewModel itemData)
         {
-            var rank = itemData?.rank ?? -1;
-            var arenaInfo = itemData.arenaInfo;
-            var currentAvatarArenaInfo = itemData.currentAvatarArenaInfo;
+            if (itemData is null)
+            {
+                Debug.LogError($"Argument is null. {nameof(itemData)}");
+                return;
+            }
 
-            ArenaInfo = arenaInfo ?? throw new ArgumentNullException(nameof(arenaInfo));
-            _isCurrentUser = States.Instance.CurrentAvatarState?.address == ArenaInfo.AvatarAddress;
+            ArenaInfo = itemData.arenaInfo ?? throw new ArgumentNullException(nameof(itemData.arenaInfo));
+            _isCurrentUser = ArenaInfo.AvatarAddress == itemData.currentAvatarArenaInfo.AvatarAddress;
 
             if (controlBackgroundImage)
             {
                 backgroundImage.enabled = Index % 2 == 1;
             }
 
-            UpdateRank(rank);
+            UpdateRank(itemData.rank);
             nameText.text = ArenaInfo.AvatarName;
             scoreText.text = ArenaInfo.Score.ToString();
-            cpText.text = GetCP(arenaInfo);
+            cpText.text = GetCP(ArenaInfo);
 
             challengeCountTextContainer.SetActive(_isCurrentUser);
             challengeButton.gameObject.SetActive(!_isCurrentUser);
@@ -195,20 +197,20 @@ namespace Nekoyume.UI.Scroller
                 }
 
                 challengeCountText.text =
-                    $"<color=orange>{arenaInfo.DailyChallengeCount}</color>/{GameConfig.ArenaChallengeCountMax}";
+                    $"<color=orange>{ArenaInfo.DailyChallengeCount}</color>/{GameConfig.ArenaChallengeCountMax}";
             }
             else
             {
                 //FIXME 현재 코스튬대응이 안되있음 lib9c쪽과 함께 고쳐야함
-                characterView.SetByArenaInfo(arenaInfo);
+                characterView.SetByArenaInfo(ArenaInfo);
 
-                if (currentAvatarArenaInfo is null)
+                if (itemData.currentAvatarArenaInfo is null)
                 {
                     challengeButton.SetSubmittable(true);
                 }
                 else
                 {
-                    challengeButton.SetSubmittable(currentAvatarArenaInfo.DailyChallengeCount > 0);
+                    challengeButton.SetSubmittable(itemData.currentAvatarArenaInfo.DailyChallengeCount > 0);
                 }
             }
 
