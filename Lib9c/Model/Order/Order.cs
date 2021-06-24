@@ -65,42 +65,6 @@ namespace Lib9c.Model.Order
 
         public abstract OrderReceipt Transfer(AvatarState seller, AvatarState buyer, long blockIndex);
 
-        public OrderDigest Digest(ShopItem shopItem, CostumeStatSheet costumeStatSheet)
-        {
-            ItemBase item;
-            int cp = 0;
-            int count = 1;
-            if (!(shopItem.ItemUsable is null))
-            {
-                item = shopItem.ItemUsable;
-                cp = CPHelper.GetCP(shopItem.ItemUsable);
-            }
-            else if (!(shopItem.Costume is null))
-            {
-                item = shopItem.Costume;
-                cp = CPHelper.GetCP(shopItem.Costume, costumeStatSheet);
-            }
-            else
-            {
-                item = (ItemBase)shopItem.TradableFungibleItem;
-                count = shopItem.TradableFungibleItemCount;
-            }
-
-            int level = shopItem.ItemUsable is Equipment equipment ? equipment.level : 0;
-            return new OrderDigest(
-                SellerAgentAddress,
-                StartedBlockIndex,
-                ExpiredBlockIndex,
-                OrderId,
-                TradableId,
-                Price,
-                cp,
-                level,
-                item.Id,
-                count
-            );
-        }
-
         public FungibleAssetValue GetTax()
         {
             return Price.DivRem(100, out _) * Buy.TaxRate;

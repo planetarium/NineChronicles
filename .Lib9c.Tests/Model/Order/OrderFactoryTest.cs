@@ -60,14 +60,16 @@ namespace Lib9c.Tests.Model.Order
             var currency = new Currency("NCG", 2, minter: null);
             Guid orderId = new Guid("6d460c1a-755d-48e4-ad67-65d5f519dbc8");
 
-            var shopItem = new ShopItem(
+            Order order = OrderFactory.Create(
                 Addresses.Admin,
                 Addresses.Blacksmith,
                 orderId,
                 new FungibleAssetValue(currency, 1, 0),
-                blockIndex + Sell6.ExpiredBlockIndex,
-                tradableItem);
-            Order order = OrderFactory.Create(shopItem);
+                tradableItem.TradableId,
+                blockIndex,
+                tradableItem.ItemSubType,
+                1
+            );
 
             Assert.Equal(orderType, order.Type);
             Assert.Equal(blockIndex, order.StartedBlockIndex);
@@ -130,14 +132,17 @@ namespace Lib9c.Tests.Model.Order
             }
 
             var currency = new Currency("NCG", 2, minter: null);
-            var shopItem = new ShopItem(
+            Order order = OrderFactory.Create(
+                Addresses.Admin,
+                Addresses.Blacksmith,
                 default,
-                default,
-                Guid.NewGuid(),
                 new FungibleAssetValue(currency, 1, 0),
-                blockIndex + Sell6.ExpiredBlockIndex,
-                tradableItem);
-            Order order = OrderFactory.Create(shopItem);
+                tradableItem.TradableId,
+                blockIndex,
+                tradableItem.ItemSubType,
+                1
+            );
+
             Dictionary serialized = (Dictionary)order.Serialize();
             Order deserialized = OrderFactory.Deserialize(serialized);
             Assert.Equal(order, deserialized);

@@ -1,16 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Numerics;
 using Bencodex.Types;
-using Lib9c.Model.Order;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Assets;
-using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
-using Nekoyume.TableData;
-using Serilog;
 
 namespace Nekoyume.Action
 {
@@ -31,10 +26,6 @@ namespace Nekoyume.Action
             var states = context.PreviousStates;
             states = GenesisGoldDistribution(context, states);
             states = WeeklyArenaRankingBoard(context, states);
-            // FIXME Separate action before new shop release
-            // Log.Debug("Start Migration");
-            // states = MigrateOrder(context, states);
-            // Log.Debug("Complete Migration");
             return MinerReward(context, states);
         }
 
@@ -124,86 +115,6 @@ namespace Nekoyume.Action
                 );
             }
 
-            return states;
-        }
-
-        public IAccountStateDelta MigrateOrder(IActionContext ctx, IAccountStateDelta states)
-        {
-            var types = new List<ItemSubType>()
-            {
-                ItemSubType.Weapon,
-                ItemSubType.Armor,
-                ItemSubType.Belt,
-                ItemSubType.Necklace,
-                ItemSubType.Ring,
-                ItemSubType.Food,
-                ItemSubType.Hourglass,
-                ItemSubType.ApStone,
-                ItemSubType.FullCostume,
-                ItemSubType.HairCostume,
-                ItemSubType.EarCostume,
-                ItemSubType.EyeCostume,
-                ItemSubType.TailCostume,
-                ItemSubType.Title,
-            };
-
-            var costumeStatSheet = states.GetSheet<CostumeStatSheet>();
-            foreach (var type in types)
-            {
-                Log.Debug($"Type: {type}");
-                foreach (var key in ShardedShopState.AddressKeys)
-                {
-                    Log.Debug($"AddressKey: {key}");
-                    var address = ShardedShopState.DeriveAddress(type, key);
-                    if (states.GetState(address) is Dictionary dictionary)
-                    {
-                        var shardedShopState = new ShardedShopState(dictionary);
-                        foreach (var shopItem in shardedShopState.Products.Values)
-                        {
-                            if (shopItem.ExpiredBlockIndex < ctx.BlockIndex)
-                            {
-                                continue;
-                            }
-                            var order = OrderFactory.Create(shopItem);
-                            var orderAddress = Order.DeriveAddress(order.OrderId);
-                            var orderDigest = order.Digest(shopItem, costumeStatSheet);
-                            var itemAddress = Addresses.GetItemAddress(order.TradableId);
-                            var v2Address = ShardedShopStateV2.DeriveAddress(order.ItemSubType, order.OrderId);
-                            var shardedShopStateV2 = states.TryGetState(v2Address, out Dictionary dict)
-                                ? new ShardedShopStateV2(dict)
-                                : new ShardedShopStateV2(v2Address);
-                            if (shardedShopStateV2.OrderDigestList.Any(o => o.OrderId.Equals(order.OrderId)))
-                            {
-                                continue;
-                            }
-
-                            var digestListAddress = OrderDigestListState.DeriveAddress(order.SellerAvatarAddress);
-                            var digestList = states.TryGetState(digestListAddress, out Dictionary receiptDict)
-                                ? new OrderDigestListState(receiptDict)
-                                : new OrderDigestListState(digestListAddress);
-                            digestList.Add(orderDigest);
-
-                            shardedShopStateV2.Add(orderDigest, ctx.BlockIndex);
-
-                            if (!(shopItem.ItemUsable is null))
-                            {
-                                states = states.SetState(itemAddress, shopItem.ItemUsable.Serialize());
-                            }
-                            if (!(shopItem.Costume is null))
-                            {
-                                states = states.SetState(itemAddress, shopItem.Costume.Serialize());
-                            }
-                            if (!(shopItem.TradableFungibleItem is null))
-                            {
-                                states = states.SetState(itemAddress, shopItem.TradableFungibleItem.Serialize());
-                            }
-                            states = states.SetState(orderAddress, order.Serialize());
-                            states = states.SetState(digestListAddress, digestList.Serialize());
-                            states = states.SetState(v2Address, shardedShopStateV2.Serialize());
-                        }
-                    }
-                }
-            }
             return states;
         }
     }

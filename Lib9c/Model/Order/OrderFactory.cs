@@ -11,25 +11,6 @@ namespace Lib9c.Model.Order
 {
     public static class OrderFactory
     {
-        public static Order Create(ShopItem shopItem)
-        {
-            Address sellerAgentAddress = shopItem.SellerAgentAddress;
-            Address sellerAvatarAddress = shopItem.SellerAvatarAddress;
-            Guid orderId = shopItem.ProductId;
-            FungibleAssetValue price = shopItem.Price;
-            var itemId = (shopItem.ItemUsable?.ItemId ?? shopItem.Costume?.ItemId) ??
-                         shopItem.TradableFungibleItem.TradableId;
-            var startedBlockIndex = shopItem.ExpiredBlockIndex - Sell6.ExpiredBlockIndex;
-            if (shopItem.TradableFungibleItem is null)
-            {
-                return CreateNonFungibleOrder(sellerAgentAddress, sellerAvatarAddress, orderId, price, itemId,
-                    startedBlockIndex, shopItem.ItemUsable?.ItemSubType ?? shopItem.Costume.ItemSubType);
-            }
-
-            return CreateFungibleOrder(sellerAgentAddress, sellerAvatarAddress, orderId, price, itemId, startedBlockIndex,
-                shopItem.TradableFungibleItemCount, shopItem.TradableFungibleItem.ItemSubType);
-        }
-
         public static Order Create(Address agentAddress, Address avatarAddress, Guid orderId,
             FungibleAssetValue price, Guid tradableId, long startedIndex, ItemSubType itemSubType, int count)
         {
