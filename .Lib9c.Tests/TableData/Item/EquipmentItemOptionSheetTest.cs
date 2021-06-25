@@ -9,7 +9,7 @@
         private const string _csv =
             @"id,stat_type,stat_min,stat_max,skill_id,skill_damage_min,skill_damage_max,skill_chance_min,skill_chance_max
 1,ATK,6,9,,,,,
-7,,,,110003,76,101,28,28";
+2,,,,110003,76,101,28,28";
 
         [Fact]
         public void Set()
@@ -38,8 +38,8 @@
             Assert.Equal(0, row.StatMin);
             Assert.Equal(0, row.StatMax);
             Assert.Equal(110003, row.SkillId);
-            Assert.Equal(124, row.SkillDamageMin);
-            Assert.Equal(166, row.SkillDamageMax);
+            Assert.Equal(76, row.SkillDamageMin);
+            Assert.Equal(101, row.SkillDamageMax);
             Assert.Equal(28, row.SkillChanceMin);
             Assert.Equal(28, row.SkillChanceMax);
         }
