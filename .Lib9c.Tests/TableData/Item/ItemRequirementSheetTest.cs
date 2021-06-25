@@ -18,10 +18,10 @@
             Assert.Single(sheet);
             Assert.NotNull(sheet.First);
 
-            var first = sheet.First;
-            Assert.Equal(first.ItemId, first.Key);
-            Assert.Equal(10100000, first.ItemId);
-            Assert.Equal(1, first.Level);
+            var row = sheet.First;
+            Assert.Equal(row.ItemId, row.Key);
+            Assert.Equal(10100000, row.ItemId);
+            Assert.Equal(1, row.Level);
         }
     }
 }
