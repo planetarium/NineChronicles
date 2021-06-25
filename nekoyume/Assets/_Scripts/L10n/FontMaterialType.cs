@@ -29,5 +29,6 @@ namespace Nekoyume.L10n
         RewardText,
         Paper,
         PopupTitle,
+	MainSpeech,
     }
 }

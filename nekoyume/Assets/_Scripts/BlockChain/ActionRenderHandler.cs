@@ -57,6 +57,7 @@ namespace Nekoyume.BlockChain
             RewardGold();
             GameConfig();
             CreateAvatar();
+            TransferAsset();
 
             // Battle
             HackAndSlash();
@@ -154,7 +155,6 @@ namespace Nekoyume.BlockChain
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseHackAndSlash).AddTo(_disposables);
-
         }
 
         private void MimisbrunnrBattle()
@@ -265,6 +265,14 @@ namespace Nekoyume.BlockChain
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseClaimMonsterCollectionReward).AddTo(_disposables);
+        }
+
+        private void TransferAsset()
+        {
+            _renderer.EveryRender<TransferAsset>()
+                .Where(HasUpdatedAssetsForCurrentAgent)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseTransferAsset).AddTo(_disposables);
         }
 
         private void ResponseRapidCombination(ActionBase.ActionEvaluation<RapidCombination> eval)
@@ -997,6 +1005,46 @@ namespace Nekoyume.BlockChain
             UpdateAgentState(eval);
             UpdateCurrentAvatarState(eval);
             RenderQuest(avatarAddress, avatarState.questList.completedQuestIds);
+        }
+
+        private void ResponseTransferAsset(ActionBase.ActionEvaluation<TransferAsset> eval)
+        {
+            if (!(eval.Exception is null))
+            {
+                return;
+            }
+
+            var senderAddress = eval.Action.Sender;
+            var recipientAddress = eval.Action.Recipient;
+            var currentAgentAddress = States.Instance.AgentState.address;
+            var playToEarnRewardAddress = new Address("d595f7e85e1757d6558e9e448fa9af77ab28be4c");
+
+            if (senderAddress == currentAgentAddress)
+            {
+                var amount = eval.Action.Amount;
+                var messageFormat = L10nManager.Localize("UI_TRANSFERASSET_NOTIFICATION_SENDER");
+                var message = string.Format(messageFormat, amount, recipientAddress);
+
+                OneLinePopup.Push(MailType.System, message);
+            }
+            else if (recipientAddress == currentAgentAddress)
+            {
+                var amount = eval.Action.Amount;
+                string message;
+                if (senderAddress == playToEarnRewardAddress)
+                {
+                    var messageFormat = L10nManager.Localize("UI_PLAYTOEARN_NOTIFICATION_FORMAT");
+                    message = string.Format(messageFormat, amount);
+                }
+                else
+                {
+                    var messageFormat = L10nManager.Localize("UI_TRANSFERASSET_NOTIFICATION_RECIPIENT");
+                    message = string.Format(messageFormat, amount, senderAddress);
+                }
+
+                OneLinePopup.Push(MailType.System, message);
+            }
+            UpdateAgentState(eval);
         }
 
         public static void RenderQuest(Address avatarAddress, IEnumerable<int> ids)
