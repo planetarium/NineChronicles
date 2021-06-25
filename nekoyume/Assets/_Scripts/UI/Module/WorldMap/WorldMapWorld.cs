@@ -11,6 +11,8 @@ using UnityEngine.UI.Extensions;
 
 namespace Nekoyume.UI.Module
 {
+    using UniRx;
+
     public class WorldMapWorld : MonoBehaviour
     {
         public class ViewModel : IDisposable
@@ -47,7 +49,7 @@ namespace Nekoyume.UI.Module
         private Button nextButton = null;
 
         [SerializeField]
-        private Image titleImage = null;
+        private TextMeshProUGUI titleText;
 
         private readonly List<IDisposable> _disposablesForModel = new List<IDisposable>();
 
@@ -96,9 +98,7 @@ namespace Nekoyume.UI.Module
                     $"{worldRow.Id}: worldRow.StagesCount({worldRow.StagesCount}) != stageRowsCount({stageRowsCount})");
             }
 
-            var imageKey = worldRow.Id == GameConfig.MimisbrunnrWorldId ? "99" : $"{worldRow.Id:D2}";
-            titleImage.overrideSprite = Resources.Load<Sprite>($"UI/Textures/WorldMap/UI_bg_worldmap_{imageKey}");
-            titleImage.SetNativeSize();
+            titleText.text = worldRow.Name;
             var stageOffset = 0;
             var nextPageShouldHide = false;
             var pageIndex = 1;
@@ -140,6 +140,7 @@ namespace Nekoyume.UI.Module
                     }
                 }
 
+                var imageKey = worldRow.Id == GameConfig.MimisbrunnrWorldId ? "99" : $"{worldRow.Id:D2}";
                 page.Show(stageModels, imageKey, worldRow.Id == GameConfig.MimisbrunnrWorldId ? 1 : pageIndex);
                 pageIndex += 1;
                 stageOffset += stageModels.Count;

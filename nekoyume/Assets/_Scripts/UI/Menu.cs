@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Linq;
 using Nekoyume.BlockChain;
@@ -6,7 +5,6 @@ using Nekoyume.Game;
 using Nekoyume.Game.Controller;
 using Nekoyume.State;
 using Nekoyume.UI.Module;
-using Nekoyume.Manager;
 using Nekoyume.Model.BattleStatus;
 using UniRx;
 using UnityEngine;
@@ -16,6 +14,7 @@ using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
 using System.Collections.Generic;
+using Nekoyume.Game.Character;
 using Nekoyume.State.Subjects;
 using UnityEngine.UI;
 
@@ -147,11 +146,6 @@ namespace Nekoyume.UI
 
         public void GoToStage(BattleLog battleLog)
         {
-            var props = new Value
-            {
-                ["StageId"] = battleLog.stageId,
-            };
-            Mixpanel.Track("Unity/Stage Start", props);
             Game.Event.OnStageStart.Invoke(battleLog);
             Find<LoadingScreen>().Close();
             Close(true);
@@ -245,12 +239,10 @@ namespace Nekoyume.UI
                 PlayerPrefs.SetInt(key, 1);
             }
 
-            Mixpanel.Track("Unity/Enter Dungeon");
             _coLazyClose = StartCoroutine(CoLazyClose());
             var avatarState = States.Instance.CurrentAvatarState;
             Find<WorldMap>().Show(avatarState.worldInformation);
             AudioController.PlayClick();
-            AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ClickMainBattle);
         }
 
         public void ShopClick()
@@ -271,7 +263,6 @@ namespace Nekoyume.UI
             Close();
             Find<ShopBuy>().Show();
             AudioController.PlayClick();
-            AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ClickMainShop);
         }
 
         public void CombinationClick(int slotIndex = -1)
@@ -313,7 +304,6 @@ namespace Nekoyume.UI
             showAction();
 
             AudioController.PlayClick();
-            AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ClickMainCombination);
         }
 
         public void RankingClick()
@@ -380,10 +370,8 @@ namespace Nekoyume.UI
                 PlayerPrefs.SetInt(key, 1);
             }
 
-            Mixpanel.Track("Unity/Enter Mimisbrunnr");
             _coLazyClose = StartCoroutine(CoLazyClose());
             AudioController.PlayClick();
-            AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ClickHardBattle);
 
             SharedViewModel.SelectedWorldId.SetValueAndForceNotify(world.Id);
             SharedViewModel.SelectedStageId.SetValueAndForceNotify(world.GetNextStageId());
@@ -557,7 +545,11 @@ namespace Nekoyume.UI
             GoToCombinationEquipmentRecipe(firstRecipeRow.Id);
         }
 
-        public void TutorialActionClickGuidedQuestWorldStage2() =>
+        public void TutorialActionClickGuidedQuestWorldStage2()
+        {
+            var player = Game.Game.instance.Stage.GetPlayer();
+            player.DisableHudContainer();
             HackAndSlash(GuidedQuest.WorldQuest?.Goal ?? 4);
+        }
     }
 }

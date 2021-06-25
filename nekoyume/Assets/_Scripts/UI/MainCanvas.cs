@@ -162,6 +162,8 @@ namespace Nekoyume.UI
                 // 팝업 영역.
                 Widget.Create<Settings>(),
                 Widget.Create<Confirm>(),
+                Widget.Create<QuitPopup>(),
+                Widget.Create<OneButtonPopup>(),
                 Widget.Create<TwoButtonPopup>(),
 
                 // 팝업 영역: 알림.
@@ -191,8 +193,6 @@ namespace Nekoyume.UI
         {
             var secondWidgets = new List<Widget>();
 
-            secondWidgets.Add(Widget.Create<ItemInformationTooltip>());
-            yield return null;
             // 일반.
             secondWidgets.Add(Widget.Create<Synopsis>());
             yield return null;
@@ -249,6 +249,8 @@ namespace Nekoyume.UI
             yield return null;
             secondWidgets.Add(Widget.Create<CombinationSlots>());
             yield return null;
+            secondWidgets.Add(Widget.Create<Rank>());
+            yield return null;
             secondWidgets.Add(Widget.Create<AvatarInfo>());
             yield return null;
 
@@ -258,6 +260,8 @@ namespace Nekoyume.UI
             secondWidgets.Add(Widget.Create<RankingBattleResult>());
             yield return null;
             secondWidgets.Add(Widget.Create<ItemCountAndPricePopup>());
+            yield return null;
+            secondWidgets.Add(Widget.Create<ItemCountableAndPricePopup>());
             yield return null;
             secondWidgets.Add(Widget.Create<DailyRewardItemPopup>());
             yield return null;
@@ -271,10 +275,14 @@ namespace Nekoyume.UI
             yield return null;
             secondWidgets.Add(Widget.Create<LevelUpCelebratePopup>());
             yield return null;
+            secondWidgets.Add(Widget.Create<MonsterCollectionRewardsPopup>());
+            yield return null;
             // 임시로 팝업보다 상단에 배치합니다.
             secondWidgets.Add(Widget.Create<BottomMenu>());
             yield return null;
             secondWidgets.Add(Widget.Create<FriendInfoPopup>());
+            yield return null;
+            secondWidgets.Add(Widget.Create<ItemInformationTooltip>());
             yield return null;
             // 팝업이지만 하단 메뉴보다 위에 그려져야 하는 것들입니다.
             secondWidgets.Add(Widget.Create<Dialog>());

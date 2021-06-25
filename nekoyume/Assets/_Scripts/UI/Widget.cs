@@ -166,6 +166,19 @@ namespace Nekoyume.UI
             return (T) model.widget;
         }
 
+        public static bool TryFind<T>(out T widget) where T : Widget
+        {
+            widget = null;
+            var type = typeof(T);
+            if (!Pool.TryGetValue(type, out var model))
+            {
+                return false;
+            }
+
+            widget = (T) model.widget;
+            return true;
+        }
+
         public static T FindOrCreate<T>() where T : HudWidget
         {
             var type = typeof(T);

@@ -1,16 +1,17 @@
-﻿using System;
+using System;
 using Nekoyume.EnumType;
 using Nekoyume.Game;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
 using Spine.Unity;
-using UniRx;
 using UnityEngine;
 using UnityEngine.Rendering;
 
 namespace Nekoyume.UI.Module
 {
+    using UniRx;
+
     public class RefreshButton : MonoBehaviour
     {
         private const float AnimatorTimeScale = 1.2f;

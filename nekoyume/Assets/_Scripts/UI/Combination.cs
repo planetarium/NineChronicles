@@ -32,6 +32,8 @@ using Nekoyume.UI.Model;
 
 namespace Nekoyume.UI
 {
+    using UniRx;
+
     public class Combination : Widget
     {
         public enum StateType
@@ -255,6 +257,7 @@ namespace Nekoyume.UI
                 BottomMenu.ToggleableType.Quest,
                 BottomMenu.ToggleableType.Chat,
                 BottomMenu.ToggleableType.IllustratedBook,
+                BottomMenu.ToggleableType.Ranking,
                 BottomMenu.ToggleableType.Character,
                 BottomMenu.ToggleableType.Combination
             );
@@ -359,9 +362,6 @@ namespace Nekoyume.UI
 
             selectionArea.root.SetActive(value == StateType.SelectMenu);
             leftArea.SetActive(value != StateType.SelectMenu);
-
-            var tutorialController = Game.Game.instance.Stage.TutorialController;
-            var tutorialProgress = 0;
 
             switch (value)
             {

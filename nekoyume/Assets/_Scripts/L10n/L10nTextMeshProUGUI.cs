@@ -6,6 +6,8 @@ using UnityEngine;
 
 namespace Nekoyume.L10n
 {
+    using UniRx;
+
     [DisallowMultipleComponent, RequireComponent(typeof(TextMeshProUGUI))]
     public class L10nTextMeshProUGUI : MonoBehaviour
     {

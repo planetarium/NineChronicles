@@ -29,12 +29,13 @@ using Nekoyume.UI;
 using NineChronicles.RPC.Shared.Exceptions;
 using UniRx;
 using UnityEngine;
-using UnityEngine.Events;
 using static Nekoyume.Action.ActionBase;
 using Logger = Serilog.Core.Logger;
 
 namespace Nekoyume.BlockChain
 {
+    using UniRx;
+
     public class RPCAgent : MonoBehaviour, IAgent, IActionEvaluationHubReceiver
     {
         private const float TxProcessInterval = 1.0f;
@@ -128,14 +129,15 @@ namespace Nekoyume.BlockChain
 
         public FungibleAssetValue GetBalance(Address address, Currency currency)
         {
+            // FIXME: `CurrencyExtension.Serialize()` should be changed to `Currency.Serialize()`.
             var result = _service.GetBalance(
                 address.ToByteArray(),
-                _codec.Encode(currency.Serialize())
+                _codec.Encode(CurrencyExtensions.Serialize(currency))
             );
             byte[] raw = result.ResponseAsync.Result;
             var serialized = (Bencodex.Types.List) _codec.Decode(raw);
             return FungibleAssetValue.FromRawValue(
-                CurrencyExtensions.Deserialize((Bencodex.Types.Dictionary) serialized.ElementAt(0)),
+                new Currency(serialized.ElementAt(0)),
                 serialized.ElementAt(1).ToBigInteger());
         }
 

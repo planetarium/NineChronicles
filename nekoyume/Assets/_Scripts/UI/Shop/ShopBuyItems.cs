@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -13,11 +13,13 @@ using ShopItem = Nekoyume.UI.Model.ShopItem;
 
 namespace Nekoyume.UI.Module
 {
+    using UniRx;
+
     public class ShopBuyItems : MonoBehaviour
     {
         public List<ShopItemView> Items { get; } = new List<ShopItemView>();
 
-        [SerializeField] private List<NCToggleDropdown> toggleDropdowns = new List<NCToggleDropdown>();
+        [SerializeField] private List<ToggleDropdown> toggleDropdowns = new List<ToggleDropdown>();
         [SerializeField] private TextMeshProUGUI pageText = null;
         [SerializeField] private Button previousPageButton = null;
         [SerializeField] private Button nextPageButton = null;
@@ -33,7 +35,7 @@ namespace Nekoyume.UI.Module
 
         private readonly List<int> _itemIds = new List<int>();
         private TextMeshProUGUI _sortText;
-        private SortFilter _sortFilter = SortFilter.Class;
+        private ShopSortFilter _sortFilter = ShopSortFilter.Class;
 
         private readonly int _hashNormal = Animator.StringToHash("Normal");
         private readonly int _hashDisabled = Animator.StringToHash("Disabled");
@@ -44,6 +46,7 @@ namespace Nekoyume.UI.Module
         {
             ItemSubTypeFilter.Equipment,
             ItemSubTypeFilter.Food,
+            ItemSubTypeFilter.Materials,
             ItemSubTypeFilter.Costume,
         };
 
@@ -71,6 +74,9 @@ namespace Nekoyume.UI.Module
                 }
             },
             {
+                ItemSubTypeFilter.Materials, new List<ItemSubTypeFilter>()
+            },
+            {
                 ItemSubTypeFilter.Costume, new List<ItemSubTypeFilter>()
                 {
                     ItemSubTypeFilter.FullCostume,
@@ -92,16 +98,15 @@ namespace Nekoyume.UI.Module
             var equipments = Game.Game.instance.TableSheets.EquipmentItemSheet.Values.Select(x => x.Id);
             var consumableItems = Game.Game.instance.TableSheets.ConsumableItemSheet.Values.Select(x => x.Id);
             var costumes = Game.Game.instance.TableSheets.CostumeItemSheet.Values.Select(x => x.Id);
+            var materials = Game.Game.instance.TableSheets.MaterialItemSheet.Values.Select(x => x.Id);
             _itemIds.AddRange(equipments);
             _itemIds.AddRange(consumableItems);
             _itemIds.AddRange(costumes);
+            _itemIds.AddRange(materials);
             _sortText = sortButton.GetComponentInChildren<TextMeshProUGUI>();
             inputPlaceholder.SetAsLastSibling();
 
             SharedModel = new Model.ShopItems();
-            SharedModel.State
-                .Subscribe(_ => UpdateView())
-                .AddTo(gameObject);
             SharedModel.AgentProducts
                 .Subscribe(_ => UpdateView())
                 .AddTo(gameObject);
@@ -117,8 +122,15 @@ namespace Nekoyume.UI.Module
                 {
                     if (value)
                     {
-                        SharedModel.itemSubTypeFilter = _toggleSubTypes[toggleType].First();
-                        toggleDropdown.items.First().isOn = true;
+                        if (_toggleSubTypes[toggleType].Count > 0)
+                        {
+                            SharedModel.itemSubTypeFilter = _toggleSubTypes[toggleType].First();
+                            toggleDropdown.items.First().isOn = true;
+                        }
+                        else
+                        {
+                            SharedModel.itemSubTypeFilter = ItemSubTypeFilter.Materials;
+                        }
                         OnItemSubTypeFilterChanged();
                     }
                 });
@@ -154,18 +166,19 @@ namespace Nekoyume.UI.Module
         public void Reset()
         {
             toggleDropdowns.First().isOn = true;
+            toggleDropdowns.First().items.First().isOn = true;
             inputField.text = string.Empty;
             resetButton.interactable = false;
             resetAnimator.Play(_hashDisabled);
             sortOrderIcon.localScale = new Vector3(1, -1, 1);
             SharedModel.itemSubTypeFilter = ItemSubTypeFilter.Weapon;
-            SharedModel.sortFilter = SortFilter.Class;
+            SharedModel.sortFilter = ShopSortFilter.Class;
             SharedModel.isReverseOrder = false;
             SharedModel.searchIds = new List<int>();
             SharedModel.SetMultiplePurchase(false);
             SharedModel.ResetAgentProducts();
             SharedModel.ResetItemSubTypeProducts();
-            UpdateSrot();
+            UpdateSort();
         }
 
         public void Show()
@@ -301,12 +314,12 @@ namespace Nekoyume.UI.Module
 
         private void OnClickSort(Unit unit)
         {
-            UpdateSrot();
+            UpdateSort();
         }
 
-        private void UpdateSrot()
+        private void UpdateSort()
         {
-            int count = Enum.GetNames(typeof(SortFilter)).Length;
+            int count = Enum.GetNames(typeof(ShopSortFilter)).Length;
             _sortFilter = (int) _sortFilter < count - 1 ? _sortFilter + 1 : 0;
             _sortText.text = L10nManager.Localize($"UI_{_sortFilter.ToString().ToUpper()}");
 

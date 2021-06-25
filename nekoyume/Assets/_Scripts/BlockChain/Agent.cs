@@ -45,6 +45,8 @@ using UnityEngine.Assertions;
 
 namespace Nekoyume.BlockChain
 {
+    using UniRx;
+
     /// <summary>
     /// 블록체인 노드 관련 로직을 처리
     /// </summary>
@@ -535,7 +537,7 @@ namespace Nekoyume.BlockChain
                 Debug.Log($"Storage Type {storageType} is not supported. DefaultStore will be used.");
             }
 
-            return store ?? new DefaultStore(path, flush: false, compress: true);
+            return store ?? new DefaultStore(path, flush: false);
         }
 
         private void StartSystemCoroutines()
@@ -635,6 +637,7 @@ namespace Nekoyume.BlockChain
 
         private IEnumerator CoLogger()
         {
+            Widget.Create<BattleSimulator>(true);
             Widget.Create<Cheat>(true);
             while (true)
             {

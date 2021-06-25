@@ -99,7 +99,6 @@ namespace Nekoyume.BlockChain
 
         protected void UpdateCurrentAvatarState<T>(ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
         {
-            //전투중이면 게임에서의 아바타상태를 바로 업데이트하지말고 쌓아둔다.
             var avatarState = evaluation.OutputStates.GetAvatarState(States.Instance.CurrentAvatarState.address);
             UpdateCurrentAvatarState(avatarState);
         }
@@ -150,6 +149,7 @@ namespace Nekoyume.BlockChain
 
         public void UpdateCurrentAvatarState(AvatarState avatarState)
         {
+            // When in battle, do not immediately update the AvatarState, but pending it.
             if (Pending)
             {
                 Game.Game.instance.Stage.AvatarState = avatarState;

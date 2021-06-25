@@ -7,7 +7,7 @@ namespace Nekoyume.UI.Module
     {
         private void OnEnable()
         {
-            var children = transform.GetComponentsInChildren<NCToggleDropdown>();
+            var children = transform.GetComponentsInChildren<ToggleDropdown>();
             float childHeight = children.First().GetComponent<RectTransform>().sizeDelta.y;
 
             int itemCount = 0;

@@ -1,10 +1,11 @@
 using System;
 using System.Collections.Generic;
 using TMPro;
-using UniRx;
 
 namespace Nekoyume.UI.Module
 {
+    using UniRx;
+
     public class CountableItemView<T> : ItemView<T> where T : Model.CountableItem
     {
         protected const string CountTextFormat = "{0}";

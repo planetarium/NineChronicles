@@ -21,14 +21,14 @@ namespace Nekoyume.UI.Model
 
         public ShopItem(Nekoyume.Model.Item.ShopItem item)
             : this(item.SellerAgentAddress, item.SellerAvatarAddress, item.Price, item.ProductId,
-                item.ItemUsable ?? (ItemBase)item.Costume, item.ExpiredBlockIndex)
+                item.TradableFungibleItem is null ? 1 : item.TradableFungibleItemCount, GetItemBase(item),
+                item.ExpiredBlockIndex)
         {
-
         }
 
         private ShopItem(Address sellerAgentAddress, Address sellerAvatarAddress,
-                         FungibleAssetValue price, Guid productId,
-                         ItemBase item, long expiredBlockIndex) : base(item, 1)
+                         FungibleAssetValue price, Guid productId, int count,
+                         ItemBase item, long expiredBlockIndex) : base(item, count)
         {
             GradeEnabled.Value = true;
             SellerAgentAddress.Value = sellerAgentAddress;
@@ -46,6 +46,22 @@ namespace Nekoyume.UI.Model
             Price.Dispose();
             ProductId.Dispose();
             base.Dispose();
+        }
+
+
+        private static ItemBase GetItemBase(Nekoyume.Model.Item.ShopItem item)
+        {
+            if (item.ItemUsable != null)
+            {
+                return item.ItemUsable;
+            }
+
+            if (item.Costume != null)
+            {
+                return item.Costume;
+            }
+
+            return (ItemBase) item.TradableFungibleItem;
         }
     }
 }

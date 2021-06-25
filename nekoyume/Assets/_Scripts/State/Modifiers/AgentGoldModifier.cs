@@ -45,7 +45,7 @@ namespace Nekoyume.State.Modifiers
             {
                 var serialized = new Bencodex.Types.List(new IValue[]
                 {
-                    value.Currency.Serialize(),
+                    CurrencyExtensions.Serialize(value.Currency),
                     (Integer) value.RawValue,
                 });
 

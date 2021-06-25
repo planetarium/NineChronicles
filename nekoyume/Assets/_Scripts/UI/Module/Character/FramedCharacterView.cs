@@ -1,5 +1,7 @@
+using System;
 using System.Linq;
 using Nekoyume.Game.Character;
+using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
@@ -8,17 +10,39 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
 {
+    using UniRx;
+
     public class FramedCharacterView : VanillaCharacterView
     {
+        [SerializeField]
+        private Button button = null;
+
         [SerializeField]
         private Image frameImage = null;
 
         [SerializeField]
         private bool isTitleFrame = false;
 
+        public Subject<AvatarState> OnClickCharacterIcon = new Subject<AvatarState>();
+
+        private AvatarState _avatarStateToDisplay;
+
+        private void Awake()
+        {
+            button.OnClickAsObservable()
+                .ThrottleFirst(new TimeSpan(0, 0, 1))
+                .Subscribe(_ =>
+                {   
+                    OnClickCharacterIcon.OnNext(_avatarStateToDisplay);
+                    AudioController.PlayClick();
+                })
+                .AddTo(gameObject);
+        }
+
         public override void SetByAvatarState(AvatarState avatarState)
         {
             base.SetByAvatarState(avatarState);
+            _avatarStateToDisplay = avatarState;
 
             if (!isTitleFrame)
             {
@@ -42,7 +66,7 @@ namespace Nekoyume.UI.Module
         public override void SetByPlayer(Player player)
         {
             base.SetByPlayer(player);
-
+            
             if (!isTitleFrame)
             {
                 return;

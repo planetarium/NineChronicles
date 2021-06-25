@@ -10,6 +10,8 @@ using mixpanel;
 
 namespace Nekoyume.UI
 {
+    using UniRx;
+
     public class WorldMap : Widget
     {
         public class ViewModel
@@ -20,8 +22,6 @@ namespace Nekoyume.UI
 
             public WorldInformation WorldInformation;
         }
-
-        public List<WorldMapWorld> worlds = new List<WorldMapWorld>();
 
         [SerializeField]
         private GameObject worldMapRoot = null;
@@ -224,7 +224,7 @@ namespace Nekoyume.UI
             worldMapRoot.SetActive(true);
         }
 
-        public void SubscribeBackButtonClick(BottomMenu bottomMenu)
+        private void SubscribeBackButtonClick(BottomMenu bottomMenu)
         {
             if (!CanClose)
             {

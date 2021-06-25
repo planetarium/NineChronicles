@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using mixpanel;
@@ -7,6 +7,7 @@ using Nekoyume.EnumType;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using Nekoyume.L10n;
+using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
 using Nekoyume.State;
@@ -22,7 +23,6 @@ namespace Nekoyume.UI
     public class ShopBuy : Widget
     {
         private const int NPCId = 300000;
-        private const int ShopItemsPerPage = 24; // todo : Resolution Response Required Later
         private static readonly Vector3 NPCPosition = new Vector3(1000.1f, 998.2f, 1.7f);
         private NPC _npc;
 
@@ -61,6 +61,7 @@ namespace Nekoyume.UI
                     shopItems.Reset();
                     Find<ItemCountAndPricePopup>().Close();
                     Find<ShopSell>().gameObject.SetActive(true);
+                    Find<ShopSell>().Show();
                     _npc?.gameObject.SetActive(false);
                     gameObject.SetActive(false);
                 });
@@ -106,8 +107,7 @@ namespace Nekoyume.UI
                 {
                     shardedProducts.AddRange(items);
                 }
-
-                ReactiveShopState.Initialize(shopState, shardedProducts, ShopItemsPerPage);
+                ReactiveShopState.Initialize(shopState, shardedProducts);
                 return true;
             });
 
@@ -124,6 +124,7 @@ namespace Nekoyume.UI
                     BottomMenu.ToggleableType.Quest,
                     BottomMenu.ToggleableType.Chat,
                     BottomMenu.ToggleableType.IllustratedBook,
+                    BottomMenu.ToggleableType.Ranking,
                     BottomMenu.ToggleableType.Character);
 
                 AudioController.instance.PlayMusic(AudioController.MusicCode.Shop);
@@ -131,7 +132,6 @@ namespace Nekoyume.UI
                 shopItems.Show();
 
                 Reset();
-                Find<ShopSell>().Show();
                 Find<ShopSell>().gameObject.SetActive(false);
                 Find<DataLoadingScreen>().Close();
             }
@@ -145,6 +145,7 @@ namespace Nekoyume.UI
 
         public void Open()
         {
+            ReactiveShopState.Update();
             shopItems.Reset();
             Reset();
         }
@@ -190,13 +191,13 @@ namespace Nekoyume.UI
                 return;
             }
 
-            tooltip.Show(
+            tooltip.ShowForShop(
                 view.RectTransform,
                 view.Model,
                 ButtonEnabledFuncForBuy,
                 L10nManager.Localize("UI_BUY"),
                 _ => ShowBuyPopup(tooltip.itemInformation.Model.item.Value as ShopItem),
-                _ => shopItems.SharedModel.DeselectItemView());
+                _ => shopItems.SharedModel.DeselectItemView(), true);
         }
 
         private void ShowBuyPopup(ShopItem shopItem)
@@ -251,7 +252,8 @@ namespace Nekoyume.UI
             var productId = shopItem.ProductId.Value;
 
             LocalLayerModifier.ModifyAgentGold(buyerAgentAddress, -shopItem.Price.Value);
-            shopItems.SharedModel.RemoveItemSubTypeProduct(productId);
+            ReactiveShopState.RemoveShopItem(productId);
+
             var format = L10nManager.Localize("NOTIFICATION_BUY_START");
             OneLinePopup.Push(MailType.Auction,
                 string.Format(format, shopItem.ItemBase.Value.GetLocalizedName()));
@@ -323,7 +325,38 @@ namespace Nekoyume.UI
             return new PurchaseInfo(shopItem.ProductId.Value,
                 shopItem.SellerAgentAddress.Value,
                 shopItem.SellerAvatarAddress.Value,
-                shopItem.ItemSubType.Value);
+                shopItem.ItemSubType.Value,
+                shopItem.Price.Value);
+        }
+
+        public static ItemBase GetItemBase(Buy.PurchaseResult result)
+        {
+            if (result.itemUsable != null)
+            {
+                return result.itemUsable;
+            }
+
+            if (result.costume != null)
+            {
+                return result.costume;
+            }
+
+            return (ItemBase)result.tradableFungibleItem;
+        }
+
+        public static ItemBase GetItemBase(AttachmentActionResult result)
+        {
+            if (result.itemUsable != null)
+            {
+                return result.itemUsable;
+            }
+
+            if (result.costume != null)
+            {
+                return result.costume;
+            }
+
+            return (ItemBase)result.tradableFungibleItem;
         }
     }
 }

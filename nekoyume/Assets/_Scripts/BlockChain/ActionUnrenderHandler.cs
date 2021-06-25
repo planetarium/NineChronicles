@@ -5,6 +5,8 @@ using Lib9c.Renderer;
 using Libplanet;
 using Nekoyume.Action;
 using Nekoyume.Model.Item;
+using Nekoyume.Model.Mail;
+using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.State.Subjects;
 using Nekoyume.UI;
@@ -13,6 +15,8 @@ using UnityEngine;
 
 namespace Nekoyume.BlockChain
 {
+    using UniRx;
+
     public class ActionUnrenderHandler : ActionHandler
     {
         private static class Singleton
@@ -35,11 +39,31 @@ namespace Nekoyume.BlockChain
             _renderer = renderer;
 
             RewardGold();
-            Buy();
+            TransferAsset();
+            // GameConfig(); todo.
+            // CreateAvatar(); ignore.
+
+            // Battle
+            // HackAndSlash(); todo.
+            // RankingBattle(); todo.
+            // MimisbrunnrBattle(); todo.
+
+            // Craft
+            // CombinationConsumable(); todo.
+            // CombinationEquipment(); todo.
+            ItemEnhancement();
+            // RapidCombination(); todo.
+
+            // Market
             Sell();
             SellCancellation();
+            Buy();
+
+            // Consume
             DailyReward();
-            ItemEnhancement();
+            // RedeemCode(); todo.
+            // ChargeActionPoint(); todo.
+            ClaimMonsterCollectionReward();
         }
 
         public void Stop()
@@ -98,7 +122,7 @@ namespace Nekoyume.BlockChain
 
         private void ItemEnhancement()
         {
-            _renderer.EveryUnrender<ItemEnhancement5>()
+            _renderer.EveryUnrender<ItemEnhancement>()
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseUnrenderItemEnhancement)
@@ -107,10 +131,28 @@ namespace Nekoyume.BlockChain
 
         private void DailyReward()
         {
-            _renderer.EveryUnrender<DailyReward3>()
+            _renderer.EveryUnrender<DailyReward>()
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseDailyReward)
+                .AddTo(_disposables);
+        }
+
+        private void ClaimMonsterCollectionReward()
+        {
+            _renderer.EveryUnrender<ClaimMonsterCollectionReward>()
+                .Where(ValidateEvaluationForCurrentAgent)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseClaimMonsterCollectionReward)
+                .AddTo(_disposables);
+        }
+
+        private void TransferAsset()
+        {
+            _renderer.EveryUnrender<TransferAsset>()
+                .Where(HasUpdatedAssetsForCurrentAgent)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseTransferAsset)
                 .AddTo(_disposables);
         }
 
@@ -134,9 +176,13 @@ namespace Nekoyume.BlockChain
                     {
                         // Local layer
                         var price = purchaseResult.shopItem.Price;
-                        var itemId = purchaseResult.itemUsable?.ItemId ?? purchaseResult.costume.ItemId;
+                        var itemBase = ShopBuy.GetItemBase(purchaseResult);
+                        var count = purchaseResult.tradableFungibleItemCount > 0
+                            ? purchaseResult.tradableFungibleItemCount
+                            : 1;
+                        var tradableItem = (ITradableItem) itemBase;
                         LocalLayerModifier.ModifyAgentGold(agentAddress, -price);
-                        LocalLayerModifier.AddItem(currentAvatarAddress, itemId);
+                        LocalLayerModifier.AddItem(currentAvatarAddress, tradableItem.TradableId, tradableItem.RequiredBlockIndex, count);
                         LocalLayerModifier.RemoveNewAttachmentMail(currentAvatarAddress, purchaseResult.id);
                     }
                     else
@@ -170,6 +216,7 @@ namespace Nekoyume.BlockChain
                     }
 
                     // Local layer
+                    LocalLayerModifier.ModifyAgentGold(currentAvatarAddress, sellerResult.gold);
                     LocalLayerModifier.RemoveNewAttachmentMail(currentAvatarAddress, sellerResult.id);
                 }
             }
@@ -187,9 +234,10 @@ namespace Nekoyume.BlockChain
             }
 
             var avatarAddress = eval.Action.sellerAvatarAddress;
-            var itemId = eval.Action.itemId;
-
-            LocalLayerModifier.RemoveItem(avatarAddress, itemId);
+            var itemId = eval.Action.tradableId;
+            var blockIndex = Game.Game.instance.Agent.BlockIndex;
+            var count = eval.Action.count;
+            LocalLayerModifier.RemoveItem(avatarAddress, itemId, blockIndex, count);
             UpdateCurrentAvatarState(eval);
         }
 
@@ -200,34 +248,50 @@ namespace Nekoyume.BlockChain
                 return;
             }
 
-            var result = eval.Action.result;
-            var nonFungibleItem = result.itemUsable ?? (INonFungibleItem) result.costume;
             var avatarAddress = eval.Action.sellerAvatarAddress;
-            var itemId = nonFungibleItem.ItemId;
+            var result = eval.Action.result;
+            var itemBase = ShopSell.GetItemBase(result);
+            var count = result.tradableFungibleItemCount > 0
+                ? result.tradableFungibleItemCount
+                : 1;
+            var tradableItem = (ITradableItem) itemBase;
 
-            LocalLayerModifier.AddItem(avatarAddress, itemId);
+            LocalLayerModifier.AddItem(avatarAddress, tradableItem.TradableId, tradableItem.RequiredBlockIndex, count);
             UpdateCurrentAvatarState(eval);
         }
 
-        private void ResponseDailyReward(ActionBase.ActionEvaluation<DailyReward3> eval)
+        private void ResponseDailyReward(ActionBase.ActionEvaluation<DailyReward> eval)
         {
             if (!(eval.Exception is null))
             {
                 return;
             }
 
+            // This should be not inversed with `ActionRenderHandler`.
+            // When DailyReward is unrendered, use of ActionPoint is cancelled. So loading indicator should not appear.
+            if (GameConfigStateSubject.ActionPointState.ContainsKey(eval.Action.avatarAddress))
+            {
+                GameConfigStateSubject.ActionPointState.Remove(
+                    eval.Action.avatarAddress);
+            }
+
+            if (eval.Action.avatarAddress != States.Instance.CurrentAvatarState.address)
+            {
+                return;
+            }
+
             var avatarAddress = eval.Action.avatarAddress;
-            var itemId = eval.Action.dailyRewardResult.materials.First().Key.ItemId;
+            var fungibleId = eval.Action.dailyRewardResult.materials.First().Key.ItemId;
             var itemCount = eval.Action.dailyRewardResult.materials.First().Value;
-            LocalLayerModifier.AddItem(avatarAddress, itemId, itemCount);
+            LocalLayerModifier.AddItem(avatarAddress, fungibleId, itemCount);
             var avatarState = eval.OutputStates.GetAvatarState(avatarAddress);
             ReactiveAvatarState.DailyRewardReceivedIndex.SetValueAndForceNotify(
                 avatarState.dailyRewardReceivedIndex);
-            GameConfigStateSubject.IsChargingActionPoint.SetValueAndForceNotify(false);
-            UpdateCurrentAvatarState(eval);
+
+            UpdateCurrentAvatarState(avatarState);
         }
 
-        private void ResponseUnrenderItemEnhancement(ActionBase.ActionEvaluation<ItemEnhancement5> eval)
+        private void ResponseUnrenderItemEnhancement(ActionBase.ActionEvaluation<ItemEnhancement> eval)
         {
             var agentAddress = eval.Signer;
             var avatarAddress = eval.Action.avatarAddress;
@@ -238,15 +302,17 @@ namespace Nekoyume.BlockChain
 
             // NOTE: 사용한 자원에 대한 레이어 다시 추가하기.
             LocalLayerModifier.ModifyAgentGold(agentAddress, -result.gold);
-            LocalLayerModifier.RemoveItem(avatarAddress, itemUsable.ItemId);
+            LocalLayerModifier.RemoveItem(avatarAddress, itemUsable.ItemId, itemUsable.RequiredBlockIndex, 1);
             foreach (var itemId in result.materialItemIdList)
             {
-                // NOTE: 최종적으로 UpdateCurrentAvatarState()를 호출한다면, 그곳에서 상태를 새로 설정할 것이다.
-                LocalLayerModifier.RemoveItem(avatarAddress, itemId);
+                if (avatarState.inventory.TryGetNonFungibleItem(itemId, out ItemUsable materialItem))
+                {
+                    LocalLayerModifier.RemoveItem(avatarAddress, itemId, materialItem.RequiredBlockIndex, 1);
+                }
             }
 
             // NOTE: 메일 레이어 다시 없애기.
-            LocalLayerModifier.AddItem(avatarAddress, itemUsable.ItemId, false);
+            LocalLayerModifier.AddItem(avatarAddress, itemUsable.TradableId, itemUsable.RequiredBlockIndex, 1);
             LocalLayerModifier.RemoveNewAttachmentMail(avatarAddress, result.id);
 
             // NOTE: 워크샵 슬롯의 모든 휘발성 상태 변경자를 다시 추가하기.
@@ -260,6 +326,74 @@ namespace Nekoyume.BlockChain
             UpdateCurrentAvatarState(eval);
             UpdateCombinationSlotState(slot);
             UnrenderQuest(avatarAddress, avatarState.questList.completedQuestIds);
+        }
+
+        private void ResponseClaimMonsterCollectionReward(ActionBase.ActionEvaluation<ClaimMonsterCollectionReward> eval)
+        {
+            if (!(eval.Exception is null))
+            {
+                return;
+            }
+
+            var avatarAddress = eval.Action.avatarAddress;
+            var avatarState = eval.OutputStates.GetAvatarState(avatarAddress);
+            var mail = avatarState.mailBox.FirstOrDefault(e => e is MonsterCollectionMail);
+            if (!(mail is MonsterCollectionMail {attachment: MonsterCollectionResult monsterCollectionResult}))
+            {
+                return;
+            }
+
+            // LocalLayer
+            var rewardInfos = monsterCollectionResult.rewards;
+            for (var i = 0; i < rewardInfos.Count; i++)
+            {
+                var rewardInfo = rewardInfos[i];
+                if (!rewardInfo.ItemId.TryParseAsTradableId(
+                    Game.Game.instance.TableSheets.ItemSheet,
+                    out var tradableId))
+                {
+                    continue;
+                }
+
+                if (!rewardInfo.ItemId.TryGetFungibleId(
+                    Game.Game.instance.TableSheets.ItemSheet,
+                    out var fungibleId))
+                {
+                    continue;
+                }
+
+                avatarState.inventory.TryGetFungibleItems(fungibleId, out var items);
+                var item = items.FirstOrDefault(x => x.item is ITradableItem);
+                if (item != null && item is ITradableItem tradableItem)
+                {
+                    LocalLayerModifier.AddItem(avatarAddress, tradableId, tradableItem.RequiredBlockIndex, rewardInfo.Quantity);
+                }
+            }
+
+            LocalLayerModifier.RemoveNewAttachmentMail(avatarAddress, mail.id);
+            // ~LocalLayer
+
+            UpdateAgentState(eval);
+            UpdateCurrentAvatarState(eval);
+            UnrenderQuest(avatarAddress, avatarState.questList.completedQuestIds);
+        }
+
+        private void ResponseTransferAsset(ActionBase.ActionEvaluation<TransferAsset> eval)
+        {
+            if (!(eval.Exception is null))
+            {
+                return;
+            }
+
+            var senderAddress = eval.Action.Sender;
+            var recipientAddress = eval.Action.Recipient;
+            var currentAgentAddress = States.Instance.AgentState.address;
+
+            if (recipientAddress == currentAgentAddress ||
+                senderAddress == currentAgentAddress)
+            {
+                UpdateAgentState(eval);
+            }
         }
 
         public static void UnrenderQuest(Address avatarAddress, IEnumerable<int> ids)

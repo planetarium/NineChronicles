@@ -1,11 +1,11 @@
 using System;
 using Nekoyume.Game.Controller;
-using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
 {
+    using UniRx;
     public class HelpButton : MonoBehaviour
     {
         [SerializeField]

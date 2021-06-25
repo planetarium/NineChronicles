@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -11,6 +11,8 @@ using UnityEngine;
 
 namespace Nekoyume.UI
 {
+    using UniRx;
+
     public class OneLinePopup : SystemInfoWidget
     {
         private enum State
@@ -30,7 +32,7 @@ namespace Nekoyume.UI
         }
 
         private const float InternalTimeToAddOrRemoveCell = 1f;
-        private const float LifeTimeOfEachNotification = 6f;
+        private const float LifeTimeOfEachNotification = 1.5f;
 
         private static State _state = State.None;
 

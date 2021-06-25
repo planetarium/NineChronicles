@@ -1,16 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using Bencodex.Types;
 using Libplanet;
 using Nekoyume.Action;
 using Nekoyume.BlockChain;
-using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using Nekoyume.State.Subjects;
-using Nekoyume.UI;
-using UnityEngine;
+using Debug = UnityEngine.Debug;
 
 namespace Nekoyume.State
 {
@@ -31,6 +28,7 @@ namespace Nekoyume.State
         public GoldBalanceState GoldBalanceState { get; private set; }
 
         private readonly Dictionary<int, AvatarState> _avatarStates = new Dictionary<int, AvatarState>();
+
         public IReadOnlyDictionary<int, AvatarState> AvatarStates => _avatarStates;
 
         public int CurrentAvatarKey { get; private set; }
@@ -205,8 +203,9 @@ namespace Nekoyume.State
 
             if (isNew)
             {
-                // NOTE: 새로운 아바타를 처음 선택할 때에는 모든 워크샵 슬롯을 업데이트 합니다.
-                SetCombinationSlotStates(avatarState);
+                var curAvatarState = new AvatarState((Dictionary) Game.Game.instance.Agent.GetState(avatarState.address));
+                AddOrReplaceAvatarState(curAvatarState, CurrentAvatarKey);
+                SetCombinationSlotStates(curAvatarState);
             }
 
             if (Game.Game.instance.Agent is RPCAgent agent)

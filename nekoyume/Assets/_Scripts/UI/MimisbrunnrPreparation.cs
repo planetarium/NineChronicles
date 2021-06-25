@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,7 +6,6 @@ using Nekoyume.Battle;
 using Nekoyume.BlockChain;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
-using Nekoyume.Manager;
 using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Stat;
@@ -24,9 +23,12 @@ using Nekoyume.L10n;
 using Nekoyume.Model.Elemental;
 using Nekoyume.Model.Mail;
 using Nekoyume.TableData;
+using Toggle = Nekoyume.UI.Module.Toggle;
 
 namespace Nekoyume.UI
 {
+    using UniRx;
+
     public class MimisbrunnrPreparation : Widget
     {
         private static readonly Color BattleStartButtonOriginColor = Color.white;
@@ -80,7 +82,7 @@ namespace Nekoyume.UI
         private Transform buttonStarImageTransform = null;
 
         [SerializeField]
-        private NCToggle repeatToggle;
+        private Toggle repeatToggle;
 
         [SerializeField, Range(.5f, 3.0f)]
         private float animationTime = 1f;
@@ -496,7 +498,6 @@ namespace Nekoyume.UI
             yield return new WaitWhile(() => animation.IsPlaying);
             Battle(repeat);
             AudioController.PlayClick();
-            AnalyticsManager.Instance.BattleEntrance(repeat);
         }
 
         #region slot
@@ -756,6 +757,7 @@ namespace Nekoyume.UI
 
             _stage.isExitReserved = false;
             _stage.repeatStage = repeat;
+            _stage.foodCount = consumables.Count;
             ActionRenderHandler.Instance.Pending = true;
             Game.Game.instance.ActionManager
                 .MimisbrunnrBattle(
@@ -773,16 +775,10 @@ namespace Nekoyume.UI
                             _requiredCost);
                     }, e => ActionRenderHandler.BackToMain(false, e))
                 .AddTo(this);
-            Mixpanel.Track("Unity/Waiting Block");
         }
 
         public void GoToStage(BattleLog battleLog)
         {
-            var props = new Value
-            {
-                ["StageId"] = battleLog.stageId,
-            };
-            Mixpanel.Track("Unity/Stage Start", props);
             Game.Event.OnStageStart.Invoke(battleLog);
             Find<LoadingScreen>().Close();
             Close(true);

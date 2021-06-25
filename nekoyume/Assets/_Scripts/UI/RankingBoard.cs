@@ -20,6 +20,8 @@ using UnityEngine;
 
 namespace Nekoyume.UI
 {
+    using UniRx;
+
     public class RankingBoard : Widget
     {
         public enum StateType
@@ -175,10 +177,7 @@ namespace Nekoyume.UI
             stage.LoadBackground("ranking");
             _player = stage.GetPlayer();
             _player.gameObject.SetActive(false);
-            if (_weeklyCachedInfo.Count < 4)
-            {
-                UpdateWeeklyCache(States.Instance.WeeklyArenaState);
-            }
+            UpdateWeeklyCache(States.Instance.WeeklyArenaState);
 
             _state.SetValueAndForceNotify(stateType);
 
@@ -186,6 +185,7 @@ namespace Nekoyume.UI
                 UINavigator.NavigationType.Back,
                 SubscribeBackButtonClick,
                 true,
+                BottomMenu.ToggleableType.Ranking,
                 BottomMenu.ToggleableType.Character);
 
             var go = Game.Game.instance.Stage.npcFactory.Create(
@@ -197,13 +197,8 @@ namespace Nekoyume.UI
             _npc.gameObject.SetActive(false);
 
             AudioController.instance.PlayMusic(AudioController.MusicCode.Ranking);
-
             WeeklyArenaStateSubject.WeeklyArenaState
-                .Subscribe(state =>
-                {
-                    UpdateWeeklyCache(state);
-                    UpdateArena();
-                })
+                .Subscribe(SubscribeWeeklyArenaState)
                 .AddTo(_disposablesFromShow);
         }
 
@@ -254,6 +249,12 @@ namespace Nekoyume.UI
             }
         }
 
+        private void SubscribeWeeklyArenaState(WeeklyArenaState state)
+        {
+            UpdateWeeklyCache(state);
+            UpdateArena();
+        }
+
         private void UpdateArena()
         {
             var weeklyArenaState = States.Instance.WeeklyArenaState;
@@ -270,20 +271,16 @@ namespace Nekoyume.UI
 
             if (!_weeklyCachedInfo.Any())
             {
-                currentAvatarCellView.Hide();
+                currentAvatarCellView.ShowMyDefaultInfo();
 
                 UpdateBoard(StateType.Arena);
                 return;
             }
 
-            var (rank, arenaInfo) = _weeklyCachedInfo[0];
-            if (arenaInfo.Active)
+            var arenaInfo = _weeklyCachedInfo[0].arenaInfo;
+            if (!arenaInfo.Active)
             {
-                currentAvatarCellView.Show((rank, arenaInfo, arenaInfo));
-            }
-            else
-            {
-                currentAvatarCellView.Hide();
+                currentAvatarCellView.ShowMyDefaultInfo();
                 LocalLayerModifier.AddWeeklyArenaInfoActivator(Game.Game.instance.TableSheets.CharacterSheet);
             }
 
@@ -308,14 +305,13 @@ namespace Nekoyume.UI
                 if (!currentAvatarAddress.HasValue ||
                     !weeklyArenaState.ContainsKey(currentAvatarAddress.Value))
                 {
-                    currentAvatarCellView.Hide();
+                    currentAvatarCellView.ShowMyDefaultInfo();
 
                     arenaRankScroll.Show(_weeklyCachedInfo
                         .Select(tuple => new ArenaRankCell.ViewModel
                         {
                             rank = tuple.rank,
                             arenaInfo = tuple.arenaInfo,
-                            currentAvatarArenaInfo = null
                         }).ToList(), true);
                     // NOTE: If you want to test many arena cells, use below instead of above.
                     // arenaRankScroll.Show(Enumerable
@@ -333,11 +329,18 @@ namespace Nekoyume.UI
                     return;
                 }
 
-                var (currentAvatarRank, currentAvatarArenaInfo) = weeklyArenaState
-                    .GetArenaInfos(currentAvatarAddress.Value, 0, 0)
+                var (currentAvatarRank, currentAvatarArenaInfo) = _weeklyCachedInfo
                     .FirstOrDefault(info =>
                         info.arenaInfo.AvatarAddress.Equals(currentAvatarAddress));
-
+                if (currentAvatarArenaInfo is null)
+                {
+                    currentAvatarRank = -1;
+                    currentAvatarArenaInfo = new ArenaInfo(
+                        States.Instance.CurrentAvatarState,
+                        Game.Game.instance.TableSheets.CharacterSheet,
+                        false);
+                }
+                
                 currentAvatarCellView.Show((
                     currentAvatarRank,
                     currentAvatarArenaInfo,
@@ -348,7 +351,7 @@ namespace Nekoyume.UI
                     {
                         rank = tuple.rank,
                         arenaInfo = tuple.arenaInfo,
-                        currentAvatarArenaInfo = currentAvatarArenaInfo
+                        currentAvatarArenaInfo = currentAvatarArenaInfo,
                     }).ToList(), true);
             }
             else
@@ -413,9 +416,14 @@ namespace Nekoyume.UI
         private void SubscribeBackButtonClick(BottomMenu bottomMenu)
         {
             var avatarInfo = Find<AvatarInfo>();
+            var friendInfoPopup = Find<FriendInfoPopup>();
             if (avatarInfo.gameObject.activeSelf)
             {
                 avatarInfo.Close();
+            }
+            else if(friendInfoPopup.gameObject.activeSelf)
+            {
+                friendInfoPopup.Close();
             }
             else
             {
@@ -477,22 +485,15 @@ namespace Nekoyume.UI
                 var currentAvatarAddress = States.Instance.CurrentAvatarState.address;
                 var infos2 = state.GetArenaInfos(currentAvatarAddress, 20, 20);
                 // Player does not play prev & this week arena.
-                if (!infos2.Any())
+                if (!infos2.Any() && state.OrderedArenaInfos.Any())
                 {
                     var characterSheet = Game.Game.instance.TableSheets.CharacterSheet;
                     var costumeStatSheet = Game.Game.instance.TableSheets.CostumeStatSheet;
                     var cp = CPHelper.GetCPV2(States.Instance.CurrentAvatarState, characterSheet, costumeStatSheet);
-                    Address address;
-                    try
-                    {
-                        address = state.OrderedArenaInfos.First(i => i.CombatPoint <= cp).AvatarAddress;
-                    }
-                    catch (Exception e)
-                    {
-                        address = state.OrderedArenaInfos[state.OrderedArenaInfos.Count / 2].AvatarAddress;
-                    }
+                    var address = state.OrderedArenaInfos.First(i => i.CombatPoint <= cp).AvatarAddress;
                     infos2 = state.GetArenaInfos(address, 20, 20);
                 }
+
                 infos.AddRange(infos2);
                 infos = infos.ToImmutableHashSet().OrderBy(tuple => tuple.rank).ToList();
             }
