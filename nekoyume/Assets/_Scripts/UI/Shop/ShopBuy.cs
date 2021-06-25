@@ -125,7 +125,6 @@ namespace Nekoyume.UI
 
         public void Open()
         {
-            // ReactiveShopState.UpdateBuyDigests();
             shopItems.Reset();
             Reset();
         }
