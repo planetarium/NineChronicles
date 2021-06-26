@@ -72,7 +72,7 @@ namespace Lib9c.Tests.Action
         [ClassData(typeof(ExecuteFixture))]
         public void Execute(int collectionLevel, long claimBlockIndex, long? receivedBlockIndex, (int, int)[] expectedRewards, Type exc)
         {
-            Address collectionAddress = MonsterCollectionState.DeriveAddress(_signer);
+            Address collectionAddress = MonsterCollectionState.DeriveAddress(_signer, 0);
             var monsterCollectionState = new MonsterCollectionState(collectionAddress, collectionLevel, 0);
             if (receivedBlockIndex is { } receivedBlockIndexNotNull)
             {
@@ -180,7 +180,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Execute_Throw_RequiredBlockIndexException()
         {
-            Address collectionAddress = MonsterCollectionState.DeriveAddress(_signer);
+            Address collectionAddress = MonsterCollectionState.DeriveAddress(_signer, 0);
             var monsterCollectionState = new MonsterCollectionState(collectionAddress, 1, 0);
             _state = _state.SetState(collectionAddress, monsterCollectionState.Serialize());
 
@@ -221,7 +221,10 @@ namespace Lib9c.Tests.Action
                 _avatarAddress.Derive(LegacyInventoryKey),
                 _avatarAddress.Derive(LegacyWorldInformationKey),
                 _avatarAddress.Derive(LegacyQuestListKey),
-                MonsterCollectionState.DeriveAddress(_signer),
+                MonsterCollectionState.DeriveAddress(_signer, 0),
+                MonsterCollectionState.DeriveAddress(_signer, 1),
+                MonsterCollectionState.DeriveAddress(_signer, 2),
+                MonsterCollectionState.DeriveAddress(_signer, 3),
             };
             Assert.Equal(updatedAddresses.ToImmutableHashSet(), nextState.UpdatedAddresses);
         }

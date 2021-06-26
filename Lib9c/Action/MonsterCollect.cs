@@ -19,13 +19,18 @@ namespace Nekoyume.Action
         public override IAccountStateDelta Execute(IActionContext context)
         {
             IAccountStateDelta states = context.PreviousStates;
-            Address monsterCollectionAddress = MonsterCollectionState.DeriveAddress(context.Signer);
             if (context.Rehearsal)
             {
                 return states
-                    .SetState(monsterCollectionAddress, MarkChanged)
+                    .SetState(MonsterCollectionState.DeriveAddress(context.Signer, 0), MarkChanged)
+                    .SetState(MonsterCollectionState.DeriveAddress(context.Signer, 1), MarkChanged)
+                    .SetState(MonsterCollectionState.DeriveAddress(context.Signer, 2), MarkChanged)
+                    .SetState(MonsterCollectionState.DeriveAddress(context.Signer, 3), MarkChanged)
                     .SetState(context.Signer, MarkChanged)
-                    .MarkBalanceChanged(GoldCurrencyMock, context.Signer, monsterCollectionAddress);
+                    .MarkBalanceChanged(GoldCurrencyMock, context.Signer, MonsterCollectionState.DeriveAddress(context.Signer, 0))
+                    .MarkBalanceChanged(GoldCurrencyMock, context.Signer, MonsterCollectionState.DeriveAddress(context.Signer, 1))
+                    .MarkBalanceChanged(GoldCurrencyMock, context.Signer, MonsterCollectionState.DeriveAddress(context.Signer, 2))
+                    .MarkBalanceChanged(GoldCurrencyMock, context.Signer, MonsterCollectionState.DeriveAddress(context.Signer, 3));
             }
 
             MonsterCollectionSheet monsterCollectionSheet = states.GetSheet<MonsterCollectionSheet>();
@@ -45,7 +50,10 @@ namespace Nekoyume.Action
             // Set default gold value.
             FungibleAssetValue requiredGold = currency * 0;
             FungibleAssetValue balance = states.GetBalance(context.Signer, currency);
-
+            Address monsterCollectionAddress = MonsterCollectionState.DeriveAddress(
+                context.Signer,
+                agentState.MonsterCollectionRound
+            );
             if (states.TryGetState(monsterCollectionAddress, out Dictionary stateDict))
             {
                 var existingStates = new MonsterCollectionState(stateDict);

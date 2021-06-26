@@ -53,7 +53,7 @@ namespace Lib9c.Tests.Action
         [InlineData(null, 0, 1, null, 0)]
         public void Execute(int? prevLevel, int level, long blockIndex, Type exc, int? expectedStakings)
         {
-            Address monsterCollectionAddress = MonsterCollectionState.DeriveAddress(_signer);
+            Address monsterCollectionAddress = MonsterCollectionState.DeriveAddress(_signer, 0);
             Currency currency = _initialState.GetGoldCurrency();
             FungibleAssetValue balance = currency * 10000000;
             FungibleAssetValue staked = currency * 0;
@@ -154,7 +154,6 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Rehearsal()
         {
-            Address collectionAddress = MonsterCollectionState.DeriveAddress(_signer);
             MonsterCollect action = new MonsterCollect
             {
                 level = 1,
@@ -169,7 +168,10 @@ namespace Lib9c.Tests.Action
             List<Address> updatedAddresses = new List<Address>()
             {
                 _signer,
-                collectionAddress,
+                MonsterCollectionState.DeriveAddress(_signer, 0),
+                MonsterCollectionState.DeriveAddress(_signer, 1),
+                MonsterCollectionState.DeriveAddress(_signer, 2),
+                MonsterCollectionState.DeriveAddress(_signer, 3),
             };
 
             Assert.Equal(updatedAddresses.ToImmutableHashSet(), nextState.UpdatedAddresses);

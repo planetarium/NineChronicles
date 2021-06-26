@@ -13,13 +13,14 @@ namespace Nekoyume.Model.State
     [Serializable]
     public class MonsterCollectionState: State
     {
-        public static Address DeriveAddress(Address baseAddress)
+        // We need `round` to integrate previous states.
+        public static Address DeriveAddress(Address baseAddress, int round)
         {
             return baseAddress.Derive(
                 string.Format(
                     CultureInfo.InvariantCulture,
                     DeriveFormat,
-                    0
+                    round
                 )
             );
         }
