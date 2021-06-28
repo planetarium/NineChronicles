@@ -2,6 +2,7 @@ namespace Lib9c.Tests.Action
 {
     using System;
     using System.Collections.Generic;
+    using System.Collections.Immutable;
     using System.IO;
     using System.Linq;
     using System.Runtime.Serialization.Formatters.Binary;
@@ -19,6 +20,7 @@ namespace Lib9c.Tests.Action
     using Nekoyume.Model.State;
     using Nekoyume.TableData;
     using Xunit;
+    using static SerializeKeys;
 
     public class HackAndSlashTest
     {
@@ -74,9 +76,11 @@ namespace Lib9c.Tests.Action
         }
 
         [Theory]
-        [InlineData(GameConfig.RequireCharacterLevel.CharacterFullCostumeSlot, 1, 1, false)]
-        [InlineData(200, 1, GameConfig.RequireClearedStageLevel.ActionsInRankingBoard, true)]
-        public void Execute(int avatarLevel, int worldId, int stageId, bool contains)
+        [InlineData(GameConfig.RequireCharacterLevel.CharacterFullCostumeSlot, 1, 1, false, false)]
+        [InlineData(GameConfig.RequireCharacterLevel.CharacterFullCostumeSlot, 1, 1, false, true)]
+        [InlineData(200, 1, GameConfig.RequireClearedStageLevel.ActionsInRankingBoard, true, false)]
+        [InlineData(200, 1, GameConfig.RequireClearedStageLevel.ActionsInRankingBoard, true, true)]
+        public void Execute(int avatarLevel, int worldId, int stageId, bool contains, bool backward)
         {
             Assert.True(_tableSheets.WorldSheet.TryGetValue(worldId, out var worldRow));
             Assert.True(stageId >= worldRow.StageBegin);
@@ -146,7 +150,7 @@ namespace Lib9c.Tests.Action
 
             var mailEquipmentRow = _tableSheets.EquipmentItemSheet.Values.First();
             var mailEquipment = ItemFactory.CreateItemUsable(mailEquipmentRow, default, 0);
-            var result = new CombinationConsumable.ResultModel
+            var result = new CombinationConsumable5.ResultModel
             {
                 id = default,
                 gold = 0,
@@ -161,7 +165,19 @@ namespace Lib9c.Tests.Action
                 previousAvatarState.Update(mail);
             }
 
-            var state = _initialState.SetState(_avatarAddress, previousAvatarState.Serialize());
+            IAccountStateDelta state;
+            if (backward)
+            {
+                state = _initialState.SetState(_avatarAddress, previousAvatarState.Serialize());
+            }
+            else
+            {
+                state = _initialState
+                    .SetState(_avatarAddress, previousAvatarState.SerializeV2())
+                    .SetState(_avatarAddress.Derive(LegacyInventoryKey), previousAvatarState.inventory.Serialize())
+                    .SetState(_avatarAddress.Derive(LegacyWorldInformationKey), previousAvatarState.worldInformation.Serialize())
+                    .SetState(_avatarAddress.Derive(LegacyQuestListKey), previousAvatarState.questList.Serialize());
+            }
 
             var action = new HackAndSlash
             {
@@ -186,7 +202,7 @@ namespace Lib9c.Tests.Action
                 BlockIndex = 1,
             });
 
-            var nextAvatarState = nextState.GetAvatarState(_avatarAddress);
+            var nextAvatarState = nextState.GetAvatarStateV2(_avatarAddress);
             var newWeeklyState = nextState.GetWeeklyArenaState(0);
 
             Assert.NotNull(action.Result);
@@ -361,8 +377,10 @@ namespace Lib9c.Tests.Action
             SerializeException<InvalidAddressException>(exec);
         }
 
-        [Fact]
-        public void ExecuteThrowFailedLoadStateException()
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public void Execute_Throw_FailedLoadStateException(bool backward)
         {
             var action = new HackAndSlash()
             {
@@ -377,9 +395,19 @@ namespace Lib9c.Tests.Action
 
             Assert.Null(action.Result);
 
+            IAccountStateDelta state = backward ? new State() : _initialState;
+            if (!backward)
+            {
+                state = _initialState
+                    .SetState(_avatarAddress, _avatarState.SerializeV2())
+                    .SetState(_avatarAddress.Derive(LegacyInventoryKey), null!)
+                    .SetState(_avatarAddress.Derive(LegacyWorldInformationKey), null!)
+                    .SetState(_avatarAddress.Derive(LegacyQuestListKey), null!);
+            }
+
             var exec = Assert.Throws<FailedLoadStateException>(() => action.Execute(new ActionContext()
             {
-                PreviousStates = new State(),
+                PreviousStates = state,
                 Signer = _agentAddress,
                 Random = new TestRandom(),
             }));
@@ -756,6 +784,45 @@ namespace Lib9c.Tests.Action
             Assert.Null(action.Result);
 
             SerializeException<NotEnoughActionPointException>(exec);
+        }
+
+        [Fact]
+        public void Rehearsal()
+        {
+            var action = new HackAndSlash()
+            {
+                costumes = new List<Guid>(),
+                equipments = new List<Guid>(),
+                foods = new List<Guid>(),
+                worldId = 1,
+                stageId = 1,
+                avatarAddress = _avatarAddress,
+                WeeklyArenaAddress = _weeklyArenaState.address,
+                RankingMapAddress = _rankingMapAddress,
+            };
+
+            var updatedAddresses = new List<Address>()
+            {
+                _agentAddress,
+                _avatarAddress,
+                _weeklyArenaState.address,
+                _rankingMapAddress,
+                _avatarAddress.Derive(LegacyInventoryKey),
+                _avatarAddress.Derive(LegacyWorldInformationKey),
+                _avatarAddress.Derive(LegacyQuestListKey),
+            };
+
+            var state = new State();
+
+            var nextState = action.Execute(new ActionContext()
+            {
+                PreviousStates = state,
+                Signer = _agentAddress,
+                BlockIndex = 0,
+                Rehearsal = true,
+            });
+
+            Assert.Equal(updatedAddresses.ToImmutableHashSet(), nextState.UpdatedAddresses);
         }
 
         private static void SerializeException<T>(Exception exec)

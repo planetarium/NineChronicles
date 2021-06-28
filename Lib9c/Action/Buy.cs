@@ -18,7 +18,7 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("buy7")]
+    [ActionType("buy8")]
     public class Buy : GameAction
     {
         public const int TaxRate = 8;
@@ -190,15 +190,25 @@ namespace Nekoyume.Action
         {
             IActionContext ctx = context;
             var states = ctx.PreviousStates;
+            var buyerInventoryAddress = buyerAvatarAddress.Derive(LegacyInventoryKey);
+            var buyerWorldInformationAddress = buyerAvatarAddress.Derive(LegacyWorldInformationKey);
+            var buyerQuestListAddress = buyerAvatarAddress.Derive(LegacyQuestListKey);
             if (ctx.Rehearsal)
             {
                 foreach (var purchaseInfo in purchaseInfos)
                 {
+                    var sellerAvatarAddress = purchaseInfo.sellerAvatarAddress;
+                    var sellerInventoryAddress = sellerAvatarAddress.Derive(LegacyInventoryKey);
+                    var sellerWorldInformationAddress = sellerAvatarAddress.Derive(LegacyWorldInformationKey);
+                    var sellerQuestListAddress = sellerAvatarAddress.Derive(LegacyQuestListKey);
                     Address shardedShopAddress =
                         ShardedShopState.DeriveAddress(purchaseInfo.itemSubType, purchaseInfo.productId);
                     states = states
                         .SetState(shardedShopAddress, MarkChanged)
-                        .SetState(purchaseInfo.sellerAvatarAddress, MarkChanged)
+                        .SetState(sellerAvatarAddress, MarkChanged)
+                        .SetState(sellerInventoryAddress, MarkChanged)
+                        .SetState(sellerWorldInformationAddress, MarkChanged)
+                        .SetState(sellerQuestListAddress, MarkChanged)
                         .MarkBalanceChanged(
                             GoldCurrencyMock,
                             ctx.Signer,
@@ -207,6 +217,9 @@ namespace Nekoyume.Action
                 }
                 return states
                     .SetState(buyerAvatarAddress, MarkChanged)
+                    .SetState(buyerInventoryAddress, MarkChanged)
+                    .SetState(buyerWorldInformationAddress, MarkChanged)
+                    .SetState(buyerQuestListAddress, MarkChanged)
                     .SetState(ctx.Signer, MarkChanged)
                     .SetState(Addresses.Shop, MarkChanged);
             }
@@ -218,7 +231,7 @@ namespace Nekoyume.Action
             var started = DateTimeOffset.UtcNow;
             Log.Verbose("{AddressesHex}Buy exec started", addressesHex);
 
-            if (!states.TryGetAvatarState(ctx.Signer, buyerAvatarAddress, out var buyerAvatarState))
+            if (!states.TryGetAvatarStateV2(ctx.Signer, buyerAvatarAddress, out var buyerAvatarState))
             {
                 throw new FailedLoadStateException(
                     $"{addressesHex}Aborted as the avatar state of the buyer was failed to load.");
@@ -248,6 +261,9 @@ namespace Nekoyume.Action
                     ShardedShopState.DeriveAddress(purchaseInfo.itemSubType, purchaseInfo.productId);
                 Address sellerAgentAddress = purchaseInfo.sellerAgentAddress;
                 Address sellerAvatarAddress = purchaseInfo.sellerAvatarAddress;
+                Address sellerInventoryAddress = sellerAvatarAddress.Derive(LegacyInventoryKey);
+                var sellerWorldInformationAddress = sellerAvatarAddress.Derive(LegacyWorldInformationKey);
+                Address sellerQuestListAddress = sellerAvatarAddress.Derive(LegacyQuestListKey);
                 Guid productId = purchaseInfo.productId;
 
                 purchaseResults.Add(purchaseResult);
@@ -339,7 +355,7 @@ namespace Nekoyume.Action
                     continue;
                 }
 
-                if (!states.TryGetAvatarState(sellerAgentAddress, sellerAvatarAddress, out var sellerAvatarState))
+                if (!states.TryGetAvatarStateV2(sellerAgentAddress, sellerAvatarAddress, out var sellerAvatarState))
                 {
                     purchaseResult.errorCode = ErrorCodeFailedLoadingState;
                     continue;
@@ -453,7 +469,11 @@ namespace Nekoyume.Action
                 buyerAvatarState.UpdateQuestRewards(materialSheet);
                 sellerAvatarState.UpdateQuestRewards(materialSheet);
 
-                states = states.SetState(sellerAvatarAddress, sellerAvatarState.Serialize());
+                states = states
+                    .SetState(sellerInventoryAddress, sellerAvatarState.inventory.Serialize())
+                    .SetState(sellerWorldInformationAddress, sellerAvatarState.worldInformation.Serialize())
+                    .SetState(sellerQuestListAddress, sellerAvatarState.questList.Serialize())
+                    .SetState(sellerAvatarAddress, sellerAvatarState.SerializeV2());
                 sw.Stop();
                 Log.Verbose("{AddressesHex}Buy Set Seller AvatarState: {Elapsed}", addressesHex, sw.Elapsed);
                 sw.Restart();
@@ -468,7 +488,11 @@ namespace Nekoyume.Action
             buyerAvatarState.updatedAt = ctx.BlockIndex;
             buyerAvatarState.blockIndex = ctx.BlockIndex;
 
-            states = states.SetState(buyerAvatarAddress, buyerAvatarState.Serialize());
+            states = states
+                .SetState(buyerInventoryAddress, buyerAvatarState.inventory.Serialize())
+                .SetState(buyerWorldInformationAddress, buyerAvatarState.worldInformation.Serialize())
+                .SetState(buyerQuestListAddress, buyerAvatarState.questList.Serialize())
+                .SetState(buyerAvatarAddress, buyerAvatarState.Serialize());
             sw.Stop();
             Log.Verbose("{AddressesHex}Buy Set Buyer AvatarState: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();

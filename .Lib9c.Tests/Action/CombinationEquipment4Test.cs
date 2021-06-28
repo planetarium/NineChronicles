@@ -105,7 +105,7 @@ namespace Lib9c.Tests.Action
             var equipmentRow = _tableSheets.EquipmentItemSheet[row.ResultEquipmentId];
             var equipment = ItemFactory.CreateItemUsable(equipmentRow, default, 0);
 
-            var result = new CombinationConsumable.ResultModel()
+            var result = new CombinationConsumable5.ResultModel()
             {
                 id = default,
                 gold = 0,

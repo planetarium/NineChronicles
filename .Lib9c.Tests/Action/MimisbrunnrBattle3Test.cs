@@ -116,7 +116,7 @@
                 }
             }
 
-            var result = new CombinationConsumable.ResultModel()
+            var result = new CombinationConsumable5.ResultModel()
             {
                 id = default,
                 gold = 0,
@@ -153,6 +153,7 @@
                 Signer = _agentAddress,
                 Random = new TestRandom(),
                 Rehearsal = false,
+                BlockIndex = 1,
             });
 
             var nextAvatarState = nextState.GetAvatarState(_avatarAddress);
@@ -442,7 +443,7 @@
                 }
             }
 
-            var result = new CombinationConsumable.ResultModel()
+            var result = new CombinationConsumable5.ResultModel()
             {
                 id = default,
                 gold = 0,

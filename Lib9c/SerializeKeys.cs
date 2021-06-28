@@ -8,7 +8,6 @@ namespace Lib9c
         public const string SellerAvatarAddressKey = "sva";
         public const string ProductIdKey = "pi";
         public const string PriceKey = "p";
-        public const string ItemUsableKey = "i";
         public const string CostumeKey = "c";
         public const string TradableFungibleItemKey = "tradable_fungible_item";
         public const string TradableFungibleItemCountKey = "tradable_fungible_item_count";
@@ -22,7 +21,6 @@ namespace Lib9c
         // ItemUsable, Costume
         public const string ItemIdKey = "ii";
         public const string ItemCountKey = "item_count";
-        public const string StatsMapKey = "sm";
         public const string SkillsKey = "sk";
         public const string BuffSkillsKey = "bs";
         public const string RequiredBlockIndexKey = "rbi";
@@ -34,7 +32,6 @@ namespace Lib9c
         public const string LegacyRequiredBlockIndexKey = "requiredBlockIndex";
 
         // Equipment
-        public const string EquippedKey = "e";
         public const string LevelKey = "l";
         public const string StatKey = "st";
         public const string SetIdKey = "si";
@@ -95,5 +92,49 @@ namespace Lib9c
         public const string MonsterCollectionResultKey = "mcr";
         public const string QuantityKey = "q";
         public const string RewardLevelMapKey = "rlm";
+
+        // State
+        public const string AddressKey = "a";
+        public const string NameKey = "n";
+        public const string CharacterIdKey = "ci";
+        public const string ExpKey = "exp";
+        public const string UpdatedAtKey = "ua";
+        public const string AgentAddressKey = "aga";
+        public const string MailBoxKey = "mb";
+        public const string BlockIndexKey = "bi";
+        public const string DailyRewardReceivedIndexKey = "dri";
+        public const string ActionPointKey = "ap";
+        public const string StageMapKey = "sm";
+        public const string MonsterMapKey = "mm";
+        public const string ItemMapKey = "im";
+        public const string EventMapKey = "em";
+        public const string HairKey = "h";
+        public const string LensKey = "lens";
+        public const string EarKey = "e";
+        public const string TailKey = "t";
+        public const string CombinationSlotAddressesKey = "csa";
+        public const string RankingMapAddressKey = "rma";
+        public const string LegacyAddressKey = "address";
+        public const string LegacyNameKey = "name";
+        public const string LegacyCharacterIdKey = "characterId";
+        public const string LegacyInventoryKey = "inventory";
+        public const string LegacyWorldInformationKey = "worldInformation";
+        public const string LegacyUpdatedAtKey = "updatedAt";
+        public const string LegacyAgentAddressKey = "agentAddress";
+        public const string LegacyQuestListKey = "questList";
+        public const string LegacyMailBoxKey = "mailBox";
+        public const string LegacyBlockIndexKey = "blockIndex";
+        public const string LegacyDailyRewardReceivedIndexKey = "dailyRewardReceivedIndex";
+        public const string LegacyActionPointKey = "actionPoint";
+        public const string LegacyStageMapKey = "stageMap";
+        public const string LegacyMonsterMapKey = "monsterMap";
+        public const string LegacyItemMapKey = "itemMap";
+        public const string LegacyEventMapKey = "eventMap";
+        public const string LegacyHairKey = "hair";
+        public const string LegacyEarKey = "ear";
+        public const string LegacyTailKey = "tail";
+        public const string LegacyCombinationSlotAddressesKey = "combinationSlotAddresses";
+        public const string LegacyNonceKey = "nonce";
+        public const string LegacyRankingMapAddressKey = "ranking_map_address";
     }
 }

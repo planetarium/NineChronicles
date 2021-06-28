@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Collections.Immutable;
     using System.Linq;
     using Bencodex.Types;
     using Libplanet;
@@ -17,6 +18,7 @@
     using Nekoyume.Model.State;
     using Nekoyume.TableData;
     using Xunit;
+    using static SerializeKeys;
 
     public class MimisbrunnrBattleTest
     {
@@ -71,9 +73,11 @@
         }
 
         [Theory]
-        [InlineData(200, GameConfig.MimisbrunnrWorldId, GameConfig.MimisbrunnrStartStageId, 140)]
-        [InlineData(400, GameConfig.MimisbrunnrWorldId, GameConfig.MimisbrunnrStartStageId, 100)]
-        public void Execute(int avatarLevel, int worldId, int stageId, int clearStageId)
+        [InlineData(200, GameConfig.MimisbrunnrWorldId, GameConfig.MimisbrunnrStartStageId, 140, true)]
+        [InlineData(400, GameConfig.MimisbrunnrWorldId, GameConfig.MimisbrunnrStartStageId, 100, true)]
+        [InlineData(200, GameConfig.MimisbrunnrWorldId, GameConfig.MimisbrunnrStartStageId, 140, false)]
+        [InlineData(400, GameConfig.MimisbrunnrWorldId, GameConfig.MimisbrunnrStartStageId, 100, false)]
+        public void Execute(int avatarLevel, int worldId, int stageId, int clearStageId, bool backward)
         {
             Assert.True(_tableSheets.WorldSheet.TryGetValue(worldId, out var worldRow));
             Assert.True(stageId >= worldRow.StageBegin);
@@ -116,7 +120,7 @@
                 }
             }
 
-            var result = new CombinationConsumable.ResultModel()
+            var result = new CombinationConsumable5.ResultModel()
             {
                 id = default,
                 gold = 0,
@@ -131,7 +135,19 @@
                 previousAvatarState.Update(mail);
             }
 
-            var state = _initialState.SetState(_avatarAddress, previousAvatarState.Serialize());
+            var state = _initialState;
+            if (backward)
+            {
+                state = _initialState.SetState(_avatarAddress, previousAvatarState.Serialize());
+            }
+            else
+            {
+                state = _initialState
+                    .SetState(_avatarAddress.Derive(LegacyInventoryKey), previousAvatarState.inventory.Serialize())
+                    .SetState(_avatarAddress.Derive(LegacyWorldInformationKey), previousAvatarState.worldInformation.Serialize())
+                    .SetState(_avatarAddress.Derive(LegacyQuestListKey), previousAvatarState.questList.Serialize())
+                    .SetState(_avatarAddress, previousAvatarState.SerializeV2());
+            }
 
             var action = new MimisbrunnrBattle()
             {
@@ -156,7 +172,7 @@
                 BlockIndex = 1,
             });
 
-            var nextAvatarState = nextState.GetAvatarState(_avatarAddress);
+            var nextAvatarState = nextState.GetAvatarStateV2(_avatarAddress);
             var newWeeklyState = nextState.GetWeeklyArenaState(0);
             Assert.NotNull(action.Result);
             var reward = action.Result.OfType<GetReward>();
@@ -443,7 +459,7 @@
                 }
             }
 
-            var result = new CombinationConsumable.ResultModel()
+            var result = new CombinationConsumable5.ResultModel()
             {
                 id = default,
                 gold = 0,
@@ -578,6 +594,44 @@
             var player = (Player)spawnPlayer.Character;
             Assert.Equal(player.Costumes.First().ItemId, ((Costume)costume).ItemId);
             Assert.Equal(player.Equipments.First().ItemId, equipment.ItemId);
+        }
+
+        [Fact]
+        public void Rehearsal()
+        {
+            var action = new MimisbrunnrBattle()
+            {
+                costumes = new List<Guid>(),
+                equipments = new List<Guid>(),
+                foods = new List<Guid>(),
+                worldId = 1,
+                stageId = 1,
+                avatarAddress = _avatarAddress,
+                WeeklyArenaAddress = _weeklyArenaState.address,
+                RankingMapAddress = _rankingMapAddress,
+            };
+
+            var updatedAddresses = new List<Address>()
+            {
+                _avatarAddress,
+                _weeklyArenaState.address,
+                _rankingMapAddress,
+                _avatarAddress.Derive(LegacyInventoryKey),
+                _avatarAddress.Derive(LegacyWorldInformationKey),
+                _avatarAddress.Derive(LegacyQuestListKey),
+            };
+
+            var state = new State();
+
+            var nextState = action.Execute(new ActionContext()
+            {
+                PreviousStates = state,
+                Signer = _agentAddress,
+                BlockIndex = 0,
+                Rehearsal = true,
+            });
+
+            Assert.Equal(updatedAddresses.ToImmutableHashSet(), nextState.UpdatedAddresses);
         }
     }
 }

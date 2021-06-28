@@ -18,7 +18,7 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("sell6")]
+    [ActionType("sell7")]
     public class Sell : GameAction
     {
         public const long ExpiredBlockIndex = 16000;
@@ -52,9 +52,16 @@ namespace Nekoyume.Action
         public override IAccountStateDelta Execute(IActionContext context)
         {
             var states = context.PreviousStates;
+            var inventoryAddress = sellerAvatarAddress.Derive(LegacyInventoryKey);
+            var worldInformationAddress = sellerAvatarAddress.Derive(LegacyWorldInformationKey);
+            var questListAddress = sellerAvatarAddress.Derive(LegacyQuestListKey);
             if (context.Rehearsal)
             {
-                states = states.SetState(sellerAvatarAddress, MarkChanged);
+                states = states
+                    .SetState(inventoryAddress, MarkChanged)
+                    .SetState(worldInformationAddress, MarkChanged)
+                    .SetState(questListAddress, MarkChanged)
+                    .SetState(sellerAvatarAddress, MarkChanged);
                 states = ShardedShopState.AddressKeys.Aggregate(
                     states,
                     (current, addressKey) => current.SetState(
@@ -76,7 +83,7 @@ namespace Nekoyume.Action
                     $"{addressesHex}Aborted as the price is less than zero: {price}.");
             }
 
-            if (!states.TryGetAgentAvatarStates(
+            if (!states.TryGetAgentAvatarStatesV2(
                 context.Signer,
                 sellerAvatarAddress,
                 out _,
@@ -266,7 +273,11 @@ namespace Nekoyume.Action
             result.id = mail.id;
             avatarState.UpdateV3(mail);
 
-            states = states.SetState(sellerAvatarAddress, avatarState.Serialize());
+            states = states
+                .SetState(inventoryAddress, avatarState.inventory.Serialize())
+                .SetState(worldInformationAddress, avatarState.worldInformation.Serialize())
+                .SetState(questListAddress, avatarState.questList.Serialize())
+                .SetState(sellerAvatarAddress, avatarState.SerializeV2());
             sw.Stop();
             Log.Verbose("{AddressesHex}Sell Set AvatarState: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();

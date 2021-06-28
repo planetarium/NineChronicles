@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Bencodex.Types;
 using Libplanet;
+using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Model.State
 {
@@ -21,7 +22,9 @@ namespace Nekoyume.Model.State
         }
 
         protected State(Dictionary serialized)
-            : this(serialized["address"].ToAddress())
+            : this(serialized.ContainsKey(LegacyAddressKey)
+                ? serialized[LegacyAddressKey].ToAddress()
+                : serialized[AddressKey].ToAddress())
         {
         }
 
@@ -32,7 +35,13 @@ namespace Nekoyume.Model.State
         public virtual IValue Serialize() =>
             new Dictionary(new Dictionary<IKey, IValue>
             {
-                [(Text)"address"] = address.Serialize(),
+                [(Text)LegacyAddressKey] = address.Serialize(),
             });
+        public virtual IValue SerializeV2() =>
+            new Dictionary(new Dictionary<IKey, IValue>
+            {
+                [(Text)AddressKey] = address.Serialize(),
+            });
+
     }
 }

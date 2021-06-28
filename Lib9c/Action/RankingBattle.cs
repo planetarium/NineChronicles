@@ -12,11 +12,12 @@ using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using Serilog;
+using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("ranking_battle4")]
+    [ActionType("ranking_battle5")]
     public class RankingBattle : GameAction
     {
         public const int StageId = 999999;
@@ -34,13 +35,17 @@ namespace Nekoyume.Action
         {
             IActionContext ctx = context;
             var states = ctx.PreviousStates;
+            var inventoryAddress = AvatarAddress.Derive(LegacyInventoryKey);
+            var worldInformationAddress = AvatarAddress.Derive(LegacyWorldInformationKey);
+            var questListAddress = AvatarAddress.Derive(LegacyQuestListKey);
             if (ctx.Rehearsal)
             {
-                return states.SetState(ctx.Signer, MarkChanged)
+                return states
                     .SetState(AvatarAddress, MarkChanged)
                     .SetState(WeeklyArenaAddress, MarkChanged)
-                    .SetState(ctx.Signer, MarkChanged)
-                    .MarkBalanceChanged(GoldCurrencyMock, ctx.Signer, WeeklyArenaAddress);
+                    .SetState(inventoryAddress, MarkChanged)
+                    .SetState(worldInformationAddress, MarkChanged)
+                    .SetState(questListAddress, MarkChanged);
             }
 
             // Avoid InvalidBlockStateRootHashException
@@ -66,7 +71,7 @@ namespace Nekoyume.Action
                 throw new InvalidAddressException($"{addressesHex}Aborted as the signer tried to battle for themselves.");
             }
 
-            if (!states.TryGetAvatarState(ctx.Signer, AvatarAddress, out var avatarState))
+            if (!states.TryGetAvatarStateV2(ctx.Signer, AvatarAddress, out var avatarState))
             {
                 throw new FailedLoadStateException($"{addressesHex}Aborted as the avatar state of the signer was failed to load.");
             }
@@ -100,7 +105,16 @@ namespace Nekoyume.Action
                     world.StageClearedId);
             }
 
-            var enemyAvatarState = states.GetAvatarState(EnemyAddress);
+            AvatarState enemyAvatarState;
+            try
+            {
+                enemyAvatarState = states.GetAvatarStateV2(EnemyAddress);
+            }
+            // BackWard compatible.
+            catch (FailedLoadStateException)
+            {
+                enemyAvatarState = states.GetAvatarState(EnemyAddress);
+            }
             if (enemyAvatarState is null)
             {
                 throw new FailedLoadStateException($"{addressesHex}Aborted as the avatar state of the opponent ({EnemyAddress}) was failed to load.");
@@ -209,7 +223,11 @@ namespace Nekoyume.Action
             Log.Verbose("{AddressesHex}RankingBattle Serialize WeeklyArenaState: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();
 
-            states = states.SetState(AvatarAddress, avatarState.Serialize());
+            states = states
+                .SetState(inventoryAddress, avatarState.inventory.Serialize())
+                .SetState(worldInformationAddress, avatarState.worldInformation.Serialize())
+                .SetState(questListAddress, avatarState.questList.Serialize())
+                .SetState(AvatarAddress, avatarState.SerializeV2());
 
             sw.Stop();
             Log.Verbose("{AddressesHex}RankingBattle Serialize AvatarState: {Elapsed}", addressesHex, sw.Elapsed);
