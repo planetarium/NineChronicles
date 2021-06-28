@@ -1,6 +1,6 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
-using Nekoyume.Game.ScriptableObject;
 
 namespace Nekoyume
 {
@@ -8,6 +8,13 @@ namespace Nekoyume
         order = int.MaxValue)]
     public class WeaponAuraScriptableObject : ScriptableObject
     {
-        public List<GameObject> data;
+        public List<WeaponAuraData> data;
+    }
+
+    [Serializable]
+    public class WeaponAuraData
+    {
+        public int id;
+        public List<GameObject> prefab;
     }
 }

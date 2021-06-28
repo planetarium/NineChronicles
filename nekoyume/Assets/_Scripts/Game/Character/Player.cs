@@ -347,8 +347,8 @@ namespace Nekoyume.Game.Character
             }
 
             var id = weapon?.Id ?? 0;
-            var levelVFXPrefab = WeaponAura.GetAura(id);
-
+            var level = weapon?.level ?? 0;
+            var levelVFXPrefab = ResourcesHelper.GetAura(id, level);
             var sprite = weapon.GetPlayerSpineTexture();
             SpineController.UpdateWeapon(sprite, levelVFXPrefab);
         }
