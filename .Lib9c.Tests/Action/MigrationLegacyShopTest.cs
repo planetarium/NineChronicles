@@ -31,15 +31,10 @@ namespace Lib9c.Tests.Action
             var states = new State().SetState(Addresses.Admin, adminState.Serialize());
             var signer = isAdmin ? adminAddress : default;
             var blockIndex = expire ? 200 : 100;
-            var avatarAddress = adminAddress.Derive("avatar");
 
-            var action = new MigrationLegacyShop
-            {
-                SellerAvatarAddresses = new List<Address>
-                {
-                    avatarAddress,
-                },
-            };
+            var action = new MigrationLegacyShop();
+
+            var avatarAddress = new Address(action.AvatarAddressesHex.First());
 
             if (exc is null)
             {
