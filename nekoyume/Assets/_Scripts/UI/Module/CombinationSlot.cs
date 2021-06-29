@@ -121,7 +121,7 @@ namespace Nekoyume.UI.Module
 
             switch (_data.Result)
             {
-                case CombinationConsumable.ResultModel ccResult:
+                case CombinationConsumable5.ResultModel ccResult:
                     if (ccResult.id == default)
                     {
                         HasNotification.Value = false;
@@ -161,7 +161,7 @@ namespace Nekoyume.UI.Module
 
         private void ShowPopup()
         {
-            if (!(_data?.Result is CombinationConsumable.ResultModel))
+            if (!(_data?.Result is CombinationConsumable5.ResultModel))
             {
                 return;
             }

@@ -81,15 +81,15 @@ namespace Nekoyume.UI
         public void Pop(CombinationSlotState state, int slotIndex)
         {
             _slotIndex = slotIndex;
-            CombinationConsumable.ResultModel result;
-            CombinationConsumable.ResultModel chainResult;
+            CombinationConsumable5.ResultModel result;
+            CombinationConsumable5.ResultModel chainResult;
             try
             {
-                result = (CombinationConsumable.ResultModel) state.Result;
+                result = (CombinationConsumable5.ResultModel) state.Result;
                 var chainState =
                     new CombinationSlotState(
                         (Dictionary) Game.Game.instance.Agent.GetState(state.address));
-                chainResult = (CombinationConsumable.ResultModel) chainState.Result;
+                chainResult = (CombinationConsumable5.ResultModel) chainState.Result;
             }
             catch (InvalidCastException)
             {
@@ -207,7 +207,7 @@ namespace Nekoyume.UI
                 string.Format(CultureInfo.InvariantCulture, CombinationSlotState.DeriveFormat,
                     _slotIndex));
             var slotState = States.Instance.CombinationSlotStates[slotAddress];
-            var result = (CombinationConsumable.ResultModel) slotState.Result;
+            var result = (CombinationConsumable5.ResultModel) slotState.Result;
             LocalLayerModifier.AddNewResultAttachmentMail(
                 States.Instance.CurrentAvatarState.address, result.id, blockIndex);
             var format = L10nManager.Localize("NOTIFICATION_COMBINATION_COMPLETE");

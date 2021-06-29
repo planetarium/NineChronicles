@@ -1,6 +1,5 @@
 using System;
 using Nekoyume.Model.Item;
-using Nekoyume.UI.Module;
 using UniRx;
 
 namespace Nekoyume.UI.Model

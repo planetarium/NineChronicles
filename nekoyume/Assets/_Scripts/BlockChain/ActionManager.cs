@@ -220,9 +220,10 @@ namespace Nekoyume.BlockChain
             {
                 sellerAvatarAddress = avatarAddress,
                 tradableId = tradableId,
-                price = price,
                 count = count,
+                price = price,
                 itemSubType = itemSubType,
+                orderId = Guid.NewGuid(),
             };
             ProcessAction(action);
 
@@ -237,12 +238,14 @@ namespace Nekoyume.BlockChain
 
         public IObservable<ActionBase.ActionEvaluation<SellCancellation>> SellCancellation(
             Address sellerAvatarAddress,
-            Guid productId,
+            Guid orderId,
+            Guid tradableId,
             ItemSubType itemSubType)
         {
             var action = new SellCancellation
             {
-                productId = productId,
+                orderId = orderId,
+                tradableId = tradableId,
                 sellerAvatarAddress = sellerAvatarAddress,
                 itemSubType = itemSubType,
             };
@@ -265,7 +268,7 @@ namespace Nekoyume.BlockChain
                 buyerAvatarAddress = States.Instance.CurrentAvatarState.address,
                 purchaseInfos = purchaseInfos
             };
-            ReactiveShopState.PurchaseHistory.Add(action.Id, shopItems);
+
             ProcessAction(action);
             return _renderer.EveryRender<Buy>()
                 .Where(eval => eval.Action.Id.Equals(action.Id))
