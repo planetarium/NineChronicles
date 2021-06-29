@@ -22,11 +22,10 @@ namespace Nekoyume.UI.Model
         {
         }
 
-        private ShopItem(OrderDigest orderDigest, ItemBase item) : base(item, 1)
+        private ShopItem(OrderDigest orderDigest, ItemBase item) : base(item, orderDigest.ItemCount)
         {
             GradeEnabled.Value = true;
             Price.Value = orderDigest.Price;
-            Count.Value = orderDigest.ItemCount;
             OrderId.Value = orderDigest.OrderId;
             TradableId.Value = orderDigest.TradableId;
             ExpiredBlockIndex.Value = orderDigest.ExpiredBlockIndex;
@@ -37,6 +36,9 @@ namespace Nekoyume.UI.Model
         {
             Price.Dispose();
             OrderId.Dispose();
+            TradableId.Dispose();
+            ExpiredBlockIndex.Dispose();
+            Level.Dispose();
             base.Dispose();
         }
     }

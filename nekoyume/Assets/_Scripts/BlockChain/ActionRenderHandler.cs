@@ -261,7 +261,6 @@ namespace Nekoyume.BlockChain
         {
             if (eval.Exception is null)
             {
-                // var agentAddress = States.Instance.AgentState.address;
                 var agentAddress = eval.Signer;
                 var avatarAddress = eval.Action.AvatarAddress;
                 var slot = eval.OutputStates.GetCombinationSlotState(avatarAddress, eval.Action.SlotIndex);

@@ -84,7 +84,7 @@ namespace Nekoyume.UI.Model
 
         protected void SelectItemView(ShopItemView view)
         {
-            if (view?.Model is null)
+            if (view == null || view.Model is null)
                 return;
 
             DeselectItemView();
@@ -110,67 +110,6 @@ namespace Nekoyume.UI.Model
             _selectedItemViewModel.Value = null;
             SelectedItemView.SetValueAndForceNotify(null);
         }
-
-        #region Shop Item
-        // public void RemoveAgentProduct(Guid productId)
-        // {
-        //     var agentAddress = States.Instance.AgentState.address;
-        //     if (!_agentProducts.ContainsKey(agentAddress))
-        //     {
-        //         return;
-        //     }
-
-            // RemoveProduct(productId, _agentProducts[agentAddress], AgentProducts.Value);
-            // AgentProducts.SetValueAndForceNotify(AgentProducts.Value);
-        // }
-
-        // private static void RemoveProduct(
-        //     Guid productId,
-        //     IReadOnlyDictionary<
-        //         ItemSubTypeFilter, Dictionary<
-        //             ShopSortFilter, Dictionary<int, List<ShopItem>>>> origin,
-        //     Dictionary<int, List<ShopItem>> reactivePropertyValue)
-        // {
-        //     foreach (var pair in origin)
-        //     {
-        //         var removed = false;
-        //         foreach (var pair2 in pair.Value)
-        //         {
-        //             foreach (var pair3 in pair2.Value)
-        //             {
-        //                 var target = pair3.Value.FirstOrDefault(item =>
-        //                     item.ProductId.Value.Equals(productId));
-        //                 if (target is null)
-        //                 {
-        //                     continue;
-        //                 }
-        //
-        //                 target.Dispose();
-        //                 pair3.Value.Remove(target);
-        //                 removed = true;
-        //             }
-        //         }
-        //
-        //         if (removed)
-        //         {
-        //             break;
-        //         }
-        //     }
-        //
-        //     foreach (var pair in reactivePropertyValue)
-        //     {
-        //         var target = pair.Value.FirstOrDefault(item =>
-        //             item.ProductId.Value.Equals(productId));
-        //         if (target is null)
-        //         {
-        //             continue;
-        //         }
-        //
-        //         target.Dispose();
-        //         pair.Value.Remove(target);
-        //     }
-        // }
-        #endregion
 
         public void ResetShopItems()
         {
