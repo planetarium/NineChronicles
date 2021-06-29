@@ -1,6 +1,9 @@
+using System.Linq;
+using Nekoyume.TableData;
 using Nekoyume.UI.Model;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
 {
@@ -19,9 +22,9 @@ namespace Nekoyume.UI.Module
             base.SetData(model);
 
             SetBg(1f);
+            SetLevel(model.ItemBase.Value.Grade, model.Level.Value);
             priceGroup.SetActive(true);
             priceText.text = model.Price.Value.GetQuantityString();
-
             Model.View = this;
         }
 
@@ -35,6 +38,7 @@ namespace Nekoyume.UI.Module
             base.Clear();
 
             SetBg(0f);
+            SetLevel(0, 0);
             priceGroup.SetActive(false);
         }
 
@@ -44,6 +48,18 @@ namespace Nekoyume.UI.Module
             var color = backgroundImage.color;
             color.a = a;
             backgroundImage.color = color;
+        }
+
+        private void SetLevel(int grade, int level)
+        {
+            if (level > 0)
+            {
+                var data = itemViewData.GetItemViewData(grade);
+                enhancementImage.GetComponent<Image>().material = data.EnhancementMaterial;
+                enhancementImage.SetActive(true);
+                enhancementText.text = $"+{level}";
+                enhancementText.enabled = true;
+            }
         }
     }
 }

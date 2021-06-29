@@ -1,15 +1,13 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using mixpanel;
 using Nekoyume.Action;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
+using Nekoyume.Helper;
 using Nekoyume.L10n;
-using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
-using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
@@ -22,23 +20,26 @@ namespace Nekoyume.UI
 {
     public class ShopBuy : Widget
     {
-        private const int NPCId = 300000;
-        private static readonly Vector3 NPCPosition = new Vector3(1000.1f, 998.2f, 1.7f);
-        private NPC _npc;
-
-        [SerializeField] private ShopBuyItems shopItems = null;
+        [SerializeField] private Module.ShopBuyItems shopItems = null;
         [SerializeField] private ShopBuyBoard shopBuyBoard = null;
         [SerializeField] private Button sellButton = null;
         [SerializeField] private Button spineButton = null;
         [SerializeField] private Canvas frontCanvas;
-
-        private Model.Shop SharedModel { get; set; }
-
         [SerializeField] private List<ShopItemViewRow> itemViewItems;
+
+        private NPC _npc;
+        private static readonly Vector3 NPCPosition = new Vector3(1000.1f, 998.2f, 1.7f);
+        private const int NPCId = 300000;
+
+        private Shop SharedModel { get; set; }
 
         protected override void Awake()
         {
-            var ratio = (float)Screen.height / (float)Screen.width;
+            base.Awake();
+            SharedModel = new Shop();
+            CloseWidget = null;
+
+            var ratio = (float) Screen.height / (float) Screen.width;
             var count = Mathf.RoundToInt(10 * ratio) - 2;
 
             shopItems.Items.Clear();
@@ -51,9 +52,6 @@ namespace Nekoyume.UI
                 }
             }
 
-            base.Awake();
-            SharedModel = new Model.Shop();
-            CloseWidget = null;
             sellButton.onClick.AddListener(() =>
             {
                 CleanUpWishListAlertPopup(() =>
@@ -73,7 +71,6 @@ namespace Nekoyume.UI
         public override void Initialize()
         {
             base.Initialize();
-
             shopItems.SharedModel.SelectedItemView
                 .Subscribe(OnClickShopItem)
                 .AddTo(gameObject);
@@ -97,17 +94,7 @@ namespace Nekoyume.UI
 
             var task = Task.Run(() =>
             {
-                var game = Game.Game.instance;
-                var shopState = new ShopState(
-                    (Bencodex.Types.Dictionary) game.Agent.GetState(Addresses.Shop));
-
-                var shardedProducts = new List<Nekoyume.Model.Item.ShopItem>();
-                Game.Game.instance.ShopProducts.UpdateProducts();
-                foreach (var items in game.ShopProducts.Products.Select(i => i.Value))
-                {
-                    shardedProducts.AddRange(items);
-                }
-                ReactiveShopState.Initialize(shopState, shardedProducts);
+                ReactiveShopState.InitBuyDigests();
                 return true;
             });
 
@@ -116,16 +103,10 @@ namespace Nekoyume.UI
             {
                 base.Show(ignoreShowAnimation);
 
-                Find<BottomMenu>().Show(
-                    UINavigator.NavigationType.Back,
-                    SubscribeBackButtonClick,
-                    true,
-                    BottomMenu.ToggleableType.Mail,
-                    BottomMenu.ToggleableType.Quest,
-                    BottomMenu.ToggleableType.Chat,
-                    BottomMenu.ToggleableType.IllustratedBook,
-                    BottomMenu.ToggleableType.Ranking,
-                    BottomMenu.ToggleableType.Character);
+                Find<BottomMenu>().Show(UINavigator.NavigationType.Back, SubscribeBackButtonClick,
+                    true, BottomMenu.ToggleableType.Mail, BottomMenu.ToggleableType.Quest,
+                    BottomMenu.ToggleableType.Chat, BottomMenu.ToggleableType.IllustratedBook,
+                    BottomMenu.ToggleableType.Ranking, BottomMenu.ToggleableType.Character);
 
                 AudioController.instance.PlayMusic(AudioController.MusicCode.Shop);
                 shopBuyBoard.ShowDefaultView();
@@ -137,7 +118,6 @@ namespace Nekoyume.UI
             }
         }
 
-
         private void Reset()
         {
             ShowNPC();
@@ -145,7 +125,6 @@ namespace Nekoyume.UI
 
         public void Open()
         {
-            ReactiveShopState.Update();
             shopItems.Reset();
             Reset();
         }
@@ -168,11 +147,8 @@ namespace Nekoyume.UI
 
         private void ShowNPC()
         {
-            var go = Game.Game.instance.Stage.npcFactory.Create(
-                NPCId,
-                NPCPosition,
-                LayerType.InGameBackground,
-                3);
+            var go = Game.Game.instance.Stage.npcFactory.Create(NPCId, NPCPosition,
+                LayerType.InGameBackground, 3);
             _npc = go.GetComponent<NPC>();
             _npc.SpineController.Appear();
             go.SetActive(true);
@@ -184,17 +160,13 @@ namespace Nekoyume.UI
         {
             var tooltip = Find<ItemInformationTooltip>();
 
-            if (view is null ||
-                view.RectTransform == tooltip.Target)
+            if (view is null || view.RectTransform == tooltip.Target)
             {
                 tooltip.Close();
                 return;
             }
 
-            tooltip.ShowForShop(
-                view.RectTransform,
-                view.Model,
-                ButtonEnabledFuncForBuy,
+            tooltip.ShowForShop(view.RectTransform, view.Model, ButtonEnabledFuncForBuy,
                 L10nManager.Localize("UI_BUY"),
                 _ => ShowBuyPopup(tooltip.itemInformation.Model.item.Value as ShopItem),
                 _ => shopItems.SharedModel.DeselectItemView(), true);
@@ -202,18 +174,15 @@ namespace Nekoyume.UI
 
         private void ShowBuyPopup(ShopItem shopItem)
         {
-            if (shopItem is null ||
-                shopItem.Dimmed.Value)
+            if (shopItem is null || shopItem.Dimmed.Value)
             {
                 return;
             }
 
             var price = shopItem.Price.Value.GetQuantityString();
             var content = string.Format(L10nManager.Localize("UI_BUY_MULTIPLE_FORMAT"), 1, price);
-            Find<TwoButtonPopup>().Show(content,
-                L10nManager.Localize("UI_BUY"),
-                L10nManager.Localize("UI_CANCEL"),
-                (() => { Buy(shopItem); }));
+            Find<TwoButtonPopup>().Show(content, L10nManager.Localize("UI_BUY"),
+                L10nManager.Localize("UI_CANCEL"), (() => { Buy(shopItem); }));
         }
 
         private void SubscribeItemPopup(CountableItem data)
@@ -229,30 +198,22 @@ namespace Nekoyume.UI
 
         private void Buy(ShopItem shopItem)
         {
-            var purchaseInfos = new List<PurchaseInfo> { GetPurchseInfo(shopItem) };
-            Game.Game.instance.ActionManager.Buy(purchaseInfos,
-                new List<ShopItem> {shopItem});
+            var purchaseInfos = new List<PurchaseInfo> {GetPurchseInfo(shopItem.OrderId.Value)};
+            Game.Game.instance.ActionManager.Buy(purchaseInfos, new List<ShopItem> {shopItem});
 
-            var countProps = new Value
-            {
-                ["Count"] = 1,
-            };
+            var countProps = new Value {["Count"] = 1,};
             Mixpanel.Track("Unity/Number of Purchased Items", countProps);
 
-            var buyProps = new Value
-            {
-                ["Price"] = shopItem.Price.Value.GetQuantityString(),
-            };
+            var buyProps = new Value {["Price"] = shopItem.Price.Value.GetQuantityString(),};
             Mixpanel.Track("Unity/Buy", buyProps);
 
             SharedModel.ItemCountAndPricePopup.Value.Item.Value = null;
             shopItem.Selected.Value = false;
 
             var buyerAgentAddress = States.Instance.AgentState.address;
-            var productId = shopItem.ProductId.Value;
 
             LocalLayerModifier.ModifyAgentGold(buyerAgentAddress, -shopItem.Price.Value);
-            ReactiveShopState.RemoveShopItem(productId);
+            ReactiveShopState.RemoveBuyDigest(shopItem.TradableId.Value);
 
             var format = L10nManager.Localize("NOTIFICATION_BUY_START");
             OneLinePopup.Push(MailType.Auction,
@@ -261,7 +222,7 @@ namespace Nekoyume.UI
             AudioController.instance.PlaySfx(AudioController.SfxCode.BuyItem);
         }
 
-        private void SetMultiplePurchase(bool value)
+        public void SetMultiplePurchase(bool value)
         {
             shopItems.SharedModel.SetMultiplePurchase(value);
             if (value)
@@ -287,7 +248,6 @@ namespace Nekoyume.UI
         }
 
 
-
         private void OnClickShopItem(ShopItemView view)
         {
             if (!shopItems.SharedModel.isMultiplePurchase && shopBuyBoard.IsAcitveWishListView)
@@ -307,12 +267,10 @@ namespace Nekoyume.UI
 
         private void CleanUpWishListAlertPopup(System.Action callback)
         {
-            if (shopItems.SharedModel.isMultiplePurchase && shopItems.SharedModel.wishItems.Count > 0)
+            if (shopItems.SharedModel.isMultiplePurchase && shopItems.SharedModel.WishItemCount > 0)
             {
                 Widget.Find<TwoButtonPopup>().Show(L10nManager.Localize("UI_CLOSE_BUY_WISH_LIST"),
-                    L10nManager.Localize("UI_YES"),
-                    L10nManager.Localize("UI_NO"),
-                    callback);
+                    L10nManager.Localize("UI_YES"), L10nManager.Localize("UI_NO"), callback);
             }
             else
             {
@@ -320,43 +278,11 @@ namespace Nekoyume.UI
             }
         }
 
-        public static PurchaseInfo GetPurchseInfo(ShopItem shopItem)
+        public static PurchaseInfo GetPurchseInfo(System.Guid orderId)
         {
-            return new PurchaseInfo(shopItem.ProductId.Value,
-                shopItem.SellerAgentAddress.Value,
-                shopItem.SellerAvatarAddress.Value,
-                shopItem.ItemSubType.Value,
-                shopItem.Price.Value);
-        }
-
-        public static ItemBase GetItemBase(Buy.PurchaseResult result)
-        {
-            if (result.itemUsable != null)
-            {
-                return result.itemUsable;
-            }
-
-            if (result.costume != null)
-            {
-                return result.costume;
-            }
-
-            return (ItemBase)result.tradableFungibleItem;
-        }
-
-        public static ItemBase GetItemBase(AttachmentActionResult result)
-        {
-            if (result.itemUsable != null)
-            {
-                return result.itemUsable;
-            }
-
-            if (result.costume != null)
-            {
-                return result.costume;
-            }
-
-            return (ItemBase)result.tradableFungibleItem;
+            var order = Util.GetOrder(orderId);
+            return new PurchaseInfo(orderId, order.TradableId, order.SellerAgentAddress,
+                order.SellerAvatarAddress, order.ItemSubType, order.Price);
         }
     }
 }
