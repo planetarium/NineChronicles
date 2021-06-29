@@ -13,13 +13,14 @@ namespace Nekoyume.Model.State
     [Serializable]
     public class MonsterCollectionState: State
     {
-        public static Address DeriveAddress(Address baseAddress)
+        // We need `round` to integrate previous states.
+        public static Address DeriveAddress(Address baseAddress, int round)
         {
             return baseAddress.Derive(
                 string.Format(
                     CultureInfo.InvariantCulture,
                     DeriveFormat,
-                    0
+                    round
                 )
             );
         }
@@ -94,6 +95,27 @@ namespace Nekoyume.Model.State
             }
 
             return step;
+        }
+
+        public List<MonsterCollectionRewardSheet.RewardInfo> CalculateRewards(
+            MonsterCollectionRewardSheet sheet,
+            long blockIndex
+        )
+        {
+            int step = CalculateStep(blockIndex);
+            if (step > 0)
+            {
+                return sheet[Level].Rewards
+                    .GroupBy(ri => ri.ItemId)
+                    .Select(g => new MonsterCollectionRewardSheet.RewardInfo(
+                                g.Key,
+                                g.Sum(ri => ri.Quantity) * step))
+                    .ToList();
+            }
+            else
+            {
+                return new List<MonsterCollectionRewardSheet.RewardInfo>();
+            }
         }
 
         public override IValue Serialize()

@@ -21,7 +21,6 @@ namespace Nekoyume.Action
         public override IAccountStateDelta Execute(IActionContext context)
         {
             IAccountStateDelta states = context.PreviousStates;
-            Address collectionAddress = MonsterCollectionState.DeriveAddress(context.Signer);
             Address inventoryAddress = avatarAddress.Derive(LegacyInventoryKey);
             Address worldInformationAddress = avatarAddress.Derive(LegacyWorldInformationKey);
             Address questListAddress = avatarAddress.Derive(LegacyQuestListKey);
@@ -31,15 +30,20 @@ namespace Nekoyume.Action
                 return states
                     .SetState(avatarAddress, MarkChanged)
                     .SetState(inventoryAddress, MarkChanged)
-                    .SetState(collectionAddress, MarkChanged)
                     .SetState(worldInformationAddress, MarkChanged)
-                    .SetState(questListAddress, MarkChanged);
+                    .SetState(questListAddress, MarkChanged)
+                    .SetState(MonsterCollectionState.DeriveAddress(context.Signer, 0), MarkChanged)
+                    .SetState(MonsterCollectionState.DeriveAddress(context.Signer, 1), MarkChanged)
+                    .SetState(MonsterCollectionState.DeriveAddress(context.Signer, 2), MarkChanged)
+                    .SetState(MonsterCollectionState.DeriveAddress(context.Signer, 3), MarkChanged);
             }
 
-            if (!states.TryGetAvatarStateV2(context.Signer, avatarAddress, out AvatarState avatarState))
+            if (!states.TryGetAgentAvatarStatesV2(context.Signer, avatarAddress, out AgentState agentState, out AvatarState avatarState))
             {
                 throw new FailedLoadStateException($"Aborted as the avatar state of the signer failed to load.");
             }
+
+            Address collectionAddress = MonsterCollectionState.DeriveAddress(context.Signer, agentState.MonsterCollectionRound);
 
             if (!states.TryGetState(collectionAddress, out Dictionary stateDict))
             {
@@ -47,22 +51,17 @@ namespace Nekoyume.Action
             }
 
             var monsterCollectionState = new MonsterCollectionState(stateDict);
+            List<MonsterCollectionRewardSheet.RewardInfo> rewards = 
+                monsterCollectionState.CalculateRewards(
+                    states.GetSheet<MonsterCollectionRewardSheet>(),
+                    context.BlockIndex
+                );
 
-            int step = monsterCollectionState.CalculateStep(context.BlockIndex);
-            if (step < 1)
+            if (rewards.Count == 0)
             {
                 throw new RequiredBlockIndexException($"{collectionAddress} is not available yet");
             }
 
-            MonsterCollectionRewardSheet monsterCollectionRewardSheet = 
-                states.GetSheet<MonsterCollectionRewardSheet>();
-            List<MonsterCollectionRewardSheet.RewardInfo> rewards =
-                monsterCollectionRewardSheet[monsterCollectionState.Level].Rewards
-                .GroupBy(ri => ri.ItemId)
-                .Select(g => new MonsterCollectionRewardSheet.RewardInfo(
-                        g.Key,
-                        g.Sum(ri => ri.Quantity) * step))
-                .ToList();
             Guid id = context.Random.GenerateRandomGuid();
             var result = new MonsterCollectionResult(id, avatarAddress, rewards);
             var mail = new MonsterCollectionMail(result, context.BlockIndex, id, context.BlockIndex);
