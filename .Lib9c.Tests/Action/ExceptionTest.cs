@@ -204,6 +204,13 @@ namespace Lib9c.Tests.Action
             AssertException<InvalidLevelException>(exc);
         }
 
+        [Fact]
+        public void ActionPointExceededException_Serializable()
+        {
+            var exc = new ActionPointExceededException("for testing.");
+            AssertException<ActionPointExceededException>(exc);
+        }
+
         private static void AssertException<T>(Exception exc)
             where T : Exception
         {
