@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using Libplanet.Assets;
 using mixpanel;
 using Nekoyume.Action;
@@ -245,6 +246,12 @@ namespace Nekoyume.UI
                 return;
             }
 
+            if (data.TotalPrice.Value.MinorUnit > 0)
+            {
+                OneLinePopup.Push(MailType.System, L10nManager.Localize("UI_TOTAL_PRICE_WARINING"));
+                return;
+            }
+
             if (data.TotalPrice.Value.Sign * data.TotalPrice.Value.MajorUnit < Model.Shop.MinimumPrice)
             {
                 throw new InvalidSellingPriceException(data);
@@ -284,7 +291,13 @@ namespace Nekoyume.UI
         private void UpdateTotalPrice(PriorityType priorityType)
         {
             var model = SharedModel.ItemCountableAndPricePopup.Value;
-            var price = Convert.ToDecimal(model.Price.Value.GetQuantityString());
+            decimal price = 0;
+            if (decimal.TryParse(model.Price.Value.GetQuantityString(), NumberStyles.AllowDecimalPoint,
+                CultureInfo.InvariantCulture, out var result))
+            {
+                price = result;
+            }
+
             var count = model.Count.Value;
             var totalPrice = price * count;
 

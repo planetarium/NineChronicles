@@ -592,8 +592,7 @@ namespace Nekoyume.State
             int? subRecipeId
         )
         {
-            // When the layer is covered, additionally set the block height to prevent state updates until the actual state comes in.
-            var blockIndex = Game.Game.instance.Agent.BlockIndex + 100;
+            var blockIndex = Game.Game.instance.Agent.BlockIndex;
             var requiredBlockIndex = row.RequiredBlockIndex + blockIndex;
             if (subRecipeId.HasValue)
             {
@@ -655,8 +654,7 @@ namespace Nekoyume.State
             Address slotAddress
         )
         {
-            // When the layer is covered, additionally set the block height to prevent state updates until the actual state comes in.
-            var blockIndex = Game.Game.instance.Agent.BlockIndex + 100;
+            var blockIndex = Game.Game.instance.Agent.BlockIndex;
             var requiredBlockIndex = blockIndex + recipeRow.RequiredBlockIndex;
             var consumableRow = tableSheets.ConsumableItemSheet.Values.First(i =>
                 i.Id == recipeRow.ResultConsumableItemId);
@@ -711,8 +709,7 @@ namespace Nekoyume.State
             Address slotAddress
         )
         {
-            // When the layer is covered, additionally set the block height to prevent state updates until the actual state comes in.
-            var blockIndex = Game.Game.instance.Agent.BlockIndex + 100;
+            var blockIndex = Game.Game.instance.Agent.BlockIndex;
             var requiredBlockIndex = blockIndex + 1;
 
             var avatarAddress = States.Instance.CurrentAvatarState.address;
