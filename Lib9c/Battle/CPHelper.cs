@@ -99,6 +99,21 @@ namespace Nekoyume.Battle
             return DecimalToInt(GetStatsCP(statsMap));
         }
 
+        public static int GetCP(ITradableItem tradableItem, CostumeStatSheet sheet)
+        {
+            if (tradableItem is ItemUsable itemUsable)
+            {
+                return GetCP(itemUsable);
+            }
+
+            if (tradableItem is Costume costume)
+            {
+                return GetCP(costume, sheet);
+            }
+
+            return 0;
+        }
+
         #endregion
 
         #region Private getter

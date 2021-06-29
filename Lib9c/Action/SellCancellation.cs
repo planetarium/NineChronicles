@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
 using Bencodex.Types;
+using Lib9c.Model.Order;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Model.Item;
@@ -20,9 +21,9 @@ namespace Nekoyume.Action
     [ActionType("sell_cancellation7")]
     public class SellCancellation : GameAction
     {
-        public Guid productId;
+        public Guid orderId;
+        public Guid tradableId;
         public Address sellerAvatarAddress;
-        public Result result;
         public ItemSubType itemSubType;
 
         [Serializable]
@@ -55,14 +56,14 @@ namespace Nekoyume.Action
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal => new Dictionary<string, IValue>
         {
-            [ProductIdKey] = productId.Serialize(),
+            [ProductIdKey] = orderId.Serialize(),
             [SellerAvatarAddressKey] = sellerAvatarAddress.Serialize(),
             [ItemSubTypeKey] = itemSubType.Serialize(),
         }.ToImmutableDictionary();
 
         protected override void LoadPlainValueInternal(IImmutableDictionary<string, IValue> plainValue)
         {
-            productId = plainValue[ProductIdKey].ToGuid();
+            orderId = plainValue[ProductIdKey].ToGuid();
             sellerAvatarAddress = plainValue[SellerAvatarAddressKey].ToAddress();
             itemSubType = plainValue[ItemSubTypeKey].ToEnum<ItemSubType>();
         }
@@ -70,18 +71,21 @@ namespace Nekoyume.Action
         public override IAccountStateDelta Execute(IActionContext context)
         {
             var states = context.PreviousStates;
-            var shardedShopAddress = ShardedShopState.DeriveAddress(itemSubType, productId);
+            var shardedShopAddress = ShardedShopStateV2.DeriveAddress(itemSubType, orderId);
             var inventoryAddress = sellerAvatarAddress.Derive(LegacyInventoryKey);
             var worldInformationAddress = sellerAvatarAddress.Derive(LegacyWorldInformationKey);
             var questListAddress = sellerAvatarAddress.Derive(LegacyQuestListKey);
+            var orderDigestListAddress = OrderDigestListState.DeriveAddress(sellerAvatarAddress);
+            var itemAddress = Addresses.GetItemAddress(tradableId);
             if (context.Rehearsal)
             {
                 states = states.SetState(shardedShopAddress, MarkChanged);
                 return states
-                    .SetState(Addresses.Shop, MarkChanged)
                     .SetState(inventoryAddress, MarkChanged)
                     .SetState(worldInformationAddress, MarkChanged)
                     .SetState(questListAddress, MarkChanged)
+                    .SetState(orderDigestListAddress, MarkChanged)
+                    .SetState(itemAddress, MarkChanged)
                     .SetState(sellerAvatarAddress, MarkChanged);
             }
 
@@ -110,124 +114,46 @@ namespace Nekoyume.Action
 
             if (!states.TryGetState(shardedShopAddress, out BxDictionary shopStateDict))
             {
-                var shopState = new ShardedShopState(shardedShopAddress);
-                shopStateDict = (BxDictionary) shopState.Serialize();
+                throw new FailedLoadStateException($"{addressesHex}failed to load {nameof(ShardedShopStateV2)}({shardedShopAddress}).");
             }
 
             sw.Stop();
             Log.Verbose("{AddressesHex}Sell Cancel Get ShopState: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();
 
-            // 상점에서 아이템을 빼온다.
-            var products = (BxList)shopStateDict[ProductsKey];
-            var productIdSerialized = productId.Serialize();
-            var productSerialized = products
-                .Select(p => (BxDictionary) p)
-                .FirstOrDefault(p => p[LegacyProductIdKey].Equals(productIdSerialized));
-
-            var backwardCompatible = false;
-            if (productSerialized.Equals(BxDictionary.Empty))
+            if (!states.TryGetState(Order.DeriveAddress(orderId), out Dictionary orderDict))
             {
-                if (itemSubType == ItemSubType.Hourglass || itemSubType == ItemSubType.ApStone)
-                {
-                    throw new ItemDoesNotExistException(
-                        $"{addressesHex}Aborted as the shop item ({productId}) could not be found from the shop.");
-                }
-                // Backward compatibility.
-                var rawShop = states.GetState(Addresses.Shop);
-                if (!(rawShop is null))
-                {
-                    var legacyShopDict = (BxDictionary) rawShop;
-                    var legacyProducts = (BxDictionary) legacyShopDict[LegacyProductsKey];
-                    var productKey = (IKey) productId.Serialize();
-                    // SoldOut
-                    if (!legacyProducts.ContainsKey(productKey))
-                    {
-                        throw new ItemDoesNotExistException(
-                            $"{addressesHex}Aborted as the shop item ({productId}) could not be found from the legacy shop."
-                        );
-                    }
-
-                    productSerialized = (BxDictionary) legacyProducts[productKey];
-                    legacyProducts = (BxDictionary) legacyProducts.Remove(productKey);
-                    legacyShopDict = legacyShopDict.SetItem(LegacyProductsKey, legacyProducts);
-                    states = states.SetState(Addresses.Shop, legacyShopDict);
-                    backwardCompatible = true;
-                }
-            }
-            else
-            {
-                products = (BxList) products.Remove(productSerialized);
-                shopStateDict = shopStateDict.SetItem(ProductsKey, new List<IValue>(products));
+                throw new FailedLoadStateException($"{addressesHex}failed to load {nameof(Order)}({Order.DeriveAddress(orderId)}).");
             }
 
-            var shopItem = new ShopItem(productSerialized);
-
-            sw.Stop();
-            Log.Verbose("{AddressesHex}Sell Cancel Get Unregister Item: {Elapsed}", addressesHex, sw.Elapsed);
-            sw.Restart();
-
-            if (shopItem.SellerAvatarAddress != sellerAvatarAddress || shopItem.SellerAgentAddress != context.Signer)
+            Order order = OrderFactory.Deserialize(orderDict);
+            order.ValidateCancelOrder(avatarState, tradableId);
+            ITradableItem sellItem = order.Cancel(avatarState, context.BlockIndex);
+            var shardedShopState = new ShardedShopStateV2(shopStateDict);
+            shardedShopState.Remove(order, context.BlockIndex);
+            states = states.SetState(shardedShopAddress, shardedShopState.Serialize());
+            if (!states.TryGetState(orderDigestListAddress, out Dictionary rawList))
             {
-                throw new InvalidAddressException($"{addressesHex}Invalid Avatar Address");
+                throw new FailedLoadStateException($"{addressesHex}failed to load {nameof(OrderDigest)}({orderDigestListAddress}).");
+            }
+            var digestList = new OrderDigestListState(rawList);
+            digestList.Remove(order.OrderId);
+
+            var expirationMail = avatarState.mailBox.OfType<OrderExpirationMail>()
+                .FirstOrDefault(m => m.OrderId.Equals(orderId));
+            if (!(expirationMail is null))
+            {
+                avatarState.mailBox.Remove(expirationMail);
             }
 
-            ITradableItem tradableItem;
-            int itemCount = 1;
-            if (!(shopItem.ItemUsable is null))
-            {
-                tradableItem = shopItem.ItemUsable;
-            }
-            else if (!(shopItem.Costume is null))
-            {
-                tradableItem = shopItem.Costume;
-            }
-            else if (!(shopItem.TradableFungibleItem is null))
-            {
-                tradableItem = shopItem.TradableFungibleItem;
-                itemCount = shopItem.TradableFungibleItemCount;
-            }
-            else
-            {
-                throw new InvalidShopItemException($"{addressesHex}Tradable Item is null.");
-            }
-
-            if (!backwardCompatible)
-            {
-                avatarState.inventory.UpdateTradableItem(tradableItem.TradableId,
-                    tradableItem.RequiredBlockIndex, itemCount, context.BlockIndex);
-            }
-
-            if (tradableItem is INonFungibleItem nonFungibleItem)
-            {
-                nonFungibleItem.RequiredBlockIndex = context.BlockIndex;
-                if (backwardCompatible)
-                {
-                    switch (nonFungibleItem)
-                    {
-                        case ItemUsable itemUsable:
-                            avatarState.UpdateFromAddItem(itemUsable, true);
-                            break;
-                        case Costume costume:
-                            avatarState.UpdateFromAddCostume(costume, true);
-                            break;
-                    }
-                }
-            }
-
-            // 메일에 아이템을 넣는다.
-            result = new Result
-            {
-                shopItem = shopItem,
-                itemUsable = shopItem.ItemUsable,
-                costume = shopItem.Costume,
-                tradableFungibleItem = shopItem.TradableFungibleItem,
-                tradableFungibleItemCount = shopItem.TradableFungibleItemCount,
-            };
-            var mail = new SellCancelMail(result, context.BlockIndex, context.Random.GenerateRandomGuid(), context.BlockIndex);
-            result.id = mail.id;
-
+            var mail = new CancelOrderMail(
+                context.BlockIndex,
+                orderId,
+                context.BlockIndex,
+                orderId
+            );
             avatarState.UpdateV3(mail);
+
             avatarState.updatedAt = context.BlockIndex;
             avatarState.blockIndex = context.BlockIndex;
 
@@ -236,6 +162,8 @@ namespace Nekoyume.Action
             sw.Restart();
 
             states = states
+                .SetState(itemAddress, sellItem.Serialize())
+                .SetState(orderDigestListAddress, digestList.Serialize())
                 .SetState(inventoryAddress,avatarState.inventory.Serialize())
                 .SetState(worldInformationAddress, avatarState.worldInformation.Serialize())
                 .SetState(questListAddress, avatarState.questList.Serialize())
@@ -244,7 +172,6 @@ namespace Nekoyume.Action
             Log.Verbose("{AddressesHex}Sell Cancel Set AvatarState: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();
 
-            states = states.SetState(shardedShopAddress, shopStateDict);
             sw.Stop();
             var ended = DateTimeOffset.UtcNow;
             Log.Verbose("{AddressesHex}Sell Cancel Set ShopState: {Elapsed}", addressesHex, sw.Elapsed);

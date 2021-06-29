@@ -182,7 +182,7 @@ namespace Lib9c.Tests.Action
                 Random = new TestRandom(),
             });
 
-            const long expiredBlockIndex = Sell.ExpiredBlockIndex + 1;
+            const long expiredBlockIndex = Sell6.ExpiredBlockIndex + 1;
 
             // Check AvatarState and Inventory
             var nextAvatarState = nextState.GetAvatarState(_avatarAddress);

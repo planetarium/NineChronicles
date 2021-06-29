@@ -109,7 +109,7 @@ namespace Lib9c.Tests.Action
                     ItemId = Guid.NewGuid(),
                     SellerAgentAddress = new PrivateKey().ToAddress(),
                     SellerAvatarAddress = new PrivateKey().ToAddress(),
-                    RequiredBlockIndex = Sell.ExpiredBlockIndex,
+                    RequiredBlockIndex = Sell6.ExpiredBlockIndex,
                     Price = 10,
                     ContainsInInventory = true,
                 },
@@ -142,7 +142,7 @@ namespace Lib9c.Tests.Action
                     ItemId = Guid.NewGuid(),
                     SellerAgentAddress = new PrivateKey().ToAddress(),
                     SellerAvatarAddress = new PrivateKey().ToAddress(),
-                    RequiredBlockIndex = Sell.ExpiredBlockIndex,
+                    RequiredBlockIndex = Sell6.ExpiredBlockIndex,
                     Price = 50,
                     ContainsInInventory = true,
                 },
@@ -154,7 +154,7 @@ namespace Lib9c.Tests.Action
         public void Execute(params ShopItemData[] shopItemMembers)
         {
             AvatarState buyerAvatarState = _initialState.GetAvatarState(_buyerAvatarAddress);
-            List<PurchaseInfo> purchaseInfos = new List<PurchaseInfo>();
+            List<PurchaseInfo0> purchaseInfos = new List<PurchaseInfo0>();
             Dictionary<Address, ShardedShopState> shardedShopStates = new Dictionary<Address, ShardedShopState>();
             ShopState legacyShopState = _initialState.GetShopState();
             foreach (var shopItemData in shopItemMembers)
@@ -228,7 +228,7 @@ namespace Lib9c.Tests.Action
                     sellerAvatarState.inventory.TryGetNonFungibleItem(productId, out _)
                 );
 
-                var purchaseInfo = new PurchaseInfo(
+                var purchaseInfo = new PurchaseInfo0(
                     shopItem.ProductId,
                     shopItem.SellerAgentAddress,
                     shopItem.SellerAvatarAddress,
@@ -275,7 +275,7 @@ namespace Lib9c.Tests.Action
                 var nextShopState = new ShardedShopState((Dictionary)nextState.GetState(shardedShopAddress));
                 Assert.Empty(nextShopState.Products);
                 Guid itemId = purchaseInfo.productId;
-                Buy.PurchaseResult pr = buyAction.buyerMultipleResult.purchaseResults.First(r => r.productId == itemId);
+                Buy7.PurchaseResult pr = buyAction.buyerMultipleResult.purchaseResults.First(r => r.productId == itemId);
                 ShopItem shopItem = pr.shopItem;
                 FungibleAssetValue tax = shopItem.Price.DivRem(100, out _) * Buy.TaxRate;
                 FungibleAssetValue taxedPrice = shopItem.Price - tax;
@@ -316,7 +316,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Execute_ErrorCode_InvalidAddress()
         {
-            PurchaseInfo purchaseInfo = new PurchaseInfo(
+            PurchaseInfo0 purchaseInfo0 = new PurchaseInfo0(
                 default,
                 _buyerAgentAddress,
                 _sellerAvatarAddress,
@@ -326,7 +326,7 @@ namespace Lib9c.Tests.Action
             var action = new Buy5
             {
                 buyerAvatarAddress = _buyerAvatarAddress,
-                purchaseInfos = new[] { purchaseInfo },
+                purchaseInfos = new[] { purchaseInfo0 },
             };
 
             action.Execute(new ActionContext()
@@ -346,7 +346,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Execute_Throw_FailedLoadStateException()
         {
-            PurchaseInfo purchaseInfo = new PurchaseInfo(
+            PurchaseInfo0 purchaseInfo0 = new PurchaseInfo0(
                 default,
                 _buyerAgentAddress,
                 _sellerAvatarAddress,
@@ -356,7 +356,7 @@ namespace Lib9c.Tests.Action
             var action = new Buy5
             {
                 buyerAvatarAddress = default,
-                purchaseInfos = new[] { purchaseInfo },
+                purchaseInfos = new[] { purchaseInfo0 },
             };
 
             Assert.Throws<FailedLoadStateException>(() => action.Execute(new ActionContext()
@@ -382,7 +382,7 @@ namespace Lib9c.Tests.Action
             };
             _initialState = _initialState.SetState(_buyerAvatarAddress, avatarState.Serialize());
 
-            PurchaseInfo purchaseInfo = new PurchaseInfo(
+            PurchaseInfo0 purchaseInfo0 = new PurchaseInfo0(
                 default,
                 _buyerAgentAddress,
                 _sellerAvatarAddress,
@@ -392,7 +392,7 @@ namespace Lib9c.Tests.Action
             var action = new Buy5
             {
                 buyerAvatarAddress = _buyerAvatarAddress,
-                purchaseInfos = new[] { purchaseInfo },
+                purchaseInfos = new[] { purchaseInfo0 },
             };
 
             Assert.Throws<NotEnoughClearedStageLevelException>(() => action.Execute(new ActionContext()
@@ -408,7 +408,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Execute_ErrorCode_ItemDoesNotExist()
         {
-            PurchaseInfo purchaseInfo = new PurchaseInfo(
+            PurchaseInfo0 purchaseInfo0 = new PurchaseInfo0(
                 default,
                 _sellerAgentAddress,
                 _sellerAvatarAddress,
@@ -418,7 +418,7 @@ namespace Lib9c.Tests.Action
             var action = new Buy5
             {
                 buyerAvatarAddress = _buyerAvatarAddress,
-                purchaseInfos = new[] { purchaseInfo },
+                purchaseInfos = new[] { purchaseInfo0 },
             };
 
             action.Execute(new ActionContext()
@@ -442,14 +442,14 @@ namespace Lib9c.Tests.Action
             var itemUsable = ItemFactory.CreateItemUsable(
                 _tableSheets.EquipmentItemSheet.First,
                 Guid.NewGuid(),
-                Sell.ExpiredBlockIndex);
+                Sell6.ExpiredBlockIndex);
 
             var shopItem = new ShopItem(
                 _sellerAgentAddress,
                 _sellerAvatarAddress,
                 _productId,
                 new FungibleAssetValue(_goldCurrencyState.Currency, 100, 0),
-                Sell.ExpiredBlockIndex,
+                Sell6.ExpiredBlockIndex,
                 itemUsable);
 
             ShardedShopState shopState = new ShardedShopState(shardedShopAddress);
@@ -459,7 +459,7 @@ namespace Lib9c.Tests.Action
             _initialState = _initialState.BurnAsset(_buyerAgentAddress, balance)
                 .SetState(shardedShopAddress, shopState.Serialize());
 
-            PurchaseInfo purchaseInfo = new PurchaseInfo(
+            PurchaseInfo0 purchaseInfo0 = new PurchaseInfo0(
                 _productId,
                 _sellerAgentAddress,
                 _sellerAvatarAddress,
@@ -470,7 +470,7 @@ namespace Lib9c.Tests.Action
             var action = new Buy5
             {
                 buyerAvatarAddress = _buyerAvatarAddress,
-                purchaseInfos = new[] { purchaseInfo },
+                purchaseInfos = new[] { purchaseInfo0 },
             };
 
             action.Execute(new ActionContext()
@@ -494,14 +494,14 @@ namespace Lib9c.Tests.Action
             var itemUsable = ItemFactory.CreateItemUsable(
                 _tableSheets.EquipmentItemSheet.First,
                 Guid.NewGuid(),
-                Sell.ExpiredBlockIndex);
+                Sell6.ExpiredBlockIndex);
 
             var shopItem = new ShopItem(
                 _sellerAgentAddress,
                 _sellerAvatarAddress,
                 _productId,
                 new FungibleAssetValue(_goldCurrencyState.Currency, 100, 0),
-                Sell.ExpiredBlockIndex,
+                Sell6.ExpiredBlockIndex,
                 itemUsable);
 
             ShardedShopState shopState = new ShardedShopState(shardedShopAddress);
@@ -511,7 +511,7 @@ namespace Lib9c.Tests.Action
             Assert.True(shopItem.ExpiredBlockIndex > 0);
             Assert.True(shopItem.ItemUsable.RequiredBlockIndex > 0);
 
-            PurchaseInfo purchaseInfo = new PurchaseInfo(
+            PurchaseInfo0 purchaseInfo0 = new PurchaseInfo0(
                 _productId,
                 _sellerAgentAddress,
                 _sellerAvatarAddress,
@@ -522,7 +522,7 @@ namespace Lib9c.Tests.Action
             var action = new Buy5
             {
                 buyerAvatarAddress = _buyerAvatarAddress,
-                purchaseInfos = new[] { purchaseInfo },
+                purchaseInfos = new[] { purchaseInfo0 },
             };
 
             action.Execute(new ActionContext()
@@ -562,7 +562,7 @@ namespace Lib9c.Tests.Action
 
             Assert.True(shopState.Products.ContainsKey(_productId));
 
-            PurchaseInfo purchaseInfo = new PurchaseInfo(
+            PurchaseInfo0 purchaseInfo0 = new PurchaseInfo0(
                 _productId,
                 _sellerAgentAddress,
                 _sellerAvatarAddress,
@@ -572,7 +572,7 @@ namespace Lib9c.Tests.Action
             var action = new Buy5
             {
                 buyerAvatarAddress = _buyerAvatarAddress,
-                purchaseInfos = new[] { purchaseInfo },
+                purchaseInfos = new[] { purchaseInfo0 },
             };
 
             action.Execute(new ActionContext()

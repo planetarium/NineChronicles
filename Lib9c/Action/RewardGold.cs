@@ -93,7 +93,6 @@ namespace Nekoyume.Action
                 weekly.ResetCount(ctx.BlockIndex);
                 states = states.SetState(weekly.address, weekly.Serialize());
             }
-
             return states;
         }
 

@@ -228,7 +228,7 @@ namespace Lib9c.Tests.Action
             ItemUsable itemUsable = ItemFactory.CreateItemUsable(
                 _tableSheets.EquipmentItemSheet.First,
                 Guid.NewGuid(),
-                Sell.ExpiredBlockIndex);
+                Sell6.ExpiredBlockIndex);
             Address shardedShopAddress = ShardedShopState.DeriveAddress(itemUsable.ItemSubType, productId);
             ShardedShopState shopState = new ShardedShopState(shardedShopAddress);
 
@@ -237,7 +237,7 @@ namespace Lib9c.Tests.Action
                 _avatarAddress,
                 productId,
                 new FungibleAssetValue(_goldCurrencyState.Currency, 100, 0),
-                Sell.ExpiredBlockIndex,
+                Sell6.ExpiredBlockIndex,
                 itemUsable);
 
             IAccountStateDelta prevState = _initialState
@@ -267,7 +267,7 @@ namespace Lib9c.Tests.Action
             ItemUsable itemUsable = ItemFactory.CreateItemUsable(
                 _tableSheets.EquipmentItemSheet.First,
                 Guid.NewGuid(),
-                Sell.ExpiredBlockIndex);
+                Sell6.ExpiredBlockIndex);
             Address shardedShopAddress = ShardedShopState.DeriveAddress(itemUsable.ItemSubType, productId);
             ShardedShopState shopState = new ShardedShopState(shardedShopAddress);
 
@@ -276,7 +276,7 @@ namespace Lib9c.Tests.Action
                 _avatarAddress,
                 productId,
                 new FungibleAssetValue(_goldCurrencyState.Currency, 100, 0),
-                Sell.ExpiredBlockIndex,
+                Sell6.ExpiredBlockIndex,
                 itemUsable);
             shopState.Register(shopItem);
 
@@ -307,7 +307,7 @@ namespace Lib9c.Tests.Action
             ItemUsable itemUsable = ItemFactory.CreateItemUsable(
                 _tableSheets.EquipmentItemSheet.First,
                 Guid.NewGuid(),
-                Sell.ExpiredBlockIndex);
+                Sell6.ExpiredBlockIndex);
             Address shardedShopAddress = ShardedShopState.DeriveAddress(itemUsable.ItemSubType, productId);
             ShardedShopState shopState = new ShardedShopState(shardedShopAddress);
 
@@ -316,7 +316,7 @@ namespace Lib9c.Tests.Action
                 default,
                 productId,
                 new FungibleAssetValue(_goldCurrencyState.Currency, 100, 0),
-                Sell.ExpiredBlockIndex,
+                Sell6.ExpiredBlockIndex,
                 itemUsable);
             shopState.Register(shopItem);
 

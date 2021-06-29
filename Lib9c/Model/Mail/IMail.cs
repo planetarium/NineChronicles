@@ -9,5 +9,9 @@ namespace Nekoyume.Model.Mail
         void Read(ItemEnhanceMail itemEnhanceMail);
         void Read(DailyRewardMail dailyRewardMail);
         void Read(MonsterCollectionMail monsterCollectionMail);
+        void Read(OrderExpirationMail orderExpirationMail);
+        void Read(CancelOrderMail cancelOrderMail);
+        void Read(OrderBuyerMail orderBuyerMail);
+        void Read(OrderSellerMail orderSellerMail);
     }
 }
