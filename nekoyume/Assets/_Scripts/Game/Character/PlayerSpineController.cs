@@ -154,16 +154,10 @@ namespace Nekoyume.Game.Character
                 _clonedSkin.SetAttachment(_weaponSlotIndex, WeaponSlot, newWeapon);
             }
 
-            if (_currentWeaponVFX && !_currentWeaponVFXPrefab.Equals(weaponVFXPrefab))
-            {
-                Destroy(_currentWeaponVFX);
-                _currentWeaponVFX = null;
-                _currentWeaponVFXPrefab = weaponVFXPrefab;
-            }
 
-            if (!(weaponVFXPrefab is null) &&
-                !_currentWeaponVFX &&
-                (!_currentWeaponVFXPrefab?.Equals(weaponVFXPrefab) ?? true))
+            Destroy(_currentWeaponVFX);
+
+            if (!(weaponVFXPrefab is null))
             {
                 var weaponVFX = Instantiate(weaponVFXPrefab, transform);
 
@@ -175,7 +169,6 @@ namespace Nekoyume.Game.Character
                 boneFollower.SetBone(boneName);
 
                 _currentWeaponVFX = weaponVFX;
-                _currentWeaponVFXPrefab = weaponVFXPrefab;
             }
 
             UpdateInternal();
