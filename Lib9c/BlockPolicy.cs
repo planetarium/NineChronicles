@@ -4,6 +4,7 @@ using Libplanet.Blockchain.Policies;
 using Libplanet.Blocks;
 using Libplanet.Tx;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Lib9c;
 using Libplanet;
@@ -16,6 +17,7 @@ namespace Nekoyume.BlockChain
     {
         private readonly long _minimumDifficulty;
         private readonly long _difficultyBoundDivisor;
+        private AuthorizedMinersState _authorizedMinersState;
 
         /// <summary>
         /// Whether to ignore or respect hardcoded block indices to make older
@@ -70,7 +72,10 @@ namespace Nekoyume.BlockChain
                 maxTransactionsPerBlock: maxTransactionsPerBlock,
                 maxBlockBytes: maxBlockBytes,
                 maxGenesisBytes: maxGenesisBytes,
-                doesTransactionFollowPolicy: doesTransactionFollowPolicy
+                doesTransactionFollowPolicy: doesTransactionFollowPolicy,
+                canonicalChainComparer: new CanonicalChainComparer(
+                    null,
+                    TimeSpan.FromTicks(blockInterval.Ticks * 10))
             )
         {
             _minimumDifficulty = minimumDifficulty;
@@ -79,13 +84,23 @@ namespace Nekoyume.BlockChain
                 ignoreHardcodedIndicesForBackwardCompatibility;
         }
 
-        public AuthorizedMinersState AuthorizedMinersState { get; set; }
+        public AuthorizedMinersState AuthorizedMinersState
+        {
+            get => _authorizedMinersState;
+            set
+            {
+                _authorizedMinersState = value;
+                ((CanonicalChainComparer)CanonicalChainComparer).AuthorizedMinersState = value;
+            }
+        }
 
         public override InvalidBlockException ValidateNextBlock(
             BlockChain<NCAction> blocks,
             Block<NCAction> nextBlock
         ) =>
-            ValidateMinerAuthority(nextBlock) ?? base.ValidateNextBlock(blocks, nextBlock);
+            ValidateBlock(nextBlock) 
+            ?? ValidateMinerAuthority(nextBlock) 
+            ?? base.ValidateNextBlock(blocks, nextBlock);
 
         public override long GetNextBlockDifficulty(BlockChain<NCAction> blocks)
         {
@@ -138,6 +153,29 @@ namespace Nekoyume.BlockChain
             return Math.Max(nextDifficulty, _minimumDifficulty);
         }
 
+        private InvalidBlockException ValidateBlock(Block<NCAction> block)
+        {
+            if (!(block.Miner is Address miner))
+            {
+                return null;
+            }
+
+            // To prevent selfish mining, we define a consensus that blocks with no transactions are do not accepted. 
+            // (For backward compatibility, blocks before 1,711,631th don't have to be proven.
+            // Note that as of Jun 16, 2021, there are about 1,710,000+ blocks.)
+            if (block.Transactions.Count <= 0 &&
+                (IgnoreHardcodedIndicesForBackwardCompatibility || block.Index > 1_711_631))
+            {
+                return new InvalidMinerException(
+                    $"The block #{block.Index} {block.Hash} (mined by {miner}) should " +
+                    "include at least one transaction.",
+                    miner
+                );
+            }
+
+            return null;
+        }
+        
         private InvalidBlockException ValidateMinerAuthority(Block<NCAction> block)
         {
             if (AuthorizedMinersState is null)
@@ -162,6 +200,7 @@ namespace Nekoyume.BlockChain
                     miner
                 );
             }
+            
 
             // Authority should be proven through a no-op transaction (= txs with zero actions).
             // (For backward compatibility, blocks before 1,200,000th don't have to be proven.

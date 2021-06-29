@@ -56,6 +56,11 @@ namespace Nekoyume.Action
                     $"{addressesHex}Aborted as the game config state was failed to load.");
             }
 
+            if (avatarState.actionPoint == gameConfigState.ActionPointMax)
+            {
+                throw new ActionPointExceededException();
+            }
+
             avatarState.actionPoint = gameConfigState.ActionPointMax;
             return states
                 .SetState(inventoryAddress, avatarState.inventory.Serialize())
