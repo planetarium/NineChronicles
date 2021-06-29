@@ -118,11 +118,10 @@ MonoBehaviour:
   material: {fileID: -2364689171920820918}
   materialHashCode: 1574674051
   m_Version: 1.1.0
-  m_SourceFontFileGUID: 1da5c5563106ea94ba1e2114308b9c16
-  m_SourceFontFile_EditorRef: {fileID: 12800000, guid: 1da5c5563106ea94ba1e2114308b9c16,
-    type: 3}
-  m_SourceFontFile: {fileID: 12800000, guid: 1da5c5563106ea94ba1e2114308b9c16, type: 3}
-  m_AtlasPopulationMode: 1
+  m_SourceFontFileGUID: 
+  m_SourceFontFile_EditorRef: {fileID: 0}
+  m_SourceFontFile: {fileID: 0}
+  m_AtlasPopulationMode: 0
   m_FaceInfo:
     m_FaceIndex: 0
     m_FamilyName: Poor Story
@@ -4975,8 +4974,7 @@ MonoBehaviour:
   m_FontFeatureTable:
     m_GlyphPairAdjustmentRecords: []
   fallbackFontAssets: []
-  m_FallbackFontAssetTable:
-  - {fileID: 11400000, guid: e9a2d396958eae64ab9fb60125127ed2, type: 2}
+  m_FallbackFontAssetTable: []
   m_CreationSettings:
     sourceFontFileName: 
     sourceFontFileGUID: 1da5c5563106ea94ba1e2114308b9c16
@@ -5042,7 +5040,7 @@ Texture2D:
   m_MipsStripped: 0
   m_TextureFormat: 1
   m_MipCount: 1
-  m_IsReadable: 1
+  m_IsReadable: 0
   m_IsPreProcessed: 0
   m_IgnoreMasterTextureLimit: 0
   m_StreamingMipmaps: 0
