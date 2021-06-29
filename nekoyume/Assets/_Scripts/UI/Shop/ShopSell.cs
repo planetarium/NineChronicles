@@ -246,6 +246,12 @@ namespace Nekoyume.UI
                 return;
             }
 
+            if (data.TotalPrice.Value.MinorUnit > 0)
+            {
+                OneLinePopup.Push(MailType.System, L10nManager.Localize("UI_TOTAL_PRICE_WARINING"));
+                return;
+            }
+
             if (data.TotalPrice.Value.Sign * data.TotalPrice.Value.MajorUnit < Model.Shop.MinimumPrice)
             {
                 throw new InvalidSellingPriceException(data);
