@@ -127,7 +127,7 @@ namespace Nekoyume.State
             return AddOrReplaceAvatarState(state, index, initializeReactiveState);
         }
 
-        private static AvatarState GetAvatarStateV2(Address address)
+        public AvatarState GetAvatarStateV2(Address address)
         {
             string[] keys =
             {
