@@ -418,7 +418,9 @@ namespace Nekoyume.State
             if (receiptState is Dictionary dictionary)
             {
                 var state = new OrderDigestListState(dictionary);
-                receipts.AddRange(state.OrderDigestList);
+                var validOrderDigests = state.OrderDigestList.Where(x =>
+                    x.ExpiredBlockIndex > Game.Game.instance.Agent.BlockIndex);
+                receipts.AddRange(validOrderDigests);
             }
 
             return receipts;
