@@ -59,6 +59,7 @@ namespace Nekoyume.Action
             [ProductIdKey] = orderId.Serialize(),
             [SellerAvatarAddressKey] = sellerAvatarAddress.Serialize(),
             [ItemSubTypeKey] = itemSubType.Serialize(),
+            [TradableIdKey] = tradableId.Serialize(),
         }.ToImmutableDictionary();
 
         protected override void LoadPlainValueInternal(IImmutableDictionary<string, IValue> plainValue)
@@ -66,6 +67,10 @@ namespace Nekoyume.Action
             orderId = plainValue[ProductIdKey].ToGuid();
             sellerAvatarAddress = plainValue[SellerAvatarAddressKey].ToAddress();
             itemSubType = plainValue[ItemSubTypeKey].ToEnum<ItemSubType>();
+            if (plainValue.ContainsKey(TradableIdKey))
+            {
+                tradableId = plainValue[TradableIdKey].ToGuid();
+            }
         }
 
         public override IAccountStateDelta Execute(IActionContext context)
