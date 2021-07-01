@@ -163,7 +163,9 @@ namespace Nekoyume.UI.Scroller
             }
 
             ArenaInfo = itemData.arenaInfo ?? throw new ArgumentNullException(nameof(itemData.arenaInfo));
-            _isCurrentUser = ArenaInfo.AvatarAddress == itemData.currentAvatarArenaInfo.AvatarAddress;
+            var currentAvatarArenaInfo = itemData.currentAvatarArenaInfo;
+            _isCurrentUser = currentAvatarArenaInfo is null ?
+                false : ArenaInfo.AvatarAddress == currentAvatarArenaInfo.AvatarAddress;
 
             if (controlBackgroundImage)
             {
