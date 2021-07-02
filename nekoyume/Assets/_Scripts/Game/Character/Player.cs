@@ -350,7 +350,7 @@ namespace Nekoyume.Game.Character
             var level = weapon?.level ?? 0;
             var levelVFXPrefab = ResourcesHelper.GetAura(id, level);
             var sprite = weapon.GetPlayerSpineTexture();
-            SpineController.UpdateWeapon(sprite, levelVFXPrefab);
+            SpineController.UpdateWeapon(id, sprite, levelVFXPrefab);
         }
 
         public void Equip(int armorId, int weaponId)
@@ -358,7 +358,7 @@ namespace Nekoyume.Game.Character
             var spineResourcePath = $"Character/Player/{armorId}";
             ChangeSpine(spineResourcePath);
             var sprite = SpriteHelper.GetPlayerSpineTextureWeapon(weaponId);
-            SpineController.UpdateWeapon(sprite);
+            SpineController.UpdateWeapon(weaponId, sprite);
         }
 
         #endregion

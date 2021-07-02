@@ -76,7 +76,7 @@ namespace Nekoyume.Game.Character
 
         private int _weaponSlotIndex;
         private RegionAttachment _weaponAttachmentDefault;
-        private GameObject _currentWeaponVFX;
+        private GameObject _cachedWeaponVFX;
         private GameObject _currentWeaponVFXPrefab;
 
         private readonly List<string> _attachmentNames = new List<string>();
@@ -142,7 +142,7 @@ namespace Nekoyume.Game.Character
 
         #region Equipments & Costomize
 
-        public void UpdateWeapon(Sprite sprite, GameObject weaponVFXPrefab = null)
+        public void UpdateWeapon(int weaponId, Sprite sprite, GameObject weaponVFXPrefab = null)
         {
             if (sprite is null)
             {
@@ -154,21 +154,20 @@ namespace Nekoyume.Game.Character
                 _clonedSkin.SetAttachment(_weaponSlotIndex, WeaponSlot, newWeapon);
             }
 
-
-            Destroy(_currentWeaponVFX);
+            Destroy(_cachedWeaponVFX);
 
             if (!(weaponVFXPrefab is null))
             {
-                var weaponVFX = Instantiate(weaponVFXPrefab, transform);
-
+                var parent = new GameObject(weaponId.ToString());
+                parent.AddComponent<BoneFollower>();
+                parent.transform.SetParent(transform);
+                Instantiate(weaponVFXPrefab, parent.transform);
                 var weaponSlot = SkeletonAnimation.Skeleton.FindSlot(WeaponSlot);
                 var boneName = weaponSlot.Bone.Data.Name;
-
-                var boneFollower = weaponVFX.GetComponent<BoneFollower>();
+                var boneFollower = parent.GetComponent<BoneFollower>();
                 boneFollower.SkeletonRenderer = SkeletonAnimation;
                 boneFollower.SetBone(boneName);
-
-                _currentWeaponVFX = weaponVFX;
+                _cachedWeaponVFX = parent;
             }
 
             UpdateInternal();
