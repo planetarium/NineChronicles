@@ -19,6 +19,7 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
+    [Obsolete("Use Sell")]
     [ActionType("sell5")]
     public class Sell5 : GameAction
     {

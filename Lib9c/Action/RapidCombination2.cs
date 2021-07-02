@@ -13,6 +13,7 @@ using Nekoyume.TableData;
 namespace Nekoyume.Action
 {
     [Serializable]
+    [Obsolete("Use RapidCombination")]
     [ActionType("rapid_combination2")]
     public class RapidCombination2 : GameAction
     {

@@ -19,6 +19,7 @@ using Nekoyume.TableData;
 namespace Nekoyume.Action
 {
     [Serializable]
+    [Obsolete("Use CombinationEquipment")]
     [ActionType("combination_equipment2")]
     public class CombinationEquipment2 : GameAction
     {

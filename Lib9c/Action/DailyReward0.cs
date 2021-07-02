@@ -9,6 +9,7 @@ using Nekoyume.Model.State;
 namespace Nekoyume.Action
 {
     [Serializable]
+    [Obsolete("Use DailyReward")]
     [ActionType("daily_reward")]
     public class DailyReward0 : GameAction
     {

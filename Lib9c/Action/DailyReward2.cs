@@ -13,6 +13,7 @@ using Nekoyume.TableData;
 namespace Nekoyume.Action
 {
     [Serializable]
+    [Obsolete("Use DailyReward")]
     [ActionType("daily_reward2")]
     public class DailyReward2 : GameAction
     {

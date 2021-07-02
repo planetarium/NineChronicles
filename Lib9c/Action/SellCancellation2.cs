@@ -13,6 +13,7 @@ using Serilog;
 namespace Nekoyume.Action
 {
     [Serializable]
+    [Obsolete("Use SellCancellation")]
     [ActionType("sell_cancellation2")]
     public class SellCancellation2 : GameAction
     {

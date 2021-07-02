@@ -16,6 +16,7 @@ using Serilog;
 namespace Nekoyume.Action
 {
     [Serializable]
+    [Obsolete("Use MimisbrunnrBattle")]
     [ActionType("mimisbrunnr_battle2")]
     public class MimisbrunnrBattle2 : GameAction
     {

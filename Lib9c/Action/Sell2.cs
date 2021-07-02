@@ -14,6 +14,7 @@ using Serilog;
 namespace Nekoyume.Action
 {
     [Serializable]
+    [Obsolete("Use Sell")]
     [ActionType("sell2")]
     public class Sell2 : GameAction
     {

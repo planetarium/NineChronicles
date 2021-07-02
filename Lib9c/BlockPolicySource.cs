@@ -88,21 +88,31 @@ namespace Nekoyume.BlockChain
         public IEnumerable<IRenderer<NCAction>> GetRenderers() =>
             new IRenderer<NCAction>[] { BlockRenderer, LoggedActionRenderer };
 
+        public static bool IsObsolete(Transaction<NCAction> transaction)
+        {
+            return transaction.Actions
+                .Select(action => action.InnerAction.GetType())
+                .Any(at => at.IsDefined(typeof(ObsoleteAttribute), false));
+        }
+
         private bool DoesTransactionFollowPolicy(
             Transaction<NCAction> transaction,
             BlockChain<NCAction> blockChain
         )
         {
-            return 
-                transaction.Actions.Count <= 1 &&
-                CheckSigner(transaction, blockChain);
+            return CheckTransaction(transaction, blockChain);
         }
 
-        private bool CheckSigner(
+        private bool CheckTransaction(
             Transaction<NCAction> transaction,
             BlockChain<NCAction> blockChain
         )
         {
+            if (transaction.Actions.Count > 1 || IsObsolete(transaction))
+            {
+                return false;
+            }
+
             try
             {
                 // Check if it is a no-op transaction to prove it's made by the authorized miner.

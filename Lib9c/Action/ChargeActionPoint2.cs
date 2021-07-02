@@ -12,6 +12,7 @@ using Nekoyume.TableData;
 namespace Nekoyume.Action
 {
     [Serializable]
+    [Obsolete("Use ChargeActionPoint")]
     [ActionType("charge_action_point2")]
     public class ChargeActionPoint2 : GameAction
     {
