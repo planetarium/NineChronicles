@@ -14,7 +14,7 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [Obsolete("Use ClaimMonsterCollect")]
+    [ActionObsolete(2000000)]
     [ActionType("claim_monster_collection_reward")]
     public class ClaimMonsterCollectionReward0 : GameAction
     {

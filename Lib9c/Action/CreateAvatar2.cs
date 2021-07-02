@@ -17,7 +17,7 @@ using Serilog;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [Obsolete("Use CreateAvatar")]
+    [ActionObsolete(2000000)]
     [ActionType("create_avatar2")]
     public class CreateAvatar2 : GameAction
     {

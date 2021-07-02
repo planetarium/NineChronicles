@@ -17,7 +17,7 @@ using Serilog;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [Obsolete("Use ItemEnhancement")]
+    [ActionObsolete(2000000)]
     [ActionType("item_enhancement2")]
     public class ItemEnhancement2 : GameAction
     {

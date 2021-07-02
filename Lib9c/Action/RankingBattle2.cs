@@ -16,7 +16,7 @@ using Serilog;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [Obsolete("Use RankingBattle")]
+    [ActionObsolete(2000000)]
     [ActionType("ranking_battle2")]
     public class RankingBattle2 : GameAction
     {

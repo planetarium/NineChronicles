@@ -14,7 +14,7 @@ using Serilog;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [Obsolete("Use RapidCombination")]
+    [ActionObsolete(2000000)]
     [ActionType("rapid_combination")]
     public class RapidCombination0 : GameAction
     {

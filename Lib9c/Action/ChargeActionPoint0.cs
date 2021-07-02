@@ -13,7 +13,7 @@ using Serilog;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [Obsolete("Use ChargeActionPoint")]
+    [ActionObsolete(2000000)]
     [ActionType("charge_action_point")]
     public class ChargeActionPoint0 : GameAction
     {

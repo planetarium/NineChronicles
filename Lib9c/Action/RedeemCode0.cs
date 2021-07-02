@@ -14,7 +14,7 @@ using Serilog;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [Obsolete("Use RedeemCode")]
+    [ActionObsolete(2000000)]
     [ActionType("redeem_code")]
     public class RedeemCode0 : GameAction
     {

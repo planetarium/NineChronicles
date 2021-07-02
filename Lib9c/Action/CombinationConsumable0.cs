@@ -18,7 +18,7 @@ using Material = Nekoyume.Model.Item.Material;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [Obsolete("Use CombinationConsumable")]
+    [ActionObsolete(2000000)]
     [ActionType("combination_consumable")]
     public class CombinationConsumable0 : GameAction
     {

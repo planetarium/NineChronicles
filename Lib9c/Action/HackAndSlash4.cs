@@ -15,7 +15,7 @@ using Serilog;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [Obsolete("Use HackAndSlash")]
+    [ActionObsolete(2000000)]
     [ActionType("hack_and_slash4")]
     public class HackAndSlash4 : GameAction
     {
