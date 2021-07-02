@@ -50,6 +50,8 @@ namespace Nekoyume.Action
                     .MarkBalanceChanged(GoldCurrencyMock, ctx.Signer, BlacksmithAddress);
             }
 
+            CheckObsolete(2000000, context);
+
             var addressesHex = GetSignerAndOtherAddressesHex(context, AvatarAddress);
 
             if (!states.TryGetAgentAvatarStates(ctx.Signer, AvatarAddress, out var agentState,

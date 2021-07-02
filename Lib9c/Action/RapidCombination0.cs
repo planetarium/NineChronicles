@@ -62,6 +62,8 @@ namespace Nekoyume.Action
                     .SetState(slotAddress, MarkChanged);
             }
 
+            CheckObsolete(2000000, context);
+
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
 
             Log.Warning("{AddressesHex}rapid_combination is deprecated. Please use rapid_combination2", addressesHex);

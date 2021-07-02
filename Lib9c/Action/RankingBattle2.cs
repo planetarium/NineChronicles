@@ -44,6 +44,8 @@ namespace Nekoyume.Action
                     .MarkBalanceChanged(GoldCurrencyMock, ctx.Signer, WeeklyArenaAddress);
             }
 
+            CheckObsolete(2000000, context);
+
             var addressesHex = GetSignerAndOtherAddressesHex(context, AvatarAddress, EnemyAddress);
             
             var sw = new Stopwatch();

@@ -68,7 +68,9 @@ namespace Nekoyume.Action
                 states = states.SetState(WeeklyArenaAddress, MarkChanged);
                 return states.SetState(ctx.Signer, MarkChanged);
             }
-            
+
+            CheckObsolete(2000000, context);
+
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
 
             Log.Warning("{AddressesHex}hack_and_slash is deprecated. Please use hack_and_slash2", addressesHex);

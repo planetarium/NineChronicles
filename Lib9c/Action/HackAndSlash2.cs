@@ -67,7 +67,9 @@ namespace Nekoyume.Action
                 states = states.SetState(WeeklyArenaAddress, MarkChanged);
                 return states.SetState(ctx.Signer, MarkChanged);
             }
-            
+
+            CheckObsolete(2000000, context);
+
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
 
             var sw = new Stopwatch();

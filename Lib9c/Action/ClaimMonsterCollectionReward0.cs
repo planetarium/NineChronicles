@@ -33,6 +33,8 @@ namespace Nekoyume.Action
                     .SetState(collectionAddress, MarkChanged);
             }
 
+            CheckObsolete(2000000, context);
+
             if (!states.TryGetAgentAvatarStates(context.Signer, avatarAddress, out AgentState agentState, out AvatarState avatarState))
             {
                 throw new FailedLoadStateException($"Aborted as the avatar state of the signer failed to load.");

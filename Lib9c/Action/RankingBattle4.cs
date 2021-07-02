@@ -50,6 +50,8 @@ namespace Nekoyume.Action
                 return states;
             }
 
+            CheckObsolete(2000000, context);
+
             var addressesHex = GetSignerAndOtherAddressesHex(context, AvatarAddress, EnemyAddress);
 
             var sw = new Stopwatch();

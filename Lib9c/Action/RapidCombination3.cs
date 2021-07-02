@@ -37,6 +37,8 @@ namespace Nekoyume.Action
                     .SetState(slotAddress, MarkChanged);
             }
 
+            CheckObsolete(2000000, context);
+
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
 
             if (!states.TryGetAgentAvatarStates(

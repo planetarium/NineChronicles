@@ -47,6 +47,8 @@ namespace Nekoyume.Action
                 return states.SetState(ctx.Signer, MarkChanged);
             }
 
+            CheckObsolete(2000000, context);
+
             var addressesHex = GetSignerAndOtherAddressesHex(context, sellerAvatarAddress);
             
             var sw = new Stopwatch();

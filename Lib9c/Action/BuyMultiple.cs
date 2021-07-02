@@ -231,6 +231,8 @@ namespace Nekoyume.Action
                 return states.SetState(ShopState.Address, MarkChanged);
             }
 
+            CheckObsolete(2000000, context);
+
             var availableInfos = purchaseInfos.Where(p => !(p is null));
 
             var sellerAgentAddresses = availableInfos.Select(p => p.sellerAgentAddress);
