@@ -44,9 +44,6 @@ namespace Nekoyume.UI
         private Button closeButton = null;
 
         [SerializeField]
-        private Model.Rank rankPanel = null;
-
-        [SerializeField]
         private TextMeshProUGUI firstColumnText = null;
 
         [SerializeField]
