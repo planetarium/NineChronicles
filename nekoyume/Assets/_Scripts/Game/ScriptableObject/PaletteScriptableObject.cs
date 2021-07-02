@@ -8,15 +8,15 @@ namespace Nekoyume
 {
     [CreateAssetMenu(fileName = "UI_Palette", menuName = "Scriptable Object/Palette",
         order = int.MaxValue)]
-    public class PaletteScriptableObject : ScriptableObject
+    public class PaletteScriptableObject : ScriptableObjectIncludeEnum<ColorType>
     {
         [Serializable]
-        public class ButtonColorInfo
+        public class ColorInfo
         {
-            public ButtonColorType ButtonColorType;
+            public ColorType colorType;
             public Color Color;
         }
 
-        public List<ButtonColorInfo> ButtonColorPalette;
+        public List<ColorInfo> Palette;
     }
 }
