@@ -191,18 +191,9 @@ namespace Nekoyume.UI.Model
                     return;
                 }
 
-                var addressString = myRecord.AvatarAddress.Substring(2);
-                var address = new Address(addressString);
-                var iValue = Game.Game.instance.Agent.GetState(address);
-                if (iValue is Bencodex.Types.Null || iValue is null)
-                {
-                    Debug.LogError($"Failed to get state of user {address}.");
-                    return;
-                }
-                var avatarState = new AvatarState((Bencodex.Types.Dictionary)iValue);
                 AgentStageRankingInfos[pair.Key] = new StageRankingModel
                 {
-                    AvatarState = avatarState,
+                    AvatarState = pair.Value,
                     ClearedStageId = myRecord.ClearedStageId,
                     Rank = myRecord.Ranking,
                 };
@@ -273,18 +264,9 @@ namespace Nekoyume.UI.Model
                     return;
                 }
 
-                var addressString = myRecord.AvatarAddress.Substring(2);
-                var address = new Address(addressString);
-                var iValue = Game.Game.instance.Agent.GetState(address);
-                if (iValue is Bencodex.Types.Null || iValue is null)
-                {
-                    Debug.LogError($"Failed to get state of user {address}.");
-                    return;
-                }
-                var avatarState = new AvatarState((Bencodex.Types.Dictionary)iValue);
                 AgentMimisbrunnrRankingInfos[pair.Key] = new StageRankingModel
                 {
-                    AvatarState = avatarState,
+                    AvatarState = pair.Value,
                     ClearedStageId = myRecord.ClearedStageId - GameConfig.MimisbrunnrStartStageId + 1,
                     Rank = myRecord.Ranking,
                 };
