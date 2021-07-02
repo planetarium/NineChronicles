@@ -81,8 +81,7 @@ namespace Nekoyume.UI.Model
                 .Take(displayCount)
                 .Select(rankingInfo =>
                 {
-                    var iValue = Game.Game.instance.Agent.GetState(rankingInfo.AvatarAddress);
-                    var avatarState = new AvatarState((Bencodex.Types.Dictionary)iValue);
+                    var avatarState = States.Instance.GetAvatarStateV2(rankingInfo.AvatarAddress);
                     var cp = CPHelper.GetCPV2(avatarState, characterSheet, costumeStatSheet);
 
                     return new AbilityRankingModel()
@@ -147,13 +146,7 @@ namespace Nekoyume.UI.Model
                 {
                     var addressString = x.AvatarAddress.Substring(2);
                     var address = new Address(addressString);
-                    var iValue = Game.Game.instance.Agent.GetState(address);
-                    if (iValue is Bencodex.Types.Null || iValue is null)
-                    {
-                        Debug.LogError($"Failed to get state of user {address}.");
-                        return null;
-                    }
-                    var avatarState = new AvatarState((Bencodex.Types.Dictionary)iValue);
+                    var avatarState = States.Instance.GetAvatarStateV2(address);
 
                     return new StageRankingModel
                     {
@@ -191,9 +184,12 @@ namespace Nekoyume.UI.Model
                     return;
                 }
 
+                var addressString = myRecord.AvatarAddress.Substring(2);
+                var address = new Address(addressString);
+                var avatarState = States.Instance.GetAvatarStateV2(address);
                 AgentStageRankingInfos[pair.Key] = new StageRankingModel
                 {
-                    AvatarState = pair.Value,
+                    AvatarState = avatarState,
                     ClearedStageId = myRecord.ClearedStageId,
                     Rank = myRecord.Ranking,
                 };
@@ -219,13 +215,7 @@ namespace Nekoyume.UI.Model
                 {
                     var addressString = x.AvatarAddress.Substring(2);
                     var address = new Address(addressString);
-                    var iValue = Game.Game.instance.Agent.GetState(address);
-                    if (iValue is Bencodex.Types.Null || iValue is null)
-                    {
-                        Debug.LogError($"Failed to get state of user {address}.");
-                        return null;
-                    }
-                    var avatarState = new AvatarState((Bencodex.Types.Dictionary)iValue);
+                    var avatarState = States.Instance.GetAvatarStateV2(address);
 
                     return new StageRankingModel
                     {
@@ -264,9 +254,12 @@ namespace Nekoyume.UI.Model
                     return;
                 }
 
+                var addressString = myRecord.AvatarAddress.Substring(2);
+                var address = new Address(addressString);
+                var avatarState = States.Instance.GetAvatarStateV2(address);
                 AgentMimisbrunnrRankingInfos[pair.Key] = new StageRankingModel
                 {
-                    AvatarState = pair.Value,
+                    AvatarState = avatarState,
                     ClearedStageId = myRecord.ClearedStageId - GameConfig.MimisbrunnrStartStageId + 1,
                     Rank = myRecord.Ranking,
                 };
