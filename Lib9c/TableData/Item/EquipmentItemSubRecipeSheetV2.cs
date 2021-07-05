@@ -3,30 +3,21 @@ using System.Collections.Generic;
 namespace Nekoyume.TableData
 {
     using static TableExtensions;
-    
-    public class EquipmentItemSubRecipeSheet : Sheet<int, EquipmentItemSubRecipeSheet.Row>
+    using MaterialInfo = EquipmentItemSubRecipeSheet.MaterialInfo;
+
+    public class EquipmentItemSubRecipeSheetV2 : Sheet<int, EquipmentItemSubRecipeSheetV2.Row>
     {
-        public readonly struct MaterialInfo
-        {
-            public readonly int Id;
-            public readonly int Count;
-
-            public MaterialInfo(int id, int count)
-            {
-                Id = id;
-                Count = count;
-            }
-        }
-
         public readonly struct OptionInfo
         {
             public readonly int Id;
             public readonly decimal Ratio;
+            public readonly int RequiredBlockIndex;
 
-            public OptionInfo(int id, decimal ratio)
+            public OptionInfo(int id, decimal ratio, int requiredBlockIndex = default)
             {
                 Id = id;
                 Ratio = ratio;
+                RequiredBlockIndex = requiredBlockIndex;
             }
         }
 
@@ -39,6 +30,7 @@ namespace Nekoyume.TableData
             public long RequiredBlockIndex { get; private set; }
             public List<MaterialInfo> Materials { get; private set; }
             public List<OptionInfo> Options { get; private set; }
+            public int MinOptionLimit { get; private set; }
             public int MaxOptionLimit { get; private set; }
 
             public override void Set(IReadOnlyList<string> fields)
@@ -66,23 +58,26 @@ namespace Nekoyume.TableData
                 Options = new List<OptionInfo>();
                 for (var i = 0; i < 4; i++)
                 {
-                    var offset = i * 2;
+                    var offset = i * 3;
                     if (string.IsNullOrEmpty(fields[10 + offset]) ||
-                        string.IsNullOrEmpty(fields[11 + offset]))
+                        string.IsNullOrEmpty(fields[11 + offset]) ||
+                        string.IsNullOrEmpty(fields[12 + offset]))
                     {
                         continue;
                     }
 
                     Options.Add(new OptionInfo(
                         ParseInt(fields[10 + offset]),
-                        ParseDecimal(fields[11 + offset])));
+                        ParseDecimal(fields[11 + offset]),
+                        ParseInt(fields[12 + offset])));
                 }
 
-                MaxOptionLimit = ParseInt(fields[18]);
+                MinOptionLimit = ParseInt(fields[22]);
+                MaxOptionLimit = ParseInt(fields[23]);
             }
         }
 
-        public EquipmentItemSubRecipeSheet() : base(nameof(EquipmentItemSubRecipeSheet))
+        public EquipmentItemSubRecipeSheetV2() : base(nameof(EquipmentItemSubRecipeSheetV2))
         {
         }
     }

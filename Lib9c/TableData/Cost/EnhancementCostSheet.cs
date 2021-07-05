@@ -8,7 +8,7 @@ namespace Nekoyume.TableData
 {
     public class EnhancementCostSheet : Sheet<int, EnhancementCostSheet.Row>
     {
-        public class Row: SheetRow<int>
+        public class Row : SheetRow<int>
         {
             public override int Key => Id;
             public int Id { get; private set; }
