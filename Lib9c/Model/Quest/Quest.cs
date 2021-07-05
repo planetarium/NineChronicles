@@ -142,6 +142,9 @@ namespace Nekoyume.Model.Quest
     public class QuestList : IEnumerable<Quest>, IState
     {
         private readonly List<Quest> _quests;
+
+        private int _listVersion = 1;
+        
         public List<int> completedQuestIds = new List<int>();
 
         public QuestList(QuestSheet questSheet,
@@ -222,6 +225,10 @@ namespace Nekoyume.Model.Quest
 
         public QuestList(Dictionary serialized)
         {
+            _listVersion = serialized.TryGetValue((Text) "list-version", out var listVersion)
+                ? listVersion.ToInteger()
+                : 1;
+            
             _quests = serialized.TryGetValue((Text) "quests", out var questsValue)
                 ? questsValue.ToList(Quest.Deserialize)
                 : new List<Quest>();
@@ -358,15 +365,30 @@ namespace Nekoyume.Model.Quest
             }
         }
 
-        public IValue Serialize() => new Dictionary(new Dictionary<IKey, IValue>
+        public IValue Serialize()
         {
-            [(Text) "quests"] = new List(_quests
-                .OrderBy(i => i.Id)
-                .Select(q => q.Serialize())),
-            [(Text) "completedQuestIds"] = new List(completedQuestIds
-                .OrderBy(i => i)
-                .Select(i => i.Serialize()))
-        });
+            if (_listVersion > 1)
+            {
+                return Dictionary.Empty
+                    .SetItem("list-version", _listVersion.Serialize())
+                    .SetItem("quests", (IValue) new List(_quests
+                        .OrderBy(i => i.Id)
+                        .Select(q => q.Serialize())))
+                    .SetItem("completedQuestIds", (IValue) new List(completedQuestIds
+                        .OrderBy(i => i)
+                        .Select(i => i.Serialize())));
+            }
+
+            return new Dictionary(new Dictionary<IKey, IValue>
+            {
+                [(Text) "quests"] = new List(_quests
+                    .OrderBy(i => i.Id)
+                    .Select(q => q.Serialize())),
+                [(Text) "completedQuestIds"] = new List(completedQuestIds
+                    .OrderBy(i => i)
+                    .Select(i => i.Serialize()))
+            });
+        }
 
         public void UpdateCombinationEquipmentQuest(int recipeId)
         {
