@@ -1,9 +1,12 @@
 namespace Lib9c.Tests.Model
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Text;
     using Nekoyume.Model.Item;
     using Nekoyume.Model.Quest;
+    using Nekoyume.TableData;
     using Xunit;
 
     public class QuestListTest
@@ -73,6 +76,64 @@ namespace Lib9c.Tests.Model
             list.UpdateItemTypeCollectQuest(prevItems);
 
             Assert.Equal(expectedItemIds, list.OfType<ItemTypeCollectQuest>().First().ItemIds);
+        }
+
+        [Theory]
+        [InlineData(1)]
+        [InlineData(99)]
+        public void UpdateList(int addedQuestCount)
+        {
+            var questList = new QuestList(
+                _tableSheets.QuestSheet,
+                _tableSheets.QuestRewardSheet,
+                _tableSheets.QuestItemRewardSheet,
+                _tableSheets.EquipmentItemRecipeSheet,
+                _tableSheets.EquipmentItemSubRecipeSheet
+            );
+
+            Assert.Equal(1, questList.ListVersion);
+            Assert.Equal(_tableSheets.QuestSheet.Count, questList.Count());
+
+            var questSheet = _tableSheets.QuestSheet;
+            Assert.NotNull(questSheet.First);
+            var patchedSheet = new QuestSheet();
+            var patchedSheetCsvSb = new StringBuilder().AppendLine("id,goal,quest_reward_id");
+            for (var i = addedQuestCount; i > 0; i--)
+            {
+                patchedSheetCsvSb.AppendLine($"{990000 + i - 1},10,{questSheet.First.QuestRewardId}");
+            }
+
+            patchedSheet.Set(patchedSheetCsvSb.ToString());
+            Assert.Equal(addedQuestCount, patchedSheet.Count);
+            var previousQuestSheetCount = questSheet.Count;
+            questSheet.Set(patchedSheet);
+            Assert.Equal(previousQuestSheetCount + addedQuestCount, questSheet.Count);
+
+            questList.UpdateList(
+                questSheet,
+                _tableSheets.QuestRewardSheet,
+                _tableSheets.QuestItemRewardSheet,
+                _tableSheets.EquipmentItemRecipeSheet);
+        }
+
+        [Fact]
+        public void UpdateList_Throw_ArgumentException()
+        {
+            var questList = new QuestList(
+                _tableSheets.QuestSheet,
+                _tableSheets.QuestRewardSheet,
+                _tableSheets.QuestItemRewardSheet,
+                _tableSheets.EquipmentItemRecipeSheet,
+                _tableSheets.EquipmentItemSubRecipeSheet
+            );
+
+            Assert.Equal(1, questList.ListVersion);
+            Assert.Throws<ArgumentException>(() =>
+                questList.UpdateList(
+                    _tableSheets.QuestSheet,
+                    _tableSheets.QuestRewardSheet,
+                    _tableSheets.QuestItemRewardSheet,
+                    _tableSheets.EquipmentItemRecipeSheet));
         }
     }
 }

@@ -17,6 +17,7 @@ namespace Nekoyume.Model.Quest
         private readonly List<Quest> _quests;
 
         private int _listVersion = 1;
+        public int ListVersion => _listVersion;
         
         public List<int> completedQuestIds = new List<int>();
 
@@ -109,6 +110,86 @@ namespace Nekoyume.Model.Quest
             completedQuestIds = serialized.TryGetValue((Text) "completedQuestIds", out var idsValue)
                 ? idsValue.ToList(StateExtensions.ToInteger)
                 : new List<int>();
+        }
+
+        public void UpdateList(
+            QuestSheet questSheet,
+            QuestRewardSheet questRewardSheet,
+            QuestItemRewardSheet questItemRewardSheet,
+            EquipmentItemRecipeSheet equipmentItemRecipeSheet)
+        {
+            if (questSheet.Count <= _quests.Count)
+            {
+                throw new ArgumentException(
+                    $"{nameof(questSheet)}.Count({questSheet.Count}) should greater than ${_quests.Count}");
+            }
+            
+            _listVersion += 1;
+
+            for (var i = questSheet.OrderedList.Count; i > 0; i--)
+            {
+                var questRow = questSheet.OrderedList[i - 1];
+                var quest = _quests.FirstOrDefault(e => e.Id == questRow.Id);
+                if (!(quest is null))
+                {
+                    continue;
+                }
+
+                var reward = GetQuestReward(
+                    questRow.QuestRewardId,
+                    questRewardSheet,
+                    questItemRewardSheet);
+                
+                switch (questRow)
+                {
+                    case CollectQuestSheet.Row row:
+                        quest = new CollectQuest(row, reward);
+                        break;
+                    case CombinationQuestSheet.Row row1:
+                        quest = new CombinationQuest(row1, reward);
+                        break;
+                    case GeneralQuestSheet.Row row2:
+                        quest = new GeneralQuest(row2, reward);
+                        break;
+                    case ItemEnhancementQuestSheet.Row row3:
+                        quest = new ItemEnhancementQuest(row3, reward);
+                        break;
+                    case ItemGradeQuestSheet.Row row4:
+                        quest = new ItemGradeQuest(row4, reward);
+                        break;
+                    case MonsterQuestSheet.Row row5:
+                        quest = new MonsterQuest(row5, reward);
+                        break;
+                    case TradeQuestSheet.Row row6:
+                        quest = new TradeQuest(row6, reward);
+                        break;
+                    case WorldQuestSheet.Row row7:
+                        quest = new WorldQuest(row7, reward);
+                        break;
+                    case ItemTypeCollectQuestSheet.Row row8:
+                        quest = new ItemTypeCollectQuest(row8, reward);
+                        break;
+                    case GoldQuestSheet.Row row9:
+                        quest = new GoldQuest(row9, reward);
+                        break;
+                    case CombinationEquipmentQuestSheet.Row row10:
+                        int stageId;
+                        var recipeRow = equipmentItemRecipeSheet.Values
+                            .FirstOrDefault(r => r.Id == row10.RecipeId);
+                        if (recipeRow is null)
+                        {
+                            throw new ArgumentException($"Invalid Recipe Id : {row10.RecipeId}");
+                        }
+
+                        stageId = recipeRow.UnlockStage;
+                        quest = new CombinationEquipmentQuest(row10, reward, stageId);
+                        break;
+                    default:
+                        continue;
+                }
+                
+                _quests.Add(quest);
+            }
         }
 
         public IEnumerator<Quest> GetEnumerator()
