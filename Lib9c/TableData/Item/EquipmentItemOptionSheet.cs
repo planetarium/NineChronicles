@@ -7,7 +7,7 @@ namespace Nekoyume.TableData
 {
     public class EquipmentItemOptionSheet : Sheet<int, EquipmentItemOptionSheet.Row>
     {
-        public class Row: SheetRow<int>
+        public class Row : SheetRow<int>
         {
             public override int Key => Id;
             public int Id { get; private set; }

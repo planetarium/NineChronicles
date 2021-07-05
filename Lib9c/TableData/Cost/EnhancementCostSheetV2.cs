@@ -9,7 +9,7 @@ namespace Nekoyume.TableData
     
     public class EnhancementCostSheetV2 : Sheet<int, EnhancementCostSheetV2.Row>
     {
-        public class Row: EnhancementCostSheet.Row
+        public class Row : EnhancementCostSheet.Row
         {
             public decimal SuccessRatio { get; private set; }
             public decimal GreatSuccessRatio { get; private set; }

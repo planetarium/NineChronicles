@@ -5,7 +5,7 @@ namespace Nekoyume.TableData
 {
     public class EquipmentItemOptionSheetV2 : Sheet<int, EquipmentItemOptionSheetV2.Row>
     {
-        public class Row: EquipmentItemOptionSheet.Row
+        public class Row : EquipmentItemOptionSheet.Row
         {
             public int Grade { get; private set; }
 
