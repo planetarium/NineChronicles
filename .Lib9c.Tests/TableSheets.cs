@@ -35,7 +35,6 @@ namespace Lib9c.Tests
             }
 
             ItemSheetInitialize();
-            ItemRequirementSheetInitialize();
             QuestSheetInitialize();
         }
 
@@ -61,13 +60,9 @@ namespace Lib9c.Tests
 
         public ConsumableItemSheet ConsumableItemSheet { get; private set; }
 
-        public ConsumableItemRequirementSheet ConsumableItemRequirementSheet { get; private set; }
-
         public CostumeItemSheet CostumeItemSheet { get; private set; }
 
         public EquipmentItemSheet EquipmentItemSheet { get; private set; }
-
-        public EquipmentItemRequirementSheet EquipmentItemRequirementSheet { get; private set; }
 
         public MaterialItemSheet MaterialItemSheet { get; private set; }
 
@@ -148,13 +143,6 @@ namespace Lib9c.Tests
             ItemSheet.Set(CostumeItemSheet, false);
             ItemSheet.Set(EquipmentItemSheet, false);
             ItemSheet.Set(MaterialItemSheet);
-        }
-
-        public void ItemRequirementSheetInitialize()
-        {
-            ItemRequirementSheet = new ItemRequirementSheet();
-            ItemRequirementSheet.Set(ConsumableItemRequirementSheet, false);
-            ItemRequirementSheet.Set(EquipmentItemRequirementSheet);
         }
 
         public void QuestSheetInitialize()
