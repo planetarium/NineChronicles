@@ -321,13 +321,8 @@ namespace Planetarium.Nekoyume.Editor
             return false;
         }
 
-        private static bool ValidateForFullCostume(SkeletonDataAsset skeletonDataAsset)
-        {
-            var data = skeletonDataAsset.GetSkeletonData(false);
-            var hud = data.FindBone("HUD");
-
-            return !(hud is null);
-        }
+        private static bool ValidateForFullCostume(SkeletonDataAsset skeletonDataAsset) =>
+            ValidateForPlayer(skeletonDataAsset);
 
         private static bool ValidateForMonster(SkeletonDataAsset skeletonDataAsset)
         {
@@ -337,19 +332,37 @@ namespace Planetarium.Nekoyume.Editor
             return !(hud is null);
         }
 
-        private static bool ValidateForNPC(SkeletonDataAsset skeletonDataAsset)
-        {
-            return true;
-        }
+        private static bool ValidateForNPC(SkeletonDataAsset skeletonDataAsset) => true;
 
         private static bool ValidateForPlayer(SkeletonDataAsset skeletonDataAsset)
         {
             var data = skeletonDataAsset.GetSkeletonData(false);
             var hud = data.FindBone("HUD");
+            if (hud is null)
+            {
+                Debug.LogError("NotFoundBone: HUD");
+                return false;
+            }
 
-            // TODO: 커스터마이징 슬롯 검사.
+            var slotNames = new[]
+            {
+                PlayerSpineController.WeaponSlot,
+                PlayerSpineController.EarLeftSlot,
+                PlayerSpineController.EarRightSlot,
+                PlayerSpineController.EyeHalfSlot,
+                PlayerSpineController.EyeOpenSlot,
+            };
+            foreach (var slotName in slotNames)
+            {
+                var weaponSlot = data.FindSlot(slotName);
+                if (weaponSlot is null)
+                {
+                    Debug.LogError($"NotFoundSlot: {slotName}");
+                    return false;
+                }
+            }
 
-            return !(hud is null);
+            return true;
         }
 
         #endregion
