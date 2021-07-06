@@ -1,3 +1,4 @@
+using System;
 using DG.Tweening;
 using TMPro;
 using UnityEngine;
@@ -23,6 +24,11 @@ namespace Nekoyume.UI.Tween
         private void Awake()
         {
             text = GetComponent<TextMeshProUGUI>();
+        }
+
+        private void OnDisable()
+        {
+            KillTween();
         }
 
         public Tweener Play()
