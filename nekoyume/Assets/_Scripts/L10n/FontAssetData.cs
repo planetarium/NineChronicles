@@ -18,12 +18,14 @@ namespace Nekoyume.L10n
         [SerializeField]
         private List<FontMaterialData> fontMaterialDataList = null;
 
+        [Header("Main Settings")]
         [SerializeField]
         private bool setFontStyleBoldToDisabledAsForced = default;
 
         [SerializeField]
         private float fontSizeOffset = default;
 
+        [Header("Spacing Offsets")]
         [SerializeField]
         private float characterSpacingOffset = default;
 
@@ -32,6 +34,10 @@ namespace Nekoyume.L10n
 
         [SerializeField]
         private float lineSpacingOffset = default;
+
+        [Header("Extra Settings")]
+        [SerializeField]
+        private float marginBottom = default;
 
         public TMP_FontAsset FontAsset => fontAsset;
 
@@ -46,6 +52,8 @@ namespace Nekoyume.L10n
         public float WordSpacingOffset => wordSpacingOffset;
 
         public float LineSpacingOffset => lineSpacingOffset;
+
+        public float MarginBottom => marginBottom;
 
         public FontAssetData()
         {
