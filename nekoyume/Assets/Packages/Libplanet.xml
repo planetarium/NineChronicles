@@ -6666,7 +6666,7 @@
             <returns>A <see cref="T:System.Threading.Tasks.Task"/> completed when <see cref="P:Libplanet.Net.Transports.NetMQTransport.Running"/>
             property becomes <c>true</c>.</returns>
         </member>
-        <member name="M:Libplanet.Net.Swarm`1.StartAsync(System.Int32,System.Int32,System.Threading.CancellationToken)">
+        <member name="M:Libplanet.Net.Swarm`1.StartAsync(System.Int32,System.Int32,System.Int32,System.Threading.CancellationToken)">
             <summary>
             Starts to periodically synchronize the <see cref="P:Libplanet.Net.Swarm`1.BlockChain"/>.
             </summary>
@@ -6675,9 +6675,10 @@
             the dial-up is cancelled after this timeout, and it tries another peer.
             If <c>null</c> is given it never gives up dial-ups.
             </param>
-            <param name="millisecondsBroadcastTxInterval">
-            The time period of exchange of staged transactions.
-            </param>
+            <param name="millisecondsBroadcastBlockInterval">Time interval between each broadcast
+            of chain tip.</param>
+            <param name="millisecondsBroadcastTxInterval">Time interval between each broadcast
+            of staged transactions.</param>
             <param name="cancellationToken">
             A cancellation token used to propagate notification that this
             operation should be canceled.
@@ -6694,7 +6695,7 @@
             "M:Libplanet.Net.Swarm`1.PreloadAsync(System.Nullable{System.TimeSpan},System.IProgress{Libplanet.Net.PreloadState},System.Threading.CancellationToken)"
             /> method too.</remarks>
         </member>
-        <member name="M:Libplanet.Net.Swarm`1.StartAsync(System.TimeSpan,System.TimeSpan,System.Threading.CancellationToken)">
+        <member name="M:Libplanet.Net.Swarm`1.StartAsync(System.TimeSpan,System.TimeSpan,System.TimeSpan,System.Threading.CancellationToken)">
             <summary>
             Starts to periodically synchronize the <see cref="P:Libplanet.Net.Swarm`1.BlockChain"/>.
             </summary>
@@ -6703,8 +6704,10 @@
             the dial-up is cancelled after this timeout, and it tries another peer.
             If <c>null</c> is given it never gives up dial-ups.
             </param>
-            <param name="broadcastTxInterval">The time period of exchange of staged transactions.
-            </param>
+            <param name="broadcastBlockInterval">Time interval between each broadcast of
+            chain tip.</param>
+            <param name="broadcastTxInterval">Time interval between each broadcast of staged
+            transactions.</param>
             <param name="cancellationToken">
             A cancellation token used to propagate notification that this
             operation should be canceled.
