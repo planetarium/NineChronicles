@@ -168,11 +168,11 @@ namespace Nekoyume.UI.Module
             resetAnimator.Play(_hashDisabled);
             sortOrderIcon.localScale = new Vector3(1, -1, 1);
             SharedModel.itemSubTypeFilter = ItemSubTypeFilter.Weapon;
-            SharedModel.sortFilter = ShopSortFilter.Class;
             SharedModel.isReverseOrder = false;
             SharedModel.searchIds = new List<int>();
             SharedModel.SetMultiplePurchase(false);
             SharedModel.ResetShopItems();
+            _sortFilter = ShopSortFilter.Class;
             UpdateSort();
         }
 
@@ -305,13 +305,12 @@ namespace Nekoyume.UI.Module
         {
             int count = Enum.GetNames(typeof(ShopSortFilter)).Length;
             _sortFilter = (int) _sortFilter < count - 1 ? _sortFilter + 1 : 0;
-            _sortText.text = L10nManager.Localize($"UI_{_sortFilter.ToString().ToUpper()}");
-
             UpdateSort();
         }
 
         private void UpdateSort()
         {
+            _sortText.text = L10nManager.Localize($"UI_{_sortFilter.ToString().ToUpper()}");
             SharedModel.sortFilter = _sortFilter;
             OnSortFilterChanged();
         }
