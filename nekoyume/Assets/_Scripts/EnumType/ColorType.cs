@@ -6,12 +6,17 @@ namespace Nekoyume.EnumType
 	ButtonColorDisabled,
 	ButtonAlphaDisabled,
 	ButtonDisabled,
-	Textdenial,
+	TextDenial,
 	TextPositive,
 	TextGrade00,
 	TextGrade01,
 	TextGrade02,
 	TextGrade03,
 	TextGrade04,
+	TextElement00,
+	TextElement01,
+	TextElement02,
+	TextElement04,
+	TextElement05,
     }
 }
