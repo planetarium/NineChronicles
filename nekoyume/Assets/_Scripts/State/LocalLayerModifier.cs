@@ -713,9 +713,7 @@ namespace Nekoyume.State
             var requiredBlockIndex = blockIndex + 1;
 
             var avatarAddress = States.Instance.CurrentAvatarState.address;
-            var avatarState = new AvatarState(
-                (Bencodex.Types.Dictionary) Game.Game.instance.Agent.GetState(avatarAddress));
-
+            var avatarState = States.Instance.GetAvatarStateV2(avatarAddress);
             if (!avatarState.inventory.TryGetNonFungibleItem(baseMaterialGuid, out ItemUsable item))
             {
                 return;
