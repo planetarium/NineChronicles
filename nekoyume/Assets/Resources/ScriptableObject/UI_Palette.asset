@@ -12,20 +12,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2cd6324defe910049a00728bad803885, type: 3}
   m_Name: UI_Palette
   m_EditorClassIdentifier: 
-  type: 0
+  type: 12
   enums:
   - ButtonEnabled
   - ButtonColorDisabled
   - ButtonAlphaDisabled
   - ButtonDisabled
-  - Textdenial
+  - TextDenial
   - TextPositive
   - TextGrade00
   - TextGrade01
   - TextGrade02
   - TextGrade03
   - TextGrade04
-  - TextGrade05
+  - TextElement00
+  - TextElement01
+  - TextElement02
+  - TextElement04
+  - TextElement05
   Palette:
   - colorType: 0
     Color: {r: 1, g: 1, b: 1, a: 1}
@@ -49,3 +53,13 @@ MonoBehaviour:
     Color: {r: 1, g: 0.8117647, b: 0.16470589, a: 1}
   - colorType: 10
     Color: {r: 0.9372549, g: 0.23921569, b: 1, a: 1}
+  - colorType: 11
+    Color: {r: 0.5283019, g: 0.47053304, b: 0.4012104, a: 1}
+  - colorType: 12
+    Color: {r: 1, g: 0.3443396, b: 0.3443396, a: 1}
+  - colorType: 13
+    Color: {r: 0.6792453, g: 0.45421076, b: 0.15699539, a: 1}
+  - colorType: 14
+    Color: {r: 0.08627451, g: 0.7058824, b: 0.93725497, a: 1}
+  - colorType: 15
+    Color: {r: 0, g: 0.6666667, b: 0.29411766, a: 1}
