@@ -75,9 +75,7 @@ namespace Nekoyume.UI
 
         public void Show(RectTransform target, Address avatarAddress)
         {
-            var avatarState =
-                new AvatarState(
-                    (Bencodex.Types.Dictionary) Game.Game.instance.Agent.GetState(avatarAddress));
+            var avatarState = States.Instance.GetAvatarStateV2(avatarAddress);
             Show(target, avatarState);
         }
 
