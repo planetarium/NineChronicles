@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
 using TMPro;
 using UnityEngine;
@@ -9,11 +10,13 @@ namespace Nekoyume.Game.Util
     [RequireComponent(typeof(TextMeshProUGUI))]
     public class RandomNumberRoulette : MonoBehaviour
     {
+        [SerializeField] private bool playOnEnable;
         [SerializeField] private int digit;
         [SerializeField] private float cooltime;
 
         private TextMeshProUGUI _number;
         private Coroutine _rouletteCoroutine;
+        private bool _isPlaying;
 
         private void Awake()
         {
@@ -22,24 +25,57 @@ namespace Nekoyume.Game.Util
 
         private void OnEnable()
         {
+            if (!playOnEnable)
+            {
+                return;
+            }
+
+            Play();
+        }
+
+        public void Play()
+        {
+            if (_isPlaying)
+            {
+                return;
+            }
+
             if (_rouletteCoroutine != null)
             {
                 StopCoroutine(_rouletteCoroutine);
             }
 
             _rouletteCoroutine = StartCoroutine(Play(_number, digit, cooltime));
+            _isPlaying = true;
         }
 
-        public static IEnumerator Play(TMP_Text effect, int digit, float time)
+        public void Stop()
         {
-            StringBuilder sb = new StringBuilder();
+            if (_rouletteCoroutine != null)
+            {
+                StopCoroutine(_rouletteCoroutine);
+            }
+
+            var sb = new StringBuilder();
+            for (var i = 0; i < digit; i++)
+            {
+                sb.Append(0);
+            }
+            _number.text = sb.ToString();
+            _isPlaying = false;
+        }
+
+        private IEnumerator Play(TMP_Text effect, int digit, float time)
+        {
+            var sb = new StringBuilder();
             while (true)
             {
                 sb.Length = 0;
-                for (int i = 0; i < digit; i++)
+                for (var i = 0; i < digit; i++)
                 {
                     sb.Append(Random.Range(0, 10));
                 }
+
                 effect.text = sb.ToString();
                 yield return new WaitForSeconds(time);
             }
