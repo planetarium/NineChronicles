@@ -235,6 +235,8 @@ namespace Nekoyume.UI
         {
             if (!CanClose)
             {
+                Debug.Log(
+                    $"Cannot close ShopBuy widget. ShopBuy.CanHandleInputEvent({CanHandleInputEvent}) ShopSell.CanHandleInputEvent({Find<ShopSell>().CanHandleInputEvent})");
                 return;
             }
 
