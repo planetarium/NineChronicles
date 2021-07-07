@@ -402,7 +402,7 @@ namespace Nekoyume.BlockChain
                 OneLinePopup.Push(MailType.Auction, message);
 
                 UpdateCurrentAvatarState(eval);
-                Widget.Find<ShopSell>().ForceNotifyActiveFunc();
+                Widget.Find<ShopSell>().Refresh();
             }
         }
 
@@ -423,7 +423,7 @@ namespace Nekoyume.BlockChain
             var format = L10nManager.Localize("NOTIFICATION_SELL_CANCEL_COMPLETE");
             OneLinePopup.Push(MailType.Auction, string.Format(format, itemBase.GetLocalizedName()));
             UpdateCurrentAvatarState(eval);
-            Widget.Find<ShopSell>().ForceNotifyActiveFunc();
+            Widget.Find<ShopSell>().Refresh();
         }
 
         private void ResponseBuy(ActionBase.ActionEvaluation<Buy> eval)

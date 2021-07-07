@@ -231,6 +231,7 @@ namespace Nekoyume.BlockChain
             var count = eval.Action.count;
             LocalLayerModifier.RemoveItem(avatarAddress, itemId, blockIndex, count);
             UpdateCurrentAvatarState(eval);
+            Widget.Find<ShopSell>().Refresh();
         }
 
         private void ResponseSellCancellation(ActionBase.ActionEvaluation<SellCancellation> eval)
@@ -247,6 +248,7 @@ namespace Nekoyume.BlockChain
             var count = order is FungibleOrder fungibleOrder ? fungibleOrder.ItemCount : 1;
             LocalLayerModifier.AddItem(avatarAddress, tradableItem.TradableId, tradableItem.RequiredBlockIndex, count);
             UpdateCurrentAvatarState(eval);
+            Widget.Find<ShopSell>().Refresh();
         }
 
         private void ResponseDailyReward(ActionBase.ActionEvaluation<DailyReward> eval)

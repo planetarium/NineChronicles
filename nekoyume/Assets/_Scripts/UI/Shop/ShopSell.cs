@@ -102,16 +102,19 @@ namespace Nekoyume.UI
         public void Show()
         {
             base.Show();
-            Refresh();
+            Refresh(true);
+            AudioController.instance.PlayMusic(AudioController.MusicCode.Shop);
         }
 
-        private void Refresh()
+        public void Refresh(bool isResetType = false)
         {
             ReactiveShopState.InitSellDigests();
             shopItems.Show();
-            inventory.SharedModel.State.Value = ItemType.Equipment;
+            if (isResetType)
+            {
+                inventory.SharedModel.State.Value = ItemType.Equipment;
+            }
             inventory.SharedModel.ActiveFunc.SetValueAndForceNotify(inventoryItem => (inventoryItem.ItemBase.Value is ITradableItem));
-            AudioController.instance.PlayMusic(AudioController.MusicCode.Shop);
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
@@ -453,11 +456,6 @@ namespace Nekoyume.UI
                 : NPCAnimation.Type.Emotion_01);
 
             speechBubble.SetKey(key);
-        }
-
-        public void ForceNotifyActiveFunc()
-        {
-            inventory.SharedModel.ActiveFunc.SetValueAndForceNotify(inventoryItem => (inventoryItem.ItemBase.Value is ITradableItem));
         }
     }
 }
