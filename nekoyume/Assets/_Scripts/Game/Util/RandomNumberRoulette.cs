@@ -35,7 +35,7 @@ namespace Nekoyume.Game.Util
 
         public void Play()
         {
-            if (_isPlaying)
+            if (!isActiveAndEnabled || _isPlaying)
             {
                 return;
             }
@@ -51,6 +51,11 @@ namespace Nekoyume.Game.Util
 
         public void Stop()
         {
+            if (!isActiveAndEnabled || !_isPlaying)
+            {
+                return;
+            }
+
             if (_rouletteCoroutine != null)
             {
                 StopCoroutine(_rouletteCoroutine);

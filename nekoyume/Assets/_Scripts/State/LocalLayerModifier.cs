@@ -710,7 +710,8 @@ namespace Nekoyume.State
         )
         {
             var blockIndex = Game.Game.instance.Agent.BlockIndex;
-            var requiredBlockIndex = blockIndex + 1;
+            // todo : ItemEnhancement.RequiredBlockCount 시트에서 정보 가저와야 합니다.
+            var requiredBlockIndex = blockIndex + ItemEnhancement.RequiredBlockCount;
 
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             var avatarState = States.Instance.GetAvatarStateV2(avatarAddress);
