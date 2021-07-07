@@ -286,7 +286,7 @@ namespace Nekoyume.UI
         {
             var elemental = useElementalIcon ? GetElementalIcon(item.ElementalType) : string.Empty;
             var name = L10nManager.Localize($"ITEM_NAME_{item.Id}");
-            return $"{name}<size=200%>{elemental}</size>";
+            return $"{name}{elemental}";
         }
 
         public static Color GetItemGradeColor(this ItemBase item)
