@@ -127,7 +127,13 @@ namespace Planetarium.Nekoyume.Editor
 
             if (!ValidateSpineResource(prefabName, skeletonDataAsset))
             {
-                return;
+                if (IsPlayer(prefabName))
+                {
+                    Debug.LogError("ValidationSpineResource() return false");
+                    return;
+                }
+                
+                Debug.LogWarning("ValidationSpineResource() return false");
             }
 
             CreateAnimationReferenceAssets(skeletonDataAsset);
@@ -336,12 +342,13 @@ namespace Planetarium.Nekoyume.Editor
 
         private static bool ValidateForPlayer(SkeletonDataAsset skeletonDataAsset)
         {
+            var result = true;
             var data = skeletonDataAsset.GetSkeletonData(false);
             var hud = data.FindBone("HUD");
             if (hud is null)
             {
                 Debug.LogError("NotFoundBone: HUD");
-                return false;
+                result = false;
             }
 
             var slotNames = new[]
@@ -358,11 +365,11 @@ namespace Planetarium.Nekoyume.Editor
                 if (weaponSlot is null)
                 {
                     Debug.LogError($"NotFoundSlot: {slotName}");
-                    return false;
+                    result = false;
                 }
             }
 
-            return true;
+            return result;
         }
 
         #endregion
