@@ -267,9 +267,10 @@ namespace Nekoyume.UI
             }
         }
 
-        public static string GetLocalizedName(this ItemBase item)
+        public static string GetLocalizedName(this ItemBase item, bool useElementalIcon = true)
         {
-            string name = item.GetLocalizedNonColoredName();
+            string name = item.GetLocalizedNonColoredName(useElementalIcon);
+            var elemental = useElementalIcon ? GetElementalIcon(item.ElementalType) : string.Empty;
             switch (item)
             {
                 case Equipment equipment:
@@ -281,9 +282,11 @@ namespace Nekoyume.UI
             }
         }
 
-        public static string GetLocalizedNonColoredName(this ItemBase item)
+        public static string GetLocalizedNonColoredName(this ItemBase item, bool useElementalIcon = true)
         {
-            return L10nManager.Localize($"ITEM_NAME_{item.Id}");
+            var elemental = useElementalIcon ? GetElementalIcon(item.ElementalType) : string.Empty;
+            var name = L10nManager.Localize($"ITEM_NAME_{item.Id}");
+            return $"{name}<size=200%>{elemental}</size>";
         }
 
         public static Color GetItemGradeColor(this ItemBase item)
@@ -294,6 +297,19 @@ namespace Nekoyume.UI
         public static string GetLocalizedDescription(this ItemBase item)
         {
             return L10nManager.Localize($"ITEM_DESCRIPTION_{item.Id}");
+        }
+
+        private static string GetElementalIcon(ElementalType type)
+        {
+            return type switch
+            {
+                ElementalType.Normal => "<sprite name=icon_Element_0>",
+                ElementalType.Fire => "<sprite name=icon_Element_1>",
+                ElementalType.Water => "<sprite name=icon_Element_2>",
+                ElementalType.Land => "<sprite name=icon_Element_3>",
+                ElementalType.Wind => "<sprite name=icon_Element_4>",
+                _ => "<sprite name=icon_Element_0>"
+            };
         }
 
         private static string GetColorHexByGrade(ItemBase item)
