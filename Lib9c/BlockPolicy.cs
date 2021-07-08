@@ -164,7 +164,7 @@ namespace Nekoyume.BlockChain
             // 1,870,000th block.  (Note that as of Jul 8, 2021, there are about 1,860,000+ blocks.)
             // This rule is not applied to blocks (with proofs) made by authorized miners.
             if (block.Transactions.Count < 10 &&
-                (IgnoreHardcodedIndicesForBackwardCompatibility || block.Index >= 1_870_000) &&
+                block.Index >= 1_870_000 &&
                 !(AuthorizedMinersState is AuthorizedMinersState ams &&
                     block.Index <= ams.ValidUntil &&
                     block.Miner is Address m && ams.Miners.Contains(m) &&
