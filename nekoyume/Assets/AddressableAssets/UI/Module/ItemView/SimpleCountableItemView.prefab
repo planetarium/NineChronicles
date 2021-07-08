@@ -230,6 +230,7 @@ MonoBehaviour:
   dimmedImage: {fileID: 0}
   optionTagObject: {fileID: 3035334260605092586}
   optionTagText: {fileID: 1156024209325165730}
+  optionTagBgImage: {fileID: 4939612878348484702}
   ignoreOne: 0
   countText: {fileID: 1997588973851837028}
 --- !u!114 &4194215539597630542
@@ -495,6 +496,18 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 2826826851296989604}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &4939612878348484702 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7185475297955795450, guid: 7ad634ecd8fec49ba9291bfa3f942e7b,
+    type: 3}
+  m_PrefabInstance: {fileID: 2826826851296989604}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3035334260605092586}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &1156024209325165730 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 3977221560816884998, guid: 7ad634ecd8fec49ba9291bfa3f942e7b,
