@@ -4,7 +4,6 @@ using Libplanet.Blockchain.Policies;
 using Libplanet.Blocks;
 using Libplanet.Tx;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using Lib9c;
 using Libplanet;
@@ -158,6 +157,24 @@ namespace Nekoyume.BlockChain
             if (!(block.Miner is Address miner))
             {
                 return null;
+            }
+
+            // As a temporary approach to prevent selfish mining (again), we add a new rule
+            // disallowing blocks with less than 10 transactions.  This rule is applied since
+            // 1,870,000th block.  (Note that as of Jul 8, 2021, there are about 1,860,000+ blocks.)
+            // This rule is not applied to blocks (with proofs) made by authorized miners.
+            if (block.Transactions.Count < 10 &&
+                (IgnoreHardcodedIndicesForBackwardCompatibility || block.Index >= 1_870_000) &&
+                !(AuthorizedMinersState is AuthorizedMinersState ams &&
+                    block.Index <= ams.ValidUntil &&
+                    block.Miner is Address m && ams.Miners.Contains(m) &&
+                    block.Transactions.Any(tx => tx.Signer.Equals(m))))
+            {
+                return new InvalidMinerException(
+                    $"The block #{block.Index} {block.Hash} (mined by {miner}) must " +
+                    "include at least 10 transactions.",
+                    miner
+                );
             }
 
             // To prevent selfish mining, we define a consensus that blocks with no transactions are do not accepted. 
