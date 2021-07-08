@@ -127,6 +127,7 @@ namespace Nekoyume.L10n
 
         public static LanguageType ISO396(string iso396)
         {
+            iso396 = iso396.Replace("_", "-");
             switch (iso396)
             {
                 case "ko":
@@ -134,7 +135,6 @@ namespace Nekoyume.L10n
                 case "en":
                     return LanguageType.English;
                 case "pt-BR":
-                case "pt_BR":
                     return LanguageType.PortugueseBrazil;
                 case "pl":
                     return LanguageType.Polish;
