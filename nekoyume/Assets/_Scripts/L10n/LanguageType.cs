@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace Nekoyume.L10n
 {
@@ -133,6 +134,7 @@ namespace Nekoyume.L10n
                 case "en":
                     return LanguageType.English;
                 case "pt-BR":
+                case "pt_BR":
                     return LanguageType.PortugueseBrazil;
                 case "pl":
                     return LanguageType.Polish;
@@ -143,6 +145,7 @@ namespace Nekoyume.L10n
                 case "th":
                     return LanguageType.Thai;
                 default:
+                    Debug.LogWarning($"Does not support LanguageType for {iso396}");
                     return LanguageType.English;
             }
         }
