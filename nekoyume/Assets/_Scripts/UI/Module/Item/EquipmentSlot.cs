@@ -11,6 +11,7 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
 {
+    using System.Text;
     using UniRx;
 
     // TODO: 지금의 `EquipmentSlot`은 장비 뿐만 아니라 소모품과 코스튬이 모두 사용하고 있습니다.
@@ -42,6 +43,12 @@ namespace Nekoyume.UI.Module
 
         [SerializeField]
         private int itemSubTypeIndex = 1;
+
+        [SerializeField]
+        protected GameObject optionTagObject = null;
+
+        [SerializeField]
+        protected TextMeshProUGUI optionTagText = null;
 
         private int _requireLevel;
         private string _messageForCat;
@@ -222,6 +229,7 @@ namespace Nekoyume.UI.Module
                 enhancementText.enabled = false;
             }
 
+            SetOptionTag(itemBase);
             _onClick = onClick;
             _onDoubleClick = onDoubleClick;
         }
@@ -287,6 +295,32 @@ namespace Nekoyume.UI.Module
                     _onDoubleClick?.Invoke(this);
                     break;
             }
+        }
+
+        protected virtual void SetOptionTag(ItemBase itemBase)
+        {
+            var equipment = itemBase as Equipment;
+            if (equipment is null)
+            {
+                optionTagObject.SetActive(false);
+                return;
+            }
+
+            var optionCount = equipment.GetOptionCount();
+            if (optionCount <= 0)
+            {
+                optionTagObject.SetActive(false);
+                return;
+            }
+
+            var sb = new StringBuilder();
+            for (int i = 0; i < optionCount; ++i)
+            {
+                sb.AppendLine("<sprite name=UI_icon_option>");
+            }
+
+            optionTagText.text = sb.ToString();
+            optionTagObject.SetActive(true);
         }
     }
 }
