@@ -1,6 +1,7 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Security.Cryptography;
+using System.Text;
 using Libplanet;
 using Nekoyume.Helper;
 using Nekoyume.Model.Item;
@@ -38,6 +39,30 @@ namespace Nekoyume
             }
 
             fungibleId = materialRow.ItemId;
+            return true;
+        }
+
+        public static bool TryGetOptionTagText(this ItemBase itemBase, out string text)
+        {
+            text = string.Empty;
+
+            if (!(itemBase is Equipment equipment))
+            {
+                return false;
+            }
+
+            var optionCount = equipment.GetOptionCount();
+            if (optionCount <= 0)
+            {
+                return false;
+            }
+
+            var sb = new StringBuilder();
+            for (var i = 0; i < optionCount; ++i)
+            {
+                sb.AppendLine("<sprite name=UI_icon_option>");
+            }
+            text = sb.ToString();
             return true;
         }
     }

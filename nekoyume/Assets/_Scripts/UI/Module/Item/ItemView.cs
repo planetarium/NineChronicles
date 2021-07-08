@@ -5,7 +5,6 @@ using JetBrains.Annotations;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
-using Nekoyume.Model.Item;
 using Nekoyume.TableData;
 using TMPro;
 using UniRx;
@@ -122,7 +121,15 @@ namespace Nekoyume.UI.Module
 
             Model.Selected.SubscribeTo(selectionImage.gameObject).AddTo(_disposablesAtSetData);
             UpdateView();
-            SetOptionTag(model.ItemBase.Value);
+            if (Model.ItemBase.Value.TryGetOptionTagText(out var text))
+            {
+                optionTagObject.SetActive(true);
+                optionTagText.text = text;
+            }
+            else
+            {
+                optionTagObject.SetActive(false);
+            }
         }
 
         private void UpdateEnhancement()
@@ -172,7 +179,15 @@ namespace Nekoyume.UI.Module
             Model.Selected.SubscribeTo(selectionImage).AddTo(_disposablesAtSetData);
 
             UpdateView();
-            SetOptionTag(model.ItemBase.Value);
+            if (model.ItemBase.Value.TryGetOptionTagText(out var text))
+            {
+                optionTagObject.SetActive(true);
+                optionTagText.text = text;
+            }
+            else
+            {
+                optionTagObject.SetActive(false);
+            }
         }
 
         public virtual void SetToUnknown()
@@ -209,32 +224,6 @@ namespace Nekoyume.UI.Module
                     selectionImage.enabled = false;
                 }
             }
-        }
-
-        protected virtual void SetOptionTag(ItemBase itemBase)
-        {
-            var equipment = itemBase as Equipment;
-            if (equipment is null)
-            {
-                optionTagObject.SetActive(false);
-                return;
-            }
-
-            var optionCount = equipment.GetOptionCount();
-            if (optionCount <= 0)
-            {
-                optionTagObject.SetActive(false);
-                return;
-            }
-            
-            var sb = new StringBuilder();
-            for (int i = 0; i < optionCount; ++i)
-            {
-                sb.AppendLine("<sprite name=UI_icon_option>");
-            }
-
-            optionTagText.text = sb.ToString();
-            optionTagObject.SetActive(true);
         }
     }
 }

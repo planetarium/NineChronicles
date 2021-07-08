@@ -229,7 +229,16 @@ namespace Nekoyume.UI.Module
                 enhancementText.enabled = false;
             }
 
-            SetOptionTag(itemBase);
+            if (itemBase.TryGetOptionTagText(out var text))
+            {
+                optionTagObject.SetActive(true);
+                optionTagText.text = text;
+            }
+            else
+            {
+                optionTagObject.SetActive(false);
+            }
+
             _onClick = onClick;
             _onDoubleClick = onDoubleClick;
         }
@@ -295,32 +304,6 @@ namespace Nekoyume.UI.Module
                     _onDoubleClick?.Invoke(this);
                     break;
             }
-        }
-
-        protected virtual void SetOptionTag(ItemBase itemBase)
-        {
-            var equipment = itemBase as Equipment;
-            if (equipment is null)
-            {
-                optionTagObject.SetActive(false);
-                return;
-            }
-
-            var optionCount = equipment.GetOptionCount();
-            if (optionCount <= 0)
-            {
-                optionTagObject.SetActive(false);
-                return;
-            }
-
-            var sb = new StringBuilder();
-            for (int i = 0; i < optionCount; ++i)
-            {
-                sb.AppendLine("<sprite name=UI_icon_option>");
-            }
-
-            optionTagText.text = sb.ToString();
-            optionTagObject.SetActive(true);
         }
     }
 }
