@@ -472,7 +472,7 @@ namespace Nekoyume.Action
             }
             catch (Exception e)
             {
-                Log.Error(e, $"Unexpected error occurred during {nameof(T)}()");
+                Log.Error(e, "Unexpected error occurred during GetSheet<{TypeName}>()", typeof(T).FullName);
                 throw;
             }
         }
@@ -483,8 +483,8 @@ namespace Nekoyume.Action
             var value = states.GetState(address);
             if (value is null)
             {
-                Log.Warning($"{nameof(T)} is null ({0})", address.ToHex());
-                throw new FailedLoadStateException(nameof(T));
+                Log.Warning("{TypeName} is null ({Address})", typeof(T).FullName, address.ToHex());
+                throw new FailedLoadStateException(typeof(T).FullName);
             }
 
             try
@@ -493,7 +493,7 @@ namespace Nekoyume.Action
             }
             catch (Exception e)
             {
-                Log.Error(e, $"Unexpected error occurred during {nameof(T)}()");
+                Log.Error(e, "Unexpected error occurred during GetSheetCsv<{TypeName}>()", typeof(T).FullName);
                 throw;
             }
         }
