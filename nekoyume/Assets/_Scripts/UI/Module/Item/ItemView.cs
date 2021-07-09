@@ -5,7 +5,6 @@ using JetBrains.Annotations;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
-using Nekoyume.Model.Item;
 using Nekoyume.TableData;
 using TMPro;
 using UniRx;
@@ -14,6 +13,7 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
 {
+    using System.Text;
     using UniRx;
 
     public class ItemView<TViewModel> : VanillaItemView
@@ -26,6 +26,12 @@ namespace Nekoyume.UI.Module
         public GameObject enhancementImage;
         public Image selectionImage;
         public Image dimmedImage;
+
+        [SerializeField]
+        protected GameObject optionTagObject = null;
+
+        [SerializeField]
+        protected TextMeshProUGUI optionTagText = null;
 
         private readonly List<IDisposable> _disposablesAtSetData = new List<IDisposable>();
 
@@ -115,6 +121,15 @@ namespace Nekoyume.UI.Module
 
             Model.Selected.SubscribeTo(selectionImage.gameObject).AddTo(_disposablesAtSetData);
             UpdateView();
+            if (Model.ItemBase.Value.TryGetOptionTagText(out var text))
+            {
+                optionTagObject.SetActive(true);
+                optionTagText.text = text;
+            }
+            else
+            {
+                optionTagObject.SetActive(false);
+            }
         }
 
         private void UpdateEnhancement()
@@ -164,6 +179,15 @@ namespace Nekoyume.UI.Module
             Model.Selected.SubscribeTo(selectionImage).AddTo(_disposablesAtSetData);
 
             UpdateView();
+            if (model.ItemBase.Value.TryGetOptionTagText(out var text))
+            {
+                optionTagObject.SetActive(true);
+                optionTagText.text = text;
+            }
+            else
+            {
+                optionTagObject.SetActive(false);
+            }
         }
 
         public virtual void SetToUnknown()

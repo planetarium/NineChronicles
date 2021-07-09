@@ -1,4 +1,3 @@
-using System.Linq;
 using Coffee.UIEffects;
 using DG.Tweening;
 using Nekoyume.Helper;
@@ -20,9 +19,13 @@ namespace Nekoyume.UI.Module
             Middle
         }
 
-        public Image gradeImage;
-        public UIHsvModifier gradeHsv;
-        public Image iconImage;
+        public Image iconImage = null;
+
+        [SerializeField]
+        protected Image gradeImage = null;
+
+        [SerializeField]
+        protected UIHsvModifier gradeHsv = null;
 
         private Tweener _tweener;
 
