@@ -308,6 +308,10 @@ namespace Nekoyume.UI
             secondWidgets.Add(Widget.Create<Tutorial>());
             yield return null;
 
+            secondWidgets.Add(Widget.Create<CombinationMain>());
+            secondWidgets.Add(Widget.Create<UpgradeEquipment>());
+            yield return null;
+
             Widget last = null;
             foreach (var value in secondWidgets)
             {
@@ -389,6 +393,18 @@ namespace Nekoyume.UI
                 {
                     widget.Close();
                 }
+            }
+        }
+
+        void OnGUI()
+        {
+            if (GUI.Button(new Rect(Screen.width-100, 500, 100, 50), "show upgrade"))
+            {
+                Widget.Find<CombinationMain>().Show();
+            }
+            if (GUI.Button(new Rect(Screen.width-100, 560, 100, 50), "Close upgrade"))
+            {
+                Widget.Find<CombinationMain>().Close(true);
             }
         }
     }
