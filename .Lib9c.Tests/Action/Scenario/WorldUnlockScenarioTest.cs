@@ -85,9 +85,8 @@ namespace Lib9c.Tests.Action.Scenario
             Assert.True(avatarState.worldInformation.IsWorldUnlocked(worldIdToClear));
             Assert.False(avatarState.worldInformation.IsWorldUnlocked(worldIdToUnlock));
 
-            var doomfist = Doomfist.Get(_tableSheets);
+            var doomfist = Doomfist.GetWeapon(_tableSheets);
             avatarState.inventory.AddItem(doomfist);
-            doomfist.Equip();
 
             var nextState = _initialState.SetState(_avatarAddress, avatarState.Serialize());
             var hackAndSlash = new HackAndSlash3
@@ -96,7 +95,7 @@ namespace Lib9c.Tests.Action.Scenario
                 stageId = stageIdToClear,
                 avatarAddress = _avatarAddress,
                 costumes = new List<int>(),
-                equipments = new List<Guid>(),
+                equipments = new List<Guid> { doomfist.NonFungibleId },
                 foods = new List<Guid>(),
                 WeeklyArenaAddress = _weeklyArenaState.address,
                 RankingMapAddress = _rankingMapAddress,
