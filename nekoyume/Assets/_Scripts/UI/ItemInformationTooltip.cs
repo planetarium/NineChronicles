@@ -99,9 +99,8 @@ namespace Nekoyume.UI
             {
                 if (item?.ItemBase.Value is ITradableItem tradableItem)
                 {
-                    var remain = tradableItem.RequiredBlockIndex -
-                                 Game.Game.instance.Agent.BlockIndex;
-                    OneLinePopup.Push(MailType.System, $"This item has not expired. It can be used again after up to 3 days.\n remain block index : {remain}");
+                    var remain = tradableItem.RequiredBlockIndex - Game.Game.instance.Agent.BlockIndex;
+                    OneLinePopup.Push(MailType.System, $"This item has not expired. It can be used again after {remain} blocks.");
                 }
                 return;
             }
@@ -124,9 +123,8 @@ namespace Nekoyume.UI
             {
                 if (item?.ItemBase.Value is ITradableItem tradableItem)
                 {
-                    var remain = tradableItem.RequiredBlockIndex -
-                                 Game.Game.instance.Agent.BlockIndex;
-                    OneLinePopup.Push(MailType.System, $"This item has not expired. It can be used again after up to 3 days.\n remain block index : {remain}");
+                    var remain = tradableItem.RequiredBlockIndex - Game.Game.instance.Agent.BlockIndex;
+                    OneLinePopup.Push(MailType.System, $"This item has not expired. It can be used again after {remain} blocks.");
                 }
                 return;
             }
