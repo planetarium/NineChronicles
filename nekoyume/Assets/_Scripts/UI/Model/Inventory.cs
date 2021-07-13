@@ -444,6 +444,11 @@ namespace Nekoyume.UI.Model
         {
             foreach (var item in Materials)
             {
+                if (item.ForceDimmed)
+                {
+                    continue;
+                }
+
                 if (!(item.ItemBase.Value is Material material) ||
                     !material.ItemId.Equals(itemId))
                 {
