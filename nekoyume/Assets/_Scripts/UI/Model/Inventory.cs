@@ -7,6 +7,7 @@ using Nekoyume.Battle;
 using Nekoyume.Model.Elemental;
 using Nekoyume.Model.Item;
 using Nekoyume.UI.Module;
+using UnityEngine;
 using Material = Nekoyume.Model.Item.Material;
 
 namespace Nekoyume.UI.Model
@@ -106,9 +107,49 @@ namespace Nekoyume.UI.Model
             return item;
         }
 
+        private InventoryItem CreateInventoryItemTemp(ItemBase itemBase, int count)
+        {
+            var item = new InventoryItem(itemBase, count);
+            item.Dimmed.Value = true;
+            item.ForceDimmed = true;
+
+            return item;
+        }
+
         #endregion
 
         #region Add Item
+
+        private void CreateTempItem(ItemBase itemBase, int count)
+        {
+            InventoryItem inventoryTempItem;
+            switch (itemBase.ItemType)
+            {
+                case ItemType.Consumable:
+                    inventoryTempItem = CreateInventoryItemTemp(itemBase, count);
+                    Consumables.Add(inventoryTempItem);
+                    return;
+                case ItemType.Costume:
+                    var costume = (Costume) itemBase;
+                    inventoryTempItem = CreateInventoryItemTemp(itemBase, count);
+                    inventoryTempItem.EquippedEnabled.Value = costume.equipped;
+                    Costumes.Add(inventoryTempItem);
+                    return;
+                case ItemType.Equipment:
+                    var equipment = (Equipment) itemBase;
+                    inventoryTempItem = CreateInventoryItemTemp(itemBase, count);
+                    inventoryTempItem.EquippedEnabled.Value = equipment.equipped;
+                    Equipments.Add(inventoryTempItem);
+                    return;
+                case ItemType.Material:
+                    inventoryTempItem = CreateInventoryItemTemp(itemBase, count);
+                    Materials.Add(inventoryTempItem);
+                    return;
+
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
 
         public void AddItem(ItemBase itemBase, int count = 1)
         {
@@ -117,6 +158,39 @@ namespace Nekoyume.UI.Model
                 var blockIndex = Game.Game.instance.Agent?.BlockIndex ?? -1;
                 if (tradableItem.RequiredBlockIndex > blockIndex)
                 {
+                    if (Game.Game.instance.Agent.BlockIndex >
+                        Game.Game.instance.TempExpiredBlockIndex)
+                        return;
+
+                    var agentAddress = Game.Game.instance.Agent.Address;
+                    if (!Game.Game.instance.LegacyShopProducts.Products.ContainsKey(agentAddress))
+                        return;
+
+                    var shopItems = Game.Game.instance.LegacyShopProducts.Products[agentAddress];
+                    foreach (var shopItem in shopItems)
+                    {
+                        if (shopItem.ItemUsable != null &&
+                            shopItem.ItemUsable.ItemId == tradableItem.TradableId)
+                        {
+                            CreateTempItem(itemBase, count);
+                            return;
+                        }
+
+                        if (shopItem.Costume != null &&
+                            shopItem.Costume.ItemId == tradableItem.TradableId)
+                        {
+                            CreateTempItem(itemBase, count);
+                            return;
+                        }
+
+                        if (shopItem.TradableFungibleItem != null &&
+                            shopItem.TradableFungibleItem.TradableId == tradableItem.TradableId &&
+                            shopItem.TradableFungibleItem.RequiredBlockIndex == tradableItem.RequiredBlockIndex)
+                        {
+                            CreateTempItem(itemBase, count);
+                            return;
+                        }
+                    }
                     return;
                 }
             }
@@ -370,6 +444,11 @@ namespace Nekoyume.UI.Model
         {
             foreach (var item in Materials)
             {
+                if (item.ForceDimmed)
+                {
+                    continue;
+                }
+
                 if (!(item.ItemBase.Value is Material material) ||
                     !material.ItemId.Equals(itemId))
                 {
