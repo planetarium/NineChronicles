@@ -12,8 +12,8 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("monster_collect3")]
-    public class MonsterCollect : GameAction
+    [ActionType("monster_collect2")]
+    public class MonsterCollect2 : GameAction
     {
         public int level;
         public override IAccountStateDelta Execute(IActionContext context)
@@ -49,6 +49,7 @@ namespace Nekoyume.Action
             Currency currency = states.GetGoldCurrency();
             // Set default gold value.
             FungibleAssetValue requiredGold = currency * 0;
+            FungibleAssetValue balance = states.GetBalance(context.Signer, currency);
             Address monsterCollectionAddress = MonsterCollectionState.DeriveAddress(
                 context.Signer,
                 agentState.MonsterCollectionRound
@@ -83,7 +84,6 @@ namespace Nekoyume.Action
                 return states.SetState(monsterCollectionAddress, new Null());
             }
 
-            FungibleAssetValue balance = states.GetBalance(context.Signer, currency);
             var monsterCollectionState = new MonsterCollectionState(monsterCollectionAddress, level, context.BlockIndex);
             for (int i = 0; i < level; i++)
             {
