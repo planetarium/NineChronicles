@@ -5,6 +5,7 @@ using Nekoyume.EnumType;
 using Nekoyume.Extension;
 using Nekoyume.Game.Controller;
 using Nekoyume.L10n;
+using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.State;
 using Nekoyume.UI.Model;
@@ -96,7 +97,12 @@ namespace Nekoyume.UI
         {
             if (item.ForceDimmed)
             {
-                OneLinePopup.Push(MailType.System, "This item has not expired. It can be used again after up to 3 days.");
+                if (item?.ItemBase.Value is ITradableItem tradableItem)
+                {
+                    var remain = tradableItem.RequiredBlockIndex -
+                                 Game.Game.instance.Agent.BlockIndex;
+                    OneLinePopup.Push(MailType.System, $"This item has not expired. It can be used again after up to 3 days.\n remain block index : {remain}");
+                }
                 return;
             }
             Show(target, item, null, null, null, onClose);
@@ -116,7 +122,12 @@ namespace Nekoyume.UI
 
             if (item.ForceDimmed)
             {
-                OneLinePopup.Push(MailType.System, "This item has not expired. It can be used again after up to 3 days.");
+                if (item?.ItemBase.Value is ITradableItem tradableItem)
+                {
+                    var remain = tradableItem.RequiredBlockIndex -
+                                 Game.Game.instance.Agent.BlockIndex;
+                    OneLinePopup.Push(MailType.System, $"This item has not expired. It can be used again after up to 3 days.\n remain block index : {remain}");
+                }
                 return;
             }
 

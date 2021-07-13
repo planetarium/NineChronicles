@@ -74,7 +74,9 @@ namespace Nekoyume.Game
                 var state = new ShardedShopState(dictionary);
                 foreach (var product in state.Products.Values)
                 {
-                    if (product.ExpiredBlockIndex != 0 && product.ExpiredBlockIndex > Game.instance.Agent.BlockIndex)
+                    if (product.SellerAgentAddress == Game.instance.Agent.Address &&
+                        product.ExpiredBlockIndex != 0 &&
+                        product.ExpiredBlockIndex > Game.instance.Agent.BlockIndex)
                     {
                         var agentAddress = product.SellerAgentAddress;
                         if (!Products.ContainsKey(agentAddress))
