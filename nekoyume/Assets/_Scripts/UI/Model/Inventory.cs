@@ -120,6 +120,37 @@ namespace Nekoyume.UI.Model
 
         #region Add Item
 
+        private void CreateTempItem(ItemBase itemBase, int count)
+        {
+            InventoryItem inventoryTempItem;
+            switch (itemBase.ItemType)
+            {
+                case ItemType.Consumable:
+                    inventoryTempItem = CreateInventoryItemTemp(itemBase, count);
+                    Consumables.Add(inventoryTempItem);
+                    return;
+                case ItemType.Costume:
+                    var costume = (Costume) itemBase;
+                    inventoryTempItem = CreateInventoryItemTemp(itemBase, count);
+                    inventoryTempItem.EquippedEnabled.Value = costume.equipped;
+                    Costumes.Add(inventoryTempItem);
+                    return;
+                case ItemType.Equipment:
+                    var equipment = (Equipment) itemBase;
+                    inventoryTempItem = CreateInventoryItemTemp(itemBase, count);
+                    inventoryTempItem.EquippedEnabled.Value = equipment.equipped;
+                    Equipments.Add(inventoryTempItem);
+                    return;
+                case ItemType.Material:
+                    inventoryTempItem = CreateInventoryItemTemp(itemBase, count);
+                    Materials.Add(inventoryTempItem);
+                    return;
+
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
         public void AddItem(ItemBase itemBase, int count = 1)
         {
             if (itemBase is ITradableItem tradableItem)
@@ -136,35 +167,21 @@ namespace Nekoyume.UI.Model
                         return;
 
                     var shopItems = Game.Game.instance.LegacyShopProducts.Products[agentAddress];
-                    if (!shopItems.Exists(x => x.ProductId == tradableItem.TradableId))
-                        return;
-
-                    InventoryItem inventoryTempItem;
-                    switch (itemBase.ItemType)
+                    foreach (var shopItem in shopItems)
                     {
-                        case ItemType.Consumable:
-                            inventoryTempItem = CreateInventoryItemTemp(itemBase, count);
-                            Consumables.Add(inventoryTempItem);
+                        if (shopItem.ItemUsable != null &&
+                            shopItem.ItemUsable.ItemId == tradableItem.TradableId)
+                        {
+                            CreateTempItem(itemBase, count);
                             return;
-                        case ItemType.Costume:
-                            var costume = (Costume) itemBase;
-                            inventoryTempItem = CreateInventoryItemTemp(itemBase, count);
-                            inventoryTempItem.EquippedEnabled.Value = costume.equipped;
-                            Costumes.Add(inventoryTempItem);
-                            return;
-                        case ItemType.Equipment:
-                            var equipment = (Equipment) itemBase;
-                            inventoryTempItem = CreateInventoryItemTemp(itemBase, count);
-                            inventoryTempItem.EquippedEnabled.Value = equipment.equipped;
-                            Equipments.Add(inventoryTempItem);
-                            return;
-                        case ItemType.Material:
-                            inventoryTempItem = CreateInventoryItemTemp(itemBase, count);
-                            Materials.Add(inventoryTempItem);
-                            return;
+                        }
 
-                        default:
-                            throw new ArgumentOutOfRangeException();
+                        if (shopItem.Costume != null &&
+                            shopItem.Costume.ItemId == tradableItem.TradableId)
+                        {
+                            CreateTempItem(itemBase, count);
+                            return;
+                        }
                     }
                     return;
                 }
