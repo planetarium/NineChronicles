@@ -185,8 +185,7 @@ namespace Nekoyume.UI.Model
 
                         if (shopItem.TradableFungibleItem != null &&
                             shopItem.TradableFungibleItem.TradableId == tradableItem.TradableId &&
-                            shopItem.TradableFungibleItem.RequiredBlockIndex == tradableItem.RequiredBlockIndex &&
-                            shopItem.TradableFungibleItemCount == count)
+                            shopItem.TradableFungibleItem.RequiredBlockIndex == tradableItem.RequiredBlockIndex)
                         {
                             CreateTempItem(itemBase, count);
                             return;
