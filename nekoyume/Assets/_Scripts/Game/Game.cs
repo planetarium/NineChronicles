@@ -25,6 +25,7 @@ using Nekoyume.UI.Module;
 using UniRx;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
+using UnityEngine.Serialization;
 using Menu = Nekoyume.UI.Menu;
 
 
@@ -519,7 +520,15 @@ namespace Nekoyume.Game
                 loginPopup.GetPrivateKey(),
                 callback
             );
+
+            if (Agent.BlockIndex < TempExpiredBlockIndex)
+            {
+                LegacyShopProducts = new ShopProducts();
+            }
         }
+
+        public long TempExpiredBlockIndex = 1925000;
+        public ShopProducts LegacyShopProducts { get; set; }
 
         public void ResetStore()
         {

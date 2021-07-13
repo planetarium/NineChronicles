@@ -19,6 +19,7 @@ namespace Nekoyume.UI.Model
         public readonly Subject<Item> OnDoubleClick = new Subject<Item>();
 
         private const int VisibleEnhancementEffectValue = 11; // todo : When a weapon effect is added, the value must be modified.
+        public bool ForceDimmed { get; set; }
         public Item(ItemBase value)
         {
             ItemBase.Value = value;

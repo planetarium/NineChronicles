@@ -7,6 +7,7 @@ using Nekoyume.Battle;
 using Nekoyume.Model.Elemental;
 using Nekoyume.Model.Item;
 using Nekoyume.UI.Module;
+using UnityEngine;
 using Material = Nekoyume.Model.Item.Material;
 
 namespace Nekoyume.UI.Model
@@ -106,6 +107,15 @@ namespace Nekoyume.UI.Model
             return item;
         }
 
+        private InventoryItem CreateInventoryItemTemp(ItemBase itemBase, int count)
+        {
+            var item = new InventoryItem(itemBase, count);
+            item.Dimmed.Value = true;
+            item.ForceDimmed = true;
+
+            return item;
+        }
+
         #endregion
 
         #region Add Item
@@ -117,7 +127,57 @@ namespace Nekoyume.UI.Model
                 var blockIndex = Game.Game.instance.Agent?.BlockIndex ?? -1;
                 if (tradableItem.RequiredBlockIndex > blockIndex)
                 {
-                    return;
+                    if (Game.Game.instance.Agent.BlockIndex < Game.Game.instance.TempExpiredBlockIndex)
+                    {
+                        var agentAddress = Game.Game.instance.Agent.Address;
+                        if (Game.Game.instance.LegacyShopProducts.Products
+                            .ContainsKey(agentAddress))
+                        {
+                            InventoryItem inventoryTempItem;
+                            switch (itemBase.ItemType)
+                            {
+                                case ItemType.Consumable:
+                                    inventoryTempItem = CreateInventoryItemTemp(itemBase, count);
+                                    Consumables.Add(inventoryTempItem);
+                                    return;
+                                case ItemType.Costume:
+                                    var costume = (Costume) itemBase;
+                                    inventoryTempItem = CreateInventoryItemTemp(itemBase, count);
+                                    inventoryTempItem.EquippedEnabled.Value = costume.equipped;
+                                    Costumes.Add(inventoryTempItem);
+                                    return;
+                                case ItemType.Equipment:
+                                    var equipment = (Equipment) itemBase;
+                                    inventoryTempItem = CreateInventoryItemTemp(itemBase, count);
+                                    inventoryTempItem.EquippedEnabled.Value = equipment.equipped;
+                                    Equipments.Add(inventoryTempItem);
+                                    return;
+                                case ItemType.Material:
+                                    var material = (Material) itemBase;
+                                    bool istTradable = material is TradableMaterial;
+                                    if (TryGetMaterial(material, istTradable, out inventoryTempItem))
+                                    {
+                                        inventoryTempItem.Count.Value += count;
+                                        break;
+                                    }
+
+                                    inventoryTempItem = CreateInventoryItemTemp(itemBase, count);
+                                    Materials.Add(inventoryTempItem);
+                                    return;
+
+                                default:
+                                    throw new ArgumentOutOfRangeException();
+                            }
+                        }
+                        else
+                        {
+                            return;
+                        }
+                    }
+                    else
+                    {
+                        return;
+                    }
                 }
             }
 
