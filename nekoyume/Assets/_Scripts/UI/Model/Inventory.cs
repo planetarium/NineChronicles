@@ -182,6 +182,13 @@ namespace Nekoyume.UI.Model
                             CreateTempItem(itemBase, count);
                             return;
                         }
+
+                        if (shopItem.TradableFungibleItem != null &&
+                            shopItem.TradableFungibleItem.TradableId == tradableItem.TradableId)
+                        {
+                            CreateTempItem(itemBase, count);
+                            return;
+                        }
                     }
                     return;
                 }
