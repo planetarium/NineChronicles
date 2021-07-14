@@ -8,7 +8,7 @@ namespace Nekoyume.Helper
 {
     public static class Util
     {
-        private const int BlockPerSecond = 15;
+        private const int BlockPerSecond = 12;
 
         public static string GetBlockToTime(int block)
         {
