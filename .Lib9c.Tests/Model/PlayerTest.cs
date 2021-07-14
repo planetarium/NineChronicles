@@ -9,6 +9,7 @@ namespace Lib9c.Tests.Model
     using Nekoyume.Model;
     using Nekoyume.Model.BattleStatus;
     using Nekoyume.Model.Item;
+    using Nekoyume.Model.Quest;
     using Nekoyume.Model.Skill;
     using Nekoyume.Model.Stat;
     using Nekoyume.Model.State;
@@ -188,6 +189,7 @@ namespace Lib9c.Tests.Model
                 _tableSheets.CharacterLevelSheet,
                 _tableSheets.EquipmentItemSetEffectSheet);
 
+            Assert.Empty(player.eventMap);
             for (int i = 0; i < count; ++i)
             {
                 var requiredExp = _tableSheets.CharacterLevelSheet[level].ExpNeed;
@@ -195,6 +197,54 @@ namespace Lib9c.Tests.Model
 
                 Assert.Equal(level + 1, player.Level);
                 ++level;
+            }
+
+            Assert.Empty(player.eventMap);
+        }
+
+        [Theory]
+        [InlineData(1, true)]
+        [InlineData(2, true)]
+        [InlineData(5, true)]
+        [InlineData(3, false)]
+        public void GetExpV3(int nextLevel, bool log)
+        {
+            var simulator = new StageSimulator(
+                _random,
+                _avatarState,
+                new List<Guid>(),
+                1,
+                1,
+                _tableSheets.GetStageSimulatorSheets(),
+                2
+            );
+            var player = simulator.Player;
+            Assert.Empty(player.eventMap);
+            Assert.Empty(simulator.Log);
+            long requiredExp = 0;
+            for (int i = player.Level; i < nextLevel; ++i)
+            {
+                requiredExp += _tableSheets.CharacterLevelSheet[i + 1].ExpNeed;
+            }
+
+            player.GetExpV3(requiredExp, log);
+
+            if (log)
+            {
+                Assert.Single(simulator.Log);
+                Assert.IsType<GetExp>(simulator.Log.First());
+                var getExp = simulator.Log.OfType<GetExp>().First();
+                Assert.Equal(requiredExp, getExp.Exp);
+            }
+
+            Assert.Equal(nextLevel, player.Level);
+            if (nextLevel > 1)
+            {
+                Assert.Equal(nextLevel - 1, player.eventMap[(int)QuestEventType.Level]);
+            }
+            else
+            {
+                Assert.Empty(player.eventMap);
             }
         }
 

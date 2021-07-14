@@ -2,6 +2,7 @@ namespace Lib9c.Tests.Action
 {
     using System;
     using System.Collections.Generic;
+    using System.Collections.Immutable;
     using System.Globalization;
     using System.Linq;
     using Bencodex.Types;
@@ -15,6 +16,7 @@ namespace Lib9c.Tests.Action
     using Nekoyume.Model.Mail;
     using Nekoyume.Model.State;
     using Xunit;
+    using static SerializeKeys;
 
     public class ItemEnhancementTest
     {
@@ -71,9 +73,11 @@ namespace Lib9c.Tests.Action
         }
 
         [Theory]
-        [InlineData(0, 1, 1000)]
-        [InlineData(3, 4, 0)]
-        public void Execute(int level, int expectedLevel, int expectedGold)
+        [InlineData(0, 1, 1000, true)]
+        [InlineData(3, 4, 0, true)]
+        [InlineData(0, 1, 1000, false)]
+        [InlineData(3, 4, 0, false)]
+        public void Execute(int level, int expectedLevel, int expectedGold, bool backward)
         {
             var row = _tableSheets.EquipmentItemSheet.Values.First(r => r.Grade == 1);
             var equipment = (Equipment)ItemFactory.CreateItemUsable(row, default, 0, level);
@@ -83,7 +87,7 @@ namespace Lib9c.Tests.Action
             _avatarState.inventory.AddItem(equipment, count: 1);
             _avatarState.inventory.AddItem(material, count: 1);
 
-            var result = new CombinationConsumable.ResultModel()
+            var result = new CombinationConsumable5.ResultModel()
             {
                 id = default,
                 gold = 0,
@@ -106,7 +110,18 @@ namespace Lib9c.Tests.Action
 
             Assert.Equal(level, equipment.level);
 
-            _initialState = _initialState.SetState(_avatarAddress, _avatarState.Serialize());
+            if (backward)
+            {
+                _initialState = _initialState.SetState(_avatarAddress, _avatarState.Serialize());
+            }
+            else
+            {
+                _initialState = _initialState
+                    .SetState(_avatarAddress.Derive(LegacyInventoryKey), _avatarState.inventory.Serialize())
+                    .SetState(_avatarAddress.Derive(LegacyWorldInformationKey), _avatarState.worldInformation.Serialize())
+                    .SetState(_avatarAddress.Derive(LegacyQuestListKey), _avatarState.questList.Serialize())
+                    .SetState(_avatarAddress, _avatarState.SerializeV2());
+            }
 
             var action = new ItemEnhancement()
             {
@@ -145,6 +160,48 @@ namespace Lib9c.Tests.Action
             var slotResult = (ItemEnhancement.ResultModel)slot.Result;
 
             Assert.Equal(costRow.Cost, slotResult.gold);
+        }
+
+        [Fact]
+        public void Rehearsal()
+        {
+            var action = new ItemEnhancement()
+            {
+                itemId = default,
+                materialId = default,
+                avatarAddress = _avatarAddress,
+                slotIndex = 0,
+            };
+
+            var slotAddress = _avatarAddress.Derive(
+                string.Format(
+                    CultureInfo.InvariantCulture,
+                    CombinationSlotState.DeriveFormat,
+                    0
+                )
+            );
+            var updatedAddresses = new List<Address>()
+            {
+                _agentAddress,
+                _avatarAddress,
+                slotAddress,
+                _avatarAddress.Derive(LegacyInventoryKey),
+                _avatarAddress.Derive(LegacyWorldInformationKey),
+                _avatarAddress.Derive(LegacyQuestListKey),
+                Addresses.Blacksmith,
+            };
+
+            var state = new State();
+
+            var nextState = action.Execute(new ActionContext()
+            {
+                PreviousStates = state,
+                Signer = _agentAddress,
+                BlockIndex = 0,
+                Rehearsal = true,
+            });
+
+            Assert.Equal(updatedAddresses.ToImmutableHashSet(), nextState.UpdatedAddresses);
         }
     }
 }

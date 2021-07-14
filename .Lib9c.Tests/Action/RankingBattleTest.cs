@@ -2,6 +2,7 @@ namespace Lib9c.Tests.Action
 {
     using System;
     using System.Collections.Generic;
+    using System.Collections.Immutable;
     using System.IO;
     using System.Linq;
     using System.Runtime.Serialization.Formatters.Binary;
@@ -19,6 +20,7 @@ namespace Lib9c.Tests.Action
     using Serilog;
     using Xunit;
     using Xunit.Abstractions;
+    using static SerializeKeys;
 
     public class RankingBattleTest
     {
@@ -109,9 +111,15 @@ namespace Lib9c.Tests.Action
         }
 
         [Theory]
-        [InlineData(true)]
-        [InlineData(false)]
-        public void Execute(bool isNew)
+        [InlineData(true, true, true)]
+        [InlineData(true, true, false)]
+        [InlineData(true, false, true)]
+        [InlineData(true, false, false)]
+        [InlineData(false, true, true)]
+        [InlineData(false, true, false)]
+        [InlineData(false, false, true)]
+        [InlineData(false, false, false)]
+        public void Execute(bool isNew, bool avatarBackward, bool enemyBackward)
         {
             var previousWeeklyState = _initialState.GetWeeklyArenaState(0);
             var previousAvatar1State = _initialState.GetAvatarState(_avatar1Address);
@@ -145,9 +153,31 @@ namespace Lib9c.Tests.Action
             var enemyAvatarState = _initialState.GetAvatarState(_avatar2Address);
             enemyAvatarState.inventory.AddItem(enemyCostume);
 
-            previousState = previousState
-                .SetState(_avatar1Address, previousAvatar1State.Serialize())
-                .SetState(_avatar2Address, enemyAvatarState.Serialize());
+            if (avatarBackward)
+            {
+                previousState = previousState.SetState(_avatar1Address, previousAvatar1State.Serialize());
+            }
+            else
+            {
+                previousState = previousState
+                    .SetState(_avatar1Address.Derive(LegacyInventoryKey), previousAvatar1State.inventory.Serialize())
+                    .SetState(_avatar1Address.Derive(LegacyWorldInformationKey), previousAvatar1State.worldInformation.Serialize())
+                    .SetState(_avatar1Address.Derive(LegacyQuestListKey), previousAvatar1State.questList.Serialize())
+                    .SetState(_avatar1Address, previousAvatar1State.SerializeV2());
+            }
+
+            if (enemyBackward)
+            {
+                previousState = previousState.SetState(_avatar2Address, enemyAvatarState.Serialize());
+            }
+            else
+            {
+                previousState = previousState
+                    .SetState(_avatar2Address.Derive(LegacyInventoryKey), enemyAvatarState.inventory.Serialize())
+                    .SetState(_avatar2Address.Derive(LegacyWorldInformationKey), enemyAvatarState.worldInformation.Serialize())
+                    .SetState(_avatar2Address.Derive(LegacyQuestListKey), enemyAvatarState.questList.Serialize())
+                    .SetState(_avatar2Address, enemyAvatarState.SerializeV2());
+            }
 
             var action = new RankingBattle
             {
@@ -169,7 +199,7 @@ namespace Lib9c.Tests.Action
                 Rehearsal = false,
             });
 
-            var nextAvatar1State = nextState.GetAvatarState(_avatar1Address);
+            var nextAvatar1State = nextState.GetAvatarStateV2(_avatar1Address);
             var nextWeeklyState = nextState.GetWeeklyArenaState(0);
 
             Assert.Contains(nextAvatar1State.inventory.Materials, i => itemIds.Contains(i.Id));
@@ -389,6 +419,41 @@ namespace Lib9c.Tests.Action
                     Rehearsal = false,
                 });
             });
+        }
+
+        [Fact]
+        public void Rehearsal()
+        {
+            var action = new RankingBattle
+            {
+                AvatarAddress = _avatar1Address,
+                EnemyAddress = _avatar2Address,
+                WeeklyArenaAddress = _weeklyArenaAddress,
+                costumeIds = new List<Guid>(),
+                equipmentIds = new List<Guid>(),
+                consumableIds = new List<Guid>(),
+            };
+
+            var updatedAddresses = new List<Address>()
+            {
+                _avatar1Address,
+                _weeklyArenaAddress,
+                _avatar1Address.Derive(LegacyInventoryKey),
+                _avatar1Address.Derive(LegacyWorldInformationKey),
+                _avatar1Address.Derive(LegacyQuestListKey),
+            };
+
+            var state = new State();
+
+            var nextState = action.Execute(new ActionContext()
+            {
+                PreviousStates = state,
+                Signer = _agent1Address,
+                BlockIndex = 0,
+                Rehearsal = true,
+            });
+
+            Assert.Equal(updatedAddresses.ToImmutableHashSet(), nextState.UpdatedAddresses);
         }
 
         [Fact]

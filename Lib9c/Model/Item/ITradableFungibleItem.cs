@@ -1,6 +1,8 @@
-﻿namespace Nekoyume.Model.Item
+﻿using System;
+
+namespace Nekoyume.Model.Item
 {
-    public interface ITradableFungibleItem : ITradableItem, IFungibleItem
+    public interface ITradableFungibleItem : ITradableItem, IFungibleItem, ICloneable
     {
     }
 }

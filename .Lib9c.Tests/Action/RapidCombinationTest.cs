@@ -2,6 +2,7 @@ namespace Lib9c.Tests.Action
 {
     using System;
     using System.Collections.Generic;
+    using System.Collections.Immutable;
     using System.Globalization;
     using System.Linq;
     using Bencodex.Types;
@@ -16,6 +17,7 @@ namespace Lib9c.Tests.Action
     using Nekoyume.Model.State;
     using Nekoyume.TableData;
     using Xunit;
+    using static SerializeKeys;
 
     public class RapidCombinationTest
     {
@@ -61,8 +63,10 @@ namespace Lib9c.Tests.Action
                 .SetState(_avatarAddress, avatarState.Serialize());
         }
 
-        [Fact]
-        public void Execute()
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public void Execute(bool backward)
         {
             const int slotStateUnlockStage = 1;
 
@@ -89,7 +93,7 @@ namespace Lib9c.Tests.Action
                 requiredBlockIndex);
             avatarState.inventory.AddItem(equipment);
 
-            var result = new CombinationConsumable.ResultModel
+            var result = new CombinationConsumable5.ResultModel
             {
                 actionPoint = 0,
                 gold = 0,
@@ -110,9 +114,20 @@ namespace Lib9c.Tests.Action
             var slotState = new CombinationSlotState(slotAddress, slotStateUnlockStage);
             slotState.Update(result, 0, requiredBlockIndex);
 
-            var tempState = _initialState
-                .SetState(_avatarAddress, avatarState.Serialize())
-                .SetState(slotAddress, slotState.Serialize());
+            var tempState = _initialState.SetState(slotAddress, slotState.Serialize());
+
+            if (backward)
+            {
+                tempState = tempState.SetState(_avatarAddress, avatarState.Serialize());
+            }
+            else
+            {
+                tempState = tempState
+                    .SetState(_avatarAddress.Derive(LegacyInventoryKey), avatarState.inventory.Serialize())
+                    .SetState(_avatarAddress.Derive(LegacyWorldInformationKey), avatarState.worldInformation.Serialize())
+                    .SetState(_avatarAddress.Derive(LegacyQuestListKey), avatarState.questList.Serialize())
+                    .SetState(_avatarAddress, avatarState.SerializeV2());
+            }
 
             var action = new RapidCombination
             {
@@ -127,7 +142,7 @@ namespace Lib9c.Tests.Action
                 BlockIndex = 1,
             });
 
-            var nextAvatarState = nextState.GetAvatarState(_avatarAddress);
+            var nextAvatarState = nextState.GetAvatarStateV2(_avatarAddress);
             var item = nextAvatarState.inventory.Equipments.First();
 
             Assert.Empty(nextAvatarState.inventory.Materials.Select(r => r.ItemSubType == ItemSubType.Hourglass));
@@ -181,7 +196,7 @@ namespace Lib9c.Tests.Action
                 Guid.NewGuid(),
                 100);
 
-            var result = new CombinationConsumable.ResultModel
+            var result = new CombinationConsumable5.ResultModel
             {
                 actionPoint = 0,
                 gold = 0,
@@ -237,7 +252,7 @@ namespace Lib9c.Tests.Action
                 Guid.NewGuid(),
                 itemRequiredBlockIndex);
 
-            var result = new CombinationConsumable.ResultModel
+            var result = new CombinationConsumable5.ResultModel
             {
                 actionPoint = 0,
                 gold = 0,
@@ -309,7 +324,7 @@ namespace Lib9c.Tests.Action
                 requiredBlockIndex);
             avatarState.inventory.AddItem(equipment);
 
-            var result = new CombinationConsumable.ResultModel
+            var result = new CombinationConsumable5.ResultModel
             {
                 actionPoint = 0,
                 gold = 0,
@@ -348,6 +363,45 @@ namespace Lib9c.Tests.Action
             }));
         }
 
+        [Fact]
+        public void Rehearsal()
+        {
+            var slotAddress = _avatarAddress.Derive(
+                string.Format(
+                    CultureInfo.InvariantCulture,
+                    CombinationSlotState.DeriveFormat,
+                    0
+                )
+            );
+
+            var updatedAddresses = new List<Address>()
+            {
+                _avatarAddress,
+                _avatarAddress.Derive(LegacyInventoryKey),
+                _avatarAddress.Derive(LegacyWorldInformationKey),
+                _avatarAddress.Derive(LegacyQuestListKey),
+                slotAddress,
+            };
+
+            var state = new State();
+
+            var action = new RapidCombination
+            {
+                avatarAddress = _avatarAddress,
+                slotIndex = 0,
+            };
+
+            var nextState = action.Execute(new ActionContext()
+            {
+                PreviousStates = state,
+                Signer = _agentAddress,
+                BlockIndex = 0,
+                Rehearsal = true,
+            });
+
+            Assert.Equal(updatedAddresses.ToImmutableHashSet(), nextState.UpdatedAddresses);
+        }
+
         [Theory]
         [InlineData(null)]
         [InlineData(1)]
@@ -362,7 +416,7 @@ namespace Lib9c.Tests.Action
             var material2 = ItemFactory.CreateMaterial(row2);
 
             var itemUsable = ItemFactory.CreateItemUsable(_tableSheets.EquipmentItemSheet.Values.First(), default, 0);
-            var r = new CombinationConsumable.ResultModel
+            var r = new CombinationConsumable5.ResultModel
             {
                 id = default,
                 gold = 0,
@@ -385,7 +439,7 @@ namespace Lib9c.Tests.Action
                 },
             };
 
-            var r2 = new CombinationConsumable.ResultModel
+            var r2 = new CombinationConsumable5.ResultModel
             {
                 id = default,
                 gold = 0,

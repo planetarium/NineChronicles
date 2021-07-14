@@ -18,7 +18,7 @@ using Material = Nekoyume.Model.Item.Material;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("combination_consumable")]
+    [ActionType("combination_consumable4")]
     public class CombinationConsumable4 : GameAction
     {
         public Address AvatarAddress;
@@ -83,7 +83,7 @@ namespace Nekoyume.Action
             var sw = new Stopwatch();
             sw.Start();
             var started = DateTimeOffset.UtcNow;
-            Log.Verbose("{AddressesHex}Combination exec started", addressesHex);
+            Log.Verbose("{AddressesHex}Combination exec started.", addressesHex);
 
             if (!states.TryGetAvatarState(ctx.Signer, AvatarAddress, out AvatarState avatarState))
             {
@@ -145,7 +145,7 @@ namespace Nekoyume.Action
             Log.Verbose("{AddressesHex}Combination Remove Materials: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();
 
-            var result = new CombinationConsumable.ResultModel
+            var result = new CombinationConsumable5.ResultModel
             {
                 materials = materials,
                 itemType = ItemType.Consumable,
@@ -188,7 +188,7 @@ namespace Nekoyume.Action
                 requiredBlockIndex
             );
             result.id = mail.id;
-            avatarState.Update(mail);
+            avatarState.UpdateV3(mail);
             avatarState.UpdateFromCombination(itemUsable);
             sw.Stop();
             Log.Verbose("{AddressesHex}Combination Update AvatarState: {Elapsed}", addressesHex, sw.Elapsed);

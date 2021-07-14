@@ -319,6 +319,36 @@ namespace Nekoyume.Model
             UpdateExp();
         }
 
+        public void GetExpV3(long waveExp, bool log = false)
+        {
+            if (!characterLevelSheet.TryGetLevel(Exp.Current + waveExp, out var newLevel))
+            {
+                waveExp = Exp.Max - Exp.Current - 1;
+                newLevel = Level;
+            }
+
+            Exp.Current += waveExp;
+
+            if (log)
+            {
+                var getExp = new GetExp((CharacterBase) Clone(), waveExp);
+                Simulator.Log.Add(getExp);
+            }
+
+            if (Level == newLevel)
+            {
+                return;
+            }
+
+            if (Level < newLevel)
+            {
+                eventMap?.Add(new KeyValuePair<int, int>((int) QuestEventType.Level, newLevel - Level));
+            }
+            Level = newLevel;
+
+            UpdateExp();
+        }
+
         // ToDo. 지금은 스테이지에서 재료 아이템만 주고 있음. 추후 대체 불가능 아이템도 줄 경우 수정 대상.
         public CollectionMap GetRewards(List<ItemBase> items)
         {

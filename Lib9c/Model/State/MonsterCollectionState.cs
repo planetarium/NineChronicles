@@ -13,109 +13,109 @@ namespace Nekoyume.Model.State
     [Serializable]
     public class MonsterCollectionState: State
     {
-        public static Address DeriveAddress(Address baseAddress, int collectRound)
+        // We need `round` to integrate previous states.
+        public static Address DeriveAddress(Address baseAddress, int round)
         {
             return baseAddress.Derive(
                 string.Format(
                     CultureInfo.InvariantCulture,
                     DeriveFormat,
-                    collectRound
+                    round
                 )
             );
         }
 
         public const string DeriveFormat = "monster-collection-{0}";
-        public const long ExpirationIndex = RewardInterval * RewardCapacity;
-        public const int RewardCapacity = 4;
         public const long RewardInterval = 50400;
+        public const long LockUpInterval = 50400 * 4;
 
         public int Level { get; private set; }
         public long ExpiredBlockIndex { get; private set; }
         public long StartedBlockIndex { get; private set; }
         public long ReceivedBlockIndex { get; private set; }
         public long RewardLevel { get; private set; }
-        public Dictionary<long, MonsterCollectionResult> RewardMap { get; private set; }
-        public bool End { get; private set; }
-        public Dictionary<long, List<MonsterCollectionRewardSheet.RewardInfo>> RewardLevelMap { get; private set; }
+
+        public MonsterCollectionState(Address address, int level, long blockIndex) : base(address)
+        {
+            Level = level;
+            StartedBlockIndex = blockIndex;
+        }
 
         public MonsterCollectionState(Address address, int level, long blockIndex,
             MonsterCollectionRewardSheet monsterCollectionRewardSheet) : base(address)
         {
             Level = level;
             StartedBlockIndex = blockIndex;
-            ExpiredBlockIndex = blockIndex + ExpirationIndex;
-            RewardMap = new Dictionary<long, MonsterCollectionResult>();
+            ExpiredBlockIndex = blockIndex + LockUpInterval;
             List<MonsterCollectionRewardSheet.RewardInfo> rewardInfos = monsterCollectionRewardSheet[level].Rewards;
-            RewardLevelMap = new Dictionary<long, List<MonsterCollectionRewardSheet.RewardInfo>>
-            {
-                [1] = rewardInfos,
-                [2] = rewardInfos,
-                [3] = rewardInfos,
-                [4] = rewardInfos,
-            };
         }
 
         public MonsterCollectionState(Dictionary serialized) : base(serialized)
         {
             Level = serialized[LevelKey].ToInteger();
-            ExpiredBlockIndex = serialized[ExpiredBlockIndexKey].ToLong();
             StartedBlockIndex = serialized[StartedBlockIndexKey].ToLong();
             ReceivedBlockIndex = serialized[ReceivedBlockIndexKey].ToLong();
-            RewardLevel = serialized[RewardLevelKey].ToLong();
-            RewardMap = ((Dictionary) serialized[RewardMapKey]).ToDictionary(
-                kv => kv.Key.ToLong(),
-                kv => new MonsterCollectionResult((Dictionary)kv.Value)
-            );
-            End = serialized[EndKey].ToBoolean();
-            RewardLevelMap = ((Dictionary) serialized[RewardLevelMapKey])
-                .OrderBy(r => r.Key)
-                .ToDictionary(
-                    kv => kv.Key.ToLong(),
-                    kv => kv.Value
-                        .ToList(v => new MonsterCollectionRewardSheet.RewardInfo((Dictionary)v))
-                        .OrderBy(r => r.ItemId)
-                        .ToList()
-                );
-        }
 
-        public void Update(int level, long rewardLevel, MonsterCollectionRewardSheet monsterCollectionRewardSheet)
-        {
-            Level = level;
-            List<MonsterCollectionRewardSheet.RewardInfo> rewardInfos = monsterCollectionRewardSheet[level].Rewards;
-            for (long i = rewardLevel; i < RewardLevelMap.Count; i++)
+            if (serialized.ContainsKey(ExpiredBlockIndexKey))
             {
-                RewardLevelMap[i + 1] = rewardInfos;
+                ExpiredBlockIndex = serialized[ExpiredBlockIndexKey].ToLong();
+            }
+
+            if (serialized.ContainsKey(RewardLevelKey))
+            {
+                RewardLevel = serialized[RewardLevelKey].ToLong();
             }
         }
 
-        public void UpdateRewardMap(long rewardLevel, MonsterCollectionResult avatarAddress, long blockIndex)
+        public bool IsLocked(long blockIndex)
         {
-            if (rewardLevel < 0 || rewardLevel > RewardCapacity)
-            {
-                throw new ArgumentOutOfRangeException(nameof(rewardLevel),
-                    $"reward level must be greater than 0 and less than {RewardCapacity}.");
-            }
+            return StartedBlockIndex +  LockUpInterval > blockIndex;
+        }
 
-            if (RewardMap.ContainsKey(rewardLevel))
-            {
-                throw new AlreadyReceivedException("");
-            }
-
-            RewardMap[rewardLevel] = avatarAddress;
-            RewardLevel = rewardLevel;
+        public void Claim(long blockIndex)
+        {
             ReceivedBlockIndex = blockIndex;
-            End = rewardLevel == 4;
         }
 
-        public long GetRewardLevel(long blockIndex)
+        public int CalculateStep(long blockIndex)
         {
-            long diff = Math.Max(0, blockIndex - StartedBlockIndex);
-            return Math.Min(RewardCapacity, diff / RewardInterval);
+            int step = (int)Math.DivRem(
+                blockIndex - StartedBlockIndex,
+                RewardInterval,
+                out _
+            );
+            if (ReceivedBlockIndex > 0)
+            {
+                int previousStep = (int)Math.DivRem(
+                    ReceivedBlockIndex - StartedBlockIndex,
+                    RewardInterval,
+                    out _
+                );
+                step -= previousStep;
+            }
+
+            return step;
         }
 
-        public bool CanReceive(long blockIndex)
+        public List<MonsterCollectionRewardSheet.RewardInfo> CalculateRewards(
+            MonsterCollectionRewardSheet sheet,
+            long blockIndex
+        )
         {
-            return blockIndex - Math.Max(StartedBlockIndex, ReceivedBlockIndex) >= RewardInterval;
+            int step = CalculateStep(blockIndex);
+            if (step > 0)
+            {
+                return sheet[Level].Rewards
+                    .GroupBy(ri => ri.ItemId)
+                    .Select(g => new MonsterCollectionRewardSheet.RewardInfo(
+                                g.Key,
+                                g.Sum(ri => ri.Quantity) * step))
+                    .ToList();
+            }
+            else
+            {
+                return new List<MonsterCollectionRewardSheet.RewardInfo>();
+            }
         }
 
         public override IValue Serialize()
@@ -124,28 +124,9 @@ namespace Nekoyume.Model.State
             return new Dictionary(new Dictionary<IKey, IValue>
             {
                 [(Text) LevelKey] = Level.Serialize(),
-                [(Text) ExpiredBlockIndexKey] = ExpiredBlockIndex.Serialize(),
                 [(Text) StartedBlockIndexKey] = StartedBlockIndex.Serialize(),
                 [(Text) ReceivedBlockIndexKey] = ReceivedBlockIndex.Serialize(),
-                [(Text) RewardLevelKey] = RewardLevel.Serialize(),
-                [(Text) RewardMapKey] = new Dictionary(
-                    RewardMap.Select(
-                        kv => new KeyValuePair<IKey, IValue>(
-                            (IKey) kv.Key.Serialize(),
-                            kv.Value.Serialize()
-                        )
-                    )
-                ),
-                [(Text) EndKey] = End.Serialize(),
-                [(Text) RewardLevelMapKey] = new Dictionary(
-                    RewardLevelMap.Select(
-                        kv => new KeyValuePair<IKey, IValue>(
-                            (IKey) kv.Key.Serialize(),
-                            new List(kv.Value.Select(v => v.Serialize())).Serialize()
-                        )
-                    )
-                ),
-            }.Union((Dictionary) base.Serialize()));
+            }.Union((Dictionary) base.SerializeV2()));
 #pragma warning restore LAA1002
         }
 
@@ -154,8 +135,7 @@ namespace Nekoyume.Model.State
 #pragma warning disable LAA1002
             return Level == other.Level && ExpiredBlockIndex == other.ExpiredBlockIndex &&
                    StartedBlockIndex == other.StartedBlockIndex && ReceivedBlockIndex == other.ReceivedBlockIndex &&
-                   RewardLevel == other.RewardLevel && RewardMap.SequenceEqual(other.RewardMap) && End == other.End &&
-                   RewardLevelMap.SequenceEqual(other.RewardLevelMap);
+                   RewardLevel == other.RewardLevel;
 #pragma warning restore LAA1002
         }
 
@@ -176,9 +156,6 @@ namespace Nekoyume.Model.State
                 hashCode = (hashCode * 397) ^ StartedBlockIndex.GetHashCode();
                 hashCode = (hashCode * 397) ^ ReceivedBlockIndex.GetHashCode();
                 hashCode = (hashCode * 397) ^ RewardLevel.GetHashCode();
-                hashCode = (hashCode * 397) ^ (RewardMap != null ? RewardMap.GetHashCode() : 0);
-                hashCode = (hashCode * 397) ^ End.GetHashCode();
-                hashCode = (hashCode * 397) ^ (RewardLevelMap != null ? RewardLevelMap.GetHashCode() : 0);
                 return hashCode;
             }
         }

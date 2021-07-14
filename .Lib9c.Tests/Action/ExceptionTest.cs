@@ -204,6 +204,41 @@ namespace Lib9c.Tests.Action
             AssertException<InvalidLevelException>(exc);
         }
 
+        [Fact]
+        public void ActionPointExceededException_Serializable()
+        {
+            var exc = new ActionPointExceededException("for testing.");
+            AssertException<ActionPointExceededException>(exc);
+        }
+
+        [Fact]
+        public void InvalidItemCountException_Serializable()
+        {
+            var exc = new InvalidItemCountException("for testing.");
+            AssertException<InvalidItemCountException>(exc);
+        }
+
+        [Fact]
+        public void DuplicateOrderIdException_Serializable()
+        {
+            var exc = new DuplicateOrderIdException("for testing.");
+            AssertException<DuplicateOrderIdException>(exc);
+        }
+
+        [Fact]
+        public void OrderIdDoesNotExistException_Serializable()
+        {
+            var exc = new OrderIdDoesNotExistException("for testing.");
+            AssertException<OrderIdDoesNotExistException>(exc);
+        }
+
+        [Fact]
+        public void InvalidTradableIdException_Serializable()
+        {
+            var exc = new InvalidTradableIdException("for testing.");
+            AssertException<InvalidTradableIdException>(exc);
+        }
+
         private static void AssertException<T>(Exception exc)
             where T : Exception
         {

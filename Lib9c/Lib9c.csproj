@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <NoWarn>$(NoWarn);CS0162;CS8032</NoWarn>
+    <NoWarn>$(NoWarn);CS0162;CS8032;CS0618</NoWarn>
     <CodeAnalysisRuleSet>Lib9c.ruleset</CodeAnalysisRuleSet>
     <OutputPath>.bin</OutputPath>
     <IntermediateOutputPath>.obj</IntermediateOutputPath>

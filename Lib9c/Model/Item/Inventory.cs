@@ -644,7 +644,7 @@ namespace Nekoyume.Model.Item
             if (TryGetTradableItems(tradableId, blockIndex, count, out List<Item> items))
             {
                 int remain = count;
-                long requiredBlockIndex = blockIndex + Sell.ExpiredBlockIndex;
+                long requiredBlockIndex = blockIndex + Sell6.ExpiredBlockIndex;
                 for (int i = 0; i < items.Count; i++)
                 {
                     Item item = items[i];

@@ -1,3 +1,4 @@
+using System;
 using Libplanet;
 using Nekoyume.Action;
 using Nekoyume.TableData;
@@ -24,5 +25,7 @@ namespace Nekoyume
         public static Address GetSheetAddress<T>() where T : ISheet => GetSheetAddress(typeof(T).Name);
         
         public static Address GetSheetAddress(string sheetName) => TableSheet.Derive(sheetName);
+
+        public static Address GetItemAddress(Guid itemId) => Blacksmith.Derive(itemId.ToString());
     }
 }

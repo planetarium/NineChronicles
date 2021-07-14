@@ -3,25 +3,22 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Globalization;
-using System.Linq;
-using System.Numerics;
 using System.Text.RegularExpressions;
 using Bencodex.Types;
-using Libplanet;
 using Libplanet.Action;
-using Nekoyume.Model.Item;
-using Nekoyume.Model.Stat;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using Serilog;
+using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("create_avatar")]
+    [ActionType("create_avatar3")]
     public class CreateAvatar : GameAction
     {
-        public Address avatarAddress;
+        public const string DeriveFormat = "avatar-state-{0}";
+
         public int index;
         public int hair;
         public int lens;
@@ -31,7 +28,6 @@ namespace Nekoyume.Action
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal => new Dictionary<string, IValue>()
         {
-            ["avatarAddress"] = avatarAddress.Serialize(),
             ["index"] = (Integer) index,
             ["hair"] = (Integer) hair,
             ["lens"] = (Integer) lens,
@@ -42,7 +38,6 @@ namespace Nekoyume.Action
 
         protected override void LoadPlainValueInternal(IImmutableDictionary<string, IValue> plainValue)
         {
-            avatarAddress = plainValue["avatarAddress"].ToAddress();
             index = (int) ((Integer) plainValue["index"]).Value;
             hair = (int) ((Integer) plainValue["hair"]).Value;
             lens = (int) ((Integer) plainValue["lens"]).Value;
@@ -55,6 +50,16 @@ namespace Nekoyume.Action
         {
             IActionContext ctx = context;
             var states = ctx.PreviousStates;
+            var avatarAddress = ctx.Signer.Derive(
+                string.Format(
+                    CultureInfo.InvariantCulture,
+                    DeriveFormat,
+                    index
+                )
+            );
+            var inventoryAddress = avatarAddress.Derive(LegacyInventoryKey);
+            var worldInformationAddress = avatarAddress.Derive(LegacyWorldInformationKey);
+            var questListAddress = avatarAddress.Derive(LegacyQuestListKey);
             if (ctx.Rehearsal)
             {
                 states = states.SetState(ctx.Signer, MarkChanged);
@@ -73,12 +78,13 @@ namespace Nekoyume.Action
                 return states
                     .SetState(avatarAddress, MarkChanged)
                     .SetState(Addresses.Ranking, MarkChanged)
+                    .SetState(inventoryAddress, MarkChanged)
+                    .SetState(worldInformationAddress, MarkChanged)
+                    .SetState(questListAddress, MarkChanged)
                     .MarkBalanceChanged(GoldCurrencyMock, GoldCurrencyState.Address, context.Signer);
             }
-
+            
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
-
-            Log.Warning("{AddressesHex}create_avatar is deprecated. Please use create_avatar2", addressesHex);
 
             if (!Regex.IsMatch(name, GameConfig.AvatarNickNamePattern))
             {
@@ -125,7 +131,7 @@ namespace Nekoyume.Action
 
             var rankingMapAddress = rankingState.UpdateRankingMap(avatarAddress);
 
-            avatarState = CreateAvatarState(name, avatarAddress, ctx, materialItemSheet, rankingMapAddress);
+            avatarState = CreateAvatar0.CreateAvatarState(name, avatarAddress, ctx, materialItemSheet, rankingMapAddress);
 
             if (hair < 0) hair = 0;
             if (lens < 0) lens = 0;
@@ -150,151 +156,10 @@ namespace Nekoyume.Action
             return states
                 .SetState(ctx.Signer, agentState.Serialize())
                 .SetState(Addresses.Ranking, rankingState.Serialize())
-                .SetState(avatarAddress, avatarState.Serialize());
-        }
-
-        public static AvatarState CreateAvatarState(string name,
-            Address avatarAddress,
-            IActionContext ctx,
-            MaterialItemSheet materialItemSheet,
-            Address rankingMapAddress)
-        {
-            var state = ctx.PreviousStates;
-            var gameConfigState = state.GetGameConfigState();
-            var avatarState = new AvatarState(
-                avatarAddress,
-                ctx.Signer,
-                ctx.BlockIndex,
-                state.GetAvatarSheets(),
-                gameConfigState,
-                rankingMapAddress,
-                name
-            );
-
-            if (GameConfig.IsEditor)
-            {
-                var costumeItemSheet = ctx.PreviousStates.GetSheet<CostumeItemSheet>();
-                var equipmentItemSheet = ctx.PreviousStates.GetSheet<EquipmentItemSheet>();
-                AddItemsForTest(
-                    avatarState: avatarState,
-                    random: ctx.Random,
-                    costumeItemSheet: costumeItemSheet,
-                    materialItemSheet: materialItemSheet,
-                    equipmentItemSheet: equipmentItemSheet);
-
-                var skillSheet = ctx.PreviousStates.GetSheet<SkillSheet>();
-                var optionSheet = ctx.PreviousStates.GetSheet<EquipmentItemOptionSheet>();
-
-                AddCustomEquipment(
-                    avatarState: avatarState,
-                    random: ctx.Random,
-                    skillSheet: skillSheet,
-                    equipmentItemSheet: equipmentItemSheet,
-                    equipmentItemOptionSheet: optionSheet,
-                    // Set level of equipment here.
-                    level: 2,
-                    // Set recipeId of target equipment here.
-                    recipeId: 10110000,
-                    // Add optionIds here.
-                    7, 9, 11);
-            }
-
-            return avatarState;
-        }
-
-        private static void AddItemsForTest(
-            AvatarState avatarState,
-            IRandom random,
-            CostumeItemSheet costumeItemSheet,
-            MaterialItemSheet materialItemSheet,
-            EquipmentItemSheet equipmentItemSheet
-        )
-        {
-            foreach (var row in costumeItemSheet.OrderedList)
-            {
-                avatarState.inventory.AddItem(ItemFactory.CreateCostume(row, random.GenerateRandomGuid()));
-            }
-
-            foreach (var row in materialItemSheet.OrderedList)
-            {
-                avatarState.inventory.AddItem(ItemFactory.CreateMaterial(row), 10);
-
-                if (row.ItemSubType == ItemSubType.Hourglass ||
-                    row.ItemSubType == ItemSubType.ApStone)
-                {
-                    avatarState.inventory.AddItem(ItemFactory.CreateTradableMaterial(row), 100);
-                }
-            }
-
-            foreach (var row in equipmentItemSheet.OrderedList.Where(row =>
-                row.Id > GameConfig.DefaultAvatarWeaponId))
-            {
-                var itemId = random.GenerateRandomGuid();
-                avatarState.inventory.AddItem(ItemFactory.CreateItemUsable(row, itemId, default));
-            }
-        }
-
-        private static void AddCustomEquipment(
-            AvatarState avatarState,
-            IRandom random,
-            SkillSheet skillSheet,
-            EquipmentItemSheet equipmentItemSheet,
-            EquipmentItemOptionSheet equipmentItemOptionSheet,
-            int level,
-            int recipeId,
-            params int[] optionIds
-            )
-        {
-            if (!equipmentItemSheet.TryGetValue(recipeId, out var equipmentRow))
-            {
-                return;
-            }
-
-            var itemId = random.GenerateRandomGuid();
-            var equipment = (Equipment)ItemFactory.CreateItemUsable(equipmentRow, itemId, 0, level);
-            var optionRows = new List<EquipmentItemOptionSheet.Row>();
-            foreach (var optionId in optionIds)
-            {
-                if (!equipmentItemOptionSheet.TryGetValue(optionId, out var optionRow))
-                {
-                    continue;
-                }
-                optionRows.Add(optionRow);
-            }
-
-            AddOption(skillSheet, equipment, optionRows, random);
-
-            avatarState.inventory.AddItem(equipment);
-        }
-
-        private static HashSet<int> AddOption(
-            SkillSheet skillSheet,
-            Equipment equipment,
-            IEnumerable<EquipmentItemOptionSheet.Row> optionRows,
-            IRandom random)
-        {
-            var optionIds = new HashSet<int>();
-
-            foreach (var optionRow in optionRows.OrderBy(r => r.Id))
-            {
-                if (optionRow.StatType != StatType.NONE)
-                {
-                    var statMap = CombinationEquipment.GetStat(optionRow, random);
-                    equipment.StatsMap.AddStatAdditionalValue(statMap.StatType, statMap.Value);
-                }
-                else
-                {
-                    var skill = CombinationEquipment.GetSkill(optionRow, skillSheet, random);
-                    if (!(skill is null))
-                    {
-                        equipment.Skills.Add(skill);
-                    }
-                }
-
-                optionIds.Add(optionRow.Id);
-            }
-
-            return optionIds;
+                .SetState(inventoryAddress, avatarState.inventory.Serialize())
+                .SetState(worldInformationAddress, avatarState.worldInformation.Serialize())
+                .SetState(questListAddress, avatarState.questList.Serialize())
+                .SetState(avatarAddress, avatarState.SerializeV2());
         }
     }
 }

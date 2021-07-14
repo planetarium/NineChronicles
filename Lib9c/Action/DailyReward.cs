@@ -9,11 +9,12 @@ using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
+using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("daily_reward3")]
+    [ActionType("daily_reward4")]
     public class DailyReward : GameAction
     {
         public Address avatarAddress;
@@ -25,14 +26,21 @@ namespace Nekoyume.Action
         {
             IActionContext ctx = context;
             var states = ctx.PreviousStates;
+            var inventoryAddress = avatarAddress.Derive(LegacyInventoryKey);
+            var worldInformationAddress = avatarAddress.Derive(LegacyWorldInformationKey);
+            var questListAddress = avatarAddress.Derive(LegacyQuestListKey);
             if (ctx.Rehearsal)
             {
-                return states.SetState(avatarAddress, MarkChanged);
+                return states
+                    .SetState(inventoryAddress, MarkChanged)
+                    .SetState(worldInformationAddress, MarkChanged)
+                    .SetState(questListAddress, MarkChanged)
+                    .SetState(avatarAddress, MarkChanged);
             }
             
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
 
-            if (!states.TryGetAgentAvatarStates(ctx.Signer, avatarAddress, out _, out AvatarState avatarState))
+            if (!states.TryGetAgentAvatarStatesV2(ctx.Signer, avatarAddress, out _, out AvatarState avatarState))
             {
                 throw new FailedLoadStateException($"{addressesHex}Aborted as the avatar state of the signer was failed to load.");
             }
@@ -70,7 +78,11 @@ namespace Nekoyume.Action
             dailyRewardResult = result;
             avatarState.UpdateV3(mail);
             avatarState.UpdateFromAddItem(material, rewardItemCount, false);
-            return states.SetState(avatarAddress, avatarState.Serialize());
+            return states
+                .SetState(inventoryAddress, avatarState.inventory.Serialize())
+                .SetState(worldInformationAddress, avatarState.worldInformation.Serialize())
+                .SetState(questListAddress, avatarState.questList.Serialize())
+                .SetState(avatarAddress, avatarState.SerializeV2());
         }
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal => new Dictionary<string, IValue>

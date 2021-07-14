@@ -42,14 +42,14 @@ namespace Lib9c.Tests.Action
 
         [Theory]
         [InlineData(7, 1, 1)]
-        [InlineData(6, 2, MonsterCollectionState.RewardInterval)]
-        [InlineData(5, 3, MonsterCollectionState.RewardInterval * 3)]
-        [InlineData(4, 3, MonsterCollectionState.RewardInterval * 4)]
+        [InlineData(6, 2, MonsterCollectionState0.RewardInterval)]
+        [InlineData(5, 3, MonsterCollectionState0.RewardInterval * 3)]
+        [InlineData(4, 3, MonsterCollectionState0.RewardInterval * 4)]
         public void Execute(int prevLevel, int collectionLevel, long blockIndex)
         {
-            Address collectionAddress = MonsterCollectionState.DeriveAddress(_signer, 0);
+            Address collectionAddress = MonsterCollectionState0.DeriveAddress(_signer, 0);
             List<MonsterCollectionRewardSheet.RewardInfo> rewardInfos = _tableSheets.MonsterCollectionRewardSheet[prevLevel].Rewards;
-            MonsterCollectionState monsterCollectionState = new MonsterCollectionState(collectionAddress, prevLevel, 0, _tableSheets.MonsterCollectionRewardSheet);
+            MonsterCollectionState0 monsterCollectionState = new MonsterCollectionState0(collectionAddress, prevLevel, 0, _tableSheets.MonsterCollectionRewardSheet);
             Currency currency = _state.GetGoldCurrency();
             FungibleAssetValue balance = 0 * currency;
             foreach (var row in _tableSheets.MonsterCollectionSheet)
@@ -79,7 +79,7 @@ namespace Lib9c.Tests.Action
                 BlockIndex = blockIndex,
             });
 
-            MonsterCollectionState nextMonsterCollectionState = new MonsterCollectionState((Dictionary)nextState.GetState(collectionAddress));
+            MonsterCollectionState0 nextMonsterCollectionState = new MonsterCollectionState0((Dictionary)nextState.GetState(collectionAddress));
             Assert.Equal(collectionLevel, nextMonsterCollectionState.Level);
             Assert.Equal(0 * currency, nextState.GetBalance(collectionAddress, currency));
             Assert.Equal(balance, nextState.GetBalance(_signer, currency));
@@ -134,8 +134,8 @@ namespace Lib9c.Tests.Action
         [InlineData(3, 0)]
         public void Execute_Throw_InvalidLevelException(int prevLevel, int level)
         {
-            Address collectionAddress = MonsterCollectionState.DeriveAddress(_signer, 0);
-            MonsterCollectionState monsterCollectionState = new MonsterCollectionState(collectionAddress, prevLevel, 0, _tableSheets.MonsterCollectionRewardSheet);
+            Address collectionAddress = MonsterCollectionState0.DeriveAddress(_signer, 0);
+            MonsterCollectionState0 monsterCollectionState = new MonsterCollectionState0(collectionAddress, prevLevel, 0, _tableSheets.MonsterCollectionRewardSheet);
 
             _state = _state.SetState(collectionAddress, monsterCollectionState.Serialize());
 
@@ -157,9 +157,9 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Execute_Throw_MonsterCollectionExpiredException()
         {
-            Address collectionAddress = MonsterCollectionState.DeriveAddress(_signer, 0);
-            MonsterCollectionState monsterCollectionState = new MonsterCollectionState(collectionAddress, 2, 0, _tableSheets.MonsterCollectionRewardSheet);
-            for (int i = 0; i < MonsterCollectionState.RewardCapacity; i++)
+            Address collectionAddress = MonsterCollectionState0.DeriveAddress(_signer, 0);
+            MonsterCollectionState0 monsterCollectionState = new MonsterCollectionState0(collectionAddress, 2, 0, _tableSheets.MonsterCollectionRewardSheet);
+            for (int i = 0; i < MonsterCollectionState0.RewardCapacity; i++)
             {
                 MonsterCollectionResult monsterCollectionResult = new MonsterCollectionResult(Guid.NewGuid(), default, new List<MonsterCollectionRewardSheet.RewardInfo>());
                 monsterCollectionState.UpdateRewardMap(i + 1, monsterCollectionResult, 0);
@@ -187,8 +187,8 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Execute_Throw_InsufficientBalanceException()
         {
-            Address collectionAddress = MonsterCollectionState.DeriveAddress(_signer, 0);
-            MonsterCollectionState monsterCollectionState = new MonsterCollectionState(collectionAddress, 2, 0, _tableSheets.MonsterCollectionRewardSheet);
+            Address collectionAddress = MonsterCollectionState0.DeriveAddress(_signer, 0);
+            MonsterCollectionState0 monsterCollectionState = new MonsterCollectionState0(collectionAddress, 2, 0, _tableSheets.MonsterCollectionRewardSheet);
 
             _state = _state.SetState(collectionAddress, monsterCollectionState.Serialize());
 

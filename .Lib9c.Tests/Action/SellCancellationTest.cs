@@ -2,8 +2,10 @@ namespace Lib9c.Tests.Action
 {
     using System;
     using System.Collections.Generic;
+    using System.Collections.Immutable;
     using System.Linq;
     using Bencodex.Types;
+    using Lib9c.Model.Order;
     using Libplanet;
     using Libplanet.Action;
     using Libplanet.Assets;
@@ -18,6 +20,7 @@ namespace Lib9c.Tests.Action
     using Serilog;
     using Xunit;
     using Xunit.Abstractions;
+    using static SerializeKeys;
 
     public class SellCancellationTest
     {
@@ -74,22 +77,31 @@ namespace Lib9c.Tests.Action
         }
 
         [Theory]
-        [InlineData(ItemType.Equipment, "F9168C5E-CEB2-4faa-B6BF-329BF39FA1E4", true, 1, 1, 1, 1)]
-        [InlineData(ItemType.Costume, "936DA01F-9ABD-4d9d-80C7-02AF85C822A8", true, 1, 1, 1, 1)]
-        [InlineData(ItemType.Material, "15396359-04db-68d5-f24a-d89c18665900", true, 1, 1, 1, 1)]
-        [InlineData(ItemType.Material, "15396359-04db-68d5-f24a-d89c18665900", true, 2, 1, 2, 2)]
-        [InlineData(ItemType.Material, "15396359-04db-68d5-f24a-d89c18665900", true, 2, 2, 3, 3)]
-        [InlineData(ItemType.Equipment, "F9168C5E-CEB2-4faa-B6BF-329BF39FA1E4", false, 1, 1, 0, 1)]
-        [InlineData(ItemType.Costume, "936DA01F-9ABD-4d9d-80C7-02AF85C822A8", false, 1, 1, 0, 1)]
-        public void Execute(ItemType itemType, string guid, bool contain, int itemCount, int inventoryCount, int prevCount, int expectedCount)
+        [InlineData(ItemType.Equipment, "F9168C5E-CEB2-4faa-B6BF-329BF39FA1E4", 1, 1, 1, true)]
+        [InlineData(ItemType.Costume, "936DA01F-9ABD-4d9d-80C7-02AF85C822A8", 1, 1, 1, true)]
+        [InlineData(ItemType.Material, "15396359-04db-68d5-f24a-d89c18665900", 1, 1, 1, true)]
+        [InlineData(ItemType.Material, "15396359-04db-68d5-f24a-d89c18665900", 2, 1, 2, true)]
+        [InlineData(ItemType.Material, "15396359-04db-68d5-f24a-d89c18665900", 2, 2, 3, true)]
+        [InlineData(ItemType.Equipment, "F9168C5E-CEB2-4faa-B6BF-329BF39FA1E4", 1, 1, 1, false)]
+        [InlineData(ItemType.Costume, "936DA01F-9ABD-4d9d-80C7-02AF85C822A8", 1, 1, 1, false)]
+        [InlineData(ItemType.Material, "15396359-04db-68d5-f24a-d89c18665900", 1, 1, 1, false)]
+        [InlineData(ItemType.Material, "15396359-04db-68d5-f24a-d89c18665900", 2, 1, 2, false)]
+        [InlineData(ItemType.Material, "15396359-04db-68d5-f24a-d89c18665900", 2, 2, 3, false)]
+        public void Execute(
+            ItemType itemType,
+            string guid,
+            int itemCount,
+            int inventoryCount,
+            int expectedCount,
+            bool backward
+        )
         {
             var avatarState = _initialState.GetAvatarState(_avatarAddress);
             ITradableItem tradableItem;
             Guid itemId = new Guid(guid);
-            Guid productId = itemId;
+            Guid orderId = Guid.NewGuid();
             ItemSubType itemSubType;
-            const long requiredBlockIndex = Sell.ExpiredBlockIndex;
-            ShopState legacyShopState = _initialState.GetShopState();
+            const long requiredBlockIndex = Order.ExpirationInterval;
             if (itemType == ItemType.Equipment)
             {
                 var itemUsable = ItemFactory.CreateItemUsable(
@@ -127,79 +139,101 @@ namespace Lib9c.Tests.Action
                 avatarState.Update(mail);
             }
 
-            Address shardedShopAddress = ShardedShopState.DeriveAddress(itemSubType, productId);
-            ShardedShopState shopState = new ShardedShopState(shardedShopAddress);
-            var shopItem = new ShopItem(
+            Address shardedShopAddress = ShardedShopStateV2.DeriveAddress(itemSubType, orderId);
+            ShardedShopStateV2 shopState = new ShardedShopStateV2(shardedShopAddress);
+            Order order = OrderFactory.Create(
                 _agentAddress,
                 _avatarAddress,
-                productId,
+                orderId,
                 new FungibleAssetValue(_goldCurrencyState.Currency, 100, 0),
+                tradableItem.TradableId,
                 requiredBlockIndex,
-                tradableItem,
-                itemCount);
+                itemSubType,
+                itemCount
+            );
 
-            if (contain)
+            var expirationMail = new OrderExpirationMail(
+                101,
+                orderId,
+                order.ExpiredBlockIndex,
+                orderId
+            );
+            avatarState.mailBox.Add(expirationMail);
+
+            var orderDigestList = new OrderDigestListState(OrderDigestListState.DeriveAddress(_avatarAddress));
+            IAccountStateDelta prevState = _initialState;
+
+            if (inventoryCount > 1)
             {
-                shopState.Register(shopItem);
-                if (inventoryCount > 1)
+                for (int i = 0; i < inventoryCount; i++)
                 {
-                    for (int i = 0; i < inventoryCount; i++)
+                    // Different RequiredBlockIndex for divide inventory slot.
+                    if (tradableItem is ITradableFungibleItem tradableFungibleItem)
                     {
-                        // Different RequiredBlockIndex for divide inventory slot.
-                        var tradable = new TradableMaterial((Dictionary)tradableItem.Serialize())
-                        {
-                            RequiredBlockIndex = tradableItem.RequiredBlockIndex - i,
-                        };
+                        var tradable = (TradableMaterial)tradableFungibleItem.Clone();
+                        tradable.RequiredBlockIndex = tradableItem.RequiredBlockIndex - i;
                         avatarState.inventory.AddItem(tradable, 2 - i);
                     }
                 }
-                else
-                {
-                    avatarState.inventory.AddItem((ItemBase)tradableItem, itemCount);
-                }
-
-                Assert.Empty(legacyShopState.Products);
-                Assert.Single(shopState.Products);
-                Assert.Equal(inventoryCount, avatarState.inventory.Items.Count);
-                Assert.Equal(prevCount, avatarState.inventory.Items.Sum(i => i.count));
             }
             else
             {
-                legacyShopState.Register(shopItem);
-                Assert.Single(legacyShopState.Products);
-                Assert.Empty(shopState.Products);
+                avatarState.inventory.AddItem((ItemBase)tradableItem, itemCount);
             }
 
-            Assert.Equal(requiredBlockIndex, tradableItem.RequiredBlockIndex);
-            Assert.Equal(
-                contain,
-                avatarState.inventory.TryGetTradableItems(itemId, requiredBlockIndex, itemCount, out _)
-            );
+            ITradableItem sellItem = order.Sell(avatarState);
+            OrderDigest orderDigest = order.Digest(avatarState, _tableSheets.CostumeStatSheet);
+            shopState.Add(orderDigest, requiredBlockIndex);
+            orderDigestList.Add(orderDigest);
 
-            IAccountStateDelta prevState = _initialState
-                .SetState(_avatarAddress, avatarState.Serialize())
-                .SetState(Addresses.Shop, legacyShopState.Serialize())
+            Assert.Equal(inventoryCount, avatarState.inventory.Items.Count);
+            Assert.Equal(expectedCount, avatarState.inventory.Items.Sum(i => i.count));
+
+            Assert.Single(shopState.OrderDigestList);
+            Assert.Single(orderDigestList.OrderDigestList);
+
+            Assert.Equal(requiredBlockIndex * 2, sellItem.RequiredBlockIndex);
+            Assert.True(avatarState.inventory.TryGetTradableItems(itemId, requiredBlockIndex * 2, itemCount, out _));
+
+            if (backward)
+            {
+                prevState = prevState.SetState(_avatarAddress, avatarState.Serialize());
+            }
+            else
+            {
+                prevState = prevState
+                    .SetState(_avatarAddress.Derive(LegacyInventoryKey), avatarState.inventory.Serialize())
+                    .SetState(_avatarAddress.Derive(LegacyWorldInformationKey), avatarState.worldInformation.Serialize())
+                    .SetState(_avatarAddress.Derive(LegacyQuestListKey), avatarState.questList.Serialize())
+                    .SetState(_avatarAddress, avatarState.SerializeV2());
+            }
+
+            prevState = prevState
+                .SetState(Addresses.GetItemAddress(itemId), sellItem.Serialize())
+                .SetState(Order.DeriveAddress(order.OrderId), order.Serialize())
+                .SetState(orderDigestList.Address, orderDigestList.Serialize())
                 .SetState(shardedShopAddress, shopState.Serialize());
 
             var sellCancellationAction = new SellCancellation
             {
-                productId = shopItem.ProductId,
+                orderId = orderId,
                 sellerAvatarAddress = _avatarAddress,
                 itemSubType = itemSubType,
+                tradableId = itemId,
             };
             var nextState = sellCancellationAction.Execute(new ActionContext
             {
-                BlockIndex = 1,
+                BlockIndex = 101,
                 PreviousStates = prevState,
                 Random = new TestRandom(),
                 Rehearsal = false,
                 Signer = _agentAddress,
             });
 
-            ShardedShopState nextShopState = new ShardedShopState((Dictionary)nextState.GetState(shardedShopAddress));
-            Assert.Empty(nextShopState.Products);
+            ShardedShopStateV2 nextShopState = new ShardedShopStateV2((Dictionary)nextState.GetState(shardedShopAddress));
+            Assert.Empty(nextShopState.OrderDigestList);
 
-            var nextAvatarState = nextState.GetAvatarState(_avatarAddress);
+            var nextAvatarState = nextState.GetAvatarStateV2(_avatarAddress);
             Assert.Equal(expectedCount, nextAvatarState.inventory.Items.Sum(i => i.count));
             Assert.False(nextAvatarState.inventory.TryGetTradableItems(
                 itemId,
@@ -213,16 +247,21 @@ namespace Lib9c.Tests.Action
                 itemCount,
                 out List<Inventory.Item> inventoryItems
             ));
-            Assert.Empty(inventoryItems.Select(i => (ITradableItem)i.item).Where(item => item.RequiredBlockIndex == requiredBlockIndex));
             Assert.Equal(inventoryCount, inventoryItems.Count);
             Inventory.Item inventoryItem = inventoryItems.First();
             Assert.Equal(itemCount, inventoryItem.count);
             Assert.Equal(inventoryCount, nextAvatarState.inventory.Items.Count);
             ITradableItem nextTradableItem = (ITradableItem)inventoryItem.item;
-            Assert.Equal(1, nextTradableItem.RequiredBlockIndex);
+            Assert.Equal(101, nextTradableItem.RequiredBlockIndex);
             Assert.Equal(30, nextAvatarState.mailBox.Count);
-            ShopState nextLegacyShopState = nextState.GetShopState();
-            Assert.Empty(nextLegacyShopState.Products);
+            Assert.Empty(nextAvatarState.mailBox.OfType<OrderExpirationMail>());
+            var cancelMail = nextAvatarState.mailBox.OfType<CancelOrderMail>().First();
+            Assert.Equal(orderId, cancelMail.OrderId);
+            var nextReceiptList = new OrderDigestListState((Dictionary)nextState.GetState(orderDigestList.Address));
+            Assert.Empty(nextReceiptList.OrderDigestList);
+
+            var sellCancelItem = (ITradableItem)ItemFactory.Deserialize((Dictionary)nextState.GetState(Addresses.GetItemAddress(itemId)));
+            Assert.Equal(101, sellCancelItem.RequiredBlockIndex);
         }
 
         [Fact]
@@ -230,7 +269,7 @@ namespace Lib9c.Tests.Action
         {
             var action = new SellCancellation
             {
-                productId = default,
+                orderId = default,
                 sellerAvatarAddress = default,
                 itemSubType = ItemSubType.Weapon,
             };
@@ -261,7 +300,7 @@ namespace Lib9c.Tests.Action
 
             var action = new SellCancellation
             {
-                productId = default,
+                orderId = default,
                 sellerAvatarAddress = _avatarAddress,
                 itemSubType = ItemSubType.Weapon,
             };
@@ -281,7 +320,7 @@ namespace Lib9c.Tests.Action
         [InlineData(ItemType.Material)]
         public void Execute_Throw_ItemDoesNotExistException(ItemType itemType)
         {
-            Guid productId = Guid.NewGuid();
+            Guid orderId = Guid.NewGuid();
             ITradableItem tradableItem;
             ItemSheet.Row row;
             switch (itemType)
@@ -312,27 +351,32 @@ namespace Lib9c.Tests.Action
                 tradableItem = (ITradableItem)ItemFactory.CreateItem(row, new TestRandom());
             }
 
-            tradableItem.RequiredBlockIndex = Sell.ExpiredBlockIndex;
+            tradableItem.RequiredBlockIndex = Sell6.ExpiredBlockIndex;
 
-            Address shardedShopAddress = ShardedShopState.DeriveAddress(tradableItem.ItemSubType, productId);
-            ShardedShopState shopState = new ShardedShopState(shardedShopAddress);
+            Address shardedShopAddress = ShardedShopStateV2.DeriveAddress(tradableItem.ItemSubType, orderId);
+            var shopState = new ShardedShopStateV2(shardedShopAddress);
 
-            var shopItem = new ShopItem(
+            Order order = OrderFactory.Create(
                 _agentAddress,
                 _avatarAddress,
-                productId,
+                orderId,
                 new FungibleAssetValue(_goldCurrencyState.Currency, 100, 0),
-                Sell.ExpiredBlockIndex,
-                tradableItem);
+                tradableItem.TradableId,
+                0,
+                tradableItem.ItemSubType,
+                1
+            );
 
             IAccountStateDelta prevState = _initialState
+                .SetState(Order.DeriveAddress(orderId), order.Serialize())
                 .SetState(shardedShopAddress, shopState.Serialize());
 
             var action = new SellCancellation
             {
-                productId = shopItem.ProductId,
+                orderId = orderId,
                 sellerAvatarAddress = _avatarAddress,
                 itemSubType = tradableItem.ItemSubType,
+                tradableId = tradableItem.TradableId,
             };
 
             ItemDoesNotExistException exc = Assert.Throws<ItemDoesNotExistException>(() => action.Execute(new ActionContext()
@@ -343,77 +387,57 @@ namespace Lib9c.Tests.Action
                     Signer = _agentAddress,
                 })
             );
-            Assert.Equal(itemType == ItemType.Material, !exc.Message.Contains("legacy"));
         }
 
-        [Fact]
-        public void Execute_Throw_InvalidAddressException_From_Agent()
+        [Theory]
+        [InlineData(false, true)]
+        [InlineData(true, false)]
+        public void Execute_Throw_InvalidAddressException(bool useAgentAddress, bool useAvatarAddress)
         {
-            Guid productId = Guid.NewGuid();
+            Guid orderId = Guid.NewGuid();
             ItemUsable itemUsable = ItemFactory.CreateItemUsable(
                 _tableSheets.EquipmentItemSheet.First,
                 Guid.NewGuid(),
-                Sell.ExpiredBlockIndex);
-            Address shardedShopAddress = ShardedShopState.DeriveAddress(itemUsable.ItemSubType, productId);
-            ShardedShopState shopState = new ShardedShopState(shardedShopAddress);
+                Sell6.ExpiredBlockIndex);
+            Address shardedShopAddress = ShardedShopStateV2.DeriveAddress(itemUsable.ItemSubType, orderId);
+            var shopState = new ShardedShopStateV2(shardedShopAddress);
 
-            var shopItem = new ShopItem(
-                default,
-                _avatarAddress,
-                productId,
+            Address agentAddress = useAgentAddress ? _agentAddress : default;
+            Address avatarAddress = useAvatarAddress ? _avatarAddress : default;
+            Order order = OrderFactory.Create(
+                agentAddress,
+                avatarAddress,
+                orderId,
                 new FungibleAssetValue(_goldCurrencyState.Currency, 100, 0),
-                Sell.ExpiredBlockIndex,
-                itemUsable);
-            shopState.Register(shopItem);
-
-            IAccountStateDelta prevState = _initialState
-                .SetState(shardedShopAddress, shopState.Serialize());
-
-            var action = new SellCancellation
-            {
-                productId = shopItem.ProductId,
-                sellerAvatarAddress = _avatarAddress,
-                itemSubType = itemUsable.ItemSubType,
-            };
-
-            Assert.Throws<InvalidAddressException>(() => action.Execute(new ActionContext()
-                {
-                    BlockIndex = 0,
-                    PreviousStates = prevState,
-                    Random = new TestRandom(),
-                    Signer = _agentAddress,
-                })
+                itemUsable.TradableId,
+                0,
+                itemUsable.ItemSubType,
+                1
             );
-        }
-
-        [Fact]
-        public void Execute_Throw_InvalidAddressException_From_Avatar()
-        {
-            Guid productId = Guid.NewGuid();
-            ItemUsable itemUsable = ItemFactory.CreateItemUsable(
-                _tableSheets.EquipmentItemSheet.First,
-                Guid.NewGuid(),
-                Sell.ExpiredBlockIndex);
-            Address shardedShopAddress = ShardedShopState.DeriveAddress(itemUsable.ItemSubType, productId);
-            ShardedShopState shopState = new ShardedShopState(shardedShopAddress);
-
-            var shopItem = new ShopItem(
+            var orderDigest = new OrderDigest(
                 _agentAddress,
-                default,
-                productId,
-                new FungibleAssetValue(_goldCurrencyState.Currency, 100, 0),
-                Sell.ExpiredBlockIndex,
-                itemUsable);
-            shopState.Register(shopItem);
+                order.StartedBlockIndex,
+                order.ExpiredBlockIndex,
+                orderId,
+                itemUsable.TradableId,
+                order.Price,
+                0,
+                0,
+                itemUsable.Id,
+                1
+            );
+            shopState.Add(orderDigest, 0);
 
             IAccountStateDelta prevState = _initialState
+                .SetState(Order.DeriveAddress(orderId), order.Serialize())
                 .SetState(shardedShopAddress, shopState.Serialize());
 
             var action = new SellCancellation
             {
-                productId = shopItem.ProductId,
+                orderId = orderId,
                 sellerAvatarAddress = _avatarAddress,
                 itemSubType = itemUsable.ItemSubType,
+                tradableId = itemUsable.TradableId,
             };
 
             Assert.Throws<InvalidAddressException>(() => action.Execute(new ActionContext()
@@ -424,6 +448,60 @@ namespace Lib9c.Tests.Action
                     Signer = _agentAddress,
                 })
             );
+        }
+
+        [Fact]
+        public void Rehearsal()
+        {
+            var action = new SellCancellation()
+            {
+                sellerAvatarAddress = _avatarAddress,
+                orderId = default,
+                itemSubType = ItemSubType.Weapon,
+                tradableId = default,
+            };
+
+            var updatedAddresses = new List<Address>()
+            {
+                _avatarAddress,
+                _avatarAddress.Derive(LegacyInventoryKey),
+                _avatarAddress.Derive(LegacyWorldInformationKey),
+                _avatarAddress.Derive(LegacyQuestListKey),
+                ShardedShopStateV2.DeriveAddress(ItemSubType.Weapon, default(Guid)),
+                OrderDigestListState.DeriveAddress(_avatarAddress),
+                Addresses.GetItemAddress(default),
+            };
+
+            var state = new State();
+
+            var nextState = action.Execute(new ActionContext()
+            {
+                PreviousStates = state,
+                Signer = _agentAddress,
+                BlockIndex = 0,
+                Rehearsal = true,
+            });
+
+            Assert.Equal(updatedAddresses.ToImmutableHashSet(), nextState.UpdatedAddresses);
+        }
+
+        [Fact]
+        public void PlainValue()
+        {
+            var action = new SellCancellation
+            {
+                sellerAvatarAddress = _avatarAddress,
+                orderId = Guid.NewGuid(),
+                itemSubType = ItemSubType.Weapon,
+                tradableId = Guid.NewGuid(),
+            };
+
+            var plainValue = action.PlainValue;
+
+            var action2 = new SellCancellation();
+            action2.LoadPlainValue(plainValue);
+
+            Assert.Equal(plainValue, action2.PlainValue);
         }
     }
 }

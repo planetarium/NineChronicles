@@ -27,6 +27,10 @@ namespace Nekoyume.Model.Mail
                 ["itemEnhance"] = d => new ItemEnhanceMail(d),
                 ["dailyRewardMail"] = d => new DailyRewardMail(d),
                 ["monsterCollectionMail"] = d => new MonsterCollectionMail(d),
+                [nameof(OrderExpirationMail)] = d => new OrderExpirationMail(d),
+                [nameof(CancelOrderMail)] = d => new CancelOrderMail(d),
+                [nameof(OrderBuyerMail)] = d => new OrderBuyerMail(d),
+                [nameof(OrderSellerMail)] = d => new OrderSellerMail(d),
             };
 
         public Guid id;
@@ -155,6 +159,12 @@ namespace Nekoyume.Model.Mail
                 .Where(m => m.requiredBlockIndex >= blockIndex)
                 .ToList();
         }
+
+        public void Remove(Mail mail)
+        {
+            _mails.Remove(mail);
+        }
+
         public IValue Serialize() => new List(_mails
             .OrderBy(i => i.id)
             .Select(m => m.Serialize()));

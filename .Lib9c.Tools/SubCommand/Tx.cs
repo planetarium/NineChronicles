@@ -81,6 +81,7 @@ namespace Lib9c.Tools.SubCommand
                         nameof(TransferAsset) => new TransferAsset(),
                         nameof(PatchTableSheet) => new PatchTableSheet(),
                         nameof(AddRedeemCode) => new AddRedeemCode(),
+                        nameof(Nekoyume.Action.MigrationLegacyShop) => new MigrationLegacyShop(),
                         _ => throw new CommandExitedException($"Can't determine given action type: {type}", 128),
                     };
                     action.LoadPlainValue(plainValue);
@@ -134,6 +135,23 @@ namespace Lib9c.Tools.SubCommand
                 new IValue[]
                 {
                     (Text) nameof(PatchTableSheet),
+                    action.PlainValue
+                }
+            );
+
+            byte[] raw = _codec.Encode(bencoded);
+            Console.WriteLine(ByteUtil.Hex(raw));
+        }
+
+        [Command(Description = "Create MigrationLegacyShop action and dump it.")]
+        public void MigrationLegacyShop()
+        {
+            var action = new MigrationLegacyShop();
+
+            var bencoded = new List(
+                new IValue[]
+                {
+                    (Text) nameof(Nekoyume.Action.MigrationLegacyShop),
                     action.PlainValue
                 }
             );

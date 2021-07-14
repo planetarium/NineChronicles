@@ -23,8 +23,8 @@ namespace Nekoyume.Action
         public Address sellerAgentAddress;
         public Address sellerAvatarAddress;
         public Guid productId;
-        public Buy.BuyerResult buyerResult;
-        public Buy.SellerResult sellerResult;
+        public Buy7.BuyerResult buyerResult;
+        public Buy7.SellerResult sellerResult;
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal => new Dictionary<string, IValue>
         {
@@ -143,7 +143,7 @@ namespace Nekoyume.Action
                 );
             }
 
-            var tax = shopItem.Price.DivRem(100, out _) * Buy.TaxRate;
+            var tax = shopItem.Price.DivRem(100, out _) * Buy7.TaxRate;
             var taxedPrice = shopItem.Price - tax;
 
             // 세금을 송금한다.
@@ -163,7 +163,7 @@ namespace Nekoyume.Action
             shopStateDict = shopStateDict.SetItem("products", products);
 
             // 구매자, 판매자에게 결과 메일 전송
-            buyerResult = new Buy.BuyerResult
+            buyerResult = new Buy7.BuyerResult
             {
                 shopItem = shopItem,
                 itemUsable = shopItem.ItemUsable,
@@ -172,7 +172,7 @@ namespace Nekoyume.Action
             var buyerMail = new BuyerMail(buyerResult, ctx.BlockIndex, ctx.Random.GenerateRandomGuid(), ctx.BlockIndex);
             buyerResult.id = buyerMail.id;
 
-            sellerResult = new Buy.SellerResult
+            sellerResult = new Buy7.SellerResult
             {
                 shopItem = shopItem,
                 itemUsable = shopItem.ItemUsable,

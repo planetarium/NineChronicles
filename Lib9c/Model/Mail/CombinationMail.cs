@@ -10,7 +10,7 @@ namespace Nekoyume.Model.Mail
         protected override string TypeId => "combinationMail";
         public override MailType MailType => MailType.Workshop;
 
-        public CombinationMail(CombinationConsumable.ResultModel attachmentActionResult, long blockIndex, Guid id, long requiredBlockIndex)
+        public CombinationMail(CombinationConsumable5.ResultModel attachmentActionResult, long blockIndex, Guid id, long requiredBlockIndex)
             : base(attachmentActionResult, blockIndex, id, requiredBlockIndex)
         {
 

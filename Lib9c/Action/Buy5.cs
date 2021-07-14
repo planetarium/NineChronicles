@@ -29,9 +29,9 @@ namespace Nekoyume.Action
         public const int ErrorCodeInvalidAddress = 5;
 
         public Address buyerAvatarAddress;
-        public IEnumerable<PurchaseInfo> purchaseInfos;
-        public Buy.BuyerMultipleResult buyerMultipleResult;
-        public Buy.SellerMultipleResult sellerMultipleResult;
+        public IEnumerable<PurchaseInfo0> purchaseInfos;
+        public Buy7.BuyerMultipleResult buyerMultipleResult;
+        public Buy7.SellerMultipleResult sellerMultipleResult;
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal => new Dictionary<string, IValue>
         {
@@ -97,15 +97,15 @@ namespace Nekoyume.Action
                     GameConfig.RequireClearedStageLevel.ActionsInShop, current);
             }
 
-            List<Buy.PurchaseResult> purchaseResults = new List<Buy.PurchaseResult>();
-            List<Buy.SellerResult> sellerResults = new List<Buy.SellerResult>();
+            List<Buy7.PurchaseResult> purchaseResults = new List<Buy7.PurchaseResult>();
+            List<Buy7.SellerResult> sellerResults = new List<Buy7.SellerResult>();
             MaterialItemSheet materialSheet = states.GetSheet<MaterialItemSheet>();
-            buyerMultipleResult = new Buy.BuyerMultipleResult();
-            sellerMultipleResult = new Buy.SellerMultipleResult();
+            buyerMultipleResult = new Buy7.BuyerMultipleResult();
+            sellerMultipleResult = new Buy7.SellerMultipleResult();
 
             foreach (var purchaseInfo in purchaseInfos)
             {
-                Buy.PurchaseResult purchaseResult = new Buy.PurchaseResult(purchaseInfo.productId);
+                Buy7.PurchaseResult purchaseResult = new Buy7.PurchaseResult(purchaseInfo.productId);
                 Address shardedShopAddress =
                     ShardedShopState.DeriveAddress(purchaseInfo.itemSubType, purchaseInfo.productId);
                 Address sellerAgentAddress = purchaseInfo.sellerAgentAddress;
@@ -238,7 +238,7 @@ namespace Nekoyume.Action
                     ctx.BlockIndex);
                 purchaseResult.id = buyerMail.id;
 
-                var sellerResult = new Buy.SellerResult
+                var sellerResult = new Buy7.SellerResult
                 {
                     shopItem = shopItem,
                     itemUsable = shopItem.ItemUsable,

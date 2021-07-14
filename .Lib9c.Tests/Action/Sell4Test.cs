@@ -162,7 +162,7 @@
                 Random = new TestRandom(),
             });
 
-            const long expiredBlockIndex = Sell.ExpiredBlockIndex + 1;
+            const long expiredBlockIndex = Sell6.ExpiredBlockIndex + 1;
             var nextAvatarState = nextState.GetAvatarState(_avatarAddress);
             Assert.True(nextAvatarState.inventory.TryGetNonFungibleItem(nonFungibleItem.NonFungibleId, out var nextItem));
             INonFungibleItem nextNonFungibleItem = (INonFungibleItem)nextItem.item;

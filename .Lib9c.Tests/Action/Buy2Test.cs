@@ -97,7 +97,7 @@ namespace Lib9c.Tests.Action
                 new FungibleAssetValue(_goldCurrencyState.Currency, 100, 0),
                 equipment));
 
-            var result = new CombinationConsumable.ResultModel()
+            var result = new CombinationConsumable5.ResultModel()
             {
                 id = default,
                 gold = 0,

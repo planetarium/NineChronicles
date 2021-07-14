@@ -123,7 +123,7 @@
                 new FungibleAssetValue(_goldCurrencyState.Currency, ProductPrice, 0),
                 costume));
 
-            var result = new CombinationConsumable.ResultModel()
+            var result = new CombinationConsumable5.ResultModel()
             {
                 id = default,
                 gold = 0,

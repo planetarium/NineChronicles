@@ -16,9 +16,9 @@ namespace Nekoyume.Action
         private static readonly Dictionary<string, Func<BxDictionary, AttachmentActionResult>>
             Deserializers = new Dictionary<string, Func<BxDictionary, AttachmentActionResult>>
             {
-                ["buy.buyerResult"] = d => new Buy.BuyerResult(d),
-                ["buy.sellerResult"] = d => new Buy.SellerResult(d),
-                ["combination.result-model"] = d => new CombinationConsumable.ResultModel(d),
+                ["buy.buyerResult"] = d => new Buy7.BuyerResult(d),
+                ["buy.sellerResult"] = d => new Buy7.SellerResult(d),
+                ["combination.result-model"] = d => new CombinationConsumable5.ResultModel(d),
                 ["itemEnhancement.result"] = d => new ItemEnhancement.ResultModel(d),
                 ["sellCancellation.result"] = d => new SellCancellation.Result(d),
                 ["rapidCombination.result"] = d => new RapidCombination0.ResultModel(d),

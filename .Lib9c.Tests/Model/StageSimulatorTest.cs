@@ -8,6 +8,7 @@ namespace Lib9c.Tests.Model
     using Nekoyume.Battle;
     using Nekoyume.Model.BattleStatus;
     using Nekoyume.Model.Item;
+    using Nekoyume.Model.Quest;
     using Nekoyume.Model.Stat;
     using Nekoyume.Model.State;
     using Xunit;
@@ -74,6 +75,32 @@ namespace Lib9c.Tests.Model
 
             var player2 = simulator.SimulateV2();
             Assert.Equal(row.Stat, player2.Stats.OptionalStats.ATK);
+        }
+
+        [Fact]
+        public void SimulateV3()
+        {
+            var simulator = new StageSimulator(
+                _random,
+                _avatarState,
+                new List<Guid>(),
+                1,
+                1,
+                _tableSheets.GetStageSimulatorSheets(),
+                _tableSheets.CostumeStatSheet,
+                2);
+
+            var player = simulator.Player;
+
+            while (player.Level == 1)
+            {
+                simulator.SimulateV3();
+            }
+
+            var player2 = simulator.Player;
+            Assert.Equal(2, player2.Level);
+            Assert.Equal(1, player2.eventMap[(int)QuestEventType.Level]);
+            Assert.True(simulator.Log.OfType<GetExp>().Any());
         }
     }
 }

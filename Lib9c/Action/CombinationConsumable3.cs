@@ -145,7 +145,7 @@ namespace Nekoyume.Action
             Log.Verbose("{AddressesHex}Combination Remove Materials: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();
 
-            var result = new CombinationConsumable.ResultModel
+            var result = new CombinationConsumable5.ResultModel
             {
                 materials = materials,
                 itemType = ItemType.Consumable,
