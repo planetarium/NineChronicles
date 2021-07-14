@@ -228,6 +228,31 @@ namespace Nekoyume.State
             ReactiveAvatarState.MailBox.SetValueAndForceNotify(outAvatarState.mailBox);
         }
 
+        public static void AddNewMail(Address avatarAddress, Guid mailId)
+        {
+            var modifier = new AvatarMailNewSetter(mailId);
+            LocalLayer.Instance.Add(avatarAddress, modifier);
+
+            if (!TryGetLoadedAvatarState(
+                avatarAddress,
+                out var outAvatarState,
+                out _,
+                out var isCurrentAvatarState)
+            )
+            {
+                return;
+            }
+
+            outAvatarState = modifier.Modify(outAvatarState);
+
+            if (!isCurrentAvatarState)
+            {
+                return;
+            }
+
+            ReactiveAvatarState.MailBox.SetValueAndForceNotify(outAvatarState.mailBox);
+        }
+
         public static void AddNewResultAttachmentMail(
             Address avatarAddress,
             Guid mailId,
@@ -279,6 +304,22 @@ namespace Nekoyume.State
             TryResetLoadedAvatarState(avatarAddress, out _, out _);
         }
 
+        public static void RemoveNewMail(
+            Address avatarAddress,
+            Guid mailId,
+            bool resetState = true)
+        {
+            var modifier = new AvatarMailNewSetter(mailId);
+            LocalLayer.Instance.Remove(avatarAddress, modifier);
+
+            if (!resetState)
+            {
+                return;
+            }
+
+            TryResetLoadedAvatarState(avatarAddress, out _, out _);
+        }
+
         public static void RemoveAttachmentResult(
             Address avatarAddress,
             Guid mailId,
@@ -294,7 +335,6 @@ namespace Nekoyume.State
 
             TryResetLoadedAvatarState(avatarAddress, out _, out _);
         }
-
         #endregion
 
         #region Avatar / Quest
@@ -552,8 +592,7 @@ namespace Nekoyume.State
             int? subRecipeId
         )
         {
-            // When the layer is covered, additionally set the block height to prevent state updates until the actual state comes in.
-            var blockIndex = Game.Game.instance.Agent.BlockIndex + 100;
+            var blockIndex = Game.Game.instance.Agent.BlockIndex;
             var requiredBlockIndex = row.RequiredBlockIndex + blockIndex;
             if (subRecipeId.HasValue)
             {
@@ -571,7 +610,7 @@ namespace Nekoyume.State
                 materials[material] = count;
             }
 
-            var result = new CombinationConsumable.ResultModel
+            var result = new CombinationConsumable5.ResultModel
             {
                 // id: When applying the local layer for the first time, if the id is the default, the notification is not applied.
                 id = Guid.NewGuid(),
@@ -615,8 +654,7 @@ namespace Nekoyume.State
             Address slotAddress
         )
         {
-            // When the layer is covered, additionally set the block height to prevent state updates until the actual state comes in.
-            var blockIndex = Game.Game.instance.Agent.BlockIndex + 100;
+            var blockIndex = Game.Game.instance.Agent.BlockIndex;
             var requiredBlockIndex = blockIndex + recipeRow.RequiredBlockIndex;
             var consumableRow = tableSheets.ConsumableItemSheet.Values.First(i =>
                 i.Id == recipeRow.ResultConsumableItemId);
@@ -632,7 +670,7 @@ namespace Nekoyume.State
                 materials[material] = materialInfo.Count;
             }
 
-            var result = new CombinationConsumable.ResultModel
+            var result = new CombinationConsumable5.ResultModel
             {
                 actionPoint = panel.CostAP,
                 gold = panel.CostNCG,
@@ -671,14 +709,11 @@ namespace Nekoyume.State
             Address slotAddress
         )
         {
-            // When the layer is covered, additionally set the block height to prevent state updates until the actual state comes in.
-            var blockIndex = Game.Game.instance.Agent.BlockIndex + 100;
+            var blockIndex = Game.Game.instance.Agent.BlockIndex;
             var requiredBlockIndex = blockIndex + 1;
 
             var avatarAddress = States.Instance.CurrentAvatarState.address;
-            var avatarState = new AvatarState(
-                (Bencodex.Types.Dictionary) Game.Game.instance.Agent.GetState(avatarAddress));
-
+            var avatarState = States.Instance.GetAvatarStateV2(avatarAddress);
             if (!avatarState.inventory.TryGetNonFungibleItem(baseMaterialGuid, out ItemUsable item))
             {
                 return;

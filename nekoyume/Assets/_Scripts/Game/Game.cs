@@ -25,6 +25,7 @@ using Nekoyume.UI.Module;
 using UniRx;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
+using UnityEngine.Serialization;
 using Menu = Nekoyume.UI.Menu;
 
 
@@ -64,8 +65,6 @@ namespace Nekoyume.Game
 
         public bool IsInitialized { get; private set; }
 
-        public ShopProducts ShopProducts;
-
         public Prologue Prologue => prologue;
 
         public const string AddressableAssetsContainerPath = nameof(AddressableAssetsContainer);
@@ -88,7 +87,7 @@ namespace Nekoyume.Game
         protected override void Awake()
         {
             Debug.Log("[Game] Awake() invoked");
-            
+
             Application.targetFrameRate = 60;
             Application.SetStackTraceLogType(LogType.Log, StackTraceLogType.None);
             base.Awake();
@@ -96,7 +95,7 @@ namespace Nekoyume.Game
             _options = CommandLineOptions.Load(
                 CommandLineOptionsJsonPath
             );
-            
+
             Debug.Log("[Game] Awake() CommandLineOptions loaded");
 
 #if !UNITY_EDITOR
@@ -112,7 +111,7 @@ namespace Nekoyume.Game
 
             Mixpanel.Init();
             Mixpanel.Track("Unity/Started");
-            
+
             Debug.Log("[Game] Awake() Mixpanel initialized");
 #endif
 
@@ -175,8 +174,6 @@ namespace Nekoyume.Game
             );
 
             yield return new WaitUntil(() => agentInitialized);
-            Debug.Log("[Game] Start() Agent initialized");
-            ShopProducts = new ShopProducts();
             // NOTE: Create ActionManager after Agent initialized.
             ActionManager = new ActionManager(Agent);
             yield return StartCoroutine(CoSyncTableSheets());
@@ -236,7 +233,7 @@ namespace Nekoyume.Game
                     OnRPCAgentRetryAndPreloadEnded(agent);
                 })
                 .AddTo(gameObject);
-            
+
             rpcAgent.OnPreloadEnded
                 .ObserveOnMainThread()
                 .Subscribe(agent =>
@@ -523,7 +520,15 @@ namespace Nekoyume.Game
                 loginPopup.GetPrivateKey(),
                 callback
             );
+
+            if (Agent.BlockIndex < TempExpiredBlockIndex)
+            {
+                LegacyShopProducts = new ShopProducts();
+            }
         }
+
+        public long TempExpiredBlockIndex = 1925000;
+        public ShopProducts LegacyShopProducts { get; set; }
 
         public void ResetStore()
         {
@@ -664,7 +669,7 @@ namespace Nekoyume.Game
                 }
                 await _logsClient.PutLogEventsAsync(request);
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 // ignored
             }

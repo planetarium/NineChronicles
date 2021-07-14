@@ -102,6 +102,9 @@ namespace Nekoyume.UI
 
         public override bool DimFunc(InventoryItem inventoryItem)
         {
+            if (inventoryItem.ForceDimmed)
+                return true;
+
             if (!IsThereAnyUnlockedEmptyMaterialView)
                 return true;
 

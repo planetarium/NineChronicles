@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Lib9c.Model.Order;
 using Nekoyume.Action;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
@@ -25,7 +26,7 @@ namespace Nekoyume.UI
         {
             remainTimeSlider.OnValueChangedAsObservable().Subscribe(OnSliderChange)
                 .AddTo(gameObject);
-            remainTimeSlider.maxValue = Sell.ExpiredBlockIndex;
+            remainTimeSlider.maxValue = Order.ExpirationInterval;
             remainTimeSlider.value = 0;
         }
 

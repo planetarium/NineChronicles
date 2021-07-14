@@ -57,7 +57,7 @@ namespace Tests.EditMode
         {
             var address = new PrivateKey().PublicKey.ToAddress();
             var state = new CombinationSlotState(address, 1);
-            var result = new CombinationConsumable.ResultModel();
+            var result = new CombinationConsumable5.ResultModel();
             state.Update(result,1, 10);
             Assert.AreEqual(result,state.Result);
             Assert.AreEqual(10, state.UnlockBlockIndex);
@@ -71,7 +71,7 @@ namespace Tests.EditMode
             var state = new CombinationSlotState(address, 1);
             var item = ItemFactory.CreateItemUsable(_tableSheets.EquipmentItemSheet.Values.First(), Guid.Empty,
                 default);
-            var result = new CombinationConsumable.ResultModel
+            var result = new CombinationConsumable5.ResultModel
             {
                 actionPoint = 1,
                 gold = 1,

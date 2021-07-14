@@ -24,11 +24,11 @@ namespace Nekoyume.Game.Character
             }
         }
 
-        private const string WeaponSlot = "weapon";
-        private const string EarLeftSlot = "ear_L";
-        private const string EarRightSlot = "ear_R";
-        private const string EyeOpenSlot = "eye_01";
-        private const string EyeHalfSlot = "eye_02";
+        public const string WeaponSlot = "weapon";
+        public const string EarLeftSlot = "ear_L";
+        public const string EarRightSlot = "ear_R";
+        public const string EyeOpenSlot = "eye_01";
+        public const string EyeHalfSlot = "eye_02";
 
         private static readonly string[] HairType0Slots =
         {

@@ -47,7 +47,7 @@ SpriteAtlas:
     - {fileID: 102900000, guid: f4ec4f8b49db5487fae145d395ec1611, type: 3}
     - {fileID: 102900000, guid: 9c67e02a967534297bd452ad80ca3261, type: 3}
     - {fileID: 102900000, guid: 77aad0043bc7d4ee3a9fda3a23e966a8, type: 3}
-    totalSpriteSurfaceArea: 167277
+    totalSpriteSurfaceArea: 168167
     bindAsDefault: 1
     isAtlasV2: 0
     cachedData: {fileID: 0}
@@ -55,6 +55,7 @@ SpriteAtlas:
   m_PackedSprites:
   - {fileID: 21300000, guid: 225ff00088f72434aaf5c203633862d9, type: 3}
   - {fileID: 21300000, guid: f9c0b51094961408fa7b8def68b9527a, type: 3}
+  - {fileID: 21300000, guid: 20cfb2802ede847b3bd7399ebb092084, type: 3}
   - {fileID: 21300000, guid: 67408a906b2fa4a70a373d337e76c56b, type: 3}
   - {fileID: 21300000, guid: d4c97631fa00e4ea0b695b13aa1e8943, type: 3}
   - {fileID: 21300000, guid: a91d7ab1de8ab4ae3b69953b5537b5a0, type: 3}
@@ -82,6 +83,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: f8ebc527aa87e4f2da7520536ec17819, type: 3}
   - {fileID: 21300000, guid: 759d94676296e406fac190ffc20f6c3f, type: 3}
   - {fileID: 21300000, guid: f8f7f0974d97747e18157dc7d4ea469c, type: 3}
+  - {fileID: 21300000, guid: 808104c7483594cdb8dcfbd83cf135d3, type: 3}
   - {fileID: 21300000, guid: 0c2ed0f79d8d543699b1c942e15eb8ea, type: 3}
   - {fileID: 21300000, guid: 5778c038d0194430ba2d1a410dc5c114, type: 3}
   - {fileID: 21300000, guid: 41b5de389005642e2b5a28f7b753938f, type: 3}
@@ -104,6 +106,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 0f16b14c39a634b3685af8884ae4d70c, type: 3}
   - {fileID: 21300000, guid: 531ef08c7428b47cb931c74bd74b4c74, type: 3}
   - {fileID: 21300000, guid: d39adb8c5ebb3496a914eb49255ff959, type: 3}
+  - {fileID: 21300000, guid: 85e011bc4905b47798ea91e720b5cb09, type: 3}
   - {fileID: 21300000, guid: 23ddb55d979c142de8850659d07946b3, type: 3}
   - {fileID: 21300000, guid: 9900946d0fad7480694b2ff70a563b12, type: 3}
   - {fileID: 21300000, guid: 43f3608d0a4ad423bb4bd00e12b8ecde, type: 3}
@@ -120,6 +123,7 @@ SpriteAtlas:
   m_PackedSpriteNamesToIndex:
   - Ani_Workshop_04
   - Ani_Workshop_15
+  - UI_icon_new
   - button_gold_close
   - Ani_Workshop_14
   - UI_bg_frame_03
@@ -147,6 +151,7 @@ SpriteAtlas:
   - UI_scroll_bar
   - UI_bg_frame_02
   - Item_bg_Grade_01
+  - UI_page_normal
   - UI_Btn_bg_03
   - UI_icon_item_cp_b
   - Common_bg_3x3
@@ -169,6 +174,7 @@ SpriteAtlas:
   - icon_Rank
   - Ani_Workshop_08
   - UI_bg_Warning
+  - UI_page_Select
   - Ani_Workshop_12
   - UI_Btn_bg_02
   - Tab_bg_Normal

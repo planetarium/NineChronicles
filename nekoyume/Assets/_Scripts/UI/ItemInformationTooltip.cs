@@ -4,6 +4,9 @@ using System.Collections.Generic;
 using Nekoyume.EnumType;
 using Nekoyume.Extension;
 using Nekoyume.Game.Controller;
+using Nekoyume.L10n;
+using Nekoyume.Model.Item;
+using Nekoyume.Model.Mail;
 using Nekoyume.State;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
@@ -92,6 +95,15 @@ namespace Nekoyume.UI
 
         public void Show(RectTransform target, CountableItem item, Action<ItemInformationTooltip> onClose = null)
         {
+            if (item.ForceDimmed)
+            {
+                if (item?.ItemBase.Value is ITradableItem tradableItem)
+                {
+                    var remain = tradableItem.RequiredBlockIndex - Game.Game.instance.Agent.BlockIndex;
+                    OneLinePopup.Push(MailType.System, $"This item has not expired. It can be used again after {remain} blocks.");
+                }
+                return;
+            }
             Show(target, item, null, null, null, onClose);
         }
 
@@ -104,6 +116,16 @@ namespace Nekoyume.UI
         {
             if (item?.ItemBase.Value is null)
             {
+                return;
+            }
+
+            if (item.ForceDimmed)
+            {
+                if (item?.ItemBase.Value is ITradableItem tradableItem)
+                {
+                    var remain = tradableItem.RequiredBlockIndex - Game.Game.instance.Agent.BlockIndex;
+                    OneLinePopup.Push(MailType.System, $"This item has not expired. It can be used again after {remain} blocks.");
+                }
                 return;
             }
 

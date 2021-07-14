@@ -14,7 +14,6 @@ using System.Collections;
 using mixpanel;
 using Nekoyume.Game;
 using Nekoyume.L10n;
-using TentuPlay.Api;
 
 namespace Nekoyume.UI
 {
@@ -106,12 +105,6 @@ namespace Nekoyume.UI
                         StartCoroutine(CreateAndLoginAnimation(avatarState));
                         ActionRenderHandler.RenderQuest(avatarState.address,
                             avatarState.questList.completedQuestIds);
-
-                        //[TentuPlay]
-                        new TPStashEvent().CharacterLogin(
-                            player_uuid: States.Instance.AgentState.address.ToHex(),
-                            character_uuid: States.Instance.CurrentAvatarState.address.ToHex().Substring(0, 4)
-                        );
                     },
                     e =>
                     {
@@ -140,12 +133,6 @@ namespace Nekoyume.UI
             var avatarState = States.Instance.SelectAvatar(_selectedIndex);
             OnDidAvatarStateLoaded(avatarState);
             AudioController.PlayClick();
-
-            //[TentuPlay]
-            new TPStashEvent().CharacterLogin(
-                player_uuid: States.Instance.AgentState.address.ToHex(),
-                character_uuid: States.Instance.CurrentAvatarState.address.ToHex().Substring(0, 4)
-                );
         }
 
         public void BackToLogin()
