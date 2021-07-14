@@ -170,9 +170,9 @@ namespace Lib9c.Tests.Model.Order
                 _avatarState.inventory.AddNonFungibleItem(item);
             }
 
-            if (item is Equipment equipment)
+            if (item is IEquippableItem equippableItem)
             {
-                equipment.Equip();
+                equippableItem.Equip();
             }
 
             Assert.Equal(add, _avatarState.inventory.TryGetTradableItems(tradableItem.TradableId, order.StartedBlockIndex, 1, out _));
@@ -181,9 +181,9 @@ namespace Lib9c.Tests.Model.Order
             {
                 ITradableItem result = order.Sell(_avatarState);
                 Assert.Equal(order.ExpiredBlockIndex, result.RequiredBlockIndex);
-                if (result is Equipment equipmentResult)
+                if (result is IEquippableItem equippableItem1)
                 {
-                    Assert.False(equipmentResult.equipped);
+                    Assert.False(equippableItem1.Equipped);
                 }
             }
             else

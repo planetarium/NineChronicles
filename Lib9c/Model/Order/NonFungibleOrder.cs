@@ -72,10 +72,11 @@ namespace Lib9c.Model.Order
             if (avatarState.inventory.TryGetNonFungibleItem(TradableId, out INonFungibleItem nonFungibleItem))
             {
                 nonFungibleItem.RequiredBlockIndex = ExpiredBlockIndex;
-                if (nonFungibleItem is Equipment equipment)
+                if (nonFungibleItem is IEquippableItem equippableItem)
                 {
-                    equipment.Unequip();
+                    equippableItem.Unequip();
                 }
+
                 return nonFungibleItem;
             }
 
