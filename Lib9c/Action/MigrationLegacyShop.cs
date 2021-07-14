@@ -6,11 +6,12 @@ using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
 using Serilog;
+using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("migration_legacy_shop")]
+    [ActionType("migration_legacy_shop2")]
     public class MigrationLegacyShop : GameAction
     {
         public override IAccountStateDelta Execute(IActionContext context)
@@ -39,7 +40,14 @@ namespace Nekoyume.Action
             foreach (var group in groupBy)
             {
                 var avatarAddress = group.Key;
+                bool v2 = false;
+                var inventoryAddress = avatarAddress.Derive(LegacyInventoryKey);
                 var avatarState = states.GetAvatarState(avatarAddress);
+                if (avatarState.inventory is null)
+                {
+                    v2 = true;
+                    avatarState = states.GetAvatarStateV2(avatarAddress);
+                }
                 Log.Debug($"Start Migration Avatar({avatarAddress}). Target Count: {group.Count()}");
                 foreach (var shopItem in group)
                 {
@@ -61,7 +69,10 @@ namespace Nekoyume.Action
                     }
                     shopState.Unregister(shopItem);
                 }
-                states = states.SetState(avatarAddress, avatarState.Serialize());
+
+                states = v2
+                    ? states.SetState(inventoryAddress, avatarState.inventory.Serialize())
+                    : states.SetState(avatarAddress, avatarState.Serialize());
                 Log.Debug($"Finish Migration Avatar({avatarAddress})");
             }
 
