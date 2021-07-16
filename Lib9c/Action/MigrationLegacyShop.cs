@@ -21,8 +21,13 @@ namespace Nekoyume.Action
 
             if (context.Rehearsal)
             {
-                states = sellerAvatarAddresses.Aggregate(states,
-                    (current, sellerAvatarAddress) => current.SetState(sellerAvatarAddress, MarkChanged));
+                foreach (var avatarAddress in sellerAvatarAddresses)
+                {
+                    var inventoryAddress = avatarAddress.Derive(LegacyInventoryKey);
+                    states = states
+                        .SetState(inventoryAddress, MarkChanged)
+                        .SetState(avatarAddress, MarkChanged);
+                }
 
                 return states.SetState(Addresses.Shop, MarkChanged);
             }
