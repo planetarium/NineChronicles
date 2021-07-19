@@ -25,7 +25,7 @@ namespace Nekoyume.Game.Controller
             }
         }
 
-        public static Color GetButtonColor(ColorType colorType)
+        public static Color GetColor(ColorType colorType)
         {
             return ButtonColorMap.ContainsKey(colorType) ? ButtonColorMap[colorType] : Color.black;
         }

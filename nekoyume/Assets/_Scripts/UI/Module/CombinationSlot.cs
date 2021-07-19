@@ -224,8 +224,8 @@ namespace Nekoyume.UI.Module
             var count = GetHourglassCount();
             hourglassCountText.text = cost.ToString();
             hourglassCountText.color = count >= cost
-                ? Palette.GetButtonColor(ColorType.ButtonEnabled)
-                : Palette.GetButtonColor(ColorType.TextDenial);
+                ? Palette.GetColor(ColorType.ButtonEnabled)
+                : Palette.GetColor(ColorType.TextDenial);
         }
 
         private int GetHourglassCount()

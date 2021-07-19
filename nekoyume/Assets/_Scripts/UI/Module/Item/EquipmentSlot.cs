@@ -50,6 +50,9 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         protected TextMeshProUGUI optionTagText = null;
 
+        [SerializeField]
+        protected Image optionTagBgImage = null;
+
         private int _requireLevel;
         private string _messageForCat;
         private MessageCat _cat;
@@ -231,8 +234,9 @@ namespace Nekoyume.UI.Module
 
             if (itemBase.TryGetOptionTagText(out var text))
             {
-                optionTagObject.SetActive(true);
                 optionTagText.text = text;
+                optionTagBgImage.color = Item.GetItemGradeColor();
+                optionTagObject.SetActive(true);
             }
             else
             {
