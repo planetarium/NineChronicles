@@ -1215,6 +1215,11 @@ UI_COMBINATION_POPUP_CONSUMABLE_STATS,There are no additional options for food.,
 UI_COMBINATION_SLOT_UPGRADE,Upgrading {0} to {1} level..,{0} {1}레벨로 강화중..,,,,,,,,,,,,,,,,
 UI_COMBINATION_POPUP_UPGRADE_RESULT_STATS,{0} +({1}~{2}),{0} +({1}~{2}),,,,,,,,,,,,,,,,
 UI_COMBINATION_POPUP_UPGRADE_RESULT_SKILLS,{0} ({1}~{2}) / ({3}~{4}%),{0} ({1}~{2}) / ({3}~{4}%),,,,,,,,,,,,,,,,
+UI_COMBINATION_RESULT_SUCCESS,Success!!,성공!!,,,,,,,,,,,,,,,,
+UI_COMBINATION_RESULT_GREAT_SUCCESS,Great Success!!,대성공!!,,,,,,,,,,,,,,,,
+UI_ENHANCEMENT_RESULT_SUCCESS,Success!!,성공!!,,,,,,,,,,,,,,,,
+UI_ENHANCEMENT_RESULT_GREAT_SUCCESS,Great Success!!,대성공!!,,,,,,,,,,,,,,,,
+UI_ENHANCEMENT_RESULT_FAIL,Fail..,실패..,,,,,,,,,,,,,,,,
 UI_COMBINATION_NOTIFY_FORMAT_GREATER,"<size=12><color=#FFA78B>[Workshop Cat]</color></size>
 Great Success! I've finished crafting {0}","<size=12><color=#FFA78B>[대장장이 고양이]</color></size>
 대성공! {0} 제작을 완료하였네.",,,,,,,,,,,,,,,,
