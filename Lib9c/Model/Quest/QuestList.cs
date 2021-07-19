@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using Bencodex.Types;
 using Libplanet.Assets;
 using Nekoyume.Model.EnumType;
@@ -11,6 +12,48 @@ using Nekoyume.TableData;
 
 namespace Nekoyume.Model.Quest
 {
+    [Serializable]
+    public class UpdateListVersionException : ArgumentOutOfRangeException
+    {
+        public UpdateListVersionException()
+        {
+        }
+
+        public UpdateListVersionException(string s) : base(s)
+        {
+        }
+
+        public UpdateListVersionException(int expected, int actual)
+            : base($"{nameof(expected)}: {expected}, {nameof(actual)}: {actual}")
+        {
+        }
+
+        protected UpdateListVersionException(SerializationInfo info, StreamingContext context) : base(info, context)
+        {
+        }
+    }
+
+    [Serializable]
+    public class UpdateListQuestsCountException : ArgumentException
+    {
+        public UpdateListQuestsCountException()
+        {
+        }
+
+        public UpdateListQuestsCountException(string s) : base(s)
+        {
+        }
+
+        public UpdateListQuestsCountException(int expected, int actual)
+            : base($"{nameof(expected)}: greater than {expected}, {nameof(actual)}: {actual}")
+        {
+        }
+
+        protected UpdateListQuestsCountException(SerializationInfo info, StreamingContext context) : base(info, context)
+        {
+        }
+    }
+
     [Serializable]
     public class QuestList : IEnumerable<Quest>, IState
     {
