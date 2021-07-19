@@ -6,13 +6,12 @@ using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
 using Serilog;
-using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("migration_legacy_shop2")]
-    public class MigrationLegacyShop : GameAction
+    [ActionType("migration_legacy_shop")]
+    public class MigrationLegacyShop0 : GameAction
     {
         public override IAccountStateDelta Execute(IActionContext context)
         {
@@ -21,13 +20,8 @@ namespace Nekoyume.Action
 
             if (context.Rehearsal)
             {
-                foreach (var avatarAddress in sellerAvatarAddresses)
-                {
-                    var inventoryAddress = avatarAddress.Derive(LegacyInventoryKey);
-                    states = states
-                        .SetState(inventoryAddress, MarkChanged)
-                        .SetState(avatarAddress, MarkChanged);
-                }
+                states = sellerAvatarAddresses.Aggregate(states,
+                    (current, sellerAvatarAddress) => current.SetState(sellerAvatarAddress, MarkChanged));
 
                 return states.SetState(Addresses.Shop, MarkChanged);
             }
@@ -45,14 +39,7 @@ namespace Nekoyume.Action
             foreach (var group in groupBy)
             {
                 var avatarAddress = group.Key;
-                bool v2 = false;
-                var inventoryAddress = avatarAddress.Derive(LegacyInventoryKey);
                 var avatarState = states.GetAvatarState(avatarAddress);
-                if (avatarState.inventory is null)
-                {
-                    v2 = true;
-                    avatarState = states.GetAvatarStateV2(avatarAddress);
-                }
                 Log.Debug($"Start Migration Avatar({avatarAddress}). Target Count: {group.Count()}");
                 foreach (var shopItem in group)
                 {
@@ -74,10 +61,7 @@ namespace Nekoyume.Action
                     }
                     shopState.Unregister(shopItem);
                 }
-
-                states = v2
-                    ? states.SetState(inventoryAddress, avatarState.inventory.Serialize())
-                    : states.SetState(avatarAddress, avatarState.Serialize());
+                states = states.SetState(avatarAddress, avatarState.Serialize());
                 Log.Debug($"Finish Migration Avatar({avatarAddress})");
             }
 

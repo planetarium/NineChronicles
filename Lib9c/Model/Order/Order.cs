@@ -92,7 +92,7 @@ namespace Lib9c.Model.Order
 
             if (!TradableId.Equals(tradableId))
             {
-                throw new InvalidTradableIdException($"{tradableId} is not equals {OrderId}");
+                throw new InvalidTradableIdException($"{tradableId} is not equals {TradableId}");
             }
         }
 
