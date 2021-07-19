@@ -174,6 +174,7 @@ namespace Nekoyume.Action
             if (questList.Count() < questSheet.Count)
             {
                 questList.UpdateList(
+                    2,
                     questSheet,
                     states.GetSheet<QuestRewardSheet>(),
                     states.GetSheet<QuestItemRewardSheet>(),

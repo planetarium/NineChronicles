@@ -179,18 +179,23 @@ namespace Nekoyume.Model.Quest
         }
 
         public void UpdateList(
+            int listVersion,
             QuestSheet questSheet,
             QuestRewardSheet questRewardSheet,
             QuestItemRewardSheet questItemRewardSheet,
             EquipmentItemRecipeSheet equipmentItemRecipeSheet)
         {
+            if (listVersion != _listVersion + 1)
+            {
+                throw new UpdateListVersionException(_listVersion + 1, listVersion);
+            }
+
             if (questSheet.Count <= _quests.Count)
             {
-                throw new ArgumentException(
-                    $"{nameof(questSheet)}.Count({questSheet.Count}) should greater than ${_quests.Count}");
+                throw new UpdateListQuestsCountException(_quests.Count, questSheet.Count);
             }
-            
-            _listVersion += 1;
+
+            _listVersion = listVersion;
 
             for (var i = questSheet.OrderedList.Count; i > 0; i--)
             {
