@@ -12,7 +12,7 @@ namespace Nekoyume.Game.Util
     {
         [SerializeField] private bool playOnEnable;
         [SerializeField] private int digit;
-        [SerializeField] private float cooltime;
+        [SerializeField] private float intervalTime;
 
         private TextMeshProUGUI _number;
         private Coroutine _rouletteCoroutine;
@@ -45,7 +45,7 @@ namespace Nekoyume.Game.Util
                 StopCoroutine(_rouletteCoroutine);
             }
 
-            _rouletteCoroutine = StartCoroutine(Play(_number, digit, cooltime));
+            _rouletteCoroutine = StartCoroutine(Play(_number, digit, intervalTime));
             _isPlaying = true;
         }
 
@@ -70,7 +70,7 @@ namespace Nekoyume.Game.Util
             _isPlaying = false;
         }
 
-        private IEnumerator Play(TMP_Text effect, int digit, float time)
+        private IEnumerator Play(TMP_Text effect, int digit, float intervalTime)
         {
             var sb = new StringBuilder();
             while (true)
@@ -82,7 +82,7 @@ namespace Nekoyume.Game.Util
                 }
 
                 effect.text = sb.ToString();
-                yield return new WaitForSeconds(time);
+                yield return new WaitForSeconds(intervalTime);
             }
         }
     }

@@ -2394,7 +2394,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playOnEnable: 0
   digit: 2
-  cooltime: 0.04
+  intervalTime: 0.04
 --- !u!1 &6819150710310291523
 GameObject:
   m_ObjectHideFlags: 0
