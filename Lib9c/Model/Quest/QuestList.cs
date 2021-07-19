@@ -14,11 +14,16 @@ namespace Nekoyume.Model.Quest
     [Serializable]
     public class QuestList : IEnumerable<Quest>, IState
     {
+        private const string _questsKeyDeprecated = "quests";
+        private const string _questsKey = "q";
         private readonly List<Quest> _quests;
 
+        private const string _listVersionKey = "lv";
         private int _listVersion = 1;
         public int ListVersion => _listVersion;
-        
+
+        private const string _completedQuestIdsKeyDeprecated = "completedQuestIds";
+        private const string _completedQuestIdsKey = "cqi";
         public List<int> completedQuestIds = new List<int>();
 
         public QuestList(QuestSheet questSheet,
@@ -99,17 +104,35 @@ namespace Nekoyume.Model.Quest
 
         public QuestList(Dictionary serialized)
         {
-            _listVersion = serialized.TryGetValue((Text) "list-version", out var listVersion)
+            _listVersion = serialized.TryGetValue((Text) _listVersionKey, out var listVersion)
                 ? listVersion.ToInteger()
                 : 1;
-            
-            _quests = serialized.TryGetValue((Text) "quests", out var questsValue)
-                ? questsValue.ToList(Quest.Deserialize)
-                : new List<Quest>();
 
-            completedQuestIds = serialized.TryGetValue((Text) "completedQuestIds", out var idsValue)
-                ? idsValue.ToList(StateExtensions.ToInteger)
-                : new List<int>();
+            switch (_listVersion)
+            {
+                case 1:
+                {
+                    _quests = serialized.TryGetValue((Text) _questsKeyDeprecated, out var questsValue)
+                        ? questsValue.ToList(Quest.Deserialize)
+                        : new List<Quest>();
+
+                    completedQuestIds = serialized.TryGetValue((Text) _completedQuestIdsKeyDeprecated, out var idsValue)
+                        ? idsValue.ToList(StateExtensions.ToInteger)
+                        : new List<int>();
+                    break;
+                }
+                case 2:
+                {
+                    _quests = serialized.TryGetValue((Text) _questsKey, out var q)
+                        ? q.ToList(Quest.Deserialize)
+                        : new List<Quest>();
+
+                    completedQuestIds = serialized.TryGetValue((Text) _completedQuestIdsKey, out var cqi)
+                        ? cqi.ToList(StateExtensions.ToInteger)
+                        : new List<int>();
+                    break;
+                }
+            }
         }
 
         public void UpdateList(
@@ -139,7 +162,7 @@ namespace Nekoyume.Model.Quest
                     questRow.QuestRewardId,
                     questRewardSheet,
                     questItemRewardSheet);
-                
+
                 switch (questRow)
                 {
                     case CollectQuestSheet.Row row:
@@ -187,7 +210,7 @@ namespace Nekoyume.Model.Quest
                     default:
                         continue;
                 }
-                
+
                 _quests.Add(quest);
             }
         }
@@ -306,7 +329,7 @@ namespace Nekoyume.Model.Quest
             {
                 return;
             }
-            
+
             foreach (var item in items.OrderBy(i => i.Id))
             {
                 var targets = _quests
@@ -324,21 +347,21 @@ namespace Nekoyume.Model.Quest
             if (_listVersion > 1)
             {
                 return Dictionary.Empty
-                    .SetItem("list-version", _listVersion.Serialize())
-                    .SetItem("quests", (IValue) new List(_quests
+                    .SetItem(_listVersionKey, _listVersion.Serialize())
+                    .SetItem(_questsKey, (IValue) new List(_quests
                         .OrderBy(i => i.Id)
                         .Select(q => q.Serialize())))
-                    .SetItem("completedQuestIds", (IValue) new List(completedQuestIds
+                    .SetItem(_completedQuestIdsKey, (IValue) new List(completedQuestIds
                         .OrderBy(i => i)
                         .Select(i => i.Serialize())));
             }
 
             return new Dictionary(new Dictionary<IKey, IValue>
             {
-                [(Text) "quests"] = new List(_quests
+                [(Text) _questsKeyDeprecated] = new List(_quests
                     .OrderBy(i => i.Id)
                     .Select(q => q.Serialize())),
-                [(Text) "completedQuestIds"] = new List(completedQuestIds
+                [(Text) _completedQuestIdsKeyDeprecated] = new List(completedQuestIds
                     .OrderBy(i => i)
                     .Select(i => i.Serialize()))
             });
