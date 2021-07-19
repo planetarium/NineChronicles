@@ -1,8 +1,10 @@
 using System;
 using System.Linq;
 using Nekoyume.Action;
+using Nekoyume.EnumType;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
+using Nekoyume.Game.Util;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
@@ -18,108 +20,132 @@ namespace Nekoyume.UI.Module
 
     public class CombinationSlot : MonoBehaviour
     {
-        public Slider progressBar;
-        public SimpleItemView resultView;
-        public TextMeshProUGUI unlockText;
-        public TextMeshProUGUI progressText;
-        public TextMeshProUGUI lockText;
-        public TextMeshProUGUI sliderText;
-        public TouchHandler touchHandler;
-        public Image hasNotificationImage;
-        public Image lockImage;
+        private enum SlotState
+        {
+            Lock,
+            Empty,
+            Working,
+        }
 
         public readonly ReactiveProperty<bool> HasNotification = new ReactiveProperty<bool>();
 
-        private CombinationSlotState _data;
-        private int _slotIndex;
+        [SerializeField] private SimpleItemView itemView;
+        [SerializeField] private TouchHandler touchHandler;
+        [SerializeField] private Slider progressBar;
+        [SerializeField] private Image hasNotificationImage;
+        [SerializeField] private TextMeshProUGUI lockText;
+        [SerializeField] private TextMeshProUGUI requiredBlockIndexText;
+        [SerializeField] private TextMeshProUGUI itemNameText;
+        [SerializeField] private TextMeshProUGUI hourglassCountText;
+        [SerializeField] private GameObject lockContainer;
+        [SerializeField] private GameObject baseContainer;
+        [SerializeField] private GameObject noneContainer;
+        [SerializeField] private GameObject preparingContainer;
+        [SerializeField] private GameObject workingContainer;
+        [SerializeField] private RandomNumberRoulette randomNumberRoulette;
 
-        private long _blockIndex;
+        private CombinationSlotState _combinationSlotState;
+
+        private long _currentBlockIndex;
+        private int _slotIndex;
 
         private void Awake()
         {
             Game.Game.instance.Agent.BlockIndexSubject.ObserveOnMainThread()
-                .Subscribe(SubscribeOnBlockIndex)
-                .AddTo(gameObject);
-            touchHandler.OnClick
-                .Subscribe(pointerEventData =>
-                {
-                    AudioController.PlayClick();
-                    SelectSlot();
-                }).AddTo(gameObject);
-            resultView.OnClick
-                .Subscribe(pointerEventData =>
-                {
-                    AudioController.PlayClick();
-                    SelectSlot();
-                }).AddTo(gameObject);
-            unlockText.text = L10nManager.Localize("UI_COMBINATION_SLOT_AVAILABLE");
+                .Subscribe(SubscribeOnBlockIndex).AddTo(gameObject);
+
+            touchHandler.OnClick.Subscribe(pointerEventData =>
+            {
+                AudioController.PlayClick();
+                SelectSlot();
+            }).AddTo(gameObject);
+
+            itemView.OnClick.Subscribe(pointerEventData =>
+            {
+                AudioController.PlayClick();
+                SelectSlot();
+            }).AddTo(gameObject);
+
             HasNotification.SubscribeTo(hasNotificationImage).AddTo(gameObject);
         }
 
-        public void SetData(CombinationSlotState state, long blockIndex, int slotIndex)
+        private SlotState GetSlotState(CombinationSlotState state, long currentBlockIndex)
         {
-            lockText.text = string.Format(
-                L10nManager.Localize("UI_UNLOCK_CONDITION_STAGE"),
-                state.UnlockStage);
-            _data = state;
-            _slotIndex = slotIndex;
-            var unlock = States.Instance.CurrentAvatarState?.worldInformation
-                .IsStageCleared(state.UnlockStage) ?? false;
-            lockText.gameObject.SetActive(!unlock);
-            lockImage.gameObject.SetActive(!unlock);
-            unlockText.gameObject.SetActive(false);
-            progressText.gameObject.SetActive(false);
-            progressBar.gameObject.SetActive(false);
-            if (unlock)
+            var isLock =
+                !States.Instance.CurrentAvatarState?.worldInformation.IsStageCleared(
+                    state.UnlockStage) ?? true;
+            if (isLock)
             {
-                var canUse = state.Validate(States.Instance.CurrentAvatarState, blockIndex);
-                if (state.Result is null)
-                {
-                    resultView.Clear();
-                }
-                else
-                {
-                    canUse = canUse && state.Result.itemUsable.RequiredBlockIndex <= blockIndex;
-                    if (canUse)
-                    {
-                        resultView.Clear();
-                    }
-                    else
-                    {
-                        resultView.SetData(new Item(state.Result.itemUsable));
-                    }
-
-                    progressText.text = state.Result.itemUsable.GetLocalizedName();
-                }
-
-                unlockText.gameObject.SetActive(canUse);
-                progressText.gameObject.SetActive(!canUse);
-                progressBar.gameObject.SetActive(!canUse);
-                SubscribeOnBlockIndex(blockIndex);
-                Widget.Find<BottomMenu>()?.UpdateCombinationNotification();
+                return SlotState.Lock;
             }
 
-            progressBar.maxValue = state.RequiredBlockIndex;
-            progressBar.value = blockIndex - state.StartBlockIndex;
-            sliderText.text = $"({progressBar.value} / {progressBar.maxValue})";
+            if (state.Result is null)
+            {
+                return SlotState.Empty;
+            }
+
+            var isValid = state.Validate(States.Instance.CurrentAvatarState, currentBlockIndex);
+            if (!isValid)
+            {
+                return SlotState.Working;
+            }
+
+            var itemRequiredBlockIndex = state.Result.itemUsable.RequiredBlockIndex;
+            return itemRequiredBlockIndex <= currentBlockIndex
+                ? SlotState.Empty
+                : SlotState.Working;
         }
 
-        private void SubscribeOnBlockIndex(long blockIndex)
+        public void SetData(CombinationSlotState state, long currentBlockIndex, int slotIndex)
         {
-            _blockIndex = blockIndex;
-            UpdateProgressBar(_blockIndex);
-            UpdateHasNotification(_blockIndex);
+            _combinationSlotState = state;
+            _slotIndex = slotIndex;
+
+            switch (GetSlotState(state, currentBlockIndex))
+            {
+                case SlotState.Lock:
+                    lockContainer.gameObject.SetActive(true);
+                    baseContainer.gameObject.SetActive(false);
+                    noneContainer.gameObject.SetActive(false);
+                    var text = L10nManager.Localize("UI_UNLOCK_CONDITION_STAGE");
+                    lockText.text = string.Format(text, state.UnlockStage);
+                    break;
+                case SlotState.Empty:
+                    lockContainer.gameObject.SetActive(false);
+                    baseContainer.gameObject.SetActive(false);
+                    noneContainer.gameObject.SetActive(true);
+                    itemView.Clear();
+                    break;
+                case SlotState.Working:
+                    lockContainer.gameObject.SetActive(false);
+                    baseContainer.gameObject.SetActive(true);
+                    noneContainer.gameObject.SetActive(false);
+                    itemView.SetData(new Item(state.Result.itemUsable));
+                    itemNameText.text = GetItemName(state.Result.itemUsable);
+                    SubscribeOnBlockIndex(currentBlockIndex);
+                    Widget.Find<BottomMenu>()?.UpdateCombinationNotification();
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
 
-        private void UpdateHasNotification(long blockIndex)
+        private void SubscribeOnBlockIndex(long currentBlockIndex)
         {
-            if (_data is null || _data.Result is null)
+            _currentBlockIndex = currentBlockIndex;
+            UpdateHasNotification(_currentBlockIndex);
+            UpdateSlotInformation(currentBlockIndex);
+        }
+
+        private void UpdateHasNotification(long currentBlockIndex)
+        {
+            if (_combinationSlotState is null || _combinationSlotState.Result is null)
             {
                 HasNotification.Value = false;
                 return;
             }
 
-            switch (_data.Result)
+            switch (_combinationSlotState.Result)
             {
                 case CombinationConsumable5.ResultModel ccResult:
                     if (ccResult.id == default)
@@ -127,14 +153,15 @@ namespace Nekoyume.UI.Module
                         HasNotification.Value = false;
                         return;
                     }
+
                     break;
-                case ItemEnhancement.ResultModel _:
                 default:
                     HasNotification.Value = false;
                     return;
             }
 
-            var diff = _data.Result.itemUsable.RequiredBlockIndex - blockIndex;
+            var diff = _combinationSlotState.Result.itemUsable.RequiredBlockIndex -
+                       currentBlockIndex;
             if (diff <= 0)
             {
                 HasNotification.Value = false;
@@ -144,38 +171,113 @@ namespace Nekoyume.UI.Module
             var gameConfigState = Game.Game.instance.States.GameConfigState;
             var cost = RapidCombination0.CalculateHourglassCount(gameConfigState, diff);
 
-            var row = Game.Game.instance.TableSheets.MaterialItemSheet.Values
-                .First(r => r.ItemSubType == ItemSubType.Hourglass);
+            var row = Game.Game.instance.TableSheets.MaterialItemSheet.Values.First(r =>
+                r.ItemSubType == ItemSubType.Hourglass);
             var isEnough =
                 States.Instance.CurrentAvatarState.inventory.HasFungibleItem(row.ItemId, cost);
 
             HasNotification.Value = isEnough;
         }
 
-        private void UpdateProgressBar(long index)
+        private void UpdateSlotInformation(long currentBlockIndex)
         {
-            var value = Math.Min(index - _data?.StartBlockIndex ?? index, progressBar.maxValue);
-            progressBar.value = value;
-            sliderText.text = $"({progressBar.value} / {progressBar.maxValue})";
-        }
-
-        private void ShowPopup()
-        {
-            if (!(_data?.Result is CombinationConsumable5.ResultModel))
+            if (!isActiveAndEnabled)
             {
                 return;
             }
 
-            if (_data.Result.itemUsable.RequiredBlockIndex > Game.Game.instance.Agent.BlockIndex)
+            if (_combinationSlotState.Result is null)
             {
-                Widget.Find<CombinationSlotPopup>().Pop(_data, _slotIndex);
+                return;
+            }
+
+            UpdateRequiredBlockInformation(_currentBlockIndex);
+
+            if (_combinationSlotState.StartBlockIndex >= currentBlockIndex) // prepare
+            {
+                preparingContainer.gameObject.SetActive(true);
+                workingContainer.gameObject.SetActive(false);
+                randomNumberRoulette.Stop();
+            }
+            else // working
+            {
+                preparingContainer.gameObject.SetActive(false);
+                workingContainer.gameObject.SetActive(true);
+                randomNumberRoulette.Play();
+                UpdateHourglass(_currentBlockIndex);
+            }
+        }
+
+        private void UpdateRequiredBlockInformation(long currentBlockIndex)
+        {
+            progressBar.maxValue = Math.Max(_combinationSlotState.RequiredBlockIndex, 1);
+            var diff = Math.Max(_combinationSlotState.UnlockBlockIndex - currentBlockIndex, 1);
+            progressBar.value = diff;
+            requiredBlockIndexText.text = $"{diff}.";
+        }
+
+        private void UpdateHourglass(long currentBlockIndex)
+        {
+            var diff = _combinationSlotState.UnlockBlockIndex - currentBlockIndex;
+            var cost =
+                RapidCombination0.CalculateHourglassCount(States.Instance.GameConfigState, diff);
+            var count = GetHourglassCount();
+            hourglassCountText.text = cost.ToString();
+            hourglassCountText.color = count >= cost
+                ? Palette.GetButtonColor(ColorType.ButtonEnabled)
+                : Palette.GetButtonColor(ColorType.TextDenial);
+        }
+
+        private int GetHourglassCount()
+        {
+            var count = 0;
+            var inventory = States.Instance.CurrentAvatarState.inventory;
+            var materials =
+                inventory.Items.OrderByDescending(x => x.item.ItemType == ItemType.Material);
+            var hourglass = materials.Where(x => x.item.ItemSubType == ItemSubType.Hourglass);
+            foreach (var item in hourglass)
+            {
+                if (item.item is TradableMaterial tradableItem)
+                {
+                    var blockIndex = Game.Game.instance.Agent?.BlockIndex ?? -1;
+                    if (tradableItem.RequiredBlockIndex > blockIndex)
+                    {
+                        continue;
+                    }
+                }
+
+                count += item.count;
+            }
+
+            return count;
+        }
+
+        private string GetItemName(ItemUsable itemUsable)
+        {
+            var itemName = itemUsable.GetLocalizedNonColoredName();
+            switch (itemUsable)
+            {
+                case Equipment equipment:
+                    if (equipment.level > 0)
+                    {
+                        return string.Format(L10nManager.Localize("UI_COMBINATION_SLOT_UPGRADE"),
+                            itemName,
+                            equipment.level);
+                    }
+                    else
+                    {
+                        return string.Format(L10nManager.Localize("UI_COMBINATION_SLOT_CRAFT"),
+                            itemName);
+                    }
+                default:
+                    return string.Format(L10nManager.Localize("UI_COMBINATION_SLOT_CRAFT"),
+                        itemName);
             }
         }
 
         private void SelectSlot()
         {
-            if (_data.Validate(
-                States.Instance.CurrentAvatarState,
+            if (_combinationSlotState.Validate(States.Instance.CurrentAvatarState,
                 Game.Game.instance.Agent.BlockIndex))
             {
                 if (Game.Game.instance.Stage.IsInStage)
@@ -188,6 +290,20 @@ namespace Nekoyume.UI.Module
             else
             {
                 ShowPopup();
+            }
+        }
+
+        private void ShowPopup()
+        {
+            if (!(_combinationSlotState?.Result is CombinationConsumable5.ResultModel))
+            {
+                return;
+            }
+
+            if (_combinationSlotState.Result.itemUsable.RequiredBlockIndex >
+                Game.Game.instance.Agent.BlockIndex)
+            {
+                Widget.Find<CombinationSlotPopup>().Pop(_combinationSlotState, _slotIndex);
             }
         }
     }

@@ -1,13 +1,11 @@
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using Libplanet;
 using Nekoyume.Action;
 using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.State.Subjects;
 using Nekoyume.UI.Module;
 using UniRx;
+using UnityEngine;
 
 namespace Nekoyume.UI
 {
@@ -19,13 +17,16 @@ namespace Nekoyume.UI
         protected override void Awake()
         {
             base.Awake();
-            CombinationSlotStateSubject.CombinationSlotState
-                .Subscribe(SetSlot)
-                .AddTo(gameObject);
+            CombinationSlotStateSubject.CombinationSlotState.Subscribe(SetSlot).AddTo(gameObject);
             Game.Game.instance.Agent.BlockIndexSubject.ObserveOnMainThread()
-                .Subscribe(SubscribeBlockIndex)
-                .AddTo(gameObject);
+                .Subscribe(SubscribeBlockIndex).AddTo(gameObject);
             _blockIndex = Game.Game.instance.Agent.BlockIndex;
+        }
+
+        public override void Show(bool ignoreShowAnimation = false)
+        {
+            base.Show(ignoreShowAnimation);
+            UpdateSlotAll();
         }
 
         private void SetSlot(CombinationSlotState state)
@@ -42,6 +43,11 @@ namespace Nekoyume.UI
         private void SubscribeBlockIndex(long blockIndex)
         {
             _blockIndex = blockIndex;
+            UpdateSlotAll();
+        }
+
+        private void UpdateSlotAll()
+        {
             foreach (var state in States.Instance.CombinationSlotStates.Values)
             {
                 UpdateSlot(state);
@@ -54,15 +60,14 @@ namespace Nekoyume.UI
             {
                 var slot = slots[i];
                 var address = States.Instance.CurrentAvatarState.address.Derive(
-                    string.Format(
-                        CultureInfo.InvariantCulture,
-                        CombinationSlotState.DeriveFormat,
-                        i
-                    )
-                );
+                    string.Format(CultureInfo.InvariantCulture, CombinationSlotState.DeriveFormat,
+                        i));
                 if (address == state.address)
                 {
-                    slot.SetData(state, _blockIndex, i);
+                    if (isActiveAndEnabled)
+                    {
+                        slot.SetData(state, _blockIndex, i);
+                    }
                     break;
                 }
             }
