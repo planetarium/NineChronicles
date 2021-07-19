@@ -79,67 +79,15 @@ namespace Nekoyume.Model.Quest
             _quests = new List<Quest>();
             foreach (var questData in questSheet.OrderedList)
             {
-                Quest quest;
-                QuestReward reward = GetQuestReward(
+                var reward = GetQuestReward(
                     questData.QuestRewardId,
                     questRewardSheet,
                     questItemRewardSheet
                 );
-                switch (questData)
-                {
-                    case CollectQuestSheet.Row row:
-                        quest = new CollectQuest(row, reward);
-                        _quests.Add(quest);
-                        break;
-                    case CombinationQuestSheet.Row row1:
-                        quest = new CombinationQuest(row1, reward);
-                        _quests.Add(quest);
-                        break;
-                    case GeneralQuestSheet.Row row2:
-                        quest = new GeneralQuest(row2, reward);
-                        _quests.Add(quest);
-                        break;
-                    case ItemEnhancementQuestSheet.Row row3:
-                        quest = new ItemEnhancementQuest(row3, reward);
-                        _quests.Add(quest);
-                        break;
-                    case ItemGradeQuestSheet.Row row4:
-                        quest = new ItemGradeQuest(row4, reward);
-                        _quests.Add(quest);
-                        break;
-                    case MonsterQuestSheet.Row row5:
-                        quest = new MonsterQuest(row5, reward);
-                        _quests.Add(quest);
-                        break;
-                    case TradeQuestSheet.Row row6:
-                        quest = new TradeQuest(row6, reward);
-                        _quests.Add(quest);
-                        break;
-                    case WorldQuestSheet.Row row7:
-                        quest = new WorldQuest(row7, reward);
-                        _quests.Add(quest);
-                        break;
-                    case ItemTypeCollectQuestSheet.Row row8:
-                        quest = new ItemTypeCollectQuest(row8, reward);
-                        _quests.Add(quest);
-                        break;
-                    case GoldQuestSheet.Row row9:
-                        quest = new GoldQuest(row9, reward);
-                        _quests.Add(quest);
-                        break;
-                    case CombinationEquipmentQuestSheet.Row row10:
-                        int stageId;
-                        var recipeRow = equipmentItemRecipeSheet.Values
-                            .FirstOrDefault(r => r.Id == row10.RecipeId);
-                        if (recipeRow is null)
-                        {
-                            throw new ArgumentException($"Invalid Recipe Id : {row10.RecipeId}");
-                        }
 
-                        stageId = recipeRow.UnlockStage;
-                        quest = new CombinationEquipmentQuest(row10, reward, stageId);
-                        _quests.Add(quest);
-                        break;
+                if (TryCreateQuest(questData, reward, equipmentItemRecipeSheet, out var quest))
+                {
+                    _quests.Add(quest);
                 }
             }
         }
@@ -211,55 +159,10 @@ namespace Nekoyume.Model.Quest
                     questRewardSheet,
                     questItemRewardSheet);
 
-                switch (questRow)
+                if (TryCreateQuest(questRow, reward, equipmentItemRecipeSheet, out quest))
                 {
-                    case CollectQuestSheet.Row row:
-                        quest = new CollectQuest(row, reward);
-                        break;
-                    case CombinationQuestSheet.Row row1:
-                        quest = new CombinationQuest(row1, reward);
-                        break;
-                    case GeneralQuestSheet.Row row2:
-                        quest = new GeneralQuest(row2, reward);
-                        break;
-                    case ItemEnhancementQuestSheet.Row row3:
-                        quest = new ItemEnhancementQuest(row3, reward);
-                        break;
-                    case ItemGradeQuestSheet.Row row4:
-                        quest = new ItemGradeQuest(row4, reward);
-                        break;
-                    case MonsterQuestSheet.Row row5:
-                        quest = new MonsterQuest(row5, reward);
-                        break;
-                    case TradeQuestSheet.Row row6:
-                        quest = new TradeQuest(row6, reward);
-                        break;
-                    case WorldQuestSheet.Row row7:
-                        quest = new WorldQuest(row7, reward);
-                        break;
-                    case ItemTypeCollectQuestSheet.Row row8:
-                        quest = new ItemTypeCollectQuest(row8, reward);
-                        break;
-                    case GoldQuestSheet.Row row9:
-                        quest = new GoldQuest(row9, reward);
-                        break;
-                    case CombinationEquipmentQuestSheet.Row row10:
-                        int stageId;
-                        var recipeRow = equipmentItemRecipeSheet.Values
-                            .FirstOrDefault(r => r.Id == row10.RecipeId);
-                        if (recipeRow is null)
-                        {
-                            throw new ArgumentException($"Invalid Recipe Id : {row10.RecipeId}");
-                        }
-
-                        stageId = recipeRow.UnlockStage;
-                        quest = new CombinationEquipmentQuest(row10, reward, stageId);
-                        break;
-                    default:
-                        continue;
+                    _quests.Add(quest);
                 }
-
-                _quests.Add(quest);
             }
         }
 
@@ -452,6 +355,64 @@ namespace Nekoyume.Model.Quest
             }
 
             return new QuestReward(itemMap);
+        }
+
+        private static bool TryCreateQuest(
+            QuestSheet.Row row,
+            QuestReward reward,
+            EquipmentItemRecipeSheet equipmentItemRecipeSheet,
+            out Quest quest)
+        {
+            switch (row)
+            {
+                case CollectQuestSheet.Row r:
+                    quest = new CollectQuest(r, reward);
+                    break;
+                case CombinationQuestSheet.Row r:
+                    quest = new CombinationQuest(r, reward);
+                    break;
+                case GeneralQuestSheet.Row r:
+                    quest = new GeneralQuest(r, reward);
+                    break;
+                case ItemEnhancementQuestSheet.Row r:
+                    quest = new ItemEnhancementQuest(r, reward);
+                    break;
+                case ItemGradeQuestSheet.Row r:
+                    quest = new ItemGradeQuest(r, reward);
+                    break;
+                case MonsterQuestSheet.Row r:
+                    quest = new MonsterQuest(r, reward);
+                    break;
+                case TradeQuestSheet.Row r:
+                    quest = new TradeQuest(r, reward);
+                    break;
+                case WorldQuestSheet.Row r:
+                    quest = new WorldQuest(r, reward);
+                    break;
+                case ItemTypeCollectQuestSheet.Row r:
+                    quest = new ItemTypeCollectQuest(r, reward);
+                    break;
+                case GoldQuestSheet.Row r:
+                    quest = new GoldQuest(r, reward);
+                    break;
+                case CombinationEquipmentQuestSheet.Row r:
+                    int stageId;
+                    var recipeRow = equipmentItemRecipeSheet.Values
+                        .FirstOrDefault(e => e.Id == r.RecipeId);
+                    if (recipeRow is null)
+                    {
+                        throw new ArgumentException($"Invalid Recipe Id : {r.RecipeId}");
+                    }
+
+                    stageId = recipeRow.UnlockStage;
+                    quest = new CombinationEquipmentQuest(r, reward, stageId);
+                    break;
+                default:
+                    quest = null;
+                    break;
+            }
+            
+            return !(quest is null);
         }
     }
 }
