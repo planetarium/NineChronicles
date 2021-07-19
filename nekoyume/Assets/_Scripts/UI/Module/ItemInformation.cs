@@ -99,7 +99,7 @@ namespace Nekoyume.UI.Module
             tradableText.text = isTradable ?
                 L10nManager.Localize("UI_TRADABLE") : L10nManager.Localize("UI_UNTRADABLE");
             tradableText.color = isTradable ?
-                Palette.GetColor(ColorType.TextElement04) : Palette.GetColor(ColorType.TextElement00);
+                Palette.GetColor(ColorType.TextElement00) : Palette.GetColor(ColorType.TextElement04);
         }
 
         private void UpdateViewIconArea()
