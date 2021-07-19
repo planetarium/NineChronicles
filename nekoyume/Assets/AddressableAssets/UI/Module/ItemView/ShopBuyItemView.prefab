@@ -399,6 +399,7 @@ MonoBehaviour:
   dimmedImage: {fileID: 7308612318653958429}
   optionTagObject: {fileID: 4470250220146168696}
   optionTagText: {fileID: 296443097347792176}
+  optionTagBgImage: {fileID: 5808288046033146316}
   ignoreOne: 0
   countText: {fileID: 1130108970979103734}
   priceGroup: {fileID: 5451994509222027226}
@@ -687,6 +688,18 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 1447388901623468434}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &5808288046033146316 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4939612878348484702, guid: 5a7ec89f001bf46e686e8583d2f3a60e,
+    type: 3}
+  m_PrefabInstance: {fileID: 1447388901623468434}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4470250220146168696}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &296443097347792176 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 1156024209325165730, guid: 5a7ec89f001bf46e686e8583d2f3a60e,

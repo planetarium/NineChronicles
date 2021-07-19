@@ -49,6 +49,7 @@ namespace Nekoyume.UI.Module
         {
             statTypeText.enabled = true;
             valueText.enabled = true;
+            gameObject.SetActive(true);
         }
 
         public virtual void Hide()

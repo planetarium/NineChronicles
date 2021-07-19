@@ -183,7 +183,7 @@ namespace Nekoyume.UI.Module
 
         private static void SetTextColor(Graphic textField, Graphic submitField, bool isEnough)
         {
-            textField.color = isEnough ? Palette.GetButtonColor(ColorType.ButtonEnabled) : Palette.GetButtonColor(ColorType.ButtonDisabled);
+            textField.color = isEnough ? Palette.GetColor(ColorType.ButtonEnabled) : Palette.GetColor(ColorType.ButtonDisabled);
             submitField.color = textField.color;
         }
     }

@@ -13,7 +13,6 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
 {
-    using System.Text;
     using UniRx;
 
     public class ItemView<TViewModel> : VanillaItemView
@@ -32,6 +31,9 @@ namespace Nekoyume.UI.Module
 
         [SerializeField]
         protected TextMeshProUGUI optionTagText = null;
+
+        [SerializeField]
+        protected Image optionTagBgImage = null;
 
         private readonly List<IDisposable> _disposablesAtSetData = new List<IDisposable>();
 
@@ -113,6 +115,7 @@ namespace Nekoyume.UI.Module
             Model.EnhancementEffectEnabled
                 .Subscribe(x => enhancementImage.gameObject.SetActive(x))
                 .AddTo(_disposablesAtSetData);
+            Model.Options.Subscribe(SetOptionTag).AddTo(_disposablesAtSetData);
             Model.Dimmed.Subscribe(SetDim).AddTo(_disposablesAtSetData);
             if (dimmedImage != null)
             {
@@ -121,15 +124,6 @@ namespace Nekoyume.UI.Module
 
             Model.Selected.SubscribeTo(selectionImage.gameObject).AddTo(_disposablesAtSetData);
             UpdateView();
-            if (Model.ItemBase.Value.TryGetOptionTagText(out var text))
-            {
-                optionTagObject.SetActive(true);
-                optionTagText.text = text;
-            }
-            else
-            {
-                optionTagObject.SetActive(false);
-            }
         }
 
         private void UpdateEnhancement()
@@ -171,6 +165,7 @@ namespace Nekoyume.UI.Module
             Model.EnhancementEffectEnabled
                 .Subscribe(x => enhancementImage.gameObject.SetActive(x))
                 .AddTo(_disposablesAtSetData);
+            Model.Options.Subscribe(SetOptionTag).AddTo(_disposablesAtSetData);
             Model.Dimmed.Subscribe(SetDim).AddTo(_disposablesAtSetData);
             if (dimmedImage != null)
             {
@@ -179,15 +174,6 @@ namespace Nekoyume.UI.Module
             Model.Selected.SubscribeTo(selectionImage).AddTo(_disposablesAtSetData);
 
             UpdateView();
-            if (model.ItemBase.Value.TryGetOptionTagText(out var text))
-            {
-                optionTagObject.SetActive(true);
-                optionTagText.text = text;
-            }
-            else
-            {
-                optionTagObject.SetActive(false);
-            }
         }
 
         public virtual void SetToUnknown()
@@ -223,6 +209,25 @@ namespace Nekoyume.UI.Module
                 {
                     selectionImage.enabled = false;
                 }
+
+                optionTagObject.SetActive(false);
+            }
+        }
+
+        protected void SetOptionTag(int count)
+        {
+            optionTagObject.SetActive(false);
+            if (Model is null)
+            {
+                return;
+            }
+
+            var itemBase = Model.ItemBase.Value;
+            if (itemBase.TryGetOptionTagText(out var text))
+            {
+                optionTagBgImage.color = Model.ItemBase.Value.GetItemGradeColor();
+                optionTagText.text = text;
+                optionTagObject.SetActive(true);
             }
         }
     }

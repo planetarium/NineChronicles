@@ -1,7 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Action;
+using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model;
@@ -267,9 +268,10 @@ namespace Nekoyume.UI
             }
         }
 
-        public static string GetLocalizedName(this ItemBase item)
+        public static string GetLocalizedName(this ItemBase item, bool useElementalIcon = true)
         {
-            string name = item.GetLocalizedNonColoredName();
+            string name = item.GetLocalizedNonColoredName(useElementalIcon);
+            var elemental = useElementalIcon ? GetElementalIcon(item.ElementalType) : string.Empty;
             switch (item)
             {
                 case Equipment equipment:
@@ -281,38 +283,126 @@ namespace Nekoyume.UI
             }
         }
 
-        public static string GetLocalizedNonColoredName(this ItemBase item)
+        public static string GetLocalizedNonColoredName(this ItemBase item, bool useElementalIcon = true)
         {
-            return L10nManager.Localize($"ITEM_NAME_{item.Id}");
+            var elemental = useElementalIcon ? GetElementalIcon(item.ElementalType) : string.Empty;
+            var name = L10nManager.Localize($"ITEM_NAME_{item.Id}");
+            return $"{name}{elemental}";
         }
 
+        public static Color GetElementalTypeColor(this ItemBase item)
+        {
+            switch (item.ElementalType)
+            {
+                case ElementalType.Normal:
+                    return Palette.GetColor(EnumType.ColorType.TextElement00);
+                case ElementalType.Fire:
+                    return Palette.GetColor(EnumType.ColorType.TextElement01);
+                case ElementalType.Land:
+                    return Palette.GetColor(EnumType.ColorType.TextElement02);
+                case ElementalType.Water:
+                    return Palette.GetColor(EnumType.ColorType.TextElement04);
+                case ElementalType.Wind:
+                    return Palette.GetColor(EnumType.ColorType.TextElement05);
+                default:
+                    return Color.white;
+            }
+        }
         public static Color GetItemGradeColor(this ItemBase item)
         {
-            return ColorHelper.HexToColorRGB(GetColorHexByGrade(item));
+            switch (item.Grade)
+            {
+                case 1:
+                    return Palette.GetColor(EnumType.ColorType.TextGrade00);
+                case 2:
+                    return Palette.GetColor(EnumType.ColorType.TextGrade01);
+                case 3:
+                    return Palette.GetColor(EnumType.ColorType.TextGrade02);
+                case 4:
+                    return Palette.GetColor(EnumType.ColorType.TextGrade03);
+                case 5:
+                    return Palette.GetColor(EnumType.ColorType.TextGrade04);
+                default:
+                    return Palette.GetColor(EnumType.ColorType.TextGrade00);
+            }
+        }
+        public static string GetColorHexByGrade(this ItemBase item)
+        {
+            var color = GetItemGradeColor(item);
+            return color.ColorToHex();
         }
 
+        public static string ColorToHex(this Color color)
+        {
+            var r = (int)(color.r * 255);
+            var g = (int)(color.g * 255);
+            var b = (int)(color.b * 255);
+
+            var result = string.Format("{0:x2}{1:x2}{2:x2}", r, g, b);
+            return result;
+        }
         public static string GetLocalizedDescription(this ItemBase item)
         {
             return L10nManager.Localize($"ITEM_DESCRIPTION_{item.Id}");
         }
 
-        private static string GetColorHexByGrade(ItemBase item)
+        private static string GetElementalIcon(ElementalType type)
         {
-            switch (item.Grade)
+            return type switch
             {
-                case 1:
-                    return ColorConfig.ColorHexForGrade1;
-                case 2:
-                    return ColorConfig.ColorHexForGrade2;
-                case 3:
-                    return ColorConfig.ColorHexForGrade3;
-                case 4:
-                    return ColorConfig.ColorHexForGrade4;
-                case 5:
-                    return ColorConfig.ColorHexForGrade5;
+                ElementalType.Normal => "<sprite name=icon_Element_0>",
+                ElementalType.Fire => "<sprite name=icon_Element_1>",
+                ElementalType.Water => "<sprite name=icon_Element_2>",
+                ElementalType.Land => "<sprite name=icon_Element_3>",
+                ElementalType.Wind => "<sprite name=icon_Element_4>",
+                _ => "<sprite name=icon_Element_0>"
+            };
+        }
+
+        public static string GetLocalizedItemSubTypeText(ItemSubType type)
+        {
+            switch (type)
+            {
+                case ItemSubType.Title:
+                case ItemSubType.FullCostume:
+                case ItemSubType.HairCostume:
+                case ItemSubType.EarCostume:
+                case ItemSubType.EyeCostume:
+                case ItemSubType.TailCostume:
+                    return L10nManager.Localize("UI_COSTUME");
+                case ItemSubType.ApStone:
+                case ItemSubType.Food:
+                    return L10nManager.Localize("UI_CONSUMABLE");
+                case ItemSubType.Weapon:
+                    return L10nManager.Localize("UI_WEAPON");
+                case ItemSubType.Armor:
+                    return L10nManager.Localize("UI_ARMOR");
+                case ItemSubType.Belt:
+                    return L10nManager.Localize("UI_BELT");
+                case ItemSubType.Necklace:
+                    return L10nManager.Localize("UI_NECKLACE");
+                case ItemSubType.Ring:
+                    return L10nManager.Localize("UI_RING");
+                case ItemSubType.EquipmentMaterial:
+                case ItemSubType.FoodMaterial:
+                case ItemSubType.MonsterPart:
+                case ItemSubType.NormalMaterial:
+                case ItemSubType.Hourglass:
+                    return L10nManager.Localize("UI_MATERIAL");
                 default:
-                    return ColorConfig.ColorHexForGrade1;
+                    return string.Empty;
             }
+        }
+
+        public static string GetGradeText(this ItemBase itemBase)
+        {
+            var gradeText = L10nManager.Localize($"UI_ITEM_GRADE_{itemBase.Grade}");
+            return gradeText;
+        }
+        public static string GetSubTypeText(this ItemBase itemBase)
+        {
+            var subTypeText = GetLocalizedItemSubTypeText(itemBase.ItemSubType);
+            return subTypeText;
         }
     }
 }
