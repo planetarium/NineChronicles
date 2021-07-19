@@ -1,6 +1,5 @@
 namespace Lib9c.Tests.Model
 {
-    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Text;
@@ -16,6 +15,14 @@ namespace Lib9c.Tests.Model
         public QuestListTest()
         {
             _tableSheets = new TableSheets(TableSheetsImporter.ImportSheets());
+        }
+
+        [Fact]
+        public void SerializeExceptions()
+        {
+            ExceptionTest.AssertException(
+                new UpdateListVersionException("test"),
+                new UpdateListQuestsCountException("test"));
         }
 
         [Fact]
@@ -110,14 +117,18 @@ namespace Lib9c.Tests.Model
             Assert.Equal(previousQuestSheetCount + addedQuestCount, questSheet.Count);
 
             questList.UpdateList(
+                2,
                 questSheet,
                 _tableSheets.QuestRewardSheet,
                 _tableSheets.QuestItemRewardSheet,
                 _tableSheets.EquipmentItemRecipeSheet);
         }
 
-        [Fact]
-        public void UpdateList_Throw_ArgumentException()
+        [Theory]
+        [InlineData(-1)]
+        [InlineData(0)]
+        [InlineData(1)]
+        public void UpdateList_Throw_UpdateListVersionException(int listVersion)
         {
             var questList = new QuestList(
                 _tableSheets.QuestSheet,
@@ -128,8 +139,30 @@ namespace Lib9c.Tests.Model
             );
 
             Assert.Equal(1, questList.ListVersion);
-            Assert.Throws<ArgumentException>(() =>
+            Assert.Throws<UpdateListVersionException>(() =>
                 questList.UpdateList(
+                    listVersion,
+                    _tableSheets.QuestSheet,
+                    _tableSheets.QuestRewardSheet,
+                    _tableSheets.QuestItemRewardSheet,
+                    _tableSheets.EquipmentItemRecipeSheet));
+        }
+
+        [Fact]
+        public void UpdateList_Throw_UpdateListQuestsCountException()
+        {
+            var questList = new QuestList(
+                _tableSheets.QuestSheet,
+                _tableSheets.QuestRewardSheet,
+                _tableSheets.QuestItemRewardSheet,
+                _tableSheets.EquipmentItemRecipeSheet,
+                _tableSheets.EquipmentItemSubRecipeSheet
+            );
+
+            Assert.Equal(1, questList.ListVersion);
+            Assert.Throws<UpdateListQuestsCountException>(() =>
+                questList.UpdateList(
+                    2,
                     _tableSheets.QuestSheet,
                     _tableSheets.QuestRewardSheet,
                     _tableSheets.QuestItemRewardSheet,
