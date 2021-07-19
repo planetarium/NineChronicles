@@ -487,6 +487,7 @@ UI_CHARACTER,Character,캐릭터,Personagem,,キャラクター,Charakter,Person
 UI_INVENTORY,Inventory,가방,Inventário,,所持品,Inventar,Inventario,รายการทรัพย์สิน,Ekwipunek,,,Inventaris,Inventaire,,,,库存,
 UI_COMBINATION_MATERIALS,Materials,재료 리스트,Materiais,,素材,Materialien,Materiales,วัสดุ,Materiały,,,Bahan,Matériaux,,,,材料,
 UI_COMBINATION_REGISTER_MATERIAL,Register,재료 등록,Registro,,登録,Register,Registro,บันทึก,Zarejestruj,,,Daftar,Enregistrer,,,,注册,
+UI_COMBINATION_UNREGISTER_MATERIAL,Unregister,등록 해제,,,,,,,,,,,,,,,,
 UI_DELETE,Delete,삭제,Apagar,,削除,Löschen,Borrar,ลบ,Usuń,,,Hapus,Effacer,,,,删除,
 UI_COMBINATION_ITEM,Combine,아이템 제작,Combinar,,アイテム製作,Kombinieren,Combinar,รวมกัน,Połącz,,,Gabung,Combiner,,,,合并,
 UI_COMBINATION_ERROR,Error,조합 에러,Erro,,製作エラー,Fehler,Error,ข้อผิดพลาด,Błąd,,,Error,Erreur,,,,错误,
@@ -1189,6 +1190,7 @@ UI_UNLOCK_CONDITION_STAGE,Clear Stage {0},{0} 스테이지 클리어,Fase Comple
 UI_RAPID_COMBINATION,Open Now,바로 받기,Abrir agora,,今すぐ入手する,Momentan geöffnet,,เปิดตอนนี้,Otwórz teraz,,,Selesaikan sekarang,Ouvrir Maintenant,,,,立即打开,
 UI_COMBINATION_SLOT_CRAFT,Crafting {0},{0} 제작 중,Fabricando {0},,{0} 製作中,{0} wird hergestellt,,คราฟ {0},Rzemiosło {0},,,Membuat {0},Fabriquer {0},,,,制作{0},
 UI_COMBINATION_SLOT_AVAILABLE,Click and select what you want to craft or enchant!,클릭해서 제작이나 강화를 시작해 보세요!,Clique e selecione o que você faz ou encanta!,,クリックしてアイテムの製作や強化をしましょう！,"Wähle den Gegenstand aus, den du herstellen oder verzaubern möchtest.",,คลิกเพื่อเริ่มสร้างหรือเพิ่มประสิทธิภาพ!,"Kliknij i wybierz, co chcesz stworzyć lub ulepszyć!",,,Klik dan pilih apa yang ingin Anda buat atau perkuat!,Clique et sélectionne ce que tu veux fabriquer ou enchanter !,,,,单击并选择您要选择的内容要手工制作或附魔！,
+UI_ACCELERATE,Fast Craft,빠른 제작,,,,,,,,,,,,,,,,
 UI_COMBINATION_WAITING,Preparing for crafting...,제작 대기 중...,Prepairing para fabricação ...,,製作待機中…,Die Herstellung wird vorbereitet...,,กำลังเตรียมงานคราฟ ...,Przygotowanie do tworzenia ...,,,Mempersiapkan untuk membuat ...,Préparation à fabriquer...,,,,准备制作...,
 UI_WEAPON,Weapon,무기,Arma,,武器,Waffe,,อาวุธ,Broń,,,Senjata,Arme,,,,武器,
 UI_ARMOR,Armor,방어구,Armadura,,アーマー,Rüstung,,เกราะ,Zbroja,,,Baju zirah,Armure,,,,装甲,
@@ -1202,6 +1204,29 @@ UI_CHARGE_AP,Charge AP,AP 충전,Carregar AP,,APをチャージ,Aktionspunkte au
 UI_CHARACTER_INFO,Character Info,캐릭터 정보,Informação do Personagem,,キャラクター情報,Charakterinformationen,,ข้อมูลตัวละคร,Informacje o postaci,,,Info Karakter,Infos du Personnage,,,,角色信息,
 UI_COSTUME,Costumes,코스튬,Trajes,,コスチューム,Kostüme,,ชุดแต่งกาย,Kostiumy,,,kostum,Costumes,,,,服装,
 UI_MAIL_EMPTY,Mailbox is empty.,메일함이 비어있습니다.,Caixa de entrada vazia,,メールボックスは空です。,Der Briefkasten ist leer.,,กล่องจดหมายของคุณว่างเปล่า,Skrzynka jest pusta.,,,Kotak surat kosong.,La boite courriel est vide.,,,,邮箱为空。,
+UI_COMBINATION_SLOT_UPGRADE,Upgrading to +{0},+{0} 강화 중..,,,,,,,,,,,,,,,,
+UI_COMBINATION_SLOT_IDENTIFYING,Identifying items..,아이템을 감정하는 중..,,,,,,,,,,,,,,,,
+UI_COMBINATION_SLOT_AVAILABLE,Start Craft,제작하기,,,,,,,,,,,,,,,,
+UI_COMBINATION_NOTIFY_IDENTIFYING,The item is being identified.,아이템을 감정하고 있습니다.,,,,,,,,,,,,,,,,
+UI_COMBINATION_POPUP_RESULT_TITLE,Expected results,예상 결과,,,,,,,,,,,,,,,,
+UI_COMBINATION_POPUP_RESULT_STATS,Obtained random {0} stats,{0} 무작위 능력치 획득,,,,,,,,,,,,,,,,
+UI_COMBINATION_POPUP_RESULT_SKILLS,Obtained {0} skills,{0} 스킬 보너스 획득,,,,,,,,,,,,,,,,
+UI_COMBINATION_POPUP_CONSUMABLE_STATS,There are no additional options for food.,요리는 추가 옵션이 없습니다.,,,,,,,,,,,,,,,,
+UI_COMBINATION_SLOT_UPGRADE,Upgrading {0} to +{1},{0} +{1} 강화중..,,,,,,,,,,,,,,,,
+UI_COMBINATION_POPUP_UPGRADE_RESULT_STATS,{0} +({1}~{2}),{0} +({1}~{2}),,,,,,,,,,,,,,,,
+UI_COMBINATION_POPUP_UPGRADE_RESULT_SKILLS,{0} ({1}~{2}) / ({3}~{4}%),{0} ({1}~{2}) / ({3}~{4}%),,,,,,,,,,,,,,,,
+UI_COMBINATION_NOTIFY_FORMAT_GREATER,"<size=12><color=#FFA78B>[Workshop Cat]</color></size>
+Great Success! I've finished crafting {0}","<size=12><color=#FFA78B>[대장장이 고양이]</color></size>
+대성공! {0} 제작을 완료하였네.",,,,,,,,,,,,,,,,
+UI_ITEM_ENHANCEMENT_MAIL_FORMAT_GREATER,"<size=12><color=#FFA78B>[Workshop Deberg]</color></size>
+Great Success! I've finished upgrading {0}","<size=12><color=#FFA78B>[Workshop Deberg]</color></size>
+대성공! {0} 강화를 완료했소",,,,,,,,,,,,,,,,
+UI_ITEM_ENHANCEMENT_MAIL_FORMAT_FAIL,"<size=12><color=#FFA78B>[Workshop Deberg]</color></size>Sorry, 
+I've failed to upgrade {0}","<size=12><color=#FFA78B>[Workshop Deberg]</color></size>
+미안하네, {0} 강화에 실패했다네",,,,,,,,,,,,,,,,
+UI_UPGRADE_DEPTH,Current,강화도,,,,,,,,,,,,,,,,
+UI_UPGRADE_SUCCESS_RATE_TITLE,Success Rate,성공률,,,,,,,,,,,,,,,,
+UI_UPGRADE_BLOCK_TITLE,Required Blocks,필요 블록 수,,,,,,,,,,,,,,,,
 UI_REDEEM_CODE_SUCCESS,The code has been redeemed successfully.,코드 사용 성공,A caixa de correio está vazia.,,コードの使用成功,Der Code wurde erfolgreich eingelöst.,,การแลกรหัสสำเร็จ,Kod zrealizowany pomyślnie,,,Redeem Code berhasil,Utilisation du Code Réussie.,,,,兑换代码成功。,
 UI_REDEEM_CODE_ALREADY_USE,The code has already been used.,이미 사용된 코드입니다.,Código já utilizado,,コードは既に使用されています。,Der Code wurde bereits eingelöst.,,รหัสนี้ถูกใช้แล้ว,Kod został już użyty,,,Kode telah digunakan.,Le code a déjà été utilisé.,,,,该代码已被使用。,
 UI_REDEEM_CODE_INVALID_CODE,The code is invalid.,잘못된 코드입니다.,Código inválido,,不正なコードです。,Der Code ist ungültig.,,รหัสไม่ถูกต้อง,Błędny kod,,,Redeem Code tidak valid,Code d'Échange Invalide,,,,无效的兑换代码。,
@@ -1457,6 +1482,3 @@ UI_TOTAL_PRICE_VALID,The total price is valid.,총 가격이 알맞게 입력되
 UI_TRANSFERASSET_NOTIFICATION_RECIPIENT,You are transferred {0} from {1}.,{0}를 {1}로부터 송금받았습니다.,You are transferred {0} from {1}.,You are transferred {0} from {1}.,You are transferred {0} from {1}.,You are transferred {0} from {1}.,You are transferred {0} from {1}.,You are transferred {0} from {1}.,You are transferred {0} from {1}.,You are transferred {0} from {1}.,You are transferred {0} from {1}.,You are transferred {0} from {1}.,You are transferred {0} from {1}.,You are transferred {0} from {1}.,You are transferred {0} from {1}.,You are transferred {0} from {1}.,You are transferred {0} from {1}.,
 UI_TRANSFERASSET_NOTIFICATION_SENDER,You transferred {0} to {1}.,{0}를 {1}에게 송금했습니다.,You transferred {0} to {1}.,You transferred {0} to {1}.,You transferred {0} to {1}.,You transferred {0} to {1}.,You transferred {0} to {1}.,You transferred {0} to {1}.,You transferred {0} to {1}.,You transferred {0} to {1}.,You transferred {0} to {1}.,You transferred {0} to {1}.,You transferred {0} to {1}.,You transferred {0} to {1}.,You transferred {0} to {1}.,You transferred {0} to {1}.,You transferred {0} to {1}.,
 UI_PLAYTOEARN_NOTIFICATION_FORMAT,You received {0} as the reward for the onboarding portal mission.,온보딩 포탈 보상으로 {0}를 받았습니다.,Você recebeu {0} como recompensa pela missão do portal integral.,,オンボーディングポータルミッションの報酬として{0}を受け取った。,Sie haben {0} als Belohnung für die Onboarding-Portal-Mission erhalten.,Recibió {0} como la recompensa por la misión del portal a bordo.,คุณได้รับ {0} เป็นรางวัลสำหรับภารกิจพอร์ทัลออนบอร์ด,Otrzymałeś {0} jako nagrodę za misję portalu nabierającym.,Jūs gavote {0} kaip atlygį už laivo portalo misiją.,U ontving {0} als de beloning voor de aan boord van poortmissie.,Anda menerima {0} sebagai hadiah untuk misi portal onboarding.,Vous avez reçu {0} comme récompense pour la mission de portail à insertion.,Вы получили {0} как награду за миссию на бортовой портале.,អ្នកបានទទួល {0} ជារង្វាន់សម្រាប់បេសកកម្មផតថលនៅលើក្តារបន្ទះ។,,您收到了{0}作为船上门户的奖励。,
-UI_ACCELERATE,Accelerate :,가속 :,Accelerate :,Accelerate :,Accelerate :,Accelerate :,Accelerate :,Accelerate :,Accelerate :,Accelerate :,Accelerate :,Accelerate :,Accelerate :,Accelerate :,Accelerate :,Accelerate :,Accelerate :,Accelerate :
-UI_COMBINATION_SLOT_UPGRADE,Upgrading {0} to {1} level..,{0} {1}레벨로 강화중..,Upgrading {0} to {1} level..,Upgrading {0} to {1} level..,Upgrading {0} to {1} level..,Upgrading {0} to {1} level..,Upgrading {0} to {1} level..,Upgrading {0} to {1} level..,Upgrading {0} to {1} level..,Upgrading {0} to {1} level..,Upgrading {0} to {1} level..,Upgrading {0} to {1} level..,Upgrading {0} to {1} level..,Upgrading {0} to {1} level..,Upgrading {0} to {1} level..,Upgrading {0} to {1} level..,Upgrading {0} to {1} level..,Upgrading {0} to {1} level..
-UI_COMBINATION_SLOT_IDENTIFYING,Identifying items..,아이템을 감정하는 중..,Identifying items..,Identifying items..,Identifying items..,Identifying items..,Identifying items..,Identifying items..,Identifying items..,Identifying items..,Identifying items..,Identifying items..,Identifying items..,Identifying items..,Identifying items..,Identifying items..,Identifying items..,Identifying items..
