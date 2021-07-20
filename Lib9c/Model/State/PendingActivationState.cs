@@ -63,7 +63,12 @@ namespace Nekoyume.Model.State
 
         public bool Verify(ActivateAccount action)
         {
-            return PublicKey.Verify(Nonce, action.Signature);
+            return Verify(action.Signature);
+        }
+
+        public bool Verify(byte[] signature)
+        {
+            return PublicKey.Verify(Nonce, signature);
         }
     }
 }
