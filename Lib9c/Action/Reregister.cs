@@ -60,7 +60,6 @@ namespace Nekoyume.Action
             var questListAddress = sellerAvatarAddress.Derive(LegacyQuestListKey);
             var shopAddress = ShardedShopStateV2.DeriveAddress(itemSubType, orderId);
             var reregisterShopAddress = ShardedShopStateV2.DeriveAddress(itemSubType, reregisterOrderId);
-            var orderAddress = Order.DeriveAddress(orderId);
             var reregisterOrderAddress = Order.DeriveAddress(reregisterOrderId);
             var itemAddress = Addresses.GetItemAddress(tradableId);
             var orderReceiptAddress = OrderDigestListState.DeriveAddress(sellerAvatarAddress);
@@ -71,7 +70,6 @@ namespace Nekoyume.Action
                     .SetState(itemAddress, MarkChanged)
                     .SetState(shopAddress, MarkChanged)
                     .SetState(reregisterShopAddress, MarkChanged)
-                    .SetState(orderAddress, MarkChanged)
                     .SetState(reregisterOrderAddress, MarkChanged)
                     .SetState(orderReceiptAddress, MarkChanged)
                     .SetState(inventoryAddress, MarkChanged)
@@ -180,7 +178,7 @@ namespace Nekoyume.Action
             sw.Restart();
             states = states
                 .SetState(itemAddress, tradableItem.Serialize())
-                .SetState(orderAddress, newOrder.Serialize())
+                .SetState(reregisterOrderAddress, newOrder.Serialize())
                 .SetState(reregisterShopAddress, reregisterShopState.Serialize());
             sw.Stop();
 
