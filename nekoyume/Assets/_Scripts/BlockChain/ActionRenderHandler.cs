@@ -72,6 +72,7 @@ namespace Nekoyume.BlockChain
             // Market
             Sell();
             SellCancellation();
+            Reregister();
             Buy();
 
             // Consume
@@ -147,6 +148,14 @@ namespace Nekoyume.BlockChain
                 .Where(ValidateEvaluationForCurrentAvatarState)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseSellCancellation).AddTo(_disposables);
+        }
+
+        private void Reregister()
+        {
+            _renderer.EveryRender<Reregister>()
+                .Where(ValidateEvaluationForCurrentAvatarState)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseReregister).AddTo(_disposables);
         }
 
         private void Buy()
@@ -421,6 +430,20 @@ namespace Nekoyume.BlockChain
             LocalLayerModifier.RemoveItem(avatarAddress, tradableItem.TradableId, tradableItem.RequiredBlockIndex, count);
             LocalLayerModifier.AddNewMail(avatarAddress, eval.Action.orderId);
             var format = L10nManager.Localize("NOTIFICATION_SELL_CANCEL_COMPLETE");
+            OneLinePopup.Push(MailType.Auction, string.Format(format, itemBase.GetLocalizedName()));
+            UpdateCurrentAvatarState(eval);
+            Widget.Find<ShopSell>().Refresh();
+        }
+
+        private void ResponseReregister(ActionBase.ActionEvaluation<Reregister> eval)
+        {
+            if (!(eval.Exception is null))
+            {
+                return;
+            }
+
+            var itemBase = Util.GetItemBaseByOrderId(eval.Action.orderId);
+            var format = L10nManager.Localize("NOTIFICATION_REREGISTER_COMPLETE");
             OneLinePopup.Push(MailType.Auction, string.Format(format, itemBase.GetLocalizedName()));
             UpdateCurrentAvatarState(eval);
             Widget.Find<ShopSell>().Refresh();

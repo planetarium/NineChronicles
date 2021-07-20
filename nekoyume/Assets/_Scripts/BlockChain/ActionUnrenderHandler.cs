@@ -60,6 +60,7 @@ namespace Nekoyume.BlockChain
             // Market
             Sell();
             SellCancellation();
+            Reregister();
             Buy();
 
             // Consume
@@ -120,6 +121,15 @@ namespace Nekoyume.BlockChain
                 .Where(ValidateEvaluationForCurrentAvatarState)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseSellCancellation)
+                .AddTo(_disposables);
+        }
+
+        private void Reregister()
+        {
+            _renderer.EveryUnrender<Reregister>()
+                .Where(ValidateEvaluationForCurrentAvatarState)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseReregister)
                 .AddTo(_disposables);
         }
 
@@ -250,6 +260,18 @@ namespace Nekoyume.BlockChain
             UpdateCurrentAvatarState(eval);
             Widget.Find<ShopSell>().Refresh();
         }
+
+        private void ResponseReregister(ActionBase.ActionEvaluation<Reregister> eval)
+        {
+            if (!(eval.Exception is null))
+            {
+                return;
+            }
+
+            UpdateCurrentAvatarState(eval);
+            Widget.Find<ShopSell>().Refresh();
+        }
+
 
         private void ResponseDailyReward(ActionBase.ActionEvaluation<DailyReward> eval)
         {

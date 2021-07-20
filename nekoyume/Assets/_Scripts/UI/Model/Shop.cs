@@ -17,6 +17,7 @@ namespace Nekoyume.UI.Model
         public void Dispose()
         {
             ItemCountAndPricePopup.DisposeAll();
+            ItemCountableAndPricePopup.DisposeAll();
         }
     }
 }

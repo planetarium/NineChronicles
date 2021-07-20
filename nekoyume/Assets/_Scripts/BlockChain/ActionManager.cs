@@ -260,6 +260,39 @@ namespace Nekoyume.BlockChain
                 .DoOnError(e => HandleException(action.Id, e)); // Last() is for completion
         }
 
+        public IObservable<ActionBase.ActionEvaluation<Reregister>> Reregister(
+            Guid orderId,
+            Guid tradableId,
+            FungibleAssetValue price,
+            int count,
+            ItemSubType itemSubType)
+        {
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+
+            // NOTE: 장착했는지 안 했는지에 상관없이 해제 플래그를 걸어 둔다.
+            LocalLayerModifier.SetItemEquip(avatarAddress, tradableId, false);
+
+            var action = new Reregister
+            {
+                orderId = orderId,
+                reregisterOrderId = Guid.NewGuid(),
+                tradableId = tradableId,
+                sellerAvatarAddress = avatarAddress,
+                itemSubType = itemSubType,
+                price = price,
+                count = count,
+            };
+            ProcessAction(action);
+
+            return _renderer.EveryRender<Reregister>()
+                .Where(eval => eval.Action.Id.Equals(action.Id))
+                .Take(1)
+                .Last()
+                .ObserveOnMainThread()
+                .Timeout(ActionTimeout)
+                .DoOnError(e => HandleException(action.Id, e)); // Last() is for completion
+        }
+
         public IObservable<ActionBase.ActionEvaluation<Buy>> Buy(IEnumerable<PurchaseInfo> purchaseInfos,
             List<Nekoyume.UI.Model.ShopItem> shopItems)
         {
