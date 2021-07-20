@@ -82,6 +82,7 @@ namespace Lib9c.Tools.SubCommand
                         nameof(PatchTableSheet) => new PatchTableSheet(),
                         nameof(AddRedeemCode) => new AddRedeemCode(),
                         nameof(Nekoyume.Action.MigrationLegacyShop) => new MigrationLegacyShop(),
+                        nameof(Nekoyume.Action.MigrationActivatedAccountsState) => new MigrationActivatedAccountsState(),
                         _ => throw new CommandExitedException($"Can't determine given action type: {type}", 128),
                     };
                     action.LoadPlainValue(plainValue);
@@ -152,6 +153,32 @@ namespace Lib9c.Tools.SubCommand
                 new IValue[]
                 {
                     (Text) nameof(Nekoyume.Action.MigrationLegacyShop),
+                    action.PlainValue
+                }
+            );
+
+            byte[] raw = _codec.Encode(bencoded);
+            Console.WriteLine(ByteUtil.Hex(raw));
+        }
+
+        [Command(Description = "Create MigrationActivatedAccountsState action and dump it.")]
+        public void MigrationActivatedAccountsState(
+            [Argument("FILE-PATH", Description = "A address list file path for migration.")] string filePath
+        )
+        {
+            var addresses = File.ReadLines(filePath)
+                .Where(line => !string.IsNullOrEmpty(line))
+                .Select(line => new Address(line)).ToList();
+
+            var action = new MigrationActivatedAccountsState
+            {
+                Addresses = addresses,
+            };
+
+            var bencoded = new List(
+                new IValue[]
+                {
+                    (Text) nameof(Nekoyume.Action.MigrationActivatedAccountsState),
                     action.PlainValue
                 }
             );
