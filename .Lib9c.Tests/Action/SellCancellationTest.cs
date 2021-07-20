@@ -484,5 +484,24 @@ namespace Lib9c.Tests.Action
 
             Assert.Equal(updatedAddresses.ToImmutableHashSet(), nextState.UpdatedAddresses);
         }
+
+        [Fact]
+        public void PlainValue()
+        {
+            var action = new SellCancellation
+            {
+                sellerAvatarAddress = _avatarAddress,
+                orderId = Guid.NewGuid(),
+                itemSubType = ItemSubType.Weapon,
+                tradableId = Guid.NewGuid(),
+            };
+
+            var plainValue = action.PlainValue;
+
+            var action2 = new SellCancellation();
+            action2.LoadPlainValue(plainValue);
+
+            Assert.Equal(plainValue, action2.PlainValue);
+        }
     }
 }
