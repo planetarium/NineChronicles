@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
+using System.Linq;
 using Bencodex.Types;
 using Lib9c.Model.Order;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Assets;
 using Nekoyume.Model.Item;
+using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using Serilog;
@@ -142,10 +144,16 @@ namespace Nekoyume.Action
             var digestList = new OrderDigestListState(rawList);
             digestList.Remove(orderOnSale.OrderId);
             states = states.SetState(itemAddress, itemOnSale.Serialize())
-                .SetState(inventoryAddress, avatarState.inventory.Serialize())
                 .SetState(shopAddress, shardedShopState.Serialize())
                 .SetState(orderReceiptAddress, digestList.Serialize());
             sw.Stop();
+            
+            var expirationMail = avatarState.mailBox.OfType<OrderExpirationMail>()
+                            .FirstOrDefault(m => m.OrderId.Equals(orderId));
+            if (!(expirationMail is null))
+            {
+                avatarState.mailBox.Remove(expirationMail);
+            }
 
             // for reregister
             var reregisterShopState = states.TryGetState(reregisterShopAddress, out Dictionary serializedState)

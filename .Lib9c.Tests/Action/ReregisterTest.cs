@@ -232,6 +232,8 @@
             Assert.Equal(1, nextShopState.OrderDigestList.Count);
             Assert.NotEqual(orderId, nextShopState.OrderDigestList.First().OrderId);
             Assert.Equal(reregisterOrderId, nextShopState.OrderDigestList.First().OrderId);
+            Assert.Equal(itemId, nextShopState.OrderDigestList.First().TradableId);
+            Assert.Equal(requiredBlockIndex + 101, nextShopState.OrderDigestList.First().ExpiredBlockIndex);
         }
 
         [Fact]
