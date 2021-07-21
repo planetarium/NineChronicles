@@ -659,7 +659,7 @@ namespace Lib9c.Tests
             Assert.Empty(Assembly.GetAssembly(typeof(ActionBase))!.GetTypes().Where(
                 type => type.Namespace is { } @namespace &&
                         @namespace.StartsWith($"{nameof(Nekoyume)}.{nameof(Nekoyume.Action)}") &&
-                        (typeof(ActionBase).IsAssignableFrom(type) || typeof(ActionBase).IsAssignableFrom(type)) &&
+                        typeof(ActionBase).IsAssignableFrom(type) &&
                         !type.IsAbstract &&
                         Regex.IsMatch(type.Name, @"\d+$") &&
                         !type.IsDefined(typeof(ActionObsoleteAttribute), false)));
