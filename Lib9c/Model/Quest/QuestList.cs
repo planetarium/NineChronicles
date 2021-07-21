@@ -9,9 +9,13 @@ using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
+using Serilog;
+using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Model.Quest
 {
+    #region Exceptions
+
     [Serializable]
     public class UpdateListVersionException : ArgumentOutOfRangeException
     {
@@ -55,18 +59,34 @@ namespace Nekoyume.Model.Quest
     }
 
     [Serializable]
+    public class UpdateListFailedException : Exception
+    {
+        public UpdateListFailedException()
+        {
+        }
+
+        public UpdateListFailedException(string s) : base(s)
+        {
+        }
+
+        protected UpdateListFailedException(SerializationInfo info, StreamingContext context) : base(info, context)
+        {
+        }
+    }
+
+    #endregion
+
+    [Serializable]
     public class QuestList : IEnumerable<Quest>, IState
     {
-        private const string _questsKeyDeprecated = "quests";
-        private const string _questsKey = "q";
+        public const string QuestsKey = "q";
         private readonly List<Quest> _quests;
 
-        private const string _listVersionKey = "lv";
+        public const string ListVersionKey = "v";
         private int _listVersion = 1;
         public int ListVersion => _listVersion;
 
-        private const string _completedQuestIdsKeyDeprecated = "completedQuestIds";
-        private const string _completedQuestIdsKey = "cqi";
+        public const string CompletedQuestIdsKey = "c";
         public List<int> completedQuestIds = new List<int>();
 
         public QuestList(QuestSheet questSheet,
@@ -85,9 +105,9 @@ namespace Nekoyume.Model.Quest
                     questItemRewardSheet
                 );
 
-                if (TryCreateQuest(questData, reward, equipmentItemRecipeSheet, out var quest))
+                if (TryCreateQuest(questData, reward, equipmentItemRecipeSheet, out var result))
                 {
-                    _quests.Add(quest);
+                    _quests.Add(result.quest);
                 }
             }
         }
@@ -95,7 +115,7 @@ namespace Nekoyume.Model.Quest
 
         public QuestList(Dictionary serialized)
         {
-            _listVersion = serialized.TryGetValue((Text) _listVersionKey, out var listVersion)
+            _listVersion = serialized.TryGetValue((Text) ListVersionKey, out var listVersion)
                 ? listVersion.ToInteger()
                 : 1;
 
@@ -103,22 +123,22 @@ namespace Nekoyume.Model.Quest
             {
                 case 1:
                 {
-                    _quests = serialized.TryGetValue((Text) _questsKeyDeprecated, out var questsValue)
+                    _quests = serialized.TryGetValue((Text) QuestsKeyDeprecated, out var questsValue)
                         ? questsValue.ToList(Quest.Deserialize)
                         : new List<Quest>();
 
-                    completedQuestIds = serialized.TryGetValue((Text) _completedQuestIdsKeyDeprecated, out var idsValue)
+                    completedQuestIds = serialized.TryGetValue((Text) CompletedQuestIdsKeyDeprecated, out var idsValue)
                         ? idsValue.ToList(StateExtensions.ToInteger)
                         : new List<int>();
                     break;
                 }
                 case 2:
                 {
-                    _quests = serialized.TryGetValue((Text) _questsKey, out var q)
+                    _quests = serialized.TryGetValue((Text) QuestsKey, out var q)
                         ? q.ToList(Quest.Deserialize)
                         : new List<Quest>();
 
-                    completedQuestIds = serialized.TryGetValue((Text) _completedQuestIdsKey, out var cqi)
+                    completedQuestIds = serialized.TryGetValue((Text) CompletedQuestIdsKey, out var cqi)
                         ? cqi.ToList(StateExtensions.ToInteger)
                         : new List<int>();
                     break;
@@ -126,6 +146,9 @@ namespace Nekoyume.Model.Quest
             }
         }
 
+        /// <exception cref="UpdateListVersionException"></exception>
+        /// <exception cref="UpdateListQuestsCountException"></exception>
+        /// <exception cref="UpdateListFailedException"></exception>
         public void UpdateList(
             int listVersion,
             QuestSheet questSheet,
@@ -159,9 +182,14 @@ namespace Nekoyume.Model.Quest
                     questRewardSheet,
                     questItemRewardSheet);
 
-                if (TryCreateQuest(questRow, reward, equipmentItemRecipeSheet, out quest))
+                if (TryCreateQuest(questRow, reward, equipmentItemRecipeSheet, out var result))
                 {
-                    _quests.Add(quest);
+                    _quests.Add(result.quest);
+                }
+                else
+                {
+                    throw new UpdateListFailedException(
+                        $"{nameof(TryCreateQuest)}() return false. questRow.Id({questRow.Id}). {result.errorMessage}");
                 }
             }
         }
@@ -298,21 +326,21 @@ namespace Nekoyume.Model.Quest
             if (_listVersion > 1)
             {
                 return Dictionary.Empty
-                    .SetItem(_listVersionKey, _listVersion.Serialize())
-                    .SetItem(_questsKey, (IValue) new List(_quests
+                    .SetItem(ListVersionKey, _listVersion.Serialize())
+                    .SetItem(QuestsKey, (IValue) new List(_quests
                         .OrderBy(i => i.Id)
                         .Select(q => q.Serialize())))
-                    .SetItem(_completedQuestIdsKey, (IValue) new List(completedQuestIds
+                    .SetItem(CompletedQuestIdsKey, (IValue) new List(completedQuestIds
                         .OrderBy(i => i)
                         .Select(i => i.Serialize())));
             }
 
             return new Dictionary(new Dictionary<IKey, IValue>
             {
-                [(Text) _questsKeyDeprecated] = new List(_quests
+                [(Text) QuestsKeyDeprecated] = new List(_quests
                     .OrderBy(i => i.Id)
                     .Select(q => q.Serialize())),
-                [(Text) _completedQuestIdsKeyDeprecated] = new List(completedQuestIds
+                [(Text) CompletedQuestIdsKeyDeprecated] = new List(completedQuestIds
                     .OrderBy(i => i)
                     .Select(i => i.Serialize()))
             });
@@ -361,39 +389,44 @@ namespace Nekoyume.Model.Quest
             QuestSheet.Row row,
             QuestReward reward,
             EquipmentItemRecipeSheet equipmentItemRecipeSheet,
-            out Quest quest)
+            out (Quest quest, string errorMessage) result)
         {
+            result = (null, string.Empty);
             switch (row)
             {
+                default:
+                    result.quest = null;
+                    result.errorMessage = $"Unexpected type: {row.GetType().FullName}";
+                    break;
                 case CollectQuestSheet.Row r:
-                    quest = new CollectQuest(r, reward);
+                    result.quest = new CollectQuest(r, reward);
                     break;
                 case CombinationQuestSheet.Row r:
-                    quest = new CombinationQuest(r, reward);
+                    result.quest = new CombinationQuest(r, reward);
                     break;
                 case GeneralQuestSheet.Row r:
-                    quest = new GeneralQuest(r, reward);
+                    result.quest = new GeneralQuest(r, reward);
                     break;
                 case ItemEnhancementQuestSheet.Row r:
-                    quest = new ItemEnhancementQuest(r, reward);
+                    result.quest = new ItemEnhancementQuest(r, reward);
                     break;
                 case ItemGradeQuestSheet.Row r:
-                    quest = new ItemGradeQuest(r, reward);
+                    result.quest = new ItemGradeQuest(r, reward);
                     break;
                 case MonsterQuestSheet.Row r:
-                    quest = new MonsterQuest(r, reward);
+                    result.quest = new MonsterQuest(r, reward);
                     break;
                 case TradeQuestSheet.Row r:
-                    quest = new TradeQuest(r, reward);
+                    result.quest = new TradeQuest(r, reward);
                     break;
                 case WorldQuestSheet.Row r:
-                    quest = new WorldQuest(r, reward);
+                    result.quest = new WorldQuest(r, reward);
                     break;
                 case ItemTypeCollectQuestSheet.Row r:
-                    quest = new ItemTypeCollectQuest(r, reward);
+                    result.quest = new ItemTypeCollectQuest(r, reward);
                     break;
                 case GoldQuestSheet.Row r:
-                    quest = new GoldQuest(r, reward);
+                    result.quest = new GoldQuest(r, reward);
                     break;
                 case CombinationEquipmentQuestSheet.Row r:
                     int stageId;
@@ -401,18 +434,17 @@ namespace Nekoyume.Model.Quest
                         .FirstOrDefault(e => e.Id == r.RecipeId);
                     if (recipeRow is null)
                     {
-                        throw new ArgumentException($"Invalid Recipe Id : {r.RecipeId}");
+                        result.quest = null;
+                        result.errorMessage = $"Invalid Recipe Id : {r.RecipeId}";
+                        break;
                     }
 
                     stageId = recipeRow.UnlockStage;
-                    quest = new CombinationEquipmentQuest(r, reward, stageId);
-                    break;
-                default:
-                    quest = null;
+                    result.quest = new CombinationEquipmentQuest(r, reward, stageId);
                     break;
             }
-            
-            return !(quest is null);
+
+            return !(result.quest is null);
         }
     }
 }

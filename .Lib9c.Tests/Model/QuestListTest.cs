@@ -18,12 +18,10 @@ namespace Lib9c.Tests.Model
         }
 
         [Fact]
-        public void SerializeExceptions()
-        {
-            ExceptionTest.AssertException(
-                new UpdateListVersionException("test"),
-                new UpdateListQuestsCountException("test"));
-        }
+        public void SerializeExceptions() => ExceptionTest.AssertException(
+            new UpdateListVersionException("test"),
+            new UpdateListQuestsCountException("test"),
+            new UpdateListFailedException("test"));
 
         [Fact]
         public void GetEnumerator()
@@ -88,7 +86,7 @@ namespace Lib9c.Tests.Model
         [Theory]
         [InlineData(1)]
         [InlineData(99)]
-        public void UpdateList(int addedQuestCount)
+        public void UpdateList(int questCountToAdd)
         {
             var questList = new QuestList(
                 _tableSheets.QuestSheet,
@@ -103,18 +101,18 @@ namespace Lib9c.Tests.Model
 
             var questSheet = _tableSheets.QuestSheet;
             Assert.NotNull(questSheet.First);
-            var patchedSheet = new QuestSheet();
+            var patchedSheet = new WorldQuestSheet();
             var patchedSheetCsvSb = new StringBuilder().AppendLine("id,goal,quest_reward_id");
-            for (var i = addedQuestCount; i > 0; i--)
+            for (var i = questCountToAdd; i > 0; i--)
             {
                 patchedSheetCsvSb.AppendLine($"{990000 + i - 1},10,{questSheet.First.QuestRewardId}");
             }
 
             patchedSheet.Set(patchedSheetCsvSb.ToString());
-            Assert.Equal(addedQuestCount, patchedSheet.Count);
+            Assert.Equal(questCountToAdd, patchedSheet.Count);
             var previousQuestSheetCount = questSheet.Count;
             questSheet.Set(patchedSheet);
-            Assert.Equal(previousQuestSheetCount + addedQuestCount, questSheet.Count);
+            Assert.Equal(previousQuestSheetCount + questCountToAdd, questSheet.Count);
 
             questList.UpdateList(
                 2,
@@ -122,6 +120,8 @@ namespace Lib9c.Tests.Model
                 _tableSheets.QuestRewardSheet,
                 _tableSheets.QuestItemRewardSheet,
                 _tableSheets.EquipmentItemRecipeSheet);
+            Assert.Equal(2, questList.ListVersion);
+            Assert.Equal(questSheet.Count, questList.Count());
         }
 
         [Theory]
@@ -167,6 +167,11 @@ namespace Lib9c.Tests.Model
                     _tableSheets.QuestRewardSheet,
                     _tableSheets.QuestItemRewardSheet,
                     _tableSheets.EquipmentItemRecipeSheet));
+        }
+
+        [Fact]
+        public void UpdateList_Throw_UpdateListFailedException()
+        {
         }
     }
 }
