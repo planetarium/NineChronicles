@@ -10,7 +10,7 @@ namespace Nekoyume.Action
 {
     [Serializable]
     [ActionType("activate_account")]
-    public class ActivateAccount0 : ActionBase
+    public class ActivateAccount0 : ActionBase, IActivateAction
     {
         public Address PendingAddress { get; private set; }
 
@@ -83,5 +83,9 @@ namespace Nekoyume.Action
             PendingAddress = asDict["pending_address"].ToAddress();
             Signature = (Binary) asDict["signature"];
         }
+
+        public Address GetPendingAddress() => PendingAddress;
+
+        public byte[] GetSignature() => Signature;
     }
 }

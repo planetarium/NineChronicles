@@ -115,10 +115,10 @@ namespace Nekoyume.BlockChain
 
                 // Check ActivateAccount
                 if (transaction.Actions.Count == 1 &&
-                    transaction.Actions.First().InnerAction is ActivateAccount aa)
+                    transaction.Actions.First().InnerAction is IActivateAction aa)
                 {
-                    return blockChain.GetState(aa.PendingAddress) is Dictionary rawPending &&
-                           new PendingActivationState(rawPending).Verify(aa);
+                    return blockChain.GetState(aa.GetPendingAddress()) is Dictionary rawPending &&
+                           new PendingActivationState(rawPending).Verify(aa.GetSignature());
                 }
 
                 // Check admin
