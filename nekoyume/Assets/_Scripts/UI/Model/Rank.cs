@@ -411,7 +411,7 @@ namespace Nekoyume.UI.Model
                     var addressString = myRecord.AvatarAddress.Substring(2);
                     var address = new Address(addressString);
                     var avatarState = States.Instance.GetAvatarStateV2(address);
-                    if (AgentEquipmentRankingInfos[pair.Key] == null)
+                    if (!AgentEquipmentRankingInfos.ContainsKey(pair.Key))
                     {
                         AgentEquipmentRankingInfos[pair.Key] = new Dictionary<ItemSubType, EquipmentRankingModel>();
                     }

@@ -33,7 +33,10 @@ namespace Nekoyume.UI.Scroller
         private TextMeshProUGUI firstElementText = null;
 
         [SerializeField]
-        private TextMeshProUGUI secondElement = null;
+        private TextMeshProUGUI secondElementText = null;
+
+        [SerializeField]
+        private TextMeshProUGUI secondElementEquipmentNameText = null;
 
         [SerializeField]
         private Sprite firstPlaceSprite = null;
@@ -71,11 +74,12 @@ namespace Nekoyume.UI.Scroller
                 .Remove(addressStringCount);
 
             firstElementCpText.text = rankingInfo.Cp.ToString();
-            secondElement.text = rankingInfo.AvatarState.level.ToString();
+            secondElementText.text = rankingInfo.AvatarState.level.ToString();
 
             firstElementText.gameObject.SetActive(false);
             firstElementCpText.gameObject.SetActive(true);
-            secondElement.gameObject.SetActive(true);
+            secondElementText.gameObject.SetActive(true);
+            secondElementEquipmentNameText.gameObject.SetActive(false);
 
             UpdateRank(rankingInfo.Rank);
             characterView.SetByAvatarState(rankingInfo.AvatarState);
@@ -93,7 +97,8 @@ namespace Nekoyume.UI.Scroller
             firstElementText.text = rankingInfo.ClearedStageId.ToString();
             firstElementText.gameObject.SetActive(true);
             firstElementCpText.gameObject.SetActive(false);
-            secondElement.gameObject.SetActive(false);
+            secondElementText.gameObject.SetActive(false);
+            secondElementEquipmentNameText.gameObject.SetActive(false);
 
             UpdateRank(rankingInfo.Rank);
             characterView.SetByAvatarState(rankingInfo.AvatarState);
@@ -111,7 +116,8 @@ namespace Nekoyume.UI.Scroller
             firstElementText.text = rankingInfo.CraftCount.ToString();
             firstElementText.gameObject.SetActive(true);
             firstElementCpText.gameObject.SetActive(false);
-            secondElement.gameObject.SetActive(false);
+            secondElementText.gameObject.SetActive(false);
+            secondElementEquipmentNameText.gameObject.SetActive(false);
 
             UpdateRank(rankingInfo.Rank);
             characterView.SetByAvatarState(rankingInfo.AvatarState);
@@ -129,14 +135,15 @@ namespace Nekoyume.UI.Scroller
             firstElementCpText.text = rankingInfo.Cp.ToString();
 
             var equipmentItemSheet = Game.Game.instance.TableSheets.EquipmentItemSheet;
-            secondElement.text = LocalizationExtension.GetLocalizedName(
+            secondElementEquipmentNameText.text = LocalizationExtension.GetLocalizedName(
                 equipmentItemSheet,
                 rankingInfo.EquipmentId,
                 rankingInfo.Level);
 
             firstElementText.gameObject.SetActive(false);
             firstElementCpText.gameObject.SetActive(true);
-            secondElement.gameObject.SetActive(true);
+            secondElementText.gameObject.SetActive(false);
+            secondElementEquipmentNameText.gameObject.SetActive(true);
 
             UpdateRank(rankingInfo.Rank);
             characterView.SetByAvatarState(rankingInfo.AvatarState);
@@ -186,7 +193,8 @@ namespace Nekoyume.UI.Scroller
             firstElementText.text = "-";
             firstElementText.gameObject.SetActive(true);
             firstElementCpText.gameObject.SetActive(false);
-            secondElement.gameObject.SetActive(false);
+            secondElementText.gameObject.SetActive(false);
+            secondElementEquipmentNameText.gameObject.SetActive(false);
         }
     }
 }
