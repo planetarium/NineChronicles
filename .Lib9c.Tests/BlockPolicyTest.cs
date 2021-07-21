@@ -37,36 +37,6 @@ namespace Lib9c.Tests
         }
 
         [Fact]
-        public void DoesTransactionFollowsPolicyWithEmpty()
-        {
-            var adminPrivateKey = new PrivateKey();
-            var adminAddress = new Address(adminPrivateKey.PublicKey);
-            var blockPolicySource = new BlockPolicySource(Logger.None);
-            IBlockPolicy<PolymorphicAction<ActionBase>> policy = new DebugPolicy();
-            IStagePolicy<PolymorphicAction<ActionBase>> stagePolicy =
-                new VolatileStagePolicy<PolymorphicAction<ActionBase>>();
-            Block<PolymorphicAction<ActionBase>> genesis = MakeGenesisBlock(adminAddress, ImmutableHashSet<Address>.Empty);
-
-            using var store = new DefaultStore(null);
-            using var stateStore = new TrieStateStore(new DefaultKeyValueStore(null), new DefaultKeyValueStore(null));
-            var blockChain = new BlockChain<PolymorphicAction<ActionBase>>(
-                policy,
-                stagePolicy,
-                store,
-                stateStore,
-                genesis,
-                renderers: new[] { blockPolicySource.BlockRenderer }
-            );
-            Transaction<PolymorphicAction<ActionBase>> tx = Transaction<PolymorphicAction<ActionBase>>.Create(
-                0,
-                new PrivateKey(),
-                genesis.Hash,
-                new PolymorphicAction<ActionBase>[] { });
-
-            Assert.True(policy.DoesTransactionFollowsPolicy(tx, blockChain));
-        }
-
-        [Fact]
         public async Task DoesTransactionFollowsPolicy()
         {
             var adminPrivateKey = new PrivateKey();
