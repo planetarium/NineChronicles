@@ -171,11 +171,8 @@ namespace Nekoyume.Action
             var orderDigest = newOrder.Digest(avatarState, costumeStatSheet);
             reregisterShopState.Add(orderDigest, context.BlockIndex);
 
-            var reregisterDigestList = states.TryGetState(orderReceiptAddress, out Dictionary receiptDict)
-                ? new OrderDigestListState(receiptDict)
-                : new OrderDigestListState(orderReceiptAddress);
-            reregisterDigestList.Add(orderDigest);
-            states = states.SetState(orderReceiptAddress, reregisterDigestList.Serialize());
+            digestList.Add(orderDigest);
+            states = states.SetState(orderReceiptAddress, digestList.Serialize());
             states = states.SetState(inventoryAddress, avatarState.inventory.Serialize())
                 .SetState(worldInformationAddress, avatarState.worldInformation.Serialize())
                 .SetState(questListAddress, avatarState.questList.Serialize())
