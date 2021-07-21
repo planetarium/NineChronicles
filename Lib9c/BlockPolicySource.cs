@@ -132,7 +132,15 @@ namespace Nekoyume.BlockChain
                 switch (value2)
                 {
                     case null:
-                        return blockChain.GetState(Addresses.ActivatedAccount) is null;
+                        if (blockChain.GetState(ActivatedAccountsState.Address) is Dictionary asDict)
+                        {
+                            IImmutableSet<Address> activatedAccounts =
+                                new ActivatedAccountsState(asDict).Accounts;
+                            return !activatedAccounts.Any() ||
+                                   activatedAccounts.Contains(transaction.Signer);
+                        }
+
+                        return true;
                     case Bencodex.Types.Boolean _:
                         return true;
                 }
