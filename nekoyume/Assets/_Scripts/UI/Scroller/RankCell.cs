@@ -30,6 +30,12 @@ namespace Nekoyume.UI.Scroller
                 case StageRankingModel stageRankingModel:
                     cell.SetDataAsStage(stageRankingModel);
                     break;
+                case CraftRankingModel craftRankingModel:
+                    cell.SetDataAsCrafting(craftRankingModel);
+                    break;
+                case EquipmentRankingModel equipmentRankingModel:
+                    cell.SetDataAsEquipment(equipmentRankingModel);
+                    break;
             }
         }
     }

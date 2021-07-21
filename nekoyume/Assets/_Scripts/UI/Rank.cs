@@ -16,6 +16,7 @@ using Toggle = Nekoyume.UI.Module.Toggle;
 
 namespace Nekoyume.UI
 {
+    using Nekoyume.Model.Item;
     using UniRx;
 
     public class Rank : Widget
@@ -88,7 +89,12 @@ namespace Nekoyume.UI
             { RankCategory.Ability, ("UI_CP", "UI_LEVEL") },
             { RankCategory.Stage, ("UI_STAGE", null)},
             { RankCategory.Mimisburnnr, ("UI_STAGE", null) },
-            { RankCategory.Weapon, ("UI_CP", null) },
+            { RankCategory.Crafting, ("UI_COUNTS_CRAFTED", null) },
+            { RankCategory.EquipmentWeapon, ("UI_CP", "UI_NAME") },
+            { RankCategory.EquipmentArmor, ("UI_CP", "UI_NAME") },
+            { RankCategory.EquipmentBelt, ("UI_CP", "UI_NAME") },
+            { RankCategory.EquipmentNecklace, ("UI_CP", "UI_NAME") },
+            { RankCategory.EquipmentRing, ("UI_CP", "UI_NAME") },
         };
 
         public override void Initialize()
@@ -160,11 +166,6 @@ namespace Nekoyume.UI
         private async void UpdateCategoryAsync(RankCategory category, bool toggleOn)
         {
             preloadingObject.SetActive(true);
-            if (category == RankCategory.Weapon)
-            {
-                Find<SystemPopup>().Show("UI_ALERT_NOT_IMPLEMENTED_TITLE", "UI_ALERT_NOT_IMPLEMENTED_CONTENT");
-                return;
-            }
 
             if (toggleOn)
             {
@@ -265,12 +266,124 @@ namespace Nekoyume.UI
 
                     rankScroll.Show(mimisbrunnrRankingInfos, true);
                     break;
-                case RankCategory.Weapon:
-                    var weaponRankingInfos = SharedModel.WeaponRankingModel;
-                    if (weaponRankingInfos is null)
+                case RankCategory.Crafting:
+                    if (!isApiLoaded)
                     {
-                        Find<SystemPopup>().Show("UI_ALERT_NOT_IMPLEMENTED_TITLE", "UI_ALERT_NOT_IMPLEMENTED_CONTENT");
+                        break;
                     }
+
+                    var craftRankingInfos = SharedModel.CraftRankingInfos;
+                    if (SharedModel.AgentCraftRankingInfos
+                        .TryGetValue(states.CurrentAvatarKey, out var craftingInfo))
+                    {
+                        myInfoCell.SetDataAsCrafting(craftingInfo);
+                    }
+                    else
+                    {
+                        myInfoCell.SetEmpty(states.CurrentAvatarState);
+                    }
+
+                    rankScroll.Show(craftRankingInfos, true);
+                    break;
+                case RankCategory.EquipmentWeapon:
+                    if (!isApiLoaded)
+                    {
+                        break;
+                    }
+
+                    var weaponRankingInfos = SharedModel.EquipmentRankingInfosMap[ItemSubType.Weapon];
+                    if (SharedModel.AgentEquipmentRankingInfos
+                        .TryGetValue(states.CurrentAvatarKey, out var equipmentRankingMap))
+                    {
+                        var weaponInfo = equipmentRankingMap[ItemSubType.Weapon];
+                        myInfoCell.SetDataAsEquipment(weaponInfo);
+                    }
+                    else
+                    {
+                        myInfoCell.SetEmpty(states.CurrentAvatarState);
+                    }
+
+                    rankScroll.Show(weaponRankingInfos, true);
+                    break;
+                case RankCategory.EquipmentArmor:
+                    if (!isApiLoaded)
+                    {
+                        break;
+                    }
+
+                    var armorRankingInfos = SharedModel.EquipmentRankingInfosMap[ItemSubType.Armor];
+                    if (SharedModel.AgentEquipmentRankingInfos
+                        .TryGetValue(states.CurrentAvatarKey, out equipmentRankingMap))
+                    {
+                        var armorInfo = equipmentRankingMap[ItemSubType.Armor];
+                        myInfoCell.SetDataAsEquipment(armorInfo);
+                    }
+                    else
+                    {
+                        myInfoCell.SetEmpty(states.CurrentAvatarState);
+                    }
+
+                    rankScroll.Show(armorRankingInfos, true);
+                    break;
+                case RankCategory.EquipmentBelt:
+                    if (!isApiLoaded)
+                    {
+                        break;
+                    }
+
+                    var beltRankingInfos = SharedModel.EquipmentRankingInfosMap[ItemSubType.Belt];
+                    if (SharedModel.AgentEquipmentRankingInfos
+                        .TryGetValue(states.CurrentAvatarKey, out equipmentRankingMap))
+                    {
+                        var armorInfo = equipmentRankingMap[ItemSubType.Belt];
+                        myInfoCell.SetDataAsEquipment(armorInfo);
+                    }
+                    else
+                    {
+                        myInfoCell.SetEmpty(states.CurrentAvatarState);
+                    }
+
+                    rankScroll.Show(beltRankingInfos, true);
+                    break;
+                case RankCategory.EquipmentNecklace:
+                    if (!isApiLoaded)
+                    {
+                        break;
+                    }
+
+                    var necklaceRankingInfos = SharedModel.EquipmentRankingInfosMap[ItemSubType.Necklace];
+                    if (SharedModel.AgentEquipmentRankingInfos
+                        .TryGetValue(states.CurrentAvatarKey, out equipmentRankingMap))
+                    {
+                        var necklaceInfo = equipmentRankingMap[ItemSubType.Necklace];
+                        myInfoCell.SetDataAsEquipment(necklaceInfo);
+                    }
+                    else
+                    {
+                        myInfoCell.SetEmpty(states.CurrentAvatarState);
+                    }
+
+                    rankScroll.Show(necklaceRankingInfos, true);
+                    break;
+                case RankCategory.EquipmentRing:
+                    if (!isApiLoaded)
+                    {
+                        break;
+                    }
+
+                    var ringRankingInfos = SharedModel.EquipmentRankingInfosMap[ItemSubType.Ring];
+                    if (SharedModel.AgentEquipmentRankingInfos
+                        .TryGetValue(states.CurrentAvatarKey, out equipmentRankingMap))
+                    {
+                        var ringInfo = equipmentRankingMap[ItemSubType.Ring];
+                        myInfoCell.SetDataAsEquipment(ringInfo);
+                    }
+                    else
+                    {
+                        myInfoCell.SetEmpty(states.CurrentAvatarState);
+                    }
+
+                    rankScroll.Show(ringRankingInfos, true);
                     break;
                 default:
                     break;
