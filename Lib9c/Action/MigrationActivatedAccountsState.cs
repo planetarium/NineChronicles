@@ -41,20 +41,10 @@ namespace Nekoyume.Action
                     if (states.GetState(address) is null)
                     {
                         states = states.SetState(address, true.Serialize());
-                        if (activatedAccountsState.Accounts.Contains(agentAddress))
-                        {
-                            activatedAccountsState.Remove(agentAddress);
-                        }
-                    }
-                    else
-                    {
-                        // Prevent override state.
-                        throw new InvalidAddressException($"Address({address}) duplicated.");
                     }
                 }
-
-                Log.Debug($"Finish {nameof(MigrationActivatedAccountsState)}: {activatedAccountsState.Accounts.Count}");
-                return states.SetState(Nekoyume.Addresses.ActivatedAccount, activatedAccountsState.Serialize());
+                Log.Debug($"Finish {nameof(MigrationActivatedAccountsState)}");
+                return states;
             }
 
             throw new ActivatedAccountsDoesNotExistsException();
