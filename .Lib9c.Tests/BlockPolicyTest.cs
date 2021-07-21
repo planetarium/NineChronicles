@@ -37,42 +37,10 @@ namespace Lib9c.Tests
         }
 
         [Fact]
-        public void DoesTransactionFollowsPolicyWithEmpty()
-        {
-            var adminPrivateKey = new PrivateKey();
-            var adminAddress = new Address(adminPrivateKey.PublicKey);
-            var blockPolicySource = new BlockPolicySource(Logger.None);
-            IBlockPolicy<PolymorphicAction<ActionBase>> policy = blockPolicySource.GetPolicy(10000, 100);
-            IStagePolicy<PolymorphicAction<ActionBase>> stagePolicy =
-                new VolatileStagePolicy<PolymorphicAction<ActionBase>>();
-            Block<PolymorphicAction<ActionBase>> genesis = MakeGenesisBlock(adminAddress, ImmutableHashSet<Address>.Empty);
-
-            using var store = new DefaultStore(null);
-            using var stateStore = new TrieStateStore(new DefaultKeyValueStore(null), new DefaultKeyValueStore(null));
-            var blockChain = new BlockChain<PolymorphicAction<ActionBase>>(
-                policy,
-                stagePolicy,
-                store,
-                stateStore,
-                genesis,
-                renderers: new[] { blockPolicySource.BlockRenderer }
-            );
-            Transaction<PolymorphicAction<ActionBase>> tx = Transaction<PolymorphicAction<ActionBase>>.Create(
-                0,
-                new PrivateKey(),
-                genesis.Hash,
-                new PolymorphicAction<ActionBase>[] { });
-
-            Assert.True(policy.DoesTransactionFollowsPolicy(tx, blockChain));
-        }
-
-        [Fact]
         public async Task DoesTransactionFollowsPolicy()
         {
             var adminPrivateKey = new PrivateKey();
             var adminAddress = adminPrivateKey.ToAddress();
-            var activatedPrivateKey = new PrivateKey();
-            var activatedAddress = activatedPrivateKey.ToAddress();
 
             var blockPolicySource = new BlockPolicySource(Logger.None);
             IBlockPolicy<PolymorphicAction<ActionBase>> policy = blockPolicySource.GetPolicy(10000, 100);
@@ -80,7 +48,7 @@ namespace Lib9c.Tests
                 new VolatileStagePolicy<PolymorphicAction<ActionBase>>();
             Block<PolymorphicAction<ActionBase>> genesis = MakeGenesisBlock(
                 adminAddress,
-                ImmutableHashSet.Create(activatedAddress).Add(adminAddress)
+                ImmutableHashSet.Create(adminAddress)
             );
             using var store = new DefaultStore(null);
             using var stateStore = new TrieStateStore(new DefaultKeyValueStore(null), new DefaultKeyValueStore(null));
@@ -107,11 +75,10 @@ namespace Lib9c.Tests
             var newActivatedAddress = newActivatedPrivateKey.ToAddress();
 
             // Activate with admin account.
-            Transaction<PolymorphicAction<ActionBase>> invitationTx = blockChain.MakeTransaction(
+            blockChain.MakeTransaction(
                 adminPrivateKey,
                 new PolymorphicAction<ActionBase>[] { new AddActivatedAccount(newActivatedAddress) }
             );
-            blockChain.StageTransaction(invitationTx);
             await blockChain.MineBlock(adminAddress);
 
             Transaction<PolymorphicAction<ActionBase>> txByNewActivated =
@@ -137,14 +104,14 @@ namespace Lib9c.Tests
             Transaction<PolymorphicAction<ActionBase>> txWithSingleAction =
                 Transaction<PolymorphicAction<ActionBase>>.Create(
                     0,
-                    activatedPrivateKey,
+                    newActivatedPrivateKey,
                     genesis.Hash,
                     singleAction
                 );
             Transaction<PolymorphicAction<ActionBase>> txWithManyActions =
                 Transaction<PolymorphicAction<ActionBase>>.Create(
                     0,
-                    activatedPrivateKey,
+                    newActivatedPrivateKey,
                     genesis.Hash,
                     manyActions
                 );
