@@ -13,8 +13,17 @@ namespace Nekoyume.Model.Item
     public class Equipment : ItemUsable, IEquippableItem
     {
         // FIXME: Whether the equipment is equipped or not has no asset value and must be removed from the state.
-        public bool equipped = false;
+        public bool equipped;
         public int level;
+        public int optionCountFromCombination;
+
+        /// <summary>
+        /// Do not use in Lib9c. This property only for UI.
+        /// </summary>
+        public int OptionCountFromCombinationForUI => optionCountFromCombination > 0
+            ? optionCountFromCombination
+            : StatsMap.GetStats(true).Count();
+
         public DecimalStat Stat { get; }
         public int SetId { get; }
         public string SpineResourcePath { get; }
@@ -40,6 +49,7 @@ namespace Nekoyume.Model.Item
             {
                 equipped = toEquipped.ToBoolean();
             }
+
             if (serialized.TryGetValue((Text) "level", out var toLevel))
             {
                 try
@@ -51,17 +61,25 @@ namespace Nekoyume.Model.Item
                     level = (int) ((Integer) toLevel).Value;
                 }
             }
+
             if (serialized.TryGetValue((Text) "stat", out var stat))
             {
                 Stat = stat.ToDecimalStat();
             }
+
             if (serialized.TryGetValue((Text) "set_id", out var setId))
             {
                 SetId = setId.ToInteger();
             }
+
             if (serialized.TryGetValue((Text) "spine_resource_path", out var spineResourcePath))
             {
                 SpineResourcePath = (Text) spineResourcePath;
+            }
+
+            if (serialized.TryGetValue((Text) "oc", out var optionCountValue))
+            {
+                optionCountFromCombination = optionCountValue.ToInteger();
             }
         }
 
@@ -70,9 +88,10 @@ namespace Nekoyume.Model.Item
         {
         }
 
-        public override IValue Serialize() =>
+        public override IValue Serialize()
+        {
 #pragma warning disable LAA1002
-            new Dictionary(new Dictionary<IKey, IValue>
+            var dict = new Dictionary(new Dictionary<IKey, IValue>
             {
                 [(Text) "equipped"] = equipped.Serialize(),
                 [(Text) "level"] = level.Serialize(),
@@ -81,7 +100,14 @@ namespace Nekoyume.Model.Item
                 [(Text) "spine_resource_path"] = SpineResourcePath.Serialize(),
             }.Union((Dictionary) base.Serialize()));
 
+            if (optionCountFromCombination > 0)
+            {
+                dict = dict.SetItem("oc", optionCountFromCombination.Serialize());
+            }
+
+            return dict;
 #pragma warning restore LAA1002
+        }
 
         public void Equip()
         {
