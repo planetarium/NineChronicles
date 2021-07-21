@@ -128,10 +128,10 @@ namespace Nekoyume.BlockChain
                     return true;
                 }
 
-                var value2 = blockChain.GetState(transaction.Signer.Derive(ActivationKey.DeriveKey));
-                switch (value2)
+                switch (blockChain.GetState(transaction.Signer.Derive(ActivationKey.DeriveKey)))
                 {
                     case null:
+                        // Fallback for pre-migration.
                         if (blockChain.GetState(ActivatedAccountsState.Address) is Dictionary asDict)
                         {
                             IImmutableSet<Address> activatedAccounts =
@@ -139,7 +139,6 @@ namespace Nekoyume.BlockChain
                             return !activatedAccounts.Any() ||
                                    activatedAccounts.Contains(transaction.Signer);
                         }
-
                         return true;
                     case Bencodex.Types.Boolean _:
                         return true;
