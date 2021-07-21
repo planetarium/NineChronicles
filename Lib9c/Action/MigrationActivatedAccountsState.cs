@@ -15,16 +15,11 @@ namespace Nekoyume.Action
     [ActionType("migration_activated_accounts_state")]
     public class MigrationActivatedAccountsState : GameAction
     {
-        public List<Address> Addresses;
         public override IAccountStateDelta Execute(IActionContext context)
         {
             var states = context.PreviousStates;
             if (context.Rehearsal)
             {
-                states = Addresses
-                    .Aggregate(states, (current, address) =>
-                        current.SetState(address.Derive(ActivationKey.DeriveKey), MarkChanged));
-
                 return states.SetState(Nekoyume.Addresses.ActivatedAccount, MarkChanged);
             }
 
@@ -52,12 +47,10 @@ namespace Nekoyume.Action
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal => new Dictionary<string, IValue>
         {
-            ["a"] = new List(Addresses.Select(a => a.Serialize()))
         }.ToImmutableDictionary();
 
         protected override void LoadPlainValueInternal(IImmutableDictionary<string, IValue> plainValue)
         {
-            Addresses = plainValue["a"].ToList(a => a.ToAddress());
         }
     }
 }

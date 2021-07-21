@@ -23,13 +23,7 @@ namespace Lib9c.Tests.Action
                 .Add(ActivatedAccountsState.Address, new ActivatedAccountsState().AddAccount(default).Serialize())
             );
 
-            var action = new MigrationActivatedAccountsState
-            {
-                Addresses = new List<Address>
-                {
-                    default,
-                },
-            };
+            var action = new MigrationActivatedAccountsState();
 
             IAccountStateDelta nextState = action.Execute(new ActionContext()
             {

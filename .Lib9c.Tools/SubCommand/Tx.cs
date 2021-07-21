@@ -162,19 +162,9 @@ namespace Lib9c.Tools.SubCommand
         }
 
         [Command(Description = "Create MigrationActivatedAccountsState action and dump it.")]
-        public void MigrationActivatedAccountsState(
-            [Argument("FILE-PATH", Description = "A address list file path for migration.")] string filePath
-        )
+        public void MigrationActivatedAccountsState()
         {
-            var addresses = File.ReadLines(filePath)
-                .Where(line => !string.IsNullOrEmpty(line))
-                .Select(line => new Address(line)).ToList();
-
-            var action = new MigrationActivatedAccountsState
-            {
-                Addresses = addresses,
-            };
-
+            var action = new MigrationActivatedAccountsState();
             var bencoded = new List(
                 new IValue[]
                 {
