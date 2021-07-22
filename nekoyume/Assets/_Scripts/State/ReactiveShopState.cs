@@ -93,8 +93,7 @@ namespace Nekoyume.State
                     {
                         return _sellDigests.Exists(x =>
                             x.TradableId.Equals(tradableMaterial.TradableId) &&
-                            x.ExpiredBlockIndex == tradableMaterial.RequiredBlockIndex &&
-                            x.ItemCount == count);
+                            x.ExpiredBlockIndex == tradableMaterial.RequiredBlockIndex);
                     }
                     else
                     {
@@ -154,9 +153,9 @@ namespace Nekoyume.State
                 GetGroupedOrderDigestsByItemSubTypeFilter(_sellDigests, sellItemsPerPage);
         }
 
-        public static void RemoveBuyDigest(Guid tradableId)
+        public static void RemoveBuyDigest(Guid orderId)
         {
-            var item = _buyDigests.FirstOrDefault(x => x.TradableId == tradableId);
+            var item = _buyDigests.FirstOrDefault(x => x.OrderId.Equals(orderId));
             if (item != null)
             {
                 _buyDigests.Remove(item);
@@ -165,9 +164,9 @@ namespace Nekoyume.State
             UpdateBuyDigests();
         }
 
-        public static void RemoveSellDigest(Guid tradableId)
+        public static void RemoveSellDigest(Guid orderId)
         {
-            var item = _sellDigests.FirstOrDefault(x => x.TradableId == tradableId);
+            var item = _sellDigests.FirstOrDefault(x => x.OrderId.Equals(orderId));
             if (item != null)
             {
                 _sellDigests.Remove(item);

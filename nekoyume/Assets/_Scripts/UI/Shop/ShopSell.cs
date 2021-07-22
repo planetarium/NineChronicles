@@ -10,6 +10,7 @@ using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
+using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
@@ -517,12 +518,13 @@ namespace Nekoyume.UI
         private void ResponseSellCancellation(Guid orderId, Guid tradableId)
         {
             SharedModel.ItemCountAndPricePopup.Value.Item.Value = null;
-            var itemBase = Util.GetItemBaseByOrderId(orderId);
-            ReactiveShopState.RemoveSellDigest(tradableId);
+            var itemName = Util.GetItemNameByOrdierId(orderId);
+            ReactiveShopState.RemoveSellDigest(orderId);
             AudioController.instance.PlaySfx(AudioController.SfxCode.InputItem);
             var format = L10nManager.Localize("NOTIFICATION_SELL_CANCEL_START");
-            OneLinePopup.Push(MailType.Auction, string.Format(format, itemBase.GetLocalizedName()));
+            OneLinePopup.Push(MailType.Auction, string.Format(format, itemName));
             inventory.SharedModel.ActiveFunc.SetValueAndForceNotify(inventoryItem => (inventoryItem.ItemBase.Value is ITradableItem));
+            Refresh();
         }
 
         private void ShowSpeech(string key,

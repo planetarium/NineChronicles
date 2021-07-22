@@ -32,26 +32,26 @@ namespace Nekoyume.UI
                         GetLocalizedNonColoredName(itemEnhanceMail.attachment.itemUsable));
 
                 case OrderBuyerMail orderBuyerMail:
-                    var buyItem = Util.GetItemBaseByOrderId(orderBuyerMail.OrderId);
+                    var buyerItemName = Util.GetItemNameByOrdierId(orderBuyerMail.OrderId, true);
                     return string.Format(L10nManager.Localize("UI_BUYER_MAIL_FORMAT"),
-                        GetLocalizedNonColoredName(buyItem));
+                        buyerItemName);
 
                 case OrderSellerMail orderSellerMail:
                     var orderId = orderSellerMail.OrderId;
                     var order = Util.GetOrder(orderId);
-                    var itembase = Util.GetItemBaseByTradableId(order.TradableId);
+                    var sellerItemName = Util.GetItemNameByOrdierId(orderId, true);
                     var format = L10nManager.Localize("UI_SELLER_MAIL_FORMAT");
                     var taxedPrice = order.Price - order.GetTax();
-                    return string.Format(format, taxedPrice, GetLocalizedNonColoredName(itembase));
+                    return string.Format(format, taxedPrice, sellerItemName);
 
                 case OrderExpirationMail orderExpirationMail:
-                    var expiredItem = Util.GetItemBaseByOrderId(orderExpirationMail.OrderId);
+                    var expiredItemName = Util.GetItemNameByOrdierId(orderId, true);
                     return string.Format(L10nManager.Localize("UI_SELL_EXPIRATION_MAIL_FORMAT"),
-                        GetLocalizedNonColoredName(expiredItem));
+                        expiredItemName);
                 case CancelOrderMail cancelOrderMail:
-                    var cancelItem = Util.GetItemBaseByOrderId(cancelOrderMail.OrderId);
+                    var cancelItemName = Util.GetItemNameByOrdierId(orderId, true);
                     return string.Format(L10nManager.Localize("UI_SELL_CANCEL_MAIL_FORMAT"),
-                        GetLocalizedNonColoredName(cancelItem));
+                        cancelItemName);
 
                 case BuyerMail buyerMail:
                     return string.Format(
