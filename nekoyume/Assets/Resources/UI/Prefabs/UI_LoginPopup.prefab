@@ -988,6 +988,7 @@ MonoBehaviour:
   fixedFontStyle: 0
   fixedFontSizeOffset: 0
   fixedSpacingOption: 0
+  fixedMarginOption: 0
   fontMaterialType: 0
   l10nKey: 
   fontMaterialIndexInitialized: 0
@@ -1175,6 +1176,7 @@ MonoBehaviour:
   fixedFontStyle: 0
   fixedFontSizeOffset: 0
   fixedSpacingOption: 0
+  fixedMarginOption: 0
   fontMaterialType: 0
   l10nKey: 
   fontMaterialIndexInitialized: 0
@@ -1501,6 +1503,7 @@ MonoBehaviour:
   fixedFontStyle: 0
   fixedFontSizeOffset: 0
   fixedSpacingOption: 0
+  fixedMarginOption: 0
   fontMaterialType: 0
   l10nKey: 
   fontMaterialIndexInitialized: 0
@@ -1985,6 +1988,7 @@ MonoBehaviour:
   fixedFontStyle: 0
   fixedFontSizeOffset: 0
   fixedSpacingOption: 0
+  fixedMarginOption: 0
   fontMaterialType: 0
   l10nKey: 
   fontMaterialIndexInitialized: 0
@@ -2151,6 +2155,7 @@ MonoBehaviour:
   fixedFontStyle: 0
   fixedFontSizeOffset: 0
   fixedSpacingOption: 0
+  fixedMarginOption: 0
   fontMaterialType: 0
   l10nKey: 
   fontMaterialIndexInitialized: 0
@@ -3209,6 +3214,7 @@ MonoBehaviour:
   fixedFontStyle: 0
   fixedFontSizeOffset: 0
   fixedSpacingOption: 0
+  fixedMarginOption: 0
   fontMaterialType: 0
   l10nKey: 
   fontMaterialIndexInitialized: 0
@@ -3571,6 +3577,7 @@ MonoBehaviour:
   fixedFontStyle: 0
   fixedFontSizeOffset: 0
   fixedSpacingOption: 0
+  fixedMarginOption: 0
   fontMaterialType: 22
   l10nKey: 
   fontMaterialIndexInitialized: 0
@@ -3814,6 +3821,7 @@ MonoBehaviour:
   fixedFontStyle: 0
   fixedFontSizeOffset: 0
   fixedSpacingOption: 0
+  fixedMarginOption: 0
   fontMaterialType: 0
   l10nKey: 
   fontMaterialIndexInitialized: 0
@@ -4303,6 +4311,7 @@ MonoBehaviour:
   fixedFontStyle: 0
   fixedFontSizeOffset: 0
   fixedSpacingOption: 0
+  fixedMarginOption: 0
   fontMaterialType: 0
   l10nKey: 
   fontMaterialIndexInitialized: 0
@@ -4468,6 +4477,7 @@ MonoBehaviour:
   fixedFontStyle: 0
   fixedFontSizeOffset: 0
   fixedSpacingOption: 0
+  fixedMarginOption: 0
   fontMaterialType: 0
   l10nKey: 
   fontMaterialIndexInitialized: 0
@@ -4853,6 +4863,7 @@ MonoBehaviour:
   fixedFontStyle: 0
   fixedFontSizeOffset: 0
   fixedSpacingOption: 0
+  fixedMarginOption: 0
   fontMaterialType: 0
   l10nKey: 
   fontMaterialIndexInitialized: 0
@@ -5596,7 +5607,7 @@ MonoBehaviour:
       m_Calls: []
   m_FontData:
     m_Font: {fileID: 12800000, guid: 1da5c5563106ea94ba1e2114308b9c16, type: 3}
-    m_FontSize: 16
+    m_FontSize: 20
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 1
@@ -5642,8 +5653,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 13, y: 0}
-  m_SizeDelta: {x: -46, y: 0}
+  m_AnchoredPosition: {x: 17.5, y: 0}
+  m_SizeDelta: {x: -35, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8982525102794226803
 CanvasRenderer:
@@ -5839,6 +5850,7 @@ MonoBehaviour:
   fixedFontStyle: 0
   fixedFontSizeOffset: 0
   fixedSpacingOption: 0
+  fixedMarginOption: 0
   fontMaterialType: 0
   l10nKey: 
   fontMaterialIndexInitialized: 0
@@ -6005,6 +6017,7 @@ MonoBehaviour:
   fixedFontStyle: 0
   fixedFontSizeOffset: 0
   fixedSpacingOption: 0
+  fixedMarginOption: 0
   fontMaterialType: 0
   l10nKey: 
   fontMaterialIndexInitialized: 0
@@ -6171,6 +6184,7 @@ MonoBehaviour:
   fixedFontStyle: 0
   fixedFontSizeOffset: 0
   fixedSpacingOption: 0
+  fixedMarginOption: 0
   fontMaterialType: 0
   l10nKey: 
   fontMaterialIndexInitialized: 0
@@ -6337,6 +6351,7 @@ MonoBehaviour:
   fixedFontStyle: 0
   fixedFontSizeOffset: 0
   fixedSpacingOption: 0
+  fixedMarginOption: 0
   fontMaterialType: 0
   l10nKey: 
   fontMaterialIndexInitialized: 0
@@ -6503,6 +6518,7 @@ MonoBehaviour:
   fixedFontStyle: 0
   fixedFontSizeOffset: 0
   fixedSpacingOption: 0
+  fixedMarginOption: 0
   fontMaterialType: 0
   l10nKey: 
   fontMaterialIndexInitialized: 0
@@ -6988,9 +7004,9 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f7054cc9c15e14f0fa1e5cbc714e3845, type: 3}
---- !u!224 &1247296880432076026 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 1733266872303566868, guid: f7054cc9c15e14f0fa1e5cbc714e3845,
+--- !u!1 &8093473601438825723 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8724404533293426709, guid: f7054cc9c15e14f0fa1e5cbc714e3845,
     type: 3}
   m_PrefabInstance: {fileID: 667241856819533038}
   m_PrefabAsset: {fileID: 0}
@@ -7000,9 +7016,9 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 667241856819533038}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &8093473601438825723 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 8724404533293426709, guid: f7054cc9c15e14f0fa1e5cbc714e3845,
+--- !u!224 &1247296880432076026 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 1733266872303566868, guid: f7054cc9c15e14f0fa1e5cbc714e3845,
     type: 3}
   m_PrefabInstance: {fileID: 667241856819533038}
   m_PrefabAsset: {fileID: 0}
@@ -7164,6 +7180,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 087d608eb50946b409525e83801de9d2, type: 3}
+--- !u!224 &7399502949231005216 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 224898616830980190, guid: 087d608eb50946b409525e83801de9d2,
+    type: 3}
+  m_PrefabInstance: {fileID: 7327163783354351230}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &4697174091161054856 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 2630355418658099446, guid: 087d608eb50946b409525e83801de9d2,
@@ -7176,12 +7198,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0398d8905be44004b803f2412d77ef52, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!224 &7399502949231005216 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 224898616830980190, guid: 087d608eb50946b409525e83801de9d2,
-    type: 3}
-  m_PrefabInstance: {fileID: 7327163783354351230}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &7325552906847629322 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1907849136098932, guid: 087d608eb50946b409525e83801de9d2,
@@ -7367,6 +7383,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7be548df9809bfa49b4378b1228575d6, type: 3}
+--- !u!224 &1446695842736227535 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 8990862485258832141, guid: 7be548df9809bfa49b4378b1228575d6,
+    type: 3}
+  m_PrefabInstance: {fileID: 7554304586818702786}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &1446695841905302001 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 8990862484493702195, guid: 7be548df9809bfa49b4378b1228575d6,
@@ -7379,9 +7401,3 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!224 &1446695842736227535 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 8990862485258832141, guid: 7be548df9809bfa49b4378b1228575d6,
-    type: 3}
-  m_PrefabInstance: {fileID: 7554304586818702786}
-  m_PrefabAsset: {fileID: 0}
