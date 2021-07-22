@@ -41,6 +41,8 @@ namespace Lib9c
         public const string LegacyStatKey = "stat";
         public const string LegacySetIdKey = "set_id";
         public const string LegacySpineResourcePathKey = "spine_resource_path";
+        public const string OptionCountFromCombinationKey = "oc";
+        public const string RequiredCharacterLevelKey = "rc";
 
         // Stat
         public const string StatTypeKey = "stt";
