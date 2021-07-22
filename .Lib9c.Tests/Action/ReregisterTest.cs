@@ -338,7 +338,6 @@
                 _avatarAddress.Derive(LegacyWorldInformationKey),
                 _avatarAddress.Derive(LegacyQuestListKey),
                 Addresses.GetItemAddress(tradableId),
-                Order.DeriveAddress(orderId),
                 Order.DeriveAddress(reregisterOrderId),
                 ShardedShopStateV2.DeriveAddress(ItemSubType.Weapon, orderId),
                 ShardedShopStateV2.DeriveAddress(ItemSubType.Weapon, reregisterOrderId),

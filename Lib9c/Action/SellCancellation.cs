@@ -134,7 +134,7 @@ namespace Nekoyume.Action
             Order order = OrderFactory.Deserialize(orderDict);
             order.ValidateCancelOrder(avatarState, tradableId);
             ITradableItem sellItem = order.Cancel(avatarState, context.BlockIndex);
-            if (sellItem.RequiredBlockIndex < context.BlockIndex)
+            if (context.BlockIndex < order.ExpiredBlockIndex)
             {
                 var shardedShopState = new ShardedShopStateV2(shopStateDict);
                 shardedShopState.Remove(order, context.BlockIndex);

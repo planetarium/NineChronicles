@@ -136,7 +136,7 @@ namespace Nekoyume.Action
             orderOnSale.ValidateCancelOrder(avatarState, tradableId);
             var itemOnSale = orderOnSale.Cancel(avatarState, context.BlockIndex);
             
-            if (itemOnSale.RequiredBlockIndex < context.BlockIndex)
+            if (context.BlockIndex < orderOnSale.ExpiredBlockIndex)
             {
                 var shardedShopState = new ShardedShopStateV2(shopStateDict);
                 shardedShopState.Remove(orderOnSale, context.BlockIndex);
