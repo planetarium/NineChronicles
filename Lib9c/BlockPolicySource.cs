@@ -12,6 +12,7 @@ using Nekoyume.Action;
 using Nekoyume.Model.State;
 using Libplanet;
 using Libplanet.Blockchain.Renderers;
+using Nekoyume.Model;
 using Serilog;
 using Serilog.Events;
 #if UNITY_EDITOR || UNITY_STANDALONE
@@ -111,25 +112,39 @@ namespace Nekoyume.BlockChain
                     // The authorization proof has to have no actions at all.
                     return !transaction.Actions.Any();
                 }
-                
+
+                // Check ActivateAccount
                 if (transaction.Actions.Count == 1 &&
-                    transaction.Actions.First().InnerAction is ActivateAccount aa)
+                    transaction.Actions.First().InnerAction is IActivateAction aa)
                 {
-                    return blockChain.GetState(aa.PendingAddress) is Dictionary rawPending &&
-                        new PendingActivationState(rawPending).Verify(aa);
+                    return blockChain.GetState(aa.GetPendingAddress()) is Dictionary rawPending &&
+                           new PendingActivationState(rawPending).Verify(aa.GetSignature());
                 }
 
-                if (blockChain.GetState(ActivatedAccountsState.Address) is Dictionary asDict)
-                {
-                    IImmutableSet<Address> activatedAccounts =
-                        new ActivatedAccountsState(asDict).Accounts;
-                    return !activatedAccounts.Any() ||
-                        activatedAccounts.Contains(transaction.Signer);
-                }
-                else
+                // Check admin
+                if (blockChain.GetState(Addresses.Admin) is Dictionary rawAdmin
+                    && new AdminState(rawAdmin).AdminAddress.Equals(transaction.Signer))
                 {
                     return true;
                 }
+
+                switch (blockChain.GetState(transaction.Signer.Derive(ActivationKey.DeriveKey)))
+                {
+                    case null:
+                        // Fallback for pre-migration.
+                        if (blockChain.GetState(ActivatedAccountsState.Address) is Dictionary asDict)
+                        {
+                            IImmutableSet<Address> activatedAccounts =
+                                new ActivatedAccountsState(asDict).Accounts;
+                            return !activatedAccounts.Any() ||
+                                   activatedAccounts.Contains(transaction.Signer);
+                        }
+                        return true;
+                    case Bencodex.Types.Boolean _:
+                        return true;
+                }
+
+                return true;
             }
             catch (InvalidSignatureException)
             {

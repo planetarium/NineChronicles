@@ -45,6 +45,11 @@ namespace Nekoyume.Model.State
             return new ActivatedAccountsState(Accounts.Add(account));
         }
 
+        public void Remove(Address account)
+        {
+            Accounts = Accounts.Remove(account);
+        }
+
         public override IValue Serialize()
         {
             var values = new Dictionary<IKey, IValue>
