@@ -135,8 +135,14 @@ namespace Nekoyume.Action
             var orderOnSale = OrderFactory.Deserialize(orderDict);
             orderOnSale.ValidateCancelOrder(avatarState, tradableId);
             var itemOnSale = orderOnSale.Cancel(avatarState, context.BlockIndex);
-            var shardedShopState = new ShardedShopStateV2(shopStateDict);
-            shardedShopState.Remove(orderOnSale, context.BlockIndex);
+            
+            if (itemOnSale.RequiredBlockIndex < context.BlockIndex)
+            {
+                var shardedShopState = new ShardedShopStateV2(shopStateDict);
+                shardedShopState.Remove(orderOnSale, context.BlockIndex);
+                states = states.SetState(shopAddress, shardedShopState.Serialize());
+            }
+          
             if (!states.TryGetState(orderReceiptAddress, out Dictionary rawList))
             {
                 throw new FailedLoadStateException($"{addressesHex} failed to load {nameof(OrderDigest)}({orderReceiptAddress}).");
@@ -144,7 +150,6 @@ namespace Nekoyume.Action
             var digestList = new OrderDigestListState(rawList);
             digestList.Remove(orderOnSale.OrderId);
             states = states.SetState(itemAddress, itemOnSale.Serialize())
-                .SetState(shopAddress, shardedShopState.Serialize())
                 .SetState(orderReceiptAddress, digestList.Serialize());
             sw.Stop();
             
