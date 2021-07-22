@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using Libplanet.Assets;
 using Nekoyume.Game.Controller;
+using Nekoyume.L10n;
+using Nekoyume.Model.Mail;
 using Nekoyume.UI.Module;
 using TMPro;
 using UnityEngine;
@@ -22,6 +22,7 @@ namespace Nekoyume.UI
         [SerializeField] private Button addMaximumCountButton = null;
         [SerializeField] private Button removeCountButton = null;
         [SerializeField] private Button resetPriceButton = null;
+        [SerializeField] private Button notificationButton = null;
         [SerializeField] private SubmitButton reregisterButton = null;
         [SerializeField] private List<Button> addPriceButton = null;
 
@@ -40,7 +41,7 @@ namespace Nekoyume.UI
         protected override void Awake()
         {
             base.Awake();
-            // count
+
             countInputField.onEndEdit.AsObservable().Subscribe(_ =>
             {
                 if (countInputField.text.Equals(string.Empty) ||
@@ -125,6 +126,12 @@ namespace Nekoyume.UI
                     AudioController.PlayClick();
                 })
                 .AddTo(_disposablesForAwake);
+
+            notificationButton.OnClickAsObservable().Subscribe(_ =>
+            {
+                OneLinePopup.Push(MailType.System,
+                    L10nManager.Localize("NOTIFICATION_QUANTITY_CANNOT_CHANGED"));
+            }).AddTo(_disposablesForAwake);
         }
 
         protected override void OnDestroy()
@@ -241,11 +248,12 @@ namespace Nekoyume.UI
         public void Show(Model.ItemCountableAndPricePopup data, bool isSell)
         {
             countInputField.enabled = isSell;
-            addCountButton.enabled = isSell;
-            addMaximumCountButton.enabled = isSell;
-            removeCountButton.enabled = isSell;
+            addCountButton.gameObject.SetActive(isSell);
+            addMaximumCountButton.gameObject.SetActive(isSell);
+            removeCountButton.gameObject.SetActive(isSell);
             submitButton.gameObject.SetActive(isSell);
             reregisterButton.gameObject.SetActive(!isSell);
+            notificationButton.gameObject.SetActive(!isSell);
             Pop(data);
         }
     }
