@@ -247,6 +247,15 @@ namespace Nekoyume.UI
 
         public void Show(Model.ItemCountableAndPricePopup data, bool isSell)
         {
+            if (isSell)
+            {
+                SubmitWidget = () => submitButton.OnSubmitClick.OnNext(submitButton);
+            }
+            else
+            {
+                SubmitWidget = () => reregisterButton.OnSubmitClick.OnNext(submitButton);
+            }
+
             countInputField.enabled = isSell;
             addCountButton.gameObject.SetActive(isSell);
             addMaximumCountButton.gameObject.SetActive(isSell);

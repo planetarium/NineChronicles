@@ -37,19 +37,19 @@ namespace Nekoyume.UI
                         buyerItemName);
 
                 case OrderSellerMail orderSellerMail:
-                    var orderId = orderSellerMail.OrderId;
-                    var order = Util.GetOrder(orderId);
-                    var sellerItemName = Util.GetItemNameByOrdierId(orderId, true);
+                    var order = Util.GetOrder(orderSellerMail.OrderId);
+                    var sellerItemName = Util.GetItemNameByOrdierId(orderSellerMail.OrderId, true);
                     var format = L10nManager.Localize("UI_SELLER_MAIL_FORMAT");
                     var taxedPrice = order.Price - order.GetTax();
                     return string.Format(format, taxedPrice, sellerItemName);
 
                 case OrderExpirationMail orderExpirationMail:
-                    var expiredItemName = Util.GetItemNameByOrdierId(orderId, true);
+                    var expiredItemName = Util.GetItemNameByOrdierId(orderExpirationMail.OrderId, true);
                     return string.Format(L10nManager.Localize("UI_SELL_EXPIRATION_MAIL_FORMAT"),
                         expiredItemName);
+
                 case CancelOrderMail cancelOrderMail:
-                    var cancelItemName = Util.GetItemNameByOrdierId(orderId, true);
+                    var cancelItemName = Util.GetItemNameByOrdierId(cancelOrderMail.OrderId, true);
                     return string.Format(L10nManager.Localize("UI_SELL_CANCEL_MAIL_FORMAT"),
                         cancelItemName);
 

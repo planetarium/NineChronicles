@@ -513,6 +513,7 @@ namespace Nekoyume.UI
             }
             OneLinePopup.Push(MailType.Auction, message);
             inventory.SharedModel.ActiveFunc.SetValueAndForceNotify(inventoryItem => (inventoryItem.ItemBase.Value is ITradableItem));
+            Refresh();
         }
 
         private void ResponseSellCancellation(Guid orderId, Guid tradableId)

@@ -411,7 +411,11 @@ namespace Nekoyume.BlockChain
                 OneLinePopup.Push(MailType.Auction, message);
 
                 UpdateCurrentAvatarState(eval);
-                Widget.Find<ShopSell>().Refresh();
+                var shopSell = Widget.Find<ShopSell>();
+                if (shopSell.isActiveAndEnabled)
+                {
+                    shopSell.Refresh();
+                }
             }
         }
 
@@ -431,7 +435,11 @@ namespace Nekoyume.BlockChain
             var format = L10nManager.Localize("NOTIFICATION_SELL_CANCEL_COMPLETE");
             OneLinePopup.Push(MailType.Auction, string.Format(format, itemName));
             UpdateCurrentAvatarState(eval);
-            Widget.Find<ShopSell>().Refresh();
+            var shopSell = Widget.Find<ShopSell>();
+            if (shopSell.isActiveAndEnabled)
+            {
+                shopSell.Refresh();
+            }
         }
 
         private void ResponseReregister(ActionBase.ActionEvaluation<Reregister> eval)
@@ -445,7 +453,11 @@ namespace Nekoyume.BlockChain
             var format = L10nManager.Localize("NOTIFICATION_REREGISTER_COMPLETE");
             OneLinePopup.Push(MailType.Auction, string.Format(format, itemName));
             UpdateCurrentAvatarState(eval);
-            Widget.Find<ShopSell>().Refresh();
+            var shopSell = Widget.Find<ShopSell>();
+            if (shopSell.isActiveAndEnabled)
+            {
+                shopSell.Refresh();
+            }
         }
 
         private void ResponseBuy(ActionBase.ActionEvaluation<Buy> eval)

@@ -292,6 +292,11 @@ namespace Nekoyume.UI
                 {
                     LocalLayerModifier.AddItem(avatarAddress, order.TradableId, order.ExpiredBlockIndex, 1);
                     LocalLayerModifier.RemoveNewMail(avatarAddress, cancelOrderMail.id);
+                    var shopSell = Find<ShopSell>();
+                    if (shopSell.isActiveAndEnabled)
+                    {
+                        shopSell.Refresh();
+                    }
                 });
         }
 

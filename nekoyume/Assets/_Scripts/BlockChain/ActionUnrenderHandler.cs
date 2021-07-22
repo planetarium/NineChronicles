@@ -239,7 +239,11 @@ namespace Nekoyume.BlockChain
             var count = eval.Action.count;
             LocalLayerModifier.RemoveItem(avatarAddress, itemId, blockIndex, count);
             UpdateCurrentAvatarState(eval);
-            Widget.Find<ShopSell>().Refresh();
+            var shopSell = Widget.Find<ShopSell>();
+            if (shopSell.isActiveAndEnabled)
+            {
+                shopSell.Refresh();
+            }
         }
 
         private void ResponseSellCancellation(ActionBase.ActionEvaluation<SellCancellation> eval)
@@ -254,7 +258,11 @@ namespace Nekoyume.BlockChain
             var count = order is FungibleOrder fungibleOrder ? fungibleOrder.ItemCount : 1;
             LocalLayerModifier.AddItem(avatarAddress, order.TradableId, order.ExpiredBlockIndex, count);
             UpdateCurrentAvatarState(eval);
-            Widget.Find<ShopSell>().Refresh();
+            var shopSell = Widget.Find<ShopSell>();
+            if (shopSell.isActiveAndEnabled)
+            {
+                shopSell.Refresh();
+            }
         }
 
         private void ResponseReregister(ActionBase.ActionEvaluation<Reregister> eval)
@@ -265,7 +273,11 @@ namespace Nekoyume.BlockChain
             }
 
             UpdateCurrentAvatarState(eval);
-            Widget.Find<ShopSell>().Refresh();
+            var shopSell = Widget.Find<ShopSell>();
+            if (shopSell.isActiveAndEnabled)
+            {
+                shopSell.Refresh();
+            }
         }
 
 
