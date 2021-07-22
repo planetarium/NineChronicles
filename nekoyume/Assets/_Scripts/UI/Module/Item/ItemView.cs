@@ -210,12 +210,20 @@ namespace Nekoyume.UI.Module
                     selectionImage.enabled = false;
                 }
 
-                optionTagObject.SetActive(false);
+                if (optionTagObject != null)
+                {
+                    optionTagObject.SetActive(false);
+                }
             }
         }
 
         protected void SetOptionTag(int count)
         {
+            if (optionTagObject != null)
+            {
+                return;
+            }
+
             optionTagObject.SetActive(false);
             if (Model is null)
             {
