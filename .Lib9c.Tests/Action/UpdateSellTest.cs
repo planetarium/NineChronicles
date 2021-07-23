@@ -20,7 +20,7 @@
     using Xunit.Abstractions;
     using static SerializeKeys;
 
-    public class ResellTest
+    public class UpdateSellTest
     {
         private const long ProductPrice = 100;
         private readonly Address _agentAddress;
@@ -31,7 +31,7 @@
         private readonly GoldCurrencyState _goldCurrencyState;
         private IAccountStateDelta _initialState;
 
-        public ResellTest(ITestOutputHelper outputHelper)
+        public UpdateSellTest(ITestOutputHelper outputHelper)
         {
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Verbose()
@@ -103,7 +103,7 @@
             ITradableItem tradableItem;
             var itemId = new Guid(guid);
             var orderId = Guid.NewGuid();
-            var resellOrderId = Guid.NewGuid();
+            var updateSellOrderId = Guid.NewGuid();
             ItemSubType itemSubType;
             const long requiredBlockIndex = Order.ExpirationInterval;
             switch (itemType)
@@ -208,10 +208,10 @@
 
             var currencyState = prevState.GetGoldCurrency();
             var price = new FungibleAssetValue(currencyState, ProductPrice, 0);
-            var action = new Resell
+            var action = new UpdateSell
             {
                 orderId = orderId,
-                resellOrderId = resellOrderId,
+                updateSellOrderId = updateSellOrderId,
                 tradableId = itemId,
                 sellerAvatarAddress = _avatarAddress,
                 itemSubType = itemSubType,
@@ -227,11 +227,11 @@
                 Signer = _agentAddress,
             });
 
-            var resellShopAddress = ShardedShopStateV2.DeriveAddress(itemSubType, resellOrderId);
-            var nextShopState = new ShardedShopStateV2((Dictionary)nextState.GetState(resellShopAddress));
+            var updateSellShopAddress = ShardedShopStateV2.DeriveAddress(itemSubType, updateSellOrderId);
+            var nextShopState = new ShardedShopStateV2((Dictionary)nextState.GetState(updateSellShopAddress));
             Assert.Equal(1, nextShopState.OrderDigestList.Count);
             Assert.NotEqual(orderId, nextShopState.OrderDigestList.First().OrderId);
-            Assert.Equal(resellOrderId, nextShopState.OrderDigestList.First().OrderId);
+            Assert.Equal(updateSellOrderId, nextShopState.OrderDigestList.First().OrderId);
             Assert.Equal(itemId, nextShopState.OrderDigestList.First().TradableId);
             Assert.Equal(requiredBlockIndex + 101, nextShopState.OrderDigestList.First().ExpiredBlockIndex);
         }
@@ -239,10 +239,10 @@
         [Fact]
         public void Execute_Throw_FailedLoadStateException()
         {
-            var action = new Resell
+            var action = new UpdateSell
             {
                 orderId = default,
-                resellOrderId = default,
+                updateSellOrderId = default,
                 tradableId = default,
                 sellerAvatarAddress = _avatarAddress,
                 itemSubType = ItemSubType.Food,
@@ -261,10 +261,10 @@
         [Fact]
         public void Execute_Throw_InvalidPriceException()
         {
-            var action = new Resell
+            var action = new UpdateSell
             {
                 orderId = default,
-                resellOrderId = default,
+                updateSellOrderId = default,
                 tradableId = default,
                 sellerAvatarAddress = _avatarAddress,
                 itemSubType = default,
@@ -294,9 +294,9 @@
 
             _initialState = _initialState.SetState(_avatarAddress, avatarState.Serialize());
 
-            var action = new Resell
+            var action = new UpdateSell
             {
-                resellOrderId = default,
+                updateSellOrderId = default,
                 orderId = default,
                 tradableId = default,
                 sellerAvatarAddress = _avatarAddress,
@@ -318,11 +318,11 @@
         {
             var tradableId = Guid.NewGuid();
             var orderId = Guid.NewGuid();
-            var resellOrderId = Guid.NewGuid();
-            var action = new Resell
+            var updateSellOrderId = Guid.NewGuid();
+            var action = new UpdateSell
             {
                 orderId = orderId,
-                resellOrderId = resellOrderId,
+                updateSellOrderId = updateSellOrderId,
                 tradableId = tradableId,
                 sellerAvatarAddress = _avatarAddress,
                 itemSubType = ItemSubType.Weapon,
@@ -338,9 +338,9 @@
                 _avatarAddress.Derive(LegacyWorldInformationKey),
                 _avatarAddress.Derive(LegacyQuestListKey),
                 Addresses.GetItemAddress(tradableId),
-                Order.DeriveAddress(resellOrderId),
+                Order.DeriveAddress(updateSellOrderId),
                 ShardedShopStateV2.DeriveAddress(ItemSubType.Weapon, orderId),
-                ShardedShopStateV2.DeriveAddress(ItemSubType.Weapon, resellOrderId),
+                ShardedShopStateV2.DeriveAddress(ItemSubType.Weapon, updateSellOrderId),
                 OrderDigestListState.DeriveAddress(_avatarAddress),
             };
 

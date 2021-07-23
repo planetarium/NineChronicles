@@ -20,11 +20,11 @@ using BxList = Bencodex.Types.List;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("resell")]
-    public class Resell : GameAction
+    [ActionType("update_sell")]
+    public class UpdateSell : GameAction
     {
         public Guid orderId;
-        public Guid resellOrderId;
+        public Guid updateSellOrderId;
         public Guid tradableId;
         public Address sellerAvatarAddress;
         public ItemSubType itemSubType;
@@ -35,7 +35,7 @@ namespace Nekoyume.Action
             new Dictionary<string, IValue>
             {
                 [OrderIdKey] = orderId.Serialize(),
-                [ResellOrderIdKey] = resellOrderId.Serialize(),
+                [updateSellOrderIdKey] = updateSellOrderId.Serialize(),
                 [ItemIdKey] = tradableId.Serialize(),
                 [SellerAvatarAddressKey] = sellerAvatarAddress.Serialize(),
                 [ItemSubTypeKey] = itemSubType.Serialize(),
@@ -46,7 +46,7 @@ namespace Nekoyume.Action
         protected override void LoadPlainValueInternal(IImmutableDictionary<string, IValue> plainValue)
         {
             orderId = plainValue[OrderIdKey].ToGuid();
-            resellOrderId = plainValue[ResellOrderIdKey].ToGuid();
+            updateSellOrderId = plainValue[updateSellOrderIdKey].ToGuid();
             tradableId = plainValue[ItemIdKey].ToGuid();
             sellerAvatarAddress = plainValue[SellerAvatarAddressKey].ToAddress();
             itemSubType = plainValue[ItemSubTypeKey].ToEnum<ItemSubType>();
@@ -61,8 +61,8 @@ namespace Nekoyume.Action
             var worldInformationAddress = sellerAvatarAddress.Derive(LegacyWorldInformationKey);
             var questListAddress = sellerAvatarAddress.Derive(LegacyQuestListKey);
             var shopAddress = ShardedShopStateV2.DeriveAddress(itemSubType, orderId);
-            var resellShopAddress = ShardedShopStateV2.DeriveAddress(itemSubType, resellOrderId);
-            var resellOrderAddress = Order.DeriveAddress(resellOrderId);
+            var updateSellShopAddress = ShardedShopStateV2.DeriveAddress(itemSubType, updateSellOrderId);
+            var updateSellOrderAddress = Order.DeriveAddress(updateSellOrderId);
             var itemAddress = Addresses.GetItemAddress(tradableId);
             var orderReceiptAddress = OrderDigestListState.DeriveAddress(sellerAvatarAddress);
             if (context.Rehearsal)
@@ -71,8 +71,8 @@ namespace Nekoyume.Action
                     .SetState(context.Signer, MarkChanged)
                     .SetState(itemAddress, MarkChanged)
                     .SetState(shopAddress, MarkChanged)
-                    .SetState(resellShopAddress, MarkChanged)
-                    .SetState(resellOrderAddress, MarkChanged)
+                    .SetState(updateSellShopAddress, MarkChanged)
+                    .SetState(updateSellOrderAddress, MarkChanged)
                     .SetState(orderReceiptAddress, MarkChanged)
                     .SetState(inventoryAddress, MarkChanged)
                     .SetState(worldInformationAddress, MarkChanged)
@@ -85,7 +85,7 @@ namespace Nekoyume.Action
             var sw = new Stopwatch();
             sw.Start();
             var started = DateTimeOffset.UtcNow;
-            Log.Verbose("{AddressesHex} Resell exec started", addressesHex);
+            Log.Verbose("{AddressesHex} updateSell exec started", addressesHex);
 
             if (price.Sign < 0)
             {
@@ -117,7 +117,7 @@ namespace Nekoyume.Action
             avatarState.blockIndex = context.BlockIndex;
 
             // for sell cancel
-            Log.Verbose("{AddressesHex} Resell IsStageCleared: {Elapsed}", addressesHex, sw.Elapsed);
+            Log.Verbose("{AddressesHex} UpdateSell IsStageCleared: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();
             if (!states.TryGetState(shopAddress, out BxDictionary shopStateDict))
             {
@@ -125,7 +125,7 @@ namespace Nekoyume.Action
             }
             sw.Stop();
 
-            Log.Verbose("{AddressesHex} Resell Sell Cancel Get ShopState: {Elapsed}", addressesHex, sw.Elapsed);
+            Log.Verbose("{AddressesHex} UpdateSell Sell Cancel Get ShopState: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();
             if (!states.TryGetState(Order.DeriveAddress(orderId), out Dictionary orderDict))
             {
@@ -160,21 +160,21 @@ namespace Nekoyume.Action
                 avatarState.mailBox.Remove(expirationMail);
             }
 
-            // for resell
-            var resellShopState = states.TryGetState(resellShopAddress, out Dictionary serializedState)
+            // for updateSell
+            var updateSellShopState = states.TryGetState(updateSellShopAddress, out Dictionary serializedState)
                 ? new ShardedShopStateV2(serializedState)
-                : new ShardedShopStateV2(resellShopAddress);
+                : new ShardedShopStateV2(updateSellShopAddress);
 
-            Log.Verbose("{AddressesHex} Resell Get ShardedShopState: {Elapsed}", addressesHex, sw.Elapsed);
+            Log.Verbose("{AddressesHex} UpdateSell Get ShardedShopState: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();
-            var newOrder = OrderFactory.Create(context.Signer, sellerAvatarAddress, resellOrderId, price, tradableId,
+            var newOrder = OrderFactory.Create(context.Signer, sellerAvatarAddress, updateSellOrderId, price, tradableId,
                 context.BlockIndex, itemSubType, count);
             newOrder.Validate(avatarState, count);
 
             var tradableItem = newOrder.Sell(avatarState);
             var costumeStatSheet = states.GetSheet<CostumeStatSheet>();
             var orderDigest = newOrder.Digest(avatarState, costumeStatSheet);
-            resellShopState.Add(orderDigest, context.BlockIndex);
+            updateSellShopState.Add(orderDigest, context.BlockIndex);
 
             digestList.Add(orderDigest);
             states = states.SetState(orderReceiptAddress, digestList.Serialize());
@@ -184,17 +184,17 @@ namespace Nekoyume.Action
                 .SetState(sellerAvatarAddress, avatarState.SerializeV2());
             sw.Stop();
 
-            Log.Verbose("{AddressesHex} Resell Set AvatarState: {Elapsed}", addressesHex, sw.Elapsed);
+            Log.Verbose("{AddressesHex} UpdateSell Set AvatarState: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();
             states = states
                 .SetState(itemAddress, tradableItem.Serialize())
-                .SetState(resellOrderAddress, newOrder.Serialize())
-                .SetState(resellShopAddress, resellShopState.Serialize());
+                .SetState(updateSellOrderAddress, newOrder.Serialize())
+                .SetState(updateSellShopAddress, updateSellShopState.Serialize());
             sw.Stop();
 
             var ended = DateTimeOffset.UtcNow;
-            Log.Verbose("{AddressesHex} Resell Set ShopState: {Elapsed}", addressesHex, sw.Elapsed);
-            Log.Verbose("{AddressesHex} Resell Total Executed Time: {Elapsed}", addressesHex, ended - started);
+            Log.Verbose("{AddressesHex} UpdateSell Set ShopState: {Elapsed}", addressesHex, sw.Elapsed);
+            Log.Verbose("{AddressesHex} UpdateSell Total Executed Time: {Elapsed}", addressesHex, ended - started);
 
             return states;
         }
