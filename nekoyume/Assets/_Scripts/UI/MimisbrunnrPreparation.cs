@@ -236,15 +236,6 @@ namespace Nekoyume.UI
                 }
             }
 
-            Find<BottomMenu>().Show(
-                UINavigator.NavigationType.Back,
-                SubscribeBackButtonClick,
-                true,
-                BottomMenu.ToggleableType.Mail,
-                BottomMenu.ToggleableType.Quest,
-                BottomMenu.ToggleableType.Chat,
-                BottomMenu.ToggleableType.IllustratedBook);
-
             ReactiveAvatarState.ActionPoint
                 .Subscribe(_ => UpdateBattleStartButton())
                 .AddTo(_disposables);
@@ -256,7 +247,6 @@ namespace Nekoyume.UI
         public override void Close(bool ignoreCloseAnimation = false)
         {
             _reset = true;
-            Find<BottomMenu>().Close(ignoreCloseAnimation);
 
             foreach (var slot in consumableSlots)
             {
@@ -385,7 +375,7 @@ namespace Nekoyume.UI
             ShowTooltip(view);
         }
 
-        private void SubscribeBackButtonClick(BottomMenu bottomMenu)
+        private void SubscribeBackButtonClick(HeaderMenu headerMenu)
         {
             if (!CanClose)
             {
@@ -620,7 +610,12 @@ namespace Nekoyume.UI
                 ? AudioController.SfxCode.ChainMail2
                 : AudioController.SfxCode.Equipment);
             inventory.SharedModel.UpdateEquipmentNotification(GetElementalTypes());
-            Find<BottomMenu>().UpdateInventoryNotification();
+            var avatarInfo = Find<AvatarInfo>();
+            if (avatarInfo != null)
+            {
+                Find<HeaderMenu>().UpdateInventoryNotification(avatarInfo.HasNotification);
+            }
+
             UpdateBattleStartButton();
         }
 
@@ -736,7 +731,7 @@ namespace Nekoyume.UI
 
         private void Battle(bool repeat)
         {
-            Find<BottomMenu>().Close(true);
+            Find<HeaderMenu>().Close(true);
             Find<LoadingScreen>().Show();
 
             startButton.gameObject.SetActive(false);

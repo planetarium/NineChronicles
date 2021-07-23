@@ -123,7 +123,7 @@ namespace Nekoyume.UI.Module
                     itemView.SetData(new Item(state.Result.itemUsable));
                     itemNameText.text = GetItemName(state.Result.itemUsable);
                     SubscribeOnBlockIndex(currentBlockIndex);
-                    Widget.Find<BottomMenu>()?.UpdateCombinationNotification();
+                    Widget.Find<HeaderMenu>()?.UpdateCombinationNotification();
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();

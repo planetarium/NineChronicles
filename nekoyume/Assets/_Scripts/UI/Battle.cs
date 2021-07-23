@@ -95,7 +95,7 @@ namespace Nekoyume.UI
                 world.StageClearedId >= GameConfig.RequireClearedStageLevel.UIBottomMenuInBattle)
             {
                 ShowBottomMenu(world);
-                WidgetHandler.Instance.BottomMenu.exitButton.SharedModel.IsEnabled.Value = isExitReserved;
+                WidgetHandler.Instance.HeaderMenu.exitButton.SharedModel.IsEnabled.Value = isExitReserved;
             }
             repeatButton.gameObject.SetActive(stageId >= 4 || world.StageClearedId >= 4);
             helpButton.gameObject.SetActive(true);
@@ -104,7 +104,6 @@ namespace Nekoyume.UI
         public override void Close(bool ignoreCloseAnimation = false)
         {
             guidedQuest.Hide(ignoreCloseAnimation);
-            Find<BottomMenu>().Close(ignoreCloseAnimation);
             enemyPlayerStatus.Close(ignoreCloseAnimation);
             base.Close(ignoreCloseAnimation);
         }
@@ -113,27 +112,8 @@ namespace Nekoyume.UI
         {
             var showExitButton = world.StageClearedId >= RequiredStageForExitButton;
 
-            var bottomMenu = WidgetHandler.Instance.BottomMenu;
-            if (!bottomMenu.isActiveAndEnabled)
-            {
-                WidgetHandler.Instance.BottomMenu.Show(
-                    showExitButton ?
-                        UINavigator.NavigationType.Exit :
-                        UINavigator.NavigationType.None,
-                    SubscribeOnExitButtonClick,
-                    false,
-                    BottomMenu.ToggleableType.Mail,
-                    BottomMenu.ToggleableType.Quest,
-                    BottomMenu.ToggleableType.Chat,
-                    BottomMenu.ToggleableType.IllustratedBook,
-                    BottomMenu.ToggleableType.Ranking,
-                    BottomMenu.ToggleableType.Character,
-                    BottomMenu.ToggleableType.Combination,
-                    BottomMenu.ToggleableType.Settings);
-            }
-
-            WidgetHandler.Instance.BottomMenu.exitButton.SetToggleListener(this);
-            WidgetHandler.Instance.BottomMenu.exitButton.SetInteractable(isInteractableExitButton);
+            WidgetHandler.Instance.HeaderMenu.exitButton.SetToggleListener(this);
+            WidgetHandler.Instance.HeaderMenu.exitButton.SetInteractable(isInteractableExitButton);
         }
 
         public void ClearStage(int stageId, System.Action<bool> onComplete)
@@ -152,7 +132,7 @@ namespace Nekoyume.UI
             });
         }
 
-        private void SubscribeOnExitButtonClick(BottomMenu bottomMenu)
+        private void SubscribeOnExitButtonClick(HeaderMenu headerMenu)
         {
             if (!CanClose)
             {
@@ -163,15 +143,15 @@ namespace Nekoyume.UI
             if (stage.isExitReserved)
             {
                 stage.isExitReserved = false;
-                bottomMenu.exitButton.Toggleable = false;
-                bottomMenu.exitButton.IsWidgetControllable = false;
-                bottomMenu.exitButton.SharedModel.IsEnabled.Value = false;
-                bottomMenu.exitButton.SetToggledOff();
+                headerMenu.exitButton.Toggleable = false;
+                headerMenu.exitButton.IsWidgetControllable = false;
+                headerMenu.exitButton.SharedModel.IsEnabled.Value = false;
+                headerMenu.exitButton.SetToggledOff();
             }
             else
             {
-                bottomMenu.exitButton.Toggleable = true;
-                bottomMenu.exitButton.IsWidgetControllable = true;
+                headerMenu.exitButton.Toggleable = true;
+                headerMenu.exitButton.IsWidgetControllable = true;
 
                 var confirm = Find<Confirm>();
                 confirm.Show("UI_BATTLE_EXIT_RESERVATION_TITLE", "UI_BATTLE_EXIT_RESERVATION_CONTENT");
@@ -180,7 +160,7 @@ namespace Nekoyume.UI
                     if (result == ConfirmResult.Yes)
                     {
                         stage.isExitReserved = true;
-                        bottomMenu.exitButton.SharedModel.IsEnabled.Value = true;
+                        headerMenu.exitButton.SharedModel.IsEnabled.Value = true;
                         repeatButton.SetToggledOff();
                     }
                 };
@@ -190,7 +170,6 @@ namespace Nekoyume.UI
         private static void SetExitButtonToggledOff()
         {
             Game.Game.instance.Stage.isExitReserved = false;
-            Find<BottomMenu>().exitButton.SharedModel.IsEnabled.Value = false;
         }
 
         public void ShowComboText(bool attacked)
@@ -201,12 +180,12 @@ namespace Nekoyume.UI
 
         private void OnGetItem(DropItem dropItem)
         {
-            var bottomMenu = Find<BottomMenu>();
+            var bottomMenu = Find<HeaderMenu>();
             if (!bottomMenu)
             {
-                throw new WidgetNotFoundException<BottomMenu>();
+                throw new WidgetNotFoundException<HeaderMenu>();
             }
-            VFXController.instance.CreateAndChase<DropItemInventoryVFX>(bottomMenu.characterButton.transform, Vector3.zero);
+            // VFXController.instance.CreateAndChase<DropItemInventoryVFX>(bottomMenu.characterButton.transform, Vector3.zero);
         }
 
         protected override void OnCompleteOfCloseAnimationInternal()

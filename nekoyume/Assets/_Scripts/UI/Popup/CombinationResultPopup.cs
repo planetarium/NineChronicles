@@ -83,15 +83,6 @@ namespace Nekoyume.UI
 
             Model.OnClickSubmit.OnNext(Model);
             AudioController.PlayClick();
-            ItemMoveAnimation.Show(itemInformation.Model.item.Value.ItemBase.Value.GetIconSprite(),
-                itemInformation.transform.position,
-                Find<BottomMenu>().characterButton.transform.position,
-                Vector2.one,
-                false,
-                true,
-                1f,
-                0.82f,
-                ItemMoveAnimation.EndPoint.Inventory);
         }
 
         private void SetData(Model.CombinationResultPopup data)

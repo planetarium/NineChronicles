@@ -116,7 +116,6 @@ namespace Nekoyume.UI
 
             var worldId = worldRow.Id;
 
-            Find<BottomMenu>().Close(true);
             Find<LoadingScreen>().Show();
 
             var stage = Game.Game.instance.Stage;
@@ -473,7 +472,6 @@ namespace Nekoyume.UI
             StopSpeeches();
 
             guidedQuest.Hide(true);
-            Find<BottomMenu>().Close(true);
             Find<Status>().Close(true);
             base.Close(ignoreCloseAnimation);
         }
@@ -481,8 +479,6 @@ namespace Nekoyume.UI
         private IEnumerator CoLazyClose(float duration = 1f, bool ignoreCloseAnimation = false)
         {
             StopSpeeches();
-
-            Find<BottomMenu>().Close(true);
             Find<Status>().Close(true);
             yield return new WaitForSeconds(duration);
             base.Close(ignoreCloseAnimation);
