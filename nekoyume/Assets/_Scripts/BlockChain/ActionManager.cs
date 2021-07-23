@@ -254,7 +254,7 @@ namespace Nekoyume.BlockChain
                 .DoOnError(e => HandleException(action.Id, e)); // Last() is for completion
         }
 
-        public IObservable<ActionBase.ActionEvaluation<Reregister>> Reregister(
+        public IObservable<ActionBase.ActionEvaluation<UpdateSell>> UpdateSell(
             Guid orderId,
             Guid tradableId,
             FungibleAssetValue price,
@@ -266,10 +266,10 @@ namespace Nekoyume.BlockChain
             // NOTE: 장착했는지 안 했는지에 상관없이 해제 플래그를 걸어 둔다.
             LocalLayerModifier.SetItemEquip(avatarAddress, tradableId, false);
 
-            var action = new Reregister
+            var action = new UpdateSell
             {
                 orderId = orderId,
-                reregisterOrderId = Guid.NewGuid(),
+                updateSellOrderId = Guid.NewGuid(),
                 tradableId = tradableId,
                 sellerAvatarAddress = avatarAddress,
                 itemSubType = itemSubType,
@@ -278,7 +278,7 @@ namespace Nekoyume.BlockChain
             };
             ProcessAction(action);
 
-            return _renderer.EveryRender<Reregister>()
+            return _renderer.EveryRender<UpdateSell>()
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .First()
                 .ObserveOnMainThread()

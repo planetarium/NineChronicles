@@ -85,7 +85,7 @@ namespace Nekoyume.UI
                 .Subscribe(SubscribeSellPopupSubmit)
                 .AddTo(gameObject);
             SharedModel.ItemCountableAndPricePopup.Value.OnClickReregister
-                .Subscribe(SubscribeSellPopupReregister)
+                .Subscribe(SubscribeSellPopupUpdateSell)
                 .AddTo(gameObject);
             SharedModel.ItemCountableAndPricePopup.Value.OnClickCancel
                 .Subscribe(SubscribeSellPopupCancel)
@@ -186,12 +186,12 @@ namespace Nekoyume.UI
                 view.Model,
                 ButtonEnabledFuncForSell,
                 L10nManager.Localize("UI_RETRIEVE"),
-                _ => ShowReregisterPopup(tooltip.itemInformation.Model.item.Value as ShopItem),
+                _ => ShowUpdateSellPopup(tooltip.itemInformation.Model.item.Value as ShopItem),
                 _ => ShowRetrievePopup(tooltip.itemInformation.Model.item.Value as ShopItem),
                 _ => shopItems.SharedModel.DeselectItemView());
         }
 
-        private void ShowReregisterPopup(ShopItem shopItem)
+        private void ShowUpdateSellPopup(ShopItem shopItem)
         {
             if (shopItem is null || shopItem.Dimmed.Value)
             {
@@ -314,7 +314,7 @@ namespace Nekoyume.UI
             ResponseSell();
         }
 
-        private void SubscribeSellPopupReregister(Model.ItemCountableAndPricePopup data)
+        private void SubscribeSellPopupUpdateSell(Model.ItemCountableAndPricePopup data)
         {
             if (!(data.Item.Value.ItemBase.Value is ITradableItem tradableItem))
             {
@@ -341,8 +341,8 @@ namespace Nekoyume.UI
             if (digest != null)
             {
                 var itemSubType = data.Item.Value.ItemBase.Value.ItemSubType;
-                Game.Game.instance.ActionManager.Reregister(digest.OrderId, tradableId, totalPrice, count, itemSubType);
-                Mixpanel.Track("Unity/Reregister");
+                Game.Game.instance.ActionManager.UpdateSell(digest.OrderId, tradableId, totalPrice, count, itemSubType);
+                Mixpanel.Track("Unity/UpdateSell");
                 ResponseSell();
             }
         }
