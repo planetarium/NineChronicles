@@ -94,7 +94,7 @@ namespace Nekoyume.UI
 
             var task = Task.Run(() =>
             {
-                ReactiveShopState.InitBuyDigests();
+                ReactiveShopState.InitAndUpdateBuyDigests();
                 return true;
             });
 
@@ -166,10 +166,10 @@ namespace Nekoyume.UI
                 return;
             }
 
-            tooltip.ShowForShop(view.RectTransform, view.Model, ButtonEnabledFuncForBuy,
+            tooltip.ShowForBuy(view.RectTransform, view.Model, ButtonEnabledFuncForBuy,
                 L10nManager.Localize("UI_BUY"),
                 _ => ShowBuyPopup(tooltip.itemInformation.Model.item.Value as ShopItem),
-                _ => shopItems.SharedModel.DeselectItemView(), true);
+                _ => shopItems.SharedModel.DeselectItemView());
         }
 
         private void ShowBuyPopup(ShopItem shopItem)
@@ -213,7 +213,8 @@ namespace Nekoyume.UI
             var buyerAgentAddress = States.Instance.AgentState.address;
 
             LocalLayerModifier.ModifyAgentGold(buyerAgentAddress, -shopItem.Price.Value);
-            ReactiveShopState.RemoveBuyDigest(shopItem.TradableId.Value);
+
+            ReactiveShopState.RemoveBuyDigest(shopItem.OrderId.Value);
 
             var format = L10nManager.Localize("NOTIFICATION_BUY_START");
             OneLinePopup.Push(MailType.Auction,
