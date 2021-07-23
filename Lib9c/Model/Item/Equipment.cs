@@ -19,13 +19,6 @@ namespace Nekoyume.Model.Item
         public int optionCountFromCombination;
         public readonly int RequiredCharacterLevel;
 
-        /// <summary>
-        /// Do not use in Lib9c. This property only for UI.
-        /// </summary>
-        public int OptionCountFromCombinationForUI => optionCountFromCombination > 0
-            ? optionCountFromCombination
-            : StatsMap.GetStats(true).Count();
-
         public DecimalStat Stat { get; }
         public int SetId { get; }
         public string SpineResourcePath { get; }
