@@ -8,6 +8,8 @@ namespace Nekoyume.Model
 {
     public struct ActivationKey
     {
+        public const string DeriveKey = "activated";
+
         public PrivateKey PrivateKey { get; }
 
         public Address PendingAddress { get; }
@@ -61,6 +63,12 @@ namespace Nekoyume.Model
         public ActivateAccount CreateActivateAccount(byte[] nonce)
         {
             return new ActivateAccount(PendingAddress, PrivateKey.Sign(nonce));
+        }
+
+        [Obsolete("ActivateAccount0 is obsolete. use CreateActivateAccount")]
+        public ActivateAccount0 CreateActivateAccount0(byte[] nonce)
+        {
+            return new ActivateAccount0(PendingAddress, PrivateKey.Sign(nonce));
         }
     }
 }
