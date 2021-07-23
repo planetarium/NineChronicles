@@ -3,7 +3,7 @@ using Nekoyume.Game.Item;
 
 namespace Nekoyume
 {
-    public static class TypeExtension
+    public static class TypeExtensions
     {
         public static bool IsInheritsFrom(this Type source, Type destination)
         {
