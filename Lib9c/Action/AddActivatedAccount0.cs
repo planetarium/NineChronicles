@@ -3,21 +3,20 @@ using System.Collections.Generic;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
-using Nekoyume.Model;
 using Nekoyume.Model.State;
 
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("add_activated_account2")]
-    public class AddActivatedAccount : ActionBase
+    [ActionType("add_activated_account")]
+    public class AddActivatedAccount0 : ActionBase
     {
-        public AddActivatedAccount(Address address)
+        public AddActivatedAccount0(Address address)
         {
             Address = address;
         }
 
-        public AddActivatedAccount()
+        public AddActivatedAccount0()
         {
         }
 
@@ -27,35 +26,38 @@ namespace Nekoyume.Action
             new Dictionary(
                 new[]
                 {
-                    new KeyValuePair<IKey, IValue>((Text)"a", Address.Serialize()),
+                    new KeyValuePair<IKey, IValue>((Text)"address", Address.Serialize()),
                 }
             );
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
             IAccountStateDelta state = context.PreviousStates;
-            var address = Address.Derive(ActivationKey.DeriveKey);
 
             if (context.Rehearsal)
             {
                 return state
-                    .SetState(address, MarkChanged);
+                    .SetState(ActivatedAccountsState.Address, MarkChanged);
             }
 
-            if (!(state.GetState(address) is null))
+            if (!state.TryGetState(ActivatedAccountsState.Address, out Dictionary accountsAsDict))
             {
-                throw new AlreadyActivatedException($"{address} is already activated.");
+                throw new ActivatedAccountsDoesNotExistsException();
             }
 
             CheckPermission(context);
 
-            return state.SetState(address, true.Serialize());
+            var accounts = new ActivatedAccountsState(accountsAsDict);
+            return state.SetState(
+                ActivatedAccountsState.Address,
+                accounts.AddAccount(Address).Serialize()
+            );
         }
 
         public override void LoadPlainValue(IValue plainValue)
         {
             var asDict = (Dictionary) plainValue;
-            Address = asDict["a"].ToAddress();
+            Address = asDict["address"].ToAddress();
         }
     }
 }
