@@ -1,4 +1,4 @@
-namespace Lib9c.Tests.Action
+﻿namespace Lib9c.Tests.Action
 {
     using System;
     using System.Collections.Generic;
@@ -21,7 +21,7 @@ namespace Lib9c.Tests.Action
     using Xunit.Abstractions;
     using static SerializeKeys;
 
-    public class SellTest
+    public class Sell7Test
     {
         private const long ProductPrice = 100;
 
@@ -32,7 +32,7 @@ namespace Lib9c.Tests.Action
         private readonly TableSheets _tableSheets;
         private IAccountStateDelta _initialState;
 
-        public SellTest(ITestOutputHelper outputHelper)
+        public Sell7Test(ITestOutputHelper outputHelper)
         {
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Verbose()
@@ -179,7 +179,7 @@ namespace Lib9c.Tests.Action
                 Assert.Null(previousStates.GetState(shardedShopAddress));
             }
 
-            var sellAction = new Sell
+            var sellAction = new Sell7
             {
                 sellerAvatarAddress = _avatarAddress,
                 tradableId = tradableItem.TradableId,
@@ -242,6 +242,13 @@ namespace Lib9c.Tests.Action
             Assert.Equal(_avatarAddress, order.SellerAvatarAddress);
             Assert.Equal(expiredBlockIndex, orderItem.RequiredBlockIndex);
 
+            var mailList = nextAvatarState.mailBox.OfType<OrderExpirationMail>().ToList();
+            Assert.Single(mailList);
+            var mail = mailList.First();
+            Assert.NotNull(mail);
+            Assert.Equal(expiredBlockIndex, mail.requiredBlockIndex);
+            Assert.Equal(orderId, mail.OrderId);
+
             var receiptDict = nextState.GetState(OrderDigestListState.DeriveAddress(_avatarAddress));
             Assert.NotNull(receiptDict);
             var orderDigestList = new OrderDigestListState((Dictionary)receiptDict);
@@ -253,7 +260,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Execute_Throw_InvalidPriceException()
         {
-            var action = new Sell
+            var action = new Sell7
             {
                 sellerAvatarAddress = _avatarAddress,
                 tradableId = default,
@@ -274,7 +281,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Execute_Throw_FailedLoadStateException()
         {
-            var action = new Sell
+            var action = new Sell7
             {
                 sellerAvatarAddress = _avatarAddress,
                 tradableId = default,
@@ -306,7 +313,7 @@ namespace Lib9c.Tests.Action
 
             _initialState = _initialState.SetState(_avatarAddress, avatarState.Serialize());
 
-            var action = new Sell
+            var action = new Sell7
             {
                 sellerAvatarAddress = _avatarAddress,
                 tradableId = default,
@@ -327,7 +334,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Execute_Throw_ItemDoesNotExistException()
         {
-            var action = new Sell
+            var action = new Sell7
             {
                 sellerAvatarAddress = _avatarAddress,
                 tradableId = default,
@@ -358,7 +365,7 @@ namespace Lib9c.Tests.Action
 
             _initialState = _initialState.SetState(_avatarAddress, _avatarState.Serialize());
 
-            var action = new Sell
+            var action = new Sell7
             {
                 sellerAvatarAddress = _avatarAddress,
                 tradableId = equipmentId,
@@ -409,7 +416,7 @@ namespace Lib9c.Tests.Action
                 .SetState(_avatarAddress, avatarState.Serialize())
                 .SetState(shardedShopAddress, shardedShopState.Serialize());
 
-            var action = new Sell
+            var action = new Sell7
             {
                 sellerAvatarAddress = _avatarAddress,
                 tradableId = tradableId,
@@ -433,7 +440,7 @@ namespace Lib9c.Tests.Action
         {
             Guid tradableId = Guid.NewGuid();
             Guid orderId = Guid.NewGuid();
-            var action = new Sell
+            var action = new Sell7
             {
                 sellerAvatarAddress = _avatarAddress,
                 tradableId = tradableId,
