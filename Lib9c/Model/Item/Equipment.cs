@@ -6,6 +6,7 @@ using Bencodex.Types;
 using Nekoyume.Model.Stat;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
+using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Model.Item
 {
@@ -13,8 +14,11 @@ namespace Nekoyume.Model.Item
     public class Equipment : ItemUsable, IEquippableItem
     {
         // FIXME: Whether the equipment is equipped or not has no asset value and must be removed from the state.
-        public bool equipped = false;
+        public bool equipped;
         public int level;
+        public int optionCountFromCombination;
+        public readonly int RequiredCharacterLevel;
+
         public DecimalStat Stat { get; }
         public int SetId { get; }
         public string SpineResourcePath { get; }
@@ -26,42 +30,61 @@ namespace Nekoyume.Model.Item
             return Math.Max(1.0m, StatsMap.GetStat(UniqueStatType, true) * 0.1m);
         }
 
-        public Equipment(EquipmentItemSheet.Row data, Guid id, long requiredBlockIndex)
+        public Equipment(
+            EquipmentItemSheet.Row data,
+            Guid id,
+            long requiredBlockIndex,
+            int requiredCharacterLevel = default)
             : base(data, id, requiredBlockIndex)
         {
             Stat = data.Stat;
             SetId = data.SetId;
             SpineResourcePath = data.SpineResourcePath;
+            RequiredCharacterLevel = requiredCharacterLevel;
         }
 
         public Equipment(Dictionary serialized) : base(serialized)
         {
-            if (serialized.TryGetValue((Text) "equipped", out var toEquipped))
+            if (serialized.TryGetValue((Text) LegacyEquippedKey, out var value))
             {
-                equipped = toEquipped.ToBoolean();
+                equipped = value.ToBoolean();
             }
-            if (serialized.TryGetValue((Text) "level", out var toLevel))
+
+            if (serialized.TryGetValue((Text) LegacyLevelKey, out value))
             {
                 try
                 {
-                    level = toLevel.ToInteger();
+                    level = value.ToInteger();
                 }
                 catch (InvalidCastException)
                 {
-                    level = (int) ((Integer) toLevel).Value;
+                    level = (int) ((Integer) value).Value;
                 }
             }
-            if (serialized.TryGetValue((Text) "stat", out var stat))
+
+            if (serialized.TryGetValue((Text) LegacyStatKey, out value))
             {
-                Stat = stat.ToDecimalStat();
+                Stat = value.ToDecimalStat();
             }
-            if (serialized.TryGetValue((Text) "set_id", out var setId))
+
+            if (serialized.TryGetValue((Text) LegacySetIdKey, out value))
             {
-                SetId = setId.ToInteger();
+                SetId = value.ToInteger();
             }
-            if (serialized.TryGetValue((Text) "spine_resource_path", out var spineResourcePath))
+
+            if (serialized.TryGetValue((Text) LegacySpineResourcePathKey, out value))
             {
-                SpineResourcePath = (Text) spineResourcePath;
+                SpineResourcePath = (Text) value;
+            }
+
+            if (serialized.TryGetValue((Text) OptionCountFromCombinationKey, out value))
+            {
+                optionCountFromCombination = value.ToInteger();
+            }
+            
+            if (serialized.TryGetValue((Text) RequiredCharacterLevelKey, out value))
+            {
+                RequiredCharacterLevel = value.ToInteger();
             }
         }
 
@@ -70,18 +93,31 @@ namespace Nekoyume.Model.Item
         {
         }
 
-        public override IValue Serialize() =>
+        public override IValue Serialize()
+        {
 #pragma warning disable LAA1002
-            new Dictionary(new Dictionary<IKey, IValue>
+            var dict = new Dictionary(new Dictionary<IKey, IValue>
             {
-                [(Text) "equipped"] = equipped.Serialize(),
-                [(Text) "level"] = level.Serialize(),
-                [(Text) "stat"] = Stat.Serialize(),
-                [(Text) "set_id"] = SetId.Serialize(),
-                [(Text) "spine_resource_path"] = SpineResourcePath.Serialize(),
+                [(Text) LegacyEquippedKey] = equipped.Serialize(),
+                [(Text) LegacyLevelKey] = level.Serialize(),
+                [(Text) LegacyStatKey] = Stat.Serialize(),
+                [(Text) LegacySetIdKey] = SetId.Serialize(),
+                [(Text) LegacySpineResourcePathKey] = SpineResourcePath.Serialize(),
             }.Union((Dictionary) base.Serialize()));
 
+            if (optionCountFromCombination > 0)
+            {
+                dict = dict.SetItem(OptionCountFromCombinationKey, optionCountFromCombination.Serialize());
+            }
+
+            if (RequiredCharacterLevel > 0)
+            {
+                dict = dict.SetItem(RequiredCharacterLevelKey, RequiredCharacterLevel.Serialize());
+            }
+
+            return dict;
 #pragma warning restore LAA1002
+        }
 
         public void Equip()
         {
