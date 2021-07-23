@@ -148,6 +148,12 @@ namespace Nekoyume.UI.Model
                     }}";
 
             var response = await apiClient.GetObjectAsync<StageRankingResponse>(query);
+            if (response is null)
+            {
+                Debug.LogError($"Failed getting response : {nameof(StageRankingResponse)}");
+                return;
+            }
+
             StageRankingInfos =
                 response.StageRanking
                 .Select(x =>
@@ -217,6 +223,12 @@ namespace Nekoyume.UI.Model
                     }}";
 
             var response = await apiClient.GetObjectAsync<StageRankingResponse>(query);
+            if (response is null)
+            {
+                Debug.LogError($"Failed getting response : {nameof(StageRankingResponse)}");
+                return;
+            }
+
             MimisbrunnrRankingInfos =
                 response.StageRanking
                 .Select(x =>
@@ -286,6 +298,12 @@ namespace Nekoyume.UI.Model
                     }}";
 
             var response = await apiClient.GetObjectAsync<CraftRankingResponse>(query);
+            if (response is null)
+            {
+                Debug.LogError($"Failed getting response : {nameof(CraftRankingResponse)}");
+                return;
+            }
+
             CraftRankingInfos =
                 response.CraftRanking
                 .Select(x =>
@@ -361,6 +379,12 @@ namespace Nekoyume.UI.Model
                     }}";
 
                 var response = await apiClient.GetObjectAsync<EquipmentRankingResponse>(query);
+                if (response is null)
+                {
+                    Debug.LogError($"Failed getting response : {nameof(EquipmentRankingResponse)}");
+                    return;
+                }
+
                 EquipmentRankingInfosMap[subType] =
                     response.EquipmentRanking
                     .Select(x =>
