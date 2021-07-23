@@ -58,22 +58,6 @@ namespace Nekoyume.Model.Quest
         }
     }
 
-    [Serializable]
-    public class UpdateListFailedException : Exception
-    {
-        public UpdateListFailedException()
-        {
-        }
-
-        public UpdateListFailedException(string s) : base(s)
-        {
-        }
-
-        protected UpdateListFailedException(SerializationInfo info, StreamingContext context) : base(info, context)
-        {
-        }
-    }
-
     #endregion
 
     [Serializable]
@@ -105,10 +89,8 @@ namespace Nekoyume.Model.Quest
                     questItemRewardSheet
                 );
 
-                if (TryCreateQuest(questData, reward, equipmentItemRecipeSheet, out var result))
-                {
-                    _quests.Add(result.quest);
-                }
+                var quest = CreateQuest(questData, reward, equipmentItemRecipeSheet);
+                _quests.Add(quest);
             }
         }
 
@@ -148,7 +130,7 @@ namespace Nekoyume.Model.Quest
 
         /// <exception cref="UpdateListVersionException"></exception>
         /// <exception cref="UpdateListQuestsCountException"></exception>
-        /// <exception cref="UpdateListFailedException"></exception>
+        /// <exception cref="Exception"></exception>
         public void UpdateList(
             int listVersion,
             QuestSheet questSheet,
@@ -182,15 +164,8 @@ namespace Nekoyume.Model.Quest
                     questRewardSheet,
                     questItemRewardSheet);
 
-                if (TryCreateQuest(questRow, reward, equipmentItemRecipeSheet, out var result))
-                {
-                    _quests.Add(result.quest);
-                }
-                else
-                {
-                    throw new UpdateListFailedException(
-                        $"{nameof(TryCreateQuest)}() return false. questRow.Id({questRow.Id}). {result.errorMessage}");
-                }
+                quest = CreateQuest(questRow, reward, equipmentItemRecipeSheet);
+                _quests.Add(quest);
             }
         }
 
@@ -385,48 +360,47 @@ namespace Nekoyume.Model.Quest
             return new QuestReward(itemMap);
         }
 
-        private static bool TryCreateQuest(
+        private static Quest CreateQuest(
             QuestSheet.Row row,
             QuestReward reward,
-            EquipmentItemRecipeSheet equipmentItemRecipeSheet,
-            out (Quest quest, string errorMessage) result)
+            EquipmentItemRecipeSheet equipmentItemRecipeSheet)
         {
-            result = (null, string.Empty);
+            Quest quest = default;
+            var errorMessage = string.Empty;
             switch (row)
             {
                 default:
-                    result.quest = null;
-                    result.errorMessage = $"Unexpected type: {row.GetType().FullName}";
+                    errorMessage = $"Unexpected type: {row.GetType().FullName}";
                     break;
                 case CollectQuestSheet.Row r:
-                    result.quest = new CollectQuest(r, reward);
+                    quest = new CollectQuest(r, reward);
                     break;
                 case CombinationQuestSheet.Row r:
-                    result.quest = new CombinationQuest(r, reward);
+                    quest = new CombinationQuest(r, reward);
                     break;
                 case GeneralQuestSheet.Row r:
-                    result.quest = new GeneralQuest(r, reward);
+                    quest = new GeneralQuest(r, reward);
                     break;
                 case ItemEnhancementQuestSheet.Row r:
-                    result.quest = new ItemEnhancementQuest(r, reward);
+                    quest = new ItemEnhancementQuest(r, reward);
                     break;
                 case ItemGradeQuestSheet.Row r:
-                    result.quest = new ItemGradeQuest(r, reward);
+                    quest = new ItemGradeQuest(r, reward);
                     break;
                 case MonsterQuestSheet.Row r:
-                    result.quest = new MonsterQuest(r, reward);
+                    quest = new MonsterQuest(r, reward);
                     break;
                 case TradeQuestSheet.Row r:
-                    result.quest = new TradeQuest(r, reward);
+                    quest = new TradeQuest(r, reward);
                     break;
                 case WorldQuestSheet.Row r:
-                    result.quest = new WorldQuest(r, reward);
+                    quest = new WorldQuest(r, reward);
                     break;
                 case ItemTypeCollectQuestSheet.Row r:
-                    result.quest = new ItemTypeCollectQuest(r, reward);
+                    quest = new ItemTypeCollectQuest(r, reward);
                     break;
                 case GoldQuestSheet.Row r:
-                    result.quest = new GoldQuest(r, reward);
+                    quest = new GoldQuest(r, reward);
                     break;
                 case CombinationEquipmentQuestSheet.Row r:
                     int stageId;
@@ -434,17 +408,21 @@ namespace Nekoyume.Model.Quest
                         .FirstOrDefault(e => e.Id == r.RecipeId);
                     if (recipeRow is null)
                     {
-                        result.quest = null;
-                        result.errorMessage = $"Invalid Recipe Id : {r.RecipeId}";
+                        errorMessage = $"Invalid Recipe Id : {r.RecipeId}";
                         break;
                     }
 
                     stageId = recipeRow.UnlockStage;
-                    result.quest = new CombinationEquipmentQuest(r, reward, stageId);
+                    quest = new CombinationEquipmentQuest(r, reward, stageId);
                     break;
             }
 
-            return !(result.quest is null);
+            if (!string.IsNullOrEmpty(errorMessage))
+            {
+                throw new Exception(errorMessage);
+            }
+
+            return quest;
         }
     }
 }

@@ -20,8 +20,7 @@ namespace Lib9c.Tests.Model
         [Fact]
         public void SerializeExceptions() => ExceptionTest.AssertException(
             new UpdateListVersionException("test"),
-            new UpdateListQuestsCountException("test"),
-            new UpdateListFailedException("test"));
+            new UpdateListQuestsCountException("test"));
 
         [Fact]
         public void GetEnumerator()
@@ -167,11 +166,6 @@ namespace Lib9c.Tests.Model
                     _tableSheets.QuestRewardSheet,
                     _tableSheets.QuestItemRewardSheet,
                     _tableSheets.EquipmentItemRecipeSheet));
-        }
-
-        [Fact]
-        public void UpdateList_Throw_UpdateListFailedException()
-        {
         }
     }
 }
