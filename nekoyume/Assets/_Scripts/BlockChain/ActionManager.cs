@@ -71,8 +71,7 @@ namespace Nekoyume.BlockChain
 
             return _renderer.EveryRender<CreateAvatar2>()
                 .SkipWhile(eval => !eval.Action.Id.Equals(action.Id))
-                .Take(1)
-                .Last()
+                .First()
                 .ObserveOnMainThread()
                 .Timeout(ActionTimeout)
                 .DoOnError(e => HandleException(action.Id, e))
@@ -122,8 +121,7 @@ namespace Nekoyume.BlockChain
 
             return _renderer.EveryRender<MimisbrunnrBattle>()
                 .SkipWhile(eval => !eval.Action.Id.Equals(action.Id))
-                .Take(1)
-                .Last()
+                .First()
                 .ObserveOnMainThread()
                 .Timeout(ActionTimeout)
                 .DoOnError(e => HandleException(action.Id, e));
@@ -174,8 +172,7 @@ namespace Nekoyume.BlockChain
 
             return _renderer.EveryRender<HackAndSlash>()
                 .SkipWhile(eval => !eval.Action.Id.Equals(action.Id))
-                .Take(1)
-                .Last()
+                .First()
                 .ObserveOnMainThread()
                 .Timeout(ActionTimeout)
                 .DoOnError(e => HandleException(action.Id, e));
@@ -199,8 +196,7 @@ namespace Nekoyume.BlockChain
 
             return _renderer.EveryRender<CombinationConsumable>()
                 .Where(eval => eval.Action.Id.Equals(action.Id))
-                .Take(1)
-                .Last()
+                .First()
                 .ObserveOnMainThread()
                 .Timeout(ActionTimeout)
                 .DoOnError(e => HandleException(action.Id, e));
@@ -229,8 +225,7 @@ namespace Nekoyume.BlockChain
 
             return _renderer.EveryRender<Sell>()
                 .Where(eval => eval.Action.Id.Equals(action.Id))
-                .Take(1)
-                .Last()
+                .First()
                 .ObserveOnMainThread()
                 .Timeout(ActionTimeout)
                 .DoOnError(e => HandleException(action.Id, e)); // Last() is for completion
@@ -253,8 +248,7 @@ namespace Nekoyume.BlockChain
 
             return _renderer.EveryRender<SellCancellation>()
                 .Where(eval => eval.Action.Id.Equals(action.Id))
-                .Take(1)
-                .Last()
+                .First()
                 .ObserveOnMainThread()
                 .Timeout(ActionTimeout)
                 .DoOnError(e => HandleException(action.Id, e)); // Last() is for completion
@@ -286,8 +280,7 @@ namespace Nekoyume.BlockChain
 
             return _renderer.EveryRender<Reregister>()
                 .Where(eval => eval.Action.Id.Equals(action.Id))
-                .Take(1)
-                .Last()
+                .First()
                 .ObserveOnMainThread()
                 .Timeout(ActionTimeout)
                 .DoOnError(e => HandleException(action.Id, e)); // Last() is for completion
@@ -305,8 +298,7 @@ namespace Nekoyume.BlockChain
             ProcessAction(action);
             return _renderer.EveryRender<Buy>()
                 .Where(eval => eval.Action.Id.Equals(action.Id))
-                .Take(1)
-                .Last()
+                .First()
                 .ObserveOnMainThread()
                 .Timeout(ActionTimeout)
                 .DoOnError(e => HandleException(action.Id, e)); // Last() is for completion
@@ -327,8 +319,7 @@ namespace Nekoyume.BlockChain
 
             return _renderer.EveryRender<DailyReward>()
                 .Where(eval => eval.Action.Id.Equals(action.Id))
-                .Take(1)
-                .Last()
+                .First()
                 .ObserveOnMainThread()
                 .Timeout(ActionTimeout)
                 .DoOnError(e => HandleException(action.Id, e));
@@ -358,8 +349,7 @@ namespace Nekoyume.BlockChain
 
             return _renderer.EveryRender<ItemEnhancement>()
                 .Where(eval => eval.Action.Id.Equals(action.Id))
-                .Take(1)
-                .Last()
+                .First()
                 .ObserveOnMainThread()
                 .Timeout(ActionTimeout)
                 .DoOnError(e => HandleException(action.Id, e));
@@ -389,8 +379,7 @@ namespace Nekoyume.BlockChain
 
             return _renderer.EveryRender<RankingBattle>()
                 .Where(eval => eval.Action.Id.Equals(action.Id))
-                .Take(1)
-                .Last()
+                .First()
                 .ObserveOnMainThread()
                 .Timeout(ActionTimeout)
                 .DoOnError(e => HandleException(action.Id, e));
@@ -427,8 +416,7 @@ namespace Nekoyume.BlockChain
 
             return _renderer.EveryRender<CombinationEquipment>()
                 .Where(eval => eval.Action.Id.Equals(action.Id))
-                .Take(1)
-                .Last()
+                .First()
                 .ObserveOnMainThread()
                 .Timeout(ActionTimeout)
                 .DoOnError(e => HandleException(action.Id, e));
@@ -445,8 +433,7 @@ namespace Nekoyume.BlockChain
 
             return _renderer.EveryRender<RapidCombination>()
                 .Where(eval => eval.Action.Id.Equals(action.Id))
-                .Take(1)
-                .Last()
+                .First()
                 .ObserveOnMainThread()
                 .Timeout(ActionTimeout)
                 .DoOnError(e => HandleException(action.Id, e));
@@ -462,8 +449,7 @@ namespace Nekoyume.BlockChain
 
             return _renderer.EveryRender<RedeemCode>()
                 .Where(eval => eval.Action.Id.Equals(action.Id))
-                .Take(1)
-                .Last()
+                .First()
                 .ObserveOnMainThread()
                 .Timeout(ActionTimeout)
                 .DoOnError(e => HandleException(action.Id, e));
@@ -479,8 +465,7 @@ namespace Nekoyume.BlockChain
 
             return _renderer.EveryRender<ChargeActionPoint>()
                 .Where(eval => eval.Action.Id.Equals(action.Id))
-                .Take(1)
-                .Last()
+                .First()
                 .ObserveOnMainThread()
                 .Timeout(ActionTimeout)
                 .DoOnError(e => HandleException(action.Id, e));

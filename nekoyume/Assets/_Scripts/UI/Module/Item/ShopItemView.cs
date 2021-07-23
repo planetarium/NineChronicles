@@ -2,13 +2,13 @@ using System;
 using System.Collections.Generic;
 using Nekoyume.UI.Model;
 using TMPro;
-using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
-using ObservableExtensions = UniRx.ObservableExtensions;
 
 namespace Nekoyume.UI.Module
 {
+    using UniRx;
+
     public class ShopItemView : CountableItemView<ShopItem>
     {
         public GameObject priceGroup;
@@ -37,8 +37,8 @@ namespace Nekoyume.UI.Module
             {
                 _expiredBlockIndex = model.ExpiredBlockIndex.Value;
                 SetExpired(Game.Game.instance.Agent.BlockIndex);
-                ObservableExtensions
-                    .Subscribe(Game.Game.instance.Agent.BlockIndexSubject, SetExpired)
+                Game.Game.instance.Agent.BlockIndexSubject
+                    .Subscribe(SetExpired)
                     .AddTo(_disposables);
             }
         }
