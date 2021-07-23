@@ -215,7 +215,6 @@ namespace Nekoyume.UI
                         break;
                     }
 
-                    var abilityRankingInfos = SharedModel.AbilityRankingInfos;
                     if (SharedModel.AgentAbilityRankingInfos
                         .TryGetValue(states.CurrentAvatarKey, out var abilityInfo))
                     {
@@ -226,7 +225,7 @@ namespace Nekoyume.UI
                         myInfoCell.SetEmpty(states.CurrentAvatarState);
                     }
 
-                    rankScroll.Show(abilityRankingInfos, true);
+                    rankScroll.Show(SharedModel.AbilityRankingInfos, true);
                     break;
                 case RankCategory.Stage:
                     if (!isApiLoaded)
@@ -234,7 +233,6 @@ namespace Nekoyume.UI
                         break;
                     }
 
-                    var stageRankingInfos = SharedModel.StageRankingInfos;
                     if (SharedModel.AgentStageRankingInfos
                         .TryGetValue(states.CurrentAvatarKey, out var stageInfo))
                     {
@@ -245,7 +243,7 @@ namespace Nekoyume.UI
                         myInfoCell.SetEmpty(states.CurrentAvatarState);
                     }
 
-                    rankScroll.Show(stageRankingInfos, true);
+                    rankScroll.Show(SharedModel.StageRankingInfos, true);
                     break;
                 case RankCategory.Mimisburnnr:
                     if (!isApiLoaded)
@@ -253,7 +251,6 @@ namespace Nekoyume.UI
                         break;
                     }
 
-                    var mimisbrunnrRankingInfos = SharedModel.MimisbrunnrRankingInfos;
                     if (SharedModel.AgentMimisbrunnrRankingInfos
                         .TryGetValue(states.CurrentAvatarKey, out var mimisbrunnrInfo))
                     {
@@ -264,7 +261,7 @@ namespace Nekoyume.UI
                         myInfoCell.SetEmpty(states.CurrentAvatarState);
                     }
 
-                    rankScroll.Show(mimisbrunnrRankingInfos, true);
+                    rankScroll.Show(SharedModel.MimisbrunnrRankingInfos, true);
                     break;
                 case RankCategory.Crafting:
                     if (!isApiLoaded)
@@ -272,7 +269,6 @@ namespace Nekoyume.UI
                         break;
                     }
 
-                    var craftRankingInfos = SharedModel.CraftRankingInfos;
                     if (SharedModel.AgentCraftRankingInfos
                         .TryGetValue(states.CurrentAvatarKey, out var craftingInfo))
                     {
@@ -283,7 +279,7 @@ namespace Nekoyume.UI
                         myInfoCell.SetEmpty(states.CurrentAvatarState);
                     }
 
-                    rankScroll.Show(craftRankingInfos, true);
+                    rankScroll.Show(SharedModel.CraftRankingInfos, true);
                     break;
                 case RankCategory.EquipmentWeapon:
                     if (!isApiLoaded)
