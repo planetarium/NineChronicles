@@ -71,8 +71,7 @@ namespace Nekoyume.BlockChain
 
             return _renderer.EveryRender<CreateAvatar2>()
                 .SkipWhile(eval => !eval.Action.Id.Equals(action.Id))
-                .Take(1)
-                .Last()
+                .First()
                 .ObserveOnMainThread()
                 .Timeout(ActionTimeout)
                 .DoOnError(e => HandleException(action.Id, e))
@@ -122,8 +121,7 @@ namespace Nekoyume.BlockChain
 
             return _renderer.EveryRender<MimisbrunnrBattle>()
                 .SkipWhile(eval => !eval.Action.Id.Equals(action.Id))
-                .Take(1)
-                .Last()
+                .First()
                 .ObserveOnMainThread()
                 .Timeout(ActionTimeout)
                 .DoOnError(e => HandleException(action.Id, e));
@@ -174,8 +172,7 @@ namespace Nekoyume.BlockChain
 
             return _renderer.EveryRender<HackAndSlash>()
                 .SkipWhile(eval => !eval.Action.Id.Equals(action.Id))
-                .Take(1)
-                .Last()
+                .First()
                 .ObserveOnMainThread()
                 .Timeout(ActionTimeout)
                 .DoOnError(e => HandleException(action.Id, e));
@@ -199,8 +196,7 @@ namespace Nekoyume.BlockChain
 
             return _renderer.EveryRender<CombinationConsumable>()
                 .Where(eval => eval.Action.Id.Equals(action.Id))
-                .Take(1)
-                .Last()
+                .First()
                 .ObserveOnMainThread()
                 .Timeout(ActionTimeout)
                 .DoOnError(e => HandleException(action.Id, e));
@@ -229,8 +225,7 @@ namespace Nekoyume.BlockChain
 
             return _renderer.EveryRender<Sell>()
                 .Where(eval => eval.Action.Id.Equals(action.Id))
-                .Take(1)
-                .Last()
+                .First()
                 .ObserveOnMainThread()
                 .Timeout(ActionTimeout)
                 .DoOnError(e => HandleException(action.Id, e)); // Last() is for completion
@@ -253,8 +248,39 @@ namespace Nekoyume.BlockChain
 
             return _renderer.EveryRender<SellCancellation>()
                 .Where(eval => eval.Action.Id.Equals(action.Id))
-                .Take(1)
-                .Last()
+                .First()
+                .ObserveOnMainThread()
+                .Timeout(ActionTimeout)
+                .DoOnError(e => HandleException(action.Id, e)); // Last() is for completion
+        }
+
+        public IObservable<ActionBase.ActionEvaluation<UpdateSell>> UpdateSell(
+            Guid orderId,
+            Guid tradableId,
+            FungibleAssetValue price,
+            int count,
+            ItemSubType itemSubType)
+        {
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+
+            // NOTE: 장착했는지 안 했는지에 상관없이 해제 플래그를 걸어 둔다.
+            LocalLayerModifier.SetItemEquip(avatarAddress, tradableId, false);
+
+            var action = new UpdateSell
+            {
+                orderId = orderId,
+                updateSellOrderId = Guid.NewGuid(),
+                tradableId = tradableId,
+                sellerAvatarAddress = avatarAddress,
+                itemSubType = itemSubType,
+                price = price,
+                count = count,
+            };
+            ProcessAction(action);
+
+            return _renderer.EveryRender<UpdateSell>()
+                .Where(eval => eval.Action.Id.Equals(action.Id))
+                .First()
                 .ObserveOnMainThread()
                 .Timeout(ActionTimeout)
                 .DoOnError(e => HandleException(action.Id, e)); // Last() is for completion
@@ -272,8 +298,7 @@ namespace Nekoyume.BlockChain
             ProcessAction(action);
             return _renderer.EveryRender<Buy>()
                 .Where(eval => eval.Action.Id.Equals(action.Id))
-                .Take(1)
-                .Last()
+                .First()
                 .ObserveOnMainThread()
                 .Timeout(ActionTimeout)
                 .DoOnError(e => HandleException(action.Id, e)); // Last() is for completion
@@ -294,8 +319,7 @@ namespace Nekoyume.BlockChain
 
             return _renderer.EveryRender<DailyReward>()
                 .Where(eval => eval.Action.Id.Equals(action.Id))
-                .Take(1)
-                .Last()
+                .First()
                 .ObserveOnMainThread()
                 .Timeout(ActionTimeout)
                 .DoOnError(e => HandleException(action.Id, e));
@@ -325,8 +349,7 @@ namespace Nekoyume.BlockChain
 
             return _renderer.EveryRender<ItemEnhancement>()
                 .Where(eval => eval.Action.Id.Equals(action.Id))
-                .Take(1)
-                .Last()
+                .First()
                 .ObserveOnMainThread()
                 .Timeout(ActionTimeout)
                 .DoOnError(e => HandleException(action.Id, e));
@@ -356,8 +379,7 @@ namespace Nekoyume.BlockChain
 
             return _renderer.EveryRender<RankingBattle>()
                 .Where(eval => eval.Action.Id.Equals(action.Id))
-                .Take(1)
-                .Last()
+                .First()
                 .ObserveOnMainThread()
                 .Timeout(ActionTimeout)
                 .DoOnError(e => HandleException(action.Id, e));
@@ -394,8 +416,7 @@ namespace Nekoyume.BlockChain
 
             return _renderer.EveryRender<CombinationEquipment>()
                 .Where(eval => eval.Action.Id.Equals(action.Id))
-                .Take(1)
-                .Last()
+                .First()
                 .ObserveOnMainThread()
                 .Timeout(ActionTimeout)
                 .DoOnError(e => HandleException(action.Id, e));
@@ -412,8 +433,7 @@ namespace Nekoyume.BlockChain
 
             return _renderer.EveryRender<RapidCombination>()
                 .Where(eval => eval.Action.Id.Equals(action.Id))
-                .Take(1)
-                .Last()
+                .First()
                 .ObserveOnMainThread()
                 .Timeout(ActionTimeout)
                 .DoOnError(e => HandleException(action.Id, e));
@@ -429,8 +449,7 @@ namespace Nekoyume.BlockChain
 
             return _renderer.EveryRender<RedeemCode>()
                 .Where(eval => eval.Action.Id.Equals(action.Id))
-                .Take(1)
-                .Last()
+                .First()
                 .ObserveOnMainThread()
                 .Timeout(ActionTimeout)
                 .DoOnError(e => HandleException(action.Id, e));
@@ -446,8 +465,7 @@ namespace Nekoyume.BlockChain
 
             return _renderer.EveryRender<ChargeActionPoint>()
                 .Where(eval => eval.Action.Id.Equals(action.Id))
-                .Take(1)
-                .Last()
+                .First()
                 .ObserveOnMainThread()
                 .Timeout(ActionTimeout)
                 .DoOnError(e => HandleException(action.Id, e));

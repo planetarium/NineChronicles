@@ -12,6 +12,7 @@ using Nekoyume.TableData;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using UniRx;
+using ShopItem = Nekoyume.UI.Model.ShopItem;
 
 namespace Nekoyume.State
 {
@@ -72,6 +73,37 @@ namespace Nekoyume.State
         private static List<OrderDigest> _buyDigests = new List<OrderDigest>();
         private static List<OrderDigest> _sellDigests = new List<OrderDigest>();
 
+        public static bool IsExistSellDigests(ItemBase itemBase, int count = 1)
+        {
+            switch (itemBase.ItemType)
+            {
+                case ItemType.Consumable:
+                    var consumable = (Consumable) itemBase;
+                    return _sellDigests.Exists(x => x.TradableId.Equals(consumable.ItemId));
+
+                case ItemType.Costume:
+                    var costume = (Costume) itemBase;
+                    return _sellDigests.Exists(x => x.TradableId.Equals(costume.ItemId));
+                case ItemType.Equipment:
+                    var equipment = (Equipment) itemBase;
+                    return _sellDigests.Exists(x => x.TradableId.Equals(equipment.ItemId));
+                case ItemType.Material:
+                    var material = (Material) itemBase;
+                    if (material is TradableMaterial tradableMaterial)
+                    {
+                        return _sellDigests.Exists(x =>
+                            x.TradableId.Equals(tradableMaterial.TradableId) &&
+                            x.ExpiredBlockIndex == tradableMaterial.RequiredBlockIndex);
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
         public static OrderDigest GetSellDigest(Guid tradableId,
             long requiredBlockIndex,
             FungibleAssetValue price,
@@ -87,13 +119,21 @@ namespace Nekoyume.State
         private const int buyItemsPerPage = 24;
         private const int sellItemsPerPage = 20;
 
-        public static void InitBuyDigests()
+        public static void InitAndUpdateBuyDigests()
         {
             _buyDigests = GetBuyOrderDigests();
             UpdateBuyDigests();
         }
 
         public static void InitSellDigests()
+        {
+            if (_sellDigests != null)
+            {
+                _sellDigests = GetSellOrderDigests();
+            }
+        }
+
+        public static void InitAndUpdateSellDigests()
         {
             _sellDigests = GetSellOrderDigests();
             UpdateSellDigests();
@@ -113,9 +153,9 @@ namespace Nekoyume.State
                 GetGroupedOrderDigestsByItemSubTypeFilter(_sellDigests, sellItemsPerPage);
         }
 
-        public static void RemoveBuyDigest(Guid tradableId)
+        public static void RemoveBuyDigest(Guid orderId)
         {
-            var item = _buyDigests.FirstOrDefault(x => x.TradableId == tradableId);
+            var item = _buyDigests.FirstOrDefault(x => x.OrderId.Equals(orderId));
             if (item != null)
             {
                 _buyDigests.Remove(item);
@@ -124,9 +164,9 @@ namespace Nekoyume.State
             UpdateBuyDigests();
         }
 
-        public static void RemoveSellDigest(Guid tradableId)
+        public static void RemoveSellDigest(Guid orderId)
         {
-            var item = _sellDigests.FirstOrDefault(x => x.TradableId == tradableId);
+            var item = _sellDigests.FirstOrDefault(x => x.OrderId.Equals(orderId));
             if (item != null)
             {
                 _sellDigests.Remove(item);
@@ -411,16 +451,14 @@ namespace Nekoyume.State
 
         private static List<OrderDigest> GetSellOrderDigests()
         {
-            var agentAddress = States.Instance.CurrentAvatarState.address;
-            var receiptAddress = OrderDigestListState.DeriveAddress(agentAddress);
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+            var receiptAddress = OrderDigestListState.DeriveAddress(avatarAddress);
             var receiptState = Game.Game.instance.Agent.GetState(receiptAddress);
             var receipts = new List<OrderDigest>();
             if (receiptState is Dictionary dictionary)
             {
                 var state = new OrderDigestListState(dictionary);
-                var validOrderDigests = state.OrderDigestList.Where(x =>
-                    x.ExpiredBlockIndex > Game.Game.instance.Agent.BlockIndex);
-                receipts.AddRange(validOrderDigests);
+                receipts.AddRange(state.OrderDigestList);
             }
 
             return receipts;
