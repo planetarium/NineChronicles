@@ -2,8 +2,10 @@ namespace Lib9c.Tests.Model
 {
     using System.Collections.Generic;
     using System.Linq;
+    using System.Text;
     using Nekoyume.Model.Item;
     using Nekoyume.Model.Quest;
+    using Nekoyume.TableData;
     using Xunit;
 
     public class QuestListTest
@@ -14,6 +16,11 @@ namespace Lib9c.Tests.Model
         {
             _tableSheets = new TableSheets(TableSheetsImporter.ImportSheets());
         }
+
+        [Fact]
+        public void SerializeExceptions() => ExceptionTest.AssertException(
+            new UpdateListVersionException("test"),
+            new UpdateListQuestsCountException("test"));
 
         [Fact]
         public void GetEnumerator()
@@ -73,6 +80,92 @@ namespace Lib9c.Tests.Model
             list.UpdateItemTypeCollectQuest(prevItems);
 
             Assert.Equal(expectedItemIds, list.OfType<ItemTypeCollectQuest>().First().ItemIds);
+        }
+
+        [Theory]
+        [InlineData(1)]
+        [InlineData(99)]
+        public void UpdateList(int questCountToAdd)
+        {
+            var questList = new QuestList(
+                _tableSheets.QuestSheet,
+                _tableSheets.QuestRewardSheet,
+                _tableSheets.QuestItemRewardSheet,
+                _tableSheets.EquipmentItemRecipeSheet,
+                _tableSheets.EquipmentItemSubRecipeSheet
+            );
+
+            Assert.Equal(1, questList.ListVersion);
+            Assert.Equal(_tableSheets.QuestSheet.Count, questList.Count());
+
+            var questSheet = _tableSheets.QuestSheet;
+            Assert.NotNull(questSheet.First);
+            var patchedSheet = new WorldQuestSheet();
+            var patchedSheetCsvSb = new StringBuilder().AppendLine("id,goal,quest_reward_id");
+            for (var i = questCountToAdd; i > 0; i--)
+            {
+                patchedSheetCsvSb.AppendLine($"{990000 + i - 1},10,{questSheet.First.QuestRewardId}");
+            }
+
+            patchedSheet.Set(patchedSheetCsvSb.ToString());
+            Assert.Equal(questCountToAdd, patchedSheet.Count);
+            var previousQuestSheetCount = questSheet.Count;
+            questSheet.Set(patchedSheet);
+            Assert.Equal(previousQuestSheetCount + questCountToAdd, questSheet.Count);
+
+            questList.UpdateList(
+                2,
+                questSheet,
+                _tableSheets.QuestRewardSheet,
+                _tableSheets.QuestItemRewardSheet,
+                _tableSheets.EquipmentItemRecipeSheet);
+            Assert.Equal(2, questList.ListVersion);
+            Assert.Equal(questSheet.Count, questList.Count());
+        }
+
+        [Theory]
+        [InlineData(-1)]
+        [InlineData(0)]
+        [InlineData(1)]
+        public void UpdateList_Throw_UpdateListVersionException(int listVersion)
+        {
+            var questList = new QuestList(
+                _tableSheets.QuestSheet,
+                _tableSheets.QuestRewardSheet,
+                _tableSheets.QuestItemRewardSheet,
+                _tableSheets.EquipmentItemRecipeSheet,
+                _tableSheets.EquipmentItemSubRecipeSheet
+            );
+
+            Assert.Equal(1, questList.ListVersion);
+            Assert.Throws<UpdateListVersionException>(() =>
+                questList.UpdateList(
+                    listVersion,
+                    _tableSheets.QuestSheet,
+                    _tableSheets.QuestRewardSheet,
+                    _tableSheets.QuestItemRewardSheet,
+                    _tableSheets.EquipmentItemRecipeSheet));
+        }
+
+        [Fact]
+        public void UpdateList_Throw_UpdateListQuestsCountException()
+        {
+            var questList = new QuestList(
+                _tableSheets.QuestSheet,
+                _tableSheets.QuestRewardSheet,
+                _tableSheets.QuestItemRewardSheet,
+                _tableSheets.EquipmentItemRecipeSheet,
+                _tableSheets.EquipmentItemSubRecipeSheet
+            );
+
+            Assert.Equal(1, questList.ListVersion);
+            Assert.Throws<UpdateListQuestsCountException>(() =>
+                questList.UpdateList(
+                    2,
+                    _tableSheets.QuestSheet,
+                    _tableSheets.QuestRewardSheet,
+                    _tableSheets.QuestItemRewardSheet,
+                    _tableSheets.EquipmentItemRecipeSheet));
         }
     }
 }

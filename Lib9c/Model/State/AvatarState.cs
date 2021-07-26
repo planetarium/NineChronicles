@@ -434,7 +434,9 @@ namespace Nekoyume.Model.State
         /// </summary>
         public void UpdateQuestRewards(MaterialItemSheet materialItemSheet)
         {
-            var completedQuests = questList.Where(quest => quest.Complete && !quest.IsPaidInAction);
+            var completedQuests = questList
+                .Where(quest => quest.Complete && !quest.IsPaidInAction)
+                .ToList();
             // 완료되었지만 보상을 받지 않은 퀘스트를 return 문에서 Select 하지 않고 미리 저장하는 이유는
             // 지연된 실행에 의해, return 시점에서 이미 모든 퀘스트의 보상 처리가 완료된 상태에서
             // completed를 호출 시 where문의 predicate가 평가되어 컬렉션이 텅 비기 때문이다.
