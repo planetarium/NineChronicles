@@ -120,7 +120,7 @@ namespace Nekoyume.Model.Quest
             {
                 Log.Error(
                     e,
-                    "{0} was raised during deserialize: {1}",
+                    "{TypeFullName} was raised during deserialize: {Serialized}",
                     e.GetType().FullName,
                     serialized);
                 throw;

@@ -9,7 +9,6 @@ using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
-using Serilog;
 using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Model.Quest
@@ -90,6 +89,11 @@ namespace Nekoyume.Model.Quest
                 );
 
                 var quest = CreateQuest(questData, reward, equipmentItemRecipeSheet);
+                if (quest is null)
+                {
+                    continue;
+                }
+
                 _quests.Add(quest);
             }
         }
@@ -165,6 +169,11 @@ namespace Nekoyume.Model.Quest
                     questItemRewardSheet);
 
                 quest = CreateQuest(questRow, reward, equipmentItemRecipeSheet);
+                if (quest is null)
+                {
+                    continue;
+                }
+
                 _quests.Add(quest);
             }
         }
@@ -366,12 +375,8 @@ namespace Nekoyume.Model.Quest
             EquipmentItemRecipeSheet equipmentItemRecipeSheet)
         {
             Quest quest = default;
-            var errorMessage = string.Empty;
             switch (row)
             {
-                default:
-                    errorMessage = $"Unexpected type: {row.GetType().FullName}";
-                    break;
                 case CollectQuestSheet.Row r:
                     quest = new CollectQuest(r, reward);
                     break;
@@ -408,18 +413,12 @@ namespace Nekoyume.Model.Quest
                         .FirstOrDefault(e => e.Id == r.RecipeId);
                     if (recipeRow is null)
                     {
-                        errorMessage = $"Invalid Recipe Id : {r.RecipeId}";
-                        break;
+                        throw new ArgumentException($"Invalid Recipe Id : {r.RecipeId}");
                     }
 
                     stageId = recipeRow.UnlockStage;
                     quest = new CombinationEquipmentQuest(r, reward, stageId);
                     break;
-            }
-
-            if (!string.IsNullOrEmpty(errorMessage))
-            {
-                throw new Exception(errorMessage);
             }
 
             return quest;
