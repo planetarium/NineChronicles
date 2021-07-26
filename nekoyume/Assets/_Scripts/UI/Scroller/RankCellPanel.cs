@@ -65,89 +65,61 @@ namespace Nekoyume.UI.Scroller
                 .AddTo(gameObject);
         }
 
-        public void SetDataAsAbility(AbilityRankingModel rankingInfo)
+        public void SetData<T>(T rankingInfo) where T : RankingModel
         {
-            nicknameText.text = rankingInfo.AvatarState.name;
+            var avatarState = rankingInfo.AvatarState;
+            nicknameText.text = avatarState.name;
             nicknameText.gameObject.SetActive(true);
-            addressText.text = rankingInfo.AvatarState.address
+            addressText.text = avatarState.address
                 .ToString()
                 .Remove(addressStringCount);
 
-            firstElementCpText.text = rankingInfo.Cp.ToString();
-            secondElementText.text = rankingInfo.AvatarState.level.ToString();
-
-            firstElementText.gameObject.SetActive(false);
-            firstElementCpText.gameObject.SetActive(true);
-            secondElementText.gameObject.SetActive(true);
-            secondElementEquipmentNameText.gameObject.SetActive(false);
-
             UpdateRank(rankingInfo.Rank);
-            characterView.SetByAvatarState(rankingInfo.AvatarState);
+            characterView.SetByAvatarState(avatarState);
             gameObject.SetActive(true);
-        }
 
-        public void SetDataAsStage(StageRankingModel rankingInfo)
-        {
-            nicknameText.text = rankingInfo.AvatarState.name;
-            nicknameText.gameObject.SetActive(true);
-            addressText.text = rankingInfo.AvatarState.address
-                .ToString()
-                .Remove(addressStringCount);
+            switch (rankingInfo)
+            {
+                case AbilityRankingModel abilityInfo:
+                    firstElementCpText.text = abilityInfo.Cp.ToString();
+                    secondElementText.text = avatarState.level.ToString();
 
-            firstElementText.text = rankingInfo.ClearedStageId.ToString();
-            firstElementText.gameObject.SetActive(true);
-            firstElementCpText.gameObject.SetActive(false);
-            secondElementText.gameObject.SetActive(false);
-            secondElementEquipmentNameText.gameObject.SetActive(false);
+                    firstElementText.gameObject.SetActive(false);
+                    firstElementCpText.gameObject.SetActive(true);
+                    secondElementText.gameObject.SetActive(true);
+                    secondElementEquipmentNameText.gameObject.SetActive(false);
+                    break;
+                case StageRankingModel stageInfo:
+                    firstElementText.text = stageInfo.ClearedStageId.ToString();
 
-            UpdateRank(rankingInfo.Rank);
-            characterView.SetByAvatarState(rankingInfo.AvatarState);
-            gameObject.SetActive(true);
-        }
+                    firstElementText.gameObject.SetActive(true);
+                    firstElementCpText.gameObject.SetActive(false);
+                    secondElementText.gameObject.SetActive(false);
+                    secondElementEquipmentNameText.gameObject.SetActive(false);
+                    break;
+                case CraftRankingModel craftInfo:
+                    firstElementText.text = craftInfo.CraftCount.ToString();
 
-        public void SetDataAsCrafting(CraftRankingModel rankingInfo)
-        {
-            nicknameText.text = rankingInfo.AvatarState.name;
-            nicknameText.gameObject.SetActive(true);
-            addressText.text = rankingInfo.AvatarState.address
-                .ToString()
-                .Remove(addressStringCount);
+                    firstElementText.gameObject.SetActive(true);
+                    firstElementCpText.gameObject.SetActive(false);
+                    secondElementText.gameObject.SetActive(false);
+                    secondElementEquipmentNameText.gameObject.SetActive(false);
+                    break;
+                case EquipmentRankingModel equipmentInfo:
+                    firstElementCpText.text = equipmentInfo.Cp.ToString();
 
-            firstElementText.text = rankingInfo.CraftCount.ToString();
-            firstElementText.gameObject.SetActive(true);
-            firstElementCpText.gameObject.SetActive(false);
-            secondElementText.gameObject.SetActive(false);
-            secondElementEquipmentNameText.gameObject.SetActive(false);
+                    var equipmentItemSheet = Game.Game.instance.TableSheets.EquipmentItemSheet;
+                    secondElementEquipmentNameText.text = LocalizationExtension.GetLocalizedName(
+                        equipmentItemSheet,
+                        equipmentInfo.EquipmentId,
+                        equipmentInfo.Level);
 
-            UpdateRank(rankingInfo.Rank);
-            characterView.SetByAvatarState(rankingInfo.AvatarState);
-            gameObject.SetActive(true);
-        }
-
-        public void SetDataAsEquipment(EquipmentRankingModel rankingInfo)
-        {
-            nicknameText.text = rankingInfo.AvatarState.name;
-            nicknameText.gameObject.SetActive(true);
-            addressText.text = rankingInfo.AvatarState.address
-                .ToString()
-                .Remove(addressStringCount);
-
-            firstElementCpText.text = rankingInfo.Cp.ToString();
-
-            var equipmentItemSheet = Game.Game.instance.TableSheets.EquipmentItemSheet;
-            secondElementEquipmentNameText.text = LocalizationExtension.GetLocalizedName(
-                equipmentItemSheet,
-                rankingInfo.EquipmentId,
-                rankingInfo.Level);
-
-            firstElementText.gameObject.SetActive(false);
-            firstElementCpText.gameObject.SetActive(true);
-            secondElementText.gameObject.SetActive(false);
-            secondElementEquipmentNameText.gameObject.SetActive(true);
-
-            UpdateRank(rankingInfo.Rank);
-            characterView.SetByAvatarState(rankingInfo.AvatarState);
-            gameObject.SetActive(true);
+                    firstElementText.gameObject.SetActive(false);
+                    firstElementCpText.gameObject.SetActive(true);
+                    secondElementText.gameObject.SetActive(false);
+                    secondElementEquipmentNameText.gameObject.SetActive(true);
+                    break;
+            }
         }
 
         private void UpdateRank(int rank)
