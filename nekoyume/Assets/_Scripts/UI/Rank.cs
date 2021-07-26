@@ -282,7 +282,7 @@ namespace Nekoyume.UI
                 myInfoCell.SetEmpty(states.CurrentAvatarState);
             }
 
-            rankScroll.Show(SharedModel.AbilityRankingInfos, true);
+            rankScroll.Show(rankingInfos, true);
         }
 
         private void SetEquipmentScroll(ItemSubType type)
