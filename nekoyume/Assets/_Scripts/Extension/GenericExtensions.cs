@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Nekoyume
 {
-    public static class GenericExtension
+    public static class GenericExtensions
     {   
         public static void DisposeAllAndClear<T>(this List<T> list) where T : IDisposable
         {

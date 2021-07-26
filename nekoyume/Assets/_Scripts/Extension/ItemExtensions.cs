@@ -78,5 +78,10 @@ namespace Nekoyume
             var cp = CPHelper.GetCP(costume, sheet);
             return $"<size=80%>CP</size> {cp}";
         }
+
+        public static int GetOptionCountFromCombinationForUI(this Equipment value) =>
+            value.optionCountFromCombination > 0
+                ? value.optionCountFromCombination
+                : value.StatsMap.GetStats(true).Count();
     }
 }

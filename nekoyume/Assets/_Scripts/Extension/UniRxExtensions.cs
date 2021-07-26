@@ -11,7 +11,7 @@ using UnityEngine.UI;
 
 namespace Nekoyume
 {
-    public static class UniRxExtension
+    public static class UniRxExtensions
     {
         public static void DisposeAll<T>(this ReactiveProperty<T> property) where T : IDisposable
         {
