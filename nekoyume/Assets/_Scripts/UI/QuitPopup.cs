@@ -43,6 +43,7 @@ namespace Nekoyume.UI
             Nekoyume.Game.Event.OnNestEnter.Invoke();
             Find<Login>().Show();
             Find<Menu>().Close();
+            Close(true);
         }
 
         private void Quit()

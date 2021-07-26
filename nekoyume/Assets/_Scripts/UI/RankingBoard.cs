@@ -17,6 +17,7 @@ using Nekoyume.UI.Scroller;
 using TMPro;
 using UniRx;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
@@ -31,8 +32,8 @@ namespace Nekoyume.UI
             Overall
         }
 
+        private static readonly Vector3 NPCPosition = new Vector3(1000.1f, 998.6f, 2.69f);
         private const int NPCId = 300002;
-        private static readonly Vector3 NPCPosition = new Vector3(1.2f, -1.72f);
 
         [SerializeField]
         private CategoryButton arenaButton = null;
@@ -42,6 +43,9 @@ namespace Nekoyume.UI
 
         [SerializeField]
         private CategoryButton overallButton = null;
+
+        [SerializeField]
+        private Button closeButton;
 
         [SerializeField]
         private GameObject arenaRankingHeader = null;
@@ -138,17 +142,19 @@ namespace Nekoyume.UI
             winText.text = L10nManager.Localize("UI_WIN");
             loseText.text = L10nManager.Localize("UI_LOSE");
 
-            CloseWidget = null;
+            closeButton.onClick.AddListener(() =>
+            {
+                Close(true);
+                Game.Event.OnRoomEnter.Invoke(true);
+            });
+
+            CloseWidget = () =>
+            {
+                Close(true);
+                Game.Event.OnRoomEnter.Invoke(true);
+            };
             SubmitWidget = null;
             SetRankingInfos(States.Instance.RankingMapStates);
-        }
-
-        protected override void OnCompleteOfShowAnimationInternal()
-        {
-            base.OnCompleteOfShowAnimationInternal();
-            _npc.gameObject.SetActive(true);
-            _npc.SpineController.Appear();
-            ShowSpeech("SPEECH_RANKING_BOARD_GREETING_", CharacterAnimation.Type.Greeting);
         }
 
         public void Show(StateType stateType = StateType.Arena)
@@ -171,7 +177,7 @@ namespace Nekoyume.UI
                 States.Instance.SetRankingMapStates(rankingMapState);
             }
 
-            base.Show();
+            base.Show(true);
 
             var stage = Game.Game.instance.Stage;
             stage.LoadBackground("ranking");
@@ -181,28 +187,26 @@ namespace Nekoyume.UI
 
             _state.SetValueAndForceNotify(stateType);
 
+            AudioController.instance.PlayMusic(AudioController.MusicCode.Ranking);
+            WeeklyArenaStateSubject.WeeklyArenaState
+                .Subscribe(SubscribeWeeklyArenaState)
+                .AddTo(_disposablesFromShow);
+
             var go = Game.Game.instance.Stage.npcFactory.Create(
                 NPCId,
                 NPCPosition,
                 LayerType.InGameBackground,
                 3);
             _npc = go.GetComponent<NPC>();
-            _npc.gameObject.SetActive(false);
-
-            AudioController.instance.PlayMusic(AudioController.MusicCode.Ranking);
-            WeeklyArenaStateSubject.WeeklyArenaState
-                .Subscribe(SubscribeWeeklyArenaState)
-                .AddTo(_disposablesFromShow);
+            _npc.gameObject.SetActive(true);
+            _npc.SpineController.Appear();
+            ShowSpeech("SPEECH_RANKING_BOARD_GREETING_", CharacterAnimation.Type.Greeting);
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
         {
             _disposablesFromShow.DisposeAllAndClear();
-
-            Find<HeaderMenu>()?.Close();
-
             base.Close(ignoreCloseAnimation);
-
             _npc?.gameObject.SetActive(false);
             speechBubble.Hide();
         }

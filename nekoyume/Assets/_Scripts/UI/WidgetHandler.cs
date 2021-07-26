@@ -19,7 +19,6 @@ namespace Nekoyume.UI
                 ? _messageCatManager
                 : (_messageCatManager = Widget.Find<MessageCatManager>());
 
-        public HeaderMenu HeaderMenu => _headerMenu ? _headerMenu : (_headerMenu = Widget.Find<HeaderMenu>());
         public Battle Battle => _battle ? _battle : (_battle = Widget.Find<Battle>());
         public Menu Menu => _menu ? _menu : (_menu = Widget.Find<Menu>());
 

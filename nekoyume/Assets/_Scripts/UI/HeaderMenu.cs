@@ -82,9 +82,6 @@ namespace Nekoyume.UI.Module
 
         private long _blockIndex;
 
-        private ReactiveProperty<bool> test = new ReactiveProperty<bool>();
-        private Subject<bool> _FocusSubject;
-
         protected override void Awake()
         {
             base.Awake();

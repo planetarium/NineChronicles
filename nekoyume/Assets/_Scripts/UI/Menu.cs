@@ -314,7 +314,7 @@ namespace Nekoyume.UI
                 return;
             }
 
-            Close();
+            Close(true);
             Find<RankingBoard>().Show();
             AudioController.PlayClick();
         }

@@ -94,8 +94,8 @@ namespace Nekoyume.UI
                 out var world) &&
                 world.StageClearedId >= GameConfig.RequireClearedStageLevel.UIBottomMenuInBattle)
             {
-                ShowBottomMenu(world);
-                WidgetHandler.Instance.HeaderMenu.exitButton.SharedModel.IsEnabled.Value = isExitReserved;
+                // ShowBottomMenu(world);
+                // WidgetHandler.Instance.HeaderMenu.exitButton.SharedModel.IsEnabled.Value = isExitReserved;
             }
             repeatButton.gameObject.SetActive(stageId >= 4 || world.StageClearedId >= 4);
             helpButton.gameObject.SetActive(true);
@@ -108,13 +108,13 @@ namespace Nekoyume.UI
             base.Close(ignoreCloseAnimation);
         }
 
-        public void ShowBottomMenu(WorldInformation.World world, bool isInteractableExitButton = true)
-        {
-            var showExitButton = world.StageClearedId >= RequiredStageForExitButton;
-
-            WidgetHandler.Instance.HeaderMenu.exitButton.SetToggleListener(this);
-            WidgetHandler.Instance.HeaderMenu.exitButton.SetInteractable(isInteractableExitButton);
-        }
+        // public void ShowBottomMenu(WorldInformation.World world, bool isInteractableExitButton = true)
+        // {
+        //     var showExitButton = world.StageClearedId >= RequiredStageForExitButton;
+        //
+        //     WidgetHandler.Instance.HeaderMenu.exitButton.SetToggleListener(this);
+        //     WidgetHandler.Instance.HeaderMenu.exitButton.SetInteractable(isInteractableExitButton);
+        // }
 
         public void ClearStage(int stageId, System.Action<bool> onComplete)
         {

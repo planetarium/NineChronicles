@@ -200,7 +200,6 @@ namespace Nekoyume.UI
         private void UpdateSlotView(AvatarState avatarState)
         {
             var game = Game.Game.instance;
-            // var playerModel = game.Stage.GetPlayer().Model;
             var playerModel = _player.Model;
 
             nicknameText.text = string.Format(
@@ -215,7 +214,7 @@ namespace Nekoyume.UI
             if (!(title is null))
             {
                 Destroy(_cachedCharacterTitle);
-                var clone  = ResourcesHelper.GetCharacterTitle(title.Grade, title.GetLocalizedNonColoredName());
+                var clone  = ResourcesHelper.GetCharacterTitle(title.Grade, title.GetLocalizedNonColoredName(false));
                 _cachedCharacterTitle = Instantiate(clone, titleSocket);
             }
 

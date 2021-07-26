@@ -62,7 +62,6 @@ namespace Nekoyume.Game
         public int waveNumber;
         public int waveTurn;
         public Player selectedPlayer;
-        public readonly Vector2 questPreparationPosition = new Vector2(2.45f, -0.35f);
         public readonly Vector2 roomPosition = new Vector2(-2.808f, -1.519f);
         public bool repeatStage;
         public bool isExitReserved;
@@ -1022,7 +1021,7 @@ namespace Nekoyume.Game
             return selectedPlayer;
         }
 
-        public Player GetPlayer(Vector2 position, bool forceCreate = false)
+        public Player GetPlayer(Vector3 position, bool forceCreate = false)
         {
             var player = GetPlayer(forceCreate);
             player.transform.position = position;

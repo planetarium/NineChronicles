@@ -4,9 +4,9 @@ using System.Linq;
 using Nekoyume.Model;
 using Nekoyume.Model.Quest;
 using Nekoyume.UI.Module;
-using UniRx;
 using UnityEngine;
 using mixpanel;
+using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
@@ -23,10 +23,8 @@ namespace Nekoyume.UI
             public WorldInformation WorldInformation;
         }
 
-        [SerializeField]
-        private GameObject worldMapRoot = null;
-
-        private readonly List<IDisposable> _disposablesAtShow = new List<IDisposable>();
+        [SerializeField] private GameObject worldMapRoot = null;
+        [SerializeField] private Button closeButton;
 
         private WorldButton[] _worldButtons;
         public ViewModel SharedViewModel { get; private set; }
@@ -55,7 +53,17 @@ namespace Nekoyume.UI
         {
             base.Awake();
 
-            CloseWidget = null;
+            closeButton.onClick.AddListener(() =>
+            {
+                Close(true);
+                Game.Event.OnRoomEnter.Invoke(true);
+            });
+
+            CloseWidget = () =>
+            {
+                Close(true);
+                Game.Event.OnRoomEnter.Invoke(true);
+            };
             _worldButtons = GetComponentsInChildren<WorldButton>();
         }
 
@@ -126,19 +134,17 @@ namespace Nekoyume.UI
 
             var status = Find<Status>();
             status.Close(true);
-            Show();
+            Show(true);
         }
 
         public void Show(int worldId, int stageId, bool showWorld, bool callByShow = false)
         {
             ShowWorld(worldId, stageId, showWorld, callByShow);
-            Show();
+            Show(true);
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
         {
-            _disposablesAtShow.DisposeAllAndClear();
-            Find<HeaderMenu>().Close(true);
             base.Close(true);
         }
 
@@ -152,10 +158,7 @@ namespace Nekoyume.UI
                 Mixpanel.Track("Unity/Click Yggdrasil");
             }
 
-            CloseWidget += Pop;
-            CloseWidget += () => CloseWidget = null;
             Push();
-
             ShowWorld(world.Id, world.GetNextStageId(), false);
         }
 
@@ -199,18 +202,6 @@ namespace Nekoyume.UI
             var status = Find<Status>();
             status.Close(true);
             worldMapRoot.SetActive(true);
-        }
-
-        private void SubscribeBackButtonClick(HeaderMenu headerMenu)
-        {
-            if (!CanClose)
-            {
-                return;
-            }
-
-            SharedViewModel.IsWorldShown.SetValueAndForceNotify(false);
-            Close();
-            Game.Event.OnRoomEnter.Invoke(true);
         }
     }
 }
