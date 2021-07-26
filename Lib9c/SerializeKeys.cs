@@ -147,5 +147,7 @@ namespace Lib9c
         // QuestList
         public const string QuestsKeyDeprecated = "quests";
         public const string CompletedQuestIdsKeyDeprecated = "completedQuestIds";
+
+        public const string updateSellOrderIdKey = "roi";
     }
 }
