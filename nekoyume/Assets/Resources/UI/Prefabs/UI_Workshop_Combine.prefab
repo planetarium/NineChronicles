@@ -14913,7 +14913,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 28}
+  m_SizeDelta: {x: 294.5, y: 30}
   m_Pivot: {x: 0, y: 1}
 --- !u!222 &6791142678956736434
 CanvasRenderer:
@@ -14936,7 +14936,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.09803922, g: 0.0627451, b: 0.05490196, a: 1}
+  m_Color: {r: 0.13333334, g: 0.13333334, b: 0.1254902, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -16053,7 +16053,7 @@ GameObject:
   - component: {fileID: 6791142679275872156}
   - component: {fileID: 6791142679275872155}
   m_Layer: 5
-  m_Name: UI_Combination_Combine
+  m_Name: UI_Workshop_Combine
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -16754,7 +16754,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 28}
+  m_SizeDelta: {x: 294.5, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6791142679441193064
 CanvasRenderer:
@@ -16777,15 +16777,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.16862746, g: 0.11372549, b: 0.101960786, a: 1}
+  m_Color: {r: 0.13333334, g: 0.13333334, b: 0.1254902, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
-  m_Type: 0
+  m_Sprite: {fileID: 21300000, guid: 35eb611bce90a4aebb9fa21927f292b2, type: 3}
+  m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -17661,8 +17661,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4282301410
-  m_fontColor: {r: 0.8862746, g: 0.73333335, b: 0.24313727, a: 1}
+    rgba: 4282174449
+  m_fontColor: {r: 0.9450981, g: 0.7960785, b: 0.23529413, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 0
   m_fontColorGradient:
@@ -17998,8 +17998,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: -40, y: -400}
+  m_AnchoredPosition: {x: 0, y: -5}
+  m_SizeDelta: {x: -40, y: -390.00003}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6791142679600781481
 CanvasRenderer:
@@ -19140,8 +19140,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4282301410
-  m_fontColor: {r: 0.8862745, g: 0.73333335, b: 0.24313726, a: 1}
+    rgba: 4282174449
+  m_fontColor: {r: 0.9450981, g: 0.7960785, b: 0.23529413, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 0
   m_fontColorGradient:
@@ -19325,7 +19325,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 28}
+  m_SizeDelta: {x: 294.5, y: 30}
   m_Pivot: {x: 0, y: 1}
 --- !u!222 &6791142680067791495
 CanvasRenderer:
@@ -19348,7 +19348,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.16862746, g: 0.11372549, b: 0.101960786, a: 1}
+  m_Color: {r: 0.13333334, g: 0.13333334, b: 0.1254902, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -19441,8 +19441,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4282301410
-  m_fontColor: {r: 0.8862746, g: 0.73333335, b: 0.24313727, a: 1}
+    rgba: 4282174449
+  m_fontColor: {r: 0.9450981, g: 0.7960785, b: 0.23529413, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 0
   m_fontColorGradient:
@@ -20290,7 +20290,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 105}
+  m_SizeDelta: {x: 0, y: 100}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &6791142680261141406
 MonoBehaviour:
@@ -20307,13 +20307,13 @@ MonoBehaviour:
   m_Padding:
     m_Left: 0
     m_Right: 0
-    m_Top: 0
+    m_Top: 5
     m_Bottom: 5
   m_ChildAlignment: 0
-  m_Spacing: 0
-  m_ChildForceExpandWidth: 1
-  m_ChildForceExpandHeight: 1
-  m_ChildControlWidth: 1
+  m_Spacing: 5
+  m_ChildForceExpandWidth: 0
+  m_ChildForceExpandHeight: 0
+  m_ChildControlWidth: 0
   m_ChildControlHeight: 0
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
@@ -27624,6 +27624,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4761291823141552886, guid: 794dca580fdd94c239fd3aab39c1da8a,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5668651415111520620, guid: 794dca580fdd94c239fd3aab39c1da8a,
         type: 3}
