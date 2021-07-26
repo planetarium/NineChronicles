@@ -50,7 +50,7 @@ namespace Nekoyume.BlockChain
 
         #region Actions
 
-        public IObservable<ActionBase.ActionEvaluation<CreateAvatar2>> CreateAvatar(int index,
+        public IObservable<ActionBase.ActionEvaluation<CreateAvatar>> CreateAvatar(int index,
             string nickName, int hair = 0, int lens = 0, int ear = 0, int tail = 0)
         {
             if (States.Instance.AvatarStates.ContainsKey(index))
@@ -58,7 +58,7 @@ namespace Nekoyume.BlockChain
                 throw new Exception($"Already contains {index} in {States.Instance.AvatarStates}");
             }
 
-            var action = new CreateAvatar2
+            var action = new CreateAvatar
             {
                 index = index,
                 hair = hair,
@@ -69,7 +69,7 @@ namespace Nekoyume.BlockChain
             };
             ProcessAction(action);
 
-            return _renderer.EveryRender<CreateAvatar2>()
+            return _renderer.EveryRender<CreateAvatar>()
                 .SkipWhile(eval => !eval.Action.Id.Equals(action.Id))
                 .First()
                 .ObserveOnMainThread()
