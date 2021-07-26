@@ -37,7 +37,7 @@ namespace Nekoyume.UI.Module
             public Image Notification;
         }
 
-        public override WidgetType WidgetType => WidgetType.Popup;
+        public override WidgetType WidgetType => WidgetType.Screen;
 
         // 네비게이션 버튼.
         public ToggleableButton quitButton;
@@ -82,6 +82,9 @@ namespace Nekoyume.UI.Module
 
         private long _blockIndex;
 
+        private ReactiveProperty<bool> test = new ReactiveProperty<bool>();
+        private Subject<bool> _FocusSubject;
+
         protected override void Awake()
         {
             base.Awake();
@@ -92,7 +95,7 @@ namespace Nekoyume.UI.Module
             _toggleWidgets.Add(ToggleType.Mail, Find<Mail>());
             _toggleWidgets.Add(ToggleType.Rank, Find<Rank>());
             _toggleWidgets.Add(ToggleType.Settings, Find<Settings>());
-            _toggleWidgets.Add(ToggleType.Chat, Find<Confirm>());
+            _toggleWidgets.Add(ToggleType.Chat, Find<ChatPopup>());
             _toggleWidgets.Add(ToggleType.Quit, Find<QuitPopup>());
 
             foreach (var toggleInfo in toggles)
@@ -117,13 +120,16 @@ namespace Nekoyume.UI.Module
                             return;
                         }
 
-                        widget.Show();
+                        widget.Show(() =>
+                        {
+                            toggleInfo.Toggle.isOn = false;
+                        });
                     }
                     else
                     {
                         if (widget.isActiveAndEnabled)
                         {
-                            widget.Close();
+                            widget.Close(true);
                         }
                     }
                 });
@@ -152,29 +158,21 @@ namespace Nekoyume.UI.Module
                 .AddTo(gameObject);
         }
 
-        private static void SubScribeOnClickChat(ToggleableButton button)
-        {
-            var confirm = Find<Confirm>();
-            confirm.CloseCallback = result =>
-            {
-                if (result == ConfirmResult.No)
-                {
-                    return;
-                }
-
-                Application.OpenURL(GameConfig.DiscordLink);
-            };
-            confirm.Set("UI_PROCEED_DISCORD", "UI_PROCEED_DISCORD_CONTENT", blurRadius: 2);
-            HelpPopup.HelpMe(100012, true);
-        }
-
-        private static void SubscribeOnClick(ToggleableButton button)
-        {
-            Find<Alert>().Set(
-                "UI_ALERT_NOT_IMPLEMENTED_TITLE",
-                "UI_ALERT_NOT_IMPLEMENTED_CONTENT",
-                blurRadius: 2);
-        }
+        // private static void SubScribeOnClickChat(ToggleableButton button)
+        // {
+        //     var confirm = Find<Confirm>();
+        //     confirm.CloseCallback = result =>
+        //     {
+        //         if (result == ConfirmResult.No)
+        //         {
+        //             return;
+        //         }
+        //
+        //         Application.OpenURL(GameConfig.DiscordLink);
+        //     };
+        //     confirm.Set("UI_PROCEED_DISCORD", "UI_PROCEED_DISCORD_CONTENT", blurRadius: 2);
+        //     HelpPopup.HelpMe(100012, true);
+        // }
 
         protected override void OnEnable()
         {
@@ -199,11 +197,6 @@ namespace Nekoyume.UI.Module
             base.OnDisable();
         }
 
-        // public void SetIntractable(bool intractable)
-        // {
-        //     canvasGroup.interactable = intractable;
-        // }
-        //
         // public void PlayGetItemAnimation()
         // {
         //     characterButton.Animator.Play("GetItem");
@@ -264,375 +257,6 @@ namespace Nekoyume.UI.Module
             var hasNotification = inventory?.HasNotification(avatarLevel, blockIndex) ?? false;
             UpdateInventoryNotification(hasNotification);
         }
-
-        // #region show button
-        //
-        // private bool ShowButton(ToggleableType toggleableType)
-        // {
-        //     switch (toggleableType)
-        //     {
-        //         case ToggleableType.Mail:
-        //             return ShowMailButton();
-        //         case ToggleableType.Quest:
-        //             return ShowQuestButton();
-        //         case ToggleableType.Chat:
-        //             return ShowChatButton();
-        //         case ToggleableType.Ranking:
-        //             return ShowRankingButton();
-        //         case ToggleableType.Character:
-        //             return ShowCharacterButton();
-        //         case ToggleableType.WorldMap:
-        //             return ShowWorldMapButton();
-        //         case ToggleableType.Settings:
-        //             return ShowSettingsButton();
-        //         case ToggleableType.Combination:
-        //             return ShowCombinationButton();
-        //         default:
-        //             throw new ArgumentOutOfRangeException(nameof(toggleableType), toggleableType,
-        //                 null);
-        //     }
-        // }
-        //
-        // private bool ShowChatButton()
-        // {
-        //     chatButton.Show();
-        //
-        //     var requiredStage = GameConfig.RequireClearedStageLevel.UIBottomMenuChat;
-        //     if (!States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(GameConfig
-        //         .RequireClearedStageLevel.UIBottomMenuChat))
-        //     {
-        //         if (_disposablesForLockedButtons.TryGetValue(ToggleableType.Chat, out var _))
-        //         {
-        //             chatButton.SetInteractable(false);
-        //             return true;
-        //         }
-        //
-        //         (IDisposable enter, IDisposable exit) disposables;
-        //
-        //         disposables.enter = chatButton.onPointerEnter.Subscribe(_ =>
-        //         {
-        //             if (_cat)
-        //             {
-        //                 _cat.Hide();
-        //             }
-        //
-        //             var unlockConditionString = string.Format(
-        //                 L10nManager.Localize("UI_STAGE_LOCK_FORMAT"),
-        //                 requiredStage);
-        //
-        //             var message =
-        //                 $"{L10nManager.Localize(chatButton.localizationKey)}\n<sprite name=\"UI_icon_lock_01\"> {unlockConditionString}";
-        //             _cat = Find<MessageCatManager>().Show(true, message);
-        //         }).AddTo(chatButton.gameObject);
-        //         disposables.exit = chatButton.onPointerExit.Subscribe(_ =>
-        //         {
-        //             if (_cat)
-        //             {
-        //                 _cat.Hide();
-        //             }
-        //         }).AddTo(chatButton.gameObject);
-        //         _disposablesForLockedButtons[ToggleableType.Chat] = disposables;
-        //         chatButton.SetInteractable(false);
-        //     }
-        //     else
-        //     {
-        //         if (_disposablesForLockedButtons.TryGetValue(ToggleableType.Chat, out var tuple))
-        //         {
-        //             tuple.pointerEnter.Dispose();
-        //             tuple.pointerExit.Dispose();
-        //             _disposablesForLockedButtons.Remove(ToggleableType.Chat);
-        //         }
-        //         chatButton.SetInteractable(true);
-        //     }
-        //
-        //     return true;
-        // }
-        //
-        // private bool CheckMailUnlock()
-        // {
-        //     var requiredStage = GameConfig.RequireClearedStageLevel.UIBottomMenuMail;
-        //     if (!States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(GameConfig.RequireClearedStageLevel.UIBottomMenuMail))
-        //     {
-        //         (IDisposable enter, IDisposable exit) disposables;
-        //
-        //         disposables.enter = mailButton.onPointerEnter.Subscribe(_ =>
-        //         {
-        //             if (_cat)
-        //             {
-        //                 _cat.Hide();
-        //             }
-        //
-        //             var unlockConditionString = string.Format(
-        //                 L10nManager.Localize("UI_STAGE_LOCK_FORMAT"),
-        //                 requiredStage);
-        //             var message =
-        //                 $"{L10nManager.Localize(mailButton.localizationKey)}\n<sprite name=\"UI_icon_lock_01\"> {unlockConditionString}";
-        //             _cat = Find<MessageCatManager>().Show(true, message, true);
-        //         }).AddTo(mailButton.gameObject);
-        //
-        //
-        //         disposables.exit = mailButton.onPointerExit.Subscribe(_ =>
-        //         {
-        //             if (_cat)
-        //             {
-        //                 _cat.Hide();
-        //             }
-        //         }).AddTo(mailButton.gameObject);
-        //         _disposablesForLockedButtons[ToggleableType.Mail] = disposables;
-        //         mailButton.SetInteractable(false);
-        //     }
-        //     else
-        //     {
-        //         if (_disposablesForLockedButtons.TryGetValue(ToggleableType.Mail, out var tuple))
-        //         {
-        //             tuple.pointerEnter.Dispose();
-        //             tuple.pointerExit.Dispose();
-        //             _disposablesForLockedButtons.Remove(ToggleableType.Mail);
-        //         }
-        //         mailButton.SetInteractable(true);
-        //     }
-        //     return true;
-        // }
-        //
-        // private bool ShowQuestButton()
-        // {
-        //     questButton.Show();
-        //
-        //     var requiredStage = GameConfig.RequireClearedStageLevel.UIBottomMenuQuest;
-        //     if (!States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(GameConfig
-        //         .RequireClearedStageLevel.UIBottomMenuQuest))
-        //     {
-        //         if (_disposablesForLockedButtons.TryGetValue(ToggleableType.Quest, out var _))
-        //         {
-        //             questButton.SetInteractable(false);
-        //             return true;
-        //         }
-        //
-        //         (IDisposable enter, IDisposable exit) disposables;
-        //
-        //         disposables.enter = questButton.onPointerEnter.Subscribe(_ =>
-        //         {
-        //             if (_cat)
-        //             {
-        //                 _cat.Hide();
-        //             }
-        //
-        //             var unlockConditionString = string.Format(
-        //                 L10nManager.Localize("UI_STAGE_LOCK_FORMAT"),
-        //                 requiredStage);
-        //             var message =
-        //                 $"{L10nManager.Localize(questButton.localizationKey)}\n<sprite name=\"UI_icon_lock_01\"> {unlockConditionString}";
-        //             _cat = Find<MessageCatManager>().Show(true, message, true);
-        //         }).AddTo(questButton.gameObject);
-        //         disposables.exit = questButton.onPointerExit.Subscribe(_ =>
-        //         {
-        //             if (_cat)
-        //             {
-        //                 _cat.Hide();
-        //             }
-        //         }).AddTo(questButton.gameObject);
-        //         _disposablesForLockedButtons[ToggleableType.Quest] = disposables;
-        //         questButton.SetInteractable(false);
-        //     }
-        //     else
-        //     {
-        //         if (_disposablesForLockedButtons.TryGetValue(ToggleableType.Quest, out var tuple))
-        //         {
-        //             tuple.pointerEnter.Dispose();
-        //             tuple.pointerExit.Dispose();
-        //             _disposablesForLockedButtons.Remove(ToggleableType.Quest);
-        //         }
-        //         questButton.SetInteractable(true);
-        //     }
-        //
-        //     return true;
-        // }
-        //
-        // private bool ShowRankingButton()
-        // {
-        //     rankingButton.Show();
-        //
-        //     var requiredStage = 1;
-        //     if (!States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(requiredStage))
-        //     {
-        //         if (_disposablesForLockedButtons.TryGetValue(ToggleableType.Ranking, out var _))
-        //         {
-        //             rankingButton.SetInteractable(false);
-        //             return true;
-        //         }
-        //
-        //         (IDisposable enter, IDisposable exit) disposables;
-        //
-        //         disposables.enter = rankingButton.onPointerEnter.Subscribe(_ =>
-        //         {
-        //             if (_cat)
-        //             {
-        //                 _cat.Hide();
-        //             }
-        //
-        //             var unlockConditionString = string.Format(
-        //                 L10nManager.Localize("UI_STAGE_LOCK_FORMAT"),
-        //                 requiredStage);
-        //             var message =
-        //                 $"{L10nManager.Localize(rankingButton.localizationKey)}\n<sprite name=\"UI_icon_lock_01\"> {unlockConditionString}";
-        //             _cat = Find<MessageCatManager>().Show(true, message, true);
-        //         }).AddTo(rankingButton.gameObject);
-        //         disposables.exit = rankingButton.onPointerExit.Subscribe(_ =>
-        //         {
-        //             if (_cat)
-        //             {
-        //                 _cat.Hide();
-        //             }
-        //         }).AddTo(rankingButton.gameObject);
-        //         _disposablesForLockedButtons[ToggleableType.Ranking] = disposables;
-        //         rankingButton.SetInteractable(false);
-        //     }
-        //     else
-        //     {
-        //         if (_disposablesForLockedButtons.TryGetValue(ToggleableType.Ranking, out var tuple))
-        //         {
-        //             tuple.pointerEnter.Dispose();
-        //             tuple.pointerExit.Dispose();
-        //             _disposablesForLockedButtons.Remove(ToggleableType.Ranking);
-        //         }
-        //         rankingButton.SetInteractable(true);
-        //     }
-        //
-        //     return true;
-        // }
-        //
-        // private bool ShowCharacterButton()
-        // {
-        //     characterButton.Show();
-        //
-        //     var requiredStage = GameConfig.RequireClearedStageLevel.UIBottomMenuCharacter;
-        //     if (!States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(GameConfig
-        //         .RequireClearedStageLevel.UIBottomMenuCharacter))
-        //     {
-        //         if (_disposablesForLockedButtons.TryGetValue(ToggleableType.Character, out var _))
-        //         {
-        //             characterButton.SetInteractable(false);
-        //             return true;
-        //         }
-        //
-        //         (IDisposable enter, IDisposable exit) disposables;
-        //
-        //         disposables.enter = characterButton.onPointerEnter.Subscribe(_ =>
-        //         {
-        //             if (_cat)
-        //             {
-        //                 _cat.Hide();
-        //             }
-        //
-        //             var unlockConditionString = string.Format(
-        //                 L10nManager.Localize("UI_STAGE_LOCK_FORMAT"),
-        //                 requiredStage);
-        //             var message =
-        //                 $"{L10nManager.Localize(characterButton.localizationKey)}\n<sprite name=\"UI_icon_lock_01\"> {unlockConditionString}";
-        //             _cat = Find<MessageCatManager>().Show(true, message, true);
-        //         }).AddTo(characterButton.gameObject);
-        //         disposables.exit = characterButton.onPointerExit.Subscribe(_ =>
-        //         {
-        //             if (_cat)
-        //             {
-        //                 _cat.Hide();
-        //             }
-        //         }).AddTo(characterButton.gameObject);
-        //         _disposablesForLockedButtons[ToggleableType.Character] = disposables;
-        //         characterButton.SetInteractable(false);
-        //     }
-        //     else
-        //     {
-        //         if (_disposablesForLockedButtons.TryGetValue(ToggleableType.Character, out var tuple))
-        //         {
-        //             tuple.pointerEnter.Dispose();
-        //             tuple.pointerExit.Dispose();
-        //             _disposablesForLockedButtons.Remove(ToggleableType.Character);
-        //         }
-        //         characterButton.SetInteractable(true);
-        //     }
-        //
-        //     return true;
-        // }
-        //
-        // private bool ShowWorldMapButton()
-        // {
-        //     worldMapButton.Show();
-        //     return true;
-        // }
-        //
-        // private bool ShowSettingsButton()
-        // {
-        //     settingsButton.Show();
-        //
-        //     if (_disposablesForLockedButtons.TryGetValue(ToggleableType.Settings, out var tuple))
-        //         {
-        //             tuple.pointerEnter.Dispose();
-        //             tuple.pointerExit.Dispose();
-        //             _disposablesForLockedButtons.Remove(ToggleableType.Settings);
-        //         }
-        //         settingsButton.SetInteractable(true);
-        //
-        //     return true;
-        // }
-        //
-        // private bool ShowCombinationButton()
-        // {
-        //     combinationButton.Show();
-        //
-        //     var requiredStage = GameConfig.RequireClearedStageLevel.CombinationEquipmentAction;
-        //     if (!States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(GameConfig
-        //         .RequireClearedStageLevel.CombinationEquipmentAction))
-        //     {
-        //         if (_disposablesForLockedButtons.TryGetValue(ToggleableType.Combination, out var _))
-        //         {
-        //             combinationButton.SetInteractable(false);
-        //             return true;
-        //         }
-        //
-        //         (IDisposable enter, IDisposable exit) disposables;
-        //
-        //         disposables.enter = combinationButton.onPointerEnter.Subscribe(_ =>
-        //         {
-        //             if (_cat)
-        //             {
-        //                 _cat.Hide();
-        //             }
-        //
-        //             var unlockConditionString = string.Format(
-        //                 L10nManager.Localize("UI_STAGE_LOCK_FORMAT"),
-        //                 requiredStage);
-        //             var message =
-        //                 $"{L10nManager.Localize(combinationButton.localizationKey)}\n<sprite name=\"UI_icon_lock_01\"> {unlockConditionString}";
-        //             _cat = Find<MessageCatManager>().Show(true, message);
-        //         }).AddTo(combinationButton.gameObject);
-        //         disposables.exit = combinationButton.onPointerExit.Subscribe(_ =>
-        //         {
-        //             if (_cat)
-        //             {
-        //                 _cat.Hide();
-        //             }
-        //         }).AddTo(combinationButton.gameObject);
-        //         _disposablesForLockedButtons[ToggleableType.Combination] = disposables;
-        //         combinationButton.SetInteractable(false);
-        //     }
-        //     else
-        //     {
-        //         if (_disposablesForLockedButtons.TryGetValue(ToggleableType.Combination, out var tuple))
-        //         {
-        //             tuple.pointerEnter.Dispose();
-        //             tuple.pointerExit.Dispose();
-        //             _disposablesForLockedButtons.Remove(ToggleableType.Combination);
-        //         }
-        //         combinationButton.SetInteractable(true);
-        //     }
-        //
-        //     return true;
-        // }
-        //
-        // #endregion
-        //
-
 
         public void UpdateCombinationNotification()
         {

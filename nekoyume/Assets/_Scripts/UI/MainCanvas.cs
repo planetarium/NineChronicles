@@ -162,6 +162,7 @@ namespace Nekoyume.UI
                 // 팝업 영역.
                 Widget.Create<Settings>(),
                 Widget.Create<Confirm>(),
+                Widget.Create<ChatPopup>(),
                 Widget.Create<QuitPopup>(),
                 Widget.Create<OneButtonPopup>(),
                 Widget.Create<TwoButtonPopup>(),
@@ -393,18 +394,6 @@ namespace Nekoyume.UI
                 {
                     widget.Close();
                 }
-            }
-        }
-
-        void OnGUI()
-        {
-            if (GUI.Button(new Rect(Screen.width-100, 500, 100, 50), "show upgrade"))
-            {
-                Widget.Find<CombinationMain>().Show();
-            }
-            if (GUI.Button(new Rect(Screen.width-100, 560, 100, 50), "Close upgrade"))
-            {
-                Widget.Find<CombinationMain>().Close(true);
             }
         }
     }

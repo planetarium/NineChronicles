@@ -8,6 +8,7 @@ namespace Nekoyume.UI
     {
         [SerializeField] private Button combineButton;
         [SerializeField] private Button upgradeButton;
+        [SerializeField] private Button closeButton;
 
         protected override void Awake()
         {
@@ -22,11 +23,13 @@ namespace Nekoyume.UI
             {
                 Find<UpgradeEquipment>().Show();
             });
-        }
 
-        public override void Show(bool ignoreShowAnimation = false)
-        {
-            base.Show(ignoreShowAnimation);
+            closeButton.onClick.AddListener(() =>
+            {
+                Close(true);
+            });
+
+            CloseWidget = () => Close(true);
         }
     }
 }

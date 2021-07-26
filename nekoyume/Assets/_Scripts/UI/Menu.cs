@@ -266,17 +266,18 @@ namespace Nekoyume.UI
 
         public void CombinationClick(int slotIndex = -1)
         {
-            CombinationClickInternal(() =>
-            {
-                if (slotIndex >= 0)
-                {
-                    Find<Combination>().Show(slotIndex);
-                }
-                else
-                {
-                    Find<Combination>().Show();
-                }
-            });
+            Find<CombinationMain>().Show();
+            // CombinationClickInternal(() =>
+            // {
+            //     if (slotIndex >= 0)
+            //     {
+            //         Find<Combination>().Show(slotIndex);
+            //     }
+            //     else
+            //     {
+            //         Find<Combination>().Show();
+            //     }
+            // });
         }
 
         private void CombinationClickInternal(System.Action showAction)

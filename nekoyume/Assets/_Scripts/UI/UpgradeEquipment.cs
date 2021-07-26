@@ -17,6 +17,7 @@ namespace Nekoyume.UI
     {
         [SerializeField] private EquipmentInventory inventory;
         [SerializeField] private Button upgradeButton;
+        [SerializeField] private Button closeButton;
         [SerializeField] private UpgradeEquipmentSlot baseEquipmentSlot;
         [SerializeField] private UpgradeEquipmentSlot materialEquipmentSlot;
 
@@ -29,6 +30,7 @@ namespace Nekoyume.UI
         {
             base.Awake();
             upgradeButton.onClick.AddListener(ActionUpgradeItem);
+            closeButton.onClick.AddListener(() => Close(true));
         }
 
         public override void Initialize()
