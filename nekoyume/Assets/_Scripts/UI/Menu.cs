@@ -116,7 +116,6 @@ namespace Nekoyume.UI
 
             var worldId = worldRow.Id;
 
-            Find<BottomMenu>().Close(true);
             Find<LoadingScreen>().Show();
 
             var stage = Game.Game.instance.Stage;
@@ -267,17 +266,18 @@ namespace Nekoyume.UI
 
         public void CombinationClick(int slotIndex = -1)
         {
-            CombinationClickInternal(() =>
-            {
-                if (slotIndex >= 0)
-                {
-                    Find<Combination>().Show(slotIndex);
-                }
-                else
-                {
-                    Find<Combination>().Show();
-                }
-            });
+            Find<CombinationMain>().Show();
+            // CombinationClickInternal(() =>
+            // {
+            //     if (slotIndex >= 0)
+            //     {
+            //         Find<Combination>().Show(slotIndex);
+            //     }
+            //     else
+            //     {
+            //         Find<Combination>().Show();
+            //     }
+            // });
         }
 
         private void CombinationClickInternal(System.Action showAction)
@@ -473,7 +473,6 @@ namespace Nekoyume.UI
             StopSpeeches();
 
             guidedQuest.Hide(true);
-            Find<BottomMenu>().Close(true);
             Find<Status>().Close(true);
             base.Close(ignoreCloseAnimation);
         }
@@ -481,8 +480,6 @@ namespace Nekoyume.UI
         private IEnumerator CoLazyClose(float duration = 1f, bool ignoreCloseAnimation = false)
         {
             StopSpeeches();
-
-            Find<BottomMenu>().Close(true);
             Find<Status>().Close(true);
             yield return new WaitForSeconds(duration);
             base.Close(ignoreCloseAnimation);

@@ -11,6 +11,7 @@ namespace Nekoyume.UI.Module
     {
         public List<Toggle> items = new List<Toggle>();
         public float duration;
+        public bool allOffOnAwake = false;
 
         private List<RectTransform> _itemRectTransforms = new List<RectTransform>();
         private List<CanvasGroup> _itemCanvasGroups = new List<CanvasGroup>();
@@ -26,8 +27,12 @@ namespace Nekoyume.UI.Module
             {
                 _itemRectTransforms.AddRange(items.Select(x => x.GetComponent<RectTransform>()));
                 _itemCanvasGroups.AddRange(items.Select(x => x.GetComponent<CanvasGroup>()));
+
                 items.First().isOn = false;
-                items.First().isOn = true;
+                if (!allOffOnAwake)
+                {
+                    items.First().isOn = true;
+                }
             }
 
             base.Awake();

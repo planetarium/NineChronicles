@@ -43,6 +43,7 @@ namespace Nekoyume.UI
 
         private readonly Subject<Widget> _onEnableSubject = new Subject<Widget>();
         private readonly Subject<Widget> _onDisableSubject = new Subject<Widget>();
+        private System.Action _onClose;
 
         private Coroutine _coClose;
         private Coroutine _coCompleteCloseAnimation;
@@ -218,8 +219,20 @@ namespace Nekoyume.UI
             }
         }
 
+        public void Show(System.Action onClose, bool ignoreShowAnimation = false)
+        {
+            _onClose = onClose;
+            Show(ignoreShowAnimation);
+        }
+
         public virtual void Show(bool ignoreShowAnimation = false)
         {
+            if (!(_coClose is null))
+            {
+                StopCoroutine(_coClose);
+                _coClose = null;
+            }
+
             if (CloseWidget != null ||
                 SubmitWidget != null ||
                 WidgetType == WidgetType.Screen)
@@ -243,8 +256,7 @@ namespace Nekoyume.UI
             AnimationState = AnimationStateType.Showing;
             gameObject.SetActive(true);
 
-            if (!Animator ||
-                ignoreShowAnimation)
+            if (!Animator || ignoreShowAnimation)
             {
                 AnimationState = AnimationStateType.Shown;
                 return;
@@ -266,6 +278,8 @@ namespace Nekoyume.UI
             {
                 return;
             }
+
+            _onClose?.Invoke();
 
             if (!Animator ||
                 ignoreCloseAnimation)

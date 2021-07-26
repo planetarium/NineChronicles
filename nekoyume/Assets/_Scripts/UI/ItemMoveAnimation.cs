@@ -65,10 +65,10 @@ namespace Nekoyume.UI
             Tweener tweenMove;
             tweenMove = transform.DOPath(path, _animationTime, PathType.CatmullRom).SetEase(Ease.OutSine);
             yield return new WaitForSeconds(_animationTime - 0.5f);
-            if(endPoint == EndPoint.Inventory)
-                Find<BottomMenu>().PlayGetItemAnimation();
-            else if(endPoint == EndPoint.Workshop)
-                Find<BottomMenu>().PlayWorkShopVFX();
+            // if(endPoint == EndPoint.Inventory)
+                // Find<BottomMenu>().PlayGetItemAnimation();
+            // else if(endPoint == EndPoint.Workshop)
+                // Find<BottomMenu>().PlayWorkShopVFX();
             yield return new WaitWhile(tweenMove.IsPlaying);
             itemImage.enabled = false;
 

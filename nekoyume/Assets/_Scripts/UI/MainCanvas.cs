@@ -162,6 +162,7 @@ namespace Nekoyume.UI
                 // 팝업 영역.
                 Widget.Create<Settings>(),
                 Widget.Create<Confirm>(),
+                Widget.Create<ChatPopup>(),
                 Widget.Create<QuitPopup>(),
                 Widget.Create<OneButtonPopup>(),
                 Widget.Create<TwoButtonPopup>(),
@@ -278,7 +279,7 @@ namespace Nekoyume.UI
             secondWidgets.Add(Widget.Create<MonsterCollectionRewardsPopup>());
             yield return null;
             // 임시로 팝업보다 상단에 배치합니다.
-            secondWidgets.Add(Widget.Create<BottomMenu>());
+            secondWidgets.Add(Widget.Create<HeaderMenu>());
             yield return null;
             secondWidgets.Add(Widget.Create<FriendInfoPopup>());
             yield return null;
@@ -306,6 +307,10 @@ namespace Nekoyume.UI
 
             // 튜토리얼
             secondWidgets.Add(Widget.Create<Tutorial>());
+            yield return null;
+
+            secondWidgets.Add(Widget.Create<CombinationMain>());
+            secondWidgets.Add(Widget.Create<UpgradeEquipment>());
             yield return null;
 
             Widget last = null;

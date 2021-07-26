@@ -181,13 +181,6 @@ namespace Nekoyume.UI
 
             _state.SetValueAndForceNotify(stateType);
 
-            Find<BottomMenu>()?.Show(
-                UINavigator.NavigationType.Back,
-                SubscribeBackButtonClick,
-                true,
-                BottomMenu.ToggleableType.Ranking,
-                BottomMenu.ToggleableType.Character);
-
             var go = Game.Game.instance.Stage.npcFactory.Create(
                 NPCId,
                 NPCPosition,
@@ -206,7 +199,7 @@ namespace Nekoyume.UI
         {
             _disposablesFromShow.DisposeAllAndClear();
 
-            Find<BottomMenu>()?.Close();
+            Find<HeaderMenu>()?.Close();
 
             base.Close(ignoreCloseAnimation);
 
@@ -340,7 +333,7 @@ namespace Nekoyume.UI
                         Game.Game.instance.TableSheets.CharacterSheet,
                         false);
                 }
-                
+
                 currentAvatarCellView.Show((
                     currentAvatarRank,
                     currentAvatarArenaInfo,
@@ -413,7 +406,7 @@ namespace Nekoyume.UI
             Find<ArenaBattleLoadingScreen>().Show(arenaRankCell.ArenaInfo);
         }
 
-        private void SubscribeBackButtonClick(BottomMenu bottomMenu)
+        private void SubscribeBackButtonClick(HeaderMenu headerMenu)
         {
             var avatarInfo = Find<AvatarInfo>();
             var friendInfoPopup = Find<FriendInfoPopup>();

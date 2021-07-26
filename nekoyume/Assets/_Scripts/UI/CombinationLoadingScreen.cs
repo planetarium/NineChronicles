@@ -67,7 +67,7 @@ namespace Nekoyume.UI
         {
             _buttonCanvasGroup.alpha = 0f;
             _bgCanvasGroup.alpha = 0f;
-            Find<BottomMenu>().combinationButton.SetSortOrderToTop();
+            // Find<BottomMenu>().combinationButton.SetSortOrderToTop();
             base.Show(ignoreShowAnimation);
         }
 
@@ -89,7 +89,7 @@ namespace Nekoyume.UI
                 _fireVFX.Stop();
                 _fireVFX = null;
             }
-            Find<BottomMenu>().combinationButton.SetSortOrderToNormal();
+            // Find<BottomMenu>().combinationButton.SetSortOrderToNormal();
 
             base.Close(ignoreCloseAnimation);
         }
@@ -166,7 +166,8 @@ namespace Nekoyume.UI
 
             yield return new WaitForSeconds(speechBubble.bubbleTweenTime);
 
-            var endPosition = Find<BottomMenu>().combinationButton.transform.position;
+            // var endPosition = Find<BottomMenu>().combinationButton.transform.position;
+            var endPosition = Vector3.zero; // for temp
 
             ItemMoveAnimation.Show(
                 item.ItemBase.Value.GetIconSprite(),

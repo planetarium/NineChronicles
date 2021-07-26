@@ -104,7 +104,6 @@ namespace Nekoyume.UI
             }
 
             _stageType = stageType;
-            SetBottomMenu(stageType);
 
             world.Set(worldRow);
             var questStageId = Game.Game.instance.States
@@ -128,30 +127,7 @@ namespace Nekoyume.UI
             base.Show();
         }
 
-        private void SetBottomMenu(StageType stageType)
-        {
-            var bottomMenu = Find<BottomMenu>();
-            switch (stageType)
-            {
-                case StageType.Quest:
-                    bottomMenu.Show(
-                        UINavigator.NavigationType.None,
-                        null,
-                        true,
-                        BottomMenu.ToggleableType.WorldMap);
-
-                    bottomMenu.worldMapButton.OnClick
-                        .Subscribe(_ => BackToWorldMap())
-                        .AddTo(gameObject);
-                    bottomMenu.ToggleGroup?.SetToggledOffAll();
-                    break;
-                case StageType.Mimisbrunnr:
-                    bottomMenu.Show(UINavigator.NavigationType.Back, SubscribeBackButtonClick, false);
-                    break;
-            }
-        }
-
-        private void SubscribeBackButtonClick(BottomMenu bottomMenu)
+        private void SubscribeBackButtonClick(HeaderMenu headerMenu)
         {
             var stageInfo = Find<UI.StageInformation>();
             stageInfo.Close();
