@@ -16,6 +16,7 @@ using Toggle = Nekoyume.UI.Module.Toggle;
 
 namespace Nekoyume.UI
 {
+    using Nekoyume.Model.Item;
     using UniRx;
 
     public class Rank : Widget
@@ -88,7 +89,12 @@ namespace Nekoyume.UI
             { RankCategory.Ability, ("UI_CP", "UI_LEVEL") },
             { RankCategory.Stage, ("UI_STAGE", null)},
             { RankCategory.Mimisburnnr, ("UI_STAGE", null) },
-            { RankCategory.Weapon, ("UI_CP", null) },
+            { RankCategory.Crafting, ("UI_COUNTS_CRAFTED", null) },
+            { RankCategory.EquipmentWeapon, ("UI_CP", "UI_NAME") },
+            { RankCategory.EquipmentArmor, ("UI_CP", "UI_NAME") },
+            { RankCategory.EquipmentBelt, ("UI_CP", "UI_NAME") },
+            { RankCategory.EquipmentNecklace, ("UI_CP", "UI_NAME") },
+            { RankCategory.EquipmentRing, ("UI_CP", "UI_NAME") },
         };
 
         public override void Initialize()
@@ -160,11 +166,6 @@ namespace Nekoyume.UI
         private async void UpdateCategoryAsync(RankCategory category, bool toggleOn)
         {
             preloadingObject.SetActive(true);
-            if (category == RankCategory.Weapon)
-            {
-                Find<SystemPopup>().Show("UI_ALERT_NOT_IMPLEMENTED_TITLE", "UI_ALERT_NOT_IMPLEMENTED_CONTENT");
-                return;
-            }
 
             if (toggleOn)
             {
@@ -202,79 +203,6 @@ namespace Nekoyume.UI
                 return;
             }
 
-            preloadingObject.SetActive(false);
-            missingObject.SetActive(false);
-            refreshObject.SetActive(false);
-
-            switch (category)
-            {
-                case RankCategory.Ability:
-                    if (!isApiLoaded)
-                    {
-                        break;
-                    }
-
-                    var abilityRankingInfos = SharedModel.AbilityRankingInfos;
-                    if (SharedModel.AgentAbilityRankingInfos
-                        .TryGetValue(states.CurrentAvatarKey, out var abilityInfo))
-                    {
-                        myInfoCell.SetDataAsAbility(abilityInfo);
-                    }
-                    else
-                    {
-                        myInfoCell.SetEmpty(states.CurrentAvatarState);
-                    }
-
-                    rankScroll.Show(abilityRankingInfos, true);
-                    break;
-                case RankCategory.Stage:
-                    if (!isApiLoaded)
-                    {
-                        break;
-                    }
-
-                    var stageRankingInfos = SharedModel.StageRankingInfos;
-                    if (SharedModel.AgentStageRankingInfos
-                        .TryGetValue(states.CurrentAvatarKey, out var stageInfo))
-                    {
-                        myInfoCell.SetDataAsStage(stageInfo);
-                    }
-                    else
-                    {
-                        myInfoCell.SetEmpty(states.CurrentAvatarState);
-                    }
-
-                    rankScroll.Show(stageRankingInfos, true);
-                    break;
-                case RankCategory.Mimisburnnr:
-                    if (!isApiLoaded)
-                    {
-                        break;
-                    }
-
-                    var mimisbrunnrRankingInfos = SharedModel.MimisbrunnrRankingInfos;
-                    if (SharedModel.AgentMimisbrunnrRankingInfos
-                        .TryGetValue(states.CurrentAvatarKey, out var mimisbrunnrInfo))
-                    {
-                        myInfoCell.SetDataAsStage(mimisbrunnrInfo);
-                    }
-                    else
-                    {
-                        myInfoCell.SetEmpty(states.CurrentAvatarState);
-                    }
-
-                    rankScroll.Show(mimisbrunnrRankingInfos, true);
-                    break;
-                case RankCategory.Weapon:
-                    var weaponRankingInfos = SharedModel.WeaponRankingModel;
-                    if (weaponRankingInfos is null)
-                    {
-                        Find<SystemPopup>().Show("UI_ALERT_NOT_IMPLEMENTED_TITLE", "UI_ALERT_NOT_IMPLEMENTED_CONTENT");
-                    }
-                    break;
-                default:
-                    break;
-            }
 
             var firstCategory = _rankColumnMap[category].Item1;
             if (firstCategory is null)
@@ -295,6 +223,84 @@ namespace Nekoyume.UI
             {
                 secondColumnText.text = secondCategory.StartsWith("UI_") ? L10nManager.Localize(secondCategory) : secondCategory;
             }
+
+            preloadingObject.SetActive(false);
+            missingObject.SetActive(false);
+            refreshObject.SetActive(false);
+
+            if (!isApiLoaded)
+            {
+                return;
+            }
+
+            switch (category)
+            {
+                case RankCategory.Ability:
+                    SetScroll(SharedModel.AgentAbilityRankingInfos, SharedModel.AbilityRankingInfos);
+                    break;
+                case RankCategory.Stage:
+                    SetScroll(SharedModel.AgentStageRankingInfos, SharedModel.StageRankingInfos);
+                    break;
+                case RankCategory.Mimisburnnr:
+                    SetScroll(SharedModel.AgentMimisbrunnrRankingInfos, SharedModel.MimisbrunnrRankingInfos);
+                    break;
+                case RankCategory.Crafting:
+                    SetScroll(SharedModel.AgentCraftRankingInfos, SharedModel.CraftRankingInfos);
+                    break;
+                case RankCategory.EquipmentWeapon:
+                    SetEquipmentScroll(ItemSubType.Weapon);
+                    break;
+                case RankCategory.EquipmentArmor:
+                    SetEquipmentScroll(ItemSubType.Armor);
+                    break;
+                case RankCategory.EquipmentBelt:
+                    SetEquipmentScroll(ItemSubType.Belt);
+                    break;
+                case RankCategory.EquipmentNecklace:
+                    SetEquipmentScroll(ItemSubType.Necklace);
+                    break;
+                case RankCategory.EquipmentRing:
+                    SetEquipmentScroll(ItemSubType.Ring);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        private void SetScroll<T>(
+            IReadOnlyDictionary<int, T> myRecordMap,
+            IEnumerable<T> rankingInfos)
+            where T : RankingModel
+        {
+            var states = States.Instance;
+            if (myRecordMap.TryGetValue(states.CurrentAvatarKey, out var rankingInfo))
+            {
+                myInfoCell.SetData(rankingInfo);
+            }
+            else
+            {
+                myInfoCell.SetEmpty(states.CurrentAvatarState);
+            }
+
+            rankScroll.Show(rankingInfos, true);
+        }
+
+        private void SetEquipmentScroll(ItemSubType type)
+        {
+            var states = States.Instance;
+            var rankingInfos = SharedModel.EquipmentRankingInfosMap[type];
+            if (SharedModel.AgentEquipmentRankingInfos
+                .TryGetValue(states.CurrentAvatarKey, out var equipmentRankingMap))
+            {
+                var rankingInfo = equipmentRankingMap[type];
+                myInfoCell.SetData(rankingInfo);
+            }
+            else
+            {
+                myInfoCell.SetEmpty(states.CurrentAvatarState);
+            }
+
+            rankScroll.Show(rankingInfos, true);
         }
 
         private void ToggleCategory(RankCategory category)

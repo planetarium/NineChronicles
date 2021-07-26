@@ -21,16 +21,7 @@ namespace Nekoyume.UI.Scroller
             var cell = isMyInfo ? myInfoRankCell : rankCell;
             rankCell.gameObject.SetActive(!isMyInfo);
             myInfoRankCell.gameObject.SetActive(isMyInfo);
-
-            switch (viewModel)
-            {
-                case AbilityRankingModel abilityRankingModel:
-                    cell.SetDataAsAbility(abilityRankingModel);
-                    break;
-                case StageRankingModel stageRankingModel:
-                    cell.SetDataAsStage(stageRankingModel);
-                    break;
-            }
+            cell.SetData(viewModel);
         }
     }
 }
