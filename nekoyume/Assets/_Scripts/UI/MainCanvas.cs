@@ -248,6 +248,10 @@ namespace Nekoyume.UI
             yield return null;
             secondWidgets.Add(Widget.Create<Quest>());
             yield return null;
+            secondWidgets.Add(Widget.Create<CombinationMain>());
+            yield return null;
+            secondWidgets.Add(Widget.Create<UpgradeEquipment>());
+            yield return null;
             secondWidgets.Add(Widget.Create<CombinationSlots>());
             yield return null;
             secondWidgets.Add(Widget.Create<Rank>());
@@ -307,10 +311,6 @@ namespace Nekoyume.UI
 
             // 튜토리얼
             secondWidgets.Add(Widget.Create<Tutorial>());
-            yield return null;
-
-            secondWidgets.Add(Widget.Create<CombinationMain>());
-            secondWidgets.Add(Widget.Create<UpgradeEquipment>());
             yield return null;
 
             Widget last = null;
