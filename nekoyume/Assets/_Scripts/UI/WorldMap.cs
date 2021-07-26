@@ -123,28 +123,14 @@ namespace Nekoyume.UI
             {
                 throw new Exception("worldInformation.TryGetFirstWorld() failed!");
             }
-            var bottomMenu = Find<BottomMenu>();
-            bottomMenu.Show(
-                UINavigator.NavigationType.Back,
-                SubscribeBackButtonClick);
-            var status = Find<Status>();
 
+            var status = Find<Status>();
             status.Close(true);
             Show();
         }
 
         public void Show(int worldId, int stageId, bool showWorld, bool callByShow = false)
         {
-            var bottomMenu = Find<BottomMenu>();
-            bottomMenu.Show(
-                UINavigator.NavigationType.None,
-                null,
-                true,
-                BottomMenu.ToggleableType.WorldMap);
-            bottomMenu.worldMapButton.OnClick
-                .Subscribe(_ => SharedViewModel.IsWorldShown.SetValueAndForceNotify(true))
-                .AddTo(_disposablesAtShow);
-
             ShowWorld(worldId, stageId, showWorld, callByShow);
             Show();
         }
@@ -152,7 +138,7 @@ namespace Nekoyume.UI
         public override void Close(bool ignoreCloseAnimation = false)
         {
             _disposablesAtShow.DisposeAllAndClear();
-            Find<BottomMenu>().Close(true);
+            Find<HeaderMenu>().Close(true);
             base.Close(true);
         }
 
@@ -166,11 +152,6 @@ namespace Nekoyume.UI
                 Mixpanel.Track("Unity/Click Yggdrasil");
             }
 
-            CloseWidget = () =>
-            {
-                var button = Find<BottomMenu>().worldMapButton;
-                button.OnClick.OnNext(button);
-            };
             CloseWidget += Pop;
             CloseWidget += () => CloseWidget = null;
             Push();
@@ -216,15 +197,11 @@ namespace Nekoyume.UI
         private void CallByShowUpdateWorld()
         {
             var status = Find<Status>();
-
-            var bottomMenu = Find<BottomMenu>();
-            bottomMenu.worldMapButton.Hide();
-            bottomMenu.backButton.Show();
             status.Close(true);
             worldMapRoot.SetActive(true);
         }
 
-        private void SubscribeBackButtonClick(BottomMenu bottomMenu)
+        private void SubscribeBackButtonClick(HeaderMenu headerMenu)
         {
             if (!CanClose)
             {

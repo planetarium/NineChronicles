@@ -249,19 +249,6 @@ namespace Nekoyume.UI
                 State.SetValueAndForceNotify(StateType.SelectMenu);
             }
 
-            Find<BottomMenu>().Show(
-                UINavigator.NavigationType.Back,
-                SubscribeBackButtonClick,
-                true,
-                BottomMenu.ToggleableType.Mail,
-                BottomMenu.ToggleableType.Quest,
-                BottomMenu.ToggleableType.Chat,
-                BottomMenu.ToggleableType.IllustratedBook,
-                BottomMenu.ToggleableType.Ranking,
-                BottomMenu.ToggleableType.Character,
-                BottomMenu.ToggleableType.Combination
-            );
-
             if (_npc01 is null)
             {
                 var go = Game.Game.instance.Stage.npcFactory.Create(
@@ -290,8 +277,6 @@ namespace Nekoyume.UI
 
         public override void Close(bool ignoreCloseAnimation = false)
         {
-            Find<BottomMenu>().Close(ignoreCloseAnimation);
-
             _enhanceEquipment.Close(ignoreCloseAnimation);
             speechBubbleForEquipment.gameObject.SetActive(false);
             speechBubbleForUpgrade.gameObject.SetActive(false);
@@ -358,7 +343,7 @@ namespace Nekoyume.UI
             }
 
             Find<ItemInformationTooltip>().Close();
-            Find<BottomMenu>().ToggleGroup.SetToggledOffAll();
+            // Find<BottomMenu>().ToggleGroup.SetToggledOffAll();
 
             selectionArea.root.SetActive(value == StateType.SelectMenu);
             leftArea.SetActive(value != StateType.SelectMenu);
@@ -558,7 +543,7 @@ namespace Nekoyume.UI
             State.SetValueAndForceNotify((StateType) index);
         }
 
-        private void SubscribeBackButtonClick(BottomMenu bottomMenu)
+        private void SubscribeBackButtonClick(HeaderMenu headerMenu)
         {
             if (!CanClose)
             {
@@ -774,7 +759,6 @@ namespace Nekoyume.UI
             loadingScreen.SetCloseAction(action);
             canvasGroup.interactable = false;
             canvasGroup.blocksRaycasts = false;
-            Find<BottomMenu>().SetIntractable(false);
             blur.gameObject.SetActive(true);
             _npc01.SpineController.Disappear();
             Push();
@@ -787,7 +771,6 @@ namespace Nekoyume.UI
             _npc01.SpineController.Appear();
             canvasGroup.interactable = true;
             canvasGroup.blocksRaycasts = true;
-            Find<BottomMenu>().SetIntractable(true);
             blur.gameObject.SetActive(false);
             Pop();
             _selectedSpeechBubble.Hide();

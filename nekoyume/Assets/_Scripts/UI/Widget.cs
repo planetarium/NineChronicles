@@ -220,6 +220,12 @@ namespace Nekoyume.UI
 
         public virtual void Show(bool ignoreShowAnimation = false)
         {
+            if (!(_coClose is null))
+            {
+                StopCoroutine(_coClose);
+                _coClose = null;
+            }
+
             if (CloseWidget != null ||
                 SubmitWidget != null ||
                 WidgetType == WidgetType.Screen)

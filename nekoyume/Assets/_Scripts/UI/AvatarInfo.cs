@@ -511,7 +511,7 @@ namespace Nekoyume.UI
                 ? AudioController.SfxCode.ChainMail2
                 : AudioController.SfxCode.Equipment);
             inventory.SharedModel.UpdateEquipmentNotification();
-            Find<BottomMenu>().UpdateInventoryNotification();
+            Find<HeaderMenu>().UpdateInventoryNotification(HasNotification);
         }
 
         private void LocalStateItemEquipModify(ItemBase itemBase, bool equip)
