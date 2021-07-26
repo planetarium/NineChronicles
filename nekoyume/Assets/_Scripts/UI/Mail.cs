@@ -86,7 +86,7 @@ namespace Nekoyume.UI
             ReactiveAvatarState.MailBox?.Subscribe(SetList).AddTo(gameObject);
             Game.Game.instance.Agent.BlockIndexSubject
                 .ObserveOnMainThread()
-                .Subscribe(UpdateMailList)
+                .Subscribe(UpdateNotification)
                 .AddTo(gameObject);
 
             emptyText.text = L10nManager.Localize(emptyTextL10nKey);
@@ -202,6 +202,12 @@ namespace Nekoyume.UI
 
             MailBox = mailBox;
             ChangeState((int) tabState);
+        }
+
+        private void UpdateNotification(long blockIndex)
+        {
+            MailBox = States.Instance.CurrentAvatarState.mailBox;
+            UpdateTabs(blockIndex);
         }
 
         public void Read(CombinationMail mail)
