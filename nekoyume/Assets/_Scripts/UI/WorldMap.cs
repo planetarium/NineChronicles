@@ -55,13 +55,13 @@ namespace Nekoyume.UI
 
             closeButton.onClick.AddListener(() =>
             {
-                Close(true);
+                Close();
                 Game.Event.OnRoomEnter.Invoke(true);
             });
 
             CloseWidget = () =>
             {
-                Close(true);
+                Close();
                 Game.Event.OnRoomEnter.Invoke(true);
             };
             _worldButtons = GetComponentsInChildren<WorldButton>();
