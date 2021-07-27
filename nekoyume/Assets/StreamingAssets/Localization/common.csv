@@ -538,7 +538,9 @@ UI_COMBINATION_SELECT_MATERIAL,Select Material,재료 선택,Seleção de Materi
 UI_STATUS,Status,상태,Status,,ステータス,Status,Estado,สถานะ,Status,,,Status,Statut,,,,状态,
 UI_EQUIPMENTS,Equipment,장비,Equipamento,,装備,Ausrüstungen,Equipamientos,อุปกรณ์,Ekwipunek,,,Perlengkapan,Équipements,,,,装备,
 UI_CONSUMABLES,Consumables,소모품,Consumíveis,,消耗品,Verbrauchsgegenstände,Consumibles,วัสดุสิ้นเปลือง,Przedmioty użytkowe,,,Barang Konsumsi,Consommables,,,,消耗品,
+UI_CONSUMABLE,Consumable,소모품,Consumable,,消耗品,Consumable,Consumable,Consumable,Consumable,,,Consumable,Consumable,,,,消耗品,
 UI_MATERIALS,Materials,재료,Materiais,,素材,Materialien,Materiales,วัสดุ,Materiały,,,Bahan,Matériaux,,,,材料,
+UI_MATERIAL,Material,재료,Material,,素材,Material,Material,Material,Material,,,Material,Material,,,,材料,
 UI_SYNOPSIS_0,"Peace, harmony, and honor...
 Long lost treasures of this bygone world where only their shells remain to be felt.","평화와 조화, 그리고 긍지
 이 세 가지는 이미 신계에는 없어져, 껍데기만 남은 단어가 되고 말았다.","Paz , harmonia , e honra ...
@@ -1475,3 +1477,11 @@ UI_PLAYTOEARN_NOTIFICATION_FORMAT,You received {0} as the reward for the onboard
 UI_ACCELERATE,Accelerate :,빠른 제작 :,acelerar:,acelerar:,加速：,Beschleunigen :,acelerar:,เร่งความเร็ว :,Przyspieszenie:,pagreitinti:,Versnellen :,mempercepat:,Accélérer :,Ускорение:,បង្កើនល្បឿន:,تیز:,加速 ：,Fel kell gyorsítani:
 UI_COMBINATION_SLOT_UPGRADE,Upgrading {0} to {1} level..,{0} {1}레벨로 강화중..,Atualizando {0} para {1} nível ..,Atualizando {0} para {1} nível ..,アップグレード{0} {1}レベル..,Ein Upgrade {0} {1} Ebene ..,La actualización {0} a {1} nivel ..,อัพเกรด {0} เป็น {1} ระดับ ..,Aktualizacja {0} {1} .. poziomie,Atnaujinimas {0} į {1} lygio ..,Upgrading {0} tot {1} niveau ..,Upgrade {0} ke {1} tingkat ..,Mise à niveau {0} {1} niveau ..,Обновление {0} до {1} уровня ..,ការធ្វើឱ្យទាន់សម័យទៅនឹង {0} {1} កម្រិត ..,{1} سطح پر اپ گریڈ (0) ..,升级{0}到{1}水平..,Frissítés {0} {1} szinten ..
 UI_COMBINATION_SLOT_IDENTIFYING,Identifying items..,아이템을 감정하는 중..,Identificação de itens ..,Identificação de itens ..,アイテムを識別..,Identifizieren Artikel ..,La identificación de artículos ..,รายการระบุ ..,Identyfikowanie elementów ..,Nustatyti elementus ..,Het identificeren van artikelen ..,Mengidentifikasi item ..,Identification des éléments ..,Определение элементов ..,ការកំណត់អត្តសញ្ញាណធាតុ ..,نشاندہی آئٹم ..,确定项目..,Azonosító elem ..
+UI_TRADABLE,Tradable,Tradable,Tradable,Tradable,Tradable,Tradable,Tradable,Tradable,Tradable,Tradable,Tradable,Tradable,Tradable,Tradable,Tradable,Tradable,Tradable,Tradable,
+UI_UNTRADABLE,Untradable,Untradable,Untradable,Untradable,Untradable,Untradable,Untradable,Untradable,Untradable,Untradable,Untradable,Untradable,Untradable,Untradable,Untradable,Untradable,Untradable,Untradable,
+UI_COUNT_FORMAT,Count : {0},보유 : {0},Count : {0},Count : {0},Count : {0},Count : {0},Count : {0},Count : {0},Count : {0},Count : {0},Count : {0},Count : {0},Count : {0},Count : {0},Count : {0},Count : {0},Count : {0},Count : {0},
+UI_ITEM_GRADE_1,Normal,Normal,Normal,Normal,Normal,Normal,Normal,Normal,Normal,Normal,Normal,Normal,Normal,Normal,Normal,Normal,Normal,Normal,
+UI_ITEM_GRADE_2,Rare,Rare,Rare,Rare,Rare,Rare,Rare,Rare,Rare,Rare,Rare,Rare,Rare,Rare,Rare,Rare,Rare,Rare,
+UI_ITEM_GRADE_3,Epic,Epic,Epic,Epic,Epic,Epic,Epic,Epic,Epic,Epic,Epic,Epic,Epic,Epic,Epic,Epic,Epic,Epic,
+UI_ITEM_GRADE_4,Unique,Unique,Unique,Unique,Unique,Unique,Unique,Unique,Unique,Unique,Unique,Unique,Unique,Unique,Unique,Unique,Unique,Unique,
+UI_ITEM_GRADE_5,Legend,Legend,Legend,Legend,Legend,Legend,Legend,Legend,Legend,Legend,Legend,Legend,Legend,Legend,Legend,Legend,Legend,Legend,
