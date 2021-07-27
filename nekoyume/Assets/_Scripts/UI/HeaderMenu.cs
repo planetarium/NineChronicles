@@ -7,8 +7,6 @@ using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.Quest;
 using Nekoyume.State;
-using Nekoyume.UI.AnimatedGraphics;
-using Org.BouncyCastle.Asn1.X509;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -30,6 +28,14 @@ namespace Nekoyume.UI.Module
             Quit,
         }
 
+        public enum AssetVisibleState
+        {
+            Main,
+            Combination,
+            Shop,
+            Battle,
+        }
+
         [Serializable]
         private class ToggleInfo
         {
@@ -44,6 +50,10 @@ namespace Nekoyume.UI.Module
         public CodeRewardButton codeRewardButton;
 
         [SerializeField] private List<ToggleInfo> toggles = new List<ToggleInfo>();
+        [SerializeField] private GameObject ncg;
+        [SerializeField] private GameObject actionPoint;
+        [SerializeField] private GameObject dailyBonus;
+        [SerializeField] private GameObject hourglass;
         [SerializeField] private VFX inventoryVFX;
         [SerializeField] private VFX workshopVFX;
         [SerializeField] private Image actionPointImage;
@@ -132,6 +142,7 @@ namespace Nekoyume.UI.Module
         {
             base.Initialize();
 
+            Game.Event.OnRoomEnter.AddListener(_ => UpdateAssets(AssetVisibleState.Main));
             Game.Game.instance.Agent.BlockIndexSubject
                 .ObserveOnMainThread()
                 .Subscribe(SubscribeBlockIndex)
@@ -145,14 +156,6 @@ namespace Nekoyume.UI.Module
             ReactiveAvatarState.QuestList?.Subscribe(SubscribeAvatarQuestList).AddTo(_disposablesAtOnEnable);
             ReactiveAvatarState.MailBox?.Subscribe(SubscribeAvatarMailBox).AddTo(_disposablesAtOnEnable);
             ReactiveAvatarState.Inventory?.Subscribe(SubscribeInventory).AddTo(_disposablesAtOnEnable);
-            ReactiveAvatarState.LevelUp.Subscribe(SubscribeUnlockState)
-                .AddTo(_disposablesAtOnEnable);
-
-        }
-
-        public void SubscribeUnlockState(int level)
-        {
-            // CheckMailUnlock();
         }
 
         protected override void OnDisable()
@@ -179,6 +182,31 @@ namespace Nekoyume.UI.Module
             var info = toggles.FirstOrDefault(x => x.Type.Equals(toggleType));
             var toggleTransform = info?.Toggle.transform;
             return toggleTransform ? toggleTransform : null;
+        }
+
+        public void UpdateAssets(AssetVisibleState state)
+        {
+            switch (state)
+            {
+                case AssetVisibleState.Main:
+                    SetActiveAssets(true, true, true, false);
+                    break;
+                case AssetVisibleState.Combination:
+                    SetActiveAssets(true, true, false, true);
+                    break;
+                case AssetVisibleState.Shop:
+                case AssetVisibleState.Battle:
+                    SetActiveAssets(true, true, false, false);
+                    break;
+            }
+        }
+
+        private void SetActiveAssets(bool isNcgActive, bool isActionPointActive, bool isDailyBonusActive, bool isHourglassActive)
+        {
+            ncg.SetActive(isNcgActive);
+            actionPoint.SetActive(isActionPointActive);
+            dailyBonus.SetActive(isDailyBonusActive);
+            hourglass.SetActive(isHourglassActive);
         }
 
         private void SubscribeBlockIndex(long blockIndex)

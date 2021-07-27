@@ -26,6 +26,7 @@ using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.UI;
 using Nekoyume.UI.Model;
+using Nekoyume.UI.Module;
 using Spine.Unity;
 using UniRx;
 using UnityEngine;

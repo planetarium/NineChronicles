@@ -23,7 +23,6 @@ namespace Nekoyume.State
         public static readonly ReactiveProperty<int> ActionPoint = new ReactiveProperty<int>();
         public static readonly ReactiveProperty<long> DailyRewardReceivedIndex = new ReactiveProperty<long>();
         public static readonly ReactiveProperty<QuestList> QuestList = new ReactiveProperty<QuestList>();
-        public static readonly ReactiveProperty<int> LevelUp = new ReactiveProperty<int>();
 
         public static void Initialize(AvatarState state)
         {

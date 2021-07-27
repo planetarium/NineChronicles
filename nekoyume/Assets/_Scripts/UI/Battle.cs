@@ -1,5 +1,7 @@
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
+using Nekoyume.L10n;
+using Nekoyume.Model.Mail;
 using Nekoyume.State;
 using Nekoyume.UI.Module;
 using UnityEngine;
@@ -44,6 +46,7 @@ namespace Nekoyume.UI
                 stage.IsExitReserved = value;
                 if (value)
                 {
+                    OneLinePopup.Push(MailType.System, L10nManager.Localize("UI_BATTLE_EXIT_RESERVATION_TITLE"));
                     stage.IsRepeatStage = false;
                 }
             });

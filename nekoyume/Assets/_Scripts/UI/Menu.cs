@@ -241,6 +241,7 @@ namespace Nekoyume.UI
             _coLazyClose = StartCoroutine(CoLazyClose());
             var avatarState = States.Instance.CurrentAvatarState;
             Find<WorldMap>().Show(avatarState.worldInformation);
+            Find<HeaderMenu>().UpdateAssets(HeaderMenu.AssetVisibleState.Battle);
             AudioController.PlayClick();
         }
 
@@ -261,12 +262,14 @@ namespace Nekoyume.UI
 
             Close();
             Find<ShopBuy>().Show();
+            Find<HeaderMenu>().UpdateAssets(HeaderMenu.AssetVisibleState.Shop);
             AudioController.PlayClick();
         }
 
         public void CombinationClick(int slotIndex = -1)
         {
             Find<CombinationMain>().Show();
+            Find<HeaderMenu>().UpdateAssets(HeaderMenu.AssetVisibleState.Combination);
             // CombinationClickInternal(() =>
             // {
             //     if (slotIndex >= 0)
@@ -316,6 +319,7 @@ namespace Nekoyume.UI
 
             Close(true);
             Find<RankingBoard>().Show();
+            Find<HeaderMenu>().UpdateAssets(HeaderMenu.AssetVisibleState.Battle);
             AudioController.PlayClick();
         }
 
@@ -379,6 +383,7 @@ namespace Nekoyume.UI
             stageInfo.Show(SharedViewModel, worldRow, StageInformation.StageType.Mimisbrunnr);
             var status = Find<Status>();
             status.Close(true);
+            Find<HeaderMenu>().UpdateAssets(HeaderMenu.AssetVisibleState.Battle);
         }
 
         public void UpdateGuideQuest(AvatarState avatarState)
