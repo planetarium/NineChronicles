@@ -249,6 +249,8 @@ namespace Nekoyume.UI
             yield return null;
             secondWidgets.Add(Widget.Create<CombinationMain>());
             yield return null;
+            secondWidgets.Add(Widget.Create<Craft>());
+            yield return null;
             secondWidgets.Add(Widget.Create<UpgradeEquipment>());
             yield return null;
             secondWidgets.Add(Widget.Create<CombinationSlots>());
