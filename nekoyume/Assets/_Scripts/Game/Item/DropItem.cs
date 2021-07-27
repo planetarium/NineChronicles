@@ -103,7 +103,13 @@ namespace Nekoyume.Game.Item
                 yield return null;
             }
 
-            // Widget.Find<BottomMenu>().PlayGetItemAnimation();
+            var headerMenu = Widget.Find<HeaderMenu>();
+            if (!headerMenu)
+            {
+                throw new WidgetNotFoundException<HeaderMenu>();
+            }
+            headerMenu.PlayVFX(ItemMoveAnimation.EndPoint.Inventory);
+
             Event.OnGetItem.Invoke(this);
             gameObject.SetActive(false);
         }
@@ -116,15 +122,15 @@ namespace Nekoyume.Game.Item
             }
             else
             {
-                // todo : 여기도 다시 잡아줘야됨
-                // var bottomMenu = Widget.Find<BottomMenu>();
-                // if (!bottomMenu)
-                // {
-                //     throw new WidgetNotFoundException<BottomMenu>();
-                // }
-                //
-                // _inventoryPosition = bottomMenu.characterButton.transform.position;
-                // _inventoryPosition.z = transform.position.z;
+                var headerMenu = Widget.Find<HeaderMenu>();
+                if (!headerMenu)
+                {
+                    throw new WidgetNotFoundException<HeaderMenu>();
+                }
+
+                var target = headerMenu.GetToggle(HeaderMenu.ToggleType.AvatarInfo);
+                _inventoryPosition = target ? target.position : Vector3.zero;
+                _inventoryPosition.z = transform.position.z;
             }
         }
     }

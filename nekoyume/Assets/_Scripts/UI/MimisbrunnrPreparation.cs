@@ -150,7 +150,7 @@ namespace Nekoyume.UI
 
             Mixpanel.Track("Unity/Click Stage");
             _stage = Game.Game.instance.Stage;
-            _stage.repeatStage = false;
+            _stage.IsRepeatStage = false;
             repeatToggle.isOn = false;
             repeatToggle.interactable = true;
             _stage.LoadBackground("dungeon_02");
@@ -709,8 +709,8 @@ namespace Nekoyume.UI
                 .Select(slot => (Consumable) slot.Item)
                 .ToList();
 
-            _stage.isExitReserved = false;
-            _stage.repeatStage = repeat;
+            _stage.IsExitReserved = false;
+            _stage.IsRepeatStage = repeat;
             _stage.foodCount = consumables.Count;
             ActionRenderHandler.Instance.Pending = true;
             Game.Game.instance.ActionManager
