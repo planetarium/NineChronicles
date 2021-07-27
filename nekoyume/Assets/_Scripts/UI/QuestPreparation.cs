@@ -42,8 +42,6 @@ namespace Nekoyume.UI
         [SerializeField] private Button closeButton;
         [SerializeField] private Button simulateButton = null;
 
-        [Header("ItemMoveAnimation")]
-        [SerializeField] private Image actionPointImage = null;
         [SerializeField] private Transform buttonStarImageTransform = null;
         [SerializeField] private Toggle repeatToggle;
         [SerializeField, Range(.5f, 3.0f)] private float animationTime = 1f;
@@ -367,21 +365,21 @@ namespace Nekoyume.UI
 
         private IEnumerator CoQuestClick(bool repeat)
         {
-            // var animation = ItemMoveAnimation.Show(actionPointImage.sprite,
-            //     actionPointImage.transform.position,
-            //     buttonStarImageTransform.position,
-            //     Vector2.one,
-            //     moveToLeft,
-            //     true,
-            //     animationTime,
-            //     middleXGap);
-            // LocalLayerModifier.ModifyAvatarActionPoint(States.Instance.CurrentAvatarState.address,
-            //     -_requiredCost);
-            // yield return new WaitWhile(() => animation.IsPlaying);
+            var actionPointImage = Find<HeaderMenu>().ActionPointImage;
+            var animation = ItemMoveAnimation.Show(actionPointImage.sprite,
+                actionPointImage.transform.position,
+                buttonStarImageTransform.position,
+                Vector2.one,
+                moveToLeft,
+                true,
+                animationTime,
+                middleXGap);
+            LocalLayerModifier.ModifyAvatarActionPoint(States.Instance.CurrentAvatarState.address,
+                -_requiredCost);
+            yield return new WaitWhile(() => animation.IsPlaying);
 
             Quest(repeat);
             AudioController.PlayClick();
-            yield break;
         }
 
         #region slot

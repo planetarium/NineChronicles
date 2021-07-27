@@ -139,7 +139,7 @@ namespace Nekoyume.UI.Module
 
         private void UpdateHasNotification(long currentBlockIndex)
         {
-            if (_combinationSlotState is null || _combinationSlotState.Result is null)
+            if (_combinationSlotState?.Result is null)
             {
                 HasNotification.Value = false;
                 return;
@@ -186,7 +186,7 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
-            if (_combinationSlotState.Result is null)
+            if (_combinationSlotState?.Result is null)
             {
                 return;
             }

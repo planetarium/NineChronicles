@@ -1,4 +1,5 @@
-﻿using Nekoyume.BlockChain;
+﻿using System.Collections;
+using Nekoyume.BlockChain;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
@@ -134,12 +135,27 @@ namespace Nekoyume.UI
             LocalLayerModifier.RemoveItem(avatarAddress, _materialItem.TradableId, _materialItem.RequiredBlockIndex, 1);
             LocalLayerModifier.ModifyCombinationSlotItemEnhancement(baseGuid, materialGuid, slotIndex);
             Notification.Push(MailType.Workshop, L10nManager.Localize("NOTIFICATION_ITEM_ENHANCEMENT_START"));
+
             Game.Game.instance.ActionManager
                 .ItemEnhancement(baseGuid, materialGuid, slotIndex)
                 .Subscribe(_ => { }, e => ActionRenderHandler.BackToMain(false, e));
 
-            baseEquipmentSlot.RemoveMaterial();
-            materialEquipmentSlot.RemoveMaterial();
+            StartCoroutine(CoCombineNPCAnimation(_baseItem, () =>
+            {
+                baseEquipmentSlot.RemoveMaterial();
+                materialEquipmentSlot.RemoveMaterial();
+            }));
+        }
+
+        private IEnumerator CoCombineNPCAnimation(ItemBase itemBase, System.Action action, bool isConsumable = false)
+        {
+            var loadingScreen = Find<CombinationLoadingScreen>();
+            loadingScreen.Show();
+            loadingScreen.SetItemMaterial(new Item(itemBase), isConsumable);
+            loadingScreen.SetCloseAction(action);
+            Push();
+            yield return new WaitForSeconds(.5f);
+            loadingScreen.AnimateNPC();
         }
 
         private void ShowItemInformationTooltip(InventoryItemView view)

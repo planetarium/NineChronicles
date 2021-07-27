@@ -8,6 +8,7 @@ using Nekoyume.Model.Mail;
 using Nekoyume.Model.Quest;
 using Nekoyume.State;
 using Nekoyume.UI.AnimatedGraphics;
+using Org.BouncyCastle.Asn1.X509;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -17,7 +18,7 @@ namespace Nekoyume.UI.Module
 
     public class HeaderMenu : Widget
     {
-        private enum ToggleType
+        public enum ToggleType
         {
             Quest,
             AvatarInfo,
@@ -39,21 +40,13 @@ namespace Nekoyume.UI.Module
 
         public override WidgetType WidgetType => WidgetType.Screen;
 
-        // 네비게이션 버튼.
-        public ToggleableButton quitButton;
-        public GlowingButton exitButton;
-
         // 코드 보상 버튼
         public CodeRewardButton codeRewardButton;
 
-        public CanvasGroup canvasGroup;
-        public VFX inventoryVFX;
-        public VFX workshopVFX;
-
-        private Animator _inventoryAnimator;
-        private MessageCat _cat;
-
         [SerializeField] private List<ToggleInfo> toggles = new List<ToggleInfo>();
+        [SerializeField] private VFX inventoryVFX;
+        [SerializeField] private VFX workshopVFX;
+        [SerializeField] private Image actionPointImage;
 
         private readonly List<IDisposable> _disposablesAtOnEnable = new List<IDisposable>();
         private readonly Dictionary<ToggleType, Widget> _toggleWidgets = new Dictionary<ToggleType, Widget>();
@@ -81,6 +74,8 @@ namespace Nekoyume.UI.Module
             };
 
         private long _blockIndex;
+
+        public Image ActionPointImage => actionPointImage;
 
         protected override void Awake()
         {
@@ -131,18 +126,6 @@ namespace Nekoyume.UI.Module
                     }
                 });
             }
-
-            // // worldMapButton.SetWidgetType<WorldMapPaper>();
-            //
-            // chatButton.OnClick
-            //     .Subscribe(SubScribeOnClickChat)
-            //     .AddTo(gameObject);
-            //
-
-            //
-            // SubmitWidget = null;
-            // CloseWidget = null;
-
         }
 
         public override void Initialize()
@@ -154,22 +137,6 @@ namespace Nekoyume.UI.Module
                 .Subscribe(SubscribeBlockIndex)
                 .AddTo(gameObject);
         }
-
-        // private static void SubScribeOnClickChat(ToggleableButton button)
-        // {
-        //     var confirm = Find<Confirm>();
-        //     confirm.CloseCallback = result =>
-        //     {
-        //         if (result == ConfirmResult.No)
-        //         {
-        //             return;
-        //         }
-        //
-        //         Application.OpenURL(GameConfig.DiscordLink);
-        //     };
-        //     confirm.Set("UI_PROCEED_DISCORD", "UI_PROCEED_DISCORD_CONTENT", blurRadius: 2);
-        //     HelpPopup.HelpMe(100012, true);
-        // }
 
         protected override void OnEnable()
         {
@@ -194,18 +161,24 @@ namespace Nekoyume.UI.Module
             base.OnDisable();
         }
 
-        // public void PlayGetItemAnimation()
-        // {
-        //     characterButton.Animator.Play("GetItem");
-        //     inventoryVFX.Play();
-        // }
-        //
-        // public void PlayWorkShopVFX()
-        // {
-        //     combinationButton.Animator.Play("GetItem");
-        //     workshopVFX.Play();
-        // }
+        public void PlayVFX(ItemMoveAnimation.EndPoint endPoint)
+        {
+            switch (endPoint)
+            {
+                case ItemMoveAnimation.EndPoint.Inventory:
+                    inventoryVFX.Play();
+                    break;
+                case ItemMoveAnimation.EndPoint.Workshop:
+                    workshopVFX.Play();
+                    break;
+            }
+        }
 
+        public Vector3 GetTogglePosition(ToggleType toggleType)
+        {
+            var info = toggles.FirstOrDefault(x => x.Type.Equals(toggleType));
+            return info?.Toggle.transform.position ?? Vector3.zero;
+        }
 
         private void SubscribeBlockIndex(long blockIndex)
         {

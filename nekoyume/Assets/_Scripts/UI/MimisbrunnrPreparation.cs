@@ -44,8 +44,6 @@ namespace Nekoyume.UI
         [SerializeField] private Button closeButton;
         [SerializeField] private Button simulateButton = null;
 
-        [Header("ItemMoveAnimation")]
-        [SerializeField] private Image actionPointImage = null;
         [SerializeField] private Transform buttonStarImageTransform = null;
         [SerializeField] private Toggle repeatToggle;
         [SerializeField, Range(.5f, 3.0f)] private float animationTime = 1f;
@@ -64,7 +62,6 @@ namespace Nekoyume.UI
         private readonly IntReactiveProperty _stageId = new IntReactiveProperty(GameConfig.MimisbrunnrWorldId);
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
 
-        private static readonly Color BattleStartButtonOriginColor = Color.white;
         private static readonly Color RequiredActionPointOriginColor = ColorHelper.HexToColorRGB("FFF3D4");
         private static readonly Color DimmedColor = ColorHelper.HexToColorRGB("848484");
         private static readonly Vector3 PlayerPosition = new Vector3(999.8f, 999.3f, 3f);
@@ -434,6 +431,7 @@ namespace Nekoyume.UI
 
         private IEnumerator CoBattleClick(bool repeat)
         {
+            var actionPointImage = Find<HeaderMenu>().ActionPointImage;
             var animation = ItemMoveAnimation.Show(actionPointImage.sprite,
                 actionPointImage.transform.position,
                 buttonStarImageTransform.position,
@@ -446,6 +444,7 @@ namespace Nekoyume.UI
                 States.Instance.CurrentAvatarState.address,
                 -_requiredCost);
             yield return new WaitWhile(() => animation.IsPlaying);
+
             Battle(repeat);
             AudioController.PlayClick();
         }

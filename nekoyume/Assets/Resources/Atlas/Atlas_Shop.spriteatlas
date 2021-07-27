@@ -47,7 +47,7 @@ SpriteAtlas:
     - {fileID: 102900000, guid: f4ec4f8b49db5487fae145d395ec1611, type: 3}
     - {fileID: 102900000, guid: 85f7dc4e2285f4e8eaa1d5143ed311b2, type: 3}
     - {fileID: 102900000, guid: 77aad0043bc7d4ee3a9fda3a23e966a8, type: 3}
-    totalSpriteSurfaceArea: 526407
+    totalSpriteSurfaceArea: 531948
     bindAsDefault: 1
     isAtlasV2: 0
     cachedData: {fileID: 0}
@@ -60,16 +60,17 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 633313d0ff9414b49bd1914e1334107e, type: 3}
   - {fileID: 21300000, guid: 5cb3a1e068b394b1ba033ec945d1e7ba, type: 3}
   - {fileID: 21300000, guid: ad8ee2e030fce49f8a63a747d715d34b, type: 3}
-  - {fileID: 21300000, guid: 412c5ce06df6b4d60a55ea58af38733a, type: 3}
   - {fileID: 21300000, guid: eb8ae001e201248ec82527da02ac7069, type: 3}
   - {fileID: 21300000, guid: ae32db11461d7488d95b5193cced9563, type: 3}
   - {fileID: 21300000, guid: e739a8614827e47c28922c712a4a3366, type: 3}
   - {fileID: 21300000, guid: f8276e6112df04abb8d0d08a15c94c64, type: 3}
   - {fileID: 21300000, guid: 30178091cf81e45ff86d2d68aef412f5, type: 3}
   - {fileID: 21300000, guid: 4cdf9691d78cc496e9c9242f19a436e2, type: 3}
+  - {fileID: 21300000, guid: 77cb3b917b1cf423ea0a0a8ae6ad1772, type: 3}
   - {fileID: 21300000, guid: a91d7ab1de8ab4ae3b69953b5537b5a0, type: 3}
   - {fileID: 21300000, guid: 31b36db1e740e401d8be75eb249a386c, type: 3}
   - {fileID: 21300000, guid: 08de63c196cf24e55b09ec3cea10b387, type: 3}
+  - {fileID: 21300000, guid: 04cfacc1286324f03a32e2667cfdc04d, type: 3}
   - {fileID: 21300000, guid: 78d1bb025c01346e8b2f00141c0c43d6, type: 3}
   - {fileID: 21300000, guid: 2ca4e332521dd4678a899db56f0e581e, type: 3}
   - {fileID: 21300000, guid: 70890d82a92414f288c13ccdb57760de, type: 3}
@@ -103,6 +104,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 2ccc5e57f9ec549508dbc27349d3bfed, type: 3}
   - {fileID: 21300000, guid: 759d94676296e406fac190ffc20f6c3f, type: 3}
   - {fileID: 21300000, guid: f8f7f0974d97747e18157dc7d4ea469c, type: 3}
+  - {fileID: 21300000, guid: 7c857d97a6fec4f33963889081cb5e1b, type: 3}
   - {fileID: 21300000, guid: 808104c7483594cdb8dcfbd83cf135d3, type: 3}
   - {fileID: 21300000, guid: 0c2ed0f79d8d543699b1c942e15eb8ea, type: 3}
   - {fileID: 21300000, guid: 5778c038d0194430ba2d1a410dc5c114, type: 3}
@@ -135,10 +137,12 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 3cc2abfb8152443ff90c1f2c5d90a417, type: 3}
   - {fileID: 21300000, guid: cb638a1c9a3d04d888d6f5ba2f046f4b, type: 3}
   - {fileID: 21300000, guid: 0f16b14c39a634b3685af8884ae4d70c, type: 3}
+  - {fileID: 21300000, guid: 3d764b4c137f54c70b9e32487429e526, type: 3}
   - {fileID: 21300000, guid: f1b26d5cf0d82406992c76377df80415, type: 3}
   - {fileID: 21300000, guid: e668fd6c2bb3f403ab1f092d1b798252, type: 3}
   - {fileID: 21300000, guid: 960dbe6cf8ca94e7b9072e6a385cbbf6, type: 3}
   - {fileID: 21300000, guid: d39adb8c5ebb3496a914eb49255ff959, type: 3}
+  - {fileID: 21300000, guid: b823399c8d4d5485c8b8fad9f1e170b3, type: 3}
   - {fileID: 21300000, guid: 85e011bc4905b47798ea91e720b5cb09, type: 3}
   - {fileID: 21300000, guid: df0e66dc89720402983e87564578ed97, type: 3}
   - {fileID: 21300000, guid: 8751b0ec97df7407ca906e894e91f91f, type: 3}
@@ -150,6 +154,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 5c033e7db52c44756810280ff49ba340, type: 3}
   - {fileID: 21300000, guid: 43f3608d0a4ad423bb4bd00e12b8ecde, type: 3}
   - {fileID: 21300000, guid: 99c5f78d9d60a4b5385e12e79d30e8c9, type: 3}
+  - {fileID: 21300000, guid: 0906929dd89eb4e03852f680b657ec35, type: 3}
   - {fileID: 21300000, guid: 62c9b5bde9eb5478283fe5454c87d0bf, type: 3}
   - {fileID: 21300000, guid: 55352fbdf22e74f52a49fd3d89d83953, type: 3}
   - {fileID: 21300000, guid: bb56b1dd931de4f6fbaae82298e417e9, type: 3}
@@ -182,16 +187,17 @@ SpriteAtlas:
   - item_bg_Plusbg
   - UI_icon_Speech_01
   - Shop_bg_00
-  - Item_Recipebg_05
   - UI_icon_Mainmenu_main
   - Shop_bg_04
   - Shop_bg_20
   - UI_popup_bg_04
   - UI_bg_frame_05
   - UI_icon_Speech_03
+  - UI_icon_Mainmenu_06
   - UI_bg_frame_03
   - UI_Btn_Back_bg
   - UI_box_01
+  - UI_icon_Mainmenu_main2
   - item_bg_Color
   - Common_gradiant_64
   - Shop_bg_05
@@ -225,6 +231,7 @@ SpriteAtlas:
   - Item_Recipebg_03
   - UI_bg_frame_02
   - Item_bg_Grade_01
+  - UI_icon_Mainmenu_05
   - UI_page_normal
   - UI_Btn_bg_03
   - UI_icon_item_cp_b
@@ -257,10 +264,12 @@ SpriteAtlas:
   - Common_TabBtn_Normal
   - UI_Popup_icon_09
   - icon_Rank
+  - UI_icon_Mainmenu_07
   - Shop_bg_06
   - icon_Cancle
   - Shop_bg_16
   - UI_bg_Warning
+  - UI_icon_check_04
   - UI_page_Select
   - Shop_bg_19
   - UI_icon_Mainmenu_03
@@ -272,6 +281,7 @@ SpriteAtlas:
   - Common_TabBtn_Select
   - Tab_bg_Normal
   - icon_Arrow
+  - item_bg_Plusbg_notice
   - Common_bg_2R
   - Item_bg_Grade_00
   - Shop_bg_10

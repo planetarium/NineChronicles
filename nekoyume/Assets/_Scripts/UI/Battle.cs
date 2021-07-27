@@ -143,15 +143,15 @@ namespace Nekoyume.UI
             if (stage.isExitReserved)
             {
                 stage.isExitReserved = false;
-                headerMenu.exitButton.Toggleable = false;
-                headerMenu.exitButton.IsWidgetControllable = false;
-                headerMenu.exitButton.SharedModel.IsEnabled.Value = false;
-                headerMenu.exitButton.SetToggledOff();
+                // headerMenu.exitButton.Toggleable = false;
+                // headerMenu.exitButton.IsWidgetControllable = false;
+                // headerMenu.exitButton.SharedModel.IsEnabled.Value = false;
+                // headerMenu.exitButton.SetToggledOff();
             }
             else
             {
-                headerMenu.exitButton.Toggleable = true;
-                headerMenu.exitButton.IsWidgetControllable = true;
+                // headerMenu.exitButton.Toggleable = true;
+                // headerMenu.exitButton.IsWidgetControllable = true;
 
                 var confirm = Find<Confirm>();
                 confirm.Show("UI_BATTLE_EXIT_RESERVATION_TITLE", "UI_BATTLE_EXIT_RESERVATION_CONTENT");
@@ -160,7 +160,7 @@ namespace Nekoyume.UI
                     if (result == ConfirmResult.Yes)
                     {
                         stage.isExitReserved = true;
-                        headerMenu.exitButton.SharedModel.IsEnabled.Value = true;
+                        // headerMenu.exitButton.SharedModel.IsEnabled.Value = true;
                         repeatButton.SetToggledOff();
                     }
                 };

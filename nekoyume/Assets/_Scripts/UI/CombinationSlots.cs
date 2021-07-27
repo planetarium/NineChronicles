@@ -64,10 +64,7 @@ namespace Nekoyume.UI
                         i));
                 if (address == state.address)
                 {
-                    if (isActiveAndEnabled)
-                    {
-                        slot.SetData(state, _blockIndex, i);
-                    }
+                    slot.SetData(state, _blockIndex, i);
                     break;
                 }
             }
