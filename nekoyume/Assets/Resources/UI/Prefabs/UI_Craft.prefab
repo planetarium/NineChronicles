@@ -16093,7 +16093,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tutorialTargets: []
   tutorialActions: 
-  <CloseButton>k__BackingField: {fileID: 1802076974904937240}
+  closeButton: {fileID: 1802076974904937240}
 --- !u!225 &6791142679275872157
 CanvasGroup:
   m_ObjectHideFlags: 0

@@ -7,13 +7,13 @@ namespace Nekoyume.UI
 {
     public class Craft : Widget
     {
-        [field: SerializeField]
-        private Button CloseButton { get; set; } = null;
+        [SerializeField]
+        private Button closeButton = null;
 
         protected override void Awake()
         {
             base.Awake();
-            CloseButton.onClick.AddListener(() => Close(true));
+            closeButton.onClick.AddListener(() => Close(true));
         }
     }
 }
