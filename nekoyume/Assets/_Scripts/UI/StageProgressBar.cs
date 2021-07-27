@@ -46,11 +46,11 @@ namespace Nekoyume.UI
             _xLength = vfxClamper.rect.width;
             Game.Event.OnEnemyDeadStart.AddListener(OnEnemyDeadStart);
             Game.Event.OnWaveStart.AddListener(SetNextWave);
-            Clear();
         }
 
         public void Show()
         {
+            Clear();
             gameObject.SetActive(true);
         }
 

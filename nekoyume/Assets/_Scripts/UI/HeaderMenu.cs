@@ -174,10 +174,11 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        public Vector3 GetTogglePosition(ToggleType toggleType)
+        public Transform GetToggle(ToggleType toggleType)
         {
             var info = toggles.FirstOrDefault(x => x.Type.Equals(toggleType));
-            return info?.Toggle.transform.position ?? Vector3.zero;
+            var toggleTransform = info?.Toggle.transform;
+            return toggleTransform ? toggleTransform : null;
         }
 
         private void SubscribeBlockIndex(long blockIndex)

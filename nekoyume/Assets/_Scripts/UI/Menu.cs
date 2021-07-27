@@ -119,8 +119,8 @@ namespace Nekoyume.UI
             Find<LoadingScreen>().Show();
 
             var stage = Game.Game.instance.Stage;
-            stage.isExitReserved = false;
-            stage.repeatStage = false;
+            stage.IsExitReserved = false;
+            stage.IsRepeatStage = false;
             var player = stage.GetPlayer();
             player.StartRun();
             ActionCamera.instance.ChaseX(player.transform);
