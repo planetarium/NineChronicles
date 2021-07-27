@@ -38,7 +38,6 @@ namespace Nekoyume.UI
         {
             base.Awake();
             SharedModel = new Shop();
-            CloseWidget = null;
 
             var ratio = (float) Screen.height / (float) Screen.width;
             var count = Mathf.RoundToInt(10 * ratio) - 2;
@@ -68,6 +67,7 @@ namespace Nekoyume.UI
 
             spineButton.onClick.AddListener(() => _npc.PlayAnimation(NPCAnimation.Type.Emotion_01));
             closeButton.onClick.AddListener(() => CleanUpWishListAlertPopup(Close));
+            CloseWidget = Close;
         }
 
         public override void Initialize()

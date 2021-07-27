@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using Nekoyume.EnumType;
 using Nekoyume.L10n;
 using TMPro;
 using UnityEngine;
@@ -41,6 +42,8 @@ namespace Nekoyume.UI
         private QuestList _questList;
 
         private readonly Module.ToggleGroup _toggleGroup = new Module.ToggleGroup();
+
+        public override WidgetType WidgetType => WidgetType.Popup;
 
         #region override
         protected override void Awake()

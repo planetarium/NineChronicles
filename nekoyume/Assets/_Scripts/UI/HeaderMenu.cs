@@ -44,7 +44,7 @@ namespace Nekoyume.UI.Module
             public Image Notification;
         }
 
-        public override WidgetType WidgetType => WidgetType.Screen;
+        public override WidgetType WidgetType => WidgetType.Popup;
 
         // 코드 보상 버튼
         public CodeRewardButton codeRewardButton;
@@ -59,7 +59,10 @@ namespace Nekoyume.UI.Module
         [SerializeField] private Image actionPointImage;
 
         private readonly List<IDisposable> _disposablesAtOnEnable = new List<IDisposable>();
-        private readonly Dictionary<ToggleType, Widget> _toggleWidgets = new Dictionary<ToggleType, Widget>();
+
+        private readonly Dictionary<ToggleType, Widget> _toggleWidgets =
+            new Dictionary<ToggleType, Widget>();
+
         private readonly Dictionary<ToggleType, ReactiveProperty<bool>> _toggleNotifications =
             new Dictionary<ToggleType, ReactiveProperty<bool>>()
             {
@@ -75,7 +78,10 @@ namespace Nekoyume.UI.Module
             {
                 {ToggleType.Quest, GameConfig.RequireClearedStageLevel.UIBottomMenuQuest},
                 {ToggleType.AvatarInfo, GameConfig.RequireClearedStageLevel.UIBottomMenuCharacter},
-                {ToggleType.CombinationSlots, GameConfig.RequireClearedStageLevel.CombinationEquipmentAction},
+                {
+                    ToggleType.CombinationSlots,
+                    GameConfig.RequireClearedStageLevel.CombinationEquipmentAction
+                },
                 {ToggleType.Mail, GameConfig.RequireClearedStageLevel.UIBottomMenuMail},
                 {ToggleType.Rank, 1},
                 {ToggleType.Chat, GameConfig.RequireClearedStageLevel.UIBottomMenuChat},
@@ -87,9 +93,9 @@ namespace Nekoyume.UI.Module
 
         public Image ActionPointImage => actionPointImage;
 
-        protected override void Awake()
+        public override void Initialize()
         {
-            base.Awake();
+            base.Initialize();
 
             _toggleWidgets.Add(ToggleType.Quest, Find<Quest>());
             _toggleWidgets.Add(ToggleType.AvatarInfo, Find<AvatarInfo>());
@@ -114,18 +120,17 @@ namespace Nekoyume.UI.Module
                     if (value)
                     {
                         var requiredStage = _toggleUnlockStages[toggleInfo.Type];
-                        if (!States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(requiredStage))
+                        if (!States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(
+                            requiredStage))
                         {
-                            var msg = string.Format(L10nManager.Localize("UI_STAGE_LOCK_FORMAT"), requiredStage);
+                            var msg = string.Format(L10nManager.Localize("UI_STAGE_LOCK_FORMAT"),
+                                requiredStage);
                             OneLinePopup.Push(MailType.System, msg);
                             toggleInfo.Toggle.isOn = false;
                             return;
                         }
 
-                        widget.Show(() =>
-                        {
-                            toggleInfo.Toggle.isOn = false;
-                        });
+                        widget.Show(() => { toggleInfo.Toggle.isOn = false; });
                     }
                     else
                     {
@@ -136,26 +141,26 @@ namespace Nekoyume.UI.Module
                     }
                 });
             }
-        }
-
-        public override void Initialize()
-        {
-            base.Initialize();
 
             Game.Event.OnRoomEnter.AddListener(_ => UpdateAssets(AssetVisibleState.Main));
             Game.Game.instance.Agent.BlockIndexSubject
                 .ObserveOnMainThread()
                 .Subscribe(SubscribeBlockIndex)
                 .AddTo(gameObject);
+
+            CloseWidget = null;
         }
 
         protected override void OnEnable()
         {
             base.OnEnable();
             _disposablesAtOnEnable.DisposeAllAndClear();
-            ReactiveAvatarState.QuestList?.Subscribe(SubscribeAvatarQuestList).AddTo(_disposablesAtOnEnable);
-            ReactiveAvatarState.MailBox?.Subscribe(SubscribeAvatarMailBox).AddTo(_disposablesAtOnEnable);
-            ReactiveAvatarState.Inventory?.Subscribe(SubscribeInventory).AddTo(_disposablesAtOnEnable);
+            ReactiveAvatarState.QuestList?.Subscribe(SubscribeAvatarQuestList)
+                .AddTo(_disposablesAtOnEnable);
+            ReactiveAvatarState.MailBox?.Subscribe(SubscribeAvatarMailBox)
+                .AddTo(_disposablesAtOnEnable);
+            ReactiveAvatarState.Inventory?.Subscribe(SubscribeInventory)
+                .AddTo(_disposablesAtOnEnable);
         }
 
         protected override void OnDisable()
@@ -201,7 +206,8 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        private void SetActiveAssets(bool isNcgActive, bool isActionPointActive, bool isDailyBonusActive, bool isHourglassActive)
+        private void SetActiveAssets(bool isNcgActive, bool isActionPointActive,
+            bool isDailyBonusActive, bool isHourglassActive)
         {
             ncg.SetActive(isNcgActive);
             actionPoint.SetActive(isActionPointActive);
@@ -221,7 +227,8 @@ namespace Nekoyume.UI.Module
             }
 
             _toggleNotifications[ToggleType.Mail].Value =
-                mailBox.Any(i => i.New && i.requiredBlockIndex <= _blockIndex);;
+                mailBox.Any(i => i.New && i.requiredBlockIndex <= _blockIndex);
+            ;
         }
 
         private void SubscribeAvatarMailBox(MailBox mailBox)
@@ -244,7 +251,8 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
-            var hasNotification = questList.Any(quest => quest.IsPaidInAction && quest.isReceivable);
+            var hasNotification =
+                questList.Any(quest => quest.IsPaidInAction && quest.isReceivable);
             _toggleNotifications[ToggleType.Quest].Value = hasNotification;
             Find<Quest>().SetList(questList);
         }

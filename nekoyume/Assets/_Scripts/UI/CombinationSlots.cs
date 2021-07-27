@@ -1,5 +1,6 @@
 using System.Globalization;
 using Nekoyume.Action;
+using Nekoyume.EnumType;
 using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.State.Subjects;
@@ -13,6 +14,8 @@ namespace Nekoyume.UI
     {
         public CombinationSlot[] slots;
         private long _blockIndex;
+
+        public override WidgetType WidgetType => WidgetType.Popup;
 
         protected override void Awake()
         {

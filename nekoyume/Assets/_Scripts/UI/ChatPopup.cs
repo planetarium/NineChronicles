@@ -10,7 +10,7 @@ namespace Nekoyume.UI
         [SerializeField] private Button cancel;
         [SerializeField] private Button close;
 
-        protected override void Awake()
+        public override void Initialize()
         {
             confirm.onClick.AddListener(() =>
             {
@@ -28,7 +28,7 @@ namespace Nekoyume.UI
             {
                 Close(true);
             });
-            base.Awake();
+            base.Initialize();
         }
 
         protected override void OnEnable()

@@ -162,7 +162,6 @@ namespace Nekoyume.UI
                 // 팝업 영역.
                 Widget.Create<Settings>(),
                 Widget.Create<Confirm>(),
-                Widget.Create<ChatPopup>(),
                 Widget.Create<QuitPopup>(),
                 Widget.Create<OneButtonPopup>(),
                 Widget.Create<TwoButtonPopup>(),
@@ -214,7 +213,6 @@ namespace Nekoyume.UI
             yield return null;
             secondWidgets.Add(Widget.Create<Blind>());
             yield return null;
-
             secondWidgets.Add(Widget.Create<ShopSell>());
             yield return null;
             secondWidgets.Add(Widget.Create<ShopBuy>());
@@ -236,16 +234,12 @@ namespace Nekoyume.UI
             secondWidgets.Add(Widget.Create<MimisbrunnrPreparation>());
             yield return null;
 
-            // 로딩
+            // loading
             secondWidgets.Add(Widget.Create<StageLoadingScreen>());
             yield return null;
 
-            // 모듈류.
+            // module
             secondWidgets.Add(Widget.Create<StageTitle>());
-            yield return null;
-            secondWidgets.Add(Widget.Create<Mail>());
-            yield return null;
-            secondWidgets.Add(Widget.Create<Quest>());
             yield return null;
             secondWidgets.Add(Widget.Create<CombinationMain>());
             yield return null;
@@ -253,14 +247,8 @@ namespace Nekoyume.UI
             yield return null;
             secondWidgets.Add(Widget.Create<UpgradeEquipment>());
             yield return null;
-            secondWidgets.Add(Widget.Create<CombinationSlots>());
-            yield return null;
-            secondWidgets.Add(Widget.Create<Rank>());
-            yield return null;
-            secondWidgets.Add(Widget.Create<AvatarInfo>());
-            yield return null;
 
-            // 팝업류.
+            // popup
             secondWidgets.Add(Widget.Create<BattleResult>());
             yield return null;
             secondWidgets.Add(Widget.Create<RankingBattleResult>());
@@ -283,19 +271,34 @@ namespace Nekoyume.UI
             yield return null;
             secondWidgets.Add(Widget.Create<MonsterCollectionRewardsPopup>());
             yield return null;
-            // 임시로 팝업보다 상단에 배치합니다.
+
+            // header menu
             secondWidgets.Add(Widget.Create<HeaderMenu>());
             yield return null;
+
+            // Popup included in header menu
+            secondWidgets.Add(Widget.Create<Mail>());
+            yield return null;
+            secondWidgets.Add(Widget.Create<Quest>());
+            yield return null;
+            secondWidgets.Add(Widget.Create<AvatarInfo>());
+            yield return null;
+            secondWidgets.Add(Widget.Create<CombinationSlots>());
+            yield return null;
+            secondWidgets.Add(Widget.Create<Rank>());
+            yield return null;
+            secondWidgets.Add(Widget.Create<ChatPopup>());
+            yield return null;
+
+            // popup
             secondWidgets.Add(Widget.Create<FriendInfoPopup>());
             yield return null;
             secondWidgets.Add(Widget.Create<ItemInformationTooltip>());
             yield return null;
-            // 팝업이지만 하단 메뉴보다 위에 그려져야 하는 것들입니다.
             secondWidgets.Add(Widget.Create<Dialog>());
             yield return null;
             secondWidgets.Add(Widget.Create<CodeReward>(true));
             yield return null;
-            // 팝업이지만 하단 메뉴보다 위에 그려져야 하는 것들입니다.
             secondWidgets.Add(Widget.Create<PrologueDialog>());
             yield return null;
             secondWidgets.Add(Widget.Create<CombinationLoadingScreen>());
@@ -304,13 +307,13 @@ namespace Nekoyume.UI
             yield return null;
             secondWidgets.Add(Widget.Create<HelpPopup>());
 
-            // 툴팁류.
+            // tooltip
             secondWidgets.Add(Widget.Create<AvatarTooltip>());
             yield return null;
             secondWidgets.Add(Widget.Create<MessageCatManager>(true));
             yield return null;
 
-            // 튜토리얼
+            // tutorial
             secondWidgets.Add(Widget.Create<Tutorial>());
             yield return null;
 

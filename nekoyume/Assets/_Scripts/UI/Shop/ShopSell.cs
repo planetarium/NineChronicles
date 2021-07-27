@@ -67,6 +67,8 @@ namespace Nekoyume.UI
             {
                 Close(true);
             });
+
+            CloseWidget = () => Close(true);
         }
 
         public override void Initialize()
