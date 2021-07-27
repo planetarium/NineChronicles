@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI
@@ -16,7 +16,7 @@ namespace Nekoyume.UI
 
             combineButton.onClick.AddListener(() =>
             {
-
+                Find<Craft>().Show();
             });
 
             upgradeButton.onClick.AddListener(() =>
