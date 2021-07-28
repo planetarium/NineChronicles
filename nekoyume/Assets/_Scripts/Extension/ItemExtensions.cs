@@ -3,6 +3,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using Libplanet;
+using Nekoyume.Battle;
 using Nekoyume.Helper;
 using Nekoyume.Model.Item;
 using Nekoyume.TableData;
@@ -65,5 +66,22 @@ namespace Nekoyume
             text = sb.ToString();
             return true;
         }
+
+        public static string GetCPText(this Equipment equipment)
+        {
+            var cp = CPHelper.GetCP(equipment);
+            return $"<size=80%>CP</size> {cp}";
+        }
+
+        public static string GetCPText(this Costume costume, CostumeStatSheet sheet)
+        {
+            var cp = CPHelper.GetCP(costume, sheet);
+            return $"<size=80%>CP</size> {cp}";
+        }
+
+        public static int GetOptionCountFromCombinationForUI(this Equipment value) =>
+            value.optionCountFromCombination > 0
+                ? value.optionCountFromCombination
+                : value.StatsMap.GetStats(true).Count();
     }
 }

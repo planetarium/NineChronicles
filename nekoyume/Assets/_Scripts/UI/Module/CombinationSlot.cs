@@ -123,7 +123,7 @@ namespace Nekoyume.UI.Module
                     itemView.SetData(new Item(state.Result.itemUsable));
                     itemNameText.text = GetItemName(state.Result.itemUsable);
                     SubscribeOnBlockIndex(currentBlockIndex);
-                    Widget.Find<BottomMenu>()?.UpdateCombinationNotification();
+                    Widget.Find<HeaderMenu>()?.UpdateCombinationNotification();
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -139,7 +139,7 @@ namespace Nekoyume.UI.Module
 
         private void UpdateHasNotification(long currentBlockIndex)
         {
-            if (_combinationSlotState is null || _combinationSlotState.Result is null)
+            if (_combinationSlotState?.Result is null)
             {
                 HasNotification.Value = false;
                 return;
@@ -186,7 +186,7 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
-            if (_combinationSlotState.Result is null)
+            if (_combinationSlotState?.Result is null)
             {
                 return;
             }
@@ -224,8 +224,8 @@ namespace Nekoyume.UI.Module
             var count = GetHourglassCount();
             hourglassCountText.text = cost.ToString();
             hourglassCountText.color = count >= cost
-                ? Palette.GetButtonColor(ColorType.ButtonEnabled)
-                : Palette.GetButtonColor(ColorType.TextDenial);
+                ? Palette.GetColor(ColorType.ButtonEnabled)
+                : Palette.GetColor(ColorType.TextDenial);
         }
 
         private int GetHourglassCount()

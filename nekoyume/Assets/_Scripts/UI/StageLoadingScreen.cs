@@ -105,12 +105,12 @@ namespace Nekoyume.UI
                 StageInformation.GetStageIdString(stageId));
             indicator.Show(message);
 
-            if (States.Instance.CurrentAvatarState.worldInformation
-                    .TryGetUnlockedWorldByStageClearedBlockIndex(out var world) &&
-                world.StageClearedId >= GameConfig.RequireClearedStageLevel.UIBottomMenuInBattle)
-            {
-                WidgetHandler.Instance.Battle.ShowBottomMenu(world, false);
-            }
+            // if (States.Instance.CurrentAvatarState.worldInformation
+            //         .TryGetUnlockedWorldByStageClearedBlockIndex(out var world) &&
+            //     world.StageClearedId >= GameConfig.RequireClearedStageLevel.UIBottomMenuInBattle)
+            // {
+            //     WidgetHandler.Instance.Battle.ShowBottomMenu(world, false);
+            // }
         }
 
         private IEnumerator CoDialog(int worldStage)

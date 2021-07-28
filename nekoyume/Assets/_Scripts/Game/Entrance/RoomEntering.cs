@@ -23,7 +23,7 @@ namespace Nekoyume.Game.Entrance
                 Widget.Find<LoadingScreen>().Show();
             }
 
-            Widget.Find<BottomMenu>().Close(true);
+            Widget.Find<HeaderMenu>().Close(true);
 
             stage.ClearBattle();
             stage.stageId = 0;
@@ -89,19 +89,11 @@ namespace Nekoyume.Game.Entrance
             player.Animator.Idle();
 
             Widget.Find<Status>().Show();
-            Widget.Find<BottomMenu>().Show(
-                UINavigator.NavigationType.Quit,
-                _ => Game.Quit(),
-                false,
-                BottomMenu.ToggleableType.Mail,
-                BottomMenu.ToggleableType.Quest,
-                BottomMenu.ToggleableType.Chat,
-                BottomMenu.ToggleableType.IllustratedBook,
-                BottomMenu.ToggleableType.Ranking,
-                BottomMenu.ToggleableType.Character,
-                BottomMenu.ToggleableType.Settings,
-                BottomMenu.ToggleableType.Combination
-            );
+            var headerMenu = Widget.Find<HeaderMenu>();
+            if (!headerMenu.isActiveAndEnabled)
+            {
+                headerMenu.Show();
+            }
 
             Destroy(this);
             stage.OnRoomEnterEnd.OnNext(stage);

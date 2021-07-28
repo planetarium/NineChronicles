@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Lib9c.Model.Order;
 using Nekoyume.Action;
+using Nekoyume.EnumType;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
@@ -66,6 +67,8 @@ namespace Nekoyume.UI
         private const int TutorialEquipmentId = 10110000;
 
         public MailBox MailBox { get; private set; }
+
+        public override WidgetType WidgetType => WidgetType.Popup;
 
         #region override
 

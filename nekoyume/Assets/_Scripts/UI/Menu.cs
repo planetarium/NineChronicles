@@ -116,12 +116,11 @@ namespace Nekoyume.UI
 
             var worldId = worldRow.Id;
 
-            Find<BottomMenu>().Close(true);
             Find<LoadingScreen>().Show();
 
             var stage = Game.Game.instance.Stage;
-            stage.isExitReserved = false;
-            stage.repeatStage = false;
+            stage.IsExitReserved = false;
+            stage.IsRepeatStage = false;
             var player = stage.GetPlayer();
             player.StartRun();
             ActionCamera.instance.ChaseX(player.transform);
@@ -242,6 +241,7 @@ namespace Nekoyume.UI
             _coLazyClose = StartCoroutine(CoLazyClose());
             var avatarState = States.Instance.CurrentAvatarState;
             Find<WorldMap>().Show(avatarState.worldInformation);
+            Find<HeaderMenu>().UpdateAssets(HeaderMenu.AssetVisibleState.Battle);
             AudioController.PlayClick();
         }
 
@@ -262,22 +262,25 @@ namespace Nekoyume.UI
 
             Close();
             Find<ShopBuy>().Show();
+            Find<HeaderMenu>().UpdateAssets(HeaderMenu.AssetVisibleState.Shop);
             AudioController.PlayClick();
         }
 
         public void CombinationClick(int slotIndex = -1)
         {
-            CombinationClickInternal(() =>
-            {
-                if (slotIndex >= 0)
-                {
-                    Find<Combination>().Show(slotIndex);
-                }
-                else
-                {
-                    Find<Combination>().Show();
-                }
-            });
+            Find<CombinationMain>().Show();
+            Find<HeaderMenu>().UpdateAssets(HeaderMenu.AssetVisibleState.Combination);
+            // CombinationClickInternal(() =>
+            // {
+            //     if (slotIndex >= 0)
+            //     {
+            //         Find<Combination>().Show(slotIndex);
+            //     }
+            //     else
+            //     {
+            //         Find<Combination>().Show();
+            //     }
+            // });
         }
 
         private void CombinationClickInternal(System.Action showAction)
@@ -314,8 +317,9 @@ namespace Nekoyume.UI
                 return;
             }
 
-            Close();
+            Close(true);
             Find<RankingBoard>().Show();
+            Find<HeaderMenu>().UpdateAssets(HeaderMenu.AssetVisibleState.Battle);
             AudioController.PlayClick();
         }
 
@@ -379,6 +383,7 @@ namespace Nekoyume.UI
             stageInfo.Show(SharedViewModel, worldRow, StageInformation.StageType.Mimisbrunnr);
             var status = Find<Status>();
             status.Close(true);
+            Find<HeaderMenu>().UpdateAssets(HeaderMenu.AssetVisibleState.Battle);
         }
 
         public void UpdateGuideQuest(AvatarState avatarState)
@@ -473,7 +478,6 @@ namespace Nekoyume.UI
             StopSpeeches();
 
             guidedQuest.Hide(true);
-            Find<BottomMenu>().Close(true);
             Find<Status>().Close(true);
             base.Close(ignoreCloseAnimation);
         }
@@ -481,8 +485,6 @@ namespace Nekoyume.UI
         private IEnumerator CoLazyClose(float duration = 1f, bool ignoreCloseAnimation = false)
         {
             StopSpeeches();
-
-            Find<BottomMenu>().Close(true);
             Find<Status>().Close(true);
             yield return new WaitForSeconds(duration);
             base.Close(ignoreCloseAnimation);

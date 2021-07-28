@@ -9,8 +9,8 @@ using Nekoyume.State;
 using Nekoyume.TableData;
 using Nekoyume.UI.Module;
 using TMPro;
-using UniRx;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
@@ -44,9 +44,27 @@ namespace Nekoyume.UI
         private WorldMapWorld world = null;
         [SerializeField]
         private GameObject buttonNotification = null;
+        [SerializeField] private Button closeButton;
 
         private WorldMap.ViewModel _sharedViewModel;
         private StageType _stageType = StageType.None;
+
+        protected override void Awake()
+        {
+            base.Awake();
+
+            closeButton.onClick.AddListener(() =>
+            {
+                Close(true);
+                Game.Event.OnRoomEnter.Invoke(true);
+            });
+
+            CloseWidget = () =>
+            {
+                Close(true);
+                Game.Event.OnRoomEnter.Invoke(true);
+            };
+        }
 
         public override void Initialize()
         {
@@ -104,7 +122,6 @@ namespace Nekoyume.UI
             }
 
             _stageType = stageType;
-            SetBottomMenu(stageType);
 
             world.Set(worldRow);
             var questStageId = Game.Game.instance.States
@@ -125,43 +142,7 @@ namespace Nekoyume.UI
                 LockWorld();
             }
 
-            base.Show();
-        }
-
-        private void SetBottomMenu(StageType stageType)
-        {
-            var bottomMenu = Find<BottomMenu>();
-            switch (stageType)
-            {
-                case StageType.Quest:
-                    bottomMenu.Show(
-                        UINavigator.NavigationType.None,
-                        null,
-                        true,
-                        BottomMenu.ToggleableType.WorldMap);
-
-                    bottomMenu.worldMapButton.OnClick
-                        .Subscribe(_ => BackToWorldMap())
-                        .AddTo(gameObject);
-                    bottomMenu.ToggleGroup?.SetToggledOffAll();
-                    break;
-                case StageType.Mimisbrunnr:
-                    bottomMenu.Show(UINavigator.NavigationType.Back, SubscribeBackButtonClick, false);
-                    break;
-            }
-        }
-
-        private void SubscribeBackButtonClick(BottomMenu bottomMenu)
-        {
-            var stageInfo = Find<UI.StageInformation>();
-            stageInfo.Close();
-            Game.Event.OnRoomEnter.Invoke(true);
-        }
-
-        private void BackToWorldMap()
-        {
-            Close();
-            Find<WorldMap>().Show(States.Instance.CurrentAvatarState.worldInformation);
+            base.Show(true);
         }
 
         private void UpdateStageInformation(int stageId, int characterLevel)
@@ -221,18 +202,15 @@ namespace Nekoyume.UI
 
         private void GoToPreparation()
         {
-            Close();
-
             switch (_stageType)
             {
                 case StageType.Quest:
-                    Find<WorldMap>().Close(true);
-                    Find<QuestPreparation>().Show();
+                    Find<QuestPreparation>().Show(true);
                     break;
 
                 case StageType.Mimisbrunnr:
                     Find<MimisbrunnrPreparation>().StageId = _sharedViewModel.SelectedStageId.Value;
-                    Find<MimisbrunnrPreparation>().Show();
+                    Find<MimisbrunnrPreparation>().Show(true);
                     break;
             }
         }

@@ -38,7 +38,7 @@ namespace Nekoyume.UI
             RankLoadingTask = model.Update(RankingBoardDisplayCount);
         }
 
-        public override WidgetType WidgetType => WidgetType.Tooltip;
+        public override WidgetType WidgetType => WidgetType.Popup;
 
         [SerializeField]
         private Button closeButton = null;

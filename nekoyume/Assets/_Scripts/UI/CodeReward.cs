@@ -71,16 +71,6 @@ namespace Nekoyume.UI
                 .Where(sealedCode => !string.IsNullOrEmpty(sealedCode))
                 .ToDictionary(sealedCode => sealedCode,
                     sealedCode => GetItems(State, sealedCode));
-
-            var button = Find<BottomMenu>().codeRewardButton;
-            if (_codeRewards.Any())
-            {
-                button.Show(OnClickButton, _codeRewards.Count);
-            }
-            else
-            {
-                button.Close();
-            }
         }
 
         private void OnClickButton()

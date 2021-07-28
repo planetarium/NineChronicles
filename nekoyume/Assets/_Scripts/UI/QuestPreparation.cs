@@ -14,10 +14,10 @@ using Nekoyume.State;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using TMPro;
-using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 using mixpanel;
+using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Toggle = Nekoyume.UI.Module.Toggle;
 
@@ -27,83 +27,42 @@ namespace Nekoyume.UI
 
     public class QuestPreparation : Widget
     {
-        [SerializeField]
-        private Module.Inventory inventory = null;
+        [SerializeField] private Module.Inventory inventory = null;
+        [SerializeField] private EquipmentSlot[] consumableSlots = null;
+        [SerializeField] private EquipmentSlots equipmentSlots = null;
+        [SerializeField] private GameObject equipSlotGlow = null;
+        [SerializeField] private Transform titleSocket = null;
+        [SerializeField] private TextMeshProUGUI consumableTitleText = null;
+        [SerializeField] private TextMeshProUGUI equipmentTitleText = null;
+        [SerializeField] private TextMeshProUGUI requiredPointText = null;
+        [SerializeField] private ParticleSystem[] particles = null;
+        [SerializeField] private DetailedStatView[] statusRows = null;
+        [SerializeField] private TMP_InputField levelField = null;
+        [SerializeField] private Button questButton = null;
+        [SerializeField] private Button closeButton;
+        [SerializeField] private Button simulateButton = null;
 
-        [SerializeField]
-        private TextMeshProUGUI consumableTitleText = null;
-
-        // todo: `EquipmentSlot`을 사용하지 않든가, 이름을 바꿔야 하겠다. 또한 `EquipmentSlots`와 같이 `ConsumableSlots`를 만들어도 좋겠다.
-        [SerializeField]
-        private EquipmentSlot[] consumableSlots = null;
-
-        [SerializeField]
-        private DetailedStatView[] statusRows = null;
-
-        [SerializeField]
-        private TextMeshProUGUI equipmentTitleText = null;
-
-        [SerializeField]
-        private EquipmentSlots equipmentSlots = null;
-
-        [SerializeField]
-        private Button questButton = null;
-
-        [SerializeField]
-        private GameObject equipSlotGlow = null;
-
-        [SerializeField]
-        private TextMeshProUGUI requiredPointText = null;
-
-        [SerializeField]
-        private ParticleSystem[] particles = null;
-
-        [SerializeField]
-        private TMP_InputField levelField = null;
-
-        [SerializeField]
-        private Button simulateButton = null;
-
-        [Header("ItemMoveAnimation")]
-        [SerializeField]
-        private Image actionPointImage = null;
-
-        [SerializeField]
-        private Transform buttonStarImageTransform = null;
-
-        [SerializeField]
-        private Toggle repeatToggle;
-
-        [SerializeField, Range(.5f, 3.0f)]
-        private float animationTime = 1f;
-
-        [SerializeField]
-        private bool moveToLeft = false;
-
-        [SerializeField, Range(0f, 10f),
-         Tooltip("Gap between start position X and middle position X")]
+        [SerializeField] private Transform buttonStarImageTransform = null;
+        [SerializeField] private Toggle repeatToggle;
+        [SerializeField, Range(.5f, 3.0f)] private float animationTime = 1f;
+        [SerializeField] private bool moveToLeft = false;
+        [SerializeField, Range(0f, 10f), Tooltip("Gap between start position X and middle position X")]
         private float middleXGap = 1f;
 
         private Stage _stage;
-
         private Game.Character.Player _player;
-
         private EquipmentSlot _weaponSlot;
-
-        private int _worldId;
-
-        private readonly IntReactiveProperty _stageId = new IntReactiveProperty();
-
-        private int _requiredCost;
-
-        private readonly List<IDisposable> _disposables = new List<IDisposable>();
-
         private CharacterStats _tempStats;
-
+        private GameObject _cachedCharacterTitle;
+        private int _worldId;
+        private int _requiredCost;
         private bool _reset = true;
 
-        // NOTE: questButton을 클릭한 후에 esc키를 눌러서 월드맵으로 벗어나는 것을 막는다.
-        // 행동력이 _requiredCost 미만일 경우 퀘스트 버튼이 비활성화되므로 임시 방편으로 행동력도 비교함.
+        private readonly IntReactiveProperty _stageId = new IntReactiveProperty();
+        private readonly List<IDisposable> _disposables = new List<IDisposable>();
+
+        private static readonly Vector3 PlayerPosition = new Vector3(999.8f, 999.3f, 3f);
+
         public override bool CanHandleInputEvent =>
             base.CanHandleInputEvent &&
             (questButton.interactable || !EnoughToPlay);
@@ -117,7 +76,12 @@ namespace Nekoyume.UI
         {
             base.Awake();
 
-            CloseWidget = null;
+            closeButton.onClick.AddListener(() =>
+            {
+                Close(true);
+            });
+
+            CloseWidget = () => Close(true);
             simulateButton.gameObject.SetActive(GameConfig.IsEditor);
             levelField.gameObject.SetActive(GameConfig.IsEditor);
         }
@@ -176,11 +140,11 @@ namespace Nekoyume.UI
 
             Mixpanel.Track("Unity/Click Stage");
             _stage = Game.Game.instance.Stage;
-            _stage.repeatStage = false;
+            _stage.IsRepeatStage = false;
             repeatToggle.isOn = false;
             repeatToggle.interactable = true;
             _stage.LoadBackground("dungeon_01");
-            _player = _stage.GetPlayer(_stage.questPreparationPosition);
+            _player = _stage.GetPlayer(PlayerPosition);
             if (_player is null)
             {
                 throw new NotFoundComponentException<Game.Character.Player>();
@@ -220,18 +184,17 @@ namespace Nekoyume.UI
                 }
             }
 
+            var title = _player.Costumes.FirstOrDefault(x => x.ItemSubType == ItemSubType.Title);
+            if (title != null)
+            {
+                Destroy(_cachedCharacterTitle);
+                var clone = ResourcesHelper.GetCharacterTitle(title.Grade, title.GetLocalizedNonColoredName(false));
+                _cachedCharacterTitle = Instantiate(clone, titleSocket);
+            }
+
             var worldMap = Find<WorldMap>();
             _worldId = worldMap.SelectedWorldId;
             _stageId.Value = worldMap.SelectedStageId;
-
-            Find<BottomMenu>().Show(
-                UINavigator.NavigationType.Back,
-                SubscribeBackButtonClick,
-                true,
-                BottomMenu.ToggleableType.Mail,
-                BottomMenu.ToggleableType.Quest,
-                BottomMenu.ToggleableType.Chat,
-                BottomMenu.ToggleableType.IllustratedBook);
 
             ReactiveAvatarState.ActionPoint
                 .Subscribe(_ => ReadyToQuest(EnoughToPlay))
@@ -244,7 +207,6 @@ namespace Nekoyume.UI
         public override void Close(bool ignoreCloseAnimation = false)
         {
             _reset = true;
-            Find<BottomMenu>().Close(ignoreCloseAnimation);
 
             foreach (var slot in consumableSlots)
             {
@@ -351,7 +313,7 @@ namespace Nekoyume.UI
             ShowTooltip(view);
         }
 
-        private void SubscribeBackButtonClick(BottomMenu bottomMenu)
+        private void SubscribeBackButtonClick(HeaderMenu headerMenu)
         {
             if (!CanClose)
             {
@@ -403,6 +365,7 @@ namespace Nekoyume.UI
 
         private IEnumerator CoQuestClick(bool repeat)
         {
+            var actionPointImage = Find<HeaderMenu>().ActionPointImage;
             var animation = ItemMoveAnimation.Show(actionPointImage.sprite,
                 actionPointImage.transform.position,
                 buttonStarImageTransform.position,
@@ -414,6 +377,7 @@ namespace Nekoyume.UI
             LocalLayerModifier.ModifyAvatarActionPoint(States.Instance.CurrentAvatarState.address,
                 -_requiredCost);
             yield return new WaitWhile(() => animation.IsPlaying);
+
             Quest(repeat);
             AudioController.PlayClick();
         }
@@ -531,7 +495,11 @@ namespace Nekoyume.UI
                 ? AudioController.SfxCode.ChainMail2
                 : AudioController.SfxCode.Equipment);
             inventory.SharedModel.UpdateEquipmentNotification();
-            Find<BottomMenu>().UpdateInventoryNotification();
+            var avatarInfo = Find<AvatarInfo>();
+            if (avatarInfo != null)
+            {
+                Find<HeaderMenu>().UpdateInventoryNotification(avatarInfo.HasNotification);
+            }
         }
 
         private bool TryToFindSlotAlreadyEquip(ItemBase item, out EquipmentSlot slot)
@@ -646,7 +614,8 @@ namespace Nekoyume.UI
 
         private void Quest(bool repeat)
         {
-            Find<BottomMenu>().Close(true);
+            Find<WorldMap>().Close(true);
+            Find<StageInformation>().Close(true);
             Find<LoadingScreen>().Show();
 
             questButton.gameObject.SetActive(false);
@@ -654,7 +623,6 @@ namespace Nekoyume.UI
             ActionCamera.instance.ChaseX(_player.transform);
 
             var costumes = _player.Costumes;
-
             var equipments = equipmentSlots
                 .Where(slot => !slot.IsLock && !slot.IsEmpty)
                 .Select(slot => (Equipment) slot.Item)
@@ -665,8 +633,8 @@ namespace Nekoyume.UI
                 .Select(slot => (Consumable) slot.Item)
                 .ToList();
 
-            _stage.isExitReserved = false;
-            _stage.repeatStage = repeat;
+            _stage.IsExitReserved = false;
+            _stage.IsRepeatStage = repeat;
             _stage.foodCount = consumables.Count;
             ActionRenderHandler.Instance.Pending = true;
             Game.Game.instance.ActionManager

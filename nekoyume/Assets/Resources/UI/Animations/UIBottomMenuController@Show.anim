@@ -24,7 +24,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_AnchoredPosition.x
-    path: Buttons_Bottom
+    path: Buttons_Top
     classID: 224
     script: {fileID: 0}
   - curve:
@@ -40,25 +40,25 @@ AnimationClip:
         inWeight: 0.33333334
         outWeight: 0.33333334
       - serializedVersion: 3
-        time: 0.33333334
-        value: 0
-        inSlope: -80
-        outSlope: -80
-        tangentMode: 136
+        time: 0.35
+        value: -5
+        inSlope: -71.14654
+        outSlope: -71.14654
+        tangentMode: 0
         weightedMode: 0
-        inWeight: 0.33333334
-        outWeight: 0.33333334
+        inWeight: 0.57984746
+        outWeight: 0.35401782
       - serializedVersion: 3
         time: 0.5
         value: -10
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 136
+        inSlope: 33.14482
+        outSlope: 33.14482
+        tangentMode: 0
         weightedMode: 0
         inWeight: 0.33333334
-        outWeight: 0.33333334
+        outWeight: 1
       - serializedVersion: 3
-        time: 0.6666667
+        time: 0.68333334
         value: 0
         inSlope: 0
         outSlope: 0
@@ -70,7 +70,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_AnchoredPosition.y
-    path: Buttons_Bottom
+    path: Buttons_Top
     classID: 224
     script: {fileID: 0}
   - curve:
@@ -80,7 +80,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_AnchoredPosition.z
-    path: Buttons_Bottom
+    path: Buttons_Top
     classID: 224
     script: {fileID: 0}
   m_PPtrCurves: []
@@ -92,7 +92,7 @@ AnimationClip:
   m_ClipBindingConstant:
     genericBindings:
     - serializedVersion: 2
-      path: 3275670049
+      path: 3412002136
       attribute: 538195251
       script: {fileID: 0}
       typeID: 224
@@ -127,7 +127,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_AnchoredPosition.x
-    path: Buttons_Bottom
+    path: Buttons_Top
     classID: 224
     script: {fileID: 0}
   - curve:
@@ -143,25 +143,25 @@ AnimationClip:
         inWeight: 0.33333334
         outWeight: 0.33333334
       - serializedVersion: 3
-        time: 0.33333334
-        value: 0
-        inSlope: -80
-        outSlope: -80
-        tangentMode: 136
+        time: 0.35
+        value: -5
+        inSlope: -71.14654
+        outSlope: -71.14654
+        tangentMode: 0
         weightedMode: 0
-        inWeight: 0.33333334
-        outWeight: 0.33333334
+        inWeight: 0.57984746
+        outWeight: 0.35401782
       - serializedVersion: 3
         time: 0.5
         value: -10
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 136
+        inSlope: 33.14482
+        outSlope: 33.14482
+        tangentMode: 0
         weightedMode: 0
         inWeight: 0.33333334
-        outWeight: 0.33333334
+        outWeight: 1
       - serializedVersion: 3
-        time: 0.6666667
+        time: 0.68333334
         value: 0
         inSlope: 0
         outSlope: 0
@@ -173,7 +173,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_AnchoredPosition.y
-    path: Buttons_Bottom
+    path: Buttons_Top
     classID: 224
     script: {fileID: 0}
   - curve:
@@ -183,7 +183,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_AnchoredPosition.z
-    path: Buttons_Bottom
+    path: Buttons_Top
     classID: 224
     script: {fileID: 0}
   m_EulerEditorCurves: []

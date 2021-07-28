@@ -500,9 +500,8 @@ namespace Nekoyume.UI
             StopCoUpdateBottomText();
             StartCoroutine(CoFadeOut());
             var stage = Game.Game.instance.Stage;
-            stage.repeatStage = false;
-            stage.isExitReserved = false;
-            WidgetHandler.Instance.BottomMenu.exitButton.SharedModel.IsEnabled.Value = false;
+            stage.IsRepeatStage = false;
+            stage.IsExitReserved = false;
             var stageLoadingScreen = Find<StageLoadingScreen>();
             stageLoadingScreen.Show(stage.zone, SharedModel.WorldName,
                 SharedModel.StageID + 1, true, SharedModel.StageID);
@@ -542,8 +541,7 @@ namespace Nekoyume.UI
             StopCoUpdateBottomText();
             StartCoroutine(CoFadeOut());
             var stage = Game.Game.instance.Stage;
-            stage.isExitReserved = false;
-            WidgetHandler.Instance.BottomMenu.exitButton.SharedModel.IsEnabled.Value = false;
+            stage.IsExitReserved = false;
             var stageLoadingScreen = Find<StageLoadingScreen>();
             stageLoadingScreen.Show(stage.zone, SharedModel.WorldName,
                 SharedModel.StageID, false, SharedModel.StageID);
@@ -614,7 +612,7 @@ namespace Nekoyume.UI
             {
                 ["StageId"] = Game.Game.instance.Stage.stageId,
             };
-            var eventKey = Game.Game.instance.Stage.isExitReserved ? "Quit" : "Main";
+            var eventKey = Game.Game.instance.Stage.IsExitReserved ? "Quit" : "Main";
             var eventName = $"Unity/Stage Exit {eventKey}";
             Mixpanel.Track(eventName, props);
 
