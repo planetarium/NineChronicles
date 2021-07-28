@@ -493,83 +493,81 @@ UI_COMBINATION_ITEM,Combine,아이템 제작,Combinar,,アイテム製作,Kombin
 UI_COMBINATION_ERROR,Error,조합 에러,Erro,,製作エラー,Fehler,Error,ข้อผิดพลาด,Błąd,,,Error,Erreur,,,,错误,
 UI_COMBINATION_SUCCESS,Success!,조합 성공!,Sucesso!,,製作成功！,Erfolg!,¡Conseguido!,สำเร็จ!,Sukces!,,,Sukses!,Réussi !,,,,成功！,
 UI_COMBINATION_NOTIFY_FORMAT,"<size=12><color=#FFA78B>[Workshop Cat]</color></size>
-I've finished crafting {0}.","<size=12><color=#FFA78B>[대장장이 고양이]</color></size>
+I've finished crafting {0}","<size=12><color=#FFA78B>[대장장이 고양이]</color></size>
 {0} 제작을 완료하였네.","<size=12><color=#FFA78B>[Gato de oficina]</color></size>
-Eu terminei de fabricar {0}.","<size=12><color=#FFA78B>[Gato de oficina]</color></size>
-Eu terminei de fabricar {0}.","<size=12><color=#FFA78B>[ワークショップ猫]</color></size>
+Eu terminei de fabricar {0}","<size=12><color=#FFA78B>[Gato de oficina]</color></size>
+Eu terminei de fabricar {0}","<size=12><color=#FFA78B>[ワークショップ猫]</color></size>
 {0} の製作が終わったぜ！","<size=12><color=#FFA78B>[Workshop Katze]</color></size>
-Die Produktion ist beendet {0}.","<size=12><color=#FFA78B>[gato taller]</color></size>
-Fabricación completada {0}.","<size=12><color=#FFA78B>[การประชุมเชิงปฏิบัติการแมว]</color></size>
+Die Produktion ist beendet {0}","<size=12><color=#FFA78B>[gato taller]</color></size>
+Fabricación completada {0}","<size=12><color=#FFA78B>[การประชุมเชิงปฏิบัติการแมว]</color></size>
 ฉันสร้าง {0} เสร็จแล้ว","<size=12><color=#FFA78B>[Warsztaty Cat]</color></size>
-Ukończyłem wytwarzanie {0}.","<size=12><color=#FFA78B>[seminaras Kačių]</color></size>
-Aš gatavo crafting {0}.","<size=12><color=#FFA78B>[workshop Cat]</color></size>
-Ik klaar crafting {0}.","<size=12><color=#FFA78B>[Workshop Cat]</color></size>
-Aku sudah selesai membuat {0}.","<size=12><color=#FFA78B>[atelier Cat]</color></size>
-J'ai fini la fabrication de {0}.","<size=12><color=#FFA78B>[Практикум Cat]</color></size>
-Я закончил крафт {0}.","<size=12><color=#FFA78B>[សិក្ខាសាលាឆ្មា]</color></size>
-ខ្ញុំបានបញ្ចប់ {0 សិប្បកម្ម} ។","<size=12><color=#FFA78B>[ورکشاپ بلی]</color></size>
+Ukończyłem wytwarzanie {0}","<size=12><color=#FFA78B>[seminaras Kačių]</color></size>
+Aš gatavo crafting {0}","<size=12><color=#FFA78B>[workshop Cat]</color></size>
+Ik klaar crafting {0}","<size=12><color=#FFA78B>[Workshop Cat]</color></size>
+Aku sudah selesai membuat {0}","<size=12><color=#FFA78B>[atelier Cat]</color></size>
+J'ai fini la fabrication de {0}","<size=12><color=#FFA78B>[Практикум Cat]</color></size>
+Я закончил крафт {0}","<size=12><color=#FFA78B>[សិក្ខាសាលាឆ្មា]</color></size>
+ខ្ញុំបានបញ្ចប់ {0} សិប្បកម្ម ។","<size=12><color=#FFA78B>[ورکشاپ بلی]</color></size>
 میں فارغ تیار {0} ہے.","<size=12><color=#FFA78B>[车间猫]</color></size>
 我已经完成了{0}的制作工作。","<size=12><color=#FFA78B>[Műhelymunka]</color></size>
-Végeztem ravaszkodó {0}."
+Végeztem ravaszkodó {0}"
 UI_COMBINATION_NOTIFY_FORMAT_GREATER,"<size=12><color=#FFA78B>[Workshop Cat]</color></size>
-Great Success!! I've finished crafting {0}.","<size=12><color=#FFA78B>[대장장이 고양이]</color></size>
+Great Success!! I've finished crafting {0}","<size=12><color=#FFA78B>[대장장이 고양이]</color></size>
 대성공!! {0} 제작을 완료하였네.","<size=12><color=#FFA78B>[Gato de oficina]</color></size>
-Grande sucesso!! Eu terminei de fabricar {0}.","<size=12><color=#FFA78B>[Gato de oficina]</color></size>
-Grande sucesso!! Eu terminei de fabricar {0}.","<size=12><color=#FFA78B>[ワークショップ猫]</color></size>
+Grande sucesso!! Eu terminei de fabricar {0}","<size=12><color=#FFA78B>[Gato de oficina]</color></size>
+Grande sucesso!! Eu terminei de fabricar {0}","<size=12><color=#FFA78B>[ワークショップ猫]</color></size>
 大成功！！ {0} の製作が終わったぜ！","<size=12><color=#FFA78B>[Workshop Katze]</color></size>
-Großer Erfolg!! Die Produktion ist beendet {0}.","<size=12><color=#FFA78B>[gato taller]</color></size>
-¡¡Gran éxito!! Fabricación completada {0}.","<size=12><color=#FFA78B>[การประชุมเชิงปฏิบัติการแมว]</color></size>
+Großer Erfolg!! Die Produktion ist beendet {0}","<size=12><color=#FFA78B>[gato taller]</color></size>
+¡¡Gran éxito!! Fabricación completada {0}","<size=12><color=#FFA78B>[การประชุมเชิงปฏิบัติการแมว]</color></size>
 ความสำเร็จที่ดี!! ฉันสร้าง {0} เสร็จแล้ว","<size=12><color=#FFA78B>[Warsztaty Cat]</color></size>
-Wielki sukces!! Ukończyłem wytwarzanie {0}.","<size=12><color=#FFA78B>[seminaras Kačių]</color></size>
-Didelė sėkmė!! Aš gatavo crafting {0}.","<size=12><color=#FFA78B>[workshop Cat]</color></size>
-Groot succes!! Ik klaar crafting {0}.","<size=12><color=#FFA78B>[Workshop Cat]</color></size>
-Sukses Besar !! Aku sudah selesai membuat {0}.","<size=12><color=#FFA78B>[atelier Cat]</color></size>
-Grand succès!! J'ai fini la fabrication de {0}.","<size=12><color=#FFA78B>[Практикум Cat]</color></size>
-Огромный успех!! Я закончил крафт {0}.","<size=12><color=#FFA78B>[សិក្ខាសាលាឆ្មា]</color></size>
-ជោគជ័យ​ដ៏​អស្ចារ្យ!! ខ្ញុំបានបញ្ចប់ {0 សិប្បកម្ម} ។","<size=12><color=#FFA78B>[ورکشاپ بلی]</color></size>
+Wielki sukces!! Ukończyłem wytwarzanie {0}","<size=12><color=#FFA78B>[seminaras Kačių]</color></size>
+Didelė sėkmė!! Aš gatavo crafting {0}","<size=12><color=#FFA78B>[workshop Cat]</color></size>
+Groot succes!! Ik klaar crafting {0}","<size=12><color=#FFA78B>[Workshop Cat]</color></size>
+Sukses Besar !! Aku sudah selesai membuat {0}","<size=12><color=#FFA78B>[atelier Cat]</color></size>
+Grand succès!! J'ai fini la fabrication de {0}","<size=12><color=#FFA78B>[Практикум Cat]</color></size>
+Огромный успех!! Я закончил крафт {0}","<size=12><color=#FFA78B>[សិក្ខាសាលាឆ្មា]</color></size>
+ជោគជ័យដ៏អស្ចារ្យ!! ខ្ញុំបានបញ្ចប់ {0} សិប្បកម្ម ។","<size=12><color=#FFA78B>[ورکشاپ بلی]</color></size>
 عظیم کامیابی!! میں فارغ تیار {0} ہے.","<size=12><color=#FFA78B>[车间猫]</color></size>
 巨大的成功！！ 我已经完成了{0}的制作工作。","<size=12><color=#FFA78B>[Műhelymunka]</color></size>
-Nagy siker!! Végeztem ravaszkodó {0}."
+Nagy siker!! Végeztem ravaszkodó {0}"
 UI_ITEM_ENHANCEMENT_MAIL_FORMAT_GREATER,"<size=12><color=#FFA78B>[Workshop Cat]</color></size>
-Great Success!! I've finished crafting {0}.","<size=12><color=#FFA78B>[대장장이 고양이]</color></size>
+Great Success!! I've finished crafting {0}","<size=12><color=#FFA78B>[대장장이 고양이]</color></size>
 대성공!! {0} 제작을 완료하였네.","<size=12><color=#FFA78B>[Gato de oficina]</color></size>
-Grande sucesso!! Eu terminei de fabricar {0}.","<size=12><color=#FFA78B>[Gato de oficina]</color></size>
-Grande sucesso!! Eu terminei de fabricar {0}.","<size=12><color=#FFA78B>[ワークショップ猫]</color></size>
+Grande sucesso!! Eu terminei de fabricar {0}","<size=12><color=#FFA78B>[Gato de oficina]</color></size>
+Grande sucesso!! Eu terminei de fabricar {0}","<size=12><color=#FFA78B>[ワークショップ猫]</color></size>
 大成功！！ {0} の製作が終わったぜ！","<size=12><color=#FFA78B>[Workshop Katze]</color></size>
-Großer Erfolg!! Die Produktion ist beendet {0}.","<size=12><color=#FFA78B>[gato taller]</color></size>
-¡¡Gran éxito!! Fabricación completada {0}.","<size=12><color=#FFA78B>[การประชุมเชิงปฏิบัติการแมว]</color></size>
+Großer Erfolg!! Die Produktion ist beendet {0}","<size=12><color=#FFA78B>[gato taller]</color></size>
+¡¡Gran éxito!! Fabricación completada {0}","<size=12><color=#FFA78B>[การประชุมเชิงปฏิบัติการแมว]</color></size>
 ความสำเร็จที่ดี!! ฉันสร้าง {0} เสร็จแล้ว","<size=12><color=#FFA78B>[Warsztaty Cat]</color></size>
-Wielki sukces!! Ukończyłem wytwarzanie {0}.","<size=12><color=#FFA78B>[seminaras Kačių]</color></size>
-Didelė sėkmė!! Aš gatavo crafting {0}.","<size=12><color=#FFA78B>[workshop Cat]</color></size>
-Groot succes!! Ik klaar crafting {0}.","<size=12><color=#FFA78B>[Workshop Cat]</color></size>
-Sukses Besar !! Aku sudah selesai membuat {0}.","<size=12><color=#FFA78B>[atelier Cat]</color></size>
-Grand succès!! J'ai fini la fabrication de {0}.","<size=12><color=#FFA78B>[Практикум Cat]</color></size>
-Огромный успех!! Я закончил крафт {0}.","<size=12><color=#FFA78B>[សិក្ខាសាលាឆ្មា]</color></size>
-ជោគជ័យ​ដ៏​អស្ចារ្យ!! ខ្ញុំបានបញ្ចប់ {0 សិប្បកម្ម} ។","<size=12><color=#FFA78B>[ورکشاپ بلی]</color></size>
-عظیم کامیابی!! میں فارغ تیار {0} ہے.
-","<size=12><color=#FFA78B>[车间猫]</color></size>
+Wielki sukces!! Ukończyłem wytwarzanie {0}","<size=12><color=#FFA78B>[seminaras Kačių]</color></size>
+Didelė sėkmė!! Aš gatavo crafting {0}","<size=12><color=#FFA78B>[workshop Cat]</color></size>
+Groot succes!! Ik klaar crafting {0}","<size=12><color=#FFA78B>[Workshop Cat]</color></size>
+Sukses Besar !! Aku sudah selesai membuat {0}","<size=12><color=#FFA78B>[atelier Cat]</color></size>
+Grand succès!! J'ai fini la fabrication de {0}","<size=12><color=#FFA78B>[Практикум Cat]</color></size>
+Огромный успех!! Я закончил крафт {0}","<size=12><color=#FFA78B>[សិក្ខាសាលាឆ្មា]</color></size>
+ជោគជ័យដ៏អស្ចារ្យ!! ខ្ញុំបានបញ្ចប់ {0} សិប្បកម្ម ។","<size=12><color=#FFA78B>[ورکشاپ بلی]</color></size>
+عظیم کامیابی!! میں فارغ تیار {0} ہے.","<size=12><color=#FFA78B>[车间猫]</color></size>
 巨大的成功！！ 我已经完成了{0}的制作工作。","<size=12><color=#FFA78B>[Műhelymunka]</color></size>
-Nagy siker!! Végeztem ravaszkodó {0}."
+Nagy siker!! Végeztem ravaszkodó {0}"
 UI_ITEM_ENHANCEMENT_MAIL_FORMAT_FAIL,"<size=12><color=#FFA78B>[Workshop Cat]</color></size>
-Sorry, I failed to upgrade {0}.","<size=12><color=#FFA78B>[대장장이 고양이]</color></size>
+Sorry, I failed to upgrade {0}","<size=12><color=#FFA78B>[대장장이 고양이]</color></size>
 미안하네, {0} 강화를 실패했다네.","<size=12><color=#FFA78B>[Gato de oficina]</color></size>
-Desculpe, não consegui atualizar {0}.","<size=12><color=#FFA78B>[Gato de oficina]</color></size>
-Desculpe, não consegui atualizar {0}.","<size=12><color=#FFA78B>[ワークショップ猫]</color></size>
+Desculpe, não consegui atualizar {0}","<size=12><color=#FFA78B>[Gato de oficina]</color></size>
+Desculpe, não consegui atualizar {0}","<size=12><color=#FFA78B>[ワークショップ猫]</color></size>
 申し訳ありませんが、{0}のアップグレードに失敗しました。","<size=12><color=#FFA78B>[Workshop Katze]</color></size>
 Es tut uns leid, dass ich {0} nicht aktualisiert habe.","<size=12><color=#FFA78B>[gato taller]</color></size>
-Lo sentimos, no logré actualizar {0}.","<size=12><color=#FFA78B>[การประชุมเชิงปฏิบัติการแมว]</color></size>
+Lo sentimos, no logré actualizar {0}","<size=12><color=#FFA78B>[การประชุมเชิงปฏิบัติการแมว]</color></size>
 ขออภัยฉันไม่สามารถอัพเกรด {0}","<size=12><color=#FFA78B>[Warsztaty Cat]</color></size>
-Przepraszam, nie udało mi się uaktualnić {0}.","<size=12><color=#FFA78B>[seminaras Kačių]</color></size>
-Atsiprašau, nepavyko atnaujinti {0}.","<size=12><color=#FFA78B>[workshop Cat]</color></size>
-Sorry, ik heb geen upgrade {0}.","<size=12><color=#FFA78B>[Workshop Cat]</color></size>
-Maaf, saya gagal memutakhirkan {0}.","<size=12><color=#FFA78B>[atelier Cat]</color></size>
-Désolé, j'ai échoué à mettre à niveau {0}.","<size=12><color=#FFA78B>[Практикум Cat]</color></size>
-Извините, я не смог обновить {0}.","<size=12><color=#FFA78B>[សិក្ខាសាលាឆ្មា]</color></size>
+Przepraszam, nie udało mi się uaktualnić {0}","<size=12><color=#FFA78B>[seminaras Kačių]</color></size>
+Atsiprašau, nepavyko atnaujinti {0}","<size=12><color=#FFA78B>[workshop Cat]</color></size>
+Sorry, ik heb geen upgrade {0}","<size=12><color=#FFA78B>[Workshop Cat]</color></size>
+Maaf, saya gagal memutakhirkan {0}","<size=12><color=#FFA78B>[atelier Cat]</color></size>
+Désolé, j'ai échoué à mettre à niveau {0}","<size=12><color=#FFA78B>[Практикум Cat]</color></size>
+Извините, я не смог обновить {0}","<size=12><color=#FFA78B>[សិក្ខាសាលាឆ្មា]</color></size>
 សូមអភ័យទោសខ្ញុំបានបរាជ័យក្នុងការធ្វើឱ្យប្រសើរឡើង {0} ។","<size=12><color=#FFA78B>[ورکشاپ بلی]</color></size>
-افسوس، میں {0} اپ گریڈ کرنے میں ناکام رہا.
-","<size=12><color=#FFA78B>[车间猫]</color></size>
-对不起，我未能升级{0}。","<size=12><color=#FFA78B>[Műhelymunka]</color></size>
-Sajnálom, nem sikerült frissíteni {0}."
+افسوس، میں {0} اپ گریڈ کرنے میں ناکام رہا.","<size=12><color=#FFA78B>[车间猫]</color></size>
+对不起，我未能升级{0}","<size=12><color=#FFA78B>[Műhelymunka]</color></size>
+Sajnálom, nem sikerült frissíteni {0}"
 UI_UPGRADE_DEPTH,Current Stat,강화도,Stat atual,Stat atual,現在の統計,aktuelle Stat,Stat actual,สถิติปัจจุบัน,Aktualny Stat,Dabartinis Stat,huidige Stat,saat Stat,Current Stat,Текущий Stat,ស្ថិតិបច្ចុប្បន្ន,موجودہ کی Stat,当前统计,jelenlegi Stat
 UI_UPGRADE_SUCCESS_RATE_TITLE,Success Rate,성공률,Taxa de sucesso,Taxa de sucesso,成功率,Erfolgsrate,Tasa de éxito,โอกาสสำเร็จ,Wskaźnik sukcesu,sėkmės rodiklis,Slagingspercentage,Tingkat kesuksesan,Taux de réussite,Шанс успеха,អត្រា​នៃ​ការ​ទទួល​បាន​ភាព​ជោគជ័យ,کامیابی کی شرح,成功率,Sikerarány
 UI_UPGRADE_BLOCK_TITLE,Required Blocks,필요 블록 수,Blocos necessários,Blocos necessários,必要なブロック,erforderliche Blöcke,bloques necesarios,บล็อกต้องใช้,wymagane Blocks,Reikalinga blokai,vereiste Blocks,Diperlukan Blok,blocs requis,Требуемые блоки,ប្លុកដែលបានទាមទារ,مطلوب بلاک,需要的块,Kötelező Blocks
@@ -749,7 +747,7 @@ UI_GO_MAIN,Main,메인,Principal,,メイン,Hauptmenü,,หน้าหลัก
 UI_QUIT,Quit,종료,Quit,,終了,Verlassen,,เลิกเล่น,Wyjdź,,,Berhenti,Quitter,,,,退出,
 UI_EXIT,Exit,나가기,Sair,,退出,Schließen,,ออก,Zakończ,,,Keluar,Sortir,,,,退出,
 UI_ERROR,Error,에러,Erro,,エラー,Fehler,,ข้อผิดพลาด,Błąd,,,Error,Erreur,,,,错误,
-UI_NICKNAME_CONDITION,Nickname must be between 2-20 characters and can only include alphanumeric characters.,"닉네임은 2~20자여야 하며
+UI_NICKNAME_CONDITION,Nickname must be between 2-20 characters and can only include alphanumeric characters.,"닉네임은 2-20자여야 하며
 영문자, 숫자만 사용할 수 있습니다.","O apelido deve ter entre 2 e 20 caracteres
 e pode incluir apenas caracteres alfanuméricos.",,"ニックネームは2-20文字で、
 アルファベットのみ使用できます。",Dein Name muss aus 2-20 alphanumerischen Zeichen bestehen.,,ชื่อเล่นจะต้องมี 2-20 ตัวอักษรอนุญาตให้ใช้เฉพาะตัวอักษรและตัวเลขเท่านั้น,Nazwa użytkownika musi zawierać od 2 do 20 znaków i być alfanumeryczna.,,,Nama panggilan harus diantara 2-20 karakter dan hanya dapat menyertakan karakter alfanumerik.,Votre surnom ne peut contenir que de 2 à 20 caractères alphanumériques uniquement.,,,,昵称必须介于2到20个字符之间，并且只能包含字母、数字、字符。,
@@ -1288,14 +1286,14 @@ UI_COMBINATION_GREAT_SUCCESS_RATE_TITLE,Great Success Rate,대성공 확률,Gran
 UI_COMBINATION_FIRST_RECIPE_TITLE,Basic,기본,Básico,Básico,basic,Basic,Básico,ขั้นพื้นฐาน,Podstawowy,Basic.,Basisch,Dasar,De base,Базовый,នៃមុលដ្ឋាន,بنیادی,基本的,Alapvető
 UI_COMBINATION_SECOND_RECIPE_TITLE,Premium,프리미엄,Prêmio,Prêmio,保険料,Prämie,Prima,พรีเมี่ยม,Premia,Premija,Premie,Premium,Prime,Премиум,បុព្វលាច,پریمیم,优质的,Prémium
 UI_COMBINATION_THIRD_RECIPE_TITLE,Mimir,미미르,Imir.,Imir.,ミミー,Mimir,Mimir,แมชชีน,Mimir.,Mimir,Mimir,Mimir.,Mimir,Мимир,មមមី,Mimir.,咪咪,Mimir
-UI_RECIPE_EMPTY_STATE,Please select a recipe.,레시피를 선택해주세요.,Por favor, selecione uma receita.,Por favor, selecione uma receita.,レシピを選択してください。,Bitte wählen Sie ein Rezept aus.,Por favor, seleccione una receta.,โปรดเลือกสูตร,Wybierz recepturę.,Pasirinkite receptą.,Selecteer een recept.,Silakan pilih resep.,Veuillez sélectionner une recette.,Пожалуйста, выберите рецепт.,សូមជ្រើសរើសរូបមន្តមួយ។,براہ کرم ایک ہدایت منتخب کریں.,请选择配方。,Kérjük, válasszon ki egy receptet.
+UI_RECIPE_EMPTY_STATE,Select an item to craft.,제작할 아이템을 선택하세요.,Selecione um item para embarcar.,,工芸品を選択してください。,Wählen Sie einen Artikel zum Handwerk aus.,Seleccione un elemento para navegar.,เลือกรายการเพื่องานฝีมือ,Wybierz element do rzemiosła.,Pasirinkite elementą į amatų.,Selecteer een item om te varen.,Pilih item ke kerajinan.,Sélectionnez un élément pour embarquer.,Выберите элемент для ремесла.,ជ្រើសរើសធាតុមួយទៅសិប្បកម្ម។,,选择工艺品。,
 UI_COMBINATION_NOTIFY_IDENTIFYING,The item is now identifying.,아이템을 감정하고 있습니다.,O item está agora identificar.,O item está agora identificar.,アイテムは現在識別されます。,Der Artikel ist die Identifizierung jetzt.,El tema ahora está identificando.,รายการอยู่ในขณะนี้ระบุ,Element jest teraz identyfikacji.,Elementas šiuo metu identifikuoti.,Het item is nu identificeren.,Item ini sekarang mengidentifikasi.,L'article est maintenant identifier.,Элемент теперь идентификации.,ឥឡូវនេះធាតុនេះត្រូវបានកំណត់អត្តសញ្ញាណ។,شے اب کی شناخت کی جاتی ہے.,该项目现已查明。,A tétel most azonosítására.
 UI_COMBINATION_POPUP_RESULT_TITLE,Expected results,예상 결과,Resultados esperados,Resultados esperados,期待される結果,Erwartete Ergebnisse,Resultados previstos,ผลที่คาดหวัง,Oczekiwane rezultaty,Tikėtini Rezultatai,Verwachte resultaten,Hasil yang diharapkan,Résultats attendus,Ожидаемые результаты,លទ្ធផលរំពឹងទុក,متوقع نتائج,预期成绩,Várható eredmények
 UI_COMBINATION_POPUP_RESULT_STATS,Obtained random {0} stats,{0} 무작위 능력치 획득,Obtidos aleatórios {0} estatísticas,Obtidos aleatórios {0} estatísticas,得られたランダム{0}統計,Erhalten zufällige {0} stats,Obtenido aleatorias {0} estadísticas,ได้รับการสุ่ม {0} สถิติ,Uzyskane losowe {0} statystyki,Gauti atsitiktinių {0} statistika,Verkregen willekeurige {0} stats,Diperoleh acak {0} statistik,Aléatoires obtenus {0} stats,Полученные случайные {0} Статистика,ទទួលចៃដន្យស្ថិតិ {0},حاصل بے ترتیب {0} کے اعدادوشمار,获得的随机{0}统计,Kaptunk véletlenszerű {0} statisztika
 UI_COMBINATION_POPUP_RESULT_SKILLS,Obtained {0} skills,{0} 스킬 보너스 획득,Obtidos {0} habilidades,Obtidos {0} habilidades,得られた{0}スキル,Erhalten {0} Fähigkeiten,Obtenidos {0} habilidades,ได้รับ {0} ทักษะ,Uzyskane umiejętności {0},Gauti {0} įgūdžių,Verkregen {0} vaardigheden,Diperoleh {0} keterampilan,{0} obtenus compétences,Получено {0} навыки,ទទួលបានជំនាញ {0},حاصل {0} کی مہارت,获得{0}技巧,Kaptunk {0} készségek
 UI_COMBINATION_POPUP_CONSUMABLE_STATS,There are no additional options for food.,요리는 추가 옵션이 없습니다.,Não há opções adicionais para alimentos.,Não há opções adicionais para alimentos.,食品のための追加のオプションはありません。,Es gibt keine zusätzliche Optionen für Lebensmittel.,No hay opciones adicionales para la comida.,ไม่มีตัวเลือกเพิ่มเติมสำหรับอาหารที่มี,Nie istnieją żadne dodatkowe opcje na jedzenie.,Nėra papildomų galimybių maisto.,Er zijn geen extra opties voor voedsel.,Tidak ada opsi tambahan untuk makanan.,Il n'y a pas d'autres options pour la nourriture.,Там нет никаких дополнительных опций для еды.,មិនមានជម្រើសបន្ថែមសម្រាប់ម្ហូបអាហារគឺមាន។,کھانے کے لئے کوئی اضافی اختیارات ہیں.,有食品没有其他选项。,Nincsenek további lehetőségeket élelmiszer.
-UI_COMBINATION_POPUP_UPGRADE_RESULT_STATS,{0} +({1}~{2}),{0} +({1}~{2}),{0} +({1}~{2}),{0} +({1}~{2}),{0} +({1}~{2}),{0} +({1}~{2}),{0} +({1}~{2}),{0} +({1}~{2}),{0} +({1}~{2}),{0} +({1}~{2}),{0} +({1}~{2}),{0} +({1}~{2}),{0} +({1}~{2}),{0} +({1}~{2}),{0} +({1}~{2}),{0} +({1}~{2}),{0} +({1}~{2}),{0} +({1}~{2})
-UI_COMBINATION_POPUP_UPGRADE_RESULT_SKILLS,{0} ({1}~{2}) / ({3}~{4}%),{0} ({1}~{2}) / ({3}~{4}%),{0} ({1}~{2}) / ({3}~{4}%),{0} ({1}~{2}) / ({3}~{4}%),{0} ({1}~{2}) / ({3}~{4}%),{0} ({1}~{2}) / ({3}~{4}%),{0} ({1}~{2}) / ({3}~{4}%),{0} ({1}~{2}) / ({3}~{4}%),{0} ({1}~{2}) / ({3}~{4}%),{0} ({1}~{2}) / ({3}~{4}%),{0} ({1}~{2}) / ({3}~{4}%),{0} ({1}~{2}) / ({3}~{4}%),{0} ({1}~{2}) / ({3}~{4}%),{0} ({1}~{2}) / ({3}~{4}%),{0} ({1}~{2}) / ({3}~{4}%),{0} ({1}~{2}) / ({3}~{4}%),{0} ({1}~{2}) / ({3}~{4}%),{0} ({1}~{2}) / ({3}~{4}%)
+UI_COMBINATION_POPUP_UPGRADE_RESULT_STATS,{0} +({1}-{2}),{0} +({1}-{2}),{0} +({1}-{2}),{0} +({1}-{2}),{0} +({1}-{2}),{0} +({1}-{2}),{0} +({1}-{2}),{0} +({1}-{2}),{0} +({1}-{2}),{0} +({1}-{2}),{0} +({1}-{2}),{0} +({1}-{2}),{0} +({1}-{2}),{0} +({1}-{2}),{0} +({1}-{2}),{0} +({1}-{2}),{0} +({1}-{2}),{0} +({1}-{2})
+UI_COMBINATION_POPUP_UPGRADE_RESULT_SKILLS,{0} ({1}-{2}) / ({3}-{4}%),{0} ({1}-{2}) / ({3}-{4}%),{0} ({1}-{2}) / ({3}-{4}%),{0} ({1}-{2}) / ({3}-{4}%),{0} ({1}-{2}) / ({3}-{4}%),{0} ({1}-{2}) / ({3}-{4}%),{0} ({1}-{2}) / ({3}-{4}%),{0} ({1}-{2}) / ({3}-{4}%),{0} ({1}-{2}) / ({3}-{4}%),{0} ({1}-{2}) / ({3}-{4}%),{0} ({1}-{2}) / ({3}-{4}%),{0} ({1}-{2}) / ({3}-{4}%),{0} ({1}-{2}) / ({3}-{4}%),{0} ({1}-{2}) / ({3}-{4}%),{0} ({1}-{2}) / ({3}-{4}%),{0} ({1}-{2}) / ({3}-{4}%),{0} ({1}-{2}) / ({3}-{4}%),{0} ({1}-{2}) / ({3}-{4}%)
 UI_COMBINATION_RESULT_SUCCESS,Success!!,성공!!,Sucesso!!,Sucesso!!,成功！！,Erfolg!!,¡¡Éxito!!,ที่ประสบความสำเร็จ !!,Sukces!!,Sėkmė!!,Succes!!,Keberhasilan!!,Succès!!,Успех!!,ភាពជោគជ័យ !!,کامیابی!!,成功！！,Siker!!
 UI_COMBINATION_RESULT_GREAT_SUCCESS,Great Success!!,대성공!!,Grande sucesso!!,Grande sucesso!!,大成功！！,Großer Erfolg!!,¡¡Gran éxito!!,ความสำเร็จที่ดี!!,Wielki sukces!!,Didelė sėkmė!!,Groot succes!!,Sukses Besar !!,Grand succès!!,Огромный успех!!,ជោគជ័យ​ដ៏​អស្ចារ្យ!!,عظیم کامیابی!!,巨大的成功！！,Nagy siker!!
 UI_ENHANCEMENT_RESULT_SUCCESS,Success!!,성공!!,Sucesso!!,Sucesso!!,成功！！,Erfolg!!,¡¡Éxito!!,ที่ประสบความสำเร็จ !!,Sukces!!,Sėkmė!!,Succes!!,Keberhasilan!!,Succès!!,Успех!!,ភាពជោគជ័យ !!,کامیابی!!,成功！！,Siker!!
@@ -1562,8 +1560,8 @@ UI_COMBINATION_SLOT_IDENTIFYING,Identifying items..,아이템을 감정하는 �
 UI_TRADABLE,Tradable,Tradable,Tradable,Tradable,Tradable,Tradable,Tradable,Tradable,Tradable,Tradable,Tradable,Tradable,Tradable,Tradable,Tradable,Tradable,Tradable,Tradable,
 UI_UNTRADABLE,Untradable,Untradable,Untradable,Untradable,Untradable,Untradable,Untradable,Untradable,Untradable,Untradable,Untradable,Untradable,Untradable,Untradable,Untradable,Untradable,Untradable,Untradable,
 UI_COUNT_FORMAT,Count : {0},보유 : {0},Count : {0},Count : {0},Count : {0},Count : {0},Count : {0},Count : {0},Count : {0},Count : {0},Count : {0},Count : {0},Count : {0},Count : {0},Count : {0},Count : {0},Count : {0},Count : {0},
-UI_ITEM_GRADE_1,Normal,Normal,Normal,Normal,Normal,Normal,Normal,Normal,Normal,Normal,Normal,Normal,Normal,Normal,Normal,Normal,Normal,Normal,
-UI_ITEM_GRADE_2,Rare,Rare,Rare,Rare,Rare,Rare,Rare,Rare,Rare,Rare,Rare,Rare,Rare,Rare,Rare,Rare,Rare,Rare,
-UI_ITEM_GRADE_3,Epic,Epic,Epic,Epic,Epic,Epic,Epic,Epic,Epic,Epic,Epic,Epic,Epic,Epic,Epic,Epic,Epic,Epic,
-UI_ITEM_GRADE_4,Unique,Unique,Unique,Unique,Unique,Unique,Unique,Unique,Unique,Unique,Unique,Unique,Unique,Unique,Unique,Unique,Unique,Unique,
-UI_ITEM_GRADE_5,Legend,Legend,Legend,Legend,Legend,Legend,Legend,Legend,Legend,Legend,Legend,Legend,Legend,Legend,Legend,Legend,Legend,Legend,
+UI_ITEM_GRADE_1,Normal,노멀,Normal,Normal,正常,Normal,Normal,ปกติ,Normalna,Normalus,normaal,Normal,Normal,Обычный,ធម្មតា,عمومی,普通的,Normál
+UI_ITEM_GRADE_2,Rare,레어,Cru,Cru,レア,Selten,Raro,หายาก,Rzadko spotykany,retas,Bijzonder,Langka,Peu fréquent,Редкий,កម្រ,نایاب,稀有的,Ritka
+UI_ITEM_GRADE_3,Epic,에픽,Épico,Épico,大作,Epos,Épico,มหากาพย์,Epicki,Epinis,episch,Epik,Épique,эпический,វីរភាព,مہاکاوی,史诗,Epikus
+UI_ITEM_GRADE_4,Unique,유니크,Único,Único,ユニーク,Einzigartig,Único,เป็นเอกลักษณ์,Wyjątkowy,Unikalus,Uniek,Unik,Unique,Уникальный,មានតែមួយគត់,منفرد,独特,Egyedi
+UI_ITEM_GRADE_5,Legend,레전드,Lenda,Lenda,伝説,Legende,Leyenda,ตำนาน,Legenda,legenda,Legende,Legenda,Légende,легенда,រឿងព្រេង,علامات,传奇,Legenda
