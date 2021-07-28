@@ -72,6 +72,7 @@ namespace Nekoyume.BlockChain
             // Market
             Sell();
             SellCancellation();
+            UpdateSell();
             Buy();
 
             // Consume
@@ -147,6 +148,14 @@ namespace Nekoyume.BlockChain
                 .Where(ValidateEvaluationForCurrentAvatarState)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseSellCancellation).AddTo(_disposables);
+        }
+
+        private void UpdateSell()
+        {
+            _renderer.EveryRender<UpdateSell>()
+                .Where(ValidateEvaluationForCurrentAvatarState)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseUpdateSell).AddTo(_disposables);
         }
 
         private void Buy()
@@ -402,7 +411,11 @@ namespace Nekoyume.BlockChain
                 OneLinePopup.Push(MailType.Auction, message);
 
                 UpdateCurrentAvatarState(eval);
-                Widget.Find<ShopSell>().Refresh();
+                var shopSell = Widget.Find<ShopSell>();
+                if (shopSell.isActiveAndEnabled)
+                {
+                    shopSell.Refresh();
+                }
             }
         }
 
@@ -415,15 +428,36 @@ namespace Nekoyume.BlockChain
 
             var avatarAddress = eval.Action.sellerAvatarAddress;
             var order = Util.GetOrder(eval.Action.orderId);
-            var itemBase = Util.GetItemBaseByOrderId(eval.Action.orderId);
-            var tradableItem = (ITradableItem) itemBase;
+            var itemName = Util.GetItemNameByOrdierId(order.OrderId);
             var count = order is FungibleOrder fungibleOrder ? fungibleOrder.ItemCount : 1;
-            LocalLayerModifier.RemoveItem(avatarAddress, tradableItem.TradableId, tradableItem.RequiredBlockIndex, count);
+            LocalLayerModifier.RemoveItem(avatarAddress, order.TradableId, order.ExpiredBlockIndex, count);
             LocalLayerModifier.AddNewMail(avatarAddress, eval.Action.orderId);
             var format = L10nManager.Localize("NOTIFICATION_SELL_CANCEL_COMPLETE");
-            OneLinePopup.Push(MailType.Auction, string.Format(format, itemBase.GetLocalizedName()));
+            OneLinePopup.Push(MailType.Auction, string.Format(format, itemName));
             UpdateCurrentAvatarState(eval);
-            Widget.Find<ShopSell>().Refresh();
+            var shopSell = Widget.Find<ShopSell>();
+            if (shopSell.isActiveAndEnabled)
+            {
+                shopSell.Refresh();
+            }
+        }
+
+        private void ResponseUpdateSell(ActionBase.ActionEvaluation<UpdateSell> eval)
+        {
+            if (!(eval.Exception is null))
+            {
+                return;
+            }
+
+            var itemName = Util.GetItemNameByOrdierId(eval.Action.orderId);
+            var format = L10nManager.Localize("NOTIFICATION_REREGISTER_COMPLETE");
+            OneLinePopup.Push(MailType.Auction, string.Format(format, itemName));
+            UpdateCurrentAvatarState(eval);
+            var shopSell = Widget.Find<ShopSell>();
+            if (shopSell.isActiveAndEnabled)
+            {
+                shopSell.Refresh();
+            }
         }
 
         private void ResponseBuy(ActionBase.ActionEvaluation<Buy> eval)
@@ -449,7 +483,7 @@ namespace Nekoyume.BlockChain
                 foreach (var purchaseInfo in purchaseInfos)
                 {
                     var order = Util.GetOrder(purchaseInfo.OrderId);
-                    var itemBase = Util.GetItemBaseByOrderId(purchaseInfo.OrderId);
+                    var itemName = Util.GetItemNameByOrdierId(order.OrderId);
                     var price = purchaseInfo.Price;
 
                     if (errors.Exists(tuple => tuple.orderId.Equals(purchaseInfo.OrderId)))
@@ -460,21 +494,20 @@ namespace Nekoyume.BlockChain
                         var errorType = ((ShopErrorType) errorCode).ToString();
                         LocalLayerModifier.ModifyAgentGold(agentAddress, price);
                         var msg = string.Format(L10nManager.Localize("NOTIFICATION_BUY_FAIL"),
-                            itemBase.GetLocalizedName(),
+                            itemName,
                             L10nManager.Localize(errorType),
                             price);
                         OneLinePopup.Push(MailType.Auction, msg);
                     }
                     else
                     {
-                        var tradableItem = (ITradableItem) itemBase;
                         var count = order is FungibleOrder fungibleOrder ? fungibleOrder.ItemCount : 1;
                         LocalLayerModifier.ModifyAgentGold(agentAddress, price);
-                        LocalLayerModifier.RemoveItem(avatarAddress, tradableItem.TradableId, tradableItem.RequiredBlockIndex, count);
+                        LocalLayerModifier.RemoveItem(avatarAddress, order.TradableId, order.ExpiredBlockIndex, count);
                         LocalLayerModifier.AddNewMail(avatarAddress, purchaseInfo.OrderId);
 
                         var format = L10nManager.Localize("NOTIFICATION_BUY_BUYER_COMPLETE");
-                        OneLinePopup.Push(MailType.Auction, string.Format(format, itemBase.GetLocalizedName(), price));
+                        OneLinePopup.Push(MailType.Auction, string.Format(format, itemName, price));
                     }
                 }
             }
@@ -496,7 +529,7 @@ namespace Nekoyume.BlockChain
                     );
 
                     var order = Util.GetOrder(purchaseInfo.OrderId);
-                    var itemBase = Util.GetItemBaseByOrderId(purchaseInfo.OrderId);
+                    var itemName = Util.GetItemNameByOrdierId(order.OrderId);
                     var taxedPrice = order.Price - order.GetTax();
 
                     LocalLayerModifier.ModifyAgentGold(agentAddress, -taxedPrice);
@@ -505,7 +538,7 @@ namespace Nekoyume.BlockChain
                     var message = string.Format(
                         L10nManager.Localize("NOTIFICATION_BUY_SELLER_COMPLETE"),
                         buyerNameWithHash,
-                        itemBase.GetLocalizedName());
+                        itemName);
                     OneLinePopup.Push(MailType.Auction, message);
                 }
             }
