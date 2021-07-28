@@ -1,4 +1,4 @@
-id,item_sub_type,grade,level,cost,success_ratio,great_success_ratio,fail_ratio,success_required_block_index,great_success_required_block_index,fail_required_block_index,base_stat_growth_min,base_stat_growth_max,extra_stat_growth_min,extra_stat_growth_max,extra_skill_damage_growth_min,extra_skill_damage_growth_max,extra_skill_proc_growth_min,extra_skill_proc_growth_max
+id,item_sub_type,grade,level,cost,success_ratio,great_success_ratio,fail_ratio,success_required_block_index,great_success_required_block_index,fail_required_block_index,base_stat_growth_min,base_stat_growth_max,extra_stat_growth_min,extra_stat_growth_max,extra_skill_damage_growth_min,extra_skill_damage_growth_max,extra_skill_chance_growth_min,extra_skill_chance_growth_max
 1,Weapon,1,1,0,0.75,0.25,0,300,700,50,0.08,0.12,0,0,0,0,0,0
 2,Weapon,1,2,0,0.75,0.25,0,300,700,50,0.08,0.12,0,0,0,0,0,0
 3,Weapon,1,3,0,0.75,0.25,0,300,700,50,0.08,0.12,0,0,0,0,0,0

@@ -7,7 +7,7 @@
     public class EnhancementCostSheetV2Test
     {
         private const string _csv =
-            @"id,item_sub_type,grade,level,cost,success_ratio,great_success_ratio,fail_ratio,success_required_block_index,great_success_required_block_index,fail_required_block_index,base_stat_growth_min,base_stat_growth_max,extra_stat_growth_min,extra_stat_growth_max,extra_skill_damage_growth_min,extra_skill_damage_growth_max,extra_skill_proc_growth_min,extra_skill_proc_growth_max
+            @"id,item_sub_type,grade,level,cost,success_ratio,great_success_ratio,fail_ratio,success_required_block_index,great_success_required_block_index,fail_required_block_index,base_stat_growth_min,base_stat_growth_max,extra_stat_growth_min,extra_stat_growth_max,extra_skill_damage_growth_min,extra_skill_damage_growth_max,extra_skill_chance_growth_min,extra_skill_chance_growth_max
 1,Weapon,1,1,0,0.75,0.25,0,300,700,50,0.08,0.12,0.24,0.36,0.24,0.36,0.12,0.18
 2,Weapon,1,2,0,0.75,0.25,0,300,700,50,0.08,0.12,0.08,0.12,0.08,0.12,0.04,0.06";
 
@@ -39,8 +39,8 @@
             Assert.Equal(0.36m, row.ExtraStatGrowthMax);
             Assert.Equal(0.24m, row.ExtraSkillDamageGrowthMin);
             Assert.Equal(0.36m, row.ExtraSkillDamageGrowthMax);
-            Assert.Equal(0.12m, row.ExtraSkillProcGrowthMin);
-            Assert.Equal(0.18m, row.ExtraSkillProcGrowthMax);
+            Assert.Equal(0.12m, row.ExtraSkillChanceGrowthMin);
+            Assert.Equal(0.18m, row.ExtraSkillChanceGrowthMax);
 
             row = sheet.Last;
             Assert.Equal(row.Id, row.Key);
@@ -61,8 +61,8 @@
             Assert.Equal(0.12m, row.ExtraStatGrowthMax);
             Assert.Equal(0.08m, row.ExtraSkillDamageGrowthMin);
             Assert.Equal(0.12m, row.ExtraSkillDamageGrowthMax);
-            Assert.Equal(0.04m, row.ExtraSkillProcGrowthMin);
-            Assert.Equal(0.06m, row.ExtraSkillProcGrowthMax);
+            Assert.Equal(0.04m, row.ExtraSkillChanceGrowthMin);
+            Assert.Equal(0.06m, row.ExtraSkillChanceGrowthMax);
         }
     }
 }

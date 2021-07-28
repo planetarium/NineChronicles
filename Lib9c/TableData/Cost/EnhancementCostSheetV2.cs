@@ -23,8 +23,8 @@ namespace Nekoyume.TableData
             public decimal ExtraStatGrowthMax { get; private set; }
             public decimal ExtraSkillDamageGrowthMin { get; private set; }
             public decimal ExtraSkillDamageGrowthMax { get; private set; }
-            public decimal ExtraSkillProcGrowthMin { get; private set; }
-            public decimal ExtraSkillProcGrowthMax { get; private set; }
+            public decimal ExtraSkillChanceGrowthMin { get; private set; }
+            public decimal ExtraSkillChanceGrowthMax { get; private set; }
 
             public override void Set(IReadOnlyList<string> fields)
             {
@@ -41,8 +41,8 @@ namespace Nekoyume.TableData
                 ExtraStatGrowthMax = ParseDecimal(fields[14], 0m);
                 ExtraSkillDamageGrowthMin = ParseDecimal(fields[15], 0m);
                 ExtraSkillDamageGrowthMax = ParseDecimal(fields[16], 0m);
-                ExtraSkillProcGrowthMin = ParseDecimal(fields[17], 0m);
-                ExtraSkillProcGrowthMax = ParseDecimal(fields[18], 0m);
+                ExtraSkillChanceGrowthMin = ParseDecimal(fields[17], 0m);
+                ExtraSkillChanceGrowthMax = ParseDecimal(fields[18], 0m);
             }
         }
 
