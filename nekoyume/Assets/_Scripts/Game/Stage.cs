@@ -593,7 +593,7 @@ namespace Nekoyume.Game
                     }
                 }
             }
-            
+
             Widget.Find<BattleResult>().Show(_battleResultModel);
 
             yield return null;

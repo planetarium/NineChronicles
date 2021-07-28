@@ -19,6 +19,7 @@ using Nekoyume.State.Modifiers;
 using Nekoyume.State.Subjects;
 using Nekoyume.UI.Module;
 using UnityEngine;
+using System.Threading.Tasks;
 
 namespace Nekoyume.BlockChain
 {
@@ -584,17 +585,26 @@ namespace Nekoyume.BlockChain
                 _disposableForBattleEnd =
                     Game.Game.instance.Stage.onEnterToStageEnd
                         .First()
-                        .Subscribe(_ =>
+                        .Subscribe(async _ =>
                         {
-                            UpdateCurrentAvatarState(eval);
-                            UpdateWeeklyArenaState(eval);
-                            Address agentAddress = States.Instance.AgentState.address;
-                            if (eval.OutputStates.TryGetAvatarStateV2(agentAddress, eval.Action.avatarAddress,
-                                out var avatarState))
+                            var task = Task.Run(() =>
                             {
-                                RenderQuest(eval.Action.avatarAddress,
-                                    avatarState.questList.completedQuestIds);
-                                _disposableForBattleEnd = null;
+                                UpdateCurrentAvatarState(eval);
+                                UpdateWeeklyArenaState(eval);
+                                Address agentAddress = States.Instance.AgentState.address;
+                                if (eval.OutputStates.TryGetAvatarStateV2(agentAddress, eval.Action.avatarAddress,
+                                    out var avatarState))
+                                {
+                                    RenderQuest(eval.Action.avatarAddress,
+                                        avatarState.questList.completedQuestIds);
+                                    _disposableForBattleEnd = null;
+                                }
+                            });
+                            await task;
+
+                            if (task.Exception != null)
+                            {
+                                Debug.LogError(task.Exception);
                             }
                         });
 
@@ -641,17 +651,26 @@ namespace Nekoyume.BlockChain
                 _disposableForBattleEnd =
                     Game.Game.instance.Stage.onEnterToStageEnd
                         .First()
-                        .Subscribe(_ =>
+                        .Subscribe(async _ =>
                         {
-                            UpdateCurrentAvatarState(eval);
-                            UpdateWeeklyArenaState(eval);
-                            Address agentAddress = States.Instance.AgentState.address;
-                            if (eval.OutputStates.TryGetAvatarStateV2(agentAddress,
-                                eval.Action.avatarAddress, out var avatarState))
+                            var task = Task.Run(() =>
                             {
-                                RenderQuest(eval.Action.avatarAddress,
-                                    avatarState.questList.completedQuestIds);
-                                _disposableForBattleEnd = null;
+                                UpdateCurrentAvatarState(eval);
+                                UpdateWeeklyArenaState(eval);
+                                Address agentAddress = States.Instance.AgentState.address;
+                                if (eval.OutputStates.TryGetAvatarStateV2(agentAddress,
+                                    eval.Action.avatarAddress, out var avatarState))
+                                {
+                                    RenderQuest(eval.Action.avatarAddress,
+                                        avatarState.questList.completedQuestIds);
+                                    _disposableForBattleEnd = null;
+                                }
+                            });
+                            await task;
+
+                            if (task.Exception != null)
+                            {
+                                Debug.LogError(task.Exception);
                             }
                         });
 
@@ -703,12 +722,21 @@ namespace Nekoyume.BlockChain
                 _disposableForBattleEnd =
                     Game.Game.instance.Stage.onEnterToStageEnd
                         .First()
-                        .Subscribe(_ =>
+                        .Subscribe(async _ =>
                         {
-                            UpdateAgentState(eval);
-                            UpdateCurrentAvatarState(eval);
-                            UpdateWeeklyArenaState(eval);
-                            _disposableForBattleEnd = null;
+                            var task = Task.Run(() =>
+                            {
+                                UpdateAgentState(eval);
+                                UpdateCurrentAvatarState(eval);
+                                UpdateWeeklyArenaState(eval);
+                                _disposableForBattleEnd = null;
+                            });
+                            await task;
+
+                            if (task.Exception != null)
+                            {
+                                Debug.LogError(task.Exception);
+                            }
                         });
 
                 if (Widget.Find<ArenaBattleLoadingScreen>().IsActive())
