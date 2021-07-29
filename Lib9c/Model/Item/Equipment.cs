@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 using Bencodex.Types;
+using Libplanet.Action;
 using Nekoyume.Model.Stat;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
@@ -81,7 +82,7 @@ namespace Nekoyume.Model.Item
             {
                 optionCountFromCombination = value.ToInteger();
             }
-            
+
             if (serialized.TryGetValue((Text) RequiredCharacterLevelKey, out value))
             {
                 RequiredCharacterLevel = value.ToInteger();
@@ -143,6 +144,22 @@ namespace Nekoyume.Model.Item
             }
         }
 
+        public void LevelUpV2(IRandom random, EnhancementCostSheetV2.Row row, bool isGreatSuccess)
+        {
+            level++;
+            var min = (int)(row.BaseStatGrowthMin * GameConfig.TenThousand);
+            var max = (int)(row.BaseStatGrowthMax * GameConfig.TenThousand) + 1;
+            var rand = random.Next(min, max) * GameConfig.TenThousandths;
+            var ratio = isGreatSuccess ? row.BaseStatGrowthMax : rand;
+            var baseStat = Math.Max(1.0m, StatsMap.GetStat(UniqueStatType, true) * ratio);
+            StatsMap.AddStatValue(UniqueStatType, baseStat);
+
+            if (GetOptionCount() > 0)
+            {
+                UpdateOptionsV2(random, row, isGreatSuccess);
+            }
+        }
+
         public List<object> GetOptions()
         {
             var options = new List<object>();
@@ -176,6 +193,39 @@ namespace Nekoyume.Model.Item
                 var chance = decimal.ToInt32(skill.Chance * 1.3m);
                 var power = decimal.ToInt32(skill.Power * 1.3m);
                 skill.Update(chance, power);
+            }
+        }
+
+        private void UpdateOptionsV2(IRandom random, EnhancementCostSheetV2.Row row, bool isGreatSuccess)
+        {
+            foreach (var statMapEx in StatsMap.GetAdditionalStats())
+            {
+                var min = (int)(row.ExtraStatGrowthMin * GameConfig.TenThousand);
+                var max = (int)(row.ExtraStatGrowthMax * GameConfig.TenThousand) + 1;
+                var rand = random.Next(min, max) * GameConfig.TenThousandths;
+                var ratio = isGreatSuccess ? row.ExtraStatGrowthMax : rand;
+                StatsMap.SetStatAdditionalValue(statMapEx.StatType, statMapEx.AdditionalValue * (1 + ratio));
+            }
+
+            var skills = new List<Skill.Skill>();
+            skills.AddRange(Skills);
+            skills.AddRange(BuffSkills);
+            foreach (var skill in skills)
+            {
+                // chance
+                var chanceMin = (int)(row.ExtraSkillChanceGrowthMin * GameConfig.TenThousand);
+                var chanceMax = (int)(row.ExtraSkillChanceGrowthMax * GameConfig.TenThousand) + 1;
+                var chanceRand = random.Next(chanceMin, chanceMax) * GameConfig.TenThousandths;
+                var chanceRatio = isGreatSuccess ? row.ExtraSkillChanceGrowthMax : chanceRand;
+                var chance = decimal.ToInt32(skill.Chance * (1 + chanceRatio));
+                // damage
+                var min = (int)(row.ExtraSkillDamageGrowthMin * GameConfig.TenThousand);
+                var max = (int)(row.ExtraSkillDamageGrowthMax * GameConfig.TenThousand) + 1;
+                var damageRand = random.Next(min, max) * GameConfig.TenThousandths;
+                var damageRatio = isGreatSuccess ? row.ExtraSkillDamageGrowthMax : damageRand;
+                var damage = decimal.ToInt32(skill.Power * (1 + damageRatio));
+
+                skill.Update(chance, damage);
             }
         }
 

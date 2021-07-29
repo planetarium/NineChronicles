@@ -1,4 +1,4 @@
-namespace Lib9c.Tests.Action
+﻿namespace Lib9c.Tests.Action
 {
     using System;
     using System.Collections.Generic;
@@ -18,7 +18,7 @@ namespace Lib9c.Tests.Action
     using Xunit;
     using static SerializeKeys;
 
-    public class ItemEnhancementTest
+    public class ItemEnhancement7Test
     {
         private readonly IRandom _random;
         private readonly TableSheets _tableSheets;
@@ -29,7 +29,7 @@ namespace Lib9c.Tests.Action
         private readonly Currency _currency;
         private IAccountStateDelta _initialState;
 
-        public ItemEnhancementTest()
+        public ItemEnhancement7Test()
         {
             var sheets = TableSheetsImporter.ImportSheets();
             _random = new TestRandom();
@@ -74,9 +74,9 @@ namespace Lib9c.Tests.Action
 
         [Theory]
         [InlineData(0, 1, 1000, true)]
-        [InlineData(6, 7, 500, true)]
+        [InlineData(3, 4, 0, true)]
         [InlineData(0, 1, 1000, false)]
-        [InlineData(6, 7, 500, false)]
+        [InlineData(3, 4, 0, false)]
         public void Execute(int level, int expectedLevel, int expectedGold, bool backward)
         {
             var row = _tableSheets.EquipmentItemSheet.Values.First(r => r.Grade == 1);
@@ -123,7 +123,7 @@ namespace Lib9c.Tests.Action
                     .SetState(_avatarAddress, _avatarState.SerializeV2());
             }
 
-            var action = new ItemEnhancement()
+            var action = new ItemEnhancement7()
             {
                 itemId = default,
                 materialId = materialId,
@@ -152,7 +152,7 @@ namespace Lib9c.Tests.Action
             Assert.Equal(30, nextAvatarState.mailBox.Count);
 
             var grade = resultEquipment.Grade;
-            var costRow = _tableSheets.EnhancementCostSheetV2
+            var costRow = _tableSheets.EnhancementCostSheet
                 .OrderedList
                 .FirstOrDefault(x => x.Grade == grade && x.Level == resultEquipment.level);
             var stateDict = (Dictionary)nextState.GetState(slotAddress);
@@ -165,7 +165,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Rehearsal()
         {
-            var action = new ItemEnhancement()
+            var action = new ItemEnhancement7()
             {
                 itemId = default,
                 materialId = default,

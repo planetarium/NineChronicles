@@ -108,7 +108,7 @@ namespace Lib9c.Tests.Action
 
             _initialState = _initialState.SetState(_avatarAddress, _avatarState.Serialize());
 
-            var action = new ItemEnhancement()
+            var action = new ItemEnhancement6()
             {
                 itemId = default,
                 materialId = materialId,
