@@ -590,8 +590,9 @@ GameObject:
   m_Component:
   - component: {fileID: 5495995641355029135}
   - component: {fileID: 5495995641355029121}
+  - component: {fileID: -3283876061779394676}
   m_Layer: 5
-  m_Name: Item_RecipeSlot_Equip
+  m_Name: Item_RecipeSlot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -627,6 +628,25 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5495995641355029134}
   m_CullTransparentMesh: 1
+--- !u!114 &-3283876061779394676
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5495995641355029134}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1fc3032e3f29acf4c94f675bbbb230dd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  iconImage: {fileID: 1878263236361382383}
+  enabledBgImage: {fileID: 8561595566502432069}
+  disabledBgImage: {fileID: 4237107044688102027}
+  elementImage: {fileID: 843561335005166976}
+  enabledObject: {fileID: 7200423135639980101}
+  disabledObject: {fileID: 4846807722613117677}
+  SelectedImage: {fileID: 6677418096144953737}
 --- !u!1 &5584105385802590638
 GameObject:
   m_ObjectHideFlags: 0
