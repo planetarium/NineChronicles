@@ -25,7 +25,10 @@ namespace Nekoyume.Action
         {
             var states = context.PreviousStates;
             states = GenesisGoldDistribution(context, states);
-            states = WeeklyArenaRankingBoard(context, states);
+            // TODO configure blockIndex on v100062
+            states = context.BlockIndex > 2000000
+                ? WeeklyArenaRankingBoard2(context, states)
+                : WeeklyArenaRankingBoard(context, states);
             return MinerReward(context, states);
         }
 
@@ -92,6 +95,45 @@ namespace Nekoyume.Action
             {
                 weekly.ResetCount(ctx.BlockIndex);
                 states = states.SetState(weekly.address, weekly.Serialize());
+            }
+            return states;
+        }
+
+        public IAccountStateDelta WeeklyArenaRankingBoard2(IActionContext ctx, IAccountStateDelta states)
+        {
+            var gameConfigState = states.GetGameConfigState();
+            var index = Math.Max((int) ctx.BlockIndex / gameConfigState.WeeklyArenaInterval, 0);
+            var weeklyAddress = WeeklyArenaState.DeriveAddress(index);
+            var rawWeekly = (Dictionary) states.GetState(weeklyAddress);
+            var nextIndex = index + 1;
+            var nextWeekly = states.GetWeeklyArenaState(nextIndex);
+            if (nextWeekly is null)
+            {
+                nextWeekly = new WeeklyArenaState(nextIndex);
+                states = states.SetState(nextWeekly.address, nextWeekly.Serialize());
+            }
+            var resetIndex = rawWeekly["resetIndex"].ToLong();
+
+            // Beginning block of a new weekly arena.
+            if (ctx.BlockIndex % gameConfigState.WeeklyArenaInterval == 0 && index > 0)
+            {
+                var prevWeeklyAddress = WeeklyArenaState.DeriveAddress(index - 1);
+                var rawPrevWeekly = (Dictionary)states.GetState(prevWeeklyAddress);
+                if (!rawPrevWeekly["ended"].ToBoolean())
+                {
+                    rawPrevWeekly = rawPrevWeekly.SetItem("ended", true.Serialize());
+                    var weekly = new WeeklyArenaState(rawWeekly);
+                    var prevWeekly = new WeeklyArenaState(rawPrevWeekly);
+                    weekly.Update(prevWeekly, ctx.BlockIndex);
+                    states = states.SetState(prevWeeklyAddress, rawPrevWeekly);
+                    states = states.SetState(weeklyAddress, weekly.Serialize());
+                }
+            }
+            else if (ctx.BlockIndex - resetIndex >= gameConfigState.DailyArenaInterval)
+            {
+                var weekly = new WeeklyArenaState(rawWeekly);
+                weekly.ResetCount(ctx.BlockIndex);
+                states = states.SetState(weeklyAddress, weekly.Serialize());
             }
             return states;
         }

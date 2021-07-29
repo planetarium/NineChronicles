@@ -49,92 +49,83 @@ namespace Lib9c.Tests.Action
                 .MintAsset(GoldCurrencyState.Address, gold.Currency * 100000000000);
         }
 
-        [Fact]
-        public void ExecuteCreateNextWeeklyArenaState()
-        {
-            var weekly = new WeeklyArenaState(0);
-            var gameConfigState = new GameConfigState();
-            gameConfigState.Set(_tableSheets.GameConfigSheet);
-            var state = _baseState
-                .SetState(weekly.address, weekly.Serialize())
-                .SetState(gameConfigState.address, gameConfigState.Serialize());
-            var action = new RewardGold();
-
-            var nextState = action.Execute(new ActionContext()
-            {
-                PreviousStates = state,
-                Miner = default,
-                BlockIndex = 1,
-            });
-
-            Assert.Contains(WeeklyArenaState.DeriveAddress(1), nextState.UpdatedAddresses);
-        }
-
-        [Fact]
-        public void ExecuteResetCount()
+        [Theory]
+        [InlineData(false, false)]
+        [InlineData(false, true)]
+        [InlineData(true, false)]
+        [InlineData(true, true)]
+        public void WeeklyArenaRankingBoard(bool resetCount, bool updateNext)
         {
             var weekly = new WeeklyArenaState(0);
             weekly.Set(_avatarState, _tableSheets.CharacterSheet);
             weekly[_avatarState.address].Update(_avatarState, weekly[_avatarState.address], BattleLog.Result.Lose);
+            var gameConfigState = new GameConfigState();
+            gameConfigState.Set(_tableSheets.GameConfigSheet);
+            var state = _baseState
+                .SetState(weekly.address, weekly.Serialize())
+                .SetState(gameConfigState.address, gameConfigState.Serialize());
+            var blockIndex = 0;
 
+            if (resetCount)
+            {
+                blockIndex = gameConfigState.DailyArenaInterval;
+            }
+
+            if (updateNext)
+            {
+                weekly[_avatarState.address].Activate();
+                blockIndex = gameConfigState.WeeklyArenaInterval;
+                // Avoid NRE in test case.
+                var nextWeekly = new WeeklyArenaState(1);
+                state = state
+                    .SetState(weekly.address, weekly.Serialize())
+                    .SetState(nextWeekly.address, nextWeekly.Serialize());
+            }
+
+            Assert.False(weekly.Ended);
             Assert.Equal(4, weekly[_avatarState.address].DailyChallengeCount);
 
-            var gameConfigState = new GameConfigState();
-            gameConfigState.Set(_tableSheets.GameConfigSheet);
-            var state = _baseState
-                .SetState(weekly.address, weekly.Serialize())
-                .SetState(gameConfigState.address, gameConfigState.Serialize());
             var action = new RewardGold();
 
-            var nextState = action.Execute(new ActionContext()
+            var ctx = new ActionContext()
             {
-                PreviousStates = state,
+                BlockIndex = blockIndex,
+                PreviousStates = _baseState,
                 Miner = default,
-                BlockIndex = gameConfigState.DailyArenaInterval,
-            });
+            };
 
-            var current = nextState.GetWeeklyArenaState(0);
-
-            Assert.Contains(WeeklyArenaState.DeriveAddress(1), nextState.UpdatedAddresses);
-            Assert.Equal(gameConfigState.DailyArenaInterval, current.ResetIndex);
-            Assert.Equal(5, current[_avatarState.address].DailyChallengeCount);
-        }
-
-        [Fact]
-        public void ExecuteUpdateNextWeeklyArenaState()
-        {
-            var prevWeekly = new WeeklyArenaState(0);
-            prevWeekly.Set(_avatarState, _tableSheets.CharacterSheet);
-            prevWeekly[_avatarState.address].Activate();
-
-            Assert.False(prevWeekly.Ended);
-            Assert.True(prevWeekly[_avatarState.address].Active);
-
-            var weekly = new WeeklyArenaState(1);
-            var gameConfigState = new GameConfigState();
-            gameConfigState.Set(_tableSheets.GameConfigSheet);
-            var state = _baseState
-                .SetState(prevWeekly.address, prevWeekly.Serialize())
-                .SetState(weekly.address, weekly.Serialize())
-                .SetState(gameConfigState.address, gameConfigState.Serialize());
-
-            var action = new RewardGold();
-
-            var nextState = action.Execute(new ActionContext()
+            var states = new[]
             {
-                PreviousStates = state,
-                Miner = default,
-                BlockIndex = gameConfigState.WeeklyArenaInterval,
-            });
+                action.WeeklyArenaRankingBoard2(ctx, state),
+                action.WeeklyArenaRankingBoard(ctx, state),
+            };
 
-            var prev = nextState.GetWeeklyArenaState(0);
-            var current = nextState.GetWeeklyArenaState(1);
+            foreach (var nextState in states)
+            {
+                var currentWeeklyState = nextState.GetWeeklyArenaState(0);
+                var nextWeeklyState = nextState.GetWeeklyArenaState(1);
 
-            Assert.Equal(prevWeekly.address, prev.address);
-            Assert.Equal(weekly.address, current.address);
-            Assert.True(prev.Ended);
-            Assert.Equal(gameConfigState.WeeklyArenaInterval, current.ResetIndex);
-            Assert.Contains(_avatarState.address, current);
+                Assert.Contains(WeeklyArenaState.DeriveAddress(0), nextState.UpdatedAddresses);
+                Assert.Contains(WeeklyArenaState.DeriveAddress(1), nextState.UpdatedAddresses);
+
+                if (updateNext)
+                {
+                    Assert.Contains(WeeklyArenaState.DeriveAddress(2), nextState.UpdatedAddresses);
+                    Assert.Equal(blockIndex, nextWeeklyState.ResetIndex);
+                }
+
+                if (resetCount)
+                {
+                    var expectedCount = updateNext ? 4 : 5;
+                    var expectedIndex = updateNext ? 0 : blockIndex;
+                    Assert.Equal(expectedCount, currentWeeklyState[_avatarState.address].DailyChallengeCount);
+                    Assert.Equal(expectedIndex, currentWeeklyState.ResetIndex);
+                }
+
+                Assert.Equal(updateNext, currentWeeklyState.Ended);
+                Assert.Contains(_avatarState.address, currentWeeklyState);
+                Assert.Equal(updateNext, nextWeeklyState.ContainsKey(_avatarState.address));
+            }
         }
 
         [Fact]
