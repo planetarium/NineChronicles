@@ -19,7 +19,7 @@ using Nekoyume.State.Modifiers;
 using Nekoyume.State.Subjects;
 using Nekoyume.UI.Module;
 using UnityEngine;
-using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 
 namespace Nekoyume.BlockChain
 {
@@ -585,9 +585,9 @@ namespace Nekoyume.BlockChain
                 _disposableForBattleEnd =
                     Game.Game.instance.Stage.onEnterToStageEnd
                         .First()
-                        .Subscribe(async _ =>
+                        .Subscribe(_ =>
                         {
-                            var task = Task.Run(() =>
+                            var task = UniTask.Run(() =>
                             {
                                 UpdateCurrentAvatarState(eval);
                                 UpdateWeeklyArenaState(eval);
@@ -599,13 +599,14 @@ namespace Nekoyume.BlockChain
                                         avatarState.questList.completedQuestIds);
                                     _disposableForBattleEnd = null;
                                 }
-                            });
-                            await task;
 
-                            if (task.Exception != null)
-                            {
-                                Debug.LogError(task.Exception);
-                            }
+                                return avatarState;
+                            });
+                            task.ToObservable()
+                                .First()
+                                .DoOnError(Debug.LogException);
+
+                            Game.Game.instance.Stage.GetStateTask = task;
                         });
 
                 if (Widget.Find<LoadingScreen>().IsActive())
@@ -651,9 +652,9 @@ namespace Nekoyume.BlockChain
                 _disposableForBattleEnd =
                     Game.Game.instance.Stage.onEnterToStageEnd
                         .First()
-                        .Subscribe(async _ =>
+                        .Subscribe(_ =>
                         {
-                            var task = Task.Run(() =>
+                            var task = UniTask.Run(() =>
                             {
                                 UpdateCurrentAvatarState(eval);
                                 UpdateWeeklyArenaState(eval);
@@ -665,13 +666,14 @@ namespace Nekoyume.BlockChain
                                         avatarState.questList.completedQuestIds);
                                     _disposableForBattleEnd = null;
                                 }
-                            });
-                            await task;
 
-                            if (task.Exception != null)
-                            {
-                                Debug.LogError(task.Exception);
-                            }
+                                return avatarState;
+                            });
+                            task.ToObservable()
+                                .First()
+                                .DoOnError(Debug.LogException);
+
+                            Game.Game.instance.Stage.GetStateTask = task;
                         });
 
                 if (Widget.Find<LoadingScreen>().IsActive())
@@ -722,21 +724,22 @@ namespace Nekoyume.BlockChain
                 _disposableForBattleEnd =
                     Game.Game.instance.Stage.onEnterToStageEnd
                         .First()
-                        .Subscribe(async _ =>
+                        .Subscribe(_ =>
                         {
-                            var task = Task.Run(() =>
+                            var task = UniTask.Run(() =>
                             {
                                 UpdateAgentState(eval);
                                 UpdateCurrentAvatarState(eval);
                                 UpdateWeeklyArenaState(eval);
                                 _disposableForBattleEnd = null;
-                            });
-                            await task;
 
-                            if (task.Exception != null)
-                            {
-                                Debug.LogError(task.Exception);
-                            }
+                                return States.Instance.CurrentAvatarState;
+                            });
+                            task.ToObservable()
+                                .First()
+                                .DoOnError(Debug.LogException);
+
+                            Game.Game.instance.Stage.GetStateTask = task;
                         });
 
                 if (Widget.Find<ArenaBattleLoadingScreen>().IsActive())
