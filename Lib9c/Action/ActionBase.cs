@@ -336,5 +336,13 @@ namespace Nekoyume.Action
                 }
             }
         }
+
+        protected void CheckObsolete(long obsoleteIndex, IActionContext ctx)
+        {
+            if (ctx.BlockIndex > obsoleteIndex)
+            {
+                throw new ActionObsoletedException();
+            }
+        }
     }
 }

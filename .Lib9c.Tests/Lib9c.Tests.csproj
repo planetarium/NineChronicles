@@ -6,7 +6,7 @@
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <NoWarn>$(NoWarn);CS0162;CS8032;CS0618</NoWarn>
+    <NoWarn>$(NoWarn);CS0162;CS8032;CS0618;CS0612</NoWarn>
     <CodeAnalysisRuleSet>.\Lib9c.Tests.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
