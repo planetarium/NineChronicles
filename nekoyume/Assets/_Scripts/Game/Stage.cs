@@ -475,6 +475,8 @@ namespace Nekoyume.Game
         private IEnumerator CoStageEnd(BattleLog log)
         {
             GetStateTask = null;
+
+            // NOTE ActionRenderHandler.Instance.Pending should be false before _onEnterToStageEnd.OnNext() invoked.
             ActionRenderHandler.Instance.Pending = false;
             _onEnterToStageEnd.OnNext(this);
             yield return new WaitUntil(() => GetStateTask.HasValue);
