@@ -686,68 +686,68 @@ namespace Nekoyume.State
             CombinationSlotStateSubject.OnNext(slotState);
         }
 
-        public static void ModifyCombinationSlotItemEnhancement(
-            Guid baseMaterialGuid,
-            Guid guid,
-            int slotIndex
-        )
-        {
-            var slotAddress = States.Instance.CurrentAvatarState.address.Derive(
-                string.Format(
-                    CultureInfo.InvariantCulture,
-                    CombinationSlotState.DeriveFormat,
-                    slotIndex
-                )
-            );
+        // public static void ModifyCombinationSlotItemEnhancement(
+        //     Guid baseMaterialGuid,
+        //     Guid guid,
+        //     int slotIndex
+        // )
+        // {
+        //     var slotAddress = States.Instance.CurrentAvatarState.address.Derive(
+        //         string.Format(
+        //             CultureInfo.InvariantCulture,
+        //             CombinationSlotState.DeriveFormat,
+        //             slotIndex
+        //         )
+        //     );
+        //
+        //     ModifyCombinationSlotItemEnhancement(baseMaterialGuid, guid, slotAddress);
+        // }
 
-            ModifyCombinationSlotItemEnhancement(baseMaterialGuid, guid, slotAddress);
-        }
-
-        public static void ModifyCombinationSlotItemEnhancement(
-            Guid baseMaterialGuid,
-            Guid otherMaterialGuid,
-            Address slotAddress
-        )
-        {
-            var blockIndex = Game.Game.instance.Agent.BlockIndex;
-            // todo : ItemEnhancement.RequiredBlockCount 시트에서 정보 가저와야 합니다.
-            var requiredBlockIndex = blockIndex + ItemEnhancement.RequiredBlockCount;
-
-            var avatarAddress = States.Instance.CurrentAvatarState.address;
-            var avatarState = States.Instance.GetAvatarStateV2(avatarAddress);
-            if (!avatarState.inventory.TryGetNonFungibleItem(baseMaterialGuid, out ItemUsable item))
-            {
-                return;
-            }
-
-            if (!(item is Equipment equipment))
-            {
-                return;
-            }
-
-            equipment.LevelUp();
-            equipment.Update(requiredBlockIndex);
-
-            var enhancementRow = Game.Game.instance.TableSheets
-                .EnhancementCostSheet.Values
-                .FirstOrDefault(x => x.Grade == equipment.Grade && x.Level == equipment.level);
-
-            var result = new ItemEnhancement.ResultModel
-            {
-                // id: When applying the local layer for the first time, if the id is the default, the notification is not applied.
-                id = Guid.NewGuid(),
-                actionPoint = 0,
-                gold = enhancementRow.Cost,
-                materialItemIdList = new[] { otherMaterialGuid },
-                itemUsable = equipment,
-            };
-
-            var modifier = new CombinationSlotBlockIndexAndResultModifier(result, blockIndex, requiredBlockIndex);
-            var slotState = States.Instance.CombinationSlotStates[slotAddress];
-            LocalLayer.Instance.Set(slotState.address, modifier);
-            States.Instance.CombinationSlotStates[slotAddress] = modifier.Modify(slotState);
-            CombinationSlotStateSubject.OnNext(slotState);
-        }
+        // public static void ModifyCombinationSlotItemEnhancement(
+        //     Guid baseMaterialGuid,
+        //     Guid otherMaterialGuid,
+        //     Address slotAddress
+        // )
+        // {
+        //     var blockIndex = Game.Game.instance.Agent.BlockIndex;
+        //     // todo : ItemEnhancement.RequiredBlockCount 시트에서 정보 가저와야 합니다.
+        //     var requiredBlockIndex = blockIndex + ItemEnhancement.RequiredBlockCount;
+        //
+        //     var avatarAddress = States.Instance.CurrentAvatarState.address;
+        //     var avatarState = States.Instance.GetAvatarStateV2(avatarAddress);
+        //     if (!avatarState.inventory.TryGetNonFungibleItem(baseMaterialGuid, out ItemUsable item))
+        //     {
+        //         return;
+        //     }
+        //
+        //     if (!(item is Equipment equipment))
+        //     {
+        //         return;
+        //     }
+        //
+        //     equipment.LevelUp();
+        //     equipment.Update(requiredBlockIndex);
+        //
+        //     var enhancementRow = Game.Game.instance.TableSheets
+        //         .EnhancementCostSheet.Values
+        //         .FirstOrDefault(x => x.Grade == equipment.Grade && x.Level == equipment.level);
+        //
+        //     var result = new ItemEnhancement.ResultModel
+        //     {
+        //         // id: When applying the local layer for the first time, if the id is the default, the notification is not applied.
+        //         id = Guid.NewGuid(),
+        //         actionPoint = 0,
+        //         gold = enhancementRow.Cost,
+        //         materialItemIdList = new[] { otherMaterialGuid },
+        //         itemUsable = equipment,
+        //     };
+        //
+        //     var modifier = new CombinationSlotBlockIndexAndResultModifier(result, blockIndex, requiredBlockIndex);
+        //     var slotState = States.Instance.CombinationSlotStates[slotAddress];
+        //     LocalLayer.Instance.Set(slotState.address, modifier);
+        //     States.Instance.CombinationSlotStates[slotAddress] = modifier.Modify(slotState);
+        //     CombinationSlotStateSubject.OnNext(slotState);
+        // }
 
         public static void UnlockCombinationSlot(int slotIndex, long blockIndex)
         {
