@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.EnumType;
+using Nekoyume.Model.Mail;
 using Nekoyume.Pattern;
 using Nekoyume.UI.Module;
 using UnityEngine;
@@ -288,6 +289,10 @@ namespace Nekoyume.UI
             secondWidgets.Add(Widget.Create<Rank>());
             yield return null;
             secondWidgets.Add(Widget.Create<ChatPopup>());
+            yield return null;
+            
+            // Over than HeaderMenu
+            secondWidgets.Add(Widget.Create<CombinationResult>());
             yield return null;
 
             // popup
