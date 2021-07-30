@@ -19,6 +19,7 @@ using Nekoyume.State.Modifiers;
 using Nekoyume.State.Subjects;
 using Nekoyume.UI.Module;
 using UnityEngine;
+using Cysharp.Threading.Tasks;
 
 namespace Nekoyume.BlockChain
 {
@@ -586,16 +587,26 @@ namespace Nekoyume.BlockChain
                         .First()
                         .Subscribe(_ =>
                         {
-                            UpdateCurrentAvatarState(eval);
-                            UpdateWeeklyArenaState(eval);
-                            Address agentAddress = States.Instance.AgentState.address;
-                            if (eval.OutputStates.TryGetAvatarStateV2(agentAddress, eval.Action.avatarAddress,
-                                out var avatarState))
+                            var task = UniTask.Run(() =>
                             {
-                                RenderQuest(eval.Action.avatarAddress,
-                                    avatarState.questList.completedQuestIds);
-                                _disposableForBattleEnd = null;
-                            }
+                                UpdateCurrentAvatarState(eval);
+                                UpdateWeeklyArenaState(eval);
+                                Address agentAddress = States.Instance.AgentState.address;
+                                if (eval.OutputStates.TryGetAvatarStateV2(agentAddress, eval.Action.avatarAddress,
+                                    out var avatarState))
+                                {
+                                    RenderQuest(eval.Action.avatarAddress,
+                                        avatarState.questList.completedQuestIds);
+                                    _disposableForBattleEnd = null;
+                                }
+
+                                return avatarState;
+                            });
+                            task.ToObservable()
+                                .First()
+                                .DoOnError(Debug.LogException);
+
+                            Game.Game.instance.Stage.GetStateTask = task;
                         });
 
                 if (Widget.Find<LoadingScreen>().IsActive())
@@ -643,16 +654,26 @@ namespace Nekoyume.BlockChain
                         .First()
                         .Subscribe(_ =>
                         {
-                            UpdateCurrentAvatarState(eval);
-                            UpdateWeeklyArenaState(eval);
-                            Address agentAddress = States.Instance.AgentState.address;
-                            if (eval.OutputStates.TryGetAvatarStateV2(agentAddress,
-                                eval.Action.avatarAddress, out var avatarState))
+                            var task = UniTask.Run(() =>
                             {
-                                RenderQuest(eval.Action.avatarAddress,
-                                    avatarState.questList.completedQuestIds);
-                                _disposableForBattleEnd = null;
-                            }
+                                UpdateCurrentAvatarState(eval);
+                                UpdateWeeklyArenaState(eval);
+                                Address agentAddress = States.Instance.AgentState.address;
+                                if (eval.OutputStates.TryGetAvatarStateV2(agentAddress,
+                                    eval.Action.avatarAddress, out var avatarState))
+                                {
+                                    RenderQuest(eval.Action.avatarAddress,
+                                        avatarState.questList.completedQuestIds);
+                                    _disposableForBattleEnd = null;
+                                }
+
+                                return avatarState;
+                            });
+                            task.ToObservable()
+                                .First()
+                                .DoOnError(Debug.LogException);
+
+                            Game.Game.instance.Stage.GetStateTask = task;
                         });
 
                 if (Widget.Find<LoadingScreen>().IsActive())
@@ -705,10 +726,20 @@ namespace Nekoyume.BlockChain
                         .First()
                         .Subscribe(_ =>
                         {
-                            UpdateAgentState(eval);
-                            UpdateCurrentAvatarState(eval);
-                            UpdateWeeklyArenaState(eval);
-                            _disposableForBattleEnd = null;
+                            var task = UniTask.Run(() =>
+                            {
+                                UpdateAgentState(eval);
+                                UpdateCurrentAvatarState(eval);
+                                UpdateWeeklyArenaState(eval);
+                                _disposableForBattleEnd = null;
+
+                                return States.Instance.CurrentAvatarState;
+                            });
+                            task.ToObservable()
+                                .First()
+                                .DoOnError(Debug.LogException);
+
+                            Game.Game.instance.Stage.GetStateTask = task;
                         });
 
                 if (Widget.Find<ArenaBattleLoadingScreen>().IsActive())
