@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Cysharp.Threading.Tasks;
 using Lib9c.Model.Order;
 using Nekoyume.Action;
 using Nekoyume.EnumType;
@@ -211,33 +212,33 @@ namespace Nekoyume.UI
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             var attachment = (CombinationConsumable5.ResultModel) mail.attachment;
-            var itemBase = attachment.itemUsable ?? (ItemBase)attachment.costume;
-            var tradableItem = attachment.itemUsable ?? (ITradableItem)attachment.costume;
-            var popup = Find<CombinationResultPopup>();
-            var materialItems = attachment.materials
-                .Select(pair => new {pair, item = pair.Key})
-                .Select(t => new CombinationMaterial(
-                    t.item,
-                    t.pair.Value,
-                    t.pair.Value,
-                    t.pair.Value))
-                .ToList();
-            var model = new UI.Model.CombinationResultPopup(new CountableItem(itemBase, 1))
+            if (attachment.itemUsable is null)
             {
-                isSuccess = true,
-                materialItems = materialItems
-            };
-            model.OnClickSubmit.Subscribe(_ =>
+                Debug.LogError("CombinationMail.itemUsable is null");
+                return;
+            }
+            
+            var itemUsable = attachment.itemUsable;
+            
+            // LocalLayer
+            UniTask.Run(() =>
             {
-                LocalLayerModifier.AddItem(avatarAddress, tradableItem.TradableId, tradableItem.RequiredBlockIndex,1);
-                LocalLayerModifier.RemoveNewAttachmentMail(avatarAddress, mail.id);
-                LocalLayerModifier.RemoveAttachmentResult(avatarAddress, mail.id, true);
+                LocalLayerModifier.AddItem(avatarAddress, itemUsable.TradableId, itemUsable.RequiredBlockIndex, 1,
+                    false);
+                LocalLayerModifier.RemoveNewAttachmentMail(avatarAddress, mail.id, false);
+                LocalLayerModifier.RemoveAttachmentResult(avatarAddress, mail.id, false);
                 LocalLayerModifier.ModifyAvatarItemRequiredIndex(
                     avatarAddress,
-                    tradableItem.TradableId,
+                    itemUsable.TradableId,
                     Game.Game.instance.Agent.BlockIndex);
-            });
-            popup.Pop(model);
+                States.Instance.AddOrReplaceAvatarState(
+                    avatarAddress,
+                    States.Instance.CurrentAvatarKey);
+            }).ToObservable().DoOnCompleted(() =>
+                Debug.Log("CombinationMail LocalLayer task completed"));
+            // ~LocalLayer
+
+            Find<CombinationResult>().Show(itemUsable);
         }
 
         public void Read(OrderBuyerMail orderBuyerMail)

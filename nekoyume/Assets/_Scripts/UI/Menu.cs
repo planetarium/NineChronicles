@@ -13,10 +13,7 @@ using mixpanel;
 using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
-using System.Collections.Generic;
-using Nekoyume.Game.Character;
-using Nekoyume.State.Subjects;
-using UnityEngine.UI;
+using Nekoyume.Model.Item;
 
 namespace Nekoyume.UI
 {
@@ -553,5 +550,45 @@ namespace Nekoyume.UI
             player.DisableHudContainer();
             HackAndSlash(GuidedQuest.WorldQuest?.Goal ?? 4);
         }
+        
+#if UNITY_EDITOR
+        protected override void Update()
+        {
+            base.Update();
+
+            if (!Find<CombinationResult>().gameObject.activeSelf &&
+                Input.GetKey(KeyCode.LeftControl) &&
+                Input.GetKeyDown(KeyCode.C))
+            {
+                ItemUsable itemUsable = null;
+                if (Random.Range(0, 2) == 0)
+                {
+                    var equipments = States.Instance.CurrentAvatarState.inventory.Equipments
+                        .Where(e => e.level == 0)
+                        .ToArray();
+                    if (equipments.Length > 0)
+                    {
+                        itemUsable = equipments[Random.Range(0, equipments.Length)];
+                    }
+                }
+                else
+                {
+                    var consumables = States.Instance.CurrentAvatarState.inventory.Consumables
+                        .ToArray();
+                    if (consumables.Length > 0)
+                    {
+                        itemUsable = consumables[Random.Range(0, consumables.Length)];
+                    }
+                }
+
+                if (itemUsable is null)
+                {
+                    return;
+                }
+                
+                Find<CombinationResult>().Show(itemUsable);
+            }
+        }
+#endif
     }
 }
