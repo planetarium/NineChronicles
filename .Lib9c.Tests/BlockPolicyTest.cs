@@ -4,7 +4,8 @@ namespace Lib9c.Tests
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.Linq;
-    using System.Security.Cryptography;
+    using System.Reflection;
+    using System.Text.RegularExpressions;
     using System.Threading.Tasks;
     using Bencodex.Types;
     using Libplanet;
@@ -603,6 +604,68 @@ namespace Lib9c.Tests
             Assert.Throws<BlockExceedingTransactionsException>(() => blockChain.Append(block3));
             Assert.Equal(3, blockChain.Count);
             Assert.False(blockChain.ContainsBlock(block3.Hash));
+        }
+
+        [Theory]
+        [InlineData(199, false)]
+        [InlineData(2000002, true)]
+        public void IsObsolete(long blockIndex, bool expected)
+        {
+            var action = new HackAndSlash
+            {
+                costumes = new List<Guid>(),
+                equipments = new List<Guid>(),
+                foods = new List<Guid>(),
+                worldId = 1,
+                stageId = 1,
+                avatarAddress = default,
+                WeeklyArenaAddress = default,
+                RankingMapAddress = default,
+            };
+            var tx = Transaction<PolymorphicAction<ActionBase>>.Create(
+                0,
+                new PrivateKey(),
+                default,
+                new List<PolymorphicAction<ActionBase>>
+            {
+                action,
+            });
+
+            Assert.False(BlockPolicySource.IsObsolete(tx, blockIndex));
+
+            var action2 = new HackAndSlash4
+            {
+                costumes = new List<Guid>(),
+                equipments = new List<Guid>(),
+                foods = new List<Guid>(),
+                worldId = 1,
+                stageId = 1,
+                avatarAddress = default,
+                WeeklyArenaAddress = default,
+                RankingMapAddress = default,
+            };
+            var tx2 = Transaction<PolymorphicAction<ActionBase>>.Create(
+                0,
+                new PrivateKey(),
+                default,
+                new List<PolymorphicAction<ActionBase>>
+                {
+                    action2,
+                });
+
+            Assert.Equal(expected, BlockPolicySource.IsObsolete(tx2, blockIndex));
+        }
+
+        [Fact]
+        public void Obsolete_Actions()
+        {
+            Assert.Empty(Assembly.GetAssembly(typeof(ActionBase))!.GetTypes().Where(
+                type => type.Namespace is { } @namespace &&
+                        @namespace.StartsWith($"{nameof(Nekoyume)}.{nameof(Nekoyume.Action)}") &&
+                        typeof(ActionBase).IsAssignableFrom(type) &&
+                        !type.IsAbstract &&
+                        Regex.IsMatch(type.Name, @"\d+$") &&
+                        !type.IsDefined(typeof(ActionObsoleteAttribute), false)));
         }
 
         private Block<PolymorphicAction<ActionBase>> MakeGenesisBlock(
