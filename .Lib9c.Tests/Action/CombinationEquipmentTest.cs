@@ -1,5 +1,6 @@
 namespace Lib9c.Tests.Action
 {
+    using System;
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.Globalization;
@@ -7,8 +8,10 @@ namespace Lib9c.Tests.Action
     using Libplanet;
     using Libplanet.Action;
     using Libplanet.Assets;
+    using Libplanet.Crypto;
     using Nekoyume;
     using Nekoyume.Action;
+    using Nekoyume.Model;
     using Nekoyume.Model.Item;
     using Nekoyume.Model.Mail;
     using Nekoyume.Model.State;
@@ -33,7 +36,7 @@ namespace Lib9c.Tests.Action
                 .WriteTo.TestOutput(outputHelper)
                 .CreateLogger();
 
-            _agentAddress = default;
+            _agentAddress = new PrivateKey().ToAddress();
             _avatarAddress = _agentAddress.Derive("avatar");
             var slotAddress = _avatarAddress.Derive(
                 string.Format(
@@ -45,10 +48,12 @@ namespace Lib9c.Tests.Action
             var sheets = TableSheetsImporter.ImportSheets();
             _random = new TestRandom();
             _tableSheets = new TableSheets(sheets);
+
             var agentState = new AgentState(_agentAddress);
             agentState.avatarAddresses[0] = _avatarAddress;
 
             var gameConfigState = new GameConfigState();
+
             _avatarState = new AvatarState(
                 _avatarAddress,
                 _agentAddress,
@@ -57,19 +62,18 @@ namespace Lib9c.Tests.Action
                 gameConfigState,
                 default
             );
+
             var gold = new GoldCurrencyState(new Currency("NCG", 2, minter: null));
 
             _initialState = new State()
                 .SetState(_agentAddress, agentState.Serialize())
-                .SetState(_avatarAddress, _avatarState.Serialize())
+                .SetState(_avatarAddress, _avatarState.SerializeV2())
                 .SetState(
                     slotAddress,
                     new CombinationSlotState(
                         slotAddress,
-                        GameConfig.RequireClearedStageLevel.CombinationEquipmentAction
-                    ).Serialize())
-                .SetState(GoldCurrencyState.Address, gold.Serialize())
-                .MintAsset(_agentAddress, gold.Currency * 300);
+                        GameConfig.RequireClearedStageLevel.CombinationEquipmentAction).Serialize())
+                .SetState(GoldCurrencyState.Address, gold.Serialize());
 
             foreach (var (key, value) in sheets)
             {
@@ -79,51 +83,142 @@ namespace Lib9c.Tests.Action
         }
 
         [Theory]
-        [InlineData(true)]
+        [InlineData(false, 1, null)]
+        [InlineData(false, 145, 341)]
+        [InlineData(false, 145, 342)]
+        [InlineData(true, 1, null)]
+        [InlineData(true, 145, 341)]
+        [InlineData(true, 145, 342)]
+        public void Execute_Success(bool backward, int recipeId, int? subRecipeId) =>
+            Execute(backward, recipeId, subRecipeId, 10000);
+
+        [Theory]
         [InlineData(false)]
-        public void Execute(bool backward)
+        [InlineData(true)]
+        public void Execute_Throw_InsufficientBalanceException(bool backward)
         {
-            var row = _tableSheets.EquipmentItemRecipeSheet[109];
+            var subRecipeId = _tableSheets.EquipmentItemSubRecipeSheetV2.OrderedList
+                .First(e => e.RequiredGold > 0)
+                .Id;
+            var recipeId = _tableSheets.EquipmentItemRecipeSheet.OrderedList
+                .First(e => e.SubRecipeIds.Contains(subRecipeId))
+                .Id;
+
+            Assert.Throws<InsufficientBalanceException>(() => Execute(
+                backward, recipeId, subRecipeId, 0));
+        }
+
+        [Fact]
+        public void Rehearsal()
+        {
+            var action = new CombinationEquipment
+            {
+                avatarAddress = _avatarAddress,
+                slotIndex = 0,
+                recipeId = 1,
+                subRecipeId = 255,
+            };
+            var slotAddress = _avatarAddress.Derive(
+                string.Format(
+                    CultureInfo.InvariantCulture,
+                    CombinationSlotState.DeriveFormat,
+                    0
+                )
+            );
+
+            var updatedAddresses = new List<Address>
+            {
+                _agentAddress,
+                _avatarAddress,
+                slotAddress,
+                _avatarAddress.Derive(LegacyInventoryKey),
+                _avatarAddress.Derive(LegacyWorldInformationKey),
+                _avatarAddress.Derive(LegacyQuestListKey),
+                Addresses.Blacksmith,
+            };
+
+            var state = new State();
+
+            var nextState = action.Execute(new ActionContext
+            {
+                PreviousStates = state,
+                Signer = _agentAddress,
+                BlockIndex = 0,
+                Rehearsal = true,
+            });
+
+            Assert.Equal(updatedAddresses.ToImmutableHashSet(), nextState.UpdatedAddresses);
+        }
+
+        [Fact]
+        public void AddAndUnlockOption()
+        {
+            var agentState = _initialState.GetAgentState(_agentAddress);
+            var subRecipe = _tableSheets.EquipmentItemSubRecipeSheetV2.Last;
+            Assert.NotNull(subRecipe);
+            var equipment = (Necklace)ItemFactory.CreateItemUsable(
+                _tableSheets.EquipmentItemSheet[10411000],
+                Guid.NewGuid(),
+                default);
+            Assert.Equal(0, equipment.optionCountFromCombination);
+            CombinationEquipment.AddAndUnlockOption(
+                agentState,
+                equipment,
+                _random,
+                subRecipe,
+                _tableSheets.EquipmentItemOptionSheet,
+                _tableSheets.SkillSheet
+            );
+            Assert.True(equipment.optionCountFromCombination > 0);
+        }
+
+        private void Execute(bool backward, int recipeId, int? subRecipeId, int mintNCG)
+        {
+            var currency = new Currency("NCG", 2, minter: null);
+            var row = _tableSheets.EquipmentItemRecipeSheet[recipeId];
+            var requiredStage = row.UnlockStage;
+            var costActionPoint = row.RequiredActionPoint;
+            var costNCG = row.RequiredGold * currency;
             var materialRow = _tableSheets.MaterialItemSheet[row.MaterialId];
             var material = ItemFactory.CreateItem(materialRow, _random);
             _avatarState.inventory.AddItem(material, count: row.MaterialCount);
 
-            foreach (var materialInfo in _tableSheets.EquipmentItemSubRecipeSheet[255].Materials)
+            if (subRecipeId.HasValue)
             {
-                var subMaterial = ItemFactory.CreateItem(_tableSheets.MaterialItemSheet[materialInfo.Id], _random);
-                _avatarState.inventory.AddItem(subMaterial, count: materialInfo.Count);
+                var subRow = _tableSheets.EquipmentItemSubRecipeSheetV2[subRecipeId.Value];
+                costActionPoint += subRow.RequiredActionPoint;
+                costNCG += subRow.RequiredGold * currency;
+
+                foreach (var materialInfo in subRow.Materials)
+                {
+                    material = ItemFactory.CreateItem(_tableSheets.MaterialItemSheet[materialInfo.Id], _random);
+                    _avatarState.inventory.AddItem(material, count: materialInfo.Count);
+                }
             }
 
-            const int requiredStage = 19;
-            for (var i = 1; i < requiredStage + 1; i++)
-            {
-                _avatarState.worldInformation.ClearStage(
-                    1,
-                    i,
-                    0,
-                    _tableSheets.WorldSheet,
-                    _tableSheets.WorldUnlockSheet
-                );
-            }
+            _avatarState.worldInformation = new WorldInformation(
+                0,
+                _tableSheets.WorldSheet,
+                requiredStage);
 
             var equipmentRow = _tableSheets.EquipmentItemSheet[row.ResultEquipmentId];
             var equipment = ItemFactory.CreateItemUsable(equipmentRow, default, 0);
 
-            var result = new CombinationConsumable5.ResultModel()
+            var result = new CombinationConsumable5.ResultModel
             {
                 id = default,
-                gold = 0,
-                actionPoint = 0,
-                recipeId = 1,
+                gold = costNCG.RawValue,
+                actionPoint = costActionPoint,
+                recipeId = recipeId,
                 materials = new Dictionary<Material, int>(),
                 itemUsable = equipment,
-                subRecipeId = 255,
+                subRecipeId = subRecipeId,
             };
 
             for (var i = 0; i < 100; i++)
             {
                 var mail = new CombinationMail(result, i, default, 0);
-                _avatarState.Update(mail);
+                _avatarState.UpdateV4(mail, 0);
             }
 
             if (backward)
@@ -139,15 +234,23 @@ namespace Lib9c.Tests.Action
                     .SetState(_avatarAddress, _avatarState.SerializeV2());
             }
 
-            var action = new CombinationEquipment()
+            var previousActionPoint = backward
+                ? _initialState.GetAvatarState(_avatarAddress).actionPoint
+                : _initialState.GetAvatarStateV2(_avatarAddress).actionPoint;
+
+            _initialState = _initialState.MintAsset(_agentAddress, mintNCG * currency);
+            var goldCurrencyState = _initialState.GetGoldCurrency();
+            var previousNCG = _initialState.GetBalance(_agentAddress, goldCurrencyState);
+            Assert.Equal(mintNCG * currency, previousNCG);
+            var action = new CombinationEquipment
             {
-                AvatarAddress = _avatarAddress,
-                RecipeId = row.Id,
-                SlotIndex = 0,
-                SubRecipeId = 255,
+                avatarAddress = _avatarAddress,
+                slotIndex = 0,
+                recipeId = recipeId,
+                subRecipeId = subRecipeId,
             };
 
-            var nextState = action.Execute(new ActionContext()
+            var nextState = action.Execute(new ActionContext
             {
                 PreviousStates = _initialState,
                 Signer = _agentAddress,
@@ -156,147 +259,27 @@ namespace Lib9c.Tests.Action
             });
 
             var slotState = nextState.GetCombinationSlotState(_avatarAddress, 0);
-
             Assert.NotNull(slotState.Result);
             Assert.NotNull(slotState.Result.itemUsable);
 
+            if (subRecipeId.HasValue)
+            {
+                Assert.True(((Equipment)slotState.Result.itemUsable).optionCountFromCombination > 0);
+            }
+            else
+            {
+                Assert.Equal(0, ((Equipment)slotState.Result.itemUsable).optionCountFromCombination);
+            }
+
             var nextAvatarState = nextState.GetAvatarStateV2(_avatarAddress);
+            Assert.Equal(previousActionPoint - costActionPoint, nextAvatarState.actionPoint);
+            Assert.Equal(1, nextAvatarState.mailBox.Count);
 
-            Assert.Equal(30, nextAvatarState.mailBox.Count);
-            Assert.Equal(2, slotState.Result.itemUsable.GetOptionCount());
-
-            var goldCurrencyState = nextState.GetGoldCurrency();
-            var blackSmithGold = nextState.GetBalance(Addresses.Blacksmith, goldCurrencyState);
-            var currency = new Currency("NCG", 2, minter: null);
-            Assert.Equal(300 * currency, blackSmithGold);
             var agentGold = nextState.GetBalance(_agentAddress, goldCurrencyState);
-            Assert.Equal(currency * 0, agentGold);
-        }
+            Assert.Equal(previousNCG - costNCG, agentGold);
 
-        [Fact]
-        public void ExecuteThrowInsufficientBalanceException()
-        {
-            var row = _tableSheets.EquipmentItemRecipeSheet[2];
-            var materialRow = _tableSheets.MaterialItemSheet[row.MaterialId];
-            var material = ItemFactory.CreateItem(materialRow, _random);
-            _avatarState.inventory.AddItem(material, count: row.MaterialCount);
-
-            foreach (var materialInfo in _tableSheets.EquipmentItemSubRecipeSheet[3].Materials)
-            {
-                var subMaterial = ItemFactory.CreateItem(_tableSheets.MaterialItemSheet[materialInfo.Id], _random);
-                _avatarState.inventory.AddItem(subMaterial, count: materialInfo.Count);
-            }
-
-            const int requiredStage = 11;
-            for (var i = 1; i < requiredStage + 1; i++)
-            {
-                _avatarState.worldInformation.ClearStage(
-                    1,
-                    i,
-                    0,
-                    _tableSheets.WorldSheet,
-                    _tableSheets.WorldUnlockSheet
-                );
-            }
-
-            _initialState = _initialState.SetState(_avatarAddress, _avatarState.Serialize());
-
-            var action = new CombinationEquipment()
-            {
-                AvatarAddress = _avatarAddress,
-                RecipeId = row.Id,
-                SlotIndex = 0,
-                SubRecipeId = 3,
-            };
-
-            Assert.Throws<InsufficientBalanceException>(() => action.Execute(new ActionContext()
-            {
-                PreviousStates = _initialState,
-                Signer = _agentAddress,
-                Random = new TestRandom(),
-            }));
-        }
-
-        [Fact]
-        public void Rehearsal()
-        {
-            var action = new CombinationEquipment()
-            {
-                AvatarAddress = _avatarAddress,
-                RecipeId = 1,
-                SlotIndex = 0,
-                SubRecipeId = 255,
-            };
-            var slotAddress = _avatarAddress.Derive(
-                string.Format(
-                    CultureInfo.InvariantCulture,
-                    CombinationSlotState.DeriveFormat,
-                    0
-                )
-            );
-
-            var updatedAddresses = new List<Address>()
-            {
-                _agentAddress,
-                _avatarAddress,
-                slotAddress,
-                _avatarAddress.Derive(LegacyInventoryKey),
-                _avatarAddress.Derive(LegacyWorldInformationKey),
-                _avatarAddress.Derive(LegacyQuestListKey),
-                Addresses.Blacksmith,
-            };
-
-            var state = new State();
-
-            var nextState = action.Execute(new ActionContext()
-            {
-                PreviousStates = state,
-                Signer = _agentAddress,
-                BlockIndex = 0,
-                Rehearsal = true,
-            });
-
-            Assert.Equal(updatedAddresses.ToImmutableHashSet(), nextState.UpdatedAddresses);
-        }
-
-        [Fact]
-        public void SelectOption()
-        {
-            var options = new Dictionary<int, int>();
-            var subRecipe = _tableSheets.EquipmentItemSubRecipeSheet[255];
-            var equipment =
-                (Necklace)ItemFactory.CreateItemUsable(_tableSheets.EquipmentItemSheet[10411000], default, 0);
-            var i = 0;
-            while (i < 10000)
-            {
-                var ids = CombinationEquipment4.SelectOption(
-                    _tableSheets.EquipmentItemOptionSheet,
-                    _tableSheets.SkillSheet,
-                    subRecipe,
-                    _random,
-                    equipment
-                );
-
-                foreach (var id in ids)
-                {
-                    if (options.ContainsKey(id))
-                    {
-                        options[id] += 1;
-                    }
-                    else
-                    {
-                        options[id] = 1;
-                    }
-                }
-
-                i++;
-            }
-
-            var optionIds = options
-                .OrderByDescending(r => r.Value)
-                .Select(r => r.Key)
-                .ToArray();
-            Assert.Equal(new[] { 932, 933, 934, 935 }, optionIds);
+            var blackSmithGold = nextState.GetBalance(Addresses.Blacksmith, goldCurrencyState);
+            Assert.Equal(costNCG, blackSmithGold);
         }
     }
 }
