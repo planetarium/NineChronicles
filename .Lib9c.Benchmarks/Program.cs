@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Security.Cryptography;
 using Bencodex.Types;
 using Libplanet;
@@ -59,7 +60,7 @@ namespace Lib9c.Benchmarks
             Block<NCAction> genesis = store.GetBlock<NCAction>(gHash);
             IKeyValueStore stateRootKeyValueStore = new RocksDBKeyValueStore(Path.Combine(storePath, "state_hashes")),
                 stateKeyValueStore = new RocksDBKeyValueStore(Path.Combine(storePath, "states"));
-            IStateStore stateStore = new TrieStateStore(stateKeyValueStore, stateRootKeyValueStore);
+            var stateStore = new TrieStateStore(stateKeyValueStore, stateRootKeyValueStore);
             var chain = new BlockChain<NCAction>(policy, stagePolicy, store, stateStore, genesis);
             long height = chain.Tip.Index;
             BlockHash[] blockHashes = limit < 0
@@ -84,23 +85,8 @@ namespace Lib9c.Benchmarks
                     block.Transactions.Count()
                 );
 
-                IEnumerable<ActionEvaluation> blockEvals;
-                if (block.Index > 0)
-                {
-                    blockEvals = block.Evaluate(
-                        DateTimeOffset.UtcNow,
-                        address => chain.GetState(address, block.Hash),
-                        (address, currency) => chain.GetBalance(address, currency, block.Hash)
-                    );
-                }
-                else
-                {
-                    blockEvals = block.Evaluate(
-                        DateTimeOffset.UtcNow,
-                        _ => null,
-                        ((_, currency) => new FungibleAssetValue(currency))
-                    );
-                }
+                IEnumerable<ActionEvaluation> blockEvals =
+                chain.ExecuteActions(block, StateCompleterSet<NCAction>.Reject);
                 SetStates(chain.Id, stateStore, block, blockEvals.ToArray(), buildStateReferences: true);
                 txs += block.Transactions.LongCount();
                 actions += block.Transactions.Sum(tx => tx.Actions.LongCount()) + 1;
