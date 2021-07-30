@@ -1,74 +1,84 @@
+using Nekoyume.Game.Controller;
 using Nekoyume.Model.Item;
 using Nekoyume.UI.Scroller;
-using System.Collections.Generic;
+using System;
 using System.Linq;
+using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
+using Nekoyume.Model.Stat;
+using Nekoyume.UI.Model;
+using System.Text.Json;
 
 namespace Nekoyume.UI
 {
     public class Craft : Widget
     {
+        [SerializeField] private Toggle equipmentToggle = null;
+
+        [SerializeField] private Toggle consumableToggle = null;
+
         [SerializeField] private Button closeButton = null;
 
         [SerializeField] private RecipeScroll recipeScroll = null;
 
-        private Dictionary<ItemSubType, Dictionary<string, RecipeRow.Model>> _models;
+        public static RecipeModel SharedModel = null;
 
-        private const string EquipmentSplitFormat = "{0}_{1}";
+        private const string ConsumableRecipeGroupPath = "Recipe/ConsumableRecipeGroup";
 
         protected override void Awake()
         {
             base.Awake();
             closeButton.onClick.AddListener(() => Close(true));
+
+            equipmentToggle.onValueChanged.AddListener(value =>
+            {
+                if (!value) return;
+                AudioController.PlayClick();
+                recipeScroll.ShowAsEquipment(ItemSubType.Weapon, true);
+            });
+
+            consumableToggle.onValueChanged.AddListener(value =>
+            {
+                if (!value) return;
+                AudioController.PlayClick();
+                recipeScroll.ShowAsFood(StatType.HP, true);
+            });
+        }
+
+        public override void Initialize()
+        {
+            LoadRecipeModel();
         }
 
         public override void Show(bool ignoreShowAnimation = false)
         {
-            if (_models is null)
+            if (equipmentToggle.isOn)
             {
-                LoadRecipeModel();
+                recipeScroll.ShowAsEquipment(ItemSubType.Weapon, true);
             }
-
-            recipeScroll.Show(_models[ItemSubType.Weapon].Values, true);
+            else
+            {
+                equipmentToggle.isOn = true;
+            }
             base.Show(ignoreShowAnimation);
         }
 
         private void LoadRecipeModel()
         {
-            _models = new Dictionary<ItemSubType, Dictionary<string, RecipeRow.Model>>();
             var tableSheets = Game.Game.instance.TableSheets;
 
-            var recipeSheet = tableSheets.EquipmentItemRecipeSheet;
-            var equipmentIds = recipeSheet.Values
+            var equipmentRecipeSheet = tableSheets.EquipmentItemRecipeSheet;
+            var equipmentIds = equipmentRecipeSheet.Values
                 .Select(r => r.ResultEquipmentId);
             var equipments = tableSheets.EquipmentItemSheet.Values
                 .Where(r => equipmentIds.Contains(r.Id));
 
-            foreach (var equipment in equipments)
-            {
-                var itemSubType = equipment.ItemSubType;
-                if (!_models.ContainsKey(itemSubType))
-                {
-                    _models[itemSubType] = new Dictionary<string, RecipeRow.Model>();
-                }
+            var jsonAsset = Resources.Load<TextAsset>(ConsumableRecipeGroupPath);
+            var group = jsonAsset is null ?
+                default : JsonSerializer.Deserialize<CombinationRecipeGroup>(jsonAsset.text);
 
-                var idString = equipment.Id.ToString();
-                var tierArea = idString.Substring(0, 4);
-                var variationArea = idString.Substring(5);
-                var key = string.Format(EquipmentSplitFormat, tierArea, variationArea);
-
-                if (!_models[itemSubType].TryGetValue(key, out var model))
-                {
-                    model = new RecipeRow.Model(
-                        equipment.GetLocalizedName(),
-                        equipment.Grade
-                        );
-                    _models[itemSubType][key] = model;
-                }
-
-                model.Rows.Add(equipment);
-            }
+            SharedModel = new RecipeModel(equipments, group.Groups);
         }
     }
 }

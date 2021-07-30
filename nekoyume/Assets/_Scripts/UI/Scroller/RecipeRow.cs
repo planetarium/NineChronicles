@@ -1,4 +1,5 @@
 using Nekoyume.TableData;
+using Nekoyume.UI.Module;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -30,7 +31,7 @@ namespace Nekoyume.UI.Scroller
 
         [SerializeField] private List<Image> gradeImages = null;
 
-        [SerializeField] private List<RecipeView> recipeViews = null;
+        [SerializeField] private List<RecipeCell> recipeCells = null;
 
         public override void UpdateContent(Model viewModel)
         {
@@ -41,15 +42,15 @@ namespace Nekoyume.UI.Scroller
                 gradeImages[i].enabled = i < viewModel.Grade;
             }
 
-            for (int i = 0; i < recipeViews.Count; ++i)
+            for (int i = 0; i < recipeCells.Count; ++i)
             {
                 if (i >= viewModel.Rows.Count)
                 {
-                    recipeViews[i].Hide();
+                    recipeCells[i].Hide();
                 }
                 else
                 {
-                    recipeViews[i].SetData(viewModel.Rows[i]);
+                    recipeCells[i].Show(viewModel.Rows[i]);
                 }
             }
         }
