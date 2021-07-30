@@ -569,6 +569,7 @@ namespace Lib9c.Tests
             Assert.Equal(1, blockChain.Count);
             Block<PolymorphicAction<ActionBase>> block1 = Block<PolymorphicAction<ActionBase>>.Mine(
                 index: 1,
+                hashAlgorithm: policy.GetHashAlgorithm(1),
                 difficulty: policy.GetNextBlockDifficulty(blockChain),
                 previousTotalDifficulty: blockChain.Tip.TotalDifficulty,
                 miner: adminAddress,
@@ -580,6 +581,7 @@ namespace Lib9c.Tests
             Assert.True(blockChain.ContainsBlock(block1.Hash));
             Block<PolymorphicAction<ActionBase>> block2 = Block<PolymorphicAction<ActionBase>>.Mine(
                 index: 2,
+                hashAlgorithm: policy.GetHashAlgorithm(2),
                 difficulty: policy.GetNextBlockDifficulty(blockChain),
                 previousTotalDifficulty: blockChain.Tip.TotalDifficulty,
                 miner: adminAddress,
@@ -591,6 +593,7 @@ namespace Lib9c.Tests
             Assert.True(blockChain.ContainsBlock(block2.Hash));
             Block<PolymorphicAction<ActionBase>> block3 = Block<PolymorphicAction<ActionBase>>.Mine(
                 index: 3,
+                hashAlgorithm: policy.GetHashAlgorithm(3),
                 difficulty: policy.GetNextBlockDifficulty(blockChain),
                 previousTotalDifficulty: blockChain.Tip.TotalDifficulty,
                 miner: adminAddress,

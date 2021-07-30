@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Globalization;
 using System.Linq;
+using System.Security.Cryptography;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Crypto;
@@ -818,9 +819,9 @@ namespace Nekoyume.Model.State
         public int GetRandomSeed()
         {
             var bytes = address.ToByteArray().Concat(BitConverter.GetBytes(Nonce)).ToArray();
-            var hash = Hashcash.Hash(bytes);
+            var hash = SHA256.Create().ComputeHash(bytes);
             Nonce++;
-            return BitConverter.ToInt32(hash.ToByteArray(), 0);
+            return BitConverter.ToInt32(hash, 0);
         }
 
         public override IValue Serialize() =>
