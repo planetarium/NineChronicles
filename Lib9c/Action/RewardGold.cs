@@ -25,10 +25,7 @@ namespace Nekoyume.Action
         {
             var states = context.PreviousStates;
             states = GenesisGoldDistribution(context, states);
-            // TODO configure blockIndex on v100062
-            states = context.BlockIndex > 2000000
-                ? WeeklyArenaRankingBoard2(context, states)
-                : WeeklyArenaRankingBoard(context, states);
+            states = WeeklyArenaRankingBoard2(context, states);
             return MinerReward(context, states);
         }
 
@@ -66,6 +63,7 @@ namespace Nekoyume.Action
             return states;
         }
 
+        [Obsolete("Use WeeklyArenaRankingBoard2 for performance.")]
         public IAccountStateDelta WeeklyArenaRankingBoard(IActionContext ctx, IAccountStateDelta states)
         {
             var gameConfigState = states.GetGameConfigState();
