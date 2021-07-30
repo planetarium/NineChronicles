@@ -19,15 +19,6 @@ namespace Nekoyume.UI.Module
 
         private readonly List<IDisposable> _disposablesAtSetData = new List<IDisposable>();
 
-        #region Mono
-
-        protected override void OnDestroy()
-        {
-            Clear();
-        }
-
-        #endregion
-
         #region override
 
         public override void SetData(Model.InventoryItem model)

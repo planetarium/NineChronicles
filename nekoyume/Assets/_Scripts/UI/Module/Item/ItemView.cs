@@ -80,7 +80,6 @@ namespace Nekoyume.UI.Module
             Model?.Dispose();
             OnClick.Dispose();
             OnDoubleClick.Dispose();
-            Clear();
         }
 
         #endregion
