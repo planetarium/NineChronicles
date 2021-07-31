@@ -3,7 +3,6 @@ using Nekoyume.Model.Item;
 using Nekoyume.UI.Scroller;
 using System;
 using System.Linq;
-using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 using Nekoyume.Model.Stat;
@@ -12,6 +11,9 @@ using System.Text.Json;
 
 namespace Nekoyume.UI
 {
+    using Nekoyume.TableData;
+    using UniRx;
+
     public class Craft : Widget
     {
         [SerializeField] private Toggle equipmentToggle = null;
@@ -21,6 +23,8 @@ namespace Nekoyume.UI
         [SerializeField] private Button closeButton = null;
 
         [SerializeField] private RecipeScroll recipeScroll = null;
+
+        [SerializeField] private SubRecipeView subRecipeView = null;
 
         public static RecipeModel SharedModel = null;
 
@@ -49,6 +53,9 @@ namespace Nekoyume.UI
         public override void Initialize()
         {
             LoadRecipeModel();
+            SharedModel.SelectedRow
+                .Subscribe(SetSubRecipe)
+                .AddTo(gameObject);
         }
 
         public override void Show(bool ignoreShowAnimation = false)
@@ -64,21 +71,27 @@ namespace Nekoyume.UI
             base.Show(ignoreShowAnimation);
         }
 
+        private void SetSubRecipe(SheetRow<int> row)
+        {
+            if (row is EquipmentItemRecipeSheet.Row equipmentRow)
+            {
+                subRecipeView.SetData(equipmentRow, equipmentRow.SubRecipeIds);
+            }
+            else if (row is ConsumableItemRecipeSheet.Row consumableRow)
+            {
+                subRecipeView.SetData(consumableRow, null);
+            }
+        }
+
         private void LoadRecipeModel()
         {
-            var tableSheets = Game.Game.instance.TableSheets;
-
-            var equipmentRecipeSheet = tableSheets.EquipmentItemRecipeSheet;
-            var equipmentIds = equipmentRecipeSheet.Values
-                .Select(r => r.ResultEquipmentId);
-            var equipments = tableSheets.EquipmentItemSheet.Values
-                .Where(r => equipmentIds.Contains(r.Id));
-
             var jsonAsset = Resources.Load<TextAsset>(ConsumableRecipeGroupPath);
             var group = jsonAsset is null ?
                 default : JsonSerializer.Deserialize<CombinationRecipeGroup>(jsonAsset.text);
 
-            SharedModel = new RecipeModel(equipments, group.Groups);
+            SharedModel = new RecipeModel(
+                Game.Game.instance.TableSheets.EquipmentItemRecipeSheet.Values,
+                group.Groups);
         }
     }
 }

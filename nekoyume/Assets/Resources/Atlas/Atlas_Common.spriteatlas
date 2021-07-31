@@ -47,7 +47,7 @@ SpriteAtlas:
     - {fileID: 102900000, guid: f4ec4f8b49db5487fae145d395ec1611, type: 3}
     - {fileID: 102900000, guid: 9c67e02a967534297bd452ad80ca3261, type: 3}
     - {fileID: 102900000, guid: 77aad0043bc7d4ee3a9fda3a23e966a8, type: 3}
-    totalSpriteSurfaceArea: 289064
+    totalSpriteSurfaceArea: 298708
     bindAsDefault: 1
     isAtlasV2: 0
     cachedData: {fileID: 0}
@@ -63,6 +63,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: eb8ae001e201248ec82527da02ac7069, type: 3}
   - {fileID: 21300000, guid: d4c97631fa00e4ea0b695b13aa1e8943, type: 3}
   - {fileID: 21300000, guid: f8276e6112df04abb8d0d08a15c94c64, type: 3}
+  - {fileID: 21300000, guid: b8e69781c1fbb40e99ccdc7762cfd351, type: 3}
   - {fileID: 21300000, guid: 30178091cf81e45ff86d2d68aef412f5, type: 3}
   - {fileID: 21300000, guid: 4cdf9691d78cc496e9c9242f19a436e2, type: 3}
   - {fileID: 21300000, guid: 77cb3b917b1cf423ea0a0a8ae6ad1772, type: 3}
@@ -76,6 +77,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 1c30f663db0ec48c8b262cb7e3f17be5, type: 3}
   - {fileID: 21300000, guid: fa18cb8351d154acc8f6da058a7c47eb, type: 3}
   - {fileID: 21300000, guid: 1c4270c34603847f1b8bf5946b2a8e1c, type: 3}
+  - {fileID: 21300000, guid: 93733c147ae424e038adfc771bdf885f, type: 3}
   - {fileID: 21300000, guid: 3ffd8c14e9e6d4aab877248cbf0d5987, type: 3}
   - {fileID: 21300000, guid: b032f12462df64e2dbaf188fb8300b0e, type: 3}
   - {fileID: 21300000, guid: d3d41544605804dfca63dd045c25a62b, type: 3}
@@ -121,6 +123,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 0c175a1a794b74cba9eba69dd1347f41, type: 3}
   - {fileID: 21300000, guid: 4cc9310b67a2a446495a3a3014bce2b1, type: 3}
   - {fileID: 21300000, guid: 35eb611bce90a4aebb9fa21927f292b2, type: 3}
+  - {fileID: 21300000, guid: 8acaca3b35c844ec8891beb27842c733, type: 3}
   - {fileID: 21300000, guid: ba30455b041df4b29a44c5acdf38d5d6, type: 3}
   - {fileID: 21300000, guid: 9e9b008bd39ec4fdda2ba2614e002eda, type: 3}
   - {fileID: 21300000, guid: fe24f69b6be404a25be81909a9d27f18, type: 3}
@@ -150,6 +153,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: bd420e9e797da42e6b8f8a430b1a6037, type: 3}
   - {fileID: 21300000, guid: f0df8e9ec6a684a5081471dcccc78859, type: 3}
   - {fileID: 21300000, guid: 6f4c5dae54f1c4edeabee331a51c79bc, type: 3}
+  - {fileID: 21300000, guid: b00134ceb6ddd49d9b26b011d12ffb4b, type: 3}
   - {fileID: 21300000, guid: 64d3712fd3c144545b6a9ec5674a529b, type: 3}
   - {fileID: 21300000, guid: 80c5136f52f2f40c9acccf837c2cb17d, type: 3}
   - {fileID: 21300000, guid: 69b8f79ff5cf94fe19e4de8fcbfb31cc, type: 3}
@@ -169,6 +173,7 @@ SpriteAtlas:
   - UI_icon_Mainmenu_main
   - Ani_Workshop_14
   - UI_popup_bg_04
+  - button_Round_Normal
   - UI_bg_frame_05
   - UI_icon_Speech_03
   - UI_icon_Mainmenu_06
@@ -182,6 +187,7 @@ SpriteAtlas:
   - Tab_bg_Press
   - UI_icon_Block
   - UI_Popup_bg_03
+  - UI_icon_exit
   - UI_bg_assist
   - Common_pattan
   - UI_popup_icon_08_b
@@ -227,6 +233,7 @@ SpriteAtlas:
   - Ani_Workshop_17
   - Ani_Workshop_00
   - Common_bg_5R
+  - UI_icon_repeat
   - UI_icon_option
   - UI_popup_list_bg
   - Ani_Workshop_16
@@ -256,6 +263,7 @@ SpriteAtlas:
   - level_frame
   - Ani_Workshop_01
   - UI_icon_Mainmenu_01
+  - button_Round_Press
   - Item_Recipebg_01
   - Item_bg_Grade_Enhancement
   - UI_icon_Speech_02
