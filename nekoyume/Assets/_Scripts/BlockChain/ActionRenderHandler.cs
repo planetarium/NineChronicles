@@ -262,8 +262,8 @@ namespace Nekoyume.BlockChain
             if (eval.Exception is null)
             {
                 var agentAddress = eval.Signer;
-                var avatarAddress = eval.Action.AvatarAddress;
-                var slot = eval.OutputStates.GetCombinationSlotState(avatarAddress, eval.Action.SlotIndex);
+                var avatarAddress = eval.Action.avatarAddress;
+                var slot = eval.OutputStates.GetCombinationSlotState(avatarAddress, eval.Action.slotIndex);
                 var result = (CombinationConsumable5.ResultModel) slot.Result;
 
                 if (!eval.OutputStates.TryGetAvatarStateV2(agentAddress, avatarAddress, out var avatarState))
@@ -307,7 +307,7 @@ namespace Nekoyume.BlockChain
 
                 if (!(nextQuest is null))
                 {
-                    var isRecipeMatch = nextQuest.RecipeId == eval.Action.RecipeId;
+                    var isRecipeMatch = nextQuest.RecipeId == eval.Action.recipeId;
 
                     if (isRecipeMatch)
                     {
@@ -339,7 +339,7 @@ namespace Nekoyume.BlockChain
             if (eval.Exception is null)
             {
                 var agentAddress = eval.Signer;
-                var avatarAddress = eval.Action.AvatarAddress;
+                var avatarAddress = eval.Action.avatarAddress;
                 var slot = eval.OutputStates.GetCombinationSlotState(avatarAddress, eval.Action.slotIndex);
                 var result = (CombinationConsumable5.ResultModel) slot.Result;
                 var itemUsable = result.itemUsable;
