@@ -11,6 +11,8 @@ namespace Nekoyume.UI.Module
     {
         [SerializeField] private RequiredItemView[] requiredItemViews = null;
 
+        [SerializeField] private GameObject plusImage = null;
+
         public void Show()
         {
             gameObject.SetActive(true);
@@ -46,12 +48,22 @@ namespace Nekoyume.UI.Module
                         itemView.gameObject.SetActive(true);
                     }
                 }
+
+                if (plusImage)
+                {
+                    plusImage.SetActive(true);
+                }
             }
             else
             {
                 for (int i = 1; i < requiredItemViews.Length; ++i)
                 {
                     requiredItemViews[i].gameObject.SetActive(false);
+                }
+
+                if (plusImage)
+                {
+                    plusImage.SetActive(false);
                 }
             }
 
