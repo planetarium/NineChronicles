@@ -47,6 +47,13 @@ namespace Nekoyume.UI.Module
                     }
                 }
             }
+            else
+            {
+                for (int i = 1; i < requiredItemViews.Length; ++i)
+                {
+                    requiredItemViews[i].gameObject.SetActive(false);
+                }
+            }
 
             Show();
         }

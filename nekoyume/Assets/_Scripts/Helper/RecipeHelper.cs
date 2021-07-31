@@ -1,7 +1,5 @@
 using Nekoyume.Model.Stat;
 using Nekoyume.TableData;
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace Nekoyume.Helper

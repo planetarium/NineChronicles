@@ -9,6 +9,14 @@ using TMPro;
 using UnityEngine;
 using System;
 using System.Globalization;
+using UnityEngine.UI;
+using Toggle = Nekoyume.UI.Module.Toggle;
+using Nekoyume.State;
+using System.Numerics;
+using Nekoyume.BlockChain;
+using System.Collections;
+using Nekoyume.Model.Item;
+using Nekoyume.UI.Model;
 
 namespace Nekoyume.UI
 {
@@ -34,9 +42,21 @@ namespace Nekoyume.UI
         [SerializeField] private List<OptionView> skillViews = null;
 
         [SerializeField] private RequiredItemRecipeView requiredItemRecipeView = null;
+        [SerializeField] private Button submitButton = null;
+        [SerializeField] private GameObject buttonEnabledObject = null;
+        [SerializeField] private TextMeshProUGUI costText = null;
+        [SerializeField] private GameObject buttonDisabledObject = null;
+        [SerializeField] private GameObject lockObject = null;
 
         private SheetRow<int> _recipeRow = null;
         private List<int> _subrecipeIds = null;
+        private int _subrecipeIndex;
+        private BigInteger _costNCG;
+
+        private bool IsSubmittable =>
+            !(States.Instance.AgentState is null) &&
+            States.Instance.GoldBalanceState.Gold.MajorUnit >= _costNCG &&
+            !(States.Instance.CurrentAvatarState is null);
 
         private const string StatTextFormat = "{0} {1}";
         private const string OptionTextFormat = "{0} +({1}~{2})";
@@ -54,6 +74,8 @@ namespace Nekoyume.UI
                     ChangeTab(innerIndex);
                 });
             }
+
+            submitButton.onClick.AddListener(SubscribeOnClick);
         }
 
         public void SetData(SheetRow<int> recipeRow, List<int> subrecipeIds)
@@ -105,8 +127,10 @@ namespace Nekoyume.UI
 
         private void ChangeTab(int index)
         {
+            _subrecipeIndex = index;
             long blockIndex = 0;
             decimal greatSuccessRate = 0m;
+            decimal costNCG = 0;
 
             var equipmentRow = _recipeRow as EquipmentItemRecipeSheet.Row;
             var consumableRow = _recipeRow as ConsumableItemRecipeSheet.Row;
@@ -116,6 +140,7 @@ namespace Nekoyume.UI
                 var baseMaterial = new EquipmentItemSubRecipeSheet.MaterialInfo(
                     equipmentRow.MaterialId,
                     equipmentRow.MaterialCount);
+                costNCG = equipmentRow.RequiredGold;
 
                 if (_subrecipeIds != null &&
                     _subrecipeIds.Any())
@@ -135,6 +160,8 @@ namespace Nekoyume.UI
                         baseMaterial,
                         subRecipe.Materials,
                         true);
+
+                    costNCG += subRecipe.RequiredGold;
                 }
                 else
                 {
@@ -159,11 +186,20 @@ namespace Nekoyume.UI
             {
                 blockIndex = consumableRow.RequiredBlockIndex;
                 requiredItemRecipeView.SetData(consumableRow.Materials, true);
+                costNCG = consumableRow.RequiredGold;
             }
 
             blockIndexText.text = blockIndex.ToString();
             greatSuccessRateText.text = greatSuccessRate == 0m ?
                 "-" : greatSuccessRate.ToString("P1");
+
+            _costNCG = (BigInteger) costNCG;
+            costText.text = _costNCG.ToString();
+            submitButton.interactable =
+                States.Instance.GoldBalanceState.Gold.MajorUnit >= _costNCG;
+
+            buttonEnabledObject.SetActive(true);
+            buttonDisabledObject.SetActive(false);
         }
 
         private void SetOptions(
@@ -225,6 +261,59 @@ namespace Nekoyume.UI
                 skillView.PercentageText.text = ratioText;
                 skillView.ParentObject.SetActive(true);
             }
+        }
+
+        private void SubscribeOnClick()
+        {
+            var slots = Widget.Find<CombinationSlots>();
+            if (!slots.TryGetEmptyCombinationSlSlot(out var slotIndex))
+            {
+                return;
+            }
+
+            slots.SetCaching(slotIndex, true);
+
+            var agentAddress = States.Instance.AgentState.address;
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+
+            LocalLayerModifier.ModifyAgentGold(agentAddress, -_costNCG);
+
+
+            if (_recipeRow is EquipmentItemRecipeSheet.Row equipmentRow)
+            {
+                var subRecipeId = _subrecipeIds.Any() ?
+                    _subrecipeIds[_subrecipeIndex] : (int?) null;
+
+                Game.Game.instance.ActionManager.CombinationEquipment(
+                    equipmentRow.Id,
+                    slotIndex,
+                    subRecipeId);
+
+                var equipment = (Equipment) ItemFactory.CreateItemUsable(
+                    equipmentRow.GetResultItem(), Guid.Empty, default);
+                StartCoroutine(CoCombineNPCAnimation(equipment, null));
+            }
+            else if (_recipeRow is ConsumableItemRecipeSheet.Row consumableRow)
+            {
+                Game.Game.instance.ActionManager.CombinationConsumable(
+                    consumableRow.Id,
+                    slotIndex);
+
+                var consumable = (Consumable) ItemFactory.CreateItemUsable(
+                    consumableRow.GetResultItem(), Guid.Empty, default);
+                StartCoroutine(CoCombineNPCAnimation(consumable, null, true));
+            }
+        }
+
+        private IEnumerator CoCombineNPCAnimation(ItemBase itemBase, System.Action action, bool isConsumable = false)
+        {
+            var loadingScreen = Widget.Find<CombinationLoadingScreen>();
+            loadingScreen.Show();
+            loadingScreen.SetItemMaterial(new Item(itemBase), isConsumable);
+            loadingScreen.SetCloseAction(action);
+            //Push();
+            yield return new WaitForSeconds(.5f);
+            loadingScreen.AnimateNPC();
         }
     }
 }
