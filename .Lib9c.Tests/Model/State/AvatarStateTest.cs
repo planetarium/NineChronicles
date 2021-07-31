@@ -8,7 +8,7 @@ namespace Lib9c.Tests.Model.State
     using System.Threading.Tasks;
     using Bencodex;
     using Bencodex.Types;
-    using Lib9c.Tests.Action;
+    using Lib9c.Tests.Model.Item;
     using Libplanet;
     using Libplanet.Crypto;
     using Nekoyume;
