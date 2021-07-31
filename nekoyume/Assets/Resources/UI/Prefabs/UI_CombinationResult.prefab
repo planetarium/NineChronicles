@@ -601,6 +601,11 @@ MonoBehaviour:
   tutorialTargets: []
   tutorialActions: 
   _iconSprite: {fileID: 3223044904201159779}
+  _resultItem:
+    itemNameText: {fileID: 6218873602398943368}
+    itemView: {fileID: 5463856523952995859}
+    mainStatText: {fileID: 705757110123492566}
+    cpText: {fileID: 8286323483557155282}
   _optionStarObjects:
   - {fileID: 8286323484632790209}
   - {fileID: 8286323483039856090}
@@ -620,7 +625,6 @@ MonoBehaviour:
     text: {fileID: 5444185815300916149}
     secondStarObject: {fileID: 0}
   _skipButton: {fileID: 3019484678701879560}
-  _touchScreenButton: {fileID: 0}
   _equipmentOrFood: 0
   _editorStatOptions: []
   _editorSkillOptions: []

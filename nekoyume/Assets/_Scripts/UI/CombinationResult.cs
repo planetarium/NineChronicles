@@ -1,10 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using JetBrains.Annotations;
+using Nekoyume.Battle;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Controller;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Stat;
+using Nekoyume.TableData;
+using Nekoyume.UI.Model;
+using Nekoyume.UI.Module;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -15,6 +20,15 @@ namespace Nekoyume.UI
 
     public class CombinationResult : Widget
     {
+        [Serializable]
+        public class ResultItem
+        {
+            public TextMeshProUGUI itemNameText;
+            public SimpleCountableItemView itemView;
+            public TextMeshProUGUI mainStatText;
+            public TextMeshProUGUI cpText;
+        }
+
         [Serializable]
         public class Option
         {
@@ -53,6 +67,9 @@ namespace Nekoyume.UI
         private Image _iconSprite;
 
         [SerializeField]
+        private ResultItem _resultItem;
+
+        [SerializeField]
         private List<GameObject> _optionStarObjects;
 
         [SerializeField]
@@ -67,6 +84,9 @@ namespace Nekoyume.UI
         [Space(10)]
         [SerializeField]
         private EquipmentOrFood _equipmentOrFood;
+
+        [SerializeField]
+        private EditorStatOption _editorMainStat;
 
         [SerializeField]
         private List<EditorStatOption> _editorStatOptions;
@@ -99,32 +119,112 @@ namespace Nekoyume.UI
         protected override void OnEnable()
         {
             base.OnEnable();
+
+            // var itemUsable = _equipmentOrFood == EquipmentOrFood.Equipment
+            //     ? (ItemUsable) new Equipment(new EquipmentItemSheet.Row(), Guid.NewGuid(), 0)
+            //     : new Consumable(new ConsumableItemSheet.Row(), Guid.NewGuid(), 0);
         }
 #endif
 
-        [Obsolete("Use `Show(ItemUsable equipment)` instead.")]
+        [Obsolete("Use `Show(ItemUsable itemUsable)` instead.")]
         public override void Show(bool ignoreShowAnimation = false)
-        {
-            // ignore.
-        }
-
-        public override void Close(bool ignoreCloseAnimation = false)
         {
             // ignore.
         }
 
         public void Show(ItemUsable itemUsable)
         {
+            // NOTE: Ignore Show Animation
             base.Show(true);
+
+            _resultItem.itemNameText.text = itemUsable.GetLocalizedName();
+            _resultItem.itemView.SetData(new CountableItem(itemUsable, 1));
 
             if (itemUsable is Equipment equipment)
             {
-                Animator.SetTrigger(equipment.optionCountFromCombination == 4
+                _resultItem.mainStatText.text = equipment.StatsMap.GetStat(equipment.UniqueStatType, true).ToString();
+                _resultItem.cpText.text = itemUsable.GetCPText();
+
+                var optionCount = equipment.optionCountFromCombination;
+                for (var i = 0; i < _optionStarObjects.Count; i++)
+                {
+                    _optionStarObjects[i].SetActive(i < optionCount);
+                }
+
+                var additionalStats = equipment.StatsMap.GetAdditionalStats(true)
+                    .ToArray();
+                var additionalStatsLength = additionalStats.Length;
+                var skills = equipment.Skills;
+                var skillsCount = skills.Count;
+                var optionTextsIndex = 0;
+                while (optionTextsIndex < _optionTexts.Count)
+                {
+                    var optionText = _optionTexts[optionTextsIndex];
+                    if (optionTextsIndex < additionalStatsLength)
+                    {
+                        if (optionTextsIndex == 0 && optionText.secondStarObject != null)
+                        {
+                            optionText.secondStarObject.SetActive(additionalStatsLength < optionCount);
+                        }
+
+                        var (statType, additionalValue) = additionalStats[optionTextsIndex];
+                        optionText.text.text = $"{statType.GetLocalizedString()} +{additionalValue}";
+                        optionText.rootObject.SetActive(true);
+                    }
+                    else if (optionTextsIndex < additionalStatsLength + skillsCount)
+                    {
+                        var skill = skills[optionTextsIndex - additionalStatsLength];
+                        optionText.text.text = $"{skill.SkillRow.GetLocalizedName()} {skill.Power} / {skill.Chance:P}";
+                        optionText.rootObject.SetActive(true);
+                    }
+                    else
+                    {
+                        optionText.rootObject.SetActive(false);
+                    }
+
+                    optionTextsIndex++;
+                }
+
+                Animator.SetTrigger(optionCount == 4
                     ? AnimatorHashGreatSuccess
                     : AnimatorHashSuccess);
             }
-            else
+            else if (itemUsable is Consumable consumable)
             {
+                _resultItem.mainStatText.text = string.Empty;
+                _resultItem.cpText.text = string.Empty;
+
+                var stats = consumable.StatsMap.GetStats(true)
+                    .ToArray();
+                var statsLength = stats.Length;
+                for (var i = 0; i < _optionStarObjects.Count; i++)
+                {
+                    _optionStarObjects[i].SetActive(i < statsLength);
+                }
+
+                var optionTextsIndex = 0;
+                while (optionTextsIndex < _optionTexts.Count)
+                {
+                    var optionText = _optionTexts[optionTextsIndex];
+                    if (optionText.secondStarObject != null)
+                    {
+                        optionText.secondStarObject.SetActive(false);
+                    }
+
+                    if (optionTextsIndex < statsLength)
+                    {
+                        var (statType, additionalValue) = stats[optionTextsIndex];
+                        optionText.text.text = $"{statType.GetLocalizedString()} +{additionalValue}";
+                        optionText.rootObject.SetActive(true);
+                    }
+                    else
+                    {
+                        optionText.rootObject.SetActive(false);
+                    }
+
+                    optionTextsIndex++;
+                }
+
                 Animator.SetTrigger(AnimatorHashSuccess);
             }
         }
