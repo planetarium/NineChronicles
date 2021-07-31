@@ -24,7 +24,9 @@ namespace Nekoyume.UI
 
         [SerializeField] private RecipeScroll recipeScroll = null;
 
-        [SerializeField] private SubRecipeView subRecipeView = null;
+        [SerializeField] private SubRecipeView equipmentSubRecipeView = null;
+
+        [SerializeField] private SubRecipeView foodSubRecipeView = null;
 
         public static RecipeModel SharedModel = null;
 
@@ -68,6 +70,9 @@ namespace Nekoyume.UI
             {
                 equipmentToggle.isOn = true;
             }
+
+            equipmentSubRecipeView.gameObject.SetActive(false);
+            foodSubRecipeView.gameObject.SetActive(false);
             base.Show(ignoreShowAnimation);
         }
 
@@ -75,11 +80,15 @@ namespace Nekoyume.UI
         {
             if (row is EquipmentItemRecipeSheet.Row equipmentRow)
             {
-                subRecipeView.SetData(equipmentRow, equipmentRow.SubRecipeIds);
+                equipmentSubRecipeView.SetData(equipmentRow, equipmentRow.SubRecipeIds);
+                equipmentSubRecipeView.gameObject.SetActive(true);
+                foodSubRecipeView.gameObject.SetActive(false);
             }
             else if (row is ConsumableItemRecipeSheet.Row consumableRow)
             {
-                subRecipeView.SetData(consumableRow, null);
+                foodSubRecipeView.SetData(consumableRow, null);
+                equipmentSubRecipeView.gameObject.SetActive(false);
+                foodSubRecipeView.gameObject.SetActive(true);
             }
         }
 
