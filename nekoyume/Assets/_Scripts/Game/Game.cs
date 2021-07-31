@@ -148,8 +148,6 @@ namespace Nekoyume.Game
 
             // Initialize MainCanvas first
             MainCanvas.instance.InitializeFirst();
-            yield return Addressables.InitializeAsync();
-            Debug.Log("[Game] Start() Addressables initialized");
             // Initialize TableSheets. This should be done before initialize the Agent.
             yield return StartCoroutine(CoInitializeTableSheets());
             Debug.Log("[Game] Start() TableSheets initialized");

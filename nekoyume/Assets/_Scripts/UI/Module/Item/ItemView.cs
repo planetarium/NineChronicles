@@ -80,7 +80,6 @@ namespace Nekoyume.UI.Module
             Model?.Dispose();
             OnClick.Dispose();
             OnDoubleClick.Dispose();
-            Clear();
         }
 
         #endregion
@@ -124,11 +123,6 @@ namespace Nekoyume.UI.Module
 
             Model.Selected.SubscribeTo(selectionImage.gameObject).AddTo(_disposablesAtSetData);
             UpdateView();
-        }
-
-        private void UpdateEnhancement()
-        {
-
         }
 
         public void SetData(TViewModel model, bool isConsumable)
