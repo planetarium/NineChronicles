@@ -268,14 +268,16 @@ namespace Nekoyume.UI
             }
         }
 
-        public static string GetLocalizedName(this ItemBase item, bool useElementalIcon = true)
+        public static string GetLocalizedName(
+            this ItemBase item,
+            bool useElementalIcon = true,
+            bool ignoreLevel = false)
         {
-            string name = item.GetLocalizedNonColoredName(useElementalIcon);
-            var elemental = useElementalIcon ? GetElementalIcon(item.ElementalType) : string.Empty;
+            var name = item.GetLocalizedNonColoredName(useElementalIcon);
             switch (item)
             {
                 case Equipment equipment:
-                    return equipment.level > 0
+                    return !ignoreLevel && equipment.level > 0
                         ? $"<color=#{GetColorHexByGrade(item)}>+{equipment.level} {name}</color>"
                         : $"<color=#{GetColorHexByGrade(item)}>{name}</color>";
                 default:
