@@ -9,7 +9,8 @@ using Nekoyume.State;
 using Nekoyume.UI.Module;
 using UnityEngine;
 using System.Numerics;
-using Nekoyume.Model.Stat;
+using Nekoyume.EnumType;
+using Nekoyume.Game.Controller;
 using Nekoyume.TableData;
 using Nekoyume.UI.Model;
 using TMPro;
@@ -31,20 +32,31 @@ namespace Nekoyume.UI
         [SerializeField] private TextMeshProUGUI itemNameText;
         [SerializeField] private TextMeshProUGUI currentLevelText;
         [SerializeField] private TextMeshProUGUI nextLevelText;
-        [SerializeField] private EnhancementOptionView mainOptions;
-        [SerializeField] private List<EnhancementOptionView> addOptions;
+        [SerializeField] private TextMeshProUGUI costText;
+        [SerializeField] private EnhancementOptionView mainStat;
+        [SerializeField] private List<EnhancementOptionView> addStats;
+        [SerializeField] private List<EnhancementOptionView> addSkills;
 
         private EnhancementCostSheetV2 _costSheet;
         private Equipment _baseItem;
         private Equipment _materialItem;
-        private BigInteger CostNCG = 0;
-        private int CostAP = 0;
+        private BigInteger _costNcg = 0;
 
         protected override void Awake()
         {
             base.Awake();
             upgradeButton.onClick.AddListener(ActionUpgradeItem);
-            closeButton.onClick.AddListener(() => Close(true));
+            closeButton.onClick.AddListener(() =>
+            {
+                Close(true);
+                Find<CombinationMain>().Show();
+            });
+
+            CloseWidget = () =>
+            {
+                Close(true);
+                Find<CombinationMain>().Show();
+            };
         }
 
         public override void Initialize()
@@ -59,6 +71,12 @@ namespace Nekoyume.UI
             inventory.SharedModel.EffectEnabledFunc.Value = Contains;
 
             _costSheet = Game.Game.instance.TableSheets.EnhancementCostSheetV2;
+        }
+
+        public override void Show(bool ignoreShowAnimation = false)
+        {
+            base.Show(ignoreShowAnimation);
+            Clear();
         }
 
         private bool DimFunc(InventoryItem inventoryItem)
@@ -143,8 +161,8 @@ namespace Nekoyume.UI
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             var slotIndex = Find<Combination>().selectedIndex;
 
-            LocalLayerModifier.ModifyAgentGold(agentAddress, CostNCG * -1);
-            LocalLayerModifier.ModifyAvatarActionPoint(avatarAddress, -CostAP);
+            LocalLayerModifier.ModifyAgentGold(agentAddress, -_costNcg);
+            LocalLayerModifier.ModifyAvatarActionPoint(avatarAddress, -GameConfig.EnhanceEquipmentCostAP);
             LocalLayerModifier.RemoveItem(avatarAddress, _baseItem.TradableId, _baseItem.RequiredBlockIndex, 1);
             LocalLayerModifier.RemoveItem(avatarAddress, _materialItem.TradableId, _materialItem.RequiredBlockIndex, 1);
 
@@ -195,6 +213,7 @@ namespace Nekoyume.UI
                 _baseItem = (Equipment) viewModel.Model.ItemBase.Value;
                 if (TryGetRow(_baseItem, _costSheet, out var row))
                 {
+                    _costNcg = row.Cost;
                     UpdateInformation(row, _baseItem);
                 }
 
@@ -204,6 +223,7 @@ namespace Nekoyume.UI
                         inventory.ClearItemState(_baseItem);
                         _baseItem = null;
                         inventory.SharedModel.UpdateDimAndEffectAll();
+                        upgradeButton.interactable = IsInteractableButton(_baseItem, _materialItem, _costNcg);
                         ClearInformation();
                     });
             }
@@ -216,21 +236,12 @@ namespace Nekoyume.UI
                         inventory.ClearItemState(_materialItem);
                         _materialItem = null;
                         inventory.SharedModel.UpdateDimAndEffectAll();
+                        upgradeButton.interactable = IsInteractableButton(_baseItem, _materialItem, _costNcg);
                     });
             }
 
-            upgradeButton.enabled = !(_baseItem is null) && !(_materialItem is null);
+            upgradeButton.interactable = IsInteractableButton(_baseItem, _materialItem, _costNcg);
             inventory.SharedModel.UpdateDimAndEffectAll();
-        }
-
-        private bool TryGetRow(Equipment equipment,
-                               EnhancementCostSheetV2 sheet,
-                               out EnhancementCostSheetV2.Row row)
-        {
-            var grade = equipment.Grade;
-            var level = equipment.level + 1;
-            row = sheet.OrderedList.FirstOrDefault(x => x.Grade == grade  && x.Level == level);
-            return row != null;
         }
 
         private void Clear()
@@ -242,16 +253,14 @@ namespace Nekoyume.UI
 
         private void UpdateInformation(EnhancementCostSheetV2.Row row, Equipment equipment)
         {
+            ClearInformation();
+            costText.text = row.Cost.ToString();
+            costText.color = GetNcgColor(row.Cost);
+            itemNameText.text = equipment.GetLocalizedName();
             currentLevelText.text = $"{equipment.level}";
             nextLevelText.text = $"{equipment.level + 1}";
             successRatioText.text = $"{(row.GreatSuccessRatio + row.SuccessRatio) * 100}%";
             requiredBlockIndexText.text = $"{row.SuccessRequiredBlockIndex}+";
-            itemNameText.text = equipment.GetLocalizedName();
-
-            foreach (var addStat in addOptions)
-            {
-                addStat.gameObject.SetActive(false);
-            }
 
             var stats = equipment.StatsMap.GetStats().ToList();
             foreach (var stat in stats)
@@ -260,10 +269,9 @@ namespace Nekoyume.UI
                 {
                     var mainType = stat.StatType.ToString();
                     var mainValue = stat.ValueAsInt.ToString();
-                    var mainAdd = (int)(row.BaseStatGrowthMax * 100);
-                    mainOptions.gameObject.SetActive(true);
-                    mainOptions.Initialize(mainType, mainValue, $"MAX  +{mainAdd}%",
-                        string.Empty, string.Empty);
+                    var mainAdd = (int)(stat.ValueAsInt * row.BaseStatGrowthMax);
+                    mainStat.gameObject.SetActive(true);
+                    mainStat.Set(mainType, mainValue, $"(<size=80%>max</size> +{mainAdd})");
                     break;
                 }
             }
@@ -274,10 +282,9 @@ namespace Nekoyume.UI
                 {
                     var subType = stats[i].StatType.ToString();
                     var subValue = stats[i].AdditionalValueAsInt.ToString();
-                    var subAdd = (int)(row.ExtraStatGrowthMax * 100);
-                    addOptions[i].gameObject.SetActive(true);
-                    addOptions[i].Initialize(subType, subValue, $"MAX  +{subAdd}%",
-                        string.Empty, string.Empty);
+                    var subAdd = (int)(stats[i].AdditionalValueAsInt * row.ExtraStatGrowthMax);
+                    addStats[i].gameObject.SetActive(true);
+                    addStats[i].Set(subType, subValue, $"(<size=80%>max</size> +{subAdd})");
                 }
             }
 
@@ -287,26 +294,74 @@ namespace Nekoyume.UI
                 var name = skills[i].SkillRow.GetLocalizedName();
                 var power = skills[i].Power.ToString();
                 var chance = skills[i].Chance.ToString();
-                var powerAdd = (int)(row.ExtraSkillDamageGrowthMax * 100);
-                var chanceAdd = (int)(row.ExtraSkillChanceGrowthMax * 100);
-                var options = addOptions[i + stats.Count];
-                options.gameObject.SetActive(true);
-                options.Initialize(name, power, $"MAX +{powerAdd}%",
-                    chance, $"MAX  +{chanceAdd}%");
+                var powerAdd = (int)(skills[i].Power * row.ExtraSkillDamageGrowthMax);
+                var chanceAdd = (int)(skills[i].Chance * row.ExtraSkillChanceGrowthMax);
+                addSkills[i].gameObject.SetActive(true);
+                addSkills[i].Set(name,
+                    $"{L10nManager.Localize("UI_SKILL_POWER")} : {power}",
+                    $"(<size=80%>max</size> +{powerAdd})",
+                    $"{L10nManager.Localize("UI_SKILL_CHANCE")} : {chance}",
+                    $"(<size=80%>max</size> +{chanceAdd}%)");
             }
         }
 
         private void ClearInformation()
         {
+            costText.text = "0";
+            itemNameText.text = string.Empty;
             currentLevelText.text = string.Empty;
             nextLevelText.text = string.Empty;
             successRatioText.text = "0%";
             requiredBlockIndexText.text = "0";
-            mainOptions.gameObject.SetActive(false);
-            foreach (var addStat in addOptions)
+            upgradeButton.interactable = false;
+
+            mainStat.gameObject.SetActive(false);
+            foreach (var stat in addStats)
             {
-                addStat.gameObject.SetActive(false);
+                stat.gameObject.SetActive(false);
             }
+
+            foreach (var skill in addSkills)
+            {
+                skill.gameObject.SetActive(false);
+            }
+        }
+
+        private bool IsInteractableButton(IItem item, IItem material, BigInteger cost)
+        {
+            if (item is null || material is null)
+            {
+                return false;
+            }
+
+            if (States.Instance.GoldBalanceState.Gold.MajorUnit < cost)
+            {
+                return false;
+            }
+
+            if (States.Instance.CurrentAvatarState.actionPoint < GameConfig.EnhanceEquipmentCostAP)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        private static bool TryGetRow(Equipment equipment,
+            EnhancementCostSheetV2 sheet,
+            out EnhancementCostSheetV2.Row row)
+        {
+            var grade = equipment.Grade;
+            var level = equipment.level + 1;
+            row = sheet.OrderedList.FirstOrDefault(x => x.Grade == grade  && x.Level == level);
+            return row != null;
+        }
+
+        private static Color GetNcgColor(BigInteger cost)
+        {
+            return States.Instance.GoldBalanceState.Gold.MajorUnit < cost
+                ? Palette.GetColor(ColorType.TextDenial)
+                : Color.white;
         }
     }
 }
