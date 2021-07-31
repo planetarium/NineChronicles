@@ -2,12 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
-using Nekoyume.Battle;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Controller;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Stat;
-using Nekoyume.TableData;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using TMPro;
