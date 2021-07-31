@@ -12,7 +12,15 @@ namespace Nekoyume.UI.Module
         [SerializeField] private TextMeshProUGUI currentExText;
         [SerializeField] private TextMeshProUGUI addExText;
 
-        public void Initialize(string type, string currentValue, string addValue,
+        public void Set(string type, string currentValue, string addValue)
+        {
+            typeText.text = type;
+
+            currentText.text = currentValue;
+            addText.text = addValue;
+        }
+
+        public void Set(string type, string currentValue, string addValue,
                                                 string exValue, string addExValue)
         {
             typeText.text = type;

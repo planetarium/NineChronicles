@@ -285,7 +285,9 @@ namespace Nekoyume.UI.Module
                     return;
                 }
 
-                Widget.Find<Menu>().CombinationClick(_slotIndex);
+                Widget.Find<HeaderMenu>().UpdateAssets(HeaderMenu.AssetVisibleState.Combination);
+                Widget.Find<Craft>().Show();
+                Widget.Find<CombinationSlots>().Close();
             }
             else
             {
