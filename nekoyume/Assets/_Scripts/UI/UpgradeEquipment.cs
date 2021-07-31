@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using Nekoyume.BlockChain;
 using Nekoyume.L10n;
@@ -9,8 +10,11 @@ using Nekoyume.State;
 using Nekoyume.UI.Module;
 using UnityEngine;
 using System.Numerics;
+using Bencodex.Types;
+using Nekoyume.Action;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Controller;
+using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using Nekoyume.UI.Model;
 using TMPro;
@@ -45,7 +49,7 @@ namespace Nekoyume.UI
         protected override void Awake()
         {
             base.Awake();
-            upgradeButton.onClick.AddListener(ActionUpgradeItem);
+            upgradeButton.onClick.AddListener(Action);
             closeButton.onClick.AddListener(() =>
             {
                 Close(true);
@@ -153,21 +157,25 @@ namespace Nekoyume.UI
             return false;
         }
 
-        private void ActionUpgradeItem()
+        private void Action()
         {
             var baseGuid = _baseItem.ItemId;
             var materialGuid = _materialItem.ItemId;
             var agentAddress = States.Instance.AgentState.address;
             var avatarAddress = States.Instance.CurrentAvatarState.address;
-            var slotIndex = Find<Combination>().selectedIndex;
 
+            var slots = Find<CombinationSlots>();
+            if (!slots.TryGetEmptyCombinationSlSlot(out var slotIndex))
+            {
+                return;
+            }
+
+            slots.SetCaching(slotIndex, true);
             LocalLayerModifier.ModifyAgentGold(agentAddress, -_costNcg);
             LocalLayerModifier.ModifyAvatarActionPoint(avatarAddress, -GameConfig.EnhanceEquipmentCostAP);
             LocalLayerModifier.RemoveItem(avatarAddress, _baseItem.TradableId, _baseItem.RequiredBlockIndex, 1);
             LocalLayerModifier.RemoveItem(avatarAddress, _materialItem.TradableId, _materialItem.RequiredBlockIndex, 1);
 
-            // todo : 로컬레이어 대체할걸 만들어야됨
-            // LocalLayerModifier.ModifyCombinationSlotItemEnhancement(baseGuid, materialGuid, slotIndex);
             Notification.Push(MailType.Workshop, L10nManager.Localize("NOTIFICATION_ITEM_ENHANCEMENT_START"));
 
             Game.Game.instance.ActionManager
@@ -344,7 +352,7 @@ namespace Nekoyume.UI
                 return false;
             }
 
-            return true;
+            return Find<CombinationSlots>().TryGetEmptyCombinationSlSlot(out _);
         }
 
         private static bool TryGetRow(Equipment equipment,

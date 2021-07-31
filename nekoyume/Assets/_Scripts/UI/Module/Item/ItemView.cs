@@ -125,11 +125,6 @@ namespace Nekoyume.UI.Module
             UpdateView();
         }
 
-        private void UpdateEnhancement()
-        {
-
-        }
-
         public void SetData(TViewModel model, bool isConsumable)
         {
             if (model is null)
