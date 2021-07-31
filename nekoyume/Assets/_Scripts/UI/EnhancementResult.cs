@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using JetBrains.Annotations;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Controller;
 using Nekoyume.Model.Item;
-using Nekoyume.Model.Stat;
+using Nekoyume.UI.Model;
+using Nekoyume.UI.Module;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
@@ -16,84 +17,47 @@ namespace Nekoyume.UI
     public class EnhancementResult : Widget
     {
         [Serializable]
+        public class ResultItem
+        {
+            public SimpleCountableItemView itemView;
+            public TextMeshProUGUI beforeGradeText;
+            public TextMeshProUGUI afterGradeText;
+            public TextMeshProUGUI itemNameText;
+            public TextMeshProUGUI cpText;
+        }
+
+        [Serializable]
         public class Option
         {
             public GameObject rootObject;
-            public TextMeshProUGUI text;
+            public TextMeshProUGUI totalText;
+            public TextMeshProUGUI plusText;
 
             [CanBeNull]
             public GameObject secondStarObject;
         }
 
-#if UNITY_EDITOR
-        [Serializable]
-        public enum EquipmentOrFood
-        {
-            Equipment,
-            Food
-        }
-
-        [Serializable]
-        public class EditorStatOption
-        {
-            public StatType statType;
-            public float value;
-        }
-
-        [Serializable]
-        public class EditorSkillOption
-        {
-            public string skillName;
-            public float chance;
-            public float power;
-        }
-#endif
-
         [SerializeField]
-        private Image _iconSprite;
-
-        [SerializeField]
-        private List<GameObject> _optionStarObjects;
+        private ResultItem _resultItem;
 
         [SerializeField]
         private List<Option> _optionTexts;
-
-        [SerializeField]
-        private Button _skipButton;
 
 #if UNITY_EDITOR
         [Space(10)]
         [Header("Editor Properties For Test")]
         [Space(10)]
         [SerializeField]
-        private EquipmentOrFood _equipmentOrFood;
-
-        [SerializeField]
-        private List<EditorStatOption> _editorStatOptions;
-
-        [SerializeField]
-        private List<EditorSkillOption> _editorSkillOptions;
+        private List<CombinationResult.EditorStatOption> _editorStatOptions;
 #endif
 
         private static readonly int AnimatorHashGreatSuccess = Animator.StringToHash("GreatSuccess");
         private static readonly int AnimatorHashSuccess = Animator.StringToHash("Success");
+        private static readonly int AnimatorHashFail = Animator.StringToHash("Fail");
         private static readonly int AnimatorHashLoop = Animator.StringToHash("Loop");
         private static readonly int AnimatorHashClose = Animator.StringToHash("Close");
 
         public override WidgetType WidgetType => WidgetType.Popup;
-
-        protected override void Awake()
-        {
-            base.Awake();
-
-            _skipButton.OnClickAsObservable()
-                .ThrottleFirst(TimeSpan.FromSeconds(1d))
-                .Subscribe(_ =>
-                {
-                    AudioController.PlayClick();
-                    SkipAnimation();
-                }).AddTo(gameObject);
-        }
 
 #if UNITY_EDITOR
         protected override void OnEnable()
@@ -102,31 +66,58 @@ namespace Nekoyume.UI
         }
 #endif
 
-        [Obsolete("Use `Show(ItemUsable equipment)` instead.")]
+        [Obsolete("Use `Show(Equipment equipment)` instead.")]
         public override void Show(bool ignoreShowAnimation = false)
         {
             // ignore.
         }
 
-        public override void Close(bool ignoreCloseAnimation = false)
+        public void Show(Equipment equipment) // or ItemEnhanceMail
         {
-            // ignore.
-        }
-
-        public void Show(ItemUsable itemUsable)
-        {
+            // NOTE: Ignore Show Animation
             base.Show(true);
 
-            if (itemUsable is Equipment equipment)
+            _resultItem.itemView.SetData(new CountableItem(equipment, 1));
+            _resultItem.beforeGradeText.text = $"+{equipment.level - 1}";
+            _resultItem.afterGradeText.text = $"+{equipment.level}";
+            _resultItem.itemNameText.text = equipment.GetLocalizedName(ignoreLevel: true);
+            _resultItem.cpText.text = equipment.GetCPText();
+
+            var optionCount = equipment.optionCountFromCombination;
+            var additionalStats = equipment.StatsMap.GetAdditionalStats(true)
+                .ToArray();
+            var additionalStatsLength = additionalStats.Length;
+            var skills = equipment.Skills;
+            var skillsCount = skills.Count;
+            for (var i = 0; i < _optionTexts.Count; i++)
             {
-                Animator.SetTrigger(equipment.optionCountFromCombination == 4
-                    ? AnimatorHashGreatSuccess
-                    : AnimatorHashSuccess);
+                var optionText = _optionTexts[i];
+                if (i < additionalStatsLength)
+                {
+                    if (i == 0 && optionText.secondStarObject != null)
+                    {
+                        optionText.secondStarObject.SetActive(additionalStatsLength < optionCount);
+                    }
+
+                    var (statType, additionalValue) = additionalStats[i];
+                    optionText.totalText.text = $"{statType.GetLocalizedString()} +{additionalValue}";
+                    optionText.rootObject.SetActive(true);
+                }
+                else if (i < additionalStatsLength + skillsCount)
+                {
+                    var skill = skills[i - additionalStatsLength];
+                    optionText.totalText.text = $"{skill.SkillRow.GetLocalizedName()} {skill.Power} / {skill.Chance:P}";
+                    optionText.rootObject.SetActive(true);
+                }
+                else
+                {
+                    optionText.rootObject.SetActive(false);
+                }
             }
-            else
-            {
-                Animator.SetTrigger(AnimatorHashSuccess);
-            }
+
+            // Animator.SetTrigger(AnimatorHashGreatSuccess);
+            // Animator.SetTrigger(AnimatorHashSuccess);
+            // Animator.SetTrigger(AnimatorHashFail);
         }
 
         public void OnAnimatorStateBeginning(string stateName)
@@ -141,6 +132,7 @@ namespace Nekoyume.UI
             {
                 case "GreatSuccess":
                 case "Success":
+                case "Fail":
                     Observable.EveryUpdate()
                         .Where(_ => Input.GetMouseButtonDown(0) ||
                                     Input.GetKeyDown(KeyCode.Return) ||
@@ -164,7 +156,8 @@ namespace Nekoyume.UI
             var hash = Animator.GetCurrentAnimatorStateInfo(0).shortNameHash;
             Animator.Play(hash, 0, 1f);
             if (hash == AnimatorHashGreatSuccess ||
-                hash == AnimatorHashSuccess)
+                hash == AnimatorHashSuccess ||
+                hash == AnimatorHashFail)
             {
                 Observable.NextFrame().Subscribe(_ =>
                     Animator.Play(AnimatorHashLoop, 0, 0));
