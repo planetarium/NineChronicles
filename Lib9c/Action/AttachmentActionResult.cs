@@ -123,7 +123,7 @@ namespace Nekoyume.Action
             catch (Exception e)
             {
                 Log.Error(
-                    "{0} was raised during deserialize: {1}",
+                    "{FullName} was raised during deserialize: {Serialized}",
                     e.GetType().FullName,
                     serialized);
                 throw;

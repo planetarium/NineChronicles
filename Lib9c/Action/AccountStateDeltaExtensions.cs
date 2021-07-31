@@ -133,7 +133,7 @@ namespace Nekoyume.Action
             var serializedAvatar = states.GetState(address);
             if (serializedAvatar is null)
             {
-                Log.Warning("No avatar state ({0})", address.ToHex());
+                Log.Warning("No avatar state ({AvatarAddress})", address.ToHex());
                 return null;
             }
 
@@ -145,7 +145,7 @@ namespace Nekoyume.Action
             {
                 Log.Error(
                     e,
-                    "Invalid avatar state ({0}): {1}",
+                    "Invalid avatar state ({AvatarAddress}): {SerializedAvatar}",
                     address.ToHex(),
                     serializedAvatar
                 );
@@ -158,7 +158,7 @@ namespace Nekoyume.Action
         {
             if (!(states.GetState(address) is Dictionary serializedAvatar))
             {
-                Log.Warning("No avatar state ({0})", address.ToHex());
+                Log.Warning("No avatar state ({AvatarAddress})", address.ToHex());
                 return null;
             }
 
@@ -188,7 +188,7 @@ namespace Nekoyume.Action
             {
                 Log.Error(
                     e,
-                    "Invalid avatar state ({0}): {1}",
+                    "Invalid avatar state ({AvatarAddress}): {SerializedAvatar}",
                     address.ToHex(),
                     serializedAvatar
                 );
