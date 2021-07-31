@@ -309,16 +309,7 @@ namespace Nekoyume.BlockChain
                 }
             }
 
-            // NOTE: 메일 레이어 다시 없애기.
-            LocalLayerModifier.AddItem(avatarAddress, itemUsable.TradableId, itemUsable.RequiredBlockIndex, 1);
-            LocalLayerModifier.RemoveNewAttachmentMail(avatarAddress, result.id);
-
-            // NOTE: 워크샵 슬롯의 모든 휘발성 상태 변경자를 다시 추가하기.
-            var otherItemId = result.materialItemIdList.First();
-            LocalLayerModifier.ModifyCombinationSlotItemEnhancement(
-                itemUsable.ItemId,
-                otherItemId,
-                eval.Action.slotIndex);
+            // todo : 워크샵 슬롯 상태 갱신해줘야합니다.
 
             UpdateAgentState(eval);
             UpdateCurrentAvatarState(eval);

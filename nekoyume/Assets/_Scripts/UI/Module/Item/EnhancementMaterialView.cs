@@ -8,7 +8,7 @@ namespace Nekoyume.UI.Module
     {
         public TextMeshProUGUI titleText;
         public TextMeshProUGUI itemNameText;
-        public EnhancementStatView statView;
+        public EnhancementOptionView OptionView;
 
         public override void Set(InventoryItem inventoryItemViewModel, int count = 1)
         {
@@ -32,20 +32,12 @@ namespace Nekoyume.UI.Module
 
             var statType = equipment.UniqueStatType;
             var statValue = equipment.StatsMap.GetStat(equipment.UniqueStatType, true);
-            if (string.IsNullOrEmpty(additionalValueText))
-            {
-                statView.Show(statType, statValue);
-            }
-            else
-            {
-                statView.Show(statType, statValue, int.Parse(additionalValueText));
-            }
+
         }
 
         public override void Clear()
         {
             itemNameText.enabled = false;
-            statView.Hide();
             base.Clear();
         }
     }
