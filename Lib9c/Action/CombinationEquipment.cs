@@ -173,7 +173,7 @@ namespace Nekoyume.Action
             // ~Validate Recipe Material
 
             // Validate SubRecipeId
-            EquipmentItemSubRecipeSheetV2.Row subRecipeRow = default;
+            EquipmentItemSubRecipeSheetV2.Row subRecipeRow = null;
             if (subRecipeId.HasValue)
             {
                 if (!recipeRow.SubRecipeIds.Contains(subRecipeId.Value))
