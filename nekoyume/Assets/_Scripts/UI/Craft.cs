@@ -35,7 +35,11 @@ namespace Nekoyume.UI
         protected override void Awake()
         {
             base.Awake();
-            closeButton.onClick.AddListener(() => Close(true));
+            closeButton.onClick.AddListener(() =>
+            {
+                Close(true);
+                Find<CombinationMain>().Show();
+            });
 
             equipmentToggle.onValueChanged.AddListener(value =>
             {
