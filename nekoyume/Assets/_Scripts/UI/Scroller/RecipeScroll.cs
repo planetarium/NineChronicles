@@ -30,11 +30,8 @@ namespace Nekoyume.UI.Scroller
         }
 
         [SerializeField] private List<EquipmentCategoryToggle> equipmentCategoryToggles = null;
-
         [SerializeField] private List<ConsumableCategoryToggle> consumableCategoryToggles = null;
-
         [SerializeField] private GameObject equipmentTab = null;
-
         [SerializeField] private GameObject consumableTab = null;
 
         protected void Awake()

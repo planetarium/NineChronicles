@@ -165,7 +165,7 @@ namespace Nekoyume.UI
             var avatarAddress = States.Instance.CurrentAvatarState.address;
 
             var slots = Find<CombinationSlots>();
-            if (!slots.TryGetEmptyCombinationSlSlot(out var slotIndex))
+            if (!slots.TryGetEmptyCombinationSlot(out var slotIndex))
             {
                 return;
             }
@@ -352,7 +352,7 @@ namespace Nekoyume.UI
                 return false;
             }
 
-            return Find<CombinationSlots>().TryGetEmptyCombinationSlSlot(out _);
+            return Find<CombinationSlots>().TryGetEmptyCombinationSlot(out _);
         }
 
         private static bool TryGetRow(Equipment equipment,

@@ -9,19 +9,29 @@ using TMPro;
 using UnityEngine;
 using System;
 using System.Globalization;
-using UnityEngine.UI;
-using Toggle = Nekoyume.UI.Module.Toggle;
 using Nekoyume.State;
 using System.Numerics;
-using Nekoyume.BlockChain;
-using System.Collections;
+using UniRx;
+using UnityEngine.UI;
 using Nekoyume.Model.Item;
-using Nekoyume.UI.Model;
+using Libplanet;
+using System.Security.Cryptography;
+using Toggle = Nekoyume.UI.Module.Toggle;
+using Material = Nekoyume.Model.Item.Material;
 
 namespace Nekoyume.UI
 {
     public class SubRecipeView : MonoBehaviour
     {
+        public struct RecipeInfo
+        {
+            public int RecipeId;
+            public int? SubRecipeId;
+            public BigInteger CostNCG;
+            public int CostAP;
+            public List<(HashDigest<SHA256>, int count)> Materials;
+        }
+
         [Serializable]
         private struct OptionView
         {
@@ -42,21 +52,19 @@ namespace Nekoyume.UI
         [SerializeField] private List<OptionView> skillViews = null;
 
         [SerializeField] private RequiredItemRecipeView requiredItemRecipeView = null;
-        [SerializeField] private Button submitButton = null;
+
+        [SerializeField] private Button combineButton = null;
         [SerializeField] private GameObject buttonEnabledObject = null;
         [SerializeField] private TextMeshProUGUI costText = null;
         [SerializeField] private GameObject buttonDisabledObject = null;
         [SerializeField] private GameObject lockObject = null;
 
+        public readonly Subject<RecipeInfo> CombinationActionSubject = new Subject<RecipeInfo>();
+
         private SheetRow<int> _recipeRow = null;
         private List<int> _subrecipeIds = null;
-        private int _subrecipeIndex;
-        private BigInteger _costNCG;
-
-        private bool IsSubmittable =>
-            !(States.Instance.AgentState is null) &&
-            States.Instance.GoldBalanceState.Gold.MajorUnit >= _costNCG &&
-            !(States.Instance.CurrentAvatarState is null);
+        private int _selectedIndex;
+        private RecipeInfo _selectedRecipeInfo;
 
         private const string StatTextFormat = "{0} {1}";
         private const string OptionTextFormat = "{0} +({1}~{2})";
@@ -75,7 +83,8 @@ namespace Nekoyume.UI
                 });
             }
 
-            submitButton.onClick.AddListener(SubscribeOnClick);
+            combineButton.onClick.AddListener(() =>
+                CombinationActionSubject.OnNext(_selectedRecipeInfo));
         }
 
         public void SetData(SheetRow<int> recipeRow, List<int> subrecipeIds)
@@ -91,7 +100,7 @@ namespace Nekoyume.UI
 
                 var stat = resultItem.GetUniqueStat();
                 statText.text = string.Format(StatTextFormat, stat.Type, stat.ValueAsInt);
-                recipeCell.Show(equipmentRow);
+                recipeCell.Show(equipmentRow, false);
 
             }
             else if (recipeRow is ConsumableItemRecipeSheet.Row consumableRow)
@@ -101,8 +110,7 @@ namespace Nekoyume.UI
 
                 var stat = resultItem.GetUniqueStat();
                 statText.text = string.Format(StatTextFormat, stat.StatType, stat.ValueAsInt);
-                recipeCell.Show(consumableRow);
-
+                recipeCell.Show(consumableRow, false);
             }
 
             titleText.text = title;
@@ -125,29 +133,54 @@ namespace Nekoyume.UI
             }
         }
 
+        public void UpdateView()
+        {
+            ChangeTab(_selectedIndex);
+        }
+
         private void ChangeTab(int index)
         {
-            _subrecipeIndex = index;
+            _selectedIndex = index;
+            UpdateInformation(index);
+
+            costText.text = _selectedRecipeInfo.CostNCG.ToString();
+            combineButton.interactable = CheckSubmittable(_selectedRecipeInfo);
+
+            buttonEnabledObject.SetActive(true);
+            buttonDisabledObject.SetActive(false);
+        }
+
+        private void UpdateInformation(int index)
+        {
             long blockIndex = 0;
             decimal greatSuccessRate = 0m;
-            decimal costNCG = 0;
+            BigInteger costNCG = 0;
+            int costAP = 0;
+            int recipeId = 0;
+            int? subRecipeId = null;
+            List<(HashDigest<SHA256> material, int count)> materialList
+                = new List<(HashDigest<SHA256> material, int count)>();
 
             var equipmentRow = _recipeRow as EquipmentItemRecipeSheet.Row;
             var consumableRow = _recipeRow as ConsumableItemRecipeSheet.Row;
 
             if (equipmentRow != null)
             {
-                var baseMaterial = new EquipmentItemSubRecipeSheet.MaterialInfo(
+                var baseMaterialInfo = new EquipmentItemSubRecipeSheet.MaterialInfo(
                     equipmentRow.MaterialId,
                     equipmentRow.MaterialCount);
                 costNCG = equipmentRow.RequiredGold;
+                costAP = equipmentRow.RequiredActionPoint;
+                recipeId = equipmentRow.Id;
+                var baseMaterial = CreateMaterial(equipmentRow.MaterialId, equipmentRow.MaterialCount);
+                materialList.Add(baseMaterial);
 
                 if (_subrecipeIds != null &&
                     _subrecipeIds.Any())
                 {
-                    var subRecipeId = _subrecipeIds[index];
+                    subRecipeId = _subrecipeIds[index];
                     var subRecipe = Game.Game.instance.TableSheets
-                        .EquipmentItemSubRecipeSheetV2[subRecipeId];
+                        .EquipmentItemSubRecipeSheetV2[subRecipeId.Value];
                     var options = subRecipe.Options;
 
                     blockIndex = subRecipe.RequiredBlockIndex;
@@ -157,49 +190,56 @@ namespace Nekoyume.UI
 
                     SetOptions(options);
                     requiredItemRecipeView.SetData(
-                        baseMaterial,
+                        baseMaterialInfo,
                         subRecipe.Materials,
                         true);
 
                     costNCG += subRecipe.RequiredGold;
+
+                    var subMaterials = subRecipe.Materials
+                        .Select(x => CreateMaterial(x.Id, x.Count));
+                    materialList.AddRange(subMaterials);
                 }
                 else
                 {
                     blockIndex = equipmentRow.RequiredBlockIndex;
-
                     foreach (var optionView in optionViews)
                     {
                         optionView.ParentObject.SetActive(false);
                     }
-
                     foreach (var skillView in skillViews)
                     {
                         skillView.ParentObject.SetActive(false);
                     }
-                    requiredItemRecipeView.SetData(
-                        baseMaterial,
-                        null,
-                        true);
+                    requiredItemRecipeView.SetData(baseMaterialInfo, null, true);
                 }
             }
             else if (consumableRow != null)
             {
                 blockIndex = consumableRow.RequiredBlockIndex;
                 requiredItemRecipeView.SetData(consumableRow.Materials, true);
-                costNCG = consumableRow.RequiredGold;
+                costNCG = (BigInteger)consumableRow.RequiredGold;
+                costAP = consumableRow.RequiredActionPoint;
+                recipeId = consumableRow.Id;
+
+                var materials = consumableRow.Materials
+                    .Select(x => CreateMaterial(x.Id, x.Count));
+                materialList.AddRange(materials);
             }
 
             blockIndexText.text = blockIndex.ToString();
             greatSuccessRateText.text = greatSuccessRate == 0m ?
                 "-" : greatSuccessRate.ToString("P1");
 
-            _costNCG = (BigInteger) costNCG;
-            costText.text = _costNCG.ToString();
-            submitButton.interactable =
-                States.Instance.GoldBalanceState.Gold.MajorUnit >= _costNCG;
-
-            buttonEnabledObject.SetActive(true);
-            buttonDisabledObject.SetActive(false);
+            var recipeInfo = new RecipeInfo
+            {
+                CostNCG = costNCG,
+                CostAP = costAP,
+                RecipeId = recipeId,
+                SubRecipeId = subRecipeId,
+                Materials = materialList
+            };
+            _selectedRecipeInfo = recipeInfo;
         }
 
         private void SetOptions(
@@ -263,57 +303,39 @@ namespace Nekoyume.UI
             }
         }
 
-        private void SubscribeOnClick()
+        private bool CheckSubmittable(RecipeInfo recipeInfo)
         {
-            var slots = Widget.Find<CombinationSlots>();
-            if (!slots.TryGetEmptyCombinationSlSlot(out var slotIndex))
-            {
-                return;
-            }
-
-            slots.SetCaching(slotIndex, true);
-
-            var agentAddress = States.Instance.AgentState.address;
-            var avatarAddress = States.Instance.CurrentAvatarState.address;
-
-            LocalLayerModifier.ModifyAgentGold(agentAddress, -_costNCG);
-
-
-            if (_recipeRow is EquipmentItemRecipeSheet.Row equipmentRow)
-            {
-                var subRecipeId = _subrecipeIds.Any() ?
-                    _subrecipeIds[_subrecipeIndex] : (int?) null;
-
-                Game.Game.instance.ActionManager.CombinationEquipment(
-                    equipmentRow.Id,
-                    slotIndex,
-                    subRecipeId);
-
-                var equipment = (Equipment) ItemFactory.CreateItemUsable(
-                    equipmentRow.GetResultItem(), Guid.Empty, default);
-                StartCoroutine(CoCombineNPCAnimation(equipment, null));
-            }
-            else if (_recipeRow is ConsumableItemRecipeSheet.Row consumableRow)
-            {
-                Game.Game.instance.ActionManager.CombinationConsumable(
-                    consumableRow.Id,
-                    slotIndex);
-
-                var consumable = (Consumable) ItemFactory.CreateItemUsable(
-                    consumableRow.GetResultItem(), Guid.Empty, default);
-                StartCoroutine(CoCombineNPCAnimation(consumable, null, true));
-            }
+            return !(States.Instance.AgentState is null) &&
+                States.Instance.GoldBalanceState.Gold.MajorUnit >= recipeInfo.CostNCG &&
+                States.Instance.CurrentAvatarState.actionPoint >= recipeInfo.CostAP &&
+                CheckMaterial(recipeInfo.Materials) &&
+                !(States.Instance.CurrentAvatarState is null);
         }
 
-        private IEnumerator CoCombineNPCAnimation(ItemBase itemBase, System.Action action, bool isConsumable = false)
+        private bool CheckMaterial(List<(HashDigest<SHA256> material, int count)> materials)
         {
-            var loadingScreen = Widget.Find<CombinationLoadingScreen>();
-            loadingScreen.Show();
-            loadingScreen.SetItemMaterial(new Item(itemBase), isConsumable);
-            loadingScreen.SetCloseAction(action);
-            //Push();
-            yield return new WaitForSeconds(.5f);
-            loadingScreen.AnimateNPC();
+            var inventory = States.Instance.CurrentAvatarState.inventory;
+
+            foreach (var material in materials)
+            {
+                var itemCount = inventory.TryGetFungibleItems(material.material, out var outFungibleItems)
+                            ? outFungibleItems.Sum(e => e.count)
+                            : 0;
+
+                if (material.count > itemCount)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        private (HashDigest<SHA256>, int) CreateMaterial(int id, int count)
+        {
+            var row = Game.Game.instance.TableSheets.MaterialItemSheet[id];
+            var material = ItemFactory.CreateMaterial(row);
+            return (material.FungibleId, count);
         }
     }
 }

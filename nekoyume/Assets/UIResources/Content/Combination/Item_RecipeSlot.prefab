@@ -222,6 +222,7 @@ GameObject:
   - component: {fileID: 7491723711219021485}
   - component: {fileID: 1080605312153592809}
   - component: {fileID: 2566518020154693237}
+  - component: {fileID: 8249104803285621840}
   m_Layer: 5
   m_Name: Text
   m_TagString: Untagged
@@ -346,6 +347,36 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &8249104803285621840
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3484471517067339863}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d668203cf6645c0bb09a4991d4bbe06, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fixedFontAsset: 0
+  fixedFontStyle: 0
+  fixedFontSizeOffset: 0
+  fixedSpacingOption: 0
+  fontMaterialType: 0
+  l10nKey: 
+  fontMaterialIndexInitialized: 0
+  fontMaterialIndex: 0
+  defaultFontStylesInitialized: 0
+  defaultFontStyles: 0
+  defaultFontSizeInitialized: 0
+  defaultFontSize: 0
+  defaultCharacterSpacingInitialized: 0
+  defaultCharacterSpacing: 0
+  defaultWordSpacingInitialized: 0
+  defaultWordSpacing: 0
+  defaultLineSpacingInitialized: 0
+  defaultLineSpacing: 0
 --- !u!1 &3606309862006403824
 GameObject:
   m_ObjectHideFlags: 0
@@ -913,7 +944,10 @@ MonoBehaviour:
   consumableView: {fileID: 4915981089427194667}
   selectedObject: {fileID: 4423364714699765298}
   lockObject: {fileID: 6706624862869275031}
+  lockVFXObject: {fileID: 4187752526587129867}
+  unlockConditionText: {fileID: 2566518020154693237}
   button: {fileID: 2408656741481977993}
+  selectable: 1
 --- !u!1 &5584105385802590638
 GameObject:
   m_ObjectHideFlags: 0
@@ -1755,11 +1789,27 @@ PrefabInstance:
       propertyPath: m_Name
       value: Effect_Lockcover
       objectReference: {fileID: 0}
+    - target: {fileID: 4071687373215305854, guid: 6037582c7dfa5493aa5be5e1ca0401e6,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6215798407344087826, guid: 6037582c7dfa5493aa5be5e1ca0401e6,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6037582c7dfa5493aa5be5e1ca0401e6, type: 3}
 --- !u!224 &6115495853808911224 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 4071687373215305825, guid: 6037582c7dfa5493aa5be5e1ca0401e6,
+    type: 3}
+  m_PrefabInstance: {fileID: 7808978988756800281}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &4187752526587129867 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6215798407344087826, guid: 6037582c7dfa5493aa5be5e1ca0401e6,
     type: 3}
   m_PrefabInstance: {fileID: 7808978988756800281}
   m_PrefabAsset: {fileID: 0}

@@ -93,7 +93,7 @@ namespace Nekoyume.UI.Module
             Show();
         }
 
-        private static void SetView(
+        private void SetView(
             RequiredItemView view,
             int materialId,
             int requiredCount,
