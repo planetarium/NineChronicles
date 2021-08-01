@@ -2,22 +2,20 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using Bencodex.Types;
 using Nekoyume.Action;
-using Nekoyume.Game.Character;
+using Nekoyume.EnumType;
 using Nekoyume.Game.Controller;
-using Nekoyume.Game.VFX;
+using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
 using Nekoyume.State;
-using Nekoyume.TableData;
+using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
-using Nekoyume.UI.Scroller;
-using UniRx;
+using TMPro;
 using UnityEngine;
-using Inventory = Nekoyume.Model.Item.Inventory;
+using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
@@ -25,200 +23,249 @@ namespace Nekoyume.UI
 
     public class CombinationSlotPopup : PopupWidget
     {
-        public RecipeCellView recipeCellView;
-        public CombinationMaterialPanel materialPanel;
-        public EquipmentOptionRecipeView optionView;
-        public SubmitWithCostButton submitButton;
-        public TouchHandler touchHandler;
+        public enum CombinationType
+        {
+            None,
+            CraftEquipment,
+            CrateFood,
+            Enhancement,
+        }
 
+        [Serializable]
+        public class Information
+        {
+            public CombinationType Type;
+            public GameObject Icon;
+            public GameObject OptionContainer;
+            public TextMeshProUGUI ItemLevel;
+            public List<SlotPopupOptionView> Options;
+        }
+
+        [SerializeField] private SimpleItemView itemView;
+        [SerializeField] private Slider progressBar;
+
+        [SerializeField] private TextMeshProUGUI itemNameText;
+        [SerializeField] private TextMeshProUGUI requiredBlockIndexText;
+        [SerializeField] private TextMeshProUGUI hourglassCountText;
+
+        [SerializeField] private  Button rapidCombinationButton;
+        [SerializeField] private  Button bgButton;
+        [SerializeField] private List<Information> _informations;
+
+        private CombinationType _type = CombinationType.None;
+        private CombinationSlotState _state;
         private int _slotIndex;
-        private int _cost;
-        private CombinationSelectSmallFrontVFX _frontVFX;
-        private MaterialItemSheet.Row _row;
 
         protected override void Awake()
         {
             base.Awake();
 
-            submitButton.SetSubmitText(L10nManager.Localize("UI_COMBINATION_WAITING"),
-                L10nManager.Localize("UI_RAPID_COMBINATION"));
+            Game.Game.instance.Agent.BlockIndexSubject.ObserveOnMainThread()
+                .Subscribe(SubscribeOnBlockIndex).AddTo(gameObject);
 
-            submitButton.OnSubmitClick.Subscribe(_ =>
+            rapidCombinationButton.onClick.AddListener(() =>
             {
                 AudioController.PlayClick();
-                RapidCombination();
+                RapidCombination(_state, _slotIndex, Game.Game.instance.Agent.BlockIndex);
                 Close();
-            }).AddTo(gameObject);
-            touchHandler.OnClick.Subscribe(pointerEventData =>
+            });
+
+            bgButton.onClick.AddListener(() =>
             {
-                if (pointerEventData.pointerCurrentRaycast.gameObject.Equals(gameObject))
-                {
-                    AudioController.PlayClick();
-                    Close();
-                }
-            }).AddTo(gameObject);
+                AudioController.PlayClick();
+                Close();
+            });
 
             CloseWidget = null;
         }
 
-        public override void Close(bool ignoreCloseAnimation = false)
+        private void SubscribeOnBlockIndex(long currentBlockIndex)
         {
-            base.Close(ignoreCloseAnimation);
-            if (_frontVFX)
-            {
-                _frontVFX.Stop();
-            }
+            UpdateInformation(_type, _state, currentBlockIndex);
         }
 
-        protected override void OnCompleteOfShowAnimationInternal()
+        public void Show(CombinationSlotState state, int slotIndex, long currentBlockIndex)
         {
-            base.OnCompleteOfShowAnimationInternal();
-            _frontVFX =
-                VFXController.instance.CreateAndChase<CombinationSelectSmallFrontVFX>(
-                    recipeCellView.transform, new Vector3(0.53f, -0.5f));
+            _state = state;
+            _slotIndex = slotIndex;
+            _type = GetCombinationType(state);
+            UpdateInformation(_type, state, currentBlockIndex);
+            base.Show();
         }
 
-        public void Pop(CombinationSlotState state)
+        private void UpdateInformation(CombinationType type, CombinationSlotState state, long currentBlockIndex)
         {
-            // _slotIndex = slotIndex;
-            CombinationConsumable5.ResultModel result;
-            CombinationConsumable5.ResultModel chainResult;
-            try
-            {
-                result = (CombinationConsumable5.ResultModel) state.Result;
-                var chainState =
-                    new CombinationSlotState(
-                        (Dictionary) Game.Game.instance.Agent.GetState(state.address));
-                chainResult = (CombinationConsumable5.ResultModel) chainState.Result;
-            }
-            catch (InvalidCastException)
+            if (state == null)
             {
                 return;
             }
 
-            var subRecipeEnabled = result.subRecipeId.HasValue;
-            materialPanel.gameObject.SetActive(false);
-            optionView.gameObject.SetActive(false);
-            switch (result.itemType)
-            {
-                case ItemType.Equipment:
-                {
-                    var recipeRow =
-                        Game.Game.instance.TableSheets.EquipmentItemRecipeSheet.Values.First(r =>
-                            r.Id == result.recipeId);
-
-                    recipeCellView.Set(recipeRow);
-                    if (subRecipeEnabled)
-                    {
-                        optionView.Show(result.itemUsable.GetLocalizedName(),
-                            (int) result.subRecipeId,
-                            new EquipmentItemSubRecipeSheet.MaterialInfo(recipeRow.MaterialId,
-                                recipeRow.MaterialCount), false);
-                    }
-                    else
-                    {
-                        materialPanel.SetData(recipeRow, null, false);
-                        materialPanel.gameObject.SetActive(true);
-                    }
-
-                    break;
-                }
-                case ItemType.Consumable:
-                {
-                    var recipeRow =
-                        Game.Game.instance.TableSheets.ConsumableItemRecipeSheet.Values.First(r =>
-                            r.Id == result.recipeId);
-
-                    recipeCellView.Set(recipeRow);
-                    materialPanel.SetData(recipeRow, false, true);
-                    materialPanel.gameObject.SetActive(true);
-                    break;
-                }
-            }
-
-            submitButton.HideAP();
-            submitButton.HideNCG();
-            var diff = result.itemUsable.RequiredBlockIndex - Game.Game.instance.Agent.BlockIndex;
-            if (diff < 0)
-            {
-                submitButton.SetSubmitText(L10nManager.Localize("UI_COMBINATION_WAITING"),
-                    L10nManager.Localize("UI_RAPID_COMBINATION"));
-                submitButton.SetSubmittable(result.id == chainResult?.id);
-                submitButton.HideHourglass();
-            }
-            else
-            {
-                _cost = Action.RapidCombination0.CalculateHourglassCount(
-                    States.Instance.GameConfigState, diff);
-
-                var count = GetHourglassCount();
-                var isEnough = count >= _cost;
-
-                if (result.id == chainResult?.id)
-                {
-                    submitButton.SetSubmitText(L10nManager.Localize("UI_RAPID_COMBINATION"));
-                    submitButton.SetSubmittable(isEnough);
-                }
-                else
-                {
-                    submitButton.SetSubmitText(L10nManager.Localize("UI_COMBINATION_WAITING"));
-                    submitButton.SetSubmittable(false);
-                }
-
-                submitButton.ShowHourglass(_cost, count);
-            }
-
-            base.Show();
+            UpdateOption(type, state.Result.itemUsable);
+            UpdateItemInformation(state.Result.itemUsable);
+            UpdateButtonInformation(state, currentBlockIndex);
+            UpdateRequiredBlockInformation(state, currentBlockIndex);
         }
 
-        private int GetHourglassCount()
+        private void UpdateOption(CombinationType type, ItemUsable itemUsable)
         {
-            var count = 0;
+            foreach (var information in _informations)
+            {
+                information.Icon.SetActive(information.Type.Equals(type));
+                information.OptionContainer.SetActive(information.Type.Equals(type));
+            }
+
+            switch (type)
+            {
+                case CombinationType.CraftEquipment:
+                    SetCraftOption(GetInformation(type), itemUsable);
+                    break;
+                case CombinationType.Enhancement:
+                    SetEnhancementOption(GetInformation(type), itemUsable);
+                    break;
+            }
+        }
+
+        private void SetCraftOption(Information information, ItemUsable itemUsable)
+        {
+            foreach (var option in information.Options)
+            {
+                option.gameObject.SetActive(false);
+            }
+
+            var stats = itemUsable.StatsMap.GetStats().ToList();
+            for (var i = 0; i < stats.Count; i++)
+            {
+                information.Options[i].gameObject.SetActive(true);
+                information.Options[i].Set(stats[i].StatType.ToString());
+            }
+
+            var skills = itemUsable.Skills;
+            for (var i = 0; i < skills.Count; i++)
+            {
+                information.Options[i + stats.Count].gameObject.SetActive(true);
+                information.Options[i + stats.Count].Set(skills[i].SkillRow.GetLocalizedName());
+            }
+        }
+
+        private void SetEnhancementOption(Information information, ItemUsable itemUsable)
+        {
+            if (!(itemUsable is Equipment equipment))
+            {
+                return;
+            }
+
+            information.ItemLevel.text = $"+{equipment.level}";
+            var sheet = Game.Game.instance.TableSheets.EnhancementCostSheetV2;
+            var grade = equipment.Grade;
+            var level = equipment.level;
+            var row = sheet.OrderedList.FirstOrDefault(x => x.Grade == grade  && x.Level == level);
+
+            foreach (var option in information.Options)
+            {
+                option.gameObject.SetActive(false);
+            }
+
+            var stats = itemUsable.StatsMap.GetStats().ToList();
+            for (var i = 0; i < stats.Count; i++)
+            {
+                information.Options[i].gameObject.SetActive(true);
+                information.Options[i].Set($"{stats[i].StatType} " +
+                                           $"+({(int)(row.ExtraStatGrowthMin * 100)}% " +
+                                           $"~ {(int)(row.ExtraStatGrowthMax * 100)}%)");
+            }
+
+            var skills = itemUsable.Skills;
+            for (var i = 0; i < skills.Count; i++)
+            {
+                information.Options[i + stats.Count].gameObject.SetActive(true);
+                information.Options[i + stats.Count].Set(
+                    $"{skills[i].SkillRow.GetLocalizedName()} " +
+                        $"{L10nManager.Localize("UI_SKILL_POWER")} : " +
+                        $"+({(int)(row.ExtraSkillDamageGrowthMin * 100)}% " +
+                        $"~ {(int)(row.ExtraSkillDamageGrowthMax * 100)}%) / " +
+                        $"{L10nManager.Localize("UI_SKILL_CHANCE")} : " +
+                        $"+({(int)(row.ExtraSkillChanceGrowthMin * 100)}% " +
+                        $"~ {(int)(row.ExtraSkillChanceGrowthMax * 100)}%)");
+            }
+        }
+
+        private void UpdateRequiredBlockInformation(CombinationSlotState state, long currentBlockIndex)
+        {
+            progressBar.maxValue = Math.Max(state.RequiredBlockIndex, 1);
+            var diff = Math.Max(state.UnlockBlockIndex - currentBlockIndex, 1);
+            progressBar.value = diff;
+            requiredBlockIndexText.text = $"{diff}.";
+        }
+
+        private void UpdateButtonInformation(CombinationSlotState state, long currentBlockIndex)
+        {
+            var diff = state.UnlockBlockIndex - currentBlockIndex;
+            var cost =
+                RapidCombination0.CalculateHourglassCount(States.Instance.GameConfigState, diff);
             var inventory = States.Instance.CurrentAvatarState.inventory;
-            var materials =
-                inventory.Items.OrderByDescending(x => x.item.ItemType == ItemType.Material);
-            var hourglass = materials.Where(x => x.item.ItemSubType == ItemSubType.Hourglass);
-            foreach (var item in hourglass)
-            {
-                if (item.item is TradableMaterial tradableItem)
-                {
-                    var blockIndex = Game.Game.instance.Agent?.BlockIndex ?? -1;
-                    if (tradableItem.RequiredBlockIndex > blockIndex)
-                    {
-                        continue;
-                    }
-                }
+            var count = Util.GetHourglassCount(inventory, currentBlockIndex);
+            hourglassCountText.text = cost.ToString();
+            var isEnable = count >= cost;
+            hourglassCountText.color = isEnable
+                ? Palette.GetColor(ColorType.ButtonEnabled)
+                : Palette.GetColor(ColorType.TextDenial);
 
-                count += item.count;
-            }
-
-            return count;
+            rapidCombinationButton.interactable = isEnable;
         }
 
-        private void RapidCombination()
+        private void UpdateItemInformation(ItemUsable item)
         {
-            _row = Game.Game.instance.TableSheets.MaterialItemSheet.Values
+            itemView.SetData(new Item(item));
+            itemNameText.text = TextHelper.GetItemName(item);
+        }
+
+        private CombinationType GetCombinationType(CombinationSlotState state)
+        {
+            switch (state.Result)
+            {
+                case CombinationConsumable5.ResultModel craft:
+                    return craft.itemUsable is Equipment
+                        ? CombinationType.CraftEquipment
+                        : CombinationType.CrateFood;
+
+                case ItemEnhancement.ResultModel _:
+                    return CombinationType.Enhancement;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(state.Result), state.Result, null);
+            }
+        }
+
+        private Information GetInformation(CombinationType type)
+        {
+            return _informations.FirstOrDefault(x => x.Type.Equals(type));
+        }
+
+        private void RapidCombination(CombinationSlotState state, int slotIndex, long currentBlockIndex)
+        {
+            var row = Game.Game.instance.TableSheets.MaterialItemSheet.Values
                 .First(r => r.ItemSubType == ItemSubType.Hourglass);
-            LocalLayerModifier.RemoveItem(States.Instance.CurrentAvatarState.address, _row.ItemId,
-                _cost);
-            var blockIndex = Game.Game.instance.Agent.BlockIndex;
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+            var diff = state.UnlockBlockIndex - currentBlockIndex;
+            var cost = RapidCombination0.CalculateHourglassCount(States.Instance.GameConfigState, diff);
+             LocalLayerModifier.RemoveItem(avatarAddress, row.ItemId, cost);
 
-            //todo : 슬롯인덱스 넣어서 작업해야함
-            // var slotAddress = States.Instance.CurrentAvatarState.address.Derive(
-            //     string.Format(CultureInfo.InvariantCulture, CombinationSlotState.DeriveFormat,
-            //         _slotIndex));
-            // var slotState = States.Instance.CombinationSlotStates[slotAddress];
-            // var slotState = States.Instance.CombinationSlotStates[0];
+             switch (state.Result)
+             {
+                 case CombinationConsumable5.ResultModel craft:
+                     LocalLayerModifier.AddNewResultAttachmentMail(avatarAddress, craft.id, currentBlockIndex);
+                     break;
 
-            // var result = (CombinationConsumable5.ResultModel) slotState.Result;
-            // LocalLayerModifier.AddNewResultAttachmentMail(
-            //     States.Instance.CurrentAvatarState.address, result.id, blockIndex);
-            // var format = L10nManager.Localize("NOTIFICATION_COMBINATION_COMPLETE");
-            // Notification.Push(MailType.Workshop,
-            //     string.Format(CultureInfo.InvariantCulture, format,
-            //         result.itemUsable.GetLocalizedName()));
-            // Notification.CancelReserve(result.itemUsable.ItemId);
-            Game.Game.instance.ActionManager.RapidCombination(_slotIndex);
+                 case ItemEnhancement.ResultModel enhancement:
+                     LocalLayerModifier.AddNewResultAttachmentMail(avatarAddress, enhancement.id, currentBlockIndex);
+                     break;
+             }
+
+             var format = L10nManager.Localize("NOTIFICATION_COMBINATION_COMPLETE");
+             Notification.Push(MailType.Workshop, string.Format(CultureInfo.InvariantCulture, format,
+                     state.Result.itemUsable.GetLocalizedName()));
+             Notification.CancelReserve(state.Result.itemUsable.ItemId);
+             Game.Game.instance.ActionManager.RapidCombination(avatarAddress, slotIndex);
+             Find<CombinationSlots>().SetCaching(slotIndex, false);
         }
     }
 }

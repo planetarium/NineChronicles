@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Text;
 using Bencodex.Types;
 using Lib9c.Model.Order;
@@ -84,6 +85,28 @@ namespace Nekoyume.Helper
             var row = Game.Game.instance.TableSheets.ItemSheet[itemId];
             var item = ItemFactory.CreateItem(row, new Cheat.DebugRandom());
             return item;
+        }
+
+        public static int GetHourglassCount(Inventory inventory, long currentBlockIndex)
+        {
+            var count = 0;
+            var materials =
+                inventory.Items.OrderByDescending(x => x.item.ItemType == ItemType.Material);
+            var hourglass = materials.Where(x => x.item.ItemSubType == ItemSubType.Hourglass);
+            foreach (var item in hourglass)
+            {
+                if (item.item is TradableMaterial tradableItem)
+                {
+                    if (tradableItem.RequiredBlockIndex > currentBlockIndex)
+                    {
+                        continue;
+                    }
+                }
+
+                count += item.count;
+            }
+
+            return count;
         }
     }
 }

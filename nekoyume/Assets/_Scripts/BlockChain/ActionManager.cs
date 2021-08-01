@@ -401,11 +401,11 @@ namespace Nekoyume.BlockChain
                 .DoOnError(e => HandleException(action.Id, e));
         }
 
-        public IObservable<ActionBase.ActionEvaluation<RapidCombination>> RapidCombination(int slotIndex)
+        public IObservable<ActionBase.ActionEvaluation<RapidCombination>> RapidCombination(Address avatarAddress, int slotIndex)
         {
             var action = new RapidCombination
             {
-                avatarAddress = States.Instance.CurrentAvatarState.address,
+                avatarAddress = avatarAddress,
                 slotIndex = slotIndex
             };
             ProcessAction(action);

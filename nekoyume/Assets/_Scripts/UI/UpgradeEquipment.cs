@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using Nekoyume.BlockChain;
 using Nekoyume.L10n;
@@ -10,11 +9,8 @@ using Nekoyume.State;
 using Nekoyume.UI.Module;
 using UnityEngine;
 using System.Numerics;
-using Bencodex.Types;
-using Nekoyume.Action;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Controller;
-using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using Nekoyume.UI.Model;
 using TMPro;
