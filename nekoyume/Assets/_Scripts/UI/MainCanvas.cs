@@ -260,8 +260,6 @@ namespace Nekoyume.UI
             yield return null;
             secondWidgets.Add(Widget.Create<DailyRewardItemPopup>());
             yield return null;
-            secondWidgets.Add(Widget.Create<CombinationResultPopup>());
-            yield return null;
             secondWidgets.Add(Widget.Create<Alert>());
             yield return null;
             secondWidgets.Add(Widget.Create<InputBox>());
@@ -295,6 +293,8 @@ namespace Nekoyume.UI
 
             // popup
             secondWidgets.Add(Widget.Create<CombinationSlotPopup>());
+            yield return null;
+            secondWidgets.Add(Widget.Create<CombinationResultPopup>());
             yield return null;
             secondWidgets.Add(Widget.Create<FriendInfoPopup>());
             yield return null;

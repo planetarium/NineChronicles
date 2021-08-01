@@ -264,7 +264,9 @@ namespace Nekoyume.UI
              Notification.Push(MailType.Workshop, string.Format(CultureInfo.InvariantCulture, format,
                      state.Result.itemUsable.GetLocalizedName()));
              Notification.CancelReserve(state.Result.itemUsable.ItemId);
+
              Game.Game.instance.ActionManager.RapidCombination(avatarAddress, slotIndex);
+             States.Instance.RemoveSlotState(slotIndex);
              Find<CombinationSlots>().SetCaching(slotIndex, false);
         }
     }
