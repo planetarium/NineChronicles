@@ -7,13 +7,13 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Fx_Flare_02
+  m_Name: Fx_Round_Impact_03
   m_Shader: {fileID: 4800000, guid: 217b35cce3fdf0346927e5e248f73565, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 5
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
-  m_CustomRenderQueue: 3000
+  m_CustomRenderQueue: 3200
   stringTagMap: {}
   disabledShaderPasses: []
   m_SavedProperties:
@@ -48,7 +48,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: 7e5968a057bf787448d2cb8bb7c9c046, type: 3}
+        m_Texture: {fileID: 2800000, guid: 227445ebd41b0034a9eff02fbd5b3ea4, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MetallicGlossMap:
