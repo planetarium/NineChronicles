@@ -18,7 +18,7 @@ namespace Nekoyume.UI
     {
         public float textInterval = 0.06f;
         public Color itemTextColor;
-        private const string TimerFormat = "<voffset=0.1em><size=14>({0})</size></voffset>";
+        private const string TimerFormat = "({0})";
 
         public TextMeshProUGUI txtName;
         public TextMeshProUGUI txtDialog;
