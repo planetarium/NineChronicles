@@ -6,13 +6,13 @@ namespace Nekoyume.Helper
 {
     public static class RecipeHelper
     {
-        public static EquipmentItemSheet.Row GetResultItem(this EquipmentItemRecipeSheet.Row recipeRow)
+        public static EquipmentItemSheet.Row GetResultItemEquipmentRow(this EquipmentItemRecipeSheet.Row recipeRow)
         {
             return Game.Game.instance.TableSheets
                 .EquipmentItemSheet[recipeRow.ResultEquipmentId];
         }
 
-        public static ConsumableItemSheet.Row GetResultItem(this ConsumableItemRecipeSheet.Row recipeRow)
+        public static ConsumableItemSheet.Row GetResultItemConsumableRow(this ConsumableItemRecipeSheet.Row recipeRow)
         {
             return Game.Game.instance.TableSheets
                 .ConsumableItemSheet[recipeRow.ResultConsumableItemId];
@@ -30,7 +30,7 @@ namespace Nekoyume.Helper
 
         public static StatMap GetUniqueStat(this ConsumableItemRecipeSheet.Row recipeRow)
         {
-            var resultItem = GetResultItem(recipeRow);
+            var resultItem = GetResultItemConsumableRow(recipeRow);
             return GetUniqueStat(resultItem);
         }
     }

@@ -40,6 +40,7 @@ namespace Nekoyume.UI
             public TextMeshProUGUI PercentageText;
         }
 
+        [SerializeField] private GameObject toggleParent = null;
         [SerializeField] private List<Toggle> categoryToggles = null;
         [SerializeField] private RecipeCell recipeCell = null;
         [SerializeField] private TextMeshProUGUI titleText = null;
@@ -84,7 +85,10 @@ namespace Nekoyume.UI
             }
 
             combineButton.onClick.AddListener(() =>
-                CombinationActionSubject.OnNext(_selectedRecipeInfo));
+            {
+                AudioController.PlayClick();
+                CombinationActionSubject.OnNext(_selectedRecipeInfo);
+            });
         }
 
         public void SetData(SheetRow<int> recipeRow, List<int> subrecipeIds)
@@ -95,7 +99,7 @@ namespace Nekoyume.UI
             string title = null;
             if (recipeRow is EquipmentItemRecipeSheet.Row equipmentRow)
             {
-                var resultItem = equipmentRow.GetResultItem();
+                var resultItem = equipmentRow.GetResultItemEquipmentRow();
                 title = resultItem.GetLocalizedName();
 
                 var stat = resultItem.GetUniqueStat();
@@ -105,7 +109,7 @@ namespace Nekoyume.UI
             }
             else if (recipeRow is ConsumableItemRecipeSheet.Row consumableRow)
             {
-                var resultItem = consumableRow.GetResultItem();
+                var resultItem = consumableRow.GetResultItemConsumableRow();
                 title = resultItem.GetLocalizedName();
 
                 var stat = resultItem.GetUniqueStat();
@@ -163,12 +167,21 @@ namespace Nekoyume.UI
 
             var equipmentRow = _recipeRow as EquipmentItemRecipeSheet.Row;
             var consumableRow = _recipeRow as ConsumableItemRecipeSheet.Row;
+            foreach (var optionView in optionViews)
+            {
+                optionView.ParentObject.SetActive(false);
+            }
+            foreach (var skillView in skillViews)
+            {
+                skillView.ParentObject.SetActive(false);
+            }
 
             if (equipmentRow != null)
             {
                 var baseMaterialInfo = new EquipmentItemSubRecipeSheet.MaterialInfo(
                     equipmentRow.MaterialId,
                     equipmentRow.MaterialCount);
+                blockIndex = equipmentRow.RequiredBlockIndex;
                 costNCG = equipmentRow.RequiredGold;
                 costAP = equipmentRow.RequiredActionPoint;
                 recipeId = equipmentRow.Id;
@@ -178,12 +191,13 @@ namespace Nekoyume.UI
                 if (_subrecipeIds != null &&
                     _subrecipeIds.Any())
                 {
+                    toggleParent.SetActive(true);
                     subRecipeId = _subrecipeIds[index];
                     var subRecipe = Game.Game.instance.TableSheets
                         .EquipmentItemSubRecipeSheetV2[subRecipeId.Value];
                     var options = subRecipe.Options;
 
-                    blockIndex = subRecipe.RequiredBlockIndex;
+                    blockIndex += subRecipe.RequiredBlockIndex;
                     greatSuccessRate = options
                         .Select(x => x.Ratio)
                         .Aggregate((a, b) => a * b);
@@ -202,15 +216,7 @@ namespace Nekoyume.UI
                 }
                 else
                 {
-                    blockIndex = equipmentRow.RequiredBlockIndex;
-                    foreach (var optionView in optionViews)
-                    {
-                        optionView.ParentObject.SetActive(false);
-                    }
-                    foreach (var skillView in skillViews)
-                    {
-                        skillView.ParentObject.SetActive(false);
-                    }
+                    toggleParent.SetActive(false);
                     requiredItemRecipeView.SetData(baseMaterialInfo, null, true);
                 }
             }
@@ -243,63 +249,57 @@ namespace Nekoyume.UI
         }
 
         private void SetOptions(
-            List<EquipmentItemSubRecipeSheetV2.OptionInfo> options)
+            List<EquipmentItemSubRecipeSheetV2.OptionInfo> optionInfos)
         {
             var tableSheets = Game.Game.instance.TableSheets;
             var optionSheet = tableSheets.EquipmentItemOptionSheet;
             var skillSheet = tableSheets.SkillSheet;
-            var statOptions = options
+            var options = optionInfos
+                .Select(x => (ratio: x.Ratio, option: optionSheet[x.Id]))
+                .ToList();
+
+            var statOptions = optionInfos
                 .Select(x => (ratio: x.Ratio, option: optionSheet[x.Id]))
                 .Where(x => x.option.StatType != StatType.NONE)
                 .ToList();
 
-            var skillOptions = options
+            var skillOptions = optionInfos
                 .Select(x => (ratio: x.Ratio, option: optionSheet[x.Id]))
                 .Except(statOptions)
                 .ToList();
 
-            for (int i = 0; i < optionViews.Count; ++i)
+            var siblingIndex = 0;
+            foreach (var (ratio, option) in options)
             {
-                var optionView = optionViews[i];
-                if (i >= statOptions.Count)
+                if (option.StatType != StatType.NONE)
                 {
-                    optionView.ParentObject.SetActive(false);
-                    continue;
+                    var optionView = optionViews.First(x => !x.ParentObject.activeSelf);
+                    var statMin = option.StatType == StatType.SPD
+                        ? (option.StatMin / 100f).ToString(CultureInfo.InvariantCulture)
+                        : option.StatMin.ToString();
+
+                    var statMax = option.StatType == StatType.SPD
+                        ? (option.StatMax / 100f).ToString(CultureInfo.InvariantCulture)
+                        : option.StatMax.ToString();
+
+                    var description = string.Format(OptionTextFormat, option.StatType, statMin, statMax);
+                    optionView.OptionText.text = description;
+                    optionView.PercentageText.text = ratio.ToString("P");
+                    optionView.ParentObject.transform.SetSiblingIndex(siblingIndex);
+                    optionView.ParentObject.SetActive(true);
+                }
+                else
+                {
+                    var skillView = skillViews.First(x => !x.ParentObject.activeSelf);
+                    var description = skillSheet.TryGetValue(option.SkillId, out var skillRow) ?
+                        skillRow.GetLocalizedName() : string.Empty;
+                    skillView.OptionText.text = description;
+                    skillView.PercentageText.text = ratio.ToString("P");
+                    skillView.ParentObject.transform.SetSiblingIndex(siblingIndex);
+                    skillView.ParentObject.SetActive(true);
                 }
 
-                var option = statOptions[i].option;
-                var ratioText = statOptions[i].ratio.ToString("P");
-                var statMin = option.StatType == StatType.SPD
-                    ? (option.StatMin / 100f).ToString(CultureInfo.InvariantCulture)
-                    : option.StatMin.ToString();
-
-                var statMax = option.StatType == StatType.SPD
-                    ? (option.StatMax / 100f).ToString(CultureInfo.InvariantCulture)
-                    : option.StatMax.ToString();
-
-                var description = string.Format(OptionTextFormat, option.StatType, statMin, statMax);
-                optionView.OptionText.text = description;
-                optionView.PercentageText.text = ratioText;
-                optionView.ParentObject.SetActive(true);
-            }
-
-            for (int i = 0; i < skillViews.Count; ++i)
-            {
-                var skillView = skillViews[i];
-                if (i >= skillOptions.Count)
-                {
-                    skillView.ParentObject.SetActive(false);
-                    continue;
-                }
-
-                var option = skillOptions[i].option;
-                var ratioText = skillOptions[i].ratio.ToString("P");
-
-                var description = skillSheet.TryGetValue(option.SkillId, out var skillRow) ?
-                    skillRow.GetLocalizedName() : string.Empty;
-                skillView.OptionText.text = description;
-                skillView.PercentageText.text = ratioText;
-                skillView.ParentObject.SetActive(true);
+                ++siblingIndex;
             }
         }
 

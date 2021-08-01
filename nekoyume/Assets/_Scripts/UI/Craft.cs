@@ -119,6 +119,8 @@ namespace Nekoyume.UI
         public override void Close(bool ignoreCloseAnimation = false)
         {
             Animator.SetBool("FirstClicked", false);
+            Animator.ResetTrigger("EquipmentClick");
+            Animator.ResetTrigger("ConsumableClick");
             base.Close(ignoreCloseAnimation);
         }
 
@@ -165,7 +167,7 @@ namespace Nekoyume.UI
 
             var equipmentRow = Game.Game.instance.TableSheets.EquipmentItemRecipeSheet[recipeInfo.RecipeId];
             var equipment = (Equipment)ItemFactory.CreateItemUsable(
-                equipmentRow.GetResultItem(), Guid.Empty, default);
+                equipmentRow.GetResultItemEquipmentRow(), Guid.Empty, default);
 
             StartCoroutine(CoCombineNPCAnimation(equipment));
         }
@@ -185,7 +187,7 @@ namespace Nekoyume.UI
 
             var consumableRow = Game.Game.instance.TableSheets.ConsumableItemRecipeSheet[recipeInfo.RecipeId];
             var consumable = (Consumable) ItemFactory.CreateItemUsable(
-                consumableRow.GetResultItem(), Guid.Empty, default);
+                consumableRow.GetResultItemConsumableRow(), Guid.Empty, default);
 
             StartCoroutine(CoCombineNPCAnimation(consumable, true));
         }

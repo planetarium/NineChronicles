@@ -74,7 +74,7 @@ namespace Nekoyume.UI.Module
 
             if (recipeRow is EquipmentItemRecipeSheet.Row equipmentRow)
             {
-                var resultItem = equipmentRow.GetResultItem();
+                var resultItem = equipmentRow.GetResultItemEquipmentRow();
                 var viewData = recipeViewData.GetData(resultItem.Grade);
                 equipmentView.Show(viewData, resultItem);
                 consumableView.Hide();
@@ -89,7 +89,7 @@ namespace Nekoyume.UI.Module
             }
             else if (recipeRow is ConsumableItemRecipeSheet.Row consumableRow)
             {
-                var resultItem = consumableRow.GetResultItem();
+                var resultItem = consumableRow.GetResultItemConsumableRow();
                 var viewData = recipeViewData.GetData(resultItem.Grade);
                 equipmentView.Hide();
                 consumableView.Show(viewData, resultItem);

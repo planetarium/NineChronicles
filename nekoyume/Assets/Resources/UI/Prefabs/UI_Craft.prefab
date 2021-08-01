@@ -8389,6 +8389,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 676689f8e0b58d04e80024f0d11a01dd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  toggleParent: {fileID: 0}
   categoryToggles: []
   recipeCell: {fileID: 2237822037724160641}
   titleText: {fileID: 876587947162867801}
@@ -21402,6 +21403,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 676689f8e0b58d04e80024f0d11a01dd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  toggleParent: {fileID: 3442509393675061887}
   categoryToggles:
   - {fileID: 2343043757607433940}
   - {fileID: 1345033105083132919}

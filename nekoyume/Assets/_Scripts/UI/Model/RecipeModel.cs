@@ -56,7 +56,7 @@ namespace Nekoyume.UI.Model
 
                 if (!EquipmentRecipeMap.TryGetValue(key, out var recipeViewModel))
                 {
-                    var resultItem = recipe.GetResultItem();
+                    var resultItem = recipe.GetResultItemEquipmentRow();
 
                     recipeViewModel = new RecipeRow.Model(
                         resultItem.GetLocalizedName(),
