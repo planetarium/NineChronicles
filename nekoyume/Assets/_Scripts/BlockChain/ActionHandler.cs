@@ -144,11 +144,6 @@ namespace Nekoyume.BlockChain
             States.Instance.AddOrReplaceAvatarState(avatarState, index);
         }
 
-        protected static void UpdateCombinationSlotState(CombinationSlotState state)
-        {
-            States.Instance.SetCombinationSlotState(state);
-        }
-
         public void UpdateCurrentAvatarState(AvatarState avatarState)
         {
             // When in battle, do not immediately update the AvatarState, but pending it.

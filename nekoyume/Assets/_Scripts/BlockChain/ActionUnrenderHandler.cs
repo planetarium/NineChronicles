@@ -54,7 +54,7 @@ namespace Nekoyume.BlockChain
             // Craft
             // CombinationConsumable(); todo.
             // CombinationEquipment(); todo.
-            ItemEnhancement();
+            // ItemEnhancement();
             // RapidCombination(); todo.
 
             // Market
@@ -123,14 +123,14 @@ namespace Nekoyume.BlockChain
                 .AddTo(_disposables);
         }
 
-        private void ItemEnhancement()
-        {
-            _renderer.EveryUnrender<ItemEnhancement>()
-                .Where(ValidateEvaluationForCurrentAgent)
-                .ObserveOnMainThread()
-                .Subscribe(ResponseUnrenderItemEnhancement)
-                .AddTo(_disposables);
-        }
+        // private void ItemEnhancement()
+        // {
+        //     _renderer.EveryUnrender<ItemEnhancement>()
+        //         .Where(ValidateEvaluationForCurrentAgent)
+        //         .ObserveOnMainThread()
+        //         .Subscribe(ResponseUnrenderItemEnhancement)
+        //         .AddTo(_disposables);
+        // }
 
         private void DailyReward()
         {
@@ -285,37 +285,37 @@ namespace Nekoyume.BlockChain
             UpdateCurrentAvatarState(avatarState);
         }
 
-        private void ResponseUnrenderItemEnhancement(ActionBase.ActionEvaluation<ItemEnhancement> eval)
-        {
-            var agentAddress = eval.Signer;
-            var avatarAddress = eval.Action.avatarAddress;
-            var slot = eval.OutputStates.GetCombinationSlotState(avatarAddress, eval.Action.slotIndex);
-            var result = (ItemEnhancement.ResultModel)slot.Result;
-            var itemUsable = result.itemUsable;
-            if (!eval.OutputStates.TryGetAvatarStateV2(agentAddress, avatarAddress,
-                out var avatarState))
-            {
-                return;
-            }
-
-            // NOTE: 사용한 자원에 대한 레이어 다시 추가하기.
-            LocalLayerModifier.ModifyAgentGold(agentAddress, -result.gold);
-            LocalLayerModifier.RemoveItem(avatarAddress, itemUsable.ItemId, itemUsable.RequiredBlockIndex, 1);
-            foreach (var itemId in result.materialItemIdList)
-            {
-                if (avatarState.inventory.TryGetNonFungibleItem(itemId, out ItemUsable materialItem))
-                {
-                    LocalLayerModifier.RemoveItem(avatarAddress, itemId, materialItem.RequiredBlockIndex, 1);
-                }
-            }
-
-            // todo : 워크샵 슬롯 상태 갱신해줘야합니다.
-
-            UpdateAgentState(eval);
-            UpdateCurrentAvatarState(eval);
-            UpdateCombinationSlotState(slot);
-            UnrenderQuest(avatarAddress, avatarState.questList.completedQuestIds);
-        }
+        // private void ResponseUnrenderItemEnhancement(ActionBase.ActionEvaluation<ItemEnhancement> eval)
+        // {
+        //     var agentAddress = eval.Signer;
+        //     var avatarAddress = eval.Action.avatarAddress;
+        //     var slotIndex = eval.Action.slotIndex;
+        //     var slot = eval.OutputStates.GetCombinationSlotState(avatarAddress, slotIndex);
+        //     var result = (ItemEnhancement.ResultModel)slot.Result;
+        //     var itemUsable = result.itemUsable;
+        //     if (!eval.OutputStates.TryGetAvatarStateV2(agentAddress, avatarAddress,
+        //         out var avatarState))
+        //     {
+        //         return;
+        //     }
+        //
+        //     // NOTE: 사용한 자원에 대한 레이어 다시 추가하기.
+        //     LocalLayerModifier.ModifyAgentGold(agentAddress, -result.gold);
+        //     LocalLayerModifier.RemoveItem(avatarAddress, itemUsable.ItemId, itemUsable.RequiredBlockIndex, 1);
+        //     foreach (var itemId in result.materialItemIdList)
+        //     {
+        //         if (avatarState.inventory.TryGetNonFungibleItem(itemId, out ItemUsable materialItem))
+        //         {
+        //             LocalLayerModifier.RemoveItem(avatarAddress, itemId, materialItem.RequiredBlockIndex, 1);
+        //         }
+        //     }
+        //
+        //     States.Instance.RemoveSlotState(slotIndex);
+        //
+        //     UpdateAgentState(eval);
+        //     UpdateCurrentAvatarState(eval);
+        //     UnrenderQuest(avatarAddress, avatarState.questList.completedQuestIds);
+        // }
 
         private void ResponseClaimMonsterCollectionReward(ActionBase.ActionEvaluation<ClaimMonsterCollectionReward> eval)
         {

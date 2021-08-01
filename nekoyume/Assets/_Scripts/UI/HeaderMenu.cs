@@ -1,11 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Nekoyume.Action;
 using Nekoyume.EnumType;
 using Nekoyume.Game.VFX;
 using Nekoyume.L10n;
+using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.Quest;
+using Nekoyume.Model.State;
 using Nekoyume.State;
 using UnityEngine;
 using UnityEngine.UI;
@@ -218,7 +221,7 @@ namespace Nekoyume.UI.Module
         private void SubscribeBlockIndex(long blockIndex)
         {
             _blockIndex = blockIndex;
-            UpdateCombinationNotification();
+            UpdateCombinationNotification(blockIndex);
 
             var mailBox = Find<Mail>().MailBox;
             if (mailBox is null)
@@ -227,7 +230,7 @@ namespace Nekoyume.UI.Module
             }
 
             _toggleNotifications[ToggleType.Mail].Value =
-                mailBox.Any(i => i.New && i.requiredBlockIndex <= _blockIndex);
+                mailBox.Any(i => i.New && i.requiredBlockIndex <= blockIndex);
             ;
         }
 
@@ -265,11 +268,47 @@ namespace Nekoyume.UI.Module
             UpdateInventoryNotification(hasNotification);
         }
 
-        public void UpdateCombinationNotification()
+        private void UpdateCombinationNotification(long currentBlockIndex)
         {
-            var combinationSlots = Find<CombinationSlots>().slots;
-            var hasNotification = combinationSlots.Any(slot => slot.HasNotification.Value);
+            var states = States.Instance.GetCombinationSlotState(currentBlockIndex);
+            var hasNotification = states?.Any(state =>
+                HasCombinationNotification(state.Value, currentBlockIndex)) ?? false;
             _toggleNotifications[ToggleType.CombinationSlots].Value = hasNotification;
+        }
+
+        private bool HasCombinationNotification(CombinationSlotState state, long currentBlockIndex)
+        {
+            if (state?.Result is null)
+            {
+                return false;
+            }
+
+            switch (state.Result)
+            {
+                case CombinationConsumable5.ResultModel ccResult:
+                    if (ccResult.id == default)
+                    {
+                        return false;
+                    }
+                    break;
+                default:
+                    return false;
+            }
+
+            var isAppraise = currentBlockIndex < state.StartBlockIndex + GameConfig.RequiredAppraiseBlock;
+            if (isAppraise)
+            {
+                return false;
+            }
+
+            var gameConfigState = Game.Game.instance.States.GameConfigState;
+            var diff = state.RequiredBlockIndex - currentBlockIndex;
+            var cost = RapidCombination0.CalculateHourglassCount(gameConfigState, diff);
+            var row = Game.Game.instance.TableSheets.MaterialItemSheet.Values.First(r =>
+                r.ItemSubType == ItemSubType.Hourglass);
+            var isEnough =
+                States.Instance.CurrentAvatarState.inventory.HasFungibleItem(row.ItemId, currentBlockIndex, cost);
+            return isEnough;
         }
 
         public void UpdateInventoryNotification(bool hasNotification)
