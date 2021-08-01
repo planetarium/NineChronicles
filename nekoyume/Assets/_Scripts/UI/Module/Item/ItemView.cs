@@ -213,7 +213,7 @@ namespace Nekoyume.UI.Module
 
         protected void SetOptionTag(int count)
         {
-            if (optionTagObject != null)
+            if (optionTagObject == null)
             {
                 return;
             }

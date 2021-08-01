@@ -6,17 +6,16 @@ using Nekoyume.Game.Controller;
 using Nekoyume.State;
 using Nekoyume.UI.Module;
 using Nekoyume.Model.BattleStatus;
-using UniRx;
 using UnityEngine;
 using Random = UnityEngine.Random;
 using mixpanel;
 using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
-using Nekoyume.Model.Item;
 
 namespace Nekoyume.UI
 {
+    using UniRx;
     public class Menu : Widget
     {
         private const string FirstOpenShopKeyFormat = "Nekoyume.UI.Menu.FirstOpenShopKey_{0}";
@@ -192,17 +191,17 @@ namespace Nekoyume.UI
 
             var worldMap = Find<WorldMap>();
             worldMap.UpdateNotificationInfo();
-            var hasNotificationInWorldmap = worldMap.HasNotification;
+            var hasNotificationInWorldMap = worldMap.HasNotification;
 
             questExclamationMark.gameObject.SetActive(
                 (btnQuest.IsUnlocked &&
                  PlayerPrefs.GetInt(firstOpenQuestKey, 0) == 0) ||
-                hasNotificationInWorldmap);
+                hasNotificationInWorldMap);
 
             mimisbrunnrExclamationMark.gameObject.SetActive(
                 (btnMimisbrunnr.IsUnlocked &&
                  PlayerPrefs.GetInt(firstOpenMimisbrunnrKey, 0) == 0) ||
-                hasNotificationInWorldmap);
+                hasNotificationInWorldMap);
         }
 
         private void HideButtons()
@@ -557,36 +556,17 @@ namespace Nekoyume.UI
             base.Update();
 
             if (!Find<CombinationResult>().gameObject.activeSelf &&
-                Input.GetKey(KeyCode.LeftControl) &&
-                Input.GetKeyDown(KeyCode.C))
+                !Find<EnhancementResult>().gameObject.activeSelf &&
+                Input.GetKey(KeyCode.LeftControl))
             {
-                ItemUsable itemUsable = null;
-                if (Random.Range(0, 2) == 0)
+                if (Input.GetKeyDown(KeyCode.C))
                 {
-                    var equipments = States.Instance.CurrentAvatarState.inventory.Equipments
-                        .Where(e => e.level == 0)
-                        .ToArray();
-                    if (equipments.Length > 0)
-                    {
-                        itemUsable = equipments[Random.Range(0, equipments.Length)];
-                    }
+                    Find<CombinationResult>().ShowWithEditorProperty();
                 }
-                else
+                else if (Input.GetKeyDown(KeyCode.E))
                 {
-                    var consumables = States.Instance.CurrentAvatarState.inventory.Consumables
-                        .ToArray();
-                    if (consumables.Length > 0)
-                    {
-                        itemUsable = consumables[Random.Range(0, consumables.Length)];
-                    }
+                    Find<EnhancementResult>().ShowWithEditorProperty();
                 }
-
-                if (itemUsable is null)
-                {
-                    return;
-                }
-                
-                Find<CombinationResult>().Show(itemUsable);
             }
         }
 #endif
