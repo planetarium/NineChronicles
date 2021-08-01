@@ -93132,17 +93132,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tutorialTargets: []
   tutorialActions: 
+  _successTitleObject: {fileID: 1177508936337676320}
+  _greatSuccessTitleObject: {fileID: 6082325002053468307}
+  _failTitleObject: {fileID: 6761189276813206027}
   _resultItem:
     itemView: {fileID: 2988756151728861090}
     beforeGradeText: {fileID: 2247406881220253524}
     afterGradeText: {fileID: 2247406880919146549}
     itemNameText: {fileID: 3811265718569019705}
     cpText: {fileID: 1177508938086744163}
-  _optionTexts:
-  - rootObject: {fileID: 2247406881655468485}
+  _mainStat:
+    rootObject: {fileID: 2247406881655468485}
     totalText: {fileID: 7738010133362976103}
     plusText: {fileID: 2247406882216596895}
     secondStarObject: {fileID: 0}
+  _optionTexts:
   - rootObject: {fileID: 3839905054159133830}
     totalText: {fileID: 7408993828131835012}
     plusText: {fileID: 1177508936385506724}
@@ -93159,7 +93163,9 @@ MonoBehaviour:
     totalText: {fileID: 3300500727193685661}
     plusText: {fileID: 1177508936779072433}
     secondStarObject: {fileID: 0}
+  _editorEnhancementResult: 0
   _editorStatOptions: []
+  _editorSkillOptions: []
 --- !u!1 &8050095939014739262
 GameObject:
   m_ObjectHideFlags: 0
