@@ -4,13 +4,17 @@ using System.Linq;
 using JetBrains.Annotations;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Controller;
+using Nekoyume.Helper;
+using Nekoyume.L10n;
 using Nekoyume.Model.Item;
+using Nekoyume.Model.Skill;
 using Nekoyume.Model.Stat;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using Random = UnityEngine.Random;
 
 namespace Nekoyume.UI
 {
@@ -49,20 +53,33 @@ namespace Nekoyume.UI
         public class EditorStatOption
         {
             public StatType statType;
-            public float value;
+            public int value;
         }
 
         [Serializable]
         public class EditorSkillOption
         {
-            public string skillName;
-            public float chance;
-            public float power;
+            public int chance;
+            public int power;
         }
 #endif
+        [SerializeField]
+        private GameObject _successTitleObject;
 
         [SerializeField]
-        private Image _iconSprite;
+        private GameObject _greatSuccessTitleObject;
+
+        [SerializeField]
+        private GameObject _consumableSuccessTitleObject;
+
+        [SerializeField]
+        private Image _iconImage;
+
+        [SerializeField]
+        private Sprite _equipmentIconSprite;
+
+        [SerializeField]
+        private Sprite _consumableIconSprite;
 
         [SerializeField]
         private ResultItem _resultItem;
@@ -80,12 +97,6 @@ namespace Nekoyume.UI
         [Space(10)]
         [Header("Editor Properties For Test")]
         [Space(10)]
-        [SerializeField]
-        private EquipmentOrFood _equipmentOrFood;
-
-        [SerializeField]
-        private EditorStatOption _editorMainStat;
-
         [SerializeField]
         private List<EditorStatOption> _editorStatOptions;
 
@@ -114,13 +125,46 @@ namespace Nekoyume.UI
         }
 
 #if UNITY_EDITOR
-        protected override void OnEnable()
+        public void ShowWithEditorProperty()
         {
-            base.OnEnable();
+            ItemUsable itemUsable;
+            var tableSheets = Game.Game.instance.TableSheets;
+            if (Random.Range(0, 2) == 0)
+            {
+                var equipmentList = tableSheets.EquipmentItemSheet.OrderedList;
+                var equipmentRow = equipmentList[Random.Range(0, equipmentList.Count)];
+                var equipment = (Equipment) ItemFactory.CreateItemUsable(equipmentRow, Guid.NewGuid(), 0);
+                foreach (var statOption in _editorStatOptions)
+                {
+                    equipment.StatsMap.AddStatAdditionalValue(statOption.statType, statOption.value);
+                    equipment.optionCountFromCombination++;
+                }
 
-            // var itemUsable = _equipmentOrFood == EquipmentOrFood.Equipment
-            //     ? (ItemUsable) new Equipment(new EquipmentItemSheet.Row(), Guid.NewGuid(), 0)
-            //     : new Consumable(new ConsumableItemSheet.Row(), Guid.NewGuid(), 0);
+                var skillList = tableSheets.SkillSheet.OrderedList;
+                foreach (var skillOption in _editorSkillOptions)
+                {
+                    var row = skillList[Random.Range(0, skillList.Count)];
+                    var skill = SkillFactory.Get(row, skillOption.power, skillOption.chance);
+                    equipment.Skills.Add(skill);
+                    equipment.optionCountFromCombination++;
+                }
+
+                itemUsable = equipment;
+            }
+            else
+            {
+                var consumableList = tableSheets.ConsumableItemSheet.OrderedList;
+                var consumableRow = consumableList[Random.Range(0, consumableList.Count)];
+                var consumable = (Consumable) ItemFactory.CreateItemUsable(consumableRow, Guid.NewGuid(), 0);
+                foreach (var statOption in _editorStatOptions)
+                {
+                    consumable.StatsMap.AddStatValue(statOption.statType, statOption.value);
+                }
+
+                itemUsable = consumable;
+            }
+
+            Show(itemUsable);
         }
 #endif
 
@@ -132,22 +176,34 @@ namespace Nekoyume.UI
 
         public void Show(ItemUsable itemUsable)
         {
+            if (itemUsable is null)
+            {
+                Debug.LogError($"{nameof(itemUsable)} is null");
+                return;
+            }
+
             // NOTE: Ignore Show Animation
             base.Show(true);
 
-            _resultItem.itemNameText.text = itemUsable.GetLocalizedName();
+            _resultItem.itemNameText.text = itemUsable.GetLocalizedName(useElementalIcon: false);
             _resultItem.itemView.SetData(new CountableItem(itemUsable, 1));
 
             if (itemUsable is Equipment equipment)
             {
-                _resultItem.mainStatText.text = equipment.StatsMap.GetStat(equipment.UniqueStatType, true).ToString();
-                _resultItem.cpText.text = itemUsable.GetCPText();
-
                 var optionCount = equipment.optionCountFromCombination;
+                _successTitleObject.SetActive(optionCount != 4);
+                _greatSuccessTitleObject.SetActive(optionCount == 4);
+                _consumableSuccessTitleObject.SetActive(false);
+
                 for (var i = 0; i < _optionStarObjects.Count; i++)
                 {
                     _optionStarObjects[i].SetActive(i < optionCount);
                 }
+
+                _iconImage.overrideSprite = _equipmentIconSprite;
+                _resultItem.mainStatText.text =
+                    $"{equipment.UniqueStatType.ToString()} {equipment.StatsMap.GetStat(equipment.UniqueStatType, true)}";
+                _resultItem.cpText.text = itemUsable.GetCPText();
 
                 var additionalStats = equipment.StatsMap.GetAdditionalStats(true)
                     .ToArray();
@@ -162,11 +218,12 @@ namespace Nekoyume.UI
                     {
                         if (optionTextsIndex == 0 && optionText.secondStarObject != null)
                         {
-                            optionText.secondStarObject.SetActive(additionalStatsLength < optionCount);
+                            optionText.secondStarObject.SetActive(
+                                additionalStatsLength < optionCount - skillsCount);
                         }
 
                         var (statType, additionalValue) = additionalStats[optionTextsIndex];
-                        optionText.text.text = $"{statType.GetLocalizedString()} +{additionalValue}";
+                        optionText.text.text = $"{statType.ToString()} +{additionalValue}";
                         optionText.rootObject.SetActive(true);
                     }
                     else if (optionTextsIndex < additionalStatsLength + skillsCount)
@@ -189,6 +246,11 @@ namespace Nekoyume.UI
             }
             else if (itemUsable is Consumable consumable)
             {
+                _successTitleObject.SetActive(false);
+                _greatSuccessTitleObject.SetActive(false);
+                _consumableSuccessTitleObject.SetActive(true);
+
+                _iconImage.overrideSprite = _consumableIconSprite;
                 _resultItem.mainStatText.text = string.Empty;
                 _resultItem.cpText.text = string.Empty;
 

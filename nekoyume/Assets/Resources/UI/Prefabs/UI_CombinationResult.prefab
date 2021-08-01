@@ -591,7 +591,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tutorialTargets: []
   tutorialActions: 
-  _iconSprite: {fileID: 3223044904201159779}
+  _successTitleObject: {fileID: 8286323483963918737}
+  _greatSuccessTitleObject: {fileID: 3945565800458031394}
+  _consumableSuccessTitleObject: {fileID: 4574853198871098298}
+  _iconImage: {fileID: 3223044904201159779}
+  _equipmentIconSprite: {fileID: 21300000, guid: 20a41f2d4c2932440a915f244c1acd90,
+    type: 3}
+  _consumableIconSprite: {fileID: 21300000, guid: a9885d1ec8c1dae4294b4bf8a9a9e178,
+    type: 3}
   _resultItem:
     itemNameText: {fileID: 6218873602398943368}
     itemView: {fileID: 5463856523952995859}
@@ -616,10 +623,6 @@ MonoBehaviour:
     text: {fileID: 5444185815300916149}
     secondStarObject: {fileID: 0}
   _skipButton: {fileID: 3019484678701879560}
-  _equipmentOrFood: 0
-  _editorMainStat:
-    statType: 0
-    value: 0
   _editorStatOptions: []
   _editorSkillOptions: []
 --- !u!1 &1037744315983714699
