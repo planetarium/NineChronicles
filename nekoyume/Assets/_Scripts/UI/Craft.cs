@@ -44,18 +44,21 @@ namespace Nekoyume.UI
             {
                 if (!value) return;
                 AudioController.PlayClick();
-                recipeScroll.ShowAsEquipment(ItemSubType.Weapon, true);
-                SharedModel.SelectedRow.Value = null;
-                consumableSubRecipeView.gameObject.SetActive(false);
+                Animator.SetTrigger("EquipmentClick");
             });
 
             consumableToggle.onValueChanged.AddListener(value =>
             {
                 if (!value) return;
                 AudioController.PlayClick();
-                recipeScroll.ShowAsFood(StatType.HP, true);
-                SharedModel.SelectedRow.Value = null;
-                equipmentSubRecipeView.gameObject.SetActive(false);
+                if (Animator.GetBool("FirstClicked"))
+                {
+                    Animator.SetTrigger("ConsumableClick");
+                }
+                else
+                {
+                    Animator.SetBool("FirstClicked", true);
+                }
             });
 
             equipmentSubRecipeView.CombinationActionSubject
@@ -96,6 +99,27 @@ namespace Nekoyume.UI
             equipmentSubRecipeView.gameObject.SetActive(false);
             consumableSubRecipeView.gameObject.SetActive(false);
             base.Show(ignoreShowAnimation);
+        }
+
+        private void ShowEquipment()
+        {
+            recipeScroll.ShowAsEquipment(ItemSubType.Weapon, true);
+            SharedModel.SelectedRow.Value = null;
+            consumableSubRecipeView.gameObject.SetActive(false);
+        }
+
+        private void ShowConsumable()
+        {
+            recipeScroll.ShowAsFood(StatType.HP, true);
+            SharedModel.SelectedRow.Value = null;
+            equipmentSubRecipeView.gameObject.SetActive(false);
+        }
+
+
+        public override void Close(bool ignoreCloseAnimation = false)
+        {
+            Animator.SetBool("FirstClicked", false);
+            base.Close(ignoreCloseAnimation);
         }
 
         private void SetSubRecipe(SheetRow<int> row)
