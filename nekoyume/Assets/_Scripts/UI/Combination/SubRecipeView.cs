@@ -183,7 +183,7 @@ namespace Nekoyume.UI
                         .EquipmentItemSubRecipeSheetV2[subRecipeId.Value];
                     var options = subRecipe.Options;
 
-                    blockIndex = subRecipe.RequiredBlockIndex;
+                    blockIndex = equipmentRow.RequiredBlockIndex;
                     greatSuccessRate = options
                         .Select(x => x.Ratio)
                         .Aggregate((a, b) => a * b);
