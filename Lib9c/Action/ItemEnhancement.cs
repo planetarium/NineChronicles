@@ -26,9 +26,9 @@ namespace Nekoyume.Action
 
         public enum EnhancementResult
         {
-            GreatSuccess,
-            Success,
-            Fail,
+            GreatSuccess = 0,
+            Success = 1,
+            Fail = 2,
         }
 
         public Guid itemId;
@@ -44,6 +44,7 @@ namespace Nekoyume.Action
             public IEnumerable<Guid> materialItemIdList;
             public BigInteger gold;
             public int actionPoint;
+            public int enhancementResult;
             public ItemUsable preItemUsable;
 
             public ResultModel()
@@ -56,6 +57,7 @@ namespace Nekoyume.Action
                 materialItemIdList = serialized["materialItemIdList"].ToList(StateExtensions.ToGuid);
                 gold = serialized["gold"].ToBigInteger();
                 actionPoint = serialized["actionPoint"].ToInteger();
+                enhancementResult = serialized["enhancementResult"].ToInteger();
                 preItemUsable = serialized.ContainsKey("preItemUsable")
                     ? (ItemUsable) ItemFactory.Deserialize((Dictionary) serialized["preItemUsable"])
                     : null;
@@ -289,6 +291,7 @@ namespace Nekoyume.Action
                 itemUsable = enhancementEquipment,
                 materialItemIdList = new[] { materialId },
                 actionPoint = requiredActionPoint,
+                enhancementResult = (int)equipmentResult,
                 gold = requiredNcg,
             };
 
