@@ -1,8 +1,10 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Globalization;
+using System.Linq;
+using System.Numerics;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
@@ -11,12 +13,13 @@ using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using Serilog;
+using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("item_enhancement5")]
-    public class ItemEnhancement5 : GameAction
+    [ActionType("item_enhancement7")]
+    public class ItemEnhancement7 : GameAction
     {
         public const int RequiredBlockCount = 1;
 
@@ -26,6 +29,43 @@ namespace Nekoyume.Action
         public Guid materialId;
         public Address avatarAddress;
         public int slotIndex;
+
+        [Serializable]
+        public class ResultModel : AttachmentActionResult
+        {
+            protected override string TypeId => "itemEnhancement.result";
+            public Guid id;
+            public IEnumerable<Guid> materialItemIdList;
+            public BigInteger gold;
+            public int actionPoint;
+
+            public ResultModel()
+            {
+            }
+
+            public ResultModel(Bencodex.Types.Dictionary serialized)
+                : base(serialized)
+            {
+                id = serialized["id"].ToGuid();
+                materialItemIdList = serialized["materialItemIdList"].ToList(StateExtensions.ToGuid);
+                gold = serialized["gold"].ToBigInteger();
+                actionPoint = serialized["actionPoint"].ToInteger();
+            }
+
+            public override IValue Serialize() =>
+#pragma warning disable LAA1002
+                new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
+                {
+                    [(Text) "id"] = id.Serialize(),
+                    [(Text) "materialItemIdList"] = materialItemIdList
+                        .OrderBy(i => i)
+                        .Select(g => g.Serialize()).Serialize(),
+                    [(Text) "gold"] = gold.Serialize(),
+                    [(Text) "actionPoint"] = actionPoint.Serialize(),
+                }.Union((Bencodex.Types.Dictionary) base.Serialize()));
+#pragma warning restore LAA1002
+        }
+
         public override IAccountStateDelta Execute(IActionContext context)
         {
             IActionContext ctx = context;
@@ -37,22 +77,28 @@ namespace Nekoyume.Action
                     slotIndex
                 )
             );
+            var inventoryAddress = avatarAddress.Derive(LegacyInventoryKey);
+            var worldInformationAddress = avatarAddress.Derive(LegacyWorldInformationKey);
+            var questListAddress = avatarAddress.Derive(LegacyQuestListKey);
             if (ctx.Rehearsal)
             {
                 return states
                     .MarkBalanceChanged(GoldCurrencyMock, ctx.Signer, BlacksmithAddress)
                     .SetState(avatarAddress, MarkChanged)
+                    .SetState(inventoryAddress, MarkChanged)
+                    .SetState(worldInformationAddress, MarkChanged)
+                    .SetState(questListAddress, MarkChanged)
                     .SetState(slotAddress, MarkChanged);
             }
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
-            
+
             var sw = new Stopwatch();
             sw.Start();
             var started = DateTimeOffset.UtcNow;
             Log.Verbose("{AddressesHex}ItemEnhancement exec started", addressesHex);
 
-            if (!states.TryGetAgentAvatarStates(ctx.Signer, avatarAddress, out AgentState agentState,
+            if (!states.TryGetAgentAvatarStatesV2(ctx.Signer, avatarAddress, out AgentState agentState,
                 out AvatarState avatarState))
             {
                 throw new FailedLoadStateException($"{addressesHex}Aborted as the avatar state of the signer was failed to load.");
@@ -106,7 +152,7 @@ namespace Nekoyume.Action
                 );
             }
 
-            var result = new ItemEnhancement7.ResultModel
+            var result = new ResultModel
             {
                 itemUsable = enhancementEquipment,
                 materialItemIdList = new[] { materialId }
@@ -121,7 +167,7 @@ namespace Nekoyume.Action
             }
 
             var enhancementCostSheet = states.GetSheet<EnhancementCostSheet>();
-            var requiredNCG = ItemEnhancement7.GetRequiredNCG(enhancementCostSheet, enhancementEquipment.Grade, enhancementEquipment.level + 1);
+            var requiredNCG = GetRequiredNCG(enhancementCostSheet, enhancementEquipment.Grade, enhancementEquipment.level + 1);
 
             avatarState.actionPoint -= requiredAP;
             result.actionPoint = requiredAP;
@@ -193,7 +239,7 @@ namespace Nekoyume.Action
 
             enhancementEquipment.Unequip();
 
-            enhancementEquipment = ItemEnhancement7.UpgradeEquipment(enhancementEquipment);
+            enhancementEquipment = UpgradeEquipment(enhancementEquipment);
 
             var requiredBlockIndex = ctx.BlockIndex + RequiredBlockCount;
             enhancementEquipment.Update(requiredBlockIndex);
@@ -222,7 +268,11 @@ namespace Nekoyume.Action
             sw.Stop();
             Log.Verbose("{AddressesHex}ItemEnhancement Update AvatarState: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();
-            states = states.SetState(avatarAddress, avatarState.Serialize());
+            states = states
+                .SetState(inventoryAddress, avatarState.inventory.Serialize())
+                .SetState(worldInformationAddress, avatarState.worldInformation.Serialize())
+                .SetState(questListAddress, avatarState.questList.Serialize())
+                .SetState(avatarAddress, avatarState.SerializeV2());
             sw.Stop();
             Log.Verbose("{AddressesHex}ItemEnhancement Set AvatarState: {Elapsed}", addressesHex, sw.Elapsed);
             var ended = DateTimeOffset.UtcNow;
@@ -251,7 +301,25 @@ namespace Nekoyume.Action
             itemId = plainValue["itemId"].ToGuid();
             materialId = plainValue["materialId"].ToGuid();
             avatarAddress = plainValue["avatarAddress"].ToAddress();
-            slotIndex = plainValue["slotIndex"].ToInteger();
+            if (plainValue.TryGetValue((Text) "slotIndex", out var value))
+            {
+                slotIndex = value.ToInteger();
+            }
+        }
+
+        public static BigInteger GetRequiredNCG(EnhancementCostSheet costSheet, int grade, int level)
+        {
+            var row = costSheet
+                .OrderedList
+                .FirstOrDefault(x => x.Grade == grade && x.Level == level);
+
+            return row?.Cost ?? 0;
+        }
+
+        public static Equipment UpgradeEquipment(Equipment equipment)
+        {
+            equipment.LevelUp();
+            return equipment;
         }
     }
 }

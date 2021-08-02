@@ -73,11 +73,11 @@ namespace Lib9c.Tests.Action
         }
 
         [Theory]
-        [InlineData(0, 1, 1000, true)]
-        [InlineData(3, 4, 0, true)]
-        [InlineData(0, 1, 1000, false)]
-        [InlineData(3, 4, 0, false)]
-        public void Execute(int level, int expectedLevel, int expectedGold, bool backward)
+        [InlineData(0, 1000, true)]
+        [InlineData(6, 500, true)]
+        [InlineData(0, 1000, false)]
+        [InlineData(6, 500, false)]
+        public void Execute(int level, int expectedGold, bool backward)
         {
             var row = _tableSheets.EquipmentItemSheet.Values.First(r => r.Grade == 1);
             var equipment = (Equipment)ItemFactory.CreateItemUsable(row, default, 0, level);
@@ -96,6 +96,7 @@ namespace Lib9c.Tests.Action
                 materials = new Dictionary<Material, int>(),
                 itemUsable = equipment,
             };
+            var preItemUsable = new Equipment((Dictionary)equipment.Serialize());
 
             for (var i = 0; i < 100; i++)
             {
@@ -142,7 +143,6 @@ namespace Lib9c.Tests.Action
             var slotState = nextState.GetCombinationSlotState(_avatarAddress, 0);
             var resultEquipment = (Equipment)slotState.Result.itemUsable;
             var nextAvatarState = nextState.GetAvatarState(_avatarAddress);
-            Assert.Equal(expectedLevel, resultEquipment.level);
             Assert.Equal(default, resultEquipment.ItemId);
             Assert.Equal(expectedGold * _currency, nextState.GetBalance(_agentAddress, _currency));
             Assert.Equal(
@@ -152,13 +152,37 @@ namespace Lib9c.Tests.Action
             Assert.Equal(30, nextAvatarState.mailBox.Count);
 
             var grade = resultEquipment.Grade;
-            var costRow = _tableSheets.EnhancementCostSheet
+            var costRow = _tableSheets.EnhancementCostSheetV2
                 .OrderedList
                 .FirstOrDefault(x => x.Grade == grade && x.Level == resultEquipment.level);
             var stateDict = (Dictionary)nextState.GetState(slotAddress);
             var slot = new CombinationSlotState(stateDict);
             var slotResult = (ItemEnhancement.ResultModel)slot.Result;
 
+            switch ((ItemEnhancement.EnhancementResult)slotResult.enhancementResult)
+            {
+                case ItemEnhancement.EnhancementResult.GreatSuccess:
+                    var baseAtk = preItemUsable.StatsMap.BaseATK * (costRow.BaseStatGrowthMax * GameConfig.TenThousandths + 1);
+                    var extraAtk = preItemUsable.StatsMap.AdditionalATK * (costRow.ExtraStatGrowthMax * GameConfig.TenThousandths + 1);
+                    Assert.Equal((int)(baseAtk + extraAtk), resultEquipment.StatsMap.ATK);
+                    Assert.Equal(preItemUsable.level + 1, resultEquipment.level);
+                    break;
+                case ItemEnhancement.EnhancementResult.Success:
+                    var baseMinAtk = preItemUsable.StatsMap.BaseATK * (costRow.BaseStatGrowthMin * GameConfig.TenThousandths + 1);
+                    var baseMaxAtk = preItemUsable.StatsMap.BaseATK * (costRow.BaseStatGrowthMax * GameConfig.TenThousandths + 1);
+                    var extraMinAtk = preItemUsable.StatsMap.AdditionalATK * (costRow.ExtraStatGrowthMin * GameConfig.TenThousandths + 1);
+                    var extraMaxAtk = preItemUsable.StatsMap.AdditionalATK * (costRow.ExtraStatGrowthMax * GameConfig.TenThousandths + 1);
+                    Assert.InRange(resultEquipment.StatsMap.ATK, (int)(baseMinAtk + extraMinAtk), (int)(baseMaxAtk + extraMaxAtk) + 1);
+                    Assert.Equal(preItemUsable.level + 1, resultEquipment.level);
+                    break;
+                case ItemEnhancement.EnhancementResult.Fail:
+                    Assert.Equal(preItemUsable.StatsMap.ATK, resultEquipment.StatsMap.ATK);
+                    Assert.Equal(preItemUsable.level, resultEquipment.level);
+                    break;
+            }
+
+            Assert.Equal(preItemUsable.TradableId, slotResult.preItemUsable.TradableId);
+            Assert.Equal(preItemUsable.TradableId, resultEquipment.TradableId);
             Assert.Equal(costRow.Cost, slotResult.gold);
         }
 
