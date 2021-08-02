@@ -192,7 +192,7 @@ namespace Nekoyume.BlockChain
             var action = new CombinationConsumable
             {
                 recipeId = recipeId,
-                AvatarAddress = States.Instance.CurrentAvatarState.address,
+                avatarAddress = States.Instance.CurrentAvatarState.address,
                 slotIndex = slotIndex,
             };
             ProcessAction(action);
@@ -385,10 +385,10 @@ namespace Nekoyume.BlockChain
 
             var action = new CombinationEquipment
             {
-                AvatarAddress = States.Instance.CurrentAvatarState.address,
-                RecipeId = recipeId,
-                SubRecipeId = subRecipeId,
-                SlotIndex = slotIndex,
+                avatarAddress = States.Instance.CurrentAvatarState.address,
+                recipeId = recipeId,
+                subRecipeId = subRecipeId,
+                slotIndex = slotIndex,
             };
             ProcessAction(action);
 
