@@ -142,7 +142,7 @@ namespace Lib9c.Tests.Action
                 .FirstOrDefault(x => x.Grade == grade && x.Level == resultEquipment.level);
             var stateDict = (Dictionary)nextState.GetState(slotAddress);
             var slot = new CombinationSlotState(stateDict);
-            var slotResult = (ItemEnhancement.ResultModel)slot.Result;
+            var slotResult = (ItemEnhancement7.ResultModel)slot.Result;
 
             Assert.Equal(costRow.Cost, slotResult.gold);
         }

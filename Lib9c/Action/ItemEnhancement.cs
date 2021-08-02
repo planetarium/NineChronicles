@@ -39,7 +39,7 @@ namespace Nekoyume.Action
         [Serializable]
         public class ResultModel : AttachmentActionResult
         {
-            protected override string TypeId => "itemEnhancement.result";
+            protected override string TypeId => "item_enhancement8.result";
             public Guid id;
             public IEnumerable<Guid> materialItemIdList;
             public BigInteger gold;
