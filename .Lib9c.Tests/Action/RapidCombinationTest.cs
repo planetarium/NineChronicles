@@ -465,5 +465,70 @@ namespace Lib9c.Tests.Action
 
             Assert.Equal(result.Serialize(), result2.Serialize());
         }
+
+        [Fact]
+        public void Execute_Throw_RequiredAppraiseBlockException()
+        {
+            const int slotStateUnlockStage = 1;
+
+            var avatarState = _initialState.GetAvatarState(_avatarAddress);
+            avatarState.worldInformation = new WorldInformation(
+                0,
+                _initialState.GetSheet<WorldSheet>(),
+                slotStateUnlockStage);
+
+            var row = _tableSheets.MaterialItemSheet.Values.First(r =>
+                r.ItemSubType == ItemSubType.Hourglass);
+            avatarState.inventory.AddItem(ItemFactory.CreateMaterial(row), count: 22);
+
+            var firstEquipmentRow = _tableSheets.EquipmentItemSheet.First;
+            Assert.NotNull(firstEquipmentRow);
+
+            var gameConfigState = _initialState.GetGameConfigState();
+            var requiredBlockIndex = gameConfigState.HourglassPerBlock * 40;
+            var equipment = (Equipment)ItemFactory.CreateItemUsable(
+                firstEquipmentRow,
+                Guid.NewGuid(),
+                requiredBlockIndex);
+            avatarState.inventory.AddItem(equipment);
+
+            var result = new CombinationConsumable5.ResultModel
+            {
+                actionPoint = 0,
+                gold = 0,
+                materials = new Dictionary<Material, int>(),
+                itemUsable = equipment,
+                recipeId = 0,
+                itemType = ItemType.Equipment,
+            };
+
+            var mail = new CombinationMail(result, 0, default, requiredBlockIndex);
+            result.id = mail.id;
+            avatarState.Update(mail);
+
+            var slotAddress = _avatarAddress.Derive(string.Format(
+                CultureInfo.InvariantCulture,
+                CombinationSlotState.DeriveFormat,
+                0));
+            var slotState = new CombinationSlotState(slotAddress, slotStateUnlockStage);
+            slotState.Update(result, 0, 0);
+
+            var tempState = _initialState
+                .SetState(_avatarAddress, avatarState.Serialize())
+                .SetState(slotAddress, slotState.Serialize());
+
+            var action = new RapidCombination
+            {
+                avatarAddress = _avatarAddress,
+                slotIndex = 0,
+            };
+
+            Assert.Throws<RequiredAppraiseBlockException>(() => action.Execute(new ActionContext
+            {
+                PreviousStates = tempState,
+                Signer = _agentAddress,
+                BlockIndex = 1,
+            }));
+        }
     }
 }
