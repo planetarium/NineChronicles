@@ -15,6 +15,7 @@ using System.Collections;
 namespace Nekoyume.UI
 {
     using UniRx;
+    using Toggle = Module.Toggle;
 
     public class Craft : Widget
     {
@@ -26,6 +27,8 @@ namespace Nekoyume.UI
         [SerializeField] private SubRecipeView consumableSubRecipeView = null;
 
         [SerializeField] private CanvasGroup canvasGroup = null;
+
+        private bool _isEquipment;
 
         public static RecipeModel SharedModel = null;
 
@@ -43,21 +46,35 @@ namespace Nekoyume.UI
             equipmentToggle.onValueChanged.AddListener(value =>
             {
                 if (!value) return;
-                AudioController.PlayClick();
-                Animator.SetTrigger("EquipmentClick");
+
+                if (!_isEquipment)
+                {
+                    _isEquipment = true;
+
+                    if (Animator.GetBool("FirstClicked"))
+                    {
+                        AudioController.PlayClick();
+                        Animator.SetTrigger("EquipmentClick");
+                    }
+                }
             });
 
             consumableToggle.onValueChanged.AddListener(value =>
             {
                 if (!value) return;
-                AudioController.PlayClick();
-                if (Animator.GetBool("FirstClicked"))
+
+                if (_isEquipment)
                 {
-                    Animator.SetTrigger("ConsumableClick");
-                }
-                else
-                {
-                    Animator.SetBool("FirstClicked", true);
+                    _isEquipment = false;
+                    AudioController.PlayClick();
+                    if (Animator.GetBool("FirstClicked"))
+                    {
+                        Animator.SetTrigger("ConsumableClick");
+                    }
+                    else
+                    {
+                        Animator.SetBool("FirstClicked", true);
+                    }
                 }
             });
 
@@ -68,6 +85,14 @@ namespace Nekoyume.UI
             consumableSubRecipeView.CombinationActionSubject
                 .Subscribe(CombinationConsumableAction)
                 .AddTo(gameObject);
+        }
+
+        protected override void OnDisable()
+        {
+            Animator.SetBool("FirstClicked", false);
+            Animator.ResetTrigger("EquipmentClick");
+            Animator.ResetTrigger("ConsumableClick");
+            base.OnDisable();
         }
 
         public override void Initialize()
@@ -86,42 +111,32 @@ namespace Nekoyume.UI
         public override void Show(bool ignoreShowAnimation = false)
         {
             Find<CombinationLoadingScreen>().OnDisappear = OnNPCDisappear;
+            equipmentSubRecipeView.gameObject.SetActive(false);
+            consumableSubRecipeView.gameObject.SetActive(false);
+            base.Show(ignoreShowAnimation);
 
+            // Toggles can be switched after enabled.
+            ShowEquipment();
             if (equipmentToggle.isOn)
             {
-                recipeScroll.ShowAsEquipment(ItemSubType.Weapon, true);
+                _isEquipment = true;
             }
             else
             {
                 equipmentToggle.isOn = true;
             }
-
-            equipmentSubRecipeView.gameObject.SetActive(false);
-            consumableSubRecipeView.gameObject.SetActive(false);
-            base.Show(ignoreShowAnimation);
         }
 
         private void ShowEquipment()
         {
             recipeScroll.ShowAsEquipment(ItemSubType.Weapon, true);
             SharedModel.SelectedRow.Value = null;
-            consumableSubRecipeView.gameObject.SetActive(false);
         }
 
         private void ShowConsumable()
         {
             recipeScroll.ShowAsFood(StatType.HP, true);
             SharedModel.SelectedRow.Value = null;
-            equipmentSubRecipeView.gameObject.SetActive(false);
-        }
-
-
-        public override void Close(bool ignoreCloseAnimation = false)
-        {
-            Animator.SetBool("FirstClicked", false);
-            Animator.ResetTrigger("EquipmentClick");
-            Animator.ResetTrigger("ConsumableClick");
-            base.Close(ignoreCloseAnimation);
         }
 
         private void SetSubRecipe(SheetRow<int> row)
@@ -137,6 +152,11 @@ namespace Nekoyume.UI
                 consumableSubRecipeView.SetData(consumableRow, null);
                 equipmentSubRecipeView.gameObject.SetActive(false);
                 consumableSubRecipeView.gameObject.SetActive(true);
+            }
+            else
+            {
+                equipmentSubRecipeView.gameObject.SetActive(false);
+                consumableSubRecipeView.gameObject.SetActive(false);
             }
         }
 
