@@ -17,7 +17,7 @@ using Serilog;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionObsolete(2000000)]
+    [ActionObsolete(2100000)]
     [ActionType("buy_multiple")]
     public class BuyMultiple : GameAction
     {
@@ -231,7 +231,7 @@ namespace Nekoyume.Action
                 return states.SetState(ShopState.Address, MarkChanged);
             }
 
-            CheckObsolete(2000000, context);
+            CheckObsolete(2100000, context);
 
             var availableInfos = purchaseInfos.Where(p => !(p is null));
 
