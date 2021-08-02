@@ -334,7 +334,7 @@ namespace Nekoyume.BlockChain
             }
             else
             {
-                Widget.Find<CombinationSlots>().SetCaching(eval.Action.SlotIndex, false);
+                Widget.Find<CombinationSlots>().SetCaching(eval.Action.slotIndex, false);
             }
         }
 
