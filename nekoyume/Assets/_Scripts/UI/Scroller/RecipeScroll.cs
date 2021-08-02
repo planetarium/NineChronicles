@@ -61,6 +61,7 @@ namespace Nekoyume.UI.Scroller
 
         public void ShowAsEquipment(ItemSubType type, bool updateToggle = false)
         {
+            Craft.SharedModel.SelectedRow.Value = null;
             equipmentTab.SetActive(true);
             consumableTab.SetActive(false);
             if (updateToggle)
@@ -84,6 +85,7 @@ namespace Nekoyume.UI.Scroller
 
         public void ShowAsFood(StatType type, bool updateToggle = false)
         {
+            Craft.SharedModel.SelectedRow.Value = null;
             equipmentTab.SetActive(false);
             consumableTab.SetActive(true);
             if (updateToggle)
