@@ -133,6 +133,10 @@ namespace Nekoyume.Model.State
         {
         }
 
+        public InvalidRedeemCodeException(string s) : base(s)
+        {
+        }
+
         public InvalidRedeemCodeException(SerializationInfo info, StreamingContext context) : base(info, context)
         {
         }
