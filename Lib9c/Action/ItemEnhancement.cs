@@ -73,6 +73,7 @@ namespace Nekoyume.Action
                         .Select(g => g.Serialize()).Serialize(),
                     [(Text) "gold"] = gold.Serialize(),
                     [(Text) "actionPoint"] = actionPoint.Serialize(),
+                    [(Text) "enhancementResult"] = enhancementResult.Serialize(),
                     [(Text) "preItemUsable"] = preItemUsable.Serialize(),
                 }.Union((Dictionary) base.Serialize()));
 #pragma warning restore LAA1002
