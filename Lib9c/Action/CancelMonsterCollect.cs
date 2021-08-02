@@ -12,7 +12,7 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionObsolete(2000000)]
+    [ActionObsolete(2100000)]
     [ActionType("cancel_monster_collect")]
     public class CancelMonsterCollect : GameAction
     {
@@ -28,6 +28,8 @@ namespace Nekoyume.Action
                     .SetState(collectionAddress, MarkChanged)
                     .MarkBalanceChanged(GoldCurrencyMock, collectionAddress, context.Signer);
             }
+
+            CheckObsolete(2100000, context);
 
             AgentState agentState = states.GetAgentState(context.Signer);
             if (agentState is null)
