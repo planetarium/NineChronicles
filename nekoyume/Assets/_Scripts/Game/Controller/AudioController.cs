@@ -208,7 +208,8 @@ namespace Nekoyume.Game.Controller
 
             if (CurrentState != State.None)
             {
-                throw new FsmException("Already initialized.");
+                Debug.LogError("Already initialized.");
+                return;
             }
 
             CurrentState = State.InInitializing;
@@ -265,12 +266,14 @@ namespace Nekoyume.Game.Controller
         {
             if (CurrentState != State.Idle)
             {
-                throw new FsmException("Not initialized.");
+                Debug.LogError("Not initialized.");
+                return;
             }
 
             if (string.IsNullOrEmpty(audioName))
             {
-                throw new ArgumentNullException();
+                Debug.LogError($"{nameof(audioName)} is null or empty");
+                return;
             }
 
             StopMusicAll(0.5f);
@@ -284,12 +287,14 @@ namespace Nekoyume.Game.Controller
         {
             if (CurrentState != State.Idle)
             {
-                throw new FsmException("Not initialized.");
+                Debug.LogError("Not initialized.");
+                return;
             }
 
             if (string.IsNullOrEmpty(audioName))
             {
-                throw new ArgumentNullException();
+                Debug.LogError($"{nameof(audioName)} is null or empty");
+                return;
             }
 
             var audioInfo = PopFromSfxPool(audioName);
@@ -312,7 +317,8 @@ namespace Nekoyume.Game.Controller
         {
             if (CurrentState != State.Idle)
             {
-                throw new FsmException("Not initialized.");
+                Debug.LogError("Not initialized.");
+                return;
             }
 
             if (_fadeInMusic != null)
@@ -351,12 +357,14 @@ namespace Nekoyume.Game.Controller
         {
             if (CurrentState != State.Idle)
             {
-                throw new FsmException("Not initialized.");
+                Debug.LogError("Not initialized.");
+                return;
             }
 
             if (string.IsNullOrEmpty(audioName))
             {
-                throw new ArgumentNullException();
+                Debug.LogError($"{nameof(audioName)} is null or empty");
+                return;
             }
 
             foreach (var audioInfo in _sfxPlaylist
@@ -375,7 +383,8 @@ namespace Nekoyume.Game.Controller
         {
             if (!prefabs.ContainsKey(audioName))
             {
-                throw new KeyNotFoundException($"Not found AudioSource `{audioName}`.");
+                Debug.LogError($"Not found AudioSource `{audioName}`.");
+                return null;
             }
 
             return Instantiate(prefabs[audioName], transform);

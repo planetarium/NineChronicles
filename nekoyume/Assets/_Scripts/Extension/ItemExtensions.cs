@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
@@ -63,13 +63,14 @@ namespace Nekoyume
             {
                 sb.AppendLine("<sprite name=UI_icon_option>");
             }
+
             text = sb.ToString();
             return true;
         }
 
-        public static string GetCPText(this Equipment equipment)
+        public static string GetCPText(this ItemUsable itemUsable)
         {
-            var cp = CPHelper.GetCP(equipment);
+            var cp = CPHelper.GetCP(itemUsable);
             return $"<size=80%>CP</size> {cp}";
         }
 
