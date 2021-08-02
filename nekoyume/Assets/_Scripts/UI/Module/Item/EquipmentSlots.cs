@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Nekoyume.Battle;
 using Nekoyume.Model;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
@@ -168,11 +169,9 @@ namespace Nekoyume.UI.Module
 
             if (itemSubType == ItemSubType.Ring)
             {
-                var itemId = equipment.ItemId;
-                slot = typeSlots.FirstOrDefault(e =>
-                           !e.IsEmpty &&
-                           e.Item is ItemUsable itemUsable &&
-                           itemUsable.ItemId.Equals(itemId))
+                slot = typeSlots.OrderBy(e => CPHelper.GetCP((ItemUsable) e.Item,
+                               Game.Game.instance.TableSheets.CostumeStatSheet))
+                           .FirstOrDefault()
                        ?? typeSlots.FirstOrDefault(e => e.IsEmpty)
                        ?? typeSlots.First();
             }
