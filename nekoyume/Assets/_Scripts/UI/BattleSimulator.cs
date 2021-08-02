@@ -283,12 +283,12 @@ public class BattleSimulator : Widget
             {
                 if (optionRow.StatType != StatType.NONE)
                 {
-                    var statMap = CombinationEquipment.GetStat(optionRow, random);
+                    var statMap = CombinationEquipment5.GetStat(optionRow, random);
                     equipment.StatsMap.AddStatAdditionalValue(statMap.StatType, statMap.Value);
                 }
                 else
                 {
-                    var skill = CombinationEquipment.GetSkill(optionRow, skillSheet, random);
+                    var skill = CombinationEquipment5.GetSkill(optionRow, skillSheet, random);
                     if (!(skill is null))
                     {
                         equipment.Skills.Add(skill);
