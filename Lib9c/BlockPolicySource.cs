@@ -2,8 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Reflection;
 using Bencodex.Types;
-using Lib9c;
 using Lib9c.Renderer;
 using Libplanet.Blockchain;
 using Libplanet.Blockchain.Policies;
@@ -12,13 +12,12 @@ using Nekoyume.Action;
 using Nekoyume.Model.State;
 using Libplanet;
 using Libplanet.Blockchain.Renderers;
+using Nekoyume.Model;
 using Serilog;
 using Serilog.Events;
 #if UNITY_EDITOR || UNITY_STANDALONE
 using UniRx;
 #else
-using System.Reactive.Subjects;
-using System.Reactive.Linq;
 #endif
 using NCAction = Libplanet.Action.PolymorphicAction<Nekoyume.Action.ActionBase>;
 
@@ -87,21 +86,39 @@ namespace Nekoyume.BlockChain
         public IEnumerable<IRenderer<NCAction>> GetRenderers() =>
             new IRenderer<NCAction>[] { BlockRenderer, LoggedActionRenderer };
 
+        public static bool IsObsolete(Transaction<NCAction> transaction, long blockIndex)
+        {
+            return transaction.Actions
+                .Select(action => action.InnerAction.GetType())
+                .Any(
+                    at =>
+                    at.IsDefined(typeof(ActionObsoleteAttribute), false) &&
+                    at.GetCustomAttributes()
+                        .OfType<ActionObsoleteAttribute>()
+                        .FirstOrDefault()?.ObsoleteIndex < blockIndex
+                );
+        }
+
         private bool DoesTransactionFollowPolicy(
             Transaction<NCAction> transaction,
             BlockChain<NCAction> blockChain
         )
         {
-            return 
-                transaction.Actions.Count <= 1 &&
-                CheckSigner(transaction, blockChain);
+            return CheckTransaction(transaction, blockChain);
         }
 
-        private bool CheckSigner(
+        private bool CheckTransaction(
             Transaction<NCAction> transaction,
             BlockChain<NCAction> blockChain
         )
         {
+            // Avoid NRE when genesis block appended
+            long index = blockChain.Tip?.Index ?? 0;
+            if (transaction.Actions.Count > 1 || IsObsolete(transaction, index))
+            {
+                return false;
+            }
+
             try
             {
                 // Check if it is a no-op transaction to prove it's made by the authorized miner.
@@ -111,25 +128,39 @@ namespace Nekoyume.BlockChain
                     // The authorization proof has to have no actions at all.
                     return !transaction.Actions.Any();
                 }
-                
+
+                // Check ActivateAccount
                 if (transaction.Actions.Count == 1 &&
-                    transaction.Actions.First().InnerAction is ActivateAccount aa)
+                    transaction.Actions.First().InnerAction is IActivateAction aa)
                 {
-                    return blockChain.GetState(aa.PendingAddress) is Dictionary rawPending &&
-                        new PendingActivationState(rawPending).Verify(aa);
+                    return blockChain.GetState(aa.GetPendingAddress()) is Dictionary rawPending &&
+                           new PendingActivationState(rawPending).Verify(aa.GetSignature());
                 }
 
-                if (blockChain.GetState(ActivatedAccountsState.Address) is Dictionary asDict)
-                {
-                    IImmutableSet<Address> activatedAccounts =
-                        new ActivatedAccountsState(asDict).Accounts;
-                    return !activatedAccounts.Any() ||
-                        activatedAccounts.Contains(transaction.Signer);
-                }
-                else
+                // Check admin
+                if (blockChain.GetState(Addresses.Admin) is Dictionary rawAdmin
+                    && new AdminState(rawAdmin).AdminAddress.Equals(transaction.Signer))
                 {
                     return true;
                 }
+
+                switch (blockChain.GetState(transaction.Signer.Derive(ActivationKey.DeriveKey)))
+                {
+                    case null:
+                        // Fallback for pre-migration.
+                        if (blockChain.GetState(ActivatedAccountsState.Address) is Dictionary asDict)
+                        {
+                            IImmutableSet<Address> activatedAccounts =
+                                new ActivatedAccountsState(asDict).Accounts;
+                            return !activatedAccounts.Any() ||
+                                   activatedAccounts.Contains(transaction.Signer);
+                        }
+                        return true;
+                    case Bencodex.Types.Boolean _:
+                        return true;
+                }
+
+                return true;
             }
             catch (InvalidSignatureException)
             {

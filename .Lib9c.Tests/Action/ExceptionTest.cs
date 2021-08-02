@@ -11,137 +11,46 @@ namespace Lib9c.Tests.Action
 
     public class ExceptionTest
     {
-        [Fact]
-        public void AlreadyReceivedExceptionSerializable()
+        [Theory]
+        [InlineData(typeof(InvalidTradableIdException))]
+        [InlineData(typeof(AlreadyReceivedException))]
+        [InlineData(typeof(ArenaNotEndedException))]
+        [InlineData(typeof(AvatarIndexAlreadyUsedException))]
+        [InlineData(typeof(FailedLoadStateException))]
+        [InlineData(typeof(InvalidNamePatternException))]
+        [InlineData(typeof(CombinationSlotResultNullException))]
+        [InlineData(typeof(CombinationSlotUnlockException))]
+        [InlineData(typeof(NotEnoughMaterialException))]
+        [InlineData(typeof(InvalidPriceException))]
+        [InlineData(typeof(ItemDoesNotExistException))]
+        [InlineData(typeof(EquipmentLevelExceededException))]
+        [InlineData(typeof(DuplicateMaterialException))]
+        [InlineData(typeof(InvalidMaterialException))]
+        [InlineData(typeof(ConsumableSlotOutOfRangeException))]
+        [InlineData(typeof(ConsumableSlotUnlockException))]
+        [InlineData(typeof(InvalidItemTypeException))]
+        [InlineData(typeof(InvalidRedeemCodeException))]
+        [InlineData(typeof(DuplicateRedeemException))]
+        [InlineData(typeof(SheetRowValidateException))]
+        [InlineData(typeof(ShopItemExpiredException))]
+        [InlineData(typeof(InvalidMonsterCollectionRoundException))]
+        [InlineData(typeof(MonsterCollectionExpiredException))]
+        [InlineData(typeof(InvalidLevelException))]
+        [InlineData(typeof(ActionPointExceededException))]
+        [InlineData(typeof(InvalidItemCountException))]
+        [InlineData(typeof(DuplicateOrderIdException))]
+        [InlineData(typeof(OrderIdDoesNotExistException))]
+        [InlineData(typeof(ActionObsoletedException))]
+        public void Exception_Serializable(Type excType)
         {
-            var exc = new AlreadyReceivedException("for testing");
-            AssertException<AlreadyReceivedException>(exc);
-        }
-
-        [Fact]
-        public void ArenaNotEndedExceptionSerializable()
-        {
-            var exc = new ArenaNotEndedException("for testing");
-            AssertException<ArenaNotEndedException>(exc);
-        }
-
-        [Fact]
-        public void AvatarIndexAlreadyUsedExceptionSerializable()
-        {
-            var exc = new AvatarIndexAlreadyUsedException("for testing");
-            AssertException<AvatarIndexAlreadyUsedException>(exc);
-        }
-
-        [Fact]
-        public void FailedLoadStateExceptionSerializable()
-        {
-            var exc = new FailedLoadStateException("for testing");
-            AssertException<FailedLoadStateException>(exc);
-        }
-
-        [Fact]
-        public void InvalidNamePatternExceptionSerializable()
-        {
-            var exc = new InvalidNamePatternException("for testing");
-            AssertException<InvalidNamePatternException>(exc);
-        }
-
-        [Fact]
-        public void CombinationSlotResultNullExceptionSerializable()
-        {
-            var exc = new CombinationSlotResultNullException("fot testing");
-            AssertException<CombinationSlotResultNullException>(exc);
-        }
-
-        [Fact]
-        public void CombinationSlotUnlockExceptionSerializable()
-        {
-            var exc = new CombinationSlotUnlockException("for testing");
-            AssertException<CombinationSlotUnlockException>(exc);
-        }
-
-        [Fact]
-        public void NotEnoughMaterialExceptionSerializable()
-        {
-            var exc = new NotEnoughMaterialException("for testing");
-            AssertException<NotEnoughMaterialException>(exc);
-        }
-
-        [Fact]
-        public void InvalidPriceExceptionSerializable()
-        {
-            var exc = new InvalidPriceException("for testing");
-            AssertException<InvalidPriceException>(exc);
-        }
-
-        [Fact]
-        public void ItemDoesNotExistException()
-        {
-            var exc = new ItemDoesNotExistException("for testing");
-            AssertException<ItemDoesNotExistException>(exc);
-        }
-
-        [Fact]
-        public void EquipmentLevelExceededExceptionSerializable()
-        {
-            var exc = new EquipmentLevelExceededException("for testing");
-            AssertException<EquipmentLevelExceededException>(exc);
-        }
-
-        [Fact]
-        public void DuplicateMaterialExceptionSerializable()
-        {
-            var exc = new DuplicateMaterialException("for testing");
-            AssertException<DuplicateMaterialException>(exc);
-        }
-
-        [Fact]
-        public void InvalidMaterialExceptionSerializable()
-        {
-            var exc = new InvalidMaterialException("for testing");
-            AssertException<InvalidMaterialException>(exc);
-        }
-
-        [Fact]
-        public void ConsumableSlotOutOfRangeExceptionSerializable()
-        {
-            var exc = new ConsumableSlotOutOfRangeException();
-            AssertException<ConsumableSlotOutOfRangeException>(exc);
-        }
-
-        [Fact]
-        public void ConsumableSlotUnlockExceptionSerializable()
-        {
-            var exc = new ConsumableSlotUnlockException("for testing");
-            AssertException<ConsumableSlotUnlockException>(exc);
-        }
-
-        [Fact]
-        public void InvalidItemTypeExceptionSerializable()
-        {
-            var exc = new InvalidItemTypeException("for testing");
-            AssertException<InvalidItemTypeException>(exc);
-        }
-
-        [Fact]
-        public void InvalidRedeemCodeExceptionSerializable()
-        {
-            var exc = new InvalidRedeemCodeException();
-            AssertException<InvalidRedeemCodeException>(exc);
-        }
-
-        [Fact]
-        public void DuplicateRedeemExceptionSerializable()
-        {
-            var exc = new DuplicateRedeemException("for testing");
-            AssertException<DuplicateRedeemException>(exc);
-        }
-
-        [Fact]
-        public void SheetRowValidateExceptionSerializable()
-        {
-            var exc = new SheetRowValidateException("for testing");
-            AssertException<SheetRowValidateException>(exc);
+            if (Activator.CreateInstance(excType, "for testing") is Exception exc)
+            {
+                AssertException(excType, exc);
+            }
+            else
+            {
+                throw new InvalidCastException();
+            }
         }
 
         [Fact]
@@ -176,71 +85,13 @@ namespace Lib9c.Tests.Action
             }
         }
 
-        [Fact]
-        public void ShopItemExpiredExceptionSerializable()
-        {
-            var exc = new ShopItemExpiredException("for testing.");
-            AssertException<ShopItemExpiredException>(exc);
-        }
-
-        [Fact]
-        public void InvalidMonsterCollectionRoundException_Serializable()
-        {
-            var exc = new InvalidMonsterCollectionRoundException("for testing.");
-            AssertException<InvalidMonsterCollectionRoundException>(exc);
-        }
-
-        [Fact]
-        public void MonsterCollectionExpiredException_Serializable()
-        {
-            var exc = new MonsterCollectionExpiredException("for testing.");
-            AssertException<MonsterCollectionExpiredException>(exc);
-        }
-
-        [Fact]
-        public void InvalidLevelException_Serializable()
-        {
-            var exc = new InvalidLevelException("for testing.");
-            AssertException<InvalidLevelException>(exc);
-        }
-
-        [Fact]
-        public void ActionPointExceededException_Serializable()
-        {
-            var exc = new ActionPointExceededException("for testing.");
-            AssertException<ActionPointExceededException>(exc);
-        }
-
-        [Fact]
-        public void InvalidItemCountException_Serializable()
-        {
-            var exc = new InvalidItemCountException("for testing.");
-            AssertException<InvalidItemCountException>(exc);
-        }
-
-        [Fact]
-        public void DuplicateOrderIdException_Serializable()
-        {
-            var exc = new DuplicateOrderIdException("for testing.");
-            AssertException<DuplicateOrderIdException>(exc);
-        }
-
-        [Fact]
-        public void OrderIdDoesNotExistException_Serializable()
-        {
-            var exc = new OrderIdDoesNotExistException("for testing.");
-            AssertException<OrderIdDoesNotExistException>(exc);
-        }
-
-        [Fact]
-        public void InvalidTradableIdException_Serializable()
-        {
-            var exc = new InvalidTradableIdException("for testing.");
-            AssertException<InvalidTradableIdException>(exc);
-        }
-
         private static void AssertException<T>(Exception exc)
             where T : Exception
+        {
+            AssertException(typeof(T), exc);
+        }
+
+        private static void AssertException(Type type, Exception exc)
         {
             var formatter = new BinaryFormatter();
             using (var ms = new MemoryStream())
@@ -248,8 +99,9 @@ namespace Lib9c.Tests.Action
                 formatter.Serialize(ms, exc);
 
                 ms.Seek(0, SeekOrigin.Begin);
-                var deserialized = (T)formatter.Deserialize(ms);
-                Assert.Equal(exc.Message, deserialized.Message);
+                var deserialized = formatter.Deserialize(ms);
+                Exception exception = (Exception)Convert.ChangeType(deserialized, type);
+                Assert.Equal(exc.Message, exception.Message);
             }
         }
 

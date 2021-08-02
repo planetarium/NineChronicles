@@ -15,6 +15,7 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
+    [ActionObsolete(2000000)]
     [ActionType("sell_cancellation5")]
     public class SellCancellation5 : GameAction
     {
@@ -49,6 +50,8 @@ namespace Nekoyume.Action
                     .SetState(Addresses.Shop, MarkChanged)
                     .SetState(sellerAvatarAddress, MarkChanged);
             }
+
+            CheckObsolete(2000000, context);
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, sellerAvatarAddress);
 

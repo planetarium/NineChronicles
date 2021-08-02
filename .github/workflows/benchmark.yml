@@ -1,0 +1,49 @@
+name: benchmark
+
+on:
+  push:
+    branches:
+    - main
+    - development
+    - rc-*
+
+env:
+  BENCHMARKS_SNAPSHOT: https://9c-test.s3.amazonaws.com/snapshots/4582250d0da33b06779a8475d283d5dd210c683b9b999d74d03fac4f58fa6bce-snapshot-c017f9bbe7729feee19aa5ca1e4b3ee53b53c7b5406b8392dbce1f613e5f8406.zip
+  BENCHMARKS_SNAPSHOT_DIR: _benchmarks_snapshot
+
+jobs:
+  benchmarks:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        submodules: true
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 3.1.403
+    - run: |
+        tmpfile="$(mktemp --suffix=.zip)"
+        curl -o "$tmpfile" "$BENCHMARKS_SNAPSHOT"
+        mkdir "$BENCHMARKS_SNAPSHOT_DIR"
+        pushd "$BENCHMARKS_SNAPSHOT_DIR"
+        7z x "$tmpfile"
+        popd
+    - id: run-migration
+      run: |
+        dotnet build .Lib9c.Tools
+        dotnet run \
+            --project .Lib9c.Tools \
+            store \
+            -o "$BENCHMARKS_SNAPSHOT_DIR" \
+            -d "$BENCHMARKS_SNAPSHOT_DIR"_migrate \
+            -t
+    - id: run-benchmarks
+      run: |
+        dotnet build .Lib9c.Benchmarks
+        dotnet run \
+          --project .Lib9c.Benchmarks \
+          --no-build \
+          --verbosity quiet \
+          -- \
+          "$BENCHMARKS_SNAPSHOT_DIR"_migrate 50000
