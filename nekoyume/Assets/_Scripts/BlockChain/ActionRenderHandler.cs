@@ -604,7 +604,8 @@ namespace Nekoyume.BlockChain
                             });
                             task.ToObservable()
                                 .First()
-                                .DoOnError(Debug.LogException);
+                                // ReSharper disable once ConvertClosureToMethodGroup
+                                .DoOnError(e => Debug.LogException(e));
 
                             Game.Game.instance.Stage.GetStateTask = task;
                         });
@@ -671,7 +672,8 @@ namespace Nekoyume.BlockChain
                             });
                             task.ToObservable()
                                 .First()
-                                .DoOnError(Debug.LogException);
+                                // ReSharper disable once ConvertClosureToMethodGroup
+                                .DoOnError(e => Debug.LogException(e));
 
                             Game.Game.instance.Stage.GetStateTask = task;
                         });
@@ -737,7 +739,8 @@ namespace Nekoyume.BlockChain
                             });
                             task.ToObservable()
                                 .First()
-                                .DoOnError(Debug.LogException);
+                                // ReSharper disable once ConvertClosureToMethodGroup
+                                .DoOnError(e => Debug.LogException(e));
 
                             Game.Game.instance.Stage.GetStateTask = task;
                         });
