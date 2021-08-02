@@ -44,7 +44,7 @@ namespace Nekoyume.Action
             public IEnumerable<Guid> materialItemIdList;
             public BigInteger gold;
             public int actionPoint;
-            public int enhancementResult;
+            public EnhancementResult enhancementResult;
             public ItemUsable preItemUsable;
 
             public ResultModel()
@@ -57,7 +57,7 @@ namespace Nekoyume.Action
                 materialItemIdList = serialized["materialItemIdList"].ToList(StateExtensions.ToGuid);
                 gold = serialized["gold"].ToBigInteger();
                 actionPoint = serialized["actionPoint"].ToInteger();
-                enhancementResult = serialized["enhancementResult"].ToInteger();
+                enhancementResult = serialized["enhancementResult"].ToEnum<EnhancementResult>();
                 preItemUsable = serialized.ContainsKey("preItemUsable")
                     ? (ItemUsable) ItemFactory.Deserialize((Dictionary) serialized["preItemUsable"])
                     : null;
@@ -185,12 +185,11 @@ namespace Nekoyume.Action
                 throw new SheetRowNotFoundException(addressesHex, nameof(WorldSheet), enhancementEquipment.level);
             }
 
-            var maximumLevel = enhancementCostSheet.OrderedList.Last().Level;
-            if (enhancementEquipment.level > maximumLevel)
+            var maxLevel = GetEquipmentMaxLevel(enhancementEquipment, enhancementCostSheet);
+            if(enhancementEquipment.level >= maxLevel)
             {
                 throw new EquipmentLevelExceededException(
-                    $"{addressesHex}Aborted due to invalid equipment level: {enhancementEquipment.level} < 9"
-                );
+                    $"{addressesHex}Aborted due to invalid equipment level: {enhancementEquipment.level} < {maxLevel}");
             }
 
             if (!avatarState.inventory.TryGetNonFungibleItem(materialId, out ItemUsable materialItem))
@@ -270,6 +269,9 @@ namespace Nekoyume.Action
             materialEquipment.Unequip();
             enhancementEquipment.Unequip();
 
+            // clone items
+            var preItemUsable = new Equipment((Dictionary) enhancementEquipment.Serialize());
+
             // Equipment level up & Update
             var equipmentResult = GetEnhancementResult(row, ctx.Random);
             if (equipmentResult != EnhancementResult.Fail)
@@ -288,11 +290,11 @@ namespace Nekoyume.Action
             // Send scheduled mail
             var result = new ResultModel
             {
-                preItemUsable = new Equipment((Dictionary)enhancementEquipment.Serialize()),
+                preItemUsable = preItemUsable,
                 itemUsable = enhancementEquipment,
                 materialItemIdList = new[] { materialId },
                 actionPoint = requiredActionPoint,
-                enhancementResult = (int)equipmentResult,
+                enhancementResult = equipmentResult,
                 gold = requiredNcg,
             };
 
@@ -325,15 +327,13 @@ namespace Nekoyume.Action
 
         public static EnhancementResult GetEnhancementResult(EnhancementCostSheetV2.Row row, IRandom random)
         {
-            var greatSuccessRatio = (int)(row.GreatSuccessRatio * GameConfig.TenThousand);
-            var successRatio = (int)(row.SuccessRatio * GameConfig.TenThousand) + 1;
             var rand = random.Next(1, GameConfig.TenThousand + 1);
-            if (rand <= greatSuccessRatio)
+            if (rand <= row.GreatSuccessRatio)
             {
                 return EnhancementResult.GreatSuccess;
             }
 
-            return rand <= greatSuccessRatio + successRatio ? EnhancementResult.Success : EnhancementResult.Fail;
+            return rand <= row.GreatSuccessRatio + row.SuccessRatio ? EnhancementResult.Success : EnhancementResult.Fail;
         }
 
         public static int GetRequiredBlockCount(EnhancementCostSheetV2.Row row, EnhancementResult result)
@@ -357,6 +357,11 @@ namespace Nekoyume.Action
             var level = equipment.level + 1;
             row = sheet.OrderedList.FirstOrDefault(x => x.Grade == grade  && x.Level == level);
             return row != null;
+        }
+
+        public static int GetEquipmentMaxLevel(Equipment equipment, EnhancementCostSheetV2 sheet)
+        {
+            return sheet.OrderedList.Where(x => x.Grade == equipment.Grade).Max(x => x.Level);
         }
 
         public static int GetRequiredAp()

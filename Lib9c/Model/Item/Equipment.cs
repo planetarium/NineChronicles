@@ -147,10 +147,9 @@ namespace Nekoyume.Model.Item
         public void LevelUpV2(IRandom random, EnhancementCostSheetV2.Row row, bool isGreatSuccess)
         {
             level++;
-            var min = (int)(row.BaseStatGrowthMin * GameConfig.TenThousand);
-            var max = (int)(row.BaseStatGrowthMax * GameConfig.TenThousand) + 1;
-            var rand = random.Next(min, max) * GameConfig.TenThousandths;
-            var ratio = isGreatSuccess ? row.BaseStatGrowthMax : rand;
+            var rand = isGreatSuccess ? row.BaseStatGrowthMax
+                :random.Next(row.BaseStatGrowthMin, row.BaseStatGrowthMax + 1);
+            var ratio = rand * GameConfig.TenThousandths;
             var baseStat = Math.Max(1.0m, StatsMap.GetStat(UniqueStatType, true) * ratio);
             StatsMap.AddStatValue(UniqueStatType, baseStat);
 
@@ -200,10 +199,10 @@ namespace Nekoyume.Model.Item
         {
             foreach (var statMapEx in StatsMap.GetAdditionalStats())
             {
-                var ratio = isGreatSuccess ? row.ExtraStatGrowthMax
-                    : GetRandomRatio(random, row.ExtraStatGrowthMin, row.ExtraStatGrowthMax);
-
-                StatsMap.SetStatAdditionalValue(statMapEx.StatType, statMapEx.AdditionalValue * (1 + ratio));
+                var rand = isGreatSuccess ? row.ExtraStatGrowthMax
+                    : random.Next(row.ExtraStatGrowthMin, row.ExtraStatGrowthMax + 1);
+                var ratio = (int) (rand * GameConfig.TenThousandths) + 1;
+                StatsMap.SetStatAdditionalValue(statMapEx.StatType, statMapEx.AdditionalValue * ratio);
             }
 
             var skills = new List<Skill.Skill>();
@@ -211,22 +210,18 @@ namespace Nekoyume.Model.Item
             skills.AddRange(BuffSkills);
             foreach (var skill in skills)
             {
-                var chanceRatio = isGreatSuccess ? row.ExtraSkillChanceGrowthMax
-                    : GetRandomRatio(random, row.ExtraSkillChanceGrowthMin, row.ExtraSkillChanceGrowthMax);
-                var damageRatio = isGreatSuccess ? row.ExtraSkillDamageGrowthMax
-                    : GetRandomRatio(random, row.ExtraSkillDamageGrowthMin, row.ExtraSkillDamageGrowthMax);
+                var chanceRand = isGreatSuccess ? row.ExtraSkillChanceGrowthMax
+                    : random.Next(row.ExtraSkillChanceGrowthMin, row.ExtraSkillChanceGrowthMax + 1);
+                var chanceRatio = (int) (chanceRand * GameConfig.TenThousandths) + 1;
+                var chance = decimal.ToInt32(skill.Chance * chanceRatio);
 
-                var chance = decimal.ToInt32(skill.Chance * (1 + chanceRatio));
-                var damage = decimal.ToInt32(skill.Power * (1 + damageRatio));
+                var damageRand = isGreatSuccess ? row.ExtraSkillDamageGrowthMax
+                    : random.Next(row.ExtraSkillDamageGrowthMin, row.ExtraSkillDamageGrowthMax + 1);
+                var damageRatio = (int) (damageRand * GameConfig.TenThousandths) + 1;
+                var damage = decimal.ToInt32(skill.Power * damageRatio);
+
                 skill.Update(chance, damage);
             }
-        }
-
-        private decimal GetRandomRatio(IRandom random, decimal minValue, decimal maxValue)
-        {
-            var min = (int)(minValue * GameConfig.TenThousand);
-            var max = (int)(maxValue * GameConfig.TenThousand) + 1;
-            return random.Next(min, max) * GameConfig.TenThousandths;
         }
 
         protected bool Equals(Equipment other)

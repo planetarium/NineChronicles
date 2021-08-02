@@ -8,8 +8,8 @@
     {
         private const string _csv =
             @"id,item_sub_type,grade,level,cost,success_ratio,great_success_ratio,fail_ratio,success_required_block_index,great_success_required_block_index,fail_required_block_index,base_stat_growth_min,base_stat_growth_max,extra_stat_growth_min,extra_stat_growth_max,extra_skill_damage_growth_min,extra_skill_damage_growth_max,extra_skill_chance_growth_min,extra_skill_chance_growth_max
-1,Weapon,1,1,0,0.75,0.25,0,300,700,50,0.08,0.12,0.24,0.36,0.24,0.36,0.12,0.18
-2,Weapon,1,2,0,0.75,0.25,0,300,700,50,0.08,0.12,0.08,0.12,0.08,0.12,0.04,0.06";
+1,Weapon,1,1,0,7500,2500,0,300,700,50,800,1200,2400,3600,2400,3600,1200,1800
+2,Weapon,1,2,0,7500,2500,0,300,700,50,800,1200,800,1200,800,1200,400,600";
 
         [Fact]
         public void Set()
@@ -27,20 +27,20 @@
             Assert.Equal(1, row.Grade);
             Assert.Equal(1, row.Level);
             Assert.Equal(0, row.Cost);
-            Assert.Equal(0.75m, row.SuccessRatio);
-            Assert.Equal(0.25m, row.GreatSuccessRatio);
-            Assert.Equal(0m, row.FailRatio);
+            Assert.Equal(7500, row.SuccessRatio);
+            Assert.Equal(2500, row.GreatSuccessRatio);
+            Assert.Equal(0, row.FailRatio);
             Assert.Equal(300, row.SuccessRequiredBlockIndex);
             Assert.Equal(700, row.GreatSuccessRequiredBlockIndex);
             Assert.Equal(50, row.FailRequiredBlockIndex);
-            Assert.Equal(0.08m, row.BaseStatGrowthMin);
-            Assert.Equal(0.12m, row.BaseStatGrowthMax);
-            Assert.Equal(0.24m, row.ExtraStatGrowthMin);
-            Assert.Equal(0.36m, row.ExtraStatGrowthMax);
-            Assert.Equal(0.24m, row.ExtraSkillDamageGrowthMin);
-            Assert.Equal(0.36m, row.ExtraSkillDamageGrowthMax);
-            Assert.Equal(0.12m, row.ExtraSkillChanceGrowthMin);
-            Assert.Equal(0.18m, row.ExtraSkillChanceGrowthMax);
+            Assert.Equal(800, row.BaseStatGrowthMin);
+            Assert.Equal(01200, row.BaseStatGrowthMax);
+            Assert.Equal(02400, row.ExtraStatGrowthMin);
+            Assert.Equal(03600, row.ExtraStatGrowthMax);
+            Assert.Equal(02400, row.ExtraSkillDamageGrowthMin);
+            Assert.Equal(03600, row.ExtraSkillDamageGrowthMax);
+            Assert.Equal(01200, row.ExtraSkillChanceGrowthMin);
+            Assert.Equal(01800, row.ExtraSkillChanceGrowthMax);
 
             row = sheet.Last;
             Assert.Equal(row.Id, row.Key);
@@ -49,20 +49,20 @@
             Assert.Equal(1, row.Grade);
             Assert.Equal(2, row.Level);
             Assert.Equal(0, row.Cost);
-            Assert.Equal(0.75m, row.SuccessRatio);
-            Assert.Equal(0.25m, row.GreatSuccessRatio);
-            Assert.Equal(0m, row.FailRatio);
+            Assert.Equal(7500, row.SuccessRatio);
+            Assert.Equal(2500, row.GreatSuccessRatio);
+            Assert.Equal(0, row.FailRatio);
             Assert.Equal(300, row.SuccessRequiredBlockIndex);
             Assert.Equal(700, row.GreatSuccessRequiredBlockIndex);
             Assert.Equal(50, row.FailRequiredBlockIndex);
-            Assert.Equal(0.08m, row.BaseStatGrowthMin);
-            Assert.Equal(0.12m, row.BaseStatGrowthMax);
-            Assert.Equal(0.08m, row.ExtraStatGrowthMin);
-            Assert.Equal(0.12m, row.ExtraStatGrowthMax);
-            Assert.Equal(0.08m, row.ExtraSkillDamageGrowthMin);
-            Assert.Equal(0.12m, row.ExtraSkillDamageGrowthMax);
-            Assert.Equal(0.04m, row.ExtraSkillChanceGrowthMin);
-            Assert.Equal(0.06m, row.ExtraSkillChanceGrowthMax);
+            Assert.Equal(800, row.BaseStatGrowthMin);
+            Assert.Equal(1200, row.BaseStatGrowthMax);
+            Assert.Equal(0800, row.ExtraStatGrowthMin);
+            Assert.Equal(1200, row.ExtraStatGrowthMax);
+            Assert.Equal(0800, row.ExtraSkillDamageGrowthMin);
+            Assert.Equal(1200, row.ExtraSkillDamageGrowthMax);
+            Assert.Equal(0400, row.ExtraSkillChanceGrowthMin);
+            Assert.Equal(0600, row.ExtraSkillChanceGrowthMax);
         }
     }
 }
