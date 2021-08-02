@@ -70,6 +70,16 @@ namespace Nekoyume.Model.State
             Result = result;
         }
 
+        public void UpdateV2(long blockIndex, Material material, int count)
+        {
+            Update(blockIndex);
+            var result = new RapidCombination.ResultModel((Dictionary) Result.Serialize())
+            {
+                cost = new Dictionary<Material, int> {[material] = count}
+            };
+            Result = result;
+        }
+
         public override IValue Serialize()
         {
             var values = new Dictionary<IKey, IValue>
