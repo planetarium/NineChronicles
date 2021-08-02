@@ -29,6 +29,8 @@ namespace Nekoyume.Action
                     .MarkBalanceChanged(GoldCurrencyMock, collectionAddress, context.Signer);
             }
 
+            CheckObsolete(2100000, context);
+
             AgentState agentState = states.GetAgentState(context.Signer);
             if (agentState is null)
             {

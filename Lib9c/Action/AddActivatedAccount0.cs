@@ -46,6 +46,7 @@ namespace Nekoyume.Action
                 throw new ActivatedAccountsDoesNotExistsException();
             }
 
+            CheckObsolete(2100000, context);
             CheckPermission(context);
 
             var accounts = new ActivatedAccountsState(accountsAsDict);

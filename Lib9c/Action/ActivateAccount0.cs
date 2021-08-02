@@ -47,6 +47,8 @@ namespace Nekoyume.Action
                     .SetState(PendingAddress, MarkChanged);
             }
 
+            CheckObsolete(2100000, context);
+
             if (!state.TryGetState(ActivatedAccountsState.Address, out Dictionary accountsAsDict))
             {
                 throw new ActivatedAccountsDoesNotExistsException();

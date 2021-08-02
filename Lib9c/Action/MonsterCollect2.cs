@@ -34,6 +34,8 @@ namespace Nekoyume.Action
                     .MarkBalanceChanged(GoldCurrencyMock, context.Signer, MonsterCollectionState.DeriveAddress(context.Signer, 3));
             }
 
+            CheckObsolete(2100000, context);
+
             MonsterCollectionSheet monsterCollectionSheet = states.GetSheet<MonsterCollectionSheet>();
 
             AgentState agentState = states.GetAgentState(context.Signer);
