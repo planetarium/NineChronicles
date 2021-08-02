@@ -9,7 +9,7 @@ using Serilog;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionObsolete(2000000)]
+    [ActionObsolete(2100000)]
     [ActionType("activate_account")]
     public class ActivateAccount0 : ActionBase, IActivateAction
     {
