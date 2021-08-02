@@ -513,7 +513,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 106927750621628511}
-  - component: {fileID: 4668151153680441988}
   - component: {fileID: 7926476950902077719}
   - component: {fileID: 871052755017196816}
   - component: {fileID: 7508801959680456141}
@@ -547,14 +546,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!222 &4668151153680441988
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 871052755017196815}
-  m_CullTransparentMesh: 0
 --- !u!95 &7926476950902077719
 Animator:
   serializedVersion: 3
@@ -600,7 +591,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tutorialTargets: []
   tutorialActions: 
-  _iconSprite: {fileID: 3223044904201159779}
+  _successTitleObject: {fileID: 8286323483963918737}
+  _greatSuccessTitleObject: {fileID: 3945565800458031394}
+  _consumableSuccessTitleObject: {fileID: 4574853198871098298}
+  _iconImage: {fileID: 3223044904201159779}
+  _equipmentIconSprite: {fileID: 21300000, guid: 20a41f2d4c2932440a915f244c1acd90,
+    type: 3}
+  _consumableIconSprite: {fileID: 21300000, guid: a9885d1ec8c1dae4294b4bf8a9a9e178,
+    type: 3}
+  _resultItem:
+    itemNameText: {fileID: 6218873602398943368}
+    itemView: {fileID: 5463856523952995859}
+    mainStatText: {fileID: 705757110123492566}
+    cpText: {fileID: 8286323483557155282}
   _optionStarObjects:
   - {fileID: 8286323484632790209}
   - {fileID: 8286323483039856090}
@@ -620,8 +623,6 @@ MonoBehaviour:
     text: {fileID: 5444185815300916149}
     secondStarObject: {fileID: 0}
   _skipButton: {fileID: 3019484678701879560}
-  _touchScreenButton: {fileID: 0}
-  _equipmentOrFood: 0
   _editorStatOptions: []
   _editorSkillOptions: []
 --- !u!1 &1037744315983714699

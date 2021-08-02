@@ -125,11 +125,6 @@ namespace Nekoyume.UI.Module
             UpdateView();
         }
 
-        private void UpdateEnhancement()
-        {
-
-        }
-
         public void SetData(TViewModel model, bool isConsumable)
         {
             if (model is null)
@@ -147,7 +142,7 @@ namespace Nekoyume.UI.Module
             }
             else
             {
-                row = Game.Game.instance.TableSheets.ItemSheet.Values
+                row = Game.Game.instance.TableSheets.EquipmentItemSheet.Values
                     .FirstOrDefault(r => r.Id == model.ItemBase.Value.Id);
             }
 
@@ -218,7 +213,7 @@ namespace Nekoyume.UI.Module
 
         protected void SetOptionTag(int count)
         {
-            if (optionTagObject != null)
+            if (optionTagObject == null)
             {
                 return;
             }

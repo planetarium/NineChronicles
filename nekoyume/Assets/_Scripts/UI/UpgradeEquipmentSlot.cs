@@ -10,6 +10,8 @@ namespace Nekoyume.UI
         [SerializeField] private Button removeButton;
         [SerializeField] private Image itemImage;
         [SerializeField] private GameObject plusContainer;
+        [SerializeField] private GameObject emptyEffectContainer;
+        [SerializeField] private GameObject stageEffectContainer;
         [SerializeField] private GameObject itemContainer;
 
         private System.Action _callback;
@@ -22,6 +24,8 @@ namespace Nekoyume.UI
         public void AddMaterial(ItemBase itemBase, System.Action callback)
         {
             _callback = callback;
+            stageEffectContainer.SetActive(true);
+            emptyEffectContainer.SetActive(false);
             plusContainer.SetActive(false);
             itemContainer.SetActive(true);
             itemImage.overrideSprite = itemBase.GetIconSprite();
@@ -31,6 +35,8 @@ namespace Nekoyume.UI
         {
             _callback?.Invoke();
             _callback = null;
+            stageEffectContainer.SetActive(false);
+            emptyEffectContainer.SetActive(true);
             plusContainer.SetActive(true);
             itemContainer.SetActive(false);
 
