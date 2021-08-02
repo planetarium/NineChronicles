@@ -26,7 +26,6 @@ namespace Nekoyume.UI.Module
         [SerializeField] private Button button = null;
         [SerializeField] private bool selectable = true;
 
-        private RecipeView _hiddenView = null;
         private SheetRow<int> _recipeRow = null;
         private IDisposable _disposableForOnDisable = null;
         private bool _unlockable = false;
@@ -53,7 +52,7 @@ namespace Nekoyume.UI.Module
                     }
                     else if (_unlockable)
                     {
-                        Unlock(_recipeIdToUnlock);
+                        Unlock();
                     }
                 });
             }
@@ -136,34 +135,32 @@ namespace Nekoyume.UI.Module
                     diff > 50 ? "???" : unlockStage.ToString());
                 unlockConditionText.enabled = true;
                 equipmentView.Hide();
-                _hiddenView = equipmentView;
                 IsLocked = true;
                 return;
             }
             else if (!Craft.SharedModel.RecipeVFXSkipList.Contains(equipmentRow.Id))
             {
-                _unlockable = true;
                 _recipeIdToUnlock = equipmentRow.Id;
                 lockVFXObject.SetActive(true);
                 equipmentView.Hide();
-                _hiddenView = equipmentView;
                 IsLocked = true;
+                _unlockable = true;
                 return;
             }
 
             IsLocked = false;
         }
 
-        public void Unlock(int recipeId)
+        public void Unlock()
         {
             AudioController.instance.PlaySfx(AudioController.SfxCode.UnlockRecipe);
             var centerPos = GetComponent<RectTransform>()
                 .GetWorldPositionOfCenter();
             VFXController.instance.CreateAndChaseCam<RecipeUnlockVFX>(centerPos);
-            Craft.SharedModel.RecipeVFXSkipList.Add(recipeId);
+            Craft.SharedModel.RecipeVFXSkipList.Add(_recipeIdToUnlock);
             Craft.SharedModel.SaveRecipeVFXSkipList();
 
-            _hiddenView.gameObject.SetActive(true);
+            equipmentView.gameObject.SetActive(true);
             IsLocked = false;
             _unlockable = false;
         }
@@ -172,6 +169,10 @@ namespace Nekoyume.UI.Module
         {
             var equals = ReferenceEquals(row, _recipeRow);
             selectedObject.SetActive(equals);
+            if (equals)
+            {
+                Craft.SharedModel.SelectedRecipeCell = this;
+            }
         }
     }
 }

@@ -14,6 +14,8 @@ using System.Collections;
 
 namespace Nekoyume.UI
 {
+    using Nekoyume.UI.Module;
+    using System.Linq;
     using UniRx;
     using Toggle = Module.Toggle;
 
@@ -253,6 +255,23 @@ namespace Nekoyume.UI
             canvasGroup.interactable = true;
             canvasGroup.blocksRaycasts = true;
             Pop();
+        }
+
+        public void TutorialActionClickFirstRecipeCellView()
+        {
+            SharedModel.SelectedRow.Value = SharedModel.RecipeForTutorial;
+            SharedModel.SelectedRecipeCell.Unlock();
+        }
+
+        public void TutorialActionClickCombinationSubmitButton()
+        {
+            equipmentSubRecipeView.CombineCurrentRecipe();
+        }
+
+        public void TutorialActionCloseCombination()
+        {
+            Close(true);
+            Game.Event.OnRoomEnter.Invoke(true);
         }
     }
 }
