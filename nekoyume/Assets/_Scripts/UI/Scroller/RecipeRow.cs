@@ -1,3 +1,5 @@
+using Nekoyume.Model.Item;
+using Nekoyume.Model.Stat;
 using Nekoyume.TableData;
 using Nekoyume.UI.Module;
 using System.Collections.Generic;
@@ -13,17 +15,21 @@ namespace Nekoyume.UI.Scroller
     {
         public class Model
         {
+            public ItemSubType ItemSubType { get; set; }
+
+            public StatType StatType { get; set; }
+
             public string Name { get; private set; }
 
             public int Grade { get; private set; }
 
-            public List<ItemSheet.Row> Rows { get; private set; }
+            public List<SheetRow<int>> Rows { get; private set; }
 
             public Model(string name, int grade)
             {
                 Name = name;
                 Grade = grade;
-                Rows = new List<ItemSheet.Row>();
+                Rows = new List<SheetRow<int>>();
             }
         }
 
@@ -50,7 +56,8 @@ namespace Nekoyume.UI.Scroller
                 }
                 else
                 {
-                    recipeCells[i].Show(viewModel.Rows[i]);
+                    var cell = recipeCells[i];
+                    cell.Show(viewModel.Rows[i]);
                 }
             }
         }

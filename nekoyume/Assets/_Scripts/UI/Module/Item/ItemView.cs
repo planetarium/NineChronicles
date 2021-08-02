@@ -142,7 +142,7 @@ namespace Nekoyume.UI.Module
             }
             else
             {
-                row = Game.Game.instance.TableSheets.ItemSheet.Values
+                row = Game.Game.instance.TableSheets.EquipmentItemSheet.Values
                     .FirstOrDefault(r => r.Id == model.ItemBase.Value.Id);
             }
 

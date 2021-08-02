@@ -1,71 +1,74 @@
+using Nekoyume.Helper;
 using Nekoyume.L10n;
-using Nekoyume.Model.Item;
-using Nekoyume.Model.Stat;
+using Nekoyume.State;
 using Nekoyume.TableData;
+using Nekoyume.UI.Module;
 using Nekoyume.UI.Scroller;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Runtime.Serialization.Formatters.Binary;
+using UniRx;
 using UnityEngine;
 
 namespace Nekoyume.UI.Model
 {
     public class RecipeModel
     {
-        public readonly Dictionary<
-            ItemSubType,
-            Dictionary<string, RecipeRow.Model>> EquipmentRecipeMap
-                = new Dictionary<
-                    ItemSubType,
-                    Dictionary<string, RecipeRow.Model>>();
+        public readonly Dictionary<string, RecipeRow.Model> EquipmentRecipeMap
+                = new Dictionary<string, RecipeRow.Model>();
 
-        public readonly Dictionary<
-            StatType,
-            Dictionary<int, RecipeRow.Model>> ConsumableRecipeMap
-                = new Dictionary<
-                    StatType,
-                    Dictionary<int, RecipeRow.Model>>();
+        public readonly Dictionary<int, RecipeRow.Model> ConsumableRecipeMap
+                = new Dictionary<int, RecipeRow.Model>();
 
+        public readonly ReactiveProperty<SheetRow<int>> SelectedRow
+            = new ReactiveProperty<SheetRow<int>>();
+
+        private RecipeCell _selectedCell = null;
+
+        public HashSet<int> RecipeVFXSkipList { get; private set; }
+        private const string RecipeVFXSkipListKey = "Nekoyume.UI.EquipmentRecipe.FirstEnterRecipeKey_{0}";
         private const string EquipmentSplitFormat = "{0}_{1}";
 
         public RecipeModel(
-            IEnumerable<EquipmentItemSheet.Row> equipments,
+            IEnumerable<EquipmentItemRecipeSheet.Row> equipments,
             IEnumerable<RecipeGroup> consumableGroups)
         {
             LoadEquipment(equipments);
             LoadConsumable(consumableGroups);
         }
 
-        private void LoadEquipment(IEnumerable<EquipmentItemSheet.Row> equipments)
+        private void LoadEquipment(IEnumerable<EquipmentItemRecipeSheet.Row> recipes)
         {
-            if (equipments is null)
+            if (recipes is null)
             {
                 Debug.LogError("Failed to load equipment recipe.");
                 return;
             }
 
-            foreach (var equipment in equipments)
+            foreach (var recipe in recipes)
             {
-                var itemSubType = equipment.ItemSubType;
-                if (!EquipmentRecipeMap.ContainsKey(itemSubType))
-                {
-                    EquipmentRecipeMap[itemSubType] = new Dictionary<string, RecipeRow.Model>();
-                }
-
-                var idString = equipment.Id.ToString();
+                var idString = recipe.ResultEquipmentId.ToString();
                 var tierArea = idString.Substring(0, 4);
                 var variationArea = idString.Substring(5);
                 var key = string.Format(EquipmentSplitFormat, tierArea, variationArea);
 
-                if (!EquipmentRecipeMap[itemSubType].TryGetValue(key, out var recipeViewModel))
+                if (!EquipmentRecipeMap.TryGetValue(key, out var recipeViewModel))
                 {
+                    var resultItem = recipe.GetResultItemEquipmentRow();
+
                     recipeViewModel = new RecipeRow.Model(
-                        equipment.GetLocalizedName(),
-                        equipment.Grade
-                        );
-                    EquipmentRecipeMap[itemSubType][key] = recipeViewModel;
+                        resultItem.GetLocalizedName(),
+                        resultItem.Grade)
+                    {
+                        ItemSubType = resultItem.ItemSubType
+                    };
+
+                    EquipmentRecipeMap[key] = recipeViewModel;
                 }
 
-                recipeViewModel.Rows.Add(equipment);
+                recipeViewModel.Rows.Add(recipe);
             }
         }
 
@@ -85,26 +88,87 @@ namespace Nekoyume.UI.Model
                 foreach (var recipeId in group.RecipeIds)
                 {
                     var recipe = consumableRecipeSheet[recipeId];
-                    var consumable = tableSheets.ConsumableItemSheet[recipe.ResultConsumableItemId];
-                    var statType = consumable.Stats.Any() ? consumable.Stats[0].StatType : StatType.NONE;
-
-                    if (!ConsumableRecipeMap.TryGetValue(statType, out var groupMap))
-                    {
-                        groupMap = new Dictionary<int, RecipeRow.Model>();
-                        ConsumableRecipeMap[statType] = groupMap;
-                    }
-
                     var key = group.Key;
-                    if (!groupMap.TryGetValue(key, out var model))
-                    {
-                        var name = L10nManager.Localize($"ITEM_GROUPNAME_{consumable.Id}");
-                        model = new RecipeRow.Model(name, consumable.Grade);
-                        groupMap[key] = model;
-                    }
 
-                    model.Rows.Add(consumable);
+                    if (!ConsumableRecipeMap.TryGetValue(key, out var model))
+                    {
+                        var name = L10nManager.Localize($"ITEM_GROUPNAME_{group.Key}");
+                        model = new RecipeRow.Model(name, 0)
+                        {
+                            StatType = recipe.GetUniqueStat().StatType
+                        };
+                        ConsumableRecipeMap[key] = model;
+                    }
+                    model.Rows.Add(recipe);
                 }
             }
+        }
+
+        public void LoadRecipeVFXSkipList()
+        {
+            var addressHex = ReactiveAvatarState.Address.Value.ToHex();
+            var key = string.Format(RecipeVFXSkipListKey, addressHex);
+
+            if (!PlayerPrefs.HasKey(key))
+            {
+                CreateRecipeVFXSkipList();
+            }
+            else
+            {
+                var bf = new BinaryFormatter();
+                var data = PlayerPrefs.GetString(key);
+                var bytes = Convert.FromBase64String(data);
+
+                using (var ms = new MemoryStream(bytes))
+                {
+                    var obj = bf.Deserialize(ms);
+
+                    if (!(obj is HashSet<int>))
+                    {
+                        CreateRecipeVFXSkipList();
+                    }
+                    else
+                    {
+                        RecipeVFXSkipList = (HashSet<int>) obj;
+                    }
+                }
+            }
+        }
+
+        public void CreateRecipeVFXSkipList()
+        {
+            RecipeVFXSkipList = new HashSet<int>();
+
+            var gameInstance = Game.Game.instance;
+
+            var recipeTable = gameInstance.TableSheets.EquipmentItemRecipeSheet;
+            var subRecipeTable = gameInstance.TableSheets.EquipmentItemSubRecipeSheet;
+            var worldInfo = gameInstance.States.CurrentAvatarState.worldInformation;
+
+            foreach (var recipe in recipeTable.Values
+                .Where(x => worldInfo.IsStageCleared(x.UnlockStage)))
+            {
+                RecipeVFXSkipList.Add(recipe.Id);
+            }
+
+            SaveRecipeVFXSkipList();
+        }
+
+        public void SaveRecipeVFXSkipList()
+        {
+            var addressHex = ReactiveAvatarState.Address.Value.ToHex();
+            var key = string.Format(RecipeVFXSkipListKey, addressHex);
+
+            var data = string.Empty;
+            var bf = new BinaryFormatter();
+            using (var ms = new MemoryStream())
+            {
+                bf.Serialize(ms, RecipeVFXSkipList);
+                var bytes = ms.ToArray();
+                data = Convert.ToBase64String(bytes);
+            }
+
+            PlayerPrefs.SetString(key, data);
         }
     }
 }
