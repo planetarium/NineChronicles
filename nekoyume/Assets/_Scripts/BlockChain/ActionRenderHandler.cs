@@ -587,27 +587,23 @@ namespace Nekoyume.BlockChain
                         .First()
                         .Subscribe(_ =>
                         {
-                            var task = UniTask.Run(() =>
+                            var task = UniTask.Run(async () =>
                             {
+                                await UniTask.SwitchToMainThread();
                                 UpdateCurrentAvatarState(eval);
                                 UpdateWeeklyArenaState(eval);
                                 Address agentAddress = States.Instance.AgentState.address;
-                                if (eval.OutputStates.TryGetAvatarStateV2(agentAddress, eval.Action.avatarAddress,
-                                    out var avatarState))
-                                {
-                                    RenderQuest(eval.Action.avatarAddress,
-                                        avatarState.questList.completedQuestIds);
-                                    _disposableForBattleEnd = null;
-                                }
+                                var avatarState = States.Instance.CurrentAvatarState;
+                                RenderQuest(eval.Action.avatarAddress,
+                                    avatarState.questList.completedQuestIds);
+                                _disposableForBattleEnd = null;
 
-                                return avatarState;
+                                Game.Game.instance.Stage.IsAvatarStateUpdatedAfterBattle = true;
                             });
                             task.ToObservable()
                                 .First()
                                 // ReSharper disable once ConvertClosureToMethodGroup
                                 .DoOnError(e => Debug.LogException(e));
-
-                            Game.Game.instance.Stage.GetStateTask = task;
                         });
 
                 if (Widget.Find<LoadingScreen>().IsActive())
@@ -655,27 +651,23 @@ namespace Nekoyume.BlockChain
                         .First()
                         .Subscribe(_ =>
                         {
-                            var task = UniTask.Run(() =>
+                            var task = UniTask.Run(async () =>
                             {
+                                await UniTask.SwitchToMainThread();
                                 UpdateCurrentAvatarState(eval);
                                 UpdateWeeklyArenaState(eval);
                                 Address agentAddress = States.Instance.AgentState.address;
-                                if (eval.OutputStates.TryGetAvatarStateV2(agentAddress,
-                                    eval.Action.avatarAddress, out var avatarState))
-                                {
-                                    RenderQuest(eval.Action.avatarAddress,
-                                        avatarState.questList.completedQuestIds);
-                                    _disposableForBattleEnd = null;
-                                }
+                                var avatarState = States.Instance.CurrentAvatarState;
+                                RenderQuest(eval.Action.avatarAddress,
+                                    avatarState.questList.completedQuestIds);
+                                _disposableForBattleEnd = null;
 
-                                return avatarState;
+                                Game.Game.instance.Stage.IsAvatarStateUpdatedAfterBattle = true;
                             });
                             task.ToObservable()
                                 .First()
                                 // ReSharper disable once ConvertClosureToMethodGroup
                                 .DoOnError(e => Debug.LogException(e));
-
-                            Game.Game.instance.Stage.GetStateTask = task;
                         });
 
                 if (Widget.Find<LoadingScreen>().IsActive())
@@ -728,21 +720,19 @@ namespace Nekoyume.BlockChain
                         .First()
                         .Subscribe(_ =>
                         {
-                            var task = UniTask.Run(() =>
+                            var task = UniTask.Run(async () =>
                             {
+                                await UniTask.SwitchToMainThread();
                                 UpdateAgentState(eval);
                                 UpdateCurrentAvatarState(eval);
                                 UpdateWeeklyArenaState(eval);
                                 _disposableForBattleEnd = null;
-
-                                return States.Instance.CurrentAvatarState;
+                                Game.Game.instance.Stage.IsAvatarStateUpdatedAfterBattle = true;
                             });
                             task.ToObservable()
                                 .First()
                                 // ReSharper disable once ConvertClosureToMethodGroup
                                 .DoOnError(e => Debug.LogException(e));
-
-                            Game.Game.instance.Stage.GetStateTask = task;
                         });
 
                 if (Widget.Find<ArenaBattleLoadingScreen>().IsActive())
