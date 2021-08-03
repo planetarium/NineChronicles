@@ -303,6 +303,11 @@ namespace Nekoyume.UI
                 tooltip.Show(
                     slot.RectTransform,
                     item,
+                    _ => !item.Dimmed.Value,
+                    item.EquippedEnabled.Value
+                        ? L10nManager.Localize("UI_UNEQUIP")
+                        : L10nManager.Localize("UI_EQUIP"),
+                    _ => Equip(tooltip.itemInformation.Model.item.Value),
                     _ => inventory.SharedModel.DeselectItemView());
             }
         }
