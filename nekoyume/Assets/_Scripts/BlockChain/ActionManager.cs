@@ -386,9 +386,9 @@ namespace Nekoyume.BlockChain
             var action = new CombinationEquipment
             {
                 avatarAddress = States.Instance.CurrentAvatarState.address,
+                slotIndex = slotIndex,
                 recipeId = recipeId,
                 subRecipeId = subRecipeId,
-                slotIndex = slotIndex,
             };
             ProcessAction(action);
 
