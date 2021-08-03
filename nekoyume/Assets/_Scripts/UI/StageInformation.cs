@@ -24,26 +24,17 @@ namespace Nekoyume.UI
             Quest,
             Mimisbrunnr,
         }
-        [SerializeField]
-        private HelpButton stageHelpButton = null;
-        [SerializeField]
-        private TextMeshProUGUI titleText = null;
-        [SerializeField]
-        private TextMeshProUGUI monstersAreaText = null;
-        [SerializeField]
-        private List<VanillaCharacterView> monstersAreaCharacterViews = null;
-        [SerializeField]
-        private TextMeshProUGUI rewardsAreaText = null;
-        [SerializeField]
-        private List<StageRewardItemView> rewardsAreaItemViews = null;
-        [SerializeField]
-        private TextMeshProUGUI expText = null;
-        [SerializeField]
-        private SubmitButton submitButton = null;
-        [SerializeField]
-        private WorldMapWorld world = null;
-        [SerializeField]
-        private GameObject buttonNotification = null;
+        [SerializeField] private HelpButton stageHelpButton = null;
+        [SerializeField] private TextMeshProUGUI titleText = null;
+        [SerializeField] private TextMeshProUGUI monstersAreaText = null;
+        [SerializeField] private List<VanillaCharacterView> monstersAreaCharacterViews = null;
+        [SerializeField] private TextMeshProUGUI rewardsAreaText = null;
+        [SerializeField] private List<StageRewardItemView> rewardsAreaItemViews = null;
+        [SerializeField]private TextMeshProUGUI expText = null;
+        [SerializeField]private TextMeshProUGUI closeButtonText = null;
+        [SerializeField] private SubmitButton submitButton = null;
+        [SerializeField] private WorldMapWorld world = null;
+        [SerializeField] private GameObject buttonNotification = null;
         [SerializeField] private Button closeButton;
 
         private WorldMap.ViewModel _sharedViewModel;
@@ -125,6 +116,7 @@ namespace Nekoyume.UI
                 )
                 .AddTo(gameObject);
             _sharedViewModel.WorldInformation.TryGetWorld(worldRow.Id, out var worldModel);
+            closeButtonText.text = worldModel.Name;
             UpdateStageInformation(_sharedViewModel.SelectedStageId.Value, States.Instance.CurrentAvatarState.level);
             if (_sharedViewModel.SelectedStageId.Value == 1)
             {
