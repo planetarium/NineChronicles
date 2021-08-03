@@ -111,8 +111,6 @@ namespace Nekoyume.Game
         public EquipmentItemSubRecipeSheetV2 EquipmentItemSubRecipeSheetV2 { get; private set; }
 
         public EquipmentItemOptionSheet EquipmentItemOptionSheet { get; private set; }
-        
-        public EquipmentItemOptionSheetV2 EquipmentItemOptionSheetV2 { get; private set; }
 
         public GameConfigSheet GameConfigSheet { get; private set; }
 

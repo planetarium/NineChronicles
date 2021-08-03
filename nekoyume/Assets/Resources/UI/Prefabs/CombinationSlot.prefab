@@ -29,8 +29,8 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
-  m_Father: {fileID: 7778286864631315859}
-  m_RootOrder: 3
+  m_Father: {fileID: 906186260637822460}
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
@@ -1988,7 +1988,7 @@ MonoBehaviour:
   fixedFontStyle: 0
   fixedFontSizeOffset: 0
   fixedSpacingOption: 0
-  fontMaterialType: 0
+  fontMaterialType: 5
   l10nKey: UI_COMBINATION_SLOT_IDENTIFYING
   fontMaterialIndexInitialized: 0
   fontMaterialIndex: 0
@@ -2547,6 +2547,7 @@ RectTransform:
   - {fileID: 8155810993267268981}
   - {fileID: 7645003756318995666}
   - {fileID: 7111202979563759680}
+  - {fileID: 2499477313067044719}
   m_Father: {fileID: 7778286864631315859}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -3131,7 +3132,6 @@ RectTransform:
   - {fileID: 906186260637822460}
   - {fileID: 199428140440020153}
   - {fileID: 4804228538706725109}
-  - {fileID: 2499477313067044719}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

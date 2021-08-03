@@ -1,74 +1,75 @@
-using System.Globalization;
-using Nekoyume.Action;
+using System.Collections.Generic;
+using System.Linq;
 using Nekoyume.EnumType;
-using Nekoyume.Model.State;
 using Nekoyume.State;
-using Nekoyume.State.Subjects;
 using Nekoyume.UI.Module;
-using UniRx;
 using UnityEngine;
 
 namespace Nekoyume.UI
 {
+    using UniRx;
+
     public class CombinationSlots : XTweenWidget
     {
-        public CombinationSlot[] slots;
-        private long _blockIndex;
+        [SerializeField] private List<CombinationSlot> slots;
 
         public override WidgetType WidgetType => WidgetType.Popup;
 
         protected override void Awake()
         {
             base.Awake();
-            CombinationSlotStateSubject.CombinationSlotState.Subscribe(SetSlot).AddTo(gameObject);
             Game.Game.instance.Agent.BlockIndexSubject.ObserveOnMainThread()
                 .Subscribe(SubscribeBlockIndex).AddTo(gameObject);
-            _blockIndex = Game.Game.instance.Agent.BlockIndex;
         }
 
         public override void Show(bool ignoreShowAnimation = false)
         {
             base.Show(ignoreShowAnimation);
-            UpdateSlotAll();
+            UpdateSlots(Game.Game.instance.Agent.BlockIndex);
         }
 
-        private void SetSlot(CombinationSlotState state)
+        public void SetCaching(int slotIndex, bool value)
         {
-            var avatarState = States.Instance.CurrentAvatarState;
-            if (avatarState is null)
+            slots[slotIndex].IsCached = value;
+            UpdateSlots(Game.Game.instance.Agent.BlockIndex);
+        }
+
+        public bool TryGetEmptyCombinationSlot(out int slotIndex)
+        {
+            UpdateSlots(Game.Game.instance.Agent.BlockIndex);
+            for (var i = 0; i < slots.Count; i++)
             {
-                return;
+                if (slots[i].Type != CombinationSlot.SlotType.Empty)
+                {
+                    continue;
+                }
+
+                slotIndex = i;
+                return true;
             }
 
-            UpdateSlot(state);
+            slotIndex = -1;
+            return false;
         }
 
         private void SubscribeBlockIndex(long blockIndex)
         {
-            _blockIndex = blockIndex;
-            UpdateSlotAll();
+            UpdateSlots(blockIndex);
         }
 
-        private void UpdateSlotAll()
+        private void UpdateSlots(long blockIndex)
         {
-            foreach (var state in States.Instance.CombinationSlotStates.Values)
-            {
-                UpdateSlot(state);
-            }
-        }
+            var states = States.Instance.GetCombinationSlotState(blockIndex);
 
-        private void UpdateSlot(CombinationSlotState state)
-        {
-            for (var i = 0; i < slots.Length; i++)
+            for (var i = 0; i < slots.Count; i++)
             {
-                var slot = slots[i];
-                var address = States.Instance.CurrentAvatarState.address.Derive(
-                    string.Format(CultureInfo.InvariantCulture, CombinationSlotState.DeriveFormat,
-                        i));
-                if (address == state.address)
+                if (states != null && states.TryGetValue(i, out var state))
                 {
-                    slot.SetData(state, _blockIndex, i);
-                    break;
+                    slots[i].SetSlot(blockIndex, i, state);
+                }
+                else
+                {
+                    slots[i].SetSlot(blockIndex, i );
                 }
             }
         }

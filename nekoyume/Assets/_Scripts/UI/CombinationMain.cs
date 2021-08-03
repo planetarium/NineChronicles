@@ -3,7 +3,6 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
-    using UniRx;
     public class CombinationMain : Widget
     {
         [SerializeField] private Button combineButton;
@@ -16,20 +15,27 @@ namespace Nekoyume.UI
 
             combineButton.onClick.AddListener(() =>
             {
+                Close(true);
                 Find<Craft>().Show();
             });
 
             upgradeButton.onClick.AddListener(() =>
             {
+                Close(true);
                 Find<UpgradeEquipment>().Show();
             });
 
             closeButton.onClick.AddListener(() =>
             {
                 Close(true);
+                Game.Event.OnRoomEnter.Invoke(true);
             });
 
-            CloseWidget = () => Close(true);
+            CloseWidget = () =>
+            {
+                Close(true);
+                Game.Event.OnRoomEnter.Invoke(true);
+            };
         }
     }
 }

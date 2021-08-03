@@ -6,20 +6,16 @@ using Nekoyume.Game.Controller;
 using Nekoyume.State;
 using Nekoyume.UI.Module;
 using Nekoyume.Model.BattleStatus;
-using UniRx;
 using UnityEngine;
 using Random = UnityEngine.Random;
 using mixpanel;
 using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
-using System.Collections.Generic;
-using Nekoyume.Game.Character;
-using Nekoyume.State.Subjects;
-using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
+    using UniRx;
     public class Menu : Widget
     {
         private const string FirstOpenShopKeyFormat = "Nekoyume.UI.Menu.FirstOpenShopKey_{0}";
@@ -155,7 +151,7 @@ namespace Nekoyume.UI
             Mixpanel.Track("Unity/Click Guided Quest Combination Equipment");
 
             CombinationClickInternal(() =>
-                Find<Combination>().ShowByEquipmentRecipe(recipeId));
+                Find<Craft>().Show());
         }
 
         private void UpdateButtons()
@@ -195,17 +191,17 @@ namespace Nekoyume.UI
 
             var worldMap = Find<WorldMap>();
             worldMap.UpdateNotificationInfo();
-            var hasNotificationInWorldmap = worldMap.HasNotification;
+            var hasNotificationInWorldMap = worldMap.HasNotification;
 
             questExclamationMark.gameObject.SetActive(
                 (btnQuest.IsUnlocked &&
                  PlayerPrefs.GetInt(firstOpenQuestKey, 0) == 0) ||
-                hasNotificationInWorldmap);
+                hasNotificationInWorldMap);
 
             mimisbrunnrExclamationMark.gameObject.SetActive(
                 (btnMimisbrunnr.IsUnlocked &&
                  PlayerPrefs.GetInt(firstOpenMimisbrunnrKey, 0) == 0) ||
-                hasNotificationInWorldmap);
+                hasNotificationInWorldMap);
         }
 
         private void HideButtons()
@@ -535,15 +531,13 @@ namespace Nekoyume.UI
                 return;
             }
 
-            // Temporarily Lock tutorial recipe.
-            var combination = Find<Combination>();
-            combination.LoadRecipeVFXSkipMap();
-            var skipMap = combination.RecipeVFXSkipMap;
-            if (skipMap.ContainsKey(firstRecipeRow.Id))
+            // Temporarily lock tutorial recipe.
+            var skipMap = Craft.SharedModel.RecipeVFXSkipList;
+            if (skipMap.Contains(firstRecipeRow.Id))
             {
                 skipMap.Remove(firstRecipeRow.Id);
             }
-            combination.SaveRecipeVFXSkipMap();
+            Craft.SharedModel.SaveRecipeVFXSkipList();
             GoToCombinationEquipmentRecipe(firstRecipeRow.Id);
         }
 
@@ -553,5 +547,26 @@ namespace Nekoyume.UI
             player.DisableHudContainer();
             HackAndSlash(GuidedQuest.WorldQuest?.Goal ?? 4);
         }
+        
+#if UNITY_EDITOR
+        protected override void Update()
+        {
+            base.Update();
+
+            if (!Find<CombinationResult>().gameObject.activeSelf &&
+                !Find<EnhancementResult>().gameObject.activeSelf &&
+                Input.GetKey(KeyCode.LeftControl))
+            {
+                if (Input.GetKeyDown(KeyCode.C))
+                {
+                    Find<CombinationResult>().ShowWithEditorProperty();
+                }
+                else if (Input.GetKeyDown(KeyCode.E))
+                {
+                    Find<EnhancementResult>().ShowWithEditorProperty();
+                }
+            }
+        }
+#endif
     }
 }
