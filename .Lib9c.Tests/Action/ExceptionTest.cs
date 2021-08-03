@@ -44,7 +44,6 @@ namespace Lib9c.Tests.Action
         [InlineData(typeof(ActionObsoletedException))]
         [InlineData(typeof(SerializeFailedException))]
         [InlineData(typeof(DeserializeFailedException))]
-        [InlineData(typeof(ActionObsoletedException))]
         public void Exception_Serializable(Type excType)
         {
             if (Activator.CreateInstance(excType, "for testing") is Exception exc)
