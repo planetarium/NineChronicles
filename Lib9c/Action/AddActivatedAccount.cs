@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
+using Nekoyume.Model;
 using Nekoyume.Model.State;
 
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("add_activated_account")]
+    [ActionType("add_activated_account2")]
     public class AddActivatedAccount : ActionBase
     {
         public AddActivatedAccount(Address address)
@@ -26,38 +27,35 @@ namespace Nekoyume.Action
             new Dictionary(
                 new[]
                 {
-                    new KeyValuePair<IKey, IValue>((Text)"address", Address.Serialize()),
+                    new KeyValuePair<IKey, IValue>((Text)"a", Address.Serialize()),
                 }
             );
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
             IAccountStateDelta state = context.PreviousStates;
+            var address = Address.Derive(ActivationKey.DeriveKey);
 
             if (context.Rehearsal)
             {
                 return state
-                    .SetState(ActivatedAccountsState.Address, MarkChanged);
+                    .SetState(address, MarkChanged);
             }
 
-            if (!state.TryGetState(ActivatedAccountsState.Address, out Dictionary accountsAsDict))
+            if (!(state.GetState(address) is null))
             {
-                throw new ActivatedAccountsDoesNotExistsException();
+                throw new AlreadyActivatedException($"{address} is already activated.");
             }
 
             CheckPermission(context);
 
-            var accounts = new ActivatedAccountsState(accountsAsDict);
-            return state.SetState(
-                ActivatedAccountsState.Address,
-                accounts.AddAccount(Address).Serialize()
-            );
+            return state.SetState(address, true.Serialize());
         }
 
         public override void LoadPlainValue(IValue plainValue)
         {
             var asDict = (Dictionary) plainValue;
-            Address = asDict["address"].ToAddress();
+            Address = asDict["a"].ToAddress();
         }
     }
 }

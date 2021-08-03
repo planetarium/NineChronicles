@@ -17,7 +17,7 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("sell7")]
+    [ActionType("sell8")]
     public class Sell : GameAction
     {
         public Address sellerAvatarAddress;
@@ -140,14 +140,6 @@ namespace Nekoyume.Action
 
             avatarState.updatedAt = context.BlockIndex;
             avatarState.blockIndex = context.BlockIndex;
-
-            var mail = new OrderExpirationMail(
-                context.BlockIndex,
-                orderId,
-                order.ExpiredBlockIndex,
-                orderId
-            );
-            avatarState.UpdateV3(mail);
 
             var orderReceiptList = states.TryGetState(orderReceiptAddress, out Dictionary receiptDict)
                 ? new OrderDigestListState(receiptDict)

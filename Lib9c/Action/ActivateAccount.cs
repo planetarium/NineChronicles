@@ -3,14 +3,15 @@ using System.Collections.Generic;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
+using Nekoyume.Model;
 using Nekoyume.Model.State;
 using Serilog;
 
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("activate_account")]
-    public class ActivateAccount : ActionBase
+    [ActionType("activate_account2")]
+    public class ActivateAccount : ActionBase, IActivateAction
     {
         public Address PendingAddress { get; private set; }
 
@@ -20,8 +21,8 @@ namespace Nekoyume.Action
             new Dictionary(
                 new[]
                 {
-                    new KeyValuePair<IKey, IValue>((Text)"pending_address", PendingAddress.Serialize()),
-                    new KeyValuePair<IKey, IValue>((Text)"signature", (Binary) Signature),
+                    new KeyValuePair<IKey, IValue>((Text)"pa", PendingAddress.Serialize()),
+                    new KeyValuePair<IKey, IValue>((Text)"s", (Binary) Signature),
                 }
             );
 
@@ -38,24 +39,24 @@ namespace Nekoyume.Action
         public override IAccountStateDelta Execute(IActionContext context)
         {
             IAccountStateDelta state = context.PreviousStates;
+            Address activatedAddress = context.Signer.Derive(ActivationKey.DeriveKey);
 
             if (context.Rehearsal)
             {
                 return state
-                    .SetState(ActivatedAccountsState.Address, MarkChanged)
+                    .SetState(activatedAddress, MarkChanged)
                     .SetState(PendingAddress, MarkChanged);
             }
 
-            if (!state.TryGetState(ActivatedAccountsState.Address, out Dictionary accountsAsDict))
+            if (!(state.GetState(activatedAddress) is null))
             {
-                throw new ActivatedAccountsDoesNotExistsException();
+                throw new AlreadyActivatedException($"{context.Signer} already activated.");
             }
             if (!state.TryGetState(PendingAddress, out Dictionary pendingAsDict))
             {
                 throw new PendingActivationDoesNotExistsException(PendingAddress);
             }
 
-            var accounts = new ActivatedAccountsState(accountsAsDict);
             var pending = new PendingActivationState(pendingAsDict);
 
             if (pending.Verify(this))
@@ -63,13 +64,9 @@ namespace Nekoyume.Action
                 // We left this log message to track activation history.
                 // Please delete it if we have an API for evaluation results on the Libplanet side.
                 Log.Information("{pendingAddress} is activated by {signer} now.", pending.address, context.Signer);
-                return state.SetState(
-                    ActivatedAccountsState.Address,
-                    accounts.AddAccount(context.Signer).Serialize()
-                ).SetState(
-                    pending.address,
-                    new Bencodex.Types.Null()
-                );
+                return state
+                    .SetState(activatedAddress, true.Serialize())
+                    .SetState(pending.address, new Bencodex.Types.Null());
             }
             else
             {
@@ -80,8 +77,12 @@ namespace Nekoyume.Action
         public override void LoadPlainValue(IValue plainValue)
         {
             var asDict = (Dictionary) plainValue;
-            PendingAddress = asDict["pending_address"].ToAddress();
-            Signature = (Binary) asDict["signature"];
+            PendingAddress = asDict["pa"].ToAddress();
+            Signature = (Binary) asDict["s"];
         }
+
+        public Address GetPendingAddress() => PendingAddress;
+
+        public byte[] GetSignature() => Signature;
     }
 }
