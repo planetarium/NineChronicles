@@ -169,11 +169,15 @@ namespace Nekoyume.UI.Module
 
             if (itemSubType == ItemSubType.Ring)
             {
-                slot = typeSlots.OrderBy(e => CPHelper.GetCP((ItemUsable) e.Item,
-                               Game.Game.instance.TableSheets.CostumeStatSheet))
-                           .FirstOrDefault()
+                var itemId = equipment.ItemId;
+                slot = typeSlots.FirstOrDefault(
+                           e =>
+                               !e.IsEmpty &&
+                               e.Item is ItemUsable itemUsable &&
+                               itemUsable.ItemId.Equals(itemId))
                        ?? typeSlots.FirstOrDefault(e => e.IsEmpty)
-                       ?? typeSlots.First();
+                       ?? typeSlots.OrderBy(e => CPHelper.GetCP((ItemUsable) e.Item))
+                           .FirstOrDefault();
             }
             else
             {
