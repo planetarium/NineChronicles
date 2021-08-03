@@ -120,16 +120,16 @@ namespace Nekoyume.UI
                     menuText.text = string.Empty;
                     break;
                 case nameof(Combination):
-                    menuText.text = L10nManager.Localize("UI_COMBINATION");
+                    menuText.text = L10nManager.Localize("UI_MAIN_MENU_COMBINATION");
                     break;
                 case nameof(RankingBoard):
-                    menuText.text = L10nManager.Localize("UI_RANKING");
+                    menuText.text = L10nManager.Localize("UI_MAIN_MENU_RANKING");
                     break;
                 case nameof(Shop):
-                    menuText.text = L10nManager.Localize("UI_SHOP");
+                    menuText.text = L10nManager.Localize("UI_MAIN_MENU_SHOP");
                     break;
                 case nameof(MimisbrunnrPreparation):
-                    menuText.text = L10nManager.Localize("UI_MIMISBRUNNR");
+                    menuText.text = L10nManager.Localize("UI_MAIN_MENU_MIMISBRUNNR");
                     break;
             }
 

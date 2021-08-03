@@ -5,7 +5,6 @@ using JetBrains.Annotations;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
-using Nekoyume.Model.Item;
 using Nekoyume.TableData;
 using TMPro;
 using UniRx;
@@ -26,6 +25,15 @@ namespace Nekoyume.UI.Module
         public GameObject enhancementImage;
         public Image selectionImage;
         public Image dimmedImage;
+
+        [SerializeField]
+        protected GameObject optionTagObject = null;
+
+        [SerializeField]
+        protected TextMeshProUGUI optionTagText = null;
+
+        [SerializeField]
+        protected Image optionTagBgImage = null;
 
         private readonly List<IDisposable> _disposablesAtSetData = new List<IDisposable>();
 
@@ -72,7 +80,6 @@ namespace Nekoyume.UI.Module
             Model?.Dispose();
             OnClick.Dispose();
             OnDoubleClick.Dispose();
-            Clear();
         }
 
         #endregion
@@ -107,6 +114,7 @@ namespace Nekoyume.UI.Module
             Model.EnhancementEffectEnabled
                 .Subscribe(x => enhancementImage.gameObject.SetActive(x))
                 .AddTo(_disposablesAtSetData);
+            Model.Options.Subscribe(SetOptionTag).AddTo(_disposablesAtSetData);
             Model.Dimmed.Subscribe(SetDim).AddTo(_disposablesAtSetData);
             if (dimmedImage != null)
             {
@@ -115,11 +123,6 @@ namespace Nekoyume.UI.Module
 
             Model.Selected.SubscribeTo(selectionImage.gameObject).AddTo(_disposablesAtSetData);
             UpdateView();
-        }
-
-        private void UpdateEnhancement()
-        {
-
         }
 
         public void SetData(TViewModel model, bool isConsumable)
@@ -139,7 +142,7 @@ namespace Nekoyume.UI.Module
             }
             else
             {
-                row = Game.Game.instance.TableSheets.ItemSheet.Values
+                row = Game.Game.instance.TableSheets.EquipmentItemSheet.Values
                     .FirstOrDefault(r => r.Id == model.ItemBase.Value.Id);
             }
 
@@ -156,6 +159,7 @@ namespace Nekoyume.UI.Module
             Model.EnhancementEffectEnabled
                 .Subscribe(x => enhancementImage.gameObject.SetActive(x))
                 .AddTo(_disposablesAtSetData);
+            Model.Options.Subscribe(SetOptionTag).AddTo(_disposablesAtSetData);
             Model.Dimmed.Subscribe(SetDim).AddTo(_disposablesAtSetData);
             if (dimmedImage != null)
             {
@@ -199,6 +203,33 @@ namespace Nekoyume.UI.Module
                 {
                     selectionImage.enabled = false;
                 }
+
+                if (optionTagObject != null)
+                {
+                    optionTagObject.SetActive(false);
+                }
+            }
+        }
+
+        protected void SetOptionTag(int count)
+        {
+            if (optionTagObject == null)
+            {
+                return;
+            }
+
+            optionTagObject.SetActive(false);
+            if (Model is null)
+            {
+                return;
+            }
+
+            var itemBase = Model.ItemBase.Value;
+            if (itemBase.TryGetOptionTagText(out var text))
+            {
+                optionTagBgImage.color = Model.ItemBase.Value.GetItemGradeColor();
+                optionTagText.text = text;
+                optionTagObject.SetActive(true);
             }
         }
     }

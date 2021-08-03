@@ -87,20 +87,22 @@ namespace Nekoyume.BlockChain
                 return;
             }
 
+            var agentAddress = States.Instance.AgentState.address;
             var avatarAddress = States.Instance.AgentState.avatarAddresses[index];
-            var avatarState = evaluation.OutputStates.GetAvatarState(avatarAddress);
-            if (avatarState is null)
+            if (evaluation.OutputStates.TryGetAvatarStateV2(agentAddress, avatarAddress, out var avatarState))
             {
-                return;
+                UpdateAvatarState(avatarState, index);
             }
-
-            UpdateAvatarState(avatarState, index);
         }
 
         protected void UpdateCurrentAvatarState<T>(ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
         {
-            var avatarState = evaluation.OutputStates.GetAvatarState(States.Instance.CurrentAvatarState.address);
-            UpdateCurrentAvatarState(avatarState);
+            var agentAddress = States.Instance.AgentState.address;
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+            if (evaluation.OutputStates.TryGetAvatarStateV2(agentAddress, avatarAddress, out var avatarState))
+            {
+                UpdateCurrentAvatarState(avatarState);
+            }
         }
 
         protected void UpdateWeeklyArenaState<T>(ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
@@ -140,11 +142,6 @@ namespace Nekoyume.BlockChain
         private void UpdateAvatarState(AvatarState avatarState, int index)
         {
             States.Instance.AddOrReplaceAvatarState(avatarState, index);
-        }
-
-        protected static void UpdateCombinationSlotState(CombinationSlotState state)
-        {
-            States.Instance.SetCombinationSlotState(state);
         }
 
         public void UpdateCurrentAvatarState(AvatarState avatarState)

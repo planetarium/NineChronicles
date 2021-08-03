@@ -64,8 +64,6 @@ namespace Nekoyume.Game
 
         public bool IsInitialized { get; private set; }
 
-        public ShopProducts ShopProducts;
-
         public Prologue Prologue => prologue;
 
         public const string AddressableAssetsContainerPath = nameof(AddressableAssetsContainer);
@@ -88,7 +86,7 @@ namespace Nekoyume.Game
         protected override void Awake()
         {
             Debug.Log("[Game] Awake() invoked");
-            
+
             Application.targetFrameRate = 60;
             Application.SetStackTraceLogType(LogType.Log, StackTraceLogType.None);
             base.Awake();
@@ -96,7 +94,7 @@ namespace Nekoyume.Game
             _options = CommandLineOptions.Load(
                 CommandLineOptionsJsonPath
             );
-            
+
             Debug.Log("[Game] Awake() CommandLineOptions loaded");
 
 #if !UNITY_EDITOR
@@ -112,7 +110,7 @@ namespace Nekoyume.Game
 
             Mixpanel.Init();
             Mixpanel.Track("Unity/Started");
-            
+
             Debug.Log("[Game] Awake() Mixpanel initialized");
 #endif
 
@@ -150,8 +148,6 @@ namespace Nekoyume.Game
 
             // Initialize MainCanvas first
             MainCanvas.instance.InitializeFirst();
-            yield return Addressables.InitializeAsync();
-            Debug.Log("[Game] Start() Addressables initialized");
             // Initialize TableSheets. This should be done before initialize the Agent.
             yield return StartCoroutine(CoInitializeTableSheets());
             Debug.Log("[Game] Start() TableSheets initialized");
@@ -175,8 +171,6 @@ namespace Nekoyume.Game
             );
 
             yield return new WaitUntil(() => agentInitialized);
-            Debug.Log("[Game] Start() Agent initialized");
-            ShopProducts = new ShopProducts();
             // NOTE: Create ActionManager after Agent initialized.
             ActionManager = new ActionManager(Agent);
             yield return StartCoroutine(CoSyncTableSheets());
@@ -236,7 +230,7 @@ namespace Nekoyume.Game
                     OnRPCAgentRetryAndPreloadEnded(agent);
                 })
                 .AddTo(gameObject);
-            
+
             rpcAgent.OnPreloadEnded
                 .ObserveOnMainThread()
                 .Subscribe(agent =>

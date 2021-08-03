@@ -78,18 +78,18 @@ namespace Nekoyume.UI
                     recipeCellView.transform, new Vector3(0.53f, -0.5f));
         }
 
-        public void Pop(CombinationSlotState state, int slotIndex)
+        public void Pop(CombinationSlotState state)
         {
-            _slotIndex = slotIndex;
-            CombinationConsumable.ResultModel result;
-            CombinationConsumable.ResultModel chainResult;
+            // _slotIndex = slotIndex;
+            CombinationConsumable5.ResultModel result;
+            CombinationConsumable5.ResultModel chainResult;
             try
             {
-                result = (CombinationConsumable.ResultModel) state.Result;
+                result = (CombinationConsumable5.ResultModel) state.Result;
                 var chainState =
                     new CombinationSlotState(
                         (Dictionary) Game.Game.instance.Agent.GetState(state.address));
-                chainResult = (CombinationConsumable.ResultModel) chainState.Result;
+                chainResult = (CombinationConsumable5.ResultModel) chainState.Result;
             }
             catch (InvalidCastException)
             {
@@ -202,19 +202,22 @@ namespace Nekoyume.UI
             LocalLayerModifier.RemoveItem(States.Instance.CurrentAvatarState.address, _row.ItemId,
                 _cost);
             var blockIndex = Game.Game.instance.Agent.BlockIndex;
-            LocalLayerModifier.UnlockCombinationSlot(_slotIndex, blockIndex);
-            var slotAddress = States.Instance.CurrentAvatarState.address.Derive(
-                string.Format(CultureInfo.InvariantCulture, CombinationSlotState.DeriveFormat,
-                    _slotIndex));
-            var slotState = States.Instance.CombinationSlotStates[slotAddress];
-            var result = (CombinationConsumable.ResultModel) slotState.Result;
-            LocalLayerModifier.AddNewResultAttachmentMail(
-                States.Instance.CurrentAvatarState.address, result.id, blockIndex);
-            var format = L10nManager.Localize("NOTIFICATION_COMBINATION_COMPLETE");
-            Notification.Push(MailType.Workshop,
-                string.Format(CultureInfo.InvariantCulture, format,
-                    result.itemUsable.GetLocalizedName()));
-            Notification.CancelReserve(result.itemUsable.ItemId);
+
+            //todo : 슬롯인덱스 넣어서 작업해야함
+            // var slotAddress = States.Instance.CurrentAvatarState.address.Derive(
+            //     string.Format(CultureInfo.InvariantCulture, CombinationSlotState.DeriveFormat,
+            //         _slotIndex));
+            // var slotState = States.Instance.CombinationSlotStates[slotAddress];
+            // var slotState = States.Instance.CombinationSlotStates[0];
+
+            // var result = (CombinationConsumable5.ResultModel) slotState.Result;
+            // LocalLayerModifier.AddNewResultAttachmentMail(
+            //     States.Instance.CurrentAvatarState.address, result.id, blockIndex);
+            // var format = L10nManager.Localize("NOTIFICATION_COMBINATION_COMPLETE");
+            // Notification.Push(MailType.Workshop,
+            //     string.Format(CultureInfo.InvariantCulture, format,
+            //         result.itemUsable.GetLocalizedName()));
+            // Notification.CancelReserve(result.itemUsable.ItemId);
             Game.Game.instance.ActionManager.RapidCombination(_slotIndex);
         }
     }

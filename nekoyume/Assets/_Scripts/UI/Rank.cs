@@ -5,19 +5,28 @@ using Nekoyume.State;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using Nekoyume.UI.Scroller;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using TMPro;
-using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 using Toggle = Nekoyume.UI.Module.Toggle;
 
 namespace Nekoyume.UI
 {
+    using UniRx;
+
     public class Rank : Widget
     {
+        [Serializable]
+        private struct CategoryToggle
+        {
+            public Toggle Toggle;
+            public RankCategory Category;
+        }
+
         private static readonly Model.Rank SharedModel = new Model.Rank();
 
         private static Task RankLoadingTask = null;
@@ -29,16 +38,10 @@ namespace Nekoyume.UI
             RankLoadingTask = model.Update(RankingBoardDisplayCount);
         }
 
-        public override WidgetType WidgetType => WidgetType.Tooltip;
+        public override WidgetType WidgetType => WidgetType.Popup;
 
         [SerializeField]
         private Button closeButton = null;
-
-        [SerializeField]
-        private Model.Rank rankPanel = null;
-
-        [SerializeField]
-        private List<Toggle> toggles = new List<Toggle>();
 
         [SerializeField]
         private TextMeshProUGUI firstColumnText = null;
@@ -53,27 +56,30 @@ namespace Nekoyume.UI
         private RankCellPanel myInfoCell = null;
 
         [SerializeField]
-        private GameObject emptyObject = null;
+        private GameObject preloadingObject = null;
 
         [SerializeField]
-        private TextMeshProUGUI emptyText = null;
+        private GameObject missingObject = null;
+
+        [SerializeField]
+        private TextMeshProUGUI missingText = null;
+
+        [SerializeField]
+        private GameObject refreshObject = null;
+
+        [SerializeField]
+        private Button refreshButton = null;
+
+        [SerializeField]
+        private List<CategoryToggle> categoryToggles = null;
+
+        [SerializeField]
+        private List<ToggleDropdown> categoryDropdowns = null;
+
+        [SerializeField]
+        private List<Button> notImplementedToggles = null;
 
         public const int RankingBoardDisplayCount = 100;
-
-        private RankCategory CurrentCategory
-        {
-            get => _currentCategory;
-            set
-            {
-                _previousCategory = _currentCategory;
-                _currentCategory = value;
-                UpdateCategory(_currentCategory);
-            }
-        }
-
-        private RankCategory _currentCategory;
-
-        private RankCategory _previousCategory;
 
         private readonly Dictionary<RankCategory, Toggle> _toggleMap = new Dictionary<RankCategory, Toggle>();
 
@@ -89,73 +95,55 @@ namespace Nekoyume.UI
         {
             base.Initialize();
 
-            var currentCategory = RankCategory.Ability;
-            foreach (var toggle in toggles)
+            foreach (var toggle in categoryToggles)
             {
-                var innerCategory = currentCategory;
-                if (toggle is ToggleDropdown toggleDropdown)
+                if (!_toggleMap.ContainsKey(toggle.Category))
                 {
-                    var subElements = toggleDropdown.items;
-                    if (subElements is null || !subElements.Any())
-                    {
-                        _toggleMap[innerCategory] = toggleDropdown;
-                        toggleDropdown.onValueChanged.AddListener(value =>
-                        {
-                            if (value)
-                            {
-                                CurrentCategory = innerCategory;
-                            }
-                        });
-                        ++currentCategory;
-                    }
-                    else
-                    {
-                        foreach (var element in subElements)
-                        {
-                            var innerCategory2 = innerCategory;
-                            _toggleMap[innerCategory2] = element;
-                            element.onValueChanged.AddListener(value =>
-                            {
-                                if (value)
-                                {
-                                    CurrentCategory = innerCategory2;
-                                }
-                            });
-                            ++innerCategory;
-                            ++currentCategory;
-                        }
-
-                        toggleDropdown.onValueChanged.AddListener(value =>
-                        {
-                            if (value)
-                            {
-                                var firstElement = subElements.First();
-
-                                if (firstElement.isOn)
-                                {
-                                    firstElement.onValueChanged.Invoke(true);
-                                }
-                                else
-                                {
-                                    firstElement.isOn = true;
-                                }
-                            }
-                        });
-                    }
+                    _toggleMap[toggle.Category] = toggle.Toggle;
                 }
-                else
+
+                toggle.Toggle.onValueChanged.AddListener(value =>
                 {
-                    _toggleMap[innerCategory] = toggle;
-                    toggle.onValueChanged.AddListener(value =>
+                    if (value)
                     {
-                        if (value)
-                        {
-                            CurrentCategory = innerCategory;
-                        }
-                    });
-                    ++currentCategory;
-                }
+                        UpdateCategory(toggle.Category);
+                    }
+                });
             }
+
+            foreach (var dropDown in categoryDropdowns)
+            {
+                if (dropDown.items is null ||
+                    !dropDown.items.Any())
+                {
+                    return;
+                }
+
+                dropDown.onValueChanged.AddListener(value =>
+                {
+                    if (value)
+                    {
+                        var firstElement = dropDown.items.FirstOrDefault();
+                        firstElement.isOn = true;
+                        firstElement.onValueChanged.Invoke(true);
+                    }
+                });
+            }
+
+            foreach (var button in notImplementedToggles)
+            {
+                button.OnClickAsObservable()
+                    .Subscribe(_ => AlertNotImplemented())
+                    .AddTo(gameObject);
+            }
+
+            refreshButton.onClick.AsObservable()
+                .Subscribe(_ =>
+                {
+                    UpdateSharedModel();
+                    UpdateCategory(RankCategory.Ability, true);
+                })
+                .AddTo(gameObject);
         }
 
         public override void Show(bool ignoreShowAnimation = false)
@@ -171,43 +159,61 @@ namespace Nekoyume.UI
 
         private async void UpdateCategoryAsync(RankCategory category, bool toggleOn)
         {
+            preloadingObject.SetActive(true);
+            if (category == RankCategory.Weapon)
+            {
+                Find<SystemPopup>().Show("UI_ALERT_NOT_IMPLEMENTED_TITLE", "UI_ALERT_NOT_IMPLEMENTED_CONTENT");
+                return;
+            }
+
             if (toggleOn)
             {
                 ToggleCategory(category);
             }
 
             await UniTask.WaitWhile(() => RankLoadingTask is null);
-            if (RankLoadingTask.IsFaulted)
-            {
-                Debug.LogError($"Error loading ranking. Exception : \n{RankLoadingTask.Exception}\n{RankLoadingTask.Exception.StackTrace}");
-                return;
-            }
-
-            if (!RankLoadingTask.IsCompleted)
-            {
-                emptyText.text = L10nManager.Localize("UI_PRELOADING_MESSAGE");
-                await RankLoadingTask;
-            }
 
             var states = States.Instance;
 
-            if (states.CurrentAvatarState is null)
+            if (!RankLoadingTask.IsCompleted)
             {
-                return;
+                missingObject.SetActive(true);
+                refreshObject.SetActive(false);
+                missingText.text = L10nManager.Localize("UI_PRELOADING_MESSAGE");
+                myInfoCell.SetEmpty(states.CurrentAvatarState);
+                await RankLoadingTask;
             }
 
-            var isApiLoaded = SharedModel.IsInitialized;
-            emptyObject.SetActive(!isApiLoaded);
-            if (!isApiLoaded)
+            if (RankLoadingTask.IsFaulted)
             {
-                emptyText.text = L10nManager.Localize("UI_RANKING_API_MISSING");
+                missingObject.SetActive(false);
+                refreshObject.SetActive(true);
+                Debug.LogError($"Error loading ranking. Exception : \n{RankLoadingTask.Exception}\n{RankLoadingTask.Exception.StackTrace}");
                 myInfoCell.SetEmpty(states.CurrentAvatarState);
                 return;
             }
 
+            var isApiLoaded = SharedModel.IsInitialized;
+            if (!isApiLoaded)
+            {
+                missingObject.SetActive(true);
+                refreshObject.SetActive(false);
+                myInfoCell.SetEmpty(states.CurrentAvatarState);
+                return;
+            }
+
+            preloadingObject.SetActive(false);
+            missingObject.SetActive(false);
+            refreshObject.SetActive(false);
+
             switch (category)
             {
                 case RankCategory.Ability:
+                    if (!isApiLoaded)
+                    {
+                        break;
+                    }
+
                     var abilityRankingInfos = SharedModel.AbilityRankingInfos;
                     if (SharedModel.AgentAbilityRankingInfos
                         .TryGetValue(states.CurrentAvatarKey, out var abilityInfo))
@@ -222,6 +228,11 @@ namespace Nekoyume.UI
                     rankScroll.Show(abilityRankingInfos, true);
                     break;
                 case RankCategory.Stage:
+                    if (!isApiLoaded)
+                    {
+                        break;
+                    }
+
                     var stageRankingInfos = SharedModel.StageRankingInfos;
                     if (SharedModel.AgentStageRankingInfos
                         .TryGetValue(states.CurrentAvatarKey, out var stageInfo))
@@ -236,6 +247,11 @@ namespace Nekoyume.UI
                     rankScroll.Show(stageRankingInfos, true);
                     break;
                 case RankCategory.Mimisburnnr:
+                    if (!isApiLoaded)
+                    {
+                        break;
+                    }
+
                     var mimisbrunnrRankingInfos = SharedModel.MimisbrunnrRankingInfos;
                     if (SharedModel.AgentMimisbrunnrRankingInfos
                         .TryGetValue(states.CurrentAvatarKey, out var mimisbrunnrInfo))
@@ -254,11 +270,7 @@ namespace Nekoyume.UI
                     if (weaponRankingInfos is null)
                     {
                         Find<SystemPopup>().Show("UI_ALERT_NOT_IMPLEMENTED_TITLE", "UI_ALERT_NOT_IMPLEMENTED_CONTENT");
-                        CurrentCategory = _previousCategory;
-                        ToggleCategory(CurrentCategory);
-                        return;
                     }
-
                     break;
                 default:
                     break;
@@ -309,6 +321,11 @@ namespace Nekoyume.UI
 
                 firstSubElement.isOn = true;
             }
+        }
+
+        private void AlertNotImplemented()
+        {
+            Find<SystemPopup>().Show("UI_ALERT_NOT_IMPLEMENTED_TITLE", "UI_ALERT_NOT_IMPLEMENTED_CONTENT");
         }
     }
 }

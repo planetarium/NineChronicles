@@ -181,14 +181,19 @@ namespace Nekoyume.UI
 
         private bool IsValid()
         {
-            var price = Convert.ToDecimal(_data.TotalPrice.Value.GetQuantityString());
-            if (price - (int) price > 0)
+            if (decimal.TryParse(_data.TotalPrice.Value.GetQuantityString(),
+                NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out var price))
             {
-                return false;
+                if (price - (int) price > 0)
+                {
+                    return false;
+                }
+
+                var count = _data.Count.Value;
+                return !(price < Model.Shop.MinimumPrice || count < 0);
             }
 
-            var count = _data.Count.Value;
-            return !(price < Model.Shop.MinimumPrice || count < 0);
+            return false;
         }
 
         protected override void Clear()
@@ -203,7 +208,7 @@ namespace Nekoyume.UI
 
             if (typeof(T) == typeof(decimal))
             {
-                if (!decimal.TryParse(inputField.text, NumberStyles.AllowDecimalPoint, CultureInfo.CurrentCulture,
+                if (!decimal.TryParse(inputField.text, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture,
                     out var price))
                 {
                     price = 0;
@@ -213,7 +218,7 @@ namespace Nekoyume.UI
 
             if (typeof(T) == typeof(int))
             {
-                if (!int.TryParse(inputField.text, NumberStyles.Number, CultureInfo.CurrentCulture,
+                if (!int.TryParse(inputField.text, NumberStyles.Number, CultureInfo.InvariantCulture,
                     out var price))
                 {
                     price = 0;

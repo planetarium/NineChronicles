@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Globalization;
+using System.Linq;
 using Bencodex.Types;
 using Libplanet;
 using Nekoyume.Action;
@@ -8,6 +10,7 @@ using Nekoyume.BlockChain;
 using Nekoyume.Model.State;
 using Nekoyume.State.Subjects;
 using Debug = UnityEngine.Debug;
+using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.State
 {
@@ -37,8 +40,8 @@ namespace Nekoyume.State
 
         public GameConfigState GameConfigState { get; private set; }
 
-        public readonly Dictionary<Address, CombinationSlotState> CombinationSlotStates =
-            new Dictionary<Address, CombinationSlotState>();
+        private readonly Dictionary<int, CombinationSlotState> _combinationSlotStates =
+            new Dictionary<int, CombinationSlotState>();
 
         public States()
         {
@@ -122,9 +125,30 @@ namespace Nekoyume.State
 
         public AvatarState AddOrReplaceAvatarState(Address avatarAddress, int index, bool initializeReactiveState = true)
         {
-            var avatarState =
-                new AvatarState((Bencodex.Types.Dictionary) Game.Game.instance.Agent.GetState(avatarAddress));
-            return AddOrReplaceAvatarState(avatarState, index, initializeReactiveState);
+            var state = GetAvatarStateV2(avatarAddress);
+            return AddOrReplaceAvatarState(state, index, initializeReactiveState);
+        }
+
+        public AvatarState GetAvatarStateV2(Address address)
+        {
+            string[] keys =
+            {
+                LegacyInventoryKey,
+                LegacyWorldInformationKey,
+                LegacyQuestListKey,
+            };
+
+            var state = (Dictionary) Game.Game.instance.Agent.GetState(address);
+            foreach (var key in keys)
+            {
+                if (!state.ContainsKey(key))
+                {
+                    var keyAddress = address.Derive(key);
+                    var serialized = Game.Game.instance.Agent.GetState(keyAddress);
+                    state = state.SetItem(key, serialized);
+                }
+            }
+            return  new AvatarState(state);
         }
 
         /// <summary>
@@ -203,7 +227,8 @@ namespace Nekoyume.State
 
             if (isNew)
             {
-                var curAvatarState = new AvatarState((Dictionary) Game.Game.instance.Agent.GetState(avatarState.address));
+                var state = GetAvatarStateV2(avatarState.address);
+                var curAvatarState = new AvatarState(state);
                 AddOrReplaceAvatarState(curAvatarState, CurrentAvatarKey);
                 SetCombinationSlotStates(curAvatarState);
             }
@@ -231,7 +256,6 @@ namespace Nekoyume.State
             if (avatarState is null)
             {
                 LocalLayer.Instance.InitializeCombinationSlotsByCurrentAvatarState(null);
-
                 return;
             }
 
@@ -245,18 +269,41 @@ namespace Nekoyume.State
                         i
                     )
                 );
-                var slotState = new CombinationSlotState(
-                    (Dictionary) Game.Game.instance.Agent.GetState(slotAddress));
-                SetCombinationSlotState(slotState);
+                var state = new CombinationSlotState((Dictionary) Game.Game.instance.Agent.GetState(slotAddress));
+                UpdateCombinationSlotState(i, state);
             }
         }
 
-        public void SetCombinationSlotState(CombinationSlotState state)
+        public void UpdateCombinationSlotState(int index, CombinationSlotState state)
         {
-            state = LocalLayer.Instance.Modify(state);
-            CombinationSlotStates[state.address] = state;
+            if (_combinationSlotStates.ContainsKey(index))
+            {
+                _combinationSlotStates[index] = state;
+            }
+            else
+            {
+                _combinationSlotStates.Add(index, state);
+            }
+        }
 
-            CombinationSlotStateSubject.OnNext(state);
+        public void RemoveSlotState(int index)
+        {
+            if (_combinationSlotStates.ContainsKey(index))
+            {
+                _combinationSlotStates.Remove(index);
+            }
+        }
+
+        public Dictionary<int, CombinationSlotState> GetCombinationSlotState(long currentBlockIndex)
+        {
+            if (_combinationSlotStates == null)
+            {
+                return new Dictionary<int, CombinationSlotState>();
+            }
+
+            return _combinationSlotStates
+                .Where(pair => !pair.Value.Validate(CurrentAvatarState, currentBlockIndex))
+                .ToDictionary(pair => pair.Key, pair => pair.Value);
         }
 
         public void SetGameConfigState(GameConfigState state)

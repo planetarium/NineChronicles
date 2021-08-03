@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Nekoyume.L10n;
 using Nekoyume.Model.Elemental;
@@ -13,6 +13,7 @@ namespace Nekoyume.UI
         private const string WaterIconResourcePath = "UI/Textures/icon_elemental_water";
         private const string LandIconResourcePath = "UI/Textures/icon_elemental_land";
         private const string WindIconResourcePath = "UI/Textures/icon_elemental_wind";
+        private const string NormalIconResourcePath = "UI/Textures/icon_element_normal";
 
         private static readonly Dictionary<ElementalType, Dictionary<StatType, List<string>>> GetOptionsCache =
             new Dictionary<ElementalType, Dictionary<StatType, List<string>>>(ElementalTypeComparer.Instance);
@@ -72,7 +73,7 @@ namespace Nekoyume.UI
             switch (type)
             {
                 case ElementalType.Normal:
-                    return null;
+                    return Resources.Load<Sprite>(NormalIconResourcePath);
                 case ElementalType.Fire:
                     return Resources.Load<Sprite>(FireIconResourcePath);
                 case ElementalType.Water:
