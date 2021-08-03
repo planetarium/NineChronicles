@@ -55,14 +55,12 @@ namespace Nekoyume.UI
 
             closeButton.onClick.AddListener(() =>
             {
-                Close(true);
-                Game.Event.OnRoomEnter.Invoke(true);
+                Close();
             });
 
             CloseWidget = () =>
             {
-                Close(true);
-                Game.Event.OnRoomEnter.Invoke(true);
+                Close();
             };
         }
 
@@ -99,6 +97,22 @@ namespace Nekoyume.UI
             submitButton.OnSubmitClick
                 .Subscribe(_ => GoToPreparation())
                 .AddTo(gameObject);
+        }
+
+        public override void Close(bool ignoreCloseAnimation = false)
+        {
+            switch (_stageType)
+            {
+                case StageType.Quest:
+                    Find<WorldMap>().Show();
+                    break;
+
+                case StageType.Mimisbrunnr:
+                    Game.Event.OnRoomEnter.Invoke(true);
+                    break;
+            }
+
+            base.Close(ignoreCloseAnimation);
         }
 
         public void Show(WorldMap.ViewModel viewModel, WorldSheet.Row worldRow, StageType stageType)
