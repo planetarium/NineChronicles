@@ -216,7 +216,7 @@ namespace Nekoyume.UI
         private void UpdateItemInformation(ItemUsable item)
         {
             itemView.SetData(new Item(item));
-            itemNameText.text = TextHelper.GetItemName(item);
+            itemNameText.text = TextHelper.GetItemNameInCombinationSlot(item);
         }
 
         private CombinationType GetCombinationType(CombinationSlotState state)

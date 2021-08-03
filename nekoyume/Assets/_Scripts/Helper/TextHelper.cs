@@ -6,7 +6,7 @@ namespace Nekoyume.Helper
 {
     public static class TextHelper
     {
-        public static string GetItemName(ItemUsable itemUsable)
+        public static string GetItemNameInCombinationSlot(ItemUsable itemUsable)
         {
             var itemName = itemUsable.GetLocalizedNonColoredName();
             switch (itemUsable)

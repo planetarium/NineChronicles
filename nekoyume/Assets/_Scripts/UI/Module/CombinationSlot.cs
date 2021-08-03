@@ -179,7 +179,7 @@ namespace Nekoyume.UI.Module
         private void UpdateItemInformation(ItemUsable item)
         {
             itemView.SetData(new Item(item));
-            itemNameText.text = TextHelper.GetItemName(item);
+            itemNameText.text = TextHelper.GetItemNameInCombinationSlot(item);
         }
 
         private static void OnClickSlot(SlotType type, CombinationSlotState state, int slotIndex, long currentBlockIndex)
