@@ -332,10 +332,7 @@ namespace Nekoyume.BlockChain
                     }
                 }
             }
-            else
-            {
-                Widget.Find<CombinationSlots>().SetCaching(eval.Action.slotIndex, false);
-            }
+            Widget.Find<CombinationSlots>().SetCaching(eval.Action.slotIndex, false);
         }
 
         private void ResponseCombinationConsumable(ActionBase.ActionEvaluation<CombinationConsumable> eval)
@@ -376,10 +373,7 @@ namespace Nekoyume.BlockChain
                 UpdateCurrentAvatarState(eval);
                 RenderQuest(avatarAddress, avatarState.questList.completedQuestIds);
             }
-            else
-            {
-                Widget.Find<CombinationSlots>().SetCaching(eval.Action.slotIndex, false);
-            }
+            Widget.Find<CombinationSlots>().SetCaching(eval.Action.slotIndex, false);
         }
 
         private void ResponseItemEnhancement(ActionBase.ActionEvaluation<ItemEnhancement> eval)
@@ -423,10 +417,7 @@ namespace Nekoyume.BlockChain
                 UpdateCurrentAvatarState(eval);
                 RenderQuest(avatarAddress, avatarState.questList.completedQuestIds);
             }
-            else
-            {
-                Widget.Find<CombinationSlots>().SetCaching(eval.Action.slotIndex, false);
-            }
+            Widget.Find<CombinationSlots>().SetCaching(eval.Action.slotIndex, false);
         }
 
         private void ResponseSell(ActionBase.ActionEvaluation<Sell> eval)

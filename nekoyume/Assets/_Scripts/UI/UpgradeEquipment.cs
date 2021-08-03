@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using Nekoyume.BlockChain;
 using Nekoyume.L10n;
@@ -11,6 +12,7 @@ using UnityEngine;
 using System.Numerics;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Controller;
+using Nekoyume.Model.Stat;
 using Nekoyume.TableData;
 using Nekoyume.UI.Model;
 using TMPro;
@@ -263,7 +265,8 @@ namespace Nekoyume.UI
             itemNameText.text = equipment.GetLocalizedName();
             currentLevelText.text = $"{equipment.level}";
             nextLevelText.text = $"{equipment.level + 1}";
-            successRatioText.text = $"{(row.GreatSuccessRatio + row.SuccessRatio) * 100}%";
+            successRatioText.text =
+                ((row.GreatSuccessRatio + row.SuccessRatio) * GameConfig.TenThousandths).ToString("P0");
             requiredBlockIndexText.text = $"{row.SuccessRequiredBlockIndex}+";
 
             var stats = equipment.StatsMap.GetStats().ToList();
@@ -273,7 +276,7 @@ namespace Nekoyume.UI
                 {
                     var mainType = stat.StatType.ToString();
                     var mainValue = stat.ValueAsInt.ToString();
-                    var mainAdd = (int)(stat.ValueAsInt * row.BaseStatGrowthMax);
+                    var mainAdd = (int)(stat.ValueAsInt * row.BaseStatGrowthMax  * GameConfig.TenThousandths);
                     mainStat.gameObject.SetActive(true);
                     mainStat.Set(mainType, mainValue, $"(<size=80%>max</size> +{mainAdd})");
                     break;
@@ -286,9 +289,14 @@ namespace Nekoyume.UI
                 {
                     var subType = stats[i].StatType.ToString();
                     var subValue = stats[i].AdditionalValueAsInt.ToString();
-                    var subAdd = (int)(stats[i].AdditionalValueAsInt * row.ExtraStatGrowthMax);
+                    var subAddValue = (int)(stats[i].AdditionalValueAsInt * row.ExtraStatGrowthMax * GameConfig.TenThousandths);
+                    var subAdd = stats[i].StatType == StatType.SPD
+                        ? (subAddValue * 0.01m).ToString(CultureInfo.InvariantCulture)
+                        : subAddValue.ToString(CultureInfo.InvariantCulture);
                     addStats[i].gameObject.SetActive(true);
-                    addStats[i].Set(subType, subValue, $"(<size=80%>max</size> +{subAdd})");
+                    addStats[i].Set(subType,
+                        subValue,
+                        $"(<size=80%>max</size> +{subAdd})");
                 }
             }
 
@@ -298,8 +306,8 @@ namespace Nekoyume.UI
                 var name = skills[i].SkillRow.GetLocalizedName();
                 var power = skills[i].Power.ToString();
                 var chance = skills[i].Chance.ToString();
-                var powerAdd = (int)(skills[i].Power * row.ExtraSkillDamageGrowthMax);
-                var chanceAdd = (int)(skills[i].Chance * row.ExtraSkillChanceGrowthMax);
+                var powerAdd = (int)(skills[i].Power * row.ExtraSkillDamageGrowthMax * GameConfig.TenThousandths);
+                var chanceAdd = (int)(skills[i].Chance * row.ExtraSkillChanceGrowthMax * GameConfig.TenThousandths);
                 addSkills[i].gameObject.SetActive(true);
                 addSkills[i].Set(name,
                     $"{L10nManager.Localize("UI_SKILL_POWER")} : {power}",
