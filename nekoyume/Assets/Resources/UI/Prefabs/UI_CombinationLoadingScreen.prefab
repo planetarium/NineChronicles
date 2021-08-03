@@ -1167,6 +1167,16 @@ PrefabInstance:
       propertyPath: enable
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 6732647702267459333, guid: 6c17785e2b2d9c846a7037abfdbc902b,
+        type: 3}
+      propertyPath: destroyTime
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 6732647702267459333, guid: 6c17785e2b2d9c846a7037abfdbc902b,
+        type: 3}
+      propertyPath: speechWaitTime
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 6948575216840506038, guid: 6c17785e2b2d9c846a7037abfdbc902b,
         type: 3}
       propertyPath: m_AnchorMax.x
