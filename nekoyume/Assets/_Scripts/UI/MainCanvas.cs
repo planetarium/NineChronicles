@@ -260,13 +260,9 @@ namespace Nekoyume.UI
             yield return null;
             secondWidgets.Add(Widget.Create<DailyRewardItemPopup>());
             yield return null;
-            secondWidgets.Add(Widget.Create<CombinationResultPopup>());
-            yield return null;
             secondWidgets.Add(Widget.Create<Alert>());
             yield return null;
             secondWidgets.Add(Widget.Create<InputBox>());
-            yield return null;
-            secondWidgets.Add(Widget.Create<CombinationSlotPopup>());
             yield return null;
             secondWidgets.Add(Widget.Create<LevelUpCelebratePopup>());
             yield return null;
@@ -290,7 +286,7 @@ namespace Nekoyume.UI
             yield return null;
             secondWidgets.Add(Widget.Create<ChatPopup>());
             yield return null;
-            
+
             // Over than HeaderMenu
             secondWidgets.Add(Widget.Create<CombinationResult>());
             yield return null;
@@ -298,6 +294,10 @@ namespace Nekoyume.UI
             yield return null;
 
             // popup
+            secondWidgets.Add(Widget.Create<CombinationSlotPopup>());
+            yield return null;
+            secondWidgets.Add(Widget.Create<CombinationResultPopup>());
+            yield return null;
             secondWidgets.Add(Widget.Create<FriendInfoPopup>());
             yield return null;
             secondWidgets.Add(Widget.Create<ItemInformationTooltip>());

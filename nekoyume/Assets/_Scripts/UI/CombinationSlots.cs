@@ -31,6 +31,7 @@ namespace Nekoyume.UI
         public void SetCaching(int slotIndex, bool value)
         {
             slots[slotIndex].IsCached = value;
+            UpdateSlots(Game.Game.instance.Agent.BlockIndex);
         }
 
         public bool TryGetEmptyCombinationSlot(out int slotIndex)
@@ -64,11 +65,11 @@ namespace Nekoyume.UI
             {
                 if (states != null && states.TryGetValue(i, out var state))
                 {
-                    slots[i].SetSlot(blockIndex, state);
+                    slots[i].SetSlot(blockIndex, i, state);
                 }
                 else
                 {
-                    slots[i].SetSlot(blockIndex);
+                    slots[i].SetSlot(blockIndex, i );
                 }
             }
         }
