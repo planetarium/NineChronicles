@@ -10,10 +10,10 @@ namespace Nekoyume.TableData
         public readonly struct OptionInfo
         {
             public readonly int Id;
-            public readonly decimal Ratio;
+            public readonly int Ratio;
             public readonly int RequiredBlockIndex;
 
-            public OptionInfo(int id, decimal ratio, int requiredBlockIndex = default)
+            public OptionInfo(int id, int ratio, int requiredBlockIndex = default)
             {
                 Id = id;
                 Ratio = ratio;
@@ -68,7 +68,7 @@ namespace Nekoyume.TableData
 
                     Options.Add(new OptionInfo(
                         ParseInt(fields[10 + offset]),
-                        ParseDecimal(fields[11 + offset]),
+                        ParseInt(fields[11 + offset]),
                         ParseInt(fields[12 + offset])));
                 }
 
