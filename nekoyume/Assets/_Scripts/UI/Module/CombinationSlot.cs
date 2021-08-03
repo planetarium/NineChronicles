@@ -5,6 +5,7 @@ using Nekoyume.EnumType;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Util;
+using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
@@ -44,6 +45,7 @@ namespace Nekoyume.UI.Module
         [SerializeField] private RandomNumberRoulette randomNumberRoulette;
 
         private CombinationSlotState _state;
+        private int _slotIndex;
         private const int UnlockStage = GameConfig.RequireClearedStageLevel.CombinationEquipmentAction;
 
         public SlotType Type { get; private set;  } = SlotType.Empty;
@@ -57,27 +59,22 @@ namespace Nekoyume.UI.Module
             touchHandler.OnClick.Subscribe(pointerEventData =>
             {
                 AudioController.PlayClick();
-                OnClickSlot(Type, _state);
+                OnClickSlot(Type, _state, _slotIndex, Game.Game.instance.Agent.BlockIndex);
             }).AddTo(gameObject);
+        }
 
-            itemView.OnClick.Subscribe(pointerEventData =>
-            {
-                AudioController.PlayClick();
-                OnClickSlot(Type, _state);
-            }).AddTo(gameObject);
+        public void SetSlot(long currentBlockIndex, int slotIndex, CombinationSlotState state = null)
+        {
+            _slotIndex = slotIndex;
+            _state = state;
+            Type = GetSlotType(state, currentBlockIndex, IsCached);
+            UpdateInformation(Type, currentBlockIndex, state, IsCached);
         }
 
         private void SubscribeOnBlockIndex(long currentBlockIndex)
         {
             Type = GetSlotType(_state, currentBlockIndex, IsCached);
             UpdateInformation(Type, currentBlockIndex, _state, IsCached);
-        }
-
-        public void SetSlot(long currentBlockIndex, CombinationSlotState state = null)
-        {
-            _state = state;
-            Type = GetSlotType(state, currentBlockIndex, IsCached);
-            UpdateInformation(Type, currentBlockIndex, state, IsCached);
         }
 
         private void UpdateInformation(SlotType type, long currentBlockIndex, CombinationSlotState state, bool isCached)
@@ -171,7 +168,8 @@ namespace Nekoyume.UI.Module
             var diff = state.UnlockBlockIndex - currentBlockIndex;
             var cost =
                 RapidCombination0.CalculateHourglassCount(States.Instance.GameConfigState, diff);
-            var count = GetHourglassCount(currentBlockIndex);
+            var inventory = States.Instance.CurrentAvatarState.inventory;
+            var count = Util.GetHourglassCount(inventory, currentBlockIndex);
             hourglassCountText.text = cost.ToString();
             hourglassCountText.color = count >= cost
                 ? Palette.GetColor(ColorType.ButtonEnabled)
@@ -181,56 +179,10 @@ namespace Nekoyume.UI.Module
         private void UpdateItemInformation(ItemUsable item)
         {
             itemView.SetData(new Item(item));
-            itemNameText.text = GetItemName(item);
+            itemNameText.text = TextHelper.GetItemNameInCombinationSlot(item);
         }
 
-        private static int GetHourglassCount(long currentBlockIndex)
-        {
-            var count = 0;
-            var inventory = States.Instance.CurrentAvatarState.inventory;
-            var materials =
-                inventory.Items.OrderByDescending(x => x.item.ItemType == ItemType.Material);
-            var hourglass = materials.Where(x => x.item.ItemSubType == ItemSubType.Hourglass);
-            foreach (var item in hourglass)
-            {
-                if (item.item is TradableMaterial tradableItem)
-                {
-                    if (tradableItem.RequiredBlockIndex > currentBlockIndex)
-                    {
-                        continue;
-                    }
-                }
-
-                count += item.count;
-            }
-
-            return count;
-        }
-
-        private static string GetItemName(ItemUsable itemUsable)
-        {
-            var itemName = itemUsable.GetLocalizedNonColoredName();
-            switch (itemUsable)
-            {
-                case Equipment equipment:
-                    if (equipment.level > 0)
-                    {
-                        return string.Format(L10nManager.Localize("UI_COMBINATION_SLOT_UPGRADE"),
-                            itemName,
-                            equipment.level);
-                    }
-                    else
-                    {
-                        return string.Format(L10nManager.Localize("UI_COMBINATION_SLOT_CRAFT"),
-                            itemName);
-                    }
-                default:
-                    return string.Format(L10nManager.Localize("UI_COMBINATION_SLOT_CRAFT"),
-                        itemName);
-            }
-        }
-
-        private static void OnClickSlot(SlotType type, CombinationSlotState state)
+        private static void OnClickSlot(SlotType type, CombinationSlotState state, int slotIndex, long currentBlockIndex)
         {
             switch (type)
             {
@@ -246,7 +198,7 @@ namespace Nekoyume.UI.Module
                     break;
 
                 case SlotType.Working:
-                    Widget.Find<CombinationSlotPopup>().Pop(state);
+                    Widget.Find<CombinationSlotPopup>().Show(state, slotIndex, currentBlockIndex);
                     break;
             }
         }
