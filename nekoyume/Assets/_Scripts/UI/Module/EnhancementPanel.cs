@@ -445,7 +445,7 @@ namespace Nekoyume.UI.Module
             CostNCG = GetCostNCG();
             SubscribeNCG(States.Instance.GoldBalanceState.Gold.MajorUnit);
             CostAP = GetCostAP();
-            SubscribeActionPoint(ReactiveAvatarState.ActionPoint.Value);
+            SubscribeActionPoint(States.Instance.CurrentAvatarState?.actionPoint ?? 0);
             UpdateSubmittable();
             OnCostNCGChange.OnNext(CostNCG);
             OnCostAPChange.OnNext(CostAP);

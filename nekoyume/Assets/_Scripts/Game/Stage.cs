@@ -85,7 +85,7 @@ namespace Nekoyume.Game
         public bool IsShowHud { get; set; }
         public Enemy Boss { get; private set; }
         public AvatarState AvatarState { get; set; }
-        public UniTask<AvatarState>? GetStateTask { private get; set; }
+        public bool IsAvatarStateUpdatedAfterBattle { get; set; }
 
 
 
@@ -474,15 +474,12 @@ namespace Nekoyume.Game
 
         private IEnumerator CoStageEnd(BattleLog log)
         {
-            GetStateTask = null;
-
+            IsAvatarStateUpdatedAfterBattle = false;
             // NOTE ActionRenderHandler.Instance.Pending should be false before _onEnterToStageEnd.OnNext() invoked.
             ActionRenderHandler.Instance.Pending = false;
             _onEnterToStageEnd.OnNext(this);
-            yield return new WaitUntil(() => GetStateTask.HasValue);
-
-            AvatarState avatarState = null;
-            yield return GetStateTask.Value.ToCoroutine(result => avatarState = result);
+            yield return new WaitUntil(() => IsAvatarStateUpdatedAfterBattle);
+            var avatarState = States.Instance.CurrentAvatarState;
 
             _battleResultModel.ClearedWaveNumber = log.clearedWaveNumber;
             var characters = GetComponentsInChildren<Character.CharacterBase>();
@@ -632,13 +629,12 @@ namespace Nekoyume.Game
 
         private IEnumerator CoRankingBattleEnd(BattleLog log, bool forceQuit = false)
         {
-            GetStateTask = null;
+            IsAvatarStateUpdatedAfterBattle = false;
 
             // NOTE ActionRenderHandler.Instance.Pending should be false before _onEnterToStageEnd.OnNext() invoked.
             ActionRenderHandler.Instance.Pending = false;
             _onEnterToStageEnd.OnNext(this);
-            yield return new WaitUntil(() => GetStateTask.HasValue);
-            yield return GetStateTask.Value.ToCoroutine();
+            yield return new WaitUntil(() => IsAvatarStateUpdatedAfterBattle);
 
             var characters = GetComponentsInChildren<Character.CharacterBase>();
 
