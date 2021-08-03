@@ -34,7 +34,7 @@ namespace Nekoyume.UI
             UpdateSlots(Game.Game.instance.Agent.BlockIndex);
         }
 
-        public bool TryGetEmptyCombinationSlSlot(out int slotIndex)
+        public bool TryGetEmptyCombinationSlot(out int slotIndex)
         {
             UpdateSlots(Game.Game.instance.Agent.BlockIndex);
             for (var i = 0; i < slots.Count; i++)

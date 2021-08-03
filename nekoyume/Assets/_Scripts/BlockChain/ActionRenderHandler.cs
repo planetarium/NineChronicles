@@ -265,8 +265,8 @@ namespace Nekoyume.BlockChain
             if (eval.Exception is null)
             {
                 var agentAddress = eval.Signer;
-                var avatarAddress = eval.Action.AvatarAddress;
-                var slotIndex = eval.Action.SlotIndex;
+                var avatarAddress = eval.Action.avatarAddress;
+                var slotIndex = eval.Action.slotIndex;
                 var slot = eval.OutputStates.GetCombinationSlotState(avatarAddress, slotIndex);
                 var result = (CombinationConsumable5.ResultModel) slot.Result;
 
@@ -307,7 +307,7 @@ namespace Nekoyume.BlockChain
 
                 if (!(nextQuest is null))
                 {
-                    var isRecipeMatch = nextQuest.RecipeId == eval.Action.RecipeId;
+                    var isRecipeMatch = nextQuest.RecipeId == eval.Action.recipeId;
 
                     if (isRecipeMatch)
                     {
@@ -334,7 +334,7 @@ namespace Nekoyume.BlockChain
             }
             else
             {
-                Widget.Find<CombinationSlots>().SetCaching(eval.Action.SlotIndex, false);
+                Widget.Find<CombinationSlots>().SetCaching(eval.Action.slotIndex, false);
             }
         }
 
@@ -343,7 +343,7 @@ namespace Nekoyume.BlockChain
             if (eval.Exception is null)
             {
                 var agentAddress = eval.Signer;
-                var avatarAddress = eval.Action.AvatarAddress;
+                var avatarAddress = eval.Action.avatarAddress;
                 var slotIndex = eval.Action.slotIndex;
                 var slot = eval.OutputStates.GetCombinationSlotState(avatarAddress, slotIndex);
                 var result = (CombinationConsumable5.ResultModel) slot.Result;

@@ -14,6 +14,7 @@ using UnityEngine.EventSystems;
 namespace Nekoyume.UI
 {
     using UniRx;
+    using UnityEngine.UI;
 
     public class ItemInformationTooltip : VerticalTooltipWidget<Model.ItemInformationTooltip>
     {
@@ -28,6 +29,10 @@ namespace Nekoyume.UI
         [SerializeField] private BlockTimer buyTimer;
 
         [SerializeField] private TextMeshProUGUI priceText;
+        [SerializeField] private Scrollbar scrollbar;
+
+        private bool _isPointerOnScrollArea;
+        private bool _isScrollAreaDragged;
 
         private readonly List<IDisposable> _disposablesForModel = new List<IDisposable>();
 
@@ -135,6 +140,7 @@ namespace Nekoyume.UI
             Model.ItemInformation.item.Subscribe(value => SubscribeTargetItem(Model.target.Value))
                 .AddTo(_disposablesForModel);
 
+            scrollbar.value = 1f;
             StartCoroutine(CoUpdate(submitButton.gameObject));
         }
 
@@ -194,11 +200,14 @@ namespace Nekoyume.UI
                 .Subscribe(value => SubscribeTargetItem(Model.target.Value))
                 .AddTo(_disposablesForModel);
 
+            scrollbar.value = 1f;
             StartCoroutine(CoUpdate(isBuy ? buyButton.gameObject : sellButton.gameObject));
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
         {
+            _isPointerOnScrollArea = false;
+            _isScrollAreaDragged = false;
             _disposablesForModel.DisposeAllAndClear();
             Model.target.Value = null;
             Model.ItemInformation.item.Value = null;
@@ -236,6 +245,11 @@ namespace Nekoyume.UI
 
             while (enabled)
             {
+                if (Input.GetMouseButtonDown(0))
+                {
+                    _isScrollAreaDragged = _isPointerOnScrollArea;
+                }
+
                 var current = EventSystem.current.currentSelectedGameObject;
                 if (current == selectedGameObjectCache)
                 {
@@ -268,13 +282,21 @@ namespace Nekoyume.UI
                         yield break;
                     }
 
-                    Model.OnCloseClick.OnNext(this);
-                    Close();
-                    yield break;
+                    if (!_isScrollAreaDragged)
+                    {
+                        Model.OnCloseClick.OnNext(this);
+                        Close();
+                        yield break;
+                    }
                 }
 
                 yield return null;
             }
+        }
+
+        public void OnEnterScrollArea(bool value)
+        {
+            _isPointerOnScrollArea = value;
         }
     }
 }

@@ -30,11 +30,8 @@ namespace Nekoyume.UI.Scroller
         }
 
         [SerializeField] private List<EquipmentCategoryToggle> equipmentCategoryToggles = null;
-
         [SerializeField] private List<ConsumableCategoryToggle> consumableCategoryToggles = null;
-
         [SerializeField] private GameObject equipmentTab = null;
-
         [SerializeField] private GameObject consumableTab = null;
 
         protected void Awake()
@@ -64,6 +61,7 @@ namespace Nekoyume.UI.Scroller
 
         public void ShowAsEquipment(ItemSubType type, bool updateToggle = false)
         {
+            Craft.SharedModel.SelectedRow.Value = null;
             equipmentTab.SetActive(true);
             consumableTab.SetActive(false);
             if (updateToggle)
@@ -78,14 +76,16 @@ namespace Nekoyume.UI.Scroller
                 return;
             }
 
-            var items = Craft.SharedModel.EquipmentRecipeMap.TryGetValue(type, out var group) ?
-                group.Values : Enumerable.Empty<RecipeRow.Model>();
+            var items = Craft.SharedModel.EquipmentRecipeMap.Values
+                .Where(x => x.ItemSubType == type)
+                ?? Enumerable.Empty<RecipeRow.Model>();
 
             Show(items, true);
         }
 
         public void ShowAsFood(StatType type, bool updateToggle = false)
         {
+            Craft.SharedModel.SelectedRow.Value = null;
             equipmentTab.SetActive(false);
             consumableTab.SetActive(true);
             if (updateToggle)
@@ -100,8 +100,9 @@ namespace Nekoyume.UI.Scroller
                 return;
             }
 
-            var items = Craft.SharedModel.ConsumableRecipeMap.TryGetValue(type, out var group) ?
-                group.Values : Enumerable.Empty<RecipeRow.Model>();
+            var items = Craft.SharedModel.ConsumableRecipeMap.Values
+                .Where(x => x.StatType == type)
+                ?? Enumerable.Empty<RecipeRow.Model>();
 
             Show(items, true);
         }
