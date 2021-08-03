@@ -1,5 +1,6 @@
 namespace Lib9c.Tests.Action
 {
+    using System;
     using System.Collections.Immutable;
     using Bencodex.Types;
     using Libplanet;
@@ -12,31 +13,54 @@ namespace Lib9c.Tests.Action
 
     public class ActivateAccountTest
     {
-        [Fact]
-        public void Execute()
+        [Theory]
+        [InlineData(false, true, false, null)]
+        [InlineData(true, true, false, typeof(InvalidSignatureException))]
+        [InlineData(false, false, false, typeof(PendingActivationDoesNotExistsException))]
+        [InlineData(false, true, true, typeof(AlreadyActivatedException))]
+        public void Execute(bool invalid, bool pendingExist, bool alreadyActivated, Type exc)
         {
             var nonce = new byte[] { 0x00, 0x01, 0x02, 0x03 };
             var privateKey = new PrivateKey();
             (ActivationKey activationKey, PendingActivationState pendingActivation) =
                 ActivationKey.Create(privateKey, nonce);
-            var state = new State(ImmutableDictionary<Address, IValue>.Empty
-                .Add(ActivatedAccountsState.Address, new ActivatedAccountsState().Serialize())
-                .Add(pendingActivation.address, pendingActivation.Serialize()));
 
-            ActivateAccount action = activationKey.CreateActivateAccount(nonce);
-            IAccountStateDelta nextState = action.Execute(new ActionContext()
+            Address activatedAddress = default(Address).Derive(ActivationKey.DeriveKey);
+            var state = new State();
+
+            if (pendingExist)
             {
-                PreviousStates = state,
-                Signer = default,
-                BlockIndex = 1,
-            });
+                state = (State)state.SetState(pendingActivation.address, pendingActivation.Serialize());
+            }
 
-            var activatedAccounts = new ActivatedAccountsState(
-                (Dictionary)nextState.GetState(ActivatedAccountsState.Address)
-            );
-            Assert.Equal(
-                new[] { default(Address) }.ToImmutableHashSet(),
-                activatedAccounts.Accounts);
+            if (alreadyActivated)
+            {
+                state = (State)state.SetState(activatedAddress, true.Serialize());
+            }
+
+            ActivateAccount action = activationKey.CreateActivateAccount(invalid ? new byte[] { 0x00 } : nonce);
+
+            if (exc is null)
+            {
+                IAccountStateDelta nextState = action.Execute(new ActionContext()
+                {
+                    PreviousStates = state,
+                    Signer = default,
+                    BlockIndex = 1,
+                });
+
+                Assert.Equal(default(Null), nextState.GetState(pendingActivation.address));
+                Assert.True(nextState.GetState(activatedAddress).ToBoolean());
+            }
+            else
+            {
+                Assert.Throws(exc, () => action.Execute(new ActionContext()
+                {
+                    PreviousStates = state,
+                    Signer = default,
+                    BlockIndex = 1,
+                }));
+            }
         }
 
         [Fact]
@@ -48,6 +72,7 @@ namespace Lib9c.Tests.Action
                 ActivationKey.Create(privateKey, nonce);
 
             ActivateAccount action = activationKey.CreateActivateAccount(nonce);
+            Address activatedAddress = default(Address).Derive(ActivationKey.DeriveKey);
             IAccountStateDelta nextState = action.Execute(new ActionContext()
             {
                 PreviousStates = new State(ImmutableDictionary<Address, IValue>.Empty),
@@ -58,7 +83,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Equal(
                 ImmutableHashSet.Create(
-                    ActivatedAccountsState.Address,
+                    activatedAddress,
                     pendingActivation.address
                 ),
                 nextState.UpdatedAddresses
@@ -66,105 +91,20 @@ namespace Lib9c.Tests.Action
         }
 
         [Fact]
-        public void ExecuteWithInvalidSignature()
+        public void PlainValue()
         {
             var nonce = new byte[] { 0x00, 0x01, 0x02, 0x03 };
             var privateKey = new PrivateKey();
             (ActivationKey activationKey, PendingActivationState pendingActivation) =
                 ActivationKey.Create(privateKey, nonce);
-            var state = new State(ImmutableDictionary<Address, IValue>.Empty
-                .Add(ActivatedAccountsState.Address, new ActivatedAccountsState().Serialize())
-                .Add(pendingActivation.address, pendingActivation.Serialize())
-            );
-
-            // 잘못된 논스를 넣습니다.
-            ActivateAccount action = activationKey.CreateActivateAccount(new byte[] { 0x00, });
-            Assert.Throws<InvalidSignatureException>(() =>
-            {
-                action.Execute(new ActionContext()
-                {
-                    PreviousStates = state,
-                    Signer = default,
-                    BlockIndex = 1,
-                });
-            });
-        }
-
-        [Fact]
-        public void ExecuteWithNonExistsPending()
-        {
-            var nonce = new byte[] { 0x00, 0x01, 0x02, 0x03 };
-            var privateKey = new PrivateKey();
-            (ActivationKey activationKey, PendingActivationState pendingActivation) =
-                ActivationKey.Create(privateKey, nonce);
-
-            // state에는 pendingActivation에 해당하는 대기가 없는 상태를 가정합니다.
-            var state = new State(ImmutableDictionary<Address, IValue>.Empty
-                .Add(ActivatedAccountsState.Address, new ActivatedAccountsState().Serialize()));
 
             ActivateAccount action = activationKey.CreateActivateAccount(nonce);
-            Assert.Throws<PendingActivationDoesNotExistsException>(() =>
-            {
-                action.Execute(new ActionContext()
-                {
-                    PreviousStates = state,
-                    Signer = default,
-                    BlockIndex = 1,
-                });
-            });
-        }
 
-        [Fact]
-        public void ExecuteWithNonExistsAccounts()
-        {
-            var nonce = new byte[] { 0x00, 0x01, 0x02, 0x03 };
-            var privateKey = new PrivateKey();
-            (ActivationKey activationKey, PendingActivationState pendingActivation) =
-                ActivationKey.Create(privateKey, nonce);
+            var action2 = new ActivateAccount();
+            action2.LoadPlainValue(action.PlainValue);
 
-            // state가 올바르게 초기화되지 않은 상태를 가정합니다.
-            var state = new State(ImmutableDictionary<Address, IValue>.Empty);
-
-            ActivateAccount action = activationKey.CreateActivateAccount(nonce);
-            Assert.Throws<ActivatedAccountsDoesNotExistsException>(() =>
-            {
-                action.Execute(new ActionContext()
-                {
-                    PreviousStates = state,
-                    Signer = default,
-                    BlockIndex = 1,
-                });
-            });
-        }
-
-        [Fact]
-        public void ForbidReusingActivationKey()
-        {
-            var nonce = new byte[] { 0x00, 0x01, 0x02, 0x03 };
-            var privateKey = new PrivateKey();
-            (ActivationKey activationKey, PendingActivationState pendingActivation) =
-                ActivationKey.Create(privateKey, nonce);
-            var state = new State(ImmutableDictionary<Address, IValue>.Empty
-                .Add(ActivatedAccountsState.Address, new ActivatedAccountsState().Serialize())
-                .Add(pendingActivation.address, pendingActivation.Serialize()));
-
-            ActivateAccount action = activationKey.CreateActivateAccount(nonce);
-            IAccountStateDelta nextState = action.Execute(new ActionContext()
-            {
-                PreviousStates = state,
-                Signer = default,
-                BlockIndex = 1,
-            });
-
-            Assert.Throws<PendingActivationDoesNotExistsException>(() =>
-            {
-                action.Execute(new ActionContext()
-                {
-                    PreviousStates = nextState,
-                    Signer = new Address("399bddF9F7B6d902ea27037B907B2486C9910730"),
-                    BlockIndex = 2,
-                });
-            });
+            Assert.Equal(action.Signature, action2.Signature);
+            Assert.Equal(action.PendingAddress, action2.PendingAddress);
         }
     }
 }

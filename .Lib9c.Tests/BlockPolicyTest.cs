@@ -4,7 +4,8 @@ namespace Lib9c.Tests
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.Linq;
-    using System.Security.Cryptography;
+    using System.Reflection;
+    using System.Text.RegularExpressions;
     using System.Threading.Tasks;
     using Bencodex.Types;
     using Libplanet;
@@ -37,42 +38,10 @@ namespace Lib9c.Tests
         }
 
         [Fact]
-        public void DoesTransactionFollowsPolicyWithEmpty()
-        {
-            var adminPrivateKey = new PrivateKey();
-            var adminAddress = new Address(adminPrivateKey.PublicKey);
-            var blockPolicySource = new BlockPolicySource(Logger.None);
-            IBlockPolicy<PolymorphicAction<ActionBase>> policy = blockPolicySource.GetPolicy(10000, 100);
-            IStagePolicy<PolymorphicAction<ActionBase>> stagePolicy =
-                new VolatileStagePolicy<PolymorphicAction<ActionBase>>();
-            Block<PolymorphicAction<ActionBase>> genesis = MakeGenesisBlock(adminAddress, ImmutableHashSet<Address>.Empty);
-
-            using var store = new DefaultStore(null);
-            using var stateStore = new TrieStateStore(new DefaultKeyValueStore(null), new DefaultKeyValueStore(null));
-            var blockChain = new BlockChain<PolymorphicAction<ActionBase>>(
-                policy,
-                stagePolicy,
-                store,
-                stateStore,
-                genesis,
-                renderers: new[] { blockPolicySource.BlockRenderer }
-            );
-            Transaction<PolymorphicAction<ActionBase>> tx = Transaction<PolymorphicAction<ActionBase>>.Create(
-                0,
-                new PrivateKey(),
-                genesis.Hash,
-                new PolymorphicAction<ActionBase>[] { });
-
-            Assert.True(policy.DoesTransactionFollowsPolicy(tx, blockChain));
-        }
-
-        [Fact]
         public async Task DoesTransactionFollowsPolicy()
         {
             var adminPrivateKey = new PrivateKey();
             var adminAddress = adminPrivateKey.ToAddress();
-            var activatedPrivateKey = new PrivateKey();
-            var activatedAddress = activatedPrivateKey.ToAddress();
 
             var blockPolicySource = new BlockPolicySource(Logger.None);
             IBlockPolicy<PolymorphicAction<ActionBase>> policy = blockPolicySource.GetPolicy(10000, 100);
@@ -80,7 +49,7 @@ namespace Lib9c.Tests
                 new VolatileStagePolicy<PolymorphicAction<ActionBase>>();
             Block<PolymorphicAction<ActionBase>> genesis = MakeGenesisBlock(
                 adminAddress,
-                ImmutableHashSet.Create(activatedAddress).Add(adminAddress)
+                ImmutableHashSet.Create(adminAddress)
             );
             using var store = new DefaultStore(null);
             using var stateStore = new TrieStateStore(new DefaultKeyValueStore(null), new DefaultKeyValueStore(null));
@@ -107,11 +76,10 @@ namespace Lib9c.Tests
             var newActivatedAddress = newActivatedPrivateKey.ToAddress();
 
             // Activate with admin account.
-            Transaction<PolymorphicAction<ActionBase>> invitationTx = blockChain.MakeTransaction(
+            blockChain.MakeTransaction(
                 adminPrivateKey,
                 new PolymorphicAction<ActionBase>[] { new AddActivatedAccount(newActivatedAddress) }
             );
-            blockChain.StageTransaction(invitationTx);
             await blockChain.MineBlock(adminAddress);
 
             Transaction<PolymorphicAction<ActionBase>> txByNewActivated =
@@ -137,14 +105,14 @@ namespace Lib9c.Tests
             Transaction<PolymorphicAction<ActionBase>> txWithSingleAction =
                 Transaction<PolymorphicAction<ActionBase>>.Create(
                     0,
-                    activatedPrivateKey,
+                    newActivatedPrivateKey,
                     genesis.Hash,
                     singleAction
                 );
             Transaction<PolymorphicAction<ActionBase>> txWithManyActions =
                 Transaction<PolymorphicAction<ActionBase>>.Create(
                     0,
-                    activatedPrivateKey,
+                    newActivatedPrivateKey,
                     genesis.Hash,
                     manyActions
                 );
@@ -602,6 +570,7 @@ namespace Lib9c.Tests
             Assert.Equal(1, blockChain.Count);
             Block<PolymorphicAction<ActionBase>> block1 = Block<PolymorphicAction<ActionBase>>.Mine(
                 index: 1,
+                hashAlgorithm: policy.GetHashAlgorithm(1),
                 difficulty: policy.GetNextBlockDifficulty(blockChain),
                 previousTotalDifficulty: blockChain.Tip.TotalDifficulty,
                 miner: adminAddress,
@@ -613,6 +582,7 @@ namespace Lib9c.Tests
             Assert.True(blockChain.ContainsBlock(block1.Hash));
             Block<PolymorphicAction<ActionBase>> block2 = Block<PolymorphicAction<ActionBase>>.Mine(
                 index: 2,
+                hashAlgorithm: policy.GetHashAlgorithm(2),
                 difficulty: policy.GetNextBlockDifficulty(blockChain),
                 previousTotalDifficulty: blockChain.Tip.TotalDifficulty,
                 miner: adminAddress,
@@ -624,6 +594,7 @@ namespace Lib9c.Tests
             Assert.True(blockChain.ContainsBlock(block2.Hash));
             Block<PolymorphicAction<ActionBase>> block3 = Block<PolymorphicAction<ActionBase>>.Mine(
                 index: 3,
+                hashAlgorithm: policy.GetHashAlgorithm(3),
                 difficulty: policy.GetNextBlockDifficulty(blockChain),
                 previousTotalDifficulty: blockChain.Tip.TotalDifficulty,
                 miner: adminAddress,
@@ -633,6 +604,68 @@ namespace Lib9c.Tests
             Assert.Throws<BlockExceedingTransactionsException>(() => blockChain.Append(block3));
             Assert.Equal(3, blockChain.Count);
             Assert.False(blockChain.ContainsBlock(block3.Hash));
+        }
+
+        [Theory]
+        [InlineData(199, false)]
+        [InlineData(2100002, true)]
+        public void IsObsolete(long blockIndex, bool expected)
+        {
+            var action = new HackAndSlash
+            {
+                costumes = new List<Guid>(),
+                equipments = new List<Guid>(),
+                foods = new List<Guid>(),
+                worldId = 1,
+                stageId = 1,
+                avatarAddress = default,
+                WeeklyArenaAddress = default,
+                RankingMapAddress = default,
+            };
+            var tx = Transaction<PolymorphicAction<ActionBase>>.Create(
+                0,
+                new PrivateKey(),
+                default,
+                new List<PolymorphicAction<ActionBase>>
+            {
+                action,
+            });
+
+            Assert.False(BlockPolicySource.IsObsolete(tx, blockIndex));
+
+            var action2 = new HackAndSlash4
+            {
+                costumes = new List<Guid>(),
+                equipments = new List<Guid>(),
+                foods = new List<Guid>(),
+                worldId = 1,
+                stageId = 1,
+                avatarAddress = default,
+                WeeklyArenaAddress = default,
+                RankingMapAddress = default,
+            };
+            var tx2 = Transaction<PolymorphicAction<ActionBase>>.Create(
+                0,
+                new PrivateKey(),
+                default,
+                new List<PolymorphicAction<ActionBase>>
+                {
+                    action2,
+                });
+
+            Assert.Equal(expected, BlockPolicySource.IsObsolete(tx2, blockIndex));
+        }
+
+        [Fact]
+        public void Obsolete_Actions()
+        {
+            Assert.Empty(Assembly.GetAssembly(typeof(ActionBase))!.GetTypes().Where(
+                type => type.Namespace is { } @namespace &&
+                        @namespace.StartsWith($"{nameof(Nekoyume)}.{nameof(Nekoyume.Action)}") &&
+                        typeof(ActionBase).IsAssignableFrom(type) &&
+                        !type.IsAbstract &&
+                        Regex.IsMatch(type.Name, @"\d+$") &&
+                        !type.IsDefined(typeof(ActionObsoleteAttribute), false)));
         }
 
         private Block<PolymorphicAction<ActionBase>> MakeGenesisBlock(

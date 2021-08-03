@@ -138,7 +138,7 @@ namespace Lib9c.Tests
 
         public void ItemSheetInitialize()
         {
-            ItemSheet = new ItemSheet();
+            ItemSheet ??= new ItemSheet();
             ItemSheet.Set(ConsumableItemSheet, false);
             ItemSheet.Set(CostumeItemSheet, false);
             ItemSheet.Set(EquipmentItemSheet, false);
@@ -147,7 +147,7 @@ namespace Lib9c.Tests
 
         public void QuestSheetInitialize()
         {
-            QuestSheet = new QuestSheet();
+            QuestSheet ??= new QuestSheet();
             QuestSheet.Set(WorldQuestSheet, false);
             QuestSheet.Set(CollectQuestSheet, false);
             QuestSheet.Set(CombinationQuestSheet, false);
