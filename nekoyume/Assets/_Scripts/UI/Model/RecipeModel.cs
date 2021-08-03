@@ -25,11 +25,12 @@ namespace Nekoyume.UI.Model
         public readonly ReactiveProperty<SheetRow<int>> SelectedRow
             = new ReactiveProperty<SheetRow<int>>();
 
-        private RecipeCell _selectedCell = null;
-
+        public RecipeCell SelectedRecipeCell { get; set; }
+        public EquipmentItemRecipeSheet.Row RecipeForTutorial { get; private set; }
         public HashSet<int> RecipeVFXSkipList { get; private set; }
         private const string RecipeVFXSkipListKey = "Nekoyume.UI.EquipmentRecipe.FirstEnterRecipeKey_{0}";
         private const string EquipmentSplitFormat = "{0}_{1}";
+        private const int RecipeIdForTutorial = 1;
 
         public RecipeModel(
             IEnumerable<EquipmentItemRecipeSheet.Row> equipments,
@@ -45,6 +46,12 @@ namespace Nekoyume.UI.Model
             {
                 Debug.LogError("Failed to load equipment recipe.");
                 return;
+            }
+
+            RecipeForTutorial = recipes.FirstOrDefault(x => x.Id == RecipeIdForTutorial);
+            if (RecipeForTutorial is null)
+            {
+                Debug.LogError($"Failed to load recipe for tutorial. id : {RecipeIdForTutorial}");
             }
 
             foreach (var recipe in recipes)

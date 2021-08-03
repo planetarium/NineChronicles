@@ -151,7 +151,7 @@ namespace Nekoyume.UI
             Mixpanel.Track("Unity/Click Guided Quest Combination Equipment");
 
             CombinationClickInternal(() =>
-                Find<Combination>().ShowByEquipmentRecipe(recipeId));
+                Find<Craft>().Show());
         }
 
         private void UpdateButtons()
@@ -531,15 +531,13 @@ namespace Nekoyume.UI
                 return;
             }
 
-            // Temporarily Lock tutorial recipe.
-            var combination = Find<Combination>();
-            combination.LoadRecipeVFXSkipMap();
-            var skipMap = combination.RecipeVFXSkipMap;
-            if (skipMap.ContainsKey(firstRecipeRow.Id))
+            // Temporarily lock tutorial recipe.
+            var skipMap = Craft.SharedModel.RecipeVFXSkipList;
+            if (skipMap.Contains(firstRecipeRow.Id))
             {
                 skipMap.Remove(firstRecipeRow.Id);
             }
-            combination.SaveRecipeVFXSkipMap();
+            Craft.SharedModel.SaveRecipeVFXSkipList();
             GoToCombinationEquipmentRecipe(firstRecipeRow.Id);
         }
 

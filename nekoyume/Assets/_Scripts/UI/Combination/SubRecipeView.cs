@@ -87,7 +87,7 @@ namespace Nekoyume.UI
             combineButton.onClick.AddListener(() =>
             {
                 AudioController.PlayClick();
-                CombinationActionSubject.OnNext(_selectedRecipeInfo);
+                CombineCurrentRecipe();
             });
         }
 
@@ -301,6 +301,11 @@ namespace Nekoyume.UI
 
                 ++siblingIndex;
             }
+        }
+
+        public void CombineCurrentRecipe()
+        {
+            CombinationActionSubject.OnNext(_selectedRecipeInfo);
         }
 
         private bool CheckSubmittable(RecipeInfo recipeInfo)

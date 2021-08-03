@@ -1,10 +1,8 @@
-using Nekoyume.UI.Module;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
-    using UniRx;
     public class CombinationMain : Widget
     {
         [SerializeField] private Button combineButton;
