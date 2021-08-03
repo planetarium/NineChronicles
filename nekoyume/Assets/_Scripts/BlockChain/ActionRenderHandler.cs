@@ -587,9 +587,8 @@ namespace Nekoyume.BlockChain
                         .First()
                         .Subscribe(_ =>
                         {
-                            var task = UniTask.Run(async () =>
+                            var task = UniTask.Run(() =>
                             {
-                                await UniTask.SwitchToMainThread();
                                 UpdateCurrentAvatarState(eval);
                                 UpdateWeeklyArenaState(eval);
                                 Address agentAddress = States.Instance.AgentState.address;
@@ -597,7 +596,6 @@ namespace Nekoyume.BlockChain
                                 RenderQuest(eval.Action.avatarAddress,
                                     avatarState.questList.completedQuestIds);
                                 _disposableForBattleEnd = null;
-
                                 Game.Game.instance.Stage.IsAvatarStateUpdatedAfterBattle = true;
                             });
                             task.ToObservable()
@@ -651,9 +649,8 @@ namespace Nekoyume.BlockChain
                         .First()
                         .Subscribe(_ =>
                         {
-                            var task = UniTask.Run(async () =>
+                            var task = UniTask.Run(() =>
                             {
-                                await UniTask.SwitchToMainThread();
                                 UpdateCurrentAvatarState(eval);
                                 UpdateWeeklyArenaState(eval);
                                 Address agentAddress = States.Instance.AgentState.address;
@@ -661,7 +658,6 @@ namespace Nekoyume.BlockChain
                                 RenderQuest(eval.Action.avatarAddress,
                                     avatarState.questList.completedQuestIds);
                                 _disposableForBattleEnd = null;
-
                                 Game.Game.instance.Stage.IsAvatarStateUpdatedAfterBattle = true;
                             });
                             task.ToObservable()
@@ -720,9 +716,8 @@ namespace Nekoyume.BlockChain
                         .First()
                         .Subscribe(_ =>
                         {
-                            var task = UniTask.Run(async () =>
+                            var task = UniTask.Run(() =>
                             {
-                                await UniTask.SwitchToMainThread();
                                 UpdateAgentState(eval);
                                 UpdateCurrentAvatarState(eval);
                                 UpdateWeeklyArenaState(eval);
