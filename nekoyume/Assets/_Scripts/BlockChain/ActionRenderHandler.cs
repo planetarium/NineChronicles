@@ -101,7 +101,7 @@ namespace Nekoyume.BlockChain
 
         private void CreateAvatar()
         {
-            _renderer.EveryRender<CreateAvatar2>()
+            _renderer.EveryRender<CreateAvatar>()
                 .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(eval =>
