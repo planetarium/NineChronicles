@@ -118,29 +118,30 @@ namespace Nekoyume.Battle
         public static decimal GetStatsCP(IStats stats, int characterLevel = 1)
         {
             var statTuples = stats.GetStats(true);
-            return statTuples.Sum(tuple =>
+            return statTuples.Sum(tuple => GetStatCP(tuple.statType, tuple.value, characterLevel));
+        }
+
+        public static decimal GetStatCP(StatType statType, decimal statValue, int characterLevel = 1)
+        {
+            switch (statType)
             {
-                var (statType, value) = tuple;
-                switch (statType)
-                {
-                    case StatType.NONE:
-                        return 0m;
-                    case StatType.HP:
-                        return GetCPOfHP(value);
-                    case StatType.ATK:
-                        return GetCPOfATK(value);
-                    case StatType.DEF:
-                        return GetCPOfDEF(value);
-                    case StatType.CRI:
-                        return GetCPOfCRI(value, characterLevel);
-                    case StatType.HIT:
-                        return GetCPOfHIT(value);
-                    case StatType.SPD:
-                        return GetCPOfSPD(value);
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
-            });
+                case StatType.NONE:
+                    return 0m;
+                case StatType.HP:
+                    return GetCPOfHP(statValue);
+                case StatType.ATK:
+                    return GetCPOfATK(statValue);
+                case StatType.DEF:
+                    return GetCPOfDEF(statValue);
+                case StatType.CRI:
+                    return GetCPOfCRI(statValue, characterLevel);
+                case StatType.HIT:
+                    return GetCPOfHIT(statValue);
+                case StatType.SPD:
+                    return GetCPOfSPD(statValue);
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
 
         public static decimal GetCPOfHP(decimal value) => value * 0.7m;
