@@ -445,6 +445,10 @@ namespace Nekoyume.Game.Character
             {
                 HPBar.gameObject.SetActive(false);
                 HPBar = null;
+            }
+
+            if (HudContainer)
+            {
                 HudContainer.UpdateAlpha(0);
                 HudContainer.gameObject.SetActive(false);
                 HudContainer = null;
