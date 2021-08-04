@@ -692,6 +692,7 @@ namespace Nekoyume.UI
         {
             Find<StageInformation>().Close(true);
             Find<LoadingScreen>().Show();
+            Find<HeaderMenu>().Close();
 
             startButton.gameObject.SetActive(false);
             _player.StartRun();
@@ -735,6 +736,7 @@ namespace Nekoyume.UI
         {
             Game.Event.OnStageStart.Invoke(battleLog);
             Find<LoadingScreen>().Close();
+            Find<HeaderMenu>().Show();
             Close(true);
         }
 
@@ -750,6 +752,7 @@ namespace Nekoyume.UI
             }
 
             Find<LoadingScreen>().Show();
+            Find<HeaderMenu>().Close();
 
             startButton.gameObject.SetActive(false);
             _player.StartRun();
