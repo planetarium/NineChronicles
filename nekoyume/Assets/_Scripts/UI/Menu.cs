@@ -379,6 +379,7 @@ namespace Nekoyume.UI
             stageInfo.Show(SharedViewModel, worldRow, StageInformation.StageType.Mimisbrunnr);
             var status = Find<Status>();
             status.Close(true);
+            Find<EventBanner>().Close(true);
             Find<HeaderMenu>().UpdateAssets(HeaderMenu.AssetVisibleState.Battle);
         }
 
@@ -475,6 +476,7 @@ namespace Nekoyume.UI
 
             guidedQuest.Hide(true);
             Find<Status>().Close(true);
+            Find<EventBanner>().Close(true);
             base.Close(ignoreCloseAnimation);
         }
 
@@ -482,6 +484,7 @@ namespace Nekoyume.UI
         {
             StopSpeeches();
             Find<Status>().Close(true);
+            Find<EventBanner>().Close(true);
             yield return new WaitForSeconds(duration);
             base.Close(ignoreCloseAnimation);
         }

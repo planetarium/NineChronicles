@@ -233,6 +233,8 @@ namespace Nekoyume.UI
             yield return null;
             secondWidgets.Add(Widget.Create<MimisbrunnrPreparation>());
             yield return null;
+            secondWidgets.Add(Widget.Create<EventBanner>());
+            yield return null;
 
             // loading
             secondWidgets.Add(Widget.Create<StageLoadingScreen>());

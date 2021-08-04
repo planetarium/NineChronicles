@@ -371,7 +371,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -40}
+  m_AnchoredPosition: {x: 0, y: -70}
   m_SizeDelta: {x: 233, y: 90}
   m_Pivot: {x: 1, y: 1}
 --- !u!222 &5938905065742253311
@@ -394,6 +394,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7ffb7b9c494221a4ea547fce33c08426, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  tutorialTargets: []
+  tutorialActions: 
   playToEarnGoldEventButton: {fileID: 8050909304458839914}
   playToEarnInviteEventButton: {fileID: 6611680544993861393}
 --- !u!114 &6611680544993861393
