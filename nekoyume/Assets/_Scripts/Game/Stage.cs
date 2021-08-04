@@ -665,7 +665,19 @@ namespace Nekoyume.Game
             }
             else
             {
-                battle.Show(stageId, IsRepeatStage, IsExitReserved);
+                var hideHeaderMenu = false;
+                var worldInfoExists = States.Instance.CurrentAvatarState.worldInformation
+                    .TryGetLastClearedStageId(out var clearedStageId);
+
+                if ((worldInfoExists &&
+                    clearedStageId < UI.Battle.RequiredStageForExitButton) ||
+                    !worldInfoExists)
+                {
+                    Widget.Find<HeaderMenu>().Close(true);
+                    hideHeaderMenu = true;
+                }
+
+                battle.Show(stageId, IsRepeatStage, IsExitReserved, hideHeaderMenu);
                 var stageSheet = Game.instance.TableSheets.StageSheet;
                 if (stageSheet.TryGetValue(stageId, out var row))
                 {
