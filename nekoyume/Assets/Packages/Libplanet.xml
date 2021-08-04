@@ -2409,28 +2409,6 @@
             Exposed as public for benchmarking.
             </remarks>
         </member>
-        <member name="M:Libplanet.Blockchain.BlockChain`1.RenderActionsInBlocks(System.Int64,Libplanet.Blockchain.Renderers.IActionRenderer{`0},System.Nullable{Libplanet.Blockchain.StateCompleterSet{`0}})">
-            <summary>
-            Render actions from block index of <paramref name="offset"/>.
-            </summary>
-            <param name="offset">Index of the block to start rendering from.</param>
-            <param name="renderer">The renderer to render actions.</param>
-            <param name="stateCompleters">The strategy to complement incomplete block states.
-            <see cref="F:Libplanet.Blockchain.StateCompleterSet`1.Recalculate"/> by default.</param>
-            <returns>The number of actions rendered.</returns>
-        </member>
-        <member name="M:Libplanet.Blockchain.BlockChain`1.RenderActions(System.Collections.Generic.IReadOnlyList{Libplanet.Action.ActionEvaluation},Libplanet.Blocks.Block{`0},Libplanet.Blockchain.Renderers.IActionRenderer{`0},System.Nullable{Libplanet.Blockchain.StateCompleterSet{`0}})">
-            <summary>
-            Render actions of the given <paramref name="block"/>.
-            </summary>
-            <param name="evaluations"><see cref="T:Libplanet.Action.ActionEvaluation"/>s of the block.  If it is
-            <c>null</c>, evaluate actions of the <paramref name="block"/> again.</param>
-            <param name="block"><see cref="T:Libplanet.Blocks.Block`1"/> to render actions.</param>
-            <param name="renderer">The renderer to render actions.</param>
-            <param name="stateCompleters">The strategy to complement incomplete block states.
-            <see cref="F:Libplanet.Blockchain.StateCompleterSet`1.Recalculate"/> by default.</param>
-            <returns>The number of actions rendered.</returns>
-        </member>
         <member name="M:Libplanet.Blockchain.BlockChain`1.FindBranchpoint(Libplanet.Blockchain.BlockLocator)">
             <summary>
             Find an approximate to the topmost common ancestor between this
@@ -2445,6 +2423,67 @@
             Calculates and complements a block's incomplete states on the fly.
             </summary>
             <param name="blockHash">The hash of a block which has incomplete states.</param>
+        </member>
+        <member name="M:Libplanet.Blockchain.BlockChain`1.RenderActions(System.Collections.Generic.IReadOnlyList{Libplanet.Action.ActionEvaluation},Libplanet.Blocks.Block{`0},Libplanet.Blockchain.StateCompleterSet{`0})">
+            <summary>
+            Render actions of the given <paramref name="block"/>.
+            </summary>
+            <param name="evaluations"><see cref="T:Libplanet.Action.ActionEvaluation"/>s of the block.  If it is
+            <c>null</c>, evaluate actions of the <paramref name="block"/> again.</param>
+            <param name="block"><see cref="T:Libplanet.Blocks.Block`1"/> to render actions.</param>
+            <param name="stateCompleters">The strategy to complement incomplete block states.
+            <see cref="F:Libplanet.Blockchain.StateCompleterSet`1.Recalculate"/> by default.</param>
+            <returns>The number of actions rendered.</returns>
+        </member>
+        <member name="M:Libplanet.Blockchain.BlockChain`1.GetRewindPath(Libplanet.Blockchain.BlockChain{`0},Libplanet.Blocks.BlockHash)">
+            <summary>
+            Generates a list of <see cref="T:Libplanet.Blocks.Block`1"/>s to traverse starting from
+            the tip of <paramref name="chain"/> to reach <paramref name="targetHash"/>.
+            </summary>
+            <param name="chain">The <see cref="T:Libplanet.Blockchain.BlockChain`1"/> to traverse.</param>
+            <param name="targetHash">The target <see cref="T:Libplanet.Blocks.BlockHash"/> to reach.</param>
+            <returns>
+            An <see cref="T:System.Collections.Immutable.ImmutableList"/> of <see cref="T:Libplanet.Blocks.Block`1"/>s to traverse from
+            the tip of <paramref name="chain"/> to reach <paramref name="targetHash"/> excluding
+            the <see cref="T:Libplanet.Blocks.Block`1"/> with <paramref name="targetHash"/> as its hash.
+            </returns>
+            <remarks>
+            <para>
+            This is a reverse of <see cref="M:Libplanet.Blockchain.BlockChain`1.GetFastForwardPath(Libplanet.Blockchain.BlockChain{`0},Libplanet.Blocks.BlockHash)"/>.
+            </para>
+            <para>
+            As the genesis is always fixed, returned results never include the genesis.
+            </para>
+            </remarks>
+        </member>
+        <member name="M:Libplanet.Blockchain.BlockChain`1.GetFastForwardPath(Libplanet.Blockchain.BlockChain{`0},Libplanet.Blocks.BlockHash)">
+            <summary>
+            Generates a list of <see cref="T:Libplanet.Blocks.Block`1"/>s to traverse starting from
+            <paramref name="originHash"/> to reach the tip of <paramref name="chain"/>.
+            </summary>
+            <param name="chain">The <see cref="T:Libplanet.Blockchain.BlockChain`1"/> to traverse.</param>
+            <param name="originHash">The <see cref="T:Libplanet.Blocks.BlockHash"/> to start from.</param>
+            <returns>
+            An <see cref="T:System.Collections.Immutable.ImmutableList"/> of <see cref="T:Libplanet.Blocks.Block`1"/>s to traverse
+            to reach the tip of <paramref name="chain"/> from <paramref name="originHash"/>
+            excluding the <see cref="T:Libplanet.Blocks.Block`1"/> with <paramref name="originHash"/> as its hash.
+            </returns>
+            <remarks>
+            This is a reverse of <see cref="M:Libplanet.Blockchain.BlockChain`1.GetRewindPath(Libplanet.Blockchain.BlockChain{`0},Libplanet.Blocks.BlockHash)"/>.
+            </remarks>
+        </member>
+        <member name="M:Libplanet.Blockchain.BlockChain`1.FindTopCommon(Libplanet.Blockchain.BlockChain{`0},Libplanet.Blockchain.BlockChain{`0})">
+            <summary>
+            Finds the top most common <see cref="T:Libplanet.Blocks.Block`1"/> between chains <paramref name="c1"/>
+            and <paramref name="c2"/>.
+            </summary>
+            <param name="c1">The first <see cref="T:Libplanet.Blockchain.BlockChain`1"/> to compare.</param>
+            <param name="c2">The second <see cref="T:Libplanet.Blockchain.BlockChain`1"/> to compare.</param>
+            <returns>
+            The top most common <see cref="T:Libplanet.Blocks.Block`1"/> between chains <paramref name="c1"/>
+            and <paramref name="c2"/>. If there is no such <see cref="T:Libplanet.Blocks.Block`1"/>,
+            returns <c>null</c> instead.
+            </returns>
         </member>
         <member name="M:Libplanet.Blockchain.BlockChain`1.MakeTxExecutions(Libplanet.Blocks.Block{`0},System.Collections.Generic.IReadOnlyList{Libplanet.Action.ActionEvaluation})">
             <summary>
@@ -8197,6 +8236,44 @@
             <exception cref="T:System.ArgumentException">Thrown when the store passed through
             <paramref name="to"/> is not empty.</exception>
         </member>
+        <member name="T:Libplanet.Store.TrieStateStore">
+            <summary>
+            An <see cref="T:Libplanet.Store.IStateStore"/> implementation. It stores states with <see cref="T:Libplanet.Store.Trie.MerkleTrie"/>.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Store.TrieStateStore.#ctor(Libplanet.Store.Trie.IKeyValueStore,Libplanet.Store.Trie.IKeyValueStore,System.Boolean)">
+            <summary>
+            Creates a new <see cref="T:Libplanet.Store.TrieStateStore"/>.
+            </summary>
+            <param name="stateKeyValueStore">The storage to store states. It used by
+            <see cref="T:Libplanet.Store.Trie.MerkleTrie"/> in internal.</param>
+            <param name="stateHashKeyValueStore">The storage to store state hash corresponding to
+            block hash.</param>
+            <param name="secure">Whether to use <see cref="T:Libplanet.Store.Trie.MerkleTrie"/> in secure mode.
+            <seealso cref="M:Libplanet.Store.Trie.MerkleTrie.#ctor(Libplanet.Store.Trie.IKeyValueStore,Libplanet.Store.Trie.Nodes.INode,System.Boolean)"/>.</param>
+        </member>
+        <member name="M:Libplanet.Store.TrieStateStore.SetStates``1(Libplanet.Blocks.Block{``0},System.Collections.Immutable.IImmutableDictionary{System.String,Bencodex.Types.IValue})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Store.TrieStateStore.GetState(System.String,System.Nullable{Libplanet.Blocks.BlockHash})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Store.TrieStateStore.ContainsBlockStates(Libplanet.Blocks.BlockHash)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Store.TrieStateStore.ForkStates``1(System.Guid,System.Guid,Libplanet.Blocks.Block{``0})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Store.TrieStateStore.GetRootHash(Libplanet.Blocks.BlockHash)">
+            <summary>
+            Gets the state hash corresponds to <paramref name="blockHash"/>.
+            </summary>
+            <param name="blockHash">The <see cref="P:Libplanet.Blocks.Block`1.Hash"/> to get state hash.</param>
+            <returns>If there is a state hash corresponds to <paramref name="blockHash"/>,
+            it will return the state hash. If not, it will return null.</returns>
+            <exception cref="T:System.Collections.Generic.KeyNotFoundException">If there are no root hashes that correspond to
+            <paramref name="blockHash"/>.</exception>
+        </member>
         <member name="T:Libplanet.Store.Trie.CacheableKeyValueStore">
             <summary>
             The proxy class to cache <see cref="T:Libplanet.Store.Trie.IKeyValueStore"/> operations.
@@ -8390,44 +8467,6 @@
             <summary>
             Wrapper class.
             </summary>
-        </member>
-        <member name="T:Libplanet.Store.TrieStateStore">
-            <summary>
-            An <see cref="T:Libplanet.Store.IStateStore"/> implementation. It stores states with <see cref="T:Libplanet.Store.Trie.MerkleTrie"/>.
-            </summary>
-        </member>
-        <member name="M:Libplanet.Store.TrieStateStore.#ctor(Libplanet.Store.Trie.IKeyValueStore,Libplanet.Store.Trie.IKeyValueStore,System.Boolean)">
-            <summary>
-            Creates a new <see cref="T:Libplanet.Store.TrieStateStore"/>.
-            </summary>
-            <param name="stateKeyValueStore">The storage to store states. It used by
-            <see cref="T:Libplanet.Store.Trie.MerkleTrie"/> in internal.</param>
-            <param name="stateHashKeyValueStore">The storage to store state hash corresponding to
-            block hash.</param>
-            <param name="secure">Whether to use <see cref="T:Libplanet.Store.Trie.MerkleTrie"/> in secure mode.
-            <seealso cref="M:Libplanet.Store.Trie.MerkleTrie.#ctor(Libplanet.Store.Trie.IKeyValueStore,Libplanet.Store.Trie.Nodes.INode,System.Boolean)"/>.</param>
-        </member>
-        <member name="M:Libplanet.Store.TrieStateStore.SetStates``1(Libplanet.Blocks.Block{``0},System.Collections.Immutable.IImmutableDictionary{System.String,Bencodex.Types.IValue})">
-            <inheritdoc/>
-        </member>
-        <member name="M:Libplanet.Store.TrieStateStore.GetState(System.String,System.Nullable{Libplanet.Blocks.BlockHash})">
-            <inheritdoc/>
-        </member>
-        <member name="M:Libplanet.Store.TrieStateStore.ContainsBlockStates(Libplanet.Blocks.BlockHash)">
-            <inheritdoc/>
-        </member>
-        <member name="M:Libplanet.Store.TrieStateStore.ForkStates``1(System.Guid,System.Guid,Libplanet.Blocks.Block{``0})">
-            <inheritdoc/>
-        </member>
-        <member name="M:Libplanet.Store.TrieStateStore.GetRootHash(Libplanet.Blocks.BlockHash)">
-            <summary>
-            Gets the state hash corresponds to <paramref name="blockHash"/>.
-            </summary>
-            <param name="blockHash">The <see cref="P:Libplanet.Blocks.Block`1.Hash"/> to get state hash.</param>
-            <returns>If there is a state hash corresponds to <paramref name="blockHash"/>,
-            it will return the state hash. If not, it will return null.</returns>
-            <exception cref="T:System.Collections.Generic.KeyNotFoundException">If there are no root hashes that correspond to
-            <paramref name="blockHash"/>.</exception>
         </member>
         <member name="T:Libplanet.Tx.InvalidTxException">
             <summary>
