@@ -10,8 +10,6 @@ namespace Nekoyume.Battle
 {
     public static class CPHelper
     {
-        #region Public getter
-
         /// <summary>
         /// `AvatarState`의 CP를 반환한다.
         /// 레벨 스탯, 그리고 장착한 장비의 스탯과 스킬을 고려합니다.
@@ -37,7 +35,10 @@ namespace Nekoyume.Battle
             return DecimalToInt(levelStatsCP + equipmentsCP);
         }
 
-        public static int GetCPV2(AvatarState avatarState, CharacterSheet characterSheet, CostumeStatSheet costumeStatSheet)
+        public static int GetCPV2(
+            AvatarState avatarState,
+            CharacterSheet characterSheet,
+            CostumeStatSheet costumeStatSheet)
         {
             var current = GetCP(avatarState, characterSheet);
             var costumeCP = avatarState.inventory.Costumes
@@ -114,11 +115,7 @@ namespace Nekoyume.Battle
             return 0;
         }
 
-        #endregion
-
-        #region Private getter
-
-        private static decimal GetStatsCP(IStats stats, int characterLevel = 1)
+        public static decimal GetStatsCP(IStats stats, int characterLevel = 1)
         {
             var statTuples = stats.GetStats(true);
             return statTuples.Sum(tuple =>
@@ -146,20 +143,20 @@ namespace Nekoyume.Battle
             });
         }
 
-        private static decimal GetCPOfHP(decimal value) => value * 0.7m;
+        public static decimal GetCPOfHP(decimal value) => value * 0.7m;
 
-        private static decimal GetCPOfATK(decimal value) => value * 10.5m;
+        public static decimal GetCPOfATK(decimal value) => value * 10.5m;
 
-        private static decimal GetCPOfDEF(decimal value) => value * 10.5m;
+        public static decimal GetCPOfDEF(decimal value) => value * 10.5m;
 
-        private static decimal GetCPOfSPD(decimal value) => value * 3m;
+        public static decimal GetCPOfSPD(decimal value) => value * 3m;
 
-        private static decimal GetCPOfHIT(decimal value) => value * 2.3m;
+        public static decimal GetCPOfHIT(decimal value) => value * 2.3m;
 
-        private static decimal GetCPOfCRI(decimal value, int characterLevel) =>
+        public static decimal GetCPOfCRI(decimal value, int characterLevel) =>
             value * characterLevel * 20m;
 
-        private static decimal GetSkillsMultiplier(int skillsCount)
+        public static decimal GetSkillsMultiplier(int skillsCount)
         {
             switch (skillsCount)
             {
@@ -172,9 +169,7 @@ namespace Nekoyume.Battle
             }
         }
 
-        #endregion
-
-        private static int DecimalToInt(decimal value)
+        public static int DecimalToInt(decimal value)
         {
             if (value > int.MaxValue)
             {
