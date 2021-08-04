@@ -184,7 +184,10 @@ namespace Nekoyume.UI.Module
                     EnterToShowing(onComplete, ignoreAnimation);
                     break;
                 case ViewState.Shown:
-                    StartCoroutine(CoUpdateList(onComplete));
+                    if (isActiveAndEnabled)
+                    {
+                        StartCoroutine(CoUpdateList(onComplete));
+                    }
                     break;
             }
         }
