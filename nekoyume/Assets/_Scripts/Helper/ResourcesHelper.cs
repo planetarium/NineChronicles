@@ -42,7 +42,7 @@ namespace Nekoyume.Helper
             return data.Title;
         }
 
-        public static GameObject GetAura(int id, int level)
+        public static GameObject GetAuraWeaponPrefab(int id, int level)
         {
             var datas = Get<WeaponAuraScriptableObject>().data;
 

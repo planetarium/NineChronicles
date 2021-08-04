@@ -159,12 +159,11 @@ namespace Nekoyume.Game.Character
             if (!(weaponVFXPrefab is null))
             {
                 var parent = new GameObject(weaponId.ToString());
-                parent.AddComponent<BoneFollower>();
+                var boneFollower = parent.AddComponent<BoneFollower>();
                 parent.transform.SetParent(transform);
                 Instantiate(weaponVFXPrefab, parent.transform);
                 var weaponSlot = SkeletonAnimation.Skeleton.FindSlot(WeaponSlot);
                 var boneName = weaponSlot.Bone.Data.Name;
-                var boneFollower = parent.GetComponent<BoneFollower>();
                 boneFollower.SkeletonRenderer = SkeletonAnimation;
                 boneFollower.SetBone(boneName);
                 _cachedWeaponVFX = parent;
