@@ -114,8 +114,6 @@ namespace Lib9c.Tests
 
         public EquipmentItemOptionSheet EquipmentItemOptionSheet { get; private set; }
 
-        public EquipmentItemOptionSheetV2 EquipmentItemOptionSheetV2 { get; private set; }
-
         public GameConfigSheet GameConfigSheet { get; private set; }
 
         public RedeemRewardSheet RedeemRewardSheet { get; private set; }

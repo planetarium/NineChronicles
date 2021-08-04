@@ -18,7 +18,6 @@ namespace Nekoyume.Model.Item
         public bool equipped;
         public int level;
         public int optionCountFromCombination;
-        public readonly int RequiredCharacterLevel;
 
         public DecimalStat Stat { get; }
         public int SetId { get; }
@@ -31,17 +30,12 @@ namespace Nekoyume.Model.Item
             return Math.Max(1.0m, StatsMap.GetStat(UniqueStatType, true) * 0.1m);
         }
 
-        public Equipment(
-            EquipmentItemSheet.Row data,
-            Guid id,
-            long requiredBlockIndex,
-            int requiredCharacterLevel = default)
+        public Equipment(EquipmentItemSheet.Row data, Guid id, long requiredBlockIndex)
             : base(data, id, requiredBlockIndex)
         {
             Stat = data.Stat;
             SetId = data.SetId;
             SpineResourcePath = data.SpineResourcePath;
-            RequiredCharacterLevel = requiredCharacterLevel;
         }
 
         public Equipment(Dictionary serialized) : base(serialized)
@@ -82,11 +76,6 @@ namespace Nekoyume.Model.Item
             {
                 optionCountFromCombination = value.ToInteger();
             }
-
-            if (serialized.TryGetValue((Text) RequiredCharacterLevelKey, out value))
-            {
-                RequiredCharacterLevel = value.ToInteger();
-            }
         }
 
         protected Equipment(SerializationInfo info, StreamingContext _)
@@ -109,11 +98,6 @@ namespace Nekoyume.Model.Item
             if (optionCountFromCombination > 0)
             {
                 dict = dict.SetItem(OptionCountFromCombinationKey, optionCountFromCombination.Serialize());
-            }
-
-            if (RequiredCharacterLevel > 0)
-            {
-                dict = dict.SetItem(RequiredCharacterLevelKey, RequiredCharacterLevel.Serialize());
             }
 
             return dict;
