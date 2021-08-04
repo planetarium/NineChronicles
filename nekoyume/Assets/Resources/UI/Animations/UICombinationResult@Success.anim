@@ -8065,26 +8065,26 @@ AnimationClip:
     floatParameter: 0
     intParameter: 0
     messageOptions: 0
-  - time: 2.1666667
-    functionName: 
+  - time: 2.6333334
+    functionName: OnOpenOption
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 0
     messageOptions: 0
-  - time: 2.4
-    functionName: 
+  - time: 2.8666666
+    functionName: OnOpenOption
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
-    intParameter: 0
+    intParameter: 1
     messageOptions: 0
-  - time: 2.6166666
-    functionName: 
+  - time: 3.1
+    functionName: OnOpenOption
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
-    intParameter: 0
+    intParameter: 2
     messageOptions: 0
   - time: 3.5833333
     functionName: OnAnimatorStateEnd

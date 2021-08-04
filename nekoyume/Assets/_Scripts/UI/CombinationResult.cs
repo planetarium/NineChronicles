@@ -2,16 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
+using Nekoyume.Battle;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Controller;
-using Nekoyume.Helper;
-using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Skill;
 using Nekoyume.Model.Stat;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using TMPro;
+using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
@@ -63,14 +63,6 @@ namespace Nekoyume.UI
             public int power;
         }
 #endif
-        [SerializeField]
-        private GameObject _successTitleObject;
-
-        [SerializeField]
-        private GameObject _greatSuccessTitleObject;
-
-        [SerializeField]
-        private GameObject _consumableSuccessTitleObject;
 
         [SerializeField]
         private Image _iconImage;
@@ -90,9 +82,6 @@ namespace Nekoyume.UI
         [SerializeField]
         private List<Option> _optionTexts;
 
-        [SerializeField]
-        private Button _skipButton;
-
 #if UNITY_EDITOR
         [Space(10)]
         [Header("Editor Properties For Test")]
@@ -109,19 +98,21 @@ namespace Nekoyume.UI
         private static readonly int AnimatorHashLoop = Animator.StringToHash("Loop");
         private static readonly int AnimatorHashClose = Animator.StringToHash("Close");
 
+        private readonly List<decimal> _cpListForAnimationSteps = new List<decimal>();
+        private IDisposable _disposableOfSkip;
+        private IDisposable _disposableOfOpenOption;
+
         public override WidgetType WidgetType => WidgetType.Popup;
 
-        protected override void Awake()
+        protected override void OnDisable()
         {
-            base.Awake();
+            _disposableOfSkip?.Dispose();
+            _disposableOfSkip = null;
 
-            _skipButton.OnClickAsObservable()
-                .ThrottleFirst(TimeSpan.FromSeconds(1d))
-                .Subscribe(_ =>
-                {
-                    AudioController.PlayClick();
-                    SkipAnimation();
-                }).AddTo(gameObject);
+            _disposableOfOpenOption?.Dispose();
+            _disposableOfOpenOption = null;
+
+            base.OnDisable();
         }
 
 #if UNITY_EDITOR
@@ -185,25 +176,27 @@ namespace Nekoyume.UI
             // NOTE: Ignore Show Animation
             base.Show(true);
 
+            _cpListForAnimationSteps.Clear();
             _resultItem.itemNameText.text = itemUsable.GetLocalizedName(useElementalIcon: false);
             _resultItem.itemView.SetData(new CountableItem(itemUsable, 1));
 
             if (itemUsable is Equipment equipment)
             {
                 var optionCount = equipment.optionCountFromCombination;
-                _successTitleObject.SetActive(optionCount != 4);
-                _greatSuccessTitleObject.SetActive(optionCount == 4);
-                _consumableSuccessTitleObject.SetActive(false);
-
                 for (var i = 0; i < _optionStarObjects.Count; i++)
                 {
                     _optionStarObjects[i].SetActive(i < optionCount);
                 }
 
                 _iconImage.overrideSprite = _equipmentIconSprite;
-                _resultItem.mainStatText.text =
-                    $"{equipment.UniqueStatType.ToString()} {equipment.StatsMap.GetStat(equipment.UniqueStatType, true)}";
-                _resultItem.cpText.text = itemUsable.GetCPText();
+                var (mainStatType, mainStatValue) = (
+                    equipment.UniqueStatType,
+                    equipment.StatsMap.GetStat(equipment.UniqueStatType, true));
+                _resultItem.mainStatText.text = $"{mainStatType.ToString()} {mainStatValue}";
+
+                var statsCP = CPHelper.GetStatCP(mainStatType, mainStatValue);
+                _cpListForAnimationSteps.Add(statsCP);
+                _resultItem.cpText.text = CPHelper.DecimalToInt(statsCP).ToString();
 
                 var additionalStats = equipment.StatsMap.GetAdditionalStats(true)
                     .ToArray();
@@ -225,12 +218,19 @@ namespace Nekoyume.UI
                         var (statType, additionalValue) = additionalStats[optionTextsIndex];
                         optionText.text.text = $"{statType.ToString()} +{additionalValue}";
                         optionText.rootObject.SetActive(true);
+
+                        statsCP += CPHelper.GetStatCP(statType, additionalValue);
+                        _cpListForAnimationSteps.Add(statsCP);
                     }
                     else if (optionTextsIndex < additionalStatsLength + skillsCount)
                     {
                         var skill = skills[optionTextsIndex - additionalStatsLength];
                         optionText.text.text = $"{skill.SkillRow.GetLocalizedName()} {skill.Power} / {skill.Chance:P}";
                         optionText.rootObject.SetActive(true);
+
+                        var multipliedCP = statsCP *
+                                           CPHelper.GetSkillsMultiplier(optionTextsIndex - additionalStatsLength + 1);
+                        _cpListForAnimationSteps.Add(multipliedCP);
                     }
                     else
                     {
@@ -240,16 +240,19 @@ namespace Nekoyume.UI
                     optionTextsIndex++;
                 }
 
+                if (CPHelper.GetCP(equipment) !=
+                    CPHelper.DecimalToInt(_cpListForAnimationSteps[_cpListForAnimationSteps.Count - 1]))
+                {
+                    Debug.LogError(
+                        $"Wrong CP!!!! {CPHelper.GetCP(equipment)} != {_cpListForAnimationSteps[_cpListForAnimationSteps.Count - 1]}");
+                }
+
                 Animator.SetTrigger(optionCount == 4
                     ? AnimatorHashGreatSuccess
                     : AnimatorHashSuccess);
             }
             else if (itemUsable is Consumable consumable)
             {
-                _successTitleObject.SetActive(false);
-                _greatSuccessTitleObject.SetActive(false);
-                _consumableSuccessTitleObject.SetActive(true);
-
                 _iconImage.overrideSprite = _consumableIconSprite;
                 _resultItem.mainStatText.text = string.Empty;
                 _resultItem.cpText.text = string.Empty;
@@ -289,9 +292,29 @@ namespace Nekoyume.UI
             }
         }
 
+        #region Invoke from Animation
+
         public void OnAnimatorStateBeginning(string stateName)
         {
             Debug.Log("OnAnimatorStateBeginning: " + stateName);
+            switch (stateName)
+            {
+                case "GreatSuccess":
+                case "Success":
+                    _disposableOfSkip = Observable.EveryUpdate()
+                        .Where(_ => Input.GetMouseButtonDown(0) ||
+                                    Input.GetKeyDown(KeyCode.Return) ||
+                                    Input.GetKeyDown(KeyCode.KeypadEnter) ||
+                                    Input.GetKeyDown(KeyCode.Escape))
+                        .Take(1)
+                        .DoOnCompleted(() => _disposableOfSkip = null)
+                        .Subscribe(_ =>
+                        {
+                            AudioController.PlayClick();
+                            SkipAnimation();
+                        });
+                    break;
+            }
         }
 
         public void OnAnimatorStateEnd(string stateName)
@@ -319,6 +342,28 @@ namespace Nekoyume.UI
             }
         }
 
+        public void OnOpenOption(int optionIndex)
+        {
+            Debug.Log($"{nameof(OnOpenOption)}({optionIndex})");
+
+            if (optionIndex < 0 || optionIndex >= _cpListForAnimationSteps.Count - 1)
+            {
+                Debug.LogWarning($"Argument out of range. {nameof(optionIndex)}({optionIndex})");
+                return;
+            }
+
+            PlayCPAnimation(
+                CPHelper.DecimalToInt(_cpListForAnimationSteps[optionIndex]),
+                CPHelper.DecimalToInt(_cpListForAnimationSteps[optionIndex + 1]));
+        }
+
+        public void OnRequestPlaySFX(string sfxCode)
+        {
+            AudioController.instance.PlaySfx(sfxCode);
+        }
+
+        #endregion
+
         private void SkipAnimation()
         {
             var hash = Animator.GetCurrentAnimatorStateInfo(0).shortNameHash;
@@ -328,6 +373,46 @@ namespace Nekoyume.UI
             {
                 Observable.NextFrame().Subscribe(_ =>
                     Animator.Play(AnimatorHashLoop, 0, 0));
+            }
+
+            if (_cpListForAnimationSteps.Any())
+            {
+                _resultItem.cpText.text = CPHelper
+                    .DecimalToInt(_cpListForAnimationSteps[_cpListForAnimationSteps.Count - 1])
+                    .ToString();
+            }
+        }
+
+        private void PlayCPAnimation(int from, int to)
+        {
+            if (_disposableOfOpenOption != null)
+            {
+                _disposableOfOpenOption.Dispose();
+            }
+
+            var deltaCP = to - from;
+            var deltaTime = 0f;
+            _disposableOfOpenOption = Observable
+                .EveryGameObjectUpdate()
+                .Take(TimeSpan.FromMilliseconds(250))
+                .DoOnCompleted(() => _disposableOfOpenOption = null)
+                .Subscribe(_ =>
+                {
+                    deltaTime += Time.deltaTime;
+                    var middleCP = math.min(to, (int) (from + deltaCP * (deltaTime / .3f)));
+                    _resultItem.cpText.text = middleCP.ToString();
+                });
+        }
+
+        protected override void Update()
+        {
+            base.Update();
+
+            if (Input.GetKeyDown(KeyCode.A))
+            {
+                var from = Random.Range(999, 999999);
+                var to = from + Random.Range(99, 99999);
+                PlayCPAnimation(from, to);
             }
         }
     }

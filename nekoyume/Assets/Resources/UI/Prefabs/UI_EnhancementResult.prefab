@@ -5232,8 +5232,8 @@ MonoBehaviour:
   fixedFontStyle: 0
   fixedFontSizeOffset: 0
   fixedSpacingOption: 0
-  fontMaterialType: 2
-  l10nKey: 
+  fontMaterialType: 13
+  l10nKey: UI_PRESS_TO_CONTINUE
   fontMaterialIndexInitialized: 1
   fontMaterialIndex: 0
   defaultFontStylesInitialized: 1
@@ -15121,6 +15121,7 @@ GameObject:
   - component: {fileID: 1177508936337676323}
   - component: {fileID: 7968502325461111175}
   - component: {fileID: 2538503477438007065}
+  - component: {fileID: 4119713695210670564}
   m_Layer: 5
   m_Name: Success
   m_TagString: Untagged
@@ -15244,6 +15245,36 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &4119713695210670564
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1177508936337676320}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d668203cf6645c0bb09a4991d4bbe06, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fixedFontAsset: 0
+  fixedFontStyle: 0
+  fixedFontSizeOffset: 0
+  fixedSpacingOption: 0
+  fontMaterialType: 24
+  l10nKey: UI_ENHANCEMENT_RESULT_SUCCESS
+  fontMaterialIndexInitialized: 0
+  fontMaterialIndex: 0
+  defaultFontStylesInitialized: 0
+  defaultFontStyles: 0
+  defaultFontSizeInitialized: 0
+  defaultFontSize: 0
+  defaultCharacterSpacingInitialized: 0
+  defaultCharacterSpacing: 0
+  defaultWordSpacingInitialized: 0
+  defaultWordSpacing: 0
+  defaultLineSpacingInitialized: 0
+  defaultLineSpacing: 0
 --- !u!1 &1177508936385506723
 GameObject:
   m_ObjectHideFlags: 0
@@ -97065,6 +97096,7 @@ GameObject:
   - component: {fileID: 5875182672750851337}
   - component: {fileID: 5778677678060987227}
   - component: {fileID: 5976137205408796708}
+  - component: {fileID: 3385822375552413885}
   m_Layer: 5
   m_Name: GreatSuccess
   m_TagString: Untagged
@@ -97188,6 +97220,36 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &3385822375552413885
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6082325002053468307}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d668203cf6645c0bb09a4991d4bbe06, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fixedFontAsset: 0
+  fixedFontStyle: 0
+  fixedFontSizeOffset: 0
+  fixedSpacingOption: 0
+  fontMaterialType: 24
+  l10nKey: UI_ENHANCEMENT_RESULT_GREAT_SUCCESS
+  fontMaterialIndexInitialized: 0
+  fontMaterialIndex: 0
+  defaultFontStylesInitialized: 0
+  defaultFontStyles: 0
+  defaultFontSizeInitialized: 0
+  defaultFontSize: 0
+  defaultCharacterSpacingInitialized: 0
+  defaultCharacterSpacing: 0
+  defaultWordSpacingInitialized: 0
+  defaultWordSpacing: 0
+  defaultLineSpacingInitialized: 0
+  defaultLineSpacing: 0
 --- !u!1 &6104828012893067776
 GameObject:
   m_ObjectHideFlags: 0
@@ -107052,6 +107114,7 @@ GameObject:
   - component: {fileID: 2090036612646174898}
   - component: {fileID: 3779887179138662414}
   - component: {fileID: 5324213533635918796}
+  - component: {fileID: 2874594538765199025}
   m_Layer: 5
   m_Name: Fail
   m_TagString: Untagged
@@ -107175,6 +107238,36 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &2874594538765199025
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6761189276813206027}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d668203cf6645c0bb09a4991d4bbe06, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fixedFontAsset: 0
+  fixedFontStyle: 0
+  fixedFontSizeOffset: 0
+  fixedSpacingOption: 0
+  fontMaterialType: 24
+  l10nKey: UI_ENHANCEMENT_RESULT_FAIL
+  fontMaterialIndexInitialized: 0
+  fontMaterialIndex: 0
+  defaultFontStylesInitialized: 0
+  defaultFontStyles: 0
+  defaultFontSizeInitialized: 0
+  defaultFontSize: 0
+  defaultCharacterSpacingInitialized: 0
+  defaultCharacterSpacing: 0
+  defaultWordSpacingInitialized: 0
+  defaultWordSpacing: 0
+  defaultLineSpacingInitialized: 0
+  defaultLineSpacing: 0
 --- !u!1 &6985442336719307172
 GameObject:
   m_ObjectHideFlags: 0
@@ -107545,7 +107638,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &7327885858598729729
 RectTransform:
   m_ObjectHideFlags: 0
@@ -107736,9 +107829,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tutorialTargets: []
   tutorialActions: 
-  _successTitleObject: {fileID: 1177508936337676320}
-  _greatSuccessTitleObject: {fileID: 6082325002053468307}
-  _failTitleObject: {fileID: 6761189276813206027}
   _resultItem:
     itemView: {fileID: 2988756151728861090}
     beforeGradeText: {fileID: 2247406881220253524}
