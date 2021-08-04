@@ -163,7 +163,6 @@ namespace Nekoyume.UI
                 // 팝업 영역.
                 Widget.Create<Settings>(),
                 Widget.Create<Confirm>(),
-                Widget.Create<QuitPopup>(),
                 Widget.Create<OneButtonPopup>(),
                 Widget.Create<TwoButtonPopup>(),
 
@@ -286,6 +285,8 @@ namespace Nekoyume.UI
             yield return null;
             secondWidgets.Add(Widget.Create<ChatPopup>());
             yield return null;
+            secondWidgets.Add(Widget.Create<QuitPopup>());
+            yield return null;
 
             // Over than HeaderMenu
             secondWidgets.Add(Widget.Create<CombinationResult>());
@@ -339,6 +340,8 @@ namespace Nekoyume.UI
             }
             Widgets.AddRange(secondWidgets);
             UpdateLayers();
+
+            Widget.Find<Settings>().transform.SetAsLastSibling();
         }
 
         public void SetLayerSortingOrderToTarget(

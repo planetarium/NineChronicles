@@ -30,6 +30,11 @@ namespace Nekoyume.UI
             closeEventSubject.GetEvent("Click")
                 .Subscribe(_ => Close())
                 .AddTo(gameObject);
+
+            CloseWidget = () =>
+            {
+                Close();
+            };
         }
 
         public void Show(float blurRadius = 2, bool ignoreShowAnimation = false)
@@ -40,10 +45,10 @@ namespace Nekoyume.UI
 
         private void SelectCharacter()
         {
-            Nekoyume.Game.Event.OnNestEnter.Invoke();
+            Game.Event.OnNestEnter.Invoke();
             Find<Login>().Show();
             Find<Menu>().Close();
-            Close(true);
+            Close();
         }
 
         private void Quit()
