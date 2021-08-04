@@ -58,7 +58,7 @@ namespace Nekoyume.Helper
 
         private static int WeaponLevelToIndex(int level)
         {
-            if (3 <= level && level < 7)
+            if (4 <= level && level < 7)
             {
                 return 0;
             }
