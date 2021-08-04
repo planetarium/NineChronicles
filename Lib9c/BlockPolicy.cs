@@ -97,8 +97,8 @@ namespace Nekoyume.BlockChain
             BlockChain<NCAction> blocks,
             Block<NCAction> nextBlock
         ) =>
-            ValidateBlock(nextBlock) 
-            ?? ValidateMinerAuthority(nextBlock) 
+            ValidateBlock(nextBlock)
+            ?? ValidateMinerAuthority(nextBlock)
             ?? base.ValidateNextBlock(blocks, nextBlock);
 
         public override long GetNextBlockDifficulty(BlockChain<NCAction> blocks)
@@ -160,11 +160,11 @@ namespace Nekoyume.BlockChain
             }
 
             // As a temporary approach to prevent selfish mining (again), we add a new rule
-            // disallowing blocks with less than 10 transactions.  This rule is applied since
-            // 1,870,000th block.  (Note that as of Jul 8, 2021, there are about 1,860,000+ blocks.)
+            // disallowing blocks with less than 3 transactions.  This rule is applied since
+            // 2,100,000th block.  (Note that as of Aug 4, 2021, there are about 2,060,000+ blocks.)
             // This rule is not applied to blocks (with proofs) made by authorized miners.
-            if (block.Transactions.Count < 10 &&
-                block.Index >= 1_870_000 &&
+            if (block.Transactions.Count < 3 &&
+                block.Index >= 2_100_000 &&
                 !(AuthorizedMinersState is AuthorizedMinersState ams &&
                     block.Index <= ams.ValidUntil &&
                     block.Miner is Address m && ams.Miners.Contains(m) &&
@@ -172,7 +172,7 @@ namespace Nekoyume.BlockChain
             {
                 return new InvalidMinerException(
                     $"The block #{block.Index} {block.Hash} (mined by {miner}) must " +
-                    "include at least 10 transactions.",
+                    "include at least 3 transactions.",
                     miner
                 );
             }
@@ -192,7 +192,7 @@ namespace Nekoyume.BlockChain
 
             return null;
         }
-        
+
         private InvalidBlockException ValidateMinerAuthority(Block<NCAction> block)
         {
             if (AuthorizedMinersState is null)
@@ -217,7 +217,7 @@ namespace Nekoyume.BlockChain
                     miner
                 );
             }
-            
+
 
             // Authority should be proven through a no-op transaction (= txs with zero actions).
             // (For backward compatibility, blocks before 1,200,000th don't have to be proven.
