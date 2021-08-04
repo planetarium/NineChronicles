@@ -139,5 +139,16 @@ namespace Nekoyume.UI.Scroller
                     toggle.Type == resultItem.ItemSubType;
             }
         }
+
+        public void GoToRecipeGroup(string equipmentRecipeGroup)
+        {
+            if (!Craft.SharedModel.EquipmentRecipeMap
+                .TryGetValue(equipmentRecipeGroup, out var model))
+            {
+                return;
+            }
+
+            JumpTo(model);
+        }
     }
 }

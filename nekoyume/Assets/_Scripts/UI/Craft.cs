@@ -116,6 +116,24 @@ namespace Nekoyume.UI
                 .AddTo(gameObject);
         }
 
+        public void Show(int equipmentRecipeId)
+        {
+            Show();
+
+            if (!Game.Game.instance.TableSheets
+                .EquipmentItemRecipeSheet.TryGetValue(equipmentRecipeId, out var row))
+            {
+                return;
+            }
+
+            var group = RecipeModel.GetEquipmentGroup(row.ResultEquipmentId);
+            recipeScroll.GoToRecipeGroup(group);
+            if (SharedModel.RecipeVFXSkipList.Contains(equipmentRecipeId))
+            {
+                SharedModel.SelectedRow.Value = row;
+            }
+        }
+
         public override void Show(bool ignoreShowAnimation = false)
         {
             Find<CombinationLoadingScreen>().OnDisappear = OnNPCDisappear;
