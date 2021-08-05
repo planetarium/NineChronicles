@@ -14,6 +14,7 @@ using System.Collections;
 
 namespace Nekoyume.UI
 {
+    using Nekoyume.Model.Quest;
     using Nekoyume.UI.Module;
     using System.Linq;
     using UniRx;
@@ -107,7 +108,10 @@ namespace Nekoyume.UI
             {
                 if (address.Equals(default)) return;
                 SharedModel.LoadRecipeVFXSkipList();
-            });
+            }).AddTo(gameObject);
+            ReactiveAvatarState.QuestList
+                .Subscribe(SubscribeQuestList)
+                .AddTo(gameObject);
         }
 
         public override void Show(bool ignoreShowAnimation = false)
@@ -173,6 +177,28 @@ namespace Nekoyume.UI
                 group.Groups);
         }
 
+        private void SubscribeQuestList(QuestList questList)
+        {
+            var quest = questList?
+                .OfType<CombinationEquipmentQuest>()
+                .Where(x => !x.Complete)
+                .OrderBy(x => x.StageId)
+                .FirstOrDefault();
+
+            if (quest is null ||
+                !Game.Game.instance.TableSheets.EquipmentItemRecipeSheet
+                .TryGetValue(quest.RecipeId, out var row) ||
+                States.Instance.CurrentAvatarState.worldInformation
+                .TryGetLastClearedStageId(out var clearedStage))
+            {
+                SharedModel.NotifiedRow.Value = null;
+                return;
+            }
+
+            var stageId = row.UnlockStage;
+            SharedModel.NotifiedRow.Value = clearedStage >= stageId ? row : null;
+        }
+
         private void CombinationEquipmentAction(SubRecipeView.RecipeInfo recipeInfo)
         {
             var slotIndex = OnCombinationAction(recipeInfo);
@@ -189,7 +215,7 @@ namespace Nekoyume.UI
 
             var equipmentRow = Game.Game.instance.TableSheets.EquipmentItemRecipeSheet[recipeInfo.RecipeId];
             var equipment = (Equipment)ItemFactory.CreateItemUsable(
-                equipmentRow.GetResultItemEquipmentRow(), Guid.Empty, default);
+                equipmentRow.GetResultEquipmentItemRow(), Guid.Empty, default);
 
             StartCoroutine(CoCombineNPCAnimation(equipment));
         }
@@ -209,7 +235,7 @@ namespace Nekoyume.UI
 
             var consumableRow = Game.Game.instance.TableSheets.ConsumableItemRecipeSheet[recipeInfo.RecipeId];
             var consumable = (Consumable) ItemFactory.CreateItemUsable(
-                consumableRow.GetResultItemConsumableRow(), Guid.Empty, default);
+                consumableRow.GetResultConsumableItemRow(), Guid.Empty, default);
 
             StartCoroutine(CoCombineNPCAnimation(consumable, true));
         }
