@@ -466,6 +466,8 @@ namespace Nekoyume.Game
 
         private IEnumerator CoStageEnd(BattleLog log)
         {
+            // NOTE ActionRenderHandler.Instance.Pending should be false before _onEnterToStageEnd.OnNext() invoked.
+            ActionRenderHandler.Instance.Pending = false;
             _onEnterToStageEnd.OnNext(this);
             _battleResultModel.ClearedWaveNumber = log.clearedWaveNumber;
             var characters = GetComponentsInChildren<Character.CharacterBase>();
@@ -587,8 +589,7 @@ namespace Nekoyume.Game
                     }
                 }
             }
-
-            ActionRenderHandler.Instance.Pending = false;
+            
             Widget.Find<BattleResult>().Show(_battleResultModel);
 
             yield return null;
@@ -618,6 +619,8 @@ namespace Nekoyume.Game
 
         private IEnumerator CoRankingBattleEnd(BattleLog log, bool forceQuit = false)
         {
+            // NOTE ActionRenderHandler.Instance.Pending should be false before _onEnterToStageEnd.OnNext() invoked.
+            ActionRenderHandler.Instance.Pending = false;
             _onEnterToStageEnd.OnNext(this);
             var characters = GetComponentsInChildren<Character.CharacterBase>();
 
@@ -638,7 +641,6 @@ namespace Nekoyume.Game
             Widget.Find<UI.Battle>().Close();
             Widget.Find<Status>().Close();
 
-            ActionRenderHandler.Instance.Pending = false;
             Widget.Find<RankingBattleResult>().Show(log, _battleResultModel.Rewards);
             yield return null;
         }

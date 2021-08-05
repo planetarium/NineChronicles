@@ -4,12 +4,13 @@ using System.Text;
 using Bencodex.Types;
 using Lib9c.Model.Order;
 using Nekoyume.Model.Item;
+using Nekoyume.UI;
 
 namespace Nekoyume.Helper
 {
     public static class Util
     {
-        private const int BlockPerSecond = 15;
+        private const int BlockPerSecond = 12;
 
         public static string GetBlockToTime(int block)
         {
@@ -62,19 +63,35 @@ namespace Nekoyume.Helper
             return null;
         }
 
-        public static ItemBase GetItemBaseByOrderId(Guid orderId)
+        public static string GetItemNameByOrdierId(Guid orderId, bool isNonColored = false)
         {
             var order = GetOrder(orderId);
-            return GetItemBaseByTradableId(order.TradableId);
+            if (order == null)
+            {
+                return string.Empty;
+            }
+
+            var address = Addresses.GetItemAddress(order.TradableId);
+            var state = Game.Game.instance.Agent.GetState(address);
+            if (state is Dictionary dictionary)
+            {
+                var itemBase = ItemFactory.Deserialize(dictionary);
+                return isNonColored ? itemBase.GetLocalizedNonColoredName() : itemBase.GetLocalizedName();
+            }
+
+            return string.Empty;
         }
 
-        public static ItemBase GetItemBaseByTradableId(Guid tradableId)
+        public static ItemBase GetItemBaseByTradableId(Guid tradableId, long requiredBlockExpiredIndex)
         {
             var address = Addresses.GetItemAddress(tradableId);
             var state = Game.Game.instance.Agent.GetState(address);
             if (state is Dictionary dictionary)
             {
-                return ItemFactory.Deserialize(dictionary);
+                var itemBase = ItemFactory.Deserialize(dictionary);
+                var tradableItem = itemBase as ITradableItem;
+                tradableItem.RequiredBlockIndex = requiredBlockExpiredIndex;
+                return tradableItem as ItemBase;
             }
 
             return null;

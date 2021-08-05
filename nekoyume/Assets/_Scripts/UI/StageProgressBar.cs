@@ -142,8 +142,8 @@ namespace Nekoyume.UI
             while (current < value - smoothenFinishThreshold)
             {
                 current = Mathf.Lerp(current, value, Time.deltaTime * speed);
-                slider.value = current;
                 vfxOffset.anchoredPosition = new Vector2(current * _xLength, vfxOffset.anchoredPosition.y);
+                slider.value = current;
                 yield return null;
             }
 
@@ -176,8 +176,8 @@ namespace Nekoyume.UI
 
         private void UpdateSliderValue(float value)
         {
-            slider.value = value;
             vfxOffset.anchoredPosition = new Vector2(value * _xLength, vfxOffset.anchoredPosition.y);
+            slider.value = value;
             _smoothenCoroutine = null;
         }
 

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace Nekoyume.L10n
 {
@@ -126,6 +127,7 @@ namespace Nekoyume.L10n
 
         public static LanguageType ISO396(string iso396)
         {
+            iso396 = iso396.Replace("_", "-");
             switch (iso396)
             {
                 case "ko":
@@ -143,6 +145,7 @@ namespace Nekoyume.L10n
                 case "th":
                     return LanguageType.Thai;
                 default:
+                    Debug.LogWarning($"Does not support LanguageType for {iso396}");
                     return LanguageType.English;
             }
         }
