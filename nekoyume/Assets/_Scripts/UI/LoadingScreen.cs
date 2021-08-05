@@ -54,10 +54,21 @@ namespace Nekoyume.UI
             }
         }
 
+        public override void Show(bool ignoreShowAnimation = false)
+        {
+            base.Show(ignoreShowAnimation);
+            Find<HeaderMenu>().Close();
+        }
+
+        public override void Close(bool ignoreCloseAnimation = false)
+        {
+            base.Close(ignoreCloseAnimation);
+            Find<HeaderMenu>().Show();
+        }
+
         protected override void OnEnable()
         {
             base.OnEnable();
-
             if (_tips != null)
             {
                 toolTip.text = _tips[new System.Random().Next(0, _tips.Count)];
@@ -67,7 +78,6 @@ namespace Nekoyume.UI
         protected override void OnDisable()
         {
             Message = L10nManager.Localize("BLOCK_CHAIN_MINING_TX") + "...";
-
             base.OnDisable();
         }
 

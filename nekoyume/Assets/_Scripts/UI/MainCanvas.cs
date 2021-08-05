@@ -253,8 +253,6 @@ namespace Nekoyume.UI
             yield return null;
 
             // popup
-            secondWidgets.Add(Widget.Create<BattleResult>());
-            yield return null;
             secondWidgets.Add(Widget.Create<RankingBattleResult>());
             yield return null;
             secondWidgets.Add(Widget.Create<ItemCountAndPricePopup>());
@@ -296,6 +294,8 @@ namespace Nekoyume.UI
             secondWidgets.Add(Widget.Create<CombinationResult>());
             yield return null;
             secondWidgets.Add(Widget.Create<EnhancementResult>());
+            yield return null;
+            secondWidgets.Add(Widget.Create<BattleResult>());
             yield return null;
 
             // popup
