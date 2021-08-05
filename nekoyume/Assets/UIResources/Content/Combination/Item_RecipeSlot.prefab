@@ -383,6 +383,7 @@ MonoBehaviour:
   fixedFontStyle: 0
   fixedFontSizeOffset: 0
   fixedSpacingOption: 0
+  fixedMarginOption: 0
   fontMaterialType: 0
   l10nKey: 
   fontMaterialIndexInitialized: 0
@@ -1980,6 +1981,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Item_Notification
+      objectReference: {fileID: 0}
+    - target: {fileID: 7408168717457641505, guid: f448589b32e674c83b7261e1fe5a61b6,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f448589b32e674c83b7261e1fe5a61b6, type: 3}
