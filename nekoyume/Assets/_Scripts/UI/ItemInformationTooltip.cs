@@ -11,7 +11,9 @@ using UnityEngine;
 
 namespace Nekoyume.UI
 {
+    using System.Collections;
     using UniRx;
+    using UnityEngine.EventSystems;
     using UnityEngine.UI;
 
     public class ItemInformationTooltip : VerticalTooltipWidget<Model.ItemInformationTooltip>
@@ -196,15 +198,18 @@ namespace Nekoyume.UI
                 Model.OnCloseClick.OnNext(this);
                 Close();
             });
+
+            scrollbar.value = 1f;
+            StartCoroutine(CoUpdate(sell));
             sellTimer.UpdateTimer(Model.ExpiredBlockIndex.Value);
         }
 
-          public void ShowForBuy(RectTransform target,
-                                CountableItem item,
-                                Func<CountableItem, bool> submitEnabledFunc,
-                                string submitText,
-                                Action<ItemInformationTooltip> onBuy,
-                                Action<ItemInformationTooltip> onClose)
+        public void ShowForBuy(RectTransform target,
+                              CountableItem item,
+                              Func<CountableItem, bool> submitEnabledFunc,
+                              string submitText,
+                              Action<ItemInformationTooltip> onBuy,
+                              Action<ItemInformationTooltip> onClose)
         {
             if (item?.ItemBase.Value is null)
             {
@@ -241,13 +246,10 @@ namespace Nekoyume.UI
             Model.ItemInformation.item
                 .Subscribe(value => SubscribeTargetItem(Model.target.Value))
                 .AddTo(_disposablesForModel);
-<<<<<<< HEAD
 
             scrollbar.value = 1f;
-            StartCoroutine(CoUpdate(isBuy ? buyButton.gameObject : sellButton.gameObject));
-=======
+            StartCoroutine(CoUpdate(buy));
             buyTimer.UpdateTimer(Model.ExpiredBlockIndex.Value);
->>>>>>> development
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
@@ -277,7 +279,6 @@ namespace Nekoyume.UI
                 UpdateAnchoredPosition();
             }
         }
-<<<<<<< HEAD
 
         private IEnumerator CoUpdate(GameObject target)
         {
@@ -345,7 +346,5 @@ namespace Nekoyume.UI
         {
             _isPointerOnScrollArea = value;
         }
-=======
->>>>>>> development
     }
 }
