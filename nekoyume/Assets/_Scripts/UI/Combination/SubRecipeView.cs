@@ -148,7 +148,6 @@ namespace Nekoyume.UI
             UpdateInformation(index);
 
             costText.text = _selectedRecipeInfo.CostNCG.ToString();
-            combineButton.interactable = CheckSubmittable(_selectedRecipeInfo);
 
             buttonEnabledObject.SetActive(true);
             buttonDisabledObject.SetActive(false);
@@ -308,13 +307,40 @@ namespace Nekoyume.UI
             CombinationActionSubject.OnNext(_selectedRecipeInfo);
         }
 
-        private bool CheckSubmittable(RecipeInfo recipeInfo)
+        public bool CheckSubmittable(out string errorKey)
         {
-            return !(States.Instance.AgentState is null) &&
-                States.Instance.GoldBalanceState.Gold.MajorUnit >= recipeInfo.CostNCG &&
-                States.Instance.CurrentAvatarState.actionPoint >= recipeInfo.CostAP &&
-                CheckMaterial(recipeInfo.Materials) &&
-                !(States.Instance.CurrentAvatarState is null);
+            if (States.Instance.AgentState is null)
+            {
+                errorKey = "FAILED_TO_GET_AGENTSTATE";
+                return false;
+            }
+
+            if (States.Instance.CurrentAvatarState is null)
+            {
+                errorKey = "FAILED_TO_GET_AVATARSTATE";
+                return false;
+            }
+
+            if (States.Instance.GoldBalanceState.Gold.MajorUnit < _selectedRecipeInfo.CostNCG)
+            {
+                errorKey = "UI_NOT_ENOUGH_NCG";
+                return false;
+            }
+
+            if (States.Instance.CurrentAvatarState.actionPoint < _selectedRecipeInfo.CostAP)
+            {
+                errorKey = "UI_NOT_ENOUGH_AP";
+                return false;
+            }
+
+            if (!CheckMaterial(_selectedRecipeInfo.Materials))
+            {
+                errorKey = "NOTIFICATION_NOT_ENOUGH_MATERIALS";
+                return false;
+            }
+
+            errorKey = null;
+            return true;
         }
 
         private bool CheckMaterial(List<(HashDigest<SHA256> material, int count)> materials)
