@@ -118,7 +118,7 @@ namespace Nekoyume.State
             }
 
             GoldBalanceState = LocalLayer.Instance.Modify(goldBalanceState);
-            AgentStateSubject.Gold.OnNext(GoldBalanceState.Gold);
+            AgentStateSubject.OnNextGold(GoldBalanceState.Gold);
         }
 
         public AvatarState AddOrReplaceAvatarState(Address avatarAddress, int index, bool initializeReactiveState = true)

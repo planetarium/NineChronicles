@@ -206,6 +206,11 @@ namespace Nekoyume.UI
 
         private void UpdateNotification(long blockIndex)
         {
+            if (States.Instance.CurrentAvatarState is null)
+            {
+                return;
+            }
+
             MailBox = States.Instance.CurrentAvatarState.mailBox;
             UpdateTabs(blockIndex);
         }
@@ -247,7 +252,7 @@ namespace Nekoyume.UI
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             var order = Util.GetOrder(orderBuyerMail.OrderId);
-            var itemBase = Util.GetItemBaseByTradableId(orderBuyerMail.OrderId, order.ExpiredBlockIndex);
+            var itemBase = Util.GetItemBaseByTradableId(order.TradableId, order.ExpiredBlockIndex);
             var count = order is FungibleOrder fungibleOrder ? fungibleOrder.ItemCount : 1;
             var popup = Find<CombinationResultPopup>();
             var model = new UI.Model.CombinationResultPopup(new CountableItem(itemBase, count))
