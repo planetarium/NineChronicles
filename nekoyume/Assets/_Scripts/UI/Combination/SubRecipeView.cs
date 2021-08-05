@@ -199,7 +199,7 @@ namespace Nekoyume.UI
 
                     blockIndex += subRecipe.RequiredBlockIndex;
                     greatSuccessRate = options
-                        .Select(x => x.Ratio)
+                        .Select(x => x.Ratio * GameConfig.TenThousandths)
                         .Aggregate((a, b) => a * b);
 
                     SetOptions(options);
@@ -275,16 +275,16 @@ namespace Nekoyume.UI
                 {
                     var optionView = optionViews.First(x => !x.ParentObject.activeSelf);
                     var statMin = option.StatType == StatType.SPD
-                        ? (option.StatMin / 100f).ToString(CultureInfo.InvariantCulture)
+                        ? (option.StatMin * 0.01m).ToString(CultureInfo.InvariantCulture)
                         : option.StatMin.ToString();
 
                     var statMax = option.StatType == StatType.SPD
-                        ? (option.StatMax / 100f).ToString(CultureInfo.InvariantCulture)
-                        : option.StatMax.ToString();
+                        ? (option.StatMax * 0.01m).ToString(CultureInfo.InvariantCulture)
+                        : (option.StatMax).ToString(CultureInfo.InvariantCulture);
 
                     var description = string.Format(OptionTextFormat, option.StatType, statMin, statMax);
                     optionView.OptionText.text = description;
-                    optionView.PercentageText.text = ratio.ToString("P");
+                    optionView.PercentageText.text = (ratio * GameConfig.TenThousandths).ToString("P0");
                     optionView.ParentObject.transform.SetSiblingIndex(siblingIndex);
                     optionView.ParentObject.SetActive(true);
                 }
@@ -294,7 +294,7 @@ namespace Nekoyume.UI
                     var description = skillSheet.TryGetValue(option.SkillId, out var skillRow) ?
                         skillRow.GetLocalizedName() : string.Empty;
                     skillView.OptionText.text = description;
-                    skillView.PercentageText.text = ratio.ToString("P");
+                    skillView.PercentageText.text = (ratio * GameConfig.TenThousandths).ToString("P0");
                     skillView.ParentObject.transform.SetSiblingIndex(siblingIndex);
                     skillView.ParentObject.SetActive(true);
                 }
