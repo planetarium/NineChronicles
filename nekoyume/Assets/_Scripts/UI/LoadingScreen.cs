@@ -3,6 +3,7 @@ using System.Linq;
 using Nekoyume.L10n;
 using Nekoyume.UI.Module;
 using TMPro;
+using UnityEngine;
 
 namespace Nekoyume.UI
 {
@@ -15,6 +16,7 @@ namespace Nekoyume.UI
 
         private List<string> _tips;
 
+        [SerializeField] private bool ShowMenuOnClosed = false;
         #region Mono
 
         protected override void Awake()
@@ -63,7 +65,10 @@ namespace Nekoyume.UI
         public override void Close(bool ignoreCloseAnimation = false)
         {
             base.Close(ignoreCloseAnimation);
-            Find<HeaderMenu>().Show();
+            if (ShowMenuOnClosed)
+            {
+                Find<HeaderMenu>().Show();
+            }
         }
 
         protected override void OnEnable()
