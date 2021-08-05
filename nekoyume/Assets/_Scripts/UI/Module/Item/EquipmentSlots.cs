@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Nekoyume.Battle;
 using Nekoyume.Model;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
@@ -174,7 +175,8 @@ namespace Nekoyume.UI.Module
                            e.Item is ItemUsable itemUsable &&
                            itemUsable.ItemId.Equals(itemId))
                        ?? typeSlots.FirstOrDefault(e => e.IsEmpty)
-                       ?? typeSlots.First();
+                       ?? typeSlots.OrderBy(e => CPHelper.GetCP((ItemUsable) e.Item))
+                           .First();
             }
             else
             {
