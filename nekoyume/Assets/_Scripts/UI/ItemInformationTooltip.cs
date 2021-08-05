@@ -28,13 +28,12 @@ namespace Nekoyume.UI
         [SerializeField] private GameObject sell;
         [SerializeField] private BlockTimer buyTimer;
         [SerializeField] private BlockTimer sellTimer;
-        [SerializeField] private Button closeButton;
 
         [SerializeField] private TextMeshProUGUI priceText;
         [SerializeField] private Scrollbar scrollbar;
 
         private bool _isPointerOnScrollArea;
-        private bool _isScrollAreaDragged;
+        private bool _isClickedButtonArea;
 
 
         private readonly List<IDisposable> _disposablesForModel = new List<IDisposable>();
@@ -82,12 +81,6 @@ namespace Nekoyume.UI
                 Model.OnSubmitClick.OnNext(this);
                 Close();
             };
-
-            closeButton.onClick.AddListener(() =>
-            {
-                Model.OnCloseClick.OnNext(this);
-                Close();
-            });
         }
 
         protected override void OnDestroy()
@@ -255,7 +248,7 @@ namespace Nekoyume.UI
         public override void Close(bool ignoreCloseAnimation = false)
         {
             _isPointerOnScrollArea = false;
-            _isScrollAreaDragged = false;
+            _isClickedButtonArea = false;
             _disposablesForModel.DisposeAllAndClear();
             Model.target.Value = null;
             Model.ItemInformation.item.Value = null;
@@ -295,7 +288,7 @@ namespace Nekoyume.UI
             {
                 if (Input.GetMouseButtonDown(0))
                 {
-                    _isScrollAreaDragged = _isPointerOnScrollArea;
+                    _isClickedButtonArea = _isPointerOnScrollArea;
                 }
 
                 var current = EventSystem.current.currentSelectedGameObject;
@@ -330,7 +323,7 @@ namespace Nekoyume.UI
                         yield break;
                     }
 
-                    if (!_isScrollAreaDragged)
+                    if (!_isClickedButtonArea)
                     {
                         Model.OnCloseClick.OnNext(this);
                         Close();
@@ -342,7 +335,7 @@ namespace Nekoyume.UI
             }
         }
 
-        public void OnEnterScrollArea(bool value)
+        public void OnEnterButtonArea(bool value)
         {
             _isPointerOnScrollArea = value;
         }
