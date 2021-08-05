@@ -17,6 +17,7 @@ namespace Nekoyume.UI
         [SerializeField] private TextMeshProUGUI remainTime = null;
 
         [SerializeField] private Slider remainTimeSlider = null;
+        [SerializeField] private GameObject expiredText;
 
         private readonly List<IDisposable> _disposablesFromOnEnable = new List<IDisposable>();
 
@@ -43,7 +44,8 @@ namespace Nekoyume.UI
 
         private void SetBlockIndex(long blockIndex)
         {
-            remainTimeSlider.value = _expiredTime - blockIndex;
+            var value = _expiredTime - blockIndex;
+            UpdateUI(value);
         }
 
         private void OnSliderChange(float value)
@@ -55,7 +57,24 @@ namespace Nekoyume.UI
         public void UpdateTimer(long expiredTime)
         {
             _expiredTime = expiredTime;
-            remainTimeSlider.value = _expiredTime - Game.Game.instance.Agent.BlockIndex;
+            var value = _expiredTime - Game.Game.instance.Agent.BlockIndex;
+            UpdateUI(value);
+        }
+
+        private void UpdateUI(float value)
+        {
+            if (value > 0)
+            {
+                expiredText.SetActive(false);
+                remainTimeSlider.gameObject.SetActive(true);
+                remainTimeSlider.value = value;
+
+            }
+            else
+            {
+                expiredText.SetActive(true);
+                remainTimeSlider.gameObject.SetActive(false);
+            }
         }
     }
 }
