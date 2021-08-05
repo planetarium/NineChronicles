@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using Nekoyume.EnumType;
 using Nekoyume.Extension;
@@ -9,7 +8,6 @@ using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using TMPro;
 using UnityEngine;
-using UnityEngine.EventSystems;
 
 namespace Nekoyume.UI
 {
@@ -20,19 +18,22 @@ namespace Nekoyume.UI
     {
         [SerializeField] private TextMeshProUGUI titleText;
         [SerializeField] private SubmitButton submitButton;
-        [SerializeField] private SubmitButton sellButton;
+        [SerializeField] private Button retrieveButton;
+        [SerializeField] private Button reregisterButton;
         [SerializeField] private SubmitWithCostButton buyButton;
         [SerializeField] private GameObject submit;
-        [SerializeField] private GameObject sell;
         [SerializeField] private GameObject buy;
-        [SerializeField] private BlockTimer sellTimer;
+        [SerializeField] private GameObject sell;
         [SerializeField] private BlockTimer buyTimer;
+        [SerializeField] private BlockTimer sellTimer;
+        [SerializeField] private Button closeButton;
 
         [SerializeField] private TextMeshProUGUI priceText;
         [SerializeField] private Scrollbar scrollbar;
 
         private bool _isPointerOnScrollArea;
         private bool _isScrollAreaDragged;
+
 
         private readonly List<IDisposable> _disposablesForModel = new List<IDisposable>();
 
@@ -51,13 +52,6 @@ namespace Nekoyume.UI
             Model = new Model.ItemInformationTooltip();
 
             submitButton.OnSubmitClick.Subscribe(_ =>
-            {
-                AudioController.PlayClick();
-                Model.OnSubmitClick.OnNext(this);
-                Close();
-            }).AddTo(gameObject);
-
-            sellButton.OnSubmitClick.Subscribe(_ =>
             {
                 AudioController.PlayClick();
                 Model.OnSubmitClick.OnNext(this);
@@ -86,6 +80,12 @@ namespace Nekoyume.UI
                 Model.OnSubmitClick.OnNext(this);
                 Close();
             };
+
+            closeButton.onClick.AddListener(() =>
+            {
+                Model.OnCloseClick.OnNext(this);
+                Close();
+            });
         }
 
         protected override void OnDestroy()
@@ -144,13 +144,13 @@ namespace Nekoyume.UI
             StartCoroutine(CoUpdate(submitButton.gameObject));
         }
 
-        public void ShowForShop(RectTransform target,
+        public void ShowForSell(RectTransform target,
                                 CountableItem item,
                                 Func<CountableItem, bool> submitEnabledFunc,
                                 string submitText,
-                                Action<ItemInformationTooltip> onSubmit,
-                                Action<ItemInformationTooltip> onClose,
-                                bool isBuy)
+                                Action<ItemInformationTooltip> onSell,
+                                Action<ItemInformationTooltip> onSellCancellation,
+                                Action<ItemInformationTooltip> onClose)
         {
             if (item?.ItemBase.Value is null)
             {
@@ -158,16 +158,13 @@ namespace Nekoyume.UI
             }
 
             submit.SetActive(false);
-            sell.SetActive(!isBuy);
-            buy.SetActive(isBuy);
-
+            buy.SetActive(false);
+            sell.SetActive(true);
             _disposablesForModel.DisposeAllAndClear();
             Model.target.Value = target;
             Model.ItemInformation.item.Value = item;
             Model.SubmitButtonEnabledFunc.SetValueAndForceNotify(submitEnabledFunc);
             Model.SubmitButtonText.Value = submitText;
-            sellTimer.UpdateTimer(Model.ExpiredBlockIndex.Value);
-            buyTimer.UpdateTimer(Model.ExpiredBlockIndex.Value);
 
             Show(Model);
             itemInformation.SetData(Model.ItemInformation);
@@ -175,22 +172,6 @@ namespace Nekoyume.UI
             Model.TitleText.SubscribeTo(titleText).AddTo(_disposablesForModel);
             Model.Price.SubscribeToPrice(priceText).AddTo(_disposablesForModel);
 
-            if (isBuy)
-            {
-                Model.SubmitButtonText.SubscribeTo(buyButton).AddTo(_disposablesForModel);
-                Model.SubmitButtonEnabled.Subscribe(buyButton.SetSubmittable).AddTo(_disposablesForModel);
-                Model.Price.Subscribe(price =>
-                {
-                    buyButton.ShowNCG(price, price <= States.Instance.GoldBalanceState.Gold);
-                }).AddTo(_disposablesForModel);
-            }
-            else
-            {
-                Model.SubmitButtonText.SubscribeTo(sellButton).AddTo(_disposablesForModel);
-                Model.SubmitButtonEnabled.Subscribe(sellButton.SetSubmittable).AddTo(_disposablesForModel);
-            }
-
-            Model.OnSubmitClick.Subscribe(onSubmit).AddTo(_disposablesForModel);
             if (onClose != null)
             {
                 Model.OnCloseClick.Subscribe(onClose).AddTo(_disposablesForModel);
@@ -200,8 +181,73 @@ namespace Nekoyume.UI
                 .Subscribe(value => SubscribeTargetItem(Model.target.Value))
                 .AddTo(_disposablesForModel);
 
+            retrieveButton.onClick.RemoveAllListeners();
+            retrieveButton.onClick.AddListener(() =>
+            {
+                onSellCancellation.Invoke(this);
+                Model.OnCloseClick.OnNext(this);
+                Close();
+            });
+
+            reregisterButton.onClick.RemoveAllListeners();
+            reregisterButton.onClick.AddListener(() =>
+            {
+                onSell.Invoke(this);
+                Model.OnCloseClick.OnNext(this);
+                Close();
+            });
+            sellTimer.UpdateTimer(Model.ExpiredBlockIndex.Value);
+        }
+
+          public void ShowForBuy(RectTransform target,
+                                CountableItem item,
+                                Func<CountableItem, bool> submitEnabledFunc,
+                                string submitText,
+                                Action<ItemInformationTooltip> onBuy,
+                                Action<ItemInformationTooltip> onClose)
+        {
+            if (item?.ItemBase.Value is null)
+            {
+                return;
+            }
+
+            submit.SetActive(false);
+            sell.SetActive(false);
+            buy.SetActive(true);
+
+            _disposablesForModel.DisposeAllAndClear();
+            Model.target.Value = target;
+            Model.ItemInformation.item.Value = item;
+            Model.SubmitButtonEnabledFunc.SetValueAndForceNotify(submitEnabledFunc);
+            Model.SubmitButtonText.Value = submitText;
+            Show(Model);
+            itemInformation.SetData(Model.ItemInformation);
+
+            Model.TitleText.SubscribeTo(titleText).AddTo(_disposablesForModel);
+            Model.Price.SubscribeToPrice(priceText).AddTo(_disposablesForModel);
+            Model.SubmitButtonText.SubscribeTo(buyButton).AddTo(_disposablesForModel);
+            Model.SubmitButtonEnabled.Subscribe(buyButton.SetSubmittable).AddTo(_disposablesForModel);
+            Model.Price.Subscribe(price =>
+            {
+                buyButton.ShowNCG(price, price <= States.Instance.GoldBalanceState.Gold);
+            }).AddTo(_disposablesForModel);
+
+            Model.OnSubmitClick.Subscribe(onBuy).AddTo(_disposablesForModel);
+            if (onClose != null)
+            {
+                Model.OnCloseClick.Subscribe(onClose).AddTo(_disposablesForModel);
+            }
+
+            Model.ItemInformation.item
+                .Subscribe(value => SubscribeTargetItem(Model.target.Value))
+                .AddTo(_disposablesForModel);
+<<<<<<< HEAD
+
             scrollbar.value = 1f;
             StartCoroutine(CoUpdate(isBuy ? buyButton.gameObject : sellButton.gameObject));
+=======
+            buyTimer.UpdateTimer(Model.ExpiredBlockIndex.Value);
+>>>>>>> development
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
@@ -231,6 +277,7 @@ namespace Nekoyume.UI
                 UpdateAnchoredPosition();
             }
         }
+<<<<<<< HEAD
 
         private IEnumerator CoUpdate(GameObject target)
         {
@@ -298,5 +345,7 @@ namespace Nekoyume.UI
         {
             _isPointerOnScrollArea = value;
         }
+=======
+>>>>>>> development
     }
 }

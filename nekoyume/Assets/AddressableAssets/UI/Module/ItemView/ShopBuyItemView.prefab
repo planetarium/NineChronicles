@@ -34,7 +34,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: -15, y: 0}
+  m_AnchoredPosition: {x: -15, y: 2.5}
   m_SizeDelta: {x: 28, y: 28}
   m_Pivot: {x: 0, y: 0}
 --- !u!222 &2538106145753043110
@@ -187,8 +187,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 6, y: -0.5}
-  m_SizeDelta: {x: 0, y: -6.99}
+  m_AnchoredPosition: {x: 6, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3353674047641742984
 CanvasRenderer:
@@ -246,17 +246,26 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
+<<<<<<< HEAD:nekoyume/Assets/AddressableAssets/UI/Module/ItemView/ShopBuyItemView.prefab
   m_fontSize: 14
   m_fontSizeBase: 16
+=======
+  m_fontSize: 13
+  m_fontSizeBase: 13
+>>>>>>> development:nekoyume/Assets/AddressableAssets/UI/Module/ItemView/ShopBuyItem.prefab
   m_fontWeight: 400
-  m_enableAutoSizing: 1
+  m_enableAutoSizing: 0
   m_fontSizeMin: 8
   m_fontSizeMax: 14
   m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535
+<<<<<<< HEAD:nekoyume/Assets/AddressableAssets/UI/Module/ItemView/ShopBuyItemView.prefab
   m_characterSpacing: 0
+=======
+  m_characterSpacing: -5
+>>>>>>> development:nekoyume/Assets/AddressableAssets/UI/Module/ItemView/ShopBuyItem.prefab
   m_wordSpacing: 0
   m_lineSpacing: 0
   m_lineSpacingMax: 0
@@ -302,8 +311,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   fixedFontAsset: 0
   fixedFontStyle: 0
-  fixedFontSizeOffset: 0
-  fixedSpacingOption: 0
+  fixedFontSizeOffset: 1
+  fixedSpacingOption: 1
+  fixedMarginOption: 1
   fontMaterialType: 0
   l10nKey: 
   fontMaterialIndexInitialized: 0
@@ -724,22 +734,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!224 &947412200653556942 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 1816018180843216220, guid: 5a7ec89f001bf46e686e8583d2f3a60e,
+--- !u!114 &7210847666546483427 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8071641539176640881, guid: 5a7ec89f001bf46e686e8583d2f3a60e,
     type: 3}
   m_PrefabInstance: {fileID: 1447388901623468434}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &8576040663526809079 stripped
+  m_GameObject: {fileID: 0}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &2927240367563074075 stripped
 MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 7138802453420313701, guid: 5a7ec89f001bf46e686e8583d2f3a60e,
+  m_CorrespondingSourceObject: {fileID: 4362172828940499849, guid: 5a7ec89f001bf46e686e8583d2f3a60e,
     type: 3}
   m_PrefabInstance: {fileID: 1447388901623468434}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e2410c6e911349d6ad72dc1f01bb7559, type: 3}
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!114 &1335482342977265350 stripped
@@ -754,15 +770,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &2927240367563074075 stripped
+--- !u!114 &8576040663526809079 stripped
 MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 4362172828940499849, guid: 5a7ec89f001bf46e686e8583d2f3a60e,
+  m_CorrespondingSourceObject: {fileID: 7138802453420313701, guid: 5a7ec89f001bf46e686e8583d2f3a60e,
     type: 3}
   m_PrefabInstance: {fileID: 1447388901623468434}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
+<<<<<<< HEAD:nekoyume/Assets/AddressableAssets/UI/Module/ItemView/ShopBuyItemView.prefab
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
@@ -778,6 +795,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+=======
+  m_Script: {fileID: 11500000, guid: e2410c6e911349d6ad72dc1f01bb7559, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!224 &947412200653556942 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 1816018180843216220, guid: 5a7ec89f001bf46e686e8583d2f3a60e,
+    type: 3}
+  m_PrefabInstance: {fileID: 1447388901623468434}
+  m_PrefabAsset: {fileID: 0}
+>>>>>>> development:nekoyume/Assets/AddressableAssets/UI/Module/ItemView/ShopBuyItem.prefab
 --- !u!1001 &8527956605961947037
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -902,6 +930,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 17e72ecd0e8a74aa29166b47443ad5c7, type: 3}
+--- !u!224 &9146537459410620784 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 627799159943436013, guid: 17e72ecd0e8a74aa29166b47443ad5c7,
+    type: 3}
+  m_PrefabInstance: {fileID: 8527956605961947037}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &7746104868017084841 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 2100597240855518772, guid: 17e72ecd0e8a74aa29166b47443ad5c7,
@@ -914,12 +948,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!224 &9146537459410620784 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 627799159943436013, guid: 17e72ecd0e8a74aa29166b47443ad5c7,
-    type: 3}
-  m_PrefabInstance: {fileID: 8527956605961947037}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &8668226562915702569
 PrefabInstance:
   m_ObjectHideFlags: 0
