@@ -28,6 +28,8 @@ namespace Nekoyume.UI.Model
         public readonly ReactiveProperty<SheetRow<int>> NotifiedRow
             = new ReactiveProperty<SheetRow<int>>();
 
+        public bool HasNotification => NotifiedRow.HasValue;
+
         public RecipeCell SelectedRecipeCell { get; set; }
         public EquipmentItemRecipeSheet.Row RecipeForTutorial { get; private set; }
         public HashSet<int> RecipeVFXSkipList { get; private set; }

@@ -109,6 +109,8 @@ namespace Nekoyume.UI
                 if (address.Equals(default)) return;
                 SharedModel.LoadRecipeVFXSkipList();
             }).AddTo(gameObject);
+
+            recipeScroll.InitializeNotification();
             ReactiveAvatarState.QuestList
                 .Subscribe(SubscribeQuestList)
                 .AddTo(gameObject);
@@ -188,7 +190,7 @@ namespace Nekoyume.UI
             if (quest is null ||
                 !Game.Game.instance.TableSheets.EquipmentItemRecipeSheet
                 .TryGetValue(quest.RecipeId, out var row) ||
-                States.Instance.CurrentAvatarState.worldInformation
+                !States.Instance.CurrentAvatarState.worldInformation
                 .TryGetLastClearedStageId(out var clearedStage))
             {
                 SharedModel.NotifiedRow.Value = null;

@@ -63,7 +63,10 @@ namespace Nekoyume.UI.Scroller
                     ShowAsFood(type);
                 });
             }
+        }
 
+        public void InitializeNotification()
+        {
             Craft.SharedModel.NotifiedRow
                 .Subscribe(SubscribeNotifiedRow)
                 .AddTo(gameObject);
