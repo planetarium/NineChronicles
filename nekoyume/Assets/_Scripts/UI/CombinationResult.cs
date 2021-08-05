@@ -82,6 +82,9 @@ namespace Nekoyume.UI
         [SerializeField]
         private List<Option> _optionTexts;
 
+        [SerializeField]
+        private float _dueTimeOfIncreaseCPAnimation;
+
 #if UNITY_EDITOR
         [Space(10)]
         [Header("Editor Properties For Test")]
@@ -394,7 +397,7 @@ namespace Nekoyume.UI
             var deltaTime = 0f;
             _disposableOfOpenOption = Observable
                 .EveryGameObjectUpdate()
-                .Take(TimeSpan.FromMilliseconds(250))
+                .Take(TimeSpan.FromSeconds(_dueTimeOfIncreaseCPAnimation))
                 .DoOnCompleted(() => _disposableOfOpenOption = null)
                 .Subscribe(_ =>
                 {
