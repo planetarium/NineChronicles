@@ -5,6 +5,7 @@ using JetBrains.Annotations;
 using Nekoyume.Battle;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Controller;
+using Nekoyume.Helper;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Skill;
 using Nekoyume.Model.Stat;
@@ -77,10 +78,16 @@ namespace Nekoyume.UI
         private ResultItem _resultItem;
 
         [SerializeField]
-        private List<GameObject> _optionStarObjects;
+        private List<GameObject> _statOptionIconObjects;
 
         [SerializeField]
-        private List<Option> _optionTexts;
+        private List<GameObject> _skillOptionIconObjects;
+
+        [SerializeField]
+        private List<Option> _statOptionTexts;
+
+        [SerializeField]
+        private List<Option> _skillOptionTexts;
 
         [SerializeField]
         private float _dueTimeOfIncreaseCPAnimation;
@@ -176,123 +183,113 @@ namespace Nekoyume.UI
                 return;
             }
 
-            // NOTE: Ignore Show Animation
-            base.Show(true);
-
             _cpListForAnimationSteps.Clear();
             _resultItem.itemNameText.text = itemUsable.GetLocalizedName(useElementalIcon: false);
             _resultItem.itemView.SetData(new CountableItem(itemUsable, 1));
+            _resultItem.mainStatText.text = string.Empty;
+            _resultItem.cpText.text = string.Empty;
 
-            if (itemUsable is Equipment equipment)
+            var optionInfo = itemUsable is Equipment equipment
+                ? new ItemOptionInfo(equipment)
+                : new ItemOptionInfo(itemUsable);
+            var statOptions = optionInfo.StatOptions;
+            var statOptionsCount = statOptions.Count;
+            for (var i = 0; i < _statOptionIconObjects.Count; i++)
             {
-                var optionCount = equipment.optionCountFromCombination;
-                for (var i = 0; i < _optionStarObjects.Count; i++)
-                {
-                    _optionStarObjects[i].SetActive(i < optionCount);
-                }
-
-                _iconImage.overrideSprite = _equipmentIconSprite;
-                var (mainStatType, mainStatValue) = (
-                    equipment.UniqueStatType,
-                    equipment.StatsMap.GetStat(equipment.UniqueStatType, true));
-                _resultItem.mainStatText.text = $"{mainStatType.ToString()} {mainStatValue}";
-
-                var statsCP = CPHelper.GetStatCP(mainStatType, mainStatValue);
-                _cpListForAnimationSteps.Add(statsCP);
-                _resultItem.cpText.text = CPHelper.DecimalToInt(statsCP).ToString();
-
-                var additionalStats = equipment.StatsMap.GetAdditionalStats(true)
-                    .ToArray();
-                var additionalStatsLength = additionalStats.Length;
-                var skills = equipment.Skills;
-                var skillsCount = skills.Count;
-                var optionTextsIndex = 0;
-                while (optionTextsIndex < _optionTexts.Count)
-                {
-                    var optionText = _optionTexts[optionTextsIndex];
-                    if (optionTextsIndex < additionalStatsLength)
-                    {
-                        if (optionTextsIndex == 0 && optionText.secondStarObject != null)
-                        {
-                            optionText.secondStarObject.SetActive(
-                                additionalStatsLength < optionCount - skillsCount);
-                        }
-
-                        var (statType, additionalValue) = additionalStats[optionTextsIndex];
-                        optionText.text.text = $"{statType.ToString()} +{additionalValue}";
-                        optionText.rootObject.SetActive(true);
-
-                        statsCP += CPHelper.GetStatCP(statType, additionalValue);
-                        _cpListForAnimationSteps.Add(statsCP);
-                    }
-                    else if (optionTextsIndex < additionalStatsLength + skillsCount)
-                    {
-                        var skill = skills[optionTextsIndex - additionalStatsLength];
-                        optionText.text.text = $"{skill.SkillRow.GetLocalizedName()} {skill.Power} / {skill.Chance:P}";
-                        optionText.rootObject.SetActive(true);
-
-                        var multipliedCP = statsCP *
-                                           CPHelper.GetSkillsMultiplier(optionTextsIndex - additionalStatsLength + 1);
-                        _cpListForAnimationSteps.Add(multipliedCP);
-                    }
-                    else
-                    {
-                        optionText.rootObject.SetActive(false);
-                    }
-
-                    optionTextsIndex++;
-                }
-
-                if (CPHelper.GetCP(equipment) !=
-                    CPHelper.DecimalToInt(_cpListForAnimationSteps[_cpListForAnimationSteps.Count - 1]))
-                {
-                    Debug.LogError(
-                        $"Wrong CP!!!! {CPHelper.GetCP(equipment)} != {_cpListForAnimationSteps[_cpListForAnimationSteps.Count - 1]}");
-                }
-
-                Animator.SetTrigger(optionCount == 4
-                    ? AnimatorHashGreatSuccess
-                    : AnimatorHashSuccess);
+                _statOptionIconObjects[i].SetActive(i < statOptionsCount);
             }
-            else if (itemUsable is Consumable consumable)
+
+            for (var i = 0; i < _statOptionTexts.Count; i++)
+            {
+                var statOptionText = _statOptionTexts[i];
+                if (i >= statOptionsCount)
+                {
+                    statOptionText.rootObject.SetActive(false);
+                    continue;
+                }
+
+                var (type, value, count) = statOptions[i];
+                if (i == 0 && statOptionText.secondStarObject)
+                {
+                    statOptionText.secondStarObject.SetActive(count > 1);
+                }
+
+                statOptionText.text.text = $"{type.ToString()} +{value}";
+                statOptionText.rootObject.SetActive(true);
+            }
+
+            var skillOptions = optionInfo.SkillOptions;
+            var skillOptionsCount = skillOptions.Count;
+            for (var i = 0; i < _skillOptionIconObjects.Count; i++)
+            {
+                _skillOptionIconObjects[i].SetActive(i < skillOptionsCount);
+            }
+
+            for (var i = 0; i < _skillOptionTexts.Count; i++)
+            {
+                var skillOptionText = _skillOptionTexts[i];
+                if (i >= skillOptionsCount)
+                {
+                    skillOptionText.rootObject.SetActive(false);
+                    continue;
+                }
+
+                var (skillName, power, chance) = skillOptions[i];
+                skillOptionText.text.text = $"{skillName} {power} / {chance:P}";
+                skillOptionText.rootObject.SetActive(true);
+            }
+
+            if (itemUsable is Equipment equipment2)
+            {
+                Show(equipment2);
+            }
+            else
             {
                 _iconImage.overrideSprite = _consumableIconSprite;
-                _resultItem.mainStatText.text = string.Empty;
-                _resultItem.cpText.text = string.Empty;
 
-                var stats = consumable.StatsMap.GetStats(true)
-                    .ToArray();
-                var statsLength = stats.Length;
-                for (var i = 0; i < _optionStarObjects.Count; i++)
-                {
-                    _optionStarObjects[i].SetActive(i < statsLength);
-                }
-
-                var optionTextsIndex = 0;
-                while (optionTextsIndex < _optionTexts.Count)
-                {
-                    var optionText = _optionTexts[optionTextsIndex];
-                    if (optionText.secondStarObject != null)
-                    {
-                        optionText.secondStarObject.SetActive(false);
-                    }
-
-                    if (optionTextsIndex < statsLength)
-                    {
-                        var (statType, additionalValue) = stats[optionTextsIndex];
-                        optionText.text.text = $"{statType.GetLocalizedString()} +{additionalValue}";
-                        optionText.rootObject.SetActive(true);
-                    }
-                    else
-                    {
-                        optionText.rootObject.SetActive(false);
-                    }
-
-                    optionTextsIndex++;
-                }
-
+                // NOTE: Ignore Show Animation
+                base.Show(true);
                 Animator.SetTrigger(AnimatorHashSuccess);
             }
+        }
+
+        private void Show(Equipment equipment, ItemOptionInfo itemOptionInfo)
+        {
+            _iconImage.overrideSprite = _equipmentIconSprite;
+
+            var (mainStatType, mainStatValue) = itemOptionInfo.MainStat;
+            _resultItem.mainStatText.text = $"{mainStatType.ToString()} {mainStatValue}";
+
+            var statsCP = CPHelper.GetStatCP(mainStatType, mainStatValue);
+            _cpListForAnimationSteps.Add(statsCP);
+            _resultItem.cpText.text = CPHelper.DecimalToInt(statsCP).ToString();
+
+            var statOptions = itemOptionInfo.StatOptions;
+            foreach (var (type, value, _) in statOptions)
+            {
+                statsCP += CPHelper.GetStatCP(type, value);
+                _cpListForAnimationSteps.Add(statsCP);
+            }
+
+            var skillOptions = itemOptionInfo.SkillOptions;
+            for (var i = 0; i < skillOptions.Count; i++)
+            {
+                var multipliedCP = statsCP * CPHelper.GetSkillsMultiplier(i + 1);
+                _cpListForAnimationSteps.Add(multipliedCP);
+            }
+
+            if (CPHelper.GetCP(equipment) !=
+                CPHelper.DecimalToInt(_cpListForAnimationSteps[_cpListForAnimationSteps.Count - 1]))
+            {
+                Debug.LogError(
+                    $"Wrong CP!!!! {CPHelper.GetCP(equipment)} != {_cpListForAnimationSteps[_cpListForAnimationSteps.Count - 1]}");
+            }
+
+            // NOTE: Ignore Show Animation
+            base.Show(true);
+            Animator.SetTrigger(itemOptionInfo.OptionCountFromCombination == 4
+                ? AnimatorHashGreatSuccess
+                : AnimatorHashSuccess);
         }
 
         #region Invoke from Animation
