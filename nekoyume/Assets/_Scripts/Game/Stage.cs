@@ -667,10 +667,10 @@ namespace Nekoyume.Game
             {
                 var hideHeaderMenu = false;
                 var worldInfoExists = States.Instance.CurrentAvatarState.worldInformation
-                    .TryGetLastClearedStageId(out var clearedStageId);
+                    .TryGetUnlockedWorldByStageClearedBlockIndex(out var worldInfo);
 
                 if ((worldInfoExists &&
-                    clearedStageId < UI.Battle.RequiredStageForExitButton) ||
+                    worldInfo.StageClearedId <= UI.Battle.RequiredStageForExitButton) ||
                     !worldInfoExists)
                 {
                     Widget.Find<HeaderMenu>().Close(true);

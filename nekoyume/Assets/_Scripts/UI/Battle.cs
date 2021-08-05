@@ -24,7 +24,7 @@ namespace Nekoyume.UI
         public BossStatus EnemyPlayerStatus => enemyPlayerStatus;
         public StageProgressBar StageProgressBar => stageProgressBar;
         public ComboText ComboText => comboText;
-        public const int RequiredStageForExitButton = 4;
+        public const int RequiredStageForExitButton = 3;
 
         protected override void Awake()
         {
@@ -93,7 +93,6 @@ namespace Nekoyume.UI
 
         public void Show(int stageId, bool isRepeat, bool isExitReserved, bool isTutorial)
         {
-            stageTitle.Show(stageId);
             if (isTutorial)
             {
                 ShowForTutorial(false);
@@ -106,6 +105,7 @@ namespace Nekoyume.UI
             {
                 guidedQuest.SetWorldQuestToInProgress(stageId);
             });
+            stageTitle.Show(stageId);
             stageProgressBar.Show();
             bossStatus.Close();
             enemyPlayerStatus.Close();
