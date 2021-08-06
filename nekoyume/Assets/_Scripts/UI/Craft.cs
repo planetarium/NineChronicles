@@ -11,12 +11,13 @@ using Nekoyume.State;
 using Nekoyume.TableData;
 using System;
 using System.Collections;
+using Nekoyume.L10n;
+using Nekoyume.Model.Mail;
+using Nekoyume.Model.Quest;
+using System.Linq;
 
 namespace Nekoyume.UI
 {
-    using Nekoyume.Model.Quest;
-    using Nekoyume.UI.Module;
-    using System.Linq;
     using UniRx;
     using Toggle = Module.Toggle;
 
@@ -221,13 +222,16 @@ namespace Nekoyume.UI
 
         private void CombinationEquipmentAction(SubRecipeView.RecipeInfo recipeInfo)
         {
-            var slotIndex = OnCombinationAction(recipeInfo);
-            if (slotIndex < 0)
+            if (!equipmentSubRecipeView.CheckSubmittable(out var errorMessage, out var slotIndex))
             {
+                OneLinePopup.Push(MailType.System, errorMessage);
                 return;
             }
-            equipmentSubRecipeView.UpdateView();
 
+            var slots = Find<CombinationSlots>();
+            slots.SetCaching(slotIndex, true);
+            OnCombinationAction(recipeInfo);
+            equipmentSubRecipeView.UpdateView();
             Game.Game.instance.ActionManager.CombinationEquipment(
                 recipeInfo.RecipeId,
                 slotIndex,
@@ -242,13 +246,16 @@ namespace Nekoyume.UI
 
         private void CombinationConsumableAction(SubRecipeView.RecipeInfo recipeInfo)
         {
-            var slotIndex = OnCombinationAction(recipeInfo);
-            if (slotIndex < 0)
+            if (!consumableSubRecipeView.CheckSubmittable(out var errorMessage, out var slotIndex))
             {
+                OneLinePopup.Push(MailType.System, errorMessage);
                 return;
             }
-            consumableSubRecipeView.UpdateView();
 
+            var slots = Find<CombinationSlots>();
+            slots.SetCaching(slotIndex, true);
+            OnCombinationAction(recipeInfo);
+            consumableSubRecipeView.UpdateView();
             Game.Game.instance.ActionManager.CombinationConsumable(
                 recipeInfo.RecipeId,
                 slotIndex);
@@ -260,16 +267,8 @@ namespace Nekoyume.UI
             StartCoroutine(CoCombineNPCAnimation(consumable, true));
         }
 
-        private int OnCombinationAction(SubRecipeView.RecipeInfo recipeInfo)
+        private void OnCombinationAction(SubRecipeView.RecipeInfo recipeInfo)
         {
-            var slots = Find<CombinationSlots>();
-            if (!slots.TryGetEmptyCombinationSlot(out var slotIndex))
-            {
-                return -1;
-            }
-
-            slots.SetCaching(slotIndex, true);
-
             var agentAddress = States.Instance.AgentState.address;
             var avatarAddress = States.Instance.CurrentAvatarState.address;
 
@@ -280,8 +279,6 @@ namespace Nekoyume.UI
             {
                 LocalLayerModifier.RemoveItem(avatarAddress, material, count);
             }
-
-            return slotIndex;
         }
 
         private IEnumerator CoCombineNPCAnimation(ItemBase itemBase, bool isConsumable = false)
