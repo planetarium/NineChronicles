@@ -18,6 +18,8 @@ using Libplanet;
 using System.Security.Cryptography;
 using Toggle = Nekoyume.UI.Module.Toggle;
 using Material = Nekoyume.Model.Item.Material;
+using Nekoyume.L10n;
+using Nekoyume.Model.Mail;
 
 namespace Nekoyume.UI
 {
@@ -57,7 +59,7 @@ namespace Nekoyume.UI
         [SerializeField] private Button combineButton = null;
         [SerializeField] private GameObject buttonEnabledObject = null;
         [SerializeField] private TextMeshProUGUI costText = null;
-        [SerializeField] private GameObject buttonDisabledObject = null;
+        [SerializeField] private Image buttonDisabledImage = null;
         [SerializeField] private GameObject lockObject = null;
 
         public readonly Subject<RecipeInfo> CombinationActionSubject = new Subject<RecipeInfo>();
@@ -150,7 +152,6 @@ namespace Nekoyume.UI
             costText.text = _selectedRecipeInfo.CostNCG.ToString();
 
             buttonEnabledObject.SetActive(true);
-            buttonDisabledObject.SetActive(false);
         }
 
         private void UpdateInformation(int index)
@@ -245,6 +246,9 @@ namespace Nekoyume.UI
                 Materials = materialList
             };
             _selectedRecipeInfo = recipeInfo;
+
+            var submittable = CheckSubmittable(out _, out _);
+            buttonDisabledImage.enabled = !submittable;
         }
 
         private void SetOptions(
@@ -307,39 +311,48 @@ namespace Nekoyume.UI
             CombinationActionSubject.OnNext(_selectedRecipeInfo);
         }
 
-        public bool CheckSubmittable(out string errorKey)
+        public bool CheckSubmittable(out string errorMessage, out int slotIndex)
         {
+            slotIndex = -1;
             if (States.Instance.AgentState is null)
             {
-                errorKey = "FAILED_TO_GET_AGENTSTATE";
+                errorMessage = L10nManager.Localize("FAILED_TO_GET_AGENTSTATE");
                 return false;
             }
 
             if (States.Instance.CurrentAvatarState is null)
             {
-                errorKey = "FAILED_TO_GET_AVATARSTATE";
+                errorMessage = L10nManager.Localize("FAILED_TO_GET_AVATARSTATE");
                 return false;
             }
 
             if (States.Instance.GoldBalanceState.Gold.MajorUnit < _selectedRecipeInfo.CostNCG)
             {
-                errorKey = "UI_NOT_ENOUGH_NCG";
+                errorMessage = L10nManager.Localize("UI_NOT_ENOUGH_NCG");
                 return false;
             }
 
             if (States.Instance.CurrentAvatarState.actionPoint < _selectedRecipeInfo.CostAP)
             {
-                errorKey = "UI_NOT_ENOUGH_AP";
+                errorMessage = L10nManager.Localize("UI_NOT_ENOUGH_AP");
                 return false;
             }
 
             if (!CheckMaterial(_selectedRecipeInfo.Materials))
             {
-                errorKey = "NOTIFICATION_NOT_ENOUGH_MATERIALS";
+                errorMessage = L10nManager.Localize("NOTIFICATION_NOT_ENOUGH_MATERIALS");
                 return false;
             }
 
-            errorKey = null;
+            var slots = Widget.Find<CombinationSlots>();
+            if (!slots.TryGetEmptyCombinationSlot(out slotIndex))
+            {
+                var message = L10nManager.Localize("NOTIFICATION_NOT_ENOUGH_SLOTS");
+                errorMessage = message;
+                return false;
+            }
+
+            errorMessage = null;
             return true;
         }
 

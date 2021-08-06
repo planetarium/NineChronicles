@@ -222,21 +222,13 @@ namespace Nekoyume.UI
 
         private void CombinationEquipmentAction(SubRecipeView.RecipeInfo recipeInfo)
         {
+            if (!equipmentSubRecipeView.CheckSubmittable(out var errorMessage, out var slotIndex))
+            {
+                OneLinePopup.Push(MailType.System, errorMessage);
+                return;
+            }
+
             var slots = Find<CombinationSlots>();
-            if (!slots.TryGetEmptyCombinationSlot(out var slotIndex))
-            {
-                var message = L10nManager.Localize("NOTIFICATION_NOT_ENOUGH_SLOTS");
-                OneLinePopup.Push(MailType.System, message);
-                return;
-            }
-
-            if (!equipmentSubRecipeView.CheckSubmittable(out var errorKey))
-            {
-                var message = L10nManager.Localize(errorKey);
-                OneLinePopup.Push(MailType.System, message);
-                return;
-            }
-
             slots.SetCaching(slotIndex, true);
             OnCombinationAction(recipeInfo);
             equipmentSubRecipeView.UpdateView();
@@ -254,21 +246,13 @@ namespace Nekoyume.UI
 
         private void CombinationConsumableAction(SubRecipeView.RecipeInfo recipeInfo)
         {
+            if (!consumableSubRecipeView.CheckSubmittable(out var errorMessage, out var slotIndex))
+            {
+                OneLinePopup.Push(MailType.System, errorMessage);
+                return;
+            }
+
             var slots = Find<CombinationSlots>();
-            if (!slots.TryGetEmptyCombinationSlot(out var slotIndex))
-            {
-                var message = L10nManager.Localize("NOTIFICATION_NOT_ENOUGH_SLOTS");
-                OneLinePopup.Push(MailType.System, message);
-                return;
-            }
-
-            if (!consumableSubRecipeView.CheckSubmittable(out var errorKey))
-            {
-                var message = L10nManager.Localize(errorKey);
-                OneLinePopup.Push(MailType.System, message);
-                return;
-            }
-
             slots.SetCaching(slotIndex, true);
             OnCombinationAction(recipeInfo);
             consumableSubRecipeView.UpdateView();
