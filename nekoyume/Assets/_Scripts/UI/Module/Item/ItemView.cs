@@ -10,11 +10,13 @@ using TMPro;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
+using Coffee.UIEffects;
+using Nekoyume.Game.ScriptableObject;
+using Nekoyume.Helper;
+using Nekoyume.Model.Item;
 
 namespace Nekoyume.UI.Module
 {
-    using Coffee.UIEffects;
-    using Nekoyume.Game.ScriptableObject;
     using UniRx;
 
     public class ItemView<TViewModel> : VanillaItemView
@@ -232,7 +234,20 @@ namespace Nekoyume.UI.Module
             optionTagBg.saturation = optionViewData.GradeHsvSaturation;
             optionTagBg.value = optionViewData.GradeHsvValue;
             optionTagBg.gameObject.SetActive(true);
-            var itemBase = Model.ItemBase.Value;
+            var data = new ItemOptionInfo(Model.ItemBase.Value as Equipment);
+
+            var index = 0;
+            for (var i = 0; i < data.StatOptions.Count; ++i)
+            {
+                
+                ++index;
+            }
+
+            for (var i = 0; i < data.SkillOptions.Count; ++i)
+            {
+
+                ++index;
+            }
         }
     }
 }
