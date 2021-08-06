@@ -204,7 +204,7 @@ namespace Nekoyume.Game.Character
             if (HudContainer != null)
             {
                 HudContainer.gameObject.SetActive(true);
-                var clone  = ResourcesHelper.GetCharacterTitle(costume.Grade, costume.GetLocalizedNonColoredName());
+                var clone  = ResourcesHelper.GetCharacterTitle(costume.Grade, costume.GetLocalizedNonColoredName(false));
                 _cachedCharacterTitle = Instantiate(clone, HudContainer.transform);
                 _cachedCharacterTitle.name = costume.Id.ToString();
                 _cachedCharacterTitle.transform.SetAsFirstSibling();

@@ -151,7 +151,7 @@ namespace Nekoyume.UI
             Mixpanel.Track("Unity/Click Guided Quest Combination Equipment");
 
             CombinationClickInternal(() =>
-                Find<Craft>().Show());
+                Find<Craft>().Show(recipeId));
         }
 
         private void UpdateButtons()
@@ -162,20 +162,17 @@ namespace Nekoyume.UI
             btnRanking.Update();
             btnMimisbrunnr.Update();
 
-            var addressHax = ReactiveAvatarState.Address.Value.ToHex();
-            var firstOpenCombinationKey = string.Format(FirstOpenCombinationKeyFormat, addressHax);
-            var firstOpenShopKey = string.Format(FirstOpenShopKeyFormat, addressHax);
-            var firstOpenRankingKey = string.Format(FirstOpenRankingKeyFormat, addressHax);
-            var firstOpenQuestKey = string.Format(FirstOpenQuestKeyFormat, addressHax);
-            var firstOpenMimisbrunnrKey = string.Format(FirstOpenMimisbrunnrKeyFormat, addressHax);
-
-            var combination = Find<Combination>();
-            var hasNotificationOnCombination = combination.HasNotification;
+            var addressHex = ReactiveAvatarState.Address.Value.ToHex();
+            var firstOpenCombinationKey = string.Format(FirstOpenCombinationKeyFormat, addressHex);
+            var firstOpenShopKey = string.Format(FirstOpenShopKeyFormat, addressHex);
+            var firstOpenRankingKey = string.Format(FirstOpenRankingKeyFormat, addressHex);
+            var firstOpenQuestKey = string.Format(FirstOpenQuestKeyFormat, addressHex);
+            var firstOpenMimisbrunnrKey = string.Format(FirstOpenMimisbrunnrKeyFormat, addressHex);
 
             combinationExclamationMark.gameObject.SetActive(
                 btnCombination.IsUnlocked &&
                 (PlayerPrefs.GetInt(firstOpenCombinationKey, 0) == 0 ||
-                 hasNotificationOnCombination));
+                 Craft.SharedModel.HasNotification));
             shopExclamationMark.gameObject.SetActive(
                 btnShop.IsUnlocked &&
                 PlayerPrefs.GetInt(firstOpenShopKey, 0) == 0);

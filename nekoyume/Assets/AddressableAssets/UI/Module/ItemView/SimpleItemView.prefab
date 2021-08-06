@@ -86,6 +86,7 @@ GameObject:
   - component: {fileID: 2719519769657226679}
   - component: {fileID: 4734210539774020924}
   - component: {fileID: 7185475297955795450}
+  - component: {fileID: 9073089715312055532}
   m_Layer: 5
   m_Name: OptionTagImage
   m_TagString: Untagged
@@ -151,6 +152,23 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &9073089715312055532
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 947238505013531470}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: efe700dddcd8341ff8607ac2c827b4b5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_TargetColor: {r: 1, g: 1, b: 1, a: 1}
+  m_Range: 0.5
+  m_Hue: 0
+  m_Saturation: 0
+  m_Value: 0
 --- !u!1 &2901451010217154596
 GameObject:
   m_ObjectHideFlags: 0
@@ -680,9 +698,9 @@ MonoBehaviour:
   enhancementImage: {fileID: 866163676375508267}
   selectionImage: {fileID: 5014130152458077508}
   dimmedImage: {fileID: 0}
-  optionTagObject: {fileID: 947238505013531470}
+  optionTagBg: {fileID: 9073089715312055532}
   optionTagText: {fileID: 3977221560816884998}
-  optionTagBgImage: {fileID: 7185475297955795450}
+  optionTagData: {fileID: 11400000, guid: 14bb93de0da9b0540b01c055544f1320, type: 2}
 --- !u!114 &4660487413905793083
 MonoBehaviour:
   m_ObjectHideFlags: 0
