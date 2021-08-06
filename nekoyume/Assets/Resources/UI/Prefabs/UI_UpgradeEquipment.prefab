@@ -1207,7 +1207,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: ba30455b041df4b29a44c5acdf38d5d6, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 8e26f1c9f9ab349b3ad8eecdb01c4033, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -1797,6 +1797,7 @@ MonoBehaviour:
   fixedFontStyle: 0
   fixedFontSizeOffset: 0
   fixedSpacingOption: 0
+  fixedMarginOption: 0
   fontMaterialType: 2
   l10nKey: 
   fontMaterialIndexInitialized: 0
@@ -3161,6 +3162,7 @@ MonoBehaviour:
   fixedFontStyle: 0
   fixedFontSizeOffset: 0
   fixedSpacingOption: 0
+  fixedMarginOption: 0
   fontMaterialType: 4
   l10nKey: 
   fontMaterialIndexInitialized: 0
@@ -3326,8 +3328,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4282896895
-  m_fontColor: {r: 1, g: 0.81960785, b: 0.2784314, a: 1}
+    rgba: 4294920156
+  m_fontColor: {r: 0.8627451, g: 0.2784314, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 0
   m_fontColorGradient:
@@ -3402,6 +3404,7 @@ MonoBehaviour:
   fixedFontStyle: 0
   fixedFontSizeOffset: 0
   fixedSpacingOption: 0
+  fixedMarginOption: 0
   fontMaterialType: 4
   l10nKey: 
   fontMaterialIndexInitialized: 0
@@ -3638,6 +3641,7 @@ MonoBehaviour:
   fixedFontStyle: 0
   fixedFontSizeOffset: 0
   fixedSpacingOption: 0
+  fixedMarginOption: 0
   fontMaterialType: 0
   l10nKey: UI_UPGRADE_BLOCK_TITLE
   fontMaterialIndexInitialized: 0
@@ -3965,6 +3969,7 @@ MonoBehaviour:
   fixedFontStyle: 0
   fixedFontSizeOffset: 0
   fixedSpacingOption: 0
+  fixedMarginOption: 0
   fontMaterialType: 1
   l10nKey: 
   fontMaterialIndexInitialized: 0
@@ -4581,6 +4586,7 @@ MonoBehaviour:
   fixedFontStyle: 0
   fixedFontSizeOffset: 0
   fixedSpacingOption: 0
+  fixedMarginOption: 0
   fontMaterialType: 2
   l10nKey: 
   fontMaterialIndexInitialized: 0
@@ -5267,6 +5273,7 @@ MonoBehaviour:
   fixedFontStyle: 0
   fixedFontSizeOffset: 0
   fixedSpacingOption: 0
+  fixedMarginOption: 0
   fontMaterialType: 2
   l10nKey: 
   fontMaterialIndexInitialized: 0
@@ -5731,6 +5738,7 @@ MonoBehaviour:
   fixedFontStyle: 0
   fixedFontSizeOffset: 0
   fixedSpacingOption: 0
+  fixedMarginOption: 0
   fontMaterialType: 4
   l10nKey: 
   fontMaterialIndexInitialized: 0
@@ -6005,6 +6013,7 @@ MonoBehaviour:
   fixedFontStyle: 0
   fixedFontSizeOffset: 0
   fixedSpacingOption: 0
+  fixedMarginOption: 0
   fontMaterialType: 4
   l10nKey: 
   fontMaterialIndexInitialized: 0
@@ -6291,6 +6300,7 @@ MonoBehaviour:
   fixedFontStyle: 0
   fixedFontSizeOffset: 0
   fixedSpacingOption: 0
+  fixedMarginOption: 0
   fontMaterialType: 9
   l10nKey: 
   fontMaterialIndexInitialized: 0
@@ -6756,7 +6766,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 5125301551388603195}
   m_Direction: 2
   m_Value: 1
-  m_Size: 0.678808
+  m_Size: 0.54635763
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -6913,6 +6923,7 @@ MonoBehaviour:
   fixedFontStyle: 0
   fixedFontSizeOffset: 0
   fixedSpacingOption: 0
+  fixedMarginOption: 0
   fontMaterialType: 4
   l10nKey: 
   fontMaterialIndexInitialized: 0
@@ -7081,6 +7092,7 @@ MonoBehaviour:
   fixedFontStyle: 0
   fixedFontSizeOffset: 0
   fixedSpacingOption: 0
+  fixedMarginOption: 0
   fontMaterialType: 0
   l10nKey: UI_UPGRADE_SUCCESS_RATE_TITLE
   fontMaterialIndexInitialized: 0
@@ -7833,6 +7845,7 @@ MonoBehaviour:
   fixedFontStyle: 0
   fixedFontSizeOffset: 0
   fixedSpacingOption: 0
+  fixedMarginOption: 0
   fontMaterialType: 1
   l10nKey: 
   fontMaterialIndexInitialized: 0
@@ -7999,6 +8012,7 @@ MonoBehaviour:
   fixedFontStyle: 0
   fixedFontSizeOffset: 0
   fixedSpacingOption: 0
+  fixedMarginOption: 0
   fontMaterialType: 4
   l10nKey: 
   fontMaterialIndexInitialized: 0
@@ -8494,6 +8508,7 @@ MonoBehaviour:
   fixedFontStyle: 0
   fixedFontSizeOffset: 0
   fixedSpacingOption: 0
+  fixedMarginOption: 0
   fontMaterialType: 4
   l10nKey: 
   fontMaterialIndexInitialized: 0
@@ -9162,8 +9177,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4282896895
-  m_fontColor: {r: 1, g: 0.81960785, b: 0.2784314, a: 1}
+    rgba: 4294920156
+  m_fontColor: {r: 0.86222446, g: 0.27843142, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 0
   m_fontColorGradient:
@@ -9238,6 +9253,7 @@ MonoBehaviour:
   fixedFontStyle: 0
   fixedFontSizeOffset: 0
   fixedSpacingOption: 0
+  fixedMarginOption: 0
   fontMaterialType: 4
   l10nKey: 
   fontMaterialIndexInitialized: 0
@@ -9498,7 +9514,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: ba30455b041df4b29a44c5acdf38d5d6, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 8e26f1c9f9ab349b3ad8eecdb01c4033, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -10002,7 +10018,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: ba30455b041df4b29a44c5acdf38d5d6, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 8e26f1c9f9ab349b3ad8eecdb01c4033, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -10888,6 +10904,7 @@ MonoBehaviour:
   fixedFontStyle: 0
   fixedFontSizeOffset: 0
   fixedSpacingOption: 0
+  fixedMarginOption: 0
   fontMaterialType: 4
   l10nKey: 
   fontMaterialIndexInitialized: 0
@@ -11349,8 +11366,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4282896895
-  m_fontColor: {r: 1, g: 0.81960785, b: 0.2784314, a: 1}
+    rgba: 4294920156
+  m_fontColor: {r: 0.8627451, g: 0.2784314, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 0
   m_fontColorGradient:
@@ -11425,6 +11442,7 @@ MonoBehaviour:
   fixedFontStyle: 0
   fixedFontSizeOffset: 0
   fixedSpacingOption: 0
+  fixedMarginOption: 0
   fontMaterialType: 4
   l10nKey: 
   fontMaterialIndexInitialized: 0
@@ -12203,6 +12221,7 @@ MonoBehaviour:
   fixedFontStyle: 0
   fixedFontSizeOffset: 0
   fixedSpacingOption: 0
+  fixedMarginOption: 0
   fontMaterialType: 4
   l10nKey: 
   fontMaterialIndexInitialized: 0
@@ -12709,6 +12728,7 @@ MonoBehaviour:
   fixedFontStyle: 0
   fixedFontSizeOffset: 0
   fixedSpacingOption: 0
+  fixedMarginOption: 0
   fontMaterialType: 1
   l10nKey: 
   fontMaterialIndexInitialized: 0
@@ -12896,6 +12916,7 @@ MonoBehaviour:
   fixedFontStyle: 1
   fixedFontSizeOffset: 0
   fixedSpacingOption: 0
+  fixedMarginOption: 0
   fontMaterialType: 0
   l10nKey: 
   fontMaterialIndexInitialized: 0
@@ -13319,7 +13340,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: ba30455b041df4b29a44c5acdf38d5d6, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 8e26f1c9f9ab349b3ad8eecdb01c4033, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -13553,6 +13574,7 @@ MonoBehaviour:
   fixedFontStyle: 0
   fixedFontSizeOffset: 0
   fixedSpacingOption: 0
+  fixedMarginOption: 0
   fontMaterialType: 2
   l10nKey: 
   fontMaterialIndexInitialized: 0
@@ -14016,6 +14038,7 @@ MonoBehaviour:
   fixedFontStyle: 0
   fixedFontSizeOffset: 0
   fixedSpacingOption: 0
+  fixedMarginOption: 0
   fontMaterialType: 1
   l10nKey: 
   fontMaterialIndexInitialized: 0
@@ -14406,6 +14429,7 @@ MonoBehaviour:
   fixedFontStyle: 0
   fixedFontSizeOffset: 0
   fixedSpacingOption: 0
+  fixedMarginOption: 0
   fontMaterialType: 2
   l10nKey: 
   fontMaterialIndexInitialized: 0
@@ -15386,6 +15410,7 @@ MonoBehaviour:
   fixedFontStyle: 0
   fixedFontSizeOffset: 0
   fixedSpacingOption: 0
+  fixedMarginOption: 0
   fontMaterialType: 4
   l10nKey: 
   fontMaterialIndexInitialized: 0
@@ -15915,6 +15940,7 @@ MonoBehaviour:
   fixedFontStyle: 0
   fixedFontSizeOffset: 0
   fixedSpacingOption: 0
+  fixedMarginOption: 0
   fontMaterialType: 4
   l10nKey: 
   fontMaterialIndexInitialized: 0
@@ -16654,8 +16680,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4282896895
-  m_fontColor: {r: 1, g: 0.81960785, b: 0.2784314, a: 1}
+    rgba: 4294920156
+  m_fontColor: {r: 0.8627451, g: 0.2784314, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 0
   m_fontColorGradient:
@@ -16730,6 +16756,7 @@ MonoBehaviour:
   fixedFontStyle: 0
   fixedFontSizeOffset: 0
   fixedSpacingOption: 0
+  fixedMarginOption: 0
   fontMaterialType: 4
   l10nKey: 
   fontMaterialIndexInitialized: 0
@@ -17218,6 +17245,7 @@ MonoBehaviour:
   fixedFontStyle: 1
   fixedFontSizeOffset: 0
   fixedSpacingOption: 0
+  fixedMarginOption: 0
   fontMaterialType: 0
   l10nKey: 
   fontMaterialIndexInitialized: 0
@@ -17727,6 +17755,7 @@ MonoBehaviour:
   fixedFontStyle: 0
   fixedFontSizeOffset: 0
   fixedSpacingOption: 0
+  fixedMarginOption: 0
   fontMaterialType: 0
   l10nKey: 
   fontMaterialIndexInitialized: 0
@@ -18594,6 +18623,7 @@ MonoBehaviour:
   fixedFontStyle: 1
   fixedFontSizeOffset: 0
   fixedSpacingOption: 0
+  fixedMarginOption: 0
   fontMaterialType: 0
   l10nKey: 
   fontMaterialIndexInitialized: 0
@@ -19100,6 +19130,7 @@ MonoBehaviour:
   fixedFontStyle: 0
   fixedFontSizeOffset: 0
   fixedSpacingOption: 0
+  fixedMarginOption: 0
   fontMaterialType: 4
   l10nKey: 
   fontMaterialIndexInitialized: 0
@@ -40057,6 +40088,7 @@ MonoBehaviour:
   fixedFontStyle: 0
   fixedFontSizeOffset: 0
   fixedSpacingOption: 0
+  fixedMarginOption: 0
   fontMaterialType: 4
   l10nKey: 
   fontMaterialIndexInitialized: 0
@@ -41208,6 +41240,7 @@ MonoBehaviour:
   fixedFontStyle: 0
   fixedFontSizeOffset: 0
   fixedSpacingOption: 0
+  fixedMarginOption: 0
   fontMaterialType: 4
   l10nKey: 
   fontMaterialIndexInitialized: 0
@@ -41395,6 +41428,7 @@ MonoBehaviour:
   fixedFontStyle: 1
   fixedFontSizeOffset: 0
   fixedSpacingOption: 0
+  fixedMarginOption: 0
   fontMaterialType: 0
   l10nKey: 
   fontMaterialIndexInitialized: 0
@@ -42011,6 +42045,7 @@ MonoBehaviour:
   fixedFontStyle: 0
   fixedFontSizeOffset: 0
   fixedSpacingOption: 0
+  fixedMarginOption: 0
   fontMaterialType: 1
   l10nKey: 
   fontMaterialIndexInitialized: 0
@@ -42177,6 +42212,7 @@ MonoBehaviour:
   fixedFontStyle: 0
   fixedFontSizeOffset: 0
   fixedSpacingOption: 0
+  fixedMarginOption: 0
   fontMaterialType: 4
   l10nKey: 
   fontMaterialIndexInitialized: 0
@@ -42492,6 +42528,7 @@ MonoBehaviour:
   fixedFontStyle: 0
   fixedFontSizeOffset: 0
   fixedSpacingOption: 0
+  fixedMarginOption: 0
   fontMaterialType: 4
   l10nKey: 
   fontMaterialIndexInitialized: 0
@@ -43248,6 +43285,7 @@ MonoBehaviour:
   fixedFontStyle: 1
   fixedFontSizeOffset: 0
   fixedSpacingOption: 0
+  fixedMarginOption: 0
   fontMaterialType: 0
   l10nKey: 
   fontMaterialIndexInitialized: 0
@@ -43557,6 +43595,7 @@ MonoBehaviour:
   fixedFontStyle: 0
   fixedFontSizeOffset: 0
   fixedSpacingOption: 0
+  fixedMarginOption: 0
   fontMaterialType: 4
   l10nKey: 
   fontMaterialIndexInitialized: 0
@@ -44208,9 +44247,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3b1a792bddbb55d4f94d6b551bb6cf5a, type: 3}
---- !u!224 &8282401372565983629 stripped
+--- !u!1 &2505797193135457804 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7936047595022313521, guid: 3b1a792bddbb55d4f94d6b551bb6cf5a,
+    type: 3}
+  m_PrefabInstance: {fileID: 5540800250893528637}
+  m_PrefabAsset: {fileID: 0}
+--- !u!224 &5991859050530654866 stripped
 RectTransform:
-  m_CorrespondingSourceObject: {fileID: 4473728449112424368, guid: 3b1a792bddbb55d4f94d6b551bb6cf5a,
+  m_CorrespondingSourceObject: {fileID: 2288880257856545967, guid: 3b1a792bddbb55d4f94d6b551bb6cf5a,
     type: 3}
   m_PrefabInstance: {fileID: 5540800250893528637}
   m_PrefabAsset: {fileID: 0}
@@ -44226,15 +44271,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1b0b49150c56ba24aae9700f8d35501b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!1 &2505797193135457804 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 7936047595022313521, guid: 3b1a792bddbb55d4f94d6b551bb6cf5a,
-    type: 3}
-  m_PrefabInstance: {fileID: 5540800250893528637}
-  m_PrefabAsset: {fileID: 0}
---- !u!224 &5991859050530654866 stripped
+--- !u!224 &8282401372565983629 stripped
 RectTransform:
-  m_CorrespondingSourceObject: {fileID: 2288880257856545967, guid: 3b1a792bddbb55d4f94d6b551bb6cf5a,
+  m_CorrespondingSourceObject: {fileID: 4473728449112424368, guid: 3b1a792bddbb55d4f94d6b551bb6cf5a,
     type: 3}
   m_PrefabInstance: {fileID: 5540800250893528637}
   m_PrefabAsset: {fileID: 0}
@@ -44862,6 +44901,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1ea70276a4bf19b4faf37eb620cafe4b, type: 3}
+--- !u!224 &1011433428714733381 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 6937746025776212025, guid: 1ea70276a4bf19b4faf37eb620cafe4b,
+    type: 3}
+  m_PrefabInstance: {fileID: 7948437832278464380}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &2633794670777347690 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 5387317070024931606, guid: 1ea70276a4bf19b4faf37eb620cafe4b,
@@ -44874,12 +44919,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 01099a345f894b53a6b901391485745b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!224 &1011433428714733381 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 6937746025776212025, guid: 1ea70276a4bf19b4faf37eb620cafe4b,
-    type: 3}
-  m_PrefabInstance: {fileID: 7948437832278464380}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &8592699407470438584
 PrefabInstance:
   m_ObjectHideFlags: 0
