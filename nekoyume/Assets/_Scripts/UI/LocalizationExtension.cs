@@ -291,14 +291,19 @@ namespace Nekoyume.UI
             return GetLocalizedNonColoredName(item.ElementalType, item.Id, useElementalIcon);
         }
 
-        public static string GetLocalizedName(EquipmentItemSheet sheet, int equipmentId, int level, bool useElementalIcon = true)
+        public static string GetLocalizedName(this EquipmentItemSheet.Row equipmentRow, int level, bool useElementalIcon = true)
         {
-            var row = sheet[equipmentId];
-            var name = GetLocalizedNonColoredName(row.ElementalType, equipmentId, useElementalIcon);
+            var name = GetLocalizedNonColoredName(equipmentRow.ElementalType, equipmentRow.Id, useElementalIcon);
 
             return level > 0
-                ? $"<color=#{GetColorHexByGrade(row.Grade)}>+{level} {name}</color>"
-                : $"<color=#{GetColorHexByGrade(row.Grade)}>{name}</color>";
+                ? $"<color=#{GetColorHexByGrade(equipmentRow.Grade)}>+{level} {name}</color>"
+                : $"<color=#{GetColorHexByGrade(equipmentRow.Grade)}>{name}</color>";
+        }
+
+        public static string GetLocalizedName(this ConsumableItemSheet.Row consumableRow)
+        {
+            var name = GetLocalizedNonColoredName(consumableRow.ElementalType, consumableRow.Id, false);
+            return $"<color=#{GetColorHexByGrade(consumableRow.Grade)}>{name}</color>";
         }
 
         public static string GetLocalizedNonColoredName(ElementalType elementalType, int equipmentId, bool useElementalIcon)

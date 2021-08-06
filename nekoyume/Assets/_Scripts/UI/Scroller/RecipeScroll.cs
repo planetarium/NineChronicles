@@ -12,7 +12,9 @@ using Toggle = Nekoyume.UI.Module.Toggle;
 
 namespace Nekoyume.UI.Scroller
 {
+    using Nekoyume.UI.Module;
     using UniRx;
+    using UnityEngine.EventSystems;
 
     public class RecipeScroll : RectScroll<RecipeRow.Model, RecipeScroll.ContextModel>
     {
@@ -35,10 +37,22 @@ namespace Nekoyume.UI.Scroller
             public StatType Type;
         }
 
-        [SerializeField] private List<EquipmentCategoryToggle> equipmentCategoryToggles = null;
-        [SerializeField] private List<ConsumableCategoryToggle> consumableCategoryToggles = null;
-        [SerializeField] private GameObject equipmentTab = null;
-        [SerializeField] private GameObject consumableTab = null;
+        [SerializeField]
+        private List<EquipmentCategoryToggle> equipmentCategoryToggles = null;
+
+        [SerializeField]
+        private List<ConsumableCategoryToggle> consumableCategoryToggles = null;
+
+        [SerializeField]
+        private GameObject equipmentTab = null;
+
+        [SerializeField]
+        private GameObject consumableTab = null;
+
+        [SerializeField]
+        private GameObject emptyObject = null;
+
+        private RecipeCell _selectedRecipeCell = null;
 
         protected void Awake()
         {
@@ -93,6 +107,7 @@ namespace Nekoyume.UI.Scroller
                 .Where(x => x.ItemSubType == type)
                 ?? Enumerable.Empty<RecipeRow.Model>();
 
+            emptyObject.SetActive(!items.Any());
             Show(items, true);
         }
 
@@ -117,6 +132,7 @@ namespace Nekoyume.UI.Scroller
                 .Where(x => x.StatType == type)
                 ?? Enumerable.Empty<RecipeRow.Model>();
 
+            emptyObject.SetActive(!items.Any());
             Show(items, true);
         }
 

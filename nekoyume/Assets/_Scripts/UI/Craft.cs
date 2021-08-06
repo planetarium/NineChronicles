@@ -156,12 +156,14 @@ namespace Nekoyume.UI
 
         private void ShowEquipment()
         {
+            equipmentSubRecipeView.ResetSelectedIndex();
             recipeScroll.ShowAsEquipment(ItemSubType.Weapon, true);
             SharedModel.SelectedRow.Value = null;
         }
 
         private void ShowConsumable()
         {
+            consumableSubRecipeView.ResetSelectedIndex();
             recipeScroll.ShowAsFood(StatType.HP, true);
             SharedModel.SelectedRow.Value = null;
         }
@@ -170,15 +172,15 @@ namespace Nekoyume.UI
         {
             if (row is EquipmentItemRecipeSheet.Row equipmentRow)
             {
-                equipmentSubRecipeView.SetData(equipmentRow, equipmentRow.SubRecipeIds);
                 equipmentSubRecipeView.gameObject.SetActive(true);
                 consumableSubRecipeView.gameObject.SetActive(false);
+                equipmentSubRecipeView.SetData(equipmentRow, equipmentRow.SubRecipeIds);
             }
             else if (row is ConsumableItemRecipeSheet.Row consumableRow)
             {
-                consumableSubRecipeView.SetData(consumableRow, null);
                 equipmentSubRecipeView.gameObject.SetActive(false);
                 consumableSubRecipeView.gameObject.SetActive(true);
+                consumableSubRecipeView.SetData(consumableRow, null);
             }
             else
             {
