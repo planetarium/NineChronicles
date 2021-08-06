@@ -4861,7 +4861,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0108edd6d4834a0aa0e35d13a78a48b1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isLayerInitializedWithChild: 0
+  _initializeSortingProbsOfChildren: 1
 --- !u!1 &6851629194783979238
 GameObject:
   m_ObjectHideFlags: 0
