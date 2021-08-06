@@ -189,6 +189,7 @@ namespace Nekoyume.UI.Module
                 case SlotType.Empty:
                     if (Game.Game.instance.Stage.IsInStage)
                     {
+                        UI.Notification.Push(Nekoyume.Model.Mail.MailType.System, L10nManager.Localize("UI_BLOCK_EXIT"));
                         return;
                     }
 

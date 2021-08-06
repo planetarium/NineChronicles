@@ -89,6 +89,7 @@ namespace Nekoyume.Game.Entrance
             player.Animator.Idle();
 
             Widget.Find<Status>().Show();
+            Widget.Find<EventBanner>().Show();
             var headerMenu = Widget.Find<HeaderMenu>();
             if (!headerMenu.isActiveAndEnabled)
             {
