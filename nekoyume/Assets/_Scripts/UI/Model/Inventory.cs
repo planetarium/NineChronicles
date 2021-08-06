@@ -6,7 +6,9 @@ using Libplanet;
 using Nekoyume.Battle;
 using Nekoyume.Model.Elemental;
 using Nekoyume.Model.Item;
+using Nekoyume.State;
 using Nekoyume.UI.Module;
+using UnityEngine;
 using Material = Nekoyume.Model.Item.Material;
 
 namespace Nekoyume.UI.Model
@@ -109,13 +111,17 @@ namespace Nekoyume.UI.Model
         #endregion
 
         #region Add Item
-
         public void AddItem(ItemBase itemBase, int count = 1)
         {
             if (itemBase is ITradableItem tradableItem)
             {
                 var blockIndex = Game.Game.instance.Agent?.BlockIndex ?? -1;
                 if (tradableItem.RequiredBlockIndex > blockIndex)
+                {
+                    return;
+                }
+
+                if (ReactiveShopState.IsExistSellDigests(itemBase, count))
                 {
                     return;
                 }

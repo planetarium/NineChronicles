@@ -128,7 +128,7 @@ namespace Nekoyume.UI
             var preset = _preset.First(x => x.id == data.presetId);
             var target = _targets.ContainsKey(data.targetType) ? _targets[data.targetType] : null;
             var scriptKey = data.scriptKey;
-            var script = L10nManager.TryLocalize(scriptKey, out var s) ? s : scriptKey;
+            var script = L10nManager.Localize(scriptKey);
 
             return new List<ITutorialData>()
             {

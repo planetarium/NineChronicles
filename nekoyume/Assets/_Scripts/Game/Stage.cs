@@ -466,6 +466,8 @@ namespace Nekoyume.Game
 
         private IEnumerator CoStageEnd(BattleLog log)
         {
+            // NOTE ActionRenderHandler.Instance.Pending should be false before _onEnterToStageEnd.OnNext() invoked.
+            ActionRenderHandler.Instance.Pending = false;
             _onEnterToStageEnd.OnNext(this);
             _battleResultModel.ClearedWaveNumber = log.clearedWaveNumber;
             var characters = GetComponentsInChildren<Character.CharacterBase>();
@@ -587,8 +589,7 @@ namespace Nekoyume.Game
                     }
                 }
             }
-
-            ActionRenderHandler.Instance.Pending = false;
+            
             Widget.Find<BattleResult>().Show(_battleResultModel);
 
             yield return null;
@@ -618,6 +619,8 @@ namespace Nekoyume.Game
 
         private IEnumerator CoRankingBattleEnd(BattleLog log, bool forceQuit = false)
         {
+            // NOTE ActionRenderHandler.Instance.Pending should be false before _onEnterToStageEnd.OnNext() invoked.
+            ActionRenderHandler.Instance.Pending = false;
             _onEnterToStageEnd.OnNext(this);
             var characters = GetComponentsInChildren<Character.CharacterBase>();
 
@@ -638,7 +641,6 @@ namespace Nekoyume.Game
             Widget.Find<UI.Battle>().Close();
             Widget.Find<Status>().Close();
 
-            ActionRenderHandler.Instance.Pending = false;
             Widget.Find<RankingBattleResult>().Show(log, _battleResultModel.Rewards);
             yield return null;
         }
@@ -663,7 +665,23 @@ namespace Nekoyume.Game
             }
             else
             {
-                battle.Show(stageId, IsRepeatStage, IsExitReserved);
+                var isTutorial = false;
+                var worldInfoExists = States.Instance.CurrentAvatarState.worldInformation
+                    .TryGetUnlockedWorldByStageClearedBlockIndex(out var worldInfo);
+
+                if ((worldInfoExists &&
+                    worldInfo.StageClearedId < UI.Battle.RequiredStageForExitButton) ||
+                    !worldInfoExists)
+                {
+                    Widget.Find<HeaderMenu>().Close(true);
+                    isTutorial = true;
+                }
+                else
+                {
+                    Widget.Find<HeaderMenu>().Show();
+                }
+
+                battle.Show(stageId, IsRepeatStage, IsExitReserved, isTutorial);
                 var stageSheet = Game.instance.TableSheets.StageSheet;
                 if (stageSheet.TryGetValue(stageId, out var row))
                 {
@@ -814,7 +832,9 @@ namespace Nekoyume.Game
         {
             var prevEnemies = GetComponentsInChildren<Character.Enemy>();
             yield return new WaitWhile(() => prevEnemies.Any(enemy => enemy.isActiveAndEnabled));
-            if (items.Count > 0)
+
+            var isHeaderMenuShown = Widget.Find<HeaderMenu>().IsActive();
+            if (isHeaderMenuShown && items.Count > 0)
             {
                 var player = GetPlayer();
                 var position = player.transform.position;

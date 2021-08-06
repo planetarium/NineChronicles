@@ -25,6 +25,7 @@ using Nekoyume.UI.Module;
 using UniRx;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
+using UnityEngine.Serialization;
 using Menu = Nekoyume.UI.Menu;
 
 

@@ -357,7 +357,7 @@ namespace Nekoyume.UI
                     if (costume.ItemSubType == ItemSubType.Title)
                     {
                         Destroy(_cachedCharacterTitle);
-                        var clone = ResourcesHelper.GetCharacterTitle(costume.Grade, costume.GetLocalizedNonColoredName());
+                        var clone = ResourcesHelper.GetCharacterTitle(costume.Grade, costume.GetLocalizedNonColoredName(false));
                         _cachedCharacterTitle = Instantiate(clone, titleSocket);
                     }
 

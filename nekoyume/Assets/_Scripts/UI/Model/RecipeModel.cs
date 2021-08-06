@@ -25,6 +25,11 @@ namespace Nekoyume.UI.Model
         public readonly ReactiveProperty<SheetRow<int>> SelectedRow
             = new ReactiveProperty<SheetRow<int>>();
 
+        public readonly ReactiveProperty<SheetRow<int>> NotifiedRow
+            = new ReactiveProperty<SheetRow<int>>();
+
+        public bool HasNotification => !(NotifiedRow.Value is null);
+
         public RecipeCell SelectedRecipeCell { get; set; }
         public EquipmentItemRecipeSheet.Row RecipeForTutorial { get; private set; }
         public HashSet<int> RecipeVFXSkipList { get; private set; }
@@ -56,14 +61,11 @@ namespace Nekoyume.UI.Model
 
             foreach (var recipe in recipes)
             {
-                var idString = recipe.ResultEquipmentId.ToString();
-                var tierArea = idString.Substring(0, 4);
-                var variationArea = idString.Substring(5);
-                var key = string.Format(EquipmentSplitFormat, tierArea, variationArea);
+                var key = GetEquipmentGroup(recipe.ResultEquipmentId);
 
                 if (!EquipmentRecipeMap.TryGetValue(key, out var recipeViewModel))
                 {
-                    var resultItem = recipe.GetResultItemEquipmentRow();
+                    var resultItem = recipe.GetResultEquipmentItemRow();
 
                     recipeViewModel = new RecipeRow.Model(
                         resultItem.GetLocalizedName(),
@@ -176,6 +178,14 @@ namespace Nekoyume.UI.Model
             }
 
             PlayerPrefs.SetString(key, data);
+        }
+
+        public static string GetEquipmentGroup(int itemId)
+        {
+            var idString = itemId.ToString();
+            var tierArea = idString.Substring(0, 4);
+            var variationArea = idString.Substring(5);
+            return string.Format(EquipmentSplitFormat, tierArea, variationArea);
         }
     }
 }

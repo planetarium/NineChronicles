@@ -31,7 +31,7 @@ namespace Nekoyume.UI
 
             Game.Event.OnNestEnter.AddListener(ClearPlayers);
             Game.Event.OnRoomEnter.AddListener(b => ClearPlayers());
-
+            Game.Event.OnRoomEnter.AddListener(b => ReactiveShopState.InitSellDigests());
             CloseWidget = null;
         }
 

@@ -234,7 +234,8 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
-            if (stageId != SharedViewModel.worldQuest.Value.Goal)
+            if (SharedViewModel.worldQuest.Value is null ||
+                stageId != SharedViewModel.worldQuest.Value.Goal)
             {
                 onComplete?.Invoke(false);
                 return;

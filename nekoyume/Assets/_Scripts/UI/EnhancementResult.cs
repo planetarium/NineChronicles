@@ -60,14 +60,6 @@ namespace Nekoyume.UI
             public int plusPower;
         }
 #endif
-        [SerializeField]
-        private GameObject _successTitleObject;
-
-        [SerializeField]
-        private GameObject _greatSuccessTitleObject;
-
-        [SerializeField]
-        private GameObject _failTitleObject;
 
         [SerializeField]
         private ResultItem _resultItem;
@@ -98,7 +90,17 @@ namespace Nekoyume.UI
         private static readonly int AnimatorHashLoop = Animator.StringToHash("Loop");
         private static readonly int AnimatorHashClose = Animator.StringToHash("Close");
 
+        private IDisposable _disposableOfSkip;
+
         public override WidgetType WidgetType => WidgetType.Popup;
+
+        protected override void OnDisable()
+        {
+            _disposableOfSkip?.Dispose();
+            _disposableOfSkip = null;
+
+            base.OnDisable();
+        }
 
 #if UNITY_EDITOR
         public void ShowWithEditorProperty()
@@ -108,7 +110,9 @@ namespace Nekoyume.UI
             var equipmentRow = equipmentList[Random.Range(0, equipmentList.Count)];
             var preLevel = Random.Range(0, 10);
             var preEquipment = (Equipment) ItemFactory.CreateItemUsable(equipmentRow, Guid.NewGuid(), 0, preLevel);
-            var equipment = (Equipment) ItemFactory.CreateItemUsable(equipmentRow, Guid.NewGuid(), 0, preLevel + 1);
+            var equipment = _editorEnhancementResult == ItemEnhancement.EnhancementResult.Fail
+                ? (Equipment) ItemFactory.CreateItemUsable(equipmentRow, Guid.NewGuid(), 0, preLevel)
+                : (Equipment) ItemFactory.CreateItemUsable(equipmentRow, Guid.NewGuid(), 0, preLevel + 1);
             foreach (var statOption in _editorStatOptions)
             {
                 preEquipment.StatsMap.AddStatAdditionalValue(
@@ -189,13 +193,6 @@ namespace Nekoyume.UI
                 return;
             }
 
-            // NOTE: Ignore Show Animation
-            base.Show(true);
-
-            _successTitleObject.SetActive(enhancementResult == ItemEnhancement.EnhancementResult.Success);
-            _greatSuccessTitleObject.SetActive(enhancementResult == ItemEnhancement.EnhancementResult.GreatSuccess);
-            _failTitleObject.SetActive(enhancementResult == ItemEnhancement.EnhancementResult.Fail);
-
             _resultItem.itemView.SetData(new CountableItem(equipment, 1));
             _resultItem.beforeGradeText.text = $"+{equipment.level - 1}";
             _resultItem.afterGradeText.text = $"+{equipment.level}";
@@ -244,7 +241,8 @@ namespace Nekoyume.UI
                     optionText.totalText.text = $"{skill.SkillRow.GetLocalizedName()} {skill.Power} / {skill.Chance}%";
 
                     var preSkill = preSkills[i - additionalStatsLength];
-                    optionText.plusText.text = $"(+{skill.Power - preSkill.Power} / +{skill.Chance - preSkill.Chance}%)";
+                    optionText.plusText.text =
+                        $"(+{skill.Power - preSkill.Power} / +{skill.Chance - preSkill.Chance}%)";
                     optionText.rootObject.SetActive(true);
                 }
                 else
@@ -252,7 +250,9 @@ namespace Nekoyume.UI
                     optionText.rootObject.SetActive(false);
                 }
             }
-
+            
+            // NOTE: Ignore Show Animation
+            base.Show(true);
             switch (enhancementResult)
             {
                 case ItemEnhancement.EnhancementResult.GreatSuccess:
@@ -269,9 +269,35 @@ namespace Nekoyume.UI
             }
         }
 
+        #region Invoke from Animation
+
         public void OnAnimatorStateBeginning(string stateName)
         {
             Debug.Log("OnAnimatorStateBeginning: " + stateName);
+            switch (stateName)
+            {
+                case "GreatSuccess":
+                case "Success":
+                case "Fail":
+                    if (_disposableOfSkip != null)
+                    {
+                        _disposableOfSkip.Dispose();
+                    }
+
+                    _disposableOfSkip = Observable.EveryUpdate()
+                        .Where(_ => Input.GetMouseButtonDown(0) ||
+                                    Input.GetKeyDown(KeyCode.Return) ||
+                                    Input.GetKeyDown(KeyCode.KeypadEnter) ||
+                                    Input.GetKeyDown(KeyCode.Escape))
+                        .Take(1)
+                        .DoOnCompleted(() => _disposableOfSkip = null)
+                        .Subscribe(_ =>
+                        {
+                            AudioController.PlayClick();
+                            SkipAnimation();
+                        });
+                    break;
+            }
         }
 
         public void OnAnimatorStateEnd(string stateName)
@@ -299,6 +325,13 @@ namespace Nekoyume.UI
                     break;
             }
         }
+
+        public void OnRequestPlaySFX(string sfxCode)
+        {
+            AudioController.instance.PlaySfx(sfxCode);
+        }
+
+        #endregion
 
         private void SkipAnimation()
         {

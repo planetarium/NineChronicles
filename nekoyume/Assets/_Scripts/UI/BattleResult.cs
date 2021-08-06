@@ -157,7 +157,6 @@ namespace Nekoyume.UI
                         if (canExit)
                         {
                             StartCoroutine(OnClickClose());
-
                         }
                     }
                 }).AddTo(gameObject);

@@ -80,9 +80,7 @@ namespace Nekoyume
             return $"<size=80%>CP</size> {cp}";
         }
 
-        public static int GetOptionCountFromCombinationForUI(this Equipment value) =>
-            value.optionCountFromCombination > 0
-                ? value.optionCountFromCombination
-                : value.StatsMap.GetStats(true).Count();
+        public static bool TryGetOptionInfo(this ItemUsable itemUsable, out ItemOptionInfo itemOptionInfo) =>
+            ItemOptionHelper.TryGet(itemUsable, out itemOptionInfo);
     }
 }
