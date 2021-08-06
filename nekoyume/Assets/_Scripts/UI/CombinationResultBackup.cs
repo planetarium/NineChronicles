@@ -21,7 +21,7 @@ namespace Nekoyume.UI
 {
     using UniRx;
 
-    public class CombinationResult : Widget
+    public class CombinationResultBackup : Widget
     {
         [Serializable]
         public class ResultItem
@@ -344,11 +344,9 @@ namespace Nekoyume.UI
 
         public void OnOpenOption(int optionIndex)
         {
-            Debug.Log($"{nameof(OnOpenOption)}({optionIndex})");
-
             if (optionIndex < 0 || optionIndex >= _cpListForAnimationSteps.Count - 1)
             {
-                Debug.LogWarning($"Argument out of range. {nameof(optionIndex)}({optionIndex})");
+                Debug.Log($"Argument out of range. {nameof(optionIndex)}({optionIndex})");
                 return;
             }
 
