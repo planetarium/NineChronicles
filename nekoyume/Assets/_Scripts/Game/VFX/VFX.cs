@@ -22,6 +22,15 @@ namespace Nekoyume.Game.VFX
         private bool _isFinished = false;
 
         /// <summary>
+        /// 해당 필드가 false일 때, 하위 파티클 시스템들의 레이어를 루트 파티클 시스템과 동일하도록 통일시킵니다.
+        /// 또한, 하위 파티클 시스템이 루트와 같은 레이어에 있게 하는 동시에
+        /// 루트 파티클보다 위에 보이도록 Order in layer를 조절합니다.
+        /// 기본값은 true입니다. 이니셜라이징을 원할 경우 인스펙터에서 false로 만들어주어야 합니다.
+        /// </summary>
+        [SerializeField]
+        private bool isLayerInitializedWithChild = true;
+
+        /// <summary>
         /// VFX 재생이 성공적으로 완료되었을 때 호출되는 콜백
         /// </summary>
         public System.Action OnFinished = null;
@@ -41,6 +50,8 @@ namespace Nekoyume.Game.VFX
             _particles = GetComponentsInChildren<ParticleSystem>();
             _particlesLength = _particles.Length;
             Assert.Greater(_particlesLength, 0);
+            _particlesRoot = _particles[0];
+            var rootParticleRenderer = _particlesRoot.GetComponent<Renderer>();
 
             foreach (var particle in _particles)
             {
@@ -56,9 +67,19 @@ namespace Nekoyume.Game.VFX
                 {
                     r.sortingLayerName = StringVFX;
                 }
-            }
 
-            _particlesRoot = _particles[0];
+                if (!isLayerInitializedWithChild && !particle.Equals(_particlesRoot))
+                {
+                    particle.gameObject.layer = _particlesRoot.gameObject.layer;
+                    if (rootParticleRenderer)
+                    {
+                        // 루트 파티클 시스템과 그 하위의 파티클 시스템의 레이어를 동일하게 맞춰줍니다.
+                        // +9는 '같은 레이어' 레벨 안에서 루트보다 위에 보이도록 하고, 다른 레이어를 침범하게 하지 않기 위함입니다.
+                        r.sortingLayerName = rootParticleRenderer.sortingLayerName;
+                        r.sortingOrder = rootParticleRenderer.sortingOrder + 9;
+                    }
+                }
+            }
         }
 
         protected virtual void OnEnable()
