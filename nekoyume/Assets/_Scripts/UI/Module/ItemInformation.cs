@@ -185,8 +185,9 @@ namespace Nekoyume.UI.Module
                     {
                         if (statMapEx.HasAdditionalValue)
                         {
-                            AddStat(statMapEx);
-                            uniqueStatValue += statMapEx.AdditionalValueAsInt;
+                            var statValue = statMapEx.AdditionalValueAsInt;
+                            AddStat(statMapEx.StatType, statValue);
+                            uniqueStatValue += statValue;
                         }
                         continue;
                     }
@@ -294,6 +295,14 @@ namespace Nekoyume.UI.Module
             if (statView is null)
                 throw new NotFoundComponentException<StatView>();
             statView.Show(model);
+        }
+
+        private void AddStat(StatType statType, int value)
+        {
+            var statView = GetDisabledStatView();
+            if (statView is null)
+                throw new NotFoundComponentException<StatView>();
+            statView.Show(statType, value);
         }
 
         private StatView GetDisabledStatView()

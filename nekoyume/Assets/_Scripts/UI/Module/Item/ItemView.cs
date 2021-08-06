@@ -119,7 +119,7 @@ namespace Nekoyume.UI.Module
                 .Subscribe(x => enhancementImage.gameObject.SetActive(x))
                 .AddTo(_disposablesAtSetData);
             var tagData = optionTagData.GetOptionTagData(row.Grade);
-            Model.Options.Subscribe(count => SetOptionTag(count, tagData)).AddTo(_disposablesAtSetData);
+            Model.HasOptions.Subscribe(hasOptions => SetOptionTag(hasOptions, tagData)).AddTo(_disposablesAtSetData);
             Model.Dimmed.Subscribe(SetDim).AddTo(_disposablesAtSetData);
             if (dimmedImage != null)
             {
@@ -167,7 +167,7 @@ namespace Nekoyume.UI.Module
                 .Subscribe(x => enhancementImage.gameObject.SetActive(x))
                 .AddTo(_disposablesAtSetData);
             var tagData = optionTagData.GetOptionTagData(row.Grade);
-            Model.Options.Subscribe(count => SetOptionTag(count, tagData)).AddTo(_disposablesAtSetData);
+            Model.HasOptions.Subscribe(hasOptions => SetOptionTag(hasOptions, tagData)).AddTo(_disposablesAtSetData);
             Model.Dimmed.Subscribe(SetDim).AddTo(_disposablesAtSetData);
             if (dimmedImage != null)
             {
@@ -216,9 +216,9 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        protected void SetOptionTag(int count, OptionTagData optionViewData)
+        protected void SetOptionTag(bool hasOptions, OptionTagData data)
         {
-            if (count <= 0)
+            if (!hasOptions)
             {
                 optionTagBg.gameObject.SetActive(false);
                 return;
@@ -229,25 +229,35 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
-            optionTagBg.range = optionViewData.GradeHsvRange;
-            optionTagBg.hue = optionViewData.GradeHsvHue;
-            optionTagBg.saturation = optionViewData.GradeHsvSaturation;
-            optionTagBg.value = optionViewData.GradeHsvValue;
-            optionTagBg.gameObject.SetActive(true);
-            var data = new ItemOptionInfo(Model.ItemBase.Value as Equipment);
+            foreach (var image in optionTagImages)
+            {
+                image.gameObject.SetActive(false);
+            }
+
+            optionTagBg.range = data.GradeHsvRange;
+            optionTagBg.hue = data.GradeHsvHue;
+            optionTagBg.saturation = data.GradeHsvSaturation;
+            optionTagBg.value = data.GradeHsvValue;
+            var optionInfo = new ItemOptionInfo(Model.ItemBase.Value as Equipment);
 
             var index = 0;
-            for (var i = 0; i < data.StatOptions.Count; ++i)
+            for (var i = 0; i < optionInfo.StatOptions.Count; ++i)
             {
-                
+                var image = optionTagImages[index];
+                image.gameObject.SetActive(true);
+                image.sprite = optionTagData.StatOptionSprite;
                 ++index;
             }
 
-            for (var i = 0; i < data.SkillOptions.Count; ++i)
+            for (var i = 0; i < optionInfo.SkillOptions.Count; ++i)
             {
-
+                var image = optionTagImages[index];
+                image.gameObject.SetActive(true);
+                image.sprite = optionTagData.SkillOptionSprite;
                 ++index;
             }
+
+            optionTagBg.gameObject.SetActive(true);
         }
     }
 }
