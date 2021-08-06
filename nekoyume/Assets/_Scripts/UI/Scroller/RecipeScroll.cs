@@ -1,14 +1,19 @@
 using Nekoyume.Game.Controller;
+using Nekoyume.Helper;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Stat;
-using Nekoyume.UI.Module;
+using Nekoyume.TableData;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
+using Toggle = Nekoyume.UI.Module.Toggle;
 
 namespace Nekoyume.UI.Scroller
 {
+    using UniRx;
+
     public class RecipeScroll : RectScroll<RecipeRow.Model, RecipeScroll.ContextModel>
     {
         public class ContextModel : RectScrollDefaultContext
@@ -20,6 +25,7 @@ namespace Nekoyume.UI.Scroller
         {
             public Toggle Toggle;
             public ItemSubType Type;
+            public Image IndicatorImage;
         }
 
         [Serializable]
@@ -57,6 +63,13 @@ namespace Nekoyume.UI.Scroller
                     ShowAsFood(type);
                 });
             }
+        }
+
+        public void InitializeNotification()
+        {
+            Craft.SharedModel.NotifiedRow
+                .Subscribe(SubscribeNotifiedRow)
+                .AddTo(gameObject);
         }
 
         public void ShowAsEquipment(ItemSubType type, bool updateToggle = false)
@@ -105,6 +118,26 @@ namespace Nekoyume.UI.Scroller
                 ?? Enumerable.Empty<RecipeRow.Model>();
 
             Show(items, true);
+        }
+
+        public void SubscribeNotifiedRow(SheetRow<int> row)
+        {
+            if (!(row is EquipmentItemRecipeSheet.Row equipmentRow))
+            {
+                foreach (var toggle in equipmentCategoryToggles)
+                {
+                    toggle.IndicatorImage.enabled = false;
+                }
+
+                return;
+            }
+
+            var resultItem = equipmentRow.GetResultEquipmentItemRow();
+            foreach (var toggle in equipmentCategoryToggles)
+            {
+                toggle.IndicatorImage.enabled =
+                    toggle.Type == resultItem.ItemSubType;
+            }
         }
     }
 }

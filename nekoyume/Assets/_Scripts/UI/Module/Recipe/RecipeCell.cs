@@ -12,6 +12,7 @@ using System;
 namespace Nekoyume.UI.Module
 {
     using Nekoyume.L10n;
+    using System.Collections.Generic;
     using UniRx;
 
     public class RecipeCell : MonoBehaviour
@@ -22,14 +23,16 @@ namespace Nekoyume.UI.Module
         [SerializeField] private GameObject selectedObject = null;
         [SerializeField] private GameObject lockObject = null;
         [SerializeField] private GameObject lockVFXObject = null;
+        [SerializeField] private GameObject indicatorObject = null;
         [SerializeField] private TextMeshProUGUI unlockConditionText = null;
         [SerializeField] private Button button = null;
         [SerializeField] private bool selectable = true;
 
         private SheetRow<int> _recipeRow = null;
-        private IDisposable _disposableForOnDisable = null;
         private bool _unlockable = false;
         private int _recipeIdToUnlock;
+
+        private readonly List<IDisposable> _disposablesForOnDisable = new List<IDisposable>();
 
         private bool IsLocked {
             get => lockObject.activeSelf;
@@ -61,7 +64,7 @@ namespace Nekoyume.UI.Module
         private void OnDisable()
         {
             selectedObject.SetActive(false);
-            _disposableForOnDisable?.Dispose();
+            _disposablesForOnDisable.DisposeAllAndClear();
         }
 
         public void Show(SheetRow<int> recipeRow, bool checkLocked = true)
@@ -73,7 +76,7 @@ namespace Nekoyume.UI.Module
 
             if (recipeRow is EquipmentItemRecipeSheet.Row equipmentRow)
             {
-                var resultItem = equipmentRow.GetResultItemEquipmentRow();
+                var resultItem = equipmentRow.GetResultEquipmentItemRow();
                 var viewData = recipeViewData.GetData(resultItem.Grade);
                 equipmentView.Show(viewData, resultItem);
                 consumableView.Hide();
@@ -88,7 +91,7 @@ namespace Nekoyume.UI.Module
             }
             else if (recipeRow is ConsumableItemRecipeSheet.Row consumableRow)
             {
-                var resultItem = consumableRow.GetResultItemConsumableRow();
+                var resultItem = consumableRow.GetResultConsumableItemRow();
                 var viewData = recipeViewData.GetData(resultItem.Grade);
                 equipmentView.Hide();
                 consumableView.Show(viewData, resultItem);
@@ -104,10 +107,16 @@ namespace Nekoyume.UI.Module
 
             if (selectable)
             {
-                var property = Craft.SharedModel.SelectedRow;
-                if(!IsLocked) SetSelected(property.Value);
-                _disposableForOnDisable = property
-                    .Subscribe(SetSelected);
+                var selected = Craft.SharedModel.SelectedRow;
+                var notified = Craft.SharedModel.NotifiedRow;
+
+                if(!IsLocked) SetSelected(selected.Value);
+                selected.Subscribe(SetSelected)
+                    .AddTo(_disposablesForOnDisable);
+
+                SetNotified(notified.Value);
+                notified.Subscribe(SetNotified)
+                    .AddTo(_disposablesForOnDisable);
             }
         }
 
@@ -173,6 +182,12 @@ namespace Nekoyume.UI.Module
             {
                 Craft.SharedModel.SelectedRecipeCell = this;
             }
+        }
+
+        public void SetNotified(SheetRow<int> row)
+        {
+            var equals = ReferenceEquals(row, _recipeRow);
+            indicatorObject.SetActive(equals);
         }
     }
 }

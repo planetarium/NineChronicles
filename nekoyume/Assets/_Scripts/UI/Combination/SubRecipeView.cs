@@ -99,7 +99,7 @@ namespace Nekoyume.UI
             string title = null;
             if (recipeRow is EquipmentItemRecipeSheet.Row equipmentRow)
             {
-                var resultItem = equipmentRow.GetResultItemEquipmentRow();
+                var resultItem = equipmentRow.GetResultEquipmentItemRow();
                 title = resultItem.GetLocalizedName();
 
                 var stat = resultItem.GetUniqueStat();
@@ -109,7 +109,7 @@ namespace Nekoyume.UI
             }
             else if (recipeRow is ConsumableItemRecipeSheet.Row consumableRow)
             {
-                var resultItem = consumableRow.GetResultItemConsumableRow();
+                var resultItem = consumableRow.GetResultConsumableItemRow();
                 title = resultItem.GetLocalizedName();
 
                 var stat = resultItem.GetUniqueStat();
