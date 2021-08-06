@@ -10,6 +10,7 @@ using Nekoyume.State;
 using Nekoyume.UI.Module;
 using UnityEngine;
 using System.Numerics;
+using Nekoyume.Action;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Controller;
 using Nekoyume.Model.Stat;
@@ -168,8 +169,14 @@ namespace Nekoyume.UI
                 return;
             }
 
-            slots.SetCaching(slotIndex, true);
+            var sheet = Game.Game.instance.TableSheets.EnhancementCostSheetV2;
+            if (ItemEnhancement.TryGetRow(_baseItem, sheet, out var row))
+            {
+                slots.SetCaching(slotIndex, true, row.SuccessRequiredBlockIndex, _baseItem);
+            }
+
             LocalLayerModifier.ModifyAgentGold(agentAddress, -_costNcg);
+            LocalLayerModifier.ModifyAvatarActionPoint(avatarAddress, -GameConfig.EnhanceEquipmentCostAP);
             LocalLayerModifier.ModifyAvatarActionPoint(avatarAddress, -GameConfig.EnhanceEquipmentCostAP);
             LocalLayerModifier.RemoveItem(avatarAddress, _baseItem.TradableId, _baseItem.RequiredBlockIndex, 1);
             LocalLayerModifier.RemoveItem(avatarAddress, _materialItem.TradableId, _materialItem.RequiredBlockIndex, 1);
@@ -217,7 +224,7 @@ namespace Nekoyume.UI
             if (_baseItem is null)
             {
                 _baseItem = (Equipment) viewModel.Model.ItemBase.Value;
-                if (TryGetRow(_baseItem, _costSheet, out var row))
+                if (ItemEnhancement.TryGetRow(_baseItem, _costSheet, out var row))
                 {
                     _costNcg = row.Cost;
                     UpdateInformation(row, _baseItem);
@@ -357,16 +364,6 @@ namespace Nekoyume.UI
             }
 
             return Find<CombinationSlots>().TryGetEmptyCombinationSlot(out _);
-        }
-
-        private static bool TryGetRow(Equipment equipment,
-            EnhancementCostSheetV2 sheet,
-            out EnhancementCostSheetV2.Row row)
-        {
-            var grade = equipment.Grade;
-            var level = equipment.level + 1;
-            row = sheet.OrderedList.FirstOrDefault(x => x.Grade == grade  && x.Level == level);
-            return row != null;
         }
 
         private static Color GetNcgColor(BigInteger cost)

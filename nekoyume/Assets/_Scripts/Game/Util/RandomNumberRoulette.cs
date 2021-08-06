@@ -16,7 +16,6 @@ namespace Nekoyume.Game.Util
 
         private TextMeshProUGUI _number;
         private Coroutine _rouletteCoroutine;
-        private bool _isPlaying;
 
         private void Awake()
         {
@@ -35,27 +34,16 @@ namespace Nekoyume.Game.Util
 
         public void Play()
         {
-            if (!isActiveAndEnabled || _isPlaying)
-            {
-                return;
-            }
-
             if (_rouletteCoroutine != null)
             {
                 StopCoroutine(_rouletteCoroutine);
             }
 
             _rouletteCoroutine = StartCoroutine(Play(_number, digit, intervalTime));
-            _isPlaying = true;
         }
 
         public void Stop()
         {
-            if (!isActiveAndEnabled || !_isPlaying)
-            {
-                return;
-            }
-
             if (_rouletteCoroutine != null)
             {
                 StopCoroutine(_rouletteCoroutine);
@@ -67,7 +55,6 @@ namespace Nekoyume.Game.Util
                 sb.Append(0);
             }
             _number.text = sb.ToString();
-            _isPlaying = false;
         }
 
         private IEnumerator Play(TMP_Text effect, int digit, float intervalTime)

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.EnumType;
+using Nekoyume.Model.Item;
 using Nekoyume.State;
 using Nekoyume.UI.Module;
 using UnityEngine;
@@ -28,9 +29,9 @@ namespace Nekoyume.UI
             UpdateSlots(Game.Game.instance.Agent.BlockIndex);
         }
 
-        public void SetCaching(int slotIndex, bool value)
+        public void SetCaching(int slotIndex, bool value, long requiredBlockIndex = 0, ItemUsable itemUsable = null)
         {
-            slots[slotIndex].IsCached = value;
+            slots[slotIndex].SetCached(value, requiredBlockIndex, itemUsable);
             UpdateSlots(Game.Game.instance.Agent.BlockIndex);
         }
 

@@ -230,8 +230,6 @@ namespace Nekoyume.UI
                 return;
             }
 
-            var slots = Find<CombinationSlots>();
-            slots.SetCaching(slotIndex, true);
             OnCombinationAction(recipeInfo);
             equipmentSubRecipeView.UpdateView();
             Game.Game.instance.ActionManager.CombinationEquipment(
@@ -243,6 +241,9 @@ namespace Nekoyume.UI
             var equipment = (Equipment)ItemFactory.CreateItemUsable(
                 equipmentRow.GetResultEquipmentItemRow(), Guid.Empty, default);
 
+
+            var slots = Find<CombinationSlots>();
+            slots.SetCaching(slotIndex, true, equipmentRow.RequiredBlockIndex, equipment);
             StartCoroutine(CoCombineNPCAnimation(equipment));
         }
 
@@ -254,8 +255,6 @@ namespace Nekoyume.UI
                 return;
             }
 
-            var slots = Find<CombinationSlots>();
-            slots.SetCaching(slotIndex, true);
             OnCombinationAction(recipeInfo);
             consumableSubRecipeView.UpdateView();
             Game.Game.instance.ActionManager.CombinationConsumable(
@@ -265,7 +264,8 @@ namespace Nekoyume.UI
             var consumableRow = Game.Game.instance.TableSheets.ConsumableItemRecipeSheet[recipeInfo.RecipeId];
             var consumable = (Consumable) ItemFactory.CreateItemUsable(
                 consumableRow.GetResultConsumableItemRow(), Guid.Empty, default);
-
+            var slots = Find<CombinationSlots>();
+            slots.SetCaching(slotIndex, true, consumableRow.RequiredBlockIndex, consumable);
             StartCoroutine(CoCombineNPCAnimation(consumable, true));
         }
 
