@@ -295,7 +295,7 @@ namespace Nekoyume.UI
                             case "item":
                                 if (Game.Game.instance.TableSheets.ItemSheet.TryGetValue(pairValue, out var itemData))
                                 {
-                                    var localizedItemName = itemData.GetLocalizedName();
+                                    var localizedItemName = itemData.GetLocalizedName(false);
                                     left = $"{left}<color={_itemTextColor}>{localizedItemName}</color>";
                                 }
 

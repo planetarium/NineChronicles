@@ -31,6 +31,7 @@ namespace Nekoyume.UI.Module
         {
             requiredItemViews[0].gameObject.SetActive(true);
             SetView(requiredItemViews[0], baseMaterialInfo.Id, baseMaterialInfo.Count, checkInventory);
+            plusImage.SetActive(materials.Any());
 
             if (materials != null)
             {
@@ -48,22 +49,12 @@ namespace Nekoyume.UI.Module
                         itemView.gameObject.SetActive(true);
                     }
                 }
-
-                if (plusImage)
-                {
-                    plusImage.SetActive(true);
-                }
             }
             else
             {
                 for (int i = 1; i < requiredItemViews.Length; ++i)
                 {
                     requiredItemViews[i].gameObject.SetActive(false);
-                }
-
-                if (plusImage)
-                {
-                    plusImage.SetActive(false);
                 }
             }
 

@@ -102,7 +102,7 @@ namespace Nekoyume.UI.Model
                     if (!ConsumableRecipeMap.TryGetValue(key, out var model))
                     {
                         var name = L10nManager.Localize($"ITEM_GROUPNAME_{group.Key}");
-                        model = new RecipeRow.Model(name, 0)
+                        model = new RecipeRow.Model(name, group.Grade)
                         {
                             StatType = recipe.GetUniqueStat().StatType
                         };

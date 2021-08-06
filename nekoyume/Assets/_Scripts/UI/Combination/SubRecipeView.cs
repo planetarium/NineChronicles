@@ -17,9 +17,7 @@ using Nekoyume.Model.Item;
 using Libplanet;
 using System.Security.Cryptography;
 using Toggle = Nekoyume.UI.Module.Toggle;
-using Material = Nekoyume.Model.Item.Material;
 using Nekoyume.L10n;
-using Nekoyume.Model.Mail;
 
 namespace Nekoyume.UI
 {
@@ -120,23 +118,20 @@ namespace Nekoyume.UI
             }
 
             titleText.text = title;
-
-            if (categoryToggles.Any())
+            var categoryToggle = categoryToggles[_selectedIndex];
+            if (categoryToggle.isOn)
             {
-                var firstCategoryToggle = categoryToggles.First();
-                if (firstCategoryToggle.isOn)
-                {
-                    ChangeTab(0);
-                }
-                else
-                {
-                    firstCategoryToggle.isOn = true;
-                }
+                ChangeTab(_selectedIndex);
             }
             else
             {
-                ChangeTab(0);
+                categoryToggle.isOn = true;
             }
+        }
+
+        public void ResetSelectedIndex()
+        {
+            _selectedIndex = 0;
         }
 
         public void UpdateView()
