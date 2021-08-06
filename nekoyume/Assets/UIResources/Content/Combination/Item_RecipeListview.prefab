@@ -621,15 +621,14 @@ MonoBehaviour:
   m_text: '-'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8a682b7747d4a664089b7b1065aa0035, type: 2}
-  m_sharedMaterial: {fileID: -2364689171920820918, guid: 8a682b7747d4a664089b7b1065aa0035,
-    type: 2}
+  m_sharedMaterial: {fileID: 2100000, guid: 898671fed158d405b97de070206058b8, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4286486708
-  m_fontColor: {r: 0.7058824, g: 0.59607846, b: 0.49411765, a: 1}
+    rgba: 4286360534
+  m_fontColor: {r: 0.8396226, g: 0.67219317, b: 0.48713955, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -704,6 +703,7 @@ MonoBehaviour:
   fixedFontStyle: 0
   fixedFontSizeOffset: 0
   fixedSpacingOption: 0
+  fixedMarginOption: 0
   fontMaterialType: 0
   l10nKey: 
   fontMaterialIndexInitialized: 0
