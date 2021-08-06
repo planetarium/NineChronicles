@@ -13,6 +13,8 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
 {
+    using Coffee.UIEffects;
+    using Nekoyume.Game.ScriptableObject;
     using UniRx;
 
     public class ItemView<TViewModel> : VanillaItemView
@@ -27,13 +29,13 @@ namespace Nekoyume.UI.Module
         public Image dimmedImage;
 
         [SerializeField]
-        protected GameObject optionTagObject = null;
+        protected UIHsvModifier optionTagBg = null;
 
         [SerializeField]
         protected TextMeshProUGUI optionTagText = null;
 
         [SerializeField]
-        protected Image optionTagBgImage = null;
+        protected OptionTagDataScriptableObject optionTagData = null;
 
         private readonly List<IDisposable> _disposablesAtSetData = new List<IDisposable>();
 
@@ -103,8 +105,8 @@ namespace Nekoyume.UI.Module
             }
             base.SetData(row);
 
-            var data = itemViewData.GetItemViewData(row.Grade);
-            enhancementImage.GetComponent<Image>().material = data.EnhancementMaterial;
+            var viewData = base.itemViewData.GetItemViewData(row.Grade);
+            enhancementImage.GetComponent<Image>().material = viewData.EnhancementMaterial;
 
             _disposablesAtSetData.DisposeAllAndClear();
             Model = model;
@@ -114,7 +116,8 @@ namespace Nekoyume.UI.Module
             Model.EnhancementEffectEnabled
                 .Subscribe(x => enhancementImage.gameObject.SetActive(x))
                 .AddTo(_disposablesAtSetData);
-            Model.Options.Subscribe(SetOptionTag).AddTo(_disposablesAtSetData);
+            var tagData = optionTagData.GetOptionTagData(row.Grade);
+            Model.Options.Subscribe(count => SetOptionTag(count, tagData)).AddTo(_disposablesAtSetData);
             Model.Dimmed.Subscribe(SetDim).AddTo(_disposablesAtSetData);
             if (dimmedImage != null)
             {
@@ -151,6 +154,8 @@ namespace Nekoyume.UI.Module
                 throw new ArgumentOutOfRangeException(nameof(ItemSheet.Row), model.ItemBase.Value.Id, null);
             }
             base.SetData(row);
+
+            var viewData = itemViewData.GetItemViewData(row.Grade);
             _disposablesAtSetData.DisposeAllAndClear();
             Model = model;
             Model.GradeEnabled.SubscribeTo(gradeImage).AddTo(_disposablesAtSetData);
@@ -159,7 +164,8 @@ namespace Nekoyume.UI.Module
             Model.EnhancementEffectEnabled
                 .Subscribe(x => enhancementImage.gameObject.SetActive(x))
                 .AddTo(_disposablesAtSetData);
-            Model.Options.Subscribe(SetOptionTag).AddTo(_disposablesAtSetData);
+            var tagData = optionTagData.GetOptionTagData(row.Grade);
+            Model.Options.Subscribe(count => SetOptionTag(count, tagData)).AddTo(_disposablesAtSetData);
             Model.Dimmed.Subscribe(SetDim).AddTo(_disposablesAtSetData);
             if (dimmedImage != null)
             {
@@ -204,21 +210,13 @@ namespace Nekoyume.UI.Module
                     selectionImage.enabled = false;
                 }
 
-                if (optionTagObject != null)
-                {
-                    optionTagObject.SetActive(false);
-                }
+                optionTagBg.gameObject.SetActive(false);
             }
         }
 
-        protected void SetOptionTag(int count)
+        protected void SetOptionTag(int count, OptionTagData optionViewData)
         {
-            if (optionTagObject == null)
-            {
-                return;
-            }
-
-            optionTagObject.SetActive(false);
+            optionTagBg.gameObject.SetActive(false);
             if (Model is null)
             {
                 return;
@@ -227,9 +225,12 @@ namespace Nekoyume.UI.Module
             var itemBase = Model.ItemBase.Value;
             if (itemBase.TryGetOptionTagText(out var text))
             {
-                optionTagBgImage.color = Model.ItemBase.Value.GetItemGradeColor();
+                optionTagBg.range = optionViewData.GradeHsvRange;
+                optionTagBg.hue = optionViewData.GradeHsvHue;
+                optionTagBg.saturation = optionViewData.GradeHsvSaturation;
+                optionTagBg.value = optionViewData.GradeHsvValue;
                 optionTagText.text = text;
-                optionTagObject.SetActive(true);
+                optionTagBg.gameObject.SetActive(true);
             }
         }
     }

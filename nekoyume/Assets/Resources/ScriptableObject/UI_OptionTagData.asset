@@ -1,0 +1,46 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fdc3e9772c5589d49b6f55216b49d68c, type: 3}
+  m_Name: UI_OptionTagData
+  m_EditorClassIdentifier: 
+  fallbackGrade: 0
+  datas:
+  - grade: 0
+    gradeHsvRange: 0.5
+    gradeHsvHue: 0
+    gradeHsvSaturation: 0
+    gradeHsvValue: 0
+  - grade: 1
+    gradeHsvRange: 0.5
+    gradeHsvHue: 0
+    gradeHsvSaturation: 0
+    gradeHsvValue: 0
+  - grade: 2
+    gradeHsvRange: 0.5
+    gradeHsvHue: 0
+    gradeHsvSaturation: 0
+    gradeHsvValue: 0
+  - grade: 3
+    gradeHsvRange: 0.5
+    gradeHsvHue: 0.24
+    gradeHsvSaturation: 0.14
+    gradeHsvValue: 0.05
+  - grade: 4
+    gradeHsvRange: 0.5
+    gradeHsvHue: -0.26
+    gradeHsvSaturation: 0
+    gradeHsvValue: 0.05
+  - grade: 5
+    gradeHsvRange: 1
+    gradeHsvHue: 0.45
+    gradeHsvSaturation: 0
+    gradeHsvValue: 0.05

@@ -258,8 +258,9 @@ MonoBehaviour:
   enhancementImage: {fileID: 2177931061790224415}
   selectionImage: {fileID: 6316702317964431472}
   dimmedImage: {fileID: 0}
-  optionTagObject: {fileID: 2241086045214574202}
+  optionTagBg: {fileID: 8058835853726843352}
   optionTagText: {fileID: 2669867580574730290}
+  optionTagData: {fileID: 11400000, guid: 14bb93de0da9b0540b01c055544f1320, type: 2}
   ignoreOne: 0
   countText: {fileID: 3368304502993323764}
   minusButton: {fileID: 4881653107994014286}
@@ -866,12 +867,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!1 &2241086045214574202 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 3035334260605092586, guid: 5a7ec89f001bf46e686e8583d2f3a60e,
+--- !u!114 &8058835853726843352 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6544010690162263368, guid: 5a7ec89f001bf46e686e8583d2f3a60e,
     type: 3}
   m_PrefabInstance: {fileID: 3820815619589735568}
   m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: efe700dddcd8341ff8607ac2c827b4b5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &2669867580574730290 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 1156024209325165730, guid: 5a7ec89f001bf46e686e8583d2f3a60e,
