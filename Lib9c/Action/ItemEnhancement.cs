@@ -279,7 +279,7 @@ namespace Nekoyume.Action
                 enhancementEquipment.LevelUpV2(ctx.Random, row, equipmentResult == EnhancementResult.GreatSuccess);
             }
             var requiredBlockCount = GetRequiredBlockCount(row, equipmentResult);
-            var requiredBlockIndex = ctx.BlockIndex + requiredBlockCount + GameConfig.RequiredAppraiseBlock;
+            var requiredBlockIndex = ctx.BlockIndex + requiredBlockCount;
             enhancementEquipment.Update(requiredBlockIndex);
 
             // Remove material
