@@ -32,7 +32,7 @@ namespace Nekoyume.UI.Module
         protected UIHsvModifier optionTagBg = null;
 
         [SerializeField]
-        protected TextMeshProUGUI optionTagText = null;
+        protected List<Image> optionTagImages = null;
 
         [SerializeField]
         protected OptionTagDataScriptableObject optionTagData = null;
@@ -216,22 +216,23 @@ namespace Nekoyume.UI.Module
 
         protected void SetOptionTag(int count, OptionTagData optionViewData)
         {
-            optionTagBg.gameObject.SetActive(false);
+            if (count <= 0)
+            {
+                optionTagBg.gameObject.SetActive(false);
+                return;
+            }
+
             if (Model is null)
             {
                 return;
             }
 
+            optionTagBg.range = optionViewData.GradeHsvRange;
+            optionTagBg.hue = optionViewData.GradeHsvHue;
+            optionTagBg.saturation = optionViewData.GradeHsvSaturation;
+            optionTagBg.value = optionViewData.GradeHsvValue;
+            optionTagBg.gameObject.SetActive(true);
             var itemBase = Model.ItemBase.Value;
-            if (itemBase.TryGetOptionTagText(out var text))
-            {
-                optionTagBg.range = optionViewData.GradeHsvRange;
-                optionTagBg.hue = optionViewData.GradeHsvHue;
-                optionTagBg.saturation = optionViewData.GradeHsvSaturation;
-                optionTagBg.value = optionViewData.GradeHsvValue;
-                optionTagText.text = text;
-                optionTagBg.gameObject.SetActive(true);
-            }
         }
     }
 }

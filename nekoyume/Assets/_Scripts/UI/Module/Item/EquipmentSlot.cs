@@ -232,16 +232,16 @@ namespace Nekoyume.UI.Module
                 enhancementText.enabled = false;
             }
 
-            if (itemBase.TryGetOptionTagText(out var text))
-            {
-                optionTagText.text = text;
-                optionTagBgImage.color = Item.GetItemGradeColor();
-                optionTagObject.SetActive(true);
-            }
-            else
-            {
-                optionTagObject.SetActive(false);
-            }
+            //if (itemBase.TryGetOptionTagText(out var text))
+            //{
+            //    optionTagText.text = text;
+            //    optionTagBgImage.color = Item.GetItemGradeColor();
+            //    optionTagObject.SetActive(true);
+            //}
+            //else
+            //{
+            //    optionTagObject.SetActive(false);
+            //}
 
             _onClick = onClick;
             _onDoubleClick = onDoubleClick;
