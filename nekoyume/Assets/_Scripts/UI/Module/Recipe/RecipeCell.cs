@@ -18,6 +18,7 @@ namespace Nekoyume.UI.Module
 
     public class RecipeCell : MonoBehaviour
     {
+        [SerializeField] private Animator animator = null;
         [SerializeField] private RecipeViewData recipeViewData = null;
         [SerializeField] private RecipeView equipmentView = null;
         [SerializeField] private RecipeView consumableView = null;
@@ -191,6 +192,11 @@ namespace Nekoyume.UI.Module
             if (equals)
             {
                 Craft.SharedModel.SelectedRecipeCell = this;
+                animator.SetTrigger("Clicked");
+            }
+            else
+            {
+                animator.SetTrigger("Normal");
             }
         }
 

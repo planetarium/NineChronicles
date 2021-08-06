@@ -12,7 +12,9 @@ using Toggle = Nekoyume.UI.Module.Toggle;
 
 namespace Nekoyume.UI.Scroller
 {
+    using Nekoyume.UI.Module;
     using UniRx;
+    using UnityEngine.EventSystems;
 
     public class RecipeScroll : RectScroll<RecipeRow.Model, RecipeScroll.ContextModel>
     {
@@ -49,6 +51,8 @@ namespace Nekoyume.UI.Scroller
 
         [SerializeField]
         private GameObject emptyObject = null;
+
+        private RecipeCell _selectedRecipeCell = null;
 
         protected void Awake()
         {

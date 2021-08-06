@@ -6,7 +6,7 @@ namespace Nekoyume.UI
 {
     public static class ItemSheetExtension
     {
-        public static string GetLocalizedName(this ItemSheet.Row value, bool hasColor = true)
+        public static string GetLocalizedName(this ItemSheet.Row value, bool hasColor = true, bool useElementalIcon = true)
         {
             if (!hasColor)
             {
@@ -15,7 +15,7 @@ namespace Nekoyume.UI
 
             if (value is EquipmentItemSheet.Row equipmentRow)
             {
-                return equipmentRow.GetLocalizedName(0);
+                return equipmentRow.GetLocalizedName(0, useElementalIcon);
             }
 
             if (value is ConsumableItemSheet.Row consumableRow)
