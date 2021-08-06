@@ -1,5 +1,6 @@
 using Nekoyume.Game;
 using Nekoyume.L10n;
+using Nekoyume.UI.Module;
 using UnityEngine;
 using UniRx;
 
@@ -56,6 +57,7 @@ namespace Nekoyume.UI
             Game.Event.OnNestEnter.Invoke();
             Find<Login>().Show();
             Find<Menu>().Close();
+            Find<HeaderMenu>().Close(true);
             Close();
         }
 

@@ -164,7 +164,10 @@ namespace Nekoyume.UI.Module
                 .Subscribe(SubscribeBlockIndex)
                 .AddTo(gameObject);
 
-            CloseWidget = null;
+            CloseWidget = ()=>
+            {
+                menuToggleDropdown.isOn = false;
+            };
         }
 
         protected override void OnEnable()
@@ -183,6 +186,12 @@ namespace Nekoyume.UI.Module
         {
             _disposablesAtOnEnable.DisposeAllAndClear();
             base.OnDisable();
+        }
+
+        public override void Close(bool ignoreCloseAnimation = false)
+        {
+            menuToggleDropdown.isOn = false;
+            base.Close(ignoreCloseAnimation);
         }
 
         public void PlayVFX(ItemMoveAnimation.EndPoint endPoint)
