@@ -61,10 +61,7 @@ namespace Nekoyume.UI.Model
 
             foreach (var recipe in recipes)
             {
-                var idString = recipe.ResultEquipmentId.ToString();
-                var tierArea = idString.Substring(0, 4);
-                var variationArea = idString.Substring(5);
-                var key = string.Format(EquipmentSplitFormat, tierArea, variationArea);
+                var key = GetEquipmentGroup(recipe.ResultEquipmentId);
 
                 if (!EquipmentRecipeMap.TryGetValue(key, out var recipeViewModel))
                 {
@@ -181,6 +178,14 @@ namespace Nekoyume.UI.Model
             }
 
             PlayerPrefs.SetString(key, data);
+        }
+
+        public static string GetEquipmentGroup(int itemId)
+        {
+            var idString = itemId.ToString();
+            var tierArea = idString.Substring(0, 4);
+            var variationArea = idString.Substring(5);
+            return string.Format(EquipmentSplitFormat, tierArea, variationArea);
         }
     }
 }

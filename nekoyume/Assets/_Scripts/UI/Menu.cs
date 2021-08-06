@@ -151,7 +151,7 @@ namespace Nekoyume.UI
             Mixpanel.Track("Unity/Click Guided Quest Combination Equipment");
 
             CombinationClickInternal(() =>
-                Find<Craft>().Show());
+                Find<Craft>().Show(recipeId));
         }
 
         private void UpdateButtons()

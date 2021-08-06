@@ -91,15 +91,21 @@ namespace Nekoyume.UI
             base.Show(ignoreShowAnimation);
         }
 
-        public void Show(int stageId, bool isRepeat, bool isExitReserved)
+        public void Show(int stageId, bool isRepeat, bool isExitReserved, bool isTutorial)
         {
+            if (isTutorial)
+            {
+                ShowForTutorial(false);
+                return;
+            }
+
             guidedQuest.Hide(true);
             base.Show();
-            stageTitle.Show(stageId);
             guidedQuest.Show(States.Instance.CurrentAvatarState, () =>
             {
                 guidedQuest.SetWorldQuestToInProgress(stageId);
             });
+            stageTitle.Show(stageId);
             stageProgressBar.Show();
             bossStatus.Close();
             enemyPlayerStatus.Close();
@@ -107,14 +113,9 @@ namespace Nekoyume.UI
 
             exitToggle.isOn = isExitReserved;
             repeatToggle.isOn = isExitReserved ? false : isRepeat;
-
-            if (States.Instance.CurrentAvatarState.worldInformation
-                .TryGetUnlockedWorldByStageClearedBlockIndex(out var world))
-            {
-                repeatToggle.gameObject.SetActive(stageId >= 4 || world.StageClearedId >= 4);
-                exitToggle.gameObject.SetActive(world.StageClearedId >= RequiredStageForExitButton);
-            }
             helpButton.gameObject.SetActive(true);
+            repeatToggle.gameObject.SetActive(true);
+            exitToggle.gameObject.SetActive(true);
         }
 
         public void ClearStage(int stageId, System.Action<bool> onComplete)
@@ -140,19 +141,29 @@ namespace Nekoyume.UI
         }
 
         #region tutorial
-        public void ShowForTutorial()
+        public void ShowForTutorial(bool isPrologue)
         {
-            stageTitle.gameObject.SetActive(false);
+            if (isPrologue)
+            {
+                stageProgressBar.Close();
+                stageTitle.gameObject.SetActive(false);
+            }
+            else
+            {
+                stageProgressBar.Show();
+            }
+
             guidedQuest.gameObject.SetActive(false);
             bossStatus.gameObject.SetActive(false);
             repeatToggle.gameObject.SetActive(false);
             helpButton.gameObject.SetActive(false);
             bossStatus.gameObject.SetActive(false);
-            stageProgressBar.gameObject.SetActive(false);
             comboText.gameObject.SetActive(false);
             enemyPlayerStatus.gameObject.SetActive(false);
+            exitToggle.gameObject.SetActive(false);
             comboText.comboMax = 5;
             gameObject.SetActive(true);
+            Find<HeaderMenu>().Close(true);
         }
         #endregion
     }
