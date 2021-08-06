@@ -37,19 +37,33 @@ namespace Nekoyume.UI.Module
         [SerializeField] private TextMeshProUGUI requiredBlockIndexText;
         [SerializeField] private TextMeshProUGUI itemNameText;
         [SerializeField] private TextMeshProUGUI hourglassCountText;
+        [SerializeField] private TextMeshProUGUI preparingText;
         [SerializeField] private GameObject lockContainer;
         [SerializeField] private GameObject baseContainer;
         [SerializeField] private GameObject noneContainer;
         [SerializeField] private GameObject preparingContainer;
         [SerializeField] private GameObject workingContainer;
-        [SerializeField] private RandomNumberRoulette randomNumberRoulette;
 
         private CombinationSlotState _state;
         private int _slotIndex;
         private const int UnlockStage = GameConfig.RequireClearedStageLevel.CombinationEquipmentAction;
 
         public SlotType Type { get; private set;  } = SlotType.Empty;
-        public bool IsCached { get; set; } = false;
+        public bool IsCached { get; private set; }
+        public void SetCached(bool value, long requiredBlockIndex, ItemUsable itemUsable = null)
+        {
+            IsCached = value;
+
+            if (itemUsable == null)
+            {
+                return;
+            }
+
+            UpdateItemInformation(itemUsable);
+            UpdateRequiredBlockInformation(requiredBlockIndex + Game.Game.instance.Agent.BlockIndex,
+                Game.Game.instance.Agent.BlockIndex,
+                Game.Game.instance.Agent.BlockIndex);
+        }
 
         private void Awake()
         {
@@ -96,8 +110,13 @@ namespace Nekoyume.UI.Module
                     SetContainer(false, true, false);
                     preparingContainer.gameObject.SetActive(true);
                     workingContainer.gameObject.SetActive(false);
+                    if (state != null)
+                    {
+                        UpdateItemInformation(state.Result.itemUsable);
+                        UpdateHourglass(state, currentBlockIndex);
+                        UpdateRequiredBlockInformation(state.UnlockBlockIndex, state.StartBlockIndex, currentBlockIndex);
+                    }
                     hasNotificationImage.enabled = false;
-                    randomNumberRoulette.Stop();
                     break;
 
                 case SlotType.Working:
@@ -105,9 +124,8 @@ namespace Nekoyume.UI.Module
                     preparingContainer.gameObject.SetActive(false);
                     workingContainer.gameObject.SetActive(true);
                     UpdateItemInformation(state.Result.itemUsable);
-                    randomNumberRoulette.Play();
                     UpdateHourglass(state, currentBlockIndex);
-                    UpdateRequiredBlockInformation(state, currentBlockIndex);
+                    UpdateRequiredBlockInformation(state.UnlockBlockIndex, state.StartBlockIndex, currentBlockIndex);
                     UpdateNotification(state, currentBlockIndex, isCached);
                     break;
             }
@@ -138,10 +156,10 @@ namespace Nekoyume.UI.Module
                 : SlotType.Working;
         }
 
-        private void UpdateRequiredBlockInformation(CombinationSlotState state, long currentBlockIndex)
+        private void UpdateRequiredBlockInformation(long unlockBlockIndex, long StartBlockIndex, long currentBlockIndex)
         {
-            progressBar.maxValue = Math.Max(state.RequiredBlockIndex, 1);
-            var diff = Math.Max(state.UnlockBlockIndex - currentBlockIndex, 1);
+            progressBar.maxValue = Math.Max(unlockBlockIndex - StartBlockIndex, 1);
+            var diff = Math.Max(unlockBlockIndex - currentBlockIndex, 1);
             progressBar.value = diff;
             requiredBlockIndexText.text = $"{diff}.";
         }
@@ -180,6 +198,8 @@ namespace Nekoyume.UI.Module
         {
             itemView.SetData(new Item(item));
             itemNameText.text = TextHelper.GetItemNameInCombinationSlot(item);
+            preparingText.text = string.Format(L10nManager.Localize("UI_COMBINATION_SLOT_IDENTIFYING"),
+                item.GetLocalizedName(ignoreLevel:true));
         }
 
         private static void OnClickSlot(SlotType type, CombinationSlotState state, int slotIndex, long currentBlockIndex)
