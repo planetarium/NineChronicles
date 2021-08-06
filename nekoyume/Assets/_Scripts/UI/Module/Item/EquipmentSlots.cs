@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Battle;
 using Nekoyume.Model;
+using Nekoyume.Model.Elemental;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using UnityEngine;
@@ -148,8 +149,9 @@ namespace Nekoyume.UI.Module
         /// </summary>
         /// <param name="equipment"></param>
         /// <param name="slot"></param>
+        /// <param name="isMimisBrunnr">기본적으로는 false이고, 미미르의 샘 준비 UI에서만 장착 규칙이 달라 true를 입력하면 된다.</param>
         /// <returns></returns>
-        public bool TryGetToEquip(Equipment equipment, out EquipmentSlot slot)
+        public bool TryGetToEquip(Equipment equipment, out EquipmentSlot slot, bool isMimisBrunnr = false)
         {
             if (equipment is null)
             {
@@ -170,13 +172,28 @@ namespace Nekoyume.UI.Module
             if (itemSubType == ItemSubType.Ring)
             {
                 var itemId = equipment.ItemId;
-                slot = typeSlots.FirstOrDefault(e =>
-                           !e.IsEmpty &&
-                           e.Item is ItemUsable itemUsable &&
-                           itemUsable.ItemId.Equals(itemId))
-                       ?? typeSlots.FirstOrDefault(e => e.IsEmpty)
-                       ?? typeSlots.OrderBy(e => CPHelper.GetCP((ItemUsable) e.Item))
-                           .First();
+                if (isMimisBrunnr)
+                {
+                    slot = typeSlots.FirstOrDefault(e =>
+                               !e.IsEmpty &&
+                               e.Item is ItemUsable itemUsable &&
+                               itemUsable.ItemId.Equals(itemId))
+                           ?? typeSlots.FirstOrDefault(e => e.IsEmpty)
+                           ?? typeSlots.FirstOrDefault(e =>
+                               !e.Item.ElementalType.Equals(ElementalType.Fire))
+                           ?? typeSlots.OrderBy(e => CPHelper.GetCP((ItemUsable) e.Item))
+                               .First();
+                }
+                else
+                {
+                    slot = typeSlots.FirstOrDefault(e =>
+                               !e.IsEmpty &&
+                               e.Item is ItemUsable itemUsable &&
+                               itemUsable.ItemId.Equals(itemId))
+                           ?? typeSlots.FirstOrDefault(e => e.IsEmpty)
+                           ?? typeSlots.OrderBy(e => CPHelper.GetCP((ItemUsable) e.Item))
+                               .First();
+                }
             }
             else
             {
