@@ -9,6 +9,12 @@ namespace Nekoyume
         order = int.MaxValue)]
     public class OptionTagDataScriptableObject : ScriptableObject
     {
+        [field: SerializeField]
+        public Sprite StatOptionSprite { get; set; }
+
+        [field: SerializeField]
+        public Sprite SkillOptionSprite { get; set; }
+
         [SerializeField]
         private int fallbackGrade;
 

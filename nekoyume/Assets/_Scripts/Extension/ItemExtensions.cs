@@ -43,31 +43,6 @@ namespace Nekoyume
             return true;
         }
 
-        public static bool TryGetOptionTagText(this ItemBase itemBase, out string text)
-        {
-            text = string.Empty;
-
-            if (!(itemBase is Equipment equipment))
-            {
-                return false;
-            }
-
-            var optionCount = equipment.GetOptionCount();
-            if (optionCount <= 0)
-            {
-                return false;
-            }
-
-            var sb = new StringBuilder();
-            for (var i = 0; i < optionCount; ++i)
-            {
-                sb.AppendLine("<sprite name=UI_icon_option>");
-            }
-
-            text = sb.ToString();
-            return true;
-        }
-
         public static string GetCPText(this ItemUsable itemUsable)
         {
             var cp = CPHelper.GetCP(itemUsable);
@@ -80,9 +55,7 @@ namespace Nekoyume
             return $"<size=80%>CP</size> {cp}";
         }
 
-        public static int GetOptionCountFromCombinationForUI(this Equipment value) =>
-            value.optionCountFromCombination > 0
-                ? value.optionCountFromCombination
-                : value.StatsMap.GetStats(true).Count();
+        public static bool TryGetOptionInfo(this ItemUsable itemUsable, out ItemOptionInfo itemOptionInfo) =>
+            ItemOptionHelper.TryGet(itemUsable, out itemOptionInfo);
     }
 }

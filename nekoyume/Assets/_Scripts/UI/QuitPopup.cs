@@ -1,4 +1,6 @@
 using Nekoyume.Game;
+using Nekoyume.L10n;
+using Nekoyume.UI.Module;
 using UnityEngine;
 using UniRx;
 
@@ -30,6 +32,11 @@ namespace Nekoyume.UI
             closeEventSubject.GetEvent("Click")
                 .Subscribe(_ => Close())
                 .AddTo(gameObject);
+
+            CloseWidget = () =>
+            {
+                Close();
+            };
         }
 
         public void Show(float blurRadius = 2, bool ignoreShowAnimation = false)
@@ -40,10 +47,18 @@ namespace Nekoyume.UI
 
         private void SelectCharacter()
         {
-            Nekoyume.Game.Event.OnNestEnter.Invoke();
+            if (Game.Game.instance.Stage.IsInStage)
+            {
+                Notification.Push(Nekoyume.Model.Mail.MailType.System,
+                    L10nManager.Localize("UI_BLOCK_EXIT"));
+                return;
+            }
+
+            Game.Event.OnNestEnter.Invoke();
             Find<Login>().Show();
             Find<Menu>().Close();
-            Close(true);
+            Find<HeaderMenu>().Close(true);
+            Close();
         }
 
         private void Quit()

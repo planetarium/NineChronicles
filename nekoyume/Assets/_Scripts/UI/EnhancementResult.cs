@@ -193,9 +193,6 @@ namespace Nekoyume.UI
                 return;
             }
 
-            // NOTE: Ignore Show Animation
-            base.Show(true);
-
             _resultItem.itemView.SetData(new CountableItem(equipment, 1));
             _resultItem.beforeGradeText.text = $"+{equipment.level - 1}";
             _resultItem.afterGradeText.text = $"+{equipment.level}";
@@ -253,7 +250,9 @@ namespace Nekoyume.UI
                     optionText.rootObject.SetActive(false);
                 }
             }
-
+            
+            // NOTE: Ignore Show Animation
+            base.Show(true);
             switch (enhancementResult)
             {
                 case ItemEnhancement.EnhancementResult.GreatSuccess:

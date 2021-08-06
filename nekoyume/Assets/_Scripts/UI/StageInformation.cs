@@ -24,26 +24,17 @@ namespace Nekoyume.UI
             Quest,
             Mimisbrunnr,
         }
-        [SerializeField]
-        private HelpButton stageHelpButton = null;
-        [SerializeField]
-        private TextMeshProUGUI titleText = null;
-        [SerializeField]
-        private TextMeshProUGUI monstersAreaText = null;
-        [SerializeField]
-        private List<VanillaCharacterView> monstersAreaCharacterViews = null;
-        [SerializeField]
-        private TextMeshProUGUI rewardsAreaText = null;
-        [SerializeField]
-        private List<StageRewardItemView> rewardsAreaItemViews = null;
-        [SerializeField]
-        private TextMeshProUGUI expText = null;
-        [SerializeField]
-        private SubmitButton submitButton = null;
-        [SerializeField]
-        private WorldMapWorld world = null;
-        [SerializeField]
-        private GameObject buttonNotification = null;
+        [SerializeField] private HelpButton stageHelpButton = null;
+        [SerializeField] private TextMeshProUGUI titleText = null;
+        [SerializeField] private TextMeshProUGUI monstersAreaText = null;
+        [SerializeField] private List<VanillaCharacterView> monstersAreaCharacterViews = null;
+        [SerializeField] private TextMeshProUGUI rewardsAreaText = null;
+        [SerializeField] private List<StageRewardItemView> rewardsAreaItemViews = null;
+        [SerializeField]private TextMeshProUGUI expText = null;
+        [SerializeField]private TextMeshProUGUI closeButtonText = null;
+        [SerializeField] private SubmitButton submitButton = null;
+        [SerializeField] private WorldMapWorld world = null;
+        [SerializeField] private GameObject buttonNotification = null;
         [SerializeField] private Button closeButton;
 
         private WorldMap.ViewModel _sharedViewModel;
@@ -53,17 +44,8 @@ namespace Nekoyume.UI
         {
             base.Awake();
 
-            closeButton.onClick.AddListener(() =>
-            {
-                Close(true);
-                Game.Event.OnRoomEnter.Invoke(true);
-            });
-
-            CloseWidget = () =>
-            {
-                Close(true);
-                Game.Event.OnRoomEnter.Invoke(true);
-            };
+            closeButton.onClick.AddListener(OnClickClose);
+            CloseWidget = OnClickClose;
         }
 
         public override void Initialize()
@@ -101,6 +83,15 @@ namespace Nekoyume.UI
                 .AddTo(gameObject);
         }
 
+        private void OnClickClose()
+        {
+            if (_stageType == StageType.Mimisbrunnr)
+            {
+                Game.Event.OnRoomEnter.Invoke(true);
+            }
+            base.Close(true);
+        }
+
         public void Show(WorldMap.ViewModel viewModel, WorldSheet.Row worldRow, StageType stageType)
         {
             _sharedViewModel = viewModel;
@@ -111,6 +102,7 @@ namespace Nekoyume.UI
                 )
                 .AddTo(gameObject);
             _sharedViewModel.WorldInformation.TryGetWorld(worldRow.Id, out var worldModel);
+            closeButtonText.text = worldModel.Name;
             UpdateStageInformation(_sharedViewModel.SelectedStageId.Value, States.Instance.CurrentAvatarState.level);
             if (_sharedViewModel.SelectedStageId.Value == 1)
             {

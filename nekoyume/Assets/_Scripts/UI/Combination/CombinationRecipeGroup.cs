@@ -13,6 +13,8 @@ namespace Nekoyume.UI
     {
         public int Key { get; set; }
 
+        public int Grade { get; set; }
+
         public int[] RecipeIds { get; set; }
     }
 }

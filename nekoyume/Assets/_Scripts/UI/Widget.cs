@@ -304,7 +304,10 @@ namespace Nekoyume.UI
                 _coCompleteCloseAnimation = null;
             }
 
-            _coClose = StartCoroutine(CoClose());
+            if (isActiveAndEnabled)
+            {
+                _coClose = StartCoroutine(CoClose());
+            }
         }
 
         protected void Push()

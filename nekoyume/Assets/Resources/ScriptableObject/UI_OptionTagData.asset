@@ -12,6 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fdc3e9772c5589d49b6f55216b49d68c, type: 3}
   m_Name: UI_OptionTagData
   m_EditorClassIdentifier: 
+  <StatOptionSprite>k__BackingField: {fileID: 21300000, guid: ba30455b041df4b29a44c5acdf38d5d6,
+    type: 3}
+  <SkillOptionSprite>k__BackingField: {fileID: 21300000, guid: 8e26f1c9f9ab349b3ad8eecdb01c4033,
+    type: 3}
   fallbackGrade: 0
   datas:
   - grade: 0

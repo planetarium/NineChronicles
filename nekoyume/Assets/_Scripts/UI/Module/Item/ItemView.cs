@@ -10,11 +10,13 @@ using TMPro;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
+using Coffee.UIEffects;
+using Nekoyume.Game.ScriptableObject;
+using Nekoyume.Helper;
+using Nekoyume.Model.Item;
 
 namespace Nekoyume.UI.Module
 {
-    using Coffee.UIEffects;
-    using Nekoyume.Game.ScriptableObject;
     using UniRx;
 
     public class ItemView<TViewModel> : VanillaItemView
@@ -32,7 +34,7 @@ namespace Nekoyume.UI.Module
         protected UIHsvModifier optionTagBg = null;
 
         [SerializeField]
-        protected TextMeshProUGUI optionTagText = null;
+        protected List<Image> optionTagImages = null;
 
         [SerializeField]
         protected OptionTagDataScriptableObject optionTagData = null;
@@ -117,7 +119,7 @@ namespace Nekoyume.UI.Module
                 .Subscribe(x => enhancementImage.gameObject.SetActive(x))
                 .AddTo(_disposablesAtSetData);
             var tagData = optionTagData.GetOptionTagData(row.Grade);
-            Model.Options.Subscribe(count => SetOptionTag(count, tagData)).AddTo(_disposablesAtSetData);
+            Model.HasOptions.Subscribe(hasOptions => SetOptionTag(hasOptions, tagData)).AddTo(_disposablesAtSetData);
             Model.Dimmed.Subscribe(SetDim).AddTo(_disposablesAtSetData);
             if (dimmedImage != null)
             {
@@ -165,7 +167,7 @@ namespace Nekoyume.UI.Module
                 .Subscribe(x => enhancementImage.gameObject.SetActive(x))
                 .AddTo(_disposablesAtSetData);
             var tagData = optionTagData.GetOptionTagData(row.Grade);
-            Model.Options.Subscribe(count => SetOptionTag(count, tagData)).AddTo(_disposablesAtSetData);
+            Model.HasOptions.Subscribe(hasOptions => SetOptionTag(hasOptions, tagData)).AddTo(_disposablesAtSetData);
             Model.Dimmed.Subscribe(SetDim).AddTo(_disposablesAtSetData);
             if (dimmedImage != null)
             {
@@ -214,24 +216,48 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        protected void SetOptionTag(int count, OptionTagData optionViewData)
+        protected void SetOptionTag(bool hasOptions, OptionTagData data)
         {
-            optionTagBg.gameObject.SetActive(false);
+            if (!hasOptions)
+            {
+                optionTagBg.gameObject.SetActive(false);
+                return;
+            }
+
             if (Model is null)
             {
                 return;
             }
 
-            var itemBase = Model.ItemBase.Value;
-            if (itemBase.TryGetOptionTagText(out var text))
+            foreach (var image in optionTagImages)
             {
-                optionTagBg.range = optionViewData.GradeHsvRange;
-                optionTagBg.hue = optionViewData.GradeHsvHue;
-                optionTagBg.saturation = optionViewData.GradeHsvSaturation;
-                optionTagBg.value = optionViewData.GradeHsvValue;
-                optionTagText.text = text;
-                optionTagBg.gameObject.SetActive(true);
+                image.gameObject.SetActive(false);
             }
+
+            optionTagBg.range = data.GradeHsvRange;
+            optionTagBg.hue = data.GradeHsvHue;
+            optionTagBg.saturation = data.GradeHsvSaturation;
+            optionTagBg.value = data.GradeHsvValue;
+            var optionInfo = new ItemOptionInfo(Model.ItemBase.Value as Equipment);
+
+            var index = 0;
+            for (var i = 0; i < optionInfo.StatOptions.Count; ++i)
+            {
+                var image = optionTagImages[index];
+                image.gameObject.SetActive(true);
+                image.sprite = optionTagData.StatOptionSprite;
+                ++index;
+            }
+
+            for (var i = 0; i < optionInfo.SkillOptions.Count; ++i)
+            {
+                var image = optionTagImages[index];
+                image.gameObject.SetActive(true);
+                image.sprite = optionTagData.SkillOptionSprite;
+                ++index;
+            }
+
+            optionTagBg.gameObject.SetActive(true);
         }
     }
 }

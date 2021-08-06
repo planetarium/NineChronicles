@@ -9,6 +9,8 @@ namespace Nekoyume.Helper
 {
     public class ItemOptionInfo
     {
+        public readonly int OptionCountFromCombination;
+
         public readonly (StatType type, int value) MainStat;
 
         public readonly List<(StatType type, int value, int count)> StatOptions
@@ -19,17 +21,28 @@ namespace Nekoyume.Helper
 
         public readonly int CP;
 
-        public readonly int OptionCountFromCombination;
-
         public ItemOptionInfo(Equipment equipment)
         {
+            var additionalStats = equipment.StatsMap.GetAdditionalStats(true).ToList();
+
+            OptionCountFromCombination = equipment.optionCountFromCombination > 0
+                ? equipment.optionCountFromCombination
+                : additionalStats.Count + equipment.Skills.Count;
+
             MainStat = (
                 equipment.UniqueStatType,
                 equipment.StatsMap.GetStat(equipment.UniqueStatType, true));
 
-            var additionalStats = equipment.StatsMap.GetAdditionalStats(true).ToList();
+            var optionCountDiff = OptionCountFromCombination - (additionalStats.Count + equipment.Skills.Count);
             foreach (var (statType, additionalValue) in additionalStats)
             {
+                if (statType == MainStat.type &&
+                    optionCountDiff > 0)
+                {
+                    StatOptions.Add((statType, additionalValue, 1 + optionCountDiff));
+                    continue;
+                }
+
                 StatOptions.Add((statType, additionalValue, 1));
             }
 
@@ -42,17 +55,6 @@ namespace Nekoyume.Helper
             }
 
             CP = CPHelper.GetCP(equipment);
-
-            OptionCountFromCombination = equipment.optionCountFromCombination > 0
-                ? equipment.optionCountFromCombination
-                : additionalStats.Count + equipment.Skills.Count;
-
-            var optionCountDiff = OptionCountFromCombination - (StatOptions.Count + SkillOptions.Count);
-            if (optionCountDiff > 0)
-            {
-                var statOption = StatOptions.First(e => e.type == MainStat.type);
-                statOption.count += optionCountDiff;
-            }
         }
 
         public ItemOptionInfo(ItemUsable itemUsable)

@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.EnumType;
 using Nekoyume.L10n;
-using Nekoyume.State;
 using UnityEngine;
 using UnityEngine.U2D;
 using UnityEngine.UI;
@@ -87,6 +86,7 @@ namespace Nekoyume.UI
             }
 
             base.Show();
+            Find<HeaderMenu>().Close();
             StartCoroutine(ShowSequence(worldName, stageId, isNext, clearedStageId));
             StartCoroutine(CoRun());
         }
@@ -104,13 +104,6 @@ namespace Nekoyume.UI
                 worldName,
                 StageInformation.GetStageIdString(stageId));
             indicator.Show(message);
-
-            // if (States.Instance.CurrentAvatarState.worldInformation
-            //         .TryGetUnlockedWorldByStageClearedBlockIndex(out var world) &&
-            //     world.StageClearedId >= GameConfig.RequireClearedStageLevel.UIBottomMenuInBattle)
-            // {
-            //     WidgetHandler.Instance.Battle.ShowBottomMenu(world, false);
-            // }
         }
 
         private IEnumerator CoDialog(int worldStage)
@@ -140,6 +133,7 @@ namespace Nekoyume.UI
         {
             _shouldClose = true;
             yield return new WaitUntil(() => closeEnd);
+            Find<HeaderMenu>().Show();
             gameObject.SetActive(false);
         }
 

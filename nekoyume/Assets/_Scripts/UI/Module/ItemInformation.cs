@@ -177,7 +177,7 @@ namespace Nekoyume.UI.Module
                 var uniqueStatType = equipment.UniqueStatType;
                 var stats = equipment.StatsMap.GetStats();
                 var uniqueStatMap = stats.FirstOrDefault(x => x.StatType.Equals(uniqueStatType));
-                uniqueStat.Show(uniqueStatType, uniqueStatMap.ValueAsInt);
+                var uniqueStatValue = uniqueStatMap.ValueAsInt;
 
                 foreach (var statMapEx in equipment.StatsMap.GetStats())
                 {
@@ -185,7 +185,9 @@ namespace Nekoyume.UI.Module
                     {
                         if (statMapEx.HasAdditionalValue)
                         {
-                            AddStat(uniqueStatType, statMapEx.AdditionalValueAsInt);
+                            var statValue = statMapEx.AdditionalValueAsInt;
+                            AddStat(statMapEx.StatType, statValue);
+                            uniqueStatValue += statValue;
                         }
                         continue;
                     }
@@ -193,6 +195,8 @@ namespace Nekoyume.UI.Module
                     AddStat(statMapEx);
                     statCount++;
                 }
+
+                uniqueStat.Show(uniqueStatType, uniqueStatValue);
             }
             else if (Model.item.Value.ItemBase.Value is ItemUsable itemUsable)
             {

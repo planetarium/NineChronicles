@@ -8,10 +8,11 @@ using UniRx.Triggers;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using Coffee.UIEffects;
+using System.Collections.Generic;
 
 namespace Nekoyume.UI.Module
 {
-    using System.Text;
     using UniRx;
 
     // TODO: 지금의 `EquipmentSlot`은 장비 뿐만 아니라 소모품과 코스튬이 모두 사용하고 있습니다.
@@ -22,6 +23,9 @@ namespace Nekoyume.UI.Module
     {
         private static readonly Color OriginColor = Color.white;
         private static readonly Color DimmedColor = ColorHelper.HexToColorRGB("848484");
+
+        [SerializeField]
+        protected OptionTagDataScriptableObject optionTagData = null;
 
         [SerializeField]
         private Image gradeImage = null;
@@ -45,13 +49,10 @@ namespace Nekoyume.UI.Module
         private int itemSubTypeIndex = 1;
 
         [SerializeField]
-        protected GameObject optionTagObject = null;
+        protected UIHsvModifier optionTagBg = null;
 
         [SerializeField]
-        protected TextMeshProUGUI optionTagText = null;
-
-        [SerializeField]
-        protected Image optionTagBgImage = null;
+        protected List<Image> optionTagImages = null;
 
         private int _requireLevel;
         private string _messageForCat;
@@ -222,25 +223,53 @@ namespace Nekoyume.UI.Module
             gradeImage.enabled = true;
             gradeImage.overrideSprite = gradeSprite;
 
-            if (itemBase is Equipment equip && equip.level > 0)
+            optionTagBg.gameObject.SetActive(false);
+            if (itemBase is Equipment equip)
             {
-                enhancementText.enabled = true;
-                enhancementText.text = $"+{equip.level}";
+                var isUpgraded = equip.level > 0;
+                enhancementText.enabled = isUpgraded;
+                if (isUpgraded)
+                {
+                    enhancementText.text = $"+{equip.level}";
+                }
+
+                if (equip.optionCountFromCombination > 0)
+                {
+                    foreach (var image in optionTagImages)
+                    {
+                        image.gameObject.SetActive(false);
+                    }
+
+                    var data = optionTagData.GetOptionTagData(Item.Grade);
+                    optionTagBg.range = data.GradeHsvRange;
+                    optionTagBg.hue = data.GradeHsvHue;
+                    optionTagBg.saturation = data.GradeHsvSaturation;
+                    optionTagBg.value = data.GradeHsvValue;
+                    var optionInfo = new ItemOptionInfo(Item as Equipment);
+
+                    var index = 0;
+                    for (var i = 0; i < optionInfo.StatOptions.Count; ++i)
+                    {
+                        var image = optionTagImages[index];
+                        image.gameObject.SetActive(true);
+                        image.sprite = optionTagData.StatOptionSprite;
+                        ++index;
+                    }
+
+                    for (var i = 0; i < optionInfo.SkillOptions.Count; ++i)
+                    {
+                        var image = optionTagImages[index];
+                        image.gameObject.SetActive(true);
+                        image.sprite = optionTagData.SkillOptionSprite;
+                        ++index;
+                    }
+
+                    optionTagBg.gameObject.SetActive(true);
+                }
             }
             else
             {
                 enhancementText.enabled = false;
-            }
-
-            if (itemBase.TryGetOptionTagText(out var text))
-            {
-                optionTagText.text = text;
-                optionTagBgImage.color = Item.GetItemGradeColor();
-                optionTagObject.SetActive(true);
-            }
-            else
-            {
-                optionTagObject.SetActive(false);
             }
 
             _onClick = onClick;
@@ -276,6 +305,7 @@ namespace Nekoyume.UI.Module
             itemImage.enabled = false;
             gradeImage.enabled = false;
             enhancementText.enabled = false;
+            optionTagBg.gameObject.SetActive(false);
             Item = null;
             Unlock();
         }

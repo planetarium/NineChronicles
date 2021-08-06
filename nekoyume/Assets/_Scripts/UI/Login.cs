@@ -1,15 +1,11 @@
 using System;
 using System.Collections.Generic;
-using Nekoyume.BlockChain;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Util;
 using Nekoyume.State;
-using UniRx;
 using UnityEngine;
-using UnityEngine.UI;
 using mixpanel;
-using Nekoyume.UI.Module;
 
 namespace Nekoyume.UI
 {

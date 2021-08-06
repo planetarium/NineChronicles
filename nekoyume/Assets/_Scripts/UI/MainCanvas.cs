@@ -163,7 +163,6 @@ namespace Nekoyume.UI
                 // 팝업 영역.
                 Widget.Create<Settings>(),
                 Widget.Create<Confirm>(),
-                Widget.Create<QuitPopup>(),
                 Widget.Create<OneButtonPopup>(),
                 Widget.Create<TwoButtonPopup>(),
 
@@ -234,6 +233,10 @@ namespace Nekoyume.UI
             yield return null;
             secondWidgets.Add(Widget.Create<MimisbrunnrPreparation>());
             yield return null;
+            secondWidgets.Add(Widget.Create<EventBanner>());
+            yield return null;
+            secondWidgets.Add(Widget.Create<CodeRewardButton>());
+            yield return null;
 
             // loading
             secondWidgets.Add(Widget.Create<StageLoadingScreen>());
@@ -250,8 +253,6 @@ namespace Nekoyume.UI
             yield return null;
 
             // popup
-            secondWidgets.Add(Widget.Create<BattleResult>());
-            yield return null;
             secondWidgets.Add(Widget.Create<RankingBattleResult>());
             yield return null;
             secondWidgets.Add(Widget.Create<ItemCountAndPricePopup>());
@@ -286,11 +287,15 @@ namespace Nekoyume.UI
             yield return null;
             secondWidgets.Add(Widget.Create<ChatPopup>());
             yield return null;
+            secondWidgets.Add(Widget.Create<QuitPopup>());
+            yield return null;
 
             // Over than HeaderMenu
             secondWidgets.Add(Widget.Create<CombinationResult>());
             yield return null;
             secondWidgets.Add(Widget.Create<EnhancementResult>());
+            yield return null;
+            secondWidgets.Add(Widget.Create<BattleResult>());
             yield return null;
 
             // popup
@@ -339,6 +344,8 @@ namespace Nekoyume.UI
             }
             Widgets.AddRange(secondWidgets);
             UpdateLayers();
+
+            Widget.Find<Settings>().transform.SetAsLastSibling();
         }
 
         public void SetLayerSortingOrderToTarget(

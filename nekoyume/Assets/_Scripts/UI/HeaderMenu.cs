@@ -10,6 +10,7 @@ using Nekoyume.Model.Mail;
 using Nekoyume.Model.Quest;
 using Nekoyume.Model.State;
 using Nekoyume.State;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -45,12 +46,11 @@ namespace Nekoyume.UI.Module
             public ToggleType Type;
             public Toggle Toggle;
             public Image Notification;
+            public GameObject Lock;
+            public TextMeshProUGUI LockText;
         }
 
         public override WidgetType WidgetType => WidgetType.Popup;
-
-        // 코드 보상 버튼
-        public CodeRewardButton codeRewardButton;
 
         [SerializeField] private List<ToggleInfo> toggles = new List<ToggleInfo>();
         [SerializeField] private GameObject ncg;
@@ -60,6 +60,7 @@ namespace Nekoyume.UI.Module
         [SerializeField] private VFX inventoryVFX;
         [SerializeField] private VFX workshopVFX;
         [SerializeField] private Image actionPointImage;
+        [SerializeField] private ToggleDropdown menuToggleDropdown;
 
         private readonly List<IDisposable> _disposablesAtOnEnable = new List<IDisposable>();
 
@@ -81,10 +82,7 @@ namespace Nekoyume.UI.Module
             {
                 {ToggleType.Quest, GameConfig.RequireClearedStageLevel.UIBottomMenuQuest},
                 {ToggleType.AvatarInfo, GameConfig.RequireClearedStageLevel.UIBottomMenuCharacter},
-                {
-                    ToggleType.CombinationSlots,
-                    GameConfig.RequireClearedStageLevel.CombinationEquipmentAction
-                },
+                {ToggleType.CombinationSlots, GameConfig.RequireClearedStageLevel.CombinationEquipmentAction},
                 {ToggleType.Mail, GameConfig.RequireClearedStageLevel.UIBottomMenuMail},
                 {ToggleType.Rank, 1},
                 {ToggleType.Chat, GameConfig.RequireClearedStageLevel.UIBottomMenuChat},
@@ -123,8 +121,7 @@ namespace Nekoyume.UI.Module
                     if (value)
                     {
                         var requiredStage = _toggleUnlockStages[toggleInfo.Type];
-                        if (!States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(
-                            requiredStage))
+                        if (!States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(requiredStage))
                         {
                             var msg = string.Format(L10nManager.Localize("UI_STAGE_LOCK_FORMAT"),
                                 requiredStage);
@@ -145,13 +142,32 @@ namespace Nekoyume.UI.Module
                 });
             }
 
+            menuToggleDropdown.onValueChanged.AddListener((value) =>
+            {
+                foreach (var toggleInfo in toggles)
+                {
+                    if (!value || !toggleInfo.Lock || !toggleInfo.LockText)
+                    {
+                        continue;
+                    }
+
+                    var requiredStage = _toggleUnlockStages[toggleInfo.Type];
+                    var isLock = !States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(requiredStage);
+                    toggleInfo.Lock.SetActive(isLock);
+                    toggleInfo.LockText.text = L10nManager.Localize("UI_STAGE") + requiredStage;
+                }
+            });
+
             Game.Event.OnRoomEnter.AddListener(_ => UpdateAssets(AssetVisibleState.Main));
             Game.Game.instance.Agent.BlockIndexSubject
                 .ObserveOnMainThread()
                 .Subscribe(SubscribeBlockIndex)
                 .AddTo(gameObject);
 
-            CloseWidget = null;
+            CloseWidget = ()=>
+            {
+                menuToggleDropdown.isOn = false;
+            };
         }
 
         protected override void OnEnable()
@@ -170,6 +186,12 @@ namespace Nekoyume.UI.Module
         {
             _disposablesAtOnEnable.DisposeAllAndClear();
             base.OnDisable();
+        }
+
+        public override void Close(bool ignoreCloseAnimation = false)
+        {
+            menuToggleDropdown.isOn = false;
+            base.Close(ignoreCloseAnimation);
         }
 
         public void PlayVFX(ItemMoveAnimation.EndPoint endPoint)
