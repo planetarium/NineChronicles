@@ -2172,28 +2172,6 @@
             </summary>
             <returns><see cref="T:System.Collections.Immutable.IImmutableSet`1"/> of staged transactions.</returns>
         </member>
-        <member name="M:Libplanet.Blockchain.BlockChain`1.RenderActionsInBlocks(System.Int64,Libplanet.Blockchain.Renderers.IActionRenderer{`0},System.Nullable{Libplanet.Blockchain.StateCompleterSet{`0}})">
-            <summary>
-            Render actions from block index of <paramref name="offset"/>.
-            </summary>
-            <param name="offset">Index of the block to start rendering from.</param>
-            <param name="renderer">The renderer to render actions.</param>
-            <param name="stateCompleters">The strategy to complement incomplete block states.
-            <see cref="F:Libplanet.Blockchain.StateCompleterSet`1.Recalculate"/> by default.</param>
-            <returns>The number of actions rendered.</returns>
-        </member>
-        <member name="M:Libplanet.Blockchain.BlockChain`1.RenderActions(System.Collections.Generic.IReadOnlyList{Libplanet.Action.ActionEvaluation},Libplanet.Blocks.Block{`0},Libplanet.Blockchain.Renderers.IActionRenderer{`0},System.Nullable{Libplanet.Blockchain.StateCompleterSet{`0}})">
-            <summary>
-            Render actions of the given <paramref name="block"/>.
-            </summary>
-            <param name="evaluations"><see cref="T:Libplanet.Action.ActionEvaluation"/>s of the block.  If it is
-            <c>null</c>, evaluate actions of the <paramref name="block"/> again.</param>
-            <param name="block"><see cref="T:Libplanet.Blocks.Block`1"/> to render actions.</param>
-            <param name="renderer">The renderer to render actions.</param>
-            <param name="stateCompleters">The strategy to complement incomplete block states.
-            <see cref="F:Libplanet.Blockchain.StateCompleterSet`1.Recalculate"/> by default.</param>
-            <returns>The number of actions rendered.</returns>
-        </member>
         <member name="M:Libplanet.Blockchain.BlockChain`1.ExecuteActions(Libplanet.Blocks.Block{`0},System.Nullable{Libplanet.Blockchain.StateCompleterSet{`0}})">
             <summary>
             Evaluates actions in the given <paramref name="block"/> and fills states with the
@@ -2223,6 +2201,67 @@
             Calculates and complements a block's incomplete states on the fly.
             </summary>
             <param name="blockHash">The hash of a block which has incomplete states.</param>
+        </member>
+        <member name="M:Libplanet.Blockchain.BlockChain`1.RenderActions(System.Collections.Generic.IReadOnlyList{Libplanet.Action.ActionEvaluation},Libplanet.Blocks.Block{`0},Libplanet.Blockchain.StateCompleterSet{`0})">
+            <summary>
+            Render actions of the given <paramref name="block"/>.
+            </summary>
+            <param name="evaluations"><see cref="T:Libplanet.Action.ActionEvaluation"/>s of the block.  If it is
+            <c>null</c>, evaluate actions of the <paramref name="block"/> again.</param>
+            <param name="block"><see cref="T:Libplanet.Blocks.Block`1"/> to render actions.</param>
+            <param name="stateCompleters">The strategy to complement incomplete block states.
+            <see cref="F:Libplanet.Blockchain.StateCompleterSet`1.Recalculate"/> by default.</param>
+            <returns>The number of actions rendered.</returns>
+        </member>
+        <member name="M:Libplanet.Blockchain.BlockChain`1.GetRewindPath(Libplanet.Blockchain.BlockChain{`0},Libplanet.Blocks.BlockHash)">
+            <summary>
+            Generates a list of <see cref="T:Libplanet.Blocks.Block`1"/>s to traverse starting from
+            the tip of <paramref name="chain"/> to reach <paramref name="targetHash"/>.
+            </summary>
+            <param name="chain">The <see cref="T:Libplanet.Blockchain.BlockChain`1"/> to traverse.</param>
+            <param name="targetHash">The target <see cref="T:Libplanet.Blocks.BlockHash"/> to reach.</param>
+            <returns>
+            An <see cref="T:System.Collections.Immutable.ImmutableList"/> of <see cref="T:Libplanet.Blocks.Block`1"/>s to traverse from
+            the tip of <paramref name="chain"/> to reach <paramref name="targetHash"/> excluding
+            the <see cref="T:Libplanet.Blocks.Block`1"/> with <paramref name="targetHash"/> as its hash.
+            </returns>
+            <remarks>
+            <para>
+            This is a reverse of <see cref="M:Libplanet.Blockchain.BlockChain`1.GetFastForwardPath(Libplanet.Blockchain.BlockChain{`0},Libplanet.Blocks.BlockHash)"/>.
+            </para>
+            <para>
+            As the genesis is always fixed, returned results never include the genesis.
+            </para>
+            </remarks>
+        </member>
+        <member name="M:Libplanet.Blockchain.BlockChain`1.GetFastForwardPath(Libplanet.Blockchain.BlockChain{`0},Libplanet.Blocks.BlockHash)">
+            <summary>
+            Generates a list of <see cref="T:Libplanet.Blocks.Block`1"/>s to traverse starting from
+            <paramref name="originHash"/> to reach the tip of <paramref name="chain"/>.
+            </summary>
+            <param name="chain">The <see cref="T:Libplanet.Blockchain.BlockChain`1"/> to traverse.</param>
+            <param name="originHash">The <see cref="T:Libplanet.Blocks.BlockHash"/> to start from.</param>
+            <returns>
+            An <see cref="T:System.Collections.Immutable.ImmutableList"/> of <see cref="T:Libplanet.Blocks.Block`1"/>s to traverse
+            to reach the tip of <paramref name="chain"/> from <paramref name="originHash"/>
+            excluding the <see cref="T:Libplanet.Blocks.Block`1"/> with <paramref name="originHash"/> as its hash.
+            </returns>
+            <remarks>
+            This is a reverse of <see cref="M:Libplanet.Blockchain.BlockChain`1.GetRewindPath(Libplanet.Blockchain.BlockChain{`0},Libplanet.Blocks.BlockHash)"/>.
+            </remarks>
+        </member>
+        <member name="M:Libplanet.Blockchain.BlockChain`1.FindTopCommon(Libplanet.Blockchain.BlockChain{`0},Libplanet.Blockchain.BlockChain{`0})">
+            <summary>
+            Finds the top most common <see cref="T:Libplanet.Blocks.Block`1"/> between chains <paramref name="c1"/>
+            and <paramref name="c2"/>.
+            </summary>
+            <param name="c1">The first <see cref="T:Libplanet.Blockchain.BlockChain`1"/> to compare.</param>
+            <param name="c2">The second <see cref="T:Libplanet.Blockchain.BlockChain`1"/> to compare.</param>
+            <returns>
+            The top most common <see cref="T:Libplanet.Blocks.Block`1"/> between chains <paramref name="c1"/>
+            and <paramref name="c2"/>. If there is no such <see cref="T:Libplanet.Blocks.Block`1"/>,
+            returns <c>null</c> instead.
+            </returns>
         </member>
         <member name="M:Libplanet.Blockchain.BlockChain`1.MakeTxExecutions(Libplanet.Blocks.Block{`0},System.Collections.Generic.IReadOnlyList{Libplanet.Action.ActionEvaluation})">
             <summary>
@@ -3910,10 +3949,6 @@
             <exception cref="T:Libplanet.Blocks.InvalidBlockTxHashException">Thrown when
             the <see cref="P:Libplanet.Blocks.Block`1.TxHash" /> does not match with its
             <see cref="P:Libplanet.Blocks.Block`1.Transactions"/>.</exception>
-            <exception cref="T:Libplanet.Tx.InvalidTxUpdatedAddressesException">Thrown when
-            any <see cref="T:Libplanet.Action.IAction"/> of <see cref="P:Libplanet.Blocks.Block`1.Transactions"/> tries
-            to update the states of <see cref="T:Libplanet.Address"/>es not included
-            in <see cref="P:Libplanet.Tx.Transaction`1.UpdatedAddresses"/>.</exception>
             <exception cref="T:Libplanet.Tx.InvalidTxSignatureException">Thrown when its
             <see cref="P:Libplanet.Tx.Transaction`1.Signature"/> is invalid or not signed by
             the account who corresponds to its <see cref="T:Libplanet.Crypto.PublicKey"/>.
@@ -6692,7 +6727,7 @@
             a lot of calls to methods of <see cref="P:Libplanet.Blockchain.BlockChain`1.Renderers"/> in a short
             period of time.  This can lead a game startup slow.  If you want to omit rendering of
             these actions in the behind blocks use <see cref=
-            "M:Libplanet.Net.Swarm`1.PreloadAsync(System.Nullable{System.TimeSpan},System.IProgress{Libplanet.Net.PreloadState},System.Threading.CancellationToken)"
+            "M:Libplanet.Net.Swarm`1.PreloadAsync(System.Nullable{System.TimeSpan},System.IProgress{Libplanet.Net.PreloadState},System.Boolean,System.Threading.CancellationToken)"
             /> method too.</remarks>
         </member>
         <member name="M:Libplanet.Net.Swarm`1.StartAsync(System.TimeSpan,System.TimeSpan,System.TimeSpan,System.Threading.CancellationToken)">
@@ -6721,7 +6756,7 @@
             a lot of calls to methods of <see cref="P:Libplanet.Blockchain.BlockChain`1.Renderers"/> in a short
             period of time.  This can lead a game startup slow.  If you want to omit rendering of
             these actions in the behind blocks use <see cref=
-            "M:Libplanet.Net.Swarm`1.PreloadAsync(System.Nullable{System.TimeSpan},System.IProgress{Libplanet.Net.PreloadState},System.Threading.CancellationToken)"
+            "M:Libplanet.Net.Swarm`1.PreloadAsync(System.Nullable{System.TimeSpan},System.IProgress{Libplanet.Net.PreloadState},System.Boolean,System.Threading.CancellationToken)"
             /> method too.</remarks>
         </member>
         <member name="M:Libplanet.Net.Swarm`1.BootstrapAsync(System.Collections.Generic.IEnumerable{Libplanet.Net.Peer},System.Nullable{System.TimeSpan},System.Nullable{System.TimeSpan},System.Int32,System.Threading.CancellationToken)">
@@ -6754,7 +6789,7 @@
             </param>
             <returns><see cref="T:Libplanet.Net.PeerChainState"/> of the connected <see cref="P:Libplanet.Net.Swarm`1.Peers"/>.</returns>
         </member>
-        <member name="M:Libplanet.Net.Swarm`1.PreloadAsync(System.Nullable{System.TimeSpan},System.IProgress{Libplanet.Net.PreloadState},System.Threading.CancellationToken)">
+        <member name="M:Libplanet.Net.Swarm`1.PreloadAsync(System.Nullable{System.TimeSpan},System.IProgress{Libplanet.Net.PreloadState},System.Boolean,System.Threading.CancellationToken)">
             <summary>
             Preemptively downloads blocks from registered <see cref="T:Libplanet.Net.Peer"/>s.
             </summary>
@@ -6766,6 +6801,8 @@
             <param name="progress">
             An instance that receives progress updates for block downloads.
             </param>
+            <param name="render">
+            The value indicates whether to render blocks and actions while preloading.</param>
             <param name="cancellationToken">
             A cancellation token used to propagate notification that this
             operation should be canceled.
@@ -6883,6 +6920,24 @@
             If the branch point is outside threshold from the <see cref="P:Libplanet.Blockchain.BlockChain`1.Tip" />,
             using an approximated value.
             </summary>
+        </member>
+        <member name="P:Libplanet.Net.SwarmOptions.MinimumBroadcastTarget">
+            <summary>
+            The minimum number to select from routing table when broadcast messages.
+            It is 10 by default.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.SwarmOptions.TableSize">
+            <summary>
+            The number of buckets of the Kademlia based routing table.
+            </summary>
+            <seealso cref="T:Libplanet.Net.Protocols.RoutingTable"/>
+        </member>
+        <member name="P:Libplanet.Net.SwarmOptions.BucketSize">
+            <summary>
+            The size of each bucket of the Kademlia based routing table.
+            </summary>
+            <seealso cref="T:Libplanet.Net.Protocols.RoutingTable"/>
         </member>
         <member name="T:Libplanet.Net.Transports.BoundPeerExtensions">
             <summary>
@@ -7028,7 +7083,7 @@
             <see cref="T:Libplanet.Net.Peer" /> is discovered.
             </summary>
         </member>
-        <member name="M:Libplanet.Net.Transports.NetMQTransport.#ctor(Libplanet.Net.Protocols.RoutingTable,Libplanet.Crypto.PrivateKey,Libplanet.Net.AppProtocolVersion,System.Collections.Immutable.IImmutableSet{Libplanet.Crypto.PublicKey},System.Int32,System.String,System.Nullable{System.Int32},System.Collections.Generic.IEnumerable{Libplanet.Net.IceServer},Libplanet.Net.DifferentAppProtocolVersionEncountered,System.Nullable{System.TimeSpan})">
+        <member name="M:Libplanet.Net.Transports.NetMQTransport.#ctor(Libplanet.Net.Protocols.RoutingTable,Libplanet.Crypto.PrivateKey,Libplanet.Net.AppProtocolVersion,System.Collections.Immutable.IImmutableSet{Libplanet.Crypto.PublicKey},System.Int32,System.String,System.Nullable{System.Int32},System.Collections.Generic.IEnumerable{Libplanet.Net.IceServer},Libplanet.Net.DifferentAppProtocolVersionEncountered,System.Int32,System.Nullable{System.TimeSpan})">
             <summary>
             Creates <see cref="T:Libplanet.Net.Transports.NetMQTransport"/> instance.
             </summary>
@@ -7055,6 +7110,9 @@
             signed by a trusted party (i.e., <paramref name="trustedAppProtocolVersionSigners"/>).
             If this callback returns <c>false</c>, an encountered peer is ignored.  If this callback
             is omitted, all peers with different <see cref="T:Libplanet.Net.AppProtocolVersion"/>s are ignored.
+            </param>
+            <param name="minimumBroadcastTarget">
+            The number of minimum peers to broadcast messages.
             </param>
             <param name="messageLifespan">
             The lifespan of a message.
@@ -8116,46 +8174,6 @@
             <param name="message">Specifies an <see cref="P:System.Exception.Message"/>.
             </param>
         </member>
-        <member name="T:Libplanet.Tx.InvalidTxUpdatedAddressesException">
-            <summary>
-            The exception that is thrown when a given
-            <see cref="P:Libplanet.Tx.InvalidTxException.TxId"/> cannot be found.
-            The exception that is thrown when a <see cref="T:Libplanet.Tx.Transaction`1"/>'s
-            <see cref="P:Libplanet.Tx.Transaction`1.Actions"/> try to update any
-            <see cref="T:Libplanet.Address"/>es that are not included in
-            <see cref="P:Libplanet.Tx.Transaction`1.UpdatedAddresses"/> (i.e., <see
-            cref="T:Libplanet.Address"/>es that <see cref="T:Libplanet.Tx.Transaction`1"/>'s
-            <see cref="P:Libplanet.Tx.Transaction`1.Signer"/> granted to update.)
-            </summary>
-        </member>
-        <member name="M:Libplanet.Tx.InvalidTxUpdatedAddressesException.#ctor(Libplanet.Tx.TxId,System.Collections.Immutable.IImmutableSet{Libplanet.Address},System.Collections.Immutable.IImmutableSet{Libplanet.Address},System.String)">
-            <summary>
-            Creates a new <see cref="T:Libplanet.Tx.InvalidTxUpdatedAddressesException"/>
-            object.
-            </summary>
-            <param name="txid">The invalid <see cref="T:Libplanet.Tx.Transaction`1"/>'s
-            <see cref="P:Libplanet.Tx.Transaction`1.Id"/>.  It is automatically included to
-            the <see cref="P:System.Exception.Message"/> string.</param>
-            <param name="updatableAddresses">Specifies the
-            <see cref="P:Libplanet.Tx.InvalidTxUpdatedAddressesException.UpdatableAddresses"/>.</param>
-            <param name="updatedAddresses">Specifies the
-            <see cref="P:Libplanet.Tx.InvalidTxUpdatedAddressesException.UpdatedAddresses"/>.</param>
-            <param name="message">Specifies the <see cref="P:System.Exception.Message"/>.
-            </param>
-        </member>
-        <member name="P:Libplanet.Tx.InvalidTxUpdatedAddressesException.UpdatableAddresses">
-            <summary>
-            Expected <see cref="T:Libplanet.Address"/>es to be updated.  That means,
-            <see cref="T:Libplanet.Address"/>es that <see cref="T:Libplanet.Tx.Transaction`1"/>'s
-            <see cref="P:Libplanet.Tx.Transaction`1.Signer"/> granted to update.
-            </summary>
-        </member>
-        <member name="P:Libplanet.Tx.InvalidTxUpdatedAddressesException.UpdatedAddresses">
-            <summary>
-            <see cref="T:Libplanet.Address"/>es that <see cref="P:Libplanet.Tx.Transaction`1.Actions"/>
-            actually try to update.
-            </summary>
-        </member>
         <member name="T:Libplanet.Tx.Transaction`1">
             <summary>
             Consists of <see cref="T:Libplanet.Action.IAction"/> and is signed to be included in
@@ -8404,6 +8422,92 @@
             <exception cref="T:System.ArgumentNullException">Thrown when <c>null</c>
             is passed to <paramref name="privateKey"/> or
             or <paramref name="actions"/>.
+            </exception>
+        </member>
+        <member name="M:Libplanet.Tx.Transaction`1.CreateUnsigned(System.Int64,Libplanet.Crypto.PublicKey,System.Nullable{Libplanet.Blocks.BlockHash},System.Collections.Generic.IEnumerable{`0},System.Collections.Immutable.IImmutableSet{Libplanet.Address},System.Nullable{System.DateTimeOffset})">
+            <summary>
+            A fa&#xe7;ade factory to create a new <see cref="T:Libplanet.Tx.Transaction`1"/>.
+            Unlike the <see cref="M:Libplanet.Tx.Transaction`1.#ctor(System.Int64,Libplanet.Address,Libplanet.Crypto.PublicKey,System.Nullable{Libplanet.Blocks.BlockHash},System.Collections.Immutable.IImmutableSet{Libplanet.Address},System.DateTimeOffset,System.Collections.Generic.IEnumerable{`0},System.Byte[])"/>
+            constructor, it automatically fills the following values from:
+            <list type="table">
+            <listheader>
+            <term>Property</term>
+            <description>Parameter the filled value derived from</description>
+            </listheader>
+            <item>
+            <term><see cref="P:Libplanet.Tx.Transaction`1.Signer"/></term>
+            <description><paramref name="publicKey"/></description>
+            </item>
+            <item>
+            <term><see cref="P:Libplanet.Tx.Transaction`1.PublicKey"/></term>
+            <description><paramref name="publicKey"/></description>
+            </item>
+            <item>
+            <term><see cref="P:Libplanet.Tx.Transaction`1.UpdatedAddresses"/></term>
+            <description><paramref name="actions"/> and
+            <paramref name="updatedAddresses"/></description>
+            </item>
+            </list>
+            </summary>
+            <remarks>
+            This factory method tries its best to fill the <see
+            cref="P:Libplanet.Tx.Transaction`1.UpdatedAddresses"/> property by actually evaluating
+            the given <paramref name="actions"/> (we call it &#x201c;rehearsal
+            mode&#x201d;), but remember that its result
+            is approximated in some degree, because the result of
+            <paramref name="actions"/> are not deterministic until
+            the <see cref="T:Libplanet.Tx.Transaction`1"/> belongs to a <see
+            cref="T:Libplanet.Blocks.Block`1"/>.
+            <para>If an <see cref="T:Libplanet.Action.IAction"/> depends on previous states or
+            some randomness to determine what <see cref="T:Libplanet.Address"/> to update,
+            the automatically filled <see cref="P:Libplanet.Tx.Transaction`1.UpdatedAddresses"/> became
+            mismatched from the <see cref="T:Libplanet.Address"/>es
+            <paramref name="actions"/> actually update after
+            a <see cref="T:Libplanet.Blocks.Block`1"/> is mined.
+            Although such case would be rare, a programmer could manually give
+            the <paramref name="updatedAddresses"/> parameter
+            the <see cref="T:Libplanet.Address"/>es they predict to be updated.</para>
+            <para>If an <see cref="T:Libplanet.Action.IAction"/> oversimplifies the assumption
+            about the <see cref="T:Libplanet.Blocks.Block`1"/> it belongs to,
+            runtime exceptions could be thrown from this factory method.
+            The best solution to that is not to oversimplify things,
+            there is an option to check <see cref="T:Libplanet.Action.IActionContext"/>'s
+            <see cref="P:Libplanet.Action.IActionContext.Rehearsal"/> is <c>true</c> and
+            a conditional logic for the case.</para>
+            </remarks>
+            <param name="nonce">The number of previous
+            <see cref="T:Libplanet.Tx.Transaction`1"/>s committed by the <see cref="P:Libplanet.Tx.Transaction`1.Signer"/>
+            of this transaction.  This goes to the
+            <see cref="P:Libplanet.Tx.Transaction`1.Nonce"/> property.</param>
+            <param name="publicKey">A <see cref="P:Libplanet.Tx.Transaction`1.PublicKey"/> of the account
+            who creates a new transaction.  This key is used to fill
+            the <see cref="P:Libplanet.Tx.Transaction`1.Signer"/> and <see cref="P:Libplanet.Tx.Transaction`1.PublicKey"/> properties,
+            but this in itself is not included in the transaction.</param>
+            <param name="genesisHash">A <see cref="T:Libplanet.HashDigest`1"/> value
+            of the genesis which this <see cref="T:Libplanet.Tx.Transaction`1"/> is made from.
+            This can be <c>null</c> iff the transaction is contained
+            in the genesis block.
+            </param>
+            <param name="actions">A list of <see cref="T:Libplanet.Action.IAction"/>s.  This
+            can be empty, but cannot be <c>null</c>.  This goes to
+            the <see cref="P:Libplanet.Tx.Transaction`1.Actions"/> property, and <see cref="T:Libplanet.Action.IAction"/>s
+            are evaluated before a <see cref="T:Libplanet.Tx.Transaction`1"/> is created
+            in order to fill the <see cref="P:Libplanet.Tx.Transaction`1.UpdatedAddresses"/>.  See also
+            <em>Remarks</em> section.</param>
+            <param name="updatedAddresses"><see cref="T:Libplanet.Address"/>es whose
+            states affected by <paramref name="actions"/>.
+            These <see cref="T:Libplanet.Address"/>es are also included in
+            the <see cref="P:Libplanet.Tx.Transaction`1.UpdatedAddresses"/> property, besides
+            <see cref="T:Libplanet.Address"/>es projected by evaluating
+            <paramref name="actions"/>.  See also <em>Remarks</em> section.
+            </param>
+            <param name="timestamp">The time this <see cref="T:Libplanet.Tx.Transaction`1"/>
+            is created.  This goes to the <see cref="P:Libplanet.Tx.Transaction`1.Timestamp"/>
+            property.  If <c>null</c> (which is default) is passed this will
+            be the current time.</param>
+            <returns>A created new <see cref="T:Libplanet.Tx.Transaction`1"/> unsigned.</returns>
+            <exception cref="T:System.ArgumentNullException">Thrown when <c>null</c>
+            is passed to <paramref name="actions"/>.
             </exception>
         </member>
         <member name="M:Libplanet.Tx.Transaction`1.Serialize(System.Boolean)">
