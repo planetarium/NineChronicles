@@ -210,7 +210,13 @@ namespace Nekoyume.UI
 
         private void UpdateNotification(long blockIndex)
         {
-            MailBox = States.Instance.CurrentAvatarState.mailBox;
+            var avatarState = States.Instance.CurrentAvatarState;
+            if (avatarState is null)
+            {
+                return;
+            }
+
+            MailBox = avatarState.mailBox;
             UpdateTabs(blockIndex);
         }
 
