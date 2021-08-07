@@ -1,10 +1,11 @@
 ﻿using Nekoyume.Game.Controller;
+using Nekoyume.Model.Stat;
 using TMPro;
 using UnityEngine;
 
 namespace Nekoyume.UI.Module
 {
-    public abstract class ItemOptionView : MonoBehaviour
+    public class ItemOptionView : MonoBehaviour
     {
         [SerializeField]
         private TextMeshProUGUI _leftText;
@@ -12,14 +13,35 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private TextMeshProUGUI _rightText;
 
-        public bool IsEmpty { get; protected set; }
+        [SerializeField]
+        protected Animator animator;
 
-        public abstract void Show(bool ignoreAnimation = false);
+        protected static readonly int AnimatorHashShow = Animator.StringToHash("Show");
+        protected static readonly int AnimatorHashHide = Animator.StringToHash("Hide");
+
+        public bool IsEmpty { get; protected set; }
 
         public void Show(string leftText, string rightText, bool ignoreAnimation = false)
         {
             UpdateView(leftText, rightText);
             Show(ignoreAnimation);
+        }
+
+        public void Show(bool ignoreAnimation = false)
+        {
+            gameObject.SetActive(true);
+            animator.Play(AnimatorHashShow, 0, ignoreAnimation ? 1f : 0f);
+        }
+
+        public void Hide(bool ignoreAnimation = false)
+        {
+            if (ignoreAnimation)
+            {
+                gameObject.SetActive(false);
+                return;
+            }
+
+            animator.SetTrigger(AnimatorHashHide);
         }
 
         public void UpdateView(string leftText, string rightText)
@@ -29,6 +51,21 @@ namespace Nekoyume.UI.Module
 
             IsEmpty = string.IsNullOrEmpty(leftText) && string.IsNullOrEmpty(rightText);
         }
+
+        public virtual void UpdateViewAsTotalAndPlusStat(StatType type, int totalValue, int plusValue) =>
+            UpdateView(
+                $"{type.ToString()} {totalValue}",
+                $"+{plusValue}");
+
+        public virtual void UpdateAsTotalAndPlusSkill(
+            string skillName,
+            int totalPower,
+            int totalChance,
+            int plusPower,
+            int plusChance) =>
+            UpdateView(
+                $"{skillName} {totalPower} / {totalChance}%",
+                $"+{plusPower} / +{plusChance}%");
 
         public virtual void UpdateToEmpty() => UpdateView(string.Empty, string.Empty);
 
@@ -62,6 +99,7 @@ namespace Nekoyume.UI.Module
             else
             {
                 textObject.text = text;
+                textObject.enabled = true;
             }
         }
     }

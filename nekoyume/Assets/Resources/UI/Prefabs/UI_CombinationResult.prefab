@@ -58,13 +58,13 @@ MonoBehaviour:
   tutorialTargets: []
   tutorialActions: 
   _iconImage: {fileID: 7000090437328095634}
-  _titleSuccessObject: {fileID: 7000090437762907082}
-  _titleGreatSuccessObject: {fileID: 7000090436957486453}
-  _titleFoodSuccessObject: {fileID: 7000090438640057416}
   _equipmentIconSprite: {fileID: 21300000, guid: 20a41f2d4c2932440a915f244c1acd90,
     type: 3}
   _consumableIconSprite: {fileID: 21300000, guid: a9885d1ec8c1dae4294b4bf8a9a9e178,
     type: 3}
+  _titleSuccessObject: {fileID: 7000090437762907082}
+  _titleGreatSuccessObject: {fileID: 7000090436957486453}
+  _titleFoodSuccessObject: {fileID: 7000090438640057416}
   _resultItem:
     itemNameText: {fileID: 7000090437134408324}
     itemView: {fileID: 2924821160230452931}
@@ -81,10 +81,10 @@ MonoBehaviour:
   - {fileID: 6314197635888546990}
   - {fileID: 2042906474432664443}
   _delayTimeOfShowOptions: 0.3
-  _intervalTimeOfShowOptions: 0.3
+  _intervalTimeOfDiscoverOptions: 0.3
   _delayTimeOfIncreaseCPAnimation: 0.5
   _dueTimeOfIncreaseCPAnimation: 0.15
-  _editorForEquipment: 0
+  _editorEquipmentOrFood: 0
   _editorStatOptions: []
   _editorSkillOptions: []
 --- !u!95 &8279697057637998834
@@ -12947,7 +12947,7 @@ PrefabInstance:
     - target: {fileID: 8622957318749041892, guid: c5267550da1c5564fbd3a183284ebe1b,
         type: 3}
       propertyPath: m_Name
-      value: CoveredItemStatOptionView
+      value: CombinationResultStatOptionView
       objectReference: {fileID: 0}
     - target: {fileID: 8622957318749041893, guid: c5267550da1c5564fbd3a183284ebe1b,
         type: 3}
@@ -13214,7 +13214,7 @@ PrefabInstance:
     - target: {fileID: 8622957318749041892, guid: c5267550da1c5564fbd3a183284ebe1b,
         type: 3}
       propertyPath: m_Name
-      value: CoveredItemStatOptionView
+      value: CombinationResultStatOptionView
       objectReference: {fileID: 0}
     - target: {fileID: 8622957318749041892, guid: c5267550da1c5564fbd3a183284ebe1b,
         type: 3}
@@ -13376,7 +13376,7 @@ PrefabInstance:
     - target: {fileID: 534289402502939420, guid: 29d981ea8c1e7b54db21f3a5d0eb6781,
         type: 3}
       propertyPath: m_Name
-      value: CoveredItemSkillOptionView
+      value: CombinationResultSkillOptionView
       objectReference: {fileID: 0}
     - target: {fileID: 534289402502939420, guid: 29d981ea8c1e7b54db21f3a5d0eb6781,
         type: 3}

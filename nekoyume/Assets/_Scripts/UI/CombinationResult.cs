@@ -88,7 +88,7 @@ namespace Nekoyume.UI
         private float _delayTimeOfShowOptions;
 
         [SerializeField]
-        private float _intervalTimeOfShowOptions;
+        private float _intervalTimeOfDiscoverOptions;
 
         [SerializeField]
         private float _delayTimeOfIncreaseCPAnimation;
@@ -240,7 +240,7 @@ namespace Nekoyume.UI
 
                 _itemOptionIconViews[i].UpdateAsStat();
                 var (type, value, count) = statOptions[i];
-                optionView.UpdateAsStat(type, value, count);
+                optionView.UpdateAsStatWithCount(type, value, count);
             }
 
             var skillOptions = _itemOptionInfo.SkillOptions;
@@ -257,7 +257,7 @@ namespace Nekoyume.UI
 
                 _itemOptionIconViews[i + statOptionsCount].UpdateAsSkill();
                 var (skillName, power, chance) = skillOptions[i];
-                optionView.UpdateBySkill(skillName, power, chance);
+                optionView.UpdateAsSkill(skillName, power, chance);
             }
 
             if (itemUsable.ItemType == ItemType.Equipment)
@@ -496,7 +496,7 @@ namespace Nekoyume.UI
                     continue;
                 }
 
-                yield return new WaitForSeconds(_intervalTimeOfShowOptions);
+                yield return new WaitForSeconds(_intervalTimeOfDiscoverOptions);
                 optionView.Discover();
                 yield return new WaitForSeconds(_delayTimeOfIncreaseCPAnimation);
                 PlayCPAnimation(step++);
@@ -510,7 +510,7 @@ namespace Nekoyume.UI
                     continue;
                 }
 
-                yield return new WaitForSeconds(_intervalTimeOfShowOptions);
+                yield return new WaitForSeconds(_intervalTimeOfDiscoverOptions);
                 optionView.Discover();
                 yield return new WaitForSeconds(_delayTimeOfIncreaseCPAnimation);
                 PlayCPAnimation(step++);

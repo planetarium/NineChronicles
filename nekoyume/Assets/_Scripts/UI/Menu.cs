@@ -554,7 +554,7 @@ namespace Nekoyume.UI
             base.Update();
 
             if (!Find<CombinationResult>().gameObject.activeSelf &&
-                !Find<EnhancementResult>().gameObject.activeSelf &&
+                !Find<EnhancementResultBackup>().gameObject.activeSelf &&
                 Input.GetKey(KeyCode.LeftControl))
             {
                 if (Input.GetKeyDown(KeyCode.C))
@@ -563,7 +563,7 @@ namespace Nekoyume.UI
                 }
                 else if (Input.GetKeyDown(KeyCode.E))
                 {
-                    Find<EnhancementResult>().ShowWithEditorProperty();
+                    Find<EnhancementResultBackup>().ShowWithEditorProperty();
                 }
             }
         }

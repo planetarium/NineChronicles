@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using JetBrains.Annotations;
 using Nekoyume.Action;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Controller;
@@ -65,13 +63,13 @@ namespace Nekoyume.UI
         private ResultItem _resultItem;
 
         [SerializeField]
-        private ItemMainStatView _itemMainStatView;
+        private ItemOptionView _itemMainStatView;
 
         [SerializeField]
-        private List<CoveredItemOptionView> _itemStatOptionViews;
+        private List<ItemOptionWithCountView> _itemStatOptionViews;
 
         [SerializeField]
-        private List<CoveredItemOptionView> _itemSkillOptionViews;
+        private List<ItemOptionView> _itemSkillOptionViews;
 
         [SerializeField]
         private float _delayTimeOfShowOptions;
@@ -214,7 +212,8 @@ namespace Nekoyume.UI
 
             var (_, mainStatValuePre) = itemOptionInfoPre.MainStat;
             var (mainStatType, mainStatValue) = itemOptionInfo.MainStat;
-            _itemMainStatView.UpdateView(mainStatType, mainStatValue, mainStatValue - mainStatValuePre);
+            _itemMainStatView.UpdateViewAsTotalAndPlusStat(mainStatType, mainStatValue,
+                mainStatValue - mainStatValuePre);
 
             var statOptions = itemOptionInfo.StatOptions;
             var statOptionsCount = statOptions.Count;
@@ -230,7 +229,7 @@ namespace Nekoyume.UI
 
                 var (_, preValue, _) = itemOptionInfoPre.StatOptions[i];
                 var (statType, value, count) = statOptions[i];
-                optionView.UpdateAsStat(statType, value, count, value - preValue);
+                optionView.UpdateAsTotalAndPlusStatWithCount(statType, value, count, value - preValue);
             }
 
             var skillOptions = itemOptionInfo.SkillOptions;
@@ -247,7 +246,7 @@ namespace Nekoyume.UI
 
                 var (_, prePower, preChance) = itemOptionInfoPre.SkillOptions[i];
                 var (skillName, power, chance) = skillOptions[i];
-                optionView.UpdateBySkill(
+                optionView.UpdateAsTotalAndPlusSkill(
                     skillName,
                     power,
                     chance,
@@ -359,6 +358,7 @@ namespace Nekoyume.UI
                     continue;
                 }
 
+                yield return new WaitForSeconds(_intervalTimeOfShowOptions);
                 optionView.Show();
             }
 
@@ -370,31 +370,8 @@ namespace Nekoyume.UI
                     continue;
                 }
 
+                yield return new WaitForSeconds(_intervalTimeOfShowOptions);
                 optionView.Show();
-            }
-
-            for (var i = 0; i < _itemStatOptionViews.Count; i++)
-            {
-                var optionView = _itemStatOptionViews[i];
-                if (optionView.IsEmpty)
-                {
-                    continue;
-                }
-
-                yield return new WaitForSeconds(_intervalTimeOfShowOptions);
-                optionView.Discover();
-            }
-
-            for (var i = 0; i < _itemSkillOptionViews.Count; i++)
-            {
-                var optionView = _itemSkillOptionViews[i];
-                if (optionView.IsEmpty)
-                {
-                    continue;
-                }
-
-                yield return new WaitForSeconds(_intervalTimeOfShowOptions);
-                optionView.Discover();
             }
 
             yield return null;

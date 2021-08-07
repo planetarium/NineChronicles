@@ -293,7 +293,7 @@ namespace Nekoyume.UI
             // Over than HeaderMenu
             secondWidgets.Add(Widget.Create<CombinationResult>());
             yield return null;
-            secondWidgets.Add(Widget.Create<EnhancementResult>());
+            secondWidgets.Add(Widget.Create<EnhancementResultBackup>());
             yield return null;
             secondWidgets.Add(Widget.Create<BattleResult>());
             yield return null;

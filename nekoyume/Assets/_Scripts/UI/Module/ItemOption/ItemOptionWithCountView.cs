@@ -23,18 +23,6 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private List<OptionCountObjectSet> _optionCountObjects;
 
-        [SerializeField]
-        protected Animator animator;
-
-        protected static readonly int AnimatorHashShow = Animator.StringToHash("Show");
-        protected static readonly int AnimatorHashHide = Animator.StringToHash("Hide");
-
-        public override void Show(bool ignoreAnimation = false)
-        {
-            gameObject.SetActive(true);
-            animator.Play(AnimatorHashShow, 0, ignoreAnimation ? 1f : 0f);
-        }
-
         public void Show(
             string leftText,
             string rightText,
@@ -43,17 +31,6 @@ namespace Nekoyume.UI.Module
         {
             UpdateView(leftText, rightText, optionCount);
             Show(ignoreAnimation);
-        }
-
-        public void Hide(bool ignoreAnimation = false)
-        {
-            if (ignoreAnimation)
-            {
-                gameObject.SetActive(false);
-                return;
-            }
-
-            animator.SetTrigger(AnimatorHashHide);
         }
 
         public void UpdateView(string leftText, string rightText, int optionCount)
@@ -68,25 +45,25 @@ namespace Nekoyume.UI.Module
             IsEmpty = IsEmpty && optionCount == 0;
         }
 
-        public virtual void UpdateAsStat(StatType type, int totalValue, int count) =>
+        public virtual void UpdateAsStatWithCount(StatType type, int value, int count) =>
             UpdateView(
-                $"{type.ToString()} {totalValue}",
+                $"{type.ToString()} {value}",
                 string.Empty,
                 count);
 
-        public virtual void UpdateAsStat(StatType type, int totalValue, int count, int plusValue) =>
+        public virtual void UpdateAsTotalAndPlusStatWithCount(StatType type, int totalValue, int count, int plusValue) =>
             UpdateView(
                 $"{type.ToString()} {totalValue}",
                 $"+{plusValue}",
                 count);
 
-        public virtual void UpdateBySkill(string skillName, int totalPower, int totalChance) =>
+        public virtual void UpdateAsSkill(string skillName, int totalPower, int totalChance) =>
             UpdateView(
                 $"{skillName} {totalPower} / {totalChance}%",
                 string.Empty,
                 1);
 
-        public virtual void UpdateBySkill(string skillName, int totalPower, int totalChance, int plusPower,
+        public virtual void UpdateAsTotalAndPlusSkill(string skillName, int totalPower, int totalChance, int plusPower,
             int plusChance) =>
             UpdateView(
                 $"{skillName} {totalPower} / {totalChance}%",

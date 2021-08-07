@@ -534,7 +534,7 @@ GameObject:
   - component: {fileID: 8711880514869621342}
   - component: {fileID: 5303394806564440716}
   m_Layer: 5
-  m_Name: ItemMainStatView
+  m_Name: EnhancementResultMainStatView
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -556,10 +556,10 @@ RectTransform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 56}
+  m_SizeDelta: {x: 500, y: 56}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1436894557140444984
 MonoBehaviour:
@@ -570,13 +570,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 8609098582116503956}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 574dfc630a914cafb8aedb92ea46a7c3, type: 3}
+  m_Script: {fileID: 11500000, guid: 68d42c08e90748a5a6a9ddd0501ea2c3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _leftText: {fileID: 2578332231743744160}
   _rightText: {fileID: 6415272211347705865}
-  _iconImage: {fileID: 8609098581486157680}
-  _animator: {fileID: 8711880514869621342}
+  animator: {fileID: 8711880514869621342}
 --- !u!222 &8609098582116503959
 CanvasRenderer:
   m_ObjectHideFlags: 0
