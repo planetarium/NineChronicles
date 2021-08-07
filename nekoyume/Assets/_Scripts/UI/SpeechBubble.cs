@@ -125,11 +125,6 @@ namespace Nekoyume.UI
 
         public IEnumerator CoShowText(string speech, bool instant = false, bool forceFixed = false)
         {
-            if (!enable || SpeechCount == 0)
-            {
-                yield break;
-            }
-
             BeforeSpeech();
             _coroutine = StartCoroutine(ShowText(speech, instant, forceFixed));
             yield return _coroutine;
