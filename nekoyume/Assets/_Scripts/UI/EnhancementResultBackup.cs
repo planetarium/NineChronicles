@@ -1,10 +1,10 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using JetBrains.Annotations;
 using Nekoyume.Action;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Controller;
-using Nekoyume.Helper;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.Skill;
@@ -19,16 +19,27 @@ namespace Nekoyume.UI
 {
     using UniRx;
 
-    public class EnhancementResult : Widget
+    public class EnhancementResultBackup : Widget
     {
         [Serializable]
         public class ResultItem
         {
-            public SimpleItemView itemView;
-            public TextMeshProUGUI itemNameText;
+            public SimpleCountableItemView itemView;
             public TextMeshProUGUI beforeGradeText;
             public TextMeshProUGUI afterGradeText;
+            public TextMeshProUGUI itemNameText;
             public TextMeshProUGUI cpText;
+        }
+
+        [Serializable]
+        public class Option
+        {
+            public GameObject rootObject;
+            public TextMeshProUGUI totalText;
+            public TextMeshProUGUI plusText;
+
+            [CanBeNull]
+            public GameObject secondStarObject;
         }
 
 #if UNITY_EDITOR
@@ -51,31 +62,13 @@ namespace Nekoyume.UI
 #endif
 
         [SerializeField]
-        private GameObject _titleFailSuccessObject;
-
-        [SerializeField]
-        private GameObject _titleSuccessObject;
-
-        [SerializeField]
-        private GameObject _titleGreatSuccessObject;
-
-        [SerializeField]
         private ResultItem _resultItem;
 
         [SerializeField]
-        private ItemOptionView _itemMainStatView;
+        private Option _mainStat;
 
         [SerializeField]
-        private List<ItemOptionWithCountView> _itemStatOptionViews;
-
-        [SerializeField]
-        private List<ItemOptionView> _itemSkillOptionViews;
-
-        [SerializeField]
-        private float _delayTimeOfShowOptions;
-
-        [SerializeField]
-        private float _intervalTimeOfShowOptions;
+        private List<Option> _optionTexts;
 
 #if UNITY_EDITOR
         [Space(10)]
@@ -98,7 +91,6 @@ namespace Nekoyume.UI
         private static readonly int AnimatorHashClose = Animator.StringToHash("Close");
 
         private IDisposable _disposableOfSkip;
-        private Coroutine _coroutineOfPlayOptionAnimation;
 
         public override WidgetType WidgetType => WidgetType.Popup;
 
@@ -117,10 +109,10 @@ namespace Nekoyume.UI
             var equipmentList = tableSheets.EquipmentItemSheet.OrderedList;
             var equipmentRow = equipmentList[Random.Range(0, equipmentList.Count)];
             var preLevel = Random.Range(0, 10);
-            var preEquipment = (Equipment)ItemFactory.CreateItemUsable(equipmentRow, Guid.NewGuid(), 0, preLevel);
+            var preEquipment = (Equipment) ItemFactory.CreateItemUsable(equipmentRow, Guid.NewGuid(), 0, preLevel);
             var equipment = _editorEnhancementResult == ItemEnhancement.EnhancementResult.Fail
-                ? (Equipment)ItemFactory.CreateItemUsable(equipmentRow, Guid.NewGuid(), 0, preLevel)
-                : (Equipment)ItemFactory.CreateItemUsable(equipmentRow, Guid.NewGuid(), 0, preLevel + 1);
+                ? (Equipment) ItemFactory.CreateItemUsable(equipmentRow, Guid.NewGuid(), 0, preLevel)
+                : (Equipment) ItemFactory.CreateItemUsable(equipmentRow, Guid.NewGuid(), 0, preLevel + 1);
             foreach (var statOption in _editorStatOptions)
             {
                 preEquipment.StatsMap.AddStatAdditionalValue(
@@ -155,7 +147,7 @@ namespace Nekoyume.UI
         }
 #endif
 
-        [Obsolete("Use `Show(ItemEnhanceMail mail)` instead.")]
+        [Obsolete("Use `Show(Equipment equipment)` instead.")]
         public override void Show(bool ignoreShowAnimation = false)
         {
             // ignore.
@@ -201,79 +193,75 @@ namespace Nekoyume.UI
                 return;
             }
 
-            var itemOptionInfoPre = new ItemOptionInfo(preEquipment);
-            var itemOptionInfo = new ItemOptionInfo(equipment);
-
             _resultItem.itemView.SetData(new CountableItem(equipment, 1));
             _resultItem.beforeGradeText.text = $"+{equipment.level - 1}";
             _resultItem.afterGradeText.text = $"+{equipment.level}";
-            _resultItem.itemNameText.text = equipment.GetLocalizedName(false, true);
-            _resultItem.cpText.text = itemOptionInfo.CP.ToString();
+            _resultItem.itemNameText.text = equipment.GetLocalizedName(
+                useElementalIcon: false,
+                ignoreLevel: true);
+            _resultItem.cpText.text = equipment.GetCPText();
 
-            var (_, mainStatValuePre) = itemOptionInfoPre.MainStat;
-            var (mainStatType, mainStatValue) = itemOptionInfo.MainStat;
-            _itemMainStatView.UpdateViewAsTotalAndPlusStat(mainStatType, mainStatValue,
-                mainStatValue - mainStatValuePre);
+            var optionCount = equipment.optionCountFromCombination;
+            var mainStatTotal = equipment.StatsMap.GetStat(equipment.UniqueStatType, true);
+            _mainStat.totalText.text =
+                $"{equipment.UniqueStatType.ToString()} {mainStatTotal}";
+            _mainStat.plusText.text =
+                $"(+{mainStatTotal - preEquipment.StatsMap.GetStat(preEquipment.UniqueStatType, true)})";
 
-            var statOptions = itemOptionInfo.StatOptions;
-            var statOptionsCount = statOptions.Count;
-            for (var i = 0; i < _itemStatOptionViews.Count; i++)
+            var preAdditionalStats = preEquipment.StatsMap.GetAdditionalStats(true)
+                .ToArray();
+            var additionalStats = equipment.StatsMap.GetAdditionalStats(true)
+                .ToArray();
+            var additionalStatsLength = additionalStats.Length;
+
+            var preSkills = preEquipment.Skills;
+            var skills = equipment.Skills;
+            var skillsCount = skills.Count;
+            for (var i = 0; i < _optionTexts.Count; i++)
             {
-                var optionView = _itemStatOptionViews[i];
-                optionView.Hide(true);
-                if (i >= statOptionsCount)
+                var optionText = _optionTexts[i];
+                if (i < additionalStatsLength)
                 {
-                    optionView.UpdateToEmpty();
-                    continue;
+                    if (i == 0 && optionText.secondStarObject != null)
+                    {
+                        optionText.secondStarObject.SetActive(
+                            additionalStatsLength < optionCount - skillsCount);
+                    }
+
+                    var (statType, additionalValue) = additionalStats[i];
+                    optionText.totalText.text = $"{statType.ToString()} {additionalValue}";
+
+                    var (_, preAdditionalValue) = preAdditionalStats.First(tuple => tuple.statType == statType);
+                    optionText.plusText.text = $"(+{additionalValue - preAdditionalValue})";
+                    optionText.rootObject.SetActive(true);
                 }
-
-                var (_, preValue, _) = itemOptionInfoPre.StatOptions[i];
-                var (statType, value, count) = statOptions[i];
-                optionView.UpdateAsTotalAndPlusStatWithCount(statType, value, count, value - preValue);
-            }
-
-            var skillOptions = itemOptionInfo.SkillOptions;
-            var skillOptionsCount = skillOptions.Count;
-            for (var i = 0; i < _itemSkillOptionViews.Count; i++)
-            {
-                var optionView = _itemSkillOptionViews[i];
-                optionView.Hide(true);
-                if (i >= skillOptionsCount)
+                else if (i < additionalStatsLength + skillsCount)
                 {
-                    optionView.UpdateToEmpty();
-                    continue;
+                    var skill = skills[i - additionalStatsLength];
+                    optionText.totalText.text = $"{skill.SkillRow.GetLocalizedName()} {skill.Power} / {skill.Chance}%";
+
+                    var preSkill = preSkills[i - additionalStatsLength];
+                    optionText.plusText.text =
+                        $"(+{skill.Power - preSkill.Power} / +{skill.Chance - preSkill.Chance}%)";
+                    optionText.rootObject.SetActive(true);
                 }
-
-                var (_, prePower, preChance) = itemOptionInfoPre.SkillOptions[i];
-                var (skillName, power, chance) = skillOptions[i];
-                optionView.UpdateAsTotalAndPlusSkill(
-                    skillName,
-                    power,
-                    chance,
-                    power - prePower,
-                    chance - preChance);
+                else
+                {
+                    optionText.rootObject.SetActive(false);
+                }
             }
-
+            
             // NOTE: Ignore Show Animation
             base.Show(true);
             switch (enhancementResult)
             {
                 case ItemEnhancement.EnhancementResult.GreatSuccess:
-                    _titleSuccessObject.SetActive(false);
-                    _titleGreatSuccessObject.SetActive(true);
-                    _titleFailSuccessObject.SetActive(false);
                     Animator.SetTrigger(AnimatorHashGreatSuccess);
                     break;
                 case ItemEnhancement.EnhancementResult.Success:
-                    _titleSuccessObject.SetActive(true);
-                    _titleGreatSuccessObject.SetActive(false);
-                    _titleFailSuccessObject.SetActive(false);
                     Animator.SetTrigger(AnimatorHashSuccess);
                     break;
                 case ItemEnhancement.EnhancementResult.Fail:
-                    _titleSuccessObject.SetActive(false);
-                    _titleGreatSuccessObject.SetActive(false);
-                    _titleFailSuccessObject.SetActive(true);
                     Animator.SetTrigger(AnimatorHashFail);
                     break;
                 default:
@@ -285,9 +273,17 @@ namespace Nekoyume.UI
 
         public void OnAnimatorStateBeginning(string stateName)
         {
+            Debug.Log("OnAnimatorStateBeginning: " + stateName);
             switch (stateName)
             {
-                case "Show":
+                case "GreatSuccess":
+                case "Success":
+                case "Fail":
+                    if (_disposableOfSkip != null)
+                    {
+                        _disposableOfSkip.Dispose();
+                    }
+
                     _disposableOfSkip = Observable.EveryUpdate()
                         .Where(_ => Input.GetMouseButtonDown(0) ||
                                     Input.GetKeyDown(KeyCode.Return) ||
@@ -306,97 +302,48 @@ namespace Nekoyume.UI
 
         public void OnAnimatorStateEnd(string stateName)
         {
+            Debug.Log("OnAnimatorStateEnd: " + stateName);
             switch (stateName)
             {
+                case "GreatSuccess":
+                case "Success":
+                case "Fail":
+                    Observable.EveryUpdate()
+                        .Where(_ => Input.GetMouseButtonDown(0) ||
+                                    Input.GetKeyDown(KeyCode.Return) ||
+                                    Input.GetKeyDown(KeyCode.KeypadEnter) ||
+                                    Input.GetKeyDown(KeyCode.Escape))
+                        .First()
+                        .Subscribe(_ =>
+                        {
+                            AudioController.PlayClick();
+                            Animator.SetTrigger(AnimatorHashClose);
+                        });
+                    break;
                 case "Close":
                     base.Close(true);
                     break;
             }
         }
 
-        public void OnRequestPlaySFX(string sfxCode) =>
-            AudioController.instance.PlaySfx(sfxCode);
-
-        public void PlayOptionAnimation()
+        public void OnRequestPlaySFX(string sfxCode)
         {
-            if (_coroutineOfPlayOptionAnimation != null)
-            {
-                StopCoroutine(_coroutineOfPlayOptionAnimation);
-            }
-
-            _coroutineOfPlayOptionAnimation = StartCoroutine(CoPlayOptionAnimation());
+            AudioController.instance.PlaySfx(sfxCode);
         }
 
         #endregion
 
         private void SkipAnimation()
         {
-            if (_disposableOfSkip != null)
+            var hash = Animator.GetCurrentAnimatorStateInfo(0).shortNameHash;
+            Animator.Play(hash, 0, 1f);
+            if (hash == AnimatorHashGreatSuccess ||
+                hash == AnimatorHashSuccess ||
+                hash == AnimatorHashFail)
             {
-                _disposableOfSkip.Dispose();
-                _disposableOfSkip = null;
+                Observable.NextFrame().Subscribe(_ =>
+                    Animator.Play(AnimatorHashLoop, 0, 0));
             }
-
-            if (_coroutineOfPlayOptionAnimation != null)
-            {
-                StopCoroutine(_coroutineOfPlayOptionAnimation);
-                _coroutineOfPlayOptionAnimation = null;
-            }
-
-            Animator.Play(AnimatorHashLoop, 0, 0);
         }
-
-        private IEnumerator CoPlayOptionAnimation()
-        {
-            yield return new WaitForSeconds(_delayTimeOfShowOptions);
-
-            for (var i = 0; i < _itemStatOptionViews.Count; i++)
-            {
-                var optionView = _itemStatOptionViews[i];
-                if (optionView.IsEmpty)
-                {
-                    continue;
-                }
-
-                yield return new WaitForSeconds(_intervalTimeOfShowOptions);
-                optionView.Show();
-            }
-
-            for (var i = 0; i < _itemSkillOptionViews.Count; i++)
-            {
-                var optionView = _itemSkillOptionViews[i];
-                if (optionView.IsEmpty)
-                {
-                    continue;
-                }
-
-                yield return new WaitForSeconds(_intervalTimeOfShowOptions);
-                optionView.Show();
-            }
-
-            yield return null;
-
-            _coroutineOfPlayOptionAnimation = null;
-
-            if (_disposableOfSkip != null)
-            {
-                _disposableOfSkip.Dispose();
-                _disposableOfSkip = null;
-            }
-
-            PressToContinue();
-        }
-
-        private void PressToContinue() => Observable.EveryUpdate()
-            .Where(_ => Input.GetMouseButtonDown(0) ||
-                        Input.GetKeyDown(KeyCode.Return) ||
-                        Input.GetKeyDown(KeyCode.KeypadEnter) ||
-                        Input.GetKeyDown(KeyCode.Escape))
-            .First()
-            .Subscribe(_ =>
-            {
-                AudioController.PlayClick();
-                Animator.SetTrigger(AnimatorHashClose);
-            });
     }
 }
