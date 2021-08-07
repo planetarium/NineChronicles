@@ -9,7 +9,6 @@ using Nekoyume.Helper;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Skill;
 using Nekoyume.Model.Stat;
-using Nekoyume.TableData;
 using Nekoyume.UI.Module;
 using TMPro;
 using Unity.Mathematics;
@@ -27,7 +26,7 @@ namespace Nekoyume.UI
         public struct ResultItem
         {
             public TextMeshProUGUI itemNameText;
-            public SimpleItemView itemView;
+            public VanillaItemView itemView;
             public TextMeshProUGUI mainStatText;
             public TextMeshProUGUI cpText;
         }
@@ -59,6 +58,12 @@ namespace Nekoyume.UI
         private Image _iconImage;
 
         [SerializeField]
+        private Sprite _equipmentIconSprite;
+
+        [SerializeField]
+        private Sprite _consumableIconSprite;
+
+        [SerializeField]
         private GameObject _titleSuccessObject;
 
         [SerializeField]
@@ -68,19 +73,13 @@ namespace Nekoyume.UI
         private GameObject _titleFoodSuccessObject;
 
         [SerializeField]
-        private Sprite _equipmentIconSprite;
-
-        [SerializeField]
-        private Sprite _consumableIconSprite;
-
-        [SerializeField]
         private ResultItem _resultItem;
 
         [SerializeField]
-        private List<ItemOptionView> _itemStatOptionViews;
+        private List<CoveredItemOptionView> _itemStatOptionViews;
 
         [SerializeField]
-        private List<ItemOptionView> _itemSkillOptionViews;
+        private List<CoveredItemOptionView> _itemSkillOptionViews;
 
         [SerializeField]
         private List<ItemOptionIconView> _itemOptionIconViews;
@@ -102,7 +101,7 @@ namespace Nekoyume.UI
         [Header("Editor Properties For Test")]
         [Space(10)]
         [SerializeField]
-        private bool _editorForEquipment;
+        private EquipmentOrFood _editorEquipmentOrFood;
 
         [SerializeField]
         private List<EditorStatOption> _editorStatOptions;
@@ -140,7 +139,7 @@ namespace Nekoyume.UI
         {
             ItemUsable itemUsable;
             var tableSheets = Game.Game.instance.TableSheets;
-            if (_editorForEquipment)
+            if (_editorEquipmentOrFood == EquipmentOrFood.Equipment)
             {
                 var equipmentList = !_editorStatOptions.Any() || _editorStatOptions[0].statType == StatType.NONE
                     ? tableSheets.EquipmentItemSheet.OrderedList
@@ -216,6 +215,10 @@ namespace Nekoyume.UI
                 _itemOptionIconViews[i].Hide(true);
             }
 
+            _itemOptionInfo = itemUsable is Equipment equipment
+                ? new ItemOptionInfo(equipment)
+                : new ItemOptionInfo(itemUsable);
+
             _cpListForAnimationSteps.Clear();
             _resultItem.itemNameText.text = itemUsable.GetLocalizedName(useElementalIcon: false);
             _resultItem.itemView.SetData(
@@ -223,9 +226,6 @@ namespace Nekoyume.UI
             _resultItem.mainStatText.text = string.Empty;
             _resultItem.cpText.text = string.Empty;
 
-            _itemOptionInfo = itemUsable is Equipment equipment
-                ? new ItemOptionInfo(equipment)
-                : new ItemOptionInfo(itemUsable);
             var statOptions = _itemOptionInfo.StatOptions;
             var statOptionsCount = statOptions.Count;
             for (var i = 0; i < _itemStatOptionViews.Count; i++)
@@ -234,12 +234,13 @@ namespace Nekoyume.UI
                 optionView.Hide(true);
                 if (i >= statOptionsCount)
                 {
-                    optionView.UpdateAsEmpty();
+                    optionView.UpdateToEmpty();
                     continue;
                 }
 
                 _itemOptionIconViews[i].UpdateAsStat();
-                optionView.UpdateAsStatTuple(statOptions[i]);
+                var (type, value, count) = statOptions[i];
+                optionView.UpdateAsStat(type, value, count);
             }
 
             var skillOptions = _itemOptionInfo.SkillOptions;
@@ -250,17 +251,18 @@ namespace Nekoyume.UI
                 optionView.Hide(true);
                 if (i >= skillOptionsCount)
                 {
-                    optionView.UpdateAsEmpty();
+                    optionView.UpdateToEmpty();
                     continue;
                 }
 
                 _itemOptionIconViews[i + statOptionsCount].UpdateAsSkill();
-                optionView.UpdateAsSkillTuple(skillOptions[i]);
+                var (skillName, power, chance) = skillOptions[i];
+                optionView.UpdateBySkill(skillName, power, chance);
             }
 
             if (itemUsable.ItemType == ItemType.Equipment)
             {
-                PostShowAsEquipment(itemUsable);
+                PostShowAsEquipment();
             }
             else
             {
@@ -280,7 +282,7 @@ namespace Nekoyume.UI
             Animator.SetTrigger(AnimatorHashSuccess);
         }
 
-        private void PostShowAsEquipment(ItemUsable itemUsable)
+        private void PostShowAsEquipment()
         {
             _iconImage.overrideSprite = _equipmentIconSprite;
             _titleSuccessObject.SetActive(_itemOptionInfo.OptionCountFromCombination != 4);
