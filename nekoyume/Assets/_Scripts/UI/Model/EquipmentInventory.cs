@@ -159,12 +159,12 @@ namespace Nekoyume.UI.Model
         {
             if (DimmedFunc.Value == null)
             {
-                DimmedFunc.Value = DefaultDimmedFunc;
+                DimmedFunc.SetValueAndForceNotify(DefaultDimmedFunc);
             }
 
             foreach (var item in Equipments.SelectMany(equipment => equipment.Value))
             {
-                item.Dimmed.Value = DimmedFunc.Value(item);
+                item.Dimmed.SetValueAndForceNotify(DimmedFunc.Value(item));
             }
         }
 
