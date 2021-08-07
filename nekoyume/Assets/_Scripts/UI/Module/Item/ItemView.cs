@@ -240,8 +240,9 @@ namespace Nekoyume.UI.Module
             optionTagBg.value = data.GradeHsvValue;
             var optionInfo = new ItemOptionInfo(Model.ItemBase.Value as Equipment);
 
+            var optionCount = optionInfo.StatOptions.Sum(x => x.count);
             var index = 0;
-            for (var i = 0; i < optionInfo.StatOptions.Count; ++i)
+            for (var i = 0; i < optionCount; ++i)
             {
                 var image = optionTagImages[index];
                 image.gameObject.SetActive(true);
