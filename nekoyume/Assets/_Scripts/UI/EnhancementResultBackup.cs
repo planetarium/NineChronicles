@@ -19,7 +19,7 @@ namespace Nekoyume.UI
 {
     using UniRx;
 
-    public class EnhancementResult : Widget
+    public class EnhancementResultBackup : Widget
     {
         [Serializable]
         public class ResultItem
