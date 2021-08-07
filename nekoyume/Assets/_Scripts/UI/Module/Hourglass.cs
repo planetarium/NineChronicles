@@ -12,7 +12,8 @@ namespace Nekoyume.UI.Module
 
     public class Hourglass : AlphaAnimateModule
     {
-        [SerializeField] private TextMeshProUGUI countText = null;
+        [SerializeField] 
+        private TextMeshProUGUI countText = null;
 
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
 
@@ -27,8 +28,7 @@ namespace Nekoyume.UI.Module
             base.OnDisable();
             _disposables.DisposeAllAndClear();
         }
-
-        // 최초로 들어올 때, 구매할 때, 퀘스트 수령할 때, 사용할 떄,
+      
         private void UpdateHourglass(Nekoyume.Model.Item.Inventory inventory)
         {
             var count = Util.GetHourglassCount(inventory, Game.Game.instance.Agent.BlockIndex);
