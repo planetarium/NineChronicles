@@ -106,6 +106,11 @@ namespace Nekoyume.Helper
 
         public static int GetHourglassCount(Inventory inventory, long currentBlockIndex)
         {
+            if (inventory == null)
+            {
+                return 0;
+            }
+
             var count = 0;
             var materials =
                 inventory.Items.OrderByDescending(x => x.item.ItemType == ItemType.Material);
