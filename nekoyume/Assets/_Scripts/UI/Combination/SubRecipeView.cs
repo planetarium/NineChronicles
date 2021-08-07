@@ -118,14 +118,22 @@ namespace Nekoyume.UI
             }
 
             titleText.text = title;
-            var categoryToggle = categoryToggles[_selectedIndex];
-            if (categoryToggle.isOn)
+
+            if (categoryToggles.Any())
             {
-                ChangeTab(_selectedIndex);
+                var categoryToggle = categoryToggles[_selectedIndex];
+                if (categoryToggle.isOn)
+                {
+                    ChangeTab(_selectedIndex);
+                }
+                else
+                {
+                    categoryToggle.isOn = true;
+                }
             }
             else
             {
-                categoryToggle.isOn = true;
+                ChangeTab(0);
             }
         }
 

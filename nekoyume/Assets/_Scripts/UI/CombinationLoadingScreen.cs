@@ -93,6 +93,11 @@ namespace Nekoyume.UI
             _npcAppearCoroutine = StartCoroutine(CoAnimateNPC());
         }
 
+        public void AnimateNPC(string quote)
+        {
+            _npcAppearCoroutine = StartCoroutine(CoAnimateNPC(quote));
+        }
+
         public void DisappearNPC()
         {
             if (!(_npcAppearCoroutine is null))
@@ -110,7 +115,7 @@ namespace Nekoyume.UI
             _closeAction = closeAction;
         }
 
-        private IEnumerator CoAnimateNPC()
+        private IEnumerator CoAnimateNPC(string quote = null)
         {
             var go = Game.Game.instance.Stage.npcFactory.Create(
                 NPCId,
@@ -127,8 +132,16 @@ namespace Nekoyume.UI
             _fireVFX =
                 VFXController.instance.CreateAndChaseCam<CombinationBGFireVFX>(pos,
                     new Vector3(-.7f, -.35f));
-            speechBubble.SetKey("SPEECH_COMBINATION_START_");
-            StartCoroutine(speechBubble.CoShowText(true));
+
+            if (quote is null)
+            {
+                speechBubble.SetKey("SPEECH_COMBINATION_START_");
+                StartCoroutine(speechBubble.CoShowText(true));
+            }
+            else
+            {
+                StartCoroutine(speechBubble.CoShowText(quote, true));
+            }
             StartCoroutine(CoWorkshopItemMove());
 
             var format = L10nManager.Localize("UI_PRESS_TO_CONTINUE_FORMAT");
