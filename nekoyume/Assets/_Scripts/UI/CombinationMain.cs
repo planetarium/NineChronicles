@@ -50,7 +50,13 @@ namespace Nekoyume.UI
         {
             craftNotificationImage.enabled = Craft.SharedModel.HasNotification;
             base.Show(ignoreShowAnimation);
-            AudioController.instance.PlayMusic(AudioController.MusicCode.Combination);
+
+            var audioController = AudioController.instance;
+            var musicName = AudioController.MusicCode.Combination;
+            if (!audioController.CurrentPlayingMusicName.Equals(musicName))
+            {
+                AudioController.instance.PlayMusic(musicName);
+            }
 
             if (_npc is null)
             {
