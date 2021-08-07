@@ -231,20 +231,22 @@ namespace Nekoyume.UI
             }
 
             OnCombinationAction(recipeInfo);
+
+
+            var equipmentRow = Game.Game.instance.TableSheets.EquipmentItemRecipeSheet[recipeInfo.RecipeId];
+            var equipment = (Equipment)ItemFactory.CreateItemUsable(
+                equipmentRow.GetResultEquipmentItemRow(), Guid.Empty, default);
+            var requiredBlockIndex = equipmentRow.RequiredBlockIndex;
+            var slots = Find<CombinationSlots>();
+            slots.SetCaching(slotIndex, true, requiredBlockIndex, equipment);
+
             equipmentSubRecipeView.UpdateView();
             Game.Game.instance.ActionManager.CombinationEquipment(
                 recipeInfo.RecipeId,
                 slotIndex,
                 recipeInfo.SubRecipeId);
 
-            var equipmentRow = Game.Game.instance.TableSheets.EquipmentItemRecipeSheet[recipeInfo.RecipeId];
-            var equipment = (Equipment)ItemFactory.CreateItemUsable(
-                equipmentRow.GetResultEquipmentItemRow(), Guid.Empty, default);
-
-
-            var slots = Find<CombinationSlots>();
-            slots.SetCaching(slotIndex, true, equipmentRow.RequiredBlockIndex, equipment);
-            StartCoroutine(CoCombineNPCAnimation(equipment));
+            StartCoroutine(CoCombineNPCAnimation(equipment, requiredBlockIndex));
         }
 
         private void CombinationConsumableAction(SubRecipeView.RecipeInfo recipeInfo)
@@ -256,17 +258,19 @@ namespace Nekoyume.UI
             }
 
             OnCombinationAction(recipeInfo);
+            var consumableRow = Game.Game.instance.TableSheets.ConsumableItemRecipeSheet[recipeInfo.RecipeId];
+            var consumable = (Consumable)ItemFactory.CreateItemUsable(
+                consumableRow.GetResultConsumableItemRow(), Guid.Empty, default);
+            var requiredBlockIndex = consumableRow.RequiredBlockIndex;
+            var slots = Find<CombinationSlots>();
+            slots.SetCaching(slotIndex, true, requiredBlockIndex, consumable);
+
             consumableSubRecipeView.UpdateView();
             Game.Game.instance.ActionManager.CombinationConsumable(
                 recipeInfo.RecipeId,
                 slotIndex);
 
-            var consumableRow = Game.Game.instance.TableSheets.ConsumableItemRecipeSheet[recipeInfo.RecipeId];
-            var consumable = (Consumable) ItemFactory.CreateItemUsable(
-                consumableRow.GetResultConsumableItemRow(), Guid.Empty, default);
-            var slots = Find<CombinationSlots>();
-            slots.SetCaching(slotIndex, true, consumableRow.RequiredBlockIndex, consumable);
-            StartCoroutine(CoCombineNPCAnimation(consumable, true));
+            StartCoroutine(CoCombineNPCAnimation(consumable, requiredBlockIndex, true));
         }
 
         private void OnCombinationAction(SubRecipeView.RecipeInfo recipeInfo)
@@ -283,7 +287,7 @@ namespace Nekoyume.UI
             }
         }
 
-        private IEnumerator CoCombineNPCAnimation(ItemBase itemBase, bool isConsumable = false)
+        private IEnumerator CoCombineNPCAnimation(ItemBase itemBase, long blockIndex, bool isConsumable = false)
         {
             var loadingScreen = Find<CombinationLoadingScreen>();
             loadingScreen.Show();
@@ -292,7 +296,10 @@ namespace Nekoyume.UI
             canvasGroup.blocksRaycasts = false;
             Push();
             yield return new WaitForSeconds(.5f);
-            loadingScreen.AnimateNPC();
+
+            var format = L10nManager.Localize("UI_COST_BLOCK");
+            var quote = string.Format(format, blockIndex);
+            loadingScreen.AnimateNPC(quote);
         }
 
         private void OnNPCDisappear()

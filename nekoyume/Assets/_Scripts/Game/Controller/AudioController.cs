@@ -138,6 +138,8 @@ namespace Nekoyume.Game.Controller
         private Coroutine _fadeInMusic;
         private readonly List<Coroutine> _fadeOutMusics = new List<Coroutine>();
 
+        public string CurrentPlayingMusicName { get; private set; }
+
         #region Mono
 
         protected override void Awake()
@@ -281,6 +283,7 @@ namespace Nekoyume.Game.Controller
             var audioInfo = PopFromMusicPool(audioName);
             Push(_musicPlaylist, audioName, audioInfo);
             _fadeInMusic = StartCoroutine(CoFadeIn(audioInfo, fadeIn));
+            CurrentPlayingMusicName = audioName;
         }
 
         public void PlaySfx(string audioName, float volume = 1.0f)
