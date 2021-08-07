@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Controller;
+using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Stat;
@@ -41,6 +42,13 @@ namespace Nekoyume.UI.Module
             public TextMeshProUGUI levelLimitText;
         }
 
+        [Serializable]
+        public struct StatRow
+        {
+            public StatView StatView;
+            public List<GameObject> StarImages;
+        }
+
         public IconArea iconArea;
         public DescriptionArea descriptionArea;
 
@@ -51,7 +59,7 @@ namespace Nekoyume.UI.Module
         private GameObject optionAreaRoot = null;
 
         public StatView uniqueStat;
-        public List<StatView> stats;
+        public List<StatRow> statRows;
         public List<SkillView> skills;
 
         [SerializeField]
@@ -99,7 +107,7 @@ namespace Nekoyume.UI.Module
             tradableText.text = isTradable ?
                 L10nManager.Localize("UI_TRADABLE") : L10nManager.Localize("UI_UNTRADABLE");
             tradableText.color = isTradable ?
-                Palette.GetColor(ColorType.TextElement00) : Palette.GetColor(ColorType.TextElement04);
+                Palette.GetColor(ColorType.TextElement04) : Palette.GetColor(ColorType.TextElement00);
         }
 
         private void UpdateViewIconArea()
@@ -161,9 +169,10 @@ namespace Nekoyume.UI.Module
                 return 0;
             }
 
-            foreach (var stat in stats)
+            foreach (var row in statRows)
             {
-                stat.gameObject.SetActive(false);
+                row.StatView.gameObject.SetActive(false);
+                row.StarImages.ForEach(x => x.SetActive(false));
             }
 
             var statCount = 0;
@@ -174,26 +183,19 @@ namespace Nekoyume.UI.Module
                 iconArea.combatPowerText.text = equipment.GetCPText();
                 iconArea.countObject.SetActive(false);
 
+                var optionInfo = new ItemOptionInfo(equipment);
                 var uniqueStatType = equipment.UniqueStatType;
-                var stats = equipment.StatsMap.GetStats();
-                var uniqueStatMap = stats.FirstOrDefault(x => x.StatType.Equals(uniqueStatType));
-                var uniqueStatValue = uniqueStatMap.ValueAsInt;
+                var uniqueStatValue = optionInfo.MainStat.value;
 
-                foreach (var statMapEx in equipment.StatsMap.GetStats())
+                foreach (var (type, value, count) in optionInfo.StatOptions)
                 {
-                    if (statMapEx.StatType.Equals(uniqueStatType))
+                    if (type.Equals(uniqueStatType))
                     {
-                        if (statMapEx.HasAdditionalValue)
-                        {
-                            var statValue = statMapEx.AdditionalValueAsInt;
-                            AddStat(statMapEx.StatType, statValue);
-                            uniqueStatValue += statValue;
-                        }
-                        continue;
+                        uniqueStatValue += value;
                     }
 
-                    AddStat(statMapEx);
-                    statCount++;
+                    AddStat(type, value, count);
+                    statCount += count;
                 }
 
                 uniqueStat.Show(uniqueStatType, uniqueStatValue);
@@ -291,25 +293,46 @@ namespace Nekoyume.UI.Module
 
         private void AddStat(StatMapEx model)
         {
-            var statView = GetDisabledStatView();
-            if (statView is null)
+            var statView = GetDisabledStatRow();
+            if (statView.Equals(default) ||
+                statView.StatView is null)
                 throw new NotFoundComponentException<StatView>();
-            statView.Show(model);
-        }
 
-        private void AddStat(StatType statType, int value)
-        {
-            var statView = GetDisabledStatView();
-            if (statView is null)
-                throw new NotFoundComponentException<StatView>();
-            statView.Show(statType, value);
-        }
-
-        private StatView GetDisabledStatView()
-        {
-            foreach (var stat in stats)
+            statView.StatView.Show(model);
+            var starImage = statView.StarImages.FirstOrDefault();
+            if (starImage is null)
             {
-                if (stat.gameObject.activeSelf)
+                Debug.LogError("Failed to get star image for option.");
+                return;
+            }
+            starImage.SetActive(true);
+        }
+
+        private void AddStat(StatType statType, int value, int count)
+        {
+            var statView = GetDisabledStatRow();
+            if (statView.Equals(default) ||
+                statView.StatView is null)
+                throw new NotFoundComponentException<StatView>();
+            statView.StatView.Show(statType, value);
+
+            for (int i = 0; i < count; ++i)
+            {
+                var starImage = statView.StarImages.FirstOrDefault(x => !x.activeSelf);
+                if (starImage is null)
+                {
+                    Debug.LogError("Failed to get star image for option.");
+                    return;
+                }
+                starImage.SetActive(true);
+            }
+        }
+
+        private StatRow GetDisabledStatRow()
+        {
+            foreach (var stat in statRows)
+            {
+                if (stat.StatView.gameObject.activeSelf)
                 {
                     continue;
                 }
@@ -317,7 +340,7 @@ namespace Nekoyume.UI.Module
                 return stat;
             }
 
-            return null;
+            return default;
         }
 
 
