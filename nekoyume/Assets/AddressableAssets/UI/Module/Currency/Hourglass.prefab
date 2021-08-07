@@ -9,9 +9,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4382485805452441107}
-  - component: {fileID: 5143054505114445293}
   - component: {fileID: 6082725816313648470}
   - component: {fileID: 6288766286076392999}
+  - component: {fileID: 8515593259343887766}
   m_Layer: 5
   m_Name: Hourglass
   m_TagString: Untagged
@@ -41,22 +41,6 @@ RectTransform:
   m_AnchoredPosition: {x: -10, y: -10}
   m_SizeDelta: {x: 145, y: 22}
   m_Pivot: {x: 1, y: 1}
---- !u!114 &5143054505114445293
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 307372968871572777}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c22e38c1708214c6194f129d11ffa93d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  canvasGroup: {fileID: 6288766286076392999}
-  animateAlpha: 0
-  text: {fileID: 457178462942036223}
-  onlineShopButton: {fileID: 0}
 --- !u!222 &6082725816313648470
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -77,6 +61,21 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
+--- !u!114 &8515593259343887766
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 307372968871572777}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0161234a595d4787ba40ef62f98b092d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  canvasGroup: {fileID: 6288766286076392999}
+  animateAlpha: 0
+  countText: {fileID: 457178462942036223}
 --- !u!1 &1926512982572440474
 GameObject:
   m_ObjectHideFlags: 0
@@ -304,6 +303,7 @@ MonoBehaviour:
   fixedFontStyle: 0
   fixedFontSizeOffset: 0
   fixedSpacingOption: 0
+  fixedMarginOption: 0
   fontMaterialType: 0
   l10nKey: 
   fontMaterialIndexInitialized: 0
