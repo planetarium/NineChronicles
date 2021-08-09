@@ -196,6 +196,66 @@ namespace Lib9c.Tests.Model.Order
         }
 
         [Theory]
+        [InlineData(ItemSubType.Weapon, true, false, null)]
+        [InlineData(ItemSubType.Weapon, true, true, typeof(ItemDoesNotExistException))]
+        [InlineData(ItemSubType.Weapon, false, false, typeof(ItemDoesNotExistException))]
+        [InlineData(ItemSubType.FullCostume, true, false, null)]
+        [InlineData(ItemSubType.Food, false, false, typeof(ItemDoesNotExistException))]
+        public void Sell2(ItemSubType itemSubType, bool add, bool isLock, Type exc)
+        {
+            var row = _tableSheets.ItemSheet.OrderedList.First(r => r.ItemSubType == itemSubType);
+            ItemBase item = ItemFactory.CreateItem(row, new TestRandom());
+            Guid orderId = new Guid("15396359-04db-68d5-f24a-d89c18665900");
+            ITradableItem tradableItem = (ITradableItem)item;
+            NonFungibleOrder order = OrderFactory.CreateNonFungibleOrder(
+                _avatarState.agentAddress,
+                _avatarState.address,
+                orderId,
+                new FungibleAssetValue(_currency, 10, 0),
+                tradableItem.TradableId,
+                1,
+                itemSubType
+            );
+
+            var orderLock = new OrderLock(orderId);
+            if (add)
+            {
+                if (isLock)
+                {
+                    _avatarState.inventory.AddNonFungibleItem(item, orderLock);
+                }
+                else
+                {
+                    _avatarState.inventory.AddNonFungibleItem(item);
+                }
+            }
+
+            if (item is IEquippableItem equippableItem)
+            {
+                equippableItem.Equip();
+            }
+
+            Assert.Equal(add && !isLock, _avatarState.inventory.TryGetNonFungibleItem(tradableItem.TradableId, out _));
+
+            if (exc is null)
+            {
+                ITradableItem result = order.Sell2(_avatarState);
+                Assert.Equal(order.ExpiredBlockIndex, result.RequiredBlockIndex);
+                if (result is IEquippableItem equippableItem1)
+                {
+                    Assert.False(equippableItem1.Equipped);
+                }
+
+                Assert.True(_avatarState.inventory.TryGetLockedItem(new OrderLock(orderId), out Inventory.Item inventoryItem));
+                Assert.Equal(result, (ITradableItem)inventoryItem.item);
+            }
+            else
+            {
+                Assert.Throws(exc, () => order.Sell2(_avatarState));
+            }
+        }
+
+        [Theory]
         [InlineData(ItemSubType.Weapon, true, null)]
         [InlineData(ItemSubType.Weapon, false, typeof(ItemDoesNotExistException))]
         [InlineData(ItemSubType.FullCostume, true, null)]

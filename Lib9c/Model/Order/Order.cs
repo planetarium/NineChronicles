@@ -57,9 +57,13 @@ namespace Lib9c.Model.Order
             ItemSubType = serialized[ItemSubTypeKey].ToEnum<ItemSubType>();
         }
 
+        [Obsolete("Use Digest2")]
         public abstract OrderDigest Digest(AvatarState avatarState, CostumeStatSheet costumeStatSheet);
+        public abstract OrderDigest Digest2(AvatarState avatarState, CostumeStatSheet costumeStatSheet);
 
+        [Obsolete("Use Sell2")]
         public abstract ITradableItem Sell(AvatarState avatarState);
+        public abstract ITradableItem Sell2(AvatarState avatarState);
 
         public abstract ITradableItem Cancel(AvatarState avatarState, long blockIndex);
 

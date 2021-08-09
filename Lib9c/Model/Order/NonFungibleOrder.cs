@@ -67,6 +67,7 @@ namespace Lib9c.Model.Order
             }
         }
 
+        [Obsolete("Use Sell2")]
         public override ITradableItem Sell(AvatarState avatarState)
         {
             if (avatarState.inventory.TryGetNonFungibleItem(TradableId, out INonFungibleItem nonFungibleItem))
@@ -84,12 +85,57 @@ namespace Lib9c.Model.Order
                 $"Aborted because the tradable item({TradableId}) was failed to load from avatar's inventory.");
         }
 
+        public override ITradableItem Sell2(AvatarState avatarState)
+        {
+            if (avatarState.inventory.TryGetNonFungibleItem(TradableId, out Inventory.Item inventoryItem))
+            {
+                inventoryItem.Lock(new OrderLock(OrderId));
+                INonFungibleItem nonFungibleItem = (INonFungibleItem)inventoryItem.item;
+                nonFungibleItem.RequiredBlockIndex = ExpiredBlockIndex;
+                if (nonFungibleItem is IEquippableItem equippableItem)
+                {
+                    equippableItem.Unequip();
+                }
+
+                return nonFungibleItem;
+            }
+
+            throw new ItemDoesNotExistException(
+                $"Aborted because the tradable item({TradableId}) was failed to load from avatar's inventory.");
+        }
+
+        [Obsolete("Use Digest2")]
         public override OrderDigest Digest(AvatarState avatarState, CostumeStatSheet costumeStatSheet)
         {
             if (avatarState.inventory.TryGetNonFungibleItem(TradableId, out INonFungibleItem nonFungibleItem))
             {
                 ItemBase item = (ItemBase) nonFungibleItem;
                 int cp = CPHelper.GetCP(nonFungibleItem, costumeStatSheet);
+                int level = item is Equipment equipment ? equipment.level : 0;
+                return new OrderDigest(
+                    SellerAgentAddress,
+                    StartedBlockIndex,
+                    ExpiredBlockIndex,
+                    OrderId,
+                    TradableId,
+                    Price,
+                    cp,
+                    level,
+                    item.Id,
+                    1
+                );
+            }
+
+            throw new ItemDoesNotExistException(
+                $"Aborted because the tradable item({TradableId}) was failed to load from avatar's inventory.");
+        }
+
+        public override OrderDigest Digest2(AvatarState avatarState, CostumeStatSheet costumeStatSheet)
+        {
+            if (avatarState.inventory.TryGetLockedItem(new OrderLock(OrderId), out Inventory.Item inventoryItem))
+            {
+                ItemBase item = inventoryItem.item;
+                int cp = CPHelper.GetCP((INonFungibleItem)item, costumeStatSheet);
                 int level = item is Equipment equipment ? equipment.level : 0;
                 return new OrderDigest(
                     SellerAgentAddress,

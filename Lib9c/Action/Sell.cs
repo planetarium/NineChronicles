@@ -8,7 +8,6 @@ using Libplanet;
 using Libplanet.Action;
 using Libplanet.Assets;
 using Nekoyume.Model.Item;
-using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using Serilog;
@@ -17,7 +16,7 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("sell8")]
+    [ActionType("sell9")]
     public class Sell : GameAction
     {
         public Address sellerAvatarAddress;
@@ -121,7 +120,7 @@ namespace Nekoyume.Action
                 context.BlockIndex, itemSubType, count);
             order.Validate(avatarState, count);
 
-            ITradableItem tradableItem = order.Sell(avatarState);
+            ITradableItem tradableItem = order.Sell2(avatarState);
 
             var shardedShopState = states.TryGetState(shopAddress, out Dictionary serializedState)
                 ? new ShardedShopStateV2(serializedState)
@@ -135,7 +134,7 @@ namespace Nekoyume.Action
             sw.Restart();
 
             var costumeStatSheet = states.GetSheet<CostumeStatSheet>();
-            OrderDigest orderDigest = order.Digest(avatarState, costumeStatSheet);
+            OrderDigest orderDigest = order.Digest2(avatarState, costumeStatSheet);
             shardedShopState.Add(orderDigest, context.BlockIndex);
 
             avatarState.updatedAt = context.BlockIndex;

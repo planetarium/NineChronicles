@@ -76,6 +76,7 @@ namespace Lib9c.Model.Order
             }
         }
 
+        [Obsolete("Use Sell2")]
         public override ITradableItem Sell(AvatarState avatarState)
         {
             if (avatarState.inventory.TryGetTradableItems(TradableId, StartedBlockIndex, ItemCount, out List<Inventory.Item> items))
@@ -104,10 +105,65 @@ namespace Lib9c.Model.Order
                 $"Can't find available item in seller inventory. TradableId: {TradableId}. RequiredBlockIndex: {StartedBlockIndex}, Count: {ItemCount}");
         }
 
+        public override ITradableItem Sell2(AvatarState avatarState)
+        {
+            if (avatarState.inventory.TryGetTradableItems(TradableId, StartedBlockIndex, ItemCount, out List<Inventory.Item> items))
+            {
+                int totalCount = ItemCount;
+                // Copy ITradableFungible item for separate inventory slots.
+                ITradableFungibleItem copy = (ITradableFungibleItem) ((ITradableFungibleItem) items.First().item).Clone();
+                foreach (var item in items)
+                {
+                    int removeCount = Math.Min(totalCount, item.count);
+                    ITradableFungibleItem tradableFungibleItem = (ITradableFungibleItem) item.item;
+                    avatarState.inventory.RemoveTradableItem(TradableId, tradableFungibleItem.RequiredBlockIndex, removeCount);
+                    totalCount -= removeCount;
+                    if (totalCount < 1)
+                    {
+                        break;
+                    }
+                }
+                // Lock item.
+                copy.RequiredBlockIndex = ExpiredBlockIndex;
+                avatarState.inventory.AddItem((ItemBase) copy, ItemCount, new OrderLock(OrderId));
+                return copy;
+            }
+
+            throw new ItemDoesNotExistException(
+                $"Can't find available item in seller inventory. TradableId: {TradableId}. RequiredBlockIndex: {StartedBlockIndex}, Count: {ItemCount}");
+        }
+
+
+        [Obsolete("Use Digest2")]
         public override OrderDigest Digest(AvatarState avatarState, CostumeStatSheet costumeStatSheet)
         {
             if (avatarState.inventory.TryGetTradableItem(TradableId, ExpiredBlockIndex, ItemCount,
                 out Inventory.Item inventoryItem))
+            {
+                ItemBase item = inventoryItem.item;
+                int cp = CPHelper.GetCP((ITradableItem) item, costumeStatSheet);
+                int level = item is Equipment equipment ? equipment.level : 0;
+                return new OrderDigest(
+                    SellerAgentAddress,
+                    StartedBlockIndex,
+                    ExpiredBlockIndex,
+                    OrderId,
+                    TradableId,
+                    Price,
+                    cp,
+                    level,
+                    item.Id,
+                    ItemCount
+                );
+            }
+
+            throw new ItemDoesNotExistException(
+                $"Aborted because the tradable item({TradableId}) was failed to load from avatar's inventory.");
+        }
+
+        public override OrderDigest Digest2(AvatarState avatarState, CostumeStatSheet costumeStatSheet)
+        {
+            if (avatarState.inventory.TryGetLockedItem(new OrderLock(OrderId), out Inventory.Item inventoryItem))
             {
                 ItemBase item = inventoryItem.item;
                 int cp = CPHelper.GetCP((ITradableItem) item, costumeStatSheet);
