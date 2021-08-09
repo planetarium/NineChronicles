@@ -8,6 +8,7 @@ using Libplanet.Assets;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Stat;
 using Nekoyume.Model.State;
+using Nekoyume.State.Modifiers;
 using Nekoyume.TableData;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
@@ -73,36 +74,36 @@ namespace Nekoyume.State
         private static List<OrderDigest> _buyDigests = new List<OrderDigest>();
         private static List<OrderDigest> _sellDigests = new List<OrderDigest>();
 
-        public static bool IsExistSellDigests(ItemBase itemBase, int count = 1)
-        {
-            switch (itemBase.ItemType)
-            {
-                case ItemType.Consumable:
-                    var consumable = (Consumable) itemBase;
-                    return _sellDigests.Exists(x => x.TradableId.Equals(consumable.ItemId));
-
-                case ItemType.Costume:
-                    var costume = (Costume) itemBase;
-                    return _sellDigests.Exists(x => x.TradableId.Equals(costume.ItemId));
-                case ItemType.Equipment:
-                    var equipment = (Equipment) itemBase;
-                    return _sellDigests.Exists(x => x.TradableId.Equals(equipment.ItemId));
-                case ItemType.Material:
-                    var material = (Material) itemBase;
-                    if (material is TradableMaterial tradableMaterial)
-                    {
-                        return _sellDigests.Exists(x =>
-                            x.TradableId.Equals(tradableMaterial.TradableId) &&
-                            x.ExpiredBlockIndex == tradableMaterial.RequiredBlockIndex);
-                    }
-                    else
-                    {
-                        return false;
-                    }
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-        }
+        // public static bool IsExistSellDigests(ItemBase itemBase, int count = 1)
+        // {
+        //     switch (itemBase.ItemType)
+        //     {
+        //         case ItemType.Consumable:
+        //             var consumable = (Consumable) itemBase;
+        //             return _sellDigests.Exists(x => x.TradableId.Equals(consumable.ItemId));
+        //
+        //         case ItemType.Costume:
+        //             var costume = (Costume) itemBase;
+        //             return _sellDigests.Exists(x => x.TradableId.Equals(costume.ItemId));
+        //         case ItemType.Equipment:
+        //             var equipment = (Equipment) itemBase;
+        //             return _sellDigests.Exists(x => x.TradableId.Equals(equipment.ItemId));
+        //         case ItemType.Material:
+        //             var material = (Material) itemBase;
+        //             if (material is TradableMaterial tradableMaterial)
+        //             {
+        //                 return _sellDigests.Exists(x =>
+        //                     x.TradableId.Equals(tradableMaterial.TradableId) &&
+        //                     x.ExpiredBlockIndex == tradableMaterial.RequiredBlockIndex);
+        //             }
+        //             else
+        //             {
+        //                 return false;
+        //             }
+        //         default:
+        //             throw new ArgumentOutOfRangeException();
+        //     }
+        // }
 
         public static OrderDigest GetSellDigest(Guid tradableId,
             long requiredBlockIndex,
@@ -458,7 +459,18 @@ namespace Nekoyume.State
             if (receiptState is Dictionary dictionary)
             {
                 var state = new OrderDigestListState(dictionary);
-                receipts.AddRange(state.OrderDigestList);
+
+                var validOrderDigests = state.OrderDigestList.Where(x =>
+                    x.ExpiredBlockIndex > Game.Game.instance.Agent.BlockIndex);
+                receipts.AddRange(validOrderDigests);
+
+                var expiredOrderDigests = state.OrderDigestList.Where(x =>
+                    x.ExpiredBlockIndex <= Game.Game.instance.Agent.BlockIndex);
+                var inventory = States.Instance.CurrentAvatarState.inventory;
+                var lockedDigests = expiredOrderDigests
+                    .Where(x => inventory.TryGetLockedItem(new OrderLock(x.OrderId), out _))
+                    .ToList();
+                receipts.AddRange(lockedDigests);
             }
 
             return receipts;

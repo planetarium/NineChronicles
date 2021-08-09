@@ -18,7 +18,7 @@ namespace Nekoyume.BlockChain
         private static readonly IImmutableDictionary<Env, string> DirNames = new Dictionary<Env, string>
         {
             [Env.Production] = "9c",
-            [Env.Development] = "9c_dev",
+            [Env.Development] = "9c_dev_test",
         }.ToImmutableDictionary();
 
         public static string GetDefaultStoragePath(Env? env = null)

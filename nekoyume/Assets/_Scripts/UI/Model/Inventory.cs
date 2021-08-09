@@ -90,8 +90,14 @@ namespace Nekoyume.UI.Model
                 return;
             }
 
+            // inventory.Items.Where(x=> x.item.ItemSubType == ItemSubType.ApStone).Select(x => x.count).Sum()
             foreach (var item in inventory.Items.OrderByDescending(x => x.item is ITradableItem))
             {
+                if (item.IsLock)
+                {
+                    continue;
+                }
+
                 AddItem(item.item, item.count);
             }
 
@@ -117,11 +123,6 @@ namespace Nekoyume.UI.Model
             {
                 var blockIndex = Game.Game.instance.Agent?.BlockIndex ?? -1;
                 if (tradableItem.RequiredBlockIndex > blockIndex)
-                {
-                    return;
-                }
-
-                if (ReactiveShopState.IsExistSellDigests(itemBase, count))
                 {
                     return;
                 }
