@@ -42,14 +42,6 @@ namespace Nekoyume.UI.Module
 
             UpdateView();
         }
-
-        protected override void SetDim(bool isDim)
-        {
-            base.SetDim(isDim);
-
-            countText.color = isDim ? DimmedColor : OriginColor;
-        }
-
         #endregion
 
         protected virtual void SetCount(int count)

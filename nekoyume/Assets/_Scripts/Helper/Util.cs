@@ -30,6 +30,7 @@ namespace Nekoyume.Helper
                 {
                     sb.Append(" ");
                 }
+
                 sb.Append($"{timeSpan.Hours}h");
             }
 
@@ -106,6 +107,11 @@ namespace Nekoyume.Helper
 
         public static int GetHourglassCount(Inventory inventory, long currentBlockIndex)
         {
+            if (inventory is null)
+            {
+                return 0;
+            }
+
             var count = 0;
             var materials =
                 inventory.Items.OrderByDescending(x => x.item.ItemType == ItemType.Material);

@@ -225,10 +225,6 @@ namespace Nekoyume.UI
             yield return null;
             secondWidgets.Add(Widget.Create<Status>());
             yield return null;
-            secondWidgets.Add(Widget.Create<Combination>());
-            yield return null;
-            secondWidgets.Add(Widget.Create<EnhanceEquipment>());
-            yield return null;
             secondWidgets.Add(Widget.Create<RankingBoard>());
             yield return null;
             secondWidgets.Add(Widget.Create<MimisbrunnrPreparation>());
@@ -293,7 +289,7 @@ namespace Nekoyume.UI
             // Over than HeaderMenu
             secondWidgets.Add(Widget.Create<CombinationResult>());
             yield return null;
-            secondWidgets.Add(Widget.Create<EnhancementResult>());
+            secondWidgets.Add(Widget.Create<EnhancementResultBackup>());
             yield return null;
             secondWidgets.Add(Widget.Create<BattleResult>());
             yield return null;

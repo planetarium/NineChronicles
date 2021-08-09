@@ -57,16 +57,6 @@ namespace Nekoyume.UI.Module
             UpdateView();
         }
 
-        protected override void SetDim(bool isDim)
-        {
-            base.SetDim(isDim);
-
-            effectImage.color = isDim ? DimmedColor : OriginColor;
-            glowImage.color = isDim ? DimmedColor : OriginColor;
-            equippedIcon.color = isDim ? DimmedColor : OriginColor;
-            hasNotificationImage.color = isDim ? DimmedColor : OriginColor;
-        }
-
         #endregion
 
         private void UpdateView()

@@ -7,7 +7,6 @@ using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using Nekoyume.TableData;
 using TMPro;
-using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 using Coffee.UIEffects;
@@ -27,8 +26,12 @@ namespace Nekoyume.UI.Module
         public Image backgroundImage;
         public TextMeshProUGUI enhancementText;
         public GameObject enhancementImage;
-        public Image selectionImage;
-        public Image dimmedImage;
+
+        [SerializeField]
+        private GameObject selection;
+
+        [SerializeField]
+        private GameObject disable;
 
         [SerializeField]
         protected UIHsvModifier optionTagBg = null;
@@ -47,17 +50,22 @@ namespace Nekoyume.UI.Module
         {
             get
             {
-                var pivotPosition = RectTransform.GetPivotPositionFromAnchor(PivotPresetType.MiddleCenter);
+                var pivotPosition =
+                    RectTransform.GetPivotPositionFromAnchor(PivotPresetType.MiddleCenter);
                 var position = new Vector3(pivotPosition.x, pivotPosition.y);
                 return RectTransform.localToWorldMatrix * position;
             }
         }
 
-        [CanBeNull] public TViewModel Model { get; private set; }
+        [CanBeNull]
+        public TViewModel Model { get; private set; }
+
         public bool IsEmpty => Model?.ItemBase.Value is null;
 
         public readonly Subject<ItemView<TViewModel>> OnClick = new Subject<ItemView<TViewModel>>();
-        public readonly Subject<ItemView<TViewModel>> OnDoubleClick = new Subject<ItemView<TViewModel>>();
+
+        public readonly Subject<ItemView<TViewModel>> OnDoubleClick =
+            new Subject<ItemView<TViewModel>>();
 
         #region Mono
 
@@ -77,6 +85,9 @@ namespace Nekoyume.UI.Module
                 OnDoubleClick.OnNext(this);
                 Model?.OnDoubleClick.OnNext(Model);
             }).AddTo(gameObject);
+
+            selection.transform.SetAsLastSibling();
+            disable.transform.SetAsLastSibling();
         }
 
         protected virtual void OnDestroy()
@@ -99,12 +110,14 @@ namespace Nekoyume.UI.Module
             ItemSheet.Row row;
 
             row = Game.Game.instance.TableSheets.ItemSheet.Values
-                    .FirstOrDefault(r => r.Id == model.ItemBase.Value.Id);
+                .FirstOrDefault(r => r.Id == model.ItemBase.Value.Id);
 
             if (row is null)
             {
-                throw new ArgumentOutOfRangeException(nameof(ItemSheet.Row), model.ItemBase.Value.Id, null);
+                throw new ArgumentOutOfRangeException(nameof(ItemSheet.Row),
+                    model.ItemBase.Value.Id, null);
             }
+
             base.SetData(row);
 
             var viewData = base.itemViewData.GetItemViewData(row.Grade);
@@ -119,14 +132,10 @@ namespace Nekoyume.UI.Module
                 .Subscribe(x => enhancementImage.gameObject.SetActive(x))
                 .AddTo(_disposablesAtSetData);
             var tagData = optionTagData.GetOptionTagData(row.Grade);
-            Model.HasOptions.Subscribe(hasOptions => SetOptionTag(hasOptions, tagData)).AddTo(_disposablesAtSetData);
-            Model.Dimmed.Subscribe(SetDim).AddTo(_disposablesAtSetData);
-            if (dimmedImage != null)
-            {
-                Model.Dimmed.SubscribeTo(dimmedImage.gameObject).AddTo(_disposablesAtSetData);
-            }
-
-            Model.Selected.SubscribeTo(selectionImage.gameObject).AddTo(_disposablesAtSetData);
+            Model.HasOptions.Subscribe(hasOptions => SetOptionTag(hasOptions, tagData))
+                .AddTo(_disposablesAtSetData);
+            Model.Dimmed.SubscribeTo(disable).AddTo(_disposablesAtSetData);
+            Model.Selected.SubscribeTo(selection).AddTo(_disposablesAtSetData);
             UpdateView();
         }
 
@@ -153,8 +162,10 @@ namespace Nekoyume.UI.Module
 
             if (row is null)
             {
-                throw new ArgumentOutOfRangeException(nameof(ItemSheet.Row), model.ItemBase.Value.Id, null);
+                throw new ArgumentOutOfRangeException(nameof(ItemSheet.Row),
+                    model.ItemBase.Value.Id, null);
             }
+
             base.SetData(row);
 
             var viewData = itemViewData.GetItemViewData(row.Grade);
@@ -167,13 +178,9 @@ namespace Nekoyume.UI.Module
                 .Subscribe(x => enhancementImage.gameObject.SetActive(x))
                 .AddTo(_disposablesAtSetData);
             var tagData = optionTagData.GetOptionTagData(row.Grade);
-            Model.HasOptions.Subscribe(hasOptions => SetOptionTag(hasOptions, tagData)).AddTo(_disposablesAtSetData);
-            Model.Dimmed.Subscribe(SetDim).AddTo(_disposablesAtSetData);
-            if (dimmedImage != null)
-            {
-                Model.Dimmed.SubscribeTo(dimmedImage).AddTo(_disposablesAtSetData);
-            }
-            Model.Selected.SubscribeTo(selectionImage).AddTo(_disposablesAtSetData);
+            Model.HasOptions.Subscribe(hasOptions => SetOptionTag(hasOptions, tagData))
+                .AddTo(_disposablesAtSetData);
+            Model.Selected.SubscribeTo(selection).AddTo(_disposablesAtSetData);
 
             UpdateView();
         }
@@ -194,24 +201,13 @@ namespace Nekoyume.UI.Module
             base.Clear();
         }
 
-        protected override void SetDim(bool isDim)
-        {
-            base.SetDim(isDim);
-            enhancementText.color = isDim ? DimmedColor : OriginColor;
-            selectionImage.color = isDim ? DimmedColor : OriginColor;
-        }
-
         private void UpdateView()
         {
             if (Model is null ||
                 Model.ItemBase.Value is null)
             {
                 enhancementText.enabled = false;
-                if (selectionImage != null)
-                {
-                    selectionImage.enabled = false;
-                }
-
+                selection.SetActive(false);
                 optionTagBg.gameObject.SetActive(false);
             }
         }

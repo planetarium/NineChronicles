@@ -10,8 +10,6 @@ namespace Nekoyume.UI.Module
     public class VanillaItemView : MonoBehaviour
     {
         [SerializeField] protected ItemViewDataScriptableObject itemViewData;
-        protected static readonly Color OriginColor = Color.white;
-        protected static readonly Color DimmedColor = ColorHelper.HexToColorRGB("848484");
 
         public enum ImageSizeType
         {
@@ -80,12 +78,6 @@ namespace Nekoyume.UI.Module
         {
             gradeImage.enabled = false;
             iconImage.enabled = false;
-        }
-
-        protected virtual void SetDim(bool isDim)
-        {
-            gradeImage.color = isDim ? DimmedColor : OriginColor;
-            iconImage.color = isDim ? DimmedColor : OriginColor;
         }
 
         protected Tweener PlayTween(float delay = default)
