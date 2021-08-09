@@ -133,9 +133,21 @@ namespace Nekoyume.Action
             }
 
             var orderOnSale = OrderFactory.Deserialize(orderDict);
-            orderOnSale.ValidateCancelOrder(avatarState, tradableId);
-            var itemOnSale = orderOnSale.Cancel(avatarState, context.BlockIndex);
-            
+            var backward = false;
+            try
+            {
+                orderOnSale.ValidateCancelOrder2(avatarState, tradableId);
+            }
+            catch (Exception)
+            {
+                //backward for not expired prev order.
+                orderOnSale.ValidateCancelOrder(avatarState, tradableId);
+                backward = true;
+            }
+
+            var itemOnSale = backward
+                ? orderOnSale.Cancel(avatarState, context.BlockIndex)
+                : orderOnSale.Cancel2(avatarState, context.BlockIndex);
             if (context.BlockIndex < orderOnSale.ExpiredBlockIndex)
             {
                 var shardedShopState = new ShardedShopStateV2(shopStateDict);
@@ -171,9 +183,9 @@ namespace Nekoyume.Action
                 context.BlockIndex, itemSubType, count);
             newOrder.Validate(avatarState, count);
 
-            var tradableItem = newOrder.Sell(avatarState);
+            var tradableItem = newOrder.Sell2(avatarState);
             var costumeStatSheet = states.GetSheet<CostumeStatSheet>();
-            var orderDigest = newOrder.Digest(avatarState, costumeStatSheet);
+            var orderDigest = newOrder.Digest2(avatarState, costumeStatSheet);
             updateSellShopState.Add(orderDigest, context.BlockIndex);
 
             digestList.Add(orderDigest);
