@@ -554,6 +554,11 @@ namespace Nekoyume.Model.Item
             return !(outItem is null);
         }
 
+        public void RemoveItem(Item item)
+        {
+            _items.Remove(item);
+        }
+
         // public bool TryGetTradableItemWithoutNonTradableFungibleItem(
         //     Guid tradeId,
         //     out Item outItem)

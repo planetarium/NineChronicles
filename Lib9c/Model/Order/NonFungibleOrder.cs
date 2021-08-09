@@ -185,6 +185,7 @@ namespace Lib9c.Model.Order
                 $"Aborted because the tradable item({TradableId}) was failed to load from avatar's inventory.");
         }
 
+        [Obsolete("Use ValidateTransfer2")]
         public override int ValidateTransfer(AvatarState avatarState, Guid tradableId, FungibleAssetValue price, long blockIndex)
         {
             int errorCode =  base.ValidateTransfer(avatarState, tradableId, price, blockIndex);
@@ -201,6 +202,29 @@ namespace Lib9c.Model.Order
             return !nonFungibleItem.ItemSubType.Equals(ItemSubType) ? Buy.ErrorCodeInvalidItemType : errorCode;
         }
 
+        public override int ValidateTransfer2(AvatarState avatarState, Guid tradableId,
+            FungibleAssetValue price, long blockIndex)
+        {
+            var errorCode =  base.ValidateTransfer(avatarState, tradableId, price, blockIndex);
+            if (errorCode != 0)
+            {
+                return errorCode;
+            }
+
+            if (!avatarState.inventory.TryGetLockedItem(new OrderLock(OrderId), out var inventoryItem))
+            {
+                return Buy.ErrorCodeItemDoesNotExist;
+            }
+
+            if (inventoryItem.item is INonFungibleItem nonFungibleItem)
+            {
+                return nonFungibleItem.ItemSubType.Equals(ItemSubType) ? errorCode : Buy.ErrorCodeInvalidItemType;
+            }
+
+            return Buy.ErrorCodeItemDoesNotExist;
+        }
+
+        [Obsolete("Use Transfer2")]
         public override OrderReceipt Transfer(AvatarState seller, AvatarState buyer, long blockIndex)
         {
             if (seller.inventory.TryGetNonFungibleItem(TradableId, out INonFungibleItem nonFungibleItem))
@@ -214,6 +238,32 @@ namespace Lib9c.Model.Order
                 else
                 {
                     buyer.UpdateFromAddItem((ItemUsable) nonFungibleItem, false);
+                }
+
+                return new OrderReceipt(OrderId, buyer.agentAddress, buyer.address, blockIndex);
+            }
+
+            throw new ItemDoesNotExistException(
+                $"Aborted because the tradable item({TradableId}) was failed to load from avatar's inventory.");
+        }
+
+        public override OrderReceipt Transfer2(AvatarState seller, AvatarState buyer, long blockIndex)
+        {
+            if (seller.inventory.TryGetLockedItem(new OrderLock(OrderId), out var inventoryItem))
+            {
+                if (inventoryItem.item is INonFungibleItem nonFungibleItem)
+                {
+                    nonFungibleItem.RequiredBlockIndex = blockIndex;
+                    seller.inventory.RemoveItem(inventoryItem);
+
+                    if (nonFungibleItem is Costume costume)
+                    {
+                        buyer.UpdateFromAddCostume(costume, false);
+                    }
+                    else
+                    {
+                        buyer.UpdateFromAddItem((ItemUsable)nonFungibleItem, false);
+                    }
                 }
 
                 return new OrderReceipt(OrderId, buyer.agentAddress, buyer.address, blockIndex);

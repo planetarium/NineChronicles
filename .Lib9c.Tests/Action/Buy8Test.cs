@@ -1,4 +1,4 @@
-namespace Lib9c.Tests.Action
+﻿namespace Lib9c.Tests.Action
 {
     using System;
     using System.Collections.Generic;
@@ -22,7 +22,7 @@ namespace Lib9c.Tests.Action
     using Xunit.Abstractions;
     using static SerializeKeys;
 
-    public class BuyTest
+    public class Buy8Test
     {
         private readonly Address _sellerAgentAddress;
         private readonly Address _sellerAvatarAddress;
@@ -34,7 +34,7 @@ namespace Lib9c.Tests.Action
         private readonly Guid _orderId;
         private IAccountStateDelta _initialState;
 
-        public BuyTest(ITestOutputHelper outputHelper)
+        public Buy8Test(ITestOutputHelper outputHelper)
         {
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Verbose()
@@ -249,15 +249,22 @@ namespace Lib9c.Tests.Action
                     orderData.ItemCount
                 );
                 sellerAvatarState.inventory.AddItem((ItemBase)tradableItem, orderData.ItemCount);
-                var sellItem = order.Sell2(sellerAvatarState);
-                OrderDigest orderDigest = order.Digest2(sellerAvatarState, _tableSheets.CostumeStatSheet);
+                var sellItem = order.Sell(sellerAvatarState);
+                OrderDigest orderDigest = order.Digest(sellerAvatarState, _tableSheets.CostumeStatSheet);
                 var orderDigestListState =
                     new OrderDigestListState(OrderDigestListState.DeriveAddress(orderData.SellerAvatarAddress));
                 orderDigestListState.Add(orderDigest);
                 shopState.Add(orderDigest, 0);
 
                 Assert.Equal(order.ExpiredBlockIndex, sellItem.RequiredBlockIndex);
-                Assert.True(sellerAvatarState.inventory.TryGetLockedItem(new OrderLock(orderId), out _));
+                Assert.True(
+                    sellerAvatarState.inventory.TryGetTradableItems(
+                        order.TradableId,
+                        order.ExpiredBlockIndex,
+                        orderData.ItemCount,
+                        out _
+                    )
+                );
                 Assert.DoesNotContain(((ItemBase)tradableItem).Id, buyerAvatarState.itemMap.Keys);
 
                 var expirationMail = new OrderExpirationMail(
@@ -286,7 +293,7 @@ namespace Lib9c.Tests.Action
                     .SetState(orderDigestListState.Address, orderDigestListState.Serialize());
             }
 
-            var buyAction = new Buy
+            var buyAction = new Buy8
             {
                 buyerAvatarAddress = _buyerAvatarAddress,
                 purchaseInfos = purchaseInfos,
@@ -411,7 +418,7 @@ namespace Lib9c.Tests.Action
             }
 
             var avatarAddress = equalAvatarAddress ? _buyerAvatarAddress : default;
-            var action = new Buy
+            var action = new Buy8
             {
                 buyerAvatarAddress = avatarAddress,
                 purchaseInfos = new[] { purchaseInfo },
@@ -461,8 +468,7 @@ namespace Lib9c.Tests.Action
                     var sellerAvatarState = _initialState.GetAvatarState(_sellerAvatarAddress);
                     if (!errorCodeMember.NotContains)
                     {
-                        var orderLock = new OrderLock(_orderId);
-                        sellerAvatarState.inventory.AddItem(item, iLock: orderLock);
+                        sellerAvatarState.inventory.AddItem(item);
                     }
 
                     var order = OrderFactory.Create(
@@ -488,7 +494,7 @@ namespace Lib9c.Tests.Action
 
                     if (errorCodeMember.DigestExist)
                     {
-                        var digest = order.Digest2(sellerAvatarState, _tableSheets.CostumeStatSheet);
+                        var digest = order.Digest(sellerAvatarState, _tableSheets.CostumeStatSheet);
                         shopState.Add(digest, 0);
                         _initialState = _initialState.SetState(_sellerAvatarAddress, sellerAvatarState.Serialize());
                     }
@@ -512,7 +518,7 @@ namespace Lib9c.Tests.Action
                 price
             );
 
-            var action = new Buy
+            var action = new Buy8
             {
                 buyerAvatarAddress = _buyerAvatarAddress,
                 purchaseInfos = new[] { purchaseInfo },
@@ -552,7 +558,7 @@ namespace Lib9c.Tests.Action
                 new FungibleAssetValue(_goldCurrencyState.Currency, 10, 0)
             );
 
-            var action = new Buy
+            var action = new Buy8
             {
                 buyerAvatarAddress = _buyerAvatarAddress,
                 purchaseInfos = new[] { purchaseInfo },

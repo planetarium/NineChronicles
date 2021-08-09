@@ -67,7 +67,9 @@ namespace Lib9c.Model.Order
         [Obsolete("Use Cancel2")]
         public abstract ITradableItem Cancel(AvatarState avatarState, long blockIndex);
 
+        [Obsolete("Use Transfer2")]
         public abstract OrderReceipt Transfer(AvatarState seller, AvatarState buyer, long blockIndex);
+        public abstract OrderReceipt Transfer2(AvatarState seller, AvatarState buyer, long blockIndex);
 
         public FungibleAssetValue GetTax()
         {
@@ -148,6 +150,7 @@ namespace Lib9c.Model.Order
             }
         }
 
+        [Obsolete("Use ValidateTransfer2")]
         public virtual int ValidateTransfer(AvatarState avatarState, Guid tradableId, FungibleAssetValue price, long blockIndex)
         {
             if (!avatarState.address.Equals(SellerAvatarAddress) || !avatarState.agentAddress.Equals(SellerAgentAddress))
@@ -167,6 +170,9 @@ namespace Lib9c.Model.Order
 
             return ExpiredBlockIndex < blockIndex ? Buy.ErrorCodeShopItemExpired : 0;
         }
+
+        public abstract int ValidateTransfer2(AvatarState avatarState, Guid tradableId,
+            FungibleAssetValue price, long blockIndex);
 
         public override IValue Serialize()
         {

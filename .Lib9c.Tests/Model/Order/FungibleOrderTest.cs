@@ -555,6 +555,58 @@ namespace Lib9c.Tests.Model.Order
         }
 
         [Theory]
+        [InlineData(true, false, false, true, true, true, false, true, Buy.ErrorCodeInvalidAddress)]
+        [InlineData(true, true, false, true, true, true, false, true, Buy.ErrorCodeInvalidAddress)]
+        [InlineData(true, false, true, true, true, true, false, true, Buy.ErrorCodeInvalidAddress)]
+        [InlineData(true, true, true, false, true, true, false, true, Buy.ErrorCodeInvalidTradableId)]
+        [InlineData(true, true, true, true, false, true, false, true, Buy.ErrorCodeInvalidPrice)]
+        [InlineData(true, true, true, true, true, true, true, true, Buy.ErrorCodeShopItemExpired)]
+        [InlineData(true, true, true, true, true, false, false, true, Buy.ErrorCodeItemDoesNotExist)]
+        [InlineData(true, true, true, true, true, true, false, false, Buy.ErrorCodeItemDoesNotExist)]
+        [InlineData(false, true, true, true, true, true, false, true, Buy.ErrorCodeInvalidItemType)]
+        [InlineData(true, true, true, true, true, true, false, true, 0)]
+        public void ValidateTransfer2(
+            bool equalItemType,
+            bool equalAgentAddress,
+            bool equalAvatarAddress,
+            bool equalTradableId,
+            bool equalPrice,
+            bool add,
+            bool expire,
+            bool equalCount,
+            int expected
+        )
+        {
+            var row = _tableSheets.MaterialItemSheet.OrderedList.First(r => r.ItemSubType == ItemSubType.Hourglass);
+            TradableMaterial item = ItemFactory.CreateTradableMaterial(row);
+            Guid orderId = new Guid("15396359-04db-68d5-f24a-d89c18665900");
+            var agentAddress = equalAgentAddress ? _avatarState.agentAddress : default;
+            var avatarAddress = equalAvatarAddress ? _avatarState.address : default;
+            FungibleOrder order = OrderFactory.CreateFungibleOrder(
+                agentAddress,
+                avatarAddress,
+                orderId,
+                new FungibleAssetValue(_currency, 10, 0),
+                item.TradableId,
+                1,
+                2,
+                equalItemType ? ItemSubType.Hourglass : ItemSubType.ApStone
+            );
+            FungibleAssetValue price = equalPrice ? order.Price : _currency * 0;
+            Guid tradableId = equalTradableId ? item.TradableId : default;
+            int itemCount = equalCount ? order.ItemCount : order.ItemCount - 1;
+            long blockIndex = expire ? order.ExpiredBlockIndex + 1 : order.ExpiredBlockIndex;
+            item.RequiredBlockIndex = blockIndex;
+
+            if (add)
+            {
+                _avatarState.inventory.AddItem(item, itemCount, new OrderLock(orderId));
+            }
+
+            Assert.Equal(expected, order.ValidateTransfer2(_avatarState, tradableId, price, blockIndex));
+        }
+
+        [Theory]
         [InlineData(false, typeof(ItemDoesNotExistException))]
         [InlineData(true, null)]
         public void Transfer(bool add, Type exc)
@@ -600,6 +652,55 @@ namespace Lib9c.Tests.Model.Order
             else
             {
                 Assert.Throws(exc, () => order.Transfer(_avatarState, buyer, 0));
+            }
+        }
+
+        [Theory]
+        [InlineData(false, typeof(ItemDoesNotExistException))]
+        [InlineData(true, null)]
+        public void Transfer2(bool add, Type exc)
+        {
+            var row = _tableSheets.MaterialItemSheet.OrderedList.First(r => r.ItemSubType == ItemSubType.Hourglass);
+            TradableMaterial item = ItemFactory.CreateTradableMaterial(row);
+            Guid orderId = new Guid("15396359-04db-68d5-f24a-d89c18665900");
+            FungibleOrder order = OrderFactory.CreateFungibleOrder(
+                _avatarState.agentAddress,
+                _avatarState.address,
+                orderId,
+                new FungibleAssetValue(_currency, 10, 0),
+                item.TradableId,
+                1,
+                1,
+                ItemSubType.Hourglass
+            );
+
+            if (add)
+            {
+                _avatarState.inventory.AddItem(item, 1);
+                order.Sell2(_avatarState);
+            }
+
+            var buyer = new AvatarState(
+                Addresses.Blacksmith,
+                Addresses.Admin,
+                0,
+                _tableSheets.GetAvatarSheets(),
+                new GameConfigState(),
+                default,
+                "buyer"
+            );
+
+            if (exc is null)
+            {
+                order.Transfer2(_avatarState, buyer, 100);
+                Assert.False(_avatarState.inventory.TryGetTradableItem(order.TradableId, 100, 1, out _));
+                Assert.True(buyer.inventory.TryGetTradableItem(order.TradableId, 100, 1, out Inventory.Item inventoryItem));
+                ITradableFungibleItem result = (ITradableFungibleItem)inventoryItem.item;
+                Assert.Equal(100, result.RequiredBlockIndex);
+            }
+            else
+            {
+                Assert.Throws(exc, () => order.Transfer2(_avatarState, buyer, 0));
             }
         }
 

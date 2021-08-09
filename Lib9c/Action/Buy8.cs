@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
@@ -19,8 +19,9 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("buy9")]
-    public class Buy : GameAction
+    [ActionObsolete(2100000)]
+    [ActionType("buy8")]
+    public class Buy8 : GameAction
     {
         public const int TaxRate = 8;
         public const int ErrorCodeFailedLoadingState = 1;
@@ -94,6 +95,8 @@ namespace Nekoyume.Action
                     .SetState(buyerQuestListAddress, MarkChanged)
                     .SetState(ctx.Signer, MarkChanged);
             }
+
+            CheckObsolete(2100000, context);
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, buyerAvatarAddress);
 
@@ -188,10 +191,7 @@ namespace Nekoyume.Action
                 Log.Verbose("{AddressesHex}Buy Get Seller AgentAvatarStates: {Elapsed}", addressesHex, sw.Elapsed);
                 sw.Restart();
 
-                // ValidateTransfer will no longer be required in the next version. (current version : buy9)
-                var errorCode = sellerAvatarState.inventory.TryGetLockedItem(new OrderLock(orderId), out _)
-                        ? order.ValidateTransfer2(sellerAvatarState, purchaseInfo.TradableId, purchaseInfo.Price, context.BlockIndex)
-                        : order.ValidateTransfer(sellerAvatarState, purchaseInfo.TradableId, purchaseInfo.Price, context.BlockIndex);
+                int errorCode = order.ValidateTransfer(sellerAvatarState, purchaseInfo.TradableId, purchaseInfo.Price, context.BlockIndex);
 
                 if (errorCode != 0)
                 {
@@ -214,10 +214,7 @@ namespace Nekoyume.Action
                 OrderReceipt orderReceipt;
                 try
                 {
-                    // Transfer will no longer be required in the next version. (current version : buy9)
-                    orderReceipt = sellerAvatarState.inventory.TryGetLockedItem(new OrderLock(orderId), out _)
-                            ? order.Transfer2(sellerAvatarState, buyerAvatarState, context.BlockIndex)
-                            : order.Transfer(sellerAvatarState, buyerAvatarState, context.BlockIndex);
+                    orderReceipt = order.Transfer(sellerAvatarState, buyerAvatarState, context.BlockIndex);
                 }
                 catch (ItemDoesNotExistException)
                 {
