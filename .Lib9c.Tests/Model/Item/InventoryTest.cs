@@ -24,6 +24,12 @@
         public void Serialize()
         {
             var inventory = new Inventory();
+            var row = TableSheets.EquipmentItemSheet.First;
+            var itemUsable = ItemFactory.CreateItemUsable(row, Guid.NewGuid(), 0);
+            inventory.AddItem(itemUsable);
+            var row2 = TableSheets.MaterialItemSheet.First;
+            var material = ItemFactory.CreateMaterial(row2);
+            inventory.AddItem(material, 1, new OrderLock(Guid.NewGuid()));
             var serialized = (BxList)inventory.Serialize();
             var deserialized = new Inventory(serialized);
             Assert.Equal(inventory, deserialized);
@@ -33,6 +39,12 @@
         public void Serialize_With_DotNet_Api()
         {
             var inventory = new Inventory();
+            var row = TableSheets.EquipmentItemSheet.First;
+            var itemUsable = ItemFactory.CreateItemUsable(row, Guid.NewGuid(), 0);
+            inventory.AddItem(itemUsable);
+            var row2 = TableSheets.MaterialItemSheet.First;
+            var material = ItemFactory.CreateMaterial(row2);
+            inventory.AddItem(material, 1, new OrderLock(Guid.NewGuid()));
             var formatter = new BinaryFormatter();
             using var ms = new MemoryStream();
             formatter.Serialize(ms, inventory);
@@ -309,15 +321,19 @@
         }
 
         [Theory]
-        [InlineData(ItemType.Equipment, 0, true)]
-        [InlineData(ItemType.Costume, 0, true)]
-        [InlineData(ItemType.Consumable, 0, true)]
-        [InlineData(ItemType.Material, 0, true)]
-        [InlineData(ItemType.Equipment, 1, false)]
-        [InlineData(ItemType.Costume, 1, false)]
-        [InlineData(ItemType.Consumable, 1, false)]
-        [InlineData(ItemType.Material, 1, false)]
-        public void TryGetTradableItems(ItemType itemType, long blockIndex, bool expected)
+        [InlineData(ItemType.Equipment, 0, false, true)]
+        [InlineData(ItemType.Costume, 0, false, true)]
+        [InlineData(ItemType.Consumable, 0, false, true)]
+        [InlineData(ItemType.Material, 0, false, true)]
+        [InlineData(ItemType.Equipment, 0, true, false)]
+        [InlineData(ItemType.Costume, 0, true, false)]
+        [InlineData(ItemType.Consumable, 0, true, false)]
+        [InlineData(ItemType.Material, 0, true, false)]
+        [InlineData(ItemType.Equipment, 1, false, false)]
+        [InlineData(ItemType.Costume, 1, false, false)]
+        [InlineData(ItemType.Consumable, 1, false, false)]
+        [InlineData(ItemType.Material, 1, false, false)]
+        public void TryGetTradableItems(ItemType itemType, long blockIndex, bool isLock, bool expected)
         {
             ItemSheet.Row row;
             switch (itemType)
@@ -350,7 +366,13 @@
             }
 
             tradableItem.RequiredBlockIndex = blockIndex;
-            inventory.AddItem((ItemBase)tradableItem, 1);
+            OrderLock? orderLock = null;
+            if (isLock)
+            {
+                orderLock = new OrderLock(Guid.NewGuid());
+            }
+
+            inventory.AddItem((ItemBase)tradableItem, 1, orderLock);
             Assert.Single(inventory.Items);
             Assert.Equal(
                 expected,
@@ -589,6 +611,25 @@
             Assert.True(inventory.HasItem(row.Id, 4));
             Assert.True(inventory.TryGetFungibleItems(row.ItemId, out List<Inventory.Item> items));
             Assert.All(items, item => Assert.True(item.item is IFungibleItem));
+        }
+
+        [Fact]
+        public void Lock()
+        {
+            MaterialItemSheet.Row row = TableSheets.MaterialItemSheet.First;
+            Assert.NotNull(row);
+            Material material = ItemFactory.CreateMaterial(row);
+            var item = new Inventory.Item(material, 1);
+            var orderLock = new OrderLock(Guid.NewGuid());
+            Assert.False(item.IsLock);
+
+            item.Lock(orderLock);
+
+            Assert.True(item.IsLock);
+
+            item.Unlock();
+
+            Assert.False(item.IsLock);
         }
     }
 }
