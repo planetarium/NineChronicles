@@ -98,11 +98,12 @@ namespace Lib9c.Tests.Action
         }
 
         [Theory]
-        [InlineData(GameConfig.RequireCharacterLevel.CharacterFullCostumeSlot, 1, 1, false, false)]
-        [InlineData(GameConfig.RequireCharacterLevel.CharacterFullCostumeSlot, 1, 1, false, true)]
-        [InlineData(200, 1, GameConfig.RequireClearedStageLevel.ActionsInRankingBoard, true, false)]
-        [InlineData(200, 1, GameConfig.RequireClearedStageLevel.ActionsInRankingBoard, true, true)]
-        public void Execute(int avatarLevel, int worldId, int stageId, bool contains, bool backward)
+        [InlineData(GameConfig.RequireCharacterLevel.CharacterFullCostumeSlot, 1, 1, false, false, false)]
+        [InlineData(GameConfig.RequireCharacterLevel.CharacterFullCostumeSlot, 1, 1, false, false, true)]
+        [InlineData(GameConfig.RequireCharacterLevel.CharacterFullCostumeSlot, 1, 1, false, true, false)]
+        [InlineData(200, 1, GameConfig.RequireClearedStageLevel.ActionsInRankingBoard, true, false, false)]
+        [InlineData(200, 1, GameConfig.RequireClearedStageLevel.ActionsInRankingBoard, true, true, false)]
+        public void Execute(int avatarLevel, int worldId, int stageId, bool contains, bool backward, bool isLock)
         {
             Assert.True(_tableSheets.WorldSheet.TryGetValue(worldId, out var worldRow));
             Assert.True(stageId >= worldRow.StageBegin);
@@ -149,7 +150,13 @@ namespace Lib9c.Tests.Action
                     random)
                     as Equipment;
                 equipments.Add(weapon.ItemId);
-                previousAvatarState.inventory.AddItem(weapon);
+                OrderLock? orderLock = null;
+                if (isLock)
+                {
+                    orderLock = new OrderLock(Guid.NewGuid());
+                }
+
+                previousAvatarState.inventory.AddItem(weapon, iLock: orderLock);
             }
 
             if (avatarLevel >= GameConfig.RequireCharacterLevel.CharacterEquipmentSlotArmor)
@@ -242,6 +249,8 @@ namespace Lib9c.Tests.Action
                     CPHelper.GetCP(nextAvatarState, _tableSheets.CharacterSheet)
                 );
             }
+
+            Assert.Equal(!isLock, nextAvatarState.inventory.Equipments.OfType<Weapon>().Any(w => w.equipped));
 
             var value = nextState.GetState(_rankingMapAddress);
 
