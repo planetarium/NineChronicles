@@ -6,9 +6,7 @@ using Libplanet;
 using Nekoyume.Battle;
 using Nekoyume.Model.Elemental;
 using Nekoyume.Model.Item;
-using Nekoyume.State;
 using Nekoyume.UI.Module;
-using UnityEngine;
 using Material = Nekoyume.Model.Item.Material;
 
 namespace Nekoyume.UI.Model
@@ -90,7 +88,6 @@ namespace Nekoyume.UI.Model
                 return;
             }
 
-            // inventory.Items.Where(x=> x.item.ItemSubType == ItemSubType.ApStone).Select(x => x.count).Sum()
             foreach (var item in inventory.Items.OrderByDescending(x => x.item is ITradableItem))
             {
                 if (item.IsLock)
