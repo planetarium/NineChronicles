@@ -14,6 +14,7 @@ using Serilog;
 namespace Nekoyume.Action
 {
     [Serializable]
+    [ActionObsolete(2000000)]
     [ActionType("sell2")]
     public class Sell2 : GameAction
     {
@@ -45,6 +46,8 @@ namespace Nekoyume.Action
                 states = states.SetState(sellerAvatarAddress, MarkChanged);
                 return states.SetState(ctx.Signer, MarkChanged);
             }
+
+            CheckObsolete(2000000, context);
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, sellerAvatarAddress);
 

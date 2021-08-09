@@ -18,6 +18,7 @@ using Material = Nekoyume.Model.Item.Material;
 namespace Nekoyume.Action
 {
     [Serializable]
+    [ActionObsolete(2000000)]
     [ActionType("combination_consumable4")]
     public class CombinationConsumable4 : GameAction
     {
@@ -77,6 +78,8 @@ namespace Nekoyume.Action
                     .SetState(ctx.Signer, MarkChanged)
                     .SetState(slotAddress, MarkChanged);
             }
+
+            CheckObsolete(2000000, context);
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, AvatarAddress);
 

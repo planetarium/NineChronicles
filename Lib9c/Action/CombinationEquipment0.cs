@@ -19,6 +19,7 @@ using Nekoyume.TableData;
 namespace Nekoyume.Action
 {
     [Serializable]
+    [ActionObsolete(2000000)]
     [ActionType("combination_equipment")]
     public class CombinationEquipment0 : GameAction
     {
@@ -48,6 +49,8 @@ namespace Nekoyume.Action
                     .SetState(ctx.Signer, MarkChanged)
                     .MarkBalanceChanged(GoldCurrencyMock, ctx.Signer, BlacksmithAddress);
             }
+
+            CheckObsolete(2000000, context);
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, AvatarAddress);
 
@@ -213,6 +216,15 @@ namespace Nekoyume.Action
             avatarState.questList.UpdateCombinationEquipmentQuest(RecipeId);
             avatarState.UpdateFromCombination(equipment);
             avatarState.UpdateQuestRewards(materialSheet);
+
+            //Avoid InvalidBlockStateRootHashException to 50000 index.
+            if (avatarState.questList.Any(q => q.Complete && !q.IsPaidInAction))
+            {
+                var prevIds = avatarState.questList.completedQuestIds;
+                avatarState.UpdateQuestRewards(materialSheet);
+                avatarState.questList.completedQuestIds = prevIds;
+            }
+
             return states
                 .SetState(AvatarAddress, avatarState.Serialize())
                 .SetState(slotAddress, slotState.Serialize())

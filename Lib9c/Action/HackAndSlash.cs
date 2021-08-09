@@ -16,7 +16,7 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("hack_and_slash6")]
+    [ActionType("hack_and_slash7")]
     public class HackAndSlash : GameAction
     {
         public List<Guid> costumes;
@@ -89,7 +89,6 @@ namespace Nekoyume.Action
 
             sw.Stop();
             Log.Verbose("{AddressesHex}HAS Get AgentAvatarStates: {Elapsed}", addressesHex, sw.Elapsed);
-
             sw.Restart();
 
             if (avatarState.RankingMapAddress != RankingMapAddress)
@@ -167,8 +166,25 @@ namespace Nekoyume.Action
             avatarState.EquipItems(items);
             sw.Stop();
             Log.Verbose("{AddressesHex}HAS Unequip items: {Elapsed}", addressesHex, sw.Elapsed);
-
             sw.Restart();
+            
+            // Update QuestList only when QuestSheet.Count is greater than QuestList.Count
+            var questList = avatarState.questList;
+            var questSheet = states.GetQuestSheet();
+            if (questList.Count() < questSheet.Count)
+            {
+                questList.UpdateList(
+                    2,
+                    questSheet,
+                    states.GetSheet<QuestRewardSheet>(),
+                    states.GetSheet<QuestItemRewardSheet>(),
+                    states.GetSheet<EquipmentItemRecipeSheet>());
+            }
+            
+            sw.Stop();
+            Log.Verbose("{AddressesHex}HAS Update QuestList: {Elapsed}", addressesHex, sw.Elapsed);
+            sw.Restart();
+            
             var characterSheet = states.GetSheet<CharacterSheet>();
             var simulator = new StageSimulator(
                 ctx.Random,
@@ -215,8 +231,8 @@ namespace Nekoyume.Action
 
             sw.Stop();
             Log.Verbose("{AddressesHex}HAS ClearStage: {Elapsed}", addressesHex, sw.Elapsed);
-
             sw.Restart();
+            
             avatarState.Update(simulator);
 
             var materialSheet = states.GetSheet<MaterialItemSheet>();

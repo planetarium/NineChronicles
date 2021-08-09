@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Security.Cryptography;
+using Libplanet;
 using Libplanet.Action;
 using Libplanet.Blockchain;
 using Libplanet.Blockchain.Policies;
@@ -37,5 +39,8 @@ namespace Lib9c
             BlockChain<PolymorphicAction<ActionBase>> blockChain
         ) =>
             true;
+
+        public HashAlgorithmType GetHashAlgorithm(long index) =>
+            HashAlgorithmType.Of<SHA256>();
     }
 }
