@@ -116,6 +116,7 @@ namespace Lib9c.Tests.Action
                     RequiredBlockIndex = Sell6.ExpiredBlockIndex,
                     Price = 10,
                     ItemCount = 1,
+                    Backward = true,
                 },
                 new OrderData()
                 {
@@ -127,6 +128,7 @@ namespace Lib9c.Tests.Action
                     RequiredBlockIndex = 0,
                     Price = 20,
                     ItemCount = 1,
+                    Backward = true,
                 },
             };
             yield return new object[]
@@ -141,6 +143,7 @@ namespace Lib9c.Tests.Action
                     RequiredBlockIndex = 0,
                     Price = 10,
                     ItemCount = 1,
+                    Backward = true,
                 },
                 new OrderData()
                 {
@@ -152,6 +155,7 @@ namespace Lib9c.Tests.Action
                     RequiredBlockIndex = Sell6.ExpiredBlockIndex,
                     Price = 50,
                     ItemCount = 1,
+                    Backward = true,
                 },
             };
             yield return new object[]
@@ -166,6 +170,7 @@ namespace Lib9c.Tests.Action
                     RequiredBlockIndex = Sell6.ExpiredBlockIndex,
                     Price = 50,
                     ItemCount = 1,
+                    Backward = true,
                 },
                 new OrderData()
                 {
@@ -177,6 +182,88 @@ namespace Lib9c.Tests.Action
                     RequiredBlockIndex = 0,
                     Price = 10,
                     ItemCount = 2,
+                    Backward = true,
+                },
+            };
+            yield return new object[]
+            {
+                new OrderData()
+                {
+                    ItemType = ItemType.Equipment,
+                    TradableId = Guid.NewGuid(),
+                    OrderId = Guid.NewGuid(),
+                    SellerAgentAddress = new PrivateKey().ToAddress(),
+                    SellerAvatarAddress = new PrivateKey().ToAddress(),
+                    RequiredBlockIndex = Sell6.ExpiredBlockIndex,
+                    Price = 10,
+                    ItemCount = 1,
+                    Backward = false,
+                },
+                new OrderData()
+                {
+                    ItemType = ItemType.Costume,
+                    TradableId = Guid.NewGuid(),
+                    OrderId = Guid.NewGuid(),
+                    SellerAgentAddress = new PrivateKey().ToAddress(),
+                    SellerAvatarAddress = new PrivateKey().ToAddress(),
+                    RequiredBlockIndex = 0,
+                    Price = 20,
+                    ItemCount = 1,
+                    Backward = false,
+                },
+            };
+            yield return new object[]
+            {
+                new OrderData()
+                {
+                    ItemType = ItemType.Costume,
+                    TradableId = Guid.NewGuid(),
+                    OrderId = Guid.NewGuid(),
+                    SellerAgentAddress = new PrivateKey().ToAddress(),
+                    SellerAvatarAddress = new PrivateKey().ToAddress(),
+                    RequiredBlockIndex = 0,
+                    Price = 10,
+                    ItemCount = 1,
+                    Backward = false,
+                },
+                new OrderData()
+                {
+                    ItemType = ItemType.Equipment,
+                    TradableId = Guid.NewGuid(),
+                    OrderId = Guid.NewGuid(),
+                    SellerAgentAddress = new PrivateKey().ToAddress(),
+                    SellerAvatarAddress = new PrivateKey().ToAddress(),
+                    RequiredBlockIndex = Sell6.ExpiredBlockIndex,
+                    Price = 50,
+                    ItemCount = 1,
+                    Backward = false,
+                },
+            };
+            yield return new object[]
+            {
+                new OrderData()
+                {
+                    ItemType = ItemType.Material,
+                    TradableId = new Guid("15396359-04db-68d5-f24a-d89c18665900"),
+                    OrderId = Guid.NewGuid(),
+                    SellerAgentAddress = new PrivateKey().ToAddress(),
+                    SellerAvatarAddress = new PrivateKey().ToAddress(),
+                    RequiredBlockIndex = Sell6.ExpiredBlockIndex,
+                    Price = 50,
+                    ItemCount = 1,
+                    Backward = false,
+                },
+                new OrderData()
+                {
+                    ItemType = ItemType.Material,
+                    TradableId = new Guid("15396359-04db-68d5-f24a-d89c18665900"),
+                    OrderId = Guid.NewGuid(),
+                    SellerAgentAddress = new PrivateKey().ToAddress(),
+                    SellerAvatarAddress = new PrivateKey().ToAddress(),
+                    RequiredBlockIndex = 0,
+                    Price = 10,
+                    ItemCount = 2,
+                    Backward = false,
                 },
             };
         }
@@ -249,15 +336,33 @@ namespace Lib9c.Tests.Action
                     orderData.ItemCount
                 );
                 sellerAvatarState.inventory.AddItem((ItemBase)tradableItem, orderData.ItemCount);
-                var sellItem = order.Sell2(sellerAvatarState);
-                OrderDigest orderDigest = order.Digest2(sellerAvatarState, _tableSheets.CostumeStatSheet);
-                var orderDigestListState =
-                    new OrderDigestListState(OrderDigestListState.DeriveAddress(orderData.SellerAvatarAddress));
+
+                var sellItem = orderData.Backward ? order.Sell(sellerAvatarState) : order.Sell2(sellerAvatarState);
+                var orderDigest = orderData.Backward
+                    ? order.Digest(sellerAvatarState, _tableSheets.CostumeStatSheet)
+                    : order.Digest2(sellerAvatarState, _tableSheets.CostumeStatSheet);
+
+                if (orderData.Backward)
+                {
+                    Assert.True(
+                        sellerAvatarState.inventory.TryGetTradableItems(
+                            order.TradableId,
+                            order.ExpiredBlockIndex,
+                            orderData.ItemCount,
+                            out _
+                        )
+                    );
+                }
+                else
+                {
+                    Assert.True(sellerAvatarState.inventory.TryGetLockedItem(new OrderLock(orderId), out _));
+                }
+
+                var orderDigestListState = new OrderDigestListState(OrderDigestListState.DeriveAddress(orderData.SellerAvatarAddress));
                 orderDigestListState.Add(orderDigest);
                 shopState.Add(orderDigest, 0);
 
                 Assert.Equal(order.ExpiredBlockIndex, sellItem.RequiredBlockIndex);
-                Assert.True(sellerAvatarState.inventory.TryGetLockedItem(new OrderLock(orderId), out _));
                 Assert.DoesNotContain(((ItemBase)tradableItem).Id, buyerAvatarState.itemMap.Keys);
 
                 var expirationMail = new OrderExpirationMail(
@@ -633,6 +738,8 @@ namespace Lib9c.Tests.Action
             public long RequiredBlockIndex { get; set; }
 
             public int ItemCount { get; set; }
+
+            public bool Backward { get; set; }
         }
 
         public class ErrorCodeMember
