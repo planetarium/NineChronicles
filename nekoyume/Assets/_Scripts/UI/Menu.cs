@@ -167,12 +167,12 @@ namespace Nekoyume.UI
             btnRanking.Update();
             btnMimisbrunnr.Update();
 
-            var addressHax = ReactiveAvatarState.Address.Value.ToHex();
-            var firstOpenCombinationKey = string.Format(FirstOpenCombinationKeyFormat, addressHax);
-            var firstOpenShopKey = string.Format(FirstOpenShopKeyFormat, addressHax);
-            var firstOpenRankingKey = string.Format(FirstOpenRankingKeyFormat, addressHax);
-            var firstOpenQuestKey = string.Format(FirstOpenQuestKeyFormat, addressHax);
-            var firstOpenMimisbrunnrKey = string.Format(FirstOpenMimisbrunnrKeyFormat, addressHax);
+            var addressHex = States.Instance.CurrentAvatarState.address.ToHex();
+            var firstOpenCombinationKey = string.Format(FirstOpenCombinationKeyFormat, addressHex);
+            var firstOpenShopKey = string.Format(FirstOpenShopKeyFormat, addressHex);
+            var firstOpenRankingKey = string.Format(FirstOpenRankingKeyFormat, addressHex);
+            var firstOpenQuestKey = string.Format(FirstOpenQuestKeyFormat, addressHex);
+            var firstOpenMimisbrunnrKey = string.Format(FirstOpenMimisbrunnrKeyFormat, addressHex);
 
             var combination = Find<Combination>();
             var hasNotificationOnCombination = combination.HasNotification;
@@ -234,8 +234,8 @@ namespace Nekoyume.UI
 
             if (questExclamationMark.gameObject.activeSelf)
             {
-                var addressHax = ReactiveAvatarState.Address.Value.ToHex();
-                var key = string.Format(FirstOpenQuestKeyFormat, addressHax);
+                var addressHex = States.Instance.CurrentAvatarState.address.ToHex();
+                var key = string.Format(FirstOpenQuestKeyFormat, addressHex);
                 PlayerPrefs.SetInt(key, 1);
             }
 
@@ -255,8 +255,8 @@ namespace Nekoyume.UI
 
             if (shopExclamationMark.gameObject.activeSelf)
             {
-                var addressHax = ReactiveAvatarState.Address.Value.ToHex();
-                var key = string.Format(FirstOpenShopKeyFormat, addressHax);
+                var addressHex = States.Instance.CurrentAvatarState.address.ToHex();
+                var key = string.Format(FirstOpenShopKeyFormat, addressHex);
                 PlayerPrefs.SetInt(key, 1);
             }
 
@@ -295,8 +295,8 @@ namespace Nekoyume.UI
 
             if (combinationExclamationMark.gameObject.activeSelf)
             {
-                var addressHax = ReactiveAvatarState.Address.Value.ToHex();
-                var key = string.Format(FirstOpenCombinationKeyFormat, addressHax);
+                var addressHex = States.Instance.CurrentAvatarState.address.ToHex();
+                var key = string.Format(FirstOpenCombinationKeyFormat, addressHex);
                 PlayerPrefs.SetInt(key, 1);
             }
 
@@ -365,8 +365,8 @@ namespace Nekoyume.UI
 
             if (mimisbrunnrExclamationMark.gameObject.activeSelf)
             {
-                var addressHax = ReactiveAvatarState.Address.Value.ToHex();
-                var key = string.Format(FirstOpenMimisbrunnrKeyFormat, addressHax);
+                var addressHex = States.Instance.CurrentAvatarState.address.ToHex();
+                var key = string.Format(FirstOpenMimisbrunnrKeyFormat, addressHex);
                 PlayerPrefs.SetInt(key, 1);
             }
 
