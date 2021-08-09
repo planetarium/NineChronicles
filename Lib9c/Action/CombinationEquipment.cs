@@ -287,7 +287,6 @@ namespace Nekoyume.Action
             // Add or Update Equipment
             avatarState.blockIndex = context.BlockIndex;
             avatarState.updatedAt = context.BlockIndex;
-            avatarState.inventory.AddNonFungibleItem(equipment);
             avatarState.questList.UpdateCombinationEquipmentQuest(recipeId);
             avatarState.UpdateFromCombination(equipment);
             avatarState.UpdateQuestRewards(materialItemSheet);

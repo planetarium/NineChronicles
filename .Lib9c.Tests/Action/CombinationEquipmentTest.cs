@@ -26,8 +26,7 @@ namespace Lib9c.Tests.Action
         private readonly Address _avatarAddress;
         private readonly TableSheets _tableSheets;
         private readonly IRandom _random;
-        private readonly AvatarState _avatarState;
-        private IAccountStateDelta _initialState;
+        private readonly IAccountStateDelta _initialState;
 
         public CombinationEquipmentTest(ITestOutputHelper outputHelper)
         {
@@ -54,7 +53,7 @@ namespace Lib9c.Tests.Action
 
             var gameConfigState = new GameConfigState();
 
-            _avatarState = new AvatarState(
+            var avatarState = new AvatarState(
                 _avatarAddress,
                 _agentAddress,
                 1,
@@ -67,7 +66,7 @@ namespace Lib9c.Tests.Action
 
             _initialState = new State()
                 .SetState(_agentAddress, agentState.Serialize())
-                .SetState(_avatarAddress, _avatarState.SerializeV2())
+                .SetState(_avatarAddress, avatarState.Serialize())
                 .SetState(
                     slotAddress,
                     new CombinationSlotState(
@@ -181,7 +180,19 @@ namespace Lib9c.Tests.Action
             var costNCG = row.RequiredGold * currency;
             var materialRow = _tableSheets.MaterialItemSheet[row.MaterialId];
             var material = ItemFactory.CreateItem(materialRow, _random);
-            _avatarState.inventory.AddItem(material, count: row.MaterialCount);
+
+            var avatarState = _initialState.GetAvatarState(_avatarAddress);
+            var previousActionPoint = avatarState.actionPoint;
+            var previousResultEquipmentCount =
+                avatarState.inventory.Equipments.Count(e => e.Id == row.ResultEquipmentId);
+            var previousMailCount = avatarState.mailBox.Count;
+
+            avatarState.worldInformation = new WorldInformation(
+                0,
+                _tableSheets.WorldSheet,
+                requiredStage);
+
+            avatarState.inventory.AddItem(material, row.MaterialCount);
 
             if (subRecipeId.HasValue)
             {
@@ -192,56 +203,31 @@ namespace Lib9c.Tests.Action
                 foreach (var materialInfo in subRow.Materials)
                 {
                     material = ItemFactory.CreateItem(_tableSheets.MaterialItemSheet[materialInfo.Id], _random);
-                    _avatarState.inventory.AddItem(material, count: materialInfo.Count);
+                    avatarState.inventory.AddItem(material, materialInfo.Count);
                 }
             }
 
-            _avatarState.worldInformation = new WorldInformation(
-                0,
-                _tableSheets.WorldSheet,
-                requiredStage);
-
-            var equipmentRow = _tableSheets.EquipmentItemSheet[row.ResultEquipmentId];
-            var equipment = ItemFactory.CreateItemUsable(equipmentRow, default, 0);
-
-            var result = new CombinationConsumable5.ResultModel
-            {
-                id = default,
-                gold = costNCG.RawValue,
-                actionPoint = costActionPoint,
-                recipeId = recipeId,
-                materials = new Dictionary<Material, int>(),
-                itemUsable = equipment,
-                subRecipeId = subRecipeId,
-            };
-
-            for (var i = 0; i < 100; i++)
-            {
-                var mail = new CombinationMail(result, i, default, 0);
-                _avatarState.UpdateV4(mail, 0);
-            }
-
+            IAccountStateDelta previousState;
             if (backward)
             {
-                _initialState = _initialState.SetState(_avatarAddress, _avatarState.Serialize());
+                previousState = _initialState.SetState(_avatarAddress, avatarState.Serialize());
             }
             else
             {
-                _initialState = _initialState
-                    .SetState(_avatarAddress.Derive(LegacyInventoryKey), _avatarState.inventory.Serialize())
-                    .SetState(_avatarAddress.Derive(LegacyWorldInformationKey), _avatarState.worldInformation.Serialize())
-                    .SetState(_avatarAddress.Derive(LegacyQuestListKey), _avatarState.questList.Serialize())
-                    .SetState(_avatarAddress, _avatarState.SerializeV2());
+                previousState = _initialState
+                    .SetState(_avatarAddress.Derive(LegacyInventoryKey), avatarState.inventory.Serialize())
+                    .SetState(
+                        _avatarAddress.Derive(LegacyWorldInformationKey),
+                        avatarState.worldInformation.Serialize())
+                    .SetState(_avatarAddress.Derive(LegacyQuestListKey), avatarState.questList.Serialize())
+                    .SetState(_avatarAddress, avatarState.SerializeV2());
             }
 
-            var previousActionPoint = backward
-                ? _initialState.GetAvatarState(_avatarAddress).actionPoint
-                : _initialState.GetAvatarStateV2(_avatarAddress).actionPoint;
-
-            _initialState = _initialState.MintAsset(_agentAddress, mintNCG * currency);
-            var goldCurrencyState = _initialState.GetGoldCurrency();
-            var previousNCG = _initialState.GetBalance(_agentAddress, goldCurrencyState);
+            previousState = previousState.MintAsset(_agentAddress, mintNCG * currency);
+            var goldCurrencyState = previousState.GetGoldCurrency();
+            var previousNCG = previousState.GetBalance(_agentAddress, goldCurrencyState);
             Assert.Equal(mintNCG * currency, previousNCG);
+
             var action = new CombinationEquipment
             {
                 avatarAddress = _avatarAddress,
@@ -252,7 +238,7 @@ namespace Lib9c.Tests.Action
 
             var nextState = action.Execute(new ActionContext
             {
-                PreviousStates = _initialState,
+                PreviousStates = previousState,
                 Signer = _agentAddress,
                 BlockIndex = 1,
                 Random = _random,
@@ -273,7 +259,11 @@ namespace Lib9c.Tests.Action
 
             var nextAvatarState = nextState.GetAvatarStateV2(_avatarAddress);
             Assert.Equal(previousActionPoint - costActionPoint, nextAvatarState.actionPoint);
-            Assert.Equal(1, nextAvatarState.mailBox.Count);
+            Assert.Equal(previousMailCount + 1, nextAvatarState.mailBox.Count);
+            Assert.IsType<CombinationMail>(nextAvatarState.mailBox.First());
+            Assert.Equal(
+                previousResultEquipmentCount + 1,
+                nextAvatarState.inventory.Equipments.Count(e => e.Id == row.ResultEquipmentId));
 
             var agentGold = nextState.GetBalance(_agentAddress, goldCurrencyState);
             Assert.Equal(previousNCG - costNCG, agentGold);
