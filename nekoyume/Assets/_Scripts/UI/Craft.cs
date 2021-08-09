@@ -152,6 +152,11 @@ namespace Nekoyume.UI
             {
                 equipmentToggle.isOn = true;
             }
+
+            if (!Game.Game.instance.Stage.TutorialController.IsPlaying)
+            {
+                HelpPopup.HelpMe(100016, true);
+            }
         }
 
         private void ShowEquipment()

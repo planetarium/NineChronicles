@@ -324,6 +324,7 @@ namespace Nekoyume.Game
 
             IsInStage = true;
             yield return StartCoroutine(CoStageEnter(log));
+            HelpPopup.HelpMe(100005, true);
             foreach (var e in log)
             {
                 yield return StartCoroutine(e.CoExecute(this));

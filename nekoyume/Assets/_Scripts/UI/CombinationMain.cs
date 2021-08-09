@@ -69,6 +69,7 @@ namespace Nekoyume.UI
             }
 
             NPCShowAnimation();
+            HelpPopup.HelpMe(100007, true);
         }
 
         public override void Close(bool ignoreCloseAnimation = false)

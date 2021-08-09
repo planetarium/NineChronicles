@@ -135,6 +135,7 @@ namespace Nekoyume.UI
             }
 
             base.Show(true);
+            HelpPopup.HelpMe(100003, true);
         }
 
         private void UpdateStageInformation(int stageId, int characterLevel)

@@ -27,6 +27,7 @@ namespace Nekoyume.UI
         {
             base.Show(ignoreShowAnimation);
             UpdateSlots(Game.Game.instance.Agent.BlockIndex);
+            HelpPopup.HelpMe(100008, true);
         }
 
         public void SetCaching(int slotIndex, bool value, long requiredBlockIndex = 0, ItemUsable itemUsable = null)

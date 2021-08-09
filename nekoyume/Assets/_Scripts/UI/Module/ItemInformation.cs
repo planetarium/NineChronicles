@@ -314,7 +314,7 @@ namespace Nekoyume.UI.Module
             if (statView.Equals(default) ||
                 statView.StatView is null)
                 throw new NotFoundComponentException<StatView>();
-            statView.StatView.Show(statType, value);
+            statView.StatView.Show(statType, value, true);
 
             for (int i = 0; i < count; ++i)
             {

@@ -135,6 +135,7 @@ namespace Nekoyume.UI
             var status = Find<Status>();
             status.Close(true);
             Show(true);
+            HelpPopup.HelpMe(100002, true);
         }
 
         public void Show(int worldId, int stageId, bool showWorld, bool callByShow = false)

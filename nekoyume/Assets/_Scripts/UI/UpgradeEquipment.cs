@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -80,6 +80,7 @@ namespace Nekoyume.UI
         {
             base.Show(ignoreShowAnimation);
             Clear();
+            HelpPopup.HelpMe(100017, true);
         }
 
         private bool DimFunc(InventoryItem inventoryItem)
