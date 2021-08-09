@@ -1,6 +1,5 @@
 namespace Lib9c.Tests.Action
 {
-    using System.Collections.Generic;
     using System.Globalization;
     using System.Linq;
     using Libplanet;
@@ -9,6 +8,7 @@ namespace Lib9c.Tests.Action
     using Libplanet.Crypto;
     using Nekoyume;
     using Nekoyume.Action;
+    using Nekoyume.Model;
     using Nekoyume.Model.Item;
     using Nekoyume.Model.Mail;
     using Nekoyume.Model.State;
@@ -21,7 +21,6 @@ namespace Lib9c.Tests.Action
         private readonly Address _avatarAddress;
         private readonly IRandom _random;
         private readonly TableSheets _tableSheets;
-        private readonly AvatarState _avatarState;
         private IAccountStateDelta _initialState;
 
         public CombinationConsumableTest()
@@ -44,7 +43,7 @@ namespace Lib9c.Tests.Action
 
             var gameConfigState = new GameConfigState();
 
-            _avatarState = new AvatarState(
+            var avatarState = new AvatarState(
                 _avatarAddress,
                 _agentAddress,
                 1,
@@ -57,7 +56,7 @@ namespace Lib9c.Tests.Action
 
             _initialState = new State()
                 .SetState(_agentAddress, agentState.Serialize())
-                .SetState(_avatarAddress, _avatarState.Serialize())
+                .SetState(_avatarAddress, avatarState.Serialize())
                 .SetState(
                     slotAddress,
                     new CombinationSlotState(
@@ -77,55 +76,38 @@ namespace Lib9c.Tests.Action
         [InlineData(false)]
         public void Execute(bool backward)
         {
+            var avatarState = _initialState.GetAvatarState(_avatarAddress);
             var row = _tableSheets.ConsumableItemRecipeSheet.Values.First();
+            var costActionPoint = row.RequiredActionPoint;
             foreach (var materialInfo in row.Materials)
             {
                 var materialRow = _tableSheets.MaterialItemSheet[materialInfo.Id];
                 var material = ItemFactory.CreateItem(materialRow, _random);
-                _avatarState.inventory.AddItem(material, count: materialInfo.Count);
+                avatarState.inventory.AddItem(material, materialInfo.Count);
             }
 
-            const int requiredStage = GameConfig.RequireClearedStageLevel.CombinationConsumableAction;
-            for (var i = 1; i < requiredStage + 1; i++)
-            {
-                _avatarState.worldInformation.ClearStage(
-                    1,
-                    i,
-                    0,
-                    _tableSheets.WorldSheet,
-                    _tableSheets.WorldUnlockSheet
-                );
-            }
+            var previousActionPoint = avatarState.actionPoint;
+            var previousResultConsumableCount =
+                avatarState.inventory.Equipments.Count(e => e.Id == row.ResultConsumableItemId);
+            var previousMailCount = avatarState.mailBox.Count;
 
-            var equipment = ItemFactory.CreateItemUsable(_tableSheets.EquipmentItemSheet.First, default, 0);
+            avatarState.worldInformation = new WorldInformation(
+                0,
+                _tableSheets.WorldSheet,
+                GameConfig.RequireClearedStageLevel.CombinationConsumableAction);
 
-            var result = new CombinationConsumable5.ResultModel
-            {
-                id = default,
-                gold = 0,
-                actionPoint = 0,
-                recipeId = 1,
-                materials = new Dictionary<Material, int>(),
-                itemUsable = equipment,
-            };
-
-            for (var i = 0; i < 100; i++)
-            {
-                var mail = new CombinationMail(result, i, default, 0);
-                _avatarState.UpdateV4(mail, 0);
-            }
-
+            IAccountStateDelta previousState;
             if (backward)
             {
-                _initialState = _initialState.SetState(_avatarAddress, _avatarState.Serialize());
+                previousState = _initialState.SetState(_avatarAddress, avatarState.Serialize());
             }
             else
             {
-                _initialState = _initialState
-                    .SetState(_avatarAddress.Derive(LegacyInventoryKey), _avatarState.inventory.Serialize())
-                    .SetState(_avatarAddress.Derive(LegacyWorldInformationKey), _avatarState.worldInformation.Serialize())
-                    .SetState(_avatarAddress.Derive(LegacyQuestListKey), _avatarState.questList.Serialize())
-                    .SetState(_avatarAddress, _avatarState.SerializeV2());
+                previousState = _initialState
+                    .SetState(_avatarAddress.Derive(LegacyInventoryKey), avatarState.inventory.Serialize())
+                    .SetState(_avatarAddress.Derive(LegacyWorldInformationKey), avatarState.worldInformation.Serialize())
+                    .SetState(_avatarAddress.Derive(LegacyQuestListKey), avatarState.questList.Serialize())
+                    .SetState(_avatarAddress, avatarState.SerializeV2());
             }
 
             var action = new CombinationConsumable
@@ -137,23 +119,26 @@ namespace Lib9c.Tests.Action
 
             var nextState = action.Execute(new ActionContext
             {
-                PreviousStates = _initialState,
+                PreviousStates = previousState,
                 Signer = _agentAddress,
                 BlockIndex = 1,
                 Random = _random,
             });
 
             var slotState = nextState.GetCombinationSlotState(_avatarAddress, 0);
-
             Assert.NotNull(slotState.Result);
+            Assert.NotNull(slotState.Result.itemUsable);
 
             var consumable = (Consumable)slotState.Result.itemUsable;
             Assert.NotNull(consumable);
 
             var nextAvatarState = nextState.GetAvatarStateV2(_avatarAddress);
-
-            Assert.Equal(1, nextAvatarState.mailBox.Count);
+            Assert.Equal(previousActionPoint - costActionPoint, nextAvatarState.actionPoint);
+            Assert.Equal(previousMailCount + 1, nextAvatarState.mailBox.Count);
             Assert.IsType<CombinationMail>(nextAvatarState.mailBox.First());
+            Assert.Equal(
+                previousResultConsumableCount + 1,
+                nextAvatarState.inventory.Consumables.Count(e => e.Id == row.ResultConsumableItemId));
         }
     }
 }
