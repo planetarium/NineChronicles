@@ -190,8 +190,8 @@ namespace Nekoyume.Action
 
                 // ValidateTransfer will no longer be required in the next version. (current version : buy9)
                 var errorCode = sellerAvatarState.inventory.TryGetLockedItem(new OrderLock(orderId), out _)
-                        ? order.ValidateTransfer2(sellerAvatarState, purchaseInfo.TradableId, purchaseInfo.Price, context.BlockIndex)
-                        : order.ValidateTransfer(sellerAvatarState, purchaseInfo.TradableId, purchaseInfo.Price, context.BlockIndex);
+                        ? order.ValidateTransfer(sellerAvatarState, purchaseInfo.TradableId, purchaseInfo.Price, context.BlockIndex)
+                        : order.ValidateTransfer2(sellerAvatarState, purchaseInfo.TradableId, purchaseInfo.Price, context.BlockIndex);
 
                 if (errorCode != 0)
                 {
@@ -216,8 +216,8 @@ namespace Nekoyume.Action
                 {
                     // Transfer will no longer be required in the next version. (current version : buy9)
                     orderReceipt = sellerAvatarState.inventory.TryGetLockedItem(new OrderLock(orderId), out _)
-                            ? order.Transfer2(sellerAvatarState, buyerAvatarState, context.BlockIndex)
-                            : order.Transfer(sellerAvatarState, buyerAvatarState, context.BlockIndex);
+                            ? order.Transfer(sellerAvatarState, buyerAvatarState, context.BlockIndex)
+                            : order.Transfer2(sellerAvatarState, buyerAvatarState, context.BlockIndex);
                 }
                 catch (ItemDoesNotExistException)
                 {

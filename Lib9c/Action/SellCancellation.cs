@@ -135,17 +135,17 @@ namespace Nekoyume.Action
             bool fromPreviousAction = false;
             try
             {
-                order.ValidateCancelOrder2(avatarState, tradableId);
+                order.ValidateCancelOrder(avatarState, tradableId);
             }
             catch (Exception)
             {
-                order.ValidateCancelOrder(avatarState, tradableId);
+                order.ValidateCancelOrder2(avatarState, tradableId);
                 fromPreviousAction = true;
             }
 
             var sellItem = fromPreviousAction
-                ? order.Cancel(avatarState, context.BlockIndex)
-                : order.Cancel2(avatarState, context.BlockIndex);
+                ? order.Cancel2(avatarState, context.BlockIndex)
+                : order.Cancel(avatarState, context.BlockIndex);
             if (context.BlockIndex < order.ExpiredBlockIndex)
             {
                 var shardedShopState = new ShardedShopStateV2(shopStateDict);

@@ -337,10 +337,10 @@ namespace Lib9c.Tests.Action
                 );
                 sellerAvatarState.inventory.AddItem((ItemBase)tradableItem, orderData.ItemCount);
 
-                var sellItem = orderData.FromPreviousAction ? order.Sell(sellerAvatarState) : order.Sell2(sellerAvatarState);
+                var sellItem = orderData.FromPreviousAction ? order.Sell2(sellerAvatarState) : order.Sell(sellerAvatarState);
                 var orderDigest = orderData.FromPreviousAction
-                    ? order.Digest(sellerAvatarState, _tableSheets.CostumeStatSheet)
-                    : order.Digest2(sellerAvatarState, _tableSheets.CostumeStatSheet);
+                    ? order.Digest2(sellerAvatarState, _tableSheets.CostumeStatSheet)
+                    : order.Digest(sellerAvatarState, _tableSheets.CostumeStatSheet);
 
                 if (orderData.FromPreviousAction)
                 {
@@ -593,7 +593,7 @@ namespace Lib9c.Tests.Action
 
                     if (errorCodeMember.DigestExist)
                     {
-                        var digest = order.Digest2(sellerAvatarState, _tableSheets.CostumeStatSheet);
+                        var digest = order.Digest(sellerAvatarState, _tableSheets.CostumeStatSheet);
                         shopState.Add(digest, 0);
                         _initialState = _initialState.SetState(_sellerAvatarAddress, sellerAvatarState.Serialize());
                     }

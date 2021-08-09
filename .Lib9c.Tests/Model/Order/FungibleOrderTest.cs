@@ -185,7 +185,7 @@ namespace Lib9c.Tests.Model.Order
 
             if (orderData.Exception is null)
             {
-                ITradableItem result = order.Sell(_avatarState);
+                ITradableItem result = order.Sell2(_avatarState);
 
                 Assert.Equal(order.ExpiredBlockIndex, result.RequiredBlockIndex);
                 Assert.Equal(order.TradableId, result.TradableId);
@@ -194,7 +194,7 @@ namespace Lib9c.Tests.Model.Order
             }
             else
             {
-                Assert.Throws(orderData.Exception, () => order.Sell(_avatarState));
+                Assert.Throws(orderData.Exception, () => order.Sell2(_avatarState));
             }
         }
 
@@ -234,7 +234,7 @@ namespace Lib9c.Tests.Model.Order
 
             if (orderData.Exception is null)
             {
-                ITradableItem result = order.Sell2(_avatarState);
+                ITradableItem result = order.Sell(_avatarState);
 
                 Assert.Equal(order.ExpiredBlockIndex, result.RequiredBlockIndex);
                 Assert.Equal(order.TradableId, result.TradableId);
@@ -245,7 +245,7 @@ namespace Lib9c.Tests.Model.Order
             }
             else
             {
-                Assert.Throws(orderData.Exception, () => order.Sell(_avatarState));
+                Assert.Throws(orderData.Exception, () => order.Sell2(_avatarState));
             }
         }
 
@@ -272,7 +272,7 @@ namespace Lib9c.Tests.Model.Order
             if (add)
             {
                 _avatarState.inventory.AddNonFungibleItem(item);
-                order.Sell(_avatarState);
+                order.Sell2(_avatarState);
             }
 
             if (exc is null)
@@ -280,14 +280,14 @@ namespace Lib9c.Tests.Model.Order
                 Assert.True(_avatarState.inventory.TryGetTradableItem(order.TradableId, order.ExpiredBlockIndex, 1, out _));
                 Assert.False(_avatarState.inventory.TryGetTradableItem(order.TradableId, 1, 1, out _));
 
-                ITradableItem result = order.Cancel(_avatarState, 1);
+                ITradableItem result = order.Cancel2(_avatarState, 1);
 
                 Assert.False(_avatarState.inventory.TryGetTradableItem(order.TradableId, order.ExpiredBlockIndex, 1, out _));
                 Assert.True(_avatarState.inventory.TryGetTradableItem(order.TradableId, 1, 1, out _));
             }
             else
             {
-                Assert.Throws(exc, () => order.Digest(_avatarState, _tableSheets.CostumeStatSheet));
+                Assert.Throws(exc, () => order.Digest2(_avatarState, _tableSheets.CostumeStatSheet));
             }
         }
 
@@ -336,11 +336,11 @@ namespace Lib9c.Tests.Model.Order
 
             if (exc is null)
             {
-                order.ValidateCancelOrder(_avatarState, tradableId);
+                order.ValidateCancelOrder2(_avatarState, tradableId);
             }
             else
             {
-                Assert.Throws(exc, () => order.ValidateCancelOrder(_avatarState, tradableId));
+                Assert.Throws(exc, () => order.ValidateCancelOrder2(_avatarState, tradableId));
             }
         }
 
@@ -391,11 +391,11 @@ namespace Lib9c.Tests.Model.Order
 
             if (exc is null)
             {
-                order.ValidateCancelOrder2(_avatarState, tradableId);
+                order.ValidateCancelOrder(_avatarState, tradableId);
             }
             else
             {
-                Assert.Throws(exc, () => order.ValidateCancelOrder2(_avatarState, tradableId));
+                Assert.Throws(exc, () => order.ValidateCancelOrder(_avatarState, tradableId));
             }
         }
 
@@ -423,7 +423,7 @@ namespace Lib9c.Tests.Model.Order
             if (add)
             {
                 _avatarState.inventory.AddItem(item, itemCount);
-                order.Sell(_avatarState);
+                order.Sell2(_avatarState);
 
                 if (exist)
                 {
@@ -436,7 +436,7 @@ namespace Lib9c.Tests.Model.Order
                 Assert.True(_avatarState.inventory.TryGetTradableItem(item.TradableId, order.ExpiredBlockIndex, itemCount, out _));
                 Assert.Equal(exist, _avatarState.inventory.TryGetTradableItem(item.TradableId, blockIndex, 1, out _));
 
-                ITradableItem result = order.Cancel(_avatarState, blockIndex);
+                ITradableItem result = order.Cancel2(_avatarState, blockIndex);
 
                 Assert.Equal(item.TradableId, result.TradableId);
                 Assert.Equal(blockIndex, result.RequiredBlockIndex);
@@ -446,7 +446,7 @@ namespace Lib9c.Tests.Model.Order
             }
             else
             {
-                Assert.Throws(exc, () => order.Cancel(_avatarState, blockIndex));
+                Assert.Throws(exc, () => order.Cancel2(_avatarState, blockIndex));
             }
         }
 
@@ -474,7 +474,7 @@ namespace Lib9c.Tests.Model.Order
             if (isLock)
             {
                 _avatarState.inventory.AddItem(item, itemCount);
-                order.Sell2(_avatarState);
+                order.Sell(_avatarState);
 
                 if (exist)
                 {
@@ -488,7 +488,7 @@ namespace Lib9c.Tests.Model.Order
                 Assert.True(_avatarState.inventory.TryGetLockedItem(orderLock, out _));
                 Assert.Equal(exist, _avatarState.inventory.TryGetTradableItem(item.TradableId, blockIndex, 1, out _));
 
-                ITradableItem result = order.Cancel2(_avatarState, blockIndex);
+                ITradableItem result = order.Cancel(_avatarState, blockIndex);
 
                 Assert.Equal(item.TradableId, result.TradableId);
                 Assert.Equal(blockIndex, result.RequiredBlockIndex);
@@ -498,7 +498,7 @@ namespace Lib9c.Tests.Model.Order
             }
             else
             {
-                Assert.Throws(exc, () => order.Cancel2(_avatarState, blockIndex));
+                Assert.Throws(exc, () => order.Cancel(_avatarState, blockIndex));
             }
         }
 
@@ -551,7 +551,7 @@ namespace Lib9c.Tests.Model.Order
                 _avatarState.inventory.AddItem(item, itemCount);
             }
 
-            Assert.Equal(expected, order.ValidateTransfer(_avatarState, tradableId, price, blockIndex));
+            Assert.Equal(expected, order.ValidateTransfer2(_avatarState, tradableId, price, blockIndex));
         }
 
         [Theory]
@@ -603,62 +603,13 @@ namespace Lib9c.Tests.Model.Order
                 _avatarState.inventory.AddItem(item, itemCount, new OrderLock(orderId));
             }
 
-            Assert.Equal(expected, order.ValidateTransfer2(_avatarState, tradableId, price, blockIndex));
+            Assert.Equal(expected, order.ValidateTransfer(_avatarState, tradableId, price, blockIndex));
         }
 
         [Theory]
         [InlineData(false, typeof(ItemDoesNotExistException))]
         [InlineData(true, null)]
         public void Transfer(bool add, Type exc)
-        {
-            var row = _tableSheets.MaterialItemSheet.OrderedList.First(r => r.ItemSubType == ItemSubType.Hourglass);
-            TradableMaterial item = ItemFactory.CreateTradableMaterial(row);
-            Guid orderId = new Guid("15396359-04db-68d5-f24a-d89c18665900");
-            FungibleOrder order = OrderFactory.CreateFungibleOrder(
-                _avatarState.agentAddress,
-                _avatarState.address,
-                orderId,
-                new FungibleAssetValue(_currency, 10, 0),
-                item.TradableId,
-                1,
-                1,
-                ItemSubType.Hourglass
-            );
-
-            if (add)
-            {
-                _avatarState.inventory.AddItem(item, 1);
-                order.Sell(_avatarState);
-            }
-
-            var buyer = new AvatarState(
-                Addresses.Blacksmith,
-                Addresses.Admin,
-                0,
-                _tableSheets.GetAvatarSheets(),
-                new GameConfigState(),
-                default,
-                "buyer"
-            );
-
-            if (exc is null)
-            {
-                order.Transfer(_avatarState, buyer, 100);
-                Assert.False(_avatarState.inventory.TryGetTradableItem(order.TradableId, 100, 1, out _));
-                Assert.True(buyer.inventory.TryGetTradableItem(order.TradableId, 100, 1, out Inventory.Item inventoryItem));
-                ITradableFungibleItem result = (ITradableFungibleItem)inventoryItem.item;
-                Assert.Equal(100, result.RequiredBlockIndex);
-            }
-            else
-            {
-                Assert.Throws(exc, () => order.Transfer(_avatarState, buyer, 0));
-            }
-        }
-
-        [Theory]
-        [InlineData(false, typeof(ItemDoesNotExistException))]
-        [InlineData(true, null)]
-        public void Transfer2(bool add, Type exc)
         {
             var row = _tableSheets.MaterialItemSheet.OrderedList.First(r => r.ItemSubType == ItemSubType.Hourglass);
             TradableMaterial item = ItemFactory.CreateTradableMaterial(row);
@@ -701,6 +652,55 @@ namespace Lib9c.Tests.Model.Order
             else
             {
                 Assert.Throws(exc, () => order.Transfer2(_avatarState, buyer, 0));
+            }
+        }
+
+        [Theory]
+        [InlineData(false, typeof(ItemDoesNotExistException))]
+        [InlineData(true, null)]
+        public void Transfer2(bool add, Type exc)
+        {
+            var row = _tableSheets.MaterialItemSheet.OrderedList.First(r => r.ItemSubType == ItemSubType.Hourglass);
+            TradableMaterial item = ItemFactory.CreateTradableMaterial(row);
+            Guid orderId = new Guid("15396359-04db-68d5-f24a-d89c18665900");
+            FungibleOrder order = OrderFactory.CreateFungibleOrder(
+                _avatarState.agentAddress,
+                _avatarState.address,
+                orderId,
+                new FungibleAssetValue(_currency, 10, 0),
+                item.TradableId,
+                1,
+                1,
+                ItemSubType.Hourglass
+            );
+
+            if (add)
+            {
+                _avatarState.inventory.AddItem(item, 1);
+                order.Sell(_avatarState);
+            }
+
+            var buyer = new AvatarState(
+                Addresses.Blacksmith,
+                Addresses.Admin,
+                0,
+                _tableSheets.GetAvatarSheets(),
+                new GameConfigState(),
+                default,
+                "buyer"
+            );
+
+            if (exc is null)
+            {
+                order.Transfer(_avatarState, buyer, 100);
+                Assert.False(_avatarState.inventory.TryGetTradableItem(order.TradableId, 100, 1, out _));
+                Assert.True(buyer.inventory.TryGetTradableItem(order.TradableId, 100, 1, out Inventory.Item inventoryItem));
+                ITradableFungibleItem result = (ITradableFungibleItem)inventoryItem.item;
+                Assert.Equal(100, result.RequiredBlockIndex);
+            }
+            else
+            {
+                Assert.Throws(exc, () => order.Transfer(_avatarState, buyer, 0));
             }
         }
 

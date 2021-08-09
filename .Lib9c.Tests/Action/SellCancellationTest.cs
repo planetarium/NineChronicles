@@ -195,8 +195,8 @@ namespace Lib9c.Tests.Action
             ITradableItem sellItem;
             if (legacy)
             {
-                sellItem = order.Sell(avatarState);
-                OrderDigest orderDigest = order.Digest(avatarState, _tableSheets.CostumeStatSheet);
+                sellItem = order.Sell2(avatarState);
+                OrderDigest orderDigest = order.Digest2(avatarState, _tableSheets.CostumeStatSheet);
                 shopState.Add(orderDigest, requiredBlockIndex);
                 orderDigestList.Add(orderDigest);
 
@@ -211,8 +211,8 @@ namespace Lib9c.Tests.Action
             }
             else
             {
-                sellItem = order.Sell2(avatarState);
-                OrderDigest orderDigest = order.Digest2(avatarState, _tableSheets.CostumeStatSheet);
+                sellItem = order.Sell(avatarState);
+                OrderDigest orderDigest = order.Digest(avatarState, _tableSheets.CostumeStatSheet);
                 shopState.Add(orderDigest, requiredBlockIndex);
                 orderDigestList.Add(orderDigest);
 

@@ -120,7 +120,7 @@ namespace Nekoyume.Action
                 context.BlockIndex, itemSubType, count);
             order.Validate(avatarState, count);
 
-            ITradableItem tradableItem = order.Sell2(avatarState);
+            ITradableItem tradableItem = order.Sell(avatarState);
 
             var shardedShopState = states.TryGetState(shopAddress, out Dictionary serializedState)
                 ? new ShardedShopStateV2(serializedState)
@@ -134,7 +134,7 @@ namespace Nekoyume.Action
             sw.Restart();
 
             var costumeStatSheet = states.GetSheet<CostumeStatSheet>();
-            OrderDigest orderDigest = order.Digest2(avatarState, costumeStatSheet);
+            OrderDigest orderDigest = order.Digest(avatarState, costumeStatSheet);
             shardedShopState.Add(orderDigest, context.BlockIndex);
 
             avatarState.updatedAt = context.BlockIndex;

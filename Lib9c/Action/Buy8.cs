@@ -191,7 +191,7 @@ namespace Nekoyume.Action
                 Log.Verbose("{AddressesHex}Buy Get Seller AgentAvatarStates: {Elapsed}", addressesHex, sw.Elapsed);
                 sw.Restart();
 
-                int errorCode = order.ValidateTransfer(sellerAvatarState, purchaseInfo.TradableId, purchaseInfo.Price, context.BlockIndex);
+                int errorCode = order.ValidateTransfer2(sellerAvatarState, purchaseInfo.TradableId, purchaseInfo.Price, context.BlockIndex);
 
                 if (errorCode != 0)
                 {
@@ -214,7 +214,7 @@ namespace Nekoyume.Action
                 OrderReceipt orderReceipt;
                 try
                 {
-                    orderReceipt = order.Transfer(sellerAvatarState, buyerAvatarState, context.BlockIndex);
+                    orderReceipt = order.Transfer2(sellerAvatarState, buyerAvatarState, context.BlockIndex);
                 }
                 catch (ItemDoesNotExistException)
                 {

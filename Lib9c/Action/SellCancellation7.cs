@@ -135,8 +135,8 @@ namespace Nekoyume.Action
             }
 
             Order order = OrderFactory.Deserialize(orderDict);
-            order.ValidateCancelOrder(avatarState, tradableId);
-            ITradableItem sellItem = order.Cancel(avatarState, context.BlockIndex);
+            order.ValidateCancelOrder2(avatarState, tradableId);
+            ITradableItem sellItem = order.Cancel2(avatarState, context.BlockIndex);
             var shardedShopState = new ShardedShopStateV2(shopStateDict);
             shardedShopState.Remove(order, context.BlockIndex);
             states = states.SetState(shardedShopAddress, shardedShopState.Serialize());

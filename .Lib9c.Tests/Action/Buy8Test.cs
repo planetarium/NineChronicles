@@ -249,8 +249,8 @@
                     orderData.ItemCount
                 );
                 sellerAvatarState.inventory.AddItem((ItemBase)tradableItem, orderData.ItemCount);
-                var sellItem = order.Sell(sellerAvatarState);
-                OrderDigest orderDigest = order.Digest(sellerAvatarState, _tableSheets.CostumeStatSheet);
+                var sellItem = order.Sell2(sellerAvatarState);
+                OrderDigest orderDigest = order.Digest2(sellerAvatarState, _tableSheets.CostumeStatSheet);
                 var orderDigestListState =
                     new OrderDigestListState(OrderDigestListState.DeriveAddress(orderData.SellerAvatarAddress));
                 orderDigestListState.Add(orderDigest);
@@ -494,7 +494,7 @@
 
                     if (errorCodeMember.DigestExist)
                     {
-                        var digest = order.Digest(sellerAvatarState, _tableSheets.CostumeStatSheet);
+                        var digest = order.Digest2(sellerAvatarState, _tableSheets.CostumeStatSheet);
                         shopState.Add(digest, 0);
                         _initialState = _initialState.SetState(_sellerAvatarAddress, sellerAvatarState.Serialize());
                     }

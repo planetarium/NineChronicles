@@ -166,9 +166,9 @@ namespace Lib9c.Tests.Action
                     tradableItem.ItemSubType,
                     1
                 );
-                existOrder.Sell(avatarState);
+                existOrder.Sell2(avatarState);
                 blockIndex = existOrder.ExpiredBlockIndex;
-                shardedShopState.Add(existOrder.Digest(avatarState, _tableSheets.CostumeStatSheet), blockIndex);
+                shardedShopState.Add(existOrder.Digest2(avatarState, _tableSheets.CostumeStatSheet), blockIndex);
                 Assert.Single(shardedShopState.OrderDigestList);
                 previousStates = previousStates.SetState(
                     shardedShopAddress,
@@ -402,7 +402,7 @@ namespace Lib9c.Tests.Action
                 ItemSubType.Weapon,
                 1
             );
-            shardedShopState.Add(order.Digest(avatarState, _tableSheets.CostumeStatSheet), 1);
+            shardedShopState.Add(order.Digest2(avatarState, _tableSheets.CostumeStatSheet), 1);
             Assert.Single(shardedShopState.OrderDigestList);
 
             IAccountStateDelta previousStates = _initialState

@@ -386,7 +386,7 @@ namespace Lib9c.Tests.Action
                 ItemSubType.Weapon,
                 1
             );
-            shardedShopState.Add(order.Digest(avatarState, _tableSheets.CostumeStatSheet), 1);
+            shardedShopState.Add(order.Digest2(avatarState, _tableSheets.CostumeStatSheet), 1);
             Assert.Single(shardedShopState.OrderDigestList);
 
             IAccountStateDelta previousStates = _initialState

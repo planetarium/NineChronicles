@@ -184,9 +184,9 @@
                 avatarState.inventory.AddItem((ItemBase)tradableItem, itemCount);
             }
 
-            var sellItem = legacy ? order.Sell(avatarState) : order.Sell2(avatarState);
-            var orderDigest = legacy ? order.Digest(avatarState, _tableSheets.CostumeStatSheet)
-                                     : order.Digest2(avatarState, _tableSheets.CostumeStatSheet);
+            var sellItem = legacy ? order.Sell2(avatarState) : order.Sell(avatarState);
+            var orderDigest = legacy ? order.Digest2(avatarState, _tableSheets.CostumeStatSheet)
+                                     : order.Digest(avatarState, _tableSheets.CostumeStatSheet);
             shopState.Add(orderDigest, requiredBlockIndex);
             orderDigestList.Add(orderDigest);
 
