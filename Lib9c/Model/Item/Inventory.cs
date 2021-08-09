@@ -304,7 +304,8 @@ namespace Nekoyume.Model.Item
                 targetItems = _items
                     .Where(e =>
                         e.item is ITradableFungibleItem tradableFungibleItem &&
-                        tradableFungibleItem.FungibleId.Equals(fungibleId))
+                        tradableFungibleItem.FungibleId.Equals(fungibleId) &&
+                        !e.IsLock)
                     .OrderBy(e => ((ITradableFungibleItem) e.item).RequiredBlockIndex)
                     .ThenByDescending(e => e.count)
                     .ToList();
@@ -330,6 +331,7 @@ namespace Nekoyume.Model.Item
                 }
 
                 targetItems = targetItems
+                    .Where(e => !e.IsLock)
                     .OrderBy(e => e.item is ITradableItem)
                     .ThenBy(e => e.count)
                     .ToList();
