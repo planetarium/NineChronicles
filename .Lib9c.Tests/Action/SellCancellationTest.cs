@@ -103,7 +103,7 @@ namespace Lib9c.Tests.Action
             int itemCount,
             int inventoryCount,
             int expectedCount,
-            bool backward,
+            bool fromPreviousAction,
             bool legacy
         )
         {
@@ -227,7 +227,7 @@ namespace Lib9c.Tests.Action
                 Assert.Equal(itemCount, outItem.count);
             }
 
-            if (backward)
+            if (fromPreviousAction)
             {
                 prevState = prevState.SetState(_avatarAddress, avatarState.Serialize());
             }

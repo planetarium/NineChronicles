@@ -89,7 +89,7 @@ namespace Lib9c.Model.Order
         {
             if (avatarState.inventory.TryGetNonFungibleItem(TradableId, out Inventory.Item inventoryItem))
             {
-                inventoryItem.Lock(new OrderLock(OrderId));
+                inventoryItem.LockUp(new OrderLock(OrderId));
                 INonFungibleItem nonFungibleItem = (INonFungibleItem)inventoryItem.item;
                 nonFungibleItem.RequiredBlockIndex = ExpiredBlockIndex;
                 if (nonFungibleItem is IEquippableItem equippableItem)

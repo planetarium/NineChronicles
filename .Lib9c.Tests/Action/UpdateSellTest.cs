@@ -106,7 +106,7 @@
             int itemCount,
             int inventoryCount,
             int expectedCount,
-            bool backward,
+            bool fromPreviousAction,
             bool legacy
         )
         {
@@ -207,7 +207,7 @@
 
             Assert.Equal(requiredBlockIndex * 2, sellItem.RequiredBlockIndex);
 
-            if (backward)
+            if (fromPreviousAction)
             {
                 prevState = prevState.SetState(_avatarAddress, avatarState.Serialize());
             }

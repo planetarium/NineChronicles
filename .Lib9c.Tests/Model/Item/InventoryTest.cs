@@ -621,15 +621,15 @@
             Material material = ItemFactory.CreateMaterial(row);
             var item = new Inventory.Item(material, 1);
             var orderLock = new OrderLock(Guid.NewGuid());
-            Assert.False(item.IsLock);
+            Assert.False(item.Locked);
 
-            item.Lock(orderLock);
+            item.LockUp(orderLock);
 
-            Assert.True(item.IsLock);
+            Assert.True(item.Locked);
 
             item.Unlock();
 
-            Assert.False(item.IsLock);
+            Assert.False(item.Locked);
         }
     }
 }

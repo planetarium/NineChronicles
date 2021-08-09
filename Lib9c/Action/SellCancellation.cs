@@ -132,19 +132,18 @@ namespace Nekoyume.Action
             }
 
             Order order = OrderFactory.Deserialize(orderDict);
-            bool backward = false;
+            bool fromPreviousAction = false;
             try
             {
                 order.ValidateCancelOrder2(avatarState, tradableId);
             }
             catch (Exception)
             {
-                //backward for not expired prev order.
                 order.ValidateCancelOrder(avatarState, tradableId);
-                backward = true;
+                fromPreviousAction = true;
             }
 
-            var sellItem = backward
+            var sellItem = fromPreviousAction
                 ? order.Cancel(avatarState, context.BlockIndex)
                 : order.Cancel2(avatarState, context.BlockIndex);
             if (context.BlockIndex < order.ExpiredBlockIndex)

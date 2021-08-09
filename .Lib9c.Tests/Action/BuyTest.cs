@@ -116,7 +116,7 @@ namespace Lib9c.Tests.Action
                     RequiredBlockIndex = Sell6.ExpiredBlockIndex,
                     Price = 10,
                     ItemCount = 1,
-                    Backward = true,
+                    FromPreviousAction = true,
                 },
                 new OrderData()
                 {
@@ -128,7 +128,7 @@ namespace Lib9c.Tests.Action
                     RequiredBlockIndex = 0,
                     Price = 20,
                     ItemCount = 1,
-                    Backward = true,
+                    FromPreviousAction = true,
                 },
             };
             yield return new object[]
@@ -143,7 +143,7 @@ namespace Lib9c.Tests.Action
                     RequiredBlockIndex = 0,
                     Price = 10,
                     ItemCount = 1,
-                    Backward = true,
+                    FromPreviousAction = true,
                 },
                 new OrderData()
                 {
@@ -155,7 +155,7 @@ namespace Lib9c.Tests.Action
                     RequiredBlockIndex = Sell6.ExpiredBlockIndex,
                     Price = 50,
                     ItemCount = 1,
-                    Backward = true,
+                    FromPreviousAction = true,
                 },
             };
             yield return new object[]
@@ -170,7 +170,7 @@ namespace Lib9c.Tests.Action
                     RequiredBlockIndex = Sell6.ExpiredBlockIndex,
                     Price = 50,
                     ItemCount = 1,
-                    Backward = true,
+                    FromPreviousAction = true,
                 },
                 new OrderData()
                 {
@@ -182,7 +182,7 @@ namespace Lib9c.Tests.Action
                     RequiredBlockIndex = 0,
                     Price = 10,
                     ItemCount = 2,
-                    Backward = true,
+                    FromPreviousAction = true,
                 },
             };
             yield return new object[]
@@ -197,7 +197,7 @@ namespace Lib9c.Tests.Action
                     RequiredBlockIndex = Sell6.ExpiredBlockIndex,
                     Price = 10,
                     ItemCount = 1,
-                    Backward = false,
+                    FromPreviousAction = false,
                 },
                 new OrderData()
                 {
@@ -209,7 +209,7 @@ namespace Lib9c.Tests.Action
                     RequiredBlockIndex = 0,
                     Price = 20,
                     ItemCount = 1,
-                    Backward = false,
+                    FromPreviousAction = false,
                 },
             };
             yield return new object[]
@@ -224,7 +224,7 @@ namespace Lib9c.Tests.Action
                     RequiredBlockIndex = 0,
                     Price = 10,
                     ItemCount = 1,
-                    Backward = false,
+                    FromPreviousAction = false,
                 },
                 new OrderData()
                 {
@@ -236,7 +236,7 @@ namespace Lib9c.Tests.Action
                     RequiredBlockIndex = Sell6.ExpiredBlockIndex,
                     Price = 50,
                     ItemCount = 1,
-                    Backward = false,
+                    FromPreviousAction = false,
                 },
             };
             yield return new object[]
@@ -251,7 +251,7 @@ namespace Lib9c.Tests.Action
                     RequiredBlockIndex = Sell6.ExpiredBlockIndex,
                     Price = 50,
                     ItemCount = 1,
-                    Backward = false,
+                    FromPreviousAction = false,
                 },
                 new OrderData()
                 {
@@ -263,7 +263,7 @@ namespace Lib9c.Tests.Action
                     RequiredBlockIndex = 0,
                     Price = 10,
                     ItemCount = 2,
-                    Backward = false,
+                    FromPreviousAction = false,
                 },
             };
         }
@@ -337,12 +337,12 @@ namespace Lib9c.Tests.Action
                 );
                 sellerAvatarState.inventory.AddItem((ItemBase)tradableItem, orderData.ItemCount);
 
-                var sellItem = orderData.Backward ? order.Sell(sellerAvatarState) : order.Sell2(sellerAvatarState);
-                var orderDigest = orderData.Backward
+                var sellItem = orderData.FromPreviousAction ? order.Sell(sellerAvatarState) : order.Sell2(sellerAvatarState);
+                var orderDigest = orderData.FromPreviousAction
                     ? order.Digest(sellerAvatarState, _tableSheets.CostumeStatSheet)
                     : order.Digest2(sellerAvatarState, _tableSheets.CostumeStatSheet);
 
-                if (orderData.Backward)
+                if (orderData.FromPreviousAction)
                 {
                     Assert.True(
                         sellerAvatarState.inventory.TryGetTradableItems(
@@ -739,7 +739,7 @@ namespace Lib9c.Tests.Action
 
             public int ItemCount { get; set; }
 
-            public bool Backward { get; set; }
+            public bool FromPreviousAction { get; set; }
         }
 
         public class ErrorCodeMember
