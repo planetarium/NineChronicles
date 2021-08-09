@@ -74,37 +74,6 @@ namespace Nekoyume.State
         private static List<OrderDigest> _buyDigests = new List<OrderDigest>();
         private static List<OrderDigest> _sellDigests = new List<OrderDigest>();
 
-        // public static bool IsExistSellDigests(ItemBase itemBase, int count = 1)
-        // {
-        //     switch (itemBase.ItemType)
-        //     {
-        //         case ItemType.Consumable:
-        //             var consumable = (Consumable) itemBase;
-        //             return _sellDigests.Exists(x => x.TradableId.Equals(consumable.ItemId));
-        //
-        //         case ItemType.Costume:
-        //             var costume = (Costume) itemBase;
-        //             return _sellDigests.Exists(x => x.TradableId.Equals(costume.ItemId));
-        //         case ItemType.Equipment:
-        //             var equipment = (Equipment) itemBase;
-        //             return _sellDigests.Exists(x => x.TradableId.Equals(equipment.ItemId));
-        //         case ItemType.Material:
-        //             var material = (Material) itemBase;
-        //             if (material is TradableMaterial tradableMaterial)
-        //             {
-        //                 return _sellDigests.Exists(x =>
-        //                     x.TradableId.Equals(tradableMaterial.TradableId) &&
-        //                     x.ExpiredBlockIndex == tradableMaterial.RequiredBlockIndex);
-        //             }
-        //             else
-        //             {
-        //                 return false;
-        //             }
-        //         default:
-        //             throw new ArgumentOutOfRangeException();
-        //     }
-        // }
-
         public static OrderDigest GetSellDigest(Guid tradableId,
             long requiredBlockIndex,
             FungibleAssetValue price,
