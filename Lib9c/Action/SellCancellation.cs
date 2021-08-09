@@ -132,8 +132,21 @@ namespace Nekoyume.Action
             }
 
             Order order = OrderFactory.Deserialize(orderDict);
-            order.ValidateCancelOrder(avatarState, tradableId);
-            ITradableItem sellItem = order.Cancel(avatarState, context.BlockIndex);
+            bool backward = false;
+            try
+            {
+                order.ValidateCancelOrder2(avatarState, tradableId);
+            }
+            catch (Exception)
+            {
+                //backward for not expired prev order.
+                order.ValidateCancelOrder(avatarState, tradableId);
+                backward = true;
+            }
+
+            var sellItem = backward
+                ? order.Cancel(avatarState, context.BlockIndex)
+                : order.Cancel2(avatarState, context.BlockIndex);
             if (context.BlockIndex < order.ExpiredBlockIndex)
             {
                 var shardedShopState = new ShardedShopStateV2(shopStateDict);

@@ -352,6 +352,60 @@ namespace Lib9c.Tests.Model.Order
         }
 
         [Theory]
+        [InlineData(false, false, false, false, ItemSubType.Weapon, ItemSubType.Weapon, typeof(InvalidAddressException))]
+        [InlineData(true, false, false, false, ItemSubType.Weapon, ItemSubType.Weapon, typeof(InvalidAddressException))]
+        [InlineData(true, true, false, false, ItemSubType.Weapon, ItemSubType.Weapon, typeof(InvalidTradableIdException))]
+        [InlineData(true, true, true, false, ItemSubType.Weapon, ItemSubType.Weapon, typeof(ItemDoesNotExistException))]
+        [InlineData(true, true, true, true, ItemSubType.Weapon, ItemSubType.Armor, typeof(InvalidItemTypeException))]
+        [InlineData(true, true, true, true, ItemSubType.Armor, ItemSubType.Armor, null)]
+        public void ValidateCancelOrder2(
+            bool useAgentAddress,
+            bool useAvatarAddress,
+            bool useTradableId,
+            bool isLock,
+            ItemSubType itemSubType,
+            ItemSubType orderItemSubType,
+            Type exc
+        )
+        {
+            var row = _tableSheets.ItemSheet.OrderedList.First(r => r.ItemSubType == itemSubType);
+            ItemBase item = ItemFactory.CreateItem(row, new TestRandom());
+            Guid orderId = new Guid("15396359-04db-68d5-f24a-d89c18665900");
+            ITradableItem tradableItem = (ITradableItem)item;
+            tradableItem.RequiredBlockIndex = 1;
+            var agentAddress = useAgentAddress ? _avatarState.agentAddress : default;
+            var avatarAddress = useAvatarAddress ? _avatarState.address : default;
+            var tradableId = useTradableId ? tradableItem.TradableId : default;
+            NonFungibleOrder order = OrderFactory.CreateNonFungibleOrder(
+                agentAddress,
+                avatarAddress,
+                orderId,
+                new FungibleAssetValue(_currency, 10, 0),
+                tradableItem.TradableId,
+                1,
+                orderItemSubType
+            );
+            OrderLock? orderLock = null;
+            if (isLock)
+            {
+                orderLock = new OrderLock(orderId);
+            }
+
+            _avatarState.inventory.AddNonFungibleItem(item, orderLock);
+
+            Assert.Equal(isLock, _avatarState.inventory.TryGetLockedItem(new OrderLock(orderId), out _));
+
+            if (exc is null)
+            {
+                order.ValidateCancelOrder2(_avatarState, tradableId);
+            }
+            else
+            {
+                Assert.Throws(exc, () => order.ValidateCancelOrder2(_avatarState, tradableId));
+            }
+        }
+
+        [Theory]
         [InlineData(ItemSubType.Weapon, 1, true, null)]
         [InlineData(ItemSubType.Weapon, 0, false, typeof(ItemDoesNotExistException))]
         [InlineData(ItemSubType.FullCostume, 2, true, null)]
@@ -404,6 +458,63 @@ namespace Lib9c.Tests.Model.Order
             else
             {
                 Assert.Throws(exc, () => order.Cancel(_avatarState, blockIndex));
+            }
+        }
+
+        [Theory]
+        [InlineData(ItemSubType.Weapon, 1, true, null)]
+        [InlineData(ItemSubType.Weapon, 0, false, typeof(ItemDoesNotExistException))]
+        [InlineData(ItemSubType.FullCostume, 2, true, null)]
+        public void Cancel2(ItemSubType itemSubType, long blockIndex, bool isLock, Type exc)
+        {
+            var row = _tableSheets.ItemSheet.OrderedList.First(r => r.ItemSubType == itemSubType);
+            ItemBase item = ItemFactory.CreateItem(row, new TestRandom());
+            Guid orderId = new Guid("15396359-04db-68d5-f24a-d89c18665900");
+            ITradableItem tradableItem = (ITradableItem)item;
+            tradableItem.RequiredBlockIndex = 1;
+            NonFungibleOrder order = OrderFactory.CreateNonFungibleOrder(
+                _avatarState.agentAddress,
+                _avatarState.address,
+                orderId,
+                new FungibleAssetValue(_currency, 10, 0),
+                tradableItem.TradableId,
+                1,
+                itemSubType
+            );
+
+            _avatarState.inventory.AddNonFungibleItem(item);
+
+            if (isLock)
+            {
+                order.Sell2(_avatarState);
+            }
+
+            if (exc is null)
+            {
+                var orderLock = new OrderLock(orderId);
+                Assert.True(
+                    _avatarState.inventory.TryGetLockedItem(orderLock, out Inventory.Item inventoryItem)
+                );
+                var nonFungibleItem = (INonFungibleItem)inventoryItem.item;
+                Assert.Equal(order.ExpiredBlockIndex, nonFungibleItem.RequiredBlockIndex);
+
+                ITradableItem result = order.Cancel2(_avatarState, blockIndex);
+
+                Assert.Equal(blockIndex, result.RequiredBlockIndex);
+                Assert.Equal(itemSubType, result.ItemSubType);
+                Assert.Equal(tradableItem.TradableId, result.TradableId);
+                Assert.True(
+                    _avatarState.inventory.TryGetNonFungibleItem(
+                        tradableItem.TradableId,
+                        out INonFungibleItem nextNonFungibleItem
+                    )
+                );
+                Assert.Equal(blockIndex, nextNonFungibleItem.RequiredBlockIndex);
+                Assert.False(_avatarState.inventory.TryGetLockedItem(orderLock, out _));
+            }
+            else
+            {
+                Assert.Throws(exc, () => order.Cancel2(_avatarState, blockIndex));
             }
         }
 

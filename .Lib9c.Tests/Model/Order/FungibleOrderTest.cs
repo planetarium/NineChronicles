@@ -345,6 +345,61 @@ namespace Lib9c.Tests.Model.Order
         }
 
         [Theory]
+        [InlineData(false, false, false, false, ItemSubType.Hourglass, ItemSubType.Hourglass, 1, 1, typeof(InvalidAddressException))]
+        [InlineData(true, false, false, false, ItemSubType.Hourglass, ItemSubType.Hourglass, 1, 1, typeof(InvalidAddressException))]
+        [InlineData(true, true, false, false, ItemSubType.Hourglass, ItemSubType.Hourglass, 1, 1, typeof(InvalidTradableIdException))]
+        [InlineData(true, true, true, false, ItemSubType.Hourglass, ItemSubType.Hourglass, 1, 1, typeof(ItemDoesNotExistException))]
+        [InlineData(true, true, true, true, ItemSubType.ApStone, ItemSubType.ApStone, 1, 2, typeof(ItemDoesNotExistException))]
+        [InlineData(true, true, true, true, ItemSubType.Hourglass, ItemSubType.ApStone, 1, 1, typeof(InvalidItemTypeException))]
+        [InlineData(true, true, true, true, ItemSubType.ApStone, ItemSubType.ApStone, 1, 1, null)]
+        public void ValidateCancelOrder2(
+            bool useAgentAddress,
+            bool useAvatarAddress,
+            bool useTradableId,
+            bool isLock,
+            ItemSubType itemSubType,
+            ItemSubType orderItemSubType,
+            int itemCount,
+            int orderItemCount,
+            Type exc
+        )
+        {
+            var row = _tableSheets.MaterialItemSheet.OrderedList.First(r => r.ItemSubType == itemSubType);
+            TradableMaterial item = ItemFactory.CreateTradableMaterial(row);
+            item.RequiredBlockIndex = 1;
+            Guid orderId = new Guid("15396359-04db-68d5-f24a-d89c18665900");
+            var agentAddress = useAgentAddress ? _avatarState.agentAddress : default;
+            var avatarAddress = useAvatarAddress ? _avatarState.address : default;
+            var tradableId = useTradableId ? item.TradableId : default;
+            FungibleOrder order = OrderFactory.CreateFungibleOrder(
+                agentAddress,
+                avatarAddress,
+                orderId,
+                new FungibleAssetValue(_currency, 10, 0),
+                item.TradableId,
+                1,
+                orderItemCount,
+                orderItemSubType
+            );
+            OrderLock? orderLock = null;
+            if (isLock)
+            {
+                orderLock = new OrderLock(orderId);
+            }
+
+            _avatarState.inventory.AddItem(item, itemCount, orderLock);
+
+            if (exc is null)
+            {
+                order.ValidateCancelOrder2(_avatarState, tradableId);
+            }
+            else
+            {
+                Assert.Throws(exc, () => order.ValidateCancelOrder2(_avatarState, tradableId));
+            }
+        }
+
+        [Theory]
         [InlineData(ItemSubType.ApStone, true, true, 1, 1, null)]
         [InlineData(ItemSubType.Hourglass, true, false, 2, 1, null)]
         [InlineData(ItemSubType.ApStone, false, false, 1, 1, typeof(ItemDoesNotExistException))]
@@ -392,6 +447,58 @@ namespace Lib9c.Tests.Model.Order
             else
             {
                 Assert.Throws(exc, () => order.Cancel(_avatarState, blockIndex));
+            }
+        }
+
+        [Theory]
+        [InlineData(ItemSubType.ApStone, true, true, 1, 1, null)]
+        [InlineData(ItemSubType.Hourglass, true, false, 2, 1, null)]
+        [InlineData(ItemSubType.ApStone, false, false, 1, 1, typeof(ItemDoesNotExistException))]
+        public void Cancel2(ItemSubType itemSubType, bool isLock, bool exist, long blockIndex, int itemCount, Type exc)
+        {
+            var row = _tableSheets.MaterialItemSheet.OrderedList.First(r => r.ItemSubType == itemSubType);
+            TradableMaterial item = ItemFactory.CreateTradableMaterial(row);
+            Guid orderId = new Guid("15396359-04db-68d5-f24a-d89c18665900");
+            item.RequiredBlockIndex = 1;
+            FungibleOrder order = OrderFactory.CreateFungibleOrder(
+                _avatarState.agentAddress,
+                _avatarState.address,
+                orderId,
+                new FungibleAssetValue(_currency, 10, 0),
+                item.TradableId,
+                blockIndex,
+                itemCount,
+                itemSubType
+            );
+
+            if (isLock)
+            {
+                _avatarState.inventory.AddItem(item, itemCount);
+                order.Sell2(_avatarState);
+
+                if (exist)
+                {
+                    _avatarState.inventory.AddItem(item);
+                }
+            }
+
+            if (exc is null)
+            {
+                var orderLock = new OrderLock(orderId);
+                Assert.True(_avatarState.inventory.TryGetLockedItem(orderLock, out _));
+                Assert.Equal(exist, _avatarState.inventory.TryGetTradableItem(item.TradableId, blockIndex, 1, out _));
+
+                ITradableItem result = order.Cancel2(_avatarState, blockIndex);
+
+                Assert.Equal(item.TradableId, result.TradableId);
+                Assert.Equal(blockIndex, result.RequiredBlockIndex);
+                int expectedCount = exist ? itemCount + 1 : 1;
+                Assert.False(_avatarState.inventory.TryGetLockedItem(orderLock, out _));
+                Assert.True(_avatarState.inventory.TryGetTradableItems(item.TradableId, blockIndex, expectedCount, out _));
+            }
+            else
+            {
+                Assert.Throws(exc, () => order.Cancel2(_avatarState, blockIndex));
             }
         }
 

@@ -4,7 +4,6 @@ using Libplanet;
 using Libplanet.Assets;
 using Nekoyume;
 using Nekoyume.Action;
-using Nekoyume.Battle;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
@@ -65,6 +64,7 @@ namespace Lib9c.Model.Order
         public abstract ITradableItem Sell(AvatarState avatarState);
         public abstract ITradableItem Sell2(AvatarState avatarState);
 
+        [Obsolete("Use Cancel2")]
         public abstract ITradableItem Cancel(AvatarState avatarState, long blockIndex);
 
         public abstract OrderReceipt Transfer(AvatarState seller, AvatarState buyer, long blockIndex);
@@ -72,6 +72,53 @@ namespace Lib9c.Model.Order
         public FungibleAssetValue GetTax()
         {
             return Price.DivRem(100, out _) * Buy.TaxRate;
+        }
+
+        public ITradableItem Cancel2(AvatarState avatarState, long blockIndex)
+        {
+            if (avatarState.inventory.TryGetLockedItem(new OrderLock(OrderId), out Inventory.Item inventoryItem))
+            {
+                inventoryItem.Unlock();
+                var tradableItem = (ITradableItem)inventoryItem.item;
+                tradableItem.RequiredBlockIndex = blockIndex;
+                return tradableItem;
+            }
+            throw new ItemDoesNotExistException(
+                $"Aborted because the tradable item({TradableId}) was failed to load from avatar's inventory.");
+        }
+
+        public void ValidateCancelOrder2(AvatarState avatarState, Guid tradableId)
+        {
+            if (!avatarState.address.Equals(SellerAvatarAddress) || !avatarState.agentAddress.Equals(SellerAgentAddress))
+            {
+                throw new InvalidAddressException($"Invalid Seller Addresses. Expected Addresses: {SellerAgentAddress}, {SellerAvatarAddress}. Actual: {avatarState.agentAddress}, {avatarState.address}");
+            }
+
+            if (!TradableId.Equals(tradableId))
+            {
+                throw new InvalidTradableIdException($"{tradableId} is not equals {TradableId}");
+            }
+
+            if (!avatarState.inventory.TryGetLockedItem(new OrderLock(OrderId), out Inventory.Item inventoryItem))
+            {
+                throw new ItemDoesNotExistException(
+                    $"Aborted because the tradable item({TradableId}) was failed to load from avatar's inventory.");
+            }
+
+            var itemCount = this is FungibleOrder fungibleOrder ? fungibleOrder.ItemCount : 1;
+            if (itemCount != inventoryItem.count)
+            {
+                throw new ItemDoesNotExistException(
+                    $"Aborted because the tradable item({TradableId}) was failed to load from avatar's inventory.");
+            }
+
+            ITradableItem tradableItem = (ITradableItem)inventoryItem.item;
+
+            if (!tradableItem.ItemSubType.Equals(ItemSubType))
+            {
+                throw new InvalidItemTypeException(
+                    $"Expected ItemSubType: {tradableItem.ItemSubType}. Actual ItemSubType: {ItemSubType}");
+            }
         }
 
         public virtual void Validate(AvatarState avatarState, int count)
@@ -87,6 +134,7 @@ namespace Lib9c.Model.Order
             }
         }
 
+        [Obsolete("Use ValidateCancelOrder2")]
         public virtual void ValidateCancelOrder(AvatarState avatarState, Guid tradableId)
         {
             if (!avatarState.address.Equals(SellerAvatarAddress) || !avatarState.agentAddress.Equals(SellerAgentAddress))

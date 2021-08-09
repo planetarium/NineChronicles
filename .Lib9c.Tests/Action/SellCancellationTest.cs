@@ -77,23 +77,34 @@ namespace Lib9c.Tests.Action
         }
 
         [Theory]
-        [InlineData(ItemType.Equipment, "F9168C5E-CEB2-4faa-B6BF-329BF39FA1E4", 1, 1, 1, true)]
-        [InlineData(ItemType.Costume, "936DA01F-9ABD-4d9d-80C7-02AF85C822A8", 1, 1, 1, true)]
-        [InlineData(ItemType.Material, "15396359-04db-68d5-f24a-d89c18665900", 1, 1, 1, true)]
-        [InlineData(ItemType.Material, "15396359-04db-68d5-f24a-d89c18665900", 2, 1, 2, true)]
-        [InlineData(ItemType.Material, "15396359-04db-68d5-f24a-d89c18665900", 2, 2, 3, true)]
-        [InlineData(ItemType.Equipment, "F9168C5E-CEB2-4faa-B6BF-329BF39FA1E4", 1, 1, 1, false)]
-        [InlineData(ItemType.Costume, "936DA01F-9ABD-4d9d-80C7-02AF85C822A8", 1, 1, 1, false)]
-        [InlineData(ItemType.Material, "15396359-04db-68d5-f24a-d89c18665900", 1, 1, 1, false)]
-        [InlineData(ItemType.Material, "15396359-04db-68d5-f24a-d89c18665900", 2, 1, 2, false)]
-        [InlineData(ItemType.Material, "15396359-04db-68d5-f24a-d89c18665900", 2, 2, 3, false)]
+        [InlineData(ItemType.Equipment, "F9168C5E-CEB2-4faa-B6BF-329BF39FA1E4", 1, 1, 1, true, true)]
+        [InlineData(ItemType.Costume, "936DA01F-9ABD-4d9d-80C7-02AF85C822A8", 1, 1, 1, true, true)]
+        [InlineData(ItemType.Material, "15396359-04db-68d5-f24a-d89c18665900", 1, 1, 1, true, true)]
+        [InlineData(ItemType.Material, "15396359-04db-68d5-f24a-d89c18665900", 2, 1, 2, true, true)]
+        [InlineData(ItemType.Material, "15396359-04db-68d5-f24a-d89c18665900", 2, 2, 3, true, true)]
+        [InlineData(ItemType.Equipment, "F9168C5E-CEB2-4faa-B6BF-329BF39FA1E4", 1, 1, 1, false, true)]
+        [InlineData(ItemType.Costume, "936DA01F-9ABD-4d9d-80C7-02AF85C822A8", 1, 1, 1, false, true)]
+        [InlineData(ItemType.Material, "15396359-04db-68d5-f24a-d89c18665900", 1, 1, 1, false, true)]
+        [InlineData(ItemType.Material, "15396359-04db-68d5-f24a-d89c18665900", 2, 1, 2, false, true)]
+        [InlineData(ItemType.Material, "15396359-04db-68d5-f24a-d89c18665900", 2, 2, 3, false, true)]
+        [InlineData(ItemType.Equipment, "F9168C5E-CEB2-4faa-B6BF-329BF39FA1E4", 1, 1, 1, true, false)]
+        [InlineData(ItemType.Costume, "936DA01F-9ABD-4d9d-80C7-02AF85C822A8", 1, 1, 1, true, false)]
+        [InlineData(ItemType.Material, "15396359-04db-68d5-f24a-d89c18665900", 1, 1, 1, true, false)]
+        [InlineData(ItemType.Material, "15396359-04db-68d5-f24a-d89c18665900", 2, 1, 2, true, false)]
+        [InlineData(ItemType.Material, "15396359-04db-68d5-f24a-d89c18665900", 2, 2, 3, true, false)]
+        [InlineData(ItemType.Equipment, "F9168C5E-CEB2-4faa-B6BF-329BF39FA1E4", 1, 1, 1, false, false)]
+        [InlineData(ItemType.Costume, "936DA01F-9ABD-4d9d-80C7-02AF85C822A8", 1, 1, 1, false, false)]
+        [InlineData(ItemType.Material, "15396359-04db-68d5-f24a-d89c18665900", 1, 1, 1, false, false)]
+        [InlineData(ItemType.Material, "15396359-04db-68d5-f24a-d89c18665900", 2, 1, 2, false, false)]
+        [InlineData(ItemType.Material, "15396359-04db-68d5-f24a-d89c18665900", 2, 2, 3, false, false)]
         public void Execute(
             ItemType itemType,
             string guid,
             int itemCount,
             int inventoryCount,
             int expectedCount,
-            bool backward
+            bool backward,
+            bool legacy
         )
         {
             var avatarState = _initialState.GetAvatarState(_avatarAddress);
@@ -181,19 +192,40 @@ namespace Lib9c.Tests.Action
                 avatarState.inventory.AddItem((ItemBase)tradableItem, itemCount);
             }
 
-            ITradableItem sellItem = order.Sell(avatarState);
-            OrderDigest orderDigest = order.Digest(avatarState, _tableSheets.CostumeStatSheet);
-            shopState.Add(orderDigest, requiredBlockIndex);
-            orderDigestList.Add(orderDigest);
+            ITradableItem sellItem;
+            if (legacy)
+            {
+                sellItem = order.Sell(avatarState);
+                OrderDigest orderDigest = order.Digest(avatarState, _tableSheets.CostumeStatSheet);
+                shopState.Add(orderDigest, requiredBlockIndex);
+                orderDigestList.Add(orderDigest);
 
-            Assert.Equal(inventoryCount, avatarState.inventory.Items.Count);
-            Assert.Equal(expectedCount, avatarState.inventory.Items.Sum(i => i.count));
+                Assert.Equal(inventoryCount, avatarState.inventory.Items.Count);
+                Assert.Equal(expectedCount, avatarState.inventory.Items.Sum(i => i.count));
 
-            Assert.Single(shopState.OrderDigestList);
-            Assert.Single(orderDigestList.OrderDigestList);
+                Assert.Single(shopState.OrderDigestList);
+                Assert.Single(orderDigestList.OrderDigestList);
 
-            Assert.Equal(requiredBlockIndex * 2, sellItem.RequiredBlockIndex);
-            Assert.True(avatarState.inventory.TryGetTradableItems(itemId, requiredBlockIndex * 2, itemCount, out _));
+                Assert.Equal(requiredBlockIndex * 2, sellItem.RequiredBlockIndex);
+                Assert.True(avatarState.inventory.TryGetTradableItems(itemId, requiredBlockIndex * 2, itemCount, out _));
+            }
+            else
+            {
+                sellItem = order.Sell2(avatarState);
+                OrderDigest orderDigest = order.Digest2(avatarState, _tableSheets.CostumeStatSheet);
+                shopState.Add(orderDigest, requiredBlockIndex);
+                orderDigestList.Add(orderDigest);
+
+                Assert.Equal(inventoryCount, avatarState.inventory.Items.Count);
+                Assert.Equal(expectedCount, avatarState.inventory.Items.Sum(i => i.count));
+
+                Assert.Single(shopState.OrderDigestList);
+                Assert.Single(orderDigestList.OrderDigestList);
+
+                Assert.Equal(requiredBlockIndex * 2, sellItem.RequiredBlockIndex);
+                Assert.True(avatarState.inventory.TryGetLockedItem(new OrderLock(orderId), out var outItem));
+                Assert.Equal(itemCount, outItem.count);
+            }
 
             if (backward)
             {
@@ -247,6 +279,7 @@ namespace Lib9c.Tests.Action
                 itemCount,
                 out List<Inventory.Item> inventoryItems
             ));
+            Assert.False(nextAvatarState.inventory.TryGetLockedItem(new OrderLock(orderId), out _));
             Assert.Equal(inventoryCount, inventoryItems.Count);
             Inventory.Item inventoryItem = inventoryItems.First();
             Assert.Equal(itemCount, inventoryItem.count);

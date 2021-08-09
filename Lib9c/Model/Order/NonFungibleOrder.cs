@@ -155,6 +155,7 @@ namespace Lib9c.Model.Order
                 $"Aborted because the tradable item({TradableId}) was failed to load from avatar's inventory.");
         }
 
+        [Obsolete("Use ValidateCancelOrder2")]
         public override void ValidateCancelOrder(AvatarState avatarState, Guid tradableId)
         {
             base.ValidateCancelOrder(avatarState, tradableId);
@@ -172,6 +173,7 @@ namespace Lib9c.Model.Order
             }
         }
 
+        [Obsolete("Use Cancel2")]
         public override ITradableItem Cancel(AvatarState avatarState, long blockIndex)
         {
             if (avatarState.inventory.TryGetNonFungibleItem(TradableId, out INonFungibleItem nonFungibleItem))
