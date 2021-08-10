@@ -294,7 +294,7 @@ namespace Nekoyume.UI
 
             var statsCP = CPHelper.GetStatCP(mainStatType, mainStatValue);
             _cpListForAnimationSteps.Add(statsCP);
-            _resultItem.cpText.text = CPHelper.DecimalToInt(statsCP).ToString();
+            _resultItem.cpText.text = $"CP {CPHelper.DecimalToInt(statsCP)}";
 
             var statOptions = _itemOptionInfo.StatOptions;
             foreach (var (type, value, _) in statOptions)
@@ -453,9 +453,8 @@ namespace Nekoyume.UI
 
             if (_cpListForAnimationSteps.Any())
             {
-                _resultItem.cpText.text = CPHelper
-                    .DecimalToInt(_cpListForAnimationSteps[_cpListForAnimationSteps.Count - 1])
-                    .ToString();
+                _resultItem.cpText.text =
+                    $"CP {CPHelper.DecimalToInt(_cpListForAnimationSteps[_cpListForAnimationSteps.Count - 1])}";
             }
 
             PressToContinue();
@@ -555,7 +554,7 @@ namespace Nekoyume.UI
                 {
                     deltaTime += Time.deltaTime;
                     var middleCP = math.min(to, (int)(from + deltaCP * (deltaTime / .3f)));
-                    _resultItem.cpText.text = middleCP.ToString();
+                    _resultItem.cpText.text = $"CP {middleCP}";
                 });
         }
 

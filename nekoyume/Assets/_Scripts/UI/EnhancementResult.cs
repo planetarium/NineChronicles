@@ -208,7 +208,7 @@ namespace Nekoyume.UI
             _resultItem.beforeGradeText.text = $"+{equipment.level - 1}";
             _resultItem.afterGradeText.text = $"+{equipment.level}";
             _resultItem.itemNameText.text = equipment.GetLocalizedName(false, true);
-            _resultItem.cpText.text = itemOptionInfo.CP.ToString();
+            _resultItem.cpText.text = $"CP {itemOptionInfo.CP}";
 
             var (_, mainStatValuePre) = itemOptionInfoPre.MainStat;
             var (mainStatType, mainStatValue) = itemOptionInfo.MainStat;
