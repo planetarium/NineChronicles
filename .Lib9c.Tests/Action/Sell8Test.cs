@@ -21,7 +21,7 @@ namespace Lib9c.Tests.Action
     using Xunit.Abstractions;
     using static SerializeKeys;
 
-    public class SellTest
+    public class Sell8Test
     {
         private const long ProductPrice = 100;
 
@@ -32,7 +32,7 @@ namespace Lib9c.Tests.Action
         private readonly TableSheets _tableSheets;
         private IAccountStateDelta _initialState;
 
-        public SellTest(ITestOutputHelper outputHelper)
+        public Sell8Test(ITestOutputHelper outputHelper)
         {
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Verbose()
@@ -81,12 +81,17 @@ namespace Lib9c.Tests.Action
         }
 
         [Theory]
-        [InlineData(ItemType.Consumable, 1, true)]
-        [InlineData(ItemType.Costume, 1, false)]
-        [InlineData(ItemType.Equipment, 1, true)]
-        [InlineData(ItemType.Material, 1, false)]
+        [InlineData(ItemType.Consumable, true, 1, true)]
+        [InlineData(ItemType.Equipment, true, 1, false)]
+        [InlineData(ItemType.Consumable, false, 1, true)]
+        [InlineData(ItemType.Costume, false, 1, false)]
+        [InlineData(ItemType.Equipment, false, 1, true)]
+        [InlineData(ItemType.Material, true, 2, false)]
+        [InlineData(ItemType.Material, true, 1, true)]
+        [InlineData(ItemType.Material, false, 1, false)]
         public void Execute(
             ItemType itemType,
+            bool orderExist,
             int itemCount,
             bool backward
         )
@@ -142,14 +147,39 @@ namespace Lib9c.Tests.Action
             var currencyState = previousStates.GetGoldCurrency();
             var price = new FungibleAssetValue(currencyState, ProductPrice, 0);
             var orderId = new Guid("6f460c1a755d48e4ad6765d5f519dbc8");
+            var existOrderId = new Guid("229e5f8c-fabe-4c04-bab9-45325cfa69a4");
             var orderAddress = Order.DeriveAddress(orderId);
             var shardedShopAddress = ShardedShopStateV2.DeriveAddress(
                 tradableItem.ItemSubType,
                 orderId);
             long blockIndex = 1;
-            Assert.Null(previousStates.GetState(shardedShopAddress));
+            if (orderExist)
+            {
+                var shardedShopState = new ShardedShopStateV2(shardedShopAddress);
+                var existOrder = OrderFactory.Create(
+                    _agentAddress,
+                    _avatarAddress,
+                    existOrderId,
+                    price,
+                    tradableItem.TradableId,
+                    0,
+                    tradableItem.ItemSubType,
+                    1
+                );
+                existOrder.Sell2(avatarState);
+                blockIndex = existOrder.ExpiredBlockIndex;
+                shardedShopState.Add(existOrder.Digest2(avatarState, _tableSheets.CostumeStatSheet), blockIndex);
+                Assert.Single(shardedShopState.OrderDigestList);
+                previousStates = previousStates.SetState(
+                    shardedShopAddress,
+                    shardedShopState.Serialize());
+            }
+            else
+            {
+                Assert.Null(previousStates.GetState(shardedShopAddress));
+            }
 
-            var sellAction = new Sell
+            var sellAction = new Sell8
             {
                 sellerAvatarAddress = _avatarAddress,
                 tradableId = tradableItem.TradableId,
@@ -172,10 +202,13 @@ namespace Lib9c.Tests.Action
             // Check AvatarState and Inventory
             var nextAvatarState = nextState.GetAvatarStateV2(_avatarAddress);
             Assert.Single(nextAvatarState.inventory.Items);
-            Assert.True(nextAvatarState.inventory.TryGetLockedItem(new OrderLock(orderId), out var inventoryItem));
-            Assert.False(nextAvatarState.inventory.TryGetTradableItems(tradableItem.TradableId, blockIndex, itemCount, out _));
-            Assert.False(nextAvatarState.inventory.TryGetTradableItems(tradableItem.TradableId, expiredBlockIndex, itemCount, out _));
-            ITradableItem nextTradableItem = (ITradableItem)inventoryItem.item;
+            Assert.True(nextAvatarState.inventory.TryGetTradableItems(
+                tradableItem.TradableId,
+                expiredBlockIndex,
+                1,
+                out var inventoryItems));
+            Assert.Single(inventoryItems);
+            ITradableItem nextTradableItem = (ITradableItem)inventoryItems.First().item;
             Assert.Equal(expiredBlockIndex, nextTradableItem.RequiredBlockIndex);
 
             // Check ShardedShopState
@@ -183,7 +216,8 @@ namespace Lib9c.Tests.Action
             Assert.NotNull(nextSerializedShardedShopState);
             var nextShardedShopState =
                 new ShardedShopStateV2((Dictionary)nextSerializedShardedShopState);
-            Assert.Single(nextShardedShopState.OrderDigestList);
+            var expectedCount = orderExist ? 2 : 1;
+            Assert.Equal(expectedCount, nextShardedShopState.OrderDigestList.Count);
             var orderDigest = nextShardedShopState.OrderDigestList.First(o => o.OrderId.Equals(orderId));
             Assert.Equal(price, orderDigest.Price);
             Assert.Equal(blockIndex, orderDigest.StartedBlockIndex);
@@ -219,7 +253,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Execute_Throw_InvalidPriceException()
         {
-            var action = new Sell
+            var action = new Sell8
             {
                 sellerAvatarAddress = _avatarAddress,
                 tradableId = default,
@@ -240,7 +274,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Execute_Throw_FailedLoadStateException()
         {
-            var action = new Sell
+            var action = new Sell8
             {
                 sellerAvatarAddress = _avatarAddress,
                 tradableId = default,
@@ -272,7 +306,7 @@ namespace Lib9c.Tests.Action
 
             _initialState = _initialState.SetState(_avatarAddress, avatarState.Serialize());
 
-            var action = new Sell
+            var action = new Sell8
             {
                 sellerAvatarAddress = _avatarAddress,
                 tradableId = default,
@@ -290,34 +324,16 @@ namespace Lib9c.Tests.Action
             }));
         }
 
-        [Theory]
-        [InlineData(false)]
-        [InlineData(true)]
-        public void Execute_Throw_ItemDoesNotExistException(bool isLock)
+        [Fact]
+        public void Execute_Throw_ItemDoesNotExistException()
         {
-            var tradableId = Guid.NewGuid();
-            if (isLock)
-            {
-                var tradableItem = ItemFactory.CreateItemUsable(
-                    _tableSheets.EquipmentItemSheet.First,
-                    tradableId,
-                    0);
-                var orderLock = new OrderLock(Guid.NewGuid());
-                _avatarState.inventory.AddItem(tradableItem, 1, orderLock);
-                Assert.True(_avatarState.inventory.TryGetLockedItem(orderLock, out _));
-                _initialState = _initialState.SetState(
-                    _avatarAddress.Derive(LegacyInventoryKey),
-                    _avatarState.inventory.Serialize()
-                );
-            }
-
-            var action = new Sell
+            var action = new Sell8
             {
                 sellerAvatarAddress = _avatarAddress,
-                tradableId = tradableId,
+                tradableId = default,
                 count = 1,
                 price = 0 * _currency,
-                itemSubType = ItemSubType.Weapon,
+                itemSubType = ItemSubType.Food,
                 orderId = default,
             };
 
@@ -342,7 +358,7 @@ namespace Lib9c.Tests.Action
 
             _initialState = _initialState.SetState(_avatarAddress, _avatarState.Serialize());
 
-            var action = new Sell
+            var action = new Sell8
             {
                 sellerAvatarAddress = _avatarAddress,
                 tradableId = equipmentId,
@@ -393,7 +409,7 @@ namespace Lib9c.Tests.Action
                 .SetState(_avatarAddress, avatarState.Serialize())
                 .SetState(shardedShopAddress, shardedShopState.Serialize());
 
-            var action = new Sell
+            var action = new Sell8
             {
                 sellerAvatarAddress = _avatarAddress,
                 tradableId = tradableId,
@@ -417,7 +433,7 @@ namespace Lib9c.Tests.Action
         {
             Guid tradableId = Guid.NewGuid();
             Guid orderId = Guid.NewGuid();
-            var action = new Sell
+            var action = new Sell8
             {
                 sellerAvatarAddress = _avatarAddress,
                 tradableId = tradableId,

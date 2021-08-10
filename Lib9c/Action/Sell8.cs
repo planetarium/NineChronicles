@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
@@ -17,9 +17,9 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionObsolete(2100000)]
-    [ActionType("sell7")]
-    public class Sell7 : GameAction
+    [ActionObsolete(2200000)]
+    [ActionType("sell8")]
+    public class Sell8 : GameAction
     {
         public Address sellerAvatarAddress;
         public Guid tradableId;
@@ -74,7 +74,7 @@ namespace Nekoyume.Action
                     .SetState(sellerAvatarAddress, MarkChanged);
             }
 
-            CheckObsolete(2100000, context);
+            CheckObsolete(2200000, context);
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, sellerAvatarAddress);
 
@@ -143,14 +143,6 @@ namespace Nekoyume.Action
 
             avatarState.updatedAt = context.BlockIndex;
             avatarState.blockIndex = context.BlockIndex;
-
-            var mail = new OrderExpirationMail(
-                context.BlockIndex,
-                orderId,
-                order.ExpiredBlockIndex,
-                orderId
-            );
-            avatarState.UpdateV3(mail);
 
             var orderReceiptList = states.TryGetState(orderReceiptAddress, out Dictionary receiptDict)
                 ? new OrderDigestListState(receiptDict)

@@ -116,6 +116,7 @@ namespace Lib9c.Tests.Model.Order
             bool add,
             ItemSubType itemSubType,
             ItemSubType orderItemSubType,
+            bool isLock,
             Type exc
         )
         {
@@ -136,7 +137,13 @@ namespace Lib9c.Tests.Model.Order
             );
             if (add)
             {
-                _avatarState.inventory.AddItem(item, count);
+                OrderLock? orderLock = null;
+                if (isLock)
+                {
+                    orderLock = new OrderLock(Guid.NewGuid());
+                }
+
+                _avatarState.inventory.AddItem(item, count, orderLock);
             }
 
             if (exc is null)
@@ -166,7 +173,7 @@ namespace Lib9c.Tests.Model.Order
                 orderData.SellCount,
                 ItemSubType.Hourglass
             );
-            foreach (var (blockIndex, count) in orderData.InventoryData)
+            foreach (var (blockIndex, count, _) in orderData.InventoryData)
             {
                 ItemBase item = ItemFactory.CreateTradableMaterial(row);
                 ITradableItem tradableItem = (ITradableItem)item;
@@ -178,7 +185,7 @@ namespace Lib9c.Tests.Model.Order
 
             if (orderData.Exception is null)
             {
-                ITradableItem result = order.Sell(_avatarState);
+                ITradableItem result = order.Sell2(_avatarState);
 
                 Assert.Equal(order.ExpiredBlockIndex, result.RequiredBlockIndex);
                 Assert.Equal(order.TradableId, result.TradableId);
@@ -187,7 +194,58 @@ namespace Lib9c.Tests.Model.Order
             }
             else
             {
-                Assert.Throws(orderData.Exception, () => order.Sell(_avatarState));
+                Assert.Throws(orderData.Exception, () => order.Sell2(_avatarState));
+            }
+        }
+
+        [Theory]
+        [MemberData(nameof(SellMemberData2))]
+        public void Sell2(OrderData orderData)
+        {
+            var row = _tableSheets.MaterialItemSheet.OrderedList.First(r => r.ItemSubType == ItemSubType.Hourglass);
+            Guid orderId = new Guid("15396359-04db-68d5-f24a-d89c18665900");
+            Guid tradableId = TradableMaterial.DeriveTradableId(row.ItemId);
+            FungibleOrder order = OrderFactory.CreateFungibleOrder(
+                _avatarState.agentAddress,
+                _avatarState.address,
+                orderId,
+                new FungibleAssetValue(_currency, 10, 0),
+                tradableId,
+                orderData.BlockIndex,
+                orderData.SellCount,
+                ItemSubType.Hourglass
+            );
+            foreach (var (blockIndex, count, isLock) in orderData.InventoryData)
+            {
+                ItemBase item = ItemFactory.CreateTradableMaterial(row);
+                ITradableItem tradableItem = (ITradableItem)item;
+                tradableItem.RequiredBlockIndex = blockIndex;
+                OrderLock? orderLock = null;
+                if (isLock)
+                {
+                    orderLock = new OrderLock(orderId);
+                }
+
+                _avatarState.inventory.AddItem(item, count, orderLock);
+                Assert.Equal(isLock, _avatarState.inventory.TryGetLockedItem(new OrderLock(orderId), out _));
+            }
+
+            Assert.Equal(orderData.InventoryData.Count, _avatarState.inventory.Items.Count);
+
+            if (orderData.Exception is null)
+            {
+                ITradableItem result = order.Sell(_avatarState);
+
+                Assert.Equal(order.ExpiredBlockIndex, result.RequiredBlockIndex);
+                Assert.Equal(order.TradableId, result.TradableId);
+                Assert.Equal(orderData.TotalCount, _avatarState.inventory.Items.Sum(i => i.count));
+                Assert.True(_avatarState.inventory.TryGetTradableItem(tradableId, order.ExpiredBlockIndex, order.ItemCount, out var item));
+                Assert.True(_avatarState.inventory.TryGetLockedItem(new OrderLock(orderId), out var lockedItem));
+                Assert.Equal(item, lockedItem);
+            }
+            else
+            {
+                Assert.Throws(orderData.Exception, () => order.Sell2(_avatarState));
             }
         }
 
@@ -214,7 +272,7 @@ namespace Lib9c.Tests.Model.Order
             if (add)
             {
                 _avatarState.inventory.AddNonFungibleItem(item);
-                order.Sell(_avatarState);
+                order.Sell2(_avatarState);
             }
 
             if (exc is null)
@@ -222,14 +280,14 @@ namespace Lib9c.Tests.Model.Order
                 Assert.True(_avatarState.inventory.TryGetTradableItem(order.TradableId, order.ExpiredBlockIndex, 1, out _));
                 Assert.False(_avatarState.inventory.TryGetTradableItem(order.TradableId, 1, 1, out _));
 
-                ITradableItem result = order.Cancel(_avatarState, 1);
+                ITradableItem result = order.Cancel2(_avatarState, 1);
 
                 Assert.False(_avatarState.inventory.TryGetTradableItem(order.TradableId, order.ExpiredBlockIndex, 1, out _));
                 Assert.True(_avatarState.inventory.TryGetTradableItem(order.TradableId, 1, 1, out _));
             }
             else
             {
-                Assert.Throws(exc, () => order.Digest(_avatarState, _tableSheets.CostumeStatSheet));
+                Assert.Throws(exc, () => order.Digest2(_avatarState, _tableSheets.CostumeStatSheet));
             }
         }
 
@@ -278,6 +336,61 @@ namespace Lib9c.Tests.Model.Order
 
             if (exc is null)
             {
+                order.ValidateCancelOrder2(_avatarState, tradableId);
+            }
+            else
+            {
+                Assert.Throws(exc, () => order.ValidateCancelOrder2(_avatarState, tradableId));
+            }
+        }
+
+        [Theory]
+        [InlineData(false, false, false, false, ItemSubType.Hourglass, ItemSubType.Hourglass, 1, 1, typeof(InvalidAddressException))]
+        [InlineData(true, false, false, false, ItemSubType.Hourglass, ItemSubType.Hourglass, 1, 1, typeof(InvalidAddressException))]
+        [InlineData(true, true, false, false, ItemSubType.Hourglass, ItemSubType.Hourglass, 1, 1, typeof(InvalidTradableIdException))]
+        [InlineData(true, true, true, false, ItemSubType.Hourglass, ItemSubType.Hourglass, 1, 1, typeof(ItemDoesNotExistException))]
+        [InlineData(true, true, true, true, ItemSubType.ApStone, ItemSubType.ApStone, 1, 2, typeof(ItemDoesNotExistException))]
+        [InlineData(true, true, true, true, ItemSubType.Hourglass, ItemSubType.ApStone, 1, 1, typeof(InvalidItemTypeException))]
+        [InlineData(true, true, true, true, ItemSubType.ApStone, ItemSubType.ApStone, 1, 1, null)]
+        public void ValidateCancelOrder2(
+            bool useAgentAddress,
+            bool useAvatarAddress,
+            bool useTradableId,
+            bool isLock,
+            ItemSubType itemSubType,
+            ItemSubType orderItemSubType,
+            int itemCount,
+            int orderItemCount,
+            Type exc
+        )
+        {
+            var row = _tableSheets.MaterialItemSheet.OrderedList.First(r => r.ItemSubType == itemSubType);
+            TradableMaterial item = ItemFactory.CreateTradableMaterial(row);
+            item.RequiredBlockIndex = 1;
+            Guid orderId = new Guid("15396359-04db-68d5-f24a-d89c18665900");
+            var agentAddress = useAgentAddress ? _avatarState.agentAddress : default;
+            var avatarAddress = useAvatarAddress ? _avatarState.address : default;
+            var tradableId = useTradableId ? item.TradableId : default;
+            FungibleOrder order = OrderFactory.CreateFungibleOrder(
+                agentAddress,
+                avatarAddress,
+                orderId,
+                new FungibleAssetValue(_currency, 10, 0),
+                item.TradableId,
+                1,
+                orderItemCount,
+                orderItemSubType
+            );
+            OrderLock? orderLock = null;
+            if (isLock)
+            {
+                orderLock = new OrderLock(orderId);
+            }
+
+            _avatarState.inventory.AddItem(item, itemCount, orderLock);
+
+            if (exc is null)
+            {
                 order.ValidateCancelOrder(_avatarState, tradableId);
             }
             else
@@ -310,7 +423,7 @@ namespace Lib9c.Tests.Model.Order
             if (add)
             {
                 _avatarState.inventory.AddItem(item, itemCount);
-                order.Sell(_avatarState);
+                order.Sell2(_avatarState);
 
                 if (exist)
                 {
@@ -323,13 +436,65 @@ namespace Lib9c.Tests.Model.Order
                 Assert.True(_avatarState.inventory.TryGetTradableItem(item.TradableId, order.ExpiredBlockIndex, itemCount, out _));
                 Assert.Equal(exist, _avatarState.inventory.TryGetTradableItem(item.TradableId, blockIndex, 1, out _));
 
-                ITradableItem result = order.Cancel(_avatarState, blockIndex);
+                ITradableItem result = order.Cancel2(_avatarState, blockIndex);
 
                 Assert.Equal(item.TradableId, result.TradableId);
                 Assert.Equal(blockIndex, result.RequiredBlockIndex);
                 int expectedCount = exist ? itemCount + 1 : 1;
                 Assert.False(_avatarState.inventory.TryGetTradableItem(item.TradableId, order.ExpiredBlockIndex, 1, out _));
                 Assert.True(_avatarState.inventory.TryGetTradableItem(item.TradableId, blockIndex, expectedCount, out _));
+            }
+            else
+            {
+                Assert.Throws(exc, () => order.Cancel2(_avatarState, blockIndex));
+            }
+        }
+
+        [Theory]
+        [InlineData(ItemSubType.ApStone, true, true, 1, 1, null)]
+        [InlineData(ItemSubType.Hourglass, true, false, 2, 1, null)]
+        [InlineData(ItemSubType.ApStone, false, false, 1, 1, typeof(ItemDoesNotExistException))]
+        public void Cancel2(ItemSubType itemSubType, bool isLock, bool exist, long blockIndex, int itemCount, Type exc)
+        {
+            var row = _tableSheets.MaterialItemSheet.OrderedList.First(r => r.ItemSubType == itemSubType);
+            TradableMaterial item = ItemFactory.CreateTradableMaterial(row);
+            Guid orderId = new Guid("15396359-04db-68d5-f24a-d89c18665900");
+            item.RequiredBlockIndex = 1;
+            FungibleOrder order = OrderFactory.CreateFungibleOrder(
+                _avatarState.agentAddress,
+                _avatarState.address,
+                orderId,
+                new FungibleAssetValue(_currency, 10, 0),
+                item.TradableId,
+                blockIndex,
+                itemCount,
+                itemSubType
+            );
+
+            if (isLock)
+            {
+                _avatarState.inventory.AddItem(item, itemCount);
+                order.Sell(_avatarState);
+
+                if (exist)
+                {
+                    _avatarState.inventory.AddItem(item);
+                }
+            }
+
+            if (exc is null)
+            {
+                var orderLock = new OrderLock(orderId);
+                Assert.True(_avatarState.inventory.TryGetLockedItem(orderLock, out _));
+                Assert.Equal(exist, _avatarState.inventory.TryGetTradableItem(item.TradableId, blockIndex, 1, out _));
+
+                ITradableItem result = order.Cancel(_avatarState, blockIndex);
+
+                Assert.Equal(item.TradableId, result.TradableId);
+                Assert.Equal(blockIndex, result.RequiredBlockIndex);
+                int expectedCount = exist ? itemCount + 1 : 1;
+                Assert.False(_avatarState.inventory.TryGetLockedItem(orderLock, out _));
+                Assert.True(_avatarState.inventory.TryGetTradableItems(item.TradableId, blockIndex, expectedCount, out _));
             }
             else
             {
@@ -386,6 +551,58 @@ namespace Lib9c.Tests.Model.Order
                 _avatarState.inventory.AddItem(item, itemCount);
             }
 
+            Assert.Equal(expected, order.ValidateTransfer2(_avatarState, tradableId, price, blockIndex));
+        }
+
+        [Theory]
+        [InlineData(true, false, false, true, true, true, false, true, Buy.ErrorCodeInvalidAddress)]
+        [InlineData(true, true, false, true, true, true, false, true, Buy.ErrorCodeInvalidAddress)]
+        [InlineData(true, false, true, true, true, true, false, true, Buy.ErrorCodeInvalidAddress)]
+        [InlineData(true, true, true, false, true, true, false, true, Buy.ErrorCodeInvalidTradableId)]
+        [InlineData(true, true, true, true, false, true, false, true, Buy.ErrorCodeInvalidPrice)]
+        [InlineData(true, true, true, true, true, true, true, true, Buy.ErrorCodeShopItemExpired)]
+        [InlineData(true, true, true, true, true, false, false, true, Buy.ErrorCodeItemDoesNotExist)]
+        [InlineData(true, true, true, true, true, true, false, false, Buy.ErrorCodeItemDoesNotExist)]
+        [InlineData(false, true, true, true, true, true, false, true, Buy.ErrorCodeInvalidItemType)]
+        [InlineData(true, true, true, true, true, true, false, true, 0)]
+        public void ValidateTransfer2(
+            bool equalItemType,
+            bool equalAgentAddress,
+            bool equalAvatarAddress,
+            bool equalTradableId,
+            bool equalPrice,
+            bool add,
+            bool expire,
+            bool equalCount,
+            int expected
+        )
+        {
+            var row = _tableSheets.MaterialItemSheet.OrderedList.First(r => r.ItemSubType == ItemSubType.Hourglass);
+            TradableMaterial item = ItemFactory.CreateTradableMaterial(row);
+            Guid orderId = new Guid("15396359-04db-68d5-f24a-d89c18665900");
+            var agentAddress = equalAgentAddress ? _avatarState.agentAddress : default;
+            var avatarAddress = equalAvatarAddress ? _avatarState.address : default;
+            FungibleOrder order = OrderFactory.CreateFungibleOrder(
+                agentAddress,
+                avatarAddress,
+                orderId,
+                new FungibleAssetValue(_currency, 10, 0),
+                item.TradableId,
+                1,
+                2,
+                equalItemType ? ItemSubType.Hourglass : ItemSubType.ApStone
+            );
+            FungibleAssetValue price = equalPrice ? order.Price : _currency * 0;
+            Guid tradableId = equalTradableId ? item.TradableId : default;
+            int itemCount = equalCount ? order.ItemCount : order.ItemCount - 1;
+            long blockIndex = expire ? order.ExpiredBlockIndex + 1 : order.ExpiredBlockIndex;
+            item.RequiredBlockIndex = blockIndex;
+
+            if (add)
+            {
+                _avatarState.inventory.AddItem(item, itemCount, new OrderLock(orderId));
+            }
+
             Assert.Equal(expected, order.ValidateTransfer(_avatarState, tradableId, price, blockIndex));
         }
 
@@ -393,6 +610,55 @@ namespace Lib9c.Tests.Model.Order
         [InlineData(false, typeof(ItemDoesNotExistException))]
         [InlineData(true, null)]
         public void Transfer(bool add, Type exc)
+        {
+            var row = _tableSheets.MaterialItemSheet.OrderedList.First(r => r.ItemSubType == ItemSubType.Hourglass);
+            TradableMaterial item = ItemFactory.CreateTradableMaterial(row);
+            Guid orderId = new Guid("15396359-04db-68d5-f24a-d89c18665900");
+            FungibleOrder order = OrderFactory.CreateFungibleOrder(
+                _avatarState.agentAddress,
+                _avatarState.address,
+                orderId,
+                new FungibleAssetValue(_currency, 10, 0),
+                item.TradableId,
+                1,
+                1,
+                ItemSubType.Hourglass
+            );
+
+            if (add)
+            {
+                _avatarState.inventory.AddItem(item, 1);
+                order.Sell2(_avatarState);
+            }
+
+            var buyer = new AvatarState(
+                Addresses.Blacksmith,
+                Addresses.Admin,
+                0,
+                _tableSheets.GetAvatarSheets(),
+                new GameConfigState(),
+                default,
+                "buyer"
+            );
+
+            if (exc is null)
+            {
+                order.Transfer2(_avatarState, buyer, 100);
+                Assert.False(_avatarState.inventory.TryGetTradableItem(order.TradableId, 100, 1, out _));
+                Assert.True(buyer.inventory.TryGetTradableItem(order.TradableId, 100, 1, out Inventory.Item inventoryItem));
+                ITradableFungibleItem result = (ITradableFungibleItem)inventoryItem.item;
+                Assert.Equal(100, result.RequiredBlockIndex);
+            }
+            else
+            {
+                Assert.Throws(exc, () => order.Transfer2(_avatarState, buyer, 0));
+            }
+        }
+
+        [Theory]
+        [InlineData(false, typeof(ItemDoesNotExistException))]
+        [InlineData(true, null)]
+        public void Transfer2(bool add, Type exc)
         {
             var row = _tableSheets.MaterialItemSheet.OrderedList.First(r => r.ItemSubType == ItemSubType.Hourglass);
             TradableMaterial item = ItemFactory.CreateTradableMaterial(row);
@@ -451,7 +717,21 @@ namespace Lib9c.Tests.Model.Order
                 true,
                 ItemSubType.Hourglass,
                 ItemSubType.Hourglass,
+                false,
                 null,
+            },
+            new object[]
+            {
+                1,
+                1,
+                0,
+                Addresses.Admin,
+                Addresses.Blacksmith,
+                true,
+                ItemSubType.Hourglass,
+                ItemSubType.Hourglass,
+                true,
+                typeof(ItemDoesNotExistException),
             },
             new object[]
             {
@@ -463,6 +743,7 @@ namespace Lib9c.Tests.Model.Order
                 false,
                 ItemSubType.Hourglass,
                 ItemSubType.Hourglass,
+                false,
                 typeof(InvalidAddressException),
             },
             new object[]
@@ -475,6 +756,7 @@ namespace Lib9c.Tests.Model.Order
                 false,
                 ItemSubType.Hourglass,
                 ItemSubType.Hourglass,
+                false,
                 typeof(InvalidItemCountException),
             },
             new object[]
@@ -487,6 +769,7 @@ namespace Lib9c.Tests.Model.Order
                 false,
                 ItemSubType.Hourglass,
                 ItemSubType.Hourglass,
+                false,
                 typeof(InvalidItemCountException),
             },
             new object[]
@@ -499,6 +782,7 @@ namespace Lib9c.Tests.Model.Order
                 false,
                 ItemSubType.Hourglass,
                 ItemSubType.Hourglass,
+                false,
                 typeof(InvalidItemCountException),
             },
             new object[]
@@ -511,6 +795,7 @@ namespace Lib9c.Tests.Model.Order
                 false,
                 ItemSubType.Hourglass,
                 ItemSubType.Hourglass,
+                false,
                 typeof(InvalidItemCountException),
             },
             new object[]
@@ -523,6 +808,7 @@ namespace Lib9c.Tests.Model.Order
                 false,
                 ItemSubType.Hourglass,
                 ItemSubType.Hourglass,
+                false,
                 typeof(ItemDoesNotExistException),
             },
             new object[]
@@ -535,6 +821,7 @@ namespace Lib9c.Tests.Model.Order
                 true,
                 ItemSubType.Hourglass,
                 ItemSubType.Hourglass,
+                false,
                 typeof(ItemDoesNotExistException),
             },
             new object[]
@@ -547,6 +834,7 @@ namespace Lib9c.Tests.Model.Order
                 true,
                 ItemSubType.Hourglass,
                 ItemSubType.Food,
+                false,
                 typeof(InvalidItemTypeException),
             },
         };
@@ -559,9 +847,9 @@ namespace Lib9c.Tests.Model.Order
                 {
                     SellCount = 1,
                     BlockIndex = 1,
-                    InventoryData = new List<(long, int)>
+                    InventoryData = new List<(long, int, bool)>
                     {
-                        (1, 1),
+                        (1, 1, false),
                     },
                     Exception = null,
                 },
@@ -572,10 +860,10 @@ namespace Lib9c.Tests.Model.Order
                 {
                     SellCount = 3,
                     BlockIndex = 10,
-                    InventoryData = new List<(long, int)>
+                    InventoryData = new List<(long, int, bool)>
                     {
-                        (1, 1),
-                        (5, 2),
+                        (1, 1, false),
+                        (5, 2, false),
                     },
                     Exception = null,
                 },
@@ -586,9 +874,9 @@ namespace Lib9c.Tests.Model.Order
                 {
                     SellCount = 3,
                     BlockIndex = 100,
-                    InventoryData = new List<(long, int)>
+                    InventoryData = new List<(long, int, bool)>
                     {
-                        (10, 20),
+                        (10, 20, false),
                     },
                     Exception = null,
                 },
@@ -599,10 +887,10 @@ namespace Lib9c.Tests.Model.Order
                 {
                     SellCount = 1,
                     BlockIndex = 1,
-                    InventoryData = new List<(long, int)>
+                    InventoryData = new List<(long, int, bool)>
                     {
-                        (3, 2),
-                        (5, 3),
+                        (3, 2, false),
+                        (5, 3, false),
                     },
                     Exception = typeof(ItemDoesNotExistException),
                 },
@@ -613,10 +901,109 @@ namespace Lib9c.Tests.Model.Order
                 {
                     SellCount = 2,
                     BlockIndex = 1,
-                    InventoryData = new List<(long, int)>
+                    InventoryData = new List<(long, int, bool)>
                     {
-                        (1, 1),
-                        (2, 100),
+                        (1, 1, false),
+                        (2, 100, false),
+                    },
+                    Exception = typeof(ItemDoesNotExistException),
+                },
+            },
+        };
+
+        public static IEnumerable<object[]> SellMemberData2() => new List<object[]>
+        {
+            new object[]
+            {
+                new OrderData
+                {
+                    SellCount = 1,
+                    BlockIndex = 1,
+                    InventoryData = new List<(long, int, bool)>
+                    {
+                        (1, 1, false),
+                    },
+                    Exception = null,
+                },
+            },
+            new object[]
+            {
+                new OrderData
+                {
+                    SellCount = 3,
+                    BlockIndex = 10,
+                    InventoryData = new List<(long, int, bool)>
+                    {
+                        (1, 1, false),
+                        (5, 2, false),
+                    },
+                    Exception = null,
+                },
+            },
+            new object[]
+            {
+                new OrderData
+                {
+                    SellCount = 3,
+                    BlockIndex = 100,
+                    InventoryData = new List<(long, int, bool)>
+                    {
+                        (10, 20, false),
+                    },
+                    Exception = null,
+                },
+            },
+            new object[]
+            {
+                new OrderData
+                {
+                    SellCount = 1,
+                    BlockIndex = 1,
+                    InventoryData = new List<(long, int, bool)>
+                    {
+                        (3, 2, false),
+                        (5, 3, false),
+                    },
+                    Exception = typeof(ItemDoesNotExistException),
+                },
+            },
+            new object[]
+            {
+                new OrderData
+                {
+                    SellCount = 2,
+                    BlockIndex = 1,
+                    InventoryData = new List<(long, int, bool)>
+                    {
+                        (1, 1, false),
+                        (2, 100, false),
+                    },
+                    Exception = typeof(ItemDoesNotExistException),
+                },
+            },
+            new object[]
+            {
+                new OrderData
+                {
+                    SellCount = 1,
+                    BlockIndex = 1,
+                    InventoryData = new List<(long, int, bool)>
+                    {
+                        (1, 1, true),
+                    },
+                    Exception = typeof(ItemDoesNotExistException),
+                },
+            },
+            new object[]
+            {
+                new OrderData
+                {
+                    SellCount = 3,
+                    BlockIndex = 10,
+                    InventoryData = new List<(long, int, bool)>
+                    {
+                        (1, 1, false),
+                        (5, 2, true),
                     },
                     Exception = typeof(ItemDoesNotExistException),
                 },
@@ -630,7 +1017,7 @@ namespace Lib9c.Tests.Model.Order
 
             public long BlockIndex { get; set; }
 
-            public List<(long, int)> InventoryData { get; set; }
+            public List<(long, int, bool)> InventoryData { get; set; }
 
             public Type Exception { get; set; }
 

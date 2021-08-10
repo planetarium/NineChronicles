@@ -181,8 +181,8 @@
                 avatarState.inventory.AddItem((ItemBase)tradableItem, itemCount);
             }
 
-            ITradableItem sellItem = order.Sell(avatarState);
-            OrderDigest orderDigest = order.Digest(avatarState, _tableSheets.CostumeStatSheet);
+            ITradableItem sellItem = order.Sell2(avatarState);
+            OrderDigest orderDigest = order.Digest2(avatarState, _tableSheets.CostumeStatSheet);
             shopState.Add(orderDigest, requiredBlockIndex);
             orderDigestList.Add(orderDigest);
 

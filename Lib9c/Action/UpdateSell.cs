@@ -133,9 +133,20 @@ namespace Nekoyume.Action
             }
 
             var orderOnSale = OrderFactory.Deserialize(orderDict);
-            orderOnSale.ValidateCancelOrder(avatarState, tradableId);
-            var itemOnSale = orderOnSale.Cancel(avatarState, context.BlockIndex);
-            
+            var fromPreviousAction = false;
+            try
+            {
+                orderOnSale.ValidateCancelOrder(avatarState, tradableId);
+            }
+            catch (Exception)
+            {
+                orderOnSale.ValidateCancelOrder2(avatarState, tradableId);
+                fromPreviousAction = true;
+            }
+
+            var itemOnSale = fromPreviousAction
+                ? orderOnSale.Cancel2(avatarState, context.BlockIndex)
+                : orderOnSale.Cancel(avatarState, context.BlockIndex);
             if (context.BlockIndex < orderOnSale.ExpiredBlockIndex)
             {
                 var shardedShopState = new ShardedShopStateV2(shopStateDict);

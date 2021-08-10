@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 using Bencodex.Types;
+using Lib9c.Model.Order;
 using Libplanet;
 using Nekoyume.Action;
 using Nekoyume.Battle;
 using Nekoyume.Model.State;
+using Serilog;
 
 namespace Nekoyume.Model.Item
 {
@@ -22,6 +24,8 @@ namespace Nekoyume.Model.Item
         {
             public ItemBase item;
             public int count = 0;
+            public ILock Lock;
+            public bool Locked => !(Lock is null);
 
             public Item(ItemBase itemBase, int count = 1)
             {
@@ -35,11 +39,25 @@ namespace Nekoyume.Model.Item
                     (Bencodex.Types.Dictionary) serialized["item"]
                 );
                 count = (int) ((Integer) serialized["count"]).Value;
+                if (serialized.ContainsKey("l"))
+                {
+                    Lock = serialized["l"].ToLock();
+                }
+            }
+
+            public void LockUp(ILock iLock)
+            {
+                Lock = iLock;
+            }
+
+            public void Unlock()
+            {
+                Lock = null;
             }
 
             protected bool Equals(Item other)
             {
-                return Equals(item, other.item) && count == other.count;
+                return Equals(item, other.item) && count == other.count && Equals(Lock, other.Lock);
             }
 
             public int Compare(Item x, Item y)
@@ -68,17 +86,25 @@ namespace Nekoyume.Model.Item
             {
                 unchecked
                 {
-                    return ((item != null ? item.GetHashCode() : 0) * 397) ^ count;
+                    var hashCode = (item != null ? item.GetHashCode() : 0);
+                    hashCode = (hashCode * 397) ^ count;
+                    hashCode = (hashCode * 397) ^ (Lock != null ? Lock.GetHashCode() : 0);
+                    return hashCode;
                 }
             }
 
             public IValue Serialize()
             {
-                return new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
+                var innerDict = new Dictionary<IKey, IValue>
                 {
                     [(Text) "item"] = item.Serialize(),
                     [(Text) "count"] = (Integer) count,
-                });
+                };
+                if (Locked)
+                {
+                    innerDict.Add((Text) "l", Lock.Serialize());
+                }
+                return new Bencodex.Types.Dictionary(innerDict);
             }
         }
 
@@ -128,7 +154,7 @@ namespace Nekoyume.Model.Item
                 return true;
             }
 
-            return Equals(_items, other._items);
+            return _items.SequenceEqual(other._items);
         }
 
         public override bool Equals(object obj)
@@ -146,17 +172,17 @@ namespace Nekoyume.Model.Item
 
         #region Add
 
-        public KeyValuePair<int, int> AddItem(ItemBase itemBase, int count = 1)
+        public KeyValuePair<int, int> AddItem(ItemBase itemBase, int count = 1, ILock iLock = null)
         {
             switch (itemBase.ItemType)
             {
                 case ItemType.Consumable:
                 case ItemType.Equipment:
                 case ItemType.Costume:
-                    AddNonFungibleItem(itemBase);
+                    AddNonFungibleItem(itemBase, iLock);
                     break;
                 case ItemType.Material:
-                    AddFungibleItem(itemBase, count);
+                    AddFungibleItem(itemBase, count, iLock);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -165,7 +191,7 @@ namespace Nekoyume.Model.Item
             return new KeyValuePair<int, int>(itemBase.Id, count);
         }
 
-        public Item AddFungibleItem(ItemBase itemBase, int count = 1)
+        public Item AddFungibleItem(ItemBase itemBase, int count = 1, ILock iLock = null)
         {
             if (!(itemBase is IFungibleItem fungibleItem))
             {
@@ -184,12 +210,21 @@ namespace Nekoyume.Model.Item
                 item.count += count;
             }
 
+            if (!(iLock is null))
+            {
+                item.LockUp(iLock);
+            }
+
             return item;
         }
 
-        public Item AddNonFungibleItem(ItemBase itemBase)
+        public Item AddNonFungibleItem(ItemBase itemBase, ILock iLock = null)
         {
             var nonFungibleItem = new Item(itemBase);
+            if (!(iLock is null))
+            {
+                nonFungibleItem.LockUp(iLock);
+            }
             _items.Add(nonFungibleItem);
             return nonFungibleItem;
         }
@@ -269,7 +304,8 @@ namespace Nekoyume.Model.Item
                 targetItems = _items
                     .Where(e =>
                         e.item is ITradableFungibleItem tradableFungibleItem &&
-                        tradableFungibleItem.FungibleId.Equals(fungibleId))
+                        tradableFungibleItem.FungibleId.Equals(fungibleId) &&
+                        !e.Locked)
                     .OrderBy(e => ((ITradableFungibleItem) e.item).RequiredBlockIndex)
                     .ThenByDescending(e => e.count)
                     .ToList();
@@ -295,6 +331,7 @@ namespace Nekoyume.Model.Item
                 }
 
                 targetItems = targetItems
+                    .Where(e => !e.Locked)
                     .OrderBy(e => e.item is ITradableItem)
                     .ThenBy(e => e.count)
                     .ToList();
@@ -340,6 +377,7 @@ namespace Nekoyume.Model.Item
         public bool RemoveTradableItem(Guid tradableId, long blockIndex, int count = 1)
         {
             var target = _items.FirstOrDefault(e =>
+                !e.Locked &&
                 e.item is ITradableItem tradableItem &&
                 tradableItem.TradableId.Equals(tradableId) &&
                 tradableItem.RequiredBlockIndex == blockIndex);
@@ -431,7 +469,8 @@ namespace Nekoyume.Model.Item
         {
             foreach (var item in _items)
             {
-                if (!(item.item is INonFungibleItem nonFungibleItem) ||
+                if (item.Locked ||
+                    !(item.item is INonFungibleItem nonFungibleItem) ||
                     !nonFungibleItem.NonFungibleId.Equals(nonFungibleId))
                 {
                     continue;
@@ -454,7 +493,8 @@ namespace Nekoyume.Model.Item
         {
             foreach (var item in _items)
             {
-                if (!(item.item is T nonFungibleItem) ||
+                if (item.Locked ||
+                    !(item.item is T nonFungibleItem) ||
                     !nonFungibleItem.NonFungibleId.Equals(itemId))
                 {
                     continue;
@@ -473,6 +513,7 @@ namespace Nekoyume.Model.Item
             outItem = new List<Item>();
             List<Item> items = _items
                 .Where(i =>
+                    !i.Locked &&
                     i.item is ITradableItem item &&
                     item.TradableId.Equals(tradeId) &&
                     item.RequiredBlockIndex <= blockIndex
@@ -507,6 +548,17 @@ namespace Nekoyume.Model.Item
                 i.count >= count
             );
             return !(outItem is null);
+        }
+
+        public bool TryGetLockedItem(ILock iLock, out Item outItem)
+        {
+            outItem = _items.FirstOrDefault(i => i.Locked && i.Lock.Equals(iLock));
+            return !(outItem is null);
+        }
+
+        public void RemoveItem(Item item)
+        {
+            _items.Remove(item);
         }
 
         // public bool TryGetTradableItemWithoutNonTradableFungibleItem(
