@@ -245,14 +245,10 @@ namespace Nekoyume.UI
                         itemUsable.TradableId,
                         Game.Game.instance.Agent.BlockIndex);
                     return States.Instance.GetAvatarStateV2(avatarAddress);
-                })
-                .ToObservable()
-                .Subscribe(avatarState =>
+                }).ToObservable().Subscribe(avatarState =>
                 {
-                    Debug.LogWarning("CombinationMail LocalLayer task completed");
-                    States.Instance.AddOrReplaceAvatarState(
-                        avatarState,
-                        States.Instance.CurrentAvatarKey);
+                    Debug.Log("CombinationMail LocalLayer task completed");
+                    States.Instance.AddOrReplaceAvatarState(avatarState, States.Instance.CurrentAvatarKey);
                 });
             // ~LocalLayer
 
@@ -344,11 +340,12 @@ namespace Nekoyume.UI
                     1,
                     false);
                 LocalLayerModifier.RemoveNewAttachmentMail(avatarAddress, itemEnhanceMail.id, false);
-                States.Instance.AddOrReplaceAvatarState(
-                    avatarAddress,
-                    States.Instance.CurrentAvatarKey);
-            }).ToObservable().DoOnCompleted(() =>
-                Debug.Log("ItemEnhanceMail LocalLayer task completed"));
+                return States.Instance.GetAvatarStateV2(avatarAddress);
+            }).ToObservable().Subscribe(avatarState =>
+            {
+                Debug.Log("ItemEnhanceMail LocalLayer task completed");
+                States.Instance.AddOrReplaceAvatarState(avatarState, States.Instance.CurrentAvatarKey);
+            });
             // ~LocalLayer
 
             Find<EnhancementResult>().Show(itemEnhanceMail);
