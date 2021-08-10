@@ -220,7 +220,7 @@ namespace Nekoyume.UI
                 : new ItemOptionInfo(itemUsable);
 
             _cpListForAnimationSteps.Clear();
-            _resultItem.itemNameText.text = itemUsable.GetLocalizedName(useElementalIcon: false);
+            _resultItem.itemNameText.text = itemUsable.GetLocalizedName(false);
             _resultItem.itemView.SetData(
                 Game.Game.instance.TableSheets.ItemSheet.OrderedList.First(e => e.Id == itemUsable.Id));
             _resultItem.mainStatText.text = string.Empty;
@@ -285,9 +285,6 @@ namespace Nekoyume.UI
         private void PostShowAsEquipment()
         {
             _iconImage.overrideSprite = _equipmentIconSprite;
-            _titleSuccessObject.SetActive(_itemOptionInfo.OptionCountFromCombination != 4);
-            _titleGreatSuccessObject.SetActive(_itemOptionInfo.OptionCountFromCombination == 4);
-            _titleFoodSuccessObject.SetActive(false);
 
             var (mainStatType, mainStatValue) = _itemOptionInfo.MainStat;
             _resultItem.mainStatText.text = $"{mainStatType.ToString()} {mainStatValue}";
@@ -319,9 +316,20 @@ namespace Nekoyume.UI
 
             // NOTE: Ignore Show Animation
             base.Show(true);
-            Animator.SetTrigger(_itemOptionInfo.OptionCountFromCombination == 4
-                ? AnimatorHashGreatSuccess
-                : AnimatorHashSuccess);
+            if (_itemOptionInfo.OptionCountFromCombination == 4)
+            {
+                _titleSuccessObject.SetActive(false);
+                _titleGreatSuccessObject.SetActive(true);
+                _titleFoodSuccessObject.SetActive(false);
+                Animator.SetTrigger(AnimatorHashGreatSuccess);
+            }
+            else
+            {
+                _titleSuccessObject.SetActive(true);
+                _titleGreatSuccessObject.SetActive(false);
+                _titleFoodSuccessObject.SetActive(false);
+                Animator.SetTrigger(AnimatorHashSuccess);
+            }
         }
 
         #region Invoke from Animation
@@ -331,7 +339,9 @@ namespace Nekoyume.UI
             switch (stateName)
             {
                 case "Show":
-                    _disposableOfSkip = Observable.EveryUpdate()
+                case "GreatSuccess":
+                case "Success":
+                    _disposableOfSkip ??= Observable.EveryUpdate()
                         .Where(_ => Input.GetMouseButtonDown(0) ||
                                     Input.GetKeyDown(KeyCode.Return) ||
                                     Input.GetKeyDown(KeyCode.KeypadEnter) ||
@@ -359,21 +369,6 @@ namespace Nekoyume.UI
 
         public void OnRequestPlaySFX(string sfxCode) =>
             AudioController.instance.PlaySfx(sfxCode);
-
-        public void ShowOptionIcon(int index)
-        {
-            if (index < 0 || index >= _itemOptionIconViews.Count)
-            {
-                Debug.LogError($"Invalid argument: {nameof(index)}({index})");
-            }
-
-            if (index >= _itemOptionInfo.OptionCountFromCombination)
-            {
-                return;
-            }
-
-            _itemOptionIconViews[index].Show();
-        }
 
         public void ShowOptionIconsAll()
         {
