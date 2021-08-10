@@ -26,12 +26,56 @@ namespace Nekoyume.UI
             switch (mail)
             {
                 case CombinationMail combinationMail:
-                    return string.Format(L10nManager.Localize("UI_COMBINATION_NOTIFY_FORMAT"),
+                {
+                    string formatKey;
+                    if (combinationMail.attachment.itemUsable is Equipment equipment)
+                    {
+                        formatKey = equipment.optionCountFromCombination == 4
+                            ? "UI_COMBINATION_NOTIFY_FORMAT_GREATER"
+                            : "UI_COMBINATION_NOTIFY_FORMAT";
+                    }
+                    else
+                    {
+                        formatKey = "UI_COMBINATION_NOTIFY_FORMAT";
+                    }
+
+                    return string.Format(
+                        L10nManager.Localize(formatKey),
                         GetLocalizedNonColoredName(combinationMail.attachment.itemUsable));
+                }
 
                 case ItemEnhanceMail itemEnhanceMail:
-                    return string.Format(L10nManager.Localize("UI_ITEM_ENHANCEMENT_MAIL_FORMAT"),
+                {
+                    string formatKey;
+                    if (itemEnhanceMail.attachment is ItemEnhancement.ResultModel result)
+                    {
+                        switch (result.enhancementResult)
+                        {
+                            case ItemEnhancement.EnhancementResult.GreatSuccess:
+                                formatKey = "UI_ITEM_ENHANCEMENT_MAIL_FORMAT_GREATER";
+                                break;
+                            case ItemEnhancement.EnhancementResult.Success:
+                                formatKey = "UI_ITEM_ENHANCEMENT_MAIL_FORMAT";
+                                break;
+                            case ItemEnhancement.EnhancementResult.Fail:
+                                formatKey = "UI_ITEM_ENHANCEMENT_MAIL_FORMAT_FAIL";
+                                break;
+                            default:
+                                Debug.LogError($"Unexpected result.enhancementResult: {result.enhancementResult}");
+                                formatKey = "UI_ITEM_ENHANCEMENT_MAIL_FORMAT";
+                                break;
+                        }
+                    }
+                    else
+                    {
+                        Debug.LogError("itemEnhanceMail.attachment is not ItemEnhancement.ResultModel");
+                        formatKey = "UI_ITEM_ENHANCEMENT_MAIL_FORMAT";
+                    }
+
+                    return string.Format(
+                        L10nManager.Localize(formatKey),
                         GetLocalizedNonColoredName(itemEnhanceMail.attachment.itemUsable));
+                }
 
                 case OrderBuyerMail orderBuyerMail:
                     var buyerItemName = Util.GetItemNameByOrdierId(orderBuyerMail.OrderId, true);
@@ -41,9 +85,8 @@ namespace Nekoyume.UI
                 case OrderSellerMail orderSellerMail:
                     var order = Util.GetOrder(orderSellerMail.OrderId);
                     var sellerItemName = Util.GetItemNameByOrdierId(orderSellerMail.OrderId, true);
-                    var format = L10nManager.Localize("UI_SELLER_MAIL_FORMAT");
                     var taxedPrice = order.Price - order.GetTax();
-                    return string.Format(format, taxedPrice, sellerItemName);
+                    return string.Format(L10nManager.Localize("UI_SELLER_MAIL_FORMAT"), taxedPrice, sellerItemName);
 
                 case OrderExpirationMail orderExpirationMail:
                     var expiredItemName = Util.GetItemNameByOrdierId(orderExpirationMail.OrderId, true);
