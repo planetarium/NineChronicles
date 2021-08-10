@@ -23,22 +23,60 @@ using EquipmentInventory = Nekoyume.UI.Module.EquipmentInventory;
 namespace Nekoyume.UI
 {
     using UniRx;
+
     public class UpgradeEquipment : Widget
     {
-        [SerializeField] private EquipmentInventory inventory;
-        [SerializeField] private Button upgradeButton;
-        [SerializeField] private Button closeButton;
-        [SerializeField] private UpgradeEquipmentSlot baseSlot;
-        [SerializeField] private UpgradeEquipmentSlot materialSlot;
-        [SerializeField] private TextMeshProUGUI successRatioText;
-        [SerializeField] private TextMeshProUGUI requiredBlockIndexText;
-        [SerializeField] private TextMeshProUGUI itemNameText;
-        [SerializeField] private TextMeshProUGUI currentLevelText;
-        [SerializeField] private TextMeshProUGUI nextLevelText;
-        [SerializeField] private TextMeshProUGUI costText;
-        [SerializeField] private EnhancementOptionView mainStat;
-        [SerializeField] private List<EnhancementOptionView> addStats;
-        [SerializeField] private List<EnhancementOptionView> addSkills;
+        [SerializeField]
+        private EquipmentInventory inventory;
+
+        [SerializeField]
+        private Button upgradeButton;
+
+        [SerializeField]
+        private Button closeButton;
+
+        [SerializeField]
+        private UpgradeEquipmentSlot baseSlot;
+
+        [SerializeField]
+        private UpgradeEquipmentSlot materialSlot;
+
+        [SerializeField]
+        private TextMeshProUGUI successRatioText;
+
+        [SerializeField]
+        private TextMeshProUGUI requiredBlockIndexText;
+
+        [SerializeField]
+        private TextMeshProUGUI itemNameText;
+
+        [SerializeField]
+        private TextMeshProUGUI currentLevelText;
+
+        [SerializeField]
+        private TextMeshProUGUI nextLevelText;
+
+        [SerializeField]
+        private TextMeshProUGUI costText;
+
+        [SerializeField]
+        private EnhancementOptionView mainStat;
+
+        [SerializeField]
+        private List<EnhancementOptionView> addStats;
+
+        [SerializeField]
+        private List<EnhancementOptionView> addSkills;
+
+        [SerializeField]
+        private GameObject noneContainer;
+
+        [SerializeField]
+        private GameObject itemInformationContainer;
+
+        [SerializeField]
+        private GameObject blockInformationContainer;
+
 
         private EnhancementCostSheetV2 _costSheet;
         private Equipment _baseItem;
@@ -67,13 +105,34 @@ namespace Nekoyume.UI
             base.Initialize();
 
             Clear();
-            inventory.SharedModel.SelectedItemView.Subscribe(ShowItemInformationTooltip).AddTo(gameObject);
+            inventory.SharedModel.SelectedItemView.Subscribe(SubscribeSelectItem).AddTo(gameObject);
             inventory.SharedModel.DeselectItemView();
             inventory.SharedModel.State.Value = ItemSubType.Weapon;
             inventory.SharedModel.DimmedFunc.Value = DimFunc;
             inventory.SharedModel.EffectEnabledFunc.Value = Contains;
 
             _costSheet = Game.Game.instance.TableSheets.EnhancementCostSheetV2;
+
+            baseSlot.RemoveButton.onClick.AddListener(() =>
+            {
+                materialSlot.RemoveButton.onClick.Invoke();
+                inventory.ClearItemState(_baseItem);
+                _baseItem = null;
+                inventory.SharedModel.UpdateDimAndEffectAll();
+                upgradeButton.interactable = IsInteractableButton(_baseItem, _materialItem, _costNcg);
+                ClearInformation();
+                noneContainer.SetActive(true);
+                itemInformationContainer.SetActive(false);
+                blockInformationContainer.SetActive(false);
+            });
+
+            materialSlot.RemoveButton.onClick.AddListener(() =>
+            {
+                inventory.ClearItemState(_materialItem);
+                _materialItem = null;
+                inventory.SharedModel.UpdateDimAndEffectAll();
+                upgradeButton.interactable = IsInteractableButton(_baseItem, _materialItem, _costNcg);
+            });
         }
 
         public override void Show(bool ignoreShowAnimation = false)
@@ -177,12 +236,17 @@ namespace Nekoyume.UI
             }
 
             LocalLayerModifier.ModifyAgentGold(agentAddress, -_costNcg);
-            LocalLayerModifier.ModifyAvatarActionPoint(avatarAddress, -GameConfig.EnhanceEquipmentCostAP);
-            LocalLayerModifier.ModifyAvatarActionPoint(avatarAddress, -GameConfig.EnhanceEquipmentCostAP);
-            LocalLayerModifier.RemoveItem(avatarAddress, _baseItem.TradableId, _baseItem.RequiredBlockIndex, 1);
-            LocalLayerModifier.RemoveItem(avatarAddress, _materialItem.TradableId, _materialItem.RequiredBlockIndex, 1);
+            LocalLayerModifier.ModifyAvatarActionPoint(avatarAddress,
+                -GameConfig.EnhanceEquipmentCostAP);
+            LocalLayerModifier.ModifyAvatarActionPoint(avatarAddress,
+                -GameConfig.EnhanceEquipmentCostAP);
+            LocalLayerModifier.RemoveItem(avatarAddress, _baseItem.TradableId,
+                _baseItem.RequiredBlockIndex, 1);
+            LocalLayerModifier.RemoveItem(avatarAddress, _materialItem.TradableId,
+                _materialItem.RequiredBlockIndex, 1);
 
-            Notification.Push(MailType.Workshop, L10nManager.Localize("NOTIFICATION_ITEM_ENHANCEMENT_START"));
+            Notification.Push(MailType.Workshop,
+                L10nManager.Localize("NOTIFICATION_ITEM_ENHANCEMENT_START"));
 
             Game.Game.instance.ActionManager
                 .ItemEnhancement(baseGuid, materialGuid, slotIndex)
@@ -191,7 +255,8 @@ namespace Nekoyume.UI
             StartCoroutine(CoCombineNPCAnimation(_baseItem, Clear));
         }
 
-        private IEnumerator CoCombineNPCAnimation(ItemBase itemBase, System.Action action, bool isConsumable = false)
+        private IEnumerator CoCombineNPCAnimation(ItemBase itemBase, System.Action action,
+            bool isConsumable = false)
         {
             var loadingScreen = Find<CombinationLoadingScreen>();
             loadingScreen.Show();
@@ -202,7 +267,7 @@ namespace Nekoyume.UI
             loadingScreen.AnimateNPC();
         }
 
-        private void ShowItemInformationTooltip(InventoryItemView view)
+        private void SubscribeSelectItem(BigInventoryItemView view)
         {
             var tooltip = Find<ItemInformationTooltip>();
             if (view is null || view.RectTransform == tooltip.Target)
@@ -211,47 +276,87 @@ namespace Nekoyume.UI
                 return;
             }
 
-            tooltip.Show(
-                view.RectTransform,
-                view.Model,
-                value => !view.Model?.Dimmed.Value ?? false,
-                L10nManager.Localize("UI_COMBINATION_REGISTER_MATERIAL"),
-                _ => StageMaterial(view),
-                _ => inventory.SharedModel.DeselectItemView());
+            UpdateSelectType(view);
+            UpdateTooltip(view, tooltip);
         }
 
-        private void StageMaterial(InventoryItemView viewModel)
+        private void UpdateSelectType(BigInventoryItemView view)
         {
             if (_baseItem is null)
             {
-                _baseItem = (Equipment) viewModel.Model.ItemBase.Value;
+                view.SetSelectType(true);
+            }
+            else
+            {
+                var baseUsable = _baseItem as ItemUsable;
+                var viewUsable = view.Model.ItemBase.Value as ItemUsable;
+                view.SetSelectType(viewUsable.ItemId.Equals(baseUsable.ItemId));
+            }
+        }
+
+        private void UpdateTooltip(BigInventoryItemView view, ItemInformationTooltip tooltip)
+        {
+            tooltip.Show(
+                view.RectTransform,
+                view.Model,
+                value => true,
+                GetSubmitText(view.Model?.Dimmed.Value ?? true),
+                _ =>
+                {
+                    if (!view.Model.Dimmed.Value)
+                    {
+                        StageMaterial(view);
+                    }
+                    else
+                    {
+                        var baseUsable = _baseItem as ItemUsable;
+                        var viewUsable = view.Model.ItemBase.Value as ItemUsable;
+                        if (viewUsable.ItemId.Equals(baseUsable.ItemId))
+                        {
+                            baseSlot.RemoveButton.onClick.Invoke();
+                        }
+                        else
+                        {
+                            materialSlot.RemoveButton.onClick.Invoke();
+                        }
+                    }
+                },
+                _ => { inventory.SharedModel.DeselectItemView(); });
+        }
+
+        private string GetSubmitText(bool isDimmed)
+        {
+            if (isDimmed)
+            {
+                return L10nManager.Localize("UI_COMBINATION_UNREGISTER_MATERIAL");
+            }
+
+            return _baseItem is null
+                ? L10nManager.Localize("UI_COMBINATION_REGISTER_ITEM")
+                : L10nManager.Localize("UI_COMBINATION_REGISTER_MATERIAL");
+        }
+
+        private void StageMaterial(BigInventoryItemView viewModel)
+        {
+            noneContainer.SetActive(false);
+            itemInformationContainer.SetActive(true);
+            blockInformationContainer.SetActive(true);
+
+            if (_baseItem is null)
+            {
+                _baseItem = (Equipment)viewModel.Model.ItemBase.Value;
                 if (ItemEnhancement.TryGetRow(_baseItem, _costSheet, out var row))
                 {
                     _costNcg = row.Cost;
                     UpdateInformation(row, _baseItem);
                 }
-
-                baseSlot.AddMaterial(viewModel.Model.ItemBase.Value,
-                    () => // unstage material callback
-                    {
-                        inventory.ClearItemState(_baseItem);
-                        _baseItem = null;
-                        inventory.SharedModel.UpdateDimAndEffectAll();
-                        upgradeButton.interactable = IsInteractableButton(_baseItem, _materialItem, _costNcg);
-                        ClearInformation();
-                    });
+                baseSlot.AddMaterial(viewModel.Model.ItemBase.Value);
             }
             else
             {
-                _materialItem = (Equipment) viewModel.Model.ItemBase.Value;
-                materialSlot.AddMaterial(viewModel.Model.ItemBase.Value,
-                    () => // unstage material callback
-                    {
-                        inventory.ClearItemState(_materialItem);
-                        _materialItem = null;
-                        inventory.SharedModel.UpdateDimAndEffectAll();
-                        upgradeButton.interactable = IsInteractableButton(_baseItem, _materialItem, _costNcg);
-                    });
+                materialSlot.RemoveButton.onClick.Invoke();
+                _materialItem = (Equipment)viewModel.Model.ItemBase.Value;
+                materialSlot.AddMaterial(viewModel.Model.ItemBase.Value);
             }
 
             upgradeButton.interactable = IsInteractableButton(_baseItem, _materialItem, _costNcg);
@@ -263,6 +368,9 @@ namespace Nekoyume.UI
             baseSlot.RemoveMaterial();
             materialSlot.RemoveMaterial();
             ClearInformation();
+            noneContainer.SetActive(true);
+            itemInformationContainer.SetActive(false);
+            blockInformationContainer.SetActive(false);
         }
 
         private void UpdateInformation(EnhancementCostSheetV2.Row row, Equipment equipment)
@@ -274,7 +382,8 @@ namespace Nekoyume.UI
             currentLevelText.text = $"{equipment.level}";
             nextLevelText.text = $"{equipment.level + 1}";
             successRatioText.text =
-                ((row.GreatSuccessRatio + row.SuccessRatio) * GameConfig.TenThousandths).ToString("P0");
+                ((row.GreatSuccessRatio + row.SuccessRatio) * GameConfig.TenThousandths)
+                .ToString("P0");
             requiredBlockIndexText.text = $"{row.SuccessRequiredBlockIndex}+";
 
             var stats = equipment.StatsMap.GetStats().ToList();
@@ -284,7 +393,8 @@ namespace Nekoyume.UI
                 {
                     var mainType = stat.StatType.ToString();
                     var mainValue = stat.ValueAsInt.ToString();
-                    var mainAdd = (int)(stat.ValueAsInt * row.BaseStatGrowthMax  * GameConfig.TenThousandths);
+                    var mainAdd = (int)(stat.ValueAsInt * row.BaseStatGrowthMax *
+                                        GameConfig.TenThousandths);
                     mainStat.gameObject.SetActive(true);
                     mainStat.Set(mainType, mainValue, $"(<size=80%>max</size> +{mainAdd})");
                     break;
@@ -297,7 +407,8 @@ namespace Nekoyume.UI
                 {
                     var subType = stats[i].StatType.ToString();
                     var subValue = stats[i].AdditionalValueAsInt.ToString();
-                    var subAddValue = (int)(stats[i].AdditionalValueAsInt * row.ExtraStatGrowthMax * GameConfig.TenThousandths);
+                    var subAddValue = (int)(stats[i].AdditionalValueAsInt * row.ExtraStatGrowthMax *
+                                            GameConfig.TenThousandths);
                     var subAdd = stats[i].StatType == StatType.SPD
                         ? (subAddValue * 0.01m).ToString(CultureInfo.InvariantCulture)
                         : subAddValue.ToString(CultureInfo.InvariantCulture);
@@ -314,8 +425,10 @@ namespace Nekoyume.UI
                 var name = skills[i].SkillRow.GetLocalizedName();
                 var power = skills[i].Power.ToString();
                 var chance = skills[i].Chance.ToString();
-                var powerAdd = (int)(skills[i].Power * row.ExtraSkillDamageGrowthMax * GameConfig.TenThousandths);
-                var chanceAdd = (int)(skills[i].Chance * row.ExtraSkillChanceGrowthMax * GameConfig.TenThousandths);
+                var powerAdd = (int)(skills[i].Power * row.ExtraSkillDamageGrowthMax *
+                                     GameConfig.TenThousandths);
+                var chanceAdd = (int)(skills[i].Chance * row.ExtraSkillChanceGrowthMax *
+                                      GameConfig.TenThousandths);
                 addSkills[i].gameObject.SetActive(true);
                 addSkills[i].Set(name,
                     $"{L10nManager.Localize("UI_SKILL_POWER")} : {power}",
