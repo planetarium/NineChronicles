@@ -157,6 +157,13 @@ namespace Nekoyume.UI
             {
                 HelpPopup.HelpMe(100016, true);
             }
+
+            var audioController = AudioController.instance;
+            var musicName = AudioController.MusicCode.Combination;
+            if (!audioController.CurrentPlayingMusicName.Equals(musicName))
+            {
+                AudioController.instance.PlayMusic(musicName);
+            }
         }
 
         private void ShowEquipment()
