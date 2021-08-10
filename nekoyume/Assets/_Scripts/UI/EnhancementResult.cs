@@ -288,7 +288,9 @@ namespace Nekoyume.UI
             switch (stateName)
             {
                 case "Show":
-                    _disposableOfSkip = Observable.EveryUpdate()
+                case "GreatSuccess":
+                case "Success":
+                    _disposableOfSkip ??= Observable.EveryUpdate()
                         .Where(_ => Input.GetMouseButtonDown(0) ||
                                     Input.GetKeyDown(KeyCode.Return) ||
                                     Input.GetKeyDown(KeyCode.KeypadEnter) ||
@@ -344,6 +346,30 @@ namespace Nekoyume.UI
             }
 
             Animator.Play(AnimatorHashLoop, 0, 0);
+
+            for (var i = 0; i < _itemStatOptionViews.Count; i++)
+            {
+                var optionView = _itemStatOptionViews[i];
+                if (optionView.IsEmpty)
+                {
+                    continue;
+                }
+
+                optionView.Show(true);
+            }
+
+            for (var i = 0; i < _itemSkillOptionViews.Count; i++)
+            {
+                var optionView = _itemSkillOptionViews[i];
+                if (optionView.IsEmpty)
+                {
+                    continue;
+                }
+
+                optionView.Show(true);
+            }
+
+            PressToContinue();
         }
 
         private IEnumerator CoPlayOptionAnimation()
