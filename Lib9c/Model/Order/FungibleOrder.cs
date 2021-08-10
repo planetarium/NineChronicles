@@ -149,7 +149,7 @@ namespace Lib9c.Model.Order
         public override int ValidateTransfer(AvatarState avatarState, Guid tradableId,
             FungibleAssetValue price, long blockIndex)
         {
-            var errorCode =  base.ValidateTransfer2(avatarState, tradableId, price, blockIndex);
+            var errorCode =  base.ValidateTransfer(avatarState, tradableId, price, blockIndex);
             if (errorCode != 0)
             {
                 return errorCode;
@@ -171,6 +171,30 @@ namespace Lib9c.Model.Order
             }
 
             return Buy.ErrorCodeItemDoesNotExist;
+        }
+
+        public override void ValidateCancelOrder(AvatarState avatarState, Guid tradableId)
+        {
+            base.ValidateCancelOrder(avatarState, tradableId);
+
+            if (!avatarState.inventory.TryGetLockedItem(new OrderLock(OrderId), out var inventoryItem))
+            {
+                throw new ItemDoesNotExistException(
+                    $"Aborted because the tradable item({TradableId}) was failed to load from avatar's inventory.");
+            }
+
+            if (inventoryItem.count != ItemCount)
+            {
+                throw new ItemDoesNotExistException(
+                    $"Aborted because the tradable item({TradableId}) was failed to load from avatar's inventory.");
+            }
+
+            var tradableItem = (ITradableItem)inventoryItem.item;
+            if (!tradableItem.ItemSubType.Equals(ItemSubType))
+            {
+                throw new InvalidItemTypeException(
+                    $"Expected ItemSubType: {tradableItem.ItemSubType}. Actual ItemSubType: {ItemSubType}");
+            }
         }
 
         [Obsolete("Use ValidateCancelOrder")]
@@ -272,7 +296,7 @@ namespace Lib9c.Model.Order
         [Obsolete("Use ValidateTransfer")]
         public override int ValidateTransfer2(AvatarState avatarState, Guid tradableId, FungibleAssetValue price, long blockIndex)
         {
-            int errorCode =  base.ValidateTransfer2(avatarState, tradableId, price, blockIndex);
+            var errorCode =  base.ValidateTransfer2(avatarState, tradableId, price, blockIndex);
             if (errorCode != 0)
             {
                 return errorCode;

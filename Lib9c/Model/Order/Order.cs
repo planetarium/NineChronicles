@@ -59,7 +59,6 @@ namespace Lib9c.Model.Order
         public abstract ITradableItem Sell(AvatarState avatarState);
         public abstract OrderDigest Digest(AvatarState avatarState, CostumeStatSheet costumeStatSheet);
         public abstract OrderReceipt Transfer(AvatarState seller, AvatarState buyer, long blockIndex);
-        public abstract int ValidateTransfer(AvatarState avatarState, Guid tradableId, FungibleAssetValue price, long blockIndex);
 
         [Obsolete("Use Sell")]
         public abstract ITradableItem Sell2(AvatarState avatarState);
@@ -101,56 +100,30 @@ namespace Lib9c.Model.Order
                 $"Aborted because the tradable item({TradableId}) was failed to load from avatar's inventory.");
         }
 
-        public void ValidateCancelOrder(AvatarState avatarState, Guid tradableId)
+        public virtual int ValidateTransfer(AvatarState avatarState, Guid tradableId,
+            FungibleAssetValue price, long blockIndex)
         {
-            if (!avatarState.address.Equals(SellerAvatarAddress) || !avatarState.agentAddress.Equals(SellerAgentAddress))
-            {
-                throw new InvalidAddressException($"Invalid Seller Addresses. Expected Addresses: {SellerAgentAddress}, {SellerAvatarAddress}. Actual: {avatarState.agentAddress}, {avatarState.address}");
-            }
+            return ValidateForTransfer(avatarState, tradableId, price, blockIndex);
+        }
 
-            if (!TradableId.Equals(tradableId))
-            {
-                throw new InvalidTradableIdException($"{tradableId} is not equals {TradableId}");
-            }
+        public virtual void ValidateCancelOrder(AvatarState avatarState, Guid tradableId)
+        {
+            ValidateForCancelOrder(avatarState, tradableId);
+        }
 
-            if (!avatarState.inventory.TryGetLockedItem(new OrderLock(OrderId), out Inventory.Item inventoryItem))
-            {
-                throw new ItemDoesNotExistException(
-                    $"Aborted because the tradable item({TradableId}) was failed to load from avatar's inventory.");
-            }
-
-            var itemCount = this is FungibleOrder fungibleOrder ? fungibleOrder.ItemCount : 1;
-            if (itemCount != inventoryItem.count)
-            {
-                throw new ItemDoesNotExistException(
-                    $"Aborted because the tradable item({TradableId}) was failed to load from avatar's inventory.");
-            }
-
-            ITradableItem tradableItem = (ITradableItem)inventoryItem.item;
-
-            if (!tradableItem.ItemSubType.Equals(ItemSubType))
-            {
-                throw new InvalidItemTypeException(
-                    $"Expected ItemSubType: {tradableItem.ItemSubType}. Actual ItemSubType: {ItemSubType}");
-            }
+        [Obsolete("Use ValidateTransfer")]
+        public virtual int ValidateTransfer2(AvatarState avatarState, Guid tradableId, FungibleAssetValue price, long blockIndex)
+        {
+            return ValidateForTransfer(avatarState, tradableId, price, blockIndex);
         }
 
         [Obsolete("Use ValidateCancelOrder")]
         public virtual void ValidateCancelOrder2(AvatarState avatarState, Guid tradableId)
         {
-            if (!avatarState.address.Equals(SellerAvatarAddress) || !avatarState.agentAddress.Equals(SellerAgentAddress))
-            {
-                throw new InvalidAddressException($"Invalid Seller Addresses. Expected Addresses: {SellerAgentAddress}, {SellerAvatarAddress}. Actual: {avatarState.agentAddress}, {avatarState.address}");
-            }
-
-            if (!TradableId.Equals(tradableId))
-            {
-                throw new InvalidTradableIdException($"{tradableId} is not equals {TradableId}");
-            }
+            ValidateForCancelOrder(avatarState, tradableId);
         }
 
-        [Obsolete("Use ValidateTransfer")]
-        public virtual int ValidateTransfer2(AvatarState avatarState, Guid tradableId, FungibleAssetValue price, long blockIndex)
+        private int ValidateForTransfer(AvatarState avatarState, Guid tradableId, FungibleAssetValue price, long blockIndex)
         {
             if (!avatarState.address.Equals(SellerAvatarAddress) || !avatarState.agentAddress.Equals(SellerAgentAddress))
             {
@@ -168,6 +141,20 @@ namespace Lib9c.Model.Order
             }
 
             return ExpiredBlockIndex < blockIndex ? Buy.ErrorCodeShopItemExpired : 0;
+        }
+
+        private void ValidateForCancelOrder(AvatarState avatarState, Guid tradableId)
+        {
+            if (!avatarState.address.Equals(SellerAvatarAddress) || !avatarState.agentAddress.Equals(SellerAgentAddress))
+            {
+                throw new InvalidAddressException(
+                    $"Invalid Seller Addresses. Expected Addresses: {SellerAgentAddress}, {SellerAvatarAddress}. Actual: {avatarState.agentAddress}, {avatarState.address}");
+            }
+
+            if (!TradableId.Equals(tradableId))
+            {
+                throw new InvalidTradableIdException($"{tradableId} is not equals {TradableId}");
+            }
         }
 
         public override IValue Serialize()
