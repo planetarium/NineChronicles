@@ -573,12 +573,12 @@ namespace Nekoyume.UI
                     e => ActionRenderHandler.BackToMain(false, e));
         }
 
-        public void NextStage(ActionBase.ActionEvaluation<HackAndSlash> eval)
+        public void NextStage(BattleLog log)
         {
-            StartCoroutine(CoGoToNextStageClose(eval));
+            StartCoroutine(CoGoToNextStageClose(log));
         }
 
-        private IEnumerator CoGoToNextStageClose(ActionBase.ActionEvaluation<HackAndSlash> eval)
+        private IEnumerator CoGoToNextStageClose(BattleLog log)
         {
             if (Find<Menu>().IsActive())
             {
@@ -587,15 +587,15 @@ namespace Nekoyume.UI
 
             yield return StartCoroutine(Find<StageLoadingScreen>().CoClose());
             yield return StartCoroutine(CoFadeOut());
-            Game.Event.OnStageStart.Invoke(eval.Action.Result);
+            Game.Event.OnStageStart.Invoke(log);
             Close();
         }
 
-        public void NextMimisbrunnrStage(ActionBase.ActionEvaluation<MimisbrunnrBattle> eval)
+        public void NextMimisbrunnrStage(BattleLog log)
         {
-            StartCoroutine(CoGoToNextMimisbrunnrStageClose(eval));
+            StartCoroutine(CoGoToNextMimisbrunnrStageClose(log));
         }
-        private IEnumerator CoGoToNextMimisbrunnrStageClose(ActionBase.ActionEvaluation<MimisbrunnrBattle> eval)
+        private IEnumerator CoGoToNextMimisbrunnrStageClose(BattleLog log)
         {
             if (Find<Menu>().IsActive())
             {
@@ -604,7 +604,7 @@ namespace Nekoyume.UI
 
             yield return StartCoroutine(Find<StageLoadingScreen>().CoClose());
             yield return StartCoroutine(CoFadeOut());
-            Game.Event.OnStageStart.Invoke(eval.Action.Result);
+            Game.Event.OnStageStart.Invoke(log);
             Close();
         }
 

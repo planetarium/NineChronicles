@@ -23,6 +23,8 @@ using Cysharp.Threading.Tasks;
 
 namespace Nekoyume.BlockChain
 {
+    using Nekoyume.Battle;
+    using Nekoyume.Model.BattleStatus;
     using UniRx;
 
     /// <summary>
@@ -37,6 +39,9 @@ namespace Nekoyume.BlockChain
         {
             internal static readonly ActionRenderHandler Value = new ActionRenderHandler();
         }
+
+        // FIXME We should move this constant to `StageSimulator.VersionV100025`
+        private const int StageSimulatorVersionV100025 = 2;
 
         public static ActionRenderHandler Instance => Singleton.Value;
 
@@ -604,21 +609,34 @@ namespace Nekoyume.BlockChain
                                 .DoOnError(e => Debug.LogException(e));
                         });
 
+                var simulator = new StageSimulator(
+                    new LocalRandom(eval.RandomSeed),
+                    States.Instance.CurrentAvatarState,
+                    eval.Action.foods,
+                    eval.Action.worldId,
+                    eval.Action.stageId,
+                    Game.Game.instance.TableSheets.GetStageSimulatorSheets(),
+                    Game.Game.instance.TableSheets.CostumeStatSheet,
+                    StageSimulatorVersionV100025
+                );
+                simulator.SimulateV3();
+                BattleLog log = simulator.Log;
+
                 if (Widget.Find<LoadingScreen>().IsActive())
                 {
                     if (Widget.Find<QuestPreparation>().IsActive())
                     {
-                        Widget.Find<QuestPreparation>().GoToStage(eval.Action.Result);
+                        Widget.Find<QuestPreparation>().GoToStage(log);
                     }
                     else if (Widget.Find<Menu>().IsActive())
                     {
-                        Widget.Find<Menu>().GoToStage(eval.Action.Result);
+                        Widget.Find<Menu>().GoToStage(log);
                     }
                 }
                 else if (Widget.Find<StageLoadingScreen>().IsActive() &&
                          Widget.Find<BattleResult>().IsActive())
                 {
-                    Widget.Find<BattleResult>().NextStage(eval);
+                    Widget.Find<BattleResult>().NextStage(log);
                 }
             }
             else
@@ -665,22 +683,34 @@ namespace Nekoyume.BlockChain
                                 // ReSharper disable once ConvertClosureToMethodGroup
                                 .DoOnError(e => Debug.LogException(e));
                         });
+                var simulator = new StageSimulator(
+                    new LocalRandom(eval.RandomSeed),
+                    States.Instance.CurrentAvatarState,
+                    eval.Action.foods,
+                    eval.Action.worldId,
+                    eval.Action.stageId,
+                    Game.Game.instance.TableSheets.GetStageSimulatorSheets(),
+                    Game.Game.instance.TableSheets.CostumeStatSheet,
+                    StageSimulatorVersionV100025
+                );
+                simulator.SimulateV2();
+                BattleLog log = simulator.Log;
 
                 if (Widget.Find<LoadingScreen>().IsActive())
                 {
                     if (Widget.Find<MimisbrunnrPreparation>().IsActive())
                     {
-                        Widget.Find<MimisbrunnrPreparation>().GoToStage(eval.Action.Result);
+                        Widget.Find<MimisbrunnrPreparation>().GoToStage(log);
                     }
                     else if (Widget.Find<Menu>().IsActive())
                     {
-                        Widget.Find<Menu>().GoToStage(eval.Action.Result);
+                        Widget.Find<Menu>().GoToStage(log);
                     }
                 }
                 else if (Widget.Find<StageLoadingScreen>().IsActive() &&
                          Widget.Find<BattleResult>().IsActive())
                 {
-                    Widget.Find<BattleResult>().NextMimisbrunnrStage(eval);
+                    Widget.Find<BattleResult>().NextMimisbrunnrStage(log);
                 }
             }
             else
@@ -732,7 +762,7 @@ namespace Nekoyume.BlockChain
 
                 if (Widget.Find<ArenaBattleLoadingScreen>().IsActive())
                 {
-                    Widget.Find<RankingBoard>().GoToStage(eval);
+                    Widget.Find<RankingBoard>().GoToStage(eval.Action.Result);
                 }
             }
             else
@@ -1036,6 +1066,16 @@ namespace Nekoyume.BlockChain
             }
 
             return null;
+        }
+
+        private class LocalRandom : System.Random, IRandom
+        {
+            public LocalRandom(int Seed)
+                : base(Seed)
+            {
+            }
+
+            public int Seed => throw new NotImplementedException();
         }
     }
 }

@@ -327,6 +327,8 @@ public class BattleSimulator : Widget
         {
             private readonly System.Random _random = new System.Random();
 
+            public int Seed => throw new NotImplementedException();
+
             public int Next()
             {
                 return _random.Next();
