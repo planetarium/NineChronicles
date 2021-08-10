@@ -235,20 +235,25 @@ namespace Nekoyume.UI
             
             // LocalLayer
             UniTask.Run(() =>
-            {
-                LocalLayerModifier.AddItem(avatarAddress, itemUsable.TradableId, itemUsable.RequiredBlockIndex, 1,
-                    false);
-                LocalLayerModifier.RemoveNewAttachmentMail(avatarAddress, mail.id, false);
-                LocalLayerModifier.RemoveAttachmentResult(avatarAddress, mail.id, false);
-                LocalLayerModifier.ModifyAvatarItemRequiredIndex(
-                    avatarAddress,
-                    itemUsable.TradableId,
-                    Game.Game.instance.Agent.BlockIndex);
-                States.Instance.AddOrReplaceAvatarState(
-                    avatarAddress,
-                    States.Instance.CurrentAvatarKey);
-            }).ToObservable().DoOnCompleted(() =>
-                Debug.Log("CombinationMail LocalLayer task completed"));
+                {
+                    LocalLayerModifier.AddItem(avatarAddress, itemUsable.TradableId, itemUsable.RequiredBlockIndex, 1,
+                        false);
+                    LocalLayerModifier.RemoveNewAttachmentMail(avatarAddress, mail.id, false);
+                    LocalLayerModifier.RemoveAttachmentResult(avatarAddress, mail.id, false);
+                    LocalLayerModifier.ModifyAvatarItemRequiredIndex(
+                        avatarAddress,
+                        itemUsable.TradableId,
+                        Game.Game.instance.Agent.BlockIndex);
+                    return States.Instance.GetAvatarStateV2(avatarAddress);
+                })
+                .ToObservable()
+                .Subscribe(avatarState =>
+                {
+                    Debug.LogWarning("CombinationMail LocalLayer task completed");
+                    States.Instance.AddOrReplaceAvatarState(
+                        avatarState,
+                        States.Instance.CurrentAvatarKey);
+                });
             // ~LocalLayer
 
             Find<CombinationResult>().Show(itemUsable);
