@@ -206,6 +206,11 @@ namespace Nekoyume.UI
 
         private void UpdateNotification(long blockIndex)
         {
+            if (States.Instance.CurrentAvatarState is null)
+            {
+                return;
+            }
+
             MailBox = States.Instance.CurrentAvatarState.mailBox;
             UpdateTabs(blockIndex);
         }
@@ -247,8 +252,7 @@ namespace Nekoyume.UI
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             var order = Util.GetOrder(orderBuyerMail.OrderId);
-            var itemBase = Util.GetItemBaseByOrderId(orderBuyerMail.OrderId);
-            var tradableItem = (ITradableItem) itemBase;
+            var itemBase = Util.GetItemBaseByTradableId(order.TradableId, order.ExpiredBlockIndex);
             var count = order is FungibleOrder fungibleOrder ? fungibleOrder.ItemCount : 1;
             var popup = Find<CombinationResultPopup>();
             var model = new UI.Model.CombinationResultPopup(new CountableItem(itemBase, count))
@@ -258,7 +262,7 @@ namespace Nekoyume.UI
             };
             model.OnClickSubmit.Subscribe(_ =>
             {
-                LocalLayerModifier.AddItem(avatarAddress, tradableItem.TradableId, tradableItem.RequiredBlockIndex, count);
+                LocalLayerModifier.AddItem(avatarAddress, order.TradableId, order.ExpiredBlockIndex, count);
                 LocalLayerModifier.RemoveNewMail(avatarAddress, orderBuyerMail.id, true);
             }).AddTo(gameObject);
             popup.Pop(model);
@@ -277,14 +281,13 @@ namespace Nekoyume.UI
         public void Read(OrderExpirationMail orderExpirationMail)
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
-            var itemBase = Util.GetItemBaseByOrderId(orderExpirationMail.OrderId);
-            var tradableItem = (ITradableItem) itemBase;
+            var order = Util.GetOrder(orderExpirationMail.OrderId);
 
             Find<OneButtonPopup>().Show(L10nManager.Localize("UI_SELL_CANCEL_INFO"),
                 L10nManager.Localize("UI_YES"),
                 () =>
                 {
-                    LocalLayerModifier.AddItem(avatarAddress, tradableItem.TradableId, tradableItem.RequiredBlockIndex, 1);
+                    LocalLayerModifier.AddItem(avatarAddress, order.TradableId, order.ExpiredBlockIndex, 1);
                     LocalLayerModifier.RemoveNewMail(avatarAddress, orderExpirationMail.id);
                 });
         }
@@ -292,15 +295,19 @@ namespace Nekoyume.UI
         public void Read(CancelOrderMail cancelOrderMail)
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
-            var itemBase = Util.GetItemBaseByOrderId(cancelOrderMail.OrderId);
-            var tradableItem = (ITradableItem) itemBase;
+            var order = Util.GetOrder(cancelOrderMail.OrderId);
 
             Find<OneButtonPopup>().Show(L10nManager.Localize("UI_SELL_CANCEL_INFO"),
                 L10nManager.Localize("UI_YES"),
                 () =>
                 {
-                    LocalLayerModifier.AddItem(avatarAddress, tradableItem.TradableId, tradableItem.RequiredBlockIndex, 1);
+                    LocalLayerModifier.AddItem(avatarAddress, order.TradableId, order.ExpiredBlockIndex, 1);
                     LocalLayerModifier.RemoveNewMail(avatarAddress, cancelOrderMail.id);
+                    var shopSell = Find<ShopSell>();
+                    if (shopSell.isActiveAndEnabled)
+                    {
+                        shopSell.Refresh();
+                    }
                 });
         }
 

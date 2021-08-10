@@ -47,7 +47,7 @@ SpriteAtlas:
     - {fileID: 102900000, guid: f4ec4f8b49db5487fae145d395ec1611, type: 3}
     - {fileID: 102900000, guid: 85f7dc4e2285f4e8eaa1d5143ed311b2, type: 3}
     - {fileID: 102900000, guid: 77aad0043bc7d4ee3a9fda3a23e966a8, type: 3}
-    totalSpriteSurfaceArea: 411051
+    totalSpriteSurfaceArea: 416435
     bindAsDefault: 1
     isAtlasV2: 0
     cachedData: {fileID: 0}
@@ -62,6 +62,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: a91d7ab1de8ab4ae3b69953b5537b5a0, type: 3}
   - {fileID: 21300000, guid: 08de63c196cf24e55b09ec3cea10b387, type: 3}
   - {fileID: 21300000, guid: 78d1bb025c01346e8b2f00141c0c43d6, type: 3}
+  - {fileID: 21300000, guid: f0b38232b61014adfa66c545872360e1, type: 3}
   - {fileID: 21300000, guid: 2ca4e332521dd4678a899db56f0e581e, type: 3}
   - {fileID: 21300000, guid: 70890d82a92414f288c13ccdb57760de, type: 3}
   - {fileID: 21300000, guid: 72d92e5332f5f4af5843ac87bfe66f59, type: 3}
@@ -104,13 +105,16 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 60782f2996c1245ada95a3816daa61b1, type: 3}
   - {fileID: 21300000, guid: 4fee7d49090114040afe8abfc3c07fa9, type: 3}
   - {fileID: 21300000, guid: 42d370593facd4f2384d20d3b889b1bf, type: 3}
+  - {fileID: 21300000, guid: 093443892e6924920b499f4237e90c6f, type: 3}
   - {fileID: 21300000, guid: 8b6e1fd9bd10048279d3f98091872831, type: 3}
   - {fileID: 21300000, guid: 801939e9c8bca4fd480e1d967b397c57, type: 3}
   - {fileID: 21300000, guid: a94d2be9dc0ea43feb0f058c8287713c, type: 3}
   - {fileID: 21300000, guid: 05124d1a9966e43d5b08d3098e210f0e, type: 3}
   - {fileID: 21300000, guid: d0da429a6b5fd4f9ebb3a87c4b6a6a6b, type: 3}
   - {fileID: 21300000, guid: 70409bdaddfa04bd3b7a0a2cb60d7b93, type: 3}
+  - {fileID: 21300000, guid: 568239eace6e94a52b9841fb10ac6974, type: 3}
   - {fileID: 21300000, guid: b043840b0ddca46278d3d7957249bea7, type: 3}
+  - {fileID: 21300000, guid: bf1c4b7b7cb1f4261b99562ecec2cc1e, type: 3}
   - {fileID: 21300000, guid: 3cc2abfb8152443ff90c1f2c5d90a417, type: 3}
   - {fileID: 21300000, guid: cb638a1c9a3d04d888d6f5ba2f046f4b, type: 3}
   - {fileID: 21300000, guid: 0f16b14c39a634b3685af8884ae4d70c, type: 3}
@@ -151,6 +155,7 @@ SpriteAtlas:
   - UI_bg_frame_03
   - UI_box_01
   - item_bg_Color
+  - UI_Common_Slot
   - Common_gradiant_64
   - Shop_bg_05
   - Shop_bg_15
@@ -193,13 +198,16 @@ SpriteAtlas:
   - Shop_bg_02
   - Common_TabSub_Normal
   - UI_bg_Start_01
+  - icon_Reregister
   - UI_popup_title_bg
   - UI_Gradiant_bg_01
   - item_bg_Plus
   - Common_TabSub_Select
   - Shop_bg_23
   - Shop_bg_21
+  - UI_Common_Slot_Expired
   - Shop_MinusBtn
+  - Icon_Retrieve
   - Common_TabBtn_Normal
   - UI_Popup_icon_09
   - icon_Rank

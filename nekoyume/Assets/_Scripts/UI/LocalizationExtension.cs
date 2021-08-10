@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Action;
@@ -11,6 +11,7 @@ using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.Quest;
 using Nekoyume.Model.Stat;
+using Nekoyume.TableData;
 using UnityEngine;
 using MailModel = Nekoyume.Model.Mail.Mail;
 using QuestModel = Nekoyume.Model.Quest.Quest;
@@ -32,26 +33,26 @@ namespace Nekoyume.UI
                         GetLocalizedNonColoredName(itemEnhanceMail.attachment.itemUsable));
 
                 case OrderBuyerMail orderBuyerMail:
-                    var buyItem = Util.GetItemBaseByOrderId(orderBuyerMail.OrderId);
+                    var buyerItemName = Util.GetItemNameByOrdierId(orderBuyerMail.OrderId, true);
                     return string.Format(L10nManager.Localize("UI_BUYER_MAIL_FORMAT"),
-                        GetLocalizedNonColoredName(buyItem));
+                        buyerItemName);
 
                 case OrderSellerMail orderSellerMail:
-                    var orderId = orderSellerMail.OrderId;
-                    var order = Util.GetOrder(orderId);
-                    var itembase = Util.GetItemBaseByTradableId(order.TradableId);
+                    var order = Util.GetOrder(orderSellerMail.OrderId);
+                    var sellerItemName = Util.GetItemNameByOrdierId(orderSellerMail.OrderId, true);
                     var format = L10nManager.Localize("UI_SELLER_MAIL_FORMAT");
                     var taxedPrice = order.Price - order.GetTax();
-                    return string.Format(format, taxedPrice, GetLocalizedNonColoredName(itembase));
+                    return string.Format(format, taxedPrice, sellerItemName);
 
                 case OrderExpirationMail orderExpirationMail:
-                    var expiredItem = Util.GetItemBaseByOrderId(orderExpirationMail.OrderId);
+                    var expiredItemName = Util.GetItemNameByOrdierId(orderExpirationMail.OrderId, true);
                     return string.Format(L10nManager.Localize("UI_SELL_EXPIRATION_MAIL_FORMAT"),
-                        GetLocalizedNonColoredName(expiredItem));
+                        expiredItemName);
+
                 case CancelOrderMail cancelOrderMail:
-                    var cancelItem = Util.GetItemBaseByOrderId(cancelOrderMail.OrderId);
+                    var cancelItemName = Util.GetItemNameByOrdierId(cancelOrderMail.OrderId, true);
                     return string.Format(L10nManager.Localize("UI_SELL_CANCEL_MAIL_FORMAT"),
-                        GetLocalizedNonColoredName(cancelItem));
+                        cancelItemName);
 
                 case BuyerMail buyerMail:
                     return string.Format(
@@ -281,9 +282,24 @@ namespace Nekoyume.UI
             }
         }
 
+        public static string GetLocalizedName(EquipmentItemSheet sheet, int equipmentId, int level)
+        {
+            var grade = sheet[equipmentId].Grade;
+            var name = GetLocalizedNonColoredName(equipmentId);
+
+            return level > 0
+                ? $"<color=#{GetColorHexByGrade(grade)}>+{level} {name}</color>"
+                : $"<color=#{GetColorHexByGrade(grade)}>{name}</color>";
+        }
+
         public static string GetLocalizedNonColoredName(this ItemBase item)
         {
-            return L10nManager.Localize($"ITEM_NAME_{item.Id}");
+            return GetLocalizedNonColoredName(item.Id);
+        }
+
+        public static string GetLocalizedNonColoredName(int id)
+        {
+            return L10nManager.Localize($"ITEM_NAME_{id}");
         }
 
         public static Color GetItemGradeColor(this ItemBase item)
@@ -298,7 +314,12 @@ namespace Nekoyume.UI
 
         private static string GetColorHexByGrade(ItemBase item)
         {
-            switch (item.Grade)
+            return GetColorHexByGrade(item.Grade);
+        }
+
+        private static string GetColorHexByGrade(int grade)
+        {
+            switch (grade)
             {
                 case 1:
                     return ColorConfig.ColorHexForGrade1;
