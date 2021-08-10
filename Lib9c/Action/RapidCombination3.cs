@@ -13,6 +13,7 @@ using Nekoyume.TableData;
 namespace Nekoyume.Action
 {
     [Serializable]
+    [ActionObsolete(2000000)]
     [ActionType("rapid_combination3")]
     public class RapidCombination3 : GameAction
     {
@@ -35,6 +36,8 @@ namespace Nekoyume.Action
                     .SetState(avatarAddress, MarkChanged)
                     .SetState(slotAddress, MarkChanged);
             }
+
+            CheckObsolete(2000000, context);
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
 

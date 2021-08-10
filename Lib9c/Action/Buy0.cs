@@ -17,6 +17,7 @@ using Serilog;
 namespace Nekoyume.Action
 {
     [Serializable]
+    [ActionObsolete(2000000)]
     [ActionType("buy")]
     public class Buy0 : GameAction
     {
@@ -60,7 +61,9 @@ namespace Nekoyume.Action
                         GoldCurrencyState.Address);
                 return states.SetState(ShopState.Address, MarkChanged);
             }
-            
+
+            CheckObsolete(2000000, context);
+
             var addressesHex = GetSignerAndOtherAddressesHex(context, buyerAvatarAddress, sellerAvatarAddress);
 
             if (ctx.Signer.Equals(sellerAgentAddress))
@@ -201,6 +204,20 @@ namespace Nekoyume.Action
             var materialSheet = states.GetSheet<MaterialItemSheet>();
             buyerAvatarState.UpdateQuestRewards(materialSheet);
             sellerAvatarState.UpdateQuestRewards(materialSheet);
+
+            //Avoid InvalidBlockStateRootHashException to 50000 index.
+            if (sellerAvatarState.questList.Any(q => q.Complete && !q.IsPaidInAction))
+            {
+                var prevIds = sellerAvatarState.questList.completedQuestIds;
+                sellerAvatarState.UpdateQuestRewards(materialSheet);
+                sellerAvatarState.questList.completedQuestIds = prevIds;
+            }
+            if (context.BlockIndex != 4742 && buyerAvatarState.questList.Any(q => q.Complete && !q.IsPaidInAction))
+            {
+                var prevIds = buyerAvatarState.questList.completedQuestIds;
+                buyerAvatarState.UpdateQuestRewards(materialSheet);
+                buyerAvatarState.questList.completedQuestIds = prevIds;
+            }
 
             states = states.SetState(sellerAvatarAddress, sellerAvatarState.Serialize());
             sw.Stop();

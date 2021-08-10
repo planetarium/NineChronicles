@@ -242,13 +242,6 @@ namespace Lib9c.Tests.Action
             Assert.Equal(_avatarAddress, order.SellerAvatarAddress);
             Assert.Equal(expiredBlockIndex, orderItem.RequiredBlockIndex);
 
-            var mailList = nextAvatarState.mailBox.OfType<OrderExpirationMail>().ToList();
-            Assert.Single(mailList);
-            var mail = mailList.First();
-            Assert.NotNull(mail);
-            Assert.Equal(expiredBlockIndex, mail.requiredBlockIndex);
-            Assert.Equal(orderId, mail.OrderId);
-
             var receiptDict = nextState.GetState(OrderDigestListState.DeriveAddress(_avatarAddress));
             Assert.NotNull(receiptDict);
             var orderDigestList = new OrderDigestListState((Dictionary)receiptDict);

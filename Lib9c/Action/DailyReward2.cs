@@ -13,6 +13,7 @@ using Nekoyume.TableData;
 namespace Nekoyume.Action
 {
     [Serializable]
+    [ActionObsolete(2000000)]
     [ActionType("daily_reward2")]
     public class DailyReward2 : GameAction
     {
@@ -29,7 +30,9 @@ namespace Nekoyume.Action
             {
                 return states.SetState(avatarAddress, MarkChanged);
             }
-            
+
+            CheckObsolete(2000000, context);
+
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
 
             if (!states.TryGetAgentAvatarStates(ctx.Signer, avatarAddress, out _, out AvatarState avatarState))
