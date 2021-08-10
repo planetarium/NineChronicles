@@ -16,6 +16,7 @@ using Nekoyume.Model;
 using Serilog;
 using Serilog.Events;
 #if UNITY_EDITOR || UNITY_STANDALONE
+using Lib9c;
 using UniRx;
 #else
 #endif
