@@ -375,6 +375,22 @@ namespace Nekoyume.UI
             _itemOptionIconViews[index].Show();
         }
 
+        public void ShowOptionIconsAll()
+        {
+            for (var i = 0; i < _itemOptionIconViews.Count; i++)
+            {
+                var view = _itemOptionIconViews[i];
+                if (i < _itemOptionInfo.OptionCountFromCombination)
+                {
+                    view.Show();
+                }
+                else
+                {
+                    view.Hide();
+                }
+            }
+        }
+
         public void HideOptionIcon(int index)
         {
             if (index < 0 || index >= _itemOptionIconViews.Count)
