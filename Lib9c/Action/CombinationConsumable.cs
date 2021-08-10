@@ -196,7 +196,6 @@ namespace Nekoyume.Action
             // Add or Update Consumable
             avatarState.blockIndex = context.BlockIndex;
             avatarState.updatedAt = context.BlockIndex;
-            avatarState.inventory.AddNonFungibleItem(consumable);
             avatarState.UpdateFromCombination(consumable);
             avatarState.UpdateQuestRewards(materialItemSheet);
             // ~Add or Update Consumable
