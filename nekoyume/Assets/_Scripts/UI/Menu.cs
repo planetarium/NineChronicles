@@ -450,7 +450,10 @@ namespace Nekoyume.UI
                 if (!States.Instance.CurrentAvatarState.inventory.HasItem(recipeRow.MaterialId))
                 {
                     tutorialController.SaveTutorialProgress(2);
-                    HelpPopup.HelpMe(100001, true);
+                    if (!Game.Game.instance.Stage.TutorialController.IsPlaying)
+                    {
+                        HelpPopup.HelpMe(100001, true);
+                    }
                 }
                 else
                 {
