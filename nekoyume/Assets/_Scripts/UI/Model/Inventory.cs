@@ -90,7 +90,7 @@ namespace Nekoyume.UI.Model
 
             foreach (var item in inventory.Items.OrderByDescending(x => x.item is ITradableItem))
             {
-                if (item.IsLock)
+                if (item.Locked)
                 {
                     continue;
                 }
