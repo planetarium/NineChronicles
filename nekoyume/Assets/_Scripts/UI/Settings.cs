@@ -1,4 +1,4 @@
-﻿using TMPro;
+using TMPro;
 using UnityEngine.UI;
 using UnityEngine;
 using System.Collections.Generic;
@@ -128,6 +128,7 @@ namespace Nekoyume.UI
             {
                 blur.Show();
             }
+            HelpPopup.HelpMe(100014, true);
         }
 
         public void ApplyCurrentSettings()

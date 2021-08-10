@@ -147,6 +147,7 @@ namespace Nekoyume.UI
             var currentAvatarState = Game.Game.instance.States.CurrentAvatarState;
             IsTweenEnd.Value = false;
             Show(currentAvatarState, ignoreShowAnimation);
+            HelpPopup.HelpMe(100013, true);
         }
 
         protected override void OnTweenComplete()

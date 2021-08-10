@@ -30,6 +30,8 @@ namespace Nekoyume.UI
 
         private readonly List<int> _mixpanelTargets = new List<int>() { 1, 2, 6, 11, 49 };
 
+        public bool IsPlaying => _tutorial.IsActive();
+
         public TutorialController(IEnumerable<Widget> widgets)
         {
             foreach (var widget in widgets)

@@ -378,6 +378,7 @@ namespace Nekoyume.UI
             status.Close(true);
             Find<EventBanner>().Close(true);
             Find<HeaderMenu>().UpdateAssets(HeaderMenu.AssetVisibleState.Battle);
+            HelpPopup.HelpMe(100019, true);
         }
 
         public void UpdateGuideQuest(AvatarState avatarState)
@@ -418,6 +419,7 @@ namespace Nekoyume.UI
 
             if (nextStageId > 4)
             {
+                HelpPopup.HelpMe(100001, true);
                 return;
             }
 
@@ -448,6 +450,7 @@ namespace Nekoyume.UI
                 if (!States.Instance.CurrentAvatarState.inventory.HasItem(recipeRow.MaterialId))
                 {
                     tutorialController.SaveTutorialProgress(2);
+                    HelpPopup.HelpMe(100001, true);
                 }
                 else
                 {
