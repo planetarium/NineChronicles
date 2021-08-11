@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Text;
 using Nekoyume.Action;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Controller;
@@ -9,6 +10,7 @@ using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
+using Nekoyume.Model.Stat;
 using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.TableData;
@@ -38,7 +40,8 @@ namespace Nekoyume.UI
             public GameObject Icon;
             public GameObject OptionContainer;
             public TextMeshProUGUI ItemLevel;
-            public List<SlotPopupOptionView> Options;
+            public List<ItemOptionWithCountView> StatOptions;
+            public List<ItemOptionView> SkillOptions;
         }
 
         [SerializeField]
@@ -52,6 +55,9 @@ namespace Nekoyume.UI
 
         [SerializeField]
         private TextMeshProUGUI requiredBlockIndexText;
+
+        [SerializeField]
+        private TextMeshProUGUI timeText;
 
         [SerializeField]
         private TextMeshProUGUI hourglassCountText;
@@ -68,13 +74,11 @@ namespace Nekoyume.UI
         private CraftType _craftType;
         private CombinationSlotState _slotState;
         private int _slotIndex;
+        private readonly List<IDisposable> _disposablesOfOnEnable = new List<IDisposable>();
 
         protected override void Awake()
         {
             base.Awake();
-
-            Game.Game.instance.Agent.BlockIndexSubject.ObserveOnMainThread()
-                .Subscribe(SubscribeOnBlockIndex).AddTo(gameObject);
 
             rapidCombinationButton.onClick.AddListener(() =>
             {
@@ -88,8 +92,23 @@ namespace Nekoyume.UI
                 AudioController.PlayClick();
                 Close();
             });
+        }
+
+        protected override void OnEnable()
+        {
+            base.OnEnable();
+
+            Game.Game.instance.Agent.BlockIndexSubject.ObserveOnMainThread()
+                .Subscribe(SubscribeOnBlockIndex)
+                .AddTo(_disposablesOfOnEnable);
 
             CloseWidget = null;
+        }
+
+        protected override void OnDisable()
+        {
+            _disposablesOfOnEnable.DisposeAllAndClear();
+            base.OnDisable();
         }
 
         private void SubscribeOnBlockIndex(long currentBlockIndex)
@@ -108,18 +127,18 @@ namespace Nekoyume.UI
 
         private void UpdateInformation(CraftType type, CombinationSlotState state, long currentBlockIndex)
         {
-            if (state == null)
+            if (state?.Result.itemUsable is null)
             {
                 return;
             }
 
-            UpdateOption(type, state.Result.itemUsable);
+            UpdateOption(type, state.Result);
             UpdateItemInformation(state.Result.itemUsable);
             UpdateButtonInformation(state, currentBlockIndex);
             UpdateRequiredBlockInformation(state, currentBlockIndex);
         }
 
-        private void UpdateOption(CraftType type, ItemUsable itemUsable)
+        private void UpdateOption(CraftType type, AttachmentActionResult attachmentActionResult)
         {
             foreach (var information in _informations)
             {
@@ -127,43 +146,116 @@ namespace Nekoyume.UI
                 information.OptionContainer.SetActive(information.Type.Equals(type));
             }
 
-            switch (type)
+            switch (attachmentActionResult)
             {
-                case CraftType.CombineEquipment:
-                case CraftType.CombineConsumable:
-                    SetCombinationOption(GetInformation(type), itemUsable);
+                case CombinationConsumable5.ResultModel cc5:
+                    SetCombinationOption(GetInformation(type), cc5);
                     break;
-                case CraftType.Enhancement:
-                    SetEnhancementOption(GetInformation(type), itemUsable);
+                case ItemEnhancement7.ResultModel _:
+                case ItemEnhancement.ResultModel _:
+                    SetEnhancementOption(GetInformation(type), attachmentActionResult);
+                    break;
+                default:
+                    Debug.LogError(
+                        $"[{nameof(CombinationSlotPopup)}] Not supported type. {attachmentActionResult.GetType().FullName}");
                     break;
             }
         }
 
-        private static void SetCombinationOption(Information information, ItemUsable itemUsable)
+        private static void SetCombinationOption(Information information, CombinationConsumable5.ResultModel resultModel)
         {
-            foreach (var option in information.Options)
+            if (!resultModel.subRecipeId.HasValue)
             {
-                option.gameObject.SetActive(false);
+                foreach (var optionView in information.StatOptions)
+                {
+                    optionView.Hide();
+                }
+
+                foreach (var optionView in information.SkillOptions)
+                {
+                    optionView.Hide();
+                }
+                
+                return;
+            }
+            
+            var subRecipeRow = Game.Game.instance.TableSheets.EquipmentItemSubRecipeSheetV2.OrderedList
+                .FirstOrDefault(e => e.Id == resultModel.subRecipeId);
+            if (subRecipeRow is null)
+            {
+                Debug.LogError($"subRecipeRow is null. {resultModel.subRecipeId}");
+                return;
             }
 
-            var stats = itemUsable.StatsMap.GetStats().ToList();
-            for (var i = 0; i < stats.Count; i++)
+            if (!resultModel.itemUsable.TryGetOptionInfo(out var itemOptionInfo))
             {
-                information.Options[i].gameObject.SetActive(true);
-                information.Options[i].Set(stats[i].StatType.ToString());
+                Debug.LogError("Failed to create ItemOptionInfo");
+                return;
             }
 
-            var skills = itemUsable.Skills;
-            for (var i = 0; i < skills.Count; i++)
+            var optionRows = subRecipeRow.Options
+                .Select(optionInfo => Game.Game.instance.TableSheets.EquipmentItemOptionSheet.OrderedList
+                    .FirstOrDefault(optionRow => optionRow.Id == optionInfo.Id))
+                .ToList();
+            if (optionRows.Count != subRecipeRow.Options.Count)
             {
-                information.Options[i + stats.Count].gameObject.SetActive(true);
-                information.Options[i + stats.Count].Set(skills[i].SkillRow.GetLocalizedName());
+                Debug.LogError(
+                    $"Failed to create optionRows with subRecipeRow.Options. Sub recipe id: {resultModel.subRecipeId}");
+                return;
+            }
+
+            var statOptionRows = optionRows.Where(e => e.StatType != StatType.NONE).ToList();
+            var format = L10nManager.Localize("UI_COMBINATION_POPUP_COMBINATION_RESULT_STATS");
+            for (var i = 0; i < information.StatOptions.Count; i++)
+            {
+                var optionView = information.StatOptions[i];
+                if (i >= statOptionRows.Count ||
+                    i >= itemOptionInfo.StatOptions.Count)
+                {
+                    optionView.Hide();
+                    continue;
+                }
+
+                var optionRow = statOptionRows[i];
+                if (optionRow is null)
+                {
+                    optionView.Hide();
+                    continue;
+                }
+
+                var (_, _, count) = itemOptionInfo.StatOptions[i];
+                var text = string.Format(format, optionRow.StatType, optionRow.StatMin, optionRow.StatMax);
+                optionView.UpdateView(text, string.Empty, count);
+                optionView.Show();
+            }
+
+            format = L10nManager.Localize("UI_COMBINATION_POPUP_COMBINATION_RESULT_SKILLS");
+            for (var i = 0; i < information.SkillOptions.Count; i++)
+            {
+                var optionView = information.SkillOptions[i];
+                if (i >= itemOptionInfo.SkillOptions.Count)
+                {
+                    optionView.Hide();
+                    continue;
+                }
+
+                var optionRow = statOptionRows[i];
+                if (optionRow is null)
+                {
+                    optionView.Hide();
+                    continue;
+                }
+
+                var (skillName, _, _) = itemOptionInfo.SkillOptions[i];
+                var text = string.Format(format, skillName);
+                optionView.UpdateView(text, string.Empty);
+                optionView.Show();
             }
         }
 
-        private static void SetEnhancementOption(Information information, ItemUsable itemUsable)
+        private static void SetEnhancementOption(Information information, AttachmentActionResult resultModel)
         {
-            if (!(itemUsable is Equipment equipment))
+            if (!(resultModel.itemUsable is Equipment equipment))
             {
                 return;
             }
@@ -178,33 +270,53 @@ namespace Nekoyume.UI
                 Debug.LogError($"Not found row: {nameof(EnhancementCostSheetV2)} Grade({grade}) Level({level})");
                 return;
             }
-
-            foreach (var option in information.Options)
+            
+            if (!resultModel.itemUsable.TryGetOptionInfo(out var itemOptionInfo))
             {
-                option.gameObject.SetActive(false);
+                Debug.LogError("Failed to create ItemOptionInfo");
+                return;
             }
 
-            var stats = itemUsable.StatsMap.GetStats().ToList();
-            for (var i = 0; i < stats.Count; i++)
+            var format = L10nManager.Localize("UI_COMBINATION_POPUP_ENHANCEMENT_RESULT_STATS");
+            for (var i = 0; i < information.StatOptions.Count; i++)
             {
-                information.Options[i].gameObject.SetActive(true);
-                information.Options[i].Set($"{stats[i].StatType} " +
-                                           $"+({row.ExtraStatGrowthMin / GameConfig.TenThousand}% " +
-                                           $"~ {row.ExtraStatGrowthMax / GameConfig.TenThousand}%)");
+                var optionView = information.StatOptions[i];
+                if (i >= itemOptionInfo.StatOptions.Count)
+                {
+                    optionView.Hide();
+                    continue;
+                }
+
+                var (type, _, count) = itemOptionInfo.StatOptions[i];
+                var text = string.Format(
+                    format,
+                    type,
+                    row.ExtraStatGrowthMin / GameConfig.TenThousand,
+                    row.ExtraStatGrowthMax / GameConfig.TenThousand);
+                optionView.UpdateView(text, string.Empty, count);
+                optionView.Show();
             }
 
-            var skills = itemUsable.Skills;
-            for (var i = 0; i < skills.Count; i++)
+            format = L10nManager.Localize("UI_COMBINATION_POPUP_ENHANCEMENT_RESULT_SKILLS");
+            for (var i = 0; i < information.SkillOptions.Count; i++)
             {
-                information.Options[i + stats.Count].gameObject.SetActive(true);
-                information.Options[i + stats.Count].Set(
-                    $"{skills[i].SkillRow.GetLocalizedName()} " +
-                    $"{L10nManager.Localize("UI_SKILL_POWER")} : " +
-                    $"+({row.ExtraSkillDamageGrowthMin / GameConfig.TenThousand}% " +
-                    $"~ {row.ExtraSkillDamageGrowthMax / GameConfig.TenThousand}%) / " +
-                    $"{L10nManager.Localize("UI_SKILL_CHANCE")} : " +
-                    $"+({row.ExtraSkillChanceGrowthMin / GameConfig.TenThousand}% " +
-                    $"~ {row.ExtraSkillChanceGrowthMax / GameConfig.TenThousand}%)");
+                var optionView = information.SkillOptions[i];
+                if (i >= itemOptionInfo.SkillOptions.Count)
+                {
+                    optionView.Hide();
+                    continue;
+                }
+
+                var (skillName, _, _) = itemOptionInfo.SkillOptions[i];
+                var text = string.Format(
+                    format,
+                    skillName,
+                    row.ExtraSkillDamageGrowthMin / GameConfig.TenThousand,
+                    row.ExtraSkillDamageGrowthMax / GameConfig.TenThousand,
+                    row.ExtraSkillChanceGrowthMin / GameConfig.TenThousand,
+                    row.ExtraSkillChanceGrowthMax / GameConfig.TenThousand);
+                optionView.UpdateView(text, string.Empty);
+                optionView.Show();
             }
         }
 
@@ -214,6 +326,7 @@ namespace Nekoyume.UI
             var diff = Math.Max(state.UnlockBlockIndex - currentBlockIndex, 1);
             progressBar.value = diff;
             requiredBlockIndexText.text = $"{diff}.";
+            timeText.text = string.Format(L10nManager.Localize("UI_REMAINING_TIME"), Util.GetBlockToTime((int)diff));
         }
 
         private void UpdateButtonInformation(CombinationSlotState state, long currentBlockIndex)
