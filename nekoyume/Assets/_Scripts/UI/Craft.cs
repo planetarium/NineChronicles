@@ -244,11 +244,18 @@ namespace Nekoyume.UI
 
             OnCombinationAction(recipeInfo);
 
+            var tableSheets = Game.Game.instance.TableSheets;
 
-            var equipmentRow = Game.Game.instance.TableSheets.EquipmentItemRecipeSheet[recipeInfo.RecipeId];
+            var equipmentRow = tableSheets.EquipmentItemRecipeSheet[recipeInfo.RecipeId];
             var equipment = (Equipment)ItemFactory.CreateItemUsable(
                 equipmentRow.GetResultEquipmentItemRow(), Guid.Empty, default);
             var requiredBlockIndex = equipmentRow.RequiredBlockIndex;
+            if (recipeInfo.SubRecipeId.HasValue)
+            {
+                var subRecipeRow = tableSheets.EquipmentItemSubRecipeSheetV2[recipeInfo.SubRecipeId.Value];
+                requiredBlockIndex += subRecipeRow.RequiredBlockIndex;
+            }
+
             var slots = Find<CombinationSlots>();
             slots.SetCaching(slotIndex, true, requiredBlockIndex, equipment);
 
