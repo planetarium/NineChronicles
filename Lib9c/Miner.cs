@@ -21,6 +21,11 @@ namespace Nekoyume.BlockChain
         private readonly BlockChain<PolymorphicAction<ActionBase>> _chain;
         private readonly Swarm<PolymorphicAction<ActionBase>> _swarm;
         private readonly PrivateKey _privateKey;
+        // TODO we must justify it.
+        private static readonly ImmutableHashSet<Address> _bannedAccounts = new[]
+        {
+            new Address("de96aa7702a7a1fd18ee0f84a5a0c7a2c28ec840"),
+        }.ToImmutableHashSet();
 
         public bool AuthorizedMiner { get; }
 
@@ -58,6 +63,14 @@ namespace Nekoyume.BlockChain
                         .Select(txid => _chain.GetTransaction(txid)).ToList()
                         .ForEach(tx => _chain.UnstageTransaction(tx));
                     StageProofTransaction();
+                }
+
+                IEnumerable<Transaction<PolymorphicAction<ActionBase>>> bannedTxs = _chain.GetStagedTransactionIds()
+                    .Select(txId => _chain.GetTransaction(txId))
+                    .Where(tx => _bannedAccounts.Contains(tx.Signer));
+                foreach (Transaction<PolymorphicAction<ActionBase>> tx in bannedTxs)
+                {
+                    _chain.UnstageTransaction(tx);
                 }
 
                 block = await _chain.MineBlock(
