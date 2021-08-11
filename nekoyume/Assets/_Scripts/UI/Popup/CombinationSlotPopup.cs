@@ -170,8 +170,8 @@ namespace Nekoyume.UI
             {
                 information.Options[i].gameObject.SetActive(true);
                 information.Options[i].Set($"{stats[i].StatType} " +
-                                           $"+({(int)(row.ExtraStatGrowthMin * 100)}% " +
-                                           $"~ {(int)(row.ExtraStatGrowthMax * 100)}%)");
+                                           $"+({row.ExtraStatGrowthMin / GameConfig.TenThousand}% " +
+                                           $"~ {row.ExtraStatGrowthMax / GameConfig.TenThousand}%)");
             }
 
             var skills = itemUsable.Skills;
@@ -181,11 +181,11 @@ namespace Nekoyume.UI
                 information.Options[i + stats.Count].Set(
                     $"{skills[i].SkillRow.GetLocalizedName()} " +
                         $"{L10nManager.Localize("UI_SKILL_POWER")} : " +
-                        $"+({(int)(row.ExtraSkillDamageGrowthMin * 100)}% " +
-                        $"~ {(int)(row.ExtraSkillDamageGrowthMax * 100)}%) / " +
+                        $"+({row.ExtraSkillDamageGrowthMin / GameConfig.TenThousand}% " +
+                        $"~ {row.ExtraSkillDamageGrowthMax / GameConfig.TenThousand}%) / " +
                         $"{L10nManager.Localize("UI_SKILL_CHANCE")} : " +
-                        $"+({(int)(row.ExtraSkillChanceGrowthMin * 100)}% " +
-                        $"~ {(int)(row.ExtraSkillChanceGrowthMax * 100)}%)");
+                        $"+({row.ExtraSkillChanceGrowthMin / GameConfig.TenThousand}% " +
+                        $"~ {row.ExtraSkillChanceGrowthMax / GameConfig.TenThousand}%)");
             }
         }
 
