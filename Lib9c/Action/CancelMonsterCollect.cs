@@ -12,6 +12,7 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
+    [ActionObsolete(2000000)]
     [ActionType("cancel_monster_collect")]
     public class CancelMonsterCollect : GameAction
     {

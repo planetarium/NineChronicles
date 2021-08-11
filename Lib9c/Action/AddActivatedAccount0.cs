@@ -8,6 +8,7 @@ using Nekoyume.Model.State;
 namespace Nekoyume.Action
 {
     [Serializable]
+    [ActionObsolete(2000000)]
     [ActionType("add_activated_account")]
     public class AddActivatedAccount0 : ActionBase
     {
