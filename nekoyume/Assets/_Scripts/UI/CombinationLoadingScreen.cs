@@ -133,6 +133,7 @@ namespace Nekoyume.UI
                 VFXController.instance.CreateAndChaseCam<CombinationBGFireVFX>(pos,
                     new Vector3(-.7f, -.35f));
 
+            speechBubble.Show();
             if (quote is null)
             {
                 speechBubble.SetKey("SPEECH_COMBINATION_START_");
@@ -193,6 +194,7 @@ namespace Nekoyume.UI
 
             yield return new WaitForSeconds(.5f);
             _npc.gameObject.SetActive(false);
+            speechBubble.Hide();
             OnDisappear?.Invoke();
             _closeAction?.Invoke();
             Close();
