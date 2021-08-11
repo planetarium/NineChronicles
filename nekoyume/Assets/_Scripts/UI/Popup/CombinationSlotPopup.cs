@@ -24,9 +24,8 @@ namespace Nekoyume.UI
 
     public class CombinationSlotPopup : PopupWidget
     {
-        public enum CombinationType
+        public enum CraftType
         {
-            None,
             CombineEquipment,
             CombineConsumable,
             Enhancement,
@@ -35,26 +34,39 @@ namespace Nekoyume.UI
         [Serializable]
         public class Information
         {
-            public CombinationType Type;
+            public CraftType Type;
             public GameObject Icon;
             public GameObject OptionContainer;
             public TextMeshProUGUI ItemLevel;
             public List<SlotPopupOptionView> Options;
         }
 
-        [SerializeField] private SimpleItemView itemView;
-        [SerializeField] private Slider progressBar;
+        [SerializeField]
+        private SimpleItemView itemView;
 
-        [SerializeField] private TextMeshProUGUI itemNameText;
-        [SerializeField] private TextMeshProUGUI requiredBlockIndexText;
-        [SerializeField] private TextMeshProUGUI hourglassCountText;
+        [SerializeField]
+        private Slider progressBar;
 
-        [SerializeField] private  Button rapidCombinationButton;
-        [SerializeField] private  Button bgButton;
-        [SerializeField] private List<Information> _informations;
+        [SerializeField]
+        private TextMeshProUGUI itemNameText;
 
-        private CombinationType _type = CombinationType.None;
-        private CombinationSlotState _state;
+        [SerializeField]
+        private TextMeshProUGUI requiredBlockIndexText;
+
+        [SerializeField]
+        private TextMeshProUGUI hourglassCountText;
+
+        [SerializeField]
+        private Button rapidCombinationButton;
+
+        [SerializeField]
+        private Button bgButton;
+
+        [SerializeField]
+        private List<Information> _informations;
+
+        private CraftType _craftType;
+        private CombinationSlotState _slotState;
         private int _slotIndex;
 
         protected override void Awake()
@@ -67,7 +79,7 @@ namespace Nekoyume.UI
             rapidCombinationButton.onClick.AddListener(() =>
             {
                 AudioController.PlayClick();
-                RapidCombination(_state, _slotIndex, Game.Game.instance.Agent.BlockIndex);
+                RapidCombination(_slotState, _slotIndex, Game.Game.instance.Agent.BlockIndex);
                 Close();
             });
 
@@ -82,19 +94,19 @@ namespace Nekoyume.UI
 
         private void SubscribeOnBlockIndex(long currentBlockIndex)
         {
-            UpdateInformation(_type, _state, currentBlockIndex);
+            UpdateInformation(_craftType, _slotState, currentBlockIndex);
         }
 
         public void Show(CombinationSlotState state, int slotIndex, long currentBlockIndex)
         {
-            _state = state;
+            _slotState = state;
             _slotIndex = slotIndex;
-            _type = GetCombinationType(state);
-            UpdateInformation(_type, state, currentBlockIndex);
+            _craftType = GetCombinationType(state);
+            UpdateInformation(_craftType, state, currentBlockIndex);
             base.Show();
         }
 
-        private void UpdateInformation(CombinationType type, CombinationSlotState state, long currentBlockIndex)
+        private void UpdateInformation(CraftType type, CombinationSlotState state, long currentBlockIndex)
         {
             if (state == null)
             {
@@ -107,7 +119,7 @@ namespace Nekoyume.UI
             UpdateRequiredBlockInformation(state, currentBlockIndex);
         }
 
-        private void UpdateOption(CombinationType type, ItemUsable itemUsable)
+        private void UpdateOption(CraftType type, ItemUsable itemUsable)
         {
             foreach (var information in _informations)
             {
@@ -117,10 +129,11 @@ namespace Nekoyume.UI
 
             switch (type)
             {
-                case CombinationType.CombineEquipment:
+                case CraftType.CombineEquipment:
+                case CraftType.CombineConsumable:
                     SetCombinationOption(GetInformation(type), itemUsable);
                     break;
-                case CombinationType.Enhancement:
+                case CraftType.Enhancement:
                     SetEnhancementOption(GetInformation(type), itemUsable);
                     break;
             }
@@ -159,7 +172,7 @@ namespace Nekoyume.UI
             var sheet = Game.Game.instance.TableSheets.EnhancementCostSheetV2;
             var grade = equipment.Grade;
             var level = equipment.level;
-            var row = sheet.OrderedList.FirstOrDefault(x => x.Grade == grade  && x.Level == level);
+            var row = sheet.OrderedList.FirstOrDefault(x => x.Grade == grade && x.Level == level);
             if (row is null)
             {
                 Debug.LogError($"Not found row: {nameof(EnhancementCostSheetV2)} Grade({grade}) Level({level})");
@@ -186,12 +199,12 @@ namespace Nekoyume.UI
                 information.Options[i + stats.Count].gameObject.SetActive(true);
                 information.Options[i + stats.Count].Set(
                     $"{skills[i].SkillRow.GetLocalizedName()} " +
-                        $"{L10nManager.Localize("UI_SKILL_POWER")} : " +
-                        $"+({row.ExtraSkillDamageGrowthMin / GameConfig.TenThousand}% " +
-                        $"~ {row.ExtraSkillDamageGrowthMax / GameConfig.TenThousand}%) / " +
-                        $"{L10nManager.Localize("UI_SKILL_CHANCE")} : " +
-                        $"+({row.ExtraSkillChanceGrowthMin / GameConfig.TenThousand}% " +
-                        $"~ {row.ExtraSkillChanceGrowthMax / GameConfig.TenThousand}%)");
+                    $"{L10nManager.Localize("UI_SKILL_POWER")} : " +
+                    $"+({row.ExtraSkillDamageGrowthMin / GameConfig.TenThousand}% " +
+                    $"~ {row.ExtraSkillDamageGrowthMax / GameConfig.TenThousand}%) / " +
+                    $"{L10nManager.Localize("UI_SKILL_CHANCE")} : " +
+                    $"+({row.ExtraSkillChanceGrowthMin / GameConfig.TenThousand}% " +
+                    $"~ {row.ExtraSkillChanceGrowthMax / GameConfig.TenThousand}%)");
             }
         }
 
@@ -225,55 +238,55 @@ namespace Nekoyume.UI
             itemNameText.text = TextHelper.GetItemNameInCombinationSlot(item);
         }
 
-        private CombinationType GetCombinationType(CombinationSlotState state)
+        private static CraftType GetCombinationType(CombinationSlotState state)
         {
             switch (state.Result)
             {
                 case CombinationConsumable5.ResultModel craft:
                     return craft.itemUsable is Equipment
-                        ? CombinationType.CombineEquipment
-                        : CombinationType.CombineConsumable;
+                        ? CraftType.CombineEquipment
+                        : CraftType.CombineConsumable;
 
                 case ItemEnhancement.ResultModel _:
-                    return CombinationType.Enhancement;
+                    return CraftType.Enhancement;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(state.Result), state.Result, null);
             }
         }
 
-        private Information GetInformation(CombinationType type)
+        private Information GetInformation(CraftType type)
         {
             return _informations.FirstOrDefault(x => x.Type.Equals(type));
         }
 
-        private void RapidCombination(CombinationSlotState state, int slotIndex, long currentBlockIndex)
+        private static void RapidCombination(CombinationSlotState state, int slotIndex, long currentBlockIndex)
         {
             var row = Game.Game.instance.TableSheets.MaterialItemSheet.Values
                 .First(r => r.ItemSubType == ItemSubType.Hourglass);
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             var diff = state.UnlockBlockIndex - currentBlockIndex;
             var cost = RapidCombination0.CalculateHourglassCount(States.Instance.GameConfigState, diff);
-             LocalLayerModifier.RemoveItem(avatarAddress, row.ItemId, cost);
+            LocalLayerModifier.RemoveItem(avatarAddress, row.ItemId, cost);
 
-             switch (state.Result)
-             {
-                 case CombinationConsumable5.ResultModel craft:
-                     LocalLayerModifier.AddNewResultAttachmentMail(avatarAddress, craft.id, currentBlockIndex);
-                     break;
+            switch (state.Result)
+            {
+                case CombinationConsumable5.ResultModel craft:
+                    LocalLayerModifier.AddNewResultAttachmentMail(avatarAddress, craft.id, currentBlockIndex);
+                    break;
 
-                 case ItemEnhancement.ResultModel enhancement:
-                     LocalLayerModifier.AddNewResultAttachmentMail(avatarAddress, enhancement.id, currentBlockIndex);
-                     break;
-             }
+                case ItemEnhancement.ResultModel enhancement:
+                    LocalLayerModifier.AddNewResultAttachmentMail(avatarAddress, enhancement.id, currentBlockIndex);
+                    break;
+            }
 
-             var format = L10nManager.Localize("NOTIFICATION_COMBINATION_COMPLETE");
-             Notification.Push(MailType.Workshop, string.Format(CultureInfo.InvariantCulture, format,
-                     state.Result.itemUsable.GetLocalizedName()));
-             Notification.CancelReserve(state.Result.itemUsable.ItemId);
+            var format = L10nManager.Localize("NOTIFICATION_COMBINATION_COMPLETE");
+            Notification.Push(MailType.Workshop, string.Format(CultureInfo.InvariantCulture, format,
+                state.Result.itemUsable.GetLocalizedName()));
+            Notification.CancelReserve(state.Result.itemUsable.ItemId);
 
-             Game.Game.instance.ActionManager.RapidCombination(avatarAddress, slotIndex);
-             States.Instance.RemoveSlotState(slotIndex);
-             Find<CombinationSlots>().SetCaching(slotIndex, false);
+            Game.Game.instance.ActionManager.RapidCombination(avatarAddress, slotIndex);
+            States.Instance.RemoveSlotState(slotIndex);
+            Find<CombinationSlots>().SetCaching(slotIndex, false);
         }
     }
 }
