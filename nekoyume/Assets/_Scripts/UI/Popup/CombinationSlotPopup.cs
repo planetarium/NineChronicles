@@ -11,6 +11,7 @@ using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
 using Nekoyume.State;
+using Nekoyume.TableData;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using TMPro;
@@ -117,7 +118,7 @@ namespace Nekoyume.UI
             switch (type)
             {
                 case CombinationType.CombineEquipment:
-                    SetCraftOption(GetInformation(type), itemUsable);
+                    SetCombinationOption(GetInformation(type), itemUsable);
                     break;
                 case CombinationType.Enhancement:
                     SetEnhancementOption(GetInformation(type), itemUsable);
@@ -125,7 +126,7 @@ namespace Nekoyume.UI
             }
         }
 
-        private void SetCraftOption(Information information, ItemUsable itemUsable)
+        private static void SetCombinationOption(Information information, ItemUsable itemUsable)
         {
             foreach (var option in information.Options)
             {
@@ -147,7 +148,7 @@ namespace Nekoyume.UI
             }
         }
 
-        private void SetEnhancementOption(Information information, ItemUsable itemUsable)
+        private static void SetEnhancementOption(Information information, ItemUsable itemUsable)
         {
             if (!(itemUsable is Equipment equipment))
             {
