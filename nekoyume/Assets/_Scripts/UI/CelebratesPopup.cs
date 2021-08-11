@@ -18,7 +18,6 @@ using Nekoyume.Model.Mail;
 using Nekoyume.Model.Quest;
 using Nekoyume.State;
 using Nekoyume.TableData;
-using Nekoyume.UI.Scroller;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -46,7 +45,16 @@ namespace Nekoyume.UI
         private SimpleCountableItemView[] questRewardViews = null;
 
         [SerializeField]
-        private RecipeCellView recipeCellView = null;
+        private GameObject recipeAreaParent = null;
+
+        [SerializeField]
+        private RecipeCell recipeCell = null;
+
+        [SerializeField]
+        private GameObject[] gradeImages = null;
+
+        [SerializeField]
+        private TextMeshProUGUI recipeNameText = null;
 
         [SerializeField]
         private GameObject menuContainer = null;
@@ -135,7 +143,7 @@ namespace Nekoyume.UI
 
             menuContainer.SetActive(true);
             questRewards.SetActive(false);
-            recipeCellView.Hide();
+            recipeAreaParent.SetActive(false);
 
             _rewards = null;
 
@@ -199,7 +207,7 @@ namespace Nekoyume.UI
 
             menuContainer.SetActive(false);
             questRewards.SetActive(true);
-            recipeCellView.Hide();
+            recipeAreaParent.SetActive(false);
 
             _rewards = rewards;
 
@@ -241,11 +249,17 @@ namespace Nekoyume.UI
             titleText.text = L10nManager.Localize("UI_NEW_EQUIPMENT_RECIPE");
             continueText.alpha = 0f;
 
-            recipeCellView.Set(row);
-
             menuContainer.SetActive(false);
             questRewards.SetActive(false);
-            recipeCellView.Show();
+            recipeCell.Show(row, false);
+
+            var resultItem = row.GetResultEquipmentItemRow();
+            for (int i = 0; i < gradeImages.Length; ++i)
+            {
+                gradeImages[i].SetActive(i < resultItem.Grade);
+            }
+            recipeNameText.text = resultItem.GetLocalizedName(false);
+            recipeAreaParent.SetActive(true);
 
             _rewards = null;
 
@@ -290,7 +304,7 @@ namespace Nekoyume.UI
                 _coShowSomethingCoroutine = StartCoroutine(CoShowQuestRewards(_rewards));
             }
 
-            if (recipeCellView.gameObject.activeSelf)
+            if (recipeCell.gameObject.activeSelf)
             {
                 _coShowSomethingCoroutine = StartCoroutine(CoShowEquipmentRecipe());
             }
