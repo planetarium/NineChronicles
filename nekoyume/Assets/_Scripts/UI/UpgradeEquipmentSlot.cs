@@ -30,7 +30,7 @@ namespace Nekoyume.UI
             itemImage.overrideSprite = itemBase.GetIconSprite();
         }
 
-        public void RemoveMaterial()
+        private void RemoveMaterial()
         {
             stageEffectContainer.SetActive(false);
             emptyEffectContainer.SetActive(true);
