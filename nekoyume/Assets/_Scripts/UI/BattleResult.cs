@@ -307,6 +307,7 @@ namespace Nekoyume.UI
             topArea.SetActive(true);
             defeatTextArea.root.SetActive(false);
             stageProgressBar.Show();
+            stageProgressBar.SetStarProgress(SharedModel.ClearedWaveNumber);
 
             _coUpdateBottomText = StartCoroutine(CoUpdateBottom(Timer));
             yield return StartCoroutine(CoUpdateRewards());

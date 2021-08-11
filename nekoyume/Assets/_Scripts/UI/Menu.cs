@@ -450,7 +450,10 @@ namespace Nekoyume.UI
                 if (!States.Instance.CurrentAvatarState.inventory.HasItem(recipeRow.MaterialId))
                 {
                     tutorialController.SaveTutorialProgress(2);
-                    HelpPopup.HelpMe(100001, true);
+                    if (!Game.Game.instance.Stage.TutorialController.IsPlaying)
+                    {
+                        HelpPopup.HelpMe(100001, true);
+                    }
                 }
                 else
                 {
@@ -557,7 +560,7 @@ namespace Nekoyume.UI
             base.Update();
 
             if (!Find<CombinationResult>().gameObject.activeSelf &&
-                !Find<EnhancementResultBackup>().gameObject.activeSelf &&
+                !Find<EnhancementResult>().gameObject.activeSelf &&
                 Input.GetKey(KeyCode.LeftControl))
             {
                 if (Input.GetKeyDown(KeyCode.C))
@@ -566,7 +569,7 @@ namespace Nekoyume.UI
                 }
                 else if (Input.GetKeyDown(KeyCode.E))
                 {
-                    Find<EnhancementResultBackup>().ShowWithEditorProperty();
+                    Find<EnhancementResult>().ShowWithEditorProperty();
                 }
             }
         }
