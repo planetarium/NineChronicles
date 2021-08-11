@@ -294,13 +294,6 @@ namespace Nekoyume.BlockChain
                 LocalLayerModifier.RemoveItem(avatarAddress, result.itemUsable.ItemId, result.itemUsable.RequiredBlockIndex, 1);
                 LocalLayerModifier.AddNewAttachmentMail(avatarAddress, result.id);
 
-                var format = L10nManager.Localize("NOTIFICATION_COMBINATION_COMPLETE");
-                UI.Notification.Reserve(
-                    MailType.Workshop,
-                    string.Format(format, result.itemUsable.GetLocalizedName()),
-                    slot.UnlockBlockIndex,
-                    result.itemUsable.ItemId);
-
                 var gameInstance = Game.Game.instance;
                 var nextQuest = gameInstance.States.CurrentAvatarState.questList?
                     .OfType<CombinationEquipmentQuest>()
@@ -340,6 +333,28 @@ namespace Nekoyume.BlockChain
                             });
                     }
                 }
+                
+                // Notify
+                string formatKey;
+                if (result.itemUsable is Equipment equipment)
+                {
+                    formatKey = equipment.optionCountFromCombination == 4
+                        ? "NOTIFICATION_COMBINATION_COMPLETE_GREATER"
+                        : "NOTIFICATION_COMBINATION_COMPLETE";
+                }
+                else
+                {
+                    Debug.LogError($"[{nameof(ResponseCombinationEquipment)}] result.itemUsable is not Equipment");
+                    formatKey = "NOTIFICATION_COMBINATION_COMPLETE";
+                }
+
+                var format = L10nManager.Localize(formatKey);
+                UI.Notification.Reserve(
+                    MailType.Workshop,
+                    string.Format(format, result.itemUsable.GetLocalizedName()),
+                    slot.UnlockBlockIndex,
+                    result.itemUsable.TradableId);
+                // ~Notify
             }
             Widget.Find<CombinationSlots>().SetCaching(eval.Action.slotIndex, false);
         }
@@ -369,18 +384,19 @@ namespace Nekoyume.BlockChain
                 LocalLayerModifier.RemoveItem(avatarAddress, itemUsable.ItemId, itemUsable.RequiredBlockIndex, 1);
                 LocalLayerModifier.AddNewAttachmentMail(avatarAddress, result.id);
 
+                States.Instance.UpdateCombinationSlotState(slotIndex, slot);
+                UpdateAgentState(eval);
+                UpdateCurrentAvatarState(eval);
+                RenderQuest(avatarAddress, avatarState.questList.completedQuestIds);
+                
+                // Notify
                 var format = L10nManager.Localize("NOTIFICATION_COMBINATION_COMPLETE");
                 UI.Notification.Reserve(
                     MailType.Workshop,
                     string.Format(format, result.itemUsable.GetLocalizedName()),
                     slot.UnlockBlockIndex,
-                    result.itemUsable.ItemId
-                );
-
-                States.Instance.UpdateCombinationSlotState(slotIndex, slot);
-                UpdateAgentState(eval);
-                UpdateCurrentAvatarState(eval);
-                RenderQuest(avatarAddress, avatarState.questList.completedQuestIds);
+                    result.itemUsable.TradableId);
+                // ~Notify
             }
             Widget.Find<CombinationSlots>().SetCaching(eval.Action.slotIndex, false);
         }
@@ -414,18 +430,39 @@ namespace Nekoyume.BlockChain
                 LocalLayerModifier.RemoveItem(avatarAddress, itemUsable.TradableId, itemUsable.RequiredBlockIndex, 1);
                 LocalLayerModifier.AddNewAttachmentMail(avatarAddress, result.id);
 
-                var format = L10nManager.Localize("NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE");
+                States.Instance.UpdateCombinationSlotState(slotIndex, slot);
+                UpdateAgentState(eval);
+                UpdateCurrentAvatarState(eval);
+                RenderQuest(avatarAddress, avatarState.questList.completedQuestIds);
+
+                // Notify
+                string formatKey;
+                switch (result.enhancementResult)
+                {
+                    case Action.ItemEnhancement.EnhancementResult.GreatSuccess:
+                        formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE_GREATER";
+                        break;
+                    case Action.ItemEnhancement.EnhancementResult.Success:
+                        formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE";
+                        break;
+                    case Action.ItemEnhancement.EnhancementResult.Fail:
+                        formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE_FAIL";
+                        break;
+                    default:
+                        Debug.LogError($"Unexpected result.enhancementResult: {result.enhancementResult}");
+                        formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE";
+                        break;
+                }
+
+                var format = L10nManager.Localize(formatKey);
                 UI.Notification.Reserve(
                     MailType.Workshop,
                     string.Format(format, result.itemUsable.GetLocalizedName()),
                     slot.UnlockBlockIndex,
                     result.itemUsable.TradableId);
-
-                States.Instance.UpdateCombinationSlotState(slotIndex, slot);
-                UpdateAgentState(eval);
-                UpdateCurrentAvatarState(eval);
-                RenderQuest(avatarAddress, avatarState.questList.completedQuestIds);
+                // ~Notify
             }
+
             Widget.Find<CombinationSlots>().SetCaching(eval.Action.slotIndex, false);
         }
 
