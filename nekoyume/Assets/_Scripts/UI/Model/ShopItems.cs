@@ -89,14 +89,11 @@ namespace Nekoyume.UI.Model
 
             DeselectItemView();
             _selectedItemViewModel.Value = view.Model;
-            var item = Util.GetItemBaseByTradableId(view.Model.TradableId.Value);
+            var item = Util.GetItemBaseByTradableId(view.Model.TradableId.Value, view.Model.ExpiredBlockIndex.Value);
             _selectedItemViewModel.Value.Selected.Value = true;
             _selectedItemViewModel.Value.ItemBase.Value = item;
             SelectedItemView.SetValueAndForceNotify(view);
-
         }
-
-
 
         public void DeselectItemView()
         {

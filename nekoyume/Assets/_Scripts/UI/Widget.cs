@@ -179,7 +179,7 @@ namespace Nekoyume.UI
             return true;
         }
 
-        public static T FindOrCreate<T>() where T : HudWidget
+        public static T FindOrCreate<T>() where T : Widget
         {
             var type = typeof(T);
             var names = type.ToString().Split('.');
@@ -187,18 +187,24 @@ namespace Nekoyume.UI
             var resName = $"UI/Prefabs/{widgetName}";
             var pool = Game.Game.instance.Stage.objectPool;
             var go = pool.Get(widgetName, false);
-            if (go is null)
+            if (go)
+            {
+                var widget = go.GetComponent<T>();
+                go.transform.SetParent(MainCanvas.instance.GetLayerRootTransform(widget.WidgetType));
+                return widget;
+            }
+            else
             {
                 Debug.Log("create new");
-                var res = Resources.Load<GameObject>(resName);
-                var go2 = Instantiate(res, MainCanvas.instance.transform);
-                go2.name = widgetName;
-                pool.Add(go2, 1);
-                return go2.GetComponent<T>();
-            }
+                var prefab = Resources.Load<GameObject>(resName);
+                go = Instantiate(prefab, MainCanvas.instance.RectTransform);
+                go.name = widgetName;
+                pool.Add(go, 1);
+                var widget = go.GetComponent<T>();
+                go.transform.SetParent(MainCanvas.instance.GetLayerRootTransform(widget.WidgetType));
 
-            go.transform.SetParent(MainCanvas.instance.GetLayerRootTransform(WidgetType.Hud));
-            return go.GetComponent<T>();
+                return widget;
+            }
         }
 
         public virtual bool IsActive()
