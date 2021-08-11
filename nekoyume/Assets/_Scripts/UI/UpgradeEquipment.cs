@@ -296,21 +296,28 @@ namespace Nekoyume.UI
                 return;
             }
 
-            UpdateTooltip(view, tooltip);
-        }
-
-        private void UpdateTooltip(BigInventoryItemView view, ItemInformationTooltip tooltip)
-        {
             if (view.Model is null)
             {
                 return;
             }
 
-            tooltip.Show(view.RectTransform, view.Model,
-                value => IsEnableSubmit(view),
-                GetSubmitText(view),
-                _ => OnSubmit(view),
-                _ => { inventory.SharedModel.DeselectItemView(); });
+            var equipment = view.Model.ItemBase.Value as Equipment;
+            if (equipment.ItemId == _baseItem?.ItemId)
+            {
+                baseSlot.RemoveButton.onClick.Invoke();
+            }
+            else if (equipment.ItemId == _materialItem?.ItemId)
+            {
+                materialSlot.RemoveButton.onClick.Invoke();
+            }
+            else
+            {
+                tooltip.Show(view.RectTransform, view.Model,
+                    value => IsEnableSubmit(view),
+                    GetSubmitText(view),
+                    _ => OnSubmit(view),
+                    _ => { inventory.SharedModel.DeselectItemView(); });
+            }
         }
 
         private bool IsEnableSubmit(BigInventoryItemView view)
@@ -349,20 +356,10 @@ namespace Nekoyume.UI
         {
             if (view.Model.Dimmed.Value)
             {
-                var equipment = view.Model.ItemBase.Value as Equipment;
-                if (equipment.ItemId.Equals(_baseItem.ItemId))
-                {
-                    baseSlot.RemoveButton.onClick.Invoke();
-                }
-                else
-                {
-                    materialSlot.RemoveButton.onClick.Invoke();
-                }
+                return;
             }
-            else
-            {
-                StageMaterial(view);
-            }
+
+            StageMaterial(view);
         }
 
         private void StageMaterial(BigInventoryItemView view)
