@@ -159,6 +159,11 @@ namespace Nekoyume.UI
             var grade = equipment.Grade;
             var level = equipment.level;
             var row = sheet.OrderedList.FirstOrDefault(x => x.Grade == grade  && x.Level == level);
+            if (row is null)
+            {
+                Debug.LogError($"Not found row: {nameof(EnhancementCostSheetV2)} Grade({grade}) Level({level})");
+                return;
+            }
 
             foreach (var option in information.Options)
             {
