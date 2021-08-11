@@ -38,6 +38,7 @@ namespace Nekoyume.UI
             public GameObject Icon;
             public GameObject OptionContainer;
             public TextMeshProUGUI ItemLevel;
+            public ItemOptionView MainStatView;
             public List<ItemOptionWithCountView> StatOptions;
             public List<ItemOptionView> SkillOptions;
         }
@@ -160,34 +161,36 @@ namespace Nekoyume.UI
             }
         }
 
-        private static void SetCombinationOption(Information information, CombinationConsumable5.ResultModel resultModel)
+        private static void SetCombinationOption(
+            Information information,
+            CombinationConsumable5.ResultModel resultModel)
         {
-            if (!resultModel.subRecipeId.HasValue)
+            if (!resultModel.itemUsable.TryGetOptionInfo(out var itemOptionInfo))
             {
-                foreach (var optionView in information.StatOptions)
-                {
-                    optionView.Hide();
-                }
-
-                foreach (var optionView in information.SkillOptions)
-                {
-                    optionView.Hide();
-                }
-                
+                Debug.LogError("Failed to create ItemOptionInfo");
                 return;
             }
-            
+
+            // Consumable case
+            if (!resultModel.subRecipeId.HasValue)
+            {
+                var (type, value, _) = itemOptionInfo.StatOptions[0];
+                information.MainStatView.UpdateView(
+                    $"{type} {value}",
+                    string.Empty);
+
+                return;
+            }
+
+            information.MainStatView.UpdateView(
+                $"{itemOptionInfo.MainStat.type} {itemOptionInfo.MainStat.value}",
+                string.Empty);
+
             var subRecipeRow = Game.Game.instance.TableSheets.EquipmentItemSubRecipeSheetV2.OrderedList
                 .FirstOrDefault(e => e.Id == resultModel.subRecipeId);
             if (subRecipeRow is null)
             {
                 Debug.LogError($"subRecipeRow is null. {resultModel.subRecipeId}");
-                return;
-            }
-
-            if (!resultModel.itemUsable.TryGetOptionInfo(out var itemOptionInfo))
-            {
-                Debug.LogError("Failed to create ItemOptionInfo");
                 return;
             }
 
@@ -255,6 +258,7 @@ namespace Nekoyume.UI
         {
             if (!(resultModel.itemUsable is Equipment equipment))
             {
+                Debug.LogError("resultModel.itemUsable is not Equipment");
                 return;
             }
 
@@ -268,7 +272,7 @@ namespace Nekoyume.UI
                 Debug.LogError($"Not found row: {nameof(EnhancementCostSheetV2)} Grade({grade}) Level({level})");
                 return;
             }
-            
+
             if (!resultModel.itemUsable.TryGetOptionInfo(out var itemOptionInfo))
             {
                 Debug.LogError("Failed to create ItemOptionInfo");
@@ -276,10 +280,27 @@ namespace Nekoyume.UI
             }
 
             var format = L10nManager.Localize("UI_COMBINATION_POPUP_ENHANCEMENT_RESULT_STATS");
+            if (row.BaseStatGrowthMin == 0 && row.BaseStatGrowthMax == 0)
+            {
+                information.MainStatView.Hide();
+            }
+            else
+            {
+                information.MainStatView.UpdateView(
+                    string.Format(
+                        format,
+                        itemOptionInfo.MainStat.type,
+                        row.BaseStatGrowthMin * 100 / GameConfig.TenThousand,
+                        row.BaseStatGrowthMax * 100 / GameConfig.TenThousand),
+                    string.Empty);
+                information.MainStatView.Show();
+            }
+
             for (var i = 0; i < information.StatOptions.Count; i++)
             {
                 var optionView = information.StatOptions[i];
-                if (i >= itemOptionInfo.StatOptions.Count)
+                if (row.ExtraStatGrowthMin == 0 && row.ExtraStatGrowthMax == 0 ||
+                    i >= itemOptionInfo.StatOptions.Count)
                 {
                     optionView.Hide();
                     continue;
@@ -289,8 +310,8 @@ namespace Nekoyume.UI
                 var text = string.Format(
                     format,
                     type,
-                    row.ExtraStatGrowthMin / GameConfig.TenThousand,
-                    row.ExtraStatGrowthMax / GameConfig.TenThousand);
+                    row.ExtraStatGrowthMin * 100 / GameConfig.TenThousand,
+                    row.ExtraStatGrowthMax * 100 / GameConfig.TenThousand);
                 optionView.UpdateView(text, string.Empty, count);
                 optionView.Show();
             }
@@ -299,7 +320,9 @@ namespace Nekoyume.UI
             for (var i = 0; i < information.SkillOptions.Count; i++)
             {
                 var optionView = information.SkillOptions[i];
-                if (i >= itemOptionInfo.SkillOptions.Count)
+                if (row.ExtraSkillDamageGrowthMin == 0 && row.ExtraSkillDamageGrowthMax == 0 &&
+                    row.ExtraSkillChanceGrowthMin == 0 && row.ExtraSkillChanceGrowthMax == 0 ||
+                    i >= itemOptionInfo.SkillOptions.Count)
                 {
                     optionView.Hide();
                     continue;
@@ -309,10 +332,10 @@ namespace Nekoyume.UI
                 var text = string.Format(
                     format,
                     skillName,
-                    row.ExtraSkillDamageGrowthMin / GameConfig.TenThousand,
-                    row.ExtraSkillDamageGrowthMax / GameConfig.TenThousand,
-                    row.ExtraSkillChanceGrowthMin / GameConfig.TenThousand,
-                    row.ExtraSkillChanceGrowthMax / GameConfig.TenThousand);
+                    row.ExtraSkillDamageGrowthMin * 100 / GameConfig.TenThousand,
+                    row.ExtraSkillDamageGrowthMax * 100 / GameConfig.TenThousand,
+                    row.ExtraSkillChanceGrowthMin * 100 / GameConfig.TenThousand,
+                    row.ExtraSkillChanceGrowthMax * 100 / GameConfig.TenThousand);
                 optionView.UpdateView(text, string.Empty);
                 optionView.Show();
             }
