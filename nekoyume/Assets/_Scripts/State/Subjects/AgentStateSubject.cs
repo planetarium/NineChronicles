@@ -1,8 +1,5 @@
-using System.Collections.Generic;
-using System.Numerics;
-using Libplanet;
+using System;
 using Libplanet.Assets;
-using Nekoyume.Model.State;
 using UniRx;
 
 namespace Nekoyume.State.Subjects
@@ -12,7 +9,19 @@ namespace Nekoyume.State.Subjects
     /// </summary>
     public static class AgentStateSubject
     {
-        public static readonly Subject<FungibleAssetValue> Gold
-            = new Subject<FungibleAssetValue>();
+        private static readonly Subject<FungibleAssetValue> _gold;
+            
+        public static readonly IObservable<FungibleAssetValue> Gold;
+
+        static AgentStateSubject()
+        {
+            _gold = new Subject<FungibleAssetValue>();
+            Gold = _gold.ObserveOnMainThread();
+        }
+
+        public static void OnNextGold(FungibleAssetValue gold)
+        {
+            _gold.OnNext(gold);
+        }
     }
 }

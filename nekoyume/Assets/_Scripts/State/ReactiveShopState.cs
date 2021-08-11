@@ -8,10 +8,12 @@ using Libplanet.Assets;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Stat;
 using Nekoyume.Model.State;
+using Nekoyume.State.Modifiers;
 using Nekoyume.TableData;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using UniRx;
+using ShopItem = Nekoyume.UI.Model.ShopItem;
 
 namespace Nekoyume.State
 {
@@ -87,13 +89,21 @@ namespace Nekoyume.State
         private const int buyItemsPerPage = 24;
         private const int sellItemsPerPage = 20;
 
-        public static void InitBuyDigests()
+        public static void InitAndUpdateBuyDigests()
         {
             _buyDigests = GetBuyOrderDigests();
             UpdateBuyDigests();
         }
 
         public static void InitSellDigests()
+        {
+            if (_sellDigests != null)
+            {
+                _sellDigests = GetSellOrderDigests();
+            }
+        }
+
+        public static void InitAndUpdateSellDigests()
         {
             _sellDigests = GetSellOrderDigests();
             UpdateSellDigests();
@@ -113,9 +123,9 @@ namespace Nekoyume.State
                 GetGroupedOrderDigestsByItemSubTypeFilter(_sellDigests, sellItemsPerPage);
         }
 
-        public static void RemoveBuyDigest(Guid tradableId)
+        public static void RemoveBuyDigest(Guid orderId)
         {
-            var item = _buyDigests.FirstOrDefault(x => x.TradableId == tradableId);
+            var item = _buyDigests.FirstOrDefault(x => x.OrderId.Equals(orderId));
             if (item != null)
             {
                 _buyDigests.Remove(item);
@@ -124,9 +134,9 @@ namespace Nekoyume.State
             UpdateBuyDigests();
         }
 
-        public static void RemoveSellDigest(Guid tradableId)
+        public static void RemoveSellDigest(Guid orderId)
         {
-            var item = _sellDigests.FirstOrDefault(x => x.TradableId == tradableId);
+            var item = _sellDigests.FirstOrDefault(x => x.OrderId.Equals(orderId));
             if (item != null)
             {
                 _sellDigests.Remove(item);
@@ -411,16 +421,25 @@ namespace Nekoyume.State
 
         private static List<OrderDigest> GetSellOrderDigests()
         {
-            var agentAddress = States.Instance.CurrentAvatarState.address;
-            var receiptAddress = OrderDigestListState.DeriveAddress(agentAddress);
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+            var receiptAddress = OrderDigestListState.DeriveAddress(avatarAddress);
             var receiptState = Game.Game.instance.Agent.GetState(receiptAddress);
             var receipts = new List<OrderDigest>();
             if (receiptState is Dictionary dictionary)
             {
                 var state = new OrderDigestListState(dictionary);
+
                 var validOrderDigests = state.OrderDigestList.Where(x =>
                     x.ExpiredBlockIndex > Game.Game.instance.Agent.BlockIndex);
                 receipts.AddRange(validOrderDigests);
+
+                var expiredOrderDigests = state.OrderDigestList.Where(x =>
+                    x.ExpiredBlockIndex <= Game.Game.instance.Agent.BlockIndex);
+                var inventory = States.Instance.CurrentAvatarState.inventory;
+                var lockedDigests = expiredOrderDigests
+                    .Where(x => inventory.TryGetLockedItem(new OrderLock(x.OrderId), out _))
+                    .ToList();
+                receipts.AddRange(lockedDigests);
             }
 
             return receipts;
