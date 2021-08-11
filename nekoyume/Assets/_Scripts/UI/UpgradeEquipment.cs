@@ -442,16 +442,24 @@ namespace Nekoyume.UI
 
             var itemOptionInfo = new ItemOptionInfo(equipment);
 
-            var (mainStatType, mainValue) = itemOptionInfo.MainStat;
-            var mainAdd = Math.Max(1, (int)(mainValue * row.BaseStatGrowthMax * GameConfig.TenThousandths));
-            mainStatView.gameObject.SetActive(true);
-            mainStatView.Set(mainStatType.ToString(),
-                ValueToString(mainValue, mainStatType),
-                $"(<size=80%>max</size> +{ValueToString(mainAdd, mainStatType)})");
+            if (row.BaseStatGrowthMin != 0 && row.BaseStatGrowthMax != 0)
+            {
+                var (mainStatType, mainValue) = itemOptionInfo.MainStat;
+                var mainAdd = Math.Max(1, (int)(mainValue * row.BaseStatGrowthMax * GameConfig.TenThousandths));
+                mainStatView.gameObject.SetActive(true);
+                mainStatView.Set(mainStatType.ToString(),
+                    ValueToString(mainValue, mainStatType),
+                    $"(<size=80%>max</size> +{ValueToString(mainAdd, mainStatType)})");
+            }
 
             var stats = itemOptionInfo.StatOptions;
             for (var i = 0; i < stats.Count; i++)
             {
+                if (row.ExtraStatGrowthMin == 0 && row.ExtraStatGrowthMax == 0)
+                {
+                    continue;
+                }
+
                 var statType = stats[i].type;
                 var statValue = stats[i].value;
                 var statAdd = Math.Max(1, (int)(statValue * row.ExtraStatGrowthMax * GameConfig.TenThousandths));
@@ -466,6 +474,12 @@ namespace Nekoyume.UI
             var skills = itemOptionInfo.SkillOptions;
             for (var i = 0; i < skills.Count; i++)
             {
+                if (row.ExtraSkillDamageGrowthMin == 0 && row.ExtraSkillDamageGrowthMax == 0 &&
+                    row.ExtraSkillChanceGrowthMin == 0 && row.ExtraSkillChanceGrowthMax == 0)
+                {
+                    continue;
+                }
+
                 var skillName = skills[i].name;
                 var power = skills[i].power;
                 var chance = skills[i].chance;
