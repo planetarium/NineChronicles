@@ -8,9 +8,6 @@ namespace Nekoyume.UI.Module
     public class CoveredItemOptionView : ItemOptionWithCountView
     {
         [SerializeField]
-        private GameObject _coverObject;
-
-        [SerializeField]
         private TextMeshProUGUI _coverText;
 
         private static readonly int AnimatorHashDiscover = Animator.StringToHash("Discover");

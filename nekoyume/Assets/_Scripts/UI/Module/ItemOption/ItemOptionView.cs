@@ -30,12 +30,17 @@ namespace Nekoyume.UI.Module
         public void Show(bool ignoreAnimation = false)
         {
             gameObject.SetActive(true);
-            animator.Play(AnimatorHashShow, 0, ignoreAnimation ? 1f : 0f);
+
+            if (animator)
+            {
+                animator.Play(AnimatorHashShow, 0, ignoreAnimation ? 1f : 0f);
+            }
         }
 
         public void Hide(bool ignoreAnimation = false)
         {
-            if (ignoreAnimation)
+            if (ignoreAnimation ||
+                !animator)
             {
                 gameObject.SetActive(false);
                 return;
@@ -92,6 +97,11 @@ namespace Nekoyume.UI.Module
 
         protected static void UpdateText(TMP_Text textObject, string text)
         {
+            if (!textObject)
+            {
+                return;
+            }
+
             if (string.IsNullOrEmpty(text))
             {
                 textObject.enabled = false;
