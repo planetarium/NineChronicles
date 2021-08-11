@@ -183,10 +183,14 @@ namespace Nekoyume.Model.Item
         {
             foreach (var statMapEx in StatsMap.GetAdditionalStats())
             {
-                var rand = isGreatSuccess ? row.ExtraStatGrowthMax
+                var rand = isGreatSuccess
+                    ? row.ExtraStatGrowthMax
                     : random.Next(row.ExtraStatGrowthMin, row.ExtraStatGrowthMax + 1);
-                var ratio = (int) (rand * GameConfig.TenThousandths) + 1;
-                StatsMap.SetStatAdditionalValue(statMapEx.StatType, statMapEx.AdditionalValue * ratio);
+                var ratio = rand * GameConfig.TenThousandths;
+                var addValue = statMapEx.AdditionalValue * ratio;
+                addValue = Math.Max(1.0m, addValue);
+
+                StatsMap.SetStatAdditionalValue(statMapEx.StatType, statMapEx.AdditionalValue + addValue);
             }
 
             var skills = new List<Skill.Skill>();
@@ -196,15 +200,17 @@ namespace Nekoyume.Model.Item
             {
                 var chanceRand = isGreatSuccess ? row.ExtraSkillChanceGrowthMax
                     : random.Next(row.ExtraSkillChanceGrowthMin, row.ExtraSkillChanceGrowthMax + 1);
-                var chanceRatio = (int) (chanceRand * GameConfig.TenThousandths) + 1;
-                var chance = decimal.ToInt32(skill.Chance * chanceRatio);
+                var chanceRatio = chanceRand * GameConfig.TenThousandths;
+                var addChance = skill.Chance * chanceRatio;
+                addChance = Math.Max(1.0m, addChance);
 
                 var damageRand = isGreatSuccess ? row.ExtraSkillDamageGrowthMax
                     : random.Next(row.ExtraSkillDamageGrowthMin, row.ExtraSkillDamageGrowthMax + 1);
-                var damageRatio = (int) (damageRand * GameConfig.TenThousandths) + 1;
-                var damage = decimal.ToInt32(skill.Power * damageRatio);
+                var damageRatio = damageRand * GameConfig.TenThousandths;
+                var addPower = skill.Power * damageRatio;
+                addPower = Math.Max(1.0m, addPower);
 
-                skill.Update(chance, damage);
+                skill.Update(skill.Chance + (int)addChance, skill.Power + (int)addPower);
             }
         }
 
