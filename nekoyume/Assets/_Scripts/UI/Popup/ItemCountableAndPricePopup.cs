@@ -132,6 +132,16 @@ namespace Nekoyume.UI
                 OneLinePopup.Push(MailType.System,
                     L10nManager.Localize("NOTIFICATION_QUANTITY_CANNOT_CHANGED"));
             }).AddTo(_disposablesForAwake);
+
+            CloseWidget = () =>
+            {
+                if (countInputField.isFocused || priceInputField.isFocused)
+                {
+                    return;
+                }
+
+                Close();
+            };
         }
 
         protected override void OnDestroy()

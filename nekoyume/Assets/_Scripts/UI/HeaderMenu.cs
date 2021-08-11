@@ -305,18 +305,6 @@ namespace Nekoyume.UI.Module
                 return false;
             }
 
-            switch (state.Result)
-            {
-                case CombinationConsumable5.ResultModel ccResult:
-                    if (ccResult.id == default)
-                    {
-                        return false;
-                    }
-                    break;
-                default:
-                    return false;
-            }
-
             var isAppraise = currentBlockIndex < state.StartBlockIndex + GameConfig.RequiredAppraiseBlock;
             if (isAppraise)
             {
@@ -328,8 +316,7 @@ namespace Nekoyume.UI.Module
             var cost = RapidCombination0.CalculateHourglassCount(gameConfigState, diff);
             var row = Game.Game.instance.TableSheets.MaterialItemSheet.Values.First(r =>
                 r.ItemSubType == ItemSubType.Hourglass);
-            var isEnough =
-                States.Instance.CurrentAvatarState.inventory.HasFungibleItem(row.ItemId, currentBlockIndex, cost);
+            var isEnough =  States.Instance.CurrentAvatarState.inventory.HasFungibleItem(row.ItemId, currentBlockIndex, cost);
             return isEnough;
         }
 
