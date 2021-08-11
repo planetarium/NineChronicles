@@ -23,8 +23,8 @@ namespace Nekoyume.UI.Model
                 {ItemSubType.Ring, new ReactiveCollection<InventoryItem>()}
             };
 
-        public readonly ReactiveProperty<InventoryItemView> SelectedItemView =
-            new ReactiveProperty<InventoryItemView>();
+        public readonly ReactiveProperty<BigInventoryItemView> SelectedItemView =
+            new ReactiveProperty<BigInventoryItemView>();
 
         public readonly ReactiveProperty<Func<InventoryItem, bool>> DimmedFunc =
             new ReactiveProperty<Func<InventoryItem, bool>>();
@@ -100,29 +100,24 @@ namespace Nekoyume.UI.Model
             return item;
         }
 
-        public void SubscribeItemOnClick(InventoryItemView view)
+        public void SubscribeItemOnClick(BigInventoryItemView view)
         {
-            if (view != null &&
-                view == SelectedItemView.Value)
-            {
-                DeselectItemView();
-                return;
-            }
-
             SelectItemView(view);
         }
 
-        private void SelectItemView(InventoryItemView view)
+        private void SelectItemView(BigInventoryItemView view)
         {
             if (view?.Model is null)
             {
                 return;
             }
 
-            DeselectItemView();
+            if (!view.Model.EffectEnabled.Value)
+            {
+                DeselectItemView();
+            }
 
-            view.Model.Selected.Value = true;
-            SelectedItemView.Value = view;
+            SelectedItemView.SetValueAndForceNotify(view);
             SetGlowedAll(false);
         }
 
@@ -135,7 +130,10 @@ namespace Nekoyume.UI.Model
 
             if (!(SelectedItemView.Value.Model is null))
             {
-                SelectedItemView.Value.Model.Selected.Value = false;
+                if (!SelectedItemView.Value.Model.EffectEnabled.Value)
+                {
+                    SelectedItemView.Value.Model.Selected.Value = false;
+                }
             }
 
             SelectedItemView.Value = null;

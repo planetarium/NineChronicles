@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Nekoyume.Action;
 using Nekoyume.Game.Controller;
 using Nekoyume.Model.Elemental;
 using Nekoyume.Model.Item;
@@ -73,7 +74,7 @@ namespace Nekoyume.UI.Module
             SharedModel.SelectedItemView.Subscribe(SubscribeSelectedItemView).AddTo(gameObject);
 
             scroll.OnClick
-                .Subscribe(cell => SharedModel.SubscribeItemOnClick(cell.View))
+                .Subscribe(cell => SharedModel.SubscribeItemOnClick(cell.View as BigInventoryItemView))
                 .AddTo(gameObject);
 
             gradeFilter.AddOptions(new[]
@@ -184,14 +185,22 @@ namespace Nekoyume.UI.Module
 
         public void ClearItemState(Equipment equipment)
         {
+            if (equipment is null)
+            {
+                return;
+            }
+
             var item = SharedModel.Equipments[equipment.ItemSubType]
                 .FirstOrDefault(x => ((Equipment)x.ItemBase.Value).ItemId.Equals(equipment.ItemId));
 
-            if (!(item is null))
+            if (item is null)
             {
-                item.EffectEnabled.Value = false;
-                item.Dimmed.Value = false;
+                return;
             }
+
+            item.Selected.SetValueAndForceNotify(false);
+            item.EffectEnabled.SetValueAndForceNotify(false);
+            item.Dimmed.SetValueAndForceNotify(false);
         }
     }
 }

@@ -1,3 +1,4 @@
+using System;
 using Nekoyume.EnumType;
 using Nekoyume.Game;
 using Nekoyume.Game.Character;
