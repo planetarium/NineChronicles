@@ -124,10 +124,16 @@ namespace Nekoyume.UI
         {
             shopItems.Reset();
             Reset();
+            base.Show(true);
         }
 
         private void Close()
         {
+            if (shopItems.IsActiveInputField)
+            {
+                return;
+            }
+
             _npc?.gameObject.SetActive(false);
             shopItems.Close();
             Find<ItemCountAndPricePopup>().Close();

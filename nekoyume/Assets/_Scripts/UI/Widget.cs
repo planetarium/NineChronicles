@@ -403,7 +403,7 @@ namespace Nekoyume.UI
                 return;
             }
 
-            if (Input.GetKeyDown(KeyCode.Escape))
+            if (Input.GetKeyDown(KeyCode.Backspace))
             {
                 if (!WidgetHandler.Instance.IsActiveTutorialMaskWidget)
                 {

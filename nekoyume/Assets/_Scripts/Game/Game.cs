@@ -434,6 +434,14 @@ namespace Nekoyume.Game
             _logsClient?.Dispose();
         }
 
+        private void Update()
+        {
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                Quit();
+            }
+        }
+
         public static void Quit()
         {
             var popup = Widget.Find<QuitPopup>();

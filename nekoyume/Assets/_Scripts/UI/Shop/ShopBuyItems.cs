@@ -89,6 +89,7 @@ namespace Nekoyume.UI.Module
         };
 
         public Model.ShopBuyItems SharedModel { get; private set; }
+        public bool IsActiveInputField => inputField.isFocused;
 
         #region Mono
 
