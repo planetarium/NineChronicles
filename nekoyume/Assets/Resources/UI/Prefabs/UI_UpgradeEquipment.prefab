@@ -1233,6 +1233,7 @@ MonoBehaviour:
   currentLevelText: {fileID: 1876712337952927504}
   nextLevelText: {fileID: 7411064952822669311}
   costText: {fileID: 8022198098510161769}
+  materialGuideText: {fileID: 4064793733678293223}
   mainStatView: {fileID: 8942166806931208469}
   statViews:
   - {fileID: 8785481068270988513}
@@ -1247,7 +1248,6 @@ MonoBehaviour:
   noneContainer: {fileID: 4264069782330966274}
   itemInformationContainer: {fileID: 9033703093585415908}
   blockInformationContainer: {fileID: 675753384982089682}
-  materialGuide: {fileID: 970993273592254862}
   buttonDisabled: {fileID: 3283341260653219466}
 --- !u!1 &573877729677872940
 GameObject:
@@ -44784,7 +44784,7 @@ PrefabInstance:
     - target: {fileID: 7430616929449913940, guid: 29c5c99555c2b5f40a6f757cea5554b3,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 88
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7430616929449913940, guid: 29c5c99555c2b5f40a6f757cea5554b3,
         type: 3}

@@ -117,7 +117,6 @@ namespace Nekoyume.UI.Model
                 DeselectItemView();
             }
 
-            view.Model.Selected.SetValueAndForceNotify(true);
             SelectedItemView.SetValueAndForceNotify(view);
             SetGlowedAll(false);
         }

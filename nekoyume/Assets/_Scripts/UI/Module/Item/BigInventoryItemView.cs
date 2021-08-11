@@ -10,10 +10,11 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private GameObject selectObject;
 
-        public void SetSelectType(bool isBaseItem)
+        public void Select(bool isBaseItem)
         {
             selectObject.SetActive(isBaseItem);
             selectCheck.SetActive(!isBaseItem);
+            Model.Selected.SetValueAndForceNotify(true);
         }
     }
 }

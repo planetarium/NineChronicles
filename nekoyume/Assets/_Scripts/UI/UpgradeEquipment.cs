@@ -62,6 +62,9 @@ namespace Nekoyume.UI
         private TextMeshProUGUI costText;
 
         [SerializeField]
+        private TextMeshProUGUI materialGuideText;
+
+        [SerializeField]
         private EnhancementOptionView mainStatView;
 
         [SerializeField]
@@ -78,9 +81,6 @@ namespace Nekoyume.UI
 
         [SerializeField]
         private GameObject blockInformationContainer;
-
-        [SerializeField]
-        private GameObject materialGuide;
 
         [SerializeField]
         private GameObject buttonDisabled;
@@ -138,7 +138,8 @@ namespace Nekoyume.UI
                 _materialItem = null;
                 inventory.SharedModel.UpdateDimAndEffectAll();
                 buttonDisabled.SetActive(!IsInteractableButton(_baseItem, _materialItem, _costNcg));
-                materialGuide.SetActive(true);
+                materialGuideText.text =
+                    L10nManager.Localize("UI_SELECT_MATERIAL_TO_UPGRADE");
             });
         }
 
@@ -265,10 +266,12 @@ namespace Nekoyume.UI
                 .ItemEnhancement(baseGuid, materialGuid, slotIndex)
                 .Subscribe(_ => { }, e => ActionRenderHandler.BackToMain(false, e));
 
-            StartCoroutine(CoCombineNPCAnimation(_baseItem, Clear));
+            StartCoroutine(CoCombineNPCAnimation(_baseItem, row.SuccessRequiredBlockIndex, Clear));
         }
 
-        private IEnumerator CoCombineNPCAnimation(ItemBase itemBase, System.Action action,
+        private IEnumerator CoCombineNPCAnimation(ItemBase itemBase,
+            long blockIndex,
+            System.Action action,
             bool isConsumable = false)
         {
             var loadingScreen = Find<CombinationLoadingScreen>();
@@ -277,7 +280,10 @@ namespace Nekoyume.UI
             loadingScreen.SetCloseAction(action);
             Push();
             yield return new WaitForSeconds(.5f);
-            loadingScreen.AnimateNPC();
+
+            var format = L10nManager.Localize("UI_COST_BLOCK");
+            var quote = string.Format(format, blockIndex);
+            loadingScreen.AnimateNPC(quote);
             Clear();
         }
 
@@ -290,22 +296,7 @@ namespace Nekoyume.UI
                 return;
             }
 
-            UpdateSelectType(view);
             UpdateTooltip(view, tooltip);
-        }
-
-        private void UpdateSelectType(BigInventoryItemView view)
-        {
-            if (_baseItem is null)
-            {
-                view.SetSelectType(true);
-            }
-            else
-            {
-                var baseUsable = _baseItem as ItemUsable;
-                var viewUsable = view.Model.ItemBase.Value as ItemUsable;
-                view.SetSelectType(viewUsable.ItemId.Equals(baseUsable.ItemId));
-            }
         }
 
         private void UpdateTooltip(BigInventoryItemView view, ItemInformationTooltip tooltip)
@@ -374,28 +365,29 @@ namespace Nekoyume.UI
             }
         }
 
-        private void StageMaterial(BigInventoryItemView viewModel)
+        private void StageMaterial(BigInventoryItemView view)
         {
             SetActiveContainer(false);
-
             if (_baseItem is null)
             {
-                _baseItem = (Equipment)viewModel.Model.ItemBase.Value;
+                _baseItem = (Equipment)view.Model.ItemBase.Value;
                 if (ItemEnhancement.TryGetRow(_baseItem, _costSheet, out var row))
                 {
                     _costNcg = row.Cost;
                     UpdateInformation(row, _baseItem);
                 }
-                baseSlot.AddMaterial(viewModel.Model.ItemBase.Value);
+                baseSlot.AddMaterial(view.Model.ItemBase.Value);
+                materialGuideText.text = L10nManager.Localize("UI_SELECT_MATERIAL_TO_UPGRADE");
+                view.Select(true);
             }
             else
             {
                 materialSlot.RemoveButton.onClick.Invoke();
-                _materialItem = (Equipment)viewModel.Model.ItemBase.Value;
-                materialSlot.AddMaterial(viewModel.Model.ItemBase.Value);
-                materialGuide.SetActive(false);
+                _materialItem = (Equipment)view.Model.ItemBase.Value;
+                materialSlot.AddMaterial(view.Model.ItemBase.Value);
+                materialGuideText.text = L10nManager.Localize("UI_UPGRADE_GUIDE");
+                view.Select(false);
             }
-
 
             buttonDisabled.SetActive(!IsInteractableButton(_baseItem, _materialItem, _costNcg));
             inventory.SharedModel.UpdateDimAndEffectAll();
@@ -435,6 +427,7 @@ namespace Nekoyume.UI
             noneContainer.SetActive(isClear);
             itemInformationContainer.SetActive(!isClear);
             blockInformationContainer.SetActive(!isClear);
+            materialGuideText.gameObject.SetActive(!isClear);
         }
 
         private void UpdateInformation(EnhancementCostSheetV2.Row row, Equipment equipment)
