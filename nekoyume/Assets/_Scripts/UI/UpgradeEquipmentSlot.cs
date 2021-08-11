@@ -14,16 +14,15 @@ namespace Nekoyume.UI
         [SerializeField] private GameObject stageEffectContainer;
         [SerializeField] private GameObject itemContainer;
 
-        private System.Action _callback;
+        public Button RemoveButton => removeButton;
 
         private void Awake()
         {
             removeButton.onClick.AddListener(RemoveMaterial);
         }
 
-        public void AddMaterial(ItemBase itemBase, System.Action callback)
+        public void AddMaterial(ItemBase itemBase)
         {
-            _callback = callback;
             stageEffectContainer.SetActive(true);
             emptyEffectContainer.SetActive(false);
             plusContainer.SetActive(false);
@@ -31,15 +30,12 @@ namespace Nekoyume.UI
             itemImage.overrideSprite = itemBase.GetIconSprite();
         }
 
-        public void RemoveMaterial()
+        private void RemoveMaterial()
         {
-            _callback?.Invoke();
-            _callback = null;
             stageEffectContainer.SetActive(false);
             emptyEffectContainer.SetActive(true);
             plusContainer.SetActive(true);
             itemContainer.SetActive(false);
-
         }
     }
 }

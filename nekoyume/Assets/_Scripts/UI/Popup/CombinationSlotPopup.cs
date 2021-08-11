@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
-using System.Text;
 using Nekoyume.Action;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Controller;
@@ -381,21 +379,62 @@ namespace Nekoyume.UI
             var cost = RapidCombination0.CalculateHourglassCount(States.Instance.GameConfigState, diff);
             LocalLayerModifier.RemoveItem(avatarAddress, row.ItemId, cost);
 
+            // Notify
+            string formatKey;
             switch (state.Result)
             {
-                case CombinationConsumable5.ResultModel craft:
-                    LocalLayerModifier.AddNewResultAttachmentMail(avatarAddress, craft.id, currentBlockIndex);
-                    break;
+                case CombinationConsumable5.ResultModel combineResultModel:
+                {
+                    LocalLayerModifier.AddNewResultAttachmentMail(avatarAddress, combineResultModel.id,
+                        currentBlockIndex);
+                    if (combineResultModel.itemUsable is Equipment equipment)
+                    {
+                        formatKey = equipment.optionCountFromCombination == 4
+                            ? "NOTIFICATION_COMBINATION_COMPLETE_GREATER"
+                            : "NOTIFICATION_COMBINATION_COMPLETE";
+                    }
+                    else
+                    {
+                        formatKey = "NOTIFICATION_COMBINATION_COMPLETE";
+                    }
 
-                case ItemEnhancement.ResultModel enhancement:
-                    LocalLayerModifier.AddNewResultAttachmentMail(avatarAddress, enhancement.id, currentBlockIndex);
+                    break;
+                }
+                case ItemEnhancement.ResultModel enhancementResultModel:
+                {
+                    LocalLayerModifier.AddNewResultAttachmentMail(avatarAddress, enhancementResultModel.id,
+                        currentBlockIndex);
+                    switch (enhancementResultModel.enhancementResult)
+                    {
+                        case ItemEnhancement.EnhancementResult.GreatSuccess:
+                            formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE_GREATER";
+                            break;
+                        case ItemEnhancement.EnhancementResult.Success:
+                            formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE";
+                            break;
+                        case ItemEnhancement.EnhancementResult.Fail:
+                            formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE_FAIL";
+                            break;
+                        default:
+                            Debug.LogError(
+                                $"Unexpected result.enhancementResult: {enhancementResultModel.enhancementResult}");
+                            formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE";
+                            break;
+                    }
+
+                    break;
+                }
+                default:
+                    Debug.LogError(
+                        $"Unexpected state.Result: {state.Result}");
+                    formatKey = "NOTIFICATION_COMBINATION_COMPLETE";
                     break;
             }
 
-            var format = L10nManager.Localize("NOTIFICATION_COMBINATION_COMPLETE");
-            Notification.Push(MailType.Workshop, string.Format(CultureInfo.InvariantCulture, format,
-                state.Result.itemUsable.GetLocalizedName()));
-            Notification.CancelReserve(state.Result.itemUsable.ItemId);
+            var format = L10nManager.Localize(formatKey);
+            Notification.CancelReserve(state.Result.itemUsable.TradableId);
+            Notification.Push(MailType.Workshop, string.Format(format, state.Result.itemUsable.GetLocalizedName()));
+            // ~Notify
 
             Game.Game.instance.ActionManager.RapidCombination(avatarAddress, slotIndex);
             States.Instance.RemoveSlotState(slotIndex);
