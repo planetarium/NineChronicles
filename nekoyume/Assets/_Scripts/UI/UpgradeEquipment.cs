@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
@@ -13,6 +14,7 @@ using System.Numerics;
 using Nekoyume.Action;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Controller;
+using Nekoyume.Helper;
 using Nekoyume.Model.Stat;
 using Nekoyume.TableData;
 using Nekoyume.UI.Model;
@@ -60,13 +62,13 @@ namespace Nekoyume.UI
         private TextMeshProUGUI costText;
 
         [SerializeField]
-        private EnhancementOptionView mainStat;
+        private EnhancementOptionView mainStatView;
 
         [SerializeField]
-        private List<EnhancementOptionView> addStats;
+        private List<EnhancementOptionView> statViews;
 
         [SerializeField]
-        private List<EnhancementOptionView> addSkills;
+        private List<EnhancementOptionView> skillViews;
 
         [SerializeField]
         private GameObject noneContainer;
@@ -308,44 +310,68 @@ namespace Nekoyume.UI
 
         private void UpdateTooltip(BigInventoryItemView view, ItemInformationTooltip tooltip)
         {
-            tooltip.Show(
-                view.RectTransform,
-                view.Model,
-                value => true,
-                GetSubmitText(view.Model?.Dimmed.Value ?? true),
-                _ =>
-                {
-                    if (!view.Model.Dimmed.Value)
-                    {
-                        StageMaterial(view);
-                    }
-                    else
-                    {
-                        var baseUsable = _baseItem as ItemUsable;
-                        var viewUsable = view.Model.ItemBase.Value as ItemUsable;
-                        if (viewUsable.ItemId.Equals(baseUsable.ItemId))
-                        {
-                            baseSlot.RemoveButton.onClick.Invoke();
-                        }
-                        else
-                        {
-                            materialSlot.RemoveButton.onClick.Invoke();
-                        }
-                    }
-                },
+            if (view.Model is null)
+            {
+                return;
+            }
+
+            tooltip.Show(view.RectTransform, view.Model,
+                value => IsEnableSubmit(view),
+                GetSubmitText(view),
+                _ => OnSubmit(view),
                 _ => { inventory.SharedModel.DeselectItemView(); });
         }
 
-        private string GetSubmitText(bool isDimmed)
+        private bool IsEnableSubmit(BigInventoryItemView view)
         {
-            if (isDimmed)
+            if (view.Model.Dimmed.Value)
             {
+                var equipment = view.Model.ItemBase.Value as Equipment;
+                if (equipment.ItemId != _baseItem?.ItemId && equipment.ItemId != _materialItem?.ItemId)
+                {
+                    return false;
+                }
+
+            }
+            return true;
+        }
+
+        private string GetSubmitText(BigInventoryItemView view)
+        {
+            if (view.Model.Dimmed.Value)
+            {
+                var equipment = view.Model.ItemBase.Value as Equipment;
+                if (equipment.ItemId != _baseItem?.ItemId && equipment.ItemId != _materialItem?.ItemId)
+                {
+                    return L10nManager.Localize("UI_COMBINATION_REGISTER_MATERIAL");
+                }
+
                 return L10nManager.Localize("UI_COMBINATION_UNREGISTER_MATERIAL");
             }
 
             return _baseItem is null
                 ? L10nManager.Localize("UI_COMBINATION_REGISTER_ITEM")
                 : L10nManager.Localize("UI_COMBINATION_REGISTER_MATERIAL");
+        }
+
+        private void OnSubmit(BigInventoryItemView view)
+        {
+            if (view.Model.Dimmed.Value)
+            {
+                var equipment = view.Model.ItemBase.Value as Equipment;
+                if (equipment.ItemId.Equals(_baseItem.ItemId))
+                {
+                    baseSlot.RemoveButton.onClick.Invoke();
+                }
+                else
+                {
+                    materialSlot.RemoveButton.onClick.Invoke();
+                }
+            }
+            else
+            {
+                StageMaterial(view);
+            }
         }
 
         private void StageMaterial(BigInventoryItemView viewModel)
@@ -392,13 +418,13 @@ namespace Nekoyume.UI
             requiredBlockIndexText.text = "0";
             buttonDisabled.SetActive(true);
 
-            mainStat.gameObject.SetActive(false);
-            foreach (var stat in addStats)
+            mainStatView.gameObject.SetActive(false);
+            foreach (var stat in statViews)
             {
                 stat.gameObject.SetActive(false);
             }
 
-            foreach (var skill in addSkills)
+            foreach (var skill in skillViews)
             {
                 skill.gameObject.SetActive(false);
             }
@@ -424,56 +450,50 @@ namespace Nekoyume.UI
                 .ToString("P0");
             requiredBlockIndexText.text = $"{row.SuccessRequiredBlockIndex}+";
 
-            var stats = equipment.StatsMap.GetStats().ToList();
-            foreach (var stat in stats)
+            var itemOptionInfo = new ItemOptionInfo(equipment);
+
+            var (mainStatType, mainValue) = itemOptionInfo.MainStat;
+            var mainAdd = Math.Max(1, (int)(mainValue * row.BaseStatGrowthMax * GameConfig.TenThousandths));
+            mainStatView.gameObject.SetActive(true);
+            mainStatView.Set(mainStatType.ToString(),
+                ValueToString(mainValue, mainStatType),
+                $"(<size=80%>max</size> +{ValueToString(mainAdd, mainStatType)})");
+
+            var stats = itemOptionInfo.StatOptions;
+            for (var i = 0; i < stats.Count; i++)
             {
-                if (stat.StatType.Equals(equipment.UniqueStatType))
-                {
-                    var mainType = stat.StatType.ToString();
-                    var mainValue = stat.ValueAsInt.ToString();
-                    var mainAdd = (int)(stat.ValueAsInt * row.BaseStatGrowthMax *
-                                        GameConfig.TenThousandths);
-                    mainStat.gameObject.SetActive(true);
-                    mainStat.Set(mainType, mainValue, $"(<size=80%>max</size> +{mainAdd})");
-                    break;
-                }
+                var statType = stats[i].type;
+                var statValue = stats[i].value;
+                var statAdd = Math.Max(1, (int)(statValue * row.ExtraStatGrowthMax * GameConfig.TenThousandths));
+                var count = stats[i].count;
+                statViews[i].gameObject.SetActive(true);
+                statViews[i].Set(statType.ToString(),
+                    ValueToString(statValue, statType),
+                    $"(<size=80%>max</size> +{ValueToString(statAdd, statType)})",
+                    count);
             }
 
-            if (equipment.GetOptionCount() > 0)
-            {
-                for (var i = 0; i < stats.Count; i++)
-                {
-                    var subType = stats[i].StatType.ToString();
-                    var subValue = stats[i].AdditionalValueAsInt.ToString();
-                    var subAddValue = (int)(stats[i].AdditionalValueAsInt * row.ExtraStatGrowthMax *
-                                            GameConfig.TenThousandths);
-                    var subAdd = stats[i].StatType == StatType.SPD
-                        ? (subAddValue * 0.01m).ToString(CultureInfo.InvariantCulture)
-                        : subAddValue.ToString(CultureInfo.InvariantCulture);
-                    addStats[i].gameObject.SetActive(true);
-                    addStats[i].Set(subType,
-                        subValue,
-                        $"(<size=80%>max</size> +{subAdd})");
-                }
-            }
-
-            var skills = equipment.Skills;
+            var skills = itemOptionInfo.SkillOptions;
             for (var i = 0; i < skills.Count; i++)
             {
-                var name = skills[i].SkillRow.GetLocalizedName();
-                var power = skills[i].Power.ToString();
-                var chance = skills[i].Chance.ToString();
-                var powerAdd = (int)(skills[i].Power * row.ExtraSkillDamageGrowthMax *
-                                     GameConfig.TenThousandths);
-                var chanceAdd = (int)(skills[i].Chance * row.ExtraSkillChanceGrowthMax *
-                                      GameConfig.TenThousandths);
-                addSkills[i].gameObject.SetActive(true);
-                addSkills[i].Set(name,
+                var skillName = skills[i].name;
+                var power = skills[i].power;
+                var chance = skills[i].chance;
+                var powerAdd = Math.Max(1, (int)(power * row.ExtraSkillDamageGrowthMax * GameConfig.TenThousandths));
+                var chanceAdd = Math.Max(1, (int)(chance * row.ExtraSkillChanceGrowthMax * GameConfig.TenThousandths));
+                skillViews[i].gameObject.SetActive(true);
+                skillViews[i].Set(skillName,
                     $"{L10nManager.Localize("UI_SKILL_POWER")} : {power}",
                     $"(<size=80%>max</size> +{powerAdd})",
                     $"{L10nManager.Localize("UI_SKILL_CHANCE")} : {chance}",
                     $"(<size=80%>max</size> +{chanceAdd}%)");
             }
+        }
+
+        private string ValueToString(int value, StatType type)
+        {
+            var result = type == StatType.SPD ? value * 0.01m : value;
+            return result.ToString(CultureInfo.InvariantCulture);
         }
 
         private bool IsInteractableButton(IItem item, IItem material, BigInteger cost)
