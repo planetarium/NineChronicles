@@ -49508,7 +49508,6 @@ GameObject:
   - component: {fileID: 5543616872375949775}
   - component: {fileID: 3358325971045989297}
   - component: {fileID: 5471389875951417929}
-  - component: {fileID: 2979539703454119239}
   m_Layer: 5
   m_Name: CenterR
   m_TagString: Untagged
@@ -49587,79 +49586,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Horizontal: 1
   m_Veritical: 0
---- !u!114 &2979539703454119239
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3898654118625002730}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c10d422b52559da41aa9676770a8fc65, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  animationSteps:
-  - id: 0
-  duration: 9
-  initializeMode: 2
-  references:
-    version: 1
-    00000000:
-      type: {class: DOTweenAnimationStep, ns: BrunoMikoski.AnimationSequencer, asm: BrunoMikoski.AnimationSequencer}
-      data:
-        delay: 0
-        flowType: 0
-        target: {fileID: 7063612224852961473}
-        duration: 3
-        loopCount: -1
-        loopType: 1
-        actions:
-        - id: 1
-    00000001:
-      type: {class: AnchoredPositionMoveToPositionDOTweenActionBase, ns: BrunoMikoski.AnimationSequencer,
-        asm: BrunoMikoski.AnimationSequencer}
-      data:
-        direction: 0
-        ease:
-          ease: 37
-          curve:
-            serializedVersion: 2
-            m_Curve:
-            - serializedVersion: 3
-              time: 0
-              value: 0
-              inSlope: 2.0143924
-              outSlope: 2.0143924
-              tangentMode: 34
-              weightedMode: 0
-              inWeight: 0
-              outWeight: 0.33333334
-            - serializedVersion: 3
-              time: 0.4964276
-              value: 1
-              inSlope: 0.014290333
-              outSlope: 0.014290333
-              tangentMode: 34
-              weightedMode: 0
-              inWeight: 0.33333334
-              outWeight: 0.33333334
-            - serializedVersion: 3
-              time: 1
-              value: 0
-              inSlope: -1.9858117
-              outSlope: -1.9858117
-              tangentMode: 34
-              weightedMode: 0
-              inWeight: 0.33333334
-              outWeight: 0
-            m_PreInfinity: 2
-            m_PostInfinity: 2
-            m_RotationOrder: 4
-        isRelative: 0
-        autoKill: 0
-        axisConstraint: 2
-        position: {x: 5, y: -5}
 --- !u!1 &4101980333867387477
 GameObject:
   m_ObjectHideFlags: 0
@@ -76300,7 +76226,6 @@ GameObject:
   - component: {fileID: 1072131856429240245}
   - component: {fileID: 7161987120230162522}
   - component: {fileID: 181791094161573899}
-  - component: {fileID: 966724422408094669}
   m_Layer: 5
   m_Name: CenterL
   m_TagString: Untagged
@@ -76365,79 +76290,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &966724422408094669
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7063612224852961473}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c10d422b52559da41aa9676770a8fc65, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  animationSteps:
-  - id: 0
-  duration: 9
-  initializeMode: 2
-  references:
-    version: 1
-    00000000:
-      type: {class: DOTweenAnimationStep, ns: BrunoMikoski.AnimationSequencer, asm: BrunoMikoski.AnimationSequencer}
-      data:
-        delay: 0
-        flowType: 0
-        target: {fileID: 7063612224852961473}
-        duration: 3
-        loopCount: -1
-        loopType: 1
-        actions:
-        - id: 1
-    00000001:
-      type: {class: AnchoredPositionMoveToPositionDOTweenActionBase, ns: BrunoMikoski.AnimationSequencer,
-        asm: BrunoMikoski.AnimationSequencer}
-      data:
-        direction: 0
-        ease:
-          ease: 37
-          curve:
-            serializedVersion: 2
-            m_Curve:
-            - serializedVersion: 3
-              time: 0
-              value: 0
-              inSlope: 2.0143924
-              outSlope: 2.0143924
-              tangentMode: 34
-              weightedMode: 0
-              inWeight: 0
-              outWeight: 0.33333334
-            - serializedVersion: 3
-              time: 0.4964276
-              value: 1
-              inSlope: 0.014290333
-              outSlope: 0.014290333
-              tangentMode: 34
-              weightedMode: 0
-              inWeight: 0.33333334
-              outWeight: 0.33333334
-            - serializedVersion: 3
-              time: 1
-              value: 0
-              inSlope: -1.9858117
-              outSlope: -1.9858117
-              tangentMode: 34
-              weightedMode: 0
-              inWeight: 0.33333334
-              outWeight: 0
-            m_PreInfinity: 2
-            m_PostInfinity: 2
-            m_RotationOrder: 4
-        isRelative: 0
-        autoKill: 0
-        axisConstraint: 0
-        position: {x: -5, y: -5}
 --- !u!1 &7247797651371982921
 GameObject:
   m_ObjectHideFlags: 0
@@ -101458,12 +101310,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d5fca3c5620884591bceed7b864eb406, type: 3}
---- !u!224 &8362316411678214250 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 4525948530569832111, guid: d5fca3c5620884591bceed7b864eb406,
-    type: 3}
-  m_PrefabInstance: {fileID: 5387303841961029317}
-  m_PrefabAsset: {fileID: 0}
 --- !u!114 &2924821160230452931 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 7085430038173831174, guid: d5fca3c5620884591bceed7b864eb406,
@@ -101476,6 +101322,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c42f0ed0866e40cfb7a72e7e9aa790a0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!224 &8362316411678214250 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 4525948530569832111, guid: d5fca3c5620884591bceed7b864eb406,
+    type: 3}
+  m_PrefabInstance: {fileID: 5387303841961029317}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &7000090436681440357
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -101735,6 +101587,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c5267550da1c5564fbd3a183284ebe1b, type: 3}
+--- !u!224 &1625716816274106496 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 8622957318749041893, guid: c5267550da1c5564fbd3a183284ebe1b,
+    type: 3}
+  m_PrefabInstance: {fileID: 7000090436681440357}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &9015078626668487820 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 2035256587400722665, guid: c5267550da1c5564fbd3a183284ebe1b,
@@ -101747,12 +101605,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 71e427cd373143168b5300936bfe4f16, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!224 &1625716816274106496 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 8622957318749041893, guid: c5267550da1c5564fbd3a183284ebe1b,
-    type: 3}
-  m_PrefabInstance: {fileID: 7000090436681440357}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &7000090437283535591
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -102017,6 +101869,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c5267550da1c5564fbd3a183284ebe1b, type: 3}
+--- !u!224 &1625716815755800066 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 8622957318749041893, guid: c5267550da1c5564fbd3a183284ebe1b,
+    type: 3}
+  m_PrefabInstance: {fileID: 7000090437283535591}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &9015078626104697358 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 2035256587400722665, guid: c5267550da1c5564fbd3a183284ebe1b,
@@ -102029,12 +101887,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 71e427cd373143168b5300936bfe4f16, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!224 &1625716815755800066 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 8622957318749041893, guid: c5267550da1c5564fbd3a183284ebe1b,
-    type: 3}
-  m_PrefabInstance: {fileID: 7000090437283535591}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &7000090438119528105
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -102216,6 +102068,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5527990495606193651, guid: 29d981ea8c1e7b54db21f3a5d0eb6781,
+        type: 3}
+      propertyPath: m_fontColor.a
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5527990495606193651, guid: 29d981ea8c1e7b54db21f3a5d0eb6781,
+        type: 3}
+      propertyPath: m_fontColor32.rgba
+      value: 4294209791
       objectReference: {fileID: 0}
     - target: {fileID: 6544527808654022341, guid: 29d981ea8c1e7b54db21f3a5d0eb6781,
         type: 3}
