@@ -16,6 +16,7 @@ using Serilog;
 namespace Nekoyume.Action
 {
     [Serializable]
+    [ActionObsolete(2100000)]
     [ActionType("buy4")]
     public class Buy4 : GameAction
     {
@@ -59,7 +60,9 @@ namespace Nekoyume.Action
                         GoldCurrencyState.Address);
                 return states.SetState(ShopState.Address, MarkChanged);
             }
-            
+
+            CheckObsolete(2100000, context);
+
             var addressesHex = GetSignerAndOtherAddressesHex(context, buyerAvatarAddress, sellerAvatarAddress);
 
             if (ctx.Signer.Equals(sellerAgentAddress))

@@ -15,6 +15,7 @@ using Serilog;
 namespace Nekoyume.Action
 {
     [Serializable]
+    [ActionObsolete(2100000)]
     [ActionType("hack_and_slash4")]
     public class HackAndSlash4 : GameAction
     {
@@ -66,6 +67,8 @@ namespace Nekoyume.Action
                 states = states.SetState(WeeklyArenaAddress, MarkChanged);
                 return states.SetState(ctx.Signer, MarkChanged);
             }
+
+            CheckObsolete(2100000, context);
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
 

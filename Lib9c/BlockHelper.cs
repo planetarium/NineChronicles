@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Security.Cryptography;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Assets;
@@ -71,6 +72,7 @@ namespace Nekoyume
             var blockAction = new BlockPolicySource(Log.Logger).GetPolicy(5000000, maximumTransactions).BlockAction;
             return
                 BlockChain<PolymorphicAction<ActionBase>>.MakeGenesisBlock(
+                    HashAlgorithmType.Of<SHA256>(),
                     actions,
                     privateKey: privateKey,
                     blockAction: blockAction,
