@@ -26,8 +26,8 @@ namespace Nekoyume.UI
         public enum CombinationType
         {
             None,
-            CraftEquipment,
-            CrateFood,
+            CombineEquipment,
+            CombineConsumable,
             Enhancement,
         }
 
@@ -116,7 +116,7 @@ namespace Nekoyume.UI
 
             switch (type)
             {
-                case CombinationType.CraftEquipment:
+                case CombinationType.CombineEquipment:
                     SetCraftOption(GetInformation(type), itemUsable);
                     break;
                 case CombinationType.Enhancement:
@@ -225,8 +225,8 @@ namespace Nekoyume.UI
             {
                 case CombinationConsumable5.ResultModel craft:
                     return craft.itemUsable is Equipment
-                        ? CombinationType.CraftEquipment
-                        : CombinationType.CrateFood;
+                        ? CombinationType.CombineEquipment
+                        : CombinationType.CombineConsumable;
 
                 case ItemEnhancement.ResultModel _:
                     return CombinationType.Enhancement;
