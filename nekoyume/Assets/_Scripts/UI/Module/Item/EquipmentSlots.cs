@@ -149,9 +149,9 @@ namespace Nekoyume.UI.Module
         /// </summary>
         /// <param name="equipment"></param>
         /// <param name="slot"></param>
-        /// <param name="isMimisBrunnr">기본적으로는 false이고, 미미르의 샘 준비 UI에서만 장착 규칙이 달라 true를 입력하면 된다.</param>
+        /// <param name="filterType"></param>
         /// <returns></returns>
-        public bool TryGetToEquip(Equipment equipment, out EquipmentSlot slot, ElementalType? equipmentType = null)
+        public bool TryGetToEquip(Equipment equipment, out EquipmentSlot slot, ElementalType? filterType = null)
         {
             if (equipment is null)
             {
@@ -173,15 +173,17 @@ namespace Nekoyume.UI.Module
             {
                 var itemId = equipment.ItemId;
 
-                slot = typeSlots.FirstOrDefault(e =>
-                           !e.IsEmpty &&
-                           e.Item is ItemUsable itemUsable &&
-                           itemUsable.ItemId.Equals(itemId))
-                       ?? typeSlots.FirstOrDefault(e => e.IsEmpty)
-                       ?? typeSlots.FirstOrDefault(e =>
-                           !e.Item.ElementalType.Equals(equipmentType))
-                       ?? typeSlots.OrderBy(e => CPHelper.GetCP((ItemUsable) e.Item))
-                           .First();
+                slot = (typeSlots.FirstOrDefault(e =>
+                            !e.IsEmpty &&
+                            e.Item is ItemUsable itemUsable &&
+                            itemUsable.ItemId.Equals(itemId))
+                        ?? typeSlots.FirstOrDefault(e => e.IsEmpty))
+                        ?? (filterType != null
+                            ? typeSlots.FirstOrDefault(e =>
+                                !e.Item.ElementalType.Equals(filterType))
+                            : null)
+                        ?? typeSlots.OrderBy(e => CPHelper.GetCP((ItemUsable) e.Item))
+                            .First();
             }
             else
             {
