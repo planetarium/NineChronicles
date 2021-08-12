@@ -171,13 +171,11 @@ namespace Nekoyume.UI.Module
 
             if (itemSubType == ItemSubType.Ring)
             {
-                var itemId = equipment.ItemId;
-
                 // Find the first slot which contains the same `non-fungible item`
                 slot = typeSlots.FirstOrDefault(e =>
                             !e.IsEmpty &&
                             e.Item is INonFungibleItem nonFungibleItem &&
-                            nonFungibleItem.NonFungibleId.Equals(itemId))
+                            nonFungibleItem.NonFungibleId.Equals(equipment.NonFungibleId))
                         // Find the first empty slot.
                         ?? typeSlots.FirstOrDefault(e => e.IsEmpty)
                         // Find the first slot of `ElementalType` that is different from `elementalTypeToIgnore`.
