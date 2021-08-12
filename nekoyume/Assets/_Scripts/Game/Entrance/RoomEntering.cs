@@ -41,7 +41,6 @@ namespace Nekoyume.Game.Entrance
             var player = stage.GetPlayer(roomPosition - new Vector2(3.0f, 0.0f));
             player.transform.localScale = Vector3.one;
             player.SetSortingLayer(SortingLayer.NameToID("Character"), 100);
-            player.DisableHUD();
             player.StopAllCoroutines();
             player.StartRun();
             if (player.Costumes.Any(value => value.Id == 40100002))
