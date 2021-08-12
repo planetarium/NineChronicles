@@ -658,7 +658,7 @@ namespace Nekoyume.UI
                            ?? consumableSlots[0];
                     return true;
                 case ItemType.Equipment:
-                    return equipmentSlots.TryGetToEquip((Equipment) item, out slot);
+                    return equipmentSlots.TryGetToEquip((Equipment) item, out slot, ElementalType.Fire);
                 default:
                     slot = null;
                     return false;
