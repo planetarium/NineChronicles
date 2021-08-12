@@ -45,30 +45,11 @@ namespace Nekoyume.UI.Module
             IsEmpty = IsEmpty && optionCount == 0;
         }
 
-        public virtual void UpdateAsStatWithCount(StatType type, int value, int count) =>
+        public void UpdateAsTotalAndPlusStatWithCount(StatType type, int totalValue, int plusValue, int count) =>
             UpdateView(
-                $"{type.ToString()} {value}",
-                string.Empty,
-                count);
-
-        public virtual void UpdateAsTotalAndPlusStatWithCount(StatType type, int totalValue, int count, int plusValue) =>
-            UpdateView(
-                $"{type.ToString()} {totalValue}",
+                $"{type} {totalValue}",
                 $"+{plusValue}",
                 count);
-
-        public virtual void UpdateAsSkill(string skillName, int totalPower, int totalChance) =>
-            UpdateView(
-                $"{skillName} {totalPower} / {totalChance}%",
-                string.Empty,
-                1);
-
-        public virtual void UpdateAsTotalAndPlusSkill(string skillName, int totalPower, int totalChance, int plusPower,
-            int plusChance) =>
-            UpdateView(
-                $"{skillName} {totalPower} / {totalChance}%",
-                $"+{plusPower} / +{plusChance}%",
-                1);
 
         public override void UpdateToEmpty() =>
             UpdateView(string.Empty, string.Empty, 0);

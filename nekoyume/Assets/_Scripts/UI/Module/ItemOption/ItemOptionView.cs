@@ -57,12 +57,12 @@ namespace Nekoyume.UI.Module
             IsEmpty = string.IsNullOrEmpty(leftText) && string.IsNullOrEmpty(rightText);
         }
 
-        public virtual void UpdateViewAsTotalAndPlusStat(StatType type, int totalValue, int plusValue) =>
+        public void UpdateViewAsTotalAndPlusStat(StatType type, int totalValue, int plusValue) =>
             UpdateView(
-                $"{type.ToString()} {totalValue}",
+                $"{type} {totalValue}",
                 $"+{plusValue}");
 
-        public virtual void UpdateAsTotalAndPlusSkill(
+        public void UpdateAsTotalAndPlusSkill(
             string skillName,
             int totalPower,
             int totalChance,

@@ -212,7 +212,9 @@ namespace Nekoyume.UI
 
             var (_, mainStatValuePre) = itemOptionInfoPre.MainStat;
             var (mainStatType, mainStatValue) = itemOptionInfo.MainStat;
-            _itemMainStatView.UpdateViewAsTotalAndPlusStat(mainStatType, mainStatValue,
+            _itemMainStatView.UpdateViewAsTotalAndPlusStat(
+                mainStatType,
+                mainStatValue,
                 mainStatValue - mainStatValuePre);
 
             var statOptions = itemOptionInfo.StatOptions;
@@ -229,7 +231,7 @@ namespace Nekoyume.UI
 
                 var (_, preValue, _) = itemOptionInfoPre.StatOptions[i];
                 var (statType, value, count) = statOptions[i];
-                optionView.UpdateAsTotalAndPlusStatWithCount(statType, value, count, value - preValue);
+                optionView.UpdateAsTotalAndPlusStatWithCount(statType, value, value - preValue, count);
             }
 
             var skillOptions = itemOptionInfo.SkillOptions;

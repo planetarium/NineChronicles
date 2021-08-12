@@ -48,36 +48,17 @@ namespace Nekoyume.UI.Module
             IsEmpty = IsEmpty && string.IsNullOrEmpty(coverText);
         }
 
-        public override void UpdateAsStatWithCount(StatType type, int value, int count) =>
+        public void UpdateAsStatWithCount(StatType type, int value, int count) =>
             UpdateView(
-                $"{type.ToString()} {value}",
+                $"{type} {value}",
                 string.Empty,
                 count,
                 L10nManager.Localize("UI_ITEM_OPTION_COVER_TEXT_FORMAT", type.ToString()));
 
-        public override void UpdateAsTotalAndPlusStatWithCount(StatType type, int totalValue, int count, int plusValue) =>
-            UpdateView(
-                $"{type.ToString()} {totalValue}",
-                $"+{plusValue}",
-                count,
-                L10nManager.Localize("UI_ITEM_OPTION_COVER_TEXT_FORMAT", type.ToString()));
-
-        public override void UpdateAsSkill(string skillName, int totalPower, int totalChance) =>
+        public void UpdateAsSkill(string skillName, int totalPower, int totalChance) =>
             UpdateView(
                 $"{skillName} {totalPower} / {totalChance}%",
                 string.Empty,
-                1,
-                L10nManager.Localize("UI_ITEM_OPTION_COVER_TEXT_FORMAT", skillName));
-
-        public override void UpdateAsTotalAndPlusSkill(
-            string skillName,
-            int totalPower,
-            int totalChance,
-            int plusPower,
-            int plusChance) =>
-            UpdateView(
-                $"{skillName} {totalPower} / {totalChance}%",
-                $"+{plusPower} / +{plusChance}%",
                 1,
                 L10nManager.Localize("UI_ITEM_OPTION_COVER_TEXT_FORMAT", skillName));
 
