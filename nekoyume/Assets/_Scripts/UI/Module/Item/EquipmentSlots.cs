@@ -176,16 +176,16 @@ namespace Nekoyume.UI.Module
                 // Find the first slot which contains the same `non-fungible item`
                 slot = typeSlots.FirstOrDefault(e =>
                             !e.IsEmpty &&
-                            e.Item is ItemUsable itemUsable &&
-                            itemUsable.ItemId.Equals(itemId))
+                            e.Item is INonFungibleItem nonFungibleItem &&
+                            nonFungibleItem.NonFungibleId.Equals(itemId))
                         // Find the first empty slot.
                         ?? typeSlots.FirstOrDefault(e => e.IsEmpty)
-                        // Find the first slot of equipment with `elementalTypeToIgnore` excluded.
+                        // Find the first slot of `ElementalType` that is different from `elementalTypeToIgnore`.
                         ?? (elementalTypeToIgnore != null
                             ? typeSlots.FirstOrDefault(e =>
                                 !e.Item.ElementalType.Equals(elementalTypeToIgnore))
                             : null)
-                        // Find the first slot of equipment with lowest cp.
+                        // Find the first slot with the lowest 'CP'.
                         ?? typeSlots.OrderBy(e => CPHelper.GetCP((ItemUsable) e.Item))
                             .First();
             }
