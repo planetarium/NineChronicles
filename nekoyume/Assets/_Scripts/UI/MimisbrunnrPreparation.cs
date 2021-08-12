@@ -384,7 +384,6 @@ namespace Nekoyume.UI
             UpdateBattleStartButton();
 
             inventory.SharedModel.DimmedFunc.Value = inventoryItem =>
-                //inventoryItem.ItemBase.Value.ItemType == ItemType.Costume ||
                 inventoryItem.ItemBase.Value.ItemType == ItemType.Material ||
                 (inventoryItem.ItemBase.Value.ItemType == ItemType.Equipment && !IsExistElementalType(inventoryItem.ItemBase.Value.ElementalType));
 
