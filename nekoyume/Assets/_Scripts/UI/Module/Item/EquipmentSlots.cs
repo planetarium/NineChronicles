@@ -149,9 +149,9 @@ namespace Nekoyume.UI.Module
         /// </summary>
         /// <param name="equipment"></param>
         /// <param name="slot"></param>
-        /// <param name="filterType"></param>
+        /// <param name="elementalTypeToIgnore"></param>
         /// <returns></returns>
-        public bool TryGetToEquip(Equipment equipment, out EquipmentSlot slot, ElementalType? filterType = null)
+        public bool TryGetToEquip(Equipment equipment, out EquipmentSlot slot, ElementalType? elementalTypeToIgnore = null)
         {
             if (equipment is null)
             {
@@ -173,15 +173,19 @@ namespace Nekoyume.UI.Module
             {
                 var itemId = equipment.ItemId;
 
-                slot = (typeSlots.FirstOrDefault(e =>
+                // Find the first slot which contains the same `non-fungible item`
+                slot = typeSlots.FirstOrDefault(e =>
                             !e.IsEmpty &&
                             e.Item is ItemUsable itemUsable &&
                             itemUsable.ItemId.Equals(itemId))
-                        ?? typeSlots.FirstOrDefault(e => e.IsEmpty))
-                        ?? (filterType != null
+                        // Find the first empty slot.
+                        ?? typeSlots.FirstOrDefault(e => e.IsEmpty)
+                        // Find the first slot of equipment with `elementalTypeToIgnore` excluded.
+                        ?? (elementalTypeToIgnore != null
                             ? typeSlots.FirstOrDefault(e =>
-                                !e.Item.ElementalType.Equals(filterType))
+                                !e.Item.ElementalType.Equals(elementalTypeToIgnore))
                             : null)
+                        // Find the first slot of equipment with lowest cp.
                         ?? typeSlots.OrderBy(e => CPHelper.GetCP((ItemUsable) e.Item))
                             .First();
             }
