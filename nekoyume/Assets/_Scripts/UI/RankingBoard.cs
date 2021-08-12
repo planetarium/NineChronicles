@@ -499,5 +499,74 @@ namespace Nekoyume.UI
             }
             _weeklyCachedInfo = infos;
         }
+
+        public List<ArenaInfo2> OrderedArenaInfos = new List<ArenaInfo2>();
+
+        /// <summary>
+        /// Get arena rank information.
+        /// </summary>
+        /// <param name="firstRank">The first rank in the range that want to get.</param>
+        /// <param name="count">The count of the range that want to get.</param>
+        /// <returns>A list of tuples that contains <c>int</c> and <c>ArenaInfo2</c>.</returns>
+        public List<(int rank, ArenaInfo2 ArenaInfo2)> GetArenaInfos(
+            int firstRank = 1,
+            int? count = null)
+        {
+            if (OrderedArenaInfos is null || !OrderedArenaInfos.Any())
+            {
+                return new List<(int rank, ArenaInfo2 ArenaInfo2)>();
+            }
+
+            if (!(0 < firstRank && firstRank <= OrderedArenaInfos.Count))
+            {
+                throw new ArgumentOutOfRangeException(
+                    $"{nameof(firstRank)}({firstRank}) out of range({OrderedArenaInfos.Count})");
+            }
+
+            count = count.HasValue
+                ? Math.Min(OrderedArenaInfos.Count - firstRank + 1, count.Value)
+                : OrderedArenaInfos.Count - firstRank + 1;
+
+            var offsetIndex = 0;
+            return OrderedArenaInfos.GetRange(firstRank - 1, count.Value)
+                .Select(arenaInfo2 => (firstRank + offsetIndex++, ArenaInfo2: arenaInfo2))
+                .ToList();
+        }
+
+        /// <summary>
+        /// Get arena rank information.
+        /// </summary>
+        /// <param name="avatarAddress">The base value of the range that want to get.</param>
+        /// <param name="upperRange">The upper range than base value in the ranges that want to get.</param>
+        /// <param name="lowerRange">The lower range than base value in the ranges that want to get.</param>
+        /// <returns>A list of tuples that contains <c>int</c> and <c>ArenaInfo2</c>.</returns>
+        public List<(int rank, ArenaInfo2 ArenaInfo2)> GetArenaInfos(
+            Address avatarAddress,
+            int upperRange = 10,
+            int lowerRange = 10)
+        {
+            var avatarRank = 0;
+            for (var i = 0; i < OrderedArenaInfos.Count; i++)
+            {
+                var pair = OrderedArenaInfos[i];
+                if (!pair.AvatarAddress.Equals(avatarAddress))
+                {
+                    continue;
+                }
+
+                avatarRank = i + 1;
+                break;
+            }
+
+            if (avatarRank == 0)
+            {
+                return new List<(int rank, ArenaInfo2 ArenaInfo2)>();
+            }
+
+            var firstRank = Math.Max(1, avatarRank - upperRange);
+            var lastRank = Math.Min(avatarRank + lowerRange, OrderedArenaInfos.Count);
+            return GetArenaInfos(firstRank, lastRank - firstRank + 1);
+        }
+
     }
 }
