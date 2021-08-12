@@ -14,6 +14,8 @@ using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
 using System.Collections.Generic;
+using Bencodex.Types;
+using Nekoyume.Action;
 using Nekoyume.Game.Character;
 using Nekoyume.State.Subjects;
 using UnityEngine.UI;
@@ -188,7 +190,8 @@ namespace Nekoyume.UI
             var currentAddress = States.Instance.CurrentAvatarState?.address;
             if (currentAddress != null)
             {
-                var arenaInfo = States.Instance.WeeklyArenaState.GetArenaInfo(currentAddress.Value);
+                var address = States.Instance.WeeklyArenaState.address.Derive(currentAddress.Value.ToHex());
+                var arenaInfo = new ArenaInfo2((List)Game.Game.instance.Agent.GetState(address));
                 rankingExclamationMark.gameObject.SetActive(
                     btnRanking.IsUnlocked &&
                     (arenaInfo == null || arenaInfo.DailyChallengeCount > 0));

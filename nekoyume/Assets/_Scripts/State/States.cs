@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using Bencodex.Types;
 using Libplanet;
@@ -22,7 +23,7 @@ namespace Nekoyume.State
 
         public readonly Dictionary<Address, RankingMapState> RankingMapStates = new Dictionary<Address, RankingMapState>();
 
-        public WeeklyArenaState WeeklyArenaState { get; private set; }
+        public WeeklyArenaState2 WeeklyArenaState { get; private set; }
 
         public AgentState AgentState { get; private set; }
 
@@ -64,7 +65,7 @@ namespace Nekoyume.State
             RankingMapStatesSubject.OnNext(RankingMapStates);
         }
 
-        public void SetWeeklyArenaState(WeeklyArenaState state)
+        public void SetWeeklyArenaState(WeeklyArenaState2 state)
         {
             if (state is null)
             {
@@ -73,7 +74,7 @@ namespace Nekoyume.State
             }
 
             LocalLayer.Instance.InitializeWeeklyArena(state);
-            WeeklyArenaState = LocalLayer.Instance.Modify(state);
+            WeeklyArenaState = state;
             WeeklyArenaStateSubject.OnNext(WeeklyArenaState);
         }
 

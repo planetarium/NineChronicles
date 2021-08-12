@@ -11,10 +11,10 @@ namespace Nekoyume.State.Subjects
     /// </summary>
     public static class WeeklyArenaStateSubject
     {
-        public static readonly Subject<WeeklyArenaState> WeeklyArenaState = new Subject<WeeklyArenaState>();
+        public static readonly Subject<WeeklyArenaState2> WeeklyArenaState = new Subject<WeeklyArenaState2>();
         public static readonly Subject<long> ResetIndex = new Subject<long>();
         
-        public static void OnNext(WeeklyArenaState state)
+        public static void OnNext(WeeklyArenaState2 state)
         {
             if (state is null)
             {

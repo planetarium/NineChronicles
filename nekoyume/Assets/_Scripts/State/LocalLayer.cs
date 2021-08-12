@@ -111,7 +111,7 @@ namespace Nekoyume.State
             }
         }
 
-        public void InitializeWeeklyArena(WeeklyArenaState weeklyArenaState)
+        public void InitializeWeeklyArena(WeeklyArenaState2 weeklyArenaState)
         {
             var address = weeklyArenaState.address;
             _weeklyArenaModifierInfo = new ModifierInfo<WeeklyArenaStateModifier>(address);
@@ -501,22 +501,6 @@ namespace Nekoyume.State
             return modifierInfo is null
                 ? state
                 : PostModify(state, modifierInfo);
-        }
-
-        /// <summary>
-        /// 인자로 받은 주간 아레나 상태에 로컬 세팅을 반영한다.
-        /// </summary>
-        /// <param name="state"></param>
-        /// <returns></returns>
-        public WeeklyArenaState Modify(WeeklyArenaState state)
-        {
-            if (state is null ||
-                !state.address.Equals(_weeklyArenaModifierInfo.Address))
-            {
-                return null;
-            }
-
-            return PostModify(state, _weeklyArenaModifierInfo);
         }
 
         private static TState PostModify<TState, TModifier>(

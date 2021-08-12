@@ -109,7 +109,7 @@ namespace Nekoyume.BlockChain
         {
             var gameConfigState = States.Instance.GameConfigState;
             var index = (int) evaluation.BlockIndex / gameConfigState.WeeklyArenaInterval;
-            var weeklyArenaState = evaluation.OutputStates.GetWeeklyArenaState(WeeklyArenaState.DeriveAddress(index));
+            var weeklyArenaState = evaluation.OutputStates.GetWeeklyArenaState2(WeeklyArenaState2.DeriveAddress(index));
             States.Instance.SetWeeklyArenaState(weeklyArenaState);
         }
 

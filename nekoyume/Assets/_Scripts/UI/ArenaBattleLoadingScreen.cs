@@ -23,7 +23,7 @@ namespace Nekoyume.UI
         private Player player;
         private static readonly int Close1 = Animator.StringToHash("Close");
 
-        public void Show(ArenaInfo enemyInfo)
+        public void Show(ArenaInfo2 enemyInfo)
         {
             player = Game.Game.instance.Stage.GetPlayer();
             var sprite = SpriteHelper.GetItemIcon(player.Model.armor? .Id ?? GameConfig.DefaultAvatarArmorId);

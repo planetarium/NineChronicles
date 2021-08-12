@@ -1,4 +1,5 @@
 using System;
+using Bencodex.Types;
 using Libplanet;
 using Nekoyume.Model.State;
 using Nekoyume.State;
@@ -22,16 +23,16 @@ namespace Nekoyume
                 return false;
             }
 
-            weeklyArenaAddress = WeeklyArenaState.DeriveAddress(index);
+            weeklyArenaAddress = WeeklyArenaState2.DeriveAddress(index);
             return true;
         }
 
-        public static bool TryGetThisWeekState(out WeeklyArenaState weeklyArenaState)
+        public static bool TryGetThisWeekState(out WeeklyArenaState2 weeklyArenaState)
         {
             return TryGetThisWeekState(Game.Game.instance.Agent.BlockIndex, out weeklyArenaState);
         }
 
-        public static bool TryGetThisWeekState(long blockIndex, out WeeklyArenaState weeklyArenaState)
+        public static bool TryGetThisWeekState(long blockIndex, out WeeklyArenaState2 weeklyArenaState)
         {
             weeklyArenaState = null;
             if (blockIndex != Game.Game.instance.Agent.BlockIndex)
@@ -44,7 +45,7 @@ namespace Nekoyume
             if (!TryGetThisWeekAddress(blockIndex, out var address))
                 return false;
 
-            weeklyArenaState = new WeeklyArenaState(Game.Game.instance.Agent.GetState(address));
+            weeklyArenaState = new WeeklyArenaState2((List)Game.Game.instance.Agent.GetState(address));
             return true;
         }
 
@@ -58,22 +59,6 @@ namespace Nekoyume
             var gameConfigState = States.Instance.GameConfigState;
             var index = Math.Max((int) thisWeekBlockIndex / gameConfigState.WeeklyArenaInterval, 0);
             return WeeklyArenaState.DeriveAddress(index);
-        }
-
-        public static bool TryGetThisWeekStateAndArenaInfo(Address avatarAddress, out WeeklyArenaState weeklyArenaState,
-            out ArenaInfo arenaInfo)
-        {
-            return TryGetThisWeekStateAndArenaInfo(Game.Game.instance.Agent.BlockIndex, avatarAddress,
-                out weeklyArenaState, out arenaInfo);
-        }
-
-        public static bool TryGetThisWeekStateAndArenaInfo(long blockIndex, Address avatarAddress,
-            out WeeklyArenaState weeklyArenaState,
-            out ArenaInfo arenaInfo)
-        {
-            arenaInfo = null;
-            return TryGetThisWeekState(blockIndex, out weeklyArenaState) &&
-                   weeklyArenaState.TryGetValue(avatarAddress, out arenaInfo);
         }
 
         public static Address GetNextWeekAddress(long blockIndex)

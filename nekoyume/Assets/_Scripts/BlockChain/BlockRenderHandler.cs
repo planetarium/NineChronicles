@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Bencodex.Types;
 using Lib9c.Renderer;
 using Nekoyume.L10n;
 using Nekoyume.Model.State;
@@ -82,10 +83,9 @@ namespace Nekoyume.BlockChain
 
                     var weeklyArenaIndex =
                         (int) currentBlockIndex / gameConfigState.WeeklyArenaInterval;
-                    var weeklyArenaAddress = WeeklyArenaState.DeriveAddress(weeklyArenaIndex);
+                    var weeklyArenaAddress = WeeklyArenaState2.DeriveAddress(weeklyArenaIndex);
                     var weeklyArenaState =
-                        new WeeklyArenaState(
-                            (Bencodex.Types.Dictionary) agent.GetState(weeklyArenaAddress));
+                        new WeeklyArenaState2((List)agent.GetState(weeklyArenaAddress));
                     States.Instance.SetWeeklyArenaState(weeklyArenaState);
                 })
                 .AddTo(_disposables);

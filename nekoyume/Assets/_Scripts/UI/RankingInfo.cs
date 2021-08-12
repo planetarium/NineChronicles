@@ -63,14 +63,14 @@ namespace Nekoyume.UI
             remainTimeSlider.value = blockIndex - _resetIndex;
         }
 
-        private void SetWeeklyArenaState(WeeklyArenaState weeklyArenaState)
+        private void SetWeeklyArenaState(WeeklyArenaState2 weeklyArenaState)
         {
             _resetIndex = weeklyArenaState.ResetIndex;
             remainTimeSlider.value = Game.Game.instance.Agent.BlockIndex - _resetIndex;
             UpdateArenaInfo(weeklyArenaState);
         }
 
-        private void UpdateArenaInfo(WeeklyArenaState weeklyArenaState)
+        private void UpdateArenaInfo(WeeklyArenaState2 weeklyArenaState)
         {
             var avatarAddress = States.Instance.CurrentAvatarState?.address;
             if (avatarAddress == null)
@@ -80,8 +80,8 @@ namespace Nekoyume.UI
                 return;
             }
 
-            var arenaInfos = weeklyArenaState
-                .GetArenaInfos(avatarAddress.Value, 0, 0);
+            var rankingBoard = Widget.Find<RankingBoard>();
+            var arenaInfos = rankingBoard.GetArenaInfos(avatarAddress.Value, 0, 0);
 
             if (arenaInfos.Count == 0)
             {
@@ -90,7 +90,7 @@ namespace Nekoyume.UI
                 return;
             }
 
-            var record = arenaInfos[0].arenaInfo.ArenaRecord;
+            var record = arenaInfos[0].ArenaInfo2.ArenaRecord;
             winCount.text = record.Win.ToString();
             loseCount.text = record.Lose.ToString();
         }

@@ -20,8 +20,8 @@ namespace Nekoyume.UI.Scroller
         public class ViewModel
         {
             public int rank;
-            public ArenaInfo arenaInfo;
-            public ArenaInfo currentAvatarArenaInfo;
+            public ArenaInfo2 arenaInfo;
+            public ArenaInfo2 currentAvatarArenaInfo;
         }
 
         [SerializeField]
@@ -75,7 +75,7 @@ namespace Nekoyume.UI.Scroller
             ? _rectTransformCache
             : _rectTransformCache = GetComponent<RectTransform>();
 
-        public ArenaInfo ArenaInfo { get; private set; }
+        public ArenaInfo2 ArenaInfo { get; private set; }
 
         public IObservable<ArenaRankCell> OnClickAvatarInfo => _onClickAvatarInfo;
 
@@ -127,8 +127,8 @@ namespace Nekoyume.UI.Scroller
 
         public void Show((
             int rank,
-            ArenaInfo arenaInfo,
-            ArenaInfo currentAvatarArenaInfo) itemData)
+            ArenaInfo2 arenaInfo,
+            ArenaInfo2 currentAvatarArenaInfo) itemData)
         {
             Show(new ViewModel
             {
@@ -239,7 +239,7 @@ namespace Nekoyume.UI.Scroller
             }
         }
 
-        private static string GetCP(ArenaInfo arenaInfo)
+        private static string GetCP(ArenaInfo2 arenaInfo)
         {
             if (States.Instance.CurrentAvatarState?.address == arenaInfo.AvatarAddress)
             {

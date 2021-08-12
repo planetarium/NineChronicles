@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Threading.Tasks;
+using Bencodex.Types;
 using Libplanet;
 using Nekoyume.Action;
 using Nekoyume.Battle;
@@ -11,11 +13,9 @@ using Nekoyume.Game.Controller;
 using Nekoyume.L10n;
 using Nekoyume.Model.State;
 using Nekoyume.State;
-using Nekoyume.State.Subjects;
 using Nekoyume.UI.Module;
 using Nekoyume.UI.Scroller;
 using TMPro;
-using UniRx;
 using UnityEngine;
 
 namespace Nekoyume.UI
@@ -80,8 +80,8 @@ namespace Nekoyume.UI
         private List<Nekoyume.Model.State.RankingInfo> _rankingInfos =
             new List<Nekoyume.Model.State.RankingInfo>();
 
-        private List<(int rank, ArenaInfo arenaInfo)> _weeklyCachedInfo =
-            new List<(int rank, ArenaInfo arenaInfo)>();
+        private List<(int rank, ArenaInfo2 arenaInfo)> _weeklyCachedInfo =
+            new List<(int rank, ArenaInfo2 arenaInfo)>();
 
         private readonly List<IDisposable> _disposablesFromShow = new List<IDisposable>();
 
@@ -153,13 +153,19 @@ namespace Nekoyume.UI
 
         public void Show(StateType stateType = StateType.Arena)
         {
+            AsyncShow(stateType);
+        }
+
+        private async void AsyncShow(StateType stateType)
+        {
+            Find<DataLoadingScreen>().Show();
+
             var agent = Game.Game.instance.Agent;
             var gameConfigState = States.Instance.GameConfigState;
             var weeklyArenaIndex = (int) agent.BlockIndex / gameConfigState.WeeklyArenaInterval;
-            var weeklyArenaAddress = WeeklyArenaState.DeriveAddress(weeklyArenaIndex);
+            var weeklyArenaAddress = WeeklyArenaState2.DeriveAddress(weeklyArenaIndex);
             var weeklyArenaState =
-                new WeeklyArenaState(
-                    (Bencodex.Types.Dictionary) agent.GetState(weeklyArenaAddress));
+                new WeeklyArenaState2((List) agent.GetState(weeklyArenaAddress));
             States.Instance.SetWeeklyArenaState(weeklyArenaState);
 
             for (var i = 0; i < RankingState.RankingMapCapacity; ++i)
@@ -171,35 +177,42 @@ namespace Nekoyume.UI
                 States.Instance.SetRankingMapStates(rankingMapState);
             }
 
-            base.Show();
+            var task = Task.Run(() =>
+            {
+                UpdateWeeklyCache(States.Instance.WeeklyArenaState);
+                return true;
+            });
 
-            var stage = Game.Game.instance.Stage;
-            stage.LoadBackground("ranking");
-            _player = stage.GetPlayer();
-            _player.gameObject.SetActive(false);
-            UpdateWeeklyCache(States.Instance.WeeklyArenaState);
+            var result = await task;
+            if (result)
+            {
+                Find<DataLoadingScreen>().Close();
+                base.Show();
 
-            _state.SetValueAndForceNotify(stateType);
+                var stage = Game.Game.instance.Stage;
+                stage.LoadBackground("ranking");
+                _player = stage.GetPlayer();
+                _player.gameObject.SetActive(false);
 
-            Find<BottomMenu>()?.Show(
-                UINavigator.NavigationType.Back,
-                SubscribeBackButtonClick,
-                true,
-                BottomMenu.ToggleableType.Ranking,
-                BottomMenu.ToggleableType.Character);
+                _state.SetValueAndForceNotify(stateType);
 
-            var go = Game.Game.instance.Stage.npcFactory.Create(
-                NPCId,
-                NPCPosition,
-                LayerType.InGameBackground,
-                3);
-            _npc = go.GetComponent<NPC>();
-            _npc.gameObject.SetActive(false);
+                Find<BottomMenu>()?.Show(
+                    UINavigator.NavigationType.Back,
+                    SubscribeBackButtonClick,
+                    true,
+                    BottomMenu.ToggleableType.Ranking,
+                    BottomMenu.ToggleableType.Character);
 
-            AudioController.instance.PlayMusic(AudioController.MusicCode.Ranking);
-            WeeklyArenaStateSubject.WeeklyArenaState
-                .Subscribe(SubscribeWeeklyArenaState)
-                .AddTo(_disposablesFromShow);
+                var go = Game.Game.instance.Stage.npcFactory.Create(
+                    NPCId,
+                    NPCPosition,
+                    LayerType.InGameBackground,
+                    3);
+                _npc = go.GetComponent<NPC>();
+                _npc.gameObject.SetActive(false);
+
+                AudioController.instance.PlayMusic(AudioController.MusicCode.Ranking);
+            }
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
@@ -249,7 +262,7 @@ namespace Nekoyume.UI
             }
         }
 
-        private void SubscribeWeeklyArenaState(WeeklyArenaState state)
+        private void SubscribeWeeklyArenaState(WeeklyArenaState2 state)
         {
             UpdateWeeklyCache(state);
             UpdateArena();
@@ -281,7 +294,6 @@ namespace Nekoyume.UI
             if (!arenaInfo.Active)
             {
                 currentAvatarCellView.ShowMyDefaultInfo();
-                LocalLayerModifier.AddWeeklyArenaInfoActivator(Game.Game.instance.TableSheets.CharacterSheet);
             }
 
             UpdateBoard(StateType.Arena);
@@ -303,7 +315,7 @@ namespace Nekoyume.UI
 
                 var currentAvatarAddress = States.Instance.CurrentAvatarState?.address;
                 if (!currentAvatarAddress.HasValue ||
-                    !weeklyArenaState.ContainsKey(currentAvatarAddress.Value))
+                    !weeklyArenaState.AvatarAddresses.Any(a => a.Equals(currentAvatarAddress.Value)))
                 {
                     currentAvatarCellView.ShowMyDefaultInfo();
 
@@ -335,9 +347,10 @@ namespace Nekoyume.UI
                 if (currentAvatarArenaInfo is null)
                 {
                     currentAvatarRank = -1;
-                    currentAvatarArenaInfo = new ArenaInfo(
+                    currentAvatarArenaInfo = new ArenaInfo2(
                         States.Instance.CurrentAvatarState,
                         Game.Game.instance.TableSheets.CharacterSheet,
+                        Game.Game.instance.TableSheets.CostumeStatSheet,
                         false);
                 }
                 
@@ -476,28 +489,46 @@ namespace Nekoyume.UI
                 .ToList();
         }
 
-        private void UpdateWeeklyCache(WeeklyArenaState state)
+        private void UpdateWeeklyCache(WeeklyArenaState2 state)
         {
-            var infos = state.GetArenaInfos(1, 3);
+            var map = state.AvatarAddresses
+                .Select(a => state.address.Derive(a.ToHex()))
+                .Select(address => new ArenaInfo2((List)Game.Game.instance.Agent.GetState(address)))
+                .ToList();
+
+            OrderedArenaInfos = map
+                .OrderByDescending(a => a.Score)
+                .ThenBy(a => a.CombatPoint)
+                .ToList();
+
+            var infos = GetArenaInfos(1, 3);
+            var list = new List<(int rank, ArenaInfo2 arenaInfo)>();
 
             if (States.Instance.CurrentAvatarState != null)
             {
                 var currentAvatarAddress = States.Instance.CurrentAvatarState.address;
-                var infos2 = state.GetArenaInfos(currentAvatarAddress, 20, 20);
+                var infos2 = GetArenaInfos(currentAvatarAddress, 20, 20);
                 // Player does not play prev & this week arena.
-                if (!infos2.Any() && state.OrderedArenaInfos.Any())
+                if (!infos2.Any() && OrderedArenaInfos.Any())
                 {
                     var characterSheet = Game.Game.instance.TableSheets.CharacterSheet;
                     var costumeStatSheet = Game.Game.instance.TableSheets.CostumeStatSheet;
                     var cp = CPHelper.GetCPV2(States.Instance.CurrentAvatarState, characterSheet, costumeStatSheet);
-                    var address = state.OrderedArenaInfos.First(i => i.CombatPoint <= cp).AvatarAddress;
-                    infos2 = state.GetArenaInfos(address, 20, 20);
+                    var address = OrderedArenaInfos.First(i => i.CombatPoint <= cp).AvatarAddress;
+                    infos2 = GetArenaInfos(address, 20, 20);
                 }
 
                 infos.AddRange(infos2);
-                infos = infos.ToImmutableHashSet().OrderBy(tuple => tuple.rank).ToList();
+                var weeklyAddress = state.address;
+                foreach (var (rank, scoreInfo) in infos)
+                {
+                    var info = new ArenaInfo2((List)Game.Game.instance.Agent.GetState(weeklyAddress.Derive(scoreInfo.AvatarAddress.ToHex())));
+                    list.Add((rank, info));
+                }
+
+                list = list.ToImmutableHashSet().OrderBy(t => t.rank).ToList();
             }
-            _weeklyCachedInfo = infos;
+            _weeklyCachedInfo = list;
         }
 
         public List<ArenaInfo2> OrderedArenaInfos = new List<ArenaInfo2>();
