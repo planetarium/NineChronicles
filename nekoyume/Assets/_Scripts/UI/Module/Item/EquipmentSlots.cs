@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Battle;
 using Nekoyume.Model;
+using Nekoyume.Model.Elemental;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using UnityEngine;
@@ -148,8 +149,9 @@ namespace Nekoyume.UI.Module
         /// </summary>
         /// <param name="equipment"></param>
         /// <param name="slot"></param>
+        /// <param name="elementalTypeToIgnore"></param>
         /// <returns></returns>
-        public bool TryGetToEquip(Equipment equipment, out EquipmentSlot slot)
+        public bool TryGetToEquip(Equipment equipment, out EquipmentSlot slot, ElementalType? elementalTypeToIgnore = null)
         {
             if (equipment is null)
             {
@@ -170,13 +172,22 @@ namespace Nekoyume.UI.Module
             if (itemSubType == ItemSubType.Ring)
             {
                 var itemId = equipment.ItemId;
+
+                // Find the first slot which contains the same `non-fungible item`
                 slot = typeSlots.FirstOrDefault(e =>
-                           !e.IsEmpty &&
-                           e.Item is ItemUsable itemUsable &&
-                           itemUsable.ItemId.Equals(itemId))
-                       ?? typeSlots.FirstOrDefault(e => e.IsEmpty)
-                       ?? typeSlots.OrderBy(e => CPHelper.GetCP((ItemUsable) e.Item))
-                           .First();
+                            !e.IsEmpty &&
+                            e.Item is ItemUsable itemUsable &&
+                            itemUsable.ItemId.Equals(itemId))
+                        // Find the first empty slot.
+                        ?? typeSlots.FirstOrDefault(e => e.IsEmpty)
+                        // Find the first slot of equipment with `elementalTypeToIgnore` excluded.
+                        ?? (elementalTypeToIgnore != null
+                            ? typeSlots.FirstOrDefault(e =>
+                                !e.Item.ElementalType.Equals(elementalTypeToIgnore))
+                            : null)
+                        // Find the first slot of equipment with lowest cp.
+                        ?? typeSlots.OrderBy(e => CPHelper.GetCP((ItemUsable) e.Item))
+                            .First();
             }
             else
             {
