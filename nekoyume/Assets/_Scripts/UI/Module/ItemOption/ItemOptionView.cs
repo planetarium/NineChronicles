@@ -30,12 +30,17 @@ namespace Nekoyume.UI.Module
         public void Show(bool ignoreAnimation = false)
         {
             gameObject.SetActive(true);
-            animator.Play(AnimatorHashShow, 0, ignoreAnimation ? 1f : 0f);
+
+            if (animator)
+            {
+                animator.Play(AnimatorHashShow, 0, ignoreAnimation ? 1f : 0f);
+            }
         }
 
         public void Hide(bool ignoreAnimation = false)
         {
-            if (ignoreAnimation)
+            if (ignoreAnimation ||
+                !animator)
             {
                 gameObject.SetActive(false);
                 return;
@@ -52,12 +57,12 @@ namespace Nekoyume.UI.Module
             IsEmpty = string.IsNullOrEmpty(leftText) && string.IsNullOrEmpty(rightText);
         }
 
-        public virtual void UpdateViewAsTotalAndPlusStat(StatType type, int totalValue, int plusValue) =>
+        public void UpdateViewAsTotalAndPlusStat(StatType type, int totalValue, int plusValue) =>
             UpdateView(
-                $"{type.ToString()} {totalValue}",
-                $"+{plusValue}");
+                $"{type} {totalValue}",
+                plusValue > 0 ? $"+{plusValue}" : string.Empty);
 
-        public virtual void UpdateAsTotalAndPlusSkill(
+        public void UpdateAsTotalAndPlusSkill(
             string skillName,
             int totalPower,
             int totalChance,
@@ -65,7 +70,7 @@ namespace Nekoyume.UI.Module
             int plusChance) =>
             UpdateView(
                 $"{skillName} {totalPower} / {totalChance}%",
-                $"+{plusPower} / +{plusChance}%");
+                plusPower > 0 || plusChance > 0 ? $"+{plusPower} / +{plusChance}%" : string.Empty);
 
         public virtual void UpdateToEmpty() => UpdateView(string.Empty, string.Empty);
 
@@ -92,6 +97,11 @@ namespace Nekoyume.UI.Module
 
         protected static void UpdateText(TMP_Text textObject, string text)
         {
+            if (!textObject)
+            {
+                return;
+            }
+
             if (string.IsNullOrEmpty(text))
             {
                 textObject.enabled = false;
