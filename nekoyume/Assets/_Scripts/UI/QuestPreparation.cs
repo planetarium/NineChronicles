@@ -569,7 +569,8 @@ namespace Nekoyume.UI
             else if (slot.ItemSubType == ItemSubType.Weapon)
             {
                 _player.EquipWeapon((Weapon) slot.Item);
-            }else if (equipCostume)
+            }
+            else if (equipCostume)
             {
                 _player.EquipCostume((Costume) slot.Item);
             }
