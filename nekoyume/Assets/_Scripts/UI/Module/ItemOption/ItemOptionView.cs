@@ -60,7 +60,7 @@ namespace Nekoyume.UI.Module
         public void UpdateViewAsTotalAndPlusStat(StatType type, int totalValue, int plusValue) =>
             UpdateView(
                 $"{type} {totalValue}",
-                $"+{plusValue}");
+                plusValue > 0 ? $"+{plusValue}" : string.Empty);
 
         public void UpdateAsTotalAndPlusSkill(
             string skillName,
@@ -70,7 +70,7 @@ namespace Nekoyume.UI.Module
             int plusChance) =>
             UpdateView(
                 $"{skillName} {totalPower} / {totalChance}%",
-                $"+{plusPower} / +{plusChance}%");
+                plusPower > 0 || plusChance > 0 ? $"+{plusPower} / +{plusChance}%" : string.Empty);
 
         public virtual void UpdateToEmpty() => UpdateView(string.Empty, string.Empty);
 
