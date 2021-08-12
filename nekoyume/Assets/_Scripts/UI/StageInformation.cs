@@ -198,7 +198,7 @@ namespace Nekoyume.UI
             switch (_stageType)
             {
                 case StageType.Quest:
-                    Find<QuestPreparation>().Show(true);
+                    Find<QuestPreparation>().Show(closeButtonText.text, true);
                     break;
 
                 case StageType.Mimisbrunnr:
