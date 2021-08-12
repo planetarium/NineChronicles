@@ -85,27 +85,26 @@ namespace Nekoyume.UI
         [SerializeField]
         private GameObject buttonDisabled;
 
+        private Animator _animator;
         private EnhancementCostSheetV2 _costSheet;
         private Equipment _baseItem;
         private Equipment _materialItem;
         private BigInteger _costNcg = 0;
         private string errorMessage;
 
+        private static readonly int HashToShow = Animator.StringToHash("Show");
+        private static readonly int HashToRegisterBase = Animator.StringToHash("RegisterBase");
+        private static readonly int HashToPostRegisterBase = Animator.StringToHash("PostRegisterBase");
+        private static readonly int HashToPostRegisterMaterial = Animator.StringToHash("PostRegisterMaterial");
+        private static readonly int HashToUnregisterMaterial = Animator.StringToHash("UnregisterMaterial");
+        private static readonly int HashToClose = Animator.StringToHash("Close");
+
         protected override void Awake()
         {
             base.Awake();
             upgradeButton.onClick.AddListener(Action);
-            closeButton.onClick.AddListener(() =>
-            {
-                Close(true);
-                Find<CombinationMain>().Show();
-            });
-
-            CloseWidget = () =>
-            {
-                Close(true);
-                Find<CombinationMain>().Show();
-            };
+            closeButton.onClick.AddListener(Close);
+            CloseWidget = Close;
         }
 
         public override void Initialize()
@@ -120,6 +119,7 @@ namespace Nekoyume.UI
             inventory.SharedModel.EffectEnabledFunc.Value = Contains;
 
             _costSheet = Game.Game.instance.TableSheets.EnhancementCostSheetV2;
+            _animator = GetComponent<Animator>();
 
             baseSlot.RemoveButton.onClick.AddListener(() =>
             {
@@ -130,6 +130,8 @@ namespace Nekoyume.UI
                 buttonDisabled.SetActive(!IsInteractableButton(_baseItem, _materialItem, _costNcg));
                 ClearInformation();
                 SetActiveContainer(true);
+                Debug.Log("Remove base");
+                _animator.PlayInFixedTime(HashToRegisterBase);
             });
 
             materialSlot.RemoveButton.onClick.AddListener(() =>
@@ -138,16 +140,25 @@ namespace Nekoyume.UI
                 _materialItem = null;
                 inventory.SharedModel.UpdateDimAndEffectAll();
                 buttonDisabled.SetActive(!IsInteractableButton(_baseItem, _materialItem, _costNcg));
-                materialGuideText.text =
-                    L10nManager.Localize("UI_SELECT_MATERIAL_TO_UPGRADE");
+                materialGuideText.text = L10nManager.Localize("UI_SELECT_MATERIAL_TO_UPGRADE");
+                Debug.Log("Remove material");
+                _animator.PlayInFixedTime(HashToUnregisterMaterial);
             });
         }
 
         public override void Show(bool ignoreShowAnimation = false)
         {
             base.Show(ignoreShowAnimation);
+            _animator.PlayInFixedTime(HashToShow);
             Clear();
             HelpPopup.HelpMe(100017, true);
+        }
+
+        private void Close()
+        {
+            _animator.PlayInFixedTime(HashToClose);
+            Close(true);
+            Find<CombinationMain>().Show();
         }
 
         private bool DimFunc(InventoryItem inventoryItem)
@@ -376,6 +387,7 @@ namespace Nekoyume.UI
                 baseSlot.AddMaterial(view.Model.ItemBase.Value);
                 materialGuideText.text = L10nManager.Localize("UI_SELECT_MATERIAL_TO_UPGRADE");
                 view.Select(true);
+                _animator.PlayInFixedTime(HashToPostRegisterBase);
             }
             else
             {
@@ -384,6 +396,7 @@ namespace Nekoyume.UI
                 materialSlot.AddMaterial(view.Model.ItemBase.Value);
                 materialGuideText.text = L10nManager.Localize("UI_UPGRADE_GUIDE");
                 view.Select(false);
+                _animator.PlayInFixedTime(HashToPostRegisterMaterial);
             }
 
             buttonDisabled.SetActive(!IsInteractableButton(_baseItem, _materialItem, _costNcg));
