@@ -622,7 +622,6 @@ namespace Nekoyume.UI
                     return equipmentSlots.TryGetToEquip((Equipment) item, out slot);
                 case ItemType.Costume:
                     return costumeSlots.TryGetToEquip((Costume) item, out slot);
-                // equipmentSlots는 말 그대로 장비들 슬롯만 갖고있어서 코스튬 슬롯을 가져오는 작업이 필요할 것 같음.
                 default:
                     slot = null;
                     return false;
