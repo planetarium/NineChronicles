@@ -949,6 +949,7 @@ GameObject:
   - component: {fileID: 5495995641355029135}
   - component: {fileID: 5495995641355029121}
   - component: {fileID: 409872150822889065}
+  - component: {fileID: 4930007547896894781}
   m_Layer: 5
   m_Name: Item_RecipeSlot
   m_TagString: Untagged
@@ -1007,6 +1008,18 @@ MonoBehaviour:
   unlockConditionText: {fileID: 2566518020154693237}
   button: {fileID: 2408656741481977993}
   selectable: 1
+--- !u!225 &4930007547896894781
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5495995641355029134}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &5584105385802590638
 GameObject:
   m_ObjectHideFlags: 0

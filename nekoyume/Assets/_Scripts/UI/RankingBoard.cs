@@ -15,7 +15,6 @@ using Nekoyume.State.Subjects;
 using Nekoyume.UI.Module;
 using Nekoyume.UI.Scroller;
 using TMPro;
-using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -32,7 +31,7 @@ namespace Nekoyume.UI
             Overall
         }
 
-        private static readonly Vector3 NPCPosition = new Vector3(1000.1f, 998.6f, 2.69f);
+        private static readonly Vector3 NPCPosition = new Vector3(1000.1f, 999.1f, 2.69f);
         private const int NPCId = 300002;
 
         [SerializeField]

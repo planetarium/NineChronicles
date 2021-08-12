@@ -6,7 +6,7 @@ AnimationClip:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: UICombinationController_Upgrade@MaterialSelect
+  m_Name: UICombinationController_Upgrade@BaseSlotSelect
   serializedVersion: 6
   m_Legacy: 0
   m_Compressed: 0
@@ -103,7 +103,7 @@ AnimationClip:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    path: BackCanvas/Upgrade/CenterArea/MaterialSlot/Select
+    path: BackCanvas/Upgrade/CenterArea/BaseSlot/Select
   m_FloatCurves:
   - curve:
       serializedVersion: 2
@@ -121,8 +121,45 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_IsActive
-    path: BackCanvas/Upgrade/CenterArea/MaterialSlot/EmptyEffectContainer
+    path: BackCanvas/Upgrade/CenterArea/BaseSlot/Select
     classID: 1
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 136
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.06666667
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 136
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.41666666
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 136
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: m_Alpha
+    path: BackCanvas/Upgrade/CenterArea/BaseSlot/Select
+    classID: 225
     script: {fileID: 0}
   - curve:
       serializedVersion: 2
@@ -149,26 +186,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_IsActive
-    path: BackCanvas/Upgrade/CenterArea/MaterialSlot/None
-    classID: 1
-    script: {fileID: 0}
-  - curve:
-      serializedVersion: 2
-      m_Curve:
-      - serializedVersion: 3
-        time: 0
-        value: 1
-        inSlope: Infinity
-        outSlope: Infinity
-        tangentMode: 103
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    attribute: m_IsActive
-    path: BackCanvas/Upgrade/CenterArea/MaterialSlot/Select
+    path: BackCanvas/Upgrade/CenterArea/BaseSlot/None
     classID: 1
     script: {fileID: 0}
   - curve:
@@ -205,7 +223,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_Color.r
-    path: BackCanvas/Upgrade/CenterArea/MaterialSlot/Select/Itemicon
+    path: BackCanvas/Upgrade/CenterArea/BaseSlot/Select/Itemicon
     classID: 114
     script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   - curve:
@@ -242,7 +260,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_Color.g
-    path: BackCanvas/Upgrade/CenterArea/MaterialSlot/Select/Itemicon
+    path: BackCanvas/Upgrade/CenterArea/BaseSlot/Select/Itemicon
     classID: 114
     script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   - curve:
@@ -279,7 +297,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_Color.b
-    path: BackCanvas/Upgrade/CenterArea/MaterialSlot/Select/Itemicon
+    path: BackCanvas/Upgrade/CenterArea/BaseSlot/Select/Itemicon
     classID: 114
     script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   - curve:
@@ -316,7 +334,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_ColorFactor
-    path: BackCanvas/Upgrade/CenterArea/MaterialSlot/Select/Itemicon
+    path: BackCanvas/Upgrade/CenterArea/BaseSlot/Select/Itemicon
     classID: 114
     script: {fileID: 11500000, guid: f8b2ed11d675446c5a49da1ea296d490, type: 3}
   - curve:
@@ -363,52 +381,15 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_Alpha
-    path: BackCanvas/Upgrade/CenterArea/MaterialSlot/EmptyEffectContainer
+    path: BackCanvas/Upgrade/CenterArea/BaseSlot/EmptyEffectContainer
     classID: 225
-    script: {fileID: 0}
-  - curve:
-      serializedVersion: 2
-      m_Curve:
-      - serializedVersion: 3
-        time: 0
-        value: 0
-        inSlope: Infinity
-        outSlope: Infinity
-        tangentMode: 103
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      - serializedVersion: 3
-        time: 0.016666668
-        value: 0
-        inSlope: Infinity
-        outSlope: Infinity
-        tangentMode: 103
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      - serializedVersion: 3
-        time: 0.06666667
-        value: 1
-        inSlope: Infinity
-        outSlope: Infinity
-        tangentMode: 103
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    attribute: m_IsActive
-    path: BackCanvas/Upgrade/CenterArea/MaterialSlot/Select/Itemicon
-    classID: 1
     script: {fileID: 0}
   m_PPtrCurves:
   - curve:
     - time: 0.41666666
       value: {fileID: 0}
     attribute: m_Material
-    path: BackCanvas/Upgrade/CenterArea/MaterialSlot/Select/Itemicon
+    path: BackCanvas/Upgrade/CenterArea/BaseSlot/Select/Itemicon
     classID: 114
     script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_SampleRate: 60
@@ -419,49 +400,49 @@ AnimationClip:
   m_ClipBindingConstant:
     genericBindings:
     - serializedVersion: 2
-      path: 707866770
+      path: 780041127
       attribute: 3
       script: {fileID: 0}
       typeID: 4
       customType: 0
       isPPtrCurve: 0
     - serializedVersion: 2
-      path: 1858468328
+      path: 780041127
       attribute: 2086281974
       script: {fileID: 0}
       typeID: 1
       customType: 0
       isPPtrCurve: 0
     - serializedVersion: 2
-      path: 1036946274
+      path: 780041127
+      attribute: 1574349066
+      script: {fileID: 0}
+      typeID: 225
+      customType: 0
+      isPPtrCurve: 0
+    - serializedVersion: 2
+      path: 886409707
       attribute: 2086281974
       script: {fileID: 0}
       typeID: 1
       customType: 0
       isPPtrCurve: 0
     - serializedVersion: 2
-      path: 707866770
-      attribute: 2086281974
-      script: {fileID: 0}
-      typeID: 1
-      customType: 0
-      isPPtrCurve: 0
-    - serializedVersion: 2
-      path: 561127043
+      path: 418447907
       attribute: 4215373228
       script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
       typeID: 114
       customType: 0
       isPPtrCurve: 0
     - serializedVersion: 2
-      path: 561127043
+      path: 418447907
       attribute: 2334886179
       script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
       typeID: 114
       customType: 0
       isPPtrCurve: 0
     - serializedVersion: 2
-      path: 561127043
+      path: 418447907
       attribute: 4097790204
       script: {fileID: 11500000, guid: f8b2ed11d675446c5a49da1ea296d490, type: 3}
       typeID: 114
@@ -475,28 +456,21 @@ AnimationClip:
       customType: 0
       isPPtrCurve: 0
     - serializedVersion: 2
-      path: 1858468328
+      path: 3923420730
       attribute: 1574349066
       script: {fileID: 0}
       typeID: 225
       customType: 0
       isPPtrCurve: 0
     - serializedVersion: 2
-      path: 561127043
-      attribute: 2086281974
-      script: {fileID: 0}
-      typeID: 1
-      customType: 0
-      isPPtrCurve: 0
-    - serializedVersion: 2
-      path: 561127043
+      path: 418447907
       attribute: 2324865467
       script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
       typeID: 114
       customType: 0
       isPPtrCurve: 1
     - serializedVersion: 2
-      path: 561127043
+      path: 418447907
       attribute: 2526845255
       script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
       typeID: 114
@@ -541,8 +515,45 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_IsActive
-    path: BackCanvas/Upgrade/CenterArea/MaterialSlot/EmptyEffectContainer
+    path: BackCanvas/Upgrade/CenterArea/BaseSlot/Select
     classID: 1
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 136
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.06666667
+        value: 0
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 136
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.41666666
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 136
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: m_Alpha
+    path: BackCanvas/Upgrade/CenterArea/BaseSlot/Select
+    classID: 225
     script: {fileID: 0}
   - curve:
       serializedVersion: 2
@@ -569,26 +580,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_IsActive
-    path: BackCanvas/Upgrade/CenterArea/MaterialSlot/None
-    classID: 1
-    script: {fileID: 0}
-  - curve:
-      serializedVersion: 2
-      m_Curve:
-      - serializedVersion: 3
-        time: 0
-        value: 1
-        inSlope: Infinity
-        outSlope: Infinity
-        tangentMode: 103
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    attribute: m_IsActive
-    path: BackCanvas/Upgrade/CenterArea/MaterialSlot/Select
+    path: BackCanvas/Upgrade/CenterArea/BaseSlot/None
     classID: 1
     script: {fileID: 0}
   - curve:
@@ -661,7 +653,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalScale.x
-    path: BackCanvas/Upgrade/CenterArea/MaterialSlot/Select
+    path: BackCanvas/Upgrade/CenterArea/BaseSlot/Select
     classID: 224
     script: {fileID: 0}
   - curve:
@@ -734,7 +726,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalScale.y
-    path: BackCanvas/Upgrade/CenterArea/MaterialSlot/Select
+    path: BackCanvas/Upgrade/CenterArea/BaseSlot/Select
     classID: 224
     script: {fileID: 0}
   - curve:
@@ -807,7 +799,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalScale.z
-    path: BackCanvas/Upgrade/CenterArea/MaterialSlot/Select
+    path: BackCanvas/Upgrade/CenterArea/BaseSlot/Select
     classID: 224
     script: {fileID: 0}
   - curve:
@@ -844,7 +836,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_Color.r
-    path: BackCanvas/Upgrade/CenterArea/MaterialSlot/Select/Itemicon
+    path: BackCanvas/Upgrade/CenterArea/BaseSlot/Select/Itemicon
     classID: 114
     script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   - curve:
@@ -881,7 +873,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_Color.g
-    path: BackCanvas/Upgrade/CenterArea/MaterialSlot/Select/Itemicon
+    path: BackCanvas/Upgrade/CenterArea/BaseSlot/Select/Itemicon
     classID: 114
     script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   - curve:
@@ -918,7 +910,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_Color.b
-    path: BackCanvas/Upgrade/CenterArea/MaterialSlot/Select/Itemicon
+    path: BackCanvas/Upgrade/CenterArea/BaseSlot/Select/Itemicon
     classID: 114
     script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   - curve:
@@ -955,7 +947,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_ColorFactor
-    path: BackCanvas/Upgrade/CenterArea/MaterialSlot/Select/Itemicon
+    path: BackCanvas/Upgrade/CenterArea/BaseSlot/Select/Itemicon
     classID: 114
     script: {fileID: 11500000, guid: f8b2ed11d675446c5a49da1ea296d490, type: 3}
   - curve:
@@ -1002,45 +994,8 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_Alpha
-    path: BackCanvas/Upgrade/CenterArea/MaterialSlot/EmptyEffectContainer
+    path: BackCanvas/Upgrade/CenterArea/BaseSlot/EmptyEffectContainer
     classID: 225
-    script: {fileID: 0}
-  - curve:
-      serializedVersion: 2
-      m_Curve:
-      - serializedVersion: 3
-        time: 0
-        value: 0
-        inSlope: Infinity
-        outSlope: Infinity
-        tangentMode: 103
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      - serializedVersion: 3
-        time: 0.016666668
-        value: 0
-        inSlope: Infinity
-        outSlope: Infinity
-        tangentMode: 103
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      - serializedVersion: 3
-        time: 0.06666667
-        value: 1
-        inSlope: Infinity
-        outSlope: Infinity
-        tangentMode: 103
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 4
-    attribute: m_IsActive
-    path: BackCanvas/Upgrade/CenterArea/MaterialSlot/Select/Itemicon
-    classID: 1
     script: {fileID: 0}
   m_EulerEditorCurves: []
   m_HasGenericRootTransform: 0
