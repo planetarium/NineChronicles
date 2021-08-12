@@ -29,26 +29,65 @@ namespace Nekoyume.UI
 
     public class MimisbrunnrPreparation : Widget
     {
-        [SerializeField] private Module.Inventory inventory = null;
-        [SerializeField] private EquipmentSlot[] consumableSlots = null;
-        [SerializeField] private EquipmentSlots equipmentSlots = null;
-        [SerializeField] private GameObject equipSlotGlow = null;
-        [SerializeField] private Transform titleSocket = null;
-        [SerializeField] private TextMeshProUGUI consumableTitleText = null;
-        [SerializeField] private TextMeshProUGUI equipmentTitleText = null;
-        [SerializeField] private TextMeshProUGUI requiredPointText = null;
-        [SerializeField] private ParticleSystem[] particles = null;
-        [SerializeField] private DetailedStatView[] statusRows = null;
-        [SerializeField] private TMP_InputField levelField = null;
-        [SerializeField] private Button startButton = null;
-        [SerializeField] private Button closeButton;
-        [SerializeField] private Button simulateButton = null;
+        [SerializeField]
+        private Module.Inventory inventory = null;
 
-        [SerializeField] private Transform buttonStarImageTransform = null;
-        [SerializeField] private Toggle repeatToggle;
-        [SerializeField, Range(.5f, 3.0f)] private float animationTime = 1f;
-        [SerializeField] private bool moveToLeft = false;
-        [SerializeField, Range(0f, 10f), Tooltip("Gap between start position X and middle position X")]
+        [SerializeField]
+        private EquipmentSlot[] consumableSlots = null;
+
+        [SerializeField]
+        private EquipmentSlots equipmentSlots = null;
+
+        [SerializeField]
+        private GameObject equipSlotGlow = null;
+
+        [SerializeField]
+        private Transform titleSocket = null;
+
+        [SerializeField]
+        private TextMeshProUGUI consumableTitleText = null;
+
+        [SerializeField]
+        private TextMeshProUGUI equipmentTitleText = null;
+
+        [SerializeField]
+        private TextMeshProUGUI requiredPointText = null;
+
+        [SerializeField]
+        private TextMeshProUGUI closeButtonText = null;
+
+        [SerializeField]
+        private ParticleSystem[] particles = null;
+
+        [SerializeField]
+        private DetailedStatView[] statusRows = null;
+
+        [SerializeField]
+        private TMP_InputField levelField = null;
+
+        [SerializeField]
+        private Button startButton = null;
+
+        [SerializeField]
+        private Button closeButton;
+
+        [SerializeField]
+        private Button simulateButton = null;
+
+        [SerializeField]
+        private Transform buttonStarImageTransform = null;
+
+        [SerializeField]
+        private Toggle repeatToggle;
+
+        [SerializeField, Range(.5f, 3.0f)]
+        private float animationTime = 1f;
+
+        [SerializeField]
+        private bool moveToLeft = false;
+
+        [SerializeField, Range(0f, 10f),
+         Tooltip("Gap between start position X and middle position X")]
         private float middleXGap = 1f;
 
         private Stage _stage;
@@ -59,17 +98,16 @@ namespace Nekoyume.UI
         private int _requiredCost;
         private bool _reset = true;
 
-        private readonly IntReactiveProperty _stageId = new IntReactiveProperty(GameConfig.MimisbrunnrWorldId);
+        private readonly IntReactiveProperty _stageId =
+            new IntReactiveProperty(GameConfig.MimisbrunnrWorldId);
+
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
 
-        private static readonly Color RequiredActionPointOriginColor = ColorHelper.HexToColorRGB("FFF3D4");
+        private static readonly Color RequiredActionPointOriginColor =
+            ColorHelper.HexToColorRGB("FFF3D4");
+
         private static readonly Color DimmedColor = ColorHelper.HexToColorRGB("848484");
         private static readonly Vector3 PlayerPosition = new Vector3(999.8f, 999.3f, 3f);
-
-        public int StageId
-        {
-            set => _stageId.SetValueAndForceNotify(value);
-        }
 
         public override bool CanHandleInputEvent =>
             base.CanHandleInputEvent &&
@@ -86,10 +124,7 @@ namespace Nekoyume.UI
         {
             base.Awake();
 
-            closeButton.onClick.AddListener(() =>
-            {
-                Close(true);
-            });
+            closeButton.onClick.AddListener(() => { Close(true); });
 
             CloseWidget = () => Close(true);
             simulateButton.gameObject.SetActive(GameConfig.IsEditor);
@@ -125,7 +160,8 @@ namespace Nekoyume.UI
 
             _stageId.Subscribe(SubscribeStage).AddTo(gameObject);
 
-            startButton.OnClickAsObservable().Subscribe(_ => BattleClick(repeatToggle.isOn)).AddTo(gameObject);
+            startButton.OnClickAsObservable().Subscribe(_ => BattleClick(repeatToggle.isOn))
+                .AddTo(gameObject);
 
             Game.Event.OnRoomEnter.AddListener(b => Close());
 
@@ -138,6 +174,13 @@ namespace Nekoyume.UI
             {
                 slot.ShowUnlockTooltip = true;
             }
+        }
+
+        public void Show(string closeButtonName, int stageId, bool ignoreShowAnimation = false)
+        {
+            closeButtonText.text = closeButtonName;
+            _stageId.SetValueAndForceNotify(stageId);
+            Show(ignoreShowAnimation);
         }
 
         public override void Show(bool ignoreShowAnimation = false)
@@ -199,7 +242,8 @@ namespace Nekoyume.UI
             if (title != null)
             {
                 Destroy(_cachedCharacterTitle);
-                var clone = ResourcesHelper.GetCharacterTitle(title.Grade, title.GetLocalizedNonColoredName(false));
+                var clone = ResourcesHelper.GetCharacterTitle(title.Grade,
+                    title.GetLocalizedNonColoredName(false));
                 _cachedCharacterTitle = Instantiate(clone, titleSocket);
             }
 
@@ -308,7 +352,8 @@ namespace Nekoyume.UI
             inventory.SharedModel.DimmedFunc.Value = inventoryItem =>
                 inventoryItem.ItemBase.Value.ItemType == ItemType.Costume ||
                 inventoryItem.ItemBase.Value.ItemType == ItemType.Material ||
-                (inventoryItem.ItemBase.Value.ItemType == ItemType.Equipment && !IsExistElementalType(inventoryItem.ItemBase.Value.ElementalType));
+                (inventoryItem.ItemBase.Value.ItemType == ItemType.Equipment &&
+                 !IsExistElementalType(inventoryItem.ItemBase.Value.ElementalType));
 
             inventory.SharedModel.EquippedEnabledFunc.SetValueAndForceNotify(inventoryItem =>
             {
@@ -337,7 +382,7 @@ namespace Nekoyume.UI
             }
             else
             {
-                UpdateGlowEquipSlot((ItemUsable) view.Model.ItemBase.Value);
+                UpdateGlowEquipSlot((ItemUsable)view.Model.ItemBase.Value);
             }
 
             ShowTooltip(view);
@@ -359,7 +404,8 @@ namespace Nekoyume.UI
             SharedViewModel.SelectedWorldId.SetValueAndForceNotify(GameConfig.MimisbrunnrWorldId);
             SharedViewModel.SelectedStageId.SetValueAndForceNotify(_stageId.Value);
 
-            Game.Game.instance.TableSheets.WorldSheet.TryGetValue(GameConfig.MimisbrunnrWorldId, out var worldRow, true);
+            Game.Game.instance.TableSheets.WorldSheet.TryGetValue(GameConfig.MimisbrunnrWorldId,
+                out var worldRow, true);
             stageInfo.Show(SharedViewModel, worldRow, StageInformation.StageType.Mimisbrunnr);
             gameObject.SetActive(false);
         }
@@ -541,7 +587,7 @@ namespace Nekoyume.UI
                 return;
             }
 
-            var equipment = (Equipment) itemBase;
+            var equipment = (Equipment)itemBase;
             LocalLayerModifier.SetItemEquip(
                 States.Instance.CurrentAvatarState.address,
                 equipment.ItemId,
@@ -556,13 +602,13 @@ namespace Nekoyume.UI
 
             if (slot.ItemSubType == ItemSubType.Armor)
             {
-                var armor = (Armor) slot.Item;
-                var weapon = (Weapon) _weaponSlot.Item;
+                var armor = (Armor)slot.Item;
+                var weapon = (Weapon)_weaponSlot.Item;
                 _player.EquipEquipmentsAndUpdateCustomize(armor, weapon);
             }
             else if (slot.ItemSubType == ItemSubType.Weapon)
             {
-                _player.EquipWeapon((Weapon) slot.Item);
+                _player.EquipWeapon((Weapon)slot.Item);
             }
 
             Game.Event.OnUpdatePlayerEquip.OnNext(_player);
@@ -613,7 +659,7 @@ namespace Nekoyume.UI
                            ?? consumableSlots[0];
                     return true;
                 case ItemType.Equipment:
-                    return equipmentSlots.TryGetToEquip((Equipment) item, out slot);
+                    return equipmentSlots.TryGetToEquip((Equipment)item, out slot);
                 default:
                     slot = null;
                     return false;
@@ -702,12 +748,12 @@ namespace Nekoyume.UI
 
             var equipments = equipmentSlots
                 .Where(slot => !slot.IsLock && !slot.IsEmpty)
-                .Select(slot => (Equipment) slot.Item)
+                .Select(slot => (Equipment)slot.Item)
                 .ToList();
 
             var consumables = consumableSlots
                 .Where(slot => !slot.IsLock && !slot.IsEmpty)
-                .Select(slot => (Consumable) slot.Item)
+                .Select(slot => (Consumable)slot.Item)
                 .ToList();
 
             _stage.IsExitReserved = false;
@@ -762,14 +808,14 @@ namespace Nekoyume.UI
                 throw new KeyNotFoundException(
                     $"WorldSheet.TryGetByStageId() {nameof(stageId)}({stageId})");
 
-            var avatarState = new AvatarState(States.Instance.CurrentAvatarState) {level = level};
+            var avatarState = new AvatarState(States.Instance.CurrentAvatarState) { level = level };
             List<Guid> consumables = consumableSlots
                 .Where(slot => !slot.IsLock && !slot.IsEmpty)
-                .Select(slot => ((Consumable) slot.Item).ItemId)
+                .Select(slot => ((Consumable)slot.Item).ItemId)
                 .ToList();
             var equipments = equipmentSlots
                 .Where(slot => !slot.IsLock && !slot.IsEmpty)
-                .Select(slot => (Equipment) slot.Item)
+                .Select(slot => (Equipment)slot.Item)
                 .ToList();
             var inventoryEquipments = avatarState.inventory.Items
                 .Select(i => i.item)
@@ -789,7 +835,7 @@ namespace Nekoyume.UI
                     continue;
                 }
 
-                ((Equipment) outNonFungibleItem).Equip();
+                ((Equipment)outNonFungibleItem).Equip();
             }
 
             var tableSheets = Game.Game.instance.TableSheets;

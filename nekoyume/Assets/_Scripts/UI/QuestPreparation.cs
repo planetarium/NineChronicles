@@ -167,9 +167,9 @@ namespace Nekoyume.UI
             }
         }
 
-        public void Show(string worldName, bool ignoreShowAnimation = false)
+        public void Show(string closeButtonName, bool ignoreShowAnimation = false)
         {
-            closeButtonText.text = worldName;
+            closeButtonText.text = closeButtonName;
             Show(ignoreShowAnimation);
         }
 

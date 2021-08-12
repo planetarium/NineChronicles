@@ -102,7 +102,7 @@ namespace Nekoyume.UI
                 )
                 .AddTo(gameObject);
             _sharedViewModel.WorldInformation.TryGetWorld(worldRow.Id, out var worldModel);
-            closeButtonText.text = worldModel.Name;
+            closeButtonText.text = L10nManager.Localize($"WORLD_NAME_{worldModel.Name.ToUpper()}");
             UpdateStageInformation(_sharedViewModel.SelectedStageId.Value, States.Instance.CurrentAvatarState.level);
             if (_sharedViewModel.SelectedStageId.Value == 1)
             {
@@ -198,12 +198,17 @@ namespace Nekoyume.UI
             switch (_stageType)
             {
                 case StageType.Quest:
-                    Find<QuestPreparation>().Show(closeButtonText.text, true);
+                    Find<QuestPreparation>().Show(
+                        $"{closeButtonText.text} {_sharedViewModel.SelectedStageId.Value}",
+                        true);
                     break;
 
                 case StageType.Mimisbrunnr:
-                    Find<MimisbrunnrPreparation>().StageId = _sharedViewModel.SelectedStageId.Value;
-                    Find<MimisbrunnrPreparation>().Show(true);
+                    var stageId = _sharedViewModel.SelectedStageId.Value;
+                    Find<MimisbrunnrPreparation>().Show(
+                        $"{closeButtonText.text} {stageId % 10000000}",
+                        stageId,
+                        true);
                     break;
             }
         }
