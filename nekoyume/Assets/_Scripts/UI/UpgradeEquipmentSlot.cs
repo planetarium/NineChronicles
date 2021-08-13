@@ -16,11 +16,6 @@ namespace Nekoyume.UI
 
         public Button RemoveButton => removeButton;
 
-        private void Awake()
-        {
-            removeButton.onClick.AddListener(RemoveMaterial);
-        }
-
         public void AddMaterial(ItemBase itemBase)
         {
             stageEffectContainer.SetActive(true);
@@ -30,7 +25,7 @@ namespace Nekoyume.UI
             itemImage.overrideSprite = itemBase.GetIconSprite();
         }
 
-        private void RemoveMaterial()
+        public void RemoveMaterial()
         {
             stageEffectContainer.SetActive(false);
             emptyEffectContainer.SetActive(true);
