@@ -59,7 +59,7 @@ namespace Nekoyume.UI.Module
 
         public void UpdateViewAsTotalAndPlusStat(StatType type, int totalValue, int plusValue) =>
             UpdateView(
-                $"{type} {totalValue}",
+                $"{type} {(type == StatType.SPD ? totalValue / 100f : totalValue)}",
                 plusValue > 0 ? $"+{plusValue}" : string.Empty);
 
         public void UpdateAsTotalAndPlusSkill(
@@ -104,12 +104,12 @@ namespace Nekoyume.UI.Module
 
             if (string.IsNullOrEmpty(text))
             {
-                textObject.enabled = false;
+                textObject.gameObject.SetActive(false);
             }
             else
             {
                 textObject.text = text;
-                textObject.enabled = true;
+                textObject.gameObject.SetActive(true);
             }
         }
     }

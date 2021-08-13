@@ -183,7 +183,7 @@ namespace Nekoyume.UI
             }
 
             information.MainStatView.UpdateView(
-                $"{itemOptionInfo.MainStat.type} {itemOptionInfo.MainStat.value}",
+                $"{itemOptionInfo.MainStat.type} {itemOptionInfo.MainStat.baseValue}",
                 string.Empty);
 
             var subRecipeRow = Game.Game.instance.TableSheets.EquipmentItemSubRecipeSheetV2.OrderedList
