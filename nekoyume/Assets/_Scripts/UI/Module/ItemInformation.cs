@@ -184,21 +184,14 @@ namespace Nekoyume.UI.Module
                 iconArea.countObject.SetActive(false);
 
                 var optionInfo = new ItemOptionInfo(equipment);
-                var uniqueStatType = equipment.UniqueStatType;
-                var uniqueStatValue = optionInfo.MainStat.value;
+                var (mainStatType, _, mainStatTotalValue) = optionInfo.MainStat;
+                uniqueStat.Show(mainStatType, mainStatTotalValue);
 
                 foreach (var (type, value, count) in optionInfo.StatOptions)
                 {
-                    if (type.Equals(uniqueStatType))
-                    {
-                        uniqueStatValue += value;
-                    }
-
                     AddStat(type, value, count);
                     statCount += count;
                 }
-
-                uniqueStat.Show(uniqueStatType, uniqueStatValue);
             }
             else if (Model.item.Value.ItemBase.Value is ItemUsable itemUsable)
             {
@@ -238,7 +231,7 @@ namespace Nekoyume.UI.Module
                     iconArea.combatPowerText.text = costume.GetCPText(costumeSheet);
                 }
             }
-            else if (Model.item.Value.ItemBase.Value is Material material)
+            else if (Model.item.Value.ItemBase.Value is Material)
             {
                 uniqueStat.gameObject.SetActive(false);
                 descriptionArea.levelLimitGameObject.SetActive(false);

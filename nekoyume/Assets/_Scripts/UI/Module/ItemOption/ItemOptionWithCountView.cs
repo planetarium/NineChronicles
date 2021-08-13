@@ -47,8 +47,8 @@ namespace Nekoyume.UI.Module
 
         public void UpdateAsTotalAndPlusStatWithCount(StatType type, int totalValue, int plusValue, int count) =>
             UpdateView(
-                $"{type} {totalValue}",
-                plusValue > 0 ? $"+{plusValue}" : string.Empty,
+                $"{type} {(type == StatType.SPD ? totalValue / 100f : totalValue)}",
+                plusValue > 0 ? $"+{(type == StatType.SPD ? plusValue / 100f : plusValue)}" : string.Empty,
                 count);
 
         public override void UpdateToEmpty() =>
