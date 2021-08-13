@@ -432,7 +432,7 @@ namespace Nekoyume.UI
             ClearInformation();
             costText.text = row.Cost.ToString();
             costText.color = GetNcgColor(row.Cost);
-            itemNameText.text = equipment.GetLocalizedName();
+            itemNameText.text = equipment.GetLocalizedName(false);
             currentLevelText.text = $"{equipment.level}";
             nextLevelText.text = $"{equipment.level + 1}";
             successRatioText.text =

@@ -199,7 +199,7 @@ namespace Nekoyume.UI.Module
             itemView.SetData(new Item(item));
             itemNameText.text = TextHelper.GetItemNameInCombinationSlot(item);
             preparingText.text = string.Format(L10nManager.Localize("UI_COMBINATION_SLOT_IDENTIFYING"),
-                item.GetLocalizedName(ignoreLevel:true));
+                item.GetLocalizedName(useElementalIcon:false, ignoreLevel:true));
         }
 
         private static void OnClickSlot(SlotType type, CombinationSlotState state, int slotIndex, long currentBlockIndex)
