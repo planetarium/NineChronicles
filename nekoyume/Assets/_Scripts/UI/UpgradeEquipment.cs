@@ -187,7 +187,7 @@ namespace Nekoyume.UI
                     break;
             }
 
-            buttonDisabled.SetActive(!IsInteractableButton(_baseItem, _materialItem, _costNcg));
+            buttonDisabled.SetActive(!IsInteractableButton(_baseItem, _materialItem));
             inventory.SharedModel.UpdateDimAndEffectAll();
         }
 
@@ -281,8 +281,15 @@ namespace Nekoyume.UI
 
         private void Action()
         {
-            if (!IsInteractableButton(_baseItem, _materialItem, _costNcg))
+            if (!IsInteractableButton(_baseItem, _materialItem))
             {
+                Notification.Push(MailType.System, errorMessage);
+                return;
+            }
+
+            if (States.Instance.GoldBalanceState.Gold.MajorUnit < _costNcg)
+            {
+                errorMessage = L10nManager.Localize("UI_NOT_ENOUGH_NCG");
                 Notification.Push(MailType.System, errorMessage);
                 return;
             }
@@ -468,12 +475,12 @@ namespace Nekoyume.UI
             costText.text = row.Cost.ToString();
             costText.color = GetNcgColor(row.Cost);
             itemNameText.text = equipment.GetLocalizedName();
-            currentLevelText.text = $"{equipment.level}";
-            nextLevelText.text = $"{equipment.level + 1}";
+            currentLevelText.text = $"+{equipment.level}";
+            nextLevelText.text = $"+{equipment.level + 1}";
             successRatioText.text =
                 ((row.GreatSuccessRatio + row.SuccessRatio) * GameConfig.TenThousandths)
                 .ToString("P0");
-            requiredBlockIndexText.text = $"{row.SuccessRequiredBlockIndex}+";
+            requiredBlockIndexText.text = $"{row.SuccessRequiredBlockIndex} +";
 
             var itemOptionInfo = new ItemOptionInfo(equipment);
 
@@ -535,17 +542,11 @@ namespace Nekoyume.UI
             return result.ToString(CultureInfo.InvariantCulture);
         }
 
-        private bool IsInteractableButton(IItem item, IItem material, BigInteger cost)
+        private bool IsInteractableButton(IItem item, IItem material)
         {
             if (item is null || material is null)
             {
                 errorMessage = L10nManager.Localize("UI_SELECT_MATERIAL_TO_UPGRADE");
-                return false;
-            }
-
-            if (States.Instance.GoldBalanceState.Gold.MajorUnit < cost)
-            {
-                errorMessage = L10nManager.Localize("UI_NOT_ENOUGH_NCG");
                 return false;
             }
 
