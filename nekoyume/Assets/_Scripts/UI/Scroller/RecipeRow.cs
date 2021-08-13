@@ -75,11 +75,17 @@ namespace Nekoyume.UI.Scroller
 
         public void HideWithAlpha()
         {
+            if (!gameObject.activeSelf)
+                return;
+
             canvasGroup.alpha = 0f;
         }
 
         public void ShowAnimation()
         {
+            if (!gameObject.activeSelf)
+                return;
+
             canvasGroup.alpha = 1f;
             animator.SetTrigger(_triggerHash);
         }

@@ -111,7 +111,7 @@ namespace Nekoyume.UI.Scroller
 
             emptyObject.SetActive(!items.Any());
             Show(items, true);
-            AnimateRows();
+            AnimateScroller();
         }
 
         public void ShowAsFood(StatType type, bool updateToggle = false)
@@ -137,20 +137,20 @@ namespace Nekoyume.UI.Scroller
 
             emptyObject.SetActive(!items.Any());
             Show(items, true);
-            AnimateRows();
+            AnimateScroller();
         }
 
-        private void AnimateRows()
+        private void AnimateScroller()
         {
             if (_animationCoroutine != null)
             {
                 StopCoroutine(_animationCoroutine);
             }
 
-            _animationCoroutine = StartCoroutine(CoAnimation());
+            _animationCoroutine = StartCoroutine(CoAnimateScroller());
         }
 
-        private IEnumerator CoAnimation()
+        private IEnumerator CoAnimateScroller()
         {
             var rows = GetComponentsInChildren<RecipeRow>();
             var wait = new WaitForSeconds(animationInterval);
@@ -160,6 +160,9 @@ namespace Nekoyume.UI.Scroller
             {
                 row.HideWithAlpha();
             }
+
+            yield return null;
+            AdjustCellIntervalAndScrollOffset();
 
             foreach (var row in rows)
             {
