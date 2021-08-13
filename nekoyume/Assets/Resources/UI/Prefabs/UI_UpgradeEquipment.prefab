@@ -1276,7 +1276,6 @@ MonoBehaviour:
   itemInformationContainer: {fileID: 9033703093585415908}
   blockInformationContainer: {fileID: 675753384982089682}
   buttonDisabled: {fileID: 3283341260653219466}
-  effectAnimator: {fileID: 571921049296418333}
 --- !u!1 &573877729677872940
 GameObject:
   m_ObjectHideFlags: 0
@@ -2318,7 +2317,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &6186366367434481640
 RectTransform:
   m_ObjectHideFlags: 0
@@ -44796,7 +44795,7 @@ PrefabInstance:
     - target: {fileID: 7430616929449913940, guid: 29c5c99555c2b5f40a6f757cea5554b3,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 88
       objectReference: {fileID: 0}
     - target: {fileID: 7430616929449913940, guid: 29c5c99555c2b5f40a6f757cea5554b3,
         type: 3}
