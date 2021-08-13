@@ -6513,8 +6513,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 5753516113674615723}
   m_HandleRect: {fileID: 5125301551388603195}
   m_Direction: 2
-  m_Value: 1
-  m_Size: 0.43057996
+  m_Value: 0
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -49618,13 +49618,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8081961528551641959, guid: 1ea70276a4bf19b4faf37eb620cafe4b,
         type: 3}
+      propertyPath: cellSize.x
+      value: 88
+      objectReference: {fileID: 0}
+    - target: {fileID: 8081961528551641959, guid: 1ea70276a4bf19b4faf37eb620cafe4b,
+        type: 3}
+      propertyPath: cellSize.y
+      value: 88
+      objectReference: {fileID: 0}
+    - target: {fileID: 8081961528551641959, guid: 1ea70276a4bf19b4faf37eb620cafe4b,
+        type: 3}
       propertyPath: cellInterval
-      value: -0.6666667
+      value: -0.57894737
       objectReference: {fileID: 0}
     - target: {fileID: 8081961528551641959, guid: 1ea70276a4bf19b4faf37eb620cafe4b,
         type: 3}
       propertyPath: scrollOffset
-      value: -0.6666667
+      value: -0.57894737
       objectReference: {fileID: 0}
     - target: {fileID: 8081961528551641959, guid: 1ea70276a4bf19b4faf37eb620cafe4b,
         type: 3}
