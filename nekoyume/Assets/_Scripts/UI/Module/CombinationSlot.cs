@@ -1,10 +1,10 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Action;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
-using Nekoyume.Game.Util;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
@@ -47,6 +47,7 @@ namespace Nekoyume.UI.Module
         private CombinationSlotState _state;
         private int _slotIndex;
         private const int UnlockStage = GameConfig.RequireClearedStageLevel.CombinationEquipmentAction;
+        private readonly List<IDisposable> _disposablesOfOnEnable = new List<IDisposable>();
 
         public SlotType Type { get; private set;  } = SlotType.Empty;
         public bool IsCached { get; private set; }
@@ -67,14 +68,27 @@ namespace Nekoyume.UI.Module
 
         private void Awake()
         {
-            Game.Game.instance.Agent.BlockIndexSubject.ObserveOnMainThread()
-                .Subscribe(SubscribeOnBlockIndex).AddTo(gameObject);
-
             touchHandler.OnClick.Subscribe(pointerEventData =>
             {
                 AudioController.PlayClick();
                 OnClickSlot(Type, _state, _slotIndex, Game.Game.instance.Agent.BlockIndex);
             }).AddTo(gameObject);
+        }
+
+        private void OnEnable()
+        {
+            Game.Game.instance.Agent.BlockIndexSubject.ObserveOnMainThread()
+                .Subscribe(SubscribeOnBlockIndex)
+                .AddTo(_disposablesOfOnEnable);
+            ReactiveAvatarState.Inventory
+                .Select(_ => Game.Game.instance.Agent.BlockIndex)
+                .Subscribe(SubscribeOnBlockIndex)
+                .AddTo(_disposablesOfOnEnable);
+        }
+
+        private void OnDisable()
+        {
+            _disposablesOfOnEnable.DisposeAllAndClear();
         }
 
         public void SetSlot(long currentBlockIndex, int slotIndex, CombinationSlotState state = null)
