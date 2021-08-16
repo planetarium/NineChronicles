@@ -28,9 +28,6 @@ namespace Nekoyume.UI.Module
         protected OptionTagDataScriptableObject optionTagData = null;
 
         [SerializeField]
-        private Image gradeImage = null;
-
-        [SerializeField]
         private Image defaultImage = null;
 
         [SerializeField]
@@ -53,6 +50,18 @@ namespace Nekoyume.UI.Module
 
         [SerializeField]
         protected List<Image> optionTagImages = null;
+
+        [SerializeField]
+        protected ItemViewDataScriptableObject itemViewData;
+
+        [SerializeField]
+        protected Image gradeImage;
+
+        [SerializeField]
+        protected UIHsvModifier gradeHsv;
+
+        [SerializeField]
+        protected Image enhancementImage;
 
         private int _requireLevel;
         private string _messageForCat;
@@ -214,14 +223,20 @@ namespace Nekoyume.UI.Module
             itemImage.SetNativeSize();
             Item = itemBase;
 
-            var gradeSprite = itemBase.GetBackgroundSprite();
-            if (gradeSprite is null)
-            {
-                throw new FailedToLoadResourceException<Sprite>(itemBase.Grade.ToString());
-            }
+            // var gradeSprite = itemBase.GetBackgroundSprite();
+            // if (gradeSprite is null)
+            // {
+            //     throw new FailedToLoadResourceException<Sprite>(itemBase.Grade.ToString());
+            // }
 
             gradeImage.enabled = true;
-            gradeImage.overrideSprite = gradeSprite;
+            var gradeData = itemViewData.GetItemViewData(itemBase.Grade);
+            gradeImage.overrideSprite = gradeData.GradeBackground;
+            gradeHsv.range = gradeData.GradeHsvRange;
+            gradeHsv.hue = gradeData.GradeHsvHue;
+            gradeHsv.saturation = gradeData.GradeHsvSaturation;
+            gradeHsv.value = gradeData.GradeHsvValue;
+            // gradeImage.overrideSprite = gradeSprite;
 
             optionTagBg.gameObject.SetActive(false);
             if (itemBase is Equipment equip)
@@ -231,6 +246,8 @@ namespace Nekoyume.UI.Module
                 if (isUpgraded)
                 {
                     enhancementText.text = $"+{equip.level}";
+                    enhancementImage.gameObject.SetActive(true);
+                    enhancementImage.material = gradeData.EnhancementMaterial;
                 }
 
                 if (equip.optionCountFromCombination > 0)
@@ -305,6 +322,7 @@ namespace Nekoyume.UI.Module
             itemImage.enabled = false;
             gradeImage.enabled = false;
             enhancementText.enabled = false;
+            enhancementImage.gameObject.SetActive(false);
             optionTagBg.gameObject.SetActive(false);
             Item = null;
             Unlock();

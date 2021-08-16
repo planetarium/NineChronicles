@@ -21,8 +21,6 @@
 	{
 	    Ref [_RefNumber]
             Comp equal
-            Pass keep
-            ZFail decrWrap
 	}
 
         Pass

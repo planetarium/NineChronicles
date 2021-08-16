@@ -192,6 +192,11 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.x
       value: 32.8
       objectReference: {fileID: 0}
+    - target: {fileID: 4949469174660990659, guid: 5635d3b88bf674869a3537f1c07fda73,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0.70000076
+      objectReference: {fileID: 0}
     - target: {fileID: 5476802869869024214, guid: 5635d3b88bf674869a3537f1c07fda73,
         type: 3}
       propertyPath: m_textInfo.lineCount

@@ -206,6 +206,7 @@ namespace Nekoyume.UI.Module
             if (Model is null ||
                 Model.ItemBase.Value is null)
             {
+                enhancementImage.SetActive(false);
                 enhancementText.enabled = false;
                 selection.SetActive(false);
                 optionTagBg.gameObject.SetActive(false);
