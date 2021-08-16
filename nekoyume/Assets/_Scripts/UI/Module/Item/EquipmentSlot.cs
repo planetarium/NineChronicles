@@ -223,12 +223,6 @@ namespace Nekoyume.UI.Module
             itemImage.SetNativeSize();
             Item = itemBase;
 
-            // var gradeSprite = itemBase.GetBackgroundSprite();
-            // if (gradeSprite is null)
-            // {
-            //     throw new FailedToLoadResourceException<Sprite>(itemBase.Grade.ToString());
-            // }
-
             gradeImage.enabled = true;
             var gradeData = itemViewData.GetItemViewData(itemBase.Grade);
             gradeImage.overrideSprite = gradeData.GradeBackground;
@@ -236,7 +230,6 @@ namespace Nekoyume.UI.Module
             gradeHsv.hue = gradeData.GradeHsvHue;
             gradeHsv.saturation = gradeData.GradeHsvSaturation;
             gradeHsv.value = gradeData.GradeHsvValue;
-            // gradeImage.overrideSprite = gradeSprite;
 
             optionTagBg.gameObject.SetActive(false);
             if (itemBase is Equipment equip)
