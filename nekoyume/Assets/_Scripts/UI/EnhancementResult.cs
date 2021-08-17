@@ -95,6 +95,7 @@ namespace Nekoyume.UI
         private static readonly int AnimatorHashSuccess = Animator.StringToHash("Success");
         private static readonly int AnimatorHashFail = Animator.StringToHash("Fail");
         private static readonly int AnimatorHashLoop = Animator.StringToHash("Loop");
+        private static readonly int AnimatorHashLoopFail = Animator.StringToHash("Loop_Fail");
         private static readonly int AnimatorHashClose = Animator.StringToHash("Close");
 
         private IDisposable _disposableOfSkip;
@@ -347,7 +348,16 @@ namespace Nekoyume.UI
                 _coroutineOfPlayOptionAnimation = null;
             }
 
-            Animator.Play(AnimatorHashLoop, 0, 0);
+            var animatorStateInfo = Animator.GetCurrentAnimatorStateInfo(0);
+            if (animatorStateInfo.shortNameHash == AnimatorHashGreatSuccess ||
+                animatorStateInfo.shortNameHash == AnimatorHashSuccess)
+            {
+                Animator.Play(AnimatorHashLoop, 0, 0);
+            }
+            else if (animatorStateInfo.shortNameHash == AnimatorHashFail)
+            {
+                Animator.Play(AnimatorHashLoopFail, 0, 0);
+            }
 
             for (var i = 0; i < _itemStatOptionViews.Count; i++)
             {
