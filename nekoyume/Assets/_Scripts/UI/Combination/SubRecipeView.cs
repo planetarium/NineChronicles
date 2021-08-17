@@ -58,7 +58,6 @@ namespace Nekoyume.UI
         [SerializeField] private GameObject buttonEnabledObject = null;
         [SerializeField] private TextMeshProUGUI costText = null;
         [SerializeField] private Image buttonDisabledImage = null;
-        [SerializeField] private GameObject lockObject = null;
 
         public readonly Subject<RecipeInfo> CombinationActionSubject = new Subject<RecipeInfo>();
 
@@ -100,7 +99,7 @@ namespace Nekoyume.UI
             if (recipeRow is EquipmentItemRecipeSheet.Row equipmentRow)
             {
                 var resultItem = equipmentRow.GetResultEquipmentItemRow();
-                title = resultItem.GetLocalizedName(false);
+                title = resultItem.GetLocalizedName();
 
                 var stat = resultItem.GetUniqueStat();
                 statText.text = string.Format(StatTextFormat, stat.Type, stat.ValueAsInt);
