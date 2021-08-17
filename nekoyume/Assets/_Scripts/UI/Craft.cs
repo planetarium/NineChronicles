@@ -133,6 +133,8 @@ namespace Nekoyume.UI
                 return;
             }
 
+            var itemRow = row.GetResultEquipmentItemRow();
+            recipeScroll.ShowAsEquipment(itemRow.ItemSubType, true);
             var group = RecipeModel.GetEquipmentGroup(row.ResultEquipmentId);
             recipeScroll.GoToRecipeGroup(group);
             if (SharedModel.RecipeVFXSkipList.Contains(equipmentRecipeId))
