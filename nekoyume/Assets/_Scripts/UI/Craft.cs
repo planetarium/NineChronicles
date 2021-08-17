@@ -47,6 +47,12 @@ namespace Nekoyume.UI
                 Find<CombinationMain>().Show();
             });
 
+            CloseWidget = () =>
+            {
+                Close(true);
+                Find<CombinationMain>().Show();
+            };
+
             equipmentToggle.onValueChanged.AddListener(value =>
             {
                 if (!value) return;

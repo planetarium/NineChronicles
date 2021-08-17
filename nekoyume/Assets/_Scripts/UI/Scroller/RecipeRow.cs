@@ -33,11 +33,22 @@ namespace Nekoyume.UI.Scroller
             }
         }
 
-        [SerializeField] private TextMeshProUGUI nameText = null;
+        [SerializeField]
+        private TextMeshProUGUI nameText = null;
 
-        [SerializeField] private List<Image> gradeImages = null;
+        [SerializeField]
+        private List<Image> gradeImages = null;
 
-        [SerializeField] private List<RecipeCell> recipeCells = null;
+        [SerializeField]
+        private List<RecipeCell> recipeCells = null;
+
+        [SerializeField]
+        private Animator animator = null;
+
+        [SerializeField]
+        private CanvasGroup canvasGroup = null;
+
+        private readonly int _triggerHash = Animator.StringToHash("Show");
 
         public override void UpdateContent(Model viewModel)
         {
@@ -60,6 +71,23 @@ namespace Nekoyume.UI.Scroller
                     cell.Show(viewModel.Rows[i]);
                 }
             }
+        }
+
+        public void HideWithAlpha()
+        {
+            if (!gameObject.activeSelf)
+                return;
+
+            canvasGroup.alpha = 0f;
+        }
+
+        public void ShowAnimation()
+        {
+            if (!gameObject.activeSelf)
+                return;
+
+            canvasGroup.alpha = 1f;
+            animator.SetTrigger(_triggerHash);
         }
     }
 }

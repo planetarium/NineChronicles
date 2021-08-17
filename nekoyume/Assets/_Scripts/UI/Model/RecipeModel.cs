@@ -68,7 +68,7 @@ namespace Nekoyume.UI.Model
                     var resultItem = recipe.GetResultEquipmentItemRow();
 
                     recipeViewModel = new RecipeRow.Model(
-                        resultItem.GetLocalizedName(true, false),
+                        resultItem.GetLocalizedName(false),
                         resultItem.Grade)
                     {
                         ItemSubType = resultItem.ItemSubType
