@@ -151,7 +151,7 @@ namespace Nekoyume.UI
 
             var stageWaveSheet = Game.Game.instance.TableSheets.StageWaveSheet;
             stageWaveSheet.TryGetValue(stageId, out var stageWaveRow, true);
-            titleText.text = $"Stage {GetStageIdString(stageWaveRow.StageId)}";
+            titleText.text = $"Stage {GetStageIdString(stageWaveRow.StageId, true)}";
 
             var monsterCount = stageWaveRow.TotalMonsterIds.Count;
             for (var i = 0; i < monstersAreaCharacterViews.Count; i++)
@@ -223,9 +223,10 @@ namespace Nekoyume.UI
             world.Set(openedStageId, selectedStageId);
         }
 
-        public static string GetStageIdString(int stageId)
+        public static string GetStageIdString(int stageId, bool isTitle = false)
         {
-            return stageId > 10000000 ? $"Fire {stageId % 10000000}" : stageId.ToString();
+            var enter = isTitle ? string.Empty : "\n";
+            return stageId > 10000000 ? $"<sprite name=icon_Element_1>{enter}{stageId % 10000000}" : stageId.ToString();
         }
     }
 }

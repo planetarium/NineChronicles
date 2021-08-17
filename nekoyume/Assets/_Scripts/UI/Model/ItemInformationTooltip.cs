@@ -40,8 +40,7 @@ namespace Nekoyume.UI.Model
                     return;
                 }
 
-                var useElementalIcon = !(item.ItemBase.Value is Costume);
-                TitleText.Value = item.ItemBase.Value.GetLocalizedName(useElementalIcon);
+                TitleText.Value = item.ItemBase.Value.GetLocalizedName(false);
 
                 if (item is ShopItem shopItem)
                 {

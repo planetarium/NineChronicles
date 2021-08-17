@@ -122,7 +122,7 @@ namespace Nekoyume.UI
 
             if (Model.isSuccess)
             {
-                itemNameText.text = item.GetLocalizedName();
+                itemNameText.text = item.GetLocalizedName(false);
                 itemInformation.gameObject.SetActive(true);
                 AudioController.instance.PlaySfx(AudioController.SfxCode.Success);
             }
