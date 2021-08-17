@@ -153,9 +153,9 @@ namespace Nekoyume.BlockChain
             }
 
             var avatarAddress = States.Instance.CurrentAvatarState.address;
-            costumes = costumes ?? new List<Costume>();
-            equipments = equipments ?? new List<Equipment>();
-            foods = foods ?? new List<Consumable>();
+            costumes ??= new List<Costume>();
+            equipments ??= new List<Equipment>();
+            foods ??= new List<Consumable>();
 
             var action = new HackAndSlash
             {

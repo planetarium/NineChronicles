@@ -11,7 +11,7 @@ namespace Nekoyume.Helper
     {
         public readonly int OptionCountFromCombination;
 
-        public readonly (StatType type, int value) MainStat;
+        public readonly (StatType type, int baseValue, int totalValue) MainStat;
 
         public readonly List<(StatType type, int value, int count)> StatOptions
             = new List<(StatType type, int value, int count)>();
@@ -31,7 +31,8 @@ namespace Nekoyume.Helper
 
             MainStat = (
                 equipment.UniqueStatType,
-                equipment.StatsMap.GetStat(equipment.UniqueStatType, true));
+                equipment.StatsMap.GetStat(equipment.UniqueStatType, true),
+                equipment.StatsMap.GetStat(equipment.UniqueStatType));
 
             var optionCountDiff = OptionCountFromCombination - (additionalStats.Count + equipment.Skills.Count);
             foreach (var (statType, additionalValue) in additionalStats)
@@ -59,7 +60,7 @@ namespace Nekoyume.Helper
 
         public ItemOptionInfo(ItemUsable itemUsable)
         {
-            MainStat = (StatType.NONE, 0);
+            MainStat = (StatType.NONE, 0, 0);
 
             var stats = itemUsable.StatsMap.GetStats(true).ToList();
             for (var i = 0; i < stats.Count; i++)

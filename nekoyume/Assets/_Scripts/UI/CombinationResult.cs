@@ -286,17 +286,23 @@ namespace Nekoyume.UI
         {
             _iconImage.overrideSprite = _equipmentIconSprite;
 
-            var (mainStatType, mainStatValue) = _itemOptionInfo.MainStat;
-            _resultItem.mainStatText.text = $"{mainStatType.ToString()} {mainStatValue}";
+            var (mainStatType, _, mainStatTotalValue) = _itemOptionInfo.MainStat;
+            _resultItem.mainStatText.text = $"{mainStatType.ToString()} {mainStatTotalValue}";
 
-            var statsCP = CPHelper.GetStatCP(mainStatType, mainStatValue);
+            var statsCP = CPHelper.GetStatCP(mainStatType, mainStatTotalValue);
             _cpListForAnimationSteps.Add(statsCP);
             _resultItem.cpText.text = $"CP {CPHelper.DecimalToInt(statsCP)}";
 
             var statOptions = _itemOptionInfo.StatOptions;
             foreach (var (type, value, _) in statOptions)
             {
-                statsCP += CPHelper.GetStatCP(type, value);
+                // NOTE: Do not add a CP which is same type with mainStatType. Because statsCP already contains this amount.
+                // But we should add statsCP to _cpListForAnimationSteps for animation.
+                if (type != mainStatType)
+                {
+                    statsCP += CPHelper.GetStatCP(type, value);
+                }
+
                 _cpListForAnimationSteps.Add(statsCP);
             }
 

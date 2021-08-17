@@ -210,12 +210,12 @@ namespace Nekoyume.UI
             _resultItem.itemNameText.text = equipment.GetLocalizedName(false, true);
             _resultItem.cpText.text = $"CP {itemOptionInfo.CP}";
 
-            var (_, mainStatValuePre) = itemOptionInfoPre.MainStat;
-            var (mainStatType, mainStatValue) = itemOptionInfo.MainStat;
+            var (_, _, mainStatTotalValuePre) = itemOptionInfoPre.MainStat;
+            var (mainStatType, _, mainStatTotalValue) = itemOptionInfo.MainStat;
             _itemMainStatView.UpdateViewAsTotalAndPlusStat(
                 mainStatType,
-                mainStatValue,
-                mainStatValue - mainStatValuePre);
+                mainStatTotalValue,
+                mainStatTotalValue - mainStatTotalValuePre);
 
             var statOptions = itemOptionInfo.StatOptions;
             var statOptionsCount = statOptions.Count;
