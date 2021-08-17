@@ -38,7 +38,6 @@ namespace Nekoyume.UI.Module
         public readonly Subject<InventoryItemView> OnDoubleClickItemView =
             new Subject<InventoryItemView>();
 
-        // FIXME: 진짜 SharedModel이 되게끔 static으로 관리하는 것이 좋겠습니다. 이곳 저곳의 인벤토리 상태가 동기화되지 않는 이슈가 있기 때문입니다.
         public Model.Inventory SharedModel { get; set; }
 
         public InventoryScroll Scroll => scroll;
