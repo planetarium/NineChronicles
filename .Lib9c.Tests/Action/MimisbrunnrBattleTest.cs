@@ -1,4 +1,4 @@
-﻿namespace Lib9c.Tests.Action
+namespace Lib9c.Tests.Action
 {
     using System;
     using System.Collections.Generic;
@@ -161,8 +161,6 @@
                 RankingMapAddress = _rankingMapAddress,
             };
 
-            Assert.Null(action.Result);
-
             var nextState = action.Execute(new ActionContext()
             {
                 PreviousStates = state,
@@ -174,10 +172,6 @@
 
             var nextAvatarState = nextState.GetAvatarStateV2(_avatarAddress);
             var newWeeklyState = nextState.GetWeeklyArenaState(0);
-            Assert.NotNull(action.Result);
-            var reward = action.Result.OfType<GetReward>();
-            Assert.NotEmpty(reward);
-            Assert.Equal(BattleLog.Result.Win, action.Result.result);
             Assert.True(nextAvatarState.worldInformation.IsStageCleared(stageId));
             Assert.Equal(30, nextAvatarState.mailBox.Count);
 
@@ -304,8 +298,6 @@
                 RankingMapAddress = default,
             };
 
-            Assert.Null(action.Result);
-
             Assert.Throws<InvalidAddressException>(() =>
             {
                 action.Execute(new ActionContext()
@@ -331,8 +323,6 @@
                 RankingMapAddress = _rankingMapAddress,
             };
 
-            Assert.Null(action.Result);
-
             Assert.Throws<SheetRowNotFoundException>(() =>
             {
                 action.Execute(new ActionContext()
@@ -357,8 +347,6 @@
                 WeeklyArenaAddress = _weeklyArenaState.address,
                 RankingMapAddress = _rankingMapAddress,
             };
-
-            Assert.Null(action.Result);
 
             Assert.Throws<SheetRowColumnException>(() =>
             {
@@ -400,7 +388,6 @@
                 RankingMapAddress = _rankingMapAddress,
             };
 
-            Assert.Null(action.Result);
             var state = _initialState;
             state = state.SetState(_avatarAddress, previousAvatarState.Serialize());
             Assert.Throws<NotEnoughActionPointException>(() =>
@@ -488,8 +475,6 @@
                 RankingMapAddress = _rankingMapAddress,
             };
 
-            Assert.Null(action.Result);
-
             Assert.Throws<InvalidWorldException>(() =>
             {
                 action.Execute(new ActionContext()
@@ -529,8 +514,6 @@
                 WeeklyArenaAddress = _weeklyArenaState.address,
                 RankingMapAddress = _rankingMapAddress,
             };
-
-            Assert.Null(action.Result);
 
             Assert.Throws<FailedAddWorldException>(() =>
             {
@@ -578,8 +561,6 @@
                 RankingMapAddress = _rankingMapAddress,
             };
 
-            Assert.Null(action.Result);
-
             action.Execute(new ActionContext
             {
                 PreviousStates = nextState,
@@ -587,13 +568,6 @@
                 Rehearsal = false,
                 Random = new TestRandom(),
             });
-
-            var spawnPlayer = action.Result.FirstOrDefault(e => e is SpawnPlayer);
-            Assert.NotNull(spawnPlayer);
-            Assert.True(spawnPlayer.Character is Player p);
-            var player = (Player)spawnPlayer.Character;
-            Assert.Equal(player.Costumes.First().ItemId, ((Costume)costume).ItemId);
-            Assert.Equal(player.Equipments.First().ItemId, equipment.ItemId);
         }
 
         [Fact]
