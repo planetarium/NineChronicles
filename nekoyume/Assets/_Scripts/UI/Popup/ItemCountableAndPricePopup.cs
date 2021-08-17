@@ -54,9 +54,12 @@ namespace Nekoyume.UI
                 }
                 else
                 {
-                    var maxCount = _data.Item.Value.MaxCount.Value;
+                    var maxCount = 1;
+                    if (_data.Item is { Value: { } })
+                    {
+                        maxCount = _data.Item.Value.MaxCount.Value;
+                    }
                     var count = InputFieldValueToValue<int>(countInputField);
-
                     var result = Mathf.Clamp(count, 1, maxCount);
                     countInputField.text = result.ToString();
                     _data.OnChangeCount.OnNext(result);
