@@ -143,5 +143,11 @@ namespace Lib9c
         public const string TradableIdKey = "ti";
         public const string OrderReceiptListKey = "orl";
         public const string BuyerAgentAddressKey = "bga";
+
+        // QuestList
+        public const string QuestsKeyDeprecated = "quests";
+        public const string CompletedQuestIdsKeyDeprecated = "completedQuestIds";
+
+        public const string updateSellOrderIdKey = "roi";
     }
 }

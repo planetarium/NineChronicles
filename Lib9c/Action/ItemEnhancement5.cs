@@ -15,6 +15,7 @@ using Serilog;
 namespace Nekoyume.Action
 {
     [Serializable]
+    [ActionObsolete(2100000)]
     [ActionType("item_enhancement5")]
     public class ItemEnhancement5 : GameAction
     {
@@ -44,6 +45,8 @@ namespace Nekoyume.Action
                     .SetState(avatarAddress, MarkChanged)
                     .SetState(slotAddress, MarkChanged);
             }
+
+            CheckObsolete(2100000, context);
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
             

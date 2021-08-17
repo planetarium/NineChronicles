@@ -19,7 +19,7 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("buy8")]
+    [ActionType("buy9")]
     public class Buy : GameAction
     {
         public const int TaxRate = 8;
@@ -188,7 +188,10 @@ namespace Nekoyume.Action
                 Log.Verbose("{AddressesHex}Buy Get Seller AgentAvatarStates: {Elapsed}", addressesHex, sw.Elapsed);
                 sw.Restart();
 
-                int errorCode = order.ValidateTransfer(sellerAvatarState, purchaseInfo.TradableId, purchaseInfo.Price, context.BlockIndex);
+                // ValidateTransfer will no longer be required in the next version. (current version : buy9)
+                var errorCode = sellerAvatarState.inventory.TryGetLockedItem(new OrderLock(orderId), out _)
+                        ? order.ValidateTransfer(sellerAvatarState, purchaseInfo.TradableId, purchaseInfo.Price, context.BlockIndex)
+                        : order.ValidateTransfer2(sellerAvatarState, purchaseInfo.TradableId, purchaseInfo.Price, context.BlockIndex);
 
                 if (errorCode != 0)
                 {
@@ -211,7 +214,10 @@ namespace Nekoyume.Action
                 OrderReceipt orderReceipt;
                 try
                 {
-                    orderReceipt = order.Transfer(sellerAvatarState, buyerAvatarState, context.BlockIndex);
+                    // Transfer will no longer be required in the next version. (current version : buy9)
+                    orderReceipt = sellerAvatarState.inventory.TryGetLockedItem(new OrderLock(orderId), out _)
+                            ? order.Transfer(sellerAvatarState, buyerAvatarState, context.BlockIndex)
+                            : order.Transfer2(sellerAvatarState, buyerAvatarState, context.BlockIndex);
                 }
                 catch (ItemDoesNotExistException)
                 {
