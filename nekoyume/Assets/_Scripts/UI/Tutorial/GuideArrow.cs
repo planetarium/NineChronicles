@@ -131,5 +131,10 @@ namespace Nekoyume.UI
         {
             AudioController.instance.PlaySfx(AudioController.SfxCode.GuideArrow);
         }
+
+        public override void Skip()
+        {
+
+        }
     }
 }

@@ -33,14 +33,6 @@ namespace Nekoyume.UI
 
         private const float DefaultPrintDelay = 0.02f;
 
-        private void Awake()
-        {
-            Observable.EveryUpdate()
-                .Where(_ => Input.GetMouseButtonDown(0) && textTyper.IsTyping)
-                .Subscribe(_ => OnClick())
-                .AddTo(gameObject);
-        }
-
         public override void Play<T>(T data, System.Action callback)
         {
             if (data is GuideDialogData d)
@@ -52,14 +44,6 @@ namespace Nekoyume.UI
                     StopCoroutine(_coroutine);
                 }
                 _coroutine = StartCoroutine(LatePlay(d, callback));
-
-                if (!TryGetComponent<Button>(out var button))
-                {
-                    button = gameObject.AddComponent<Button>();
-                }
-
-                button.onClick.AddListener(OnClick);
-                button.targetGraphic = GetComponentInChildren<Graphic>();
             }
         }
 
@@ -167,7 +151,8 @@ namespace Nekoyume.UI
         }
 
         #region Skip
-        private void OnClick()
+
+        public override void Skip()
         {
             if (textTyper.IsSkippable())
             {
