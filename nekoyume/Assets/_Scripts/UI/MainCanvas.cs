@@ -305,7 +305,7 @@ namespace Nekoyume.UI
             yield return null;
             secondWidgets.Add(Widget.Create<Dialog>());
             yield return null;
-            secondWidgets.Add(Widget.Create<CodeReward>(true));
+            secondWidgets.Add(Widget.Create<CodeReward>());
             yield return null;
             secondWidgets.Add(Widget.Create<PrologueDialog>());
             yield return null;

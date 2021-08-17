@@ -93,6 +93,7 @@ namespace Nekoyume.UI
         private IDisposable _disposableOfSkip;
 
         public override WidgetType WidgetType => WidgetType.Popup;
+        public override CloseKeyType CloseKeyType => CloseKeyType.Escape;
 
         protected override void OnDisable()
         {
@@ -250,7 +251,7 @@ namespace Nekoyume.UI
                     optionText.rootObject.SetActive(false);
                 }
             }
-            
+
             // NOTE: Ignore Show Animation
             base.Show(true);
             switch (enhancementResult)

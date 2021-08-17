@@ -113,6 +113,7 @@ namespace Nekoyume.UI
         private IDisposable _disposableOfOpenOption;
 
         public override WidgetType WidgetType => WidgetType.Popup;
+        public override CloseKeyType CloseKeyType => CloseKeyType.Escape;
 
         protected override void OnDisable()
         {

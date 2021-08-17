@@ -1,4 +1,5 @@
 ﻿
+using Nekoyume.EnumType;
 using UnityEngine;
 using UnityEngine.UI;
 

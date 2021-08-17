@@ -17,6 +17,7 @@ namespace Nekoyume.UI
         private readonly List<IDisposable> _disposablesOfOnEnable = new List<IDisposable>();
 
         public override WidgetType WidgetType => WidgetType.Popup;
+        public override CloseKeyType CloseKeyType => CloseKeyType.Escape;
 
         protected override void OnEnable()
         {
