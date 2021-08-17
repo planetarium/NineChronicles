@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using Nekoyume.Game.Controller;
 using Nekoyume.UI.Module;
@@ -132,9 +133,12 @@ namespace Nekoyume.UI
             AudioController.instance.PlaySfx(AudioController.SfxCode.GuideArrow);
         }
 
-        public override void Skip()
+        public override void Skip(System.Action callback)
         {
-
+            _arrow.Play(_arrow.GetCurrentAnimatorStateInfo(0).shortNameHash, -1, 1);
+            // _coroutine = StartCoroutine(PlayAnimation(
+            //     (GuideType) _arrow.GetCurrentAnimatorStateInfo(0).shortNameHash, -1, true,
+            //     callback));
         }
     }
 }

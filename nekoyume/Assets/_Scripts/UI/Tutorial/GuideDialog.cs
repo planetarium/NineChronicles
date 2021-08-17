@@ -152,7 +152,7 @@ namespace Nekoyume.UI
 
         #region Skip
 
-        public override void Skip()
+        public override void Skip(System.Action callback)
         {
             if (textTyper.IsSkippable())
             {
@@ -161,7 +161,6 @@ namespace Nekoyume.UI
             else
             {
                 PlayEmojiAnimation(StopHash);
-                //_callback?.Invoke();
             }
         }
         #endregion

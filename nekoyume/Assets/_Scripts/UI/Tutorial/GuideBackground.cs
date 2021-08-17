@@ -127,7 +127,7 @@ namespace Nekoyume.UI
             }
         }
 
-        public override void Skip()
+        public override void Skip(System.Action callback)
         {
 
         }

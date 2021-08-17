@@ -56,7 +56,7 @@ namespace Nekoyume.UI
                 {
                     foreach (var item in items)
                     {
-                        item.Item.Skip(/*() => PlayEnd()*/);
+                        item.Item.Skip(() => PlayEnd());
                     }
                 })
                 .AddTo(gameObject);
