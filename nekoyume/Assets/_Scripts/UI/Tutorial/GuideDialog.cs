@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,6 +6,8 @@ using Nekoyume.Game.Controller;
 using Nekoyume.L10n;
 using UnityEngine;
 using RedBlueGames.Tools.TextTyper;
+using UniRx;
+using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
@@ -32,6 +33,14 @@ namespace Nekoyume.UI
 
         private const float DefaultPrintDelay = 0.02f;
 
+        private void Awake()
+        {
+            Observable.EveryUpdate()
+                .Where(_ => Input.GetMouseButtonDown(0) && textTyper.IsTyping)
+                .Subscribe(_ => OnClick())
+                .AddTo(gameObject);
+        }
+
         public override void Play<T>(T data, System.Action callback)
         {
             if (data is GuideDialogData d)
@@ -43,6 +52,14 @@ namespace Nekoyume.UI
                     StopCoroutine(_coroutine);
                 }
                 _coroutine = StartCoroutine(LatePlay(d, callback));
+
+                if (!TryGetComponent<Button>(out var button))
+                {
+                    button = gameObject.AddComponent<Button>();
+                }
+
+                button.onClick.AddListener(OnClick);
+                button.targetGraphic = GetComponentInChildren<Graphic>();
             }
         }
 
@@ -150,23 +167,22 @@ namespace Nekoyume.UI
         }
 
         #region Skip
-        // private void OnClick()
-        // {
-        //
-        //     if (textTyper.IsSkippable())
-        //     {
-        //         textTyper.Skip();
-        //     }
-        //     else
-        //     {
-        //         PlayEmojiAnimation(StopHash);
-        //         _callback?.Invoke();
-        //     }
-        // }
+        private void OnClick()
+        {
+            if (textTyper.IsSkippable())
+            {
+                textTyper.Skip();
+            }
+            else
+            {
+                PlayEmojiAnimation(StopHash);
+                //_callback?.Invoke();
+            }
+        }
         #endregion
     }
 
-    [Serializable]
+    [System.Serializable]
     public class Emoji
     {
         [SerializeField] private DialogEmojiType type;
@@ -176,7 +192,7 @@ namespace Nekoyume.UI
         public GameObject Animation => animtion;
     }
 
-    [Serializable]
+    [System.Serializable]
     public class Comma
     {
         [SerializeField] private DialogCommaType type;
@@ -186,7 +202,7 @@ namespace Nekoyume.UI
         public GameObject Icon => icon;
     }
 
-    [Serializable]
+    [System.Serializable]
     public class PrintDelay
     {
         public LanguageType languageType;
