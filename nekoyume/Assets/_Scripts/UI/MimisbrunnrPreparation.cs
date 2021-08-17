@@ -511,6 +511,12 @@ namespace Nekoyume.UI
                 return;
             }
 
+            if (_stage.IsInStage)
+            {
+                startButton.interactable = false;
+                return;
+            }
+
             _stage.IsInStage = true;
             StartCoroutine(CoBattleClick(repeat));
             startButton.interactable = false;
