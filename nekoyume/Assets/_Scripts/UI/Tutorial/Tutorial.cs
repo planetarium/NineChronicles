@@ -39,7 +39,7 @@ namespace Nekoyume.UI
             }
 
             _onClickDispose = button.OnClickAsObservable()
-                .ThrottleFirst(TimeSpan.FromSeconds(playTime))
+                .Where(_ => !_isPlaying)
                 .Subscribe(_ => OnClick())
                 .AddTo(gameObject);
 
