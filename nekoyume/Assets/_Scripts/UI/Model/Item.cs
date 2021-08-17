@@ -19,7 +19,6 @@ namespace Nekoyume.UI.Model
         public readonly Subject<Item> OnClick = new Subject<Item>();
         public readonly Subject<Item> OnDoubleClick = new Subject<Item>();
 
-        private const int VisibleEnhancementEffectValue = 10;
         public Item(ItemBase value)
         {
             ItemBase.Value = value;
@@ -31,7 +30,7 @@ namespace Nekoyume.UI.Model
             {
                 Enhancement.Value = $"+{equipment.level}";
                 EnhancementEnabled.Value = true;
-                EnhancementEffectEnabled.Value = equipment.level >= VisibleEnhancementEffectValue;
+                EnhancementEffectEnabled.Value = equipment.level >= GameConfig.VisibleEnhancementEffectLevel;
             }
             else
             {

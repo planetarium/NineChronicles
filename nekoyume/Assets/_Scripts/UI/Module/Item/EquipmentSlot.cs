@@ -239,6 +239,10 @@ namespace Nekoyume.UI.Module
                 if (isUpgraded)
                 {
                     enhancementText.text = $"+{equip.level}";
+                }
+
+                if (equip.level >= GameConfig.VisibleEnhancementEffectLevel)
+                {
                     enhancementImage.gameObject.SetActive(true);
                     enhancementImage.material = gradeData.EnhancementMaterial;
                 }
