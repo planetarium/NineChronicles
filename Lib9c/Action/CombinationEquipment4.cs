@@ -19,7 +19,7 @@ using Nekoyume.TableData;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionObsolete(2000000)]
+    [ActionObsolete(2100000)]
     [ActionType("combination_equipment4")]
     public class CombinationEquipment4 : GameAction
     {
@@ -50,7 +50,7 @@ namespace Nekoyume.Action
                     .MarkBalanceChanged(GoldCurrencyMock, ctx.Signer, BlacksmithAddress);
             }
 
-            CheckObsolete(2000000, context);
+            CheckObsolete(2100000, context);
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, AvatarAddress);
 
