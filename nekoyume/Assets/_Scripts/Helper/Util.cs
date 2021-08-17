@@ -10,6 +10,7 @@ namespace Nekoyume.Helper
 {
     public static class Util
     {
+        public const int VisibleEnhancementEffectLevel = 10;
         private const int BlockPerSecond = 12;
 
         public static string GetBlockToTime(int block)

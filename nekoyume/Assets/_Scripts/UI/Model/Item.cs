@@ -1,4 +1,5 @@
 using System;
+using Nekoyume.Helper;
 using Nekoyume.Model.Item;
 using UniRx;
 
@@ -30,7 +31,7 @@ namespace Nekoyume.UI.Model
             {
                 Enhancement.Value = $"+{equipment.level}";
                 EnhancementEnabled.Value = true;
-                EnhancementEffectEnabled.Value = equipment.level >= GameConfig.VisibleEnhancementEffectLevel;
+                EnhancementEffectEnabled.Value = equipment.level >= Util.VisibleEnhancementEffectLevel;
             }
             else
             {
