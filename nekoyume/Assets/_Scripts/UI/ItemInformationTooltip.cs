@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using Nekoyume.EnumType;
 using Nekoyume.Extension;
@@ -8,6 +9,7 @@ using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI
@@ -26,12 +28,14 @@ namespace Nekoyume.UI
         [SerializeField] private GameObject sell;
         [SerializeField] private BlockTimer buyTimer;
         [SerializeField] private BlockTimer sellTimer;
-        [SerializeField] private Button closeButton;
 
         [SerializeField] private TextMeshProUGUI priceText;
 
 
         private readonly List<IDisposable> _disposablesForModel = new List<IDisposable>();
+
+        private bool _isPointerOnScrollArea;
+        private bool _isClickedButtonArea;
 
         private new Model.ItemInformationTooltip Model { get; set; }
 
@@ -76,12 +80,6 @@ namespace Nekoyume.UI
                 Model.OnSubmitClick.OnNext(this);
                 Close();
             };
-
-            closeButton.onClick.AddListener(() =>
-            {
-                Model.OnCloseClick.OnNext(this);
-                Close();
-            });
         }
 
         protected override void OnDestroy()
@@ -135,6 +133,8 @@ namespace Nekoyume.UI
             }
             Model.ItemInformation.item.Subscribe(value => SubscribeTargetItem(Model.target.Value))
                 .AddTo(_disposablesForModel);
+
+            StartCoroutine(CoUpdate(submitButton.gameObject));
         }
 
         public void ShowForSell(RectTransform target,
@@ -189,6 +189,8 @@ namespace Nekoyume.UI
                 Model.OnCloseClick.OnNext(this);
                 Close();
             });
+
+            StartCoroutine(CoUpdate(sell));
             sellTimer.UpdateTimer(Model.ExpiredBlockIndex.Value);
         }
 
@@ -234,11 +236,15 @@ namespace Nekoyume.UI
             Model.ItemInformation.item
                 .Subscribe(value => SubscribeTargetItem(Model.target.Value))
                 .AddTo(_disposablesForModel);
+
+            StartCoroutine(CoUpdate(buy));
             buyTimer.UpdateTimer(Model.ExpiredBlockIndex.Value);
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
         {
+            _isPointerOnScrollArea = false;
+            _isClickedButtonArea = false;
             _disposablesForModel.DisposeAllAndClear();
             Model.target.Value = null;
             Model.ItemInformation.item.Value = null;
@@ -261,6 +267,73 @@ namespace Nekoyume.UI
                 panel.MoveToRelatedPosition(target, TargetPivotPresetType.ReverseX(), DefaultOffsetFromTarget.ReverseX());
                 UpdateAnchoredPosition();
             }
+        }
+
+        private IEnumerator CoUpdate(GameObject target)
+        {
+            var selectedGameObjectCache = EventSystem.current.currentSelectedGameObject;
+            while (selectedGameObjectCache is null)
+            {
+                selectedGameObjectCache = EventSystem.current.currentSelectedGameObject;
+                yield return null;
+            }
+
+            var positionCache = selectedGameObjectCache.transform.position;
+
+            while (enabled)
+            {
+                if (Input.GetMouseButtonDown(0))
+                {
+                    _isClickedButtonArea = _isPointerOnScrollArea;
+                }
+
+                var current = EventSystem.current.currentSelectedGameObject;
+                if (current == selectedGameObjectCache)
+                {
+                    if (Input.GetMouseButtonDown(0))
+                    {
+                        positionCache = selectedGameObjectCache.transform.position;
+                        yield return null;
+                        continue;
+                    }
+
+                    if (!Input.GetMouseButton(0) &&
+                        Input.mouseScrollDelta == default)
+                    {
+                        yield return null;
+                        continue;
+                    }
+
+                    var position = selectedGameObjectCache.transform.position;
+                    if (position != positionCache)
+                    {
+                        Model.OnCloseClick.OnNext(this);
+                        Close();
+                        yield break;
+                    }
+                }
+                else
+                {
+                    if (current == target)
+                    {
+                        yield break;
+                    }
+
+                    if (!_isClickedButtonArea)
+                    {
+                        Model.OnCloseClick.OnNext(this);
+                        Close();
+                        yield break;
+                    }
+                }
+
+                yield return null;
+            }
+        }
+
+        public void OnEnterButtonArea(bool value)
+        {
+            _isPointerOnScrollArea = value;
         }
     }
 }
