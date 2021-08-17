@@ -68,7 +68,7 @@ namespace Nekoyume.BlockChain
         )
         {
 #if UNITY_EDITOR
-            return new DebugPolicy();
+            return new Lib9c.DebugPolicy();
 #else
             return new BlockPolicy(
                 new RewardGold(),

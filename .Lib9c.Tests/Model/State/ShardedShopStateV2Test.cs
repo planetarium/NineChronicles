@@ -200,8 +200,8 @@ namespace Lib9c.Tests.Model.State
                 ItemSubType.Weapon,
                 1
             );
-            var orderDigest = order.Digest(avatarState, new CostumeStatSheet());
-            var orderDigest2 = order2.Digest(avatarState, new CostumeStatSheet());
+            var orderDigest = order.Digest2(avatarState, new CostumeStatSheet());
+            var orderDigest2 = order2.Digest2(avatarState, new CostumeStatSheet());
             shardedShopState.Add(orderDigest, 0);
             shardedShopState.Add(orderDigest2, 0);
             Assert.Equal(2, shardedShopState.OrderDigestList.Count);

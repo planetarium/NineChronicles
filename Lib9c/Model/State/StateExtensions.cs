@@ -406,5 +406,17 @@ namespace Nekoyume.Model.State
             new Buy7.SellerResult((Dictionary) serialized);
 
         #endregion
+
+        public static ILock ToLock(this IValue serialized)
+        {
+            var type = ((List) serialized).First().ToEnum<LockType>();
+            switch (type)
+            {
+                case LockType.Order:
+                    return new OrderLock((List) serialized);
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
     }
 }

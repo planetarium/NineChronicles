@@ -18,7 +18,7 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionObsolete(2000000)]
+    [ActionObsolete(2200000)]
     [ActionType("sell_cancellation7")]
     public class SellCancellation7 : GameAction
     {
@@ -95,6 +95,8 @@ namespace Nekoyume.Action
                     .SetState(sellerAvatarAddress, MarkChanged);
             }
 
+            CheckObsolete(2200000, context);
+
             var addressesHex = GetSignerAndOtherAddressesHex(context, sellerAvatarAddress);
             var sw = new Stopwatch();
             sw.Start();
@@ -133,8 +135,8 @@ namespace Nekoyume.Action
             }
 
             Order order = OrderFactory.Deserialize(orderDict);
-            order.ValidateCancelOrder(avatarState, tradableId);
-            ITradableItem sellItem = order.Cancel(avatarState, context.BlockIndex);
+            order.ValidateCancelOrder2(avatarState, tradableId);
+            ITradableItem sellItem = order.Cancel2(avatarState, context.BlockIndex);
             var shardedShopState = new ShardedShopStateV2(shopStateDict);
             shardedShopState.Remove(order, context.BlockIndex);
             states = states.SetState(shardedShopAddress, shardedShopState.Serialize());

@@ -10,7 +10,7 @@ using Serilog;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionObsolete(2000000)]
+    [ActionObsolete(2100000)]
     [ActionType("migration_legacy_shop")]
     public class MigrationLegacyShop0 : GameAction
     {
@@ -27,6 +27,7 @@ namespace Nekoyume.Action
                 return states.SetState(Addresses.Shop, MarkChanged);
             }
 
+            CheckObsolete(2100000, context);
             CheckPermission(context);
 
             Log.Debug("Start Migration Legacy Shop");
