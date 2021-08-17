@@ -97,6 +97,8 @@ namespace Nekoyume.UI
             { RankCategory.EquipmentRing, ("UI_CP", "UI_NAME") },
         };
 
+        public override CloseKeyType CloseKeyType => CloseKeyType.Escape;
+
         public override void Initialize()
         {
             base.Initialize();

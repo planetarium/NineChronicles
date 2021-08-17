@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using Nekoyume.EnumType;
 using Nekoyume.Game.Controller;
 using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
@@ -35,6 +36,7 @@ namespace Nekoyume.UI
         private readonly List<IDisposable> _disposablesForSetData = new List<IDisposable>();
 
         private const int DefaultPrice = 10;
+        public override CloseKeyType CloseKeyType => CloseKeyType.Escape;
 
         #region Mono
 

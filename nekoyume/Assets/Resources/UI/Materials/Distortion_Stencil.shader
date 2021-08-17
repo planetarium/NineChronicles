@@ -1,9 +1,5 @@
 ﻿Shader "Custom/Distortion_Stencil"
 {
-    Properties
-    {
-        _RefNumber ("Stencil Masking Number", int) = 3
-    }
     SubShader
     {
         Tags
@@ -14,9 +10,9 @@
 
         Stencil
         {
-            Ref [_RefNumber]
-            Comp Never
-            Fail Replace
+            Ref 2
+            Comp always
+            Pass replace
         }
 
         Pass

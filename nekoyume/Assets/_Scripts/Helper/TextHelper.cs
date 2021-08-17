@@ -8,7 +8,7 @@ namespace Nekoyume.Helper
     {
         public static string GetItemNameInCombinationSlot(ItemUsable itemUsable)
         {
-            var itemName = itemUsable.GetLocalizedNonColoredName();
+            var itemName = itemUsable.GetLocalizedNonColoredName(false);
             switch (itemUsable)
             {
                 case Equipment equipment:
