@@ -15,6 +15,7 @@ namespace Nekoyume.UI
         [SerializeField] private List<CombinationSlot> slots;
 
         public override WidgetType WidgetType => WidgetType.Popup;
+        public override CloseKeyType CloseKeyType => CloseKeyType.Escape;
 
         protected override void Awake()
         {

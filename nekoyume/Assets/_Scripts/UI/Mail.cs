@@ -70,6 +70,7 @@ namespace Nekoyume.UI
         public MailBox MailBox { get; private set; }
 
         public override WidgetType WidgetType => WidgetType.Popup;
+        public override CloseKeyType CloseKeyType => CloseKeyType.Escape;
 
         #region override
 
@@ -230,9 +231,9 @@ namespace Nekoyume.UI
                 Debug.LogError("CombinationMail.itemUsable is null");
                 return;
             }
-            
+
             var itemUsable = attachment.itemUsable;
-            
+
             // LocalLayer
             UniTask.Run(() =>
                 {
