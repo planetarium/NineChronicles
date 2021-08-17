@@ -2,8 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Reflection;
 using Bencodex.Types;
-using Lib9c;
 using Lib9c.Renderer;
 using Libplanet.Blockchain;
 using Libplanet.Blockchain.Policies;
@@ -18,8 +18,6 @@ using Serilog.Events;
 #if UNITY_EDITOR || UNITY_STANDALONE
 using UniRx;
 #else
-using System.Reactive.Subjects;
-using System.Reactive.Linq;
 #endif
 using NCAction = Libplanet.Action.PolymorphicAction<Nekoyume.Action.ActionBase>;
 
@@ -69,7 +67,7 @@ namespace Nekoyume.BlockChain
         )
         {
 #if UNITY_EDITOR
-            return new DebugPolicy();
+            return new Lib9c.DebugPolicy();
 #else
             return new BlockPolicy(
                 new RewardGold(),
@@ -88,21 +86,39 @@ namespace Nekoyume.BlockChain
         public IEnumerable<IRenderer<NCAction>> GetRenderers() =>
             new IRenderer<NCAction>[] { BlockRenderer, LoggedActionRenderer };
 
+        public static bool IsObsolete(Transaction<NCAction> transaction, long blockIndex)
+        {
+            return transaction.Actions
+                .Select(action => action.InnerAction.GetType())
+                .Any(
+                    at =>
+                    at.IsDefined(typeof(ActionObsoleteAttribute), false) &&
+                    at.GetCustomAttributes()
+                        .OfType<ActionObsoleteAttribute>()
+                        .FirstOrDefault()?.ObsoleteIndex < blockIndex
+                );
+        }
+
         private bool DoesTransactionFollowPolicy(
             Transaction<NCAction> transaction,
             BlockChain<NCAction> blockChain
         )
         {
-            return 
-                transaction.Actions.Count <= 1 &&
-                CheckSigner(transaction, blockChain);
+            return CheckTransaction(transaction, blockChain);
         }
 
-        private bool CheckSigner(
+        private bool CheckTransaction(
             Transaction<NCAction> transaction,
             BlockChain<NCAction> blockChain
         )
         {
+            // Avoid NRE when genesis block appended
+            long index = blockChain.Tip?.Index ?? 0;
+            if (transaction.Actions.Count > 1 || IsObsolete(transaction, index))
+            {
+                return false;
+            }
+
             try
             {
                 // Check if it is a no-op transaction to prove it's made by the authorized miner.

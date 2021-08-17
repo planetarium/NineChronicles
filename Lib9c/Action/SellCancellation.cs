@@ -18,7 +18,7 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("sell_cancellation7")]
+    [ActionType("sell_cancellation8")]
     public class SellCancellation : GameAction
     {
         public Guid orderId;
@@ -132,11 +132,27 @@ namespace Nekoyume.Action
             }
 
             Order order = OrderFactory.Deserialize(orderDict);
-            order.ValidateCancelOrder(avatarState, tradableId);
-            ITradableItem sellItem = order.Cancel(avatarState, context.BlockIndex);
-            var shardedShopState = new ShardedShopStateV2(shopStateDict);
-            shardedShopState.Remove(order, context.BlockIndex);
-            states = states.SetState(shardedShopAddress, shardedShopState.Serialize());
+            bool fromPreviousAction = false;
+            try
+            {
+                order.ValidateCancelOrder(avatarState, tradableId);
+            }
+            catch (Exception)
+            {
+                order.ValidateCancelOrder2(avatarState, tradableId);
+                fromPreviousAction = true;
+            }
+
+            var sellItem = fromPreviousAction
+                ? order.Cancel2(avatarState, context.BlockIndex)
+                : order.Cancel(avatarState, context.BlockIndex);
+            if (context.BlockIndex < order.ExpiredBlockIndex)
+            {
+                var shardedShopState = new ShardedShopStateV2(shopStateDict);
+                shardedShopState.Remove(order, context.BlockIndex);
+                states = states.SetState(shardedShopAddress, shardedShopState.Serialize());
+            }
+            
             if (!states.TryGetState(orderDigestListAddress, out Dictionary rawList))
             {
                 throw new FailedLoadStateException($"{addressesHex}failed to load {nameof(OrderDigest)}({orderDigestListAddress}).");

@@ -757,6 +757,30 @@ namespace Lib9c.Tests.Action
             SerializeException<NotEnoughActionPointException>(exec);
         }
 
+        [Fact]
+        public void Execute_Throw_ActionObsoletedException()
+        {
+            var action = new HackAndSlash4()
+            {
+                costumes = new List<Guid>(),
+                equipments = new List<Guid>(),
+                foods = new List<Guid>(),
+                worldId = 1,
+                stageId = 1,
+                avatarAddress = _avatarAddress,
+                WeeklyArenaAddress = _weeklyArenaState.address,
+                RankingMapAddress = _rankingMapAddress,
+            };
+
+            Assert.Throws<ActionObsoletedException>(() => action.Execute(new ActionContext()
+            {
+                PreviousStates = _initialState,
+                Signer = _agentAddress,
+                Random = new TestRandom(),
+                BlockIndex = 2200000,
+            }));
+        }
+
         private static void SerializeException<T>(Exception exec)
             where T : Exception
         {

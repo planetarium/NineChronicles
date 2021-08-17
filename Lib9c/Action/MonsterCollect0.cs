@@ -12,6 +12,7 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
+    [ActionObsolete(2100000)]
     [ActionType("monster_collect")]
     public class MonsterCollect0 : GameAction
     {
@@ -28,6 +29,8 @@ namespace Nekoyume.Action
                     .SetState(context.Signer, MarkChanged)
                     .MarkBalanceChanged(GoldCurrencyMock, context.Signer, monsterCollectionAddress);
             }
+
+            CheckObsolete(2100000, context);
 
             MonsterCollectionSheet monsterCollectionSheet = states.GetSheet<MonsterCollectionSheet>();
 
