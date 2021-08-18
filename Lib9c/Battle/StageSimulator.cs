@@ -21,6 +21,9 @@ namespace Nekoyume.Battle
         public CollectionMap ItemMap = new CollectionMap();
         public readonly EnemySkillSheet EnemySkillSheet;
 
+        public const int ConstructorVersionDefault = 1;
+        public const int ConstructorVersionV100025 = 2;
+
         private int WorldId { get; }
         public int StageId { get; }
         private bool IsCleared { get; }
@@ -67,7 +70,7 @@ namespace Nekoyume.Battle
             var maxCount = Random.Next(stageRow.DropItemMin, stageRow.DropItemMax + 1);
             switch (constructorVersion)
             {
-                case 1:
+                case ConstructorVersionDefault:
                     _waveRewards = SetReward(
                         itemSelector,
                         maxCount,
@@ -75,7 +78,7 @@ namespace Nekoyume.Battle
                         MaterialItemSheet
                     );
                     break;
-                case 2:
+                case ConstructorVersionV100025:
                     _waveRewards = SetRewardV2(
                         itemSelector,
                         maxCount,
