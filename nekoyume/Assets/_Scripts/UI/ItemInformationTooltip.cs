@@ -262,6 +262,7 @@ namespace Nekoyume.UI
 
         private void SubscribeTargetItem(RectTransform target)
         {
+            LayoutRebuilder.ForceRebuildLayoutImmediate(panel);
             panel.SetAnchorAndPivot(AnchorPresetType.TopLeft, PivotPresetType.TopLeft);
             base.SubscribeTarget(target);
 

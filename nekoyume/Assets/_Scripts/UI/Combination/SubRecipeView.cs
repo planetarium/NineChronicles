@@ -99,7 +99,7 @@ namespace Nekoyume.UI
             if (recipeRow is EquipmentItemRecipeSheet.Row equipmentRow)
             {
                 var resultItem = equipmentRow.GetResultEquipmentItemRow();
-                title = resultItem.GetLocalizedName();
+                title = resultItem.GetLocalizedName(true, false);
 
                 var stat = resultItem.GetUniqueStat();
                 statText.text = string.Format(StatTextFormat, stat.Type, stat.ValueAsInt);
