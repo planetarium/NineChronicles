@@ -20,6 +20,7 @@ using UnityEngine;
 
 namespace Nekoyume.UI
 {
+    using Nekoyume.Model.BattleStatus;
     using UniRx;
 
     public class RankingBoard : Widget
@@ -456,9 +457,9 @@ namespace Nekoyume.UI
             }
         }
 
-        public void GoToStage(ActionBase.ActionEvaluation<RankingBattle> eval)
+        public void GoToStage(BattleLog log)
         {
-            Game.Event.OnRankingBattleStart.Invoke(eval.Action.Result);
+            Game.Event.OnRankingBattleStart.Invoke(log);
             Close();
         }
 

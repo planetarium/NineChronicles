@@ -945,6 +945,12 @@
             compatible (i.e., disallowed to be casted to each other).</para>
             </summary>
         </member>
+        <member name="P:Libplanet.Action.IRandom.Seed">
+            <summary>
+            A number used to calculate a starting value for the pseudo-random
+            number sequence.
+            </summary>
+        </member>
         <member name="M:Libplanet.Action.IRandom.Next">
             <summary>
             Gets a non-negative random integer.
