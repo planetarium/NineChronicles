@@ -22,7 +22,6 @@ namespace Nekoyume.UI
         [SerializeField] private CanvasGroup _bgCanvasGroup = null;
         [SerializeField] private DOTweenGroupAlpha _buttonAlphaTweener = null;
         [SerializeField] private DOTweenGroupAlpha _bgAlphaTweener = null;
-        [SerializeField] private Transform npcPosition = null;
         [SerializeField] private TextMeshProUGUI continueText = null;
         [SerializeField] private SpeechBubbleWithItem speechBubble = null;
 
@@ -38,6 +37,8 @@ namespace Nekoyume.UI
         private const int ContinueTime = 5;
         private const int NPCId = 300001;
         private System.Action _closeAction;
+
+        private static readonly Vector3 NPCPosition = new Vector3(1000f, 999.2f, 2.15f);
 
         public override WidgetType WidgetType => WidgetType.Screen;
 
@@ -120,7 +121,7 @@ namespace Nekoyume.UI
         {
             var go = Game.Game.instance.Stage.npcFactory.Create(
                 NPCId,
-                npcPosition.position,
+                NPCPosition,
                 LayerType.UI,
                 31);
             _npc = go.GetComponent<NPC>();
