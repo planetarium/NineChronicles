@@ -233,21 +233,20 @@ namespace Nekoyume.UI
 
             // LocalLayer
             UniTask.Run(() =>
-                {
-                    LocalLayerModifier.AddItem(avatarAddress, itemUsable.TradableId, itemUsable.RequiredBlockIndex, 1,
-                        false);
-                    LocalLayerModifier.RemoveNewAttachmentMail(avatarAddress, mail.id, false);
-                    LocalLayerModifier.RemoveAttachmentResult(avatarAddress, mail.id, false);
-                    LocalLayerModifier.ModifyAvatarItemRequiredIndex(
-                        avatarAddress,
-                        itemUsable.TradableId,
-                        Game.Game.instance.Agent.BlockIndex);
-                    return States.Instance.GetAvatarStateV2(avatarAddress);
-                }).ToObservable().Subscribe(avatarState =>
-                {
-                    Debug.Log("CombinationMail LocalLayer task completed");
-                    States.Instance.AddOrReplaceAvatarState(avatarState, States.Instance.CurrentAvatarKey);
-                });
+            {
+                LocalLayerModifier.AddItem(
+                    avatarAddress,
+                    itemUsable.TradableId,
+                    itemUsable.RequiredBlockIndex,
+                    1,
+                    false);
+                LocalLayerModifier.RemoveNewAttachmentMail(avatarAddress, mail.id, false);
+                return States.Instance.GetAvatarStateV2(avatarAddress);
+            }).ToObservable().SubscribeOnMainThread().Subscribe(avatarState =>
+            {
+                Debug.Log("CombinationMail LocalLayer task completed");
+                States.Instance.AddOrReplaceAvatarState(avatarState, States.Instance.CurrentAvatarKey);
+            });
             // ~LocalLayer
 
             Find<CombinationResult>().Show(itemUsable);
@@ -339,7 +338,7 @@ namespace Nekoyume.UI
                     false);
                 LocalLayerModifier.RemoveNewAttachmentMail(avatarAddress, itemEnhanceMail.id, false);
                 return States.Instance.GetAvatarStateV2(avatarAddress);
-            }).ToObservable().Subscribe(avatarState =>
+            }).ToObservable().SubscribeOnMainThread().Subscribe(avatarState =>
             {
                 Debug.Log("ItemEnhanceMail LocalLayer task completed");
                 States.Instance.AddOrReplaceAvatarState(avatarState, States.Instance.CurrentAvatarKey);
