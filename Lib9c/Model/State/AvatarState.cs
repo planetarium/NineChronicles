@@ -306,12 +306,6 @@ namespace Nekoyume.Model.State
             mailBox.CleanUpV2();
         }
 
-        public void UpdateV4(Mail.Mail mail, long currentBlockIndex)
-        {
-            mailBox.Add(mail);
-            mailBox.CleanUpV3(currentBlockIndex);
-        }
-
         public void Customize(int hair, int lens, int ear, int tail)
         {
             this.hair = hair;

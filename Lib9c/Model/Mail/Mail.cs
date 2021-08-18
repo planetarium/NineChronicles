@@ -153,13 +153,6 @@ namespace Nekoyume.Model.Mail
             }
         }
 
-        public void CleanUpV3(long blockIndex)
-        {
-            _mails = _mails
-                .Where(m => m.requiredBlockIndex >= blockIndex)
-                .ToList();
-        }
-
         public void Remove(Mail mail)
         {
             _mails.Remove(mail);

@@ -329,34 +329,6 @@ namespace Lib9c.Tests.Model.State
         }
 
         [Fact]
-        public void UpdateV4()
-        {
-            Address avatarAddress = new PrivateKey().ToAddress();
-            Address agentAddress = new PrivateKey().ToAddress();
-            var avatarState = GetNewAvatarState(avatarAddress, agentAddress);
-            var result = new CombinationConsumable5.ResultModel()
-            {
-                id = default,
-                gold = 0,
-                actionPoint = 0,
-                recipeId = 1,
-                materials = new Dictionary<Material, int>(),
-                itemUsable = null,
-            };
-            for (var i = 0; i < 100; i++)
-            {
-                var mail = new CombinationMail(result, i, default, i);
-                avatarState.UpdateV3(mail);
-            }
-
-            Assert.Equal(30, avatarState.mailBox.Count);
-
-            var newMail = new CombinationMail(result, 101, default, 101);
-            avatarState.UpdateV4(newMail, 101);
-            Assert.Single(avatarState.mailBox);
-        }
-
-        [Fact]
         public void CleanUpMail()
         {
             var result = new CombinationConsumable5.ResultModel()
