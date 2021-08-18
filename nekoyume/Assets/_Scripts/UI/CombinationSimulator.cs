@@ -112,15 +112,20 @@ namespace Nekoyume.UI
 
         private static void DrawResult(int itemId, int count, Result result)
         {
+            var one = GetExpectRatioOne(result);
+            var three = GetExpectRatioTree(result);
+            var four = GetExpectRatio(result, 3);
+            var two = 1 - one - three - four;
+
             Debug.Log($"[CS] [{L10nManager.Localize($"ITEM_NAME_{itemId}")}] {itemId} / " +
                       $"[subRecipeId] {result.subRecipeId} / " +
-                      $"<color=#5FD900>[1]</color><color=#0078FF>{GetExpectRatio(result, 0)}</color> <color=#00A4FF> --> {(result.results[0] / (float)count):P2}</color> / " +
-                      $"<color=#5FD900>[2]</color><color=#FF1800>{GetExpectRatio(result, 1)}</color> <color=#F16558> --> {(result.results[1] / (float)count):P2}</color> / " +
-                      $"<color=#5FD900>[3]</color><color=#0078FF>{GetExpectRatio(result, 2)}</color> <color=#00A4FF> --> {(result.results[2] / (float)count):P2}</color> / " +
-                      $"<color=#5FD900>[4]</color><color=#FF1800>{GetExpectRatio(result, 3)}</color> <color=#F16558> --> {(result.results[3] / (float)count):P2}</color>");
+                      $"<color=#5FD900>[1]</color><color=#0078FF>{one:P2}</color> <color=#00A4FF> --> {(result.results[0] / (float)count):P2}</color> / " +
+                      $"<color=#5FD900>[2]</color><color=#FF1800>{two:P2}</color> <color=#F16558> --> {(result.results[1] / (float)count):P2}</color> / " +
+                      $"<color=#5FD900>[3]</color><color=#0078FF>{three:P2}</color> <color=#00A4FF> --> {(result.results[2] / (float)count):P2}</color> / " +
+                      $"<color=#5FD900>[4]</color><color=#FF1800>{four:P2}</color> <color=#F16558> --> {(result.results[3] / (float)count):P2}</color>");
         }
 
-        private static string GetExpectRatio(Result result, int number)
+        private static decimal GetExpectRatio(Result result, int number)
         {
             decimal value = 1;
             for (var i = 0; i < number + 1; i++)
@@ -129,7 +134,59 @@ namespace Nekoyume.UI
                 value *= ratio;
             }
 
-            return value.ToString("P2");
+            return value;
+        }
+
+        private static decimal GetExpectRatioOne(Result result)
+        {
+            decimal sum = 0;
+            for (var j = 0; j < 4; j++)
+            {
+                decimal value = 1;
+                for (var i = 0; i < 4; i++)
+                {
+                    decimal ratio;
+                    if (j == i)
+                    {
+                        ratio = (result.expects[i] * GameConfig.TenThousandths);
+                    }
+                    else
+                    {
+                        ratio = 1 - result.expects[i] * GameConfig.TenThousandths;
+                    }
+                    value *= ratio;
+                }
+
+                sum += value;
+            }
+
+            return sum;
+        }
+
+        private static decimal GetExpectRatioTree(Result result)
+        {
+            decimal sum = 0;
+            for (var j = 0; j < 4; j++)
+            {
+                decimal value = 1;
+                for (var i = 0; i < 4; i++)
+                {
+                    decimal ratio;
+                    if (j == i)
+                    {
+                        ratio = 1 - (result.expects[i] * GameConfig.TenThousandths);
+                    }
+                    else
+                    {
+                        ratio = result.expects[i] * GameConfig.TenThousandths;
+                    }
+                    value *= ratio;
+                }
+
+                sum += value;
+            }
+
+            return sum;
         }
 
         private static void SetResult(EquipmentItemSheet.Row row,
@@ -155,10 +212,7 @@ namespace Nekoyume.UI
                 item.expects[i] = ratio[i];
             }
 
-            for (var i = 0; i < equipment.optionCountFromCombination; i++)
-            {
-                item.results[i] += 1;
-            }
+            item.results[equipment.optionCountFromCombination-1] += 1;
         }
 
         private static Equipment CombinationEquipment(ItemSheet.Row row,
