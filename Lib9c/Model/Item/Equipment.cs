@@ -134,7 +134,12 @@ namespace Nekoyume.Model.Item
             var rand = isGreatSuccess ? row.BaseStatGrowthMax
                 :random.Next(row.BaseStatGrowthMin, row.BaseStatGrowthMax + 1);
             var ratio = rand * GameConfig.TenThousandths;
-            var baseStat = Math.Max(1.0m, StatsMap.GetStat(UniqueStatType, true) * ratio);
+            var baseStat = StatsMap.GetStat(UniqueStatType, true) * ratio;
+            if (baseStat > 0)
+            {
+                baseStat = Math.Max(1.0m, baseStat);
+            }
+
             StatsMap.AddStatValue(UniqueStatType, baseStat);
 
             if (GetOptionCount() > 0)
@@ -188,7 +193,10 @@ namespace Nekoyume.Model.Item
                     : random.Next(row.ExtraStatGrowthMin, row.ExtraStatGrowthMax + 1);
                 var ratio = rand * GameConfig.TenThousandths;
                 var addValue = statMapEx.AdditionalValue * ratio;
-                addValue = Math.Max(1.0m, addValue);
+                if (addValue > 0)
+                {
+                    addValue = Math.Max(1.0m, addValue);
+                }
 
                 StatsMap.SetStatAdditionalValue(statMapEx.StatType, statMapEx.AdditionalValue + addValue);
             }
@@ -202,13 +210,19 @@ namespace Nekoyume.Model.Item
                     : random.Next(row.ExtraSkillChanceGrowthMin, row.ExtraSkillChanceGrowthMax + 1);
                 var chanceRatio = chanceRand * GameConfig.TenThousandths;
                 var addChance = skill.Chance * chanceRatio;
-                addChance = Math.Max(1.0m, addChance);
+                if (addChance > 0)
+                {
+                    addChance = Math.Max(1.0m, addChance);
+                }
 
                 var damageRand = isGreatSuccess ? row.ExtraSkillDamageGrowthMax
                     : random.Next(row.ExtraSkillDamageGrowthMin, row.ExtraSkillDamageGrowthMax + 1);
                 var damageRatio = damageRand * GameConfig.TenThousandths;
                 var addPower = skill.Power * damageRatio;
-                addPower = Math.Max(1.0m, addPower);
+                if (addPower > 0)
+                {
+                    addPower = Math.Max(1.0m, addPower);
+                }
 
                 skill.Update(skill.Chance + (int)addChance, skill.Power + (int)addPower);
             }
