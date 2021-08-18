@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
@@ -211,7 +211,7 @@ namespace Nekoyume.Action
                 stageId,
                 states.GetStageSimulatorSheets(),
                 costumeStatSheet,
-                2);
+                StageSimulator.ConstructorVersionV100025);
             sw.Stop();
             Log.Verbose("{AddressesHex}Mimisbrunnr Initialize Simulator: {Elapsed}", addressesHex, sw.Elapsed);
             

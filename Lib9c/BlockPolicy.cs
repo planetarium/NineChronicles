@@ -107,8 +107,7 @@ namespace Nekoyume.BlockChain
             BlockChain<NCAction> blocks,
             Block<NCAction> nextBlock
         ) =>
-            ValidateBlock(nextBlock)
-            ?? ValidateMinerAuthority(nextBlock)
+            ValidateMinerAuthority(nextBlock)
             ?? base.ValidateNextBlock(blocks, nextBlock);
 
         public override long GetNextBlockDifficulty(BlockChain<NCAction> blocks)
@@ -160,47 +159,6 @@ namespace Nekoyume.BlockChain
             long nextDifficulty = prevDifficulty + (offset * multiplier);
 
             return Math.Max(nextDifficulty, _minimumDifficulty);
-        }
-
-        private InvalidBlockException ValidateBlock(Block<NCAction> block)
-        {
-            if (!(block.Miner is Address miner))
-            {
-                return null;
-            }
-
-            // As a temporary approach to prevent selfish mining (again), we add a new rule
-            // disallowing blocks with less than 3 transactions.  This rule is applied since
-            // 2,100,000th block.  (Note that as of Aug 4, 2021, there are about 2,060,000+ blocks.)
-            // This rule is not applied to blocks (with proofs) made by authorized miners.
-            if (block.Transactions.Count < 3 &&
-                block.Index >= 2_110_000 &&
-                !(AuthorizedMinersState is AuthorizedMinersState ams &&
-                    block.Index <= ams.ValidUntil &&
-                    block.Miner is Address m && ams.Miners.Contains(m) &&
-                    block.Transactions.Any(tx => tx.Signer.Equals(m))))
-            {
-                return new InvalidMinerException(
-                    $"The block #{block.Index} {block.Hash} (mined by {miner}) must " +
-                    "include at least 3 transactions.",
-                    miner
-                );
-            }
-
-            // To prevent selfish mining, we define a consensus that blocks with no transactions are do not accepted. 
-            // (For backward compatibility, blocks before 1,711,631th don't have to be proven.
-            // Note that as of Jun 16, 2021, there are about 1,710,000+ blocks.)
-            if (block.Transactions.Count <= 0 &&
-                (IgnoreHardcodedIndicesForBackwardCompatibility || block.Index > 1_711_631))
-            {
-                return new InvalidMinerException(
-                    $"The block #{block.Index} {block.Hash} (mined by {miner}) should " +
-                    "include at least one transaction.",
-                    miner
-                );
-            }
-
-            return null;
         }
 
         private InvalidBlockException ValidateMinerAuthority(Block<NCAction> block)
