@@ -161,6 +161,12 @@ namespace Nekoyume.UI.Module
 
             SharedViewModel.StageIdToShow.Value = worldRow.StageBegin + stageRowsCount - 1;
             SharedViewModel.PageCount.Value = pages.Count(p => p.gameObject.activeSelf);
+
+            for (var i = 0; i < toggles.Count; i++)
+            {
+                toggles[i].gameObject.SetActive(i < SharedViewModel.PageCount.Value);
+            }
+            
             SharedViewModel.CurrentPageNumber.Value = 1;
 
             SharedViewModel.CurrentPageNumber

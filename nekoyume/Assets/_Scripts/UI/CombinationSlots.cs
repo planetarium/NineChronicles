@@ -1,5 +1,5 @@
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using Nekoyume.EnumType;
 using Nekoyume.Model.Item;
 using Nekoyume.State;
@@ -14,13 +14,23 @@ namespace Nekoyume.UI
     {
         [SerializeField] private List<CombinationSlot> slots;
 
-        public override WidgetType WidgetType => WidgetType.Popup;
+        private readonly List<IDisposable> _disposablesOfOnEnable = new List<IDisposable>();
 
-        protected override void Awake()
+        public override WidgetType WidgetType => WidgetType.Popup;
+        public override CloseKeyType CloseKeyType => CloseKeyType.Escape;
+
+        protected override void OnEnable()
         {
-            base.Awake();
+            base.OnEnable();
             Game.Game.instance.Agent.BlockIndexSubject.ObserveOnMainThread()
-                .Subscribe(SubscribeBlockIndex).AddTo(gameObject);
+                .Subscribe(SubscribeBlockIndex)
+                .AddTo(_disposablesOfOnEnable);
+        }
+
+        protected override void OnDisable()
+        {
+            _disposablesOfOnEnable.DisposeAllAndClear();
+            base.OnDisable();
         }
 
         public override void Show(bool ignoreShowAnimation = false)

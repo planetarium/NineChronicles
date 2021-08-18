@@ -52,6 +52,7 @@ namespace Nekoyume.UI
         protected System.Action SubmitWidget;
 
         public virtual WidgetType WidgetType => WidgetType.Widget;
+        public virtual CloseKeyType CloseKeyType => CloseKeyType.Backspace;
 
         protected RectTransform RectTransform { get; private set; }
 
@@ -200,6 +201,20 @@ namespace Nekoyume.UI
 
             go.transform.SetParent(MainCanvas.instance.GetLayerRootTransform(WidgetType.Hud));
             return go.GetComponent<T>();
+        }
+
+        public static bool IsOpenAnyPopup()
+        {
+            foreach (var model in Pool)
+            {
+                if (model.Value.widget.CloseKeyType == CloseKeyType.Escape &&
+                    model.Value.gameObject.activeSelf)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         public virtual bool IsActive()
@@ -405,17 +420,32 @@ namespace Nekoyume.UI
 
             if (Input.GetKeyDown(KeyCode.Backspace))
             {
-                if (!WidgetHandler.Instance.IsActiveTutorialMaskWidget)
-                {
-                    WidgetHandler.Instance.HideAllMessageCat();
-                    CloseWidget?.Invoke();
-                }
+                InvokeCloseWidget(KeyCode.Backspace);
+            }
+
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                InvokeCloseWidget(KeyCode.Escape);
             }
 
             if (Input.GetKeyDown(KeyCode.Return))
             {
                 WidgetHandler.Instance.HideAllMessageCat();
                 SubmitWidget?.Invoke();
+            }
+        }
+
+        private void InvokeCloseWidget(KeyCode keyCode)
+        {
+            if (!keyCode.ToString().Equals(CloseKeyType.ToString()))
+            {
+                return;
+            }
+
+            if (!WidgetHandler.Instance.IsActiveTutorialMaskWidget)
+            {
+                WidgetHandler.Instance.HideAllMessageCat();
+                CloseWidget?.Invoke();
             }
         }
     }

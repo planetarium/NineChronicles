@@ -1,4 +1,5 @@
 using System;
+using Nekoyume.Helper;
 using Nekoyume.Model.Item;
 using UniRx;
 
@@ -19,7 +20,6 @@ namespace Nekoyume.UI.Model
         public readonly Subject<Item> OnClick = new Subject<Item>();
         public readonly Subject<Item> OnDoubleClick = new Subject<Item>();
 
-        private const int VisibleEnhancementEffectValue = 11; // todo : When a weapon effect is added, the value must be modified.
         public Item(ItemBase value)
         {
             ItemBase.Value = value;
@@ -31,7 +31,7 @@ namespace Nekoyume.UI.Model
             {
                 Enhancement.Value = $"+{equipment.level}";
                 EnhancementEnabled.Value = true;
-                EnhancementEffectEnabled.Value = equipment.level >= VisibleEnhancementEffectValue;
+                EnhancementEffectEnabled.Value = equipment.level >= Util.VisibleEnhancementEffectLevel;
             }
             else
             {

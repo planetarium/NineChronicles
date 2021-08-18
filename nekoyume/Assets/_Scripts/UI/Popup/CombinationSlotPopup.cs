@@ -131,13 +131,13 @@ namespace Nekoyume.UI
                 return;
             }
 
-            UpdateOption(type, state.Result);
+            UpdateOption(type, state);
             UpdateItemInformation(state.Result.itemUsable);
             UpdateButtonInformation(state, currentBlockIndex);
             UpdateRequiredBlockInformation(state, currentBlockIndex);
         }
 
-        private void UpdateOption(CraftType type, AttachmentActionResult attachmentActionResult)
+        private void UpdateOption(CraftType type, CombinationSlotState slotState)
         {
             foreach (var information in _informations)
             {
@@ -145,25 +145,26 @@ namespace Nekoyume.UI
                 information.OptionContainer.SetActive(information.Type.Equals(type));
             }
 
-            switch (attachmentActionResult)
+            switch (slotState.Result)
             {
                 case CombinationConsumable5.ResultModel cc5:
-                    SetCombinationOption(GetInformation(type), cc5);
+                    SetCombinationOption(GetInformation(type), cc5, slotState.RequiredBlockIndex);
                     break;
                 case ItemEnhancement7.ResultModel _:
                 case ItemEnhancement.ResultModel _:
-                    SetEnhancementOption(GetInformation(type), attachmentActionResult);
+                    SetEnhancementOption(GetInformation(type), slotState.Result);
                     break;
                 default:
                     Debug.LogError(
-                        $"[{nameof(CombinationSlotPopup)}] Not supported type. {attachmentActionResult.GetType().FullName}");
+                        $"[{nameof(CombinationSlotPopup)}] Not supported type. {slotState.Result.GetType().FullName}");
                     break;
             }
         }
 
         private static void SetCombinationOption(
             Information information,
-            CombinationConsumable5.ResultModel resultModel)
+            CombinationConsumable5.ResultModel resultModel,
+            long requiredBlockIndex)
         {
             if (!resultModel.itemUsable.TryGetOptionInfo(out var itemOptionInfo))
             {
@@ -183,35 +184,18 @@ namespace Nekoyume.UI
             }
 
             information.MainStatView.UpdateView(
-                $"{itemOptionInfo.MainStat.type} {itemOptionInfo.MainStat.value}",
+                $"{itemOptionInfo.MainStat.type} {itemOptionInfo.MainStat.baseValue}",
                 string.Empty);
 
-            var subRecipeRow = Game.Game.instance.TableSheets.EquipmentItemSubRecipeSheetV2.OrderedList
-                .FirstOrDefault(e => e.Id == resultModel.subRecipeId);
-            if (subRecipeRow is null)
-            {
-                Debug.LogError($"subRecipeRow is null. {resultModel.subRecipeId}");
-                return;
-            }
-
-            var optionRows = subRecipeRow.Options
-                .Select(optionInfo => Game.Game.instance.TableSheets.EquipmentItemOptionSheet.OrderedList
-                    .FirstOrDefault(optionRow => optionRow.Id == optionInfo.Id))
-                .ToList();
-            if (optionRows.Count != subRecipeRow.Options.Count)
-            {
-                Debug.LogError(
-                    $"Failed to create optionRows with subRecipeRow.Options. Sub recipe id: {resultModel.subRecipeId}");
-                return;
-            }
-
-            var statOptionRows = optionRows.Where(e => e.StatType != StatType.NONE).ToList();
+            var statOptionRows = ItemOptionHelper.GetStatOptionRows(
+                resultModel.subRecipeId.Value,
+                resultModel.itemUsable,
+                requiredBlockIndex);
             var format = L10nManager.Localize("UI_COMBINATION_POPUP_COMBINATION_RESULT_STATS");
             for (var i = 0; i < information.StatOptions.Count; i++)
             {
                 var optionView = information.StatOptions[i];
-                if (i >= statOptionRows.Count ||
-                    i >= itemOptionInfo.StatOptions.Count)
+                if (i >= statOptionRows.Count)
                 {
                     optionView.Hide();
                     continue;
@@ -224,9 +208,8 @@ namespace Nekoyume.UI
                     continue;
                 }
 
-                var (_, _, count) = itemOptionInfo.StatOptions[i];
                 var text = string.Format(format, optionRow.StatType, optionRow.StatMin, optionRow.StatMax);
-                optionView.UpdateView(text, string.Empty, count);
+                optionView.UpdateView(text, string.Empty, 1);
                 optionView.Show();
             }
 

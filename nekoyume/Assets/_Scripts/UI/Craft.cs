@@ -47,6 +47,12 @@ namespace Nekoyume.UI
                 Find<CombinationMain>().Show();
             });
 
+            CloseWidget = () =>
+            {
+                Close(true);
+                Find<CombinationMain>().Show();
+            };
+
             equipmentToggle.onValueChanged.AddListener(value =>
             {
                 if (!value) return;
@@ -127,6 +133,8 @@ namespace Nekoyume.UI
                 return;
             }
 
+            var itemRow = row.GetResultEquipmentItemRow();
+            recipeScroll.ShowAsEquipment(itemRow.ItemSubType, true);
             var group = RecipeModel.GetEquipmentGroup(row.ResultEquipmentId);
             recipeScroll.GoToRecipeGroup(group);
             if (SharedModel.RecipeVFXSkipList.Contains(equipmentRecipeId))

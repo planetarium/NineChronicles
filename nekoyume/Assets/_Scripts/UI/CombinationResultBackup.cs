@@ -113,6 +113,7 @@ namespace Nekoyume.UI
         private IDisposable _disposableOfOpenOption;
 
         public override WidgetType WidgetType => WidgetType.Popup;
+        public override CloseKeyType CloseKeyType => CloseKeyType.Escape;
 
         protected override void OnDisable()
         {
@@ -257,7 +258,7 @@ namespace Nekoyume.UI
         {
             _iconImage.overrideSprite = _equipmentIconSprite;
 
-            var (mainStatType, mainStatValue) = itemOptionInfo.MainStat;
+            var (mainStatType, mainStatValue, _) = itemOptionInfo.MainStat;
             _resultItem.mainStatText.text = $"{mainStatType.ToString()} {mainStatValue}";
 
             var statsCP = CPHelper.GetStatCP(mainStatType, mainStatValue);

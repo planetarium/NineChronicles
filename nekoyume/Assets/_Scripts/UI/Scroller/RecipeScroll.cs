@@ -8,13 +8,12 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
-using Toggle = Nekoyume.UI.Module.Toggle;
+using System.Collections;
 
 namespace Nekoyume.UI.Scroller
 {
     using Nekoyume.UI.Module;
     using UniRx;
-    using UnityEngine.EventSystems;
 
     public class RecipeScroll : RectScroll<RecipeRow.Model, RecipeScroll.ContextModel>
     {
@@ -52,7 +51,10 @@ namespace Nekoyume.UI.Scroller
         [SerializeField]
         private GameObject emptyObject = null;
 
-        private RecipeCell _selectedRecipeCell = null;
+        [SerializeField]
+        private float animationInterval = 0.3f;
+
+        private Coroutine _animationCoroutine = null;
 
         protected void Awake()
         {
@@ -109,6 +111,7 @@ namespace Nekoyume.UI.Scroller
 
             emptyObject.SetActive(!items.Any());
             Show(items, true);
+            AnimateScroller();
         }
 
         public void ShowAsFood(StatType type, bool updateToggle = false)
@@ -134,6 +137,41 @@ namespace Nekoyume.UI.Scroller
 
             emptyObject.SetActive(!items.Any());
             Show(items, true);
+            AnimateScroller();
+        }
+
+        private void AnimateScroller()
+        {
+            if (_animationCoroutine != null)
+            {
+                StopCoroutine(_animationCoroutine);
+            }
+
+            _animationCoroutine = StartCoroutine(CoAnimateScroller());
+        }
+
+        private IEnumerator CoAnimateScroller()
+        {
+            var rows = GetComponentsInChildren<RecipeRow>();
+            var wait = new WaitForSeconds(animationInterval);
+
+            Scroller.Draggable = false;
+            foreach (var row in rows)
+            {
+                row.HideWithAlpha();
+            }
+
+            yield return null;
+            AdjustCellIntervalAndScrollOffset();
+
+            foreach (var row in rows)
+            {
+                row.ShowAnimation();
+                yield return wait;
+            }
+            Scroller.Draggable = true;
+
+            _animationCoroutine = null;
         }
 
         public void SubscribeNotifiedRow(SheetRow<int> row)

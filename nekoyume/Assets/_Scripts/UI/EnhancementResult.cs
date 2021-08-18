@@ -95,6 +95,7 @@ namespace Nekoyume.UI
         private static readonly int AnimatorHashSuccess = Animator.StringToHash("Success");
         private static readonly int AnimatorHashFail = Animator.StringToHash("Fail");
         private static readonly int AnimatorHashLoop = Animator.StringToHash("Loop");
+        private static readonly int AnimatorHashLoopFail = Animator.StringToHash("Loop_Fail");
         private static readonly int AnimatorHashClose = Animator.StringToHash("Close");
 
         private IDisposable _disposableOfSkip;
@@ -181,7 +182,7 @@ namespace Nekoyume.UI
                 return;
             }
 
-            Show(ItemEnhancement.EnhancementResult.GreatSuccess, equipment, preEquipment);
+            Show(ItemEnhancement.EnhancementResult.GreatSuccess, preEquipment, equipment);
         }
 
         public void Show(
@@ -210,12 +211,12 @@ namespace Nekoyume.UI
             _resultItem.itemNameText.text = equipment.GetLocalizedName(false, true);
             _resultItem.cpText.text = $"CP {itemOptionInfo.CP}";
 
-            var (_, mainStatValuePre) = itemOptionInfoPre.MainStat;
-            var (mainStatType, mainStatValue) = itemOptionInfo.MainStat;
+            var (_, _, mainStatTotalValuePre) = itemOptionInfoPre.MainStat;
+            var (mainStatType, _, mainStatTotalValue) = itemOptionInfo.MainStat;
             _itemMainStatView.UpdateViewAsTotalAndPlusStat(
                 mainStatType,
-                mainStatValue,
-                mainStatValue - mainStatValuePre);
+                mainStatTotalValue,
+                mainStatTotalValue - mainStatTotalValuePre);
 
             var statOptions = itemOptionInfo.StatOptions;
             var statOptionsCount = statOptions.Count;
@@ -347,7 +348,16 @@ namespace Nekoyume.UI
                 _coroutineOfPlayOptionAnimation = null;
             }
 
-            Animator.Play(AnimatorHashLoop, 0, 0);
+            var animatorStateInfo = Animator.GetCurrentAnimatorStateInfo(0);
+            if (animatorStateInfo.shortNameHash == AnimatorHashGreatSuccess ||
+                animatorStateInfo.shortNameHash == AnimatorHashSuccess)
+            {
+                Animator.Play(AnimatorHashLoop, 0, 0);
+            }
+            else if (animatorStateInfo.shortNameHash == AnimatorHashFail)
+            {
+                Animator.Play(AnimatorHashLoopFail, 0, 0);
+            }
 
             for (var i = 0; i < _itemStatOptionViews.Count; i++)
             {

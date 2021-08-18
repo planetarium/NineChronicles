@@ -85,34 +85,43 @@ namespace Nekoyume.UI
         [SerializeField]
         private GameObject buttonDisabled;
 
+        private Animator _animator;
         private EnhancementCostSheetV2 _costSheet;
         private Equipment _baseItem;
         private Equipment _materialItem;
         private BigInteger _costNcg = 0;
         private string errorMessage;
 
+        private enum  State
+        {
+            Show,
+            Empty,
+            RegisterBase,
+            RegisterMaterial,
+            UnregisterMaterial,
+            Close,
+        }
+
+        private static readonly int HashToShow = Animator.StringToHash("Show");
+        private static readonly int HashToRegisterBase = Animator.StringToHash("RegisterBase");
+        private static readonly int HashToPostRegisterBase = Animator.StringToHash("PostRegisterBase");
+        private static readonly int HashToPostRegisterMaterial = Animator.StringToHash("PostRegisterMaterial");
+        private static readonly int HashToUnregisterMaterial = Animator.StringToHash("UnregisterMaterial");
+        private static readonly int HashToClose = Animator.StringToHash("Close");
+
+        private State _state = State.Empty;
+
         protected override void Awake()
         {
             base.Awake();
             upgradeButton.onClick.AddListener(Action);
-            closeButton.onClick.AddListener(() =>
-            {
-                Close(true);
-                Find<CombinationMain>().Show();
-            });
-
-            CloseWidget = () =>
-            {
-                Close(true);
-                Find<CombinationMain>().Show();
-            };
+            closeButton.onClick.AddListener(Close);
+            CloseWidget = Close;
         }
 
         public override void Initialize()
         {
             base.Initialize();
-
-            Clear();
             inventory.SharedModel.SelectedItemView.Subscribe(SubscribeSelectItem).AddTo(gameObject);
             inventory.SharedModel.DeselectItemView();
             inventory.SharedModel.State.Value = ItemSubType.Weapon;
@@ -120,34 +129,80 @@ namespace Nekoyume.UI
             inventory.SharedModel.EffectEnabledFunc.Value = Contains;
 
             _costSheet = Game.Game.instance.TableSheets.EnhancementCostSheetV2;
+            _animator = GetComponent<Animator>();
 
             baseSlot.RemoveButton.onClick.AddListener(() =>
             {
                 materialSlot.RemoveButton.onClick.Invoke();
-                inventory.ClearItemState(_baseItem);
-                _baseItem = null;
-                inventory.SharedModel.UpdateDimAndEffectAll();
-                buttonDisabled.SetActive(!IsInteractableButton(_baseItem, _materialItem, _costNcg));
-                ClearInformation();
-                SetActiveContainer(true);
+                UpdateState(State.Empty);
             });
 
             materialSlot.RemoveButton.onClick.AddListener(() =>
             {
-                inventory.ClearItemState(_materialItem);
-                _materialItem = null;
-                inventory.SharedModel.UpdateDimAndEffectAll();
-                buttonDisabled.SetActive(!IsInteractableButton(_baseItem, _materialItem, _costNcg));
-                materialGuideText.text =
-                    L10nManager.Localize("UI_SELECT_MATERIAL_TO_UPGRADE");
+                UpdateState(State.UnregisterMaterial);
             });
+        }
+
+        private void UpdateState(State state)
+        {
+            switch (state)
+            {
+                case State.Show:
+                case State.Empty:
+                    inventory.ClearItemState(_baseItem);
+                    baseSlot.RemoveMaterial();
+                    _baseItem = null;
+                    inventory.ClearItemState(_materialItem);
+                    materialSlot.RemoveMaterial();
+                    _materialItem = null;
+                    ClearInformation();
+                    SetActiveContainer(true);
+                    materialGuideText.text = string.Empty;
+                    _animator.Play(state == State.Show ? HashToShow : HashToRegisterBase);
+                    break;
+
+                case State.RegisterBase:
+                case State.UnregisterMaterial:
+                    inventory.ClearItemState(_materialItem);
+                    materialSlot.RemoveMaterial();
+                    _materialItem = null;
+                    SetActiveContainer(false);
+                    materialGuideText.text = L10nManager.Localize("UI_SELECT_MATERIAL_TO_UPGRADE");
+                    if (ItemEnhancement.TryGetRow(_baseItem, _costSheet, out var row))
+                    {
+                        _costNcg = row.Cost;
+                        UpdateInformation(row, _baseItem);
+                    }
+                    _animator.Play(state == State.RegisterBase ? HashToPostRegisterBase : HashToUnregisterMaterial);
+                    break;
+
+                case State.RegisterMaterial:
+                    SetActiveContainer(false);
+                    materialGuideText.text = L10nManager.Localize("UI_UPGRADE_GUIDE");
+                    _animator.Play(HashToPostRegisterMaterial, -1, 0);
+                    break;
+
+                case State.Close:
+                    _animator.Play(HashToClose);
+                    break;
+            }
+
+            buttonDisabled.SetActive(!IsInteractableButton(_baseItem, _materialItem));
+            inventory.SharedModel.UpdateDimAndEffectAll();
         }
 
         public override void Show(bool ignoreShowAnimation = false)
         {
             base.Show(ignoreShowAnimation);
-            Clear();
+            UpdateState(State.Show);
             HelpPopup.HelpMe(100017, true);
+        }
+
+        private void Close()
+        {
+            UpdateState(State.Close);
+            Close(true);
+            Find<CombinationMain>().Show();
         }
 
         private bool DimFunc(InventoryItem inventoryItem)
@@ -226,8 +281,15 @@ namespace Nekoyume.UI
 
         private void Action()
         {
-            if (!IsInteractableButton(_baseItem, _materialItem, _costNcg))
+            if (!IsInteractableButton(_baseItem, _materialItem))
             {
+                Notification.Push(MailType.System, errorMessage);
+                return;
+            }
+
+            if (States.Instance.GoldBalanceState.Gold.MajorUnit < _costNcg)
+            {
+                errorMessage = L10nManager.Localize("UI_NOT_ENOUGH_NCG");
                 Notification.Push(MailType.System, errorMessage);
                 return;
             }
@@ -266,7 +328,7 @@ namespace Nekoyume.UI
                 .ItemEnhancement(baseGuid, materialGuid, slotIndex)
                 .Subscribe(_ => { }, e => ActionRenderHandler.BackToMain(false, e));
 
-            StartCoroutine(CoCombineNPCAnimation(_baseItem, row.SuccessRequiredBlockIndex, Clear));
+            StartCoroutine(CoCombineNPCAnimation(_baseItem, row.SuccessRequiredBlockIndex, () => UpdateState(State.Empty)));
         }
 
         private IEnumerator CoCombineNPCAnimation(ItemBase itemBase,
@@ -284,7 +346,6 @@ namespace Nekoyume.UI
             var format = L10nManager.Localize("UI_COST_BLOCK");
             var quote = string.Format(format, blockIndex);
             loadingScreen.AnimateNPC(quote);
-            Clear();
         }
 
         private void SubscribeSelectItem(BigInventoryItemView view)
@@ -329,7 +390,6 @@ namespace Nekoyume.UI
                 {
                     return false;
                 }
-
             }
             return true;
         }
@@ -359,42 +419,32 @@ namespace Nekoyume.UI
                 return;
             }
 
-            StageMaterial(view);
-        }
-
-        private void StageMaterial(BigInventoryItemView view)
-        {
-            SetActiveContainer(false);
             if (_baseItem is null)
             {
                 _baseItem = (Equipment)view.Model.ItemBase.Value;
-                if (ItemEnhancement.TryGetRow(_baseItem, _costSheet, out var row))
-                {
-                    _costNcg = row.Cost;
-                    UpdateInformation(row, _baseItem);
-                }
                 baseSlot.AddMaterial(view.Model.ItemBase.Value);
-                materialGuideText.text = L10nManager.Localize("UI_SELECT_MATERIAL_TO_UPGRADE");
                 view.Select(true);
+                UpdateState(State.RegisterBase);
             }
             else
             {
-                materialSlot.RemoveButton.onClick.Invoke();
+                if(!(_materialItem is null))
+                {
+                    inventory.ClearItemState(_materialItem);
+                }
+
                 _materialItem = (Equipment)view.Model.ItemBase.Value;
                 materialSlot.AddMaterial(view.Model.ItemBase.Value);
-                materialGuideText.text = L10nManager.Localize("UI_UPGRADE_GUIDE");
                 view.Select(false);
+                UpdateState(State.RegisterMaterial);
             }
-
-            buttonDisabled.SetActive(!IsInteractableButton(_baseItem, _materialItem, _costNcg));
-            inventory.SharedModel.UpdateDimAndEffectAll();
         }
 
-        private void Clear()
+        private void SetActiveContainer(bool isClear)
         {
-            baseSlot.RemoveButton.onClick.Invoke();
-            ClearInformation();
-            SetActiveContainer(true);
+            noneContainer.SetActive(isClear);
+            itemInformationContainer.SetActive(!isClear);
+            blockInformationContainer.SetActive(!isClear);
         }
 
         private void ClearInformation()
@@ -419,32 +469,24 @@ namespace Nekoyume.UI
             }
         }
 
-        private void SetActiveContainer(bool isClear)
-        {
-            noneContainer.SetActive(isClear);
-            itemInformationContainer.SetActive(!isClear);
-            blockInformationContainer.SetActive(!isClear);
-            materialGuideText.gameObject.SetActive(!isClear);
-        }
-
         private void UpdateInformation(EnhancementCostSheetV2.Row row, Equipment equipment)
         {
             ClearInformation();
             costText.text = row.Cost.ToString();
             costText.color = GetNcgColor(row.Cost);
             itemNameText.text = equipment.GetLocalizedName();
-            currentLevelText.text = $"{equipment.level}";
-            nextLevelText.text = $"{equipment.level + 1}";
+            currentLevelText.text = $"+{equipment.level}";
+            nextLevelText.text = $"+{equipment.level + 1}";
             successRatioText.text =
                 ((row.GreatSuccessRatio + row.SuccessRatio) * GameConfig.TenThousandths)
                 .ToString("P0");
-            requiredBlockIndexText.text = $"{row.SuccessRequiredBlockIndex}+";
+            requiredBlockIndexText.text = $"{row.SuccessRequiredBlockIndex} +";
 
             var itemOptionInfo = new ItemOptionInfo(equipment);
 
             if (row.BaseStatGrowthMin != 0 && row.BaseStatGrowthMax != 0)
             {
-                var (mainStatType, mainValue) = itemOptionInfo.MainStat;
+                var (mainStatType, mainValue, _) = itemOptionInfo.MainStat;
                 var mainAdd = Math.Max(1, (int)(mainValue * row.BaseStatGrowthMax * GameConfig.TenThousandths));
                 mainStatView.gameObject.SetActive(true);
                 mainStatView.Set(mainStatType.ToString(),
@@ -500,17 +542,11 @@ namespace Nekoyume.UI
             return result.ToString(CultureInfo.InvariantCulture);
         }
 
-        private bool IsInteractableButton(IItem item, IItem material, BigInteger cost)
+        private bool IsInteractableButton(IItem item, IItem material)
         {
             if (item is null || material is null)
             {
                 errorMessage = L10nManager.Localize("UI_SELECT_MATERIAL_TO_UPGRADE");
-                return false;
-            }
-
-            if (States.Instance.GoldBalanceState.Gold.MajorUnit < cost)
-            {
-                errorMessage = L10nManager.Localize("UI_NOT_ENOUGH_NCG");
                 return false;
             }
 

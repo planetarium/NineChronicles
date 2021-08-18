@@ -3,7 +3,9 @@ using System.Linq;
 using Nekoyume.Battle;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Stat;
+using Nekoyume.TableData;
 using Nekoyume.UI;
+using UnityEngine;
 
 namespace Nekoyume.Helper
 {
@@ -11,7 +13,7 @@ namespace Nekoyume.Helper
     {
         public readonly int OptionCountFromCombination;
 
-        public readonly (StatType type, int value) MainStat;
+        public readonly (StatType type, int baseValue, int totalValue) MainStat;
 
         public readonly List<(StatType type, int value, int count)> StatOptions
             = new List<(StatType type, int value, int count)>();
@@ -31,7 +33,8 @@ namespace Nekoyume.Helper
 
             MainStat = (
                 equipment.UniqueStatType,
-                equipment.StatsMap.GetStat(equipment.UniqueStatType, true));
+                equipment.StatsMap.GetStat(equipment.UniqueStatType, true),
+                equipment.StatsMap.GetStat(equipment.UniqueStatType));
 
             var optionCountDiff = OptionCountFromCombination - (additionalStats.Count + equipment.Skills.Count);
             foreach (var (statType, additionalValue) in additionalStats)
@@ -59,7 +62,7 @@ namespace Nekoyume.Helper
 
         public ItemOptionInfo(ItemUsable itemUsable)
         {
-            MainStat = (StatType.NONE, 0);
+            MainStat = (StatType.NONE, 0, 0);
 
             var stats = itemUsable.StatsMap.GetStats(true).ToList();
             for (var i = 0; i < stats.Count; i++)
@@ -92,6 +95,83 @@ namespace Nekoyume.Helper
             }
 
             return itemOptionInfo != null;
+        }
+
+        public static List<EquipmentItemOptionSheet.Row> GetStatOptionRows(
+            int subRecipeId,
+            ItemUsable itemUsable,
+            long requiredBlockIndex)
+        {
+            var subRecipeRow = Game.Game.instance.TableSheets.EquipmentItemSubRecipeSheetV2.OrderedList
+                .FirstOrDefault(e => e.Id == subRecipeId);
+            if (subRecipeRow is null)
+            {
+                Debug.LogError($"subRecipeRow is null. {subRecipeId}");
+                return new List<EquipmentItemOptionSheet.Row>();
+            }
+
+            var recipeOptionTuples = subRecipeRow.Options
+                .Select(optionInfo =>
+                {
+                    var optionRow = Game.Game.instance.TableSheets.EquipmentItemOptionSheet.OrderedList
+                        .FirstOrDefault(optionRow => optionRow.Id == optionInfo.Id);
+                    return (optionRow, optionInfo.RequiredBlockIndex);
+                })
+                .ToList();
+            if (recipeOptionTuples.Count != subRecipeRow.Options.Count)
+            {
+                Debug.LogError(
+                    $"Failed to create optionRows with subRecipeRow.Options. Sub recipe id: {subRecipeId}");
+                return new List<EquipmentItemOptionSheet.Row>();
+            }
+
+            if (!(itemUsable is Equipment equipment))
+            {
+                return recipeOptionTuples
+                    .Select(tuple => tuple.optionRow)
+                    .Where(row => row.StatType != StatType.NONE)
+                    .ToList();
+            }
+
+            var result = new List<EquipmentItemOptionSheet.Row>();
+            var optionInfo = new ItemOptionInfo(equipment);
+            foreach (var (statType, value, count) in optionInfo.StatOptions)
+            {
+                if (statType == optionInfo.MainStat.type && count > 1)
+                {
+                    var mainStatOptions = recipeOptionTuples
+                        .Where(tuple => tuple.optionRow.StatType == statType)
+                        .ToList();
+                    if (mainStatOptions.Count != count)
+                    {
+                        Debug.LogError(
+                            $"[{nameof(ItemOptionHelper)}]Unexpected case. mainStatOptions.Count({mainStatOptions.Count}) != count({count})");
+                    }
+
+                    foreach (var (optionRow, _) in mainStatOptions)
+                    {
+                        result.Add(optionRow);
+                    }
+
+                    continue;
+                }
+
+                foreach (var (optionRow, _) in recipeOptionTuples)
+                {
+                    if (optionRow.StatType != statType ||
+                        optionRow.StatMin > value ||
+                        optionRow.StatMax < value)
+                    {
+                        continue;
+                    }
+
+                    result.Add(optionRow);
+
+                    break;
+                }
+            }
+
+            return result;
         }
     }
 }

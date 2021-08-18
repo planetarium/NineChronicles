@@ -438,6 +438,11 @@ namespace Nekoyume.Game
         {
             if (Input.GetKeyDown(KeyCode.Escape))
             {
+                if (Widget.IsOpenAnyPopup())
+                {
+                    return;
+                }
+
                 Quit();
             }
         }

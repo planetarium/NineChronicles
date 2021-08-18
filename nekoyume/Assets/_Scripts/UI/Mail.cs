@@ -70,6 +70,7 @@ namespace Nekoyume.UI
         public MailBox MailBox { get; private set; }
 
         public override WidgetType WidgetType => WidgetType.Popup;
+        public override CloseKeyType CloseKeyType => CloseKeyType.Escape;
 
         #region override
 
@@ -176,10 +177,7 @@ namespace Nekoyume.UI
 
         public void UpdateTabs(long? blockIndex = null)
         {
-            if (blockIndex is null)
-            {
-                blockIndex = Game.Game.instance.Agent.BlockIndex;
-            }
+            blockIndex ??= Game.Game.instance.Agent.BlockIndex;
 
             // 전체 탭
             allButton.HasNotification.Value = MailBox
@@ -230,9 +228,9 @@ namespace Nekoyume.UI
                 Debug.LogError("CombinationMail.itemUsable is null");
                 return;
             }
-            
+
             var itemUsable = attachment.itemUsable;
-            
+
             // LocalLayer
             UniTask.Run(() =>
                 {

@@ -58,7 +58,6 @@ namespace Nekoyume.UI
         [SerializeField] private GameObject buttonEnabledObject = null;
         [SerializeField] private TextMeshProUGUI costText = null;
         [SerializeField] private Image buttonDisabledImage = null;
-        [SerializeField] private GameObject lockObject = null;
 
         public readonly Subject<RecipeInfo> CombinationActionSubject = new Subject<RecipeInfo>();
 
