@@ -59,6 +59,15 @@ namespace Nekoyume
 
         public class DebugRandom : IRandom
         {
+            public DebugRandom()
+            {
+            }
+
+            public DebugRandom(int seed)
+            {
+                _random = new System.Random(seed);
+            }
+
             private readonly System.Random _random = new System.Random();
 
             public int Next()

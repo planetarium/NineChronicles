@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Bencodex.Types;
@@ -131,6 +132,13 @@ namespace Nekoyume.Helper
             }
 
             return count;
+        }
+
+        public static IEnumerable<IEnumerable<T>> DifferentCombinations<T>(this IEnumerable<T> elements, int k)
+        {
+            return k == 0 ? new[] { Array.Empty<T>() } : elements.SelectMany((e, i) =>
+                elements.Skip(i + 1).DifferentCombinations(k - 1).Select(c =>
+                    (new[] {e}).Concat(c)));
         }
     }
 }
