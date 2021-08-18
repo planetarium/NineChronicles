@@ -33,6 +33,8 @@ namespace Nekoyume.BlockChain
         // Note: The genesis block of 9c-main net weighs 11,085,640 B (11 MiB).
         public const int MaxGenesisBytes = 1024 * 1024 * 15; // 15 MiB
 
+        public const long V100066ObsoleteIndex = 2200000;
+
         private readonly TimeSpan _blockInterval = TimeSpan.FromSeconds(8);
 
         public readonly ActionRenderer ActionRenderer = new ActionRenderer();

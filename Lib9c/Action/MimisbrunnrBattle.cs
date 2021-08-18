@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
@@ -7,7 +7,6 @@ using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Battle;
-using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
@@ -30,7 +29,6 @@ namespace Nekoyume.Action
         public Address RankingMapAddress;
 
         private const int AlfheimId = 2;
-        public BattleLog Result { get; private set; }
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
             new Dictionary<string, IValue>
@@ -216,7 +214,7 @@ namespace Nekoyume.Action
                 stageId,
                 states.GetStageSimulatorSheets(),
                 costumeStatSheet,
-                2);
+                StageSimulator.ConstructorVersionV100025);
             sw.Stop();
             Log.Verbose("{AddressesHex}Mimisbrunnr Initialize Simulator: {Elapsed}", addressesHex, sw.Elapsed);
 
@@ -320,8 +318,6 @@ namespace Nekoyume.Action
                     states = states.SetState(weekly.address, weeklySerialized);
                 }
             }
-
-            Result = simulator.Log;
 
             var ended = DateTimeOffset.UtcNow;
             Log.Verbose("{AddressesHex}Mimisbrunnr Total Executed Time: {Elapsed}", addressesHex, ended - started);

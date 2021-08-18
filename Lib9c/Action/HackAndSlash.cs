@@ -27,7 +27,6 @@ namespace Nekoyume.Action
         public Address avatarAddress;
         public Address WeeklyArenaAddress;
         public Address RankingMapAddress;
-        public BattleLog Result { get; private set; }
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
             new Dictionary<string, IValue>
@@ -194,7 +193,7 @@ namespace Nekoyume.Action
                 stageId,
                 states.GetStageSimulatorSheets(),
                 costumeStatSheet,
-                2);
+                StageSimulator.ConstructorVersionV100025);
 
             sw.Stop();
             Log.Verbose("{AddressesHex}HAS Initialize Simulator: {Elapsed}", addressesHex, sw.Elapsed);
@@ -300,8 +299,6 @@ namespace Nekoyume.Action
                     states = states.SetState(weekly.address, weeklySerialized);
                 }
             }
-
-            Result = simulator.Log;
 
             var ended = DateTimeOffset.UtcNow;
             Log.Verbose("{AddressesHex}HAS Total Executed Time: {Elapsed}", addressesHex, ended - started);

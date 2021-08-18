@@ -6,6 +6,8 @@ namespace Lib9c.Tests.Action
     {
         private readonly System.Random _random = new System.Random(Seed: 0);
 
+        public int Seed => 0;
+
         public int Next()
         {
             return _random.Next();
