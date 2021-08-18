@@ -51,7 +51,7 @@ namespace Nekoyume.UI
                 .AddTo(gameObject);
 
             _onClickWithSkipDispose = Observable.EveryUpdate()
-                .Where(_ => _isPlaying)
+                .Where(_ => _isPlaying && Input.GetMouseButtonDown(0))
                 .Subscribe(_ =>
                 {
                     foreach (var item in items)
