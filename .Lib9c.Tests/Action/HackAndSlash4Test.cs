@@ -12,6 +12,7 @@ namespace Lib9c.Tests.Action
     using Nekoyume;
     using Nekoyume.Action;
     using Nekoyume.Battle;
+    using Nekoyume.BlockChain;
     using Nekoyume.Model;
     using Nekoyume.Model.BattleStatus;
     using Nekoyume.Model.Item;
@@ -777,7 +778,7 @@ namespace Lib9c.Tests.Action
                 PreviousStates = _initialState,
                 Signer = _agentAddress,
                 Random = new TestRandom(),
-                BlockIndex = 2200000,
+                BlockIndex = BlockPolicySource.V100066ObsoleteIndex + 100000,
             }));
         }
 

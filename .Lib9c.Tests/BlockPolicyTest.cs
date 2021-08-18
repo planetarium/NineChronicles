@@ -608,7 +608,7 @@ namespace Lib9c.Tests
 
         [Theory]
         [InlineData(199, false)]
-        [InlineData(2100002, true)]
+        [InlineData(BlockPolicySource.V100066ObsoleteIndex + 2, true)]
         public void IsObsolete(long blockIndex, bool expected)
         {
             var action = new HackAndSlash
