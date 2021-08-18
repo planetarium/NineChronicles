@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Libplanet.Action;
 using Nekoyume.Action;
 using Nekoyume.EnumType;
+using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.State;
@@ -21,6 +22,7 @@ namespace Nekoyume.UI
 
         [SerializeField]
         private TMP_InputField inputField;
+
         public override WidgetType WidgetType => WidgetType.Development;
 
         private static readonly Cheat.DebugRandom _random = new Cheat.DebugRandom();
@@ -63,7 +65,7 @@ namespace Nekoyume.UI
             AsyncEnhancementSimulate(new Cheat.DebugRandom(_random.Next(1, 999999999)));
         }
 
-         private async void AsyncCombinationSimulate()
+        private async void AsyncCombinationSimulate()
         {
             var equipmentItemSheet = Game.Game.instance.TableSheets.EquipmentItemSheet;
             var equipmentReceipeSheet = Game.Game.instance.TableSheets.EquipmentItemRecipeSheet;
@@ -89,7 +91,8 @@ namespace Nekoyume.UI
 
                             for (var i = 0; i < count; ++i)
                             {
-                                SetResult(row, subRecipeRow, itemOptionSheet, skillSheet, results, recipe, subRecipeId);
+                                SetResult(row, subRecipeRow, itemOptionSheet, skillSheet, results,
+                                    recipe, subRecipeId);
                             }
                         }
 
@@ -100,6 +103,7 @@ namespace Nekoyume.UI
                         }
                     }
                 }
+
                 return true;
             });
 
@@ -112,41 +116,32 @@ namespace Nekoyume.UI
 
         private static void DrawResult(int itemId, int count, Result result)
         {
-            var one = GetExpectRatioOne(result);
-            var three = GetExpectRatioTree(result);
-            var four = GetExpectRatio(result, 3);
-            var two = 1 - one - three - four;
-
-            Debug.Log($"[CS] [{L10nManager.Localize($"ITEM_NAME_{itemId}")}] {itemId} / " +
-                      $"[subRecipeId] {result.subRecipeId} / " +
-                      $"<color=#5FD900>[1]</color><color=#0078FF>{one:P2}</color> <color=#00A4FF> --> {(result.results[0] / (float)count):P2}</color> / " +
-                      $"<color=#5FD900>[2]</color><color=#FF1800>{two:P2}</color> <color=#F16558> --> {(result.results[1] / (float)count):P2}</color> / " +
-                      $"<color=#5FD900>[3]</color><color=#0078FF>{three:P2}</color> <color=#00A4FF> --> {(result.results[2] / (float)count):P2}</color> / " +
-                      $"<color=#5FD900>[4]</color><color=#FF1800>{four:P2}</color> <color=#F16558> --> {(result.results[3] / (float)count):P2}</color>");
-        }
-
-        private static decimal GetExpectRatio(Result result, int number)
-        {
-            decimal value = 1;
-            for (var i = 0; i < number + 1; i++)
+            var numbers = new List<int>();
+            for (var i = 0; i < result.expects.Count; i++)
             {
-                var ratio = result.expects[i] * GameConfig.TenThousandths;
-                value *= ratio;
+                numbers.Add(i);
             }
 
-            return value;
+            var results = numbers.Select((t, i) => GetExpectRatio(result, numbers, i + 1)).ToList();
+            Debug.Log($"[CS] [{L10nManager.Localize($"ITEM_NAME_{itemId}")}] {itemId} / " +
+                      $"[subRecipeId] {result.subRecipeId} / " +
+                      $"<color=#5FD900>[1]</color><color=#0078FF>{results[0]:P2}</color> <color=#00A4FF> --> {(result.results[0] / (float)count):P2}</color> / " +
+                      $"<color=#5FD900>[2]</color><color=#FF1800>{results[1]:P2}</color> <color=#F16558> --> {(result.results[1] / (float)count):P2}</color> / " +
+                      $"<color=#5FD900>[3]</color><color=#0078FF>{results[2]:P2}</color> <color=#00A4FF> --> {(result.results[2] / (float)count):P2}</color> / " +
+                      $"<color=#5FD900>[4]</color><color=#FF1800>{results[3]:P2}</color> <color=#F16558> --> {(result.results[3] / (float)count):P2}</color>");
         }
 
-        private static decimal GetExpectRatioOne(Result result)
+        private static decimal GetExpectRatio(Result result, IEnumerable<int> numbers, int count)
         {
+            var combinations = numbers.DifferentCombinations(count);
             decimal sum = 0;
-            for (var j = 0; j < 4; j++)
+            foreach (var combination in combinations)
             {
                 decimal value = 1;
                 for (var i = 0; i < 4; i++)
                 {
                     decimal ratio;
-                    if (j == i)
+                    if (combination.ToList().Exists(x=> x == i))
                     {
                         ratio = (result.expects[i] * GameConfig.TenThousandths);
                     }
@@ -154,35 +149,9 @@ namespace Nekoyume.UI
                     {
                         ratio = 1 - result.expects[i] * GameConfig.TenThousandths;
                     }
+
                     value *= ratio;
                 }
-
-                sum += value;
-            }
-
-            return sum;
-        }
-
-        private static decimal GetExpectRatioTree(Result result)
-        {
-            decimal sum = 0;
-            for (var j = 0; j < 4; j++)
-            {
-                decimal value = 1;
-                for (var i = 0; i < 4; i++)
-                {
-                    decimal ratio;
-                    if (j == i)
-                    {
-                        ratio = 1 - (result.expects[i] * GameConfig.TenThousandths);
-                    }
-                    else
-                    {
-                        ratio = result.expects[i] * GameConfig.TenThousandths;
-                    }
-                    value *= ratio;
-                }
-
                 sum += value;
             }
 
@@ -197,10 +166,12 @@ namespace Nekoyume.UI
             EquipmentItemRecipeSheet.Row recipe,
             int subRecipeId)
         {
-            var equipment = CombinationEquipment(row, subRecipeRow, itemOptionSheet, skillSheet, new Cheat.DebugRandom(_random.Next(1, 999999999)));
+            var equipment = CombinationEquipment(row, subRecipeRow, itemOptionSheet, skillSheet,
+                new Cheat.DebugRandom(_random.Next(1, 999999999)));
             if (!results.ContainsKey(equipment.Id))
             {
-                var resultList = recipe.SubRecipeIds.Select(id => new Result(id, subRecipeRow.Options.Count)).ToList();
+                var resultList = recipe.SubRecipeIds
+                    .Select(id => new Result(id, subRecipeRow.Options.Count)).ToList();
                 results.Add(equipment.Id, resultList);
             }
 
@@ -212,7 +183,7 @@ namespace Nekoyume.UI
                 item.expects[i] = ratio[i];
             }
 
-            item.results[equipment.optionCountFromCombination-1] += 1;
+            item.results[equipment.optionCountFromCombination - 1] += 1;
         }
 
         private static Equipment CombinationEquipment(ItemSheet.Row row,
@@ -221,8 +192,8 @@ namespace Nekoyume.UI
             SkillSheet skillSheet,
             IRandom random)
         {
-
-            var equipment = (Equipment)ItemFactory.CreateItemUsable(row, random.GenerateRandomGuid(), 0);
+            var equipment =
+                (Equipment)ItemFactory.CreateItemUsable(row, random.GenerateRandomGuid(), 0);
             var agentState = States.Instance.AgentState;
             Action.CombinationEquipment.AddAndUnlockOption(agentState,
                 equipment,
@@ -268,7 +239,6 @@ namespace Nekoyume.UI
             {
                 Debug.Log("-------------F I N I S H (Enhancement)----------");
             }
-
         }
     }
 }
