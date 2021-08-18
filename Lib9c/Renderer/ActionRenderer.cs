@@ -42,6 +42,7 @@ namespace Lib9c.Renderer
                 BlockIndex = context.BlockIndex,
                 OutputStates = nextStates,
                 PreviousStates = context.PreviousStates,
+                RandomSeed = context.Random.Seed
             });
         }
 
@@ -58,6 +59,7 @@ namespace Lib9c.Renderer
                 BlockIndex = context.BlockIndex,
                 OutputStates = nextStates,
                 PreviousStates = context.PreviousStates,
+                RandomSeed = context.Random.Seed
             });
         }
 
@@ -76,6 +78,7 @@ namespace Lib9c.Renderer
                 OutputStates = context.PreviousStates,
                 Exception = exception,
                 PreviousStates = context.PreviousStates,
+                RandomSeed = context.Random.Seed
             });
         }
 
@@ -93,6 +96,7 @@ namespace Lib9c.Renderer
                 OutputStates = context.PreviousStates,
                 Exception = exception,
                 PreviousStates = context.PreviousStates,
+                RandomSeed = context.Random.Seed
             });
         }
 
@@ -137,12 +141,13 @@ namespace Lib9c.Renderer
                 eval => eval.Action is T
             ).Select(eval => new ActionEvaluation<T>
             {
-                Action = (T) eval.Action,
+                Action = (T)eval.Action,
                 Signer = eval.Signer,
                 BlockIndex = eval.BlockIndex,
                 OutputStates = eval.OutputStates,
                 Exception = eval.Exception,
                 PreviousStates = eval.PreviousStates,
+                RandomSeed = eval.RandomSeed
             });
         }
 
@@ -153,12 +158,13 @@ namespace Lib9c.Renderer
                 eval => eval.Action is T
             ).Select(eval => new ActionEvaluation<T>
             {
-                Action = (T) eval.Action,
+                Action = (T)eval.Action,
                 Signer = eval.Signer,
                 BlockIndex = eval.BlockIndex,
                 OutputStates = eval.OutputStates,
                 Exception = eval.Exception,
                 PreviousStates = eval.PreviousStates,
+                RandomSeed = eval.RandomSeed
             });
         }
 
@@ -174,6 +180,7 @@ namespace Lib9c.Renderer
                 OutputStates = eval.OutputStates,
                 Exception = eval.Exception,
                 PreviousStates = eval.PreviousStates,
+                RandomSeed = eval.RandomSeed
             });
         }
 
@@ -189,6 +196,7 @@ namespace Lib9c.Renderer
                 OutputStates = eval.OutputStates,
                 Exception = eval.Exception,
                 PreviousStates = eval.PreviousStates,
+                RandomSeed = eval.RandomSeed
             });
         }
 
@@ -201,7 +209,7 @@ namespace Lib9c.Renderer
             {
                 return polymorphicAction.InnerAction;
             }
-            return (ActionBase) action;
+            return (ActionBase)action;
         }
     }
 }

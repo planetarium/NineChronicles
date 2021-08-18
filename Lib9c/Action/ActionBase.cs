@@ -201,14 +201,17 @@ namespace Nekoyume.Action
 
             public IAccountStateDelta PreviousStates { get; set; }
 
+            public int RandomSeed { get; set; }
+
             public ActionEvaluation(SerializationInfo info, StreamingContext ctx)
             {
-                Action = FromBytes((byte[]) info.GetValue("action", typeof(byte[])));
-                Signer = new Address((byte[]) info.GetValue("signer", typeof(byte[])));
+                Action = FromBytes((byte[])info.GetValue("action", typeof(byte[])));
+                Signer = new Address((byte[])info.GetValue("signer", typeof(byte[])));
                 BlockIndex = info.GetInt64("blockIndex");
-                OutputStates = new AccountStateDelta((byte[]) info.GetValue("outputStates", typeof(byte[])));
-                Exception = (Exception) info.GetValue("exc", typeof(Exception));
-                PreviousStates = new AccountStateDelta((byte[]) info.GetValue("previousStates", typeof(byte[])));
+                OutputStates = new AccountStateDelta((byte[])info.GetValue("outputStates", typeof(byte[])));
+                Exception = (Exception)info.GetValue("exc", typeof(Exception));
+                PreviousStates = new AccountStateDelta((byte[])info.GetValue("previousStates", typeof(byte[])));
+                RandomSeed = info.GetInt32("randomSeed");
             }
 
             public void GetObjectData(SerializationInfo info, StreamingContext context)
@@ -219,6 +222,7 @@ namespace Nekoyume.Action
                 info.AddValue("outputStates", ToBytes(OutputStates, OutputStates.UpdatedAddresses));
                 info.AddValue("exc", Exception);
                 info.AddValue("previousStates", ToBytes(PreviousStates, OutputStates.UpdatedAddresses));
+                info.AddValue("randomSeed", RandomSeed);
             }
 
             private static byte[] ToBytes(T action)
@@ -235,7 +239,7 @@ namespace Nekoyume.Action
             {
                 var state = new Dictionary(
                     updatedAddresses.Select(addr => new KeyValuePair<IKey, IValue>(
-                        (Binary) addr.ToByteArray(),
+                        (Binary)addr.ToByteArray(),
                         delta.GetState(addr) ?? new Bencodex.Types.Null()
                     ))
                 );
@@ -244,20 +248,20 @@ namespace Nekoyume.Action
                     delta.UpdatedFungibleAssets.SelectMany(ua =>
 #pragma warning restore LAA1002
                         ua.Value.Select(c =>
+                        {
+                            FungibleAssetValue b = delta.GetBalance(ua.Key, c);
+                            return new Bencodex.Types.Dictionary(new[]
                             {
-                                FungibleAssetValue b = delta.GetBalance(ua.Key, c);
-                                return new Bencodex.Types.Dictionary(new[]
-                                {
                                     new KeyValuePair<IKey, IValue>((Text) "address", (Binary) ua.Key.ToByteArray()),
                                     new KeyValuePair<IKey, IValue>((Text) "currency", CurrencyExtensions.Serialize(c)),
                                     new KeyValuePair<IKey, IValue>((Text) "amount", (Integer) b.RawValue),
                                 });
-                            }
+                        }
                         )
                     ).Cast<IValue>()
                 );
 
-                var bdict = new Dictionary(new []
+                var bdict = new Dictionary(new[]
                 {
                     new KeyValuePair<IKey, IValue>((Text) "states", state),
                     new KeyValuePair<IKey, IValue>((Text) "balances", balance),

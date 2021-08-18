@@ -220,8 +220,6 @@ namespace Lib9c.Tests.Action
                 RankingMapAddress = _rankingMapAddress,
             };
 
-            Assert.Null(action.Result);
-
             var nextState = action.Execute(new ActionContext
             {
                 PreviousStates = state,
@@ -234,10 +232,6 @@ namespace Lib9c.Tests.Action
             var nextAvatarState = nextState.GetAvatarStateV2(_avatarAddress);
             var newWeeklyState = nextState.GetWeeklyArenaState(0);
 
-            Assert.NotNull(action.Result);
-
-            Assert.NotEmpty(action.Result.OfType<GetReward>());
-            Assert.Equal(BattleLog.Result.Win, action.Result.result);
             Assert.Equal(contains, newWeeklyState.ContainsKey(_avatarAddress));
             Assert.True(nextAvatarState.worldInformation.IsStageCleared(stageId));
             Assert.Equal(30, nextAvatarState.mailBox.Count);
@@ -399,8 +393,6 @@ namespace Lib9c.Tests.Action
                 RankingMapAddress = _rankingMapAddress,
             };
 
-            Assert.Null(action.Result);
-
             var nextState = action.Execute(new ActionContext
             {
                 PreviousStates = state,
@@ -464,8 +456,6 @@ namespace Lib9c.Tests.Action
                 RankingMapAddress = _rankingMapAddress,
             };
 
-            Assert.Null(action.Result);
-
             var exec = Assert.Throws<DuplicateEquipmentException>(() => action.Execute(new ActionContext
             {
                 PreviousStates = state,
@@ -491,8 +481,6 @@ namespace Lib9c.Tests.Action
                 WeeklyArenaAddress = _weeklyArenaState.address,
                 RankingMapAddress = default,
             };
-
-            Assert.Null(action.Result);
 
             var exec = Assert.Throws<InvalidAddressException>(() =>
                 action.Execute(new ActionContext()
@@ -523,8 +511,6 @@ namespace Lib9c.Tests.Action
                 WeeklyArenaAddress = _weeklyArenaState.address,
             };
 
-            Assert.Null(action.Result);
-
             IAccountStateDelta state = backward ? new State() : _initialState;
             if (!backward)
             {
@@ -541,8 +527,6 @@ namespace Lib9c.Tests.Action
                 Signer = _agentAddress,
                 Random = new TestRandom(),
             }));
-
-            Assert.Null(action.Result);
 
             SerializeException<FailedLoadStateException>(exec);
         }
@@ -562,16 +546,12 @@ namespace Lib9c.Tests.Action
                 RankingMapAddress = _rankingMapAddress,
             };
 
-            Assert.Null(action.Result);
-
             var exec = Assert.Throws<SheetRowNotFoundException>(() => action.Execute(new ActionContext()
             {
                 PreviousStates = _initialState,
                 Signer = _agentAddress,
                 Random = new TestRandom(),
             }));
-
-            Assert.Null(action.Result);
 
             SerializeException<SheetRowNotFoundException>(exec);
         }
@@ -593,16 +573,12 @@ namespace Lib9c.Tests.Action
                 RankingMapAddress = _rankingMapAddress,
             };
 
-            Assert.Null(action.Result);
-
             var exec = Assert.Throws<SheetRowColumnException>(() => action.Execute(new ActionContext()
             {
                 PreviousStates = _initialState,
                 Signer = _agentAddress,
                 Random = new TestRandom(),
             }));
-
-            Assert.Null(action.Result);
 
             SerializeException<SheetRowColumnException>(exec);
         }
@@ -622,8 +598,6 @@ namespace Lib9c.Tests.Action
                 RankingMapAddress = _rankingMapAddress,
             };
 
-            Assert.Null(action.Result);
-
             var state = _initialState;
             state = state.SetState(Addresses.TableSheet.Derive(nameof(StageSheet)), "test".Serialize());
 
@@ -633,8 +607,6 @@ namespace Lib9c.Tests.Action
                 Signer = _agentAddress,
                 Random = new TestRandom(),
             }));
-
-            Assert.Null(action.Result);
 
             SerializeException<SheetRowNotFoundException>(exec);
         }
@@ -654,8 +626,6 @@ namespace Lib9c.Tests.Action
                 RankingMapAddress = _rankingMapAddress,
             };
 
-            Assert.Null(action.Result);
-
             var state = _initialState;
             var worldSheet = new WorldSheet();
             worldSheet.Set("test");
@@ -673,8 +643,6 @@ namespace Lib9c.Tests.Action
                 Signer = _agentAddress,
                 Random = new TestRandom(),
             }));
-
-            Assert.Null(action.Result);
 
             SerializeException<FailedAddWorldException>(exec);
         }
@@ -694,8 +662,6 @@ namespace Lib9c.Tests.Action
                 RankingMapAddress = _rankingMapAddress,
             };
 
-            Assert.Null(action.Result);
-
             Assert.False(_avatarState.worldInformation.IsStageCleared(51));
 
             var exec = Assert.Throws<InvalidWorldException>(() => action.Execute(new ActionContext()
@@ -704,8 +670,6 @@ namespace Lib9c.Tests.Action
                 Signer = _agentAddress,
                 Random = new TestRandom(),
             }));
-
-            Assert.Null(action.Result);
 
             SerializeException<InvalidWorldException>(exec);
         }
@@ -724,8 +688,6 @@ namespace Lib9c.Tests.Action
                 WeeklyArenaAddress = _weeklyArenaState.address,
                 RankingMapAddress = _rankingMapAddress,
             };
-
-            Assert.Null(action.Result);
 
             var avatarState = new AvatarState(_avatarState);
             avatarState.worldInformation.ClearStage(
@@ -751,8 +713,6 @@ namespace Lib9c.Tests.Action
                 Random = new TestRandom(),
             }));
 
-            Assert.Null(action.Result);
-
             SerializeException<InvalidStageException>(exec);
         }
 
@@ -771,8 +731,6 @@ namespace Lib9c.Tests.Action
                 RankingMapAddress = _rankingMapAddress,
             };
 
-            Assert.Null(action.Result);
-
             _avatarState.worldInformation.TryGetWorld(1, out var world);
             Assert.False(world.IsStageCleared);
 
@@ -782,8 +740,6 @@ namespace Lib9c.Tests.Action
                 Signer = _agentAddress,
                 Random = new TestRandom(),
             }));
-
-            Assert.Null(action.Result);
 
             SerializeException<InvalidStageException>(exec);
         }
@@ -816,8 +772,6 @@ namespace Lib9c.Tests.Action
                 RankingMapAddress = _rankingMapAddress,
             };
 
-            Assert.Null(action.Result);
-
             var state = _initialState
                 .SetState(_avatarAddress, avatarState.SerializeV2())
                 .SetState(_inventoryAddress, avatarState.inventory.Serialize());
@@ -828,8 +782,6 @@ namespace Lib9c.Tests.Action
                 Signer = _agentAddress,
                 Random = new TestRandom(),
             }));
-
-            Assert.Null(action.Result);
 
             SerializeException<RequiredBlockIndexException>(exec);
         }
@@ -869,16 +821,12 @@ namespace Lib9c.Tests.Action
                 RankingMapAddress = _rankingMapAddress,
             };
 
-            Assert.Null(action.Result);
-
             var exec = Assert.Throws<EquipmentSlotUnlockException>(() => action.Execute(new ActionContext()
             {
                 PreviousStates = state,
                 Signer = _agentAddress,
                 Random = new TestRandom(),
             }));
-
-            Assert.Null(action.Result);
 
             SerializeException<EquipmentSlotUnlockException>(exec);
         }
@@ -903,8 +851,6 @@ namespace Lib9c.Tests.Action
                 RankingMapAddress = _rankingMapAddress,
             };
 
-            Assert.Null(action.Result);
-
             var state = _initialState;
             state = state.SetState(_avatarAddress, avatarState.SerializeV2());
 
@@ -914,8 +860,6 @@ namespace Lib9c.Tests.Action
                 Signer = _agentAddress,
                 Random = new TestRandom(),
             }));
-
-            Assert.Null(action.Result);
 
             SerializeException<NotEnoughActionPointException>(exec);
         }
