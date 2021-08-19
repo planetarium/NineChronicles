@@ -1,3 +1,4 @@
+using Nekoyume.EnumType;
 using Nekoyume.Game;
 using Nekoyume.L10n;
 using Nekoyume.UI.Module;
@@ -19,6 +20,8 @@ namespace Nekoyume.UI
 
         [SerializeField]
         private EventSubject closeEventSubject = null;
+
+        public override WidgetType WidgetType => WidgetType.SystemInfo;
 
         protected override void Awake()
         {
