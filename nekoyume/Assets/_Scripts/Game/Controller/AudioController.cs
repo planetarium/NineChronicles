@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using Nekoyume.EnumType;
 using Nekoyume.Model.Elemental;
 using Nekoyume.Pattern;
 using UnityEngine;
@@ -12,6 +11,8 @@ using Random = UnityEngine.Random;
 
 namespace Nekoyume.Game.Controller
 {
+    using UniRx;
+
     public class AudioController : MonoSingleton<AudioController>
     {
         private readonly struct AudioInfo
@@ -95,6 +96,16 @@ namespace Nekoyume.Game.Controller
             public const string NPC_Congrat = "sfx_npc_congrat";
             public const string NPC_Question = "sfx_npc_question";
             public const string GuideArrow = "sfx_guide_arrow";
+            public const string BgmFailed = "sfx_bgm_failed";
+            public const string BgmGreatSuccess = "sfx_bgm_great_success";
+            public const string BgmSuccess = "sfx_bgm_success";
+            public const string FailedEffect = "sfx_failed_effect";
+            public const string GreatSuccessDrum = "sfx_great_success_drum";
+            public const string OptionNormal = "sfx_option_normal";
+            public const string OptionSpecial = "sfx_option_special";
+            public const string SuccessEffectFadeIn = "sfx_successeffect_fadein";
+            public const string SuccessEffectSlot = "sfx_successeffect_slot";
+            public const string UpgradeNumber = "sfx_upgrade_number";
         }
 
         private enum State
@@ -286,8 +297,16 @@ namespace Nekoyume.Game.Controller
             CurrentPlayingMusicName = audioName;
         }
 
-        public void PlaySfx(string audioName, float volume = 1.0f)
+        public void PlaySfx(string audioName, float volume = 1f, float delay = 0f)
         {
+            if (delay > 0f)
+            {
+                Observable.Timer(TimeSpan.FromSeconds(delay))
+                    .First()
+                    .Subscribe(_ => PlaySfx(audioName, volume));
+                return;
+            }
+
             if (CurrentState != State.Idle)
             {
                 Debug.LogError("Not initialized.");

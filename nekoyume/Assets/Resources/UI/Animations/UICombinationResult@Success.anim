@@ -7871,6 +7871,27 @@ AnimationClip:
     floatParameter: 0
     intParameter: 3
     messageOptions: 0
+  - time: 0.5833333
+    functionName: OnRequestPlaySFX
+    data: sfx_successeffect_fadein
+    objectReferenceParameter: {fileID: 0}
+    floatParameter: 0
+    intParameter: 0
+    messageOptions: 0
+  - time: 1.6666666
+    functionName: OnRequestPlaySFX
+    data: sfx_successeffect_slot
+    objectReferenceParameter: {fileID: 0}
+    floatParameter: 0
+    intParameter: 0
+    messageOptions: 0
+  - time: 2
+    functionName: OnRequestPlaySFX
+    data: sfx_bgm_success
+    objectReferenceParameter: {fileID: 0}
+    floatParameter: 0
+    intParameter: 0
+    messageOptions: 0
   - time: 2.9833333
     functionName: PlayOptionAnimation
     data: 
