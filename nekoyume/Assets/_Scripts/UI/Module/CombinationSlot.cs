@@ -228,7 +228,7 @@ namespace Nekoyume.UI.Module
                     }
 
                     Widget.Find<HeaderMenu>().UpdateAssets(HeaderMenu.AssetVisibleState.Combination);
-                    Widget.Find<Craft>().Show();
+                    Widget.Find<CombinationMain>().Show();
                     Widget.Find<CombinationSlots>().Close();
                     break;
 
