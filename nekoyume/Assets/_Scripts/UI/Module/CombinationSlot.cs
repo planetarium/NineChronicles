@@ -228,12 +228,17 @@ namespace Nekoyume.UI.Module
                     }
 
                     Widget.Find<HeaderMenu>().UpdateAssets(HeaderMenu.AssetVisibleState.Combination);
-                    Widget.Find<Craft>().Show();
+                    Widget.Find<CombinationMain>().Show();
                     Widget.Find<CombinationSlots>().Close();
                     break;
 
                 case SlotType.Working:
                     Widget.Find<CombinationSlotPopup>().Show(state, slotIndex, currentBlockIndex);
+                    break;
+
+                case SlotType.Appraise:
+                    UI.Notification.Push(Nekoyume.Model.Mail.MailType.System,
+                        L10nManager.Localize("UI_COMBINATION_NOTIFY_IDENTIFYING"));
                     break;
             }
         }
