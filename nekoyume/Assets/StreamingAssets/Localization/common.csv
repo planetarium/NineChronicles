@@ -492,81 +492,81 @@ UI_DELETE,Delete,삭제,Apagar,,削除,Löschen,Borrar,ลบ,Usuń,,,Hapus,Effa
 UI_COMBINATION_ITEM,Combine,아이템 제작,Combinar,,アイテム製作,Kombinieren,Combinar,รวมกัน,Połącz,,,Gabung,Combiner,,,,合并,,,,
 UI_COMBINATION_ERROR,Error,조합 에러,Erro,,製作エラー,Fehler,Error,ข้อผิดพลาด,Błąd,,,Error,Erreur,,,,错误,,,,
 UI_COMBINATION_SUCCESS,Success!,조합 성공!,Sucesso!,,製作成功！,Erfolg!,¡Conseguido!,สำเร็จ!,Sukces!,,,Sukses!,Réussi !,,,,成功！,,,,
-UI_COMBINATION_NOTIFY_FORMAT,"<size=12><color=#FFA78B>[Workshop Cat]</color></size>
-I've finished crafting {0}","<size=12><color=#FFA78B>[대장장이 고양이]</color></size>
-{0} 제작을 완료하였네.","<size=12><color=#FFA78B>[Gato de oficina]</color></size>
-Eu terminei de fabricar {0}","<size=12><color=#FFA78B>[Gato de oficina]</color></size>
-Eu terminei de fabricar {0}","<size=12><color=#FFA78B>[ワークショップ猫]</color></size>
-{0} の製作が終わったぜ！","<size=12><color=#FFA78B>[Workshop Katze]</color></size>
-Die Produktion ist beendet {0}","<size=12><color=#FFA78B>[gato taller]</color></size>
-Fabricación completada {0}","<size=12><color=#FFA78B>[การประชุมเชิงปฏิบัติการแมว]</color></size>
-ฉันสร้าง {0} เสร็จแล้ว","<size=12><color=#FFA78B>[Warsztaty Cat]</color></size>
-Ukończyłem wytwarzanie {0}","<size=12><color=#FFA78B>[seminaras Kačių]</color></size>
-Aš gatavo crafting {0}","<size=12><color=#FFA78B>[workshop Cat]</color></size>
-Ik klaar crafting {0}","<size=12><color=#FFA78B>[Workshop Cat]</color></size>
-Aku sudah selesai membuat {0}","<size=12><color=#FFA78B>[atelier Cat]</color></size>
-J'ai fini la fabrication de {0}","<size=12><color=#FFA78B>[Практикум Cat]</color></size>
-Я закончил крафт {0}","<size=12><color=#FFA78B>[សិក្ខាសាលាឆ្មា]</color></size>
-ខ្ញុំបានបញ្ចប់ {0} សិប្បកម្ម ។","<size=12><color=#FFA78B>[ورکشاپ بلی]</color></size>
-میں فارغ تیار {0} ہے.","<size=12><color=#FFA78B>[车间猫]</color></size>
-我已经完成了{0}的制作工作。","<size=12><color=#FFA78B>[Műhelymunka]</color></size>
+UI_COMBINATION_NOTIFY_FORMAT,"<color=#FFA78B>[Workshop Cat]</color>
+I've finished crafting {0}","<color=#FFA78B>[대장장이 고양이]</color>
+{0} 제작을 완료하였네.","<color=#FFA78B>[Gato de oficina]</color>
+Eu terminei de fabricar {0}","<color=#FFA78B>[Gato de oficina]</color>
+Eu terminei de fabricar {0}","<color=#FFA78B>[ワークショップ猫]</color>
+{0} の製作が終わったぜ！","<color=#FFA78B>[Workshop Katze]</color>
+Die Produktion ist beendet {0}","<color=#FFA78B>[gato taller]</color>
+Fabricación completada {0}","<color=#FFA78B>[การประชุมเชิงปฏิบัติการแมว]</color>
+ฉันสร้าง {0} เสร็จแล้ว","<color=#FFA78B>[Warsztaty Cat]</color>
+Ukończyłem wytwarzanie {0}","<color=#FFA78B>[seminaras Kačių]</color>
+Aš gatavo crafting {0}","<color=#FFA78B>[workshop Cat]</color>
+Ik klaar crafting {0}","<color=#FFA78B>[Workshop Cat]</color>
+Aku sudah selesai membuat {0}","<color=#FFA78B>[atelier Cat]</color>
+J'ai fini la fabrication de {0}","<color=#FFA78B>[Практикум Cat]</color>
+Я закончил крафт {0}","<color=#FFA78B>[សិក្ខាសាលាឆ្មា]</color>
+ខ្ញុំបានបញ្ចប់ {0} សិប្បកម្ម ។","<color=#FFA78B>[ورکشاپ بلی]</color>
+میں فارغ تیار {0} ہے.","<color=#FFA78B>[车间猫]</color>
+我已经完成了{0}的制作工作。","<color=#FFA78B>[Műhelymunka]</color>
 Végeztem ravaszkodó {0}",,,
-UI_COMBINATION_NOTIFY_FORMAT_GREATER,"<size=12><color=#FFA78B>[Workshop Cat]</color></size>
-Great Success!! I've finished crafting {0}","<size=12><color=#FFA78B>[대장장이 고양이]</color></size>
-대성공!! {0} 제작을 완료하였네.","<size=12><color=#FFA78B>[Gato de oficina]</color></size>
-Grande sucesso!! Eu terminei de fabricar {0}","<size=12><color=#FFA78B>[Gato de oficina]</color></size>
-Grande sucesso!! Eu terminei de fabricar {0}","<size=12><color=#FFA78B>[ワークショップ猫]</color></size>
-大成功！！ {0} の製作が終わったぜ！","<size=12><color=#FFA78B>[Workshop Katze]</color></size>
-Großer Erfolg!! Die Produktion ist beendet {0}","<size=12><color=#FFA78B>[gato taller]</color></size>
-¡¡Gran éxito!! Fabricación completada {0}","<size=12><color=#FFA78B>[การประชุมเชิงปฏิบัติการแมว]</color></size>
-ความสำเร็จที่ดี!! ฉันสร้าง {0} เสร็จแล้ว","<size=12><color=#FFA78B>[Warsztaty Cat]</color></size>
-Wielki sukces!! Ukończyłem wytwarzanie {0}","<size=12><color=#FFA78B>[seminaras Kačių]</color></size>
-Didelė sėkmė!! Aš gatavo crafting {0}","<size=12><color=#FFA78B>[workshop Cat]</color></size>
-Groot succes!! Ik klaar crafting {0}","<size=12><color=#FFA78B>[Workshop Cat]</color></size>
-Sukses Besar !! Aku sudah selesai membuat {0}","<size=12><color=#FFA78B>[atelier Cat]</color></size>
-Grand succès!! J'ai fini la fabrication de {0}","<size=12><color=#FFA78B>[Практикум Cat]</color></size>
-Огромный успех!! Я закончил крафт {0}","<size=12><color=#FFA78B>[សិក្ខាសាលាឆ្មា]</color></size>
-ជោគជ័យដ៏អស្ចារ្យ!! ខ្ញុំបានបញ្ចប់ {0} សិប្បកម្ម ។","<size=12><color=#FFA78B>[ورکشاپ بلی]</color></size>
-عظیم کامیابی!! میں فارغ تیار {0} ہے.","<size=12><color=#FFA78B>[车间猫]</color></size>
-巨大的成功！！ 我已经完成了{0}的制作工作。","<size=12><color=#FFA78B>[Műhelymunka]</color></size>
+UI_COMBINATION_NOTIFY_FORMAT_GREATER,"<color=#FFA78B>[Workshop Cat]</color>
+Great Success!! I've finished crafting {0}","<color=#FFA78B>[대장장이 고양이]</color>
+대성공!! {0} 제작을 완료하였네.","<color=#FFA78B>[Gato de oficina]</color>
+Grande sucesso!! Eu terminei de fabricar {0}","<color=#FFA78B>[Gato de oficina]</color>
+Grande sucesso!! Eu terminei de fabricar {0}","<color=#FFA78B>[ワークショップ猫]</color>
+大成功！！ {0} の製作が終わったぜ！","<color=#FFA78B>[Workshop Katze]</color>
+Großer Erfolg!! Die Produktion ist beendet {0}","<color=#FFA78B>[gato taller]</color>
+¡¡Gran éxito!! Fabricación completada {0}","<color=#FFA78B>[การประชุมเชิงปฏิบัติการแมว]</color>
+ความสำเร็จที่ดี!! ฉันสร้าง {0} เสร็จแล้ว","<color=#FFA78B>[Warsztaty Cat]</color>
+Wielki sukces!! Ukończyłem wytwarzanie {0}","<color=#FFA78B>[seminaras Kačių]</color>
+Didelė sėkmė!! Aš gatavo crafting {0}","<color=#FFA78B>[workshop Cat]</color>
+Groot succes!! Ik klaar crafting {0}","<color=#FFA78B>[Workshop Cat]</color>
+Sukses Besar !! Aku sudah selesai membuat {0}","<color=#FFA78B>[atelier Cat]</color>
+Grand succès!! J'ai fini la fabrication de {0}","<color=#FFA78B>[Практикум Cat]</color>
+Огромный успех!! Я закончил крафт {0}","<color=#FFA78B>[សិក្ខាសាលាឆ្មា]</color>
+ជោគជ័យដ៏អស្ចារ្យ!! ខ្ញុំបានបញ្ចប់ {0} សិប្បកម្ម ។","<color=#FFA78B>[ورکشاپ بلی]</color>
+عظیم کامیابی!! میں فارغ تیار {0} ہے.","<color=#FFA78B>[车间猫]</color>
+巨大的成功！！ 我已经完成了{0}的制作工作。","<color=#FFA78B>[Műhelymunka]</color>
 Nagy siker!! Végeztem ravaszkodó {0}",,,
-UI_ITEM_ENHANCEMENT_MAIL_FORMAT_GREATER,"<size=12><color=#FFA78B>[Workshop Cat]</color></size>
-Great Success!! I've finished crafting {0}","<size=12><color=#FFA78B>[대장장이 고양이]</color></size>
-대성공!! {0} 제작을 완료하였네.","<size=12><color=#FFA78B>[Gato de oficina]</color></size>
-Grande sucesso!! Eu terminei de fabricar {0}","<size=12><color=#FFA78B>[Gato de oficina]</color></size>
-Grande sucesso!! Eu terminei de fabricar {0}","<size=12><color=#FFA78B>[ワークショップ猫]</color></size>
-大成功！！ {0} の製作が終わったぜ！","<size=12><color=#FFA78B>[Workshop Katze]</color></size>
-Großer Erfolg!! Die Produktion ist beendet {0}","<size=12><color=#FFA78B>[gato taller]</color></size>
-¡¡Gran éxito!! Fabricación completada {0}","<size=12><color=#FFA78B>[การประชุมเชิงปฏิบัติการแมว]</color></size>
-ความสำเร็จที่ดี!! ฉันสร้าง {0} เสร็จแล้ว","<size=12><color=#FFA78B>[Warsztaty Cat]</color></size>
-Wielki sukces!! Ukończyłem wytwarzanie {0}","<size=12><color=#FFA78B>[seminaras Kačių]</color></size>
-Didelė sėkmė!! Aš gatavo crafting {0}","<size=12><color=#FFA78B>[workshop Cat]</color></size>
-Groot succes!! Ik klaar crafting {0}","<size=12><color=#FFA78B>[Workshop Cat]</color></size>
-Sukses Besar !! Aku sudah selesai membuat {0}","<size=12><color=#FFA78B>[atelier Cat]</color></size>
-Grand succès!! J'ai fini la fabrication de {0}","<size=12><color=#FFA78B>[Практикум Cat]</color></size>
-Огромный успех!! Я закончил крафт {0}","<size=12><color=#FFA78B>[សិក្ខាសាលាឆ្មា]</color></size>
-ជោគជ័យដ៏អស្ចារ្យ!! ខ្ញុំបានបញ្ចប់ {0} សិប្បកម្ម ។","<size=12><color=#FFA78B>[ورکشاپ بلی]</color></size>
-عظیم کامیابی!! میں فارغ تیار {0} ہے.","<size=12><color=#FFA78B>[车间猫]</color></size>
-巨大的成功！！ 我已经完成了{0}的制作工作。","<size=12><color=#FFA78B>[Műhelymunka]</color></size>
+UI_ITEM_ENHANCEMENT_MAIL_FORMAT_GREATER,"<color=#FFA78B>[Workshop Cat]</color>
+Great Success!! I've finished crafting {0}","<color=#FFA78B>[대장장이 고양이]</color>
+대성공!! {0} 제작을 완료하였네.","<color=#FFA78B>[Gato de oficina]</color>
+Grande sucesso!! Eu terminei de fabricar {0}","<color=#FFA78B>[Gato de oficina]</color>
+Grande sucesso!! Eu terminei de fabricar {0}","<color=#FFA78B>[ワークショップ猫]</color>
+大成功！！ {0} の製作が終わったぜ！","<color=#FFA78B>[Workshop Katze]</color>
+Großer Erfolg!! Die Produktion ist beendet {0}","<color=#FFA78B>[gato taller]</color>
+¡¡Gran éxito!! Fabricación completada {0}","<color=#FFA78B>[การประชุมเชิงปฏิบัติการแมว]</color>
+ความสำเร็จที่ดี!! ฉันสร้าง {0} เสร็จแล้ว","<color=#FFA78B>[Warsztaty Cat]</color>
+Wielki sukces!! Ukończyłem wytwarzanie {0}","<color=#FFA78B>[seminaras Kačių]</color>
+Didelė sėkmė!! Aš gatavo crafting {0}","<color=#FFA78B>[workshop Cat]</color>
+Groot succes!! Ik klaar crafting {0}","<color=#FFA78B>[Workshop Cat]</color>
+Sukses Besar !! Aku sudah selesai membuat {0}","<color=#FFA78B>[atelier Cat]</color>
+Grand succès!! J'ai fini la fabrication de {0}","<color=#FFA78B>[Практикум Cat]</color>
+Огромный успех!! Я закончил крафт {0}","<color=#FFA78B>[សិក្ខាសាលាឆ្មា]</color>
+ជោគជ័យដ៏អស្ចារ្យ!! ខ្ញុំបានបញ្ចប់ {0} សិប្បកម្ម ។","<color=#FFA78B>[ورکشاپ بلی]</color>
+عظیم کامیابی!! میں فارغ تیار {0} ہے.","<color=#FFA78B>[车间猫]</color>
+巨大的成功！！ 我已经完成了{0}的制作工作。","<color=#FFA78B>[Műhelymunka]</color>
 Nagy siker!! Végeztem ravaszkodó {0}",,,
-UI_ITEM_ENHANCEMENT_MAIL_FORMAT_FAIL,"<size=12><color=#FFA78B>[Workshop Cat]</color></size>
-Sorry, I failed to upgrade {0}","<size=12><color=#FFA78B>[대장장이 고양이]</color></size>
-미안하네, {0} 강화를 실패했다네.","<size=12><color=#FFA78B>[Gato de oficina]</color></size>
-Desculpe, não consegui atualizar {0}","<size=12><color=#FFA78B>[Gato de oficina]</color></size>
-Desculpe, não consegui atualizar {0}","<size=12><color=#FFA78B>[ワークショップ猫]</color></size>
-申し訳ありませんが、{0}のアップグレードに失敗しました。","<size=12><color=#FFA78B>[Workshop Katze]</color></size>
-Es tut uns leid, dass ich {0} nicht aktualisiert habe.","<size=12><color=#FFA78B>[gato taller]</color></size>
-Lo sentimos, no logré actualizar {0}","<size=12><color=#FFA78B>[การประชุมเชิงปฏิบัติการแมว]</color></size>
-ขออภัยฉันไม่สามารถอัพเกรด {0}","<size=12><color=#FFA78B>[Warsztaty Cat]</color></size>
-Przepraszam, nie udało mi się uaktualnić {0}","<size=12><color=#FFA78B>[seminaras Kačių]</color></size>
-Atsiprašau, nepavyko atnaujinti {0}","<size=12><color=#FFA78B>[workshop Cat]</color></size>
-Sorry, ik heb geen upgrade {0}","<size=12><color=#FFA78B>[Workshop Cat]</color></size>
-Maaf, saya gagal memutakhirkan {0}","<size=12><color=#FFA78B>[atelier Cat]</color></size>
-Désolé, j'ai échoué à mettre à niveau {0}","<size=12><color=#FFA78B>[Практикум Cat]</color></size>
-Извините, я не смог обновить {0}","<size=12><color=#FFA78B>[សិក្ខាសាលាឆ្មា]</color></size>
-សូមអភ័យទោសខ្ញុំបានបរាជ័យក្នុងការធ្វើឱ្យប្រសើរឡើង {0} ។","<size=12><color=#FFA78B>[ورکشاپ بلی]</color></size>
-افسوس، میں {0} اپ گریڈ کرنے میں ناکام رہا.","<size=12><color=#FFA78B>[车间猫]</color></size>
-对不起，我未能升级{0}","<size=12><color=#FFA78B>[Műhelymunka]</color></size>
+UI_ITEM_ENHANCEMENT_MAIL_FORMAT_FAIL,"<color=#FFA78B>[Workshop Cat]</color>
+Sorry, I failed to upgrade {0}","<color=#FFA78B>[대장장이 고양이]</color>
+미안하네, {0} 강화를 실패했다네.","<color=#FFA78B>[Gato de oficina]</color>
+Desculpe, não consegui atualizar {0}","<color=#FFA78B>[Gato de oficina]</color>
+Desculpe, não consegui atualizar {0}","<color=#FFA78B>[ワークショップ猫]</color>
+申し訳ありませんが、{0}のアップグレードに失敗しました。","<color=#FFA78B>[Workshop Katze]</color>
+Es tut uns leid, dass ich {0} nicht aktualisiert habe.","<color=#FFA78B>[gato taller]</color>
+Lo sentimos, no logré actualizar {0}","<color=#FFA78B>[การประชุมเชิงปฏิบัติการแมว]</color>
+ขออภัยฉันไม่สามารถอัพเกรด {0}","<color=#FFA78B>[Warsztaty Cat]</color>
+Przepraszam, nie udało mi się uaktualnić {0}","<color=#FFA78B>[seminaras Kačių]</color>
+Atsiprašau, nepavyko atnaujinti {0}","<color=#FFA78B>[workshop Cat]</color>
+Sorry, ik heb geen upgrade {0}","<color=#FFA78B>[Workshop Cat]</color>
+Maaf, saya gagal memutakhirkan {0}","<color=#FFA78B>[atelier Cat]</color>
+Désolé, j'ai échoué à mettre à niveau {0}","<color=#FFA78B>[Практикум Cat]</color>
+Извините, я не смог обновить {0}","<color=#FFA78B>[សិក្ខាសាលាឆ្មា]</color>
+សូមអភ័យទោសខ្ញុំបានបរាជ័យក្នុងការធ្វើឱ្យប្រសើរឡើង {0} ។","<color=#FFA78B>[ورکشاپ بلی]</color>
+افسوس، میں {0} اپ گریڈ کرنے میں ناکام رہا.","<color=#FFA78B>[车间猫]</color>
+对不起，我未能升级{0}","<color=#FFA78B>[Műhelymunka]</color>
 Sajnálom, nem sikerült frissíteni {0}",,,
 UI_UPGRADE_DEPTH,Current Stat,강화도,Stat atual,Stat atual,現在の統計,aktuelle Stat,Stat actual,สถิติปัจจุบัน,Aktualny Stat,Dabartinis Stat,huidige Stat,saat Stat,Current Stat,Текущий Stat,ស្ថិតិបច្ចុប្បន្ន,موجودہ کی Stat,当前统计,jelenlegi Stat,,,
 UI_UPGRADE_SUCCESS_RATE_TITLE,Success Rate,성공률,Taxa de sucesso,Taxa de sucesso,成功率,Erfolgsrate,Tasa de éxito,โอกาสสำเร็จ,Wskaźnik sukcesu,sėkmės rodiklis,Slagingspercentage,Tingkat kesuksesan,Taux de réussite,Шанс успеха,អត្រា​នៃ​ការ​ទទួល​បាន​ភាព​ជោគជ័យ,کامیابی کی شرح,成功率,Sikerarány,,,
@@ -822,57 +822,57 @@ UI_LOADING_ACTION_EXECUTE,Executing actions... {0} / {1},액션 실행 중... {0
 UI_RECEIVE,Receive,받기,Receber,,受信,Erhalten,,รับ,Odbierz,,,Terima,Recevoir,,,,接收,,,,
 UI_RECEIVED,Received,받음,Recebido,,受信済,Erhalten,,ได้รับ,Odebrano,,,Diterima,Reçu,,,,接收,,,,
 UI_GET_REWARDS,Receive Rewards,보상 받기,Receba as recompensas,,報酬の受けとり,Erhalte Belohnungen,,รับรางวัล,Otrzymaj nagrody,,,Terima Hadiah,Récompenses Reçues,,,,接收奖励,,,,
-UI_ITEM_ENHANCEMENT_MAIL_FORMAT,"<size=12><color=#FFA78B>[Workshop Cat]</color></size>
-I've finished upgrading {0}","<size=12><color=#FFA78B>[대장장이 고양이]</color></size>
-{0} 강화를 완료하였네.","<size=12><color=#FFA78B>[Gato de oficina]</color></size>
-Concluí o upgrade do {0}","<size=12><color=#FFA78B>[Gato de oficina]</color></size>
-Concluí o upgrade do {0}","<size=12><color=#FFA78B>[ワークショップ猫]</color></size>
-{0} の強化が終わったぜ！","<size=12><color=#FFA78B>[Workshop Katze]</color></size>
-Die Verbesserung von {0} ist fertig.","<size=12><color=#FFA78B>[gato taller]</color></size>
-He terminado la actualización {0}","<size=12><color=#FFA78B>[การประชุมเชิงปฏิบัติการแมว]</color></size>
-ฉันอัพเกรด {0} เสร็จแล้ว","<size=12><color=#FFA78B>[Warsztaty Cat]</color></size>
-Zakończyłem ulepszanie {0}","<size=12><color=#FFA78B>[seminaras Kačių]</color></size>
-Aš gatavo atnaujinti {0}","<size=12><color=#FFA78B>[workshop Cat]</color></size>
-Ik klaar upgrading {0}","<size=12><color=#FFA78B>[Workshop Cat]</color></size>
-Saya telah selesai meningkatkan {0}","<size=12><color=#FFA78B>[atelier Cat]</color></size>
-J'ai fini l'amélioration de {0}","<size=12><color=#FFA78B>[Практикум Cat]</color></size>
-Я закончил модернизацию {0}","<size=12><color=#FFA78B>[សិក្ខាសាលាឆ្មា]</color></size>
-ខ្ញុំបានធ្វើឱ្យប្រសើរឡើងបានបញ្ចប់ {0} ។","<size=12><color=#FFA78B>[ورکشاپ بلی]</color></size>
-میں فارغ اپ گریڈنگ {0} ہے.","<size=12><color=#FFA78B>[车间猫]</color></size>
-我已经完成升级{0}","<size=12><color=#FFA78B>[Műhelymunka]</color></size>
+UI_ITEM_ENHANCEMENT_MAIL_FORMAT,"<color=#FFA78B>[Workshop Cat]</color>
+I've finished upgrading {0}","<color=#FFA78B>[대장장이 고양이]</color>
+{0} 강화를 완료하였네.","<color=#FFA78B>[Gato de oficina]</color>
+Concluí o upgrade do {0}","<color=#FFA78B>[Gato de oficina]</color>
+Concluí o upgrade do {0}","<color=#FFA78B>[ワークショップ猫]</color>
+{0} の強化が終わったぜ！","<color=#FFA78B>[Workshop Katze]</color>
+Die Verbesserung von {0} ist fertig.","<color=#FFA78B>[gato taller]</color>
+He terminado la actualización {0}","<color=#FFA78B>[การประชุมเชิงปฏิบัติการแมว]</color>
+ฉันอัพเกรด {0} เสร็จแล้ว","<color=#FFA78B>[Warsztaty Cat]</color>
+Zakończyłem ulepszanie {0}","<color=#FFA78B>[seminaras Kačių]</color>
+Aš gatavo atnaujinti {0}","<color=#FFA78B>[workshop Cat]</color>
+Ik klaar upgrading {0}","<color=#FFA78B>[Workshop Cat]</color>
+Saya telah selesai meningkatkan {0}","<color=#FFA78B>[atelier Cat]</color>
+J'ai fini l'amélioration de {0}","<color=#FFA78B>[Практикум Cat]</color>
+Я закончил модернизацию {0}","<color=#FFA78B>[សិក្ខាសាលាឆ្មា]</color>
+ខ្ញុំបានធ្វើឱ្យប្រសើរឡើងបានបញ្ចប់ {0} ។","<color=#FFA78B>[ورکشاپ بلی]</color>
+میں فارغ اپ گریڈنگ {0} ہے.","<color=#FFA78B>[车间猫]</color>
+我已经完成升级{0}","<color=#FFA78B>[Műhelymunka]</color>
 Végeztem korszerűsítés {0}",,,
-UI_SELL_CANCEL_MAIL_FORMAT,"<size=12><color=#FFA78B>[Market Cat]</color></size>
-I canceled the sales of {0}","<size=12><color=#FFA78B>[Market Cat]</color></size>
-{0} 판매를 취소했어!","<size=12><color=#FFA78B>[Market Cat]</color></size>
-Cancelei as vendas do {0}",,"<size=12><color=#FFA78B>[Market Cat]</color></size>
-{0} の販売をキャンセルしたわ。","<size=12><color=#FFA78B>[Market Cat]</color></size>
-Ich habe den Verkauf von {0} abgebrochen.",,"<size=12><color=#FFA78B>[Market Cat]</color></size>
-ฉันยกเลิกการขาย {0}","<size=12><color=#FFA78B>[Market Cat]</color></size>
-Anulowano sprzedaż {0}",,,"<size=12><color=#FFA78B>[Market Cat]</color></size>
-Saya telah membatalkan penjualan {0}","<size=12><color=#FFA78B>[Market Cat]</color></size>
-J'ai annulé la vente de {0}",,,,"<size=12><color=#FFA78B>[Market Cat]</color></size>
+UI_SELL_CANCEL_MAIL_FORMAT,"<color=#FFA78B>[Market Cat]</color>
+I canceled the sales of {0}","<color=#FFA78B>[Market Cat]</color>
+{0} 판매를 취소했어!","<color=#FFA78B>[Market Cat]</color>
+Cancelei as vendas do {0}",,"<color=#FFA78B>[Market Cat]</color>
+{0} の販売をキャンセルしたわ。","<color=#FFA78B>[Market Cat]</color>
+Ich habe den Verkauf von {0} abgebrochen.",,"<color=#FFA78B>[Market Cat]</color>
+ฉันยกเลิกการขาย {0}","<color=#FFA78B>[Market Cat]</color>
+Anulowano sprzedaż {0}",,,"<color=#FFA78B>[Market Cat]</color>
+Saya telah membatalkan penjualan {0}","<color=#FFA78B>[Market Cat]</color>
+J'ai annulé la vente de {0}",,,,"<color=#FFA78B>[Market Cat]</color>
 我取消了{0}",,,,
-UI_BUYER_MAIL_FORMAT,"<size=12><color=#FFA78B>[Market Cat]</color></size>
-Purchased! {0} is yours now!","<size=12><color=#FFA78B>[Market Cat]</color></size>
-구매 완료! {0}는 이제 네거야!","<size=12><color=#FFA78B>[Market Cat]</color></size>
-Comprado! {0} agora é seu!",,"<size=12><color=#FFA78B>[Market Cat]</color></size>
-購入完了！ {0} はあなたのものよ！","<size=12><color=#FFA78B>[Market Cat]</color></size>
-GEkauft! {0} gehört nun dir!",,"<size=12><color=#FFA78B>[Market Cat]</color></size>
-ซื้อ! {0} เป็นของคุณแล้ว!","<size=12><color=#FFA78B>[Market Cat]</color></size>
-Kupiono! {0} jest teraz Twoje!",,,"<size=12><color=#FFA78B>[Market Cat]</color></size>
-Terbeli! {0} milikmu sekarang!","<size=12><color=#FFA78B>[Market Cat]</color></size>
-Acheté ! {0} est désormais à toi !",,,,"<size=12><color=#FFA78B>[Market Cat]</color></size>
+UI_BUYER_MAIL_FORMAT,"<color=#FFA78B>[Market Cat]</color>
+Purchased! {0} is yours now!","<color=#FFA78B>[Market Cat]</color>
+구매 완료! {0}는 이제 네거야!","<color=#FFA78B>[Market Cat]</color>
+Comprado! {0} agora é seu!",,"<color=#FFA78B>[Market Cat]</color>
+購入完了！ {0} はあなたのものよ！","<color=#FFA78B>[Market Cat]</color>
+GEkauft! {0} gehört nun dir!",,"<color=#FFA78B>[Market Cat]</color>
+ซื้อ! {0} เป็นของคุณแล้ว!","<color=#FFA78B>[Market Cat]</color>
+Kupiono! {0} jest teraz Twoje!",,,"<color=#FFA78B>[Market Cat]</color>
+Terbeli! {0} milikmu sekarang!","<color=#FFA78B>[Market Cat]</color>
+Acheté ! {0} est désormais à toi !",,,,"<color=#FFA78B>[Market Cat]</color>
 已购买！{0}现在是您的！",,,,
-UI_SELLER_MAIL_FORMAT,"<size=12><color=#FFA78B>[Market Cat]</color></size>
-You earned {0}G by selling {1}","<size=12><color=#FFA78B>[Market Cat]</color></size>
-{1}을 팔아서 {0}G 를 얻었어!","<size=12><color=#FFA78B>[Market Cat]</color></size>
-Você ganhou {0} G com a venda {1}",,"<size=12><color=#FFA78B>[Market Cat]</color></size>
-{1} が {0} G で売れたわよ。","<size=12><color=#FFA78B>[Market Cat]</color></size>
-Du hast {0}G durch den Verkauf von {1} verdient.",,"<size=12><color=#FFA78B>[Market Cat]</color></size>
-คุณได้รับ {0} G จากการขาย {1}","<size=12><color=#FFA78B>[Market Cat]</color></size>
-Zdobyłeś {0}G sprzedając {1}",,,"<size=12><color=#FFA78B>[Market Cat]</color></size>
-Anda mendapatkan {0}G dari penjualan {1}","<size=12><color=#FFA78B>[Market Cat]</color></size>
-Tu as gagné {0}G en vendant {1}",,,,"<size=12><color=#FFA78B>[Market Cat]</color></size>
+UI_SELLER_MAIL_FORMAT,"<color=#FFA78B>[Market Cat]</color>
+You earned {0}G by selling {1}","<color=#FFA78B>[Market Cat]</color>
+{1}을 팔아서 {0}G 를 얻었어!","<color=#FFA78B>[Market Cat]</color>
+Você ganhou {0} G com a venda {1}",,"<color=#FFA78B>[Market Cat]</color>
+{1} が {0} G で売れたわよ。","<color=#FFA78B>[Market Cat]</color>
+Du hast {0}G durch den Verkauf von {1} verdient.",,"<color=#FFA78B>[Market Cat]</color>
+คุณได้รับ {0} G จากการขาย {1}","<color=#FFA78B>[Market Cat]</color>
+Zdobyłeś {0}G sprzedając {1}",,,"<color=#FFA78B>[Market Cat]</color>
+Anda mendapatkan {0}G dari penjualan {1}","<color=#FFA78B>[Market Cat]</color>
+Tu as gagné {0}G en vendant {1}",,,,"<color=#FFA78B>[Market Cat]</color>
 您通过出售{1}",,,,
 UI_SELECT,Select,선택,Selecione,,選択,Auswählen,,เลือก,Wybierz,,,Pilih,Sélectionner,,,,选择,,,,
 UI_PROCEED_DISCORD,Join user group,디스코드 채팅 이동,Junte-se ao grupo,,Discordへ移動,Benutzergruppe beitreten,,เข้าร่วมกลุ่ม,Dołącz do grupy użytkownika,,,Bergabung dengan grup pemain,Rejoindre Groupe d'Utilisateurs,,,,加入用户组,,,,
@@ -1411,63 +1411,63 @@ UI_BUY_MULTIPLE,Basket purchase,일괄 구매,compra Basket,,バスケット購�
 UI_TRANSACTION_HISTORY,History,거래 내역,História,,歴史,Geschichte,Historia,ประวัติศาสตร์,Historia,Istorija,Geschiedenis,Sejarah,L'histoire,история,ប្រវត្តិសាស្រ្ត,,历史,,,,
 UI_NOT_ENOUGH_NCG,Insufficient balance.,잔액이 부족합니다.,Saldo insuficiente.,,残高不足。,Mangelhaftes Gleichgewicht.,Saldo insuficiente.,ยอดเงินไม่เพียงพอ,Niewystarczająca ilość środków.,Nepakankama balansas.,Onvoldoende balans.,mencukupi.,Solde insuffisant.,Недостаточный баланс.,សមតុល្យមិនគ្រប់គ្រាន់។,,余额不足。,,,,
 UI_CLOSE_BUY_WISH_LIST,The shopping cart will be emptied. Do you want to proceed?,장바구니가 비워집니다. 계속 진행하시겠습니까?,O carrinho de compras será esvaziado. Você quer prosseguir?,,ショッピングカートは空になります。続行しますか？,Der Warenkorb wird geleert. Möchten Sie fortfahren?,La cesta de la compra se vaciará. Quieres proceder?,รถเข็นช้อปปิ้งจะได้รับการยอบ คุณต้องการที่จะดำเนินการอย่างไร,Wózek na zakupy zostanie opróżniony. Czy chcesz kontynuować?,Krepšelis bus ištuštinti. Ar norite testi?,De winkelwagen wordt geleegd. Wil je doorgaan?,Keranjang belanja akan dikosongkan. Apakah Anda ingin melanjutkan?,Le panier sera vidé. Voulez-vous poursuivre?,Корзина будет очищена. Вы хотите продолжить?,រទេះដើរទិញឥវ៉ាន់នឹងត្រូវទទេ។ តើអ្នកចង់បន្តឬ?,,购物车将被清空。你想继续吗？,,,,
-UI_BUY_MULTIPLE_FORMAT,"<color=#FFC777><size=120%><b>Try to purchase {0} items and pay {1} NCG.</b></size></color>
+UI_BUY_MULTIPLE_FORMAT,"<color=#FFC777><b>Try to purchase {0} items and pay {1} NCG.</b></color>
 
 Items purchased will be sent by mail.
 NCG is not deducted for failed purchase items.
-If NCG is insufficient, the transaction will fail.","<color=#FFC777><size=120%><b>{0}개 아이템을 구매 시도하고 {1} NCG를 지불합니다.</b></size></color>
+If NCG is insufficient, the transaction will fail.","<color=#FFC777><b>{0}개 아이템을 구매 시도하고 {1} NCG를 지불합니다.</b></color>
 
 구매에 성공한 아이템은 메일로 도착합니다.
 구매에 실패한 아이템은 NCG를 차감하지 않습니다.
-NCG가 부족한 경우 구매는 실패합니다.","<color=#FFC777><size=120%><b>Tente comprar {0} itens e pague {1} NCG.</b></size></color>
+NCG가 부족한 경우 구매는 실패합니다.","<color=#FFC777><b>Tente comprar {0} itens e pague {1} NCG.</b></color>
 
 Itens comprados será enviado pelo correio.
 NCG não é deduzido para comprar itens que falharam.
-Se NCG é insuficiente, a transação irá falhar.",,"<color=#FFC777><size=120%><b>購入{0}アイテムと有料{1} NCGに試してみてください。</b></size></color>
+Se NCG é insuficiente, a transação irá falhar.",,"<color=#FFC777><b>購入{0}アイテムと有料{1} NCGに試してみてください。</b></color>
 
 購入したアイテムはメールで送信されます。
 NCGは、失敗した購入アイテムのために控除されていません。
-NCGが不十分な場合、トランザクションは失敗します。","<color=#FFC777><size=120%><b>Versuchen Sie, Kauf {0} Artikel und bezahle {1} NCG.</b></size></color>
+NCGが不十分な場合、トランザクションは失敗します。","<color=#FFC777><b>Versuchen Sie, Kauf {0} Artikel und bezahle {1} NCG.</b></color>
 
 Gekaufte Artikel werden per Post geschickt werden.
 NCG ist nicht für die gescheiterten Kauf von Gegenständen in Abzug gebracht.
-Wenn NCG nicht ausreicht, wird scheitern die Transaktion.","<color=#FFC777><size=120%><b>Trate de comprar {0} artículos y paga {1} NCG.</b></size></color>
+Wenn NCG nicht ausreicht, wird scheitern die Transaktion.","<color=#FFC777><b>Trate de comprar {0} artículos y paga {1} NCG.</b></color>
 
 Los artículos comprados serán enviados por correo.
 NCG no se deduce de los artículos de compra que han fallado.
-Si NCG es insuficiente, la operación fallará.","<color=#FFC777><size=120%><b>พยายามที่จะซื้อ {0} รายการและจ่าย {1} NCG</b></size></color>
+Si NCG es insuficiente, la operación fallará.","<color=#FFC777><b>พยายามที่จะซื้อ {0} รายการและจ่าย {1} NCG</b></color>
 
 รายการที่ซื้อจะถูกส่งทางไปรษณีย์
 NCG ไม่ได้หักรายการซื้อล้มเหลว
-หาก NCG ไม่เพียงพอการทำธุรกรรมที่จะล้มเหลว","<color=#FFC777><size=120%><b>Spróbuj na zakup {0} elementów i wynagrodzenia {1} NCG.</b></size></color>
+หาก NCG ไม่เพียงพอการทำธุรกรรมที่จะล้มเหลว","<color=#FFC777><b>Spróbuj na zakup {0} elementów i wynagrodzenia {1} NCG.</b></color>
 
 Zakupione przedmioty zostaną wysłane pocztą.
 NCG nie odlicza się do nieudanych zakup rzeczy.
-Jeśli NCG jest niewystarczająca, transakcja zakończy się niepowodzeniem.","<color=#FFC777><size=120%><b>Pabandykite įsigyti {0} daiktų ir darbo užmokesčio {1} NCG.</b></size></color>
+Jeśli NCG jest niewystarczająca, transakcja zakończy się niepowodzeniem.","<color=#FFC777><b>Pabandykite įsigyti {0} daiktų ir darbo užmokesčio {1} NCG.</b></color>
 
 įsigytų daiktų bus išsiųstas paštu.
 NCG Netiksli išskaičiuojamas nepavykusių pirkti daiktus.
-Jei NCG yra nepakankamas, kad sandoris žlugs.","<color=#FFC777><size=120%><b>Probeer te kopen {0} artikelen en pay {1} NCG.</b></size></color>
+Jei NCG yra nepakankamas, kad sandoris žlugs.","<color=#FFC777><b>Probeer te kopen {0} artikelen en pay {1} NCG.</b></color>
 
 Objecten die worden verzonden via e-mail.
 NCG wordt niet in mindering gebracht voor mislukte aankoop items.
-Als NCG onvoldoende is, zal de transactie mislukken.","<color=#FFC777><size=120%><b>Cobalah untuk pembelian {0} item dan membayar {1} NCG.</b></size></color>
+Als NCG onvoldoende is, zal de transactie mislukken.","<color=#FFC777><b>Cobalah untuk pembelian {0} item dan membayar {1} NCG.</b></color>
 
 Barang yang dibeli akan dikirim melalui pos.
 NCG tidak dipotong untuk item pembelian gagal.
-Jika NCG tidak mencukupi, transaksi akan gagal.","<color=#FFC777><size=120%><b>Essayez d'acheter {0} articles et payer {1} NCG.</b></size></color>
+Jika NCG tidak mencukupi, transaksi akan gagal.","<color=#FFC777><b>Essayez d'acheter {0} articles et payer {1} NCG.</b></color>
 
 Les articles achetés seront envoyés par la poste.
 NCG n'est pas déduit des articles d'achat ont échoué.
-Si NCG est insuffisante, la transaction échouera.","<color=#FFC777><size=120%><b>Попробуйте покупку {0} элементов и оплаты {1} NCG.</b></size></color>
+Si NCG est insuffisante, la transaction échouera.","<color=#FFC777><b>Попробуйте покупку {0} элементов и оплаты {1} NCG.</b></color>
 
 Приобретенные товары будут отправлены по почте.
 NCG не вычитаются невыполненных пунктов покупки.
-Если NCG недостаточно, сделка не будет выполнена.","<color=#FFC777><size=120%><b>សូមព្យាយាមដើម្បីទិញ {0} ធាតុនិងការបង់ប្រាក់ {1} NCG ។</b></size></color>
+Если NCG недостаточно, сделка не будет выполнена.","<color=#FFC777><b>សូមព្យាយាមដើម្បីទិញ {0} ធាតុនិងការបង់ប្រាក់ {1} NCG ។</b></color>
 
 ធាតុដែលបានទិញនឹងត្រូវបានផ្ញើតាមអ៊ីម៉ែល។
 NCG មិនត្រូវបានកាត់សម្រាប់ការបរាជ័យក្នុងធាតុទិញ។
-ប្រសិនបើមាន NCG គឺមិនគ្រប់គ្រាន់, ប្រតិបត្តិការនេះនឹងបរាជ័យ។",,"<color=#FFC777><size=120%><b>尽量购买{0}项目和支付{1}NCG。</b></size></color>
+ប្រសិនបើមាន NCG គឺមិនគ្រប់គ្រាន់, ប្រតិបត្តិការនេះនឹងបរាជ័យ។",,"<color=#FFC777><b>尽量购买{0}项目和支付{1}NCG。</b></color>
 
 购买的物品将通过邮件发送。
 不扣除未能购买物品NCG。
