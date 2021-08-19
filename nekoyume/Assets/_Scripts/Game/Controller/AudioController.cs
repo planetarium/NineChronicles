@@ -6,7 +6,6 @@ using System.Linq;
 using System.Reflection;
 using Nekoyume.Model.Elemental;
 using Nekoyume.Pattern;
-
 using UnityEngine;
 using Random = UnityEngine.Random;
 
