@@ -259,11 +259,7 @@ namespace Nekoyume.UI
         }
 
         public void CombinationClick() =>
-            CombinationClickInternal(() =>
-            {
-                Find<CombinationMain>().Show();
-                Find<HeaderMenu>().UpdateAssets(HeaderMenu.AssetVisibleState.Combination);
-            });
+            CombinationClickInternal(() => Find<CombinationMain>().Show());
 
         private void CombinationClickInternal(System.Action showAction)
         {
@@ -286,6 +282,7 @@ namespace Nekoyume.UI
             }
 
             Close();
+            Find<HeaderMenu>().UpdateAssets(HeaderMenu.AssetVisibleState.Combination);
             showAction();
 
             AudioController.PlayClick();
