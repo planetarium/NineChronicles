@@ -121,13 +121,13 @@ MonoBehaviour:
   m_Sprite: {fileID: 21300000, guid: 97f82218899d541b487cecaac27005c9, type: 3}
   m_Type: 2
   m_PreserveAspect: 0
-  m_FillCenter: 1
+  m_FillCenter: 0
   m_FillMethod: 4
   m_FillAmount: 1
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
+  m_PixelsPerUnitMultiplier: 1.245
 --- !u!114 &1612815086006500601
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5402,7 +5402,7 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
+  m_PixelsPerUnitMultiplier: 1.245
 --- !u!1 &3378036044756849142
 GameObject:
   m_ObjectHideFlags: 0
@@ -8498,15 +8498,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2, type: 3}
---- !u!1 &6821115508890535074 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 2898020980522755532, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
-    type: 3}
-  m_PrefabInstance: {fileID: 8547461352931991918}
-  m_PrefabAsset: {fileID: 0}
 --- !u!224 &1322912652059928655 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 7261281288613710113, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
+    type: 3}
+  m_PrefabInstance: {fileID: 8547461352931991918}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &6821115508890535074 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2898020980522755532, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
     type: 3}
   m_PrefabInstance: {fileID: 8547461352931991918}
   m_PrefabAsset: {fileID: 0}
