@@ -150,8 +150,7 @@ namespace Nekoyume.UI
         {
             Mixpanel.Track("Unity/Click Guided Quest Combination Equipment");
 
-            CombinationClickInternal(() =>
-                Find<Craft>().Show(recipeId));
+            CombinationClickInternal(() => Find<Craft>().Show(recipeId));
         }
 
         private void UpdateButtons()
@@ -259,22 +258,12 @@ namespace Nekoyume.UI
             AudioController.PlayClick();
         }
 
-        public void CombinationClick(int slotIndex = -1)
-        {
-            Find<CombinationMain>().Show();
-            Find<HeaderMenu>().UpdateAssets(HeaderMenu.AssetVisibleState.Combination);
-            // CombinationClickInternal(() =>
-            // {
-            //     if (slotIndex >= 0)
-            //     {
-            //         Find<Combination>().Show(slotIndex);
-            //     }
-            //     else
-            //     {
-            //         Find<Combination>().Show();
-            //     }
-            // });
-        }
+        public void CombinationClick() =>
+            CombinationClickInternal(() =>
+            {
+                Find<CombinationMain>().Show();
+                Find<HeaderMenu>().UpdateAssets(HeaderMenu.AssetVisibleState.Combination);
+            });
 
         private void CombinationClickInternal(System.Action showAction)
         {

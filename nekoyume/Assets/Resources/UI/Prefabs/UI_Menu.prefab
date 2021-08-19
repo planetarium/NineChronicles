@@ -244,9 +244,9 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 114591809223754342}
-        m_TargetAssemblyTypeName: 
+        m_TargetAssemblyTypeName: Nekoyume.UI.Menu, Nekoyume
         m_MethodName: CombinationClick
-        m_Mode: 3
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -1362,6 +1362,7 @@ MonoBehaviour:
   fixedFontStyle: 0
   fixedFontSizeOffset: 0
   fixedSpacingOption: 0
+  fixedMarginOption: 0
   fontMaterialType: 27
   l10nKey: UI_MAIN_MENU_RANKING
   fontMaterialIndexInitialized: 0
@@ -1953,6 +1954,7 @@ MonoBehaviour:
   fixedFontStyle: 0
   fixedFontSizeOffset: 0
   fixedSpacingOption: 0
+  fixedMarginOption: 0
   fontMaterialType: 27
   l10nKey: UI_MAIN_MENU_MIMISBRUNNR
   fontMaterialIndexInitialized: 0
@@ -2118,6 +2120,7 @@ MonoBehaviour:
   fixedFontStyle: 0
   fixedFontSizeOffset: 0
   fixedSpacingOption: 0
+  fixedMarginOption: 0
   fontMaterialType: 27
   l10nKey: UI_MAIN_MENU_SHOP
   fontMaterialIndexInitialized: 0
@@ -3464,6 +3467,7 @@ MonoBehaviour:
   fixedFontStyle: 0
   fixedFontSizeOffset: 0
   fixedSpacingOption: 0
+  fixedMarginOption: 0
   fontMaterialType: 27
   l10nKey: UI_MAIN_MENU_COMBINATION
   fontMaterialIndexInitialized: 0
