@@ -165,7 +165,7 @@ namespace Nekoyume.UI
         #endregion
     }
 
-    [System.Serializable]
+    [Serializable]
     public class Emoji
     {
         [SerializeField] private DialogEmojiType type;
@@ -175,7 +175,7 @@ namespace Nekoyume.UI
         public GameObject Animation => animtion;
     }
 
-    [System.Serializable]
+    [Serializable]
     public class Comma
     {
         [SerializeField] private DialogCommaType type;
@@ -185,7 +185,7 @@ namespace Nekoyume.UI
         public GameObject Icon => icon;
     }
 
-    [System.Serializable]
+    [Serializable]
     public class PrintDelay
     {
         public LanguageType languageType;
