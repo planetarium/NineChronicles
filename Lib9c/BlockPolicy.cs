@@ -161,6 +161,7 @@ namespace Nekoyume.BlockChain
 
             return Math.Max(nextDifficulty, _minimumDifficulty);
         }
+
         private InvalidBlockException ValidateBlock(Block<NCAction> block)
         {
             if (!(block.Miner is Address miner))
