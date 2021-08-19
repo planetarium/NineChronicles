@@ -182,7 +182,7 @@ namespace Nekoyume.UI
                 return;
             }
 
-            Show(ItemEnhancement.EnhancementResult.GreatSuccess, preEquipment, equipment);
+            Show(result.enhancementResult, preEquipment, equipment);
         }
 
         public void Show(
