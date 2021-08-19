@@ -7883,7 +7883,7 @@ AnimationClip:
     messageOptions: 0
   - time: 0
     functionName: OnRequestPlaySFX
-    data: sfx_success
+    data: sfx_great_success_drum
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 0
@@ -7891,6 +7891,27 @@ AnimationClip:
   - time: 0.016666668
     functionName: ShowOptionIconsAll
     data: 
+    objectReferenceParameter: {fileID: 0}
+    floatParameter: 0
+    intParameter: 0
+    messageOptions: 0
+  - time: 0.41666666
+    functionName: OnRequestPlaySFX
+    data: sfx_successeffect_fadein
+    objectReferenceParameter: {fileID: 0}
+    floatParameter: 0
+    intParameter: 0
+    messageOptions: 0
+  - time: 1.6666666
+    functionName: OnRequestPlaySFX
+    data: sfx_successeffect_slot
+    objectReferenceParameter: {fileID: 0}
+    floatParameter: 0
+    intParameter: 0
+    messageOptions: 0
+  - time: 1.6833333
+    functionName: OnRequestPlaySFX
+    data: sfx_bgm_great_success
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 0
