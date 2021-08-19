@@ -206,7 +206,9 @@ namespace Nekoyume.UI
             var itemOptionInfo = new ItemOptionInfo(equipment);
 
             _resultItem.itemView.SetData(new CountableItem(equipment, 1));
-            _resultItem.beforeGradeText.text = $"+{equipment.level - 1}";
+            _resultItem.beforeGradeText.text = enhancementResult == ItemEnhancement.EnhancementResult.Fail
+                ? $"+{equipment.level}"
+                : $"+{equipment.level - 1}";
             _resultItem.afterGradeText.text = $"+{equipment.level}";
             _resultItem.itemNameText.text = equipment.GetLocalizedName(false, true);
             _resultItem.cpText.text = $"CP {itemOptionInfo.CP}";
