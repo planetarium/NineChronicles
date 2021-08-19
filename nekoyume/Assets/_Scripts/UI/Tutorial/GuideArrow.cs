@@ -135,7 +135,7 @@ namespace Nekoyume.UI
 
         public override void Skip(System.Action callback)
         {
-            _arrow.Play(_arrow.GetCurrentAnimatorStateInfo(0).shortNameHash, -1, 1);
+            _arrow.Play(_arrow.GetCurrentAnimatorStateInfo(0).shortNameHash, 0, 1);
             callback?.Invoke();
         }
     }

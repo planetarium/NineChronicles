@@ -6,11 +6,10 @@ using Nekoyume.Game.Controller;
 using Nekoyume.L10n;
 using UnityEngine;
 using RedBlueGames.Tools.TextTyper;
-using UniRx;
-using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
+    using System;
     public class GuideDialog : TutorialItem
     {
         [SerializeField] private float fadeDuration = 1.0f;
@@ -33,7 +32,7 @@ namespace Nekoyume.UI
 
         private const float DefaultPrintDelay = 0.02f;
 
-        public override void Play<T>(T data, System.Action callback)
+        public override void Play<T>(T data, Action callback)
         {
             if (data is GuideDialogData d)
             {
@@ -52,7 +51,7 @@ namespace Nekoyume.UI
             SetFade(false, fadeDuration, callback);
         }
 
-        private IEnumerator LatePlay(GuideDialogData data, System.Action callback)
+        private IEnumerator LatePlay(GuideDialogData data, Action callback)
         {
             yield return new WaitForSeconds(predelay);
             var height = data.target ? data.target.anchoredPosition.y : 0;
@@ -70,7 +69,7 @@ namespace Nekoyume.UI
             });
         }
 
-        private void OnPrintCompleted(DialogCommaType commaType, System.Action callback)
+        private void OnPrintCompleted(DialogCommaType commaType, Action callback)
         {
             ShowComma(commaType);
             PlayEmojiAnimation(StopHash);
@@ -132,7 +131,7 @@ namespace Nekoyume.UI
             _script = string.Empty;
         }
 
-        private void SetFade(bool isIn, float duration, System.Action action)
+        private void SetFade(bool isIn, float duration, Action action)
         {
             canvasGroup.alpha = isIn ? 0 : 1;
             canvasGroup.DOFade(isIn ? 1 : 0, duration)
