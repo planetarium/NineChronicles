@@ -360,6 +360,7 @@ namespace Nekoyume.UI
         private void SubscribeSellPopupCancel(Model.ItemCountableAndPricePopup data)
         {
             SharedModel.ItemCountableAndPricePopup.Value.Item.Value = null;
+            inventory.SharedModel.DeselectItemView();
             Find<ItemCountableAndPricePopup>().Close();
         }
 

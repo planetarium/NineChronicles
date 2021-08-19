@@ -145,7 +145,7 @@ namespace Nekoyume.UI
                     return;
                 }
 
-                Close();
+                _data?.OnClickCancel.OnNext(_data);
             };
         }
 
