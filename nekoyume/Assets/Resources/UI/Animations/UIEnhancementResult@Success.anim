@@ -4159,9 +4159,44 @@ AnimationClip:
     floatParameter: 0
     intParameter: 0
     messageOptions: 0
+  - time: 0
+    functionName: OnRequestPlaySFX
+    data: sfx_successeffect_fadein
+    objectReferenceParameter: {fileID: 0}
+    floatParameter: 0
+    intParameter: 0
+    messageOptions: 0
+  - time: 0.5
+    functionName: OnRequestPlaySFX
+    data: sfx_successeffect_slot
+    objectReferenceParameter: {fileID: 0}
+    floatParameter: 0
+    intParameter: 0
+    messageOptions: 0
+  - time: 0.75
+    functionName: OnRequestPlaySFX
+    data: sfx_bgm_success
+    objectReferenceParameter: {fileID: 0}
+    floatParameter: 0
+    intParameter: 0
+    messageOptions: 0
+  - time: 0.8666667
+    functionName: OnRequestPlaySFX
+    data: sfx_upgrade_number
+    objectReferenceParameter: {fileID: 0}
+    floatParameter: 0
+    intParameter: 0
+    messageOptions: 0
   - time: 1.3333334
     functionName: PlayOptionAnimation
     data: 
+    objectReferenceParameter: {fileID: 0}
+    floatParameter: 0
+    intParameter: 0
+    messageOptions: 0
+  - time: 1.35
+    functionName: OnRequestPlaySFX
+    data: sfx_option_normal
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 0

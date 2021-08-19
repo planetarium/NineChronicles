@@ -7875,15 +7875,15 @@ AnimationClip:
   m_HasMotionFloatCurves: 0
   m_Events:
   - time: 0
-    functionName: OnAnimatorStateBeginning
-    data: GreatSuccess
+    functionName: OnRequestPlaySFX
+    data: sfx_great_success_drum
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 0
     messageOptions: 0
   - time: 0
-    functionName: OnRequestPlaySFX
-    data: sfx_success
+    functionName: OnAnimatorStateBeginning
+    data: GreatSuccess
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 0
@@ -7895,7 +7895,28 @@ AnimationClip:
     floatParameter: 0
     intParameter: 0
     messageOptions: 0
-  - time: 2.9666667
+  - time: 0.5833333
+    functionName: OnRequestPlaySFX
+    data: sfx_successeffect_fadein
+    objectReferenceParameter: {fileID: 0}
+    floatParameter: 0
+    intParameter: 0
+    messageOptions: 0
+  - time: 1.6666666
+    functionName: OnRequestPlaySFX
+    data: sfx_successeffect_slot
+    objectReferenceParameter: {fileID: 0}
+    floatParameter: 0
+    intParameter: 0
+    messageOptions: 0
+  - time: 2
+    functionName: OnRequestPlaySFX
+    data: sfx_bgm_great_success
+    objectReferenceParameter: {fileID: 0}
+    floatParameter: 0
+    intParameter: 0
+    messageOptions: 0
+  - time: 2.9833333
     functionName: PlayOptionAnimation
     data: 
     objectReferenceParameter: {fileID: 0}
