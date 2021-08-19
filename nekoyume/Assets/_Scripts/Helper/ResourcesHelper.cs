@@ -68,7 +68,7 @@ namespace Nekoyume.Helper
                 return 1;
             }
 
-            if (level == 10)
+            if (level >= 10)
             {
                 return 2;
             }
