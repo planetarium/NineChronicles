@@ -355,7 +355,8 @@ namespace Nekoyume.Action
         {
             var grade = equipment.Grade;
             var level = equipment.level + 1;
-            row = sheet.OrderedList.FirstOrDefault(x => x.Grade == grade  && x.Level == level);
+            var itemSubType = equipment.ItemSubType;
+            row = sheet.OrderedList.FirstOrDefault(x => x.Grade == grade  && x.Level == level && x.ItemSubType == itemSubType);
             return row != null;
         }
 
