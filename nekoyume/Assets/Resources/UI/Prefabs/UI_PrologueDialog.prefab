@@ -71,7 +71,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 39, y: -20}
-  m_SizeDelta: {x: 730, y: -120}
+  m_SizeDelta: {x: 800, y: -120}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!222 &6043055664321431776
 CanvasRenderer:
@@ -101,7 +101,11 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: asdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdf
+  m_text: 'If it must com to that and blood must be spilled.. this too shall part
+    your destiny...
+
+    Cat Warrior, win this war and I will return you back to
+    micard. This asdasdasdasdsadsadsadsadsdsadsadsadsadsad'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8a682b7747d4a664089b7b1065aa0035, type: 2}
   m_sharedMaterial: {fileID: -2364689171920820918, guid: 8a682b7747d4a664089b7b1065aa0035,
@@ -840,7 +844,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: <voffset=0.1em><size=14>>></size></voffset>
+  m_text: <voffset=0.1em><size=22>>></size></voffset>
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8a682b7747d4a664089b7b1065aa0035, type: 2}
   m_sharedMaterial: {fileID: -2364689171920820918, guid: 8a682b7747d4a664089b7b1065aa0035,
