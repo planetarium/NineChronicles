@@ -66,6 +66,7 @@ namespace Nekoyume.UI.Module
                     if (!value) return;
                     AudioController.PlayClick();
                     SharedModel.State.Value = categoryToggle.Type;
+                    SortedData(_grade, _elemental);
                 });
             }
 

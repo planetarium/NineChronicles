@@ -652,7 +652,7 @@ namespace Nekoyume.UI
                     }
 
                     var (statType, baseValue, additionalValue) = enumerator.Current;
-                    statView.Show(statType, baseValue, additionalValue);
+                    statView.Show(statType, baseValue + additionalValue, 0);
                 }
             }
         }

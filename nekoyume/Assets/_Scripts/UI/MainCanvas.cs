@@ -255,8 +255,6 @@ namespace Nekoyume.UI
             yield return null;
             secondWidgets.Add(Widget.Create<ItemCountableAndPricePopup>());
             yield return null;
-            secondWidgets.Add(Widget.Create<DailyRewardItemPopup>());
-            yield return null;
             secondWidgets.Add(Widget.Create<Alert>());
             yield return null;
             secondWidgets.Add(Widget.Create<InputBox>());
@@ -306,6 +304,8 @@ namespace Nekoyume.UI
             secondWidgets.Add(Widget.Create<Dialog>());
             yield return null;
             secondWidgets.Add(Widget.Create<CodeReward>());
+            yield return null;
+            secondWidgets.Add(Widget.Create<DailyRewardItemPopup>());
             yield return null;
             secondWidgets.Add(Widget.Create<PrologueDialog>());
             yield return null;
