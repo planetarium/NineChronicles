@@ -107,7 +107,7 @@ namespace Nekoyume.BlockChain
             BlockChain<NCAction> blocks,
             Block<NCAction> nextBlock
         ) =>
-            ValidateBlock(nextBlock)
+            CheckTxCount(nextBlock)
             ?? ValidateMinerAuthority(nextBlock)
             ?? base.ValidateNextBlock(blocks, nextBlock);
 
@@ -161,7 +161,8 @@ namespace Nekoyume.BlockChain
 
             return Math.Max(nextDifficulty, _minimumDifficulty);
         }
-        private InvalidBlockException ValidateBlock(Block<NCAction> block)
+
+        private InvalidBlockException CheckTxCount(Block<NCAction> block)
         {
             if (!(block.Miner is Address miner))
             {
