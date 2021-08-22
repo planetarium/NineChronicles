@@ -287,7 +287,7 @@ namespace Lib9c.Tests
             IBlockPolicy<PolymorphicAction<ActionBase>> policy = blockPolicySource.GetPolicy(
                 10000,
                 100,
-                ignoreHardcodedIndicesForBackwardCompatibility: true
+                ignoreHardcodedPolicies: true
             );
             IStagePolicy<PolymorphicAction<ActionBase>> stagePolicy =
                 new VolatileStagePolicy<PolymorphicAction<ActionBase>>();

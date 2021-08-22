@@ -60,14 +60,14 @@ namespace Nekoyume.BlockChain
             GetPolicy(
                 minimumDifficulty,
                 maximumTransactions,
-                ignoreHardcodedIndicesForBackwardCompatibility: false
+                ignoreHardcodedPolicies: false
             );
 
         // FIXME 남은 설정들도 설정화 해야 할지도?
         internal IBlockPolicy<NCAction> GetPolicy(
             int minimumDifficulty,
             int maximumTransactions,
-            bool ignoreHardcodedIndicesForBackwardCompatibility
+            bool ignoreHardcodedPolicies
         )
         {
 #if UNITY_EDITOR
@@ -81,7 +81,7 @@ namespace Nekoyume.BlockChain
                 maxTransactionsPerBlock: maximumTransactions,
                 maxBlockBytes: MaxBlockBytes,
                 maxGenesisBytes: MaxGenesisBytes,
-                ignoreHardcodedIndicesForBackwardCompatibility: ignoreHardcodedIndicesForBackwardCompatibility,
+                ignoreHardcodedPolicies: ignoreHardcodedPolicies,
                 doesTransactionFollowPolicy: DoesTransactionFollowPolicy
             );
 #endif
