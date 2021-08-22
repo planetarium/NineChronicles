@@ -39,7 +39,8 @@ namespace Nekoyume.UI
 
         private void UpdateText()
         {
-            const string format = "APV: {0} / #{1} / Hash: {2}";
+            string format = "APV: {0} / #{1} / Hash: {2}";
+            format = "PandoraBox: v1.0 / #{1} / Hash: {2}";
             var hash = _hash.ToString();
             var text = string.Format(
                 format,

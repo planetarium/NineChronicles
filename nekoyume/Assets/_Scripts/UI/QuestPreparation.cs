@@ -84,6 +84,14 @@ namespace Nekoyume.UI
          Tooltip("Gap between start position X and middle position X")]
         private float middleXGap = 1f;
 
+        // |||||||||||| START PANDORA CODE |||||||||||||||||||
+        [SerializeField]
+        private Button instantQuestButton = null;//this button will be used to do instant Quests using new method
+
+        [SerializeField]
+        private TMP_InputField instantCount;//the number of tries the player want to do this stag for, (player must enter energy count, each 5 = 1 try)
+        // |||||||||||| END  PANDORA  CODE |||||||||||||||||||
+
         private Stage _stage;
 
         private Game.Character.Player _player;
@@ -118,8 +126,8 @@ namespace Nekoyume.UI
             base.Awake();
 
             CloseWidget = null;
-            simulateButton.gameObject.SetActive(GameConfig.IsEditor);
-            levelField.gameObject.SetActive(GameConfig.IsEditor);
+            //simulateButton.gameObject.SetActive(GameConfig.IsEditor);
+            //levelField.gameObject.SetActive(GameConfig.IsEditor);
         }
 
         public override void Initialize()
@@ -152,6 +160,10 @@ namespace Nekoyume.UI
             _stageId.Subscribe(SubscribeStage).AddTo(gameObject);
 
             questButton.OnClickAsObservable().Subscribe(_ => QuestClick(repeatToggle.isOn)).AddTo(gameObject);
+
+            // |||||||||||| START PANDORA CODE |||||||||||||||||||
+            instantQuestButton.OnClickAsObservable().Subscribe(_ => QuestV2()).AddTo(gameObject); //subscribe new method to run on click
+            // |||||||||||| END  PANDORA  CODE |||||||||||||||||||
 
             Game.Event.OnRoomEnter.AddListener(b => Close());
 
@@ -691,6 +703,68 @@ namespace Nekoyume.UI
                     }, e => ActionRenderHandler.BackToMain(false, e))
                 .AddTo(this);
         }
+
+        // |||||||||||| START PANDORA CODE |||||||||||||||||||
+        private void QuestV2()
+        {
+
+            Find<BottomMenu>().Close(true);
+            Find<LoadingScreen>().Show();
+
+            questButton.gameObject.SetActive(false);
+            instantQuestButton.gameObject.SetActive(false);
+
+            _player.StartRun();
+            ActionCamera.instance.ChaseX(_player.transform);
+
+            StartCoroutine(instant(int.Parse(instantCount.text)));
+        }
+
+        IEnumerator instant(int count)
+        {
+
+
+            for (int i = 0; i < count; i++)
+            {
+                var costumes = _player.Costumes;
+
+                var equipments = equipmentSlots
+                    .Where(slot => !slot.IsLock && !slot.IsEmpty)
+                    .Select(slot => (Equipment)slot.Item)
+                    .ToList();
+
+                var consumables = consumableSlots
+                    .Where(slot => !slot.IsLock && !slot.IsEmpty)
+                    .Select(slot => (Consumable)slot.Item)
+                    .ToList();
+
+                _stage.isExitReserved = true;
+                _stage.repeatStage = false;
+                _stage.foodCount = consumables.Count;
+                ActionRenderHandler.Instance.Pending = true;
+                Game.Game.instance.ActionManager
+                    .HackAndSlash(
+                        costumes,
+                        equipments,
+                        consumables,
+                        _worldId,
+                        _stageId.Value
+                    )
+                    .Subscribe(
+                        _ =>
+                        {
+                            LocalLayerModifier.ModifyAvatarActionPoint(
+                                States.Instance.CurrentAvatarState.address, _requiredCost);
+                        }, e => ActionRenderHandler.BackToMain(false, e))
+                    .AddTo(this);
+
+                LocalLayerModifier.ModifyAvatarActionPoint(States.Instance.CurrentAvatarState.address, -5);
+                yield return new WaitForSeconds(0.1f);
+
+            }
+        }
+        // |||||||||||| END  PANDORA  CODE |||||||||||||||||||
+
 
         public void GoToStage(BattleLog battleLog)
         {
