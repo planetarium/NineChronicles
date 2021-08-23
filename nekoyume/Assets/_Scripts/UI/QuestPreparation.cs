@@ -135,7 +135,8 @@ namespace Nekoyume.UI
             _weaponSlot = equipmentSlots.First(es => es.ItemSubType == ItemSubType.Weapon);
 
             inventory.SharedModel.DimmedFunc.Value = inventoryItem =>
-                inventoryItem.ItemBase.Value.ItemType == ItemType.Material;
+                inventoryItem.ItemBase.Value.ItemType == ItemType.Material &&
+                inventoryItem.ItemBase.Value.ItemSubType != ItemSubType.ApStone;
             inventory.SharedModel.SelectedItemView
                 .Subscribe(SubscribeInventorySelectedItem)
                 .AddTo(gameObject);
@@ -306,19 +307,59 @@ namespace Nekoyume.UI
                 return;
             }
 
-            tooltip.Show(
-                view.RectTransform,
-                view.Model,
-                value => !view.Model.Dimmed.Value,
-                view.Model.EquippedEnabled.Value
-                    ? L10nManager.Localize("UI_UNEQUIP")
-                    : L10nManager.Localize("UI_EQUIP"),
-                _ => Equip(tooltip.itemInformation.Model.item.Value),
-                _ =>
+            if (view.Model.ItemBase.Value.ItemType == ItemType.Material)
+            {
+                if (view.Model.ItemBase.Value.ItemSubType == ItemSubType.ApStone)
                 {
-                    equipSlotGlow.SetActive(false);
-                    inventory.SharedModel.DeselectItemView();
-                });
+                    tooltip.Show(
+                        view.RectTransform,
+                        view.Model,
+                        AvatarInfo.DimmedFuncForChargeActionPoint,
+                        L10nManager.Localize("UI_CHARGE_AP"),
+                         _ =>
+                         {
+                             if (States.Instance.CurrentAvatarState.actionPoint > 0)
+                             {
+                                 AvatarInfo.ShowRefillConfirmPopup(tooltip.itemInformation.Model
+                                     .item.Value);
+                             }
+                             else
+                             {
+                                 AvatarInfo.ChargeActionPoint(tooltip.itemInformation.Model.item
+                                     .Value);
+                             }
+                         }
+                        ,
+                        _ =>
+                        {
+                            equipSlotGlow.SetActive(false);
+                            inventory.SharedModel.DeselectItemView();
+                        });
+                }
+                else
+                {
+                    tooltip.Show(
+                        view.RectTransform,
+                        view.Model,
+                        _ => inventory.SharedModel.DeselectItemView());
+                }
+            }
+            else
+            {
+                tooltip.Show(
+                    view.RectTransform,
+                    view.Model,
+                    value => !view.Model.Dimmed.Value,
+                    view.Model.EquippedEnabled.Value
+                        ? L10nManager.Localize("UI_UNEQUIP")
+                        : L10nManager.Localize("UI_EQUIP"),
+                    _ => Equip(tooltip.itemInformation.Model.item.Value),
+                    _ =>
+                    {
+                        equipSlotGlow.SetActive(false);
+                        inventory.SharedModel.DeselectItemView();
+                    });
+            }
         }
 
         private void ShowTooltip(EquipmentSlot slot)
