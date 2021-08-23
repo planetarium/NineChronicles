@@ -175,12 +175,25 @@ namespace Nekoyume.BlockChain
         {
             Task t = Task.Run(async () =>
             {
-                await _hub.JoinAsync();
+                await _hub.JoinAsync(Address.ToHex());
             });
 
             yield return new WaitUntil(() => t.IsCompleted);
 
             if (t.IsFaulted)
+            {
+                callback?.Invoke(false);
+                yield break;
+            }
+
+            Task t2 = Task.Run(async () =>
+            {
+                await _service.AddClient(Address.ToByteArray());
+            });
+
+            yield return new WaitUntil(() => t2.IsCompleted);
+
+            if (t2.IsFaulted)
             {
                 callback?.Invoke(false);
                 yield break;
@@ -356,7 +369,7 @@ namespace Nekoyume.BlockChain
                 try
                 {
                     Debug.Log($"Trying to join hub...");
-                    await _hub.JoinAsync();
+                    await _hub.JoinAsync(Address.ToHex());
                     Debug.Log($"Join complete! Registering disconnect event...");
                     RegisterDisconnectEvent(_hub);
                     UpdateSubscribeAddresses();
@@ -452,7 +465,7 @@ namespace Nekoyume.BlockChain
             }
 
             Debug.Log($"Subscribing addresses: {string.Join(", ", addresses)}");
-            _service.SetAddressesToSubscribe(addresses.Select(addr => addr.ToByteArray()));
+            _service.SetAddressesToSubscribe(Address.ToByteArray(), addresses.Select(addr => addr.ToByteArray()));
         }
 
         public bool IsActionStaged(Guid actionId, out TxId txId)
