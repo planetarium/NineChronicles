@@ -140,7 +140,7 @@ namespace Nekoyume.UI.Module
         {
             lockVFXObject.SetActive(false);
             unlockConditionText.enabled = false;
-            var worldInformation = ReactiveAvatarState.WorldInformation.Value;
+            var worldInformation = States.Instance.CurrentAvatarState.worldInformation;
 
             var unlockStage = equipmentRow.UnlockStage;
             var clearedStage = worldInformation.TryGetLastClearedStageId(out var stageId) ?

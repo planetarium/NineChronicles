@@ -230,7 +230,9 @@ namespace Nekoyume.UI
             repeatToggle.isOn = false;
             repeatToggle.interactable = true;
             _stage.LoadBackground("dungeon_02");
-            _player = _stage.GetPlayer(_stage.questPreparationPosition);
+            _player = _stage.GetPlayer(PlayerPosition);
+            var currentAvatarState = Game.Game.instance.States.CurrentAvatarState;
+            _player.Set(currentAvatarState);
 
             if (_player is null)
             {
@@ -245,7 +247,6 @@ namespace Nekoyume.UI
                 _player.gameObject.SetActive(false);
                 _player.gameObject.SetActive(true);
                 _player.SpineController.Appear();
-                var currentAvatarState = Game.Game.instance.States.CurrentAvatarState;
                 _player.Set(currentAvatarState);
 
                 equipmentSlots.SetPlayerEquipments(_player.Model, ShowTooltip, Unequip);

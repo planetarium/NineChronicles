@@ -115,7 +115,7 @@ namespace Nekoyume.UI.Model
 
         public void LoadRecipeVFXSkipList()
         {
-            var addressHex = ReactiveAvatarState.Address.Value.ToHex();
+            var addressHex = States.Instance.CurrentAvatarState.address.ToHex();
             var key = string.Format(RecipeVFXSkipListKey, addressHex);
 
             if (!PlayerPrefs.HasKey(key))
@@ -165,7 +165,8 @@ namespace Nekoyume.UI.Model
 
         public void SaveRecipeVFXSkipList()
         {
-            var addressHex = ReactiveAvatarState.Address.Value.ToHex();
+
+            var addressHex = States.Instance.CurrentAvatarState.address.ToHex();
             var key = string.Format(RecipeVFXSkipListKey, addressHex);
 
             var data = string.Empty;
