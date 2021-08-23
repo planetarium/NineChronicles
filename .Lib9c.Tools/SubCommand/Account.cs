@@ -6,15 +6,10 @@ using Cocona;
 using Libplanet;
 using Libplanet.Assets;
 using Libplanet.Blockchain;
-using Libplanet.Blockchain.Policies;
 using Libplanet.Blocks;
-using Libplanet.RocksDBStore;
 using Libplanet.Store;
-using Libplanet.Store.Trie;
 using Nekoyume.Action;
-using Nekoyume.BlockChain;
 using Nekoyume.Model.State;
-using Serilog;
 using Serilog.Core;
 using NCAction = Libplanet.Action.PolymorphicAction<Nekoyume.Action.ActionBase>;
 
@@ -39,68 +34,12 @@ namespace Lib9c.Tools.SubCommand
             string address = null
         )
         {
-            var logConfig = new LoggerConfiguration();
-            if (verbose)
-            {
-                logConfig = logConfig.WriteTo.Console();
-            }
-            using Logger logger = logConfig.CreateLogger();
-            var policySource = new BlockPolicySource(logger);
-            IBlockPolicy<NCAction> policy = policySource.GetPolicy(
-                BlockPolicySource.DifficultyBoundDivisor + 1,
-                int.MaxValue
-            );
-            IStagePolicy<NCAction> stagePolicy = new VolatileStagePolicy<NCAction>();
-            IStore store = new RocksDBStore(storePath);
-            IKeyValueStore stateKeyValueStore =
-                new RocksDBKeyValueStore(Path.Combine(storePath, "states"));
-            IKeyValueStore stateHashKeyValueStore =
-                new RocksDBKeyValueStore(Path.Combine(storePath, "state_hashes"));
-            IStateStore stateStore = new TrieStateStore(stateKeyValueStore, stateHashKeyValueStore);
-            Guid chainIdValue
-                = chainId is {} i
-                ? i
-                : store.GetCanonicalChainId() is {} cc
-                ? cc
-                : throw new CommandExitedException(
-                    "No canonical chain ID.  Available chain IDs:\n    " +
-                        string.Join("\n    ", store.ListChainIds()),
-                    1);
+            using Logger logger = Utils.ConfigureLogger(verbose);
+            (BlockChain<NCAction> chain, IStore store) =
+                Utils.GetBlockChain(logger, storePath, chainId);
 
-            BlockHash genesisBlockHash;
-            try
-            {
-                genesisBlockHash = store.IterateIndexes(chainIdValue).First();
-            }
-            catch (InvalidOperationException)
-            {
-                throw new CommandExitedException(
-                    $"The chain {chainIdValue} seems empty; try with another chain ID:\n    " +
-                        string.Join("\n    ", store.ListChainIds()),
-                    1
-                );
-            }
-            Block<NCAction> genesis = store.GetBlock<NCAction>(genesisBlockHash);
-            BlockChain<NCAction> chain = new BlockChain<NCAction>(
-                policy,
-                stagePolicy,
-                store,
-                stateStore,
-                genesis
-            );
-
-            BlockHash offset
-                = block is {} blockStr
-                ? long.TryParse(blockStr, out long idx)
-                ? store.IndexBlockHash(chain.Id, idx) is { } h
-                ? h
-                : throw new CommandExitedException($"No such block index: {idx}.", 1)
-                : Utils.ParseBlockHash(blockStr)
-                : chain.Tip.Hash;
-            Console.Error.WriteLine(
-                "The offset block: #{0} {1}.",
-                store.GetBlock<NCAction>(offset).Index,
-                offset);
+            Block<NCAction> offset = Utils.ParseBlockOffset(chain, block);
+            Console.Error.WriteLine("The offset block: #{0} {1}.", offset.Index, offset.Hash);
 
             Bencodex.Types.Dictionary goldCurrencyStateDict = (Bencodex.Types.Dictionary)
                 chain.GetState(GoldCurrencyState.Address);
@@ -110,7 +49,7 @@ namespace Lib9c.Tools.SubCommand
             if (address is {} addrStr)
             {
                 Address addr = Utils.ParseAddress(addrStr);
-                FungibleAssetValue balance = chain.GetBalance(addr, gold, offset);
+                FungibleAssetValue balance = chain.GetBalance(addr, gold, offset.Hash);
                 Console.WriteLine("{0}\t{1}", addr, balance);
                 return;
             }
@@ -132,7 +71,7 @@ namespace Lib9c.Tools.SubCommand
                 {
                     if (!printed.Contains(addr))
                     {
-                        FungibleAssetValue balance = chain.GetBalance(addr, gold, offset);
+                        FungibleAssetValue balance = chain.GetBalance(addr, gold, offset.Hash);
                         Console.WriteLine("{0}\t{1}", addr, balance);
                         printed.Add(addr);
                     }
