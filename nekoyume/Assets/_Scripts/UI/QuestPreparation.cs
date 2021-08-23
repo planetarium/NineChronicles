@@ -495,14 +495,9 @@ namespace Nekoyume.UI
             // 이미 슬롯에 아이템이 있다면 해제한다.
             if (!slot.IsEmpty)
             {
-                if (inventory.SharedModel.TryGetEquipment(
-                        slot.Item as Equipment,
-                        out var inventoryItemToUnequip) ||
-                    inventory.SharedModel.TryGetConsumable(
-                        slot.Item as Consumable,
-                        out inventoryItemToUnequip) ||
-                    inventory.SharedModel.TryGetCostume(
-                        slot.Item as Costume, out inventoryItemToUnequip))
+                if (inventory.SharedModel.TryGetEquipment(slot.Item as Equipment, out var inventoryItemToUnequip) ||
+                    inventory.SharedModel.TryGetConsumable(slot.Item as Consumable, out inventoryItemToUnequip) ||
+                    inventory.SharedModel.TryGetCostume(slot.Item as Costume, out inventoryItemToUnequip))
                 {
                     inventoryItemToUnequip.EquippedEnabled.Value = false;
                     LocalStateItemEquipModify(slot.Item, false);
