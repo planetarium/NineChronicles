@@ -92,7 +92,7 @@ namespace Nekoyume.UI
         private BigInteger _costNcg = 0;
         private string errorMessage;
 
-        private enum  State
+        private enum State
         {
             Show,
             Empty,

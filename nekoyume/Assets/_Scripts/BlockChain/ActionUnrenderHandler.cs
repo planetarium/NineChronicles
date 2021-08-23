@@ -53,7 +53,7 @@ namespace Nekoyume.BlockChain
             // Craft
             // CombinationConsumable(); todo.
             // CombinationEquipment(); todo.
-            // ItemEnhancement();
+            ItemEnhancement();
             // RapidCombination(); todo.
 
             // Market
@@ -155,6 +155,15 @@ namespace Nekoyume.BlockChain
                 .Where(HasUpdatedAssetsForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseTransferAsset)
+                .AddTo(_disposables);
+        }
+
+        private void ItemEnhancement()
+        {
+            _renderer.EveryUnrender<ItemEnhancement>()
+                .Where(ValidateEvaluationForCurrentAvatarState)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseItemEnhancement)
                 .AddTo(_disposables);
         }
 
@@ -306,37 +315,33 @@ namespace Nekoyume.BlockChain
             UpdateCurrentAvatarState(avatarState);
         }
 
-        // private void ResponseUnrenderItemEnhancement(ActionBase.ActionEvaluation<ItemEnhancement> eval)
-        // {
-        //     var agentAddress = eval.Signer;
-        //     var avatarAddress = eval.Action.avatarAddress;
-        //     var slotIndex = eval.Action.slotIndex;
-        //     var slot = eval.OutputStates.GetCombinationSlotState(avatarAddress, slotIndex);
-        //     var result = (ItemEnhancement.ResultModel)slot.Result;
-        //     var itemUsable = result.itemUsable;
-        //     if (!eval.OutputStates.TryGetAvatarStateV2(agentAddress, avatarAddress,
-        //         out var avatarState))
-        //     {
-        //         return;
-        //     }
-        //
-        //     // NOTE: 사용한 자원에 대한 레이어 다시 추가하기.
-        //     LocalLayerModifier.ModifyAgentGold(agentAddress, -result.gold);
-        //     LocalLayerModifier.RemoveItem(avatarAddress, itemUsable.ItemId, itemUsable.RequiredBlockIndex, 1);
-        //     foreach (var itemId in result.materialItemIdList)
-        //     {
-        //         if (avatarState.inventory.TryGetNonFungibleItem(itemId, out ItemUsable materialItem))
-        //         {
-        //             LocalLayerModifier.RemoveItem(avatarAddress, itemId, materialItem.RequiredBlockIndex, 1);
-        //         }
-        //     }
-        //
-        //     States.Instance.RemoveSlotState(slotIndex);
-        //
-        //     UpdateAgentState(eval);
-        //     UpdateCurrentAvatarState(eval);
-        //     UnrenderQuest(avatarAddress, avatarState.questList.completedQuestIds);
-        // }
+        private void ResponseItemEnhancement(ActionBase.ActionEvaluation<ItemEnhancement> eval)
+        {
+            var agentAddress = eval.Signer;
+            var avatarAddress = eval.Action.avatarAddress;
+            var slotIndex = eval.Action.slotIndex;
+            var slot = eval.OutputStates.GetCombinationSlotState(avatarAddress, slotIndex);
+            var result = (ItemEnhancement.ResultModel)slot.Result;
+            var itemUsable = result.itemUsable;
+            if (!eval.OutputStates.TryGetAvatarStateV2(agentAddress, avatarAddress, out var avatarState))
+            {
+                return;
+            }
+
+            LocalLayerModifier.ModifyAgentGold(agentAddress, -result.gold);
+            LocalLayerModifier.RemoveItem(avatarAddress, itemUsable.ItemId, itemUsable.RequiredBlockIndex, 1);
+            foreach (var itemId in result.materialItemIdList)
+            {
+                if (avatarState.inventory.TryGetNonFungibleItem(itemId, out ItemUsable materialItem))
+                {
+                    LocalLayerModifier.RemoveItem(avatarAddress, itemId, materialItem.RequiredBlockIndex, 1);
+                }
+            }
+
+            UpdateAgentState(eval);
+            UpdateCurrentAvatarState(eval);
+            UnrenderQuest(avatarAddress, avatarState.questList.completedQuestIds);
+        }
 
         private void ResponseClaimMonsterCollectionReward(ActionBase.ActionEvaluation<ClaimMonsterCollectionReward> eval)
         {
