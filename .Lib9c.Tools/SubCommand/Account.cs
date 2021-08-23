@@ -1,0 +1,143 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using Cocona;
+using Libplanet;
+using Libplanet.Assets;
+using Libplanet.Blockchain;
+using Libplanet.Blockchain.Policies;
+using Libplanet.Blocks;
+using Libplanet.RocksDBStore;
+using Libplanet.Store;
+using Libplanet.Store.Trie;
+using Nekoyume.Action;
+using Nekoyume.BlockChain;
+using Nekoyume.Model.State;
+using Serilog;
+using Serilog.Core;
+using NCAction = Libplanet.Action.PolymorphicAction<Nekoyume.Action.ActionBase>;
+
+namespace Lib9c.Tools.SubCommand
+{
+    public class Account
+    {
+        [Command(Description = "Query accounts' balances.")]
+        public void Balance(
+            [Option('v', Description = "Print more logs.")]
+            bool verbose,
+            [Option('s', Description = "Path to the chain store.")]
+            string storePath,
+            [Option(
+                'b',
+                Description = "Optional block hash/index offset to query balances at.  " +
+                    "Tip by default.")]
+            string block = null,
+            [Option('c', Description = "Optional chain ID.  Default is the canonical chain ID.")]
+            Guid? chainId = null,
+            [Argument(Description = "Account address.")]
+            string address = null
+        )
+        {
+            var logConfig = new LoggerConfiguration();
+            if (verbose)
+            {
+                logConfig = logConfig.WriteTo.Console();
+            }
+            using Logger logger = logConfig.CreateLogger();
+            var policySource = new BlockPolicySource(logger);
+            IBlockPolicy<NCAction> policy = policySource.GetPolicy(
+                BlockPolicySource.DifficultyBoundDivisor + 1,
+                int.MaxValue
+            );
+            IStagePolicy<NCAction> stagePolicy = new VolatileStagePolicy<NCAction>();
+            IStore store = new RocksDBStore(storePath);
+            IKeyValueStore stateKeyValueStore =
+                new RocksDBKeyValueStore(Path.Combine(storePath, "states"));
+            IKeyValueStore stateHashKeyValueStore =
+                new RocksDBKeyValueStore(Path.Combine(storePath, "state_hashes"));
+            IStateStore stateStore = new TrieStateStore(stateKeyValueStore, stateHashKeyValueStore);
+            Guid chainIdValue
+                = chainId is {} i
+                ? i
+                : store.GetCanonicalChainId() is {} cc
+                ? cc
+                : throw new CommandExitedException(
+                    "No canonical chain ID.  Available chain IDs:\n    " +
+                        string.Join("\n    ", store.ListChainIds()),
+                    1);
+
+            BlockHash genesisBlockHash;
+            try
+            {
+                genesisBlockHash = store.IterateIndexes(chainIdValue).First();
+            }
+            catch (InvalidOperationException)
+            {
+                throw new CommandExitedException(
+                    $"The chain {chainIdValue} seems empty; try with another chain ID:\n    " +
+                        string.Join("\n    ", store.ListChainIds()),
+                    1
+                );
+            }
+            Block<NCAction> genesis = store.GetBlock<NCAction>(genesisBlockHash);
+            BlockChain<NCAction> chain = new BlockChain<NCAction>(
+                policy,
+                stagePolicy,
+                store,
+                stateStore,
+                genesis
+            );
+
+            BlockHash offset
+                = block is {} blockStr
+                ? long.TryParse(blockStr, out long idx)
+                ? store.IndexBlockHash(chain.Id, idx) is { } h
+                ? h
+                : throw new CommandExitedException($"No such block index: {idx}.", 1)
+                : Utils.ParseBlockHash(blockStr)
+                : chain.Tip.Hash;
+            Console.Error.WriteLine(
+                "The offset block: #{0} {1}.",
+                store.GetBlock<NCAction>(offset).Index,
+                offset);
+
+            Bencodex.Types.Dictionary goldCurrencyStateDict = (Bencodex.Types.Dictionary)
+                chain.GetState(GoldCurrencyState.Address);
+            GoldCurrencyState goldCurrencyState = new GoldCurrencyState(goldCurrencyStateDict);
+            Currency gold = goldCurrencyState.Currency;
+
+            if (address is {} addrStr)
+            {
+                Address addr = Utils.ParseAddress(addrStr);
+                FungibleAssetValue balance = chain.GetBalance(addr, gold, offset);
+                Console.WriteLine("{0}\t{1}", addr, balance);
+                return;
+            }
+
+            TextWriter stderr = Console.Error;
+            var printed = new HashSet<Address>();
+            foreach (BlockHash blockHash in chain.BlockHashes)
+            {
+                Block<NCAction> b = store.GetBlock<NCAction>(blockHash);
+                stderr.WriteLine("Scanning block #{0} {1}...", b.Index, b.Hash);
+                stderr.Flush();
+                IEnumerable<Address> addrs = b.Transactions
+                    .SelectMany(tx => tx.Actions
+                        .Select(a => a.InnerAction)
+                        .OfType<TransferAsset>()
+                        .SelectMany(a => new[] { a.Sender, a.Recipient }))
+                    .Append(b.Miner);
+                foreach (Address addr in addrs)
+                {
+                    if (!printed.Contains(addr))
+                    {
+                        FungibleAssetValue balance = chain.GetBalance(addr, gold, offset);
+                        Console.WriteLine("{0}\t{1}", addr, balance);
+                        printed.Add(addr);
+                    }
+                }
+            }
+        }
+    }
+}

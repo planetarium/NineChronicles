@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using Cocona;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Blocks;
@@ -19,6 +20,35 @@ namespace Lib9c.Tools
 {
     public static class Utils
     {
+        public static Address ParseAddress(string address)
+        {
+            if (address.StartsWith("0x") || address.StartsWith("0X"))
+            {
+                address = address.Substring(2);
+            }
+
+            try
+            {
+                return new Address(address);
+            }
+            catch (ArgumentException e)
+            {
+                throw new CommandExitedException($"{address}: {e.Message}", 1);
+            }
+        }
+
+        public static BlockHash ParseBlockHash(string blockHash)
+        {
+            try
+            {
+                return BlockHash.FromString(blockHash);
+            }
+            catch (Exception e) when (e is ArgumentOutOfRangeException || e is FormatException)
+            {
+                throw new CommandExitedException($"{blockHash}: {e.Message}", 1);
+            }
+        }
+
         public static Dictionary<string, string> ImportSheets(string dir)
         {
             var sheets = new Dictionary<string, string>();
