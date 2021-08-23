@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Linq;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
@@ -18,7 +17,7 @@ namespace Nekoyume.Action
     public class DailyReward3 : GameAction
     {
         public Address avatarAddress;
-        public DailyRewardResult dailyRewardResult;
+        public DailyReward2.DailyRewardResult dailyRewardResult;
         private const int rewardItemId = 400000;
         private const int rewardItemCount = 10;
 
@@ -58,7 +57,7 @@ namespace Nekoyume.Action
             var material = ItemFactory.CreateMaterial(materialSheet, rewardItemId);
             materials[material] = rewardItemCount;
 
-            var result = new DailyRewardResult
+            var result = new DailyReward2.DailyRewardResult
             {
                 materials = materials,
             };
@@ -84,35 +83,6 @@ namespace Nekoyume.Action
         protected override void LoadPlainValueInternal(IImmutableDictionary<string, IValue> plainValue)
         {
             avatarAddress = plainValue["avatarAddress"].ToAddress();
-        }
-        
-        
-        [Serializable]
-        public class DailyRewardResult : AttachmentActionResult
-        {
-            public Dictionary<Material, int> materials;
-            public Guid id;
-
-            protected override string TypeId => "dailyReward.dailyRewardResult";
-
-            public DailyRewardResult()
-            {
-            }
-
-            public DailyRewardResult(Bencodex.Types.Dictionary serialized) : base(serialized)
-            {
-                materials = serialized["materials"].ToDictionary_Material_int();
-                id = serialized["id"].ToGuid();
-            }
-
-            public override IValue Serialize() =>
-#pragma warning disable LAA1002
-                new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
-                {
-                    [(Text) "materials"] = materials.Serialize(),
-                    [(Text) "id"] = id.Serialize(),
-                }.Union((Bencodex.Types.Dictionary) base.Serialize()));
-#pragma warning restore LAA1002
         }
     }
 }

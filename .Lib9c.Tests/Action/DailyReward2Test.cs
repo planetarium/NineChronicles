@@ -80,7 +80,7 @@ namespace Lib9c.Tests.Action
             var mail = nextAvatarState.mailBox.First();
             var rewardMail = mail as DailyRewardMail;
             Assert.NotNull(rewardMail);
-            var rewardResult = rewardMail.attachment as DailyReward.DailyRewardResult;
+            var rewardResult = rewardMail.attachment as DailyReward2.DailyRewardResult;
             Assert.NotNull(rewardResult);
             Assert.Single(rewardResult.materials);
             var material = rewardResult.materials.First();

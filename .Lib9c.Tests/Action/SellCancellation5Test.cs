@@ -102,7 +102,7 @@ namespace Lib9c.Tests.Action
                 itemSubType = costume.ItemSubType;
             }
 
-            var result = new DailyReward.DailyRewardResult()
+            var result = new DailyReward2.DailyRewardResult()
             {
                 id = default,
                 materials = new Dictionary<Material, int>(),
