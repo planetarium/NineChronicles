@@ -780,7 +780,7 @@ namespace Nekoyume.UI
 
         public void LoadRecipeVFXSkipMap()
         {
-            var addressHex = ReactiveAvatarState.Address.Value.ToHex();
+            var addressHex = States.Instance.CurrentAvatarState.address.ToHex();
             var key = string.Format(RecipeVFXSkipListKey, addressHex);
 
             if (!PlayerPrefs.HasKey(key))
@@ -830,7 +830,7 @@ namespace Nekoyume.UI
 
         public void SaveRecipeVFXSkipMap()
         {
-            var addressHex = ReactiveAvatarState.Address.Value.ToHex();
+            var addressHex = States.Instance.CurrentAvatarState.address.ToHex();
             var key = string.Format(RecipeVFXSkipListKey, addressHex);
 
             var data = string.Empty;

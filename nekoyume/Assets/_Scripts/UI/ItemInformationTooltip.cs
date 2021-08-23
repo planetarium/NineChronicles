@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using Nekoyume.EnumType;
 using Nekoyume.Extension;
@@ -8,6 +9,8 @@ using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
@@ -32,11 +35,10 @@ namespace Nekoyume.UI
         [SerializeField] private TextMeshProUGUI priceText;
         [SerializeField] private Scrollbar scrollbar;
 
+        private readonly List<IDisposable> _disposablesForModel = new List<IDisposable>();
+
         private bool _isPointerOnScrollArea;
         private bool _isClickedButtonArea;
-
-
-        private readonly List<IDisposable> _disposablesForModel = new List<IDisposable>();
 
         private new Model.ItemInformationTooltip Model { get; set; }
 

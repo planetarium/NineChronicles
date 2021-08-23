@@ -46,6 +46,12 @@ namespace Nekoyume.UI
         private TextMeshProUGUI consumableTitleText = null;
 
         [SerializeField]
+        private TextMeshProUGUI costumeTitleText = null;
+
+        [SerializeField]
+        private EquipmentSlots costumeSlots = null;
+
+        [SerializeField]
         private TextMeshProUGUI equipmentTitleText = null;
 
         [SerializeField]
@@ -129,10 +135,32 @@ namespace Nekoyume.UI
             _weaponSlot = equipmentSlots.First(es => es.ItemSubType == ItemSubType.Weapon);
 
             inventory.SharedModel.DimmedFunc.Value = inventoryItem =>
-                inventoryItem.ItemBase.Value.ItemType == ItemType.Costume ||
                 inventoryItem.ItemBase.Value.ItemType == ItemType.Material;
             inventory.SharedModel.SelectedItemView
                 .Subscribe(SubscribeInventorySelectedItem)
+                .AddTo(gameObject);
+            inventory.SharedModel.State
+                .Subscribe(inventoryState =>
+                {
+                    switch (inventoryState)
+                    {
+                        case ItemType.Consumable:
+                            break;
+                        case ItemType.Costume:
+                            costumeSlots.gameObject.SetActive(true);
+                            equipmentSlots.gameObject.SetActive(false);
+                            break;
+                        case ItemType.Equipment:
+                            costumeSlots.gameObject.SetActive(false);
+                            equipmentSlots.gameObject.SetActive(true);
+                            break;
+                        case ItemType.Material:
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException(nameof(inventoryState),
+                                inventoryState, null);
+                    }
+                })
                 .AddTo(gameObject);
             inventory.OnDoubleClickItemView
                 .Subscribe(itemView =>
@@ -165,6 +193,11 @@ namespace Nekoyume.UI
             {
                 slot.ShowUnlockTooltip = true;
             }
+
+            foreach (var slot in costumeSlots)
+            {
+                slot.ShowUnlockTooltip = true;
+            }
         }
 
         public void Show(string closeButtonName, bool ignoreShowAnimation = false)
@@ -179,7 +212,7 @@ namespace Nekoyume.UI
             inventory.SharedModel.State.Value = ItemType.Equipment;
 
             consumableTitleText.text = L10nManager.Localize("UI_EQUIP_CONSUMABLES");
-            equipmentTitleText.text = L10nManager.Localize("UI_EQUIP_EQUIPMENTS");
+            costumeTitleText.text = equipmentTitleText.text = L10nManager.Localize("UI_EQUIP_EQUIPMENTS");
 
             Mixpanel.Track("Unity/Click Stage");
             _stage = Game.Game.instance.Stage;
@@ -205,6 +238,7 @@ namespace Nekoyume.UI
                 _player.Set(currentAvatarState);
 
                 equipmentSlots.SetPlayerEquipments(_player.Model, ShowTooltip, Unequip);
+                costumeSlots.SetPlayerCostumes(_player.Model, ShowTooltip, Unequip);
                 // 인벤토리 아이템의 장착 여부를 `equipmentSlots`의 상태를 바탕으로 설정하기 때문에 `equipmentSlots.SetPlayer()`를 호출한 이후에 인벤토리 아이템의 장착 상태를 재설정한다.
                 // 또한 인벤토리는 기본적으로 `OnEnable()` 단계에서 `OnResetItems` 이벤트를 일으키기 때문에 `equipmentSlots.SetPlayer()`와 호출 순서 커플링이 생기게 된다.
                 // 따라서 강제로 상태를 설정한다.
@@ -259,6 +293,7 @@ namespace Nekoyume.UI
             }
 
             equipmentSlots.Clear();
+            costumeSlots.Clear();
             base.Close(ignoreCloseAnimation);
             _disposables.DisposeAllAndClear();
         }
@@ -305,7 +340,8 @@ namespace Nekoyume.UI
             }
 
             if (inventory.SharedModel.TryGetEquipment(slot.Item as Equipment, out var item) ||
-                inventory.SharedModel.TryGetConsumable(slot.Item as Consumable, out item))
+                inventory.SharedModel.TryGetConsumable(slot.Item as Consumable, out item) ||
+                inventory.SharedModel.TryGetCostume(slot.Item as Costume, out item))
             {
                 tooltip.Show(
                     slot.RectTransform,
@@ -401,6 +437,12 @@ namespace Nekoyume.UI
 
         private void QuestClick(bool repeat)
         {
+            if (_stage.IsInStage)
+            {
+                questButton.interactable = false;
+                return;
+            }
+
             _stage.IsInStage = true;
             _stage.IsShowHud = true;
             StartCoroutine(CoQuestClick(repeat));
@@ -458,7 +500,9 @@ namespace Nekoyume.UI
                         out var inventoryItemToUnequip) ||
                     inventory.SharedModel.TryGetConsumable(
                         slot.Item as Consumable,
-                        out inventoryItemToUnequip))
+                        out inventoryItemToUnequip) ||
+                    inventory.SharedModel.TryGetCostume(
+                        slot.Item as Costume, out inventoryItemToUnequip))
                 {
                     inventoryItemToUnequip.EquippedEnabled.Value = false;
                     LocalStateItemEquipModify(slot.Item, false);
@@ -469,7 +513,7 @@ namespace Nekoyume.UI
             slot.Set(itemBase, ShowTooltip, Unequip);
             LocalStateItemEquipModify(slot.Item, true);
             HideGlowEquipSlot();
-            PostEquipOrUnequip(slot);
+            PostEquipOrUnequip(slot, slot.Item is Costume);
         }
 
         private void Unequip(EquipmentSlot slot)
@@ -496,12 +540,19 @@ namespace Nekoyume.UI
                     out var inventoryItem) ||
                 inventory.SharedModel.TryGetConsumable(
                     slot.Item as Consumable,
+                    out inventoryItem) ||
+                inventory.SharedModel.TryGetCostume(
+                    slot.Item as Costume,
                     out inventoryItem))
             {
                 inventoryItem.EquippedEnabled.Value = false;
                 LocalStateItemEquipModify(slot.Item, false);
             }
 
+            if (slot.Item is Costume costume)
+            {
+                _player.UnequipCostume(costume);
+            }
             slot.Clear();
             PostEquipOrUnequip(slot);
         }
@@ -519,7 +570,7 @@ namespace Nekoyume.UI
                 equip);
         }
 
-        private void PostEquipOrUnequip(EquipmentSlot slot)
+        private void PostEquipOrUnequip(EquipmentSlot slot, bool equipCostume = false)
         {
             UpdateStats();
             Find<ItemInformationTooltip>().Close();
@@ -533,6 +584,10 @@ namespace Nekoyume.UI
             else if (slot.ItemSubType == ItemSubType.Weapon)
             {
                 _player.EquipWeapon((Weapon)slot.Item);
+            }
+            else if (equipCostume)
+            {
+                _player.EquipCostume((Costume) slot.Item);
             }
 
             Game.Event.OnUpdatePlayerEquip.OnNext(_player);
@@ -566,6 +621,8 @@ namespace Nekoyume.UI
                     return false;
                 case ItemType.Equipment:
                     return equipmentSlots.TryGetAlreadyEquip(item, out slot);
+                case ItemType.Costume:
+                    return costumeSlots.TryGetAlreadyEquip(item, out slot);
                 default:
                     slot = null;
                     return false;
@@ -581,7 +638,9 @@ namespace Nekoyume.UI
                            ?? consumableSlots[0];
                     return true;
                 case ItemType.Equipment:
-                    return equipmentSlots.TryGetToEquip((Equipment)item, out slot);
+                    return equipmentSlots.TryGetToEquip((Equipment) item, out slot);
+                case ItemType.Costume:
+                    return costumeSlots.TryGetToEquip((Costume) item, out slot);
                 default:
                     slot = null;
                     return false;

@@ -300,7 +300,7 @@ namespace Nekoyume.BlockChain
             {
                 return;
             }
-            ReactiveAvatarState.DailyRewardReceivedIndex.SetValueAndForceNotify(
+            ReactiveAvatarState.UpdateDailyRewardReceivedIndex(
                 avatarState.dailyRewardReceivedIndex);
 
             UpdateCurrentAvatarState(avatarState);

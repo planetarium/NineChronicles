@@ -87,7 +87,7 @@ namespace Nekoyume.State
                 return;
             }
 
-            ReactiveAvatarState.ActionPoint.SetValueAndForceNotify(outAvatarState.actionPoint);
+            ReactiveAvatarState.UpdateActionPoint(outAvatarState.actionPoint);
         }
 
         #endregion
@@ -182,7 +182,7 @@ namespace Nekoyume.State
                 return;
             }
 
-            ReactiveAvatarState.Inventory.SetValueAndForceNotify(outAvatarState.inventory);
+            ReactiveAvatarState.UpdateInventory(outAvatarState.inventory);
         }
 
         #endregion
@@ -216,7 +216,7 @@ namespace Nekoyume.State
                 return;
             }
 
-            ReactiveAvatarState.MailBox.SetValueAndForceNotify(outAvatarState.mailBox);
+            ReactiveAvatarState.UpdateMailBox(outAvatarState.mailBox);
         }
 
         public static void AddNewMail(Address avatarAddress, Guid mailId)
@@ -241,7 +241,7 @@ namespace Nekoyume.State
                 return;
             }
 
-            ReactiveAvatarState.MailBox.SetValueAndForceNotify(outAvatarState.mailBox);
+            ReactiveAvatarState.UpdateMailBox(outAvatarState.mailBox);
         }
 
         public static void AddNewResultAttachmentMail(
@@ -357,7 +357,7 @@ namespace Nekoyume.State
                 return;
             }
 
-            ReactiveAvatarState.QuestList.SetValueAndForceNotify(outAvatarState.questList);
+            ReactiveAvatarState.UpdateQuestList(outAvatarState.questList);
         }
 
         /// <summary>
@@ -420,7 +420,7 @@ namespace Nekoyume.State
                 return;
             }
 
-            ReactiveAvatarState.Inventory.SetValueAndForceNotify(outAvatarState.inventory);
+            ReactiveAvatarState.UpdateInventory(outAvatarState.inventory);
         }
 
         /// <summary>
@@ -449,7 +449,7 @@ namespace Nekoyume.State
             }
 
             outAvatarState = modifier.Modify(outAvatarState);
-            ReactiveAvatarState.DailyRewardReceivedIndex.SetValueAndForceNotify(
+            ReactiveAvatarState.UpdateDailyRewardReceivedIndex(
                 outAvatarState.dailyRewardReceivedIndex);
         }
 
@@ -479,7 +479,7 @@ namespace Nekoyume.State
                 return;
             }
 
-            ReactiveAvatarState.DailyRewardReceivedIndex.SetValueAndForceNotify(
+            ReactiveAvatarState.UpdateDailyRewardReceivedIndex(
                 outAvatarState.dailyRewardReceivedIndex);
         }
 

@@ -4,7 +4,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Bencodex.Types;
+using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using mixpanel;
 using Nekoyume.Battle;
@@ -28,7 +28,6 @@ using Nekoyume.UI;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using Spine.Unity;
-using UniRx;
 using UnityEngine;
 using UnityEngine.Rendering;
 using CharacterBase = Nekoyume.Model.CharacterBase;
@@ -39,6 +38,8 @@ using Random = UnityEngine.Random;
 
 namespace Nekoyume.Game
 {
+    using UniRx;
+
     public class Stage : MonoBehaviour, IStage
     {
         public const float StageStartPosition = -1.2f;
@@ -88,6 +89,10 @@ namespace Nekoyume.Game
         public bool IsShowHud { get; set; }
         public bool IsExitReserved { get; set; }
         public bool IsRepeatStage { get; set; }
+        public bool IsAvatarStateUpdatedAfterBattle { get; set; }
+
+
+
 
         public Vector3 SelectPositionBegin(int index) =>
             new Vector3(-2.15f + index * 2.22f, -1.79f, 0.0f);
@@ -467,9 +472,13 @@ namespace Nekoyume.Game
 
         private IEnumerator CoStageEnd(BattleLog log)
         {
+            IsAvatarStateUpdatedAfterBattle = false;
             // NOTE ActionRenderHandler.Instance.Pending should be false before _onEnterToStageEnd.OnNext() invoked.
             ActionRenderHandler.Instance.Pending = false;
             _onEnterToStageEnd.OnNext(this);
+            yield return new WaitUntil(() => IsAvatarStateUpdatedAfterBattle);
+            var avatarState = States.Instance.CurrentAvatarState;
+
             _battleResultModel.ClearedWaveNumber = log.clearedWaveNumber;
             var characters = GetComponentsInChildren<Character.CharacterBase>();
             yield return new WaitWhile(() => characters.Any(i => i.actions.Any()));
@@ -532,8 +541,6 @@ namespace Nekoyume.Game
                 objectPool.ReleaseExcept(ReleaseWhiteList);
             }
 
-            var avatarAddress = States.Instance.CurrentAvatarState.address;
-            var avatarState = States.Instance.GetAvatarStateV2(avatarAddress);
             _battleResultModel.ActionPoint = avatarState.actionPoint;
             _battleResultModel.State = log.result;
             Game.instance.TableSheets.WorldSheet.TryGetValue(log.worldId, out var world);
@@ -590,7 +597,7 @@ namespace Nekoyume.Game
                     }
                 }
             }
-            
+
             Widget.Find<BattleResult>().Show(_battleResultModel);
 
             yield return null;
@@ -620,9 +627,13 @@ namespace Nekoyume.Game
 
         private IEnumerator CoRankingBattleEnd(BattleLog log, bool forceQuit = false)
         {
+            IsAvatarStateUpdatedAfterBattle = false;
+
             // NOTE ActionRenderHandler.Instance.Pending should be false before _onEnterToStageEnd.OnNext() invoked.
             ActionRenderHandler.Instance.Pending = false;
             _onEnterToStageEnd.OnNext(this);
+            yield return new WaitUntil(() => IsAvatarStateUpdatedAfterBattle);
+
             var characters = GetComponentsInChildren<Character.CharacterBase>();
 
             if (!forceQuit)
