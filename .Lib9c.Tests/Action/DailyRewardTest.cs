@@ -2,13 +2,11 @@ namespace Lib9c.Tests.Action
 {
     using System.Collections.Generic;
     using System.Collections.Immutable;
-    using System.Linq;
     using Libplanet;
     using Libplanet.Action;
     using Libplanet.Crypto;
     using Nekoyume;
     using Nekoyume.Action;
-    using Nekoyume.Model.Mail;
     using Nekoyume.Model.State;
     using Serilog;
     using Xunit;
@@ -19,7 +17,7 @@ namespace Lib9c.Tests.Action
     {
         private readonly Address _agentAddress;
         private readonly Address _avatarAddress;
-        private IAccountStateDelta _initialState;
+        private readonly IAccountStateDelta _initialState;
 
         public DailyRewardTest(ITestOutputHelper outputHelper)
         {
@@ -37,7 +35,8 @@ namespace Lib9c.Tests.Action
             }
 
             var tableSheets = new TableSheets(sheets);
-
+            var gameConfigState = new GameConfigState();
+            gameConfigState.Set(tableSheets.GameConfigSheet);
             _agentAddress = new PrivateKey().ToAddress();
             var agentState = new AgentState(_agentAddress);
             _avatarAddress = new PrivateKey().ToAddress();
@@ -47,7 +46,7 @@ namespace Lib9c.Tests.Action
                 _agentAddress,
                 0,
                 tableSheets.GetAvatarSheets(),
-                new GameConfigState(),
+                gameConfigState,
                 rankingMapAddress)
             {
                 actionPoint = 0,
@@ -55,69 +54,9 @@ namespace Lib9c.Tests.Action
             agentState.avatarAddresses[0] = _avatarAddress;
 
             _initialState = _initialState
-                .SetState(Addresses.GameConfig, new GameConfigState().Serialize())
+                .SetState(Addresses.GameConfig, gameConfigState.Serialize())
                 .SetState(_agentAddress, agentState.Serialize())
                 .SetState(_avatarAddress, avatarState.Serialize());
-        }
-
-        [Theory]
-        [InlineData(true)]
-        [InlineData(false)]
-        public void Execute(bool backward)
-        {
-            var dailyRewardAction = new DailyReward
-            {
-                avatarAddress = _avatarAddress,
-            };
-            if (!backward)
-            {
-                AvatarState avatarState = _initialState.GetAvatarState(_avatarAddress);
-                _initialState = _initialState
-                    .SetState(_avatarAddress.Derive(LegacyInventoryKey), avatarState.inventory.Serialize())
-                    .SetState(_avatarAddress.Derive(LegacyWorldInformationKey), avatarState.worldInformation.Serialize())
-                    .SetState(_avatarAddress.Derive(LegacyQuestListKey), avatarState.questList.Serialize())
-                    .SetState(_avatarAddress, avatarState.SerializeV2());
-            }
-
-            var nextState = dailyRewardAction.Execute(new ActionContext
-            {
-                BlockIndex = 0,
-                PreviousStates = _initialState,
-                Random = new TestRandom(),
-                Rehearsal = false,
-                Signer = _agentAddress,
-            });
-
-            var gameConfigState = nextState.GetGameConfigState();
-            var nextAvatarState = nextState.GetAvatarStateV2(_avatarAddress);
-            Assert.Equal(gameConfigState.ActionPointMax, nextAvatarState.actionPoint);
-            Assert.Single(nextAvatarState.mailBox);
-            var mail = nextAvatarState.mailBox.First();
-            var rewardMail = mail as DailyRewardMail;
-            Assert.NotNull(rewardMail);
-            var rewardResult = rewardMail.attachment as DailyReward.DailyRewardResult;
-            Assert.NotNull(rewardResult);
-            Assert.Single(rewardResult.materials);
-            var material = rewardResult.materials.First();
-            Assert.Equal(400000, material.Key.Id);
-            Assert.Equal(10, material.Value);
-        }
-
-        [Fact]
-        public void ExecuteThrowFailedLoadStateException()
-        {
-            var action = new DailyReward
-            {
-                avatarAddress = _avatarAddress,
-            };
-
-            Assert.Throws<FailedLoadStateException>(() => action.Execute(new ActionContext()
-                {
-                    PreviousStates = new State(),
-                    Signer = _agentAddress,
-                    BlockIndex = 0,
-                })
-            );
         }
 
         [Fact]
@@ -137,15 +76,95 @@ namespace Lib9c.Tests.Action
                 Signer = _agentAddress,
             });
 
-            var updatedAddresses = new List<Address>()
+            var updatedAddresses = new List<Address>
             {
                 _avatarAddress,
-                _avatarAddress.Derive(LegacyInventoryKey),
-                _avatarAddress.Derive(LegacyWorldInformationKey),
-                _avatarAddress.Derive(LegacyQuestListKey),
             };
 
             Assert.Equal(updatedAddresses.ToImmutableHashSet(), nextState.UpdatedAddresses);
+        }
+
+        [Theory]
+        [InlineData(1)]
+        [InlineData(2)]
+        public void Execute(int avatarStateSerializedVersion)
+        {
+            IAccountStateDelta previousStates = null;
+            switch (avatarStateSerializedVersion)
+            {
+                case 1:
+                    previousStates = _initialState;
+                    break;
+                case 2:
+                    var avatarState = _initialState.GetAvatarState(_avatarAddress);
+                    previousStates = SetAvatarStateAsV2To(_initialState, avatarState);
+                    break;
+            }
+
+            var nextState = ExecuteInternal(previousStates);
+            var nextGameConfigState = nextState.GetGameConfigState();
+            var nextAvatarState = avatarStateSerializedVersion switch
+            {
+                1 => nextState.GetAvatarState(_avatarAddress),
+                2 => nextState.GetAvatarStateV2(_avatarAddress),
+                _ => null
+            };
+            if (nextAvatarState is null)
+            {
+                return;
+            }
+
+            Assert.Equal(nextGameConfigState.ActionPointMax, nextAvatarState.actionPoint);
+        }
+
+        [Fact]
+        public void Execute_Throw_FailedLoadStateException() =>
+            Assert.Throws<FailedLoadStateException>(() => ExecuteInternal(new State()));
+
+        [Theory]
+        [InlineData(1)]
+        [InlineData(2)]
+        public void Execute_Throw_RequiredBlockIndexException(int avatarStateSerializedVersion)
+        {
+            var gameConfigState = _initialState.GetGameConfigState();
+            IAccountStateDelta previousStates = null;
+            switch (avatarStateSerializedVersion)
+            {
+                case 1:
+                    previousStates = _initialState;
+                    break;
+                case 2:
+                    var avatarState = _initialState.GetAvatarState(_avatarAddress);
+                    previousStates = SetAvatarStateAsV2To(_initialState, avatarState);
+                    break;
+            }
+
+            Assert.Throws<RequiredBlockIndexException>(() =>
+                ExecuteInternal(previousStates, gameConfigState.DailyRewardInterval + 1));
+        }
+
+        private IAccountStateDelta SetAvatarStateAsV2To(IAccountStateDelta state, AvatarState avatarState) =>
+            state
+                .SetState(_avatarAddress.Derive(LegacyInventoryKey), avatarState.inventory.Serialize())
+                .SetState(_avatarAddress.Derive(LegacyWorldInformationKey), avatarState.worldInformation.Serialize())
+                .SetState(_avatarAddress.Derive(LegacyQuestListKey), avatarState.questList.Serialize())
+                .SetState(_avatarAddress, avatarState.SerializeV2());
+
+        private IAccountStateDelta ExecuteInternal(IAccountStateDelta previousStates, long blockIndex = 0)
+        {
+            var dailyRewardAction = new DailyReward
+            {
+                avatarAddress = _avatarAddress,
+            };
+
+            return dailyRewardAction.Execute(new ActionContext
+            {
+                BlockIndex = blockIndex,
+                PreviousStates = previousStates,
+                Random = new TestRandom(),
+                Rehearsal = false,
+                Signer = _agentAddress,
+            });
         }
     }
 }
