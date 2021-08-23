@@ -35,6 +35,9 @@ namespace Nekoyume.BlockChain
         public const int MaxGenesisBytes = 1024 * 1024 * 15; // 15 MiB
 
         public const long V100066ObsoleteIndex = 2200000;
+        
+        // FIXME: Fix version and value when release.
+        public const long V100070ObsoleteIndex = 3000000;
 
         private readonly TimeSpan _blockInterval = TimeSpan.FromSeconds(8);
 

@@ -78,15 +78,15 @@ namespace Lib9c.Tests.Action
 
             var row = _tableSheets.MaterialItemSheet.Values.First(r =>
                 r.ItemSubType == ItemSubType.Hourglass);
-            avatarState.inventory.AddItem(ItemFactory.CreateMaterial(row));
-            avatarState.inventory.AddItem(ItemFactory.CreateTradableMaterial(row));
-            Assert.True(avatarState.inventory.HasFungibleItem(row.ItemId, 0, 2));
+            avatarState.inventory.AddItem(ItemFactory.CreateMaterial(row), 83);
+            avatarState.inventory.AddItem(ItemFactory.CreateTradableMaterial(row), 100);
+            Assert.True(avatarState.inventory.HasFungibleItem(row.ItemId, 0, 183));
 
             var firstEquipmentRow = _tableSheets.EquipmentItemSheet.First;
             Assert.NotNull(firstEquipmentRow);
 
             var gameConfigState = _initialState.GetGameConfigState();
-            var requiredBlockIndex = gameConfigState.HourglassPerBlock * 2;
+            var requiredBlockIndex = gameConfigState.HourglassPerBlock * 200;
             var equipment = (Equipment)ItemFactory.CreateItemUsable(
                 firstEquipmentRow,
                 Guid.NewGuid(),
@@ -139,7 +139,7 @@ namespace Lib9c.Tests.Action
             {
                 PreviousStates = tempState,
                 Signer = _agentAddress,
-                BlockIndex = 1,
+                BlockIndex = 51,
             });
 
             var nextAvatarState = nextState.GetAvatarStateV2(_avatarAddress);
@@ -147,7 +147,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Empty(nextAvatarState.inventory.Materials.Select(r => r.ItemSubType == ItemSubType.Hourglass));
             Assert.Equal(equipment.ItemId, item.ItemId);
-            Assert.Equal(1, item.RequiredBlockIndex);
+            Assert.Equal(51, item.RequiredBlockIndex);
         }
 
         [Fact]
@@ -288,12 +288,12 @@ namespace Lib9c.Tests.Action
         }
 
         [Theory]
-        [InlineData(0, 0, 0, 1)]
-        [InlineData(0, 1, 2, 1)]
-        [InlineData(100, 0, 0, 101)]
-        [InlineData(0, 100, 0, 101)]
-        [InlineData(0, 100, 2, 101)]
-        [InlineData(1, 99, 2, 101)]
+        [InlineData(0, 0, 0, 40)]
+        [InlineData(0, 1, 2, 40)]
+        [InlineData(22, 0, 0, 40)]
+        [InlineData(0, 22, 0, 40)]
+        [InlineData(0, 22, 2, 40)]
+        [InlineData(2, 10, 2, 40)]
         public void Execute_Throw_NotEnoughMaterialException(int materialCount, int tradableCount, long blockIndex, int requiredCount)
         {
             const int slotStateUnlockStage = 1;
@@ -359,7 +359,7 @@ namespace Lib9c.Tests.Action
             {
                 PreviousStates = tempState,
                 Signer = _agentAddress,
-                BlockIndex = 1,
+                BlockIndex = 51,
             }));
         }
 
@@ -464,6 +464,71 @@ namespace Lib9c.Tests.Action
             };
 
             Assert.Equal(result.Serialize(), result2.Serialize());
+        }
+
+        [Fact]
+        public void Execute_Throw_RequiredAppraiseBlockException()
+        {
+            const int slotStateUnlockStage = 1;
+
+            var avatarState = _initialState.GetAvatarState(_avatarAddress);
+            avatarState.worldInformation = new WorldInformation(
+                0,
+                _initialState.GetSheet<WorldSheet>(),
+                slotStateUnlockStage);
+
+            var row = _tableSheets.MaterialItemSheet.Values.First(r =>
+                r.ItemSubType == ItemSubType.Hourglass);
+            avatarState.inventory.AddItem(ItemFactory.CreateMaterial(row), count: 22);
+
+            var firstEquipmentRow = _tableSheets.EquipmentItemSheet.First;
+            Assert.NotNull(firstEquipmentRow);
+
+            var gameConfigState = _initialState.GetGameConfigState();
+            var requiredBlockIndex = gameConfigState.HourglassPerBlock * 40;
+            var equipment = (Equipment)ItemFactory.CreateItemUsable(
+                firstEquipmentRow,
+                Guid.NewGuid(),
+                requiredBlockIndex);
+            avatarState.inventory.AddItem(equipment);
+
+            var result = new CombinationConsumable5.ResultModel
+            {
+                actionPoint = 0,
+                gold = 0,
+                materials = new Dictionary<Material, int>(),
+                itemUsable = equipment,
+                recipeId = 0,
+                itemType = ItemType.Equipment,
+            };
+
+            var mail = new CombinationMail(result, 0, default, requiredBlockIndex);
+            result.id = mail.id;
+            avatarState.Update(mail);
+
+            var slotAddress = _avatarAddress.Derive(string.Format(
+                CultureInfo.InvariantCulture,
+                CombinationSlotState.DeriveFormat,
+                0));
+            var slotState = new CombinationSlotState(slotAddress, slotStateUnlockStage);
+            slotState.Update(result, 0, 0);
+
+            var tempState = _initialState
+                .SetState(_avatarAddress, avatarState.Serialize())
+                .SetState(slotAddress, slotState.Serialize());
+
+            var action = new RapidCombination
+            {
+                avatarAddress = _avatarAddress,
+                slotIndex = 0,
+            };
+
+            Assert.Throws<RequiredAppraiseBlockException>(() => action.Execute(new ActionContext
+            {
+                PreviousStates = tempState,
+                Signer = _agentAddress,
+                BlockIndex = 1,
+            }));
         }
     }
 }

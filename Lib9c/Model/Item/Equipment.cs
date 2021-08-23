@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 using Bencodex.Types;
+using Libplanet.Action;
 using Nekoyume.Model.Stat;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
+using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Model.Item
 {
@@ -13,8 +15,10 @@ namespace Nekoyume.Model.Item
     public class Equipment : ItemUsable, IEquippableItem
     {
         // FIXME: Whether the equipment is equipped or not has no asset value and must be removed from the state.
-        public bool equipped = false;
+        public bool equipped;
         public int level;
+        public int optionCountFromCombination;
+
         public DecimalStat Stat { get; }
         public int SetId { get; }
         public string SpineResourcePath { get; }
@@ -36,32 +40,41 @@ namespace Nekoyume.Model.Item
 
         public Equipment(Dictionary serialized) : base(serialized)
         {
-            if (serialized.TryGetValue((Text) "equipped", out var toEquipped))
+            if (serialized.TryGetValue((Text) LegacyEquippedKey, out var value))
             {
-                equipped = toEquipped.ToBoolean();
+                equipped = value.ToBoolean();
             }
-            if (serialized.TryGetValue((Text) "level", out var toLevel))
+
+            if (serialized.TryGetValue((Text) LegacyLevelKey, out value))
             {
                 try
                 {
-                    level = toLevel.ToInteger();
+                    level = value.ToInteger();
                 }
                 catch (InvalidCastException)
                 {
-                    level = (int) ((Integer) toLevel).Value;
+                    level = (int) ((Integer) value).Value;
                 }
             }
-            if (serialized.TryGetValue((Text) "stat", out var stat))
+
+            if (serialized.TryGetValue((Text) LegacyStatKey, out value))
             {
-                Stat = stat.ToDecimalStat();
+                Stat = value.ToDecimalStat();
             }
-            if (serialized.TryGetValue((Text) "set_id", out var setId))
+
+            if (serialized.TryGetValue((Text) LegacySetIdKey, out value))
             {
-                SetId = setId.ToInteger();
+                SetId = value.ToInteger();
             }
-            if (serialized.TryGetValue((Text) "spine_resource_path", out var spineResourcePath))
+
+            if (serialized.TryGetValue((Text) LegacySpineResourcePathKey, out value))
             {
-                SpineResourcePath = (Text) spineResourcePath;
+                SpineResourcePath = (Text) value;
+            }
+
+            if (serialized.TryGetValue((Text) OptionCountFromCombinationKey, out value))
+            {
+                optionCountFromCombination = value.ToInteger();
             }
         }
 
@@ -70,18 +83,26 @@ namespace Nekoyume.Model.Item
         {
         }
 
-        public override IValue Serialize() =>
+        public override IValue Serialize()
+        {
 #pragma warning disable LAA1002
-            new Dictionary(new Dictionary<IKey, IValue>
+            var dict = new Dictionary(new Dictionary<IKey, IValue>
             {
-                [(Text) "equipped"] = equipped.Serialize(),
-                [(Text) "level"] = level.Serialize(),
-                [(Text) "stat"] = Stat.Serialize(),
-                [(Text) "set_id"] = SetId.Serialize(),
-                [(Text) "spine_resource_path"] = SpineResourcePath.Serialize(),
+                [(Text) LegacyEquippedKey] = equipped.Serialize(),
+                [(Text) LegacyLevelKey] = level.Serialize(),
+                [(Text) LegacyStatKey] = Stat.Serialize(),
+                [(Text) LegacySetIdKey] = SetId.Serialize(),
+                [(Text) LegacySpineResourcePathKey] = SpineResourcePath.Serialize(),
             }.Union((Dictionary) base.Serialize()));
 
+            if (optionCountFromCombination > 0)
+            {
+                dict = dict.SetItem(OptionCountFromCombinationKey, optionCountFromCombination.Serialize());
+            }
+
+            return dict;
 #pragma warning restore LAA1002
+        }
 
         public void Equip()
         {
@@ -104,6 +125,26 @@ namespace Nekoyume.Model.Item
                 GetOptionCount() > 0)
             {
                 UpdateOptions();
+            }
+        }
+
+        public void LevelUpV2(IRandom random, EnhancementCostSheetV2.Row row, bool isGreatSuccess)
+        {
+            level++;
+            var rand = isGreatSuccess ? row.BaseStatGrowthMax
+                :random.Next(row.BaseStatGrowthMin, row.BaseStatGrowthMax + 1);
+            var ratio = rand * GameConfig.TenThousandths;
+            var baseStat = StatsMap.GetStat(UniqueStatType, true) * ratio;
+            if (baseStat > 0)
+            {
+                baseStat = Math.Max(1.0m, baseStat);
+            }
+
+            StatsMap.AddStatValue(UniqueStatType, baseStat);
+
+            if (GetOptionCount() > 0)
+            {
+                UpdateOptionsV2(random, row, isGreatSuccess);
             }
         }
 
@@ -140,6 +181,50 @@ namespace Nekoyume.Model.Item
                 var chance = decimal.ToInt32(skill.Chance * 1.3m);
                 var power = decimal.ToInt32(skill.Power * 1.3m);
                 skill.Update(chance, power);
+            }
+        }
+
+        private void UpdateOptionsV2(IRandom random, EnhancementCostSheetV2.Row row, bool isGreatSuccess)
+        {
+            foreach (var statMapEx in StatsMap.GetAdditionalStats())
+            {
+                var rand = isGreatSuccess
+                    ? row.ExtraStatGrowthMax
+                    : random.Next(row.ExtraStatGrowthMin, row.ExtraStatGrowthMax + 1);
+                var ratio = rand * GameConfig.TenThousandths;
+                var addValue = statMapEx.AdditionalValue * ratio;
+                if (addValue > 0)
+                {
+                    addValue = Math.Max(1.0m, addValue);
+                }
+
+                StatsMap.SetStatAdditionalValue(statMapEx.StatType, statMapEx.AdditionalValue + addValue);
+            }
+
+            var skills = new List<Skill.Skill>();
+            skills.AddRange(Skills);
+            skills.AddRange(BuffSkills);
+            foreach (var skill in skills)
+            {
+                var chanceRand = isGreatSuccess ? row.ExtraSkillChanceGrowthMax
+                    : random.Next(row.ExtraSkillChanceGrowthMin, row.ExtraSkillChanceGrowthMax + 1);
+                var chanceRatio = chanceRand * GameConfig.TenThousandths;
+                var addChance = skill.Chance * chanceRatio;
+                if (addChance > 0)
+                {
+                    addChance = Math.Max(1.0m, addChance);
+                }
+
+                var damageRand = isGreatSuccess ? row.ExtraSkillDamageGrowthMax
+                    : random.Next(row.ExtraSkillDamageGrowthMin, row.ExtraSkillDamageGrowthMax + 1);
+                var damageRatio = damageRand * GameConfig.TenThousandths;
+                var addPower = skill.Power * damageRatio;
+                if (addPower > 0)
+                {
+                    addPower = Math.Max(1.0m, addPower);
+                }
+
+                skill.Update(skill.Chance + (int)addChance, skill.Power + (int)addPower);
             }
         }
 

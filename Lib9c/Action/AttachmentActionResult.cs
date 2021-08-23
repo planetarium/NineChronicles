@@ -19,9 +19,11 @@ namespace Nekoyume.Action
                 ["buy.buyerResult"] = d => new Buy7.BuyerResult(d),
                 ["buy.sellerResult"] = d => new Buy7.SellerResult(d),
                 ["combination.result-model"] = d => new CombinationConsumable5.ResultModel(d),
-                ["itemEnhancement.result"] = d => new ItemEnhancement.ResultModel(d),
+                ["itemEnhancement.result"] = d => new ItemEnhancement7.ResultModel(d),
+                ["item_enhancement8.result"] = d => new ItemEnhancement.ResultModel(d),
                 ["sellCancellation.result"] = d => new SellCancellation.Result(d),
                 ["rapidCombination.result"] = d => new RapidCombination0.ResultModel(d),
+                ["rapid_combination5.result"] = d => new RapidCombination.ResultModel(d),
                 ["dailyReward.dailyRewardResult"] = d => new DailyReward.DailyRewardResult(d),
                 ["monsterCollection.result"] = d => new MonsterCollectionResult(d),
             };
@@ -123,7 +125,7 @@ namespace Nekoyume.Action
             catch (Exception e)
             {
                 Log.Error(
-                    "{0} was raised during deserialize: {1}",
+                    "{FullName} was raised during deserialize: {Serialized}",
                     e.GetType().FullName,
                     serialized);
                 throw;
