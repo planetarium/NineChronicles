@@ -15,14 +15,11 @@ namespace Nekoyume.UI.Module
 
     public class Hourglass : AlphaAnimateModule
     {
-        [SerializeField] 
+        [SerializeField]
         private TextMeshProUGUI countText = null;
 
         [SerializeField]
         private RectTransform tooltipArea = null;
-
-        [SerializeField]
-        private EventTrigger eventTrigger = null;
 
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
 
@@ -37,11 +34,10 @@ namespace Nekoyume.UI.Module
             base.OnDisable();
             _disposables.DisposeAllAndClear();
         }
-      
+
         private void UpdateHourglass(Nekoyume.Model.Item.Inventory inventory)
         {
             var count = Util.GetHourglassCount(inventory, Game.Game.instance.Agent.BlockIndex);
-            Debug.Log($"[UpdateHourglass] : {count}");
             countText.text = count.ToString();
         }
 
