@@ -109,7 +109,7 @@ namespace Nekoyume.Action
                 );
             }
 
-            var result = new ItemEnhancement.ResultModel
+            var result = new ItemEnhancement7.ResultModel
             {
                 itemUsable = enhancementEquipment,
                 materialItemIdList = new[] { materialId }
