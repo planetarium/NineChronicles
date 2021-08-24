@@ -440,6 +440,10 @@ MonoBehaviour:
   - {fileID: 654415664121527320}
   animator: {fileID: 3506855725556325957}
   canvasGroup: {fileID: 5905581381954775593}
+  equipmentGradeSprite: {fileID: 21300000, guid: 11da2efc3a40748dcb0b6549824f2431,
+    type: 3}
+  consumableGradeSprite: {fileID: 21300000, guid: 53bf0a57798894a1f8d5389dd47ec1eb,
+    type: 3}
 --- !u!1 &5668651415530697272
 GameObject:
   m_ObjectHideFlags: 0
@@ -1325,12 +1329,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9102ea9092785405295b3a86fcd0d154, type: 3}
---- !u!224 &7906977291921489980 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 5495995641355029135, guid: 9102ea9092785405295b3a86fcd0d154,
-    type: 3}
-  m_PrefabInstance: {fileID: 2449548210683792051}
-  m_PrefabAsset: {fileID: 0}
 --- !u!114 &2616208282068446426 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 409872150822889065, guid: 9102ea9092785405295b3a86fcd0d154,
@@ -1343,6 +1341,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78e30558c29d4044e9a7c2f30f76ebda, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!224 &7906977291921489980 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 5495995641355029135, guid: 9102ea9092785405295b3a86fcd0d154,
+    type: 3}
+  m_PrefabInstance: {fileID: 2449548210683792051}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &5568942974267275162
 PrefabInstance:
   m_ObjectHideFlags: 0
