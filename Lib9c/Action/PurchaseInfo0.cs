@@ -10,7 +10,7 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
-    public class PurchaseInfo0 : IComparable<PurchaseInfo0>, IComparable
+    public class PurchaseInfo0 : IComparable<PurchaseInfo0>, IComparable, IPurchaseInfo
     {
         public static bool operator >(PurchaseInfo0 left, PurchaseInfo0 right) => left.CompareTo(right) > 0;
 
@@ -78,6 +78,10 @@ namespace Nekoyume.Action
                 price = serialized[PriceKey].ToFungibleAssetValue();
             }
         }
+
+        Address IPurchaseInfo.SellerAgentAddress => sellerAgentAddress;
+        Address IPurchaseInfo.SellerAvatarAddress => sellerAvatarAddress;
+        FungibleAssetValue IPurchaseInfo.Price => price;
 
         public IValue Serialize()
         {
