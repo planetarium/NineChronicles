@@ -30,27 +30,27 @@ _100002,일격(전체),Normal,Attack,BlowAttack,Enemies,1,1 // 노멀 속성의 
 140005,거대 태풍,Wind,Attack,AreaAttack,Enemies,5,5
 200000,체력 증가,Normal,Buff,HPBuff,Self,1,10
 _200001,체력 증가(전체),Normal,Buff,HPBuff,Ally,1,1 // 미구현
-210000,공격 강화,Normal,Buff,AttackBuff,Self,1,25
+210000,공격 강화,Normal,Buff,AttackBuff,Self,1,40
 _210001,공격 강화(전체),Normal,Buff,AttackBuff,Ally,1,1 // 미구현
 210002,공격 약화,Normal,Debuff,AttackBuff,Enemy,1,10
 210003,공격 약화(전체),Normal,Debuff,AttackBuff,Enemies,1,10
 210004,공격 강화,Normal,Buff,AttackBuff,Self,1,10
-220000,방어 강화,Normal,Buff,DefenseBuff,Self,1,25
+220000,방어 강화,Normal,Buff,DefenseBuff,Self,1,40
 _220001,방어 강화(전체),Normal,Buff,DefenseBuff,Ally,1,1 // 미구현
 220002,방어 약화,Normal,Debuff,DefenseBuff,Enemy,1,10
 220003,방어 약화(전체),Normal,Debuff,DefenseBuff,Enemies,1,10
 220004,방어 강화,Normal,Buff,DefenseBuff,Self,1,10
-230000,치명 증가,Normal,Buff,CriticalBuff,Self,1,10
+230000,치명 증가,Normal,Buff,CriticalBuff,Self,1,40
 _230001,치명 증가(전체),Normal,Buff,CriticalBuff,Ally,1,1 // 미구현
 230002,치명 감소,Normal,Debuff,CriticalBuff,Enemy,1,10
 230003,치명 감소(전체),Normal,Debuff,CriticalBuff,Enemies,1,10
 230004,치명 증가,Normal,Buff,CriticalBuff,Self,1,10
-240000,명중 증가,Normal,Buff,HitBuff,Self,1,25
+240000,명중 증가,Normal,Buff,HitBuff,Self,1,40
 _240001,명중 증가(전체),Normal,Buff,HitBuff,Ally,1,1 // 미구현
 240002,명중 감소,Normal,Debuff,HitBuff,Enemy,1,10
 240003,명중 감소(전체),Normal,Debuff,HitBuff,Enemies,1,10
 240004,명중 증가,Normal,Buff,HitBuff,Self,1,10
-250000,속도 증가,Normal,Buff,SpeedBuff,Self,1,25
+250000,속도 증가,Normal,Buff,SpeedBuff,Self,1,40
 _250001,속도 증가(전체),Normal,Buff,SpeedBuff,Ally,1,1 // 미구현
 250002,속도 감소,Normal,Debuff,SpeedBuff,Enemy,1,10
 250003,속도 감소(전체),Normal,Debuff,SpeedBuff,Enemies,1,10

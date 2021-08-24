@@ -30,6 +30,7 @@ MonoBehaviour:
     m_Scopes:
     - com.brunomikoski.animationsequencer
     - com.demigiant.dotween
+    - com.laicasaane.texttyper
     - com.openupm
     m_IsDefault: 0
     m_Capabilities: 0
@@ -44,6 +45,7 @@ MonoBehaviour:
       m_Scopes:
       - com.brunomikoski.animationsequencer
       - com.demigiant.dotween
+      - com.laicasaane.texttyper
       - com.openupm
       m_IsDefault: 0
       m_Capabilities: 0
@@ -53,5 +55,6 @@ MonoBehaviour:
     m_Scopes:
     - com.brunomikoski.animationsequencer
     - com.demigiant.dotween
+    - com.laicasaane.texttyper
     - com.openupm
     m_SelectedScopeIndex: 0

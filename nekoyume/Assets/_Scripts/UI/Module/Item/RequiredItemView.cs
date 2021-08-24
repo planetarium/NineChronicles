@@ -28,7 +28,6 @@ namespace Nekoyume.UI.Module
                 CountTextFormatNotEnough,
                 Model.Count.Value, RequiredCount);
 
-            SetDim(!isEnough);
             countText.gameObject.SetActive(true);
             requiredText.gameObject.SetActive(false);
         }

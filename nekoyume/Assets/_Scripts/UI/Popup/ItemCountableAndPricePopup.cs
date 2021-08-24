@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using Nekoyume.EnumType;
 using Nekoyume.Game.Controller;
 using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
@@ -35,6 +36,7 @@ namespace Nekoyume.UI
         private readonly List<IDisposable> _disposablesForSetData = new List<IDisposable>();
 
         private const int DefaultPrice = 10;
+        public override CloseKeyType CloseKeyType => CloseKeyType.Escape;
 
         #region Mono
 
@@ -52,9 +54,12 @@ namespace Nekoyume.UI
                 }
                 else
                 {
-                    var maxCount = _data.Item.Value.MaxCount.Value;
+                    var maxCount = 1;
+                    if (_data.Item is { Value: { } })
+                    {
+                        maxCount = _data.Item.Value.MaxCount.Value;
+                    }
                     var count = InputFieldValueToValue<int>(countInputField);
-
                     var result = Mathf.Clamp(count, 1, maxCount);
                     countInputField.text = result.ToString();
                     _data.OnChangeCount.OnNext(result);
@@ -132,6 +137,16 @@ namespace Nekoyume.UI
                 OneLinePopup.Push(MailType.System,
                     L10nManager.Localize("NOTIFICATION_QUANTITY_CANNOT_CHANGED"));
             }).AddTo(_disposablesForAwake);
+
+            CloseWidget = () =>
+            {
+                if (countInputField.isFocused || priceInputField.isFocused)
+                {
+                    return;
+                }
+
+                _data?.OnClickCancel.OnNext(_data);
+            };
         }
 
         protected override void OnDestroy()

@@ -24,6 +24,7 @@ namespace Nekoyume.UI
         [SerializeField] private ShopBuyBoard shopBuyBoard = null;
         [SerializeField] private Button sellButton = null;
         [SerializeField] private Button spineButton = null;
+        [SerializeField] private Button closeButton = null;
         [SerializeField] private Canvas frontCanvas;
         [SerializeField] private List<ShopItemViewRow> itemViewItems;
 
@@ -37,7 +38,6 @@ namespace Nekoyume.UI
         {
             base.Awake();
             SharedModel = new Shop();
-            CloseWidget = null;
 
             var ratio = (float) Screen.height / (float) Screen.width;
             var count = Mathf.RoundToInt(10 * ratio) - 2;
@@ -66,6 +66,8 @@ namespace Nekoyume.UI
             });
 
             spineButton.onClick.AddListener(() => _npc.PlayAnimation(NPCAnimation.Type.Emotion_01));
+            closeButton.onClick.AddListener(() => CleanUpWishListAlertPopup(Close));
+            CloseWidget = Close;
         }
 
         public override void Initialize()
@@ -102,12 +104,6 @@ namespace Nekoyume.UI
             if (result)
             {
                 base.Show(ignoreShowAnimation);
-
-                Find<BottomMenu>().Show(UINavigator.NavigationType.Back, SubscribeBackButtonClick,
-                    true, BottomMenu.ToggleableType.Mail, BottomMenu.ToggleableType.Quest,
-                    BottomMenu.ToggleableType.Chat, BottomMenu.ToggleableType.IllustratedBook,
-                    BottomMenu.ToggleableType.Ranking, BottomMenu.ToggleableType.Character);
-
                 AudioController.instance.PlayMusic(AudioController.MusicCode.Shop);
                 shopBuyBoard.ShowDefaultView();
                 shopItems.Show();
@@ -115,6 +111,7 @@ namespace Nekoyume.UI
                 Reset();
                 Find<ShopSell>().gameObject.SetActive(false);
                 Find<DataLoadingScreen>().Close();
+                HelpPopup.HelpMe(100018, true);
             }
         }
 
@@ -127,22 +124,29 @@ namespace Nekoyume.UI
         {
             shopItems.Reset();
             Reset();
+            base.Show(true);
         }
 
-        public override void Close(bool ignoreCloseAnimation = false)
+        private void Close()
         {
-            Find<ItemCountAndPricePopup>().Close();
-            Find<BottomMenu>().Close(ignoreCloseAnimation);
-            base.Close(ignoreCloseAnimation);
+            if (shopItems.IsActiveInputField)
+            {
+                return;
+            }
+
             _npc?.gameObject.SetActive(false);
+            shopItems.Close();
+            Find<ItemCountAndPricePopup>().Close();
+            Close(true);
+            Game.Event.OnRoomEnter.Invoke(true);
         }
 
-        public void Close()
+        public void ForceClose()
         {
+            _npc?.gameObject.SetActive(false);
             shopItems.Close();
+            Find<ItemCountAndPricePopup>().Close();
             Close(true);
-            Find<ShopSell>().Close();
-            Game.Event.OnRoomEnter.Invoke(true);
         }
 
         private void ShowNPC()
@@ -232,7 +236,7 @@ namespace Nekoyume.UI
             }
         }
 
-        private void SubscribeBackButtonClick(BottomMenu bottomMenu)
+        private void OnClickClose()
         {
             if (!CanClose)
             {

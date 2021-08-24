@@ -5,6 +5,7 @@ using Nekoyume.State;
 
 namespace Nekoyume.UI.Model
 {
+    using Nekoyume.Model.Item;
     using UniRx;
 
     public class ItemInformationTooltip : Tooltip
@@ -39,7 +40,7 @@ namespace Nekoyume.UI.Model
                     return;
                 }
 
-                TitleText.Value = item.ItemBase.Value.GetLocalizedName();
+                TitleText.Value = item.ItemBase.Value.GetLocalizedName(false);
 
                 if (item is ShopItem shopItem)
                 {

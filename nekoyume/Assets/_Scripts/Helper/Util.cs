@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using Bencodex.Types;
 using Lib9c.Model.Order;
@@ -9,6 +11,7 @@ namespace Nekoyume.Helper
 {
     public static class Util
     {
+        public const int VisibleEnhancementEffectLevel = 10;
         private const int BlockPerSecond = 12;
 
         public static string GetBlockToTime(int block)
@@ -29,6 +32,7 @@ namespace Nekoyume.Helper
                 {
                     sb.Append(" ");
                 }
+
                 sb.Append($"{timeSpan.Hours}h");
             }
 
@@ -101,6 +105,33 @@ namespace Nekoyume.Helper
             var row = Game.Game.instance.TableSheets.ItemSheet[itemId];
             var item = ItemFactory.CreateItem(row, new Cheat.DebugRandom());
             return item;
+        }
+
+        public static int GetHourglassCount(Inventory inventory, long currentBlockIndex)
+        {
+            if (inventory is null)
+            {
+                return 0;
+            }
+
+            var count = 0;
+            var materials =
+                inventory.Items.OrderByDescending(x => x.item.ItemType == ItemType.Material);
+            var hourglass = materials.Where(x => x.item.ItemSubType == ItemSubType.Hourglass);
+            foreach (var item in hourglass)
+            {
+                if (item.item is TradableMaterial tradableItem)
+                {
+                    if (tradableItem.RequiredBlockIndex > currentBlockIndex)
+                    {
+                        continue;
+                    }
+                }
+
+                count += item.count;
+            }
+
+            return count;
         }
     }
 }

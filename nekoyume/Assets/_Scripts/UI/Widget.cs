@@ -43,6 +43,7 @@ namespace Nekoyume.UI
 
         private readonly Subject<Widget> _onEnableSubject = new Subject<Widget>();
         private readonly Subject<Widget> _onDisableSubject = new Subject<Widget>();
+        private System.Action _onClose;
 
         private Coroutine _coClose;
         private Coroutine _coCompleteCloseAnimation;
@@ -51,6 +52,7 @@ namespace Nekoyume.UI
         protected System.Action SubmitWidget;
 
         public virtual WidgetType WidgetType => WidgetType.Widget;
+        public virtual CloseKeyType CloseKeyType => CloseKeyType.Backspace;
 
         protected RectTransform RectTransform { get; private set; }
 
@@ -207,6 +209,20 @@ namespace Nekoyume.UI
             }
         }
 
+        public static bool IsOpenAnyPopup()
+        {
+            foreach (var model in Pool)
+            {
+                if (model.Value.widget.CloseKeyType == CloseKeyType.Escape &&
+                    model.Value.gameObject.activeSelf)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         public virtual bool IsActive()
         {
             return gameObject.activeSelf;
@@ -224,8 +240,20 @@ namespace Nekoyume.UI
             }
         }
 
+        public void Show(System.Action onClose, bool ignoreShowAnimation = false)
+        {
+            _onClose = onClose;
+            Show(ignoreShowAnimation);
+        }
+
         public virtual void Show(bool ignoreShowAnimation = false)
         {
+            if (!(_coClose is null))
+            {
+                StopCoroutine(_coClose);
+                _coClose = null;
+            }
+
             if (CloseWidget != null ||
                 SubmitWidget != null ||
                 WidgetType == WidgetType.Screen)
@@ -249,8 +277,7 @@ namespace Nekoyume.UI
             AnimationState = AnimationStateType.Showing;
             gameObject.SetActive(true);
 
-            if (!Animator ||
-                ignoreShowAnimation)
+            if (!Animator || ignoreShowAnimation)
             {
                 AnimationState = AnimationStateType.Shown;
                 return;
@@ -272,6 +299,8 @@ namespace Nekoyume.UI
             {
                 return;
             }
+
+            _onClose?.Invoke();
 
             if (!Animator ||
                 ignoreCloseAnimation)
@@ -296,7 +325,10 @@ namespace Nekoyume.UI
                 _coCompleteCloseAnimation = null;
             }
 
-            _coClose = StartCoroutine(CoClose());
+            if (isActiveAndEnabled)
+            {
+                _coClose = StartCoroutine(CoClose());
+            }
         }
 
         protected void Push()
@@ -392,19 +424,34 @@ namespace Nekoyume.UI
                 return;
             }
 
+            if (Input.GetKeyDown(KeyCode.Backspace))
+            {
+                InvokeCloseWidget(KeyCode.Backspace);
+            }
+
             if (Input.GetKeyDown(KeyCode.Escape))
             {
-                if (!WidgetHandler.Instance.IsActiveTutorialMaskWidget)
-                {
-                    WidgetHandler.Instance.HideAllMessageCat();
-                    CloseWidget?.Invoke();
-                }
+                InvokeCloseWidget(KeyCode.Escape);
             }
 
             if (Input.GetKeyDown(KeyCode.Return))
             {
                 WidgetHandler.Instance.HideAllMessageCat();
                 SubmitWidget?.Invoke();
+            }
+        }
+
+        private void InvokeCloseWidget(KeyCode keyCode)
+        {
+            if (!keyCode.ToString().Equals(CloseKeyType.ToString()))
+            {
+                return;
+            }
+
+            if (!WidgetHandler.Instance.IsActiveTutorialMaskWidget)
+            {
+                WidgetHandler.Instance.HideAllMessageCat();
+                CloseWidget?.Invoke();
             }
         }
     }

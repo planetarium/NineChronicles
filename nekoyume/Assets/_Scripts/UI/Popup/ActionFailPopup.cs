@@ -1,4 +1,5 @@
 using Nekoyume.Action;
+using Nekoyume.EnumType;
 using Nekoyume.L10n;
 
 namespace Nekoyume.UI
