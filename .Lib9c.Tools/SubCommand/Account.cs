@@ -35,11 +35,12 @@ namespace Lib9c.Tools.SubCommand
         )
         {
             using Logger logger = Utils.ConfigureLogger(verbose);
+            TextWriter stderr = Console.Error;
             (BlockChain<NCAction> chain, IStore store) =
                 Utils.GetBlockChain(logger, storePath, chainId);
 
             Block<NCAction> offset = Utils.ParseBlockOffset(chain, block);
-            Console.Error.WriteLine("The offset block: #{0} {1}.", offset.Index, offset.Hash);
+            stderr.WriteLine("The offset block: #{0} {1}.", offset.Index, offset.Hash);
 
             Bencodex.Types.Dictionary goldCurrencyStateDict = (Bencodex.Types.Dictionary)
                 chain.GetState(GoldCurrencyState.Address);
@@ -54,7 +55,6 @@ namespace Lib9c.Tools.SubCommand
                 return;
             }
 
-            TextWriter stderr = Console.Error;
             var printed = new HashSet<Address>();
             foreach (BlockHash blockHash in chain.BlockHashes)
             {

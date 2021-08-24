@@ -120,11 +120,14 @@ namespace Lib9c.Tools
             }
         }
 
-        public static Block<NCAction> ParseBlockOffset(BlockChain<NCAction> chain, string blockHashOrIndex)
+        public static Block<NCAction> ParseBlockOffset(
+            BlockChain<NCAction> chain,
+            string blockHashOrIndex,
+            long defaultIndex = -1)
         {
             if (!(blockHashOrIndex is {} blockStr))
             {
-                return chain.Tip;
+                return chain[defaultIndex];
             }
 
             if (long.TryParse(blockStr, out long idx) ||

@@ -3,8 +3,9 @@ using Lib9c.Tools.SubCommand;
 
 namespace Lib9c.Tools
 {
-    [HasSubCommands(typeof(Account), Description = "Manage accounts.")]
+    [HasSubCommands(typeof(Account), Description = "Query about accounts.")]
     [HasSubCommands(typeof(Genesis), Description = "Manage genesis block.")]
+    [HasSubCommands(typeof(Market), Description = "Query about market.")]
     [HasSubCommands(typeof(Tx), Description = "Manage transactions.")]
     [HasSubCommands(typeof(Store), Description = "Manage store.")]
     class Program
