@@ -7,7 +7,9 @@ using Libplanet;
 using Libplanet.Crypto;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
+using Nekoyume.Model.Mail;
 using UniRx;
+using TimeSpan = System.TimeSpan;
 
 namespace Nekoyume.UI
 {
@@ -54,8 +56,22 @@ namespace Nekoyume.UI
             confirmText.text = L10nManager.Localize("UI_CLOSE");
             redeemCodeText.text = L10nManager.Localize("UI_REDEEM_CODE");
 
-            addressCopyButton.OnClickAsObservable().Subscribe(_ => CopyAddressToClipboard());
-            privateKeyCopyButton.OnClickAsObservable().Subscribe(_ => CopyPrivateKeyToClipboard());
+            addressCopyButton.OnClickAsObservable().Subscribe(_ => CopyAddressToClipboard())
+                .AddTo(addressCopyButton);
+
+            addressCopyButton.OnClickAsObservable().ThrottleFirst(TimeSpan.FromSeconds(2f))
+                .Subscribe(_ =>
+                    OneLinePopup.Push(MailType.System, L10nManager.Localize("UI_COPIED")))
+                .AddTo(addressCopyButton);
+
+            privateKeyCopyButton.OnClickAsObservable().Subscribe(_ => CopyPrivateKeyToClipboard())
+                .AddTo(privateKeyCopyButton);
+
+            privateKeyCopyButton.OnClickAsObservable().ThrottleFirst(TimeSpan.FromSeconds(2f))
+                .Subscribe(_ =>
+                    OneLinePopup.Push(MailType.System, L10nManager.Localize("UI_COPIED")))
+                .AddTo(privateKeyCopyButton);
+
             redeemCode.OnRequested.AddListener(() =>
             {
                 Close(true);
