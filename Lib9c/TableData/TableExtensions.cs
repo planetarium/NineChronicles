@@ -25,6 +25,9 @@ namespace Nekoyume.TableData
             }
             throw new ArgumentException(value);
         }
+        
+        public static int ParseInt(string value, int defaultValue) =>
+            TryParseInt(value, out var result) ? result : defaultValue;
 
         public static decimal ParseDecimal(string value)
         {
@@ -34,6 +37,9 @@ namespace Nekoyume.TableData
             }
             throw new ArgumentException(value);
         }
+        
+        public static decimal ParseDecimal(string value, decimal defaultValue) =>
+            TryParseDecimal(value, out var result) ? result : defaultValue;
 
         public static long ParseLong(string value)
         {
@@ -43,5 +49,8 @@ namespace Nekoyume.TableData
             }
             throw new ArgumentException(value);
         }
+        
+        public static long ParseLong(string value, long defaultValue) =>
+            TryParseLong(value, out var result) ? result : defaultValue;
     }
 }

@@ -19,6 +19,14 @@ namespace Lib9c.Tests.Model.Item
             _costumeRow = tableSheets.CostumeItemSheet.First;
         }
 
+        public static Costume CreateFirstCostume(TableSheets tableSheets, Guid guid = default)
+        {
+            var row = tableSheets.CostumeItemSheet.First;
+            Assert.NotNull(row);
+
+            return new Costume(row, guid == default ? Guid.NewGuid() : guid);
+        }
+
         [Fact]
         public void Serialize()
         {
