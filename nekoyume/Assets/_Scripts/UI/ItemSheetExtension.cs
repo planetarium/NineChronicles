@@ -1,6 +1,5 @@
 using Nekoyume.L10n;
 using Nekoyume.TableData;
-using Nekoyume.Helper;
 
 namespace Nekoyume.UI
 {
@@ -8,22 +7,28 @@ namespace Nekoyume.UI
     {
         public static string GetLocalizedName(this ItemSheet.Row value, bool hasColor = true, bool useElementalIcon = true)
         {
-            if (!hasColor)
-            {
-                return L10nManager.Localize($"ITEM_NAME_{value.Id}");
-            }
-
             if (value is EquipmentItemSheet.Row equipmentRow)
             {
-                return equipmentRow.GetLocalizedName(0, useElementalIcon);
+                if (hasColor)
+                {
+                    return equipmentRow.GetLocalizedName(0, useElementalIcon);
+                }
+                else
+                {
+                    return LocalizationExtension.GetLocalizedNonColoredName(
+                        equipmentRow.ElementalType,
+                        equipmentRow.Id,
+                        useElementalIcon);
+                }
             }
 
             if (value is ConsumableItemSheet.Row consumableRow)
             {
-                return consumableRow.GetLocalizedName();
+                return LocalizationExtension.GetLocalizedName(consumableRow, hasColor);
             }
 
-            return L10nManager.Localize($"ITEM_NAME_{value.Id}");
+            return LocalizationExtension.GetLocalizedNonColoredName(
+                value.ElementalType, value.Id, useElementalIcon);
         }
     }
 }
