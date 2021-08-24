@@ -113,7 +113,7 @@ namespace Nekoyume.UI
             ColorHelper.HexToColorRGB("FFF3D4");
 
         private static readonly Color DimmedColor = ColorHelper.HexToColorRGB("848484");
-        private static readonly Vector3 PlayerPosition = new Vector3(999.8f, 999.3f, 3f);
+        private static readonly Vector3 PlayerPosition = new Vector3(1999.8f, 1999.3f, 3f);
 
         public override bool CanHandleInputEvent =>
             base.CanHandleInputEvent &&

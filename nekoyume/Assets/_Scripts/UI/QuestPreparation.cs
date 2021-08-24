@@ -106,7 +106,7 @@ namespace Nekoyume.UI
         private readonly IntReactiveProperty _stageId = new IntReactiveProperty();
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
 
-        private static readonly Vector3 PlayerPosition = new Vector3(999.8f, 999.3f, 3f);
+        private static readonly Vector3 PlayerPosition = new Vector3(1999.8f, 1999.3f, 3f);
 
         public override bool CanHandleInputEvent =>
             base.CanHandleInputEvent &&
