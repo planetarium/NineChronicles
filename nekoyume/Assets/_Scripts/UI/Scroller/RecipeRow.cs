@@ -48,6 +48,12 @@ namespace Nekoyume.UI.Scroller
         [SerializeField]
         private CanvasGroup canvasGroup = null;
 
+        [SerializeField]
+        private Sprite equipmentGradeSprite = null;
+
+        [SerializeField]
+        private Sprite consumableGradeSprite = null;
+
         private readonly int _triggerHash = Animator.StringToHash("Show");
 
         public override void UpdateContent(Model viewModel)
@@ -56,7 +62,20 @@ namespace Nekoyume.UI.Scroller
 
             for (int i = 0; i < gradeImages.Count; ++i)
             {
-                gradeImages[i].enabled = i < viewModel.Grade;
+                var image = gradeImages[i];
+
+                if (i < viewModel.Grade)
+                {
+                    image.enabled = true;
+                    image.sprite =
+                        viewModel.ItemSubType == ItemSubType.Food ?
+                        consumableGradeSprite :
+                        equipmentGradeSprite;
+                }
+                else
+                {
+                    image.enabled = false;
+                }
             }
 
             for (int i = 0; i < recipeCells.Count; ++i)
