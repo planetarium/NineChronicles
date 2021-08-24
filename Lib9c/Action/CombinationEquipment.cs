@@ -343,7 +343,7 @@ namespace Nekoyume.Action
                     continue;
                 }
 
-                var value = random.Next(1, GameConfig.TenThousand + 1);
+                var value = random.Next(1, GameConfig.MaximumProbability + 1);
                 if (value > optionInfo.Ratio)
                 {
                     continue;

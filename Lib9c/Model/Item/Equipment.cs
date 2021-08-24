@@ -4,6 +4,7 @@ using System.Linq;
 using System.Runtime.Serialization;
 using Bencodex.Types;
 using Libplanet.Action;
+using Nekoyume.Extensions;
 using Nekoyume.Model.Stat;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
@@ -133,7 +134,7 @@ namespace Nekoyume.Model.Item
             level++;
             var rand = isGreatSuccess ? row.BaseStatGrowthMax
                 :random.Next(row.BaseStatGrowthMin, row.BaseStatGrowthMax + 1);
-            var ratio = rand * GameConfig.TenThousandths;
+            var ratio = rand.NormalizeFromTenThousandths();
             var baseStat = StatsMap.GetStat(UniqueStatType, true) * ratio;
             if (baseStat > 0)
             {
@@ -191,7 +192,7 @@ namespace Nekoyume.Model.Item
                 var rand = isGreatSuccess
                     ? row.ExtraStatGrowthMax
                     : random.Next(row.ExtraStatGrowthMin, row.ExtraStatGrowthMax + 1);
-                var ratio = rand * GameConfig.TenThousandths;
+                var ratio = rand.NormalizeFromTenThousandths();
                 var addValue = statMapEx.AdditionalValue * ratio;
                 if (addValue > 0)
                 {
@@ -208,7 +209,7 @@ namespace Nekoyume.Model.Item
             {
                 var chanceRand = isGreatSuccess ? row.ExtraSkillChanceGrowthMax
                     : random.Next(row.ExtraSkillChanceGrowthMin, row.ExtraSkillChanceGrowthMax + 1);
-                var chanceRatio = chanceRand * GameConfig.TenThousandths;
+                var chanceRatio = chanceRand.NormalizeFromTenThousandths();
                 var addChance = skill.Chance * chanceRatio;
                 if (addChance > 0)
                 {
@@ -217,7 +218,7 @@ namespace Nekoyume.Model.Item
 
                 var damageRand = isGreatSuccess ? row.ExtraSkillDamageGrowthMax
                     : random.Next(row.ExtraSkillDamageGrowthMin, row.ExtraSkillDamageGrowthMax + 1);
-                var damageRatio = damageRand * GameConfig.TenThousandths;
+                var damageRatio = damageRand.NormalizeFromTenThousandths();
                 var addPower = skill.Power * damageRatio;
                 if (addPower > 0)
                 {

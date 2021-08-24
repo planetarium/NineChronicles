@@ -327,7 +327,7 @@ namespace Nekoyume.Action
 
         public static EnhancementResult GetEnhancementResult(EnhancementCostSheetV2.Row row, IRandom random)
         {
-            var rand = random.Next(1, GameConfig.TenThousand + 1);
+            var rand = random.Next(1, GameConfig.MaximumProbability + 1);
             if (rand <= row.GreatSuccessRatio)
             {
                 return EnhancementResult.GreatSuccess;

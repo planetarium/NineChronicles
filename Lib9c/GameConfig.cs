@@ -44,9 +44,7 @@ namespace Nekoyume
         public const int ArenaActivationCostNCG = 100;
         public const int ArenaScoreDefault = 1000;
         public const int ArenaChallengeCountMax = 5;
-
-        public const decimal TenThousandths = 0.0001m;
-        public const int TenThousand = 10000;
+        public const int MaximumProbability = 10000;
         public const int RequiredAppraiseBlock = 50;
 
         #endregion
