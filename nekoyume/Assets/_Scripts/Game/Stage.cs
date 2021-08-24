@@ -686,6 +686,10 @@ namespace Nekoyume.Game
                         Widget.Find<HeaderMenu>().Close(true);
                         isTutorial = true;
                     }
+                    else
+                    {
+                        Widget.Find<HeaderMenu>().Show();
+                    }
                 }
                 else
                 {
