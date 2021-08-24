@@ -97,10 +97,7 @@ namespace Nekoyume.Helper
             return itemOptionInfo != null;
         }
 
-        public static List<EquipmentItemOptionSheet.Row> GetStatOptionRows(
-            int subRecipeId,
-            ItemUsable itemUsable,
-            long requiredBlockIndex)
+        public static List<EquipmentItemOptionSheet.Row> GetStatOptionRows(int subRecipeId, ItemUsable itemUsable)
         {
             var subRecipeRow = Game.Game.instance.TableSheets.EquipmentItemSubRecipeSheetV2.OrderedList
                 .FirstOrDefault(e => e.Id == subRecipeId);

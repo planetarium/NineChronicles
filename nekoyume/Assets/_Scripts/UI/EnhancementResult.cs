@@ -295,6 +295,7 @@ namespace Nekoyume.UI
                 case "Show":
                 case "GreatSuccess":
                 case "Success":
+                case "Fail":
                     _disposableOfSkip ??= Observable.EveryUpdate()
                         .Where(_ => Input.GetMouseButtonDown(0) ||
                                     Input.GetKeyDown(KeyCode.Return) ||
