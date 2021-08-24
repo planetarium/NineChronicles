@@ -82,6 +82,7 @@ namespace Nekoyume.Action
         Address IPurchaseInfo.SellerAgentAddress => sellerAgentAddress;
         Address IPurchaseInfo.SellerAvatarAddress => sellerAvatarAddress;
         FungibleAssetValue IPurchaseInfo.Price => price;
+        ItemSubType IPurchaseInfo.ItemSubType => itemSubType;
 
         public IValue Serialize()
         {

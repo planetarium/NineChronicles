@@ -1,6 +1,7 @@
 using System;
 using Libplanet;
 using Libplanet.Assets;
+using Nekoyume.Model.Item;
 
 namespace Nekoyume.Action
 {
@@ -9,5 +10,6 @@ namespace Nekoyume.Action
         Address SellerAgentAddress { get; }
         Address SellerAvatarAddress { get; }
         FungibleAssetValue Price { get; }
+        ItemSubType ItemSubType { get; }
     }
 }

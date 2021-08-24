@@ -59,7 +59,7 @@ namespace Nekoyume.Action
         public readonly Guid TradableId;
         public Address SellerAgentAddress { get; }
         public Address SellerAvatarAddress { get; }
-        public readonly ItemSubType ItemSubType;
+        public ItemSubType ItemSubType { get; }
         public FungibleAssetValue Price { get; }
 
         public PurchaseInfo(

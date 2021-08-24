@@ -11,7 +11,7 @@ using Libplanet.RocksDBStore;
 using Libplanet.Store;
 using Libplanet.Tx;
 using Nekoyume.Action;
-using Nekoyume.Model.State;
+using Nekoyume.Model.Item;
 using Serilog.Core;
 using NCAction = Libplanet.Action.PolymorphicAction<Nekoyume.Action.ActionBase>;
 
@@ -39,6 +39,14 @@ namespace Lib9c.Tools.SubCommand
             string to = null,
             [Option('F', Description = "Include failed transactions too.")]
             bool includeFails = false,
+            [Option(
+                'T',
+                Description = "Filter by item type.  This implicitly filters out transactions " +
+                    "made with " + nameof(Buy) + " action version prior to " + nameof(Buy5) +
+                    ".  This can be applied multiple times (meaning: match any of them).  " +
+                    "The list of available types can be found in " + nameof(ItemSubType) +
+                    " enum declared in Lib9c/Model/Item/ItemType.cs file.")]
+            string[] itemType = null,
             [Option('c', Description = "Optional chain ID.  Default is the canonical chain ID.")]
             Guid? chainId = null
         )
@@ -47,6 +55,21 @@ namespace Lib9c.Tools.SubCommand
             TextWriter stderr = Console.Error;
             (BlockChain<NCAction> chain, IStore store) =
                 Utils.GetBlockChain(logger, storePath, monorocksdb, chainId);
+
+            HashSet<ItemSubType> itemTypes = null;
+            if (itemType is {} t)
+            {
+                try
+                {
+                    itemTypes =
+                        t.Select(s => ItemSubType.Parse<ItemSubType>(s, ignoreCase: true))
+                        .ToHashSet();
+                }
+                catch (ArgumentException e)
+                {
+                    throw new CommandExitedException("-T/--item-type: " + e.Message, 1);
+                }
+            }
 
             Block<NCAction> start = Utils.ParseBlockOffset(chain, from, defaultIndex: 0);
             stderr.WriteLine("The bottom block to search: #{0} {1}.", start.Index, start.Hash);
@@ -97,9 +120,15 @@ namespace Lib9c.Tools.SubCommand
                             Seller = p.SellerAgentAddress,
                             SellerAvatar = p.SellerAvatarAddress,
                             Price = p.Price,
+                            ItemSubType = p.ItemSubType,
                         }),
                         _ => new Order[0],
                     };
+
+                    if (itemTypes is {} types)
+                    {
+                        orders = orders.Where(o => o.ItemSubType is {} t && types.Contains(t));
+                    }
 
                     foreach (Order order in orders)
                     {
@@ -154,6 +183,7 @@ namespace Lib9c.Tools.SubCommand
             public Address Seller;
             public Address SellerAvatar;
             public FungibleAssetValue? Price;
+            public ItemSubType? ItemSubType;
         }
     }
 }
