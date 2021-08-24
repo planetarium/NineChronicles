@@ -233,6 +233,7 @@ namespace Nekoyume.UI.Module
             gradeHsv.value = gradeData.GradeHsvValue;
 
             optionTagBg.gameObject.SetActive(false);
+            enhancementImage.gameObject.SetActive(false);
             if (itemBase is Equipment equip)
             {
                 var isUpgraded = equip.level > 0;
