@@ -188,6 +188,7 @@ namespace Nekoyume.Game
             Widget.Find<VersionInfo>().SetVersion(Agent.AppProtocolVersion);
 
             ShowNext(agentInitializeSucceed);
+            StartCoroutine(CoUpdate());
         }
 
         private void SubscribeRPCAgent()
@@ -428,21 +429,22 @@ namespace Nekoyume.Game
             _logsClient?.Dispose();
         }
 
-        private void Update()
+        private IEnumerator CoUpdate()
         {
-            if (Input.GetMouseButtonUp(0))
+            while (enabled)
             {
-                PlayMouseOnClickVFX(Input.mousePosition);
-            }
-            
-            if (Input.GetKeyDown(KeyCode.Escape))
-            {
-                if (Widget.IsOpenAnyPopup())
+                if (Input.GetMouseButtonUp(0))
                 {
-                    return;
+                    PlayMouseOnClickVFX(Input.mousePosition);
                 }
 
-                Quit();
+                if (Input.GetKeyDown(KeyCode.Escape) &&
+                    !Widget.IsOpenAnyPopup())
+                {
+                    Quit();
+                }
+
+                yield return null;
             }
         }
 
