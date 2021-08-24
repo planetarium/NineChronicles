@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Runtime.Serialization;
 using Bencodex.Types;
@@ -154,11 +155,10 @@ namespace Nekoyume.Model.Quest
 
             _listVersion = listVersion;
 
-            for (var i = questSheet.OrderedList.Count; i > 0; i--)
+            ImmutableHashSet<int> questIds = _quests.Select(q => q.Id).ToImmutableHashSet();
+            foreach (var questRow in questSheet.OrderedList)
             {
-                var questRow = questSheet.OrderedList[i - 1];
-                var quest = _quests.FirstOrDefault(e => e.Id == questRow.Id);
-                if (!(quest is null))
+                if (questIds.Contains(questRow.Id))
                 {
                     continue;
                 }
@@ -168,7 +168,7 @@ namespace Nekoyume.Model.Quest
                     questRewardSheet,
                     questItemRewardSheet);
 
-                quest = CreateQuest(questRow, reward, equipmentItemRecipeSheet);
+                Quest quest = CreateQuest(questRow, reward, equipmentItemRecipeSheet);
                 if (quest is null)
                 {
                     continue;
