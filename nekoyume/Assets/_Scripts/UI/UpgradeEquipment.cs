@@ -498,42 +498,56 @@ namespace Nekoyume.UI
             var stats = itemOptionInfo.StatOptions;
             for (var i = 0; i < stats.Count; i++)
             {
-                if (row.ExtraStatGrowthMin == 0 && row.ExtraStatGrowthMax == 0)
-                {
-                    continue;
-                }
-
+                statViews[i].gameObject.SetActive(true);
                 var statType = stats[i].type;
                 var statValue = stats[i].value;
-                var statAdd = Math.Max(1, (int)(statValue * row.ExtraStatGrowthMax.NormalizeFromTenThousandths()));
                 var count = stats[i].count;
-                statViews[i].gameObject.SetActive(true);
-                statViews[i].Set(statType.ToString(),
-                    ValueToString(statValue, statType),
-                    $"(<size=80%>max</size> +{ValueToString(statAdd, statType)})",
-                    count);
+
+                if (row.ExtraStatGrowthMin == 0 && row.ExtraStatGrowthMax == 0)
+                {
+                    statViews[i].Set(statType.ToString(),
+                        ValueToString(statValue, statType),
+                        string.Empty,
+                        count);
+                }
+                else
+                {
+                    var statAdd = Math.Max(1, (int)(statValue * row.ExtraStatGrowthMax.NormalizeFromTenThousandths()));
+                    statViews[i].Set(statType.ToString(),
+                        ValueToString(statValue, statType),
+                        $"(<size=80%>max</size> +{ValueToString(statAdd, statType)})",
+                        count);
+                }
             }
 
             var skills = itemOptionInfo.SkillOptions;
             for (var i = 0; i < skills.Count; i++)
             {
-                if (row.ExtraSkillDamageGrowthMin == 0 && row.ExtraSkillDamageGrowthMax == 0 &&
-                    row.ExtraSkillChanceGrowthMin == 0 && row.ExtraSkillChanceGrowthMax == 0)
-                {
-                    continue;
-                }
-
+                skillViews[i].gameObject.SetActive(true);
                 var skillName = skills[i].name;
                 var power = skills[i].power;
                 var chance = skills[i].chance;
-                var powerAdd = Math.Max(1, (int)(power * row.ExtraSkillDamageGrowthMax.NormalizeFromTenThousandths()));
-                var chanceAdd = Math.Max(1, (int)(chance * row.ExtraSkillChanceGrowthMax.NormalizeFromTenThousandths()));
-                skillViews[i].gameObject.SetActive(true);
-                skillViews[i].Set(skillName,
-                    $"{L10nManager.Localize("UI_SKILL_POWER")} : {power}",
-                    $"(<size=80%>max</size> +{powerAdd})",
-                    $"{L10nManager.Localize("UI_SKILL_CHANCE")} : {chance}",
-                    $"(<size=80%>max</size> +{chanceAdd}%)");
+
+                if (row.ExtraSkillDamageGrowthMin == 0 && row.ExtraSkillDamageGrowthMax == 0 &&
+                    row.ExtraSkillChanceGrowthMin == 0 && row.ExtraSkillChanceGrowthMax == 0)
+                {
+                    skillViews[i].Set(skillName,
+                        $"{L10nManager.Localize("UI_SKILL_POWER")} : {power}",
+                        string.Empty,
+                        $"{L10nManager.Localize("UI_SKILL_CHANCE")} : {chance}",
+                        string.Empty);
+                }
+                else
+                {
+                    var powerAdd = Math.Max(1, (int)(power * row.ExtraSkillDamageGrowthMax.NormalizeFromTenThousandths()));
+                    var chanceAdd = Math.Max(1, (int)(chance * row.ExtraSkillChanceGrowthMax.NormalizeFromTenThousandths()));
+
+                    skillViews[i].Set(skillName,
+                        $"{L10nManager.Localize("UI_SKILL_POWER")} : {power}",
+                        $"(<size=80%>max</size> +{powerAdd})",
+                        $"{L10nManager.Localize("UI_SKILL_CHANCE")} : {chance}",
+                        $"(<size=80%>max</size> +{chanceAdd}%)");
+                }
             }
         }
 
@@ -574,3 +588,4 @@ namespace Nekoyume.UI
         }
     }
 }
+
