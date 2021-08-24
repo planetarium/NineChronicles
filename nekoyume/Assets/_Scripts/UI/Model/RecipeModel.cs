@@ -1,5 +1,6 @@
 using Nekoyume.Helper;
 using Nekoyume.L10n;
+using Nekoyume.Model.Item;
 using Nekoyume.State;
 using Nekoyume.TableData;
 using Nekoyume.UI.Module;
@@ -68,10 +69,10 @@ namespace Nekoyume.UI.Model
                     var resultItem = recipe.GetResultEquipmentItemRow();
 
                     recipeViewModel = new RecipeRow.Model(
-                        resultItem.GetLocalizedName(false),
+                        resultItem.GetLocalizedName(false, false),
                         resultItem.Grade)
                     {
-                        ItemSubType = resultItem.ItemSubType
+                        ItemSubType = resultItem.ItemSubType,
                     };
 
                     EquipmentRecipeMap[key] = recipeViewModel;
@@ -104,6 +105,7 @@ namespace Nekoyume.UI.Model
                         var name = L10nManager.Localize($"ITEM_GROUPNAME_{group.Key}");
                         model = new RecipeRow.Model(name, group.Grade)
                         {
+                            ItemSubType = ItemSubType.Food,
                             StatType = recipe.GetUniqueStat().StatType
                         };
                         ConsumableRecipeMap[key] = model;

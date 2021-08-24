@@ -13,6 +13,7 @@ using System.Collections.Generic;
 
 namespace Nekoyume.UI.Module
 {
+    using System.Linq;
     using UniRx;
 
     // TODO: 지금의 `EquipmentSlot`은 장비 뿐만 아니라 소모품과 코스튬이 모두 사용하고 있습니다.
@@ -247,39 +248,37 @@ namespace Nekoyume.UI.Module
                     enhancementImage.material = gradeData.EnhancementMaterial;
                 }
 
-                if (equip.optionCountFromCombination > 0)
+                foreach (var image in optionTagImages)
                 {
-                    foreach (var image in optionTagImages)
-                    {
-                        image.gameObject.SetActive(false);
-                    }
-
-                    var data = optionTagData.GetOptionTagData(Item.Grade);
-                    optionTagBg.range = data.GradeHsvRange;
-                    optionTagBg.hue = data.GradeHsvHue;
-                    optionTagBg.saturation = data.GradeHsvSaturation;
-                    optionTagBg.value = data.GradeHsvValue;
-                    var optionInfo = new ItemOptionInfo(Item as Equipment);
-
-                    var index = 0;
-                    for (var i = 0; i < optionInfo.StatOptions.Count; ++i)
-                    {
-                        var image = optionTagImages[index];
-                        image.gameObject.SetActive(true);
-                        image.sprite = optionTagData.StatOptionSprite;
-                        ++index;
-                    }
-
-                    for (var i = 0; i < optionInfo.SkillOptions.Count; ++i)
-                    {
-                        var image = optionTagImages[index];
-                        image.gameObject.SetActive(true);
-                        image.sprite = optionTagData.SkillOptionSprite;
-                        ++index;
-                    }
-
-                    optionTagBg.gameObject.SetActive(true);
+                    image.gameObject.SetActive(false);
                 }
+
+                var data = optionTagData.GetOptionTagData(Item.Grade);
+                optionTagBg.range = data.GradeHsvRange;
+                optionTagBg.hue = data.GradeHsvHue;
+                optionTagBg.saturation = data.GradeHsvSaturation;
+                optionTagBg.value = data.GradeHsvValue;
+                var optionInfo = new ItemOptionInfo(Item as Equipment);
+
+                var optionCount = optionInfo.StatOptions.Sum(x => x.count);
+                var index = 0;
+                for (var i = 0; i < optionCount; ++i)
+                {
+                    var image = optionTagImages[index];
+                    image.gameObject.SetActive(true);
+                    image.sprite = optionTagData.StatOptionSprite;
+                    ++index;
+                }
+
+                for (var i = 0; i < optionInfo.SkillOptions.Count; ++i)
+                {
+                    var image = optionTagImages[index];
+                    image.gameObject.SetActive(true);
+                    image.sprite = optionTagData.SkillOptionSprite;
+                    ++index;
+                }
+
+                optionTagBg.gameObject.SetActive(true);
             }
             else
             {

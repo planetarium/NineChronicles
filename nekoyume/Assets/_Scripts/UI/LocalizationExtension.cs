@@ -263,9 +263,10 @@ namespace Nekoyume.UI
                     }
                 case CombinationEquipmentQuest combinationEquipmentQuest:
                     var unlockFormat = L10nManager.Localize("QUEST_COMBINATION_EQUIPMENT_FORMAT");
-                    var itemId = Game.Game.instance.TableSheets.EquipmentItemRecipeSheet.Values
-                        .First(r => r.Id == combinationEquipmentQuest.RecipeId).ResultEquipmentId;
-                    return string.Format(unlockFormat, L10nManager.LocalizeItemName(itemId));
+                    var recipeRow = Game.Game.instance.TableSheets.EquipmentItemRecipeSheet.Values
+                        .First(r => r.Id == combinationEquipmentQuest.RecipeId);
+                    var itemRow = recipeRow.GetResultEquipmentItemRow();
+                    return string.Format(unlockFormat, itemRow.GetLocalizedName(false, true));
                 default:
                     throw new NotSupportedException(
                         $"Given quest[{quest}] doesn't support {nameof(GetContent)}() method.");
@@ -343,10 +344,12 @@ namespace Nekoyume.UI
                 : $"<color=#{GetColorHexByGrade(equipmentRow.Grade)}>{name}</color>";
         }
 
-        public static string GetLocalizedName(this ConsumableItemSheet.Row consumableRow)
+        public static string GetLocalizedName(this ConsumableItemSheet.Row consumableRow, bool hasColor = true)
         {
             var name = GetLocalizedNonColoredName(consumableRow.ElementalType, consumableRow.Id, false);
-            return $"<color=#{GetColorHexByGrade(consumableRow.Grade)}>{name}</color>";
+            return hasColor ? 
+                $"<color=#{GetColorHexByGrade(consumableRow.Grade)}>{name}</color>" :
+                name;
         }
 
         public static string GetLocalizedNonColoredName(ElementalType elementalType, int equipmentId, bool useElementalIcon)
