@@ -42,6 +42,7 @@ namespace Lib9c.Tools
         public static (BlockChain<NCAction> Chain, IStore Store) GetBlockChain(
             ILogger logger,
             string storePath,
+            bool monorocksdb = false,
             Guid? chainId = null
         )
         {
@@ -51,7 +52,10 @@ namespace Lib9c.Tools
                 int.MaxValue
             );
             IStagePolicy<NCAction> stagePolicy = new VolatileStagePolicy<NCAction>();
-            IStore store = new RocksDBStore(storePath);
+            IStore store
+                = monorocksdb
+                ? (IStore)new MonoRocksDBStore(storePath)
+                : new RocksDBStore(storePath);
             IKeyValueStore stateKeyValueStore =
                 new RocksDBKeyValueStore(Path.Combine(storePath, "states"));
             IKeyValueStore stateHashKeyValueStore =

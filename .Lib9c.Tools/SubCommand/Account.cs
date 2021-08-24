@@ -7,6 +7,7 @@ using Libplanet;
 using Libplanet.Assets;
 using Libplanet.Blockchain;
 using Libplanet.Blocks;
+using Libplanet.RocksDBStore;
 using Libplanet.Store;
 using Nekoyume.Action;
 using Nekoyume.Model.State;
@@ -23,6 +24,10 @@ namespace Lib9c.Tools.SubCommand
             bool verbose,
             [Option('s', Description = "Path to the chain store.")]
             string storePath,
+            [Option('M',
+                Description = "Use legacy " + nameof(MonoRocksDBStore) + " instead of " +
+                    nameof(RocksDBStore) + ".")]
+            bool monorocksdb = false,
             [Option(
                 'b',
                 Description = "Optional block hash/index offset to query balances at.  " +
@@ -37,7 +42,7 @@ namespace Lib9c.Tools.SubCommand
             using Logger logger = Utils.ConfigureLogger(verbose);
             TextWriter stderr = Console.Error;
             (BlockChain<NCAction> chain, IStore store) =
-                Utils.GetBlockChain(logger, storePath, chainId);
+                Utils.GetBlockChain(logger, storePath, monorocksdb, chainId);
 
             Block<NCAction> offset = Utils.ParseBlockOffset(chain, block);
             stderr.WriteLine("The offset block: #{0} {1}.", offset.Index, offset.Hash);

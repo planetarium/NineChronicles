@@ -7,6 +7,7 @@ using Libplanet;
 using Libplanet.Assets;
 using Libplanet.Blockchain;
 using Libplanet.Blocks;
+using Libplanet.RocksDBStore;
 using Libplanet.Store;
 using Libplanet.Tx;
 using Nekoyume.Action;
@@ -24,6 +25,10 @@ namespace Lib9c.Tools.SubCommand
             bool verbose,
             [Option('s', Description = "Path to the chain store.")]
             string storePath,
+            [Option('M',
+                Description = "Use legacy " + nameof(MonoRocksDBStore) + " instead of " +
+                    nameof(RocksDBStore) + ".")]
+            bool monorocksdb = false,
             [Option(
                 'f',
                 Description = "Optional bottom block hash/index to search.  Genesis by default.")]
@@ -41,7 +46,7 @@ namespace Lib9c.Tools.SubCommand
             using Logger logger = Utils.ConfigureLogger(verbose);
             TextWriter stderr = Console.Error;
             (BlockChain<NCAction> chain, IStore store) =
-                Utils.GetBlockChain(logger, storePath, chainId);
+                Utils.GetBlockChain(logger, storePath, monorocksdb, chainId);
 
             Block<NCAction> start = Utils.ParseBlockOffset(chain, from, defaultIndex: 0);
             stderr.WriteLine("The bottom block to search: #{0} {1}.", start.Index, start.Hash);
