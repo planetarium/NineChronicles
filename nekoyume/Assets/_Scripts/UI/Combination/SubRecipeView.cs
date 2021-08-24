@@ -16,6 +16,7 @@ using UnityEngine.UI;
 using Nekoyume.Model.Item;
 using Libplanet;
 using System.Security.Cryptography;
+using Nekoyume.Extensions;
 using Toggle = Nekoyume.UI.Module.Toggle;
 using Nekoyume.L10n;
 
@@ -201,7 +202,7 @@ namespace Nekoyume.UI
 
                     blockIndex += subRecipe.RequiredBlockIndex;
                     greatSuccessRate = options
-                        .Select(x => x.Ratio * GameConfig.TenThousandths)
+                        .Select(x => x.Ratio.NormalizeFromTenThousandths())
                         .Aggregate((a, b) => a * b);
 
                     SetOptions(options);
@@ -289,7 +290,7 @@ namespace Nekoyume.UI
 
                     var description = string.Format(OptionTextFormat, option.StatType, statMin, statMax);
                     optionView.OptionText.text = description;
-                    optionView.PercentageText.text = (ratio * GameConfig.TenThousandths).ToString("P0");
+                    optionView.PercentageText.text = (ratio.NormalizeFromTenThousandths()).ToString("P0");
                     optionView.ParentObject.transform.SetSiblingIndex(siblingIndex);
                     optionView.ParentObject.SetActive(true);
                 }
@@ -299,7 +300,7 @@ namespace Nekoyume.UI
                     var description = skillSheet.TryGetValue(option.SkillId, out var skillRow) ?
                         skillRow.GetLocalizedName() : string.Empty;
                     skillView.OptionText.text = description;
-                    skillView.PercentageText.text = (ratio * GameConfig.TenThousandths).ToString("P0");
+                    skillView.PercentageText.text = (ratio.NormalizeFromTenThousandths()).ToString("P0");
                     skillView.ParentObject.transform.SetSiblingIndex(siblingIndex);
                     skillView.ParentObject.SetActive(true);
                 }

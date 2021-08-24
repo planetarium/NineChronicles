@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Action;
 using Nekoyume.EnumType;
+using Nekoyume.Extensions;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
@@ -273,8 +274,8 @@ namespace Nekoyume.UI
                     string.Format(
                         format,
                         itemOptionInfo.MainStat.type,
-                        row.BaseStatGrowthMin * 100 / GameConfig.TenThousand,
-                        row.BaseStatGrowthMax * 100 / GameConfig.TenThousand),
+                        row.BaseStatGrowthMin.NormalizeFromTenThousandths() * 100,
+                        row.BaseStatGrowthMax.NormalizeFromTenThousandths() * 100),
                     string.Empty);
                 information.MainStatView.Show();
             }
@@ -293,8 +294,8 @@ namespace Nekoyume.UI
                 var text = string.Format(
                     format,
                     type,
-                    row.ExtraStatGrowthMin * 100 / GameConfig.TenThousand,
-                    row.ExtraStatGrowthMax * 100 / GameConfig.TenThousand);
+                    row.ExtraStatGrowthMin.NormalizeFromTenThousandths() * 100,
+                    row.ExtraStatGrowthMax.NormalizeFromTenThousandths() * 100);
                 optionView.UpdateView(text, string.Empty, count);
                 optionView.Show();
             }
@@ -315,10 +316,10 @@ namespace Nekoyume.UI
                 var text = string.Format(
                     format,
                     skillName,
-                    row.ExtraSkillDamageGrowthMin * 100 / GameConfig.TenThousand,
-                    row.ExtraSkillDamageGrowthMax * 100 / GameConfig.TenThousand,
-                    row.ExtraSkillChanceGrowthMin * 100 / GameConfig.TenThousand,
-                    row.ExtraSkillChanceGrowthMax * 100 / GameConfig.TenThousand);
+                    row.ExtraSkillDamageGrowthMin.NormalizeFromTenThousandths() * 100,
+                    row.ExtraSkillDamageGrowthMax.NormalizeFromTenThousandths() * 100,
+                    row.ExtraSkillChanceGrowthMin.NormalizeFromTenThousandths() * 100,
+                    row.ExtraSkillChanceGrowthMax.NormalizeFromTenThousandths() * 100);
                 optionView.UpdateView(text, string.Empty);
                 optionView.Show();
             }

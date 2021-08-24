@@ -13,6 +13,7 @@ using UnityEngine;
 using System.Numerics;
 using Nekoyume.Action;
 using Nekoyume.EnumType;
+using Nekoyume.Extensions;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.Model.Stat;
@@ -478,7 +479,7 @@ namespace Nekoyume.UI
             currentLevelText.text = $"+{equipment.level}";
             nextLevelText.text = $"+{equipment.level + 1}";
             successRatioText.text =
-                ((row.GreatSuccessRatio + row.SuccessRatio) * GameConfig.TenThousandths)
+                ((row.GreatSuccessRatio + row.SuccessRatio).NormalizeFromTenThousandths())
                 .ToString("P0");
             requiredBlockIndexText.text = $"{row.SuccessRequiredBlockIndex} +";
 
@@ -487,7 +488,7 @@ namespace Nekoyume.UI
             if (row.BaseStatGrowthMin != 0 && row.BaseStatGrowthMax != 0)
             {
                 var (mainStatType, mainValue, _) = itemOptionInfo.MainStat;
-                var mainAdd = Math.Max(1, (int)(mainValue * row.BaseStatGrowthMax * GameConfig.TenThousandths));
+                var mainAdd = Math.Max(1, (int)(mainValue * row.BaseStatGrowthMax.NormalizeFromTenThousandths()));
                 mainStatView.gameObject.SetActive(true);
                 mainStatView.Set(mainStatType.ToString(),
                     ValueToString(mainValue, mainStatType),
@@ -504,7 +505,7 @@ namespace Nekoyume.UI
 
                 var statType = stats[i].type;
                 var statValue = stats[i].value;
-                var statAdd = Math.Max(1, (int)(statValue * row.ExtraStatGrowthMax * GameConfig.TenThousandths));
+                var statAdd = Math.Max(1, (int)(statValue * row.ExtraStatGrowthMax.NormalizeFromTenThousandths()));
                 var count = stats[i].count;
                 statViews[i].gameObject.SetActive(true);
                 statViews[i].Set(statType.ToString(),
@@ -525,8 +526,8 @@ namespace Nekoyume.UI
                 var skillName = skills[i].name;
                 var power = skills[i].power;
                 var chance = skills[i].chance;
-                var powerAdd = Math.Max(1, (int)(power * row.ExtraSkillDamageGrowthMax * GameConfig.TenThousandths));
-                var chanceAdd = Math.Max(1, (int)(chance * row.ExtraSkillChanceGrowthMax * GameConfig.TenThousandths));
+                var powerAdd = Math.Max(1, (int)(power * row.ExtraSkillDamageGrowthMax.NormalizeFromTenThousandths()));
+                var chanceAdd = Math.Max(1, (int)(chance * row.ExtraSkillChanceGrowthMax.NormalizeFromTenThousandths()));
                 skillViews[i].gameObject.SetActive(true);
                 skillViews[i].Set(skillName,
                     $"{L10nManager.Localize("UI_SKILL_POWER")} : {power}",
