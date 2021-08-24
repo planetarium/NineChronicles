@@ -523,7 +523,7 @@ namespace Lib9c.Tests.Action
                 slotIndex = 0,
             };
 
-            Assert.Throws<RequiredAppraiseBlockException>(() => action.Execute(new ActionContext
+            Assert.Throws<AppraiseBlockNotReachedException>(() => action.Execute(new ActionContext
             {
                 PreviousStates = tempState,
                 Signer = _agentAddress,

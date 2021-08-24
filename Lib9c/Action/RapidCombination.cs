@@ -107,7 +107,10 @@ namespace Nekoyume.Action
 
             if (context.BlockIndex < slotState.StartBlockIndex + GameConfig.RequiredAppraiseBlock)
             {
-                throw new RequiredAppraiseBlockException($"{addressesHex}Aborted as Item appraisal block section. context block index: {context.BlockIndex}, actionable block index : {slotState.StartBlockIndex + GameConfig.RequiredAppraiseBlock}");
+                throw new AppraiseBlockNotReachedException(
+                    $"{addressesHex}Aborted as Item appraisal block section. " +
+                    $"context block index: {context.BlockIndex}, " +
+                    $"actionable block index : {slotState.StartBlockIndex + GameConfig.RequiredAppraiseBlock}");
             }
 
             var count = RapidCombination0.CalculateHourglassCount(gameConfigState, diff);
