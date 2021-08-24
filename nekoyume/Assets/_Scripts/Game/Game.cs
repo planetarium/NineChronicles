@@ -185,12 +185,6 @@ namespace Nekoyume.Game
             // Initialize Stage
             Stage.Initialize();
 
-            Observable.EveryUpdate()
-                .Where(_ => Input.GetMouseButtonUp(0))
-                .Select(_ => Input.mousePosition)
-                .Subscribe(PlayMouseOnClickVFX)
-                .AddTo(gameObject);
-
             Widget.Find<VersionInfo>().SetVersion(Agent.AppProtocolVersion);
 
             ShowNext(agentInitializeSucceed);
@@ -436,6 +430,11 @@ namespace Nekoyume.Game
 
         private void Update()
         {
+            if (Input.GetMouseButtonUp(0))
+            {
+                PlayMouseOnClickVFX(Input.mousePosition);
+            }
+            
             if (Input.GetKeyDown(KeyCode.Escape))
             {
                 if (Widget.IsOpenAnyPopup())

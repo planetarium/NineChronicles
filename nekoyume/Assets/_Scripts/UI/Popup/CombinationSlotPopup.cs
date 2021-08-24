@@ -190,8 +190,7 @@ namespace Nekoyume.UI
 
             var statOptionRows = ItemOptionHelper.GetStatOptionRows(
                 resultModel.subRecipeId.Value,
-                resultModel.itemUsable,
-                requiredBlockIndex);
+                resultModel.itemUsable);
             var format = L10nManager.Localize("UI_COMBINATION_POPUP_COMBINATION_RESULT_STATS");
             for (var i = 0; i < information.StatOptions.Count; i++)
             {
