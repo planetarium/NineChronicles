@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
 {
-    public class EventBanner : MonoBehaviour
+    public class EventBanner : Widget
     {
         [SerializeField]
         private Button playToEarnGoldEventButton;

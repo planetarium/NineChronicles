@@ -9,7 +9,7 @@ namespace Nekoyume.Game
         protected override void Awake()
         {
             base.Awake();
-            transform.localPosition = new Vector3(1000.0f, 1000.0f, 0.0f);
+            transform.localPosition = new Vector3(1000.0f, 1000.0f, -100.0f);
         }
     }
 }

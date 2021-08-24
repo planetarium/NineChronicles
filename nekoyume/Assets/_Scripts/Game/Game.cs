@@ -149,8 +149,6 @@ namespace Nekoyume.Game
 
             // Initialize MainCanvas first
             MainCanvas.instance.InitializeFirst();
-            yield return Addressables.InitializeAsync();
-            Debug.Log("[Game] Start() Addressables initialized");
             // Initialize TableSheets. This should be done before initialize the Agent.
             yield return StartCoroutine(CoInitializeTableSheets());
             Debug.Log("[Game] Start() TableSheets initialized");
@@ -186,12 +184,6 @@ namespace Nekoyume.Game
             Rank.UpdateSharedModel();
             // Initialize Stage
             Stage.Initialize();
-
-            Observable.EveryUpdate()
-                .Where(_ => Input.GetMouseButtonUp(0))
-                .Select(_ => Input.mousePosition)
-                .Subscribe(PlayMouseOnClickVFX)
-                .AddTo(gameObject);
 
             Widget.Find<VersionInfo>().SetVersion(Agent.AppProtocolVersion);
 
@@ -434,6 +426,24 @@ namespace Nekoyume.Game
                 Mixpanel.Flush();
             }
             _logsClient?.Dispose();
+        }
+
+        private void Update()
+        {
+            if (Input.GetMouseButtonUp(0))
+            {
+                PlayMouseOnClickVFX(Input.mousePosition);
+            }
+            
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                if (Widget.IsOpenAnyPopup())
+                {
+                    return;
+                }
+
+                Quit();
+            }
         }
 
         public static void Quit()

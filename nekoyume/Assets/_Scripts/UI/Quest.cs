@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using Nekoyume.EnumType;
 using Nekoyume.L10n;
 using TMPro;
 using UnityEngine;
@@ -42,6 +43,9 @@ namespace Nekoyume.UI
 
         private readonly Module.ToggleGroup _toggleGroup = new Module.ToggleGroup();
 
+        public override WidgetType WidgetType => WidgetType.Popup;
+        public override CloseKeyType CloseKeyType => CloseKeyType.Escape;
+
         #region override
         protected override void Awake()
         {
@@ -65,6 +69,7 @@ namespace Nekoyume.UI
             {
                 blur.Show();
             }
+            HelpPopup.HelpMe(100011, true);
         }
 
         public override void Close(bool ignoreCloseAnimation = false)

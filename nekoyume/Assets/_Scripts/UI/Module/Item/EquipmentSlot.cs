@@ -8,6 +8,8 @@ using UniRx.Triggers;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using Coffee.UIEffects;
+using System.Collections.Generic;
 
 namespace Nekoyume.UI.Module
 {
@@ -23,7 +25,7 @@ namespace Nekoyume.UI.Module
         private static readonly Color DimmedColor = ColorHelper.HexToColorRGB("848484");
 
         [SerializeField]
-        private Image gradeImage = null;
+        protected OptionTagDataScriptableObject optionTagData = null;
 
         [SerializeField]
         private Image defaultImage = null;
@@ -42,6 +44,24 @@ namespace Nekoyume.UI.Module
 
         [SerializeField]
         private int itemSubTypeIndex = 1;
+
+        [SerializeField]
+        protected UIHsvModifier optionTagBg = null;
+
+        [SerializeField]
+        protected List<Image> optionTagImages = null;
+
+        [SerializeField]
+        protected ItemViewDataScriptableObject itemViewData;
+
+        [SerializeField]
+        protected Image gradeImage;
+
+        [SerializeField]
+        protected UIHsvModifier gradeHsv;
+
+        [SerializeField]
+        protected Image enhancementImage;
 
         private int _requireLevel;
         private string _messageForCat;
@@ -203,19 +223,63 @@ namespace Nekoyume.UI.Module
             itemImage.SetNativeSize();
             Item = itemBase;
 
-            var gradeSprite = itemBase.GetBackgroundSprite();
-            if (gradeSprite is null)
-            {
-                throw new FailedToLoadResourceException<Sprite>(itemBase.Grade.ToString());
-            }
-
             gradeImage.enabled = true;
-            gradeImage.overrideSprite = gradeSprite;
+            var gradeData = itemViewData.GetItemViewData(itemBase.Grade);
+            gradeImage.overrideSprite = gradeData.GradeBackground;
+            gradeHsv.range = gradeData.GradeHsvRange;
+            gradeHsv.hue = gradeData.GradeHsvHue;
+            gradeHsv.saturation = gradeData.GradeHsvSaturation;
+            gradeHsv.value = gradeData.GradeHsvValue;
 
-            if (itemBase is Equipment equip && equip.level > 0)
+            optionTagBg.gameObject.SetActive(false);
+            if (itemBase is Equipment equip)
             {
-                enhancementText.enabled = true;
-                enhancementText.text = $"+{equip.level}";
+                var isUpgraded = equip.level > 0;
+                enhancementText.enabled = isUpgraded;
+                if (isUpgraded)
+                {
+                    enhancementText.text = $"+{equip.level}";
+                }
+
+                if (equip.level >= Util.VisibleEnhancementEffectLevel)
+                {
+                    enhancementImage.gameObject.SetActive(true);
+                    enhancementImage.material = gradeData.EnhancementMaterial;
+                }
+
+                if (equip.optionCountFromCombination > 0)
+                {
+                    foreach (var image in optionTagImages)
+                    {
+                        image.gameObject.SetActive(false);
+                    }
+
+                    var data = optionTagData.GetOptionTagData(Item.Grade);
+                    optionTagBg.range = data.GradeHsvRange;
+                    optionTagBg.hue = data.GradeHsvHue;
+                    optionTagBg.saturation = data.GradeHsvSaturation;
+                    optionTagBg.value = data.GradeHsvValue;
+                    var optionInfo = new ItemOptionInfo(Item as Equipment);
+
+                    var index = 0;
+                    for (var i = 0; i < optionInfo.StatOptions.Count; ++i)
+                    {
+                        var image = optionTagImages[index];
+                        image.gameObject.SetActive(true);
+                        image.sprite = optionTagData.StatOptionSprite;
+                        ++index;
+                    }
+
+                    for (var i = 0; i < optionInfo.SkillOptions.Count; ++i)
+                    {
+                        var image = optionTagImages[index];
+                        image.gameObject.SetActive(true);
+                        image.sprite = optionTagData.SkillOptionSprite;
+                        ++index;
+                    }
+
+                    optionTagBg.gameObject.SetActive(true);
+                }
             }
             else
             {
@@ -255,6 +319,8 @@ namespace Nekoyume.UI.Module
             itemImage.enabled = false;
             gradeImage.enabled = false;
             enhancementText.enabled = false;
+            enhancementImage.gameObject.SetActive(false);
+            optionTagBg.gameObject.SetActive(false);
             Item = null;
             Unlock();
         }

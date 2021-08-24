@@ -40,7 +40,7 @@ namespace Nekoyume.UI.Module
 
             if (subRecipeId.HasValue)
             {
-                optionView.Show(equipmentRow.GetLocalizedName(), subRecipeId.Value);
+                optionView.Show(equipmentRow.GetLocalizedName(false), subRecipeId.Value);
                 optionView.SetDimmed(false);
             }
             else

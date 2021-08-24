@@ -34,6 +34,7 @@ Material:
     m_Colors:
     - _ClipRect: {r: -32767, g: -32767, b: 32767, a: 32767}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
+  m_BuildTextureStacks: []
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -50,6 +51,27 @@ MonoBehaviour:
   material: {fileID: 2103686}
   materialHashCode: 0
   m_Version: 1.1.0
+  m_FaceInfo:
+    m_FaceIndex: 0
+    m_FamilyName: 
+    m_StyleName: 
+    m_PointSize: 0
+    m_Scale: 0
+    m_LineHeight: 0
+    m_AscentLine: 0
+    m_CapLine: 0
+    m_MeanLine: 0
+    m_Baseline: 0
+    m_DescentLine: 0
+    m_SuperscriptOffset: 0
+    m_SuperscriptSize: 0
+    m_SubscriptOffset: 0
+    m_SubscriptSize: 0
+    m_UnderlineOffset: 0
+    m_UnderlineThickness: 0
+    m_StrikethroughOffset: 0
+    m_StrikethroughThickness: 0
+    m_TabWidth: 0
   spriteSheet: {fileID: 2800000, guid: dffef66376be4fa480fb02b19edbe903, type: 3}
   m_SpriteCharacterTable:
   - m_ElementType: 2
@@ -615,7 +637,9 @@ MonoBehaviour:
     pivot: {x: 0.5, y: 0.5}
     sprite: {fileID: 0}
   fallbackSpriteAssets:
+  - {fileID: 11400000, guid: 50d1d157fa2994348bd0f7a142b3f442, type: 2}
   - {fileID: 11400000, guid: 2cbe3566f1a6ce840b5486f40e561b43, type: 2}
+  - {fileID: 11400000, guid: 78dc3df05f3994bbd9dbbde9be10aaa2, type: 2}
   - {fileID: 11400000, guid: 9cc7c440a83662047adc1d1e4574fe2b, type: 2}
 --- !u!21 &1369835458
 Material:
@@ -638,3 +662,4 @@ Material:
     m_TexEnvs: []
     m_Floats: []
     m_Colors: []
+  m_BuildTextureStacks: []

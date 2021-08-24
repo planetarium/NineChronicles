@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Battle;
+using Nekoyume.EnumType;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Factory;
@@ -70,6 +71,8 @@ namespace Nekoyume.UI
         private GameObject _cachedCharacterTitle;
 
         public readonly ReactiveProperty<bool> IsTweenEnd = new ReactiveProperty<bool>(true);
+        public override WidgetType WidgetType => WidgetType.Popup;
+        public override CloseKeyType CloseKeyType => CloseKeyType.Escape;
 
         #region Override
 
@@ -145,6 +148,7 @@ namespace Nekoyume.UI
             var currentAvatarState = Game.Game.instance.States.CurrentAvatarState;
             IsTweenEnd.Value = false;
             Show(currentAvatarState, ignoreShowAnimation);
+            HelpPopup.HelpMe(100013, true);
         }
 
         protected override void OnTweenComplete()
@@ -200,7 +204,6 @@ namespace Nekoyume.UI
         private void UpdateSlotView(AvatarState avatarState)
         {
             var game = Game.Game.instance;
-            // var playerModel = game.Stage.GetPlayer().Model;
             var playerModel = _player.Model;
 
             nicknameText.text = string.Format(
@@ -215,7 +218,7 @@ namespace Nekoyume.UI
             if (!(title is null))
             {
                 Destroy(_cachedCharacterTitle);
-                var clone  = ResourcesHelper.GetCharacterTitle(title.Grade, title.GetLocalizedNonColoredName());
+                var clone  = ResourcesHelper.GetCharacterTitle(title.Grade, title.GetLocalizedNonColoredName(false));
                 _cachedCharacterTitle = Instantiate(clone, titleSocket);
             }
 
@@ -356,7 +359,7 @@ namespace Nekoyume.UI
                     if (costume.ItemSubType == ItemSubType.Title)
                     {
                         Destroy(_cachedCharacterTitle);
-                        var clone = ResourcesHelper.GetCharacterTitle(costume.Grade, costume.GetLocalizedNonColoredName());
+                        var clone = ResourcesHelper.GetCharacterTitle(costume.Grade, costume.GetLocalizedNonColoredName(false));
                         _cachedCharacterTitle = Instantiate(clone, titleSocket);
                     }
 
@@ -511,7 +514,7 @@ namespace Nekoyume.UI
                 ? AudioController.SfxCode.ChainMail2
                 : AudioController.SfxCode.Equipment);
             inventory.SharedModel.UpdateEquipmentNotification();
-            Find<BottomMenu>().UpdateInventoryNotification();
+            Find<HeaderMenu>().UpdateInventoryNotification(HasNotification);
         }
 
         private void LocalStateItemEquipModify(ItemBase itemBase, bool equip)

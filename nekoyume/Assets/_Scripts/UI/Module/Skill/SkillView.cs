@@ -31,8 +31,6 @@ namespace Nekoyume.UI.Module
             Model.name.SubscribeTo(nameText).AddTo(_disposablesForModel);
             Model.power.SubscribeTo(powerText).AddTo(_disposablesForModel);
             Model.chance.SubscribeTo(chanceText).AddTo(_disposablesForModel);
-
-            base.SetData(model.iconSprite.Value);
         }
 
         public override void Hide()

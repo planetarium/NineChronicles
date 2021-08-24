@@ -1,4 +1,4 @@
-﻿using TMPro;
+using TMPro;
 using UnityEngine.UI;
 using UnityEngine;
 using System.Collections.Generic;
@@ -19,6 +19,7 @@ namespace Nekoyume.UI
         public TextMeshProUGUI privateKeyTitleText;
         public TMP_InputField privateKeyContentInputField;
         public Button privateKeyCopyButton;
+        public Button closeButton;
         public TextMeshProUGUI warningText;
         public TextMeshProUGUI volumeMasterText;
         public Slider volumeMasterSlider;
@@ -57,11 +58,20 @@ namespace Nekoyume.UI
             privateKeyCopyButton.OnClickAsObservable().Subscribe(_ => CopyPrivateKeyToClipboard());
             redeemCode.OnRequested.AddListener(() =>
             {
-                Close();
+                Close(true);
             });
+
+            closeButton.onClick.AddListener(ApplyCurrentSettings);
             redeemCode.Close();
 
             InitResolution();
+        }
+
+        protected override void OnEnable()
+        {
+            SubmitWidget = () => Close(true);
+            CloseWidget = () => Close(true);
+            base.OnEnable();
         }
 
 
@@ -112,25 +122,26 @@ namespace Nekoyume.UI
             volumeMasterToggle.isOn = settings.isVolumeMasterMuted;
             windowedToggle.isOn = settings.isWindowed;
 
-            base.Show(ignoreStartAnimation);
+            base.Show(true);
 
             if (blur)
             {
                 blur.Show();
             }
+            HelpPopup.HelpMe(100014, true);
         }
 
         public void ApplyCurrentSettings()
         {
             Nekoyume.Settings.Instance.ApplyCurrentSettings();
-            Close();
+            Close(true);
         }
 
         public void RevertSettings()
         {
             Nekoyume.Settings.Instance.ReloadSettings();
             UpdateSoundSettings();
-            Close();
+            Close(true);
         }
 
         public void UpdateSoundSettings()
