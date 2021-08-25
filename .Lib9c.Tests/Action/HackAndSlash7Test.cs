@@ -1,4 +1,4 @@
-namespace Lib9c.Tests.Action
+﻿namespace Lib9c.Tests.Action
 {
     using System;
     using System.Collections.Generic;
@@ -23,7 +23,7 @@ namespace Lib9c.Tests.Action
     using Xunit;
     using static SerializeKeys;
 
-    public class HackAndSlashTest
+    public class HackAndSlash7Test
     {
         private readonly Dictionary<string, string> _sheets;
         private readonly TableSheets _tableSheets;
@@ -42,7 +42,7 @@ namespace Lib9c.Tests.Action
         private readonly WeeklyArenaState _weeklyArenaState;
         private readonly IAccountStateDelta _initialState;
 
-        public HackAndSlashTest()
+        public HackAndSlash7Test()
         {
             _sheets = TableSheetsImporter.ImportSheets();
             _tableSheets = new TableSheets(_sheets);
@@ -98,17 +98,12 @@ namespace Lib9c.Tests.Action
         }
 
         [Theory]
-        [InlineData(GameConfig.RequireCharacterLevel.CharacterFullCostumeSlot, 1, 1, false, false, true)]
-        [InlineData(GameConfig.RequireCharacterLevel.CharacterFullCostumeSlot, 1, 1, false, true, true)]
-        [InlineData(GameConfig.RequireCharacterLevel.CharacterFullCostumeSlot, 1, 1, true, false, true)]
-        [InlineData(200, 1, GameConfig.RequireClearedStageLevel.ActionsInRankingBoard, false, false, true)]
-        [InlineData(200, 1, GameConfig.RequireClearedStageLevel.ActionsInRankingBoard, true, false, true)]
         [InlineData(GameConfig.RequireCharacterLevel.CharacterFullCostumeSlot, 1, 1, false, false, false)]
+        [InlineData(GameConfig.RequireCharacterLevel.CharacterFullCostumeSlot, 1, 1, false, false, true)]
         [InlineData(GameConfig.RequireCharacterLevel.CharacterFullCostumeSlot, 1, 1, false, true, false)]
-        [InlineData(GameConfig.RequireCharacterLevel.CharacterFullCostumeSlot, 1, 1, true, false, false)]
-        [InlineData(200, 1, GameConfig.RequireClearedStageLevel.ActionsInRankingBoard, false, false, false)]
         [InlineData(200, 1, GameConfig.RequireClearedStageLevel.ActionsInRankingBoard, true, false, false)]
-        public void Execute(int avatarLevel, int worldId, int stageId, bool backward, bool isLock, bool isClearedBefore)
+        [InlineData(200, 1, GameConfig.RequireClearedStageLevel.ActionsInRankingBoard, true, true, false)]
+        public void Execute(int avatarLevel, int worldId, int stageId, bool contains, bool backward, bool isLock)
         {
             Assert.True(_tableSheets.WorldSheet.TryGetValue(worldId, out var worldRow));
             Assert.True(stageId >= worldRow.StageBegin);
@@ -117,12 +112,10 @@ namespace Lib9c.Tests.Action
 
             var previousAvatarState = _initialState.GetAvatarStateV2(_avatarAddress);
             previousAvatarState.level = avatarLevel;
-            var clearedStageId = _tableSheets.StageSheet.First?.Id ?? 0;
-            clearedStageId = isClearedBefore ? Math.Max(clearedStageId, stageId - 1) : stageId - 1;
             previousAvatarState.worldInformation = new WorldInformation(
                 0,
                 _tableSheets.WorldSheet,
-                clearedStageId);
+                Math.Max(_tableSheets.StageSheet.First?.Id ?? 1, stageId - 1));
 
             List<Guid> costumes = new List<Guid>();
             IRandom random = new TestRandom();
@@ -215,7 +208,7 @@ namespace Lib9c.Tests.Action
                     .SetState(_avatarAddress.Derive(LegacyQuestListKey), previousAvatarState.questList.Serialize());
             }
 
-            var action = new HackAndSlash
+            var action = new HackAndSlash7
             {
                 costumes = costumes,
                 equipments = equipments,
@@ -223,6 +216,7 @@ namespace Lib9c.Tests.Action
                 worldId = worldId,
                 stageId = stageId,
                 avatarAddress = _avatarAddress,
+                WeeklyArenaAddress = _weeklyArenaState.address,
                 RankingMapAddress = _rankingMapAddress,
             };
 
@@ -236,20 +230,29 @@ namespace Lib9c.Tests.Action
             });
 
             var nextAvatarState = nextState.GetAvatarStateV2(_avatarAddress);
+            var newWeeklyState = nextState.GetWeeklyArenaState(0);
 
+            Assert.Equal(contains, newWeeklyState.ContainsKey(_avatarAddress));
             Assert.True(nextAvatarState.worldInformation.IsStageCleared(stageId));
             Assert.Equal(30, nextAvatarState.mailBox.Count);
+            if (contains)
+            {
+                //Check for Costume CP.
+                Assert.True(
+                    newWeeklyState[_avatarAddress].CombatPoint >
+                    CPHelper.GetCP(nextAvatarState, _tableSheets.CharacterSheet)
+                );
+            }
+
             Assert.Equal(!isLock, nextAvatarState.inventory.Equipments.OfType<Weapon>().Any(w => w.equipped));
 
             var value = nextState.GetState(_rankingMapAddress);
 
-            if (!isClearedBefore)
-            {
-                var rankingMapState = new RankingMapState((Dictionary)value);
-                var info = rankingMapState.GetRankingInfos(null).First();
-                Assert.Equal(info.AgentAddress, _agentAddress);
-                Assert.Equal(info.AvatarAddress, _avatarAddress);
-            }
+            var rankingMapState = new RankingMapState((Dictionary)value);
+            var info = rankingMapState.GetRankingInfos(null).First();
+
+            Assert.Equal(info.AgentAddress, _agentAddress);
+            Assert.Equal(info.AvatarAddress, _avatarAddress);
         }
 
         [Theory]
@@ -304,7 +307,7 @@ namespace Lib9c.Tests.Action
             Assert.Equal(2, avatarState.inventory.Items.Count);
 
             // HackAndSlash
-            var action = new HackAndSlash
+            var action = new HackAndSlash7
             {
                 costumes = new List<Guid>(),
                 equipments = equipments.Select(e => e.NonFungibleId).ToList(),
@@ -312,6 +315,7 @@ namespace Lib9c.Tests.Action
                 worldId = worldId,
                 stageId = stageId,
                 avatarAddress = avatarState.address,
+                WeeklyArenaAddress = _weeklyArenaState.address,
                 RankingMapAddress = _rankingMapAddress,
             };
 
@@ -377,7 +381,7 @@ namespace Lib9c.Tests.Action
 
             var state = _initialState.SetState(_avatarAddress, previousAvatarState.SerializeV2());
 
-            var action = new HackAndSlash
+            var action = new HackAndSlash7
             {
                 costumes = new List<Guid>(),
                 equipments = new List<Guid>(),
@@ -385,6 +389,7 @@ namespace Lib9c.Tests.Action
                 worldId = worldId,
                 stageId = stageId,
                 avatarAddress = _avatarAddress,
+                WeeklyArenaAddress = _weeklyArenaState.address,
                 RankingMapAddress = _rankingMapAddress,
             };
 
@@ -439,7 +444,7 @@ namespace Lib9c.Tests.Action
                 .SetState(_avatarAddress, previousAvatarState.SerializeV2())
                 .SetState(_inventoryAddress, previousAvatarState.inventory.Serialize());
 
-            var action = new HackAndSlash
+            var action = new HackAndSlash7
             {
                 costumes = new List<Guid>(),
                 equipments = equipments,
@@ -447,6 +452,7 @@ namespace Lib9c.Tests.Action
                 worldId = 1,
                 stageId = 1,
                 avatarAddress = _avatarAddress,
+                WeeklyArenaAddress = _weeklyArenaState.address,
                 RankingMapAddress = _rankingMapAddress,
             };
 
@@ -464,7 +470,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void ExecuteThrowInvalidRankingMapAddress()
         {
-            var action = new HackAndSlash
+            var action = new HackAndSlash7
             {
                 costumes = new List<Guid>(),
                 equipments = new List<Guid>(),
@@ -472,6 +478,7 @@ namespace Lib9c.Tests.Action
                 worldId = 1,
                 stageId = 1,
                 avatarAddress = _avatarAddress,
+                WeeklyArenaAddress = _weeklyArenaState.address,
                 RankingMapAddress = default,
             };
 
@@ -493,7 +500,7 @@ namespace Lib9c.Tests.Action
         [InlineData(false)]
         public void Execute_Throw_FailedLoadStateException(bool backward)
         {
-            var action = new HackAndSlash
+            var action = new HackAndSlash7
             {
                 costumes = new List<Guid>(),
                 equipments = new List<Guid>(),
@@ -501,6 +508,7 @@ namespace Lib9c.Tests.Action
                 worldId = 1,
                 stageId = 1,
                 avatarAddress = _avatarAddress,
+                WeeklyArenaAddress = _weeklyArenaState.address,
             };
 
             IAccountStateDelta state = backward ? new State() : _initialState;
@@ -526,7 +534,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void ExecuteThrowSheetRowNotFoundExceptionByWorld()
         {
-            var action = new HackAndSlash
+            var action = new HackAndSlash7
             {
                 costumes = new List<Guid>(),
                 equipments = new List<Guid>(),
@@ -534,6 +542,7 @@ namespace Lib9c.Tests.Action
                 worldId = 100,
                 stageId = 1,
                 avatarAddress = _avatarAddress,
+                WeeklyArenaAddress = _weeklyArenaState.address,
                 RankingMapAddress = _rankingMapAddress,
             };
 
@@ -552,7 +561,7 @@ namespace Lib9c.Tests.Action
         [InlineData(51)]
         public void ExecuteThrowSheetRowColumnException(int stageId)
         {
-            var action = new HackAndSlash
+            var action = new HackAndSlash7
             {
                 costumes = new List<Guid>(),
                 equipments = new List<Guid>(),
@@ -560,6 +569,7 @@ namespace Lib9c.Tests.Action
                 worldId = 1,
                 stageId = stageId,
                 avatarAddress = _avatarAddress,
+                WeeklyArenaAddress = _weeklyArenaState.address,
                 RankingMapAddress = _rankingMapAddress,
             };
 
@@ -576,7 +586,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void ExecuteThrowSheetRowNotFoundExceptionByStage()
         {
-            var action = new HackAndSlash
+            var action = new HackAndSlash7
             {
                 costumes = new List<Guid>(),
                 equipments = new List<Guid>(),
@@ -584,6 +594,7 @@ namespace Lib9c.Tests.Action
                 worldId = 1,
                 stageId = 1,
                 avatarAddress = _avatarAddress,
+                WeeklyArenaAddress = _weeklyArenaState.address,
                 RankingMapAddress = _rankingMapAddress,
             };
 
@@ -603,7 +614,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void ExecuteThrowFailedAddWorldException()
         {
-            var action = new HackAndSlash
+            var action = new HackAndSlash7
             {
                 costumes = new List<Guid>(),
                 equipments = new List<Guid>(),
@@ -611,6 +622,7 @@ namespace Lib9c.Tests.Action
                 worldId = 1,
                 stageId = 1,
                 avatarAddress = _avatarAddress,
+                WeeklyArenaAddress = _weeklyArenaState.address,
                 RankingMapAddress = _rankingMapAddress,
             };
 
@@ -638,7 +650,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void ExecuteThrowInvalidWorldException()
         {
-            var action = new HackAndSlash
+            var action = new HackAndSlash7
             {
                 costumes = new List<Guid>(),
                 equipments = new List<Guid>(),
@@ -646,6 +658,7 @@ namespace Lib9c.Tests.Action
                 worldId = 2,
                 stageId = 51,
                 avatarAddress = _avatarAddress,
+                WeeklyArenaAddress = _weeklyArenaState.address,
                 RankingMapAddress = _rankingMapAddress,
             };
 
@@ -664,7 +677,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void ExecuteThrowInvalidStageException()
         {
-            var action = new HackAndSlash
+            var action = new HackAndSlash7
             {
                 costumes = new List<Guid>(),
                 equipments = new List<Guid>(),
@@ -672,6 +685,7 @@ namespace Lib9c.Tests.Action
                 worldId = 1,
                 stageId = 3,
                 avatarAddress = _avatarAddress,
+                WeeklyArenaAddress = _weeklyArenaState.address,
                 RankingMapAddress = _rankingMapAddress,
             };
 
@@ -705,7 +719,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void ExecuteThrowInvalidStageExceptionUnlockedWorld()
         {
-            var action = new HackAndSlash
+            var action = new HackAndSlash7
             {
                 costumes = new List<Guid>(),
                 equipments = new List<Guid>(),
@@ -713,6 +727,7 @@ namespace Lib9c.Tests.Action
                 worldId = 1,
                 stageId = 2,
                 avatarAddress = _avatarAddress,
+                WeeklyArenaAddress = _weeklyArenaState.address,
                 RankingMapAddress = _rankingMapAddress,
             };
 
@@ -742,7 +757,7 @@ namespace Lib9c.Tests.Action
             var equipment = ItemFactory.CreateItemUsable(equipRow, Guid.NewGuid(), 100);
             avatarState.inventory.AddItem(equipment);
 
-            var action = new HackAndSlash
+            var action = new HackAndSlash7
             {
                 costumes = new List<Guid>(),
                 equipments = new List<Guid>()
@@ -753,6 +768,7 @@ namespace Lib9c.Tests.Action
                 worldId = 1,
                 stageId = 1,
                 avatarAddress = _avatarAddress,
+                WeeklyArenaAddress = _weeklyArenaState.address,
                 RankingMapAddress = _rankingMapAddress,
             };
 
@@ -790,7 +806,7 @@ namespace Lib9c.Tests.Action
             avatarState.inventory.AddItem(equipment);
             state = state.SetState(_inventoryAddress, avatarState.inventory.Serialize());
 
-            var action = new HackAndSlash
+            var action = new HackAndSlash7
             {
                 costumes = new List<Guid>(),
                 equipments = new List<Guid>
@@ -801,6 +817,7 @@ namespace Lib9c.Tests.Action
                 worldId = 1,
                 stageId = 1,
                 avatarAddress = _avatarAddress,
+                WeeklyArenaAddress = _weeklyArenaState.address,
                 RankingMapAddress = _rankingMapAddress,
             };
 
@@ -822,7 +839,7 @@ namespace Lib9c.Tests.Action
                 actionPoint = 0,
             };
 
-            var action = new HackAndSlash
+            var action = new HackAndSlash7
             {
                 costumes = new List<Guid>(),
                 equipments = new List<Guid>(),
@@ -830,6 +847,7 @@ namespace Lib9c.Tests.Action
                 worldId = 1,
                 stageId = 1,
                 avatarAddress = _avatarAddress,
+                WeeklyArenaAddress = _weeklyArenaState.address,
                 RankingMapAddress = _rankingMapAddress,
             };
 
@@ -849,7 +867,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Rehearsal()
         {
-            var action = new HackAndSlash
+            var action = new HackAndSlash7
             {
                 costumes = new List<Guid>(),
                 equipments = new List<Guid>(),
@@ -857,6 +875,7 @@ namespace Lib9c.Tests.Action
                 worldId = 1,
                 stageId = 1,
                 avatarAddress = _avatarAddress,
+                WeeklyArenaAddress = _weeklyArenaState.address,
                 RankingMapAddress = _rankingMapAddress,
             };
 
@@ -864,6 +883,7 @@ namespace Lib9c.Tests.Action
             {
                 _agentAddress,
                 _avatarAddress,
+                _weeklyArenaState.address,
                 _rankingMapAddress,
                 _avatarAddress.Derive(LegacyInventoryKey),
                 _avatarAddress.Derive(LegacyWorldInformationKey),

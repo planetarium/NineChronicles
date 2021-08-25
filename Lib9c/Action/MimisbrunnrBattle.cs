@@ -16,7 +16,7 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("mimisbrunnr_battle4")]
+    [ActionType("mimisbrunnr_battle5")]
     public class MimisbrunnrBattle : GameAction
     {
         public List<Guid> costumes;
@@ -25,7 +25,6 @@ namespace Nekoyume.Action
         public int worldId;
         public int stageId;
         public Address avatarAddress;
-        public Address WeeklyArenaAddress;
         public Address RankingMapAddress;
 
         private const int AlfheimId = 2;
@@ -39,7 +38,6 @@ namespace Nekoyume.Action
                 ["worldId"] = worldId.Serialize(),
                 ["stageId"] = stageId.Serialize(),
                 ["avatarAddress"] = avatarAddress.Serialize(),
-                ["weeklyArenaAddress"] = WeeklyArenaAddress.Serialize(),
                 ["rankingMapAddress"] = RankingMapAddress.Serialize(),
             }.ToImmutableDictionary();
 
@@ -51,7 +49,6 @@ namespace Nekoyume.Action
             worldId = plainValue["worldId"].ToInteger();
             stageId = plainValue["stageId"].ToInteger();
             avatarAddress = plainValue["avatarAddress"].ToAddress();
-            WeeklyArenaAddress = plainValue["weeklyArenaAddress"].ToAddress();
             RankingMapAddress = plainValue["rankingMapAddress"].ToAddress();
         }
 
@@ -65,12 +62,12 @@ namespace Nekoyume.Action
             if (ctx.Rehearsal)
             {
                 states = states.SetState(RankingMapAddress, MarkChanged);
+                states = states.SetState(avatarAddress, MarkChanged);
                 states = states
-                    .SetState(avatarAddress, MarkChanged)
                     .SetState(inventoryAddress, MarkChanged)
                     .SetState(worldInformationAddress, MarkChanged)
                     .SetState(questListAddress, MarkChanged);
-                return states.SetState(WeeklyArenaAddress, MarkChanged);
+                return states.SetState(ctx.Signer, MarkChanged);
             }
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
@@ -87,7 +84,6 @@ namespace Nekoyume.Action
 
             sw.Stop();
             Log.Verbose("{AddressesHex}Mimisbrunnr Get AgentAvatarStates: {Elapsed}", addressesHex, sw.Elapsed);
-
             sw.Restart();
 
             if (avatarState.RankingMapAddress != RankingMapAddress)
@@ -96,7 +92,6 @@ namespace Nekoyume.Action
             }
 
             var worldSheet = states.GetSheet<WorldSheet>();
-            var worldUnlockSheet = states.GetSheet<WorldUnlockSheet>();
             if (!worldSheet.TryGetValue(worldId, out var worldRow, false))
             {
                 throw new SheetRowNotFoundException(addressesHex, nameof(WorldSheet), worldId);
@@ -116,6 +111,7 @@ namespace Nekoyume.Action
                 throw new SheetRowNotFoundException(addressesHex, nameof(StageSheet), stageId);
             }
 
+            var worldUnlockSheet = states.GetSheet<WorldUnlockSheet>();
             var worldInformation = avatarState.worldInformation;
             if (!worldInformation.TryGetWorld(worldId, out var world))
             {
@@ -219,7 +215,7 @@ namespace Nekoyume.Action
             Log.Verbose("{AddressesHex}Mimisbrunnr Initialize Simulator: {Elapsed}", addressesHex, sw.Elapsed);
 
             sw.Restart();
-            simulator.SimulateV2();
+            simulator.SimulateV3();
             sw.Stop();
             Log.Verbose("{AddressesHex}Mimisbrunnr Simulator.Simulate(): {Elapsed}", addressesHex, sw.Elapsed);
 
@@ -248,8 +244,8 @@ namespace Nekoyume.Action
             }
             sw.Stop();
             Log.Verbose("{AddressesHex}Mimisbrunnr ClearStage: {Elapsed}", addressesHex, sw.Elapsed);
-
             sw.Restart();
+
             avatarState.Update(simulator);
 
             var materialSheet = states.GetSheet<MaterialItemSheet>();
@@ -265,9 +261,11 @@ namespace Nekoyume.Action
 
             sw.Stop();
             Log.Verbose("{AddressesHex}Mimisbrunnr Set AvatarState: {Elapsed}", addressesHex, sw.Elapsed);
-
             sw.Restart();
-            if (states.TryGetState(RankingMapAddress, out Dictionary d) && simulator.Log.IsClear)
+
+            if (stageId > world.StageClearedId &&
+                simulator.Log.IsClear &&
+                states.TryGetState(RankingMapAddress, out Dictionary d))
             {
                 var ranking = new RankingMapState(d);
                 ranking.Update(avatarState);
@@ -286,38 +284,7 @@ namespace Nekoyume.Action
 
             sw.Stop();
             Log.Verbose("{AddressesHex}Mimisbrunnr Set RankingState: {Elapsed}", addressesHex, sw.Elapsed);
-
             sw.Restart();
-            if (simulator.Log.stageId >= GameConfig.RequireClearedStageLevel.ActionsInRankingBoard &&
-                simulator.Log.IsClear &&
-                states.TryGetState(WeeklyArenaAddress, out Dictionary weeklyDict))
-            {
-                var weekly = new WeeklyArenaState(weeklyDict);
-                if (!weekly.Ended)
-                {
-                    var characterSheet = states.GetSheet<CharacterSheet>();
-                    if (weekly.ContainsKey(avatarAddress))
-                    {
-                        var info = weekly[avatarAddress];
-                        info.Update(avatarState, characterSheet, costumeStatSheet);
-                        weekly.Update(info);
-                    }
-                    else
-                    {
-                        weekly.SetV2(avatarState, characterSheet, costumeStatSheet);
-                    }
-
-                    sw.Stop();
-                    Log.Verbose("{AddressesHex}Mimisbrunnr Update WeeklyArenaState: {Elapsed}", addressesHex, sw.Elapsed);
-
-                    sw.Restart();
-                    var weeklySerialized = weekly.Serialize();
-                    sw.Stop();
-                    Log.Verbose("{AddressesHex}Mimisbrunnr Serialize RankingState: {Elapsed}", addressesHex, sw.Elapsed);
-
-                    states = states.SetState(weekly.address, weeklySerialized);
-                }
-            }
 
             var ended = DateTimeOffset.UtcNow;
             Log.Verbose("{AddressesHex}Mimisbrunnr Total Executed Time: {Elapsed}", addressesHex, ended - started);

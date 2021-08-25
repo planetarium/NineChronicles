@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
@@ -16,8 +16,9 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("hack_and_slash8")]
-    public class HackAndSlash : GameAction
+    [ActionType("hack_and_slash7")]
+    [ActionObsolete(BlockChain.BlockPolicySource.V100070ObsoleteIndex)]
+    public class HackAndSlash7 : GameAction
     {
         public List<Guid> costumes;
         public List<Guid> equipments;
@@ -25,6 +26,7 @@ namespace Nekoyume.Action
         public int worldId;
         public int stageId;
         public Address avatarAddress;
+        public Address WeeklyArenaAddress;
         public Address RankingMapAddress;
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
@@ -36,6 +38,7 @@ namespace Nekoyume.Action
                 ["worldId"] = worldId.Serialize(),
                 ["stageId"] = stageId.Serialize(),
                 ["avatarAddress"] = avatarAddress.Serialize(),
+                ["weeklyArenaAddress"] = WeeklyArenaAddress.Serialize(),
                 ["rankingMapAddress"] = RankingMapAddress.Serialize(),
             }.ToImmutableDictionary();
 
@@ -49,6 +52,7 @@ namespace Nekoyume.Action
             worldId = plainValue["worldId"].ToInteger();
             stageId = plainValue["stageId"].ToInteger();
             avatarAddress = plainValue["avatarAddress"].ToAddress();
+            WeeklyArenaAddress = plainValue["weeklyArenaAddress"].ToAddress();
             RankingMapAddress = plainValue["rankingMapAddress"].ToAddress();
         }
 
@@ -63,12 +67,15 @@ namespace Nekoyume.Action
             {
                 states = states.SetState(RankingMapAddress, MarkChanged);
                 states = states.SetState(avatarAddress, MarkChanged);
+                states = states.SetState(WeeklyArenaAddress, MarkChanged);
                 states = states
                     .SetState(inventoryAddress, MarkChanged)
                     .SetState(worldInformationAddress, MarkChanged)
                     .SetState(questListAddress, MarkChanged);
                 return states.SetState(ctx.Signer, MarkChanged);
             }
+
+            CheckObsolete(BlockChain.BlockPolicySource.V100070ObsoleteIndex, context);
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
 
@@ -91,7 +98,9 @@ namespace Nekoyume.Action
                 throw new InvalidAddressException($"{addressesHex}Invalid ranking map address");
             }
 
+            // worldId와 stageId가 유효한지 확인합니다.
             var worldSheet = states.GetSheet<WorldSheet>();
+
             if (!worldSheet.TryGetValue(worldId, out var worldRow, false))
             {
                 throw new SheetRowNotFoundException(addressesHex, nameof(WorldSheet), worldId);
@@ -136,11 +145,6 @@ namespace Nekoyume.Action
                     $"{addressesHex}Aborted as the stage ({worldId}/{stageId}) is not cleared; " +
                     $"cleared stage: {world.StageClearedId}"
                 );
-            }
-
-            if (worldId == GameConfig.MimisbrunnrWorldId)
-            {
-                throw new InvalidWorldException($"{addressesHex}{worldId} can't execute HackAndSlash action.");
             }
 
             avatarState.ValidateEquipmentsV2(equipments, context.BlockIndex);
@@ -254,9 +258,7 @@ namespace Nekoyume.Action
             Log.Verbose("{AddressesHex}HAS Set AvatarState: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();
 
-            if (stageId > world.StageClearedId &&
-                simulator.Log.IsClear &&
-                states.TryGetState(RankingMapAddress, out Dictionary d))
+            if (states.TryGetState(RankingMapAddress, out Dictionary d) && simulator.Log.IsClear)
             {
                 var ranking = new RankingMapState(d);
                 ranking.Update(avatarState);
@@ -275,6 +277,67 @@ namespace Nekoyume.Action
             sw.Stop();
             Log.Verbose("{AddressesHex}HAS Set RankingState: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();
+
+            if (simulator.Log.stageId >= GameConfig.RequireClearedStageLevel.ActionsInRankingBoard &&
+                simulator.Log.IsClear &&
+                states.TryGetState(WeeklyArenaAddress, out Dictionary weeklyDict))
+            {
+                sw.Stop();
+                Log.Verbose("{AddressesHex}HAS get weekly arena state: {Elapsed}", addressesHex, sw.Elapsed);
+                sw.Restart();
+
+                bool arenaEnded = weeklyDict["ended"].ToBoolean();
+                if (!arenaEnded)
+                {
+                    var map = (Dictionary)weeklyDict["map"];
+                    ArenaInfo info;
+                    var avatarAddressKey = avatarAddress.ToByteArray();
+
+                    if (map.TryGetValue((Binary)avatarAddressKey, out IValue rawInfo))
+                    {
+                        sw.Stop();
+                        Log.Verbose("{AddressesHex}HAS get ArenaInfo from WeeklyArenaState: {Elapsed}", addressesHex, sw.Elapsed);
+                        sw.Restart();
+                        info = new ArenaInfo((Dictionary)rawInfo);
+
+                        sw.Stop();
+                        Log.Verbose("{AddressesHex}HAS deserialize ArenaInfo: {Elapsed}", addressesHex, sw.Elapsed);
+                        sw.Restart();
+
+                        info.Update(avatarState, characterSheet, costumeStatSheet);
+
+                        sw.Stop();
+                        Log.Verbose("{AddressesHex}HAS ArenaInfo.Update: {Elapsed}", addressesHex, sw.Elapsed);
+                        sw.Restart();
+                    }
+                    else
+                    {
+                        info = new ArenaInfo(avatarState, characterSheet, costumeStatSheet, false);
+                    }
+                    var serializedInfo = info.Serialize();
+
+                    sw.Stop();
+                    Log.Verbose("{AddressesHex}HAS ArenaInfo.Serialize: {Elapsed}", addressesHex, sw.Elapsed);
+                    sw.Restart();
+
+                    map = map.SetItem(avatarAddressKey, serializedInfo);
+
+                    sw.Stop();
+                    Log.Verbose("{AddressesHex}HAS map.SetItem: {Elapsed}", addressesHex, sw.Elapsed);
+                    sw.Restart();
+
+                    weeklyDict = new Dictionary()
+                        .Add("map", map)
+                        .Add("resetIndex", weeklyDict["resetIndex"])
+                        .Add("ended", arenaEnded)
+                        .Add("address", WeeklyArenaAddress.Serialize());
+
+                    sw.Stop();
+                    Log.Verbose("{AddressesHex}HAS Update WeeklyArenaState: {Elapsed}", addressesHex, sw.Elapsed);
+
+                    states = states.SetState(WeeklyArenaAddress, weeklyDict);
+                }
+            }
 
             TimeSpan totalElapsed = DateTimeOffset.UtcNow - started;
             Log.Verbose("{AddressesHex}HAS Total Executed Time: {Elapsed}", addressesHex, totalElapsed);
