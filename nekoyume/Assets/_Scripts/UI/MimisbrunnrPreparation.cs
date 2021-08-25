@@ -467,7 +467,6 @@ namespace Nekoyume.UI
 
         private void SetBattleStartButton(bool interactable)
         {
-            //startButton.interactable = interactable;
             if (interactable)
             {
                 requiredPointText.color = RequiredActionPointOriginColor;

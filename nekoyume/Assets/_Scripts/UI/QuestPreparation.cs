@@ -414,7 +414,6 @@ namespace Nekoyume.UI
 
         private void ReadyToQuest(bool ready)
         {
-            //questButton.interactable = ready;
             requiredPointText.color = ready ? Color.white : Color.red;
             foreach (var particle in particles)
             {
