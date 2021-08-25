@@ -19,6 +19,7 @@ using UnityEngine.UI;
 using mixpanel;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
+using Nekoyume.Model.Mail;
 using Toggle = Nekoyume.UI.Module.Toggle;
 
 namespace Nekoyume.UI
@@ -180,6 +181,12 @@ namespace Nekoyume.UI
             _stageId.Subscribe(SubscribeStage).AddTo(gameObject);
 
             questButton.OnClickAsObservable().Subscribe(_ => QuestClick(repeatToggle.isOn))
+                .AddTo(gameObject);
+
+            questButton.OnClickAsObservable().Where(_ => !EnoughToPlay && !_stage.IsInStage)
+                .ThrottleFirst(TimeSpan.FromSeconds(2f))
+                .Subscribe(_ =>
+                    OneLinePopup.Push(MailType.System, L10nManager.Localize("ERROR_ACTION_POINT")))
                 .AddTo(gameObject);
 
             Game.Event.OnRoomEnter.AddListener(b => Close());
@@ -407,7 +414,7 @@ namespace Nekoyume.UI
 
         private void ReadyToQuest(bool ready)
         {
-            questButton.interactable = ready;
+            //questButton.interactable = ready;
             requiredPointText.color = ready ? Color.white : Color.red;
             foreach (var particle in particles)
             {
@@ -440,6 +447,11 @@ namespace Nekoyume.UI
             if (_stage.IsInStage)
             {
                 questButton.interactable = false;
+                return;
+            }
+
+            if (!EnoughToPlay)
+            {
                 return;
             }
 

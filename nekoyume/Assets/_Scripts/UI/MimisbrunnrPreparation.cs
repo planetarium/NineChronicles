@@ -191,6 +191,12 @@ namespace Nekoyume.UI
             startButton.OnClickAsObservable().Subscribe(_ => BattleClick(repeatToggle.isOn))
                 .AddTo(gameObject);
 
+            startButton.OnClickAsObservable().Where(_ => !EnoughActionPoint && !_stage.IsInStage)
+                .ThrottleFirst(TimeSpan.FromSeconds(2f))
+                .Subscribe(_ =>
+                    OneLinePopup.Push(MailType.System, L10nManager.Localize("ERROR_ACTION_POINT")))
+                .AddTo(gameObject);
+
             Game.Event.OnRoomEnter.AddListener(b => Close());
 
             foreach (var slot in equipmentSlots)
@@ -461,7 +467,7 @@ namespace Nekoyume.UI
 
         private void SetBattleStartButton(bool interactable)
         {
-            startButton.interactable = interactable;
+            //startButton.interactable = interactable;
             if (interactable)
             {
                 requiredPointText.color = RequiredActionPointOriginColor;
@@ -509,6 +515,11 @@ namespace Nekoyume.UI
             if (_stage.IsInStage)
             {
                 startButton.interactable = false;
+                return;
+            }
+
+            if (!EnoughActionPoint)
+            {
                 return;
             }
 
