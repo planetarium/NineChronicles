@@ -123,11 +123,9 @@ namespace Lib9c.Tests.Action
 
         [Theory]
         [InlineData(0, 0, true)]
-        [InlineData(0, 1, true)]
         [InlineData(0, 1799, true)]
         [InlineData(0, 1800, false)]
         [InlineData(1800, 1800, true)]
-        [InlineData(1800, 1800 + 1, true)]
         [InlineData(1800, 1800 + 1799, true)]
         [InlineData(1800, 1800 + 1800, false)]
         public void Execute_Throw_RequiredBlockIndexException(
