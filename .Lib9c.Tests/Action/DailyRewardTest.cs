@@ -101,7 +101,7 @@ namespace Lib9c.Tests.Action
                     break;
             }
 
-            var nextState = ExecuteInternal(previousStates);
+            var nextState = ExecuteInternal(previousStates, 1800);
             var nextGameConfigState = nextState.GetGameConfigState();
             var nextAvatarState = avatarStateSerializedVersion switch
             {
@@ -122,25 +122,28 @@ namespace Lib9c.Tests.Action
             Assert.Throws<FailedLoadStateException>(() => ExecuteInternal(new State()));
 
         [Theory]
-        [InlineData(1)]
-        [InlineData(2)]
-        public void Execute_Throw_RequiredBlockIndexException(int avatarStateSerializedVersion)
+        [InlineData(0, 0, true)]
+        [InlineData(0, 1799, true)]
+        [InlineData(0, 1800, false)]
+        [InlineData(1800, 1800, true)]
+        [InlineData(1800, 1800 + 1799, true)]
+        [InlineData(1800, 1800 + 1800, false)]
+        public void Execute_Throw_RequiredBlockIndexException(
+            long dailyRewardReceivedIndex,
+            long executeBlockIndex,
+            bool throwsException)
         {
-            var gameConfigState = _initialState.GetGameConfigState();
-            IAccountStateDelta previousStates = null;
-            switch (avatarStateSerializedVersion)
+            var avatarState = _initialState.GetAvatarState(_avatarAddress);
+            avatarState.dailyRewardReceivedIndex = dailyRewardReceivedIndex;
+            var previousStates = SetAvatarStateAsV2To(_initialState, avatarState);
+            try
             {
-                case 1:
-                    previousStates = _initialState;
-                    break;
-                case 2:
-                    var avatarState = _initialState.GetAvatarState(_avatarAddress);
-                    previousStates = SetAvatarStateAsV2To(_initialState, avatarState);
-                    break;
+                ExecuteInternal(previousStates, executeBlockIndex);
             }
-
-            Assert.Throws<RequiredBlockIndexException>(() =>
-                ExecuteInternal(previousStates, gameConfigState.DailyRewardInterval + 1));
+            catch (RequiredBlockIndexException)
+            {
+                Assert.True(throwsException);
+            }
         }
 
         private IAccountStateDelta SetAvatarStateAsV2To(IAccountStateDelta state, AvatarState avatarState) =>

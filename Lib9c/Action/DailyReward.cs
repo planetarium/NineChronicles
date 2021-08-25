@@ -38,13 +38,13 @@ namespace Nekoyume.Action
                 throw new FailedLoadStateException($"{addressesHex}Aborted as the game config was failed to load.");
             }
 
-            if (avatarState.dailyRewardReceivedIndex < context.BlockIndex - gameConfigState.DailyRewardInterval)
+            if (context.BlockIndex < avatarState.dailyRewardReceivedIndex + gameConfigState.DailyRewardInterval)
             {
                 var sb = new StringBuilder()
-                    .Append($"{addressesHex}Not enough block index since the last received daily reward.")
+                    .Append($"{addressesHex}Not enough block index to receive daily rewards.")
                     .Append(
-                        $" Expected: Equals or greater than {context.BlockIndex - gameConfigState.DailyRewardInterval}.")
-                    .Append($" Actual: {avatarState.dailyRewardReceivedIndex}");
+                        $" Expected: Equals or greater than ({avatarState.dailyRewardReceivedIndex + gameConfigState.DailyRewardInterval}).")
+                    .Append($" Actual: ({context.BlockIndex})");
                 throw new RequiredBlockIndexException(sb.ToString());
             }
 
