@@ -60,13 +60,15 @@ namespace Nekoyume.BlockChain
             GetPolicy(
                 minimumDifficulty,
                 maximumTransactions,
-                ignoreHardcodedPolicies: false
+                ignoreHardcodedPolicies: false,
+                permissionedMiningPolicy: PermissionedMiningPolicy.Mainnet
             );
 
         // FIXME 남은 설정들도 설정화 해야 할지도?
         internal IBlockPolicy<NCAction> GetPolicy(
             int minimumDifficulty,
             int maximumTransactions,
+            PermissionedMiningPolicy? permissionedMiningPolicy,
             bool ignoreHardcodedPolicies
         )
         {
@@ -82,6 +84,7 @@ namespace Nekoyume.BlockChain
                 maxBlockBytes: MaxBlockBytes,
                 maxGenesisBytes: MaxGenesisBytes,
                 ignoreHardcodedPolicies: ignoreHardcodedPolicies,
+                permissionedMiningPolicy: permissionedMiningPolicy,
                 doesTransactionFollowPolicy: DoesTransactionFollowPolicy
             );
 #endif

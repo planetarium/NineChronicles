@@ -35,14 +35,7 @@ namespace Nekoyume.BlockChain
         /// </summary>
         internal readonly bool IgnoreHardcodedPolicies;
 
-        private readonly ISet<Address> PermissionedMiners = new[]
-        {
-            new Address("ab1dce17dCE1Db1424BB833Af6cC087cd4F5CB6d"),
-            new Address("3217f757064Cd91CAba40a8eF3851F4a9e5b4985"),
-            new Address("474CB59Dea21159CeFcC828b30a8D864e0b94a6B"),
-            new Address("636d187B4d434244A92B65B06B5e7da14b3810A9"),
-        }.ToImmutableHashSet();
-        private const long PermissionedMiningThreshold = 2_300_000;
+        private readonly PermissionedMiningPolicy? _permissionedMiningPolicy;
 
         public BlockPolicy(
             IAction blockAction,
@@ -63,6 +56,7 @@ namespace Nekoyume.BlockChain
                 maxBlockBytes: maxBlockBytes,
                 maxGenesisBytes: maxGenesisBytes,
                 ignoreHardcodedPolicies: false,
+                permissionedMiningPolicy: PermissionedMiningPolicy.Mainnet,
                 doesTransactionFollowPolicy: doesTransactionFollowPolicy
             )
         {
@@ -77,6 +71,7 @@ namespace Nekoyume.BlockChain
             int maxBlockBytes,
             int maxGenesisBytes,
             bool ignoreHardcodedPolicies,
+            PermissionedMiningPolicy? permissionedMiningPolicy,
             Func<Transaction<NCAction>, BlockChain<NCAction>, bool> doesTransactionFollowPolicy = null
         )
             : base(
@@ -99,6 +94,7 @@ namespace Nekoyume.BlockChain
             _minimumDifficulty = minimumDifficulty;
             _difficultyBoundDivisor = difficultyBoundDivisor;
             IgnoreHardcodedPolicies = ignoreHardcodedPolicies;
+            _permissionedMiningPolicy = permissionedMiningPolicy;
         }
 
         public AuthorizedMinersState AuthorizedMinersState
@@ -202,13 +198,18 @@ namespace Nekoyume.BlockChain
             {
                 return null;
             }
-            
-            if (block.Index < PermissionedMiningThreshold)
+
+            if (!(_permissionedMiningPolicy is PermissionedMiningPolicy policy))
             {
                 return null;
             }
             
-            if (PermissionedMiners.Contains(miner) && block.Transactions.Any(t => t.Signer.Equals(miner)))
+            if (block.Index < policy.Threshold)
+            {
+                return null;
+            }
+            
+            if (policy.Miners.Contains(miner) && block.Transactions.Any(t => t.Signer.Equals(miner)))
             {
                 return null;
             }

@@ -287,7 +287,8 @@ namespace Lib9c.Tests
             IBlockPolicy<PolymorphicAction<ActionBase>> policy = blockPolicySource.GetPolicy(
                 10000,
                 100,
-                ignoreHardcodedPolicies: true
+                ignoreHardcodedPolicies: true,
+                permissionedMiningPolicy: null
             );
             IStagePolicy<PolymorphicAction<ActionBase>> stagePolicy =
                 new VolatileStagePolicy<PolymorphicAction<ActionBase>>();
@@ -666,6 +667,62 @@ namespace Lib9c.Tests
                         !type.IsAbstract &&
                         Regex.IsMatch(type.Name, @"\d+$") &&
                         !type.IsDefined(typeof(ActionObsoleteAttribute), false)));
+        }
+
+        [Fact]
+        public async Task PermisionedBlockPolicy()
+        {
+            Block<PolymorphicAction<ActionBase>> genesis = MakeGenesisBlock(
+                default(Address),
+                ImmutableHashSet<Address>.Empty
+            );
+            var permissionedMinerKey = new PrivateKey();
+            var nonPermissionedMinerKey = new PrivateKey();
+            using var store = new DefaultStore(null);
+            using var stateStore = new TrieStateStore(new DefaultKeyValueStore(null), new DefaultKeyValueStore(null));
+            var blockPolicySource = new BlockPolicySource(Logger.None);
+            var blockChain = new BlockChain<PolymorphicAction<ActionBase>>(
+                blockPolicySource.GetPolicy(
+                    minimumDifficulty: 50_000,
+                    maximumTransactions: 100,
+                    permissionedMiningPolicy: new PermissionedMiningPolicy(
+                        threshold: 1,
+                        miners: new[]
+                        {
+                            permissionedMinerKey.ToAddress(),
+                        }.ToImmutableHashSet()
+                    ),
+                    ignoreHardcodedPolicies: true
+                ),
+                new VolatileStagePolicy<PolymorphicAction<ActionBase>>(),
+                store,
+                stateStore,
+                genesis,
+                renderers: new[] { blockPolicySource.BlockRenderer }
+            );
+
+            blockChain.StageTransaction(Transaction<PolymorphicAction<ActionBase>>.Create(
+                0,
+                permissionedMinerKey,
+                genesis.Hash,
+                new PolymorphicAction<ActionBase>[] { }
+            ));
+            await blockChain.MineBlock(permissionedMinerKey.ToAddress());
+
+            // Error, there is no proof tx.
+            await Assert.ThrowsAsync<InvalidMinerException>(() => blockChain.MineBlock(permissionedMinerKey.ToAddress()));
+
+            // Error, it's invalid proof
+            blockChain.StageTransaction(Transaction<PolymorphicAction<ActionBase>>.Create(
+                0,
+                nonPermissionedMinerKey,
+                genesis.Hash,
+                new PolymorphicAction<ActionBase>[] { }
+            ));
+            await Assert.ThrowsAsync<InvalidMinerException>(() => blockChain.MineBlock(permissionedMinerKey.ToAddress()));
+
+            // Error, it isn't permissioned miner.
+            await Assert.ThrowsAsync<InvalidMinerException>(() => blockChain.MineBlock(nonPermissionedMinerKey.ToAddress()));
         }
 
         private Block<PolymorphicAction<ActionBase>> MakeGenesisBlock(
