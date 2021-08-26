@@ -69,8 +69,13 @@ namespace Lib9c.Tools.SubCommand
                 IEnumerable<Address> addrs = b.Transactions
                     .SelectMany(tx => tx.Actions
                         .Select(a => a.InnerAction)
-                        .OfType<TransferAsset>()
-                        .SelectMany(a => new[] { a.Sender, a.Recipient }))
+                        .SelectMany(a => a is TransferAsset t
+                            ? new[] { t.Sender, t.Recipient }
+                            : a is InitializeStates i &&
+                                i.GoldDistributions is Bencodex.Types.List l
+                            ? l.OfType<Bencodex.Types.Dictionary>()
+                                .Select(d => new GoldDistribution(d).Address)
+                            : new Address[0]))
                     .Append(b.Miner);
                 foreach (Address addr in addrs)
                 {
