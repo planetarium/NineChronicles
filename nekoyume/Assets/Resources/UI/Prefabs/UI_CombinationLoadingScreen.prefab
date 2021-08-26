@@ -1121,6 +1121,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2860132527875650757, guid: 6c17785e2b2d9c846a7037abfdbc902b,
         type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 240
+      objectReference: {fileID: 0}
+    - target: {fileID: 2860132527875650757, guid: 6c17785e2b2d9c846a7037abfdbc902b,
+        type: 3}
       propertyPath: m_LocalRotation.w
       value: 0
       objectReference: {fileID: 0}
