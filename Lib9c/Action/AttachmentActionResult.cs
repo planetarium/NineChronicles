@@ -24,7 +24,7 @@ namespace Nekoyume.Action
                 ["sellCancellation.result"] = d => new SellCancellation.Result(d),
                 ["rapidCombination.result"] = d => new RapidCombination0.ResultModel(d),
                 ["rapid_combination5.result"] = d => new RapidCombination.ResultModel(d),
-                ["dailyReward.dailyRewardResult"] = d => new DailyReward.DailyRewardResult(d),
+                ["dailyReward.dailyRewardResult"] = d => new DailyReward2.DailyRewardResult(d),
                 ["monsterCollection.result"] = d => new MonsterCollectionResult(d),
             };
 
