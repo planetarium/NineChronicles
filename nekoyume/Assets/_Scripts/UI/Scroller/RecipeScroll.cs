@@ -162,7 +162,7 @@ namespace Nekoyume.UI.Scroller
             }
 
             yield return null;
-            AdjustCellIntervalAndScrollOffset();
+            Relayout();
 
             foreach (var row in rows)
             {
