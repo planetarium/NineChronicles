@@ -665,6 +665,22 @@ namespace Nekoyume.UI
             {
                 _player.EquipWeapon((Weapon)slot.Item);
             }
+            else if (slot.ItemSubType == ItemSubType.Title)
+            {
+                if (_cachedCharacterTitle)
+                {
+                    Destroy(_cachedCharacterTitle);
+                }
+
+                var costume = (Costume) slot.Item;
+                if (costume != null)
+                {
+                    var clone = ResourcesHelper.GetCharacterTitle(costume.Grade,
+                        costume.GetLocalizedNonColoredName(false));
+                    _cachedCharacterTitle = Instantiate(clone, titleSocket.transform);
+                    _cachedCharacterTitle.name = costume.Id.ToString();
+                }
+            }
             else if (equipCostume)
             {
                 _player.EquipCostume((Costume) slot.Item);
