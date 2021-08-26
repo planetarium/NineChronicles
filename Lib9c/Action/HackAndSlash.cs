@@ -147,10 +147,16 @@ namespace Nekoyume.Action
             avatarState.ValidateEquipmentsV2(equipments, context.BlockIndex);
             avatarState.ValidateConsumable(foods, context.BlockIndex);
             avatarState.ValidateCostume(costumes);
+            
+            sw.Stop();
+            Log.Verbose("{AddressesHex}HAS Validate: {Elapsed}", addressesHex, sw.Elapsed);
+            sw.Restart();
 
             var costumeStatSheet = states.GetSheet<CostumeStatSheet>();
-
+            sw.Stop();
+            Log.Verbose("{AddressesHex}HAS get CostumeStatSheet: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();
+            
             if (avatarState.actionPoint < stageRow.CostAP)
             {
                 throw new NotEnoughActionPointException(
@@ -247,9 +253,9 @@ namespace Nekoyume.Action
 
             sw.Stop();
             Log.Verbose("{AddressesHex}HAS Set AvatarState: {Elapsed}", addressesHex, sw.Elapsed);
-
             sw.Restart();
-            if (states.TryGetState(RankingMapAddress, out Dictionary d) && simulator.Log.IsClear)
+
+            if (simulator.Log.IsClear && states.TryGetState(RankingMapAddress, out Dictionary d))
             {
                 var ranking = new RankingMapState(d);
                 ranking.Update(avatarState);
@@ -268,40 +274,71 @@ namespace Nekoyume.Action
 
             sw.Stop();
             Log.Verbose("{AddressesHex}HAS Set RankingState: {Elapsed}", addressesHex, sw.Elapsed);
-
             sw.Restart();
+
             if (simulator.Log.stageId >= GameConfig.RequireClearedStageLevel.ActionsInRankingBoard &&
                 simulator.Log.IsClear &&
                 states.TryGetState(WeeklyArenaAddress, out Dictionary weeklyDict))
             {
-                var weekly = new WeeklyArenaState(weeklyDict);
-                if (!weekly.Ended)
+                sw.Stop();
+                Log.Verbose("{AddressesHex}HAS get weekly arena state: {Elapsed}", addressesHex, sw.Elapsed);
+                sw.Restart();
+
+                bool arenaEnded = weeklyDict["ended"].ToBoolean();
+                if (!arenaEnded)
                 {
-                    if (weekly.ContainsKey(avatarAddress))
+                    var map = (Dictionary)weeklyDict["map"];
+                    ArenaInfo info;
+                    var avatarAddressKey = avatarAddress.ToByteArray();
+                    
+                    if (map.TryGetValue((Binary)avatarAddressKey, out IValue rawInfo))
                     {
-                        var info = weekly[avatarAddress];
+                        sw.Stop();
+                        Log.Verbose("{AddressesHex}HAS get ArenaInfo from WeeklyArenaState: {Elapsed}", addressesHex, sw.Elapsed);
+                        sw.Restart();
+                        info = new ArenaInfo((Dictionary)rawInfo);
+
+                        sw.Stop();
+                        Log.Verbose("{AddressesHex}HAS deserialize ArenaInfo: {Elapsed}", addressesHex, sw.Elapsed);
+                        sw.Restart();
+
                         info.Update(avatarState, characterSheet, costumeStatSheet);
-                        weekly.Update(info);
+                        
+                        sw.Stop();
+                        Log.Verbose("{AddressesHex}HAS ArenaInfo.Update: {Elapsed}", addressesHex, sw.Elapsed);
+                        sw.Restart();
                     }
                     else
                     {
-                        weekly.SetV2(avatarState, characterSheet, costumeStatSheet);
+                        info = new ArenaInfo(avatarState, characterSheet, costumeStatSheet, false);
                     }
+                    var serializedInfo = info.Serialize();
+
+                    sw.Stop();
+                    Log.Verbose("{AddressesHex}HAS ArenaInfo.Serialize: {Elapsed}", addressesHex, sw.Elapsed);
+                    sw.Restart();
+
+                    map = map.SetItem(avatarAddressKey, serializedInfo);
+
+                    sw.Stop();
+                    Log.Verbose("{AddressesHex}HAS map.SetItem: {Elapsed}", addressesHex, sw.Elapsed);
+                    sw.Restart();
+
+                    weeklyDict = new Dictionary()
+                        .Add("map", map)
+                        .Add("resetIndex", weeklyDict["resetIndex"])
+                        .Add("ended", arenaEnded)
+                        .Add("address", WeeklyArenaAddress.Serialize());
 
                     sw.Stop();
                     Log.Verbose("{AddressesHex}HAS Update WeeklyArenaState: {Elapsed}", addressesHex, sw.Elapsed);
 
-                    sw.Restart();
-                    var weeklySerialized = weekly.Serialize();
-                    sw.Stop();
-                    Log.Verbose("{AddressesHex}HAS Serialize RankingState: {Elapsed}", addressesHex, sw.Elapsed);
-
-                    states = states.SetState(weekly.address, weeklySerialized);
+                    states = states.SetState(WeeklyArenaAddress, weeklyDict);
                 }
             }
 
-            var ended = DateTimeOffset.UtcNow;
-            Log.Verbose("{AddressesHex}HAS Total Executed Time: {Elapsed}", addressesHex, ended - started);
+            TimeSpan totalElapsed = DateTimeOffset.UtcNow - started;
+            Log.Verbose("{AddressesHex}HAS Total Executed Time: {Elapsed}", addressesHex, totalElapsed);
             return states;
         }
     }
