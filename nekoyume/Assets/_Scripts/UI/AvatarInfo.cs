@@ -650,7 +650,7 @@ namespace Nekoyume.UI
             return (submitEnabledFunc, submitText, onSubmit);
         }
 
-        private void ShowRefillConfirmPopup(CountableItem item)
+        public static void ShowRefillConfirmPopup(CountableItem item)
         {
             var confirm = Widget.Find<Confirm>();
             confirm.Show("UI_CONFIRM", "UI_AP_REFILL_CONFIRM_CONTENT");
@@ -665,7 +665,7 @@ namespace Nekoyume.UI
             };
         }
 
-        private bool DimmedFuncForChargeActionPoint(CountableItem item)
+        public static bool DimmedFuncForChargeActionPoint(CountableItem item)
         {
             if (item is null || item.Count.Value < 1)
             {
@@ -687,7 +687,7 @@ namespace Nekoyume.UI
             return !item.Dimmed.Value && !Game.Game.instance.Stage.IsInStage;
         }
 
-        private static void ChargeActionPoint(CountableItem item)
+        public static void ChargeActionPoint(CountableItem item)
         {
             if (item.ItemBase.Value is Nekoyume.Model.Item.Material material)
             {
