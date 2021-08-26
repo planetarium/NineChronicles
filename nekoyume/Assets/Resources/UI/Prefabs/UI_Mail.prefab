@@ -347,8 +347,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 10, y: -42.5}
-  m_SizeDelta: {x: -60, y: -185}
+  m_AnchoredPosition: {x: 5, y: -42.5}
+  m_SizeDelta: {x: -70, y: -185}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &6207194063697094471
 MonoBehaviour:
@@ -366,7 +366,7 @@ MonoBehaviour:
   scrollDirection: 0
   movementType: 1
   elasticity: 0.1
-  scrollSensitivity: 20
+  scrollSensitivity: 10
   inertia: 1
   decelerationRate: 0.03
   snap:
@@ -388,18 +388,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a175726172594722a416eafdb9da7e35, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cellInterval: -0.6086956
-  scrollOffset: -0.6086956
+  cellInterval: -0.6666667
+  scrollOffset: -0.6666667
   loop: 0
   cellContainer: {fileID: 6396994558613178123}
   reuseCellMarginCount: 0
-  paddingHead: 0
-  paddingTail: 0
+  paddingHead: -30
+  paddingTail: 30
   spacing: 0
   cellPrefab: {fileID: 821084334546289288, guid: 93a2b34c475e0411d820646cae36c7ec,
     type: 3}
-  cellSize: 70
-  forcedScrollSensitivity: 20
+  cellSize: 74
+  forcedScrollSensitivity: 10
   fillWithNullToEmptyViewport: 0
 --- !u!222 &8548598829797019104
 CanvasRenderer:

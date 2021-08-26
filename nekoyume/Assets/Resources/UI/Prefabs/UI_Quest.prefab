@@ -3550,8 +3550,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 10, y: -42.5}
-  m_SizeDelta: {x: -60, y: -185}
+  m_AnchoredPosition: {x: 5, y: -42.5}
+  m_SizeDelta: {x: -70, y: -185}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &7312768690667482803
 MonoBehaviour:
@@ -3569,7 +3569,7 @@ MonoBehaviour:
   scrollDirection: 0
   movementType: 1
   elasticity: 0.1
-  scrollSensitivity: 5
+  scrollSensitivity: 10
   inertia: 1
   decelerationRate: 0.03
   snap:
@@ -3596,13 +3596,13 @@ MonoBehaviour:
   loop: 0
   cellContainer: {fileID: 5437261362768753071}
   reuseCellMarginCount: 0
-  paddingHead: -34.5
-  paddingTail: 34.5
+  paddingHead: -30
+  paddingTail: 30
   spacing: 0
   cellPrefab: {fileID: 8553884987421549240, guid: 95933a86cd1c843859ee9d5e2a311cd0,
     type: 3}
   cellSize: 74
-  forcedScrollSensitivity: 20
+  forcedScrollSensitivity: 10
   fillWithNullToEmptyViewport: 0
   animationCellContainer: {fileID: 9066206674448611921}
 --- !u!222 &5419980484953807436
