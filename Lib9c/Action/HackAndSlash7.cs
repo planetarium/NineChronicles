@@ -17,7 +17,7 @@ namespace Nekoyume.Action
 {
     [Serializable]
     [ActionType("hack_and_slash7")]
-    [ActionObsolete(BlockChain.BlockPolicySource.V100070ObsoleteIndex)]
+    [ActionObsolete(BlockChain.BlockPolicySource.V100071ObsoleteIndex)]
     public class HackAndSlash7 : GameAction
     {
         public List<Guid> costumes;
@@ -75,7 +75,7 @@ namespace Nekoyume.Action
                 return states.SetState(ctx.Signer, MarkChanged);
             }
 
-            CheckObsolete(BlockChain.BlockPolicySource.V100070ObsoleteIndex, context);
+            CheckObsolete(BlockChain.BlockPolicySource.V100071ObsoleteIndex, context);
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
 
