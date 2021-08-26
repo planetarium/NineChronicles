@@ -333,22 +333,7 @@ namespace Nekoyume.UI
 
         public void Read(DailyRewardMail dailyRewardMail)
         {
-            var avatarAddress = States.Instance.CurrentAvatarState.address;
-            var attachment = (DailyReward.DailyRewardResult) dailyRewardMail.attachment;
-            var popup = Find<DailyRewardItemPopup>();
-            var materials = attachment.materials;
-            var material = materials.First();
-
-            var model = new ItemCountConfirmPopup();
-            model.TitleText.Value = L10nManager.Localize("UI_DAILY_REWARD_POPUP_TITLE");
-            model.Item.Value = new CountEditableItem(material.Key, material.Value, material.Value, material.Value);
-            model.OnClickSubmit.Subscribe(_ =>
-            {
-                LocalLayerModifier.AddItem(avatarAddress, material.Key.ItemId, material.Value);
-                LocalLayerModifier.RemoveNewAttachmentMail(avatarAddress, dailyRewardMail.id, true);
-                popup.Close();
-            }).AddTo(gameObject);
-            popup.Pop(model);
+            // ignored.
         }
 
         public void Read(MonsterCollectionMail monsterCollectionMail)
