@@ -254,9 +254,7 @@ namespace Nekoyume.Action
             Log.Verbose("{AddressesHex}HAS Set AvatarState: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();
 
-            if (simulator.Log.IsClear &&
-                avatarState.exp > simulator.Player.Exp.Current &&
-                states.TryGetState(RankingMapAddress, out Dictionary d))
+            if (simulator.Log.IsClear && states.TryGetState(RankingMapAddress, out Dictionary d))
             {
                 var ranking = new RankingMapState(d);
                 ranking.Update(avatarState);
