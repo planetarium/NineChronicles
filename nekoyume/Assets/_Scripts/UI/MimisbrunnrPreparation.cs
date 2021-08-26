@@ -188,7 +188,8 @@ namespace Nekoyume.UI
 
             _stageId.Subscribe(SubscribeStage).AddTo(gameObject);
 
-            startButton.OnClickAsObservable().Subscribe(_ => BattleClick(repeatToggle.isOn))
+            startButton.OnClickAsObservable().Where(_ => EnoughActionPoint)
+                .Subscribe(_ => BattleClick(repeatToggle.isOn))
                 .AddTo(gameObject);
 
             startButton.OnClickAsObservable().Where(_ => !EnoughActionPoint && !_stage.IsInStage)
@@ -514,11 +515,6 @@ namespace Nekoyume.UI
             if (_stage.IsInStage)
             {
                 startButton.interactable = false;
-                return;
-            }
-
-            if (!EnoughActionPoint)
-            {
                 return;
             }
 

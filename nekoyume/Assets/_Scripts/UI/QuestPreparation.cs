@@ -180,7 +180,8 @@ namespace Nekoyume.UI
 
             _stageId.Subscribe(SubscribeStage).AddTo(gameObject);
 
-            questButton.OnClickAsObservable().Subscribe(_ => QuestClick(repeatToggle.isOn))
+            questButton.OnClickAsObservable().Where(_ => EnoughToPlay)
+                .Subscribe(_ => QuestClick(repeatToggle.isOn))
                 .AddTo(gameObject);
 
             questButton.OnClickAsObservable().Where(_ => !EnoughToPlay && !_stage.IsInStage)
@@ -446,11 +447,6 @@ namespace Nekoyume.UI
             if (_stage.IsInStage)
             {
                 questButton.interactable = false;
-                return;
-            }
-
-            if (!EnoughToPlay)
-            {
                 return;
             }
 
