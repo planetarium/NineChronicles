@@ -116,6 +116,7 @@ namespace Nekoyume.BlockChain
             Block<NCAction> nextBlock
         ) =>
             CheckTxCount(nextBlock)
+            ?? ValidateMinerPermission(nextBlock)
             ?? ValidateMinerAuthority(nextBlock)
             ?? base.ValidateNextBlock(blocks, nextBlock);
 
@@ -193,70 +194,79 @@ namespace Nekoyume.BlockChain
             return null;
         }
 
+        private InvalidBlockException ValidateMinerPermission(Block<NCAction> block)
+        {
+            Address miner = block.Miner;
+
+            if (!IgnoreHardcodedPolicies)
+            {
+                return null;
+            }
+            
+            if (block.Index < PermissionedMiningThreshold)
+            {
+                return null;
+            }
+            
+            if (PermissionedMiners.Contains(miner) && block.Transactions.Any(t => t.Signer.Equals(miner)))
+            {
+                return null;
+            }
+
+            return new InvalidMinerException(
+                $"The block #{block.Index} {block.Hash} is not mined by a permissioned miner.",
+                miner
+            );
+        }
+
         private InvalidBlockException ValidateMinerAuthority(Block<NCAction> block)
         {
+            Address miner = block.Miner;
+
             if (AuthorizedMinersState is null)
             {
                 return null;
             }
-            Address miner = block.Miner;
 
-            if (block.Index > PermissionedMiningThreshold && !IgnoreHardcodedPolicies)
+            if (!IsTargetBlock(block.Index))
             {
-                if (PermissionedMiners.Contains(miner) && block.Transactions.Any(t => t.Signer.Equals(miner)))
-                {
-                    return null;
-                }
-                else
-                {
-                    return new InvalidMinerException(
-                        $"The block #{block.Index} {block.Hash} is not mined by an authorized miner.",
-                        miner
-                    );
-                }
-            }
-            else
-            {
-                if (!IsTargetBlock(block.Index))
-                {
-                    return null;
-                }
-
-                if (!AuthorizedMinersState.Miners.Contains(miner))
-                {
-                    return new InvalidMinerException(
-                        $"The block #{block.Index} {block.Hash} is not mined by an authorized miner.",
-                        miner
-                    );
-                }
-
-                // Authority should be proven through a no-op transaction (= txs with zero actions).
-                // (For backward compatibility, blocks before 1,200,000th don't have to be proven.
-                // Note that as of Feb 9, 2021, there are about 770,000+ blocks.)
-                Transaction<NCAction>[] txs = block.Transactions.ToArray();
-                if (!txs.Any(tx => tx.Signer.Equals(miner) && !tx.Actions.Any()) &&
-                    block.ProtocolVersion > 0 &&
-                    (IgnoreHardcodedPolicies || block.Index > 1_200_000))
-                {
-#if DEBUG
-                    string debug =
-                        "  Note that there " +
-                        (txs.Length == 1 ? "is a transaction:" : $"are {txs.Length} transactions:") +
-                        txs.Select((tx, i) =>
-                                $"\n    {i}. {tx.Actions.Count} actions; signed by {tx.Signer}")
-                            .Aggregate(string.Empty, (a, b) => a + b);
-#else
-                const string debug = "";
-#endif
-                    return new InvalidMinerException(
-                        $"The block #{block.Index} {block.Hash}'s miner {miner} should be proven by " +
-                        "including a no-op transaction by signed the same authority." + debug,
-                        miner
-                    );
-                }
-
                 return null;
             }
+
+            if (!AuthorizedMinersState.Miners.Contains(miner))
+            {
+                return new InvalidMinerException(
+                    $"The block #{block.Index} {block.Hash} is not mined by an authorized miner.",
+                    miner
+                );
+            }
+
+            // Authority should be proven through a no-op transaction (= txs with zero actions).
+            // (For backward compatibility, blocks before 1,200,000th don't have to be proven.
+            // Note that as of Feb 9, 2021, there are about 770,000+ blocks.)
+            Transaction<NCAction>[] txs = block.Transactions.ToArray();
+            if (!txs.Any(tx => tx.Signer.Equals(miner) && !tx.Actions.Any()) &&
+                block.ProtocolVersion > 0 &&
+                (IgnoreHardcodedPolicies || block.Index > 1_200_000))
+            {
+#if DEBUG
+                string debug =
+                    "  Note that there " +
+                    (txs.Length == 1 ? "is a transaction:" : $"are {txs.Length} transactions:") +
+                    txs.Select((tx, i) =>
+                            $"\n    {i}. {tx.Actions.Count} actions; signed by {tx.Signer}")
+                        .Aggregate(string.Empty, (a, b) => a + b);
+#else
+            const string debug = "";
+#endif
+                return new InvalidMinerException(
+                    $"The block #{block.Index} {block.Hash}'s miner {miner} should be proven by " +
+                    "including a no-op transaction by signed the same authority." + debug,
+                    miner
+                );
+            }
+
+            return null;
         }
 
         private bool IsTargetBlock(long blockIndex)
