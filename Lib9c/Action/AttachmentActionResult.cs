@@ -22,7 +22,7 @@ namespace Nekoyume.Action
                 ["itemEnhancement.result"] = d => new ItemEnhancement.ResultModel(d),
                 ["sellCancellation.result"] = d => new SellCancellation.Result(d),
                 ["rapidCombination.result"] = d => new RapidCombination0.ResultModel(d),
-                ["dailyReward.dailyRewardResult"] = d => new DailyReward.DailyRewardResult(d),
+                ["dailyReward.dailyRewardResult"] = d => new DailyReward2.DailyRewardResult(d),
                 ["monsterCollection.result"] = d => new MonsterCollectionResult(d),
             };
 
