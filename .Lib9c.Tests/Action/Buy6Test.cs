@@ -229,7 +229,7 @@ namespace Lib9c.Tests.Action
                     itemSubType = ItemSubType.Hourglass;
                 }
 
-                var result = new DailyReward.DailyRewardResult()
+                var result = new DailyReward2.DailyRewardResult()
                 {
                     id = default,
                     materials = new Dictionary<Material, int>(),
