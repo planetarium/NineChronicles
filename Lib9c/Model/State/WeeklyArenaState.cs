@@ -340,12 +340,10 @@ namespace Nekoyume.Model.State
         public readonly Record ArenaRecord;
         public int Score { get; private set; }
         public int DailyChallengeCount { get; private set; }
+        public bool Active { get; private set; }
 
         [Obsolete("Not used anymore since v100070")]
         public readonly Address AgentAddress;
-
-        [Obsolete("Not used anymore since v100070")]
-        public bool Active { get; private set; }
 
         [Obsolete("Not used anymore since v100070")]
         public bool Receive;
