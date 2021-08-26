@@ -96,11 +96,14 @@ namespace Lib9c.Tools.SubCommand
                 stderr.WriteLine("Scanning block #{0} {1}...", block.Index, block.Hash);
                 stderr.Flush();
 
-                foreach (var tx in block.Transactions.Reverse())
-                if (includeFails ||
-                    !(chain.GetTxExecution(block.Hash, tx.Id) is { } e) ||
-                    e is TxSuccess)
-                foreach (var act in tx.Actions.Reverse())
+                IEnumerable<(Transaction<NCAction>, NCAction)> actions = block.Transactions
+                    .Reverse()
+                    .Where(tx => includeFails ||
+                        !(chain.GetTxExecution(block.Hash, tx.Id) is { } e) ||
+                        e is TxSuccess)
+                    .SelectMany(tx => tx.Actions.Reverse().Select(a => (tx, a)));
+
+                foreach (var (tx, act) in actions)
                 {
                     ActionBase a = act.InnerAction;
                     IEnumerable<Order> orders = act.InnerAction switch
