@@ -311,6 +311,12 @@ namespace Nekoyume.UI
 
         public void CombineCurrentRecipe()
         {
+            var loadingScreen = Widget.Find<CombinationLoadingScreen>();
+            if (loadingScreen.isActiveAndEnabled)
+            {
+                return;
+            }
+
             CombinationActionSubject.OnNext(_selectedRecipeInfo);
         }
 
