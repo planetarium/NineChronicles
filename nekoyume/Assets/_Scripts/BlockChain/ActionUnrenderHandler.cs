@@ -290,8 +290,7 @@ namespace Nekoyume.BlockChain
             // When DailyReward is unrendered, use of ActionPoint is cancelled. So loading indicator should not appear.
             if (GameConfigStateSubject.ActionPointState.ContainsKey(eval.Action.avatarAddress))
             {
-                GameConfigStateSubject.ActionPointState.Remove(
-                    eval.Action.avatarAddress);
+                GameConfigStateSubject.ActionPointState.Remove(eval.Action.avatarAddress);
             }
 
             if (eval.Action.avatarAddress != States.Instance.CurrentAvatarState.address)
@@ -301,17 +300,12 @@ namespace Nekoyume.BlockChain
 
             var agentAddress = States.Instance.AgentState.address;
             var avatarAddress = eval.Action.avatarAddress;
-            var fungibleId = eval.Action.dailyRewardResult.materials.First().Key.ItemId;
-            var itemCount = eval.Action.dailyRewardResult.materials.First().Value;
-            LocalLayerModifier.AddItem(avatarAddress, fungibleId, itemCount);
-            if (!eval.OutputStates.TryGetAvatarStateV2(agentAddress, avatarAddress,
-                out var avatarState))
+            if (!eval.OutputStates.TryGetAvatarStateV2(agentAddress, avatarAddress, out var avatarState))
             {
                 return;
             }
-            ReactiveAvatarState.UpdateDailyRewardReceivedIndex(
-                avatarState.dailyRewardReceivedIndex);
 
+            ReactiveAvatarState.UpdateDailyRewardReceivedIndex(avatarState.dailyRewardReceivedIndex);
             UpdateCurrentAvatarState(avatarState);
         }
 
