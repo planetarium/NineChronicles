@@ -227,6 +227,8 @@ namespace Nekoyume.UI.Module
                         return;
                     }
 
+                    Widget.Find<Craft>()?.gameObject.SetActive(false);
+                    Widget.Find<UpgradeEquipment>()?.gameObject.SetActive(false);
                     Widget.Find<HeaderMenu>().UpdateAssets(HeaderMenu.AssetVisibleState.Combination);
                     Widget.Find<CombinationMain>().Show();
                     Widget.Find<CombinationSlots>().Close();
