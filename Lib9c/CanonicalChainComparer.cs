@@ -11,18 +11,7 @@ namespace Lib9c
         private readonly TotalDifficultyComparer _totalDifficultyComparer;
 
         public CanonicalChainComparer(
-            AuthorizedMinersState authorizedMinersState,
-            TimeSpan outdateAfter
-        )
-            : this(authorizedMinersState, outdateAfter, () => DateTimeOffset.UtcNow)
-        {
-        }
-
-        public CanonicalChainComparer(
-            AuthorizedMinersState authorizedMinersState,
-            TimeSpan outdateAfter,
-            Func<DateTimeOffset> currentTimeGetter
-        )
+            AuthorizedMinersState authorizedMinersState)
         {
             AuthorizedMinersState = authorizedMinersState;
             _totalDifficultyComparer = new TotalDifficultyComparer();

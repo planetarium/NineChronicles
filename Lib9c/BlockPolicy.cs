@@ -80,9 +80,7 @@ namespace Nekoyume.BlockChain
                 maxBlockBytes: maxBlockBytes,
                 maxGenesisBytes: maxGenesisBytes,
                 doesTransactionFollowPolicy: doesTransactionFollowPolicy,
-                canonicalChainComparer: new CanonicalChainComparer(
-                    null,
-                    TimeSpan.FromTicks(blockInterval.Ticks * 10)),
+                canonicalChainComparer: new CanonicalChainComparer(null),
 #pragma warning disable LAA1002
                 hashAlgorithmGetter: HashAlgorithmTable.ToHashAlgorithmGetter()
 #pragma warning restore LAA1002
@@ -173,7 +171,7 @@ namespace Nekoyume.BlockChain
                 return null;
             }
 
-            // To prevent selfish mining, we define a consensus that blocks with no transactions are do not accepted. 
+            // To prevent selfish mining, we define a consensus that blocks with no transactions are do not accepted.
             // (For backward compatibility, blocks before 2,175,000th don't have to be proven.
             // Note that as of Aug 19, 2021, there are about 2,171,000+ blocks.)
             if (block.Transactions.Count <= 0 &&

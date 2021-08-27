@@ -33,9 +33,7 @@ namespace Lib9c.Tests
             IOrderedEnumerable<BlockPerception> ordered = _blocks.OrderBy(
                 p => p,
                 new CanonicalChainComparer(
-                    new AuthorizedMinersState(new Address[0], 50, 20000),
-                    TimeSpan.FromHours(3)
-                )
+                    new AuthorizedMinersState(new Address[0], 50, 20000))
             );
 
             Assert.Equal(_blocks.Reverse(), ordered);
@@ -47,9 +45,7 @@ namespace Lib9c.Tests
             BlockPerception[] oredered = _blocks.OrderBy(
                 p => p,
                 new CanonicalChainComparer(
-                    new AuthorizedMinersState(new Address[0], 50, 5000),
-                    TimeSpan.FromHours(3)
-                )
+                    new AuthorizedMinersState(new Address[0], 50, 5000))
             ).ToArray();
 
             Assert.Equal(new[] { _blocks[1], _blocks[0], _blocks[2] }, oredered);
