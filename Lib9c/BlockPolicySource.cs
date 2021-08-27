@@ -120,7 +120,7 @@ namespace Nekoyume.BlockChain
         )
         {
             // Avoid NRE when genesis block appended
-            long index = blockChain.Count > 0 ? blockChain.Tip.Index : 0;
+            long index = blockChain.Tip?.Index ?? 0;
             if (transaction.Actions.Count > 1 || IsObsolete(transaction, index))
             {
                 return false;
@@ -175,7 +175,7 @@ namespace Nekoyume.BlockChain
             }
             catch (IncompleteBlockStatesException)
             {
-                // It can be caused during `Swarm<T>.PreloadAsync()` because it doesn't fill its
+                // It can be caused during `Swarm<T>.PreloadAsync()` because it doesn't fill its 
                 // state right away...
                 // FIXME It should be removed after fix that Libplanet fills its state on IBD.
                 // See also: https://github.com/planetarium/lib9c/pull/151#discussion_r506039478
