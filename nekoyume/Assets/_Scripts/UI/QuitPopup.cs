@@ -65,11 +65,9 @@ namespace Nekoyume.UI
                 !(widget is MessageCatManager) && widget.IsActive());
             foreach (var widget in deletableWidgets)
             {
-                widget.Close();
+                widget.Close(true);
             }
             Find<Login>().Show();
-            Find<Menu>().Close();
-            Find<HeaderMenu>().Close(true);
             Close();
         }
 
