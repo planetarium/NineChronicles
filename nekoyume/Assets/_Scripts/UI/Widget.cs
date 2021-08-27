@@ -184,12 +184,7 @@ namespace Nekoyume.UI
 
         public static IEnumerable<Widget> FindWidgets()
         {
-            return FindWidgets(type => type is Widget);
-        }
-
-        public static IEnumerable<Widget> FindWidgets(Predicate<Widget> predicate)
-        {
-            return Pool.Values.Select(value => value.widget).Where(widget => predicate(widget));
+            return Pool.Values.Select(value => value.widget);
         }
 
         public static T FindOrCreate<T>() where T : Widget
