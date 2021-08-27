@@ -66,8 +66,16 @@ namespace Nekoyume.UI
             });
 
             spineButton.onClick.AddListener(() => _npc.PlayAnimation(NPCAnimation.Type.Emotion_01));
-            closeButton.onClick.AddListener(() => CleanUpWishListAlertPopup(Close));
-            CloseWidget = Close;
+            closeButton.onClick.AddListener(() =>
+            {
+                CleanUpWishListAlertPopup(Close);
+                Game.Event.OnRoomEnter.Invoke(true);
+            });
+            CloseWidget = () =>
+            {
+                Close();
+                Game.Event.OnRoomEnter.Invoke(true);
+            };
         }
 
         public override void Initialize()
@@ -138,7 +146,6 @@ namespace Nekoyume.UI
             shopItems.Close();
             Find<ItemCountAndPricePopup>().Close();
             Close(true);
-            Game.Event.OnRoomEnter.Invoke(true);
         }
 
         public void ForceClose()

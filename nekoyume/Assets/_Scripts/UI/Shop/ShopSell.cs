@@ -67,9 +67,14 @@ namespace Nekoyume.UI
             closeButton.onClick.AddListener(() =>
             {
                 Close(true);
+                Game.Event.OnRoomEnter.Invoke(true);
             });
 
-            CloseWidget = () => Close(true);
+            CloseWidget = () =>
+            {
+                Close(true);
+                Game.Event.OnRoomEnter.Invoke(true);
+            };
         }
 
         public override void Initialize()
@@ -137,7 +142,6 @@ namespace Nekoyume.UI
             speechBubble.gameObject.SetActive(false);
             Find<ShopBuy>().ForceClose();
             base.Close(ignoreCloseAnimation);
-            Game.Event.OnRoomEnter.Invoke(true);
         }
 
         protected override void OnCompleteOfShowAnimationInternal()
