@@ -27,6 +27,7 @@ namespace Nekoyume.UI
         private int _finishRef;
         private bool _isPlaying;
         private IDisposable _onClickDispose = null;
+        private IDisposable _onClickWithSkipDispose = null;
 
         public Button NextButton => button;
 
@@ -38,9 +39,26 @@ namespace Nekoyume.UI
                 _onClickDispose = null;
             }
 
+            if (!(_onClickWithSkipDispose is null))
+            {
+                _onClickWithSkipDispose.Dispose();
+                _onClickWithSkipDispose = null;
+            }
+
             _onClickDispose = button.OnClickAsObservable()
-                .ThrottleFirst(TimeSpan.FromSeconds(playTime))
+                .Where(_ => !_isPlaying)
                 .Subscribe(_ => OnClick())
+                .AddTo(gameObject);
+
+            _onClickWithSkipDispose = Observable.EveryUpdate()
+                .Where(_ => _isPlaying && Input.GetMouseButtonUp(0))
+                .Subscribe(_ =>
+                {
+                    foreach (var item in items)
+                    {
+                        item.Item.Skip(() => PlayEnd());
+                    }
+                })
                 .AddTo(gameObject);
 
             if (_isPlaying)
@@ -83,6 +101,8 @@ namespace Nekoyume.UI
         {
             _onClickDispose.Dispose();
             _onClickDispose = null;
+            _onClickWithSkipDispose.Dispose();
+            _onClickWithSkipDispose = null;
             _finishRef = 0;
             _playTimeRef = 0;
             _isPlaying = true;

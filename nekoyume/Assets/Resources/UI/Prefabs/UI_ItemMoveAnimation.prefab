@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2892578596885429834}
   - component: {fileID: 2540273645456425560}
+  - component: {fileID: 4941682248918038748}
   m_Layer: 5
   m_Name: UI_ItemMoveAnimation
   m_TagString: Untagged
@@ -49,7 +50,70 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6921a7a81fdecea49a147d09f3bcf6a4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  tutorialTargets: []
+  tutorialActions: 
   itemImage: {fileID: 7800353834629510449}
+  moveAnimationCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 3.8268325
+      outSlope: 0
+      tangentMode: 65
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.07755084
+    - serializedVersion: 3
+      time: 0.30121684
+      value: 0
+      inSlope: -0
+      outSlope: 1.6580673
+      tangentMode: 5
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.56493896
+      value: 0.88781714
+      inSlope: 0.6805145
+      outSlope: 0.6805145
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.518498
+      outWeight: 0.3117824
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+--- !u!95 &4941682248918038748
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1974293732692372025}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: c43b39ef3582f43bebb6992a7a552872, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &6996479214960864257
 GameObject:
   m_ObjectHideFlags: 0
@@ -62,6 +126,7 @@ GameObject:
   - component: {fileID: 4036070266537977568}
   - component: {fileID: 7800353834629510449}
   - component: {fileID: 7446430361970811992}
+  - component: {fileID: 5969964738764708003}
   m_Layer: 5
   m_Name: Image
   m_TagString: Untagged
@@ -78,7 +143,7 @@ RectTransform:
   m_GameObject: {fileID: 6996479214960864257}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.3, y: 0.3, z: 1}
   m_Children: []
   m_Father: {fileID: 2892578596885429834}
   m_RootOrder: 0
@@ -105,17 +170,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 6996479214960864257}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: -765806418, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
-      Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_Sprite: {fileID: 21300000, guid: e5a596d4170859048b329028f01cc8eb, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
@@ -125,6 +190,7 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
 --- !u!114 &7446430361970811992
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -134,8 +200,27 @@ MonoBehaviour:
   m_GameObject: {fileID: 6996479214960864257}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 1741964061, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Script: {fileID: 11500000, guid: 3245ec927659c4140ac4f8d17403cc18, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_HorizontalFit: 0
   m_VerticalFit: 0
+--- !u!114 &5969964738764708003
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6996479214960864257}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f8b2ed11d675446c5a49da1ea296d490, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_EffectFactor: 1
+  m_ColorFactor: 0
+  m_BlurFactor: 1
+  m_EffectMode: 0
+  m_ColorMode: 2
+  m_BlurMode: 0
+  m_AdvancedBlur: 0

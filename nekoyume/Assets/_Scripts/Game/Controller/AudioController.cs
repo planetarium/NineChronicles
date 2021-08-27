@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using Nekoyume.EnumType;
 using Nekoyume.Model.Elemental;
 using Nekoyume.Pattern;
 using UnityEngine;
@@ -12,6 +11,8 @@ using Random = UnityEngine.Random;
 
 namespace Nekoyume.Game.Controller
 {
+    using UniRx;
+
     public class AudioController : MonoSingleton<AudioController>
     {
         private readonly struct AudioInfo
@@ -95,6 +96,16 @@ namespace Nekoyume.Game.Controller
             public const string NPC_Congrat = "sfx_npc_congrat";
             public const string NPC_Question = "sfx_npc_question";
             public const string GuideArrow = "sfx_guide_arrow";
+            public const string BgmFailed = "sfx_bgm_failed";
+            public const string BgmGreatSuccess = "sfx_bgm_great_success";
+            public const string BgmSuccess = "sfx_bgm_success";
+            public const string FailedEffect = "sfx_failed_effect";
+            public const string GreatSuccessDrum = "sfx_great_success_drum";
+            public const string OptionNormal = "sfx_option_normal";
+            public const string OptionSpecial = "sfx_option_special";
+            public const string SuccessEffectFadeIn = "sfx_successeffect_fadein";
+            public const string SuccessEffectSlot = "sfx_successeffect_slot";
+            public const string UpgradeNumber = "sfx_upgrade_number";
         }
 
         private enum State
@@ -137,6 +148,8 @@ namespace Nekoyume.Game.Controller
 
         private Coroutine _fadeInMusic;
         private readonly List<Coroutine> _fadeOutMusics = new List<Coroutine>();
+
+        public string CurrentPlayingMusicName { get; private set; }
 
         #region Mono
 
@@ -208,7 +221,8 @@ namespace Nekoyume.Game.Controller
 
             if (CurrentState != State.None)
             {
-                throw new FsmException("Already initialized.");
+                Debug.LogError("Already initialized.");
+                return;
             }
 
             CurrentState = State.InInitializing;
@@ -265,12 +279,14 @@ namespace Nekoyume.Game.Controller
         {
             if (CurrentState != State.Idle)
             {
-                throw new FsmException("Not initialized.");
+                Debug.LogError("Not initialized.");
+                return;
             }
 
             if (string.IsNullOrEmpty(audioName))
             {
-                throw new ArgumentNullException();
+                Debug.LogError($"{nameof(audioName)} is null or empty");
+                return;
             }
 
             StopMusicAll(0.5f);
@@ -278,18 +294,29 @@ namespace Nekoyume.Game.Controller
             var audioInfo = PopFromMusicPool(audioName);
             Push(_musicPlaylist, audioName, audioInfo);
             _fadeInMusic = StartCoroutine(CoFadeIn(audioInfo, fadeIn));
+            CurrentPlayingMusicName = audioName;
         }
 
-        public void PlaySfx(string audioName, float volume = 1.0f)
+        public void PlaySfx(string audioName, float volume = 1f, float delay = 0f)
         {
+            if (delay > 0f)
+            {
+                Observable.Timer(TimeSpan.FromSeconds(delay))
+                    .First()
+                    .Subscribe(_ => PlaySfx(audioName, volume));
+                return;
+            }
+
             if (CurrentState != State.Idle)
             {
-                throw new FsmException("Not initialized.");
+                Debug.LogError("Not initialized.");
+                return;
             }
 
             if (string.IsNullOrEmpty(audioName))
             {
-                throw new ArgumentNullException();
+                Debug.LogError($"{nameof(audioName)} is null or empty");
+                return;
             }
 
             var audioInfo = PopFromSfxPool(audioName);
@@ -312,7 +339,8 @@ namespace Nekoyume.Game.Controller
         {
             if (CurrentState != State.Idle)
             {
-                throw new FsmException("Not initialized.");
+                Debug.LogError("Not initialized.");
+                return;
             }
 
             if (_fadeInMusic != null)
@@ -351,12 +379,14 @@ namespace Nekoyume.Game.Controller
         {
             if (CurrentState != State.Idle)
             {
-                throw new FsmException("Not initialized.");
+                Debug.LogError("Not initialized.");
+                return;
             }
 
             if (string.IsNullOrEmpty(audioName))
             {
-                throw new ArgumentNullException();
+                Debug.LogError($"{nameof(audioName)} is null or empty");
+                return;
             }
 
             foreach (var audioInfo in _sfxPlaylist
@@ -375,7 +405,8 @@ namespace Nekoyume.Game.Controller
         {
             if (!prefabs.ContainsKey(audioName))
             {
-                throw new KeyNotFoundException($"Not found AudioSource `{audioName}`.");
+                Debug.LogError($"Not found AudioSource `{audioName}`.");
+                return null;
             }
 
             return Instantiate(prefabs[audioName], transform);

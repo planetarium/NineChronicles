@@ -153,9 +153,9 @@ namespace Nekoyume.BlockChain
             }
 
             var avatarAddress = States.Instance.CurrentAvatarState.address;
-            costumes = costumes ?? new List<Costume>();
-            equipments = equipments ?? new List<Equipment>();
-            foods = foods ?? new List<Consumable>();
+            costumes ??= new List<Costume>();
+            equipments ??= new List<Equipment>();
+            foods ??= new List<Consumable>();
 
             var action = new HackAndSlash
             {
@@ -189,7 +189,7 @@ namespace Nekoyume.BlockChain
             var action = new CombinationConsumable
             {
                 recipeId = recipeId,
-                AvatarAddress = States.Instance.CurrentAvatarState.address,
+                avatarAddress = States.Instance.CurrentAvatarState.address,
                 slotIndex = slotIndex,
             };
             ProcessAction(action);
@@ -407,10 +407,10 @@ namespace Nekoyume.BlockChain
 
             var action = new CombinationEquipment
             {
-                AvatarAddress = States.Instance.CurrentAvatarState.address,
-                RecipeId = recipeId,
-                SubRecipeId = subRecipeId,
-                SlotIndex = slotIndex,
+                avatarAddress = States.Instance.CurrentAvatarState.address,
+                slotIndex = slotIndex,
+                recipeId = recipeId,
+                subRecipeId = subRecipeId,
             };
             ProcessAction(action);
 
@@ -422,11 +422,11 @@ namespace Nekoyume.BlockChain
                 .DoOnError(e => HandleException(action.Id, e));
         }
 
-        public IObservable<ActionBase.ActionEvaluation<RapidCombination>> RapidCombination(int slotIndex)
+        public IObservable<ActionBase.ActionEvaluation<RapidCombination>> RapidCombination(Address avatarAddress, int slotIndex)
         {
             var action = new RapidCombination
             {
-                avatarAddress = States.Instance.CurrentAvatarState.address,
+                avatarAddress = avatarAddress,
                 slotIndex = slotIndex
             };
             ProcessAction(action);

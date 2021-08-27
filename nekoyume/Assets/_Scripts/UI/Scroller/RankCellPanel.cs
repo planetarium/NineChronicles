@@ -108,11 +108,15 @@ namespace Nekoyume.UI.Scroller
                 case EquipmentRankingModel equipmentInfo:
                     firstElementCpText.text = equipmentInfo.Cp.ToString();
 
-                    var equipmentItemSheet = Game.Game.instance.TableSheets.EquipmentItemSheet;
-                    secondElementEquipmentNameText.text = LocalizationExtension.GetLocalizedName(
-                        equipmentItemSheet,
-                        equipmentInfo.EquipmentId,
-                        equipmentInfo.Level);
+                    if (Game.Game.instance.TableSheets.EquipmentItemSheet.TryGetValue(equipmentInfo.EquipmentId, out var row))
+                    {
+                        secondElementEquipmentNameText.text =
+                            row.GetLocalizedName(equipmentInfo.Level);
+                    }
+                    else
+                    {
+                        secondElementEquipmentNameText.text = $"!{equipmentInfo.EquipmentId}! +{equipmentInfo.Level}";
+                    }
 
                     firstElementText.gameObject.SetActive(false);
                     firstElementCpText.gameObject.SetActive(true);

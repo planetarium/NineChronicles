@@ -14,7 +14,6 @@ using Nekoyume.State;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using TMPro;
-using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 using mixpanel;
@@ -22,7 +21,6 @@ using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Elemental;
 using Nekoyume.Model.Mail;
-using Nekoyume.TableData;
 using Toggle = Nekoyume.UI.Module.Toggle;
 
 namespace Nekoyume.UI
@@ -31,27 +29,23 @@ namespace Nekoyume.UI
 
     public class MimisbrunnrPreparation : Widget
     {
-        private static readonly Color BattleStartButtonOriginColor = Color.white;
-        private static readonly Color RequiredActionPointOriginColor = ColorHelper.HexToColorRGB("FFF3D4");
-        private static readonly Color DimmedColor = ColorHelper.HexToColorRGB("848484");
-
         [SerializeField]
         private Module.Inventory inventory = null;
-
-        [SerializeField]
-        private TextMeshProUGUI consumableTitleText = null;
 
         [SerializeField]
         private EquipmentSlot[] consumableSlots = null;
 
         [SerializeField]
-        private DetailedStatView[] statusRows = null;
-
-        [SerializeField]
-        private TextMeshProUGUI equipmentTitleText = null;
-
-        [SerializeField]
         private EquipmentSlots equipmentSlots = null;
+
+        [SerializeField]
+        private GameObject equipSlotGlow = null;
+
+        [SerializeField]
+        private Transform titleSocket = null;
+
+        [SerializeField]
+        private TextMeshProUGUI consumableTitleText = null;
 
         [SerializeField]
         private TextMeshProUGUI costumeTitleText = null;
@@ -63,26 +57,28 @@ namespace Nekoyume.UI
         private Button startButton = null;
 
         [SerializeField]
-        private SpriteRenderer[] startButtonImages = null;
-
-        [SerializeField]
-        private GameObject equipSlotGlow = null;
+        private TextMeshProUGUI equipmentTitleText = null;
 
         [SerializeField]
         private TextMeshProUGUI requiredPointText = null;
 
         [SerializeField]
+        private TextMeshProUGUI closeButtonText = null;
+
+        [SerializeField]
         private ParticleSystem[] particles = null;
+
+        [SerializeField]
+        private DetailedStatView[] statusRows = null;
 
         [SerializeField]
         private TMP_InputField levelField = null;
 
         [SerializeField]
-        private Button simulateButton = null;
+        private Button closeButton;
 
-        [Header("ItemMoveAnimation")]
         [SerializeField]
-        private Image actionPointImage = null;
+        private Button simulateButton = null;
 
         [SerializeField]
         private Transform buttonStarImageTransform = null;
@@ -101,28 +97,24 @@ namespace Nekoyume.UI
         private float middleXGap = 1f;
 
         private Stage _stage;
-
         private Game.Character.Player _player;
-
         private EquipmentSlot _weaponSlot;
-
-        private readonly IntReactiveProperty _stageId = new IntReactiveProperty(GameConfig.MimisbrunnrWorldId);
-
+        private CharacterStats _tempStats;
+        private GameObject _cachedCharacterTitle;
         private int _requiredCost;
+        private bool _reset = true;
+
+        private readonly IntReactiveProperty _stageId =
+            new IntReactiveProperty(GameConfig.MimisbrunnrWorldId);
 
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
 
-        private CharacterStats _tempStats;
+        private static readonly Color RequiredActionPointOriginColor =
+            ColorHelper.HexToColorRGB("FFF3D4");
 
-        private bool _reset = true;
+        private static readonly Color DimmedColor = ColorHelper.HexToColorRGB("848484");
+        private static readonly Vector3 PlayerPosition = new Vector3(999.8f, 999.3f, 3f);
 
-        public int StageId
-        {
-            set => _stageId.SetValueAndForceNotify(value);
-        }
-
-        // NOTE: questButton을 클릭한 후에 esc키를 눌러서 월드맵으로 벗어나는 것을 막는다.
-        // 행동력이 _requiredCost 미만일 경우 퀘스트 버튼이 비활성화되므로 임시 방편으로 행동력도 비교함.
         public override bool CanHandleInputEvent =>
             base.CanHandleInputEvent &&
             (startButton.interactable || !CanStartBattle);
@@ -138,7 +130,9 @@ namespace Nekoyume.UI
         {
             base.Awake();
 
-            CloseWidget = null;
+            closeButton.onClick.AddListener(() => { Close(true); });
+
+            CloseWidget = () => Close(true);
             simulateButton.gameObject.SetActive(GameConfig.IsEditor);
             levelField.gameObject.SetActive(GameConfig.IsEditor);
         }
@@ -150,7 +144,8 @@ namespace Nekoyume.UI
             _weaponSlot = equipmentSlots.First(es => es.ItemSubType == ItemSubType.Weapon);
 
             inventory.SharedModel.DimmedFunc.Value = inventoryItem =>
-                inventoryItem.ItemBase.Value.ItemType == ItemType.Material;
+                inventoryItem.ItemBase.Value.ItemType == ItemType.Material &&
+                inventoryItem.ItemBase.Value.ItemSubType != ItemSubType.ApStone;
             inventory.SharedModel.SelectedItemView
                 .Subscribe(SubscribeInventorySelectedItem)
                 .AddTo(gameObject);
@@ -194,7 +189,8 @@ namespace Nekoyume.UI
 
             _stageId.Subscribe(SubscribeStage).AddTo(gameObject);
 
-            startButton.OnClickAsObservable().Subscribe(_ => BattleClick(repeatToggle.isOn)).AddTo(gameObject);
+            startButton.OnClickAsObservable().Subscribe(_ => BattleClick(repeatToggle.isOn))
+                .AddTo(gameObject);
 
             Game.Event.OnRoomEnter.AddListener(b => Close());
 
@@ -214,6 +210,13 @@ namespace Nekoyume.UI
             }
         }
 
+        public void Show(string closeButtonName, int stageId, bool ignoreShowAnimation = false)
+        {
+            closeButtonText.text = closeButtonName;
+            _stageId.SetValueAndForceNotify(stageId);
+            Show(ignoreShowAnimation);
+        }
+
         public override void Show(bool ignoreShowAnimation = false)
         {
             base.Show(ignoreShowAnimation);
@@ -224,11 +227,13 @@ namespace Nekoyume.UI
 
             Mixpanel.Track("Unity/Click Stage");
             _stage = Game.Game.instance.Stage;
-            _stage.repeatStage = false;
+            _stage.IsRepeatStage = false;
             repeatToggle.isOn = false;
             repeatToggle.interactable = true;
             _stage.LoadBackground("dungeon_02");
-            _player = _stage.GetPlayer(_stage.questPreparationPosition);
+            _player = _stage.GetPlayer(PlayerPosition);
+            var currentAvatarState = Game.Game.instance.States.CurrentAvatarState;
+            _player.Set(currentAvatarState);
 
             if (_player is null)
             {
@@ -243,7 +248,6 @@ namespace Nekoyume.UI
                 _player.gameObject.SetActive(false);
                 _player.gameObject.SetActive(true);
                 _player.SpineController.Appear();
-                var currentAvatarState = Game.Game.instance.States.CurrentAvatarState;
                 _player.Set(currentAvatarState);
 
                 equipmentSlots.SetPlayerEquipments(_player.Model, ShowTooltip, Unequip);
@@ -265,19 +269,19 @@ namespace Nekoyume.UI
                 foreach (var (statType, value, additionalValue) in tuples)
                 {
                     var info = statusRows[idx];
-                    info.Show(statType, value, additionalValue);
+                    info.Show(statType, value + additionalValue, 0);
                     ++idx;
                 }
             }
 
-            Find<BottomMenu>().Show(
-                UINavigator.NavigationType.Back,
-                SubscribeBackButtonClick,
-                true,
-                BottomMenu.ToggleableType.Mail,
-                BottomMenu.ToggleableType.Quest,
-                BottomMenu.ToggleableType.Chat,
-                BottomMenu.ToggleableType.IllustratedBook);
+            var title = _player.Costumes.FirstOrDefault(x => x.ItemSubType == ItemSubType.Title);
+            if (title != null)
+            {
+                Destroy(_cachedCharacterTitle);
+                var clone = ResourcesHelper.GetCharacterTitle(title.Grade,
+                    title.GetLocalizedNonColoredName(false));
+                _cachedCharacterTitle = Instantiate(clone, titleSocket);
+            }
 
             ReactiveAvatarState.ActionPoint
                 .Subscribe(_ => UpdateBattleStartButton())
@@ -285,12 +289,12 @@ namespace Nekoyume.UI
             _tempStats = _player.Model.Stats.Clone() as CharacterStats;
             inventory.SharedModel.UpdateEquipmentNotification(GetElementalTypes());
             startButton.gameObject.SetActive(true);
+            HelpPopup.HelpMe(100020, true);
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
         {
             _reset = true;
-            Find<BottomMenu>().Close(ignoreCloseAnimation);
 
             foreach (var slot in consumableSlots)
             {
@@ -318,19 +322,59 @@ namespace Nekoyume.UI
                 return;
             }
 
-            tooltip.Show(
-                view.RectTransform,
-                view.Model,
-                value => !view.Model.Dimmed.Value,
-                view.Model.EquippedEnabled.Value
-                    ? L10nManager.Localize("UI_UNEQUIP")
-                    : L10nManager.Localize("UI_EQUIP"),
-                _ => Equip(tooltip.itemInformation.Model.item.Value),
-                _ =>
+            if (view.Model.ItemBase.Value.ItemType == ItemType.Material)
+            {
+                if (view.Model.ItemBase.Value.ItemSubType == ItemSubType.ApStone)
                 {
-                    equipSlotGlow.SetActive(false);
-                    inventory.SharedModel.DeselectItemView();
-                });
+                    tooltip.Show(
+                        view.RectTransform,
+                        view.Model,
+                        AvatarInfo.DimmedFuncForChargeActionPoint,
+                        L10nManager.Localize("UI_CHARGE_AP"),
+                         _ =>
+                         {
+                             if (States.Instance.CurrentAvatarState.actionPoint > 0)
+                             {
+                                 AvatarInfo.ShowRefillConfirmPopup(tooltip.itemInformation.Model
+                                     .item.Value);
+                             }
+                             else
+                             {
+                                 AvatarInfo.ChargeActionPoint(tooltip.itemInformation.Model.item
+                                     .Value);
+                             }
+                         }
+                        ,
+                        _ =>
+                        {
+                            equipSlotGlow.SetActive(false);
+                            inventory.SharedModel.DeselectItemView();
+                        });
+                }
+                else
+                {
+                    tooltip.Show(
+                        view.RectTransform,
+                        view.Model,
+                        _ => inventory.SharedModel.DeselectItemView());
+                }
+            }
+            else
+            {
+                tooltip.Show(
+                    view.RectTransform,
+                    view.Model,
+                    value => !view.Model.Dimmed.Value,
+                    view.Model.EquippedEnabled.Value
+                        ? L10nManager.Localize("UI_UNEQUIP")
+                        : L10nManager.Localize("UI_EQUIP"),
+                    _ => Equip(tooltip.itemInformation.Model.item.Value),
+                    _ =>
+                    {
+                        equipSlotGlow.SetActive(false);
+                        inventory.SharedModel.DeselectItemView();
+                    });
+            }
         }
 
         private void ShowTooltip(EquipmentSlot slot)
@@ -384,8 +428,10 @@ namespace Nekoyume.UI
             UpdateBattleStartButton();
 
             inventory.SharedModel.DimmedFunc.Value = inventoryItem =>
-                inventoryItem.ItemBase.Value.ItemType == ItemType.Material ||
-                (inventoryItem.ItemBase.Value.ItemType == ItemType.Equipment && !IsExistElementalType(inventoryItem.ItemBase.Value.ElementalType));
+                (inventoryItem.ItemBase.Value.ItemType == ItemType.Material &&
+                 inventoryItem.ItemBase.Value.ItemSubType != ItemSubType.ApStone) ||
+                (inventoryItem.ItemBase.Value.ItemType == ItemType.Equipment &&
+                 !IsExistElementalType(inventoryItem.ItemBase.Value.ElementalType));
 
             inventory.SharedModel.EquippedEnabledFunc.SetValueAndForceNotify(inventoryItem =>
             {
@@ -414,13 +460,13 @@ namespace Nekoyume.UI
             }
             else
             {
-                UpdateGlowEquipSlot((ItemUsable) view.Model.ItemBase.Value);
+                UpdateGlowEquipSlot((ItemUsable)view.Model.ItemBase.Value);
             }
 
             ShowTooltip(view);
         }
 
-        private void SubscribeBackButtonClick(BottomMenu bottomMenu)
+        private void SubscribeBackButtonClick(HeaderMenu headerMenu)
         {
             if (!CanClose)
             {
@@ -436,7 +482,8 @@ namespace Nekoyume.UI
             SharedViewModel.SelectedWorldId.SetValueAndForceNotify(GameConfig.MimisbrunnrWorldId);
             SharedViewModel.SelectedStageId.SetValueAndForceNotify(_stageId.Value);
 
-            Game.Game.instance.TableSheets.WorldSheet.TryGetValue(GameConfig.MimisbrunnrWorldId, out var worldRow, true);
+            Game.Game.instance.TableSheets.WorldSheet.TryGetValue(GameConfig.MimisbrunnrWorldId,
+                out var worldRow, true);
             stageInfo.Show(SharedViewModel, worldRow, StageInformation.StageType.Mimisbrunnr);
             gameObject.SetActive(false);
         }
@@ -461,11 +508,6 @@ namespace Nekoyume.UI
             {
                 requiredPointText.color = RequiredActionPointOriginColor;
 
-                foreach (var image in startButtonImages)
-                {
-                    image.color = BattleStartButtonOriginColor;
-                }
-
                 foreach (var particle in particles)
                 {
                     particle.Play();
@@ -474,11 +516,6 @@ namespace Nekoyume.UI
             else
             {
                 requiredPointText.color = DimmedColor;
-
-                foreach (var image in startButtonImages)
-                {
-                    image.color = DimmedColor;
-                }
 
                 foreach (var particle in particles)
                 {
@@ -525,6 +562,7 @@ namespace Nekoyume.UI
 
         private IEnumerator CoBattleClick(bool repeat)
         {
+            var actionPointImage = Find<HeaderMenu>().ActionPointImage;
             var animation = ItemMoveAnimation.Show(actionPointImage.sprite,
                 actionPointImage.transform.position,
                 buttonStarImageTransform.position,
@@ -537,6 +575,7 @@ namespace Nekoyume.UI
                 States.Instance.CurrentAvatarState.address,
                 -_requiredCost);
             yield return new WaitWhile(() => animation.IsPlaying);
+
             Battle(repeat);
             AudioController.PlayClick();
         }
@@ -654,13 +693,13 @@ namespace Nekoyume.UI
 
             if (slot.ItemSubType == ItemSubType.Armor)
             {
-                var armor = (Armor) slot.Item;
-                var weapon = (Weapon) _weaponSlot.Item;
+                var armor = (Armor)slot.Item;
+                var weapon = (Weapon)_weaponSlot.Item;
                 _player.EquipEquipmentsAndUpdateCustomize(armor, weapon);
             }
             else if (slot.ItemSubType == ItemSubType.Weapon)
             {
-                _player.EquipWeapon((Weapon) slot.Item);
+                _player.EquipWeapon((Weapon)slot.Item);
             }
             else if (equipCostume)
             {
@@ -672,7 +711,12 @@ namespace Nekoyume.UI
                 ? AudioController.SfxCode.ChainMail2
                 : AudioController.SfxCode.Equipment);
             inventory.SharedModel.UpdateEquipmentNotification(GetElementalTypes());
-            Find<BottomMenu>().UpdateInventoryNotification();
+            var avatarInfo = Find<AvatarInfo>();
+            if (avatarInfo != null)
+            {
+                Find<HeaderMenu>().UpdateInventoryNotification(avatarInfo.HasNotification);
+            }
+
             UpdateBattleStartButton();
         }
 
@@ -785,14 +829,14 @@ namespace Nekoyume.UI
                     }
 
                     var (statType, baseValue, additionalValue) = enumerator.Current;
-                    statView.Show(statType, baseValue, additionalValue);
+                    statView.Show(statType, baseValue + additionalValue, 0);
                 }
             }
         }
 
         private void Battle(bool repeat)
         {
-            Find<BottomMenu>().Close(true);
+            Find<StageInformation>().Close(true);
             Find<LoadingScreen>().Show();
 
             startButton.gameObject.SetActive(false);
@@ -803,16 +847,16 @@ namespace Nekoyume.UI
 
             var equipments = equipmentSlots
                 .Where(slot => !slot.IsLock && !slot.IsEmpty)
-                .Select(slot => (Equipment) slot.Item)
+                .Select(slot => (Equipment)slot.Item)
                 .ToList();
 
             var consumables = consumableSlots
                 .Where(slot => !slot.IsLock && !slot.IsEmpty)
-                .Select(slot => (Consumable) slot.Item)
+                .Select(slot => (Consumable)slot.Item)
                 .ToList();
 
-            _stage.isExitReserved = false;
-            _stage.repeatStage = repeat;
+            _stage.IsExitReserved = false;
+            _stage.IsRepeatStage = repeat;
             _stage.foodCount = consumables.Count;
             ActionRenderHandler.Instance.Pending = true;
             Game.Game.instance.ActionManager
@@ -863,14 +907,14 @@ namespace Nekoyume.UI
                 throw new KeyNotFoundException(
                     $"WorldSheet.TryGetByStageId() {nameof(stageId)}({stageId})");
 
-            var avatarState = new AvatarState(States.Instance.CurrentAvatarState) {level = level};
+            var avatarState = new AvatarState(States.Instance.CurrentAvatarState) { level = level };
             List<Guid> consumables = consumableSlots
                 .Where(slot => !slot.IsLock && !slot.IsEmpty)
-                .Select(slot => ((Consumable) slot.Item).ItemId)
+                .Select(slot => ((Consumable)slot.Item).ItemId)
                 .ToList();
             var equipments = equipmentSlots
                 .Where(slot => !slot.IsLock && !slot.IsEmpty)
-                .Select(slot => (Equipment) slot.Item)
+                .Select(slot => (Equipment)slot.Item)
                 .ToList();
             var inventoryEquipments = avatarState.inventory.Items
                 .Select(i => i.item)
@@ -890,7 +934,7 @@ namespace Nekoyume.UI
                     continue;
                 }
 
-                ((Equipment) outNonFungibleItem).Equip();
+                ((Equipment)outNonFungibleItem).Equip();
             }
 
             var tableSheets = Game.Game.instance.TableSheets;

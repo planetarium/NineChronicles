@@ -6,7 +6,6 @@ using Lib9c.Renderer;
 using Libplanet;
 using Nekoyume.Action;
 using Nekoyume.Helper;
-using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
@@ -123,22 +122,12 @@ namespace Nekoyume.BlockChain
                 .Subscribe(ResponseSellCancellation)
                 .AddTo(_disposables);
         }
-
         private void UpdateSell()
         {
             _renderer.EveryUnrender<UpdateSell>()
                 .Where(ValidateEvaluationForCurrentAvatarState)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseUpdateSell)
-                .AddTo(_disposables);
-        }
-
-        private void ItemEnhancement()
-        {
-            _renderer.EveryUnrender<ItemEnhancement>()
-                .Where(ValidateEvaluationForCurrentAgent)
-                .ObserveOnMainThread()
-                .Subscribe(ResponseUnrenderItemEnhancement)
                 .AddTo(_disposables);
         }
 
@@ -166,6 +155,15 @@ namespace Nekoyume.BlockChain
                 .Where(HasUpdatedAssetsForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseTransferAsset)
+                .AddTo(_disposables);
+        }
+
+        private void ItemEnhancement()
+        {
+            _renderer.EveryUnrender<ItemEnhancement>()
+                .Where(ValidateEvaluationForCurrentAvatarState)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseItemEnhancement)
                 .AddTo(_disposables);
         }
 
@@ -292,8 +290,7 @@ namespace Nekoyume.BlockChain
             // When DailyReward is unrendered, use of ActionPoint is cancelled. So loading indicator should not appear.
             if (GameConfigStateSubject.ActionPointState.ContainsKey(eval.Action.avatarAddress))
             {
-                GameConfigStateSubject.ActionPointState.Remove(
-                    eval.Action.avatarAddress);
+                GameConfigStateSubject.ActionPointState.Remove(eval.Action.avatarAddress);
             }
 
             if (eval.Action.avatarAddress != States.Instance.CurrentAvatarState.address)
@@ -303,34 +300,28 @@ namespace Nekoyume.BlockChain
 
             var agentAddress = States.Instance.AgentState.address;
             var avatarAddress = eval.Action.avatarAddress;
-            var fungibleId = eval.Action.dailyRewardResult.materials.First().Key.ItemId;
-            var itemCount = eval.Action.dailyRewardResult.materials.First().Value;
-            LocalLayerModifier.AddItem(avatarAddress, fungibleId, itemCount);
-            if (!eval.OutputStates.TryGetAvatarStateV2(agentAddress, avatarAddress,
-                out var avatarState))
+            if (!eval.OutputStates.TryGetAvatarStateV2(agentAddress, avatarAddress, out var avatarState))
             {
                 return;
             }
-            ReactiveAvatarState.UpdateDailyRewardReceivedIndex(
-                avatarState.dailyRewardReceivedIndex);
 
+            ReactiveAvatarState.UpdateDailyRewardReceivedIndex(avatarState.dailyRewardReceivedIndex);
             UpdateCurrentAvatarState(avatarState);
         }
 
-        private void ResponseUnrenderItemEnhancement(ActionBase.ActionEvaluation<ItemEnhancement> eval)
+        private void ResponseItemEnhancement(ActionBase.ActionEvaluation<ItemEnhancement> eval)
         {
             var agentAddress = eval.Signer;
             var avatarAddress = eval.Action.avatarAddress;
-            var slot = eval.OutputStates.GetCombinationSlotState(avatarAddress, eval.Action.slotIndex);
+            var slotIndex = eval.Action.slotIndex;
+            var slot = eval.OutputStates.GetCombinationSlotState(avatarAddress, slotIndex);
             var result = (ItemEnhancement.ResultModel)slot.Result;
             var itemUsable = result.itemUsable;
-            if (!eval.OutputStates.TryGetAvatarStateV2(agentAddress, avatarAddress,
-                out var avatarState))
+            if (!eval.OutputStates.TryGetAvatarStateV2(agentAddress, avatarAddress, out var avatarState))
             {
                 return;
             }
 
-            // NOTE: 사용한 자원에 대한 레이어 다시 추가하기.
             LocalLayerModifier.ModifyAgentGold(agentAddress, -result.gold);
             LocalLayerModifier.RemoveItem(avatarAddress, itemUsable.ItemId, itemUsable.RequiredBlockIndex, 1);
             foreach (var itemId in result.materialItemIdList)
@@ -341,20 +332,8 @@ namespace Nekoyume.BlockChain
                 }
             }
 
-            // NOTE: 메일 레이어 다시 없애기.
-            LocalLayerModifier.AddItem(avatarAddress, itemUsable.TradableId, itemUsable.RequiredBlockIndex, 1);
-            LocalLayerModifier.RemoveNewAttachmentMail(avatarAddress, result.id);
-
-            // NOTE: 워크샵 슬롯의 모든 휘발성 상태 변경자를 다시 추가하기.
-            var otherItemId = result.materialItemIdList.First();
-            LocalLayerModifier.ModifyCombinationSlotItemEnhancement(
-                itemUsable.ItemId,
-                otherItemId,
-                eval.Action.slotIndex);
-
             UpdateAgentState(eval);
             UpdateCurrentAvatarState(eval);
-            UpdateCombinationSlotState(slot);
             UnrenderQuest(avatarAddress, avatarState.questList.completedQuestIds);
         }
 
