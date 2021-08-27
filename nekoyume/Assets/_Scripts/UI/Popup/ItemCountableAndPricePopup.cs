@@ -35,7 +35,7 @@ namespace Nekoyume.UI
         private readonly List<IDisposable> _disposablesForAwake = new List<IDisposable>();
         private readonly List<IDisposable> _disposablesForSetData = new List<IDisposable>();
 
-        private const int DefaultPrice = 10;
+        private const int DefaultPrice = 1;
         public override CloseKeyType CloseKeyType => CloseKeyType.Escape;
 
         #region Mono
