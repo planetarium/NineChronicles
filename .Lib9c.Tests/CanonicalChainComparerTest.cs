@@ -5,7 +5,6 @@ namespace Lib9c.Tests
     using System.Numerics;
     using Libplanet;
     using Libplanet.Action;
-    using Libplanet.Blockchain;
     using Libplanet.Blocks;
     using Nekoyume.Action;
     using Nekoyume.Model.State;

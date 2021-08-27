@@ -13,7 +13,7 @@ namespace Lib9c
 {
     public class DebugPolicy : IBlockPolicy<PolymorphicAction<ActionBase>>
     {
-        public IComparer<BlockPerception> CanonicalChainComparer { get; } = new TotalDifficultyComparer(TimeSpan.FromSeconds(3));
+        public IComparer<IBlockExcerpt> CanonicalChainComparer { get; } = new TotalDifficultyComparer();
 
         public IAction BlockAction { get; } = new RewardGold();
 
