@@ -52,6 +52,8 @@ namespace Nekoyume.UI
         {
             _buttonCanvasGroup.alpha = 0f;
             _bgCanvasGroup.alpha = 0f;
+            var format = L10nManager.Localize("UI_PRESS_TO_CONTINUE_FORMAT");
+            continueText.text = string.Format(format, ContinueTime);
             base.Show(ignoreShowAnimation);
         }
 
@@ -90,8 +92,6 @@ namespace Nekoyume.UI
 
         public void AnimateNPC()
         {
-            var format = L10nManager.Localize("UI_PRESS_TO_CONTINUE_FORMAT");
-            continueText.text = string.Format(format, ContinueTime);
             _npcAppearCoroutine = StartCoroutine(CoAnimateNPC());
         }
 
