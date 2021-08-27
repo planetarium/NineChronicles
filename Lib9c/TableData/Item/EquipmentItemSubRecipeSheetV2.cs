@@ -30,8 +30,6 @@ namespace Nekoyume.TableData
             public long RequiredBlockIndex { get; private set; }
             public List<MaterialInfo> Materials { get; private set; }
             public List<OptionInfo> Options { get; private set; }
-            public int MinOptionLimit { get; private set; }
-            public int MaxOptionLimit { get; private set; }
 
             public override void Set(IReadOnlyList<string> fields)
             {
@@ -71,9 +69,6 @@ namespace Nekoyume.TableData
                         ParseInt(fields[11 + offset]),
                         ParseInt(fields[12 + offset])));
                 }
-
-                MinOptionLimit = ParseInt(fields[22]);
-                MaxOptionLimit = ParseInt(fields[23]);
             }
         }
 
