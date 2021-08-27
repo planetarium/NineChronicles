@@ -132,7 +132,6 @@ namespace Nekoyume.UI
         {
             _shouldClose = true;
             yield return new WaitUntil(() => closeEnd);
-            Find<HeaderMenu>().Show();
             gameObject.SetActive(false);
         }
 

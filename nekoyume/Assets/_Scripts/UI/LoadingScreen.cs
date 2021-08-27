@@ -16,7 +16,6 @@ namespace Nekoyume.UI
 
         private List<string> _tips;
 
-        [SerializeField] private bool ShowMenuOnClosed = false;
         #region Mono
 
         protected override void Awake()
@@ -60,15 +59,6 @@ namespace Nekoyume.UI
         {
             base.Show(ignoreShowAnimation);
             Find<HeaderMenu>().Close();
-        }
-
-        public override void Close(bool ignoreCloseAnimation = false)
-        {
-            base.Close(ignoreCloseAnimation);
-            if (ShowMenuOnClosed)
-            {
-                Find<HeaderMenu>().Show();
-            }
         }
 
         protected override void OnEnable()

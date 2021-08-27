@@ -253,6 +253,7 @@ namespace Nekoyume.UI
             closeButton.gameObject.SetActive(model.StageID >= 3 || model.LastClearedStageId >= 3);
             repeatButton.gameObject.SetActive(false);
             nextButton.gameObject.SetActive(false);
+
             UpdateView();
             HelpPopup.HelpMe(100006, true);
         }

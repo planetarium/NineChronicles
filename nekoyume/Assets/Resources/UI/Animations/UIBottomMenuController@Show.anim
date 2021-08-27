@@ -49,16 +49,7 @@ AnimationClip:
         inWeight: 0.33333334
         outWeight: 0.33333334
       - serializedVersion: 3
-        time: 0.8333333
-        value: 100
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 136
-        weightedMode: 0
-        inWeight: 0.33333334
-        outWeight: 0.33333334
-      - serializedVersion: 3
-        time: 1.1833333
+        time: 0.33333334
         value: -5
         inSlope: -71.14654
         outSlope: -71.14654
@@ -67,7 +58,7 @@ AnimationClip:
         inWeight: 0.57984746
         outWeight: 0.35401782
       - serializedVersion: 3
-        time: 1.3333334
+        time: 0.5
         value: -10
         inSlope: 33.14482
         outSlope: 33.14482
@@ -76,7 +67,7 @@ AnimationClip:
         inWeight: 0.33333334
         outWeight: 1
       - serializedVersion: 3
-        time: 1.5166667
+        time: 0.6666667
         value: 0
         inSlope: 0
         outSlope: 0
@@ -119,7 +110,7 @@ AnimationClip:
     m_AdditiveReferencePoseClip: {fileID: 0}
     m_AdditiveReferencePoseTime: 0
     m_StartTime: 0
-    m_StopTime: 1.5333333
+    m_StopTime: 0.68333334
     m_OrientationOffsetY: 0
     m_Level: 0
     m_CycleOffset: 0
@@ -167,16 +158,7 @@ AnimationClip:
         inWeight: 0.33333334
         outWeight: 0.33333334
       - serializedVersion: 3
-        time: 0.8333333
-        value: 100
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 136
-        weightedMode: 0
-        inWeight: 0.33333334
-        outWeight: 0.33333334
-      - serializedVersion: 3
-        time: 1.1833333
+        time: 0.33333334
         value: -5
         inSlope: -71.14654
         outSlope: -71.14654
@@ -185,7 +167,7 @@ AnimationClip:
         inWeight: 0.57984746
         outWeight: 0.35401782
       - serializedVersion: 3
-        time: 1.3333334
+        time: 0.5
         value: -10
         inSlope: 33.14482
         outSlope: 33.14482
@@ -194,7 +176,7 @@ AnimationClip:
         inWeight: 0.33333334
         outWeight: 1
       - serializedVersion: 3
-        time: 1.5166667
+        time: 0.6666667
         value: 0
         inSlope: 0
         outSlope: 0
@@ -213,7 +195,7 @@ AnimationClip:
   m_HasGenericRootTransform: 0
   m_HasMotionFloatCurves: 0
   m_Events:
-  - time: 1.5333333
+  - time: 0.68333334
     functionName: OnCompleteOfShowAnimation
     data: 
     objectReferenceParameter: {fileID: 0}
