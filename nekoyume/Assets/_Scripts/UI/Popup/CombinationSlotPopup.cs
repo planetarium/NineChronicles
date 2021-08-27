@@ -101,8 +101,6 @@ namespace Nekoyume.UI
             Game.Game.instance.Agent.BlockIndexSubject.ObserveOnMainThread()
                 .Subscribe(SubscribeOnBlockIndex)
                 .AddTo(_disposablesOfOnEnable);
-
-            CloseWidget = null;
         }
 
         protected override void OnDisable()

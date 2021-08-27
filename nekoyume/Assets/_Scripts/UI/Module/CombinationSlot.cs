@@ -160,9 +160,14 @@ namespace Nekoyume.UI.Module
                 return SlotType.Lock;
             }
 
+            if (isCached)
+            {
+                return SlotType.Appraise;
+            }
+
             if (state?.Result is null)
             {
-                return isCached ? SlotType.Appraise:  SlotType.Empty;
+                return SlotType.Empty;
             }
 
             return currentBlockIndex < state.StartBlockIndex + GameConfig.RequiredAppraiseBlock
@@ -170,9 +175,9 @@ namespace Nekoyume.UI.Module
                 : SlotType.Working;
         }
 
-        private void UpdateRequiredBlockInformation(long unlockBlockIndex, long StartBlockIndex, long currentBlockIndex)
+        private void UpdateRequiredBlockInformation(long unlockBlockIndex, long startBlockIndex, long currentBlockIndex)
         {
-            progressBar.maxValue = Math.Max(unlockBlockIndex - StartBlockIndex, 1);
+            progressBar.maxValue = Math.Max(unlockBlockIndex - startBlockIndex, 1);
             var diff = Math.Max(unlockBlockIndex - currentBlockIndex, 1);
             progressBar.value = diff;
             requiredBlockIndexText.text = $"{diff}.";
