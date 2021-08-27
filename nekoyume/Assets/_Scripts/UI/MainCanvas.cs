@@ -162,7 +162,6 @@ namespace Nekoyume.UI
 
                 // 팝업 영역.
                 Widget.Create<Settings>(),
-                Widget.Create<Confirm>(),
                 Widget.Create<OneButtonPopup>(),
                 Widget.Create<TwoButtonPopup>(),
 
@@ -314,6 +313,8 @@ namespace Nekoyume.UI
             secondWidgets.Add(Widget.Create<CelebratesPopup>());
             yield return null;
             secondWidgets.Add(Widget.Create<HelpPopup>());
+            yield return null;
+            secondWidgets.Add(Widget.Create<Confirm>());
 
             // tooltip
             secondWidgets.Add(Widget.Create<AvatarTooltip>());
