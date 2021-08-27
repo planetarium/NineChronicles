@@ -68,7 +68,6 @@ namespace Nekoyume.BlockChain
                         .GetStagedTransactionIds()
                         .Select(txid => _chain.GetTransaction(txid)).ToList()
                         .ForEach(tx => _chain.UnstageTransaction(tx));
-                    StageProofTransaction();
                 }
 
                 IEnumerable<Transaction<PolymorphicAction<ActionBase>>> bannedTxs = _chain.GetStagedTransactionIds()
@@ -79,6 +78,8 @@ namespace Nekoyume.BlockChain
                     _chain.UnstageTransaction(tx);
                 }
 
+                // All miner needs proof in permissioned mining.
+                StageProofTransaction();
                 block = await _chain.MineBlock(
                     Address,
                     DateTimeOffset.UtcNow,
