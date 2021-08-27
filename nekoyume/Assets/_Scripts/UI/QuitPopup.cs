@@ -1,3 +1,4 @@
+using System.Linq;
 using Nekoyume.EnumType;
 using Nekoyume.Game;
 using Nekoyume.L10n;
@@ -58,6 +59,14 @@ namespace Nekoyume.UI
             }
 
             Game.Event.OnNestEnter.Invoke();
+
+            var deletableWidgets = FindObjectsOfType<Widget>()
+                .Where(widget => !(widget is SystemInfoWidget) && !(widget is QuitPopup) &&
+                                 !(widget is MessageCatManager) && widget.IsActive());
+            foreach (var widget in deletableWidgets)
+            {
+                widget.Close();
+            }
             Find<Login>().Show();
             Find<Menu>().Close();
             Find<HeaderMenu>().Close(true);
