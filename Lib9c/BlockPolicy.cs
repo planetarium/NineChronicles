@@ -11,7 +11,6 @@ using Lib9c;
 using Libplanet;
 using Nekoyume.Model.State;
 using NCAction = Libplanet.Action.PolymorphicAction<Nekoyume.Action.ActionBase>;
-using System.Collections.Immutable;
 
 namespace Nekoyume.BlockChain
 {
@@ -35,8 +34,6 @@ namespace Nekoyume.BlockChain
         /// </summary>
         internal readonly bool IgnoreHardcodedPolicies;
 
-        private readonly PermissionedMiningPolicy? _permissionedMiningPolicy;
-
         public BlockPolicy(
             IAction blockAction,
             TimeSpan blockInterval,
@@ -56,7 +53,7 @@ namespace Nekoyume.BlockChain
                 maxBlockBytes: maxBlockBytes,
                 maxGenesisBytes: maxGenesisBytes,
                 ignoreHardcodedPolicies: false,
-                permissionedMiningPolicy: PermissionedMiningPolicy.Mainnet,
+                permissionedMiningPolicy: BlockChain.PermissionedMiningPolicy.Mainnet,
                 doesTransactionFollowPolicy: doesTransactionFollowPolicy
             )
         {
@@ -94,7 +91,7 @@ namespace Nekoyume.BlockChain
             _minimumDifficulty = minimumDifficulty;
             _difficultyBoundDivisor = difficultyBoundDivisor;
             IgnoreHardcodedPolicies = ignoreHardcodedPolicies;
-            _permissionedMiningPolicy = permissionedMiningPolicy;
+            PermissionedMiningPolicy = permissionedMiningPolicy;
         }
 
         public AuthorizedMinersState AuthorizedMinersState
@@ -106,6 +103,8 @@ namespace Nekoyume.BlockChain
                 ((CanonicalChainComparer)CanonicalChainComparer).AuthorizedMinersState = value;
             }
         }
+
+        public PermissionedMiningPolicy? PermissionedMiningPolicy { get; }
 
         public override InvalidBlockException ValidateNextBlock(
             BlockChain<NCAction> blocks,
@@ -199,7 +198,7 @@ namespace Nekoyume.BlockChain
                 return null;
             }
 
-            if (!(_permissionedMiningPolicy is PermissionedMiningPolicy policy))
+            if (!(PermissionedMiningPolicy is PermissionedMiningPolicy policy))
             {
                 return null;
             }

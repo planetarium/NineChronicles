@@ -4,7 +4,7 @@ using System.Collections.Immutable;
 
 namespace Nekoyume.BlockChain
 {
-    internal struct PermissionedMiningPolicy
+    public struct PermissionedMiningPolicy
     {
         public PermissionedMiningPolicy(ISet<Address> miners, long threshold)
         {
@@ -26,7 +26,7 @@ namespace Nekoyume.BlockChain
                 new Address("474CB59Dea21159CeFcC828b30a8D864e0b94a6B"),
                 new Address("636d187B4d434244A92B65B06B5e7da14b3810A9"),
             }.ToImmutableHashSet(),
-            Threshold = 2_225_000
+            Threshold = 2_225_500
         };
     }
 }
