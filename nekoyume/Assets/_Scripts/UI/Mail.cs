@@ -249,7 +249,14 @@ namespace Nekoyume.UI
             });
             // ~LocalLayer
 
-            Find<CombinationResult>().Show(itemUsable);
+            if (mail.attachment is CombinationConsumable5.ResultModel resultModel &&
+                resultModel.subRecipeId.HasValue &&
+                Game.Game.instance.TableSheets.EquipmentItemSubRecipeSheetV2.TryGetValue(
+                    resultModel.subRecipeId.Value,
+                    out var row))
+            {
+                Find<CombinationResult>().Show(itemUsable, row.Options.Count);   
+            }
         }
 
         public void Read(OrderBuyerMail orderBuyerMail)
