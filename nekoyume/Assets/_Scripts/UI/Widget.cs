@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Nekoyume.EnumType;
 using UniRx;
 using UnityEngine;
@@ -179,6 +180,16 @@ namespace Nekoyume.UI
 
             widget = (T) model.widget;
             return true;
+        }
+
+        public static IEnumerable<Widget> FindWidgets()
+        {
+            return FindWidgets(type => type is Widget);
+        }
+
+        public static IEnumerable<Widget> FindWidgets(Predicate<Widget> predicate)
+        {
+            return Pool.Values.Select(value => value.widget).Where(widget => predicate(widget));
         }
 
         public static T FindOrCreate<T>() where T : Widget
