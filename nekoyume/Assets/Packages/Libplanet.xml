@@ -2079,6 +2079,7 @@
         <member name="P:Libplanet.Blockchain.BlockChain`1.Tip">
             <summary>
             The topmost <see cref="T:Libplanet.Blocks.Block`1"/> of the current blockchain.
+            Can be <c>null</c> if the blockchain is empty.
             </summary>
         </member>
         <member name="P:Libplanet.Blockchain.BlockChain`1.Genesis">
@@ -7221,26 +7222,12 @@
         <member name="P:Libplanet.Net.StateDownloadState.CurrentPhase">
             <inheritdoc />
         </member>
-        <member name="P:Libplanet.Net.Swarm`1.BlockDemandTable">
+        <member name="P:Libplanet.Net.Swarm`1.BlockDemand">
             <summary>
             Information of <see cref="T:Libplanet.Net.Swarm`1"/>'s demand for new blocks.
-            It is empty when the <see cref="T:Libplanet.Net.Swarm`1"/> does not have any block to demand.
-            <seealso cref="T:Libplanet.Net.BlockDemandTable`1"/>
+            It is null when the <see cref="T:Libplanet.Net.Swarm`1"/> does not have any block to demand.
+            <seealso cref="P:Libplanet.Net.Swarm`1.BlockDemand"/>
             </summary>
-        </member>
-        <member name="M:Libplanet.Net.Swarm`1.ProcessFillBlocksAsync(System.TimeSpan,System.Int32,System.Threading.CancellationToken)">
-            <summary>
-            Fill blocks from the <see cref="T:Libplanet.Net.BoundPeer"/>s in the
-            <see cref="P:Libplanet.Net.Swarm`1.RoutingTable"/>.
-            </summary>
-            <param name="timeout">
-            The timeout value for the request to get the tip of the block.
-            </param>
-            <param name="maximumPollPeers">The maximum targets to send request to.</param>
-            <param name="cancellationToken">
-            A cancellation token used to propagate notification that this
-            operation should be canceled.</param>
-            <returns>An awaitable task without value.</returns>
         </member>
         <member name="M:Libplanet.Net.Swarm`1.#ctor(Libplanet.Blockchain.BlockChain{`0},Libplanet.Crypto.PrivateKey,Libplanet.Net.AppProtocolVersion,System.Int32,System.String,System.Nullable{System.Int32},System.Collections.Generic.IEnumerable{Libplanet.Net.IceServer},Libplanet.Net.DifferentAppProtocolVersionEncountered,System.Collections.Generic.IEnumerable{Libplanet.Crypto.PublicKey},Libplanet.Net.SwarmOptions)">
             <summary>
@@ -7534,16 +7521,6 @@
             The size of each bucket of the Kademlia based routing table.
             </summary>
             <seealso cref="T:Libplanet.Net.Protocols.RoutingTable"/>
-        </member>
-        <member name="P:Libplanet.Net.SwarmOptions.PollInterval">
-            <summary>
-            The interval between block polling.
-            </summary>
-        </member>
-        <member name="P:Libplanet.Net.SwarmOptions.MaximumPollPeers">
-            <summary>
-            The maximum number of peers to poll blocks.
-            </summary>
         </member>
         <member name="T:Libplanet.Net.Transports.BoundPeerExtensions">
             <summary>
