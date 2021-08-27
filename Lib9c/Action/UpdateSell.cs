@@ -20,7 +20,7 @@ using BxList = Bencodex.Types.List;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("update_sell")]
+    [ActionType("update_sell2")]
     public class UpdateSell : GameAction
     {
         public Guid orderId;
@@ -153,7 +153,7 @@ namespace Nekoyume.Action
                 shardedShopState.Remove(orderOnSale, context.BlockIndex);
                 states = states.SetState(shopAddress, shardedShopState.Serialize());
             }
-          
+
             if (!states.TryGetState(orderReceiptAddress, out Dictionary rawList))
             {
                 throw new FailedLoadStateException($"{addressesHex} failed to load {nameof(OrderDigest)}({orderReceiptAddress}).");
@@ -163,7 +163,7 @@ namespace Nekoyume.Action
             states = states.SetState(itemAddress, itemOnSale.Serialize())
                 .SetState(orderReceiptAddress, digestList.Serialize());
             sw.Stop();
-            
+
             var expirationMail = avatarState.mailBox.OfType<OrderExpirationMail>()
                             .FirstOrDefault(m => m.OrderId.Equals(orderId));
             if (!(expirationMail is null))

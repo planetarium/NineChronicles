@@ -19,7 +19,7 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("buy9")]
+    [ActionType("buy10")]
     public class Buy : GameAction
     {
         public const int TaxRate = 8;
@@ -188,11 +188,7 @@ namespace Nekoyume.Action
                 Log.Verbose("{AddressesHex}Buy Get Seller AgentAvatarStates: {Elapsed}", addressesHex, sw.Elapsed);
                 sw.Restart();
 
-                // ValidateTransfer will no longer be required in the next version. (current version : buy9)
-                var errorCode = sellerAvatarState.inventory.TryGetLockedItem(new OrderLock(orderId), out _)
-                        ? order.ValidateTransfer(sellerAvatarState, purchaseInfo.TradableId, purchaseInfo.Price, context.BlockIndex)
-                        : order.ValidateTransfer2(sellerAvatarState, purchaseInfo.TradableId, purchaseInfo.Price, context.BlockIndex);
-
+                var errorCode = order.ValidateTransfer(sellerAvatarState, purchaseInfo.TradableId, purchaseInfo.Price, context.BlockIndex);
                 if (errorCode != 0)
                 {
                     errors.Add((orderId, errorCode));
@@ -214,10 +210,7 @@ namespace Nekoyume.Action
                 OrderReceipt orderReceipt;
                 try
                 {
-                    // Transfer will no longer be required in the next version. (current version : buy9)
-                    orderReceipt = sellerAvatarState.inventory.TryGetLockedItem(new OrderLock(orderId), out _)
-                            ? order.Transfer(sellerAvatarState, buyerAvatarState, context.BlockIndex)
-                            : order.Transfer2(sellerAvatarState, buyerAvatarState, context.BlockIndex);
+                    orderReceipt = order.Transfer(sellerAvatarState, buyerAvatarState, context.BlockIndex);
                 }
                 catch (ItemDoesNotExistException)
                 {
@@ -261,8 +254,8 @@ namespace Nekoyume.Action
                     orderId
                 );
 
-                buyerAvatarState.UpdateV3(orderBuyerMail);
-                sellerAvatarState.UpdateV3(orderSellerMail);
+                buyerAvatarState.Update(orderBuyerMail);
+                sellerAvatarState.Update(orderSellerMail);
 
                 // // Update quest.
                 buyerAvatarState.questList.UpdateTradeQuest(TradeType.Buy, order.Price);

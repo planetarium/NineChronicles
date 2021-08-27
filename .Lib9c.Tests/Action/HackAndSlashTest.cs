@@ -136,7 +136,7 @@ namespace Lib9c.Tests.Action
 
                 var costume = (Costume)ItemFactory.CreateItem(
                     _tableSheets.ItemSheet[costumeId], random);
-                previousAvatarState.inventory.AddItem(costume);
+                previousAvatarState.inventory.AddItem2(costume);
                 costumes.Add(costume.ItemId);
             }
 
@@ -163,7 +163,7 @@ namespace Lib9c.Tests.Action
                     orderLock = new OrderLock(Guid.NewGuid());
                 }
 
-                previousAvatarState.inventory.AddItem(weapon, iLock: orderLock);
+                previousAvatarState.inventory.AddItem2(weapon, iLock: orderLock);
             }
 
             if (avatarLevel >= GameConfig.RequireCharacterLevel.CharacterEquipmentSlotArmor)
@@ -181,7 +181,7 @@ namespace Lib9c.Tests.Action
                     random)
                     as Equipment;
                 equipments.Add(armor.ItemId);
-                previousAvatarState.inventory.AddItem(armor);
+                previousAvatarState.inventory.AddItem2(armor);
             }
 
             var mailEquipmentRow = _tableSheets.EquipmentItemSheet.Values.First();
@@ -285,7 +285,7 @@ namespace Lib9c.Tests.Action
             var equipments = Doomfist.GetAllParts(_tableSheets);
             foreach (var equipment in equipments)
             {
-                avatarState.inventory.AddItem(equipment);
+                avatarState.inventory.AddItem2(equipment);
             }
 
             state = state
@@ -432,7 +432,7 @@ namespace Lib9c.Tests.Action
                     as Equipment;
 
                 equipments.Add(equipment.ItemId);
-                previousAvatarState.inventory.AddItem(equipment);
+                previousAvatarState.inventory.AddItem2(equipment);
             }
 
             var state = _initialState
@@ -740,7 +740,7 @@ namespace Lib9c.Tests.Action
             var avatarState = new AvatarState(_avatarState);
             var equipRow = _tableSheets.EquipmentItemSheet.Values.First(r => r.ItemSubType == itemSubType);
             var equipment = ItemFactory.CreateItemUsable(equipRow, Guid.NewGuid(), 100);
-            avatarState.inventory.AddItem(equipment);
+            avatarState.inventory.AddItem2(equipment);
 
             var action = new HackAndSlash
             {
@@ -787,7 +787,7 @@ namespace Lib9c.Tests.Action
 
             var equipRow = _tableSheets.EquipmentItemSheet.Values.First(r => r.ItemSubType == itemSubType);
             var equipment = ItemFactory.CreateItemUsable(equipRow, Guid.NewGuid(), 0);
-            avatarState.inventory.AddItem(equipment);
+            avatarState.inventory.AddItem2(equipment);
             state = state.SetState(_inventoryAddress, avatarState.inventory.Serialize());
 
             var action = new HackAndSlash

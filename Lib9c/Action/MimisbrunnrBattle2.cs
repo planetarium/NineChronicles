@@ -216,7 +216,7 @@ namespace Nekoyume.Action
             Log.Verbose("{AddressesHex}Mimisbrunnr Initialize Simulator: {Elapsed}", addressesHex, sw.Elapsed);
             
             sw.Restart();
-            simulator.SimulateV2();
+            simulator.Simulate3();
             sw.Stop();
             Log.Verbose("{AddressesHex}Mimisbrunnr Simulator.Simulate(): {Elapsed}", addressesHex, sw.Elapsed);
             
@@ -250,10 +250,10 @@ namespace Nekoyume.Action
             avatarState.Update(simulator);
 
             var materialSheet = states.GetSheet<MaterialItemSheet>();
-            avatarState.UpdateQuestRewards(materialSheet);
+            avatarState.UpdateQuestRewards2(materialSheet);
 
             avatarState.updatedAt = ctx.BlockIndex;
-            avatarState.mailBox.CleanUpV2();
+            avatarState.mailBox.CleanUp();
             states = states.SetState(avatarAddress, avatarState.Serialize());
 
             sw.Stop();

@@ -136,7 +136,7 @@
             for (var i = 0; i < 100; i++)
             {
                 var mail = new DailyRewardMail(result, i, default, 0);
-                avatarState.Update(mail);
+                avatarState.Update2(mail);
             }
 
             Address shardedShopAddress = ShardedShopStateV2.DeriveAddress(itemSubType, orderId);
@@ -172,13 +172,13 @@
                     {
                         var tradable = (TradableMaterial)tradableFungibleItem.Clone();
                         tradable.RequiredBlockIndex = tradableItem.RequiredBlockIndex - i;
-                        avatarState.inventory.AddItem(tradable, 2 - i);
+                        avatarState.inventory.AddItem2(tradable, 2 - i);
                     }
                 }
             }
             else
             {
-                avatarState.inventory.AddItem((ItemBase)tradableItem, itemCount);
+                avatarState.inventory.AddItem2((ItemBase)tradableItem, itemCount);
             }
 
             ITradableItem sellItem = order.Sell2(avatarState);

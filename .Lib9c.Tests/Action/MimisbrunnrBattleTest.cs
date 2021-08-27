@@ -94,7 +94,7 @@ namespace Lib9c.Tests.Action
                 .Id;
             var costume =
                 ItemFactory.CreateItem(_tableSheets.ItemSheet[costumeId], new TestRandom());
-            previousAvatarState.inventory.AddItem(costume);
+            previousAvatarState.inventory.AddItem2(costume);
 
             var mimisbrunnrSheet = _tableSheets.MimisbrunnrSheet;
             if (!mimisbrunnrSheet.TryGetValue(stageId, out var mimisbrunnrSheetRow))
@@ -105,7 +105,7 @@ namespace Lib9c.Tests.Action
             var equipmentRow =
                 _tableSheets.EquipmentItemSheet.Values.First(x => x.ElementalType == ElementalType.Fire);
             var equipment = ItemFactory.CreateItemUsable(equipmentRow, default, 0);
-            previousAvatarState.inventory.AddItem(equipment);
+            previousAvatarState.inventory.AddItem2(equipment);
 
             foreach (var equipmentId in previousAvatarState.inventory.Equipments)
             {
@@ -212,7 +212,7 @@ namespace Lib9c.Tests.Action
             var equipmentRow =
                 _tableSheets.EquipmentItemSheet.Values.First(x => x.ElementalType == ElementalType.Fire);
             var equipment = ItemFactory.CreateItemUsable(equipmentRow, default, 0);
-            previousAvatarState.inventory.AddItem(equipment);
+            previousAvatarState.inventory.AddItem2(equipment);
 
             var mimisbrunnrSheet = _tableSheets.MimisbrunnrSheet;
             if (!mimisbrunnrSheet.TryGetValue(stageId, out var mimisbrunnrSheetRow))
@@ -413,7 +413,7 @@ namespace Lib9c.Tests.Action
                 .Id;
             var costume =
                 ItemFactory.CreateItem(_tableSheets.ItemSheet[costumeId], new TestRandom());
-            previousAvatarState.inventory.AddItem(costume);
+            previousAvatarState.inventory.AddItem2(costume);
 
             var mimisbrunnrSheet = _tableSheets.MimisbrunnrSheet;
             if (!mimisbrunnrSheet.TryGetValue(stageId, out var mimisbrunnrSheetRow))
@@ -424,7 +424,7 @@ namespace Lib9c.Tests.Action
             var equipmentRow =
                 _tableSheets.EquipmentItemSheet.Values.First(x => x.ElementalType == ElementalType.Fire);
             var equipment = ItemFactory.CreateItemUsable(equipmentRow, default, 0);
-            previousAvatarState.inventory.AddItem(equipment);
+            previousAvatarState.inventory.AddItem2(equipment);
 
             foreach (var equipmentId in previousAvatarState.inventory.Equipments)
             {
@@ -528,12 +528,12 @@ namespace Lib9c.Tests.Action
                 .Id;
             var costume =
                 ItemFactory.CreateItem(_tableSheets.ItemSheet[costumeId], new TestRandom());
-            avatarState.inventory.AddItem(costume);
+            avatarState.inventory.AddItem2(costume);
 
             var equipmentRow =
                 _tableSheets.EquipmentItemSheet.OrderedList.First(x => x.ElementalType == ElementalType.Fire);
             var equipment = ItemFactory.CreateItemUsable(equipmentRow, default, 0);
-            avatarState.inventory.AddItem(equipment);
+            avatarState.inventory.AddItem2(equipment);
             var nextState = _initialState.SetState(_avatarAddress, avatarState.Serialize());
 
             var action = new MimisbrunnrBattle()

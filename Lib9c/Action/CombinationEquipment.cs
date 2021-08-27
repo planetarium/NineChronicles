@@ -20,7 +20,7 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("combination_equipment6")]
+    [ActionType("combination_equipment7")]
     public class CombinationEquipment : GameAction
     {
         public static readonly Address BlacksmithAddress = ItemEnhancement.BlacksmithAddress;
@@ -225,7 +225,7 @@ namespace Nekoyume.Action
             var mail = new CombinationMail(result, ctx.BlockIndex, ctx.Random.GenerateRandomGuid(),
                 requiredBlockIndex);
             result.id = mail.id;
-            avatarState.UpdateV3(mail);
+            avatarState.Update(mail);
             avatarState.questList.UpdateCombinationEquipmentQuest(RecipeId);
             avatarState.UpdateFromCombination(equipment);
             avatarState.UpdateQuestRewards(materialSheet);

@@ -193,8 +193,8 @@ namespace Lib9c.Tests.Action
                 for (var i = 0; i < 100; i++)
                 {
                     var mail = new DailyRewardMail(result, i, default, 0);
-                    sellerAvatarState.Update(mail);
-                    buyerAvatarState.Update(mail);
+                    sellerAvatarState.Update2(mail);
+                    buyerAvatarState.Update2(mail);
                 }
 
                 Address shardedShopAddress = ShardedShopState.DeriveAddress(itemSubType, productId);
@@ -214,7 +214,7 @@ namespace Lib9c.Tests.Action
                 {
                     shopState.Register(shopItem);
                     shardedShopStates[shardedShopAddress] = shopState;
-                    sellerAvatarState.inventory.AddItem((ItemBase)nonFungibleItem);
+                    sellerAvatarState.inventory.AddItem2((ItemBase)nonFungibleItem);
                     _initialState = _initialState.SetState(shardedShopAddress, shopState.Serialize());
                 }
                 else

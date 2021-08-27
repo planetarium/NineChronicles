@@ -94,7 +94,7 @@
                 .Id;
             var costume =
                 ItemFactory.CreateItem(_tableSheets.ItemSheet[costumeId], new TestRandom());
-            previousAvatarState.inventory.AddItem(costume);
+            previousAvatarState.inventory.AddItem2(costume);
 
             var mimisbrunnrSheet = _tableSheets.MimisbrunnrSheet;
             if (!mimisbrunnrSheet.TryGetValue(stageId, out var mimisbrunnrSheetRow))
@@ -105,7 +105,7 @@
             var equipmentRow =
                 _tableSheets.EquipmentItemSheet.Values.First(x => x.ElementalType == ElementalType.Fire);
             var equipment = ItemFactory.CreateItemUsable(equipmentRow, default, 0);
-            previousAvatarState.inventory.AddItem(equipment);
+            previousAvatarState.inventory.AddItem2(equipment);
 
             foreach (var equipmentId in previousAvatarState.inventory.Equipments)
             {
@@ -128,7 +128,7 @@
             for (var i = 0; i < 100; i++)
             {
                 var mail = new CombinationMail(result, i, default, 0);
-                previousAvatarState.Update(mail);
+                previousAvatarState.Update2(mail);
             }
 
             var state = _initialState.SetState(_avatarAddress, previousAvatarState.Serialize());
@@ -207,7 +207,7 @@
             var equipmentRow =
                 _tableSheets.EquipmentItemSheet.Values.First(x => x.ElementalType == ElementalType.Fire);
             var equipment = ItemFactory.CreateItemUsable(equipmentRow, default, 0);
-            previousAvatarState.inventory.AddItem(equipment);
+            previousAvatarState.inventory.AddItem2(equipment);
 
             var mimisbrunnrSheet = _tableSheets.MimisbrunnrSheet;
             if (!mimisbrunnrSheet.TryGetValue(stageId, out var mimisbrunnrSheetRow))
@@ -421,7 +421,7 @@
                 .Id;
             var costume =
                 ItemFactory.CreateItem(_tableSheets.ItemSheet[costumeId], new TestRandom());
-            previousAvatarState.inventory.AddItem(costume);
+            previousAvatarState.inventory.AddItem2(costume);
 
             var mimisbrunnrSheet = _tableSheets.MimisbrunnrSheet;
             if (!mimisbrunnrSheet.TryGetValue(stageId, out var mimisbrunnrSheetRow))
@@ -432,7 +432,7 @@
             var equipmentRow =
                 _tableSheets.EquipmentItemSheet.Values.First(x => x.ElementalType == ElementalType.Fire);
             var equipment = ItemFactory.CreateItemUsable(equipmentRow, default, 0);
-            previousAvatarState.inventory.AddItem(equipment);
+            previousAvatarState.inventory.AddItem2(equipment);
 
             foreach (var equipmentId in previousAvatarState.inventory.Equipments)
             {
@@ -455,7 +455,7 @@
             for (var i = 0; i < 100; i++)
             {
                 var mail = new CombinationMail(result, i, default, 0);
-                previousAvatarState.Update(mail);
+                previousAvatarState.Update2(mail);
             }
 
             var state = _initialState.SetState(_avatarAddress, previousAvatarState.Serialize());
@@ -542,12 +542,12 @@
                 .Id;
             var costume =
                 ItemFactory.CreateItem(_tableSheets.ItemSheet[costumeId], new TestRandom());
-            avatarState.inventory.AddItem(costume);
+            avatarState.inventory.AddItem2(costume);
 
             var equipmentRow =
                 _tableSheets.EquipmentItemSheet.OrderedList.First(x => x.ElementalType == ElementalType.Fire);
             var equipment = ItemFactory.CreateItemUsable(equipmentRow, default, 0);
-            avatarState.inventory.AddItem(equipment);
+            avatarState.inventory.AddItem2(equipment);
             var nextState = _initialState.SetState(_avatarAddress, avatarState.Serialize());
 
             var action = new MimisbrunnrBattle3()

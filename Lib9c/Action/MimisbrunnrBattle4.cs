@@ -16,8 +16,8 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
+    [ActionObsolete(BlockChain.BlockPolicySource.V100073ObsoleteIndex)]
     [ActionType("mimisbrunnr_battle4")]
-    [ActionObsolete(BlockChain.BlockPolicySource.V100074ObsoleteIndex)]
     public class MimisbrunnrBattle4 : GameAction
     {
         public List<Guid> costumes;
@@ -74,7 +74,7 @@ namespace Nekoyume.Action
                 return states.SetState(WeeklyArenaAddress, MarkChanged);
             }
 
-            CheckObsolete(BlockChain.BlockPolicySource.V100074ObsoleteIndex, context);
+            CheckObsolete(BlockChain.BlockPolicySource.V100073ObsoleteIndex, context);
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
 
@@ -222,7 +222,7 @@ namespace Nekoyume.Action
             Log.Verbose("{AddressesHex}Mimisbrunnr Initialize Simulator: {Elapsed}", addressesHex, sw.Elapsed);
 
             sw.Restart();
-            simulator.SimulateV2();
+            simulator.Simulate3();
             sw.Stop();
             Log.Verbose("{AddressesHex}Mimisbrunnr Simulator.Simulate(): {Elapsed}", addressesHex, sw.Elapsed);
 
@@ -256,10 +256,10 @@ namespace Nekoyume.Action
             avatarState.Update(simulator);
 
             var materialSheet = states.GetSheet<MaterialItemSheet>();
-            avatarState.UpdateQuestRewards(materialSheet);
+            avatarState.UpdateQuestRewards2(materialSheet);
 
             avatarState.updatedAt = ctx.BlockIndex;
-            avatarState.mailBox.CleanUpV2();
+            avatarState.mailBox.CleanUp();
             states = states
                 .SetState(inventoryAddress, avatarState.inventory.Serialize())
                 .SetState(worldInformationAddress, avatarState.worldInformation.Serialize())

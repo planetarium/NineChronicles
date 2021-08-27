@@ -175,16 +175,16 @@
                     {
                         var tradable = (TradableMaterial)tradableFungibleItem.Clone();
                         tradable.RequiredBlockIndex = tradableItem.RequiredBlockIndex - i;
-                        avatarState.inventory.AddItem(tradable, 2 - i);
+                        avatarState.inventory.AddItem2(tradable, 2 - i);
                     }
                 }
             }
             else
             {
-                avatarState.inventory.AddItem((ItemBase)tradableItem, itemCount);
+                avatarState.inventory.AddItem2((ItemBase)tradableItem, itemCount);
             }
 
-            var sellItem = legacy ? order.Sell2(avatarState) : order.Sell(avatarState);
+            var sellItem = legacy ? order.Sell2(avatarState) : order.Sell3(avatarState);
             var orderDigest = legacy ? order.Digest2(avatarState, _tableSheets.CostumeStatSheet)
                                      : order.Digest(avatarState, _tableSheets.CostumeStatSheet);
             shopState.Add(orderDigest, requiredBlockIndex);

@@ -201,7 +201,7 @@ namespace Nekoyume.Battle
                 Player.OverrideSkill(skill);
             }
         }
-        
+
         public StageSimulator(
             IRandom random,
             AvatarState avatarState,
@@ -249,21 +249,14 @@ namespace Nekoyume.Battle
             Player.SetCostumeStat(costumeStatSheet);
         }
 
-        /// <summary>
-        /// Do not use anymore since v100025.
-        /// </summary>
-        /// <returns></returns>
         public Player Simulate()
         {
-#if TEST_LOG
-            var sb = new System.Text.StringBuilder();
-#endif
             Log.worldId = WorldId;
             Log.stageId = StageId;
             Log.waveCount = _waves.Count;
             Log.clearedWaveNumber = 0;
             Log.newlyCleared = false;
-            Player.Spawn();
+            Player.SpawnV2();
             TurnNumber = 0;
             for (var i = 0; i < _waves.Count; i++)
             {
@@ -272,15 +265,7 @@ namespace Nekoyume.Battle
 
                 WaveNumber = i + 1;
                 WaveTurn = 1;
-                _waves[i].Spawn(this);
-#if TEST_LOG
-                sb.Clear();
-                sb.Append($"{nameof(TurnNumber)}: {TurnNumber}");
-                sb.Append($" / {nameof(WaveNumber)}: {WaveNumber}");
-                sb.Append($" / {nameof(WaveTurn)}: {WaveTurn}");
-                sb.Append(" / Wave Start");
-                UnityEngine.Debug.LogWarning(sb.ToString());
-#endif
+                _waves[i].SpawnV2(this);
                 while (true)
                 {
                     // 제한 턴을 넘어서는 경우 break.
@@ -298,37 +283,14 @@ namespace Nekoyume.Battle
                         {
                             Result = BattleLog.Result.TimeOver;
                         }
-#if TEST_LOG
-                        sb.Clear();
-                        sb.Append($"{nameof(TurnNumber)}: {TurnNumber}");
-                        sb.Append($" / {nameof(WaveNumber)}: {WaveNumber}");
-                        sb.Append($" / {nameof(WaveTurn)}: {WaveTurn}");
-                        sb.Append($" / {nameof(TurnLimit)}: {TurnLimit}");
-                        sb.Append($" / {nameof(Result)}: {Result.ToString()}");
-                        UnityEngine.Debug.LogWarning(sb.ToString());
-#endif
                         break;
                     }
 
                     // 캐릭터 큐가 비어 있는 경우 break.
                     if (!Characters.TryDequeue(out var character))
                         break;
-#if TEST_LOG
-                    var turnBefore = TurnNumber;
-#endif
+
                     character.Tick();
-#if TEST_LOG
-                    var turnAfter = TurnNumber;
-                    if (turnBefore != turnAfter)
-                    {
-                        sb.Clear();
-                        sb.Append($"{nameof(TurnNumber)}: {TurnNumber}");
-                        sb.Append($" / {nameof(WaveNumber)}: {WaveNumber}");
-                        sb.Append($" / {nameof(WaveTurn)}: {WaveTurn}");
-                        sb.Append(" / Turn End");
-                        UnityEngine.Debug.LogWarning(sb.ToString());
-                    }
-#endif
 
                     // 플레이어가 죽은 경우 break;
                     if (Player.IsDead)
@@ -345,15 +307,6 @@ namespace Nekoyume.Battle
                         {
                             Result = BattleLog.Result.Win;
                         }
-#if TEST_LOG
-                        sb.Clear();
-                        sb.Append($"{nameof(TurnNumber)}: {TurnNumber}");
-                        sb.Append($" / {nameof(WaveNumber)}: {WaveNumber}");
-                        sb.Append($" / {nameof(WaveTurn)}: {WaveTurn}");
-                        sb.Append($" / {nameof(Player)} Dead");
-                        sb.Append($" / {nameof(Result)}: {Result.ToString()}");
-                        UnityEngine.Debug.LogWarning(sb.ToString());
-#endif
                         break;
                     }
 
@@ -413,19 +366,11 @@ namespace Nekoyume.Battle
             }
 
             Log.result = Result;
-#if TEST_LOG
-            sb.Clear();
-            sb.Append($"{nameof(TurnNumber)}: {TurnNumber}");
-            sb.Append($" / {nameof(WaveNumber)}: {WaveNumber}");
-            sb.Append($" / {nameof(WaveTurn)}: {WaveTurn}");
-            sb.Append($" / {nameof(Simulate)} End");
-            sb.Append($" / {nameof(Result)}: {Result.ToString()}");
-            UnityEngine.Debug.LogWarning(sb.ToString());
-#endif
             return Player;
         }
 
-        public Player SimulateV2()
+        [Obsolete("Use Simulate")]
+        public Player Simulate2()
         {
 #if TEST_LOG
             var sb = new System.Text.StringBuilder();
@@ -435,7 +380,7 @@ namespace Nekoyume.Battle
             Log.waveCount = _waves.Count;
             Log.clearedWaveNumber = 0;
             Log.newlyCleared = false;
-            Player.SpawnV2();
+            Player.Spawn();
             TurnNumber = 0;
             for (var i = 0; i < _waves.Count; i++)
             {
@@ -444,7 +389,7 @@ namespace Nekoyume.Battle
 
                 WaveNumber = i + 1;
                 WaveTurn = 1;
-                _waves[i].SpawnV2(this);
+                _waves[i].Spawn(this);
 #if TEST_LOG
                 sb.Clear();
                 sb.Append($"{nameof(TurnNumber)}: {TurnNumber}");
@@ -463,7 +408,7 @@ namespace Nekoyume.Battle
                             Result = BattleLog.Result.Lose;
                             if (StageId < GameConfig.MimisbrunnrStartStageId)
                             {
-                                Player.GetExpV2((int) (Exp * 0.3m), true);
+                                Player.GetExp2((int) (Exp * 0.3m), true);
                             }
                         }
                         else
@@ -510,7 +455,7 @@ namespace Nekoyume.Battle
                             Result = BattleLog.Result.Lose;
                             if (StageId < GameConfig.MimisbrunnrStartStageId)
                             {
-                                Player.GetExpV2((int) (Exp * 0.3m), true);
+                                Player.GetExp2((int) (Exp * 0.3m), true);
                             }
                         }
                         else
@@ -540,13 +485,13 @@ namespace Nekoyume.Battle
                             case 1:
                                 if (StageId < GameConfig.MimisbrunnrStartStageId)
                                 {
-                                    Player.GetExpV2(Exp, true);
+                                    Player.GetExp2(Exp, true);
                                 }
 
                                 break;
                             case 2:
                             {
-                                ItemMap = Player.GetRewards(_waveRewards);
+                                ItemMap = Player.GetRewards2(_waveRewards);
                                 var dropBox = new DropBox(null, _waveRewards);
                                 Log.Add(dropBox);
                                 var getReward = new GetReward(null, _waveRewards);
@@ -597,7 +542,181 @@ namespace Nekoyume.Battle
             return Player;
         }
 
-        public Player SimulateV3()
+        [Obsolete("Use Simulate")]
+        public Player Simulate3()
+        {
+#if TEST_LOG
+            var sb = new System.Text.StringBuilder();
+#endif
+            Log.worldId = WorldId;
+            Log.stageId = StageId;
+            Log.waveCount = _waves.Count;
+            Log.clearedWaveNumber = 0;
+            Log.newlyCleared = false;
+            Player.SpawnV2();
+            TurnNumber = 0;
+            for (var i = 0; i < _waves.Count; i++)
+            {
+                Characters = new SimplePriorityQueue<CharacterBase, decimal>();
+                Characters.Enqueue(Player, TurnPriority / Player.SPD);
+
+                WaveNumber = i + 1;
+                WaveTurn = 1;
+                _waves[i].SpawnV2(this);
+#if TEST_LOG
+                sb.Clear();
+                sb.Append($"{nameof(TurnNumber)}: {TurnNumber}");
+                sb.Append($" / {nameof(WaveNumber)}: {WaveNumber}");
+                sb.Append($" / {nameof(WaveTurn)}: {WaveTurn}");
+                sb.Append(" / Wave Start");
+                UnityEngine.Debug.LogWarning(sb.ToString());
+#endif
+                while (true)
+                {
+                    // 제한 턴을 넘어서는 경우 break.
+                    if (TurnNumber > TurnLimit)
+                    {
+                        if (i == 0)
+                        {
+                            Result = BattleLog.Result.Lose;
+                            if (StageId < GameConfig.MimisbrunnrStartStageId)
+                            {
+                                Player.GetExp3((int) (Exp * 0.3m), true);
+                            }
+                        }
+                        else
+                        {
+                            Result = BattleLog.Result.TimeOver;
+                        }
+#if TEST_LOG
+                        sb.Clear();
+                        sb.Append($"{nameof(TurnNumber)}: {TurnNumber}");
+                        sb.Append($" / {nameof(WaveNumber)}: {WaveNumber}");
+                        sb.Append($" / {nameof(WaveTurn)}: {WaveTurn}");
+                        sb.Append($" / {nameof(TurnLimit)}: {TurnLimit}");
+                        sb.Append($" / {nameof(Result)}: {Result.ToString()}");
+                        UnityEngine.Debug.LogWarning(sb.ToString());
+#endif
+                        break;
+                    }
+
+                    // 캐릭터 큐가 비어 있는 경우 break.
+                    if (!Characters.TryDequeue(out var character))
+                        break;
+#if TEST_LOG
+                    var turnBefore = TurnNumber;
+#endif
+                    character.Tick();
+#if TEST_LOG
+                    var turnAfter = TurnNumber;
+                    if (turnBefore != turnAfter)
+                    {
+                        sb.Clear();
+                        sb.Append($"{nameof(TurnNumber)}: {TurnNumber}");
+                        sb.Append($" / {nameof(WaveNumber)}: {WaveNumber}");
+                        sb.Append($" / {nameof(WaveTurn)}: {WaveTurn}");
+                        sb.Append(" / Turn End");
+                        UnityEngine.Debug.LogWarning(sb.ToString());
+                    }
+#endif
+
+                    // 플레이어가 죽은 경우 break;
+                    if (Player.IsDead)
+                    {
+                        if (i == 0)
+                        {
+                            Result = BattleLog.Result.Lose;
+                            if (StageId < GameConfig.MimisbrunnrStartStageId)
+                            {
+                                Player.GetExp3((int) (Exp * 0.3m), true);
+                            }
+                        }
+                        else
+                        {
+                            Result = BattleLog.Result.Win;
+                        }
+#if TEST_LOG
+                        sb.Clear();
+                        sb.Append($"{nameof(TurnNumber)}: {TurnNumber}");
+                        sb.Append($" / {nameof(WaveNumber)}: {WaveNumber}");
+                        sb.Append($" / {nameof(WaveTurn)}: {WaveTurn}");
+                        sb.Append($" / {nameof(Player)} Dead");
+                        sb.Append($" / {nameof(Result)}: {Result.ToString()}");
+                        UnityEngine.Debug.LogWarning(sb.ToString());
+#endif
+                        break;
+                    }
+
+                    // 플레이어의 타겟(적)이 없는 경우 break.
+                    if (!Player.Targets.Any())
+                    {
+                        Result = BattleLog.Result.Win;
+                        Log.clearedWaveNumber = WaveNumber;
+
+                        switch (WaveNumber)
+                        {
+                            case 1:
+                                if (StageId < GameConfig.MimisbrunnrStartStageId)
+                                {
+                                    Player.GetExp3(Exp, true);
+                                }
+
+                                break;
+                            case 2:
+                            {
+                                ItemMap = Player.GetRewards2(_waveRewards);
+                                var dropBox = new DropBox(null, _waveRewards);
+                                Log.Add(dropBox);
+                                var getReward = new GetReward(null, _waveRewards);
+                                Log.Add(getReward);
+                                break;
+                            }
+                            default:
+                                if (WaveNumber == _waves.Count)
+                                {
+                                    if (!IsCleared)
+                                    {
+                                        Log.newlyCleared = true;
+                                    }
+                                }
+
+                                break;
+                        }
+
+                        break;
+                    }
+
+                    foreach (var other in Characters)
+                    {
+                        var current = Characters.GetPriority(other);
+                        var speed = current * 0.6m;
+                        Characters.UpdatePriority(other, speed);
+                    }
+
+                    Characters.Enqueue(character, TurnPriority / character.SPD);
+                }
+
+                // 제한 턴을 넘거나 플레이어가 죽은 경우 break;
+                if (TurnNumber > TurnLimit ||
+                    Player.IsDead)
+                    break;
+            }
+
+            Log.result = Result;
+#if TEST_LOG
+            sb.Clear();
+            sb.Append($"{nameof(TurnNumber)}: {TurnNumber}");
+            sb.Append($" / {nameof(WaveNumber)}: {WaveNumber}");
+            sb.Append($" / {nameof(WaveTurn)}: {WaveTurn}");
+            sb.Append($" / {nameof(Simulate)} End");
+            sb.Append($" / {nameof(Result)}: {Result.ToString()}");
+            UnityEngine.Debug.LogWarning(sb.ToString());
+#endif
+            return Player;
+        }
+
+        [Obsolete("Use Simulate")]
+        public Player Simulate4()
         {
             Log.worldId = WorldId;
             Log.stageId = StageId;
@@ -624,7 +743,7 @@ namespace Nekoyume.Battle
                             Result = BattleLog.Result.Lose;
                             if (StageId < GameConfig.MimisbrunnrStartStageId)
                             {
-                                Player.GetExpV3((int) (Exp * 0.3m), true);
+                                Player.GetExp((int) (Exp * 0.3m), true);
                             }
                         }
                         else
@@ -648,7 +767,7 @@ namespace Nekoyume.Battle
                             Result = BattleLog.Result.Lose;
                             if (StageId < GameConfig.MimisbrunnrStartStageId)
                             {
-                                Player.GetExpV3((int) (Exp * 0.3m), true);
+                                Player.GetExp((int) (Exp * 0.3m), true);
                             }
                         }
                         else
@@ -669,13 +788,13 @@ namespace Nekoyume.Battle
                             case 1:
                                 if (StageId < GameConfig.MimisbrunnrStartStageId)
                                 {
-                                    Player.GetExpV3(Exp, true);
+                                    Player.GetExp(Exp, true);
                                 }
 
                                 break;
                             case 2:
                             {
-                                ItemMap = Player.GetRewards(_waveRewards);
+                                ItemMap = Player.GetRewards2(_waveRewards);
                                 var dropBox = new DropBox(null, _waveRewards);
                                 Log.Add(dropBox);
                                 var getReward = new GetReward(null, _waveRewards);
@@ -716,6 +835,7 @@ namespace Nekoyume.Battle
             Log.result = Result;
             return Player;
         }
+
         private void SetWave(StageSheet.Row stageRow, StageWaveSheet.Row stageWaveRow)
         {
             var enemyStatModifiers = stageRow.EnemyOptionalStatModifiers;

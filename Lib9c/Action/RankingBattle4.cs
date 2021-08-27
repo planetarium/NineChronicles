@@ -174,7 +174,7 @@ namespace Nekoyume.Action
                 weeklyArenaState[EnemyAddress],
                 costumeStatSheet);
 
-            simulator.SimulateV2();
+            simulator.Simulate();
 
             sw.Stop();
             Log.Verbose(
@@ -203,7 +203,7 @@ namespace Nekoyume.Action
                     addressesHex,
                     itemBase.Id,
                     sw.Elapsed);
-                avatarState.inventory.AddItem(itemBase);
+                avatarState.inventory.AddItem2(itemBase);
             }
 
             states = states.SetState(WeeklyArenaAddress, weeklyArenaState.Serialize());

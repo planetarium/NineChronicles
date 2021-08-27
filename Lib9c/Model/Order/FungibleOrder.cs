@@ -104,6 +104,64 @@ namespace Lib9c.Model.Order
                 $"Can't find available item in seller inventory. TradableId: {TradableId}. RequiredBlockIndex: {StartedBlockIndex}, Count: {ItemCount}");
         }
 
+        [Obsolete("Use Sell")]
+        public override ITradableItem Sell2(AvatarState avatarState)
+        {
+            if (avatarState.inventory.TryGetTradableItems(TradableId, StartedBlockIndex, ItemCount, out List<Inventory.Item> items))
+            {
+                int totalCount = ItemCount;
+                // Copy ITradableFungible item for separate inventory slots.
+                ITradableFungibleItem copy = (ITradableFungibleItem) ((ITradableFungibleItem) items.First().item).Clone();
+                foreach (var item in items)
+                {
+                    int removeCount = Math.Min(totalCount, item.count);
+                    ITradableFungibleItem tradableFungibleItem = (ITradableFungibleItem) item.item;
+                    avatarState.inventory.RemoveTradableItem(TradableId, tradableFungibleItem.RequiredBlockIndex, removeCount);
+                    totalCount -= removeCount;
+                    if (totalCount < 1)
+                    {
+                        break;
+                    }
+                }
+                // Lock item.
+                copy.RequiredBlockIndex = ExpiredBlockIndex;
+                avatarState.inventory.AddItem2((ItemBase) copy, ItemCount);
+                return copy;
+            }
+
+            throw new ItemDoesNotExistException(
+                $"Can't find available item in seller inventory. TradableId: {TradableId}. RequiredBlockIndex: {StartedBlockIndex}, Count: {ItemCount}");
+        }
+
+        [Obsolete("Use Sell")]
+        public override ITradableItem Sell3(AvatarState avatarState)
+        {
+            if (avatarState.inventory.TryGetTradableItems(TradableId, StartedBlockIndex, ItemCount, out List<Inventory.Item> items))
+            {
+                int totalCount = ItemCount;
+                // Copy ITradableFungible item for separate inventory slots.
+                ITradableFungibleItem copy = (ITradableFungibleItem) ((ITradableFungibleItem) items.First().item).Clone();
+                foreach (var item in items)
+                {
+                    int removeCount = Math.Min(totalCount, item.count);
+                    ITradableFungibleItem tradableFungibleItem = (ITradableFungibleItem) item.item;
+                    avatarState.inventory.RemoveTradableItem(TradableId, tradableFungibleItem.RequiredBlockIndex, removeCount);
+                    totalCount -= removeCount;
+                    if (totalCount < 1)
+                    {
+                        break;
+                    }
+                }
+                // Lock item.
+                copy.RequiredBlockIndex = ExpiredBlockIndex;
+                avatarState.inventory.AddItem2((ItemBase) copy, ItemCount, new OrderLock(OrderId));
+                return copy;
+            }
+
+            throw new ItemDoesNotExistException(
+                $"Can't find available item in seller inventory. TradableId: {TradableId}. RequiredBlockIndex: {StartedBlockIndex}, Count: {ItemCount}");
+        }
+
         public override OrderDigest Digest(AvatarState avatarState, CostumeStatSheet costumeStatSheet)
         {
             if (avatarState.inventory.TryGetLockedItem(new OrderLock(OrderId), out Inventory.Item inventoryItem))
@@ -139,6 +197,41 @@ namespace Lib9c.Model.Order
                 var copy = (TradableMaterial) tradableItem.Clone();
                 copy.RequiredBlockIndex = blockIndex;
                 buyer.UpdateFromAddItem(copy, ItemCount, false);
+                return new OrderReceipt(OrderId, buyer.agentAddress, buyer.address, blockIndex);
+            }
+
+            throw new ItemDoesNotExistException(
+                $"Aborted because the tradable item({TradableId}) was failed to load from seller's inventory.");
+        }
+
+        [Obsolete("Use Transfer")]
+        public override OrderReceipt Transfer2(AvatarState seller, AvatarState buyer, long blockIndex)
+        {
+            if (seller.inventory.TryGetTradableItem(TradableId, ExpiredBlockIndex, ItemCount,
+                out Inventory.Item inventoryItem))
+            {
+                TradableMaterial tradableItem = (TradableMaterial) inventoryItem.item;
+                seller.inventory.RemoveTradableItem(tradableItem, ItemCount);
+                TradableMaterial copy = (TradableMaterial) tradableItem.Clone();
+                copy.RequiredBlockIndex = blockIndex;
+                buyer.UpdateFromAddItem2(copy, ItemCount, false);
+                return new OrderReceipt(OrderId, buyer.agentAddress, buyer.address, blockIndex);
+            }
+            throw new ItemDoesNotExistException(
+                $"Aborted because the tradable item({TradableId}) was failed to load from seller's inventory.");
+        }
+
+        [Obsolete("Use Transfer")]
+        public override OrderReceipt Transfer3(AvatarState seller, AvatarState buyer, long blockIndex)
+        {
+            if (seller.inventory.TryGetLockedItem(new OrderLock(OrderId), out var inventoryItem))
+            {
+                var tradableItem = (TradableMaterial) inventoryItem.item;
+                seller.inventory.RemoveItem(inventoryItem);
+
+                var copy = (TradableMaterial) tradableItem.Clone();
+                copy.RequiredBlockIndex = blockIndex;
+                buyer.UpdateFromAddItem2(copy, ItemCount, false);
                 return new OrderReceipt(OrderId, buyer.agentAddress, buyer.address, blockIndex);
             }
 
@@ -220,34 +313,7 @@ namespace Lib9c.Model.Order
             }
         }
 
-        [Obsolete("Use Sell")]
-        public override ITradableItem Sell2(AvatarState avatarState)
-        {
-            if (avatarState.inventory.TryGetTradableItems(TradableId, StartedBlockIndex, ItemCount, out List<Inventory.Item> items))
-            {
-                int totalCount = ItemCount;
-                // Copy ITradableFungible item for separate inventory slots.
-                ITradableFungibleItem copy = (ITradableFungibleItem) ((ITradableFungibleItem) items.First().item).Clone();
-                foreach (var item in items)
-                {
-                    int removeCount = Math.Min(totalCount, item.count);
-                    ITradableFungibleItem tradableFungibleItem = (ITradableFungibleItem) item.item;
-                    avatarState.inventory.RemoveTradableItem(TradableId, tradableFungibleItem.RequiredBlockIndex, removeCount);
-                    totalCount -= removeCount;
-                    if (totalCount < 1)
-                    {
-                        break;
-                    }
-                }
-                // Lock item.
-                copy.RequiredBlockIndex = ExpiredBlockIndex;
-                avatarState.inventory.AddItem((ItemBase) copy, ItemCount);
-                return copy;
-            }
 
-            throw new ItemDoesNotExistException(
-                $"Can't find available item in seller inventory. TradableId: {TradableId}. RequiredBlockIndex: {StartedBlockIndex}, Count: {ItemCount}");
-        }
 
         [Obsolete("Use Digest")]
         public override OrderDigest Digest2(AvatarState avatarState, CostumeStatSheet costumeStatSheet)
@@ -274,23 +340,6 @@ namespace Lib9c.Model.Order
 
             throw new ItemDoesNotExistException(
                 $"Aborted because the tradable item({TradableId}) was failed to load from avatar's inventory.");
-        }
-
-        [Obsolete("Use Transfer")]
-        public override OrderReceipt Transfer2(AvatarState seller, AvatarState buyer, long blockIndex)
-        {
-            if (seller.inventory.TryGetTradableItem(TradableId, ExpiredBlockIndex, ItemCount,
-                out Inventory.Item inventoryItem))
-            {
-                TradableMaterial tradableItem = (TradableMaterial) inventoryItem.item;
-                seller.inventory.RemoveTradableItem(tradableItem, ItemCount);
-                TradableMaterial copy = (TradableMaterial) tradableItem.Clone();
-                copy.RequiredBlockIndex = blockIndex;
-                buyer.UpdateFromAddItem(copy, ItemCount, false);
-                return new OrderReceipt(OrderId, buyer.agentAddress, buyer.address, blockIndex);
-            }
-            throw new ItemDoesNotExistException(
-                $"Aborted because the tradable item({TradableId}) was failed to load from seller's inventory.");
         }
 
         [Obsolete("Use ValidateTransfer")]
@@ -323,7 +372,7 @@ namespace Lib9c.Model.Order
                 ITradableFungibleItem copy = (ITradableFungibleItem) ((ITradableFungibleItem) inventoryItem.item).Clone();
                 avatarState.inventory.RemoveTradableItem(TradableId, ExpiredBlockIndex, ItemCount);
                 copy.RequiredBlockIndex = blockIndex;
-                avatarState.inventory.AddItem((ItemBase) copy, ItemCount);
+                avatarState.inventory.AddItem2((ItemBase) copy, ItemCount);
                 return copy;
             }
             throw new ItemDoesNotExistException(

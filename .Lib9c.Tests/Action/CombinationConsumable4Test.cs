@@ -70,7 +70,7 @@ namespace Lib9c.Tests.Action
             {
                 var materialRow = _tableSheets.MaterialItemSheet[materialInfo.Id];
                 var material = ItemFactory.CreateItem(materialRow, _random);
-                _avatarState.inventory.AddItem(material, count: materialInfo.Count);
+                _avatarState.inventory.AddItem2(material, count: materialInfo.Count);
             }
 
             const int requiredStage = GameConfig.RequireClearedStageLevel.CombinationConsumableAction;
@@ -100,7 +100,7 @@ namespace Lib9c.Tests.Action
             for (var i = 0; i < 100; i++)
             {
                 var mail = new CombinationMail(result, i, default, 0);
-                _avatarState.Update(mail);
+                _avatarState.Update2(mail);
             }
 
             _initialState = _initialState

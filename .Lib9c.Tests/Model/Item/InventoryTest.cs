@@ -26,10 +26,10 @@
             var inventory = new Inventory();
             var row = TableSheets.EquipmentItemSheet.First;
             var itemUsable = ItemFactory.CreateItemUsable(row, Guid.NewGuid(), 0);
-            inventory.AddItem(itemUsable);
+            inventory.AddItem2(itemUsable);
             var row2 = TableSheets.MaterialItemSheet.First;
             var material = ItemFactory.CreateMaterial(row2);
-            inventory.AddItem(material, 1, new OrderLock(Guid.NewGuid()));
+            inventory.AddItem2(material, 1, new OrderLock(Guid.NewGuid()));
             var serialized = (BxList)inventory.Serialize();
             var deserialized = new Inventory(serialized);
             Assert.Equal(inventory, deserialized);
@@ -41,10 +41,10 @@
             var inventory = new Inventory();
             var row = TableSheets.EquipmentItemSheet.First;
             var itemUsable = ItemFactory.CreateItemUsable(row, Guid.NewGuid(), 0);
-            inventory.AddItem(itemUsable);
+            inventory.AddItem2(itemUsable);
             var row2 = TableSheets.MaterialItemSheet.First;
             var material = ItemFactory.CreateMaterial(row2);
-            inventory.AddItem(material, 1, new OrderLock(Guid.NewGuid()));
+            inventory.AddItem2(material, 1, new OrderLock(Guid.NewGuid()));
             var formatter = new BinaryFormatter();
             using var ms = new MemoryStream();
             formatter.Serialize(ms, inventory);
@@ -62,10 +62,10 @@
             var tradableMaterial = ItemFactory.CreateTradableMaterial(row);
             var inventory = new Inventory();
             Assert.Empty(inventory.Items);
-            inventory.AddItem(material);
+            inventory.AddItem2(material);
             Assert.Single(inventory.Items);
             Assert.Single(inventory.Materials);
-            inventory.AddItem(tradableMaterial);
+            inventory.AddItem2(tradableMaterial);
             Assert.Equal(2, inventory.Items.Count);
             Assert.Equal(2, inventory.Materials.Count());
             inventory.RemoveFungibleItem(row.ItemId);
@@ -82,14 +82,14 @@
             var tradableMaterial = ItemFactory.CreateTradableMaterial(row);
             var inventory = new Inventory();
             Assert.Empty(inventory.Items);
-            inventory.AddItem(material);
-            inventory.AddItem(tradableMaterial);
+            inventory.AddItem2(material);
+            inventory.AddItem2(tradableMaterial);
             inventory.RemoveFungibleItem(row.ItemId);
             Assert.True(inventory.Materials.First() is ITradableFungibleItem);
             inventory.RemoveFungibleItem(row.ItemId);
             Assert.Empty(inventory.Materials);
-            inventory.AddItem(tradableMaterial);
-            inventory.AddItem(material);
+            inventory.AddItem2(tradableMaterial);
+            inventory.AddItem2(material);
             inventory.RemoveFungibleItem(row.ItemId);
             Assert.True(inventory.Materials.First() is ITradableFungibleItem);
             inventory.RemoveFungibleItem(row.ItemId);
@@ -108,7 +108,7 @@
             var materialRow = TableSheets.MaterialItemSheet.First;
             Assert.NotNull(materialRow);
             var tradableMaterial = ItemFactory.CreateTradableMaterial(materialRow);
-            inventory.AddItem(tradableMaterial);
+            inventory.AddItem2(tradableMaterial);
             Assert.Single(inventory.Items);
             tradableItems.Add(tradableMaterial);
             Assert.Single(tradableItems);
@@ -116,7 +116,7 @@
             var equipmentRow = TableSheets.EquipmentItemSheet.First;
             Assert.NotNull(equipmentRow);
             var equipment = (Equipment)ItemFactory.CreateItem(equipmentRow, random);
-            inventory.AddItem(equipment);
+            inventory.AddItem2(equipment);
             Assert.Equal(2, inventory.Items.Count);
             tradableItems.Add(equipment);
             Assert.Equal(2, tradableItems.Count);
@@ -124,7 +124,7 @@
             var costumeRow = TableSheets.CostumeItemSheet.First;
             Assert.NotNull(costumeRow);
             var costume = (Costume)ItemFactory.CreateItem(costumeRow, random);
-            inventory.AddItem(costume);
+            inventory.AddItem2(costume);
             Assert.Equal(3, inventory.Items.Count);
             tradableItems.Add(costume);
             Assert.Equal(3, tradableItems.Count);
@@ -151,8 +151,8 @@
             Assert.NotNull(tradableItem);
             var inventory = new Inventory();
             Assert.Empty(inventory.Items);
-            inventory.AddItem(material);
-            inventory.AddItem(tradableMaterial);
+            inventory.AddItem2(material);
+            inventory.AddItem2(tradableMaterial);
             Assert.Equal(0, tradableMaterial.RequiredBlockIndex);
             Assert.False(inventory.RemoveTradableItem(tradableItem.TradableId, 1));
             Assert.True(inventory.RemoveTradableItem(tradableItem));
@@ -171,7 +171,7 @@
             Assert.NotNull(nonFungibleItem);
             var inventory = new Inventory();
             Assert.Empty(inventory.Items);
-            inventory.AddItem(itemUsable);
+            inventory.AddItem2(itemUsable);
             Assert.Single(inventory.Equipments);
             Assert.False(inventory.RemoveTradableItem(nonFungibleItem.TradableId, 1, 1));
             Assert.True(inventory.RemoveTradableItem(nonFungibleItem));
@@ -188,8 +188,8 @@
             var tradableMaterial = ItemFactory.CreateTradableMaterial(row);
             var inventory = new Inventory();
             Assert.Empty(inventory.Items);
-            inventory.AddItem(material);
-            inventory.AddItem(tradableMaterial);
+            inventory.AddItem2(material);
+            inventory.AddItem2(tradableMaterial);
             inventory.RemoveTradableFungibleItem(row.ItemId);
             Assert.False(inventory.Materials.First() is ITradableFungibleItem);
             Assert.False(inventory.RemoveTradableFungibleItem(row.ItemId));
@@ -206,14 +206,14 @@
             var inventory = new Inventory();
             Assert.Empty(inventory.Items);
 
-            inventory.AddItem(tradableMaterial);
+            inventory.AddItem2(tradableMaterial);
             Assert.Single(inventory.Items);
             Assert.Single(inventory.Materials);
 
             // Add new tradable material
             var tradableMaterial2 = ItemFactory.CreateTradableMaterial(row);
             tradableMaterial2.RequiredBlockIndex = 1;
-            inventory.AddItem(tradableMaterial2);
+            inventory.AddItem2(tradableMaterial2);
             Assert.Equal(2, inventory.Items.Count);
             Assert.Equal(2, inventory.Materials.Count());
             Assert.True(inventory.HasItem(row.Id, 2));
@@ -247,7 +247,7 @@
             Assert.NotNull(row);
             for (int i = 0; i < itemCount; i++)
             {
-                inventory.AddItem(ItemFactory.CreateItem(row, new TestRandom()));
+                inventory.AddItem2(ItemFactory.CreateItem(row, new TestRandom()));
             }
 
             Assert.True(inventory.HasItem(row.Id, itemCount));
@@ -266,7 +266,7 @@
             {
                 var tradableItem = ItemFactory.CreateTradableMaterial(row);
                 tradableItem.RequiredBlockIndex = i;
-                inventory.AddItem(tradableItem, 1);
+                inventory.AddItem2(tradableItem, 1);
                 Assert.True(inventory.TryGetTradableItems(tradableItem.TradableId, i, i, out _));
             }
 
@@ -314,7 +314,7 @@
                 tradableItem = (ITradableItem)ItemFactory.CreateItem(row, new TestRandom());
             }
 
-            inventory.AddItem((ItemBase)tradableItem, itemCount);
+            inventory.AddItem2((ItemBase)tradableItem, itemCount);
             Assert.Single(inventory.Items);
             inventory.SellItem(tradableItem.TradableId, 1, sellCount);
             Assert.Equal(inventoryCount, inventory.Items.Count);
@@ -372,7 +372,7 @@
                 orderLock = new OrderLock(Guid.NewGuid());
             }
 
-            inventory.AddItem((ItemBase)tradableItem, 1, orderLock);
+            inventory.AddItem2((ItemBase)tradableItem, 1, orderLock);
             Assert.Single(inventory.Items);
             Assert.Equal(
                 expected,
@@ -400,7 +400,7 @@
             {
                 TradableMaterial tradableItem = ItemFactory.CreateTradableMaterial(row);
                 tradableItem.RequiredBlockIndex = i;
-                inventory.AddItem(tradableItem, 1);
+                inventory.AddItem2(tradableItem, 1);
             }
 
             Assert.Equal(2, inventory.Items.Count);
@@ -457,7 +457,7 @@
             }
 
             tradableItem.RequiredBlockIndex = blockIndex;
-            inventory.AddItem((ItemBase)tradableItem, 1);
+            inventory.AddItem2((ItemBase)tradableItem, 1);
             Assert.Single(inventory.Items);
             Assert.Equal(
                 expected,
@@ -485,7 +485,7 @@
                 TradableMaterial tradableItem = ItemFactory.CreateTradableMaterial(row);
                 tradableItem.RequiredBlockIndex = i;
                 var count = 1 + i;
-                inventory.AddItem(tradableItem, count);
+                inventory.AddItem2(tradableItem, count);
                 Assert.Equal(count, inventory.Items.Count);
                 inventory.TryGetTradableItem(tradableItem.TradableId, i, 1, out Inventory.Item inventoryItem);
                 Assert.Equal(count, inventoryItem.count);
@@ -531,7 +531,7 @@
                 tradableItem = (ITradableItem)ItemFactory.CreateItem(row, new TestRandom());
             }
 
-            inventory.AddItem((ItemBase)tradableItem, 1);
+            inventory.AddItem2((ItemBase)tradableItem, 1);
             Assert.Single(inventory.Items);
             ITradableItem result = inventory.UpdateTradableItem(tradableItem.TradableId, 0, 1, 1);
             Assert.Equal(1, result.RequiredBlockIndex);
@@ -552,7 +552,7 @@
             {
                 ITradableItem tradableItem = ItemFactory.CreateTradableMaterial(row);
                 tradableItem.RequiredBlockIndex = i;
-                inventory.AddItem((ItemBase)tradableItem, 2);
+                inventory.AddItem2((ItemBase)tradableItem, 2);
             }
 
             Assert.Equal(2, inventory.Items.Count);
@@ -576,12 +576,12 @@
             Assert.NotNull(row);
             var inventory = new Inventory();
             Material material = ItemFactory.CreateMaterial(row);
-            inventory.AddItem(material, 2);
+            inventory.AddItem2(material, 2);
             for (int i = 0; i < 2; i++)
             {
                 ITradableItem tradableItem = ItemFactory.CreateTradableMaterial(row);
                 tradableItem.RequiredBlockIndex = i;
-                inventory.AddItem((ItemBase)tradableItem, 2);
+                inventory.AddItem2((ItemBase)tradableItem, 2);
             }
 
             Assert.False(inventory.HasFungibleItem(row.ItemId, 0, 6));
@@ -597,12 +597,12 @@
             Assert.NotNull(row);
             var inventory = new Inventory();
             Material material = ItemFactory.CreateMaterial(row);
-            inventory.AddItem(material, 2);
+            inventory.AddItem2(material, 2);
             for (int i = 0; i < 2; i++)
             {
                 ITradableItem tradableItem = ItemFactory.CreateTradableMaterial(row);
                 tradableItem.RequiredBlockIndex = i;
-                inventory.AddItem((ItemBase)tradableItem, 2);
+                inventory.AddItem2((ItemBase)tradableItem, 2);
             }
 
             Assert.True(inventory.HasItem(row.Id, 6));

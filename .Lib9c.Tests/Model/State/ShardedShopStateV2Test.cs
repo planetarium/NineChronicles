@@ -171,8 +171,8 @@ namespace Lib9c.Tests.Model.State
             var item2 = (Weapon)ItemFactory.CreateItem(
                 tableSheets.ItemSheet.Values.First(r => r.ItemSubType == ItemSubType.Weapon),
                 random);
-            avatarState.inventory.AddItem(item);
-            avatarState.inventory.AddItem(item2);
+            avatarState.inventory.AddItem2(item);
+            avatarState.inventory.AddItem2(item2);
 
             var orderId = new Guid("F9168C5E-CEB2-4faa-B6BF-329BF39FA1E4");
             var orderId2 = new Guid("936DA01F-9ABD-4d9d-80C7-02AF85C822A8");

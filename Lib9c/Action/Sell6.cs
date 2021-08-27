@@ -267,7 +267,7 @@ namespace Nekoyume.Action
                 context.Random.GenerateRandomGuid(),
                 expiredBlockIndex);
             result.id = mail.id;
-            avatarState.UpdateV3(mail);
+            avatarState.Update(mail);
 
             states = states.SetState(sellerAvatarAddress, avatarState.Serialize());
             sw.Stop();

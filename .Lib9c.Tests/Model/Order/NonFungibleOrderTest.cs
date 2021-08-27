@@ -239,7 +239,7 @@ namespace Lib9c.Tests.Model.Order
 
             if (exc is null)
             {
-                ITradableItem result = order.Sell(_avatarState);
+                ITradableItem result = order.Sell3(_avatarState);
                 Assert.Equal(order.ExpiredBlockIndex, result.RequiredBlockIndex);
                 if (result is IEquippableItem equippableItem1)
                 {
@@ -251,7 +251,7 @@ namespace Lib9c.Tests.Model.Order
             }
             else
             {
-                Assert.Throws(exc, () => order.Sell(_avatarState));
+                Assert.Throws(exc, () => order.Sell3(_avatarState));
             }
         }
 
@@ -486,7 +486,7 @@ namespace Lib9c.Tests.Model.Order
 
             if (isLock)
             {
-                order.Sell(_avatarState);
+                order.Sell3(_avatarState);
             }
 
             if (exc is null)
@@ -610,7 +610,7 @@ namespace Lib9c.Tests.Model.Order
             if (add)
             {
                 _avatarState.inventory.AddNonFungibleItem(item);
-                order.Sell(_avatarState);
+                order.Sell3(_avatarState);
             }
 
             long blockIndex = expire ? order.ExpiredBlockIndex + 1 : order.ExpiredBlockIndex;
@@ -690,7 +690,7 @@ namespace Lib9c.Tests.Model.Order
             if (add)
             {
                 _avatarState.inventory.AddNonFungibleItem(item);
-                order.Sell(_avatarState);
+                order.Sell3(_avatarState);
             }
 
             var buyer = new AvatarState(

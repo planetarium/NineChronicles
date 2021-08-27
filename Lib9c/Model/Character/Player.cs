@@ -267,6 +267,37 @@ namespace Nekoyume.Model
 
         public void GetExp(long waveExp, bool log = false)
         {
+            if (!characterLevelSheet.TryGetLevel(Exp.Current + waveExp, out var newLevel))
+            {
+                waveExp = Exp.Max - Exp.Current - 1;
+                newLevel = Level;
+            }
+
+            Exp.Current += waveExp;
+
+            if (log)
+            {
+                var getExp = new GetExp((CharacterBase) Clone(), waveExp);
+                Simulator.Log.Add(getExp);
+            }
+
+            if (Level == newLevel)
+            {
+                return;
+            }
+
+            if (Level < newLevel)
+            {
+                eventMap?.Add(new KeyValuePair<int, int>((int) QuestEventType.Level, newLevel - Level));
+            }
+            Level = newLevel;
+
+            UpdateExp();
+        }
+
+        [Obsolete("Use GetExp")]
+        public void GetExp2(long waveExp, bool log = false)
+        {
             Exp.Current += waveExp;
 
             if (log)
@@ -289,7 +320,8 @@ namespace Nekoyume.Model
             UpdateExp();
         }
 
-        public void GetExpV2(long waveExp, bool log = false)
+        [Obsolete("Use GetExp")]
+        public void GetExp3(long waveExp, bool log = false)
         {
             if (!characterLevelSheet.TryGetLevel(Exp.Current + waveExp, out var newLevel))
             {
@@ -315,36 +347,6 @@ namespace Nekoyume.Model
             {
                 eventMap?.Add(new KeyValuePair<int, int>((int) QuestEventType.Level, newLevel - Level));
             }
-
-            UpdateExp();
-        }
-
-        public void GetExpV3(long waveExp, bool log = false)
-        {
-            if (!characterLevelSheet.TryGetLevel(Exp.Current + waveExp, out var newLevel))
-            {
-                waveExp = Exp.Max - Exp.Current - 1;
-                newLevel = Level;
-            }
-
-            Exp.Current += waveExp;
-
-            if (log)
-            {
-                var getExp = new GetExp((CharacterBase) Clone(), waveExp);
-                Simulator.Log.Add(getExp);
-            }
-
-            if (Level == newLevel)
-            {
-                return;
-            }
-
-            if (Level < newLevel)
-            {
-                eventMap?.Add(new KeyValuePair<int, int>((int) QuestEventType.Level, newLevel - Level));
-            }
-            Level = newLevel;
 
             UpdateExp();
         }
@@ -361,13 +363,25 @@ namespace Nekoyume.Model
             return map;
         }
 
+        [Obsolete("Use GetRewards")]
+        public CollectionMap GetRewards2(List<ItemBase> items)
+        {
+            var map = new CollectionMap();
+            foreach (var item in items)
+            {
+                map.Add(Inventory.AddItem2(item));
+            }
+
+            return map;
+        }
+
         public virtual void Spawn()
         {
             InitAI();
             var spawn = new SpawnPlayer((CharacterBase) Clone());
             Simulator.Log.Add(spawn);
         }
-        
+
         public virtual void SpawnV2()
         {
             InitAIV2();

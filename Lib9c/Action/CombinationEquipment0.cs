@@ -212,10 +212,10 @@ namespace Nekoyume.Action
             var mail = new CombinationMail(result, ctx.BlockIndex, ctx.Random.GenerateRandomGuid(),
                 requiredBlockIndex);
             result.id = mail.id;
-            avatarState.Update(mail);
+            avatarState.Update2(mail);
             avatarState.questList.UpdateCombinationEquipmentQuest(RecipeId);
             avatarState.UpdateFromCombination(equipment);
-            avatarState.UpdateQuestRewards(materialSheet);
+            avatarState.UpdateQuestRewards2(materialSheet);
             return states
                 .SetState(AvatarAddress, avatarState.Serialize())
                 .SetState(slotAddress, slotState.Serialize())

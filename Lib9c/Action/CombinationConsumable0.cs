@@ -191,14 +191,14 @@ namespace Nekoyume.Action
                 requiredBlockIndex
             );
             result.id = mail.id;
-            avatarState.Update(mail);
+            avatarState.Update2(mail);
             avatarState.UpdateFromCombination(itemUsable);
             sw.Stop();
             Log.Verbose("{AddressesHex}Combination Update AvatarState: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();
 
             var materialSheet = states.GetSheet<MaterialItemSheet>();
-            avatarState.UpdateQuestRewards(materialSheet);
+            avatarState.UpdateQuestRewards2(materialSheet);
 
             avatarState.updatedAt = ctx.BlockIndex;
             avatarState.blockIndex = ctx.BlockIndex;

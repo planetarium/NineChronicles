@@ -217,11 +217,11 @@ namespace Nekoyume.Action
             result.id = mail.id;
 
             avatarState.inventory.RemoveNonFungibleItem(enhancementEquipment);
-            avatarState.UpdateV3(mail);
+            avatarState.Update(mail);
             avatarState.UpdateFromItemEnhancement(enhancementEquipment);
 
             var materialSheet = states.GetSheet<MaterialItemSheet>();
-            avatarState.UpdateQuestRewards(materialSheet);
+            avatarState.UpdateQuestRewards2(materialSheet);
 
             slotState.Update(result, ctx.BlockIndex, requiredBlockIndex);
 

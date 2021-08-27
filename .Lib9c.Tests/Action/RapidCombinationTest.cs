@@ -78,8 +78,8 @@ namespace Lib9c.Tests.Action
 
             var row = _tableSheets.MaterialItemSheet.Values.First(r =>
                 r.ItemSubType == ItemSubType.Hourglass);
-            avatarState.inventory.AddItem(ItemFactory.CreateMaterial(row));
-            avatarState.inventory.AddItem(ItemFactory.CreateTradableMaterial(row));
+            avatarState.inventory.AddItem2(ItemFactory.CreateMaterial(row));
+            avatarState.inventory.AddItem2(ItemFactory.CreateTradableMaterial(row));
             Assert.True(avatarState.inventory.HasFungibleItem(row.ItemId, 0, 2));
 
             var firstEquipmentRow = _tableSheets.EquipmentItemSheet.First;
@@ -91,7 +91,7 @@ namespace Lib9c.Tests.Action
                 firstEquipmentRow,
                 Guid.NewGuid(),
                 requiredBlockIndex);
-            avatarState.inventory.AddItem(equipment);
+            avatarState.inventory.AddItem2(equipment);
 
             var result = new CombinationConsumable5.ResultModel
             {
@@ -105,7 +105,7 @@ namespace Lib9c.Tests.Action
 
             var mail = new CombinationMail(result, 0, default, requiredBlockIndex);
             result.id = mail.id;
-            avatarState.Update(mail);
+            avatarState.Update2(mail);
 
             var slotAddress = _avatarAddress.Derive(string.Format(
                 CultureInfo.InvariantCulture,
@@ -305,12 +305,12 @@ namespace Lib9c.Tests.Action
                 slotStateUnlockStage);
 
             var row = _tableSheets.MaterialItemSheet.Values.First(r => r.ItemSubType == ItemSubType.Hourglass);
-            avatarState.inventory.AddItem(ItemFactory.CreateMaterial(row), count: materialCount);
+            avatarState.inventory.AddItem2(ItemFactory.CreateMaterial(row), count: materialCount);
             if (tradableCount > 0)
             {
                 var material = ItemFactory.CreateTradableMaterial(row);
                 material.RequiredBlockIndex = blockIndex;
-                avatarState.inventory.AddItem(material, count: tradableCount);
+                avatarState.inventory.AddItem2(material, count: tradableCount);
             }
 
             var firstEquipmentRow = _tableSheets.EquipmentItemSheet.First;
@@ -322,7 +322,7 @@ namespace Lib9c.Tests.Action
                 firstEquipmentRow,
                 Guid.NewGuid(),
                 requiredBlockIndex);
-            avatarState.inventory.AddItem(equipment);
+            avatarState.inventory.AddItem2(equipment);
 
             var result = new CombinationConsumable5.ResultModel
             {
@@ -336,7 +336,7 @@ namespace Lib9c.Tests.Action
 
             var mail = new CombinationMail(result, 0, default, requiredBlockIndex);
             result.id = mail.id;
-            avatarState.Update(mail);
+            avatarState.Update2(mail);
 
             var slotAddress = _avatarAddress.Derive(string.Format(
                 CultureInfo.InvariantCulture,

@@ -3,12 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 using Bencodex.Types;
-using Lib9c.Model.Order;
 using Libplanet;
 using Nekoyume.Action;
 using Nekoyume.Battle;
 using Nekoyume.Model.State;
-using Serilog;
 
 namespace Nekoyume.Model.Item
 {
@@ -191,7 +189,55 @@ namespace Nekoyume.Model.Item
             return new KeyValuePair<int, int>(itemBase.Id, count);
         }
 
+        [Obsolete("Use AddItem")]
+        public KeyValuePair<int, int> AddItem2(ItemBase itemBase, int count = 1, ILock iLock = null)
+        {
+            switch (itemBase.ItemType)
+            {
+                case ItemType.Consumable:
+                case ItemType.Equipment:
+                case ItemType.Costume:
+                    AddNonFungibleItem(itemBase, iLock);
+                    break;
+                case ItemType.Material:
+                    AddFungibleItem2(itemBase, count, iLock);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+            _items.Sort();
+            return new KeyValuePair<int, int>(itemBase.Id, count);
+        }
+
         public Item AddFungibleItem(ItemBase itemBase, int count = 1, ILock iLock = null)
+        {
+            if (!(itemBase is IFungibleItem fungibleItem))
+            {
+                throw new ArgumentException(
+                    $"Aborted because {nameof(itemBase)} cannot cast to {nameof(IFungibleItem)}");
+            }
+
+            var item = _items.FirstOrDefault(e => e.item.Equals(fungibleItem) && !e.Locked);
+            if (item is null)
+            {
+                item = new Item(itemBase, count);
+                _items.Add(item);
+            }
+            else
+            {
+                item.count += count;
+            }
+
+            if (!(iLock is null))
+            {
+                item.LockUp(iLock);
+            }
+
+            return item;
+        }
+
+        [Obsolete("Use AddFungibleItem")]
+        public Item AddFungibleItem2(ItemBase itemBase, int count = 1, ILock iLock = null)
         {
             if (!(itemBase is IFungibleItem fungibleItem))
             {
@@ -561,53 +607,6 @@ namespace Nekoyume.Model.Item
             _items.Remove(item);
         }
 
-        // public bool TryGetTradableItemWithoutNonTradableFungibleItem(
-        //     Guid tradeId,
-        //     out Item outItem)
-        // {
-        //     foreach (var item in _items)
-        //     {
-        //         if (!(item.item is ITradableItem tradableItem) ||
-        //             !tradableItem.TradableId.Equals(tradeId))
-        //         {
-        //             continue;
-        //         }
-        //
-        //         if (tradableItem is IFungibleItem fungibleItem &&
-        //             !(fungibleItem is ITradableFungibleItem))
-        //         {
-        //             continue;
-        //         }
-        //
-        //         outItem = item;
-        //         return true;
-        //     }
-        //
-        //     outItem = null;
-        //     return false;
-        // }
-
-        // public bool TryGetNonTradableFungibleItem(
-        //     HashDigest<SHA256> fungibleId,
-        //     out Item outItem)
-        // {
-        //     foreach (var item in _items)
-        //     {
-        //         if (!(item.item is IFungibleItem fungibleItem) ||
-        //             fungibleItem is ITradableFungibleItem ||
-        //             !fungibleItem.FungibleId.Equals(fungibleId))
-        //         {
-        //             continue;
-        //         }
-        //
-        //         outItem = item;
-        //         return true;
-        //     }
-        //
-        //     outItem = null;
-        //     return false;
-        // }
-
         #endregion
 
         #region Has
@@ -752,13 +751,13 @@ namespace Nekoyume.Model.Item
                 {
                     RequiredBlockIndex = requiredBlockIndex
                 };
-                AddItem(material, count);
+                AddItem2(material, count);
                 return material;
             }
 
             // NonFungibleItem case.
             tradableItem.RequiredBlockIndex = requiredBlockIndex;
-            AddItem((ItemBase) tradableItem, count);
+            AddItem2((ItemBase) tradableItem, count);
             return tradableItem;
         }
     }

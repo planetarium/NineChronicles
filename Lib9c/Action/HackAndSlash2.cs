@@ -180,7 +180,7 @@ namespace Nekoyume.Action
             Log.Verbose("{AddressesHex}HAS Initialize Simulator: {Elapsed}", addressesHex, sw.Elapsed);
 
             sw.Restart();
-            simulator.Simulate();
+            simulator.Simulate2();
             sw.Stop();
             Log.Verbose("{AddressesHex}HAS Simulator.Simulate(): {Elapsed}", addressesHex, sw.Elapsed);
 
@@ -216,7 +216,7 @@ namespace Nekoyume.Action
             avatarState.Update(simulator);
 
             var materialSheet = states.GetSheet<MaterialItemSheet>();
-            avatarState.UpdateQuestRewards(materialSheet);
+            avatarState.UpdateQuestRewards2(materialSheet);
 
             avatarState.updatedAt = ctx.BlockIndex;
             states = states.SetState(avatarAddress, avatarState.Serialize());

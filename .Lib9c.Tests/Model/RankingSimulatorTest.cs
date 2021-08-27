@@ -65,7 +65,7 @@ namespace Lib9c.Tests.Model
                 new ArenaInfo(avatarState, _tableSheets.CharacterSheet, false),
                 new ArenaInfo(avatarState, _tableSheets.CharacterSheet, false)
             );
-            simulator.SimulateV2();
+            simulator.Simulate();
 
             Assert.Equal(expected, simulator.Reward.Any());
         }
@@ -109,7 +109,7 @@ namespace Lib9c.Tests.Model
                 info,
                 new ArenaInfo(avatarState, _tableSheets.CharacterSheet, false)
             );
-            simulator.SimulateV2();
+            simulator.Simulate();
 
             Assert.Equal(expected, simulator.Reward.Count());
         }
@@ -138,12 +138,12 @@ namespace Lib9c.Tests.Model
             var row = _tableSheets.CostumeStatSheet.Values.First(r => r.StatType == StatType.ATK);
             var costume = (Costume)ItemFactory.CreateItem(_tableSheets.ItemSheet[row.CostumeId], _random);
             costume.equipped = true;
-            avatarState.inventory.AddItem(costume);
+            avatarState.inventory.AddItem2(costume);
 
             var row2 = _tableSheets.CostumeStatSheet.Values.First(r => r.StatType == StatType.DEF);
             var enemyCostume = (Costume)ItemFactory.CreateItem(_tableSheets.ItemSheet[row2.CostumeId], _random);
             enemyCostume.equipped = true;
-            enemyAvatarState.inventory.AddItem(enemyCostume);
+            enemyAvatarState.inventory.AddItem2(enemyCostume);
 
             var simulator = new RankingSimulator(
                 _random,
@@ -160,7 +160,7 @@ namespace Lib9c.Tests.Model
             var player = simulator.Player;
             Assert.Equal(row.Stat, player.Stats.OptionalStats.ATK);
 
-            var player2 = simulator.SimulateV2();
+            var player2 = simulator.Simulate();
             Assert.Equal(row.Stat, player2.Stats.OptionalStats.ATK);
 
             var e = simulator.Log.OfType<SpawnEnemyPlayer>().First();
@@ -206,7 +206,7 @@ namespace Lib9c.Tests.Model
             var rewardIds = new HashSet<int>();
             for (int i = 0; i < simulationCount; ++i)
             {
-                simulator.SimulateV2();
+                simulator.Simulate();
                 foreach (var itemBase in simulator.Reward)
                 {
                     if (!rewardIds.Contains(itemBase.Id))

@@ -144,7 +144,7 @@ namespace Nekoyume.Action
                 states = states.SetState(address, slotState.Serialize());
             }
 
-            avatarState.UpdateQuestRewards(materialItemSheet);
+            avatarState.UpdateQuestRewards2(materialItemSheet);
 
             sw.Stop();
             Log.Verbose("{AddressesHex}CreateAvatar CreateAvatarState: {Elapsed}", addressesHex, sw.Elapsed);
@@ -215,17 +215,17 @@ namespace Nekoyume.Action
         {
             foreach (var row in costumeItemSheet.OrderedList)
             {
-                avatarState.inventory.AddItem(ItemFactory.CreateCostume(row, random.GenerateRandomGuid()));
+                avatarState.inventory.AddItem2(ItemFactory.CreateCostume(row, random.GenerateRandomGuid()));
             }
 
             foreach (var row in materialItemSheet.OrderedList)
             {
-                avatarState.inventory.AddItem(ItemFactory.CreateMaterial(row), 10);
+                avatarState.inventory.AddItem2(ItemFactory.CreateMaterial(row), 10);
 
                 if (row.ItemSubType == ItemSubType.Hourglass ||
                     row.ItemSubType == ItemSubType.ApStone)
                 {
-                    avatarState.inventory.AddItem(ItemFactory.CreateTradableMaterial(row), 100);
+                    avatarState.inventory.AddItem2(ItemFactory.CreateTradableMaterial(row), 100);
                 }
             }
 
@@ -233,7 +233,7 @@ namespace Nekoyume.Action
                 row.Id > GameConfig.DefaultAvatarWeaponId))
             {
                 var itemId = random.GenerateRandomGuid();
-                avatarState.inventory.AddItem(ItemFactory.CreateItemUsable(row, itemId, default));
+                avatarState.inventory.AddItem2(ItemFactory.CreateItemUsable(row, itemId, default));
             }
         }
 
@@ -267,7 +267,7 @@ namespace Nekoyume.Action
 
             AddOption(skillSheet, equipment, optionRows, random);
 
-            avatarState.inventory.AddItem(equipment);
+            avatarState.inventory.AddItem2(equipment);
         }
 
         private static HashSet<int> AddOption(

@@ -16,7 +16,7 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("sell9")]
+    [ActionType("sell10")]
     public class Sell : GameAction
     {
         public Address sellerAvatarAddress;
