@@ -58,7 +58,7 @@ namespace Nekoyume.UI.Tween
 
         public Tweener PlayTween(float newDuration)
         {
-            KillTween();
+            ResetToOrigin();
 
             if (isFrom)
             {
@@ -104,7 +104,7 @@ namespace Nekoyume.UI.Tween
 
         public Tweener PlayReverse(float newDuration)
         {
-            KillTween();
+            ResetToOrigin();
 
             if (isFrom)
             {

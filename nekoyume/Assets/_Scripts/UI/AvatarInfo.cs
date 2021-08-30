@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Battle;
+using Nekoyume.EnumType;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Factory;
@@ -29,6 +30,7 @@ namespace Nekoyume.UI
             inventory.SharedModel.Equipments.Any(item => item.HasNotification.Value);
 
         private const string NicknameTextFormat = "<color=#B38271>Lv.{0}</color=> {1}";
+        private static readonly Vector3 PlayerPosition = new Vector3(3000f, 2999.2f, 2.15f);
 
         [SerializeField]
         private Module.Inventory inventory = null;
@@ -60,9 +62,6 @@ namespace Nekoyume.UI
         [SerializeField]
         private AvatarStats avatarStats = null;
 
-        [SerializeField]
-        private RectTransform avatarPosition = null;
-
         private EquipmentSlot _weaponSlot;
         private EquipmentSlot _armorSlot;
         private Player _player;
@@ -70,6 +69,8 @@ namespace Nekoyume.UI
         private GameObject _cachedCharacterTitle;
 
         public readonly ReactiveProperty<bool> IsTweenEnd = new ReactiveProperty<bool>(true);
+        public override WidgetType WidgetType => WidgetType.Popup;
+        public override CloseKeyType CloseKeyType => CloseKeyType.Escape;
 
         #region Override
 
@@ -145,6 +146,7 @@ namespace Nekoyume.UI
             var currentAvatarState = Game.Game.instance.States.CurrentAvatarState;
             IsTweenEnd.Value = false;
             Show(currentAvatarState, ignoreShowAnimation);
+            HelpPopup.HelpMe(100013, true);
         }
 
         protected override void OnTweenComplete()
@@ -155,7 +157,6 @@ namespace Nekoyume.UI
 
         protected override void OnTweenReverseComplete()
         {
-            Game.Game.instance.Stage.objectPool.Remove<Player>(_player.gameObject);
             IsTweenEnd.Value = true;
         }
 
@@ -176,6 +177,7 @@ namespace Nekoyume.UI
             {
                 CreatePlayer(avatarState);
             }
+            _player.gameObject.SetActive(true);
 
             UpdateSlotView(avatarState);
             UpdateStatViews();
@@ -183,12 +185,10 @@ namespace Nekoyume.UI
 
         private void CreatePlayer(AvatarState avatarState)
         {
-            var orderInLayer = MainCanvas.instance.GetLayer(WidgetType).root.sortingOrder + 1;
-            _player = PlayerFactory.CreateBySettingLayer(avatarState, SortingLayer.NameToID("UI"), orderInLayer)
-                                   .GetComponent<Player>();
-            _player.Set(avatarState);
-            _player.transform.SetParent(avatarPosition);
-            _player.transform.localPosition = Vector3.zero;
+            _player = PlayerFactory.Create(avatarState).GetComponent<Player>();
+            var t = _player.transform;
+            t.localScale = Vector3.one;
+            t.position = PlayerPosition;
         }
 
         private void UpdateUIPlayer()
@@ -200,7 +200,6 @@ namespace Nekoyume.UI
         private void UpdateSlotView(AvatarState avatarState)
         {
             var game = Game.Game.instance;
-            // var playerModel = game.Stage.GetPlayer().Model;
             var playerModel = _player.Model;
 
             nicknameText.text = string.Format(
@@ -215,7 +214,7 @@ namespace Nekoyume.UI
             if (!(title is null))
             {
                 Destroy(_cachedCharacterTitle);
-                var clone  = ResourcesHelper.GetCharacterTitle(title.Grade, title.GetLocalizedNonColoredName());
+                var clone  = ResourcesHelper.GetCharacterTitle(title.Grade, title.GetLocalizedNonColoredName(false));
                 _cachedCharacterTitle = Instantiate(clone, titleSocket);
             }
 
@@ -356,7 +355,7 @@ namespace Nekoyume.UI
                     if (costume.ItemSubType == ItemSubType.Title)
                     {
                         Destroy(_cachedCharacterTitle);
-                        var clone = ResourcesHelper.GetCharacterTitle(costume.Grade, costume.GetLocalizedNonColoredName());
+                        var clone = ResourcesHelper.GetCharacterTitle(costume.Grade, costume.GetLocalizedNonColoredName(false));
                         _cachedCharacterTitle = Instantiate(clone, titleSocket);
                     }
 
@@ -511,7 +510,7 @@ namespace Nekoyume.UI
                 ? AudioController.SfxCode.ChainMail2
                 : AudioController.SfxCode.Equipment);
             inventory.SharedModel.UpdateEquipmentNotification();
-            Find<BottomMenu>().UpdateInventoryNotification();
+            Find<HeaderMenu>().UpdateInventoryNotification(HasNotification);
         }
 
         private void LocalStateItemEquipModify(ItemBase itemBase, bool equip)
@@ -647,7 +646,7 @@ namespace Nekoyume.UI
             return (submitEnabledFunc, submitText, onSubmit);
         }
 
-        private void ShowRefillConfirmPopup(CountableItem item)
+        public static void ShowRefillConfirmPopup(CountableItem item)
         {
             var confirm = Widget.Find<Confirm>();
             confirm.Show("UI_CONFIRM", "UI_AP_REFILL_CONFIRM_CONTENT");
@@ -662,7 +661,7 @@ namespace Nekoyume.UI
             };
         }
 
-        private bool DimmedFuncForChargeActionPoint(CountableItem item)
+        public static bool DimmedFuncForChargeActionPoint(CountableItem item)
         {
             if (item is null || item.Count.Value < 1)
             {
@@ -684,7 +683,7 @@ namespace Nekoyume.UI
             return !item.Dimmed.Value && !Game.Game.instance.Stage.IsInStage;
         }
 
-        private static void ChargeActionPoint(CountableItem item)
+        public static void ChargeActionPoint(CountableItem item)
         {
             if (item.ItemBase.Value is Nekoyume.Model.Item.Material material)
             {

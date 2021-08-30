@@ -22,7 +22,7 @@ namespace Nekoyume.UI
 
         private const string NicknameTextFormat = "<color=#B38271>Lv.{0}</color=> {1}";
 
-        private static readonly Vector3 NPCPosition = new Vector3(1000f, 999.2f, 2.15f);
+        private static readonly Vector3 NPCPosition = new Vector3(2000f, 1999.2f, 2.15f);
 
         [SerializeField]
         private Button blurButton = null;
@@ -120,7 +120,7 @@ namespace Nekoyume.UI
             if (!(title is null))
             {
                 Destroy(_cachedCharacterTitle);
-                var clone = ResourcesHelper.GetCharacterTitle(title.Grade, title.GetLocalizedNonColoredName());
+                var clone = ResourcesHelper.GetCharacterTitle(title.Grade, title.GetLocalizedNonColoredName(false));
                 _cachedCharacterTitle = Instantiate(clone, titleSocket);
             }
 

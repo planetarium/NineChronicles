@@ -1,3 +1,4 @@
+using Nekoyume.EnumType;
 using Nekoyume.L10n;
 using TMPro;
 using UnityEngine;

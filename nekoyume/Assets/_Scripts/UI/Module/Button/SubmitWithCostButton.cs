@@ -145,7 +145,7 @@ namespace Nekoyume.UI.Module
             TMP_Text submitField,
             bool isEnough,
             BigInteger cost) => SetText(textField, submitField, isEnough, cost.ToString(CultureInfo.InvariantCulture));
-        
+
         private static void SetText(
             TMP_Text textField,
             TMP_Text submitField,
@@ -183,7 +183,7 @@ namespace Nekoyume.UI.Module
 
         private static void SetTextColor(Graphic textField, Graphic submitField, bool isEnough)
         {
-            textField.color = isEnough ? Palette.GetButtonColor(ButtonColorType.Enabled) : Palette.GetButtonColor(ButtonColorType.Unable);
+            textField.color = isEnough ? Palette.GetColor(ColorType.ButtonEnabled) : Palette.GetColor(ColorType.ButtonDisabled);
             submitField.color = textField.color;
         }
     }

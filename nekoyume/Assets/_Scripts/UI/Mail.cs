@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Cysharp.Threading.Tasks;
 using Lib9c.Model.Order;
 using Nekoyume.Action;
+using Nekoyume.EnumType;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
@@ -67,6 +69,9 @@ namespace Nekoyume.UI
 
         public MailBox MailBox { get; private set; }
 
+        public override WidgetType WidgetType => WidgetType.Popup;
+        public override CloseKeyType CloseKeyType => CloseKeyType.Escape;
+
         #region override
 
         protected override void Awake()
@@ -105,6 +110,7 @@ namespace Nekoyume.UI
             {
                 blur.Show();
             }
+            HelpPopup.HelpMe(100010, true);
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
@@ -171,10 +177,7 @@ namespace Nekoyume.UI
 
         public void UpdateTabs(long? blockIndex = null)
         {
-            if (blockIndex is null)
-            {
-                blockIndex = Game.Game.instance.Agent.BlockIndex;
-            }
+            blockIndex ??= Game.Game.instance.Agent.BlockIndex;
 
             // 전체 탭
             allButton.HasNotification.Value = MailBox
@@ -206,12 +209,13 @@ namespace Nekoyume.UI
 
         private void UpdateNotification(long blockIndex)
         {
-            if (States.Instance.CurrentAvatarState is null)
+            var avatarState = States.Instance.CurrentAvatarState;
+            if (avatarState is null)
             {
                 return;
             }
 
-            MailBox = States.Instance.CurrentAvatarState.mailBox;
+            MailBox = avatarState.mailBox;
             UpdateTabs(blockIndex);
         }
 
@@ -219,33 +223,33 @@ namespace Nekoyume.UI
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             var attachment = (CombinationConsumable5.ResultModel) mail.attachment;
-            var itemBase = attachment.itemUsable ?? (ItemBase)attachment.costume;
-            var tradableItem = attachment.itemUsable ?? (ITradableItem)attachment.costume;
-            var popup = Find<CombinationResultPopup>();
-            var materialItems = attachment.materials
-                .Select(pair => new {pair, item = pair.Key})
-                .Select(t => new CombinationMaterial(
-                    t.item,
-                    t.pair.Value,
-                    t.pair.Value,
-                    t.pair.Value))
-                .ToList();
-            var model = new UI.Model.CombinationResultPopup(new CountableItem(itemBase, 1))
+            if (attachment.itemUsable is null)
             {
-                isSuccess = true,
-                materialItems = materialItems
-            };
-            model.OnClickSubmit.Subscribe(_ =>
+                Debug.LogError("CombinationMail.itemUsable is null");
+                return;
+            }
+
+            var itemUsable = attachment.itemUsable;
+
+            // LocalLayer
+            UniTask.Run(() =>
             {
-                LocalLayerModifier.AddItem(avatarAddress, tradableItem.TradableId, tradableItem.RequiredBlockIndex,1);
-                LocalLayerModifier.RemoveNewAttachmentMail(avatarAddress, mail.id);
-                LocalLayerModifier.RemoveAttachmentResult(avatarAddress, mail.id, true);
-                LocalLayerModifier.ModifyAvatarItemRequiredIndex(
+                LocalLayerModifier.AddItem(
                     avatarAddress,
-                    tradableItem.TradableId,
-                    Game.Game.instance.Agent.BlockIndex);
+                    itemUsable.TradableId,
+                    itemUsable.RequiredBlockIndex,
+                    1,
+                    false);
+                LocalLayerModifier.RemoveNewAttachmentMail(avatarAddress, mail.id, false);
+                return States.Instance.GetAvatarStateV2(avatarAddress);
+            }).ToObservable().SubscribeOnMainThread().Subscribe(avatarState =>
+            {
+                Debug.Log("CombinationMail LocalLayer task completed");
+                States.Instance.AddOrReplaceAvatarState(avatarState, States.Instance.CurrentAvatarKey);
             });
-            popup.Pop(model);
+            // ~LocalLayer
+
+            Find<CombinationResult>().Show(itemUsable);
         }
 
         public void Read(OrderBuyerMail orderBuyerMail)
@@ -315,20 +319,33 @@ namespace Nekoyume.UI
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             var attachment = (ItemEnhancement.ResultModel) itemEnhanceMail.attachment;
-            var popup = Find<CombinationResultPopup>();
-            var itemBase = attachment.itemUsable ?? (ItemBase)attachment.costume;
-            var tradableItem = attachment.itemUsable ?? (ITradableItem)attachment.costume;
-            var model = new UI.Model.CombinationResultPopup(new CountableItem(itemBase, 1))
+            if (attachment.itemUsable is null)
             {
-                isSuccess = true,
-                materialItems = new List<CombinationMaterial>()
-            };
-            model.OnClickSubmit.Subscribe(_ =>
+                Debug.LogError("ItemEnhanceMail.itemUsable is null");
+                return;
+            }
+
+            var itemUsable = attachment.itemUsable;
+
+            // LocalLayer
+            UniTask.Run(() =>
             {
-                LocalLayerModifier.AddItem(avatarAddress, tradableItem.TradableId, tradableItem.RequiredBlockIndex, 1);
-                LocalLayerModifier.RemoveNewAttachmentMail(avatarAddress, itemEnhanceMail.id, true);
+                LocalLayerModifier.AddItem(
+                    avatarAddress,
+                    itemUsable.TradableId,
+                    itemUsable.RequiredBlockIndex,
+                    1,
+                    false);
+                LocalLayerModifier.RemoveNewAttachmentMail(avatarAddress, itemEnhanceMail.id, false);
+                return States.Instance.GetAvatarStateV2(avatarAddress);
+            }).ToObservable().SubscribeOnMainThread().Subscribe(avatarState =>
+            {
+                Debug.Log("ItemEnhanceMail LocalLayer task completed");
+                States.Instance.AddOrReplaceAvatarState(avatarState, States.Instance.CurrentAvatarKey);
             });
-            popup.Pop(model);
+            // ~LocalLayer
+
+            Find<EnhancementResult>().Show(itemEnhanceMail);
         }
 
         public void Read(DailyRewardMail dailyRewardMail)
