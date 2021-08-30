@@ -134,7 +134,6 @@ namespace Nekoyume.Action
                 Address orderAddress = Order.DeriveAddress(orderId);
                 Address digestListAddress = OrderDigestListState.DeriveAddress(sellerAvatarAddress);
 
-
                 if (purchaseInfo.SellerAgentAddress == ctx.Signer)
                 {
                     errors.Add((orderId, ErrorCodeInvalidAddress));
@@ -188,6 +187,18 @@ namespace Nekoyume.Action
                 Log.Verbose("{AddressesHex}Buy Get Seller AgentAvatarStates: {Elapsed}", addressesHex, sw.Elapsed);
                 sw.Restart();
 
+                if (!states.TryGetState(digestListAddress, out Dictionary rawDigestList))
+                {
+                    errors.Add((orderId, ErrorCodeFailedLoadingState));
+                    continue;
+                }
+                var digestList = new OrderDigestListState(rawDigestList);
+
+                // ReconfigureFungibleItem
+                sellerAvatarState.inventory.ReconfigureFungibleItem(digestList, order.TradableId);
+
+                digestList.Remove(orderId);
+
                 var errorCode = order.ValidateTransfer(sellerAvatarState, purchaseInfo.TradableId, purchaseInfo.Price, context.BlockIndex);
                 if (errorCode != 0)
                 {
@@ -224,15 +235,6 @@ namespace Nekoyume.Action
                     errors.Add((orderId, ErrorCodeDuplicateSell));
                     continue;
                 }
-
-                if (!states.TryGetState(digestListAddress, out Dictionary rawDigestList))
-                {
-                    errors.Add((orderId, ErrorCodeFailedLoadingState));
-                    continue;
-                }
-
-                var digestList = new OrderDigestListState(rawDigestList);
-                digestList.Remove(orderId);
 
                 var expirationMail = sellerAvatarState.mailBox.OfType<OrderExpirationMail>()
                     .FirstOrDefault(m => m.OrderId.Equals(orderId));
