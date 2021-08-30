@@ -142,7 +142,7 @@ namespace Nekoyume.Action
                     }
 
                     materials[material] = count;
-                    avatarState.inventory.RemoveFungibleItem(material, count);
+                    avatarState.inventory.RemoveFungibleItem2(material, count);
                 }
                 else
                 {

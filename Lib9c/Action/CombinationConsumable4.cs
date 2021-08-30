@@ -135,7 +135,7 @@ namespace Nekoyume.Action
                     avatarState.inventory.TryGetItem(materialId, out var inventoryItem);
                     var material = (Material) inventoryItem.item;
                     materials[material] = count;
-                    avatarState.inventory.RemoveFungibleItem(material, count);
+                    avatarState.inventory.RemoveFungibleItem2(material, count);
                 }
                 else
                 {
