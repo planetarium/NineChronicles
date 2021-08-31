@@ -111,7 +111,7 @@ namespace Nekoyume.UI.Module
                         ? (optionRow.StatMax / 100f).ToString(CultureInfo.InvariantCulture)
                         : optionRow.StatMax.ToString();
 
-                    var description = $"{optionRow.StatType} +({statMin}~{statMax})";
+                    var description = $"{optionRow.StatType} +({statMin}-{statMax})";
                     SetOptionText(optionTexts[i], optionInfo.Ratio, description, optionColor);
                 }
                 else
