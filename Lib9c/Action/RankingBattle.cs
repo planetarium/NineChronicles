@@ -17,7 +17,7 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("ranking_battle5")]
+    [ActionType("ranking_battle6")]
     public class RankingBattle : GameAction
     {
         public const int StageId = 999999;
@@ -168,6 +168,12 @@ namespace Nekoyume.Action
                 throw new WeeklyArenaStateNotContainsAvatarAddressException(addressesHex, EnemyAddress);
             }
 
+            var enemyArenaInfo = weeklyArenaState[EnemyAddress];
+            if (!enemyArenaInfo.Active)
+            {
+                enemyArenaInfo.Activate();
+            }
+
             Log.Verbose("{WeeklyArenaStateAddress}", weeklyArenaState.address.ToHex());
 
             sw.Stop();
@@ -182,7 +188,7 @@ namespace Nekoyume.Action
                 states.GetRankingSimulatorSheets(),
                 StageId,
                 arenaInfo,
-                weeklyArenaState[EnemyAddress],
+                enemyArenaInfo,
                 costumeStatSheet);
 
             simulator.SimulateV2();
