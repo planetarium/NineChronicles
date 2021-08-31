@@ -223,7 +223,7 @@ namespace Lib9c.Tests.Action
                 worldId = worldId,
                 stageId = stageId,
                 avatarAddress = _avatarAddress,
-                RankingMapAddress = _rankingMapAddress,
+                rankingMapAddress = _rankingMapAddress,
             };
 
             var nextState = action.Execute(new ActionContext
@@ -312,7 +312,7 @@ namespace Lib9c.Tests.Action
                 worldId = worldId,
                 stageId = stageId,
                 avatarAddress = avatarState.address,
-                RankingMapAddress = _rankingMapAddress,
+                rankingMapAddress = _rankingMapAddress,
             };
 
             // First Execute
@@ -385,7 +385,7 @@ namespace Lib9c.Tests.Action
                 worldId = worldId,
                 stageId = stageId,
                 avatarAddress = _avatarAddress,
-                RankingMapAddress = _rankingMapAddress,
+                rankingMapAddress = _rankingMapAddress,
             };
 
             var nextState = action.Execute(new ActionContext
@@ -447,7 +447,7 @@ namespace Lib9c.Tests.Action
                 worldId = 1,
                 stageId = 1,
                 avatarAddress = _avatarAddress,
-                RankingMapAddress = _rankingMapAddress,
+                rankingMapAddress = _rankingMapAddress,
             };
 
             var exec = Assert.Throws<DuplicateEquipmentException>(() => action.Execute(new ActionContext
@@ -472,7 +472,7 @@ namespace Lib9c.Tests.Action
                 worldId = 1,
                 stageId = 1,
                 avatarAddress = _avatarAddress,
-                RankingMapAddress = default,
+                rankingMapAddress = default,
             };
 
             var exec = Assert.Throws<InvalidAddressException>(() =>
@@ -534,7 +534,7 @@ namespace Lib9c.Tests.Action
                 worldId = 100,
                 stageId = 1,
                 avatarAddress = _avatarAddress,
-                RankingMapAddress = _rankingMapAddress,
+                rankingMapAddress = _rankingMapAddress,
             };
 
             var exec = Assert.Throws<SheetRowNotFoundException>(() => action.Execute(new ActionContext()
@@ -560,7 +560,7 @@ namespace Lib9c.Tests.Action
                 worldId = 1,
                 stageId = stageId,
                 avatarAddress = _avatarAddress,
-                RankingMapAddress = _rankingMapAddress,
+                rankingMapAddress = _rankingMapAddress,
             };
 
             var exec = Assert.Throws<SheetRowColumnException>(() => action.Execute(new ActionContext()
@@ -584,7 +584,7 @@ namespace Lib9c.Tests.Action
                 worldId = 1,
                 stageId = 1,
                 avatarAddress = _avatarAddress,
-                RankingMapAddress = _rankingMapAddress,
+                rankingMapAddress = _rankingMapAddress,
             };
 
             var state = _initialState;
@@ -611,7 +611,7 @@ namespace Lib9c.Tests.Action
                 worldId = 1,
                 stageId = 1,
                 avatarAddress = _avatarAddress,
-                RankingMapAddress = _rankingMapAddress,
+                rankingMapAddress = _rankingMapAddress,
             };
 
             var state = _initialState;
@@ -646,7 +646,7 @@ namespace Lib9c.Tests.Action
                 worldId = 2,
                 stageId = 51,
                 avatarAddress = _avatarAddress,
-                RankingMapAddress = _rankingMapAddress,
+                rankingMapAddress = _rankingMapAddress,
             };
 
             Assert.False(_avatarState.worldInformation.IsStageCleared(51));
@@ -672,7 +672,7 @@ namespace Lib9c.Tests.Action
                 worldId = 1,
                 stageId = 3,
                 avatarAddress = _avatarAddress,
-                RankingMapAddress = _rankingMapAddress,
+                rankingMapAddress = _rankingMapAddress,
             };
 
             var avatarState = new AvatarState(_avatarState);
@@ -713,7 +713,7 @@ namespace Lib9c.Tests.Action
                 worldId = 1,
                 stageId = 2,
                 avatarAddress = _avatarAddress,
-                RankingMapAddress = _rankingMapAddress,
+                rankingMapAddress = _rankingMapAddress,
             };
 
             _avatarState.worldInformation.TryGetWorld(1, out var world);
@@ -753,7 +753,7 @@ namespace Lib9c.Tests.Action
                 worldId = 1,
                 stageId = 1,
                 avatarAddress = _avatarAddress,
-                RankingMapAddress = _rankingMapAddress,
+                rankingMapAddress = _rankingMapAddress,
             };
 
             var state = _initialState
@@ -801,7 +801,7 @@ namespace Lib9c.Tests.Action
                 worldId = 1,
                 stageId = 1,
                 avatarAddress = _avatarAddress,
-                RankingMapAddress = _rankingMapAddress,
+                rankingMapAddress = _rankingMapAddress,
             };
 
             var exec = Assert.Throws<EquipmentSlotUnlockException>(() => action.Execute(new ActionContext()
@@ -830,7 +830,7 @@ namespace Lib9c.Tests.Action
                 worldId = 1,
                 stageId = 1,
                 avatarAddress = _avatarAddress,
-                RankingMapAddress = _rankingMapAddress,
+                rankingMapAddress = _rankingMapAddress,
             };
 
             var state = _initialState;
@@ -857,7 +857,7 @@ namespace Lib9c.Tests.Action
                 worldId = 1,
                 stageId = 1,
                 avatarAddress = _avatarAddress,
-                RankingMapAddress = _rankingMapAddress,
+                rankingMapAddress = _rankingMapAddress,
             };
 
             var updatedAddresses = new List<Address>()

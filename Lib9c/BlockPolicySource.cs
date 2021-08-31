@@ -34,7 +34,10 @@ namespace Nekoyume.BlockChain
         public const int MaxGenesisBytes = 1024 * 1024 * 15; // 15 MiB
 
         public const long V100066ObsoleteIndex = 2200000;
-        public const long V100071ObsoleteIndex = 2300000;
+
+        public const long V100068ObsoleteIndex = 2220000;
+
+        public const long V100074ObsoleteIndex = 2300000;
 
         private readonly TimeSpan _blockInterval = TimeSpan.FromSeconds(8);
 
@@ -59,14 +62,16 @@ namespace Nekoyume.BlockChain
             GetPolicy(
                 minimumDifficulty,
                 maximumTransactions,
-                ignoreHardcodedIndicesForBackwardCompatibility: false
+                ignoreHardcodedPolicies: false,
+                permissionedMiningPolicy: PermissionedMiningPolicy.Mainnet
             );
 
         // FIXME 남은 설정들도 설정화 해야 할지도?
         internal IBlockPolicy<NCAction> GetPolicy(
             int minimumDifficulty,
             int maximumTransactions,
-            bool ignoreHardcodedIndicesForBackwardCompatibility
+            PermissionedMiningPolicy? permissionedMiningPolicy,
+            bool ignoreHardcodedPolicies
         )
         {
 #if UNITY_EDITOR
@@ -80,7 +85,8 @@ namespace Nekoyume.BlockChain
                 maxTransactionsPerBlock: maximumTransactions,
                 maxBlockBytes: MaxBlockBytes,
                 maxGenesisBytes: MaxGenesisBytes,
-                ignoreHardcodedIndicesForBackwardCompatibility: ignoreHardcodedIndicesForBackwardCompatibility,
+                ignoreHardcodedPolicies: ignoreHardcodedPolicies,
+                permissionedMiningPolicy: permissionedMiningPolicy,
                 doesTransactionFollowPolicy: DoesTransactionFollowPolicy
             );
 #endif

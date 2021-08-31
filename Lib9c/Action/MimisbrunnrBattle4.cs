@@ -17,7 +17,7 @@ namespace Nekoyume.Action
 {
     [Serializable]
     [ActionType("mimisbrunnr_battle4")]
-    [ActionObsolete(BlockChain.BlockPolicySource.V100071ObsoleteIndex)]
+    [ActionObsolete(BlockChain.BlockPolicySource.V100074ObsoleteIndex)]
     public class MimisbrunnrBattle4 : GameAction
     {
         public List<Guid> costumes;
@@ -74,7 +74,7 @@ namespace Nekoyume.Action
                 return states.SetState(WeeklyArenaAddress, MarkChanged);
             }
 
-            CheckObsolete(BlockChain.BlockPolicySource.V100071ObsoleteIndex, context);
+            CheckObsolete(BlockChain.BlockPolicySource.V100074ObsoleteIndex, context);
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
 

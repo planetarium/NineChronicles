@@ -138,7 +138,7 @@ namespace Lib9c.Tests.Action
                 tradableItem = material;
             }
 
-            var result = new DailyReward.DailyRewardResult()
+            var result = new DailyReward2.DailyRewardResult()
             {
                 id = default,
                 materials = new Dictionary<Material, int>(),

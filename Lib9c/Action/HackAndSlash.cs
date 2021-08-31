@@ -25,7 +25,7 @@ namespace Nekoyume.Action
         public int worldId;
         public int stageId;
         public Address avatarAddress;
-        public Address RankingMapAddress;
+        public Address rankingMapAddress;
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
             new Dictionary<string, IValue>
@@ -36,7 +36,7 @@ namespace Nekoyume.Action
                 ["worldId"] = worldId.Serialize(),
                 ["stageId"] = stageId.Serialize(),
                 ["avatarAddress"] = avatarAddress.Serialize(),
-                ["rankingMapAddress"] = RankingMapAddress.Serialize(),
+                ["rankingMapAddress"] = rankingMapAddress.Serialize(),
             }.ToImmutableDictionary();
 
 
@@ -49,7 +49,7 @@ namespace Nekoyume.Action
             worldId = plainValue["worldId"].ToInteger();
             stageId = plainValue["stageId"].ToInteger();
             avatarAddress = plainValue["avatarAddress"].ToAddress();
-            RankingMapAddress = plainValue["rankingMapAddress"].ToAddress();
+            rankingMapAddress = plainValue["rankingMapAddress"].ToAddress();
         }
 
         public override IAccountStateDelta Execute(IActionContext context)
@@ -61,7 +61,7 @@ namespace Nekoyume.Action
             var questListAddress = avatarAddress.Derive(LegacyQuestListKey);
             if (ctx.Rehearsal)
             {
-                states = states.SetState(RankingMapAddress, MarkChanged);
+                states = states.SetState(rankingMapAddress, MarkChanged);
                 states = states.SetState(avatarAddress, MarkChanged);
                 states = states
                     .SetState(inventoryAddress, MarkChanged)
@@ -86,7 +86,7 @@ namespace Nekoyume.Action
             Log.Verbose("{AddressesHex}HAS Get AgentAvatarStates: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();
 
-            if (avatarState.RankingMapAddress != RankingMapAddress)
+            if (avatarState.RankingMapAddress != rankingMapAddress)
             {
                 throw new InvalidAddressException($"{addressesHex}Invalid ranking map address");
             }
@@ -254,7 +254,7 @@ namespace Nekoyume.Action
             Log.Verbose("{AddressesHex}HAS Set AvatarState: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();
 
-            if (simulator.Log.IsClear && states.TryGetState(RankingMapAddress, out Dictionary d))
+            if (simulator.Log.IsClear && states.TryGetState(rankingMapAddress, out Dictionary d))
             {
                 var ranking = new RankingMapState(d);
                 ranking.Update(avatarState);
@@ -268,7 +268,7 @@ namespace Nekoyume.Action
                 sw.Stop();
                 Log.Verbose("{AddressesHex}HAS Serialize RankingState: {Elapsed}", addressesHex, sw.Elapsed);
                 sw.Restart();
-                states = states.SetState(RankingMapAddress, serialized);
+                states = states.SetState(rankingMapAddress, serialized);
             }
             sw.Stop();
             Log.Verbose("{AddressesHex}HAS Set RankingState: {Elapsed}", addressesHex, sw.Elapsed);

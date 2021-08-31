@@ -17,7 +17,7 @@ namespace Nekoyume.Action
 {
     [Serializable]
     [ActionType("hack_and_slash7")]
-    [ActionObsolete(BlockChain.BlockPolicySource.V100071ObsoleteIndex)]
+    [ActionObsolete(BlockChain.BlockPolicySource.V100074ObsoleteIndex)]
     public class HackAndSlash7 : GameAction
     {
         public List<Guid> costumes;
@@ -75,7 +75,7 @@ namespace Nekoyume.Action
                 return states.SetState(ctx.Signer, MarkChanged);
             }
 
-            CheckObsolete(BlockChain.BlockPolicySource.V100071ObsoleteIndex, context);
+            CheckObsolete(BlockChain.BlockPolicySource.V100074ObsoleteIndex, context);
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
 
@@ -258,7 +258,7 @@ namespace Nekoyume.Action
             Log.Verbose("{AddressesHex}HAS Set AvatarState: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();
 
-            if (states.TryGetState(RankingMapAddress, out Dictionary d) && simulator.Log.IsClear)
+            if (simulator.Log.IsClear && states.TryGetState(RankingMapAddress, out Dictionary d))
             {
                 var ranking = new RankingMapState(d);
                 ranking.Update(avatarState);
