@@ -16,6 +16,7 @@ using Nekoyume.UI.Module;
 
 namespace Nekoyume.UI
 {
+    using UniRx;
     public class Quest : XTweenWidget
     {
         [SerializeField]
@@ -40,6 +41,7 @@ namespace Nekoyume.UI
         private Blur blur = null;
 
         private QuestList _questList;
+        private readonly Subject<QuestList> _questNotificationSubject = new Subject<QuestList>();
 
         private readonly Module.ToggleGroup _toggleGroup = new Module.ToggleGroup();
 
@@ -54,6 +56,27 @@ namespace Nekoyume.UI
             _toggleGroup.RegisterToggleable(obtainButton);
             _toggleGroup.RegisterToggleable(craftingButton);
             _toggleGroup.RegisterToggleable(exchangeButton);
+
+            _questNotificationSubject.Subscribe(list => adventureButton.HasNotification.Value =
+                list.Any(quest =>
+                    quest.QuestType == QuestType.Adventure &&
+                    quest.Complete &&
+                    quest.isReceivable)).AddTo(gameObject);
+            _questNotificationSubject.Subscribe(list => obtainButton.HasNotification.Value =
+                list.Any(quest =>
+                    quest.QuestType == QuestType.Obtain &&
+                    quest.Complete &&
+                    quest.isReceivable)).AddTo(gameObject);
+            _questNotificationSubject.Subscribe(list => craftingButton.HasNotification.Value =
+                list.Any(quest =>
+                    quest.QuestType == QuestType.Craft &&
+                    quest.Complete &&
+                    quest.isReceivable)).AddTo(gameObject);
+            _questNotificationSubject.Subscribe(list => exchangeButton.HasNotification.Value =
+                list.Any(quest =>
+                    quest.QuestType == QuestType.Exchange &&
+                    quest.Complete &&
+                    quest.isReceivable)).AddTo(gameObject);
         }
 
         public override void Show(bool ignoreShowAnimation = false)
@@ -88,8 +111,7 @@ namespace Nekoyume.UI
         {
             filterType = (QuestType) state;
 
-            var list = _questList
-                .ToList()
+            var list = _questList.ToList()
                 .FindAll(e => e.QuestType == (QuestType) state)
                 .OrderBy(e => e, new QuestOrderComparer())
                 .ToList();
@@ -99,30 +121,6 @@ namespace Nekoyume.UI
         public void UpdateTabs()
         {
             scroll.DoneAnimation();
-
-            var hasNotification = _questList.Any(quest =>
-                    quest.QuestType == QuestType.Adventure &&
-                    quest.Complete &&
-                    quest.isReceivable);
-            adventureButton.HasNotification.Value = hasNotification;
-
-            hasNotification = _questList.Any(quest =>
-                    quest.QuestType == QuestType.Obtain &&
-                    quest.Complete &&
-                    quest.isReceivable);
-            obtainButton.HasNotification.Value = hasNotification;
-
-            hasNotification = _questList.Any(quest =>
-                    quest.QuestType == QuestType.Craft &&
-                    quest.Complete &&
-                    quest.isReceivable);
-            craftingButton.HasNotification.Value = hasNotification;
-
-            hasNotification = _questList.Any(quest =>
-                    quest.QuestType == QuestType.Exchange &&
-                    quest.Complete &&
-                    quest.isReceivable);
-            exchangeButton.HasNotification.Value = hasNotification;
         }
 
         public void SetList(QuestList list)
@@ -133,6 +131,7 @@ namespace Nekoyume.UI
             }
 
             _questList = list;
+            _questNotificationSubject.OnNext(_questList);
 
             ChangeState((int) filterType);
         }
