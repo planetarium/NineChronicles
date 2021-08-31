@@ -5,9 +5,9 @@
 
     public class EquipmentItemSubRecipeSheetV2Test
     {
-        private const string _csv = @"id,required_action_point,required_gold,required_block_index,material_id,material_count,material_2_id,material_2_count,material_3_id,material_3_count,option_id,option_ratio,option_1_required_block_index,option_2_id,option_2_ratio,option_2_required_block_index,option_3_id,option_3_ratio,option_3_required_block_index,option_4_id,option_4_ratio,option_4_required_block_index,min_option_limit,max_option_limit
-1,0,0,0,306040,1,306041,1,306023,1,1,1,0,2,2800,200,3,1800,300,7,1200,600,1,4
-2,0,450,240,306056,15,306061,8,306068,6,8,1,0,9,3800,200,10,900,300,11,500,600,1,4";
+        private const string _csv = @"id,required_action_point,required_gold,required_block_index,material_id,material_count,material_2_id,material_2_count,material_3_id,material_3_count,option_id,option_ratio,option_1_required_block_index,option_2_id,option_2_ratio,option_2_required_block_index,option_3_id,option_3_ratio,option_3_required_block_index,option_4_id,option_4_ratio,option_4_required_block_index
+1,0,0,0,306040,1,306041,1,306023,1,1,1,0,2,2800,200,3,1800,300,7,1200,600
+2,0,450,240,306056,15,306061,8,306068,6,8,1,0,9,3800,200,10,900,300,11,500,600";
 
         [Fact]
         public void Set()
@@ -47,9 +47,6 @@
             Assert.Equal(1200, row.Options[3].Ratio);
             Assert.Equal(600, row.Options[3].RequiredBlockIndex);
 
-            Assert.Equal(1, row.MinOptionLimit);
-            Assert.Equal(4, row.MaxOptionLimit);
-
             row = sheet.Last;
             Assert.Equal(row.Id, row.Key);
             Assert.Equal(2, row.Id);
@@ -78,9 +75,6 @@
             Assert.Equal(11, row.Options[3].Id);
             Assert.Equal(500, row.Options[3].Ratio);
             Assert.Equal(600, row.Options[3].RequiredBlockIndex);
-
-            Assert.Equal(1, row.MinOptionLimit);
-            Assert.Equal(4, row.MaxOptionLimit);
         }
     }
 }
