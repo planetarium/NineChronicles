@@ -27,7 +27,7 @@ namespace Lib9c
 
         public long GetNextBlockDifficulty(BlockChain<PolymorphicAction<ActionBase>> blocks)
         {
-            return blocks.Tip is null ? 0 : 1;
+            return blocks.Count > 0 ? 1 : 0;
         }
 
         public int MaxTransactionsPerBlock { get; } = int.MaxValue;
