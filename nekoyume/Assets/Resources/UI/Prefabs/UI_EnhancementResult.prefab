@@ -25576,8 +25576,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4288651167
-  m_fontColor: {r: 0.6226415, g: 0.6226415, b: 0.6226415, a: 1}
+    rgba: 4290361785
+  m_fontColor: {r: 0.7264151, g: 0.7264151, b: 0.7264151, a: 1}
   m_enableVertexGradient: 1
   m_colorMode: 3
   m_fontColorGradient:
@@ -25653,7 +25653,7 @@ MonoBehaviour:
   fixedFontSizeOffset: 0
   fixedSpacingOption: 0
   fixedMarginOption: 0
-  fontMaterialType: 0
+  fontMaterialType: 24
   l10nKey: UI_ENHANCEMENT_RESULT_FAIL
   fontMaterialIndexInitialized: 0
   fontMaterialIndex: 0
@@ -121491,7 +121491,7 @@ PrefabInstance:
     - target: {fileID: 5271973740111618771, guid: ede5d48cbaa6ef543940797748ac41ff,
         type: 3}
       propertyPath: m_fontSize
-      value: 24
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 5271973740111618771, guid: ede5d48cbaa6ef543940797748ac41ff,
         type: 3}
