@@ -64,7 +64,7 @@ namespace Nekoyume.UI
             _toggleGroup.SetToggledOffAll();
             adventureButton.SetToggledOn();
             ChangeState(0);
-            UpdateTabs();
+            DoneScrollAnimation();
             base.Show(ignoreShowAnimation);
 
             if (blur)
@@ -97,7 +97,7 @@ namespace Nekoyume.UI
             scroll.UpdateData(list, true);
         }
 
-        public void UpdateTabs()
+        public void DoneScrollAnimation()
         {
             scroll.DoneAnimation();
         }
@@ -108,9 +108,7 @@ namespace Nekoyume.UI
             {
                 return;
             }
-
             _questList.Value = list;
-
             ChangeState((int) filterType);
         }
 
