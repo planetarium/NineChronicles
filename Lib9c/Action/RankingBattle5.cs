@@ -8,6 +8,7 @@ using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Battle;
+using Nekoyume.BlockChain;
 using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
@@ -18,6 +19,7 @@ namespace Nekoyume.Action
 {
     [Serializable]
     [ActionType("ranking_battle5")]
+    [ActionObsolete(BlockPolicySource.V100074ObsoleteIndex)]
     public class RankingBattle5 : GameAction
     {
         public const int StageId = 999999;
@@ -47,6 +49,8 @@ namespace Nekoyume.Action
                     .SetState(worldInformationAddress, MarkChanged)
                     .SetState(questListAddress, MarkChanged);
             }
+
+            CheckObsolete(BlockPolicySource.V100074ObsoleteIndex, ctx);
 
             // Avoid InvalidBlockStateRootHashException
             if (ctx.BlockIndex == 680341 && Id.Equals(new Guid("df37dbd8-5703-4dff-918b-ad22ee4c34c6")))
