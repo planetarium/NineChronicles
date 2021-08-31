@@ -10175,7 +10175,7 @@ TrailRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 28e92b064770a00498cb9a03761a65a8, type: 2}
+  - {fileID: 2100000, guid: 62432e04e3fa1614390554f704a95b31, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -10196,7 +10196,7 @@ TrailRenderer:
   m_SortingLayerID: 555532309
   m_SortingLayer: 7
   m_SortingOrder: 100
-  m_Time: 0.5
+  m_Time: 0.25
   m_Parameters:
     serializedVersion: 3
     widthMultiplier: 0.7
@@ -10213,7 +10213,7 @@ TrailRenderer:
         inWeight: 0.33333334
         outWeight: 0.33333334
       - serializedVersion: 3
-        time: 0.36111742
+        time: 0.22925097
         value: 0.9719962
         inSlope: -2.0153074
         outSlope: -2.0153074
@@ -10244,24 +10244,24 @@ TrailRenderer:
       m_RotationOrder: 4
     colorGradient:
       serializedVersion: 2
-      key0: {r: 1, g: 0.6812683, b: 0, a: 1}
-      key1: {r: 1, g: 0.92988515, b: 0, a: 1}
-      key2: {r: 1, g: 0.9857541, b: 0.7877358, a: 0}
+      key0: {r: 1, g: 0.91042846, b: 0.5424528, a: 1}
+      key1: {r: 1, g: 0.5309945, b: 0, a: 1}
+      key2: {r: 1, g: 0.9664276, b: 0.5613208, a: 0}
       key3: {r: 1, g: 0.9162848, b: 0.5330188, a: 0}
-      key4: {r: 0, g: 0, b: 0, a: 0}
+      key4: {r: 1, g: 0.9162848, b: 0.5330188, a: 0}
       key5: {r: 0, g: 0, b: 0, a: 0}
       key6: {r: 0, g: 0, b: 0, a: 0}
       key7: {r: 0, g: 0, b: 0, a: 0}
       ctime0: 0
-      ctime1: 12914
-      ctime2: 31418
+      ctime1: 43369
+      ctime2: 56283
       ctime3: 65535
-      ctime4: 0
+      ctime4: 65535
       ctime5: 0
       ctime6: 0
       ctime7: 0
       atime0: 0
-      atime1: 37394
+      atime1: 33924
       atime2: 65535
       atime3: 65535
       atime4: 0
