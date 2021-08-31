@@ -133,8 +133,7 @@ namespace Nekoyume.UI
                     LocalLayerModifier.ModifyAvatarActionPoint(
                         States.Instance.CurrentAvatarState.address,
                         requiredCost);
-                }, e => ActionRenderHandler.BackToMain(false, e))
-                .AddTo(this);
+                }, e => ActionRenderHandler.BackToMain(false, e));
             LocalLayerModifier.ModifyAvatarActionPoint(States.Instance.CurrentAvatarState.address,
                 - requiredCost);
             var props = new Value
