@@ -30,7 +30,6 @@ namespace Nekoyume.UI
         private readonly WaitForSeconds _waitForOneSec = new WaitForSeconds(1f);
 
         private CombinationSparkVFX _sparkVFX = null;
-        private CombinationBGFireVFX _fireVFX = null;
 
         public System.Action OnDisappear { get; set; }
 
@@ -52,6 +51,8 @@ namespace Nekoyume.UI
         {
             _buttonCanvasGroup.alpha = 0f;
             _bgCanvasGroup.alpha = 0f;
+            var format = L10nManager.Localize("UI_PRESS_TO_CONTINUE_FORMAT");
+            continueText.text = string.Format(format, ContinueTime);
             base.Show(ignoreShowAnimation);
         }
 
@@ -68,11 +69,6 @@ namespace Nekoyume.UI
                 _sparkVFX = null;
             }
 
-            if (_fireVFX)
-            {
-                _fireVFX.Stop();
-                _fireVFX = null;
-            }
             base.Close(ignoreCloseAnimation);
         }
 
@@ -90,8 +86,6 @@ namespace Nekoyume.UI
 
         public void AnimateNPC()
         {
-            var format = L10nManager.Localize("UI_PRESS_TO_CONTINUE_FORMAT");
-            continueText.text = string.Format(format, ContinueTime);
             _npcAppearCoroutine = StartCoroutine(CoAnimateNPC());
         }
 
@@ -131,9 +125,6 @@ namespace Nekoyume.UI
             _sparkVFX = VFXController.instance.CreateAndChaseCam<CombinationSparkVFX>(pos);
             _npc.PlayAnimation(NPCAnimation.Type.Appear_02);
             yield return new WaitForSeconds(1f);
-            _fireVFX =
-                VFXController.instance.CreateAndChaseCam<CombinationBGFireVFX>(pos,
-                    new Vector3(-.7f, -.35f));
 
             speechBubble.Show();
             if (quote is null)
@@ -187,11 +178,6 @@ namespace Nekoyume.UI
             if (_sparkVFX)
             {
                 _sparkVFX.LazyStop();
-            }
-
-            if (_fireVFX)
-            {
-                _fireVFX.LazyStop();
             }
 
             yield return new WaitForSeconds(.5f);
