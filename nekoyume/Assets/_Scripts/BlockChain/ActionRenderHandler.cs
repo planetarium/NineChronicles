@@ -264,14 +264,9 @@ namespace Nekoyume.BlockChain
                 }
 
                 LocalLayerModifier.RemoveAvatarItemRequiredIndex(avatarAddress, result.itemUsable.NonFungibleId);
-
                 States.Instance.RemoveSlotState(slotIndex);
                 UpdateAgentState(eval);
                 UpdateCurrentAvatarState(eval);
-            }
-            else
-            {
-               // todo : 고민좀 해봐야함
             }
         }
 
@@ -301,7 +296,7 @@ namespace Nekoyume.BlockChain
                 LocalLayerModifier.AddNewAttachmentMail(avatarAddress, result.id);
 
                 var gameInstance = Game.Game.instance;
-                var nextQuest = gameInstance.States.CurrentAvatarState.questList?
+                var nextQuest = avatarState.questList?
                     .OfType<CombinationEquipmentQuest>()
                     .Where(x => !x.Complete)
                     .OrderBy(x => x.StageId)
@@ -311,7 +306,7 @@ namespace Nekoyume.BlockChain
                 States.Instance.UpdateCombinationSlotState(slotIndex, slot);
                 UpdateAgentState(eval);
                 UpdateCurrentAvatarState(eval);
-                RenderQuest(avatarAddress, avatarState.questList.completedQuestIds);
+                RenderQuest(avatarAddress, avatarState.questList?.completedQuestIds);
 
                 if (!(nextQuest is null))
                 {
@@ -339,7 +334,7 @@ namespace Nekoyume.BlockChain
                             });
                     }
                 }
-                
+
                 // Notify
                 string formatKey;
                 if (result.itemUsable is Equipment equipment)
@@ -404,7 +399,7 @@ namespace Nekoyume.BlockChain
                 UpdateAgentState(eval);
                 UpdateCurrentAvatarState(eval);
                 RenderQuest(avatarAddress, avatarState.questList.completedQuestIds);
-                
+
                 // Notify
                 var format = L10nManager.Localize("NOTIFICATION_COMBINATION_COMPLETE");
                 UI.Notification.Reserve(
