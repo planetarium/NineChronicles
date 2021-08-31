@@ -7,18 +7,148 @@ using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using Cocona;
 using Libplanet;
 using Libplanet.Action;
+using Libplanet.Blockchain;
+using Libplanet.Blockchain.Policies;
 using Libplanet.Blocks;
 using Libplanet.Crypto;
+using Libplanet.RocksDBStore;
+using Libplanet.Store;
+using Libplanet.Store.Trie;
 using Nekoyume.Action;
+using Nekoyume.BlockChain;
 using Nekoyume.Model;
 using Nekoyume.Model.State;
+using Serilog;
+using Serilog.Core;
+using NCAction = Libplanet.Action.PolymorphicAction<Nekoyume.Action.ActionBase>;
 
 namespace Lib9c.Tools
 {
     public static class Utils
     {
+        public static Logger ConfigureLogger(bool verbose)
+        {
+            var logConfig = new LoggerConfiguration();
+            if (verbose)
+            {
+                logConfig = logConfig.WriteTo.Console();
+            }
+            return logConfig.CreateLogger();
+        }
+
+        public static (BlockChain<NCAction> Chain, IStore Store) GetBlockChain(
+            ILogger logger,
+            string storePath,
+            bool monorocksdb = false,
+            Guid? chainId = null
+        )
+        {
+            var policySource = new BlockPolicySource(logger);
+            IBlockPolicy<NCAction> policy = policySource.GetPolicy(
+                BlockPolicySource.DifficultyBoundDivisor + 1,
+                int.MaxValue
+            );
+            IStagePolicy<NCAction> stagePolicy = new VolatileStagePolicy<NCAction>();
+            IStore store
+                = monorocksdb
+                ? (IStore)new MonoRocksDBStore(storePath)
+                : new RocksDBStore(storePath);
+            IKeyValueStore stateKeyValueStore =
+                new RocksDBKeyValueStore(Path.Combine(storePath, "states"));
+            IKeyValueStore stateHashKeyValueStore =
+                new RocksDBKeyValueStore(Path.Combine(storePath, "state_hashes"));
+            IStateStore stateStore = new TrieStateStore(stateKeyValueStore, stateHashKeyValueStore);
+            Guid chainIdValue
+                = chainId ??
+                  store.GetCanonicalChainId() ??
+                  throw new CommandExitedException(
+                      "No canonical chain ID.  Available chain IDs:\n    " +
+                      string.Join("\n    ", store.ListChainIds()),
+                      1);
+
+            BlockHash genesisBlockHash;
+            try
+            {
+                genesisBlockHash = store.IterateIndexes(chainIdValue).First();
+            }
+            catch (InvalidOperationException)
+            {
+                throw new CommandExitedException(
+                    $"The chain {chainIdValue} seems empty; try with another chain ID:\n    " +
+                        string.Join("\n    ", store.ListChainIds()),
+                    1
+                );
+            }
+            Block<NCAction> genesis = store.GetBlock<NCAction>(genesisBlockHash);
+            BlockChain<NCAction> chain = new BlockChain<NCAction>(
+                policy,
+                stagePolicy,
+                store,
+                stateStore,
+                genesis
+            );
+            return (chain, store);
+        }
+
+        public static Address ParseAddress(string address)
+        {
+            if (address.StartsWith("0x") || address.StartsWith("0X"))
+            {
+                address = address.Substring(2);
+            }
+
+            try
+            {
+                return new Address(address);
+            }
+            catch (ArgumentException e)
+            {
+                throw new CommandExitedException($"{address}: {e.Message}", 1);
+            }
+        }
+
+        public static BlockHash ParseBlockHash(string blockHash)
+        {
+            try
+            {
+                return BlockHash.FromString(blockHash);
+            }
+            catch (Exception e) when (e is ArgumentOutOfRangeException || e is FormatException)
+            {
+                throw new CommandExitedException($"{blockHash}: {e.Message}", 1);
+            }
+        }
+
+        public static Block<NCAction> ParseBlockOffset(
+            BlockChain<NCAction> chain,
+            string blockHashOrIndex,
+            long defaultIndex = -1)
+        {
+            if (!(blockHashOrIndex is {} blockStr))
+            {
+                return chain[defaultIndex];
+            }
+
+            if (long.TryParse(blockStr, out long idx) ||
+                blockStr.StartsWith('#') && long.TryParse(blockStr.Substring(1), out idx))
+            {
+                try
+                {
+                    return chain[idx];
+                }
+                catch (ArgumentOutOfRangeException)
+                {
+                    throw new CommandExitedException($"No such block index: {idx}.", 1);
+                }
+            }
+
+            BlockHash blockHash = Utils.ParseBlockHash(blockStr);
+            return chain[blockHash];
+        }
+
         public static Dictionary<string, string> ImportSheets(string dir)
         {
             var sheets = new Dictionary<string, string>();
