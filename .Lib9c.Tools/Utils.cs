@@ -62,14 +62,12 @@ namespace Lib9c.Tools
                 new RocksDBKeyValueStore(Path.Combine(storePath, "state_hashes"));
             IStateStore stateStore = new TrieStateStore(stateKeyValueStore, stateHashKeyValueStore);
             Guid chainIdValue
-                = chainId is {} i
-                ? i
-                : store.GetCanonicalChainId() is {} cc
-                ? cc
-                : throw new CommandExitedException(
-                    "No canonical chain ID.  Available chain IDs:\n    " +
-                        string.Join("\n    ", store.ListChainIds()),
-                    1);
+                = chainId ??
+                  store.GetCanonicalChainId() ??
+                  throw new CommandExitedException(
+                      "No canonical chain ID.  Available chain IDs:\n    " +
+                      string.Join("\n    ", store.ListChainIds()),
+                      1);
 
             BlockHash genesisBlockHash;
             try
