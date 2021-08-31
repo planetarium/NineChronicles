@@ -221,7 +221,7 @@ namespace Nekoyume.Game
                 .Subscribe(agent =>
                 {
                     Debug.Log($"[Game]RPCAgent OnRetryEnded. {rpcAgent.Address.ToHex()}");
-                    OnRPCAgentRetryAndPreloadEnded(agent);
+                    OnRPCAgentRetryEnded(agent);
                 })
                 .AddTo(gameObject);
 
@@ -230,7 +230,7 @@ namespace Nekoyume.Game
                 .Subscribe(agent =>
                 {
                     Debug.Log($"[Game]RPCAgent OnPreloadStarted. {rpcAgent.Address.ToHex()}");
-                    OnRPCAgentRetryAndPreloadEnded(agent);
+                    OnRPCAgentPreloadStarted(agent);
                 })
                 .AddTo(gameObject);
 
@@ -239,7 +239,7 @@ namespace Nekoyume.Game
                 .Subscribe(agent =>
                 {
                     Debug.Log($"[Game]RPCAgent OnPreloadEnded. {rpcAgent.Address.ToHex()}");
-                    OnRPCAgentRetryAndPreloadEnded(agent);
+                    OnRPCAgentPreloadEnded(agent);
                 })
                 .AddTo(gameObject);
 
@@ -258,7 +258,84 @@ namespace Nekoyume.Game
             Widget.Find<BlockSyncLoadingScreen>().Show();
         }
 
-        private static void OnRPCAgentRetryAndPreloadEnded(RPCAgent rpcAgent)
+        private static void OnRPCAgentRetryEnded(RPCAgent rpcAgent)
+        {
+            var widget = (Widget) Widget.Find<BlockSyncLoadingScreen>();
+            if (widget.IsActive())
+            {
+                widget.Close();
+            }
+        }
+
+        private static void OnRPCAgentPreloadStarted(RPCAgent rpcAgent)
+        {
+            if (Widget.Find<Intro>().IsActive() ||
+                Widget.Find<PreloadingScreen>().IsActive() ||
+                Widget.Find<Synopsis>().IsActive())
+            {
+                // NOTE: 타이틀 화면에서 리트라이와 프리로드가 완료된 상황입니다.
+                // FIXME: 이 경우에는 메인 로비가 아니라 기존 초기화 로직이 흐르도록 처리해야 합니다.
+                return;
+            }
+
+            var needToBackToMain = false;
+            var showLoadingScreen = false;
+            var widget = (Widget) Widget.Find<BlockSyncLoadingScreen>();
+            if (widget.IsActive())
+            {
+                widget.Close();
+            }
+
+            if (Widget.Find<LoadingScreen>().IsActive())
+            {
+                Widget.Find<LoadingScreen>().Close();
+                widget = Widget.Find<QuestPreparation>();
+                if (widget.IsActive())
+                {
+                    widget.Close(true);
+                    needToBackToMain = true;
+                }
+
+                widget = Widget.Find<Menu>();
+                if (widget.IsActive())
+                {
+                    widget.Close(true);
+                    needToBackToMain = true;
+                }
+            }
+            else if (Widget.Find<StageLoadingScreen>().IsActive())
+            {
+                Widget.Find<StageLoadingScreen>().Close();
+
+                if (Widget.Find<BattleResult>().IsActive())
+                {
+                    Widget.Find<BattleResult>().Close(true);
+                }
+
+                needToBackToMain = true;
+                showLoadingScreen = true;
+            }
+            else if (Widget.Find<ArenaBattleLoadingScreen>().IsActive())
+            {
+                Widget.Find<ArenaBattleLoadingScreen>().Close();
+                needToBackToMain = true;
+            }
+            else if (Widget.Find<MimisbrunnrPreparation>().IsActive())
+            {
+                Widget.Find<MimisbrunnrPreparation>().Close(true);
+                needToBackToMain = true;
+            }
+
+            if (!needToBackToMain)
+            {
+                return;
+            }
+
+            ActionRenderHandler.BackToMain(
+                showLoadingScreen,
+                new UnableToRenderWhenSyncingBlocksException());
+        }
+        private static void OnRPCAgentPreloadEnded(RPCAgent rpcAgent)
         {
             if (Widget.Find<Intro>().IsActive() ||
                 Widget.Find<PreloadingScreen>().IsActive() ||
