@@ -57,26 +57,7 @@ namespace Nekoyume.UI
             _toggleGroup.RegisterToggleable(craftingButton);
             _toggleGroup.RegisterToggleable(exchangeButton);
 
-            _questNotificationSubject.Subscribe(list => adventureButton.HasNotification.Value =
-                list.Any(quest =>
-                    quest.QuestType == QuestType.Adventure &&
-                    quest.Complete &&
-                    quest.isReceivable)).AddTo(gameObject);
-            _questNotificationSubject.Subscribe(list => obtainButton.HasNotification.Value =
-                list.Any(quest =>
-                    quest.QuestType == QuestType.Obtain &&
-                    quest.Complete &&
-                    quest.isReceivable)).AddTo(gameObject);
-            _questNotificationSubject.Subscribe(list => craftingButton.HasNotification.Value =
-                list.Any(quest =>
-                    quest.QuestType == QuestType.Craft &&
-                    quest.Complete &&
-                    quest.isReceivable)).AddTo(gameObject);
-            _questNotificationSubject.Subscribe(list => exchangeButton.HasNotification.Value =
-                list.Any(quest =>
-                    quest.QuestType == QuestType.Exchange &&
-                    quest.Complete &&
-                    quest.isReceivable)).AddTo(gameObject);
+            _questNotificationSubject.Subscribe(OnQuestListChanged);
         }
 
         public override void Show(bool ignoreShowAnimation = false)
@@ -144,6 +125,29 @@ namespace Nekoyume.UI
         public void DisappearAnimation(int index)
         {
             scroll.DisappearAnimation(index);
+        }
+
+        private void OnQuestListChanged(QuestList list)
+        {
+            if (list is null)
+            {
+                return;
+            }
+
+            foreach (var questType in (QuestType[]) Enum.GetValues(typeof(QuestType)))
+            {
+                var button = questType switch
+                {
+                    QuestType.Adventure => adventureButton,
+                    QuestType.Obtain => obtainButton,
+                    QuestType.Craft => craftingButton,
+                    QuestType.Exchange => exchangeButton
+                };
+                button.HasNotification.Value = list.Any(quest =>
+                    quest.QuestType == questType &&
+                    quest.Complete &&
+                    quest.isReceivable);
+            }
         }
     }
 
