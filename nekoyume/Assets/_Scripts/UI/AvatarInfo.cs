@@ -30,6 +30,7 @@ namespace Nekoyume.UI
             inventory.SharedModel.Equipments.Any(item => item.HasNotification.Value);
 
         private const string NicknameTextFormat = "<color=#B38271>Lv.{0}</color=> {1}";
+        private static readonly Vector3 PlayerPosition = new Vector3(3000f, 2999.2f, 2.15f);
 
         [SerializeField]
         private Module.Inventory inventory = null;
@@ -60,9 +61,6 @@ namespace Nekoyume.UI
 
         [SerializeField]
         private AvatarStats avatarStats = null;
-
-        [SerializeField]
-        private RectTransform avatarPosition = null;
 
         private EquipmentSlot _weaponSlot;
         private EquipmentSlot _armorSlot;
@@ -159,7 +157,6 @@ namespace Nekoyume.UI
 
         protected override void OnTweenReverseComplete()
         {
-            Game.Game.instance.Stage.objectPool.Remove<Player>(_player.gameObject);
             IsTweenEnd.Value = true;
         }
 
@@ -180,6 +177,7 @@ namespace Nekoyume.UI
             {
                 CreatePlayer(avatarState);
             }
+            _player.gameObject.SetActive(true);
 
             UpdateSlotView(avatarState);
             UpdateStatViews();
@@ -187,12 +185,10 @@ namespace Nekoyume.UI
 
         private void CreatePlayer(AvatarState avatarState)
         {
-            var orderInLayer = MainCanvas.instance.GetLayer(WidgetType).root.sortingOrder + 1;
-            _player = PlayerFactory.CreateBySettingLayer(avatarState, SortingLayer.NameToID("UI"), orderInLayer)
-                                   .GetComponent<Player>();
-            _player.Set(avatarState);
-            _player.transform.SetParent(avatarPosition);
-            _player.transform.localPosition = Vector3.zero;
+            _player = PlayerFactory.Create(avatarState).GetComponent<Player>();
+            var t = _player.transform;
+            t.localScale = Vector3.one;
+            t.position = PlayerPosition;
         }
 
         private void UpdateUIPlayer()

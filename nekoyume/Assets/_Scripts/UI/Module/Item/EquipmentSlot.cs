@@ -233,6 +233,7 @@ namespace Nekoyume.UI.Module
             gradeHsv.value = gradeData.GradeHsvValue;
 
             optionTagBg.gameObject.SetActive(false);
+            enhancementImage.gameObject.SetActive(false);
             if (itemBase is Equipment equip)
             {
                 var isUpgraded = equip.level > 0;
@@ -253,13 +254,17 @@ namespace Nekoyume.UI.Module
                     image.gameObject.SetActive(false);
                 }
 
-                var data = optionTagData.GetOptionTagData(Item.Grade);
-                optionTagBg.range = data.GradeHsvRange;
-                optionTagBg.hue = data.GradeHsvHue;
-                optionTagBg.saturation = data.GradeHsvSaturation;
-                optionTagBg.value = data.GradeHsvValue;
-                var optionInfo = new ItemOptionInfo(Item as Equipment);
+                if (equip.optionCountFromCombination > 0)
+                {
+                    var data = optionTagData.GetOptionTagData(Item.Grade);
+                    optionTagBg.gameObject.SetActive(true);
+                    optionTagBg.range = data.GradeHsvRange;
+                    optionTagBg.hue = data.GradeHsvHue;
+                    optionTagBg.saturation = data.GradeHsvSaturation;
+                    optionTagBg.value = data.GradeHsvValue;
+                }
 
+                var optionInfo = new ItemOptionInfo(Item as Equipment);
                 var optionCount = optionInfo.StatOptions.Sum(x => x.count);
                 var index = 0;
                 for (var i = 0; i < optionCount; ++i)
@@ -277,8 +282,6 @@ namespace Nekoyume.UI.Module
                     image.sprite = optionTagData.SkillOptionSprite;
                     ++index;
                 }
-
-                optionTagBg.gameObject.SetActive(true);
             }
             else
             {

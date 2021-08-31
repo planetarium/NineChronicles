@@ -678,19 +678,23 @@ namespace Nekoyume.Game
             else
             {
                 var isTutorial = false;
-                var worldInfoExists = States.Instance.CurrentAvatarState.worldInformation
-                    .TryGetUnlockedWorldByStageClearedBlockIndex(out var worldInfo);
-
-                if ((worldInfoExists &&
-                    worldInfo.StageClearedId < UI.Battle.RequiredStageForExitButton) ||
-                    !worldInfoExists)
+                if (States.Instance.CurrentAvatarState.worldInformation
+                    .TryGetUnlockedWorldByStageClearedBlockIndex(out var worldInfo))
                 {
-                    Widget.Find<HeaderMenu>().Close(true);
-                    isTutorial = true;
+                    if (worldInfo.StageClearedId < UI.Battle.RequiredStageForExitButton)
+                    {
+                        Widget.Find<HeaderMenu>().Close(true);
+                        isTutorial = true;
+                    }
+                    else
+                    {
+                        Widget.Find<HeaderMenu>().Show();
+                    }
                 }
                 else
                 {
-                    Widget.Find<HeaderMenu>().Show();
+                    Widget.Find<HeaderMenu>().Close(true);
+                    isTutorial = true;
                 }
 
                 battle.Show(stageId, IsRepeatStage, IsExitReserved, isTutorial);

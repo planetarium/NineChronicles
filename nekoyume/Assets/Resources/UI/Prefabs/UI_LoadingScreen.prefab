@@ -62,7 +62,7 @@ MonoBehaviour:
   tutorialActions: 
   indicator: {fileID: 1626463727538564179}
   toolTip: {fileID: 8900275545763196454}
-  ShowMenuOnClosed: 1
+  ShowMenuOnClosed: 0
 --- !u!1 &1334572938244390
 GameObject:
   m_ObjectHideFlags: 0
@@ -893,6 +893,7 @@ MonoBehaviour:
   fixedFontStyle: 0
   fixedFontSizeOffset: 0
   fixedSpacingOption: 0
+  fixedMarginOption: 0
   fontMaterialType: 0
   l10nKey: 
   fontMaterialIndexInitialized: 0

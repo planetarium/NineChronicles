@@ -190,6 +190,11 @@ namespace Nekoyume.UI.Module
 
         public override void Close(bool ignoreCloseAnimation = false)
         {
+            foreach (var toggleInfo in toggles)
+            {
+                toggleInfo.Toggle.isOn = false;
+            }
+
             menuToggleDropdown.isOn = false;
             base.Close(ignoreCloseAnimation);
         }

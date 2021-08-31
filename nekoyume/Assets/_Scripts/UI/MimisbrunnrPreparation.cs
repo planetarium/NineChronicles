@@ -113,7 +113,7 @@ namespace Nekoyume.UI
             ColorHelper.HexToColorRGB("FFF3D4");
 
         private static readonly Color DimmedColor = ColorHelper.HexToColorRGB("848484");
-        private static readonly Vector3 PlayerPosition = new Vector3(999.8f, 999.3f, 3f);
+        private static readonly Vector3 PlayerPosition = new Vector3(1999.8f, 1999.3f, 3f);
 
         public override bool CanHandleInputEvent =>
             base.CanHandleInputEvent &&
@@ -189,7 +189,14 @@ namespace Nekoyume.UI
 
             _stageId.Subscribe(SubscribeStage).AddTo(gameObject);
 
-            startButton.OnClickAsObservable().Subscribe(_ => BattleClick(repeatToggle.isOn))
+            startButton.OnClickAsObservable().Where(_ => EnoughActionPoint)
+                .Subscribe(_ => BattleClick(repeatToggle.isOn))
+                .AddTo(gameObject);
+
+            startButton.OnClickAsObservable().Where(_ => !EnoughActionPoint && !_stage.IsInStage)
+                .ThrottleFirst(TimeSpan.FromSeconds(2f))
+                .Subscribe(_ =>
+                    OneLinePopup.Push(MailType.System, L10nManager.Localize("ERROR_ACTION_POINT")))
                 .AddTo(gameObject);
 
             Game.Event.OnRoomEnter.AddListener(b => Close());
@@ -503,7 +510,6 @@ namespace Nekoyume.UI
 
         private void SetBattleStartButton(bool interactable)
         {
-            startButton.interactable = interactable;
             if (interactable)
             {
                 requiredPointText.color = RequiredActionPointOriginColor;
@@ -700,6 +706,22 @@ namespace Nekoyume.UI
             else if (slot.ItemSubType == ItemSubType.Weapon)
             {
                 _player.EquipWeapon((Weapon)slot.Item);
+            }
+            else if (slot.ItemSubType == ItemSubType.Title)
+            {
+                if (_cachedCharacterTitle)
+                {
+                    Destroy(_cachedCharacterTitle);
+                }
+
+                var costume = (Costume) slot.Item;
+                if (costume != null)
+                {
+                    var clone = ResourcesHelper.GetCharacterTitle(costume.Grade,
+                        costume.GetLocalizedNonColoredName(false));
+                    _cachedCharacterTitle = Instantiate(clone, titleSocket.transform);
+                    _cachedCharacterTitle.name = costume.Id.ToString();
+                }
             }
             else if (equipCostume)
             {

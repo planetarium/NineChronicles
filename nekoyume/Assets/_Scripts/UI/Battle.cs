@@ -69,6 +69,7 @@ namespace Nekoyume.UI
         {
             guidedQuest.Hide(ignoreCloseAnimation);
             enemyPlayerStatus.Close(ignoreCloseAnimation);
+            Find<HeaderMenu>().Close();
             base.Close(ignoreCloseAnimation);
         }
 

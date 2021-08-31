@@ -67,7 +67,6 @@ namespace Nekoyume.UI
 
         public void Show(string background, string worldName, int stageId, bool isNext, int clearedStageId)
         {
-
             _shouldClose = false;
             _rects = new List<RectTransform>();
             var position = new Vector2(MainCanvas.instance.RectTransform.rect.width, 0f);
@@ -133,7 +132,6 @@ namespace Nekoyume.UI
         {
             _shouldClose = true;
             yield return new WaitUntil(() => closeEnd);
-            Find<HeaderMenu>().Show();
             gameObject.SetActive(false);
         }
 
