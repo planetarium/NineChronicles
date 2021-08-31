@@ -21,7 +21,7 @@ namespace Nekoyume.BlockChain
     /// </summary>
     public class ActionManager
     {
-        private static readonly TimeSpan ActionTimeout = TimeSpan.FromSeconds(360f);
+        private static readonly TimeSpan ActionTimeout = TimeSpan.FromSeconds(3600f);
 
         private readonly IAgent _agent;
 
