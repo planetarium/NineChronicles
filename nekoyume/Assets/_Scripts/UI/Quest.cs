@@ -40,8 +40,7 @@ namespace Nekoyume.UI
         [SerializeField]
         private Blur blur = null;
 
-        private QuestList _questList;
-        private readonly Subject<QuestList> _questNotificationSubject = new Subject<QuestList>();
+        private ReactiveProperty<QuestList> _questList = new ReactiveProperty<QuestList>();
 
         private readonly Module.ToggleGroup _toggleGroup = new Module.ToggleGroup();
 
@@ -56,13 +55,12 @@ namespace Nekoyume.UI
             _toggleGroup.RegisterToggleable(obtainButton);
             _toggleGroup.RegisterToggleable(craftingButton);
             _toggleGroup.RegisterToggleable(exchangeButton);
-
-            _questNotificationSubject.Subscribe(OnQuestListChanged);
+            _questList.Subscribe(OnQuestListChanged);
         }
 
         public override void Show(bool ignoreShowAnimation = false)
         {
-            _questList = States.Instance.CurrentAvatarState.questList;
+            _questList.Value = States.Instance.CurrentAvatarState.questList;
             _toggleGroup.SetToggledOffAll();
             adventureButton.SetToggledOn();
             ChangeState(0);
@@ -92,7 +90,7 @@ namespace Nekoyume.UI
         {
             filterType = (QuestType) state;
 
-            var list = _questList.ToList()
+            var list = _questList.Value.ToList()
                 .FindAll(e => e.QuestType == (QuestType) state)
                 .OrderBy(e => e, new QuestOrderComparer())
                 .ToList();
@@ -111,8 +109,7 @@ namespace Nekoyume.UI
                 return;
             }
 
-            _questList = list;
-            _questNotificationSubject.OnNext(_questList);
+            _questList.Value = list;
 
             ChangeState((int) filterType);
         }
