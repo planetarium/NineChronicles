@@ -135,8 +135,10 @@ namespace Nekoyume.Action
             }
             var digestList = new OrderDigestListState(rawList);
 
-            // ReconfigureFungibleItem
+            // migration method
+            avatarState.inventory.UnlockInvalidSlot(digestList);
             avatarState.inventory.ReconfigureFungibleItem(digestList, orderId);
+            //
 
             digestList.Remove(orderId);
 

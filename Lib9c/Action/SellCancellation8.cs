@@ -138,9 +138,6 @@ namespace Nekoyume.Action
             }
             var digestList = new OrderDigestListState(rawList);
 
-            // ReconfigureFungibleItem
-            avatarState.inventory.ReconfigureFungibleItem(digestList, orderId);
-
             digestList.Remove(orderId);
 
             if (!states.TryGetState(Order.DeriveAddress(orderId), out Dictionary orderDict))

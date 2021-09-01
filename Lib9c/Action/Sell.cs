@@ -143,6 +143,11 @@ namespace Nekoyume.Action
             var orderReceiptList = states.TryGetState(orderReceiptAddress, out Dictionary receiptDict)
                 ? new OrderDigestListState(receiptDict)
                 : new OrderDigestListState(orderReceiptAddress);
+
+            // migration method
+            avatarState.inventory.UnlockInvalidSlot(orderReceiptList);
+            //
+
             orderReceiptList.Add(orderDigest);
 
             states = states.SetState(orderReceiptAddress, orderReceiptList.Serialize());

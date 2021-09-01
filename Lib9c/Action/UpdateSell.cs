@@ -122,8 +122,10 @@ namespace Nekoyume.Action
             }
             var digestList = new OrderDigestListState(rawList);
 
-            // ReconfigureFungibleItem
+            // migration method
+            avatarState.inventory.UnlockInvalidSlot(digestList);
             avatarState.inventory.ReconfigureFungibleItem(digestList, tradableId);
+            //
 
             // for sell cancel
             Log.Verbose("{AddressesHex} UpdateSell IsStageCleared: {Elapsed}", addressesHex, sw.Elapsed);

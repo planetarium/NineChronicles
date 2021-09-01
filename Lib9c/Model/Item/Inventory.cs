@@ -8,6 +8,7 @@ using Libplanet;
 using Nekoyume.Action;
 using Nekoyume.Battle;
 using Nekoyume.Model.State;
+using Serilog;
 
 namespace Nekoyume.Model.Item
 {
@@ -768,6 +769,7 @@ namespace Nekoyume.Model.Item
         {
             var slots = _items.Where(i => i.Locked);
             var orderIds = digestListState.OrderDigestList.Select(d => d.OrderId).ToList();
+            var sellerAgentAddress = digestListState.OrderDigestList.FirstOrDefault()?.SellerAgentAddress;
             foreach (var slot in slots)
             {
                 var orderLock = (OrderLock)slot.Lock;
@@ -775,9 +777,15 @@ namespace Nekoyume.Model.Item
                 if (!orderIds.Contains(orderId))
                 {
                     slot.Unlock();
+                    var itemId = slot.item.Id;
+                    var itemCount = slot.count;
+                    Log.Verbose(
+                        "[UnlockInvalidSlot] sellerAgentAddress : {sellerAgentAddress} / OrderId : {orderId} / itemId : {itemId} / itemCount : {itemCount}",
+                        sellerAgentAddress, orderId, itemId, itemCount);
                 }
             }
         }
+
         public void ReconfigureFungibleItem(OrderDigestListState digestList, Guid tradableId)
         {
             var tradableFungibleItems = _items
