@@ -41,9 +41,8 @@ namespace Nekoyume.BlockChain
             int maxTransactionsPerBlock,
             int maxBlockBytes,
             int maxGenesisBytes,
-            bool ignoreHardcodedIndicesForBackwardCompatibility,
-            Func<Transaction<NCAction>, BlockChain<NCAction>, bool> doesTransactionFollowPolicy =
-                null)
+            Func<Transaction<NCAction>, BlockChain<NCAction>, bool> doesTransactionFollowPolicy = null
+            )
             : this(
                 blockAction: blockAction,
                 blockInterval: blockInterval,
@@ -173,7 +172,7 @@ namespace Nekoyume.BlockChain
                 return null;
             }
 
-            // To prevent selfish mining, we define a consensus that blocks with no transactions are do not accepted. 
+            // To prevent selfish mining, we define a consensus that blocks with no transactions are do not accepted.
             // (For backward compatibility, blocks before 2,175,000th don't have to be proven.
             // Note that as of Aug 19, 2021, there are about 2,171,000+ blocks.)
             if (block.Transactions.Count <= 0 &&
@@ -202,12 +201,12 @@ namespace Nekoyume.BlockChain
             {
                 return null;
             }
-            
+
             if (block.Index < policy.Threshold)
             {
                 return null;
             }
-            
+
             if (policy.Miners.Contains(miner) && block.Transactions.Any(t => t.Signer.Equals(miner)))
             {
                 return null;

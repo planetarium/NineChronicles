@@ -287,7 +287,8 @@ namespace Lib9c.Tests
             IBlockPolicy<PolymorphicAction<ActionBase>> policy = blockPolicySource.GetPolicy(
                 10000,
                 100,
-                true);
+                ignoreHardcodedPolicies: true,
+                permissionedMiningPolicy: null);
             IStagePolicy<PolymorphicAction<ActionBase>> stagePolicy =
                 new VolatileStagePolicy<PolymorphicAction<ActionBase>>();
             Block<PolymorphicAction<ActionBase>> genesis = MakeGenesisBlock(
@@ -682,7 +683,15 @@ namespace Lib9c.Tests
             var blockChain = new BlockChain<PolymorphicAction<ActionBase>>(
                 blockPolicySource.GetPolicy(
                     minimumDifficulty: 50_000,
-                    maximumTransactions: 100
+                    maximumTransactions: 100,
+                    permissionedMiningPolicy: new PermissionedMiningPolicy(
+                        threshold: 1,
+                        miners: new[]
+                        {
+                            permissionedMinerKey.ToAddress(),
+                        }.ToImmutableHashSet()
+                    ),
+                    ignoreHardcodedPolicies: true
                 ),
                 new VolatileStagePolicy<PolymorphicAction<ActionBase>>(),
                 store,
