@@ -8,9 +8,18 @@ namespace Nekoyume.Audio
     {
         [SerializeField] private AudioSource audioSource;
 
-        public void Play()
+        private void Reset()
         {
             audioSource ??= GetComponent<AudioSource>();
+        }
+
+        public void Play()
+        {
+            if (audioSource is null)
+            {
+                Reset();
+            }
+            
             AudioController.instance.PlaySfx(audioSource.clip.name);
         }
     }
