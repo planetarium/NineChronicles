@@ -6,7 +6,6 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
-using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Bencodex;
 using Bencodex.Types;
@@ -30,12 +29,13 @@ using Nekoyume.UI;
 using NineChronicles.RPC.Shared.Exceptions;
 using UniRx;
 using UnityEngine;
-using UnityEngine.Events;
 using static Nekoyume.Action.ActionBase;
 using Logger = Serilog.Core.Logger;
 
 namespace Nekoyume.BlockChain
 {
+    using UniRx;
+
     public class RPCAgent : MonoBehaviour, IAgent, IActionEvaluationHubReceiver
     {
         private const float TxProcessInterval = 1.0f;
@@ -65,7 +65,7 @@ namespace Nekoyume.BlockChain
 
         public Subject<long> BlockIndexSubject { get; } = new Subject<long>();
 
-        public Subject<HashDigest<SHA256>> BlockTipHashSubject { get; } = new Subject<HashDigest<SHA256>>();
+        public Subject<BlockHash> BlockTipHashSubject { get; } = new Subject<BlockHash>();
 
         public long BlockIndex { get; private set; }
 
@@ -87,7 +87,7 @@ namespace Nekoyume.BlockChain
 
         public int AppProtocolVersion { get; private set; }
 
-        public HashDigest<SHA256> BlockTipHash { get; private set; }
+        public BlockHash BlockTipHash { get; private set; }
 
         public void Initialize(
             CommandLineOptions options,
@@ -129,14 +129,15 @@ namespace Nekoyume.BlockChain
 
         public FungibleAssetValue GetBalance(Address address, Currency currency)
         {
+            // FIXME: `CurrencyExtension.Serialize()` should be changed to `Currency.Serialize()`.
             var result = _service.GetBalance(
                 address.ToByteArray(),
-                _codec.Encode(currency.Serialize())
+                _codec.Encode(CurrencyExtensions.Serialize(currency))
             );
             byte[] raw = result.ResponseAsync.Result;
             var serialized = (Bencodex.Types.List) _codec.Decode(raw);
             return FungibleAssetValue.FromRawValue(
-                CurrencyExtensions.Deserialize((Bencodex.Types.Dictionary) serialized.ElementAt(0)),
+                new Currency(serialized.ElementAt(0)),
                 serialized.ElementAt(1).ToBigInteger());
         }
 
@@ -209,10 +210,6 @@ namespace Nekoyume.BlockChain
             }
 
             // 상점의 상태를 한 번 동기화 한다.
-            States.Instance.SetShopState(
-                GetState(ShopState.Address) is Bencodex.Types.Dictionary shopDict
-                    ? new ShopState(shopDict)
-                    : new ShopState());
 
             if (GetState(GameConfigState.Address) is Dictionary configDict)
             {
@@ -329,7 +326,7 @@ namespace Nekoyume.BlockChain
             var newTipHeader = BlockHeader.Deserialize(newTip);
             BlockIndex = newTipHeader.Index;
             BlockIndexSubject.OnNext(BlockIndex);
-            BlockTipHash = new HashDigest<SHA256>(newTipHeader.Hash);
+            BlockTipHash = new BlockHash(newTipHeader.Hash);
             BlockTipHashSubject.OnNext(BlockTipHash);
             _lastTipChangedAt = DateTimeOffset.UtcNow;
             BlockRenderer.RenderBlock(null, null);

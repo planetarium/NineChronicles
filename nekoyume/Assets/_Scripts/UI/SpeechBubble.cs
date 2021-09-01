@@ -40,6 +40,7 @@ namespace Nekoyume.UI
         protected override void OnDisable()
         {
             _forceFixed = false;
+            text.text = string.Empty;
             KillTween();
             base.OnDisable();
         }
@@ -94,7 +95,7 @@ namespace Nekoyume.UI
 
         public virtual void Hide()
         {
-            text.text = "";
+            text.text = string.Empty;
             gameObject.SetActive(false);
         }
 
@@ -106,6 +107,7 @@ namespace Nekoyume.UI
             }
 
             KillTween();
+            text.text = string.Empty;
             gameObject.SetActive(true);
         }
 
@@ -125,11 +127,6 @@ namespace Nekoyume.UI
 
         public IEnumerator CoShowText(string speech, bool instant = false, bool forceFixed = false)
         {
-            if (!enable || SpeechCount == 0)
-            {
-                yield break;
-            }
-
             BeforeSpeech();
             _coroutine = StartCoroutine(ShowText(speech, instant, forceFixed));
             yield return _coroutine;
@@ -138,7 +135,7 @@ namespace Nekoyume.UI
         private IEnumerator ShowText(string speech, bool instant, bool forceFixed)
         {
             _forceFixed = forceFixed;
-            text.text = "";
+            text.text = string.Empty;
             var breakTime = speechBreakTime;
             if (!string.IsNullOrEmpty(speech))
             {
@@ -207,7 +204,7 @@ namespace Nekoyume.UI
                 yield return new WaitForSeconds(speechWaitTime);
                 yield return new WaitWhile(() => forceFixed);
 
-                text.text = "";
+                text.text = string.Empty;
                 textSize.rectTransform.DOScale(0.0f, bubbleTweenTime).SetEase(Ease.InBack);
                 yield return new WaitForSeconds(bubbleTweenTime);
             }

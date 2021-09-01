@@ -1,7 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using JetBrains.Annotations;
+using Libplanet;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
 using Nekoyume.L10n;
@@ -9,12 +11,13 @@ using Nekoyume.State;
 using Nekoyume.State.Subjects;
 using Nekoyume.UI.Module.Common;
 using TMPro;
-using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
 {
+    using UniRx;
+
     public class DailyBonus : AlphaAnimateModule
     {
         [SerializeField]
@@ -158,8 +161,7 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
-            if (actionPoint != null &&
-                actionPoint.IsRemained)
+            if (States.Instance.CurrentAvatarState.actionPoint > 0)
             {
                 var confirm = Widget.Find<Confirm>();
                 confirm.Show("UI_CONFIRM", "UI_AP_REFILL_CONFIRM_CONTENT");
@@ -181,12 +183,19 @@ namespace Nekoyume.UI.Module
 
         private void GetDailyReward()
         {
-            Notification.Push(
+            UI.Notification.Push(
                 Nekoyume.Model.Mail.MailType.System,
                 L10nManager.Localize("UI_RECEIVING_DAILY_REWARD"));
 
             Game.Game.instance.ActionManager.DailyReward();
-            GameConfigStateSubject.IsChargingActionPoint.SetValueAndForceNotify(true);
+
+            var address = States.Instance.CurrentAvatarState.address;
+            if (GameConfigStateSubject.ActionPointState.ContainsKey(address))
+            {
+                GameConfigStateSubject.ActionPointState.Remove(address);
+            }
+            GameConfigStateSubject.ActionPointState.Add(address, true);
+
             StartCoroutine(CoGetDailyRewardAnimation());
         }
 

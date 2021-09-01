@@ -21,10 +21,10 @@ namespace Nekoyume.State.Modifiers
 
         public override bool IsEmpty => dictionary.Count == 0;
 
-        public AvatarInventoryItemEquippedModifier(Guid itemId, bool equipped)
+        public AvatarInventoryItemEquippedModifier(Guid nonFungibleId, bool equipped)
         {
             dictionary = new InnerDictionary();
-            dictionary.Value.Add(new JsonConvertibleGuid(itemId), equipped);
+            dictionary.Value.Add(new JsonConvertibleGuid(nonFungibleId), equipped);
         }
 
         public override void Add(IAccumulatableStateModifier<AvatarState> modifier)
@@ -73,7 +73,7 @@ namespace Nekoyume.State.Modifiers
             foreach (var pair in dictionary.Value)
             {
                 var nonFungibleItem = nonFungibleItems
-                    .FirstOrDefault(item => item.ItemId.Equals(pair.Key.Value));
+                    .FirstOrDefault(item => item.NonFungibleId.Equals(pair.Key.Value));
                 if (nonFungibleItem is null ||
                     !(nonFungibleItem is IEquippableItem equippableItem))
                 {

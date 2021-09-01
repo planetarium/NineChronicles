@@ -50,6 +50,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   attackPoint: {fileID: 1339136423157052646}
   sortingGroup: {fileID: 8562625896270624523}
+  HudContainer: {fileID: 7244809371769129745, guid: dc49d36dc534c604aa9dace268752374,
+    type: 3}
   EXP: 0
   touchHandler: {fileID: 8697454501930479228}
 --- !u!210 &8562625896270624523
@@ -147,6 +149,8 @@ MeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -158,6 +162,7 @@ MeshRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -170,6 +175,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!65 &8997148857131966144
 BoxCollider:
   m_ObjectHideFlags: 0

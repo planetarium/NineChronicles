@@ -1,14 +1,14 @@
-using Nekoyume.Model.Quest;
 using Nekoyume.State;
 using Nekoyume.TableData;
 using Nekoyume.UI.Scroller;
 using System;
 using System.Linq;
-using UniRx;
 using UnityEngine;
 
 namespace Nekoyume.UI.Module
 {
+    using UniRx;
+
     public class EquipmentOptionRecipe : MonoBehaviour
     {
         [SerializeField]
@@ -79,7 +79,7 @@ namespace Nekoyume.UI.Module
                 }
 
                 optionRecipeView.Show(
-                    row.GetLocalizedName(),
+                    row.GetLocalizedName(false),
                     subRecipeId,
                     new EquipmentItemSubRecipeSheet.MaterialInfo(recipeRow.MaterialId, recipeRow.MaterialCount),
                     true,

@@ -1,3 +1,4 @@
+using System.Linq;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
 using Nekoyume.Model.State;
@@ -183,14 +184,14 @@ namespace Nekoyume.UI.Module
             Show();
         }
 
-        private bool CheckItem(AvatarState avatarState, int itemId, int count = 1)
+        private static bool CheckItem(AvatarState avatarState, int rowId, int count = 1)
         {
             var materialSheet = Game.Game.instance.TableSheets.MaterialItemSheet;
             var inventory = avatarState.inventory;
 
-            return materialSheet.TryGetValue(itemId, out var materialRow) &&
-                    inventory.TryGetMaterial(materialRow.ItemId, out var fungibleItem) &&
-                    fungibleItem.count >= count;
+            return materialSheet.TryGetValue(rowId, out var materialRow) &&
+                    inventory.TryGetFungibleItems(materialRow.ItemId, out var outFungibleItems) &&
+                    outFungibleItems.Sum(e => e.count) >= count;
         }
 
         private void SetLocked(bool value)

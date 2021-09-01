@@ -23,7 +23,7 @@ namespace Nekoyume.Game.Entrance
                 Widget.Find<LoadingScreen>().Show();
             }
 
-            Widget.Find<BottomMenu>().Close(true);
+            Widget.Find<HeaderMenu>().Close(true);
 
             stage.ClearBattle();
             stage.stageId = 0;
@@ -39,7 +39,8 @@ namespace Nekoyume.Game.Entrance
             var roomPosition = stage.roomPosition;
 
             var player = stage.GetPlayer(roomPosition - new Vector2(3.0f, 0.0f));
-            player.DisableHUD();
+            player.transform.localScale = Vector3.one;
+            player.SetSortingLayer(SortingLayer.NameToID("Character"), 100);
             player.StopAllCoroutines();
             player.StartRun();
             if (player.Costumes.Any(value => value.Id == 40100002))
@@ -87,18 +88,12 @@ namespace Nekoyume.Game.Entrance
             player.Animator.Idle();
 
             Widget.Find<Status>().Show();
-            Widget.Find<BottomMenu>().Show(
-                UINavigator.NavigationType.Quit,
-                _ => Game.Quit(),
-                false,
-                BottomMenu.ToggleableType.Mail,
-                BottomMenu.ToggleableType.Quest,
-                BottomMenu.ToggleableType.Chat,
-                BottomMenu.ToggleableType.IllustratedBook,
-                BottomMenu.ToggleableType.Character,
-                BottomMenu.ToggleableType.Settings,
-                BottomMenu.ToggleableType.Combination
-            );
+            Widget.Find<EventBanner>().Show();
+            var headerMenu = Widget.Find<HeaderMenu>();
+            if (!headerMenu.isActiveAndEnabled)
+            {
+                headerMenu.Show();
+            }
 
             Destroy(this);
             stage.OnRoomEnterEnd.OnNext(stage);

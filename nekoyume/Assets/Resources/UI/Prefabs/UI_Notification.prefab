@@ -127,17 +127,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 7971991182463500560}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: -765806418, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 0}
   m_RaycastTarget: 0
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-    m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
-      Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_Sprite: {fileID: 0}
   m_Type: 0
   m_PreserveAspect: 0
@@ -147,6 +147,7 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
 --- !u!114 &8876138861479829786
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -159,6 +160,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ecffc4641835c49c994dfaafd78b71a8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  tutorialTargets: []
+  tutorialActions: 
   scroll: {fileID: 8385178926643074671}
 --- !u!1 &8365781754176514497
 GameObject:
@@ -243,4 +246,4 @@ MonoBehaviour:
   scroller: {fileID: 6161650533754291027}
   cellPrefab: {fileID: 7229920985389256675, guid: 49c6ae1a22b0f487a97710274258a943,
     type: 3}
-  cellSize: 32
+  cellSize: 52

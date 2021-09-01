@@ -4,12 +4,13 @@ using Nekoyume.Game.Controller;
 using Nekoyume.L10n;
 using Nekoyume.UI.Module;
 using TMPro;
-using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
+    using UniRx;
+
     public class ItemCountPopup<T> : PopupWidget where T : Model.ItemCountPopup<T>
     {
         [SerializeField]

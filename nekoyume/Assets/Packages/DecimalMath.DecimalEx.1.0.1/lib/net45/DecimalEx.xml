@@ -1,0 +1,504 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>DecimalEx</name>
+    </assembly>
+    <members>
+        <member name="T:DecimalMath.DecimalEx">
+            <summary>
+            Contains mathematical operations performed in Decimal precision.
+            </summary>
+        </member>
+        <member name="M:DecimalMath.DecimalEx.Sqrt(System.Decimal)">
+            <summary>
+            Returns the square root of a given number. 
+            </summary>
+            <param name="s">A non-negative number.</param>
+            <remarks> 
+            Uses an implementation of the "Babylonian Method".
+            See http://en.wikipedia.org/wiki/Methods_of_computing_square_roots#Babylonian_method 
+            </remarks>
+        </member>
+        <member name="M:DecimalMath.DecimalEx.Pow(System.Decimal,System.Decimal)">
+            <summary>
+            Returns a specified number raised to the specified power.
+            </summary>
+            <param name="x">A number to be raised to a power.</param>
+            <param name="y">A number that specifies a power.</param>
+        </member>
+        <member name="M:DecimalMath.DecimalEx.ExpBySquaring(System.Decimal,System.Decimal)">
+            <summary>
+            Raises one number to an integral power.
+            </summary>
+            <remarks>
+            See http://en.wikipedia.org/wiki/Exponentiation_by_squaring
+            </remarks>
+        </member>
+        <member name="M:DecimalMath.DecimalEx.Exp(System.Decimal)">
+            <summary>
+            Returns e raised to the specified power.
+            </summary>
+            <param name="d">A number specifying a power.</param>
+        </member>
+        <member name="M:DecimalMath.DecimalEx.Log(System.Decimal)">
+            <summary>
+            Returns the natural (base e) logarithm of a specified number.
+            </summary>
+            <param name="d">A number whose logarithm is to be found.</param>
+            <remarks>
+            I'm still not satisfied with the speed. I tried several different
+            algorithms that you can find in a historical version of this 
+            source file. The one I settled on was the best of mediocrity.
+            </remarks>
+        </member>
+        <member name="M:DecimalMath.DecimalEx.Log(System.Decimal,System.Decimal)">
+            <summary>
+            Returns the logarithm of a specified number in a specified base.
+            </summary>
+            <param name="d">A number whose logarithm is to be found.</param>
+            <param name="newBase">The base of the logarithm.</param>
+            <remarks>
+            This is a relatively naive implementation that simply divides the
+            natural log of <paramref name="d"/> by the natural log of the base.
+            </remarks>
+        </member>
+        <member name="M:DecimalMath.DecimalEx.Log10(System.Decimal)">
+            <summary>
+            Returns the base 10 logarithm of a specified number.
+            </summary>
+            <param name="d">A number whose logarithm is to be found.</param>
+        </member>
+        <member name="M:DecimalMath.DecimalEx.Log2(System.Decimal)">
+            <summary>
+            Returns the base 2 logarithm of a specified number.
+            </summary>
+            <param name="d">A number whose logarithm is to be found.</param>
+        </member>
+        <member name="M:DecimalMath.DecimalEx.Factorial(System.Decimal)">
+            <summary>
+            Returns the factorial of a number n expressed as n!. Factorial is
+            calculated as follows: n * (n - 1) * (n - 2) * ... * 1
+            </summary>
+            <param name="n">An integer.</param>
+            <remarks>
+            Only supports non-negative integers.
+            </remarks>
+        </member>
+        <member name="M:DecimalMath.DecimalEx.SolveQuadratic(System.Decimal,System.Decimal,System.Decimal)">
+            <summary>
+            Uses the quadratic formula to factor and solve the equation ax^2 + bx + c = 0
+            </summary>
+            <param name="a">The coefficient of x^2.</param>
+            <param name="b">The coefficient of x.</param>
+            <param name="c">The constant.</param>
+            <remarks>
+            Will return empty results where there is no solution and for complex solutions.
+            See http://www.wikihow.com/Factor-Second-Degree-Polynomials-%28Quadratic-Equations%29
+            </remarks>
+        </member>
+        <member name="M:DecimalMath.DecimalEx.Floor(System.Decimal,System.Int32)">
+            <summary>
+            Returns the floor of a Decimal value at the given number of digits.
+            </summary>
+            <param name="value">A decimal value.</param>
+            <param name="places">An integer representing the maximum number of digits 
+            after the decimal point to end up with.</param>
+        </member>
+        <member name="M:DecimalMath.DecimalEx.Ceiling(System.Decimal,System.Int32)">
+            <summary>
+            Returns the ceiling of a Decimal value at the given number of digits.
+            </summary>
+            <param name="value">A decimal value.</param>
+            <param name="places">An integer representing the maximum number of digits 
+            after the decimal point to end up with.</param>
+        </member>
+        <member name="M:DecimalMath.DecimalEx.GCF(System.Decimal,System.Decimal)">
+            <summary>
+            Calculates the greatest common factor of a and b to the highest level of
+            precision represented by either number.
+            </summary>
+            <remarks>
+            If either number is not an integer, the factor sought will be at the
+            same precision as the most precise value.
+            For example, 1.2 and 0.42 will yield 0.06.
+            </remarks>
+        </member>
+        <member name="M:DecimalMath.DecimalEx.GCF(System.Decimal,System.Decimal,System.Decimal[])">
+            <summary>
+            Gets the greatest common factor of three or more numbers.
+            </summary>
+        </member>
+        <member name="M:DecimalMath.DecimalEx.AGMean(System.Decimal,System.Decimal)">
+            <summary>
+            Computes arithmetic-geometric mean which is the convergence of the
+            series of the arithmetic and geometric means and their mean values.
+            </summary>
+            <param name="x">A number.</param>
+            <param name="y">A number.</param>
+            <remarks>
+            See http://en.wikipedia.org/wiki/Arithmetic-geometric_mean
+            Originally implemented to try to get a fast approximation of the
+            natural logarithm: http://en.wikipedia.org/wiki/Natural_logarithm#High_precision
+            But it didn't yield a precise enough answer.
+            </remarks>
+        </member>
+        <member name="M:DecimalMath.DecimalEx.Average(System.Decimal[])">
+            <summary>
+            Calculates the average of the supplied numbers.
+            </summary>
+            <param name="values">The numbers to average.</param>
+            <remarks>
+            Simply uses LINQ's Average function, but switches to a potentially less
+            accurate method of summing each value divided by the number of values.
+            </remarks>
+        </member>
+        <member name="M:DecimalMath.DecimalEx.GetDecimalPlaces(System.Decimal,System.Boolean)">
+            <summary>
+            Gets the number of decimal places in a decimal value.
+            </summary>
+            <remarks>
+            Started with something found here: http://stackoverflow.com/a/6092298/856595
+            </remarks>
+        </member>
+        <member name="M:DecimalMath.DecimalEx.Remainder(System.Decimal,System.Decimal)">
+            <summary>
+            Gets the remainder of one number divided by another number in such a way as to retain maximum precision.
+            </summary>
+        </member>
+        <member name="F:DecimalMath.DecimalEx.Pi">
+            <summary> The pi (π) constant. Pi radians is equivalent to 180 degrees. </summary>
+            <remarks> See http://en.wikipedia.org/wiki/Pi </remarks>
+        </member>
+        <member name="F:DecimalMath.DecimalEx.PiHalf">
+            <summary> π/2 - in radians is equivalent to 90 degrees. </summary> 
+        </member>
+        <member name="F:DecimalMath.DecimalEx.PiQuarter">
+            <summary> π/4 - in radians is equivalent to 45 degrees. </summary>
+        </member>
+        <member name="F:DecimalMath.DecimalEx.PiTwelfth">
+            <summary> π/12 - in radians is equivalent to 15 degrees. </summary>
+        </member>
+        <member name="F:DecimalMath.DecimalEx.TwoPi">
+            <summary> 2π - in radians is equivalent to 360 degrees. </summary>
+        </member>
+        <member name="F:DecimalMath.DecimalEx.SmallestNonZeroDec">
+            <summary>
+            Smallest non-zero decimal value.
+            </summary>
+        </member>
+        <member name="F:DecimalMath.DecimalEx.E">
+            <summary>
+            The e constant, also known as "Euler's number" or "Napier's constant"
+            </summary>
+            <remarks>
+            Full value is 2.718281828459045235360287471352662497757, 
+            see http://mathworld.wolfram.com/e.html
+            </remarks>
+        </member>
+        <member name="F:DecimalMath.DecimalEx.Ln10">
+            <summary>
+            The value of the natural logarithm of 10.
+            </summary>
+            <remarks>
+            Full value is: 2.30258509299404568401799145468436420760110148862877297603332790096757
+            From: http://oeis.org/A002392/constant
+            </remarks>
+        </member>
+        <member name="F:DecimalMath.DecimalEx.Ln2">
+            <summary>
+            The value of the natural logarithm of 2.
+            </summary>
+            <remarks>
+            Full value is: .693147180559945309417232121458176568075500134360255254120680009493393621969694715605863326996418687
+            From: http://oeis.org/A002162/constant
+            </remarks>
+        </member>
+        <member name="M:DecimalMath.DecimalEx.ToRad(System.Decimal)">
+            <summary>
+            Converts degrees to radians. (π radians = 180 degrees)
+            </summary>
+            <param name="degrees">The degrees to convert.</param>
+        </member>
+        <member name="M:DecimalMath.DecimalEx.ToDeg(System.Decimal)">
+            <summary>
+            Converts radians to degrees. (π radians = 180 degrees)
+            </summary>
+            <param name="radians">The radians to convert.</param>
+        </member>
+        <member name="M:DecimalMath.DecimalEx.NormalizeAngle(System.Decimal)">
+            <summary>
+            Normalizes an angle in radians to the 0 to 2Pi interval.
+            </summary>
+            <param name="radians">Angle in radians.</param>
+        </member>
+        <member name="M:DecimalMath.DecimalEx.NormalizeAngleDeg(System.Decimal)">
+            <summary>
+            Normalizes an angle in degrees to the 0 to 360 degree interval.
+            </summary>
+            <param name="degrees">Angle in degrees.</param>
+        </member>
+        <member name="M:DecimalMath.DecimalEx.Sin(System.Decimal)">
+            <summary>
+            Returns the sine of the specified angle.
+            </summary>
+            <param name="x">An angle, measured in radians.</param>
+            <remarks>
+            Uses a Taylor series to calculate sine. See 
+            http://en.wikipedia.org/wiki/Trigonometric_functions for details.
+            </remarks>
+        </member>
+        <member name="M:DecimalMath.DecimalEx.Cos(System.Decimal)">
+            <summary>
+            Returns the cosine of the specified angle.
+            </summary>
+            <param name="x">An angle, measured in radians.</param>
+            <remarks>
+            Uses a Taylor series to calculate sine. See 
+            http://en.wikipedia.org/wiki/Trigonometric_functions for details.
+            </remarks>
+        </member>
+        <member name="M:DecimalMath.DecimalEx.Tan(System.Decimal)">
+            <summary>
+            Returns the tangent of the specified angle.
+            </summary>
+            <param name="radians">An angle, measured in radians.</param>
+            <remarks>
+            Uses a Taylor series to calculate sine. See 
+            http://en.wikipedia.org/wiki/Trigonometric_functions for details.
+            </remarks>
+        </member>
+        <member name="M:DecimalMath.DecimalEx.ASin(System.Decimal)">
+            <summary>
+            Returns the angle whose sine is the specified number.
+            </summary>
+            <param name="z">A number representing a sine, where -1 ≤d≤ 1.</param>
+            <remarks>
+            See http://en.wikipedia.org/wiki/Inverse_trigonometric_function
+            and http://mathworld.wolfram.com/InverseSine.html
+            I originally used the Taylor series for ASin, but it was extremely slow
+            around -1 and 1 (millions of iterations) and still ends up being less
+            accurate than deriving from the ATan function.
+            </remarks>
+        </member>
+        <member name="M:DecimalMath.DecimalEx.ACos(System.Decimal)">
+            <summary>
+            Returns the angle whose cosine is the specified number.
+            </summary>
+            <param name="z">A number representing a cosine, where -1 ≤d≤ 1.</param>
+            <remarks>
+            See http://en.wikipedia.org/wiki/Inverse_trigonometric_function
+            and http://mathworld.wolfram.com/InverseCosine.html
+            </remarks>
+        </member>
+        <member name="M:DecimalMath.DecimalEx.ATan(System.Decimal)">
+            <summary>
+            Returns the angle whose tangent is the quotient of two specified numbers.
+            </summary>
+            <param name="x">A number representing a tangent.</param>
+            <remarks>
+            See http://mathworld.wolfram.com/InverseTangent.html for faster converging 
+            series from Euler that was used here.
+            </remarks>
+        </member>
+        <member name="M:DecimalMath.DecimalEx.ATan2(System.Decimal,System.Decimal)">
+            <summary>
+            Returns the angle whose tangent is the quotient of two specified numbers.
+            </summary>
+            <param name="y">The y coordinate of a point.</param>
+            <param name="x">The x coordinate of a point.</param>
+            <returns>
+            An angle, θ, measured in radians, such that -π≤θ≤π, and tan(θ) = y / x,
+            where (x, y) is a point in the Cartesian plane. Observe the following: 
+            For (x, y) in quadrant 1, 0 &lt; θ &lt; π/2.
+            For (x, y) in quadrant 2, π/2 &lt; θ ≤ π.
+            For (x, y) in quadrant 3, -π &lt; θ &lt; -π/2.
+            For (x, y) in quadrant 4, -π/2 &lt; θ &lt; 0.
+            </returns>
+        </member>
+        <member name="T:DecimalMath.Extensions">
+            <summary>
+            Extension methods for the Decimal data type.
+            </summary>
+        </member>
+        <member name="M:DecimalMath.Extensions.InRangeIncl(System.Decimal,System.Decimal,System.Decimal)">
+            <summary>
+            Tests whether or not a given value is within the upper and lower limit, inclusive.
+            </summary>
+            <param name="value">The value to test.</param>
+            <param name="lowerLimit">The lower limit.</param>
+            <param name="upperLimit">The upper limit.</param>
+        </member>
+        <member name="M:DecimalMath.Extensions.InRangeExcl(System.Decimal,System.Decimal,System.Decimal)">
+            <summary>
+            Tests whether or not a given value is within the upper and lower limit, exclusive.
+            </summary>
+            <param name="value">The value to test.</param>
+            <param name="lowerLimit">The lower limit.</param>
+            <param name="upperLimit">The upper limit.</param>
+        </member>
+        <member name="M:DecimalMath.Extensions.RoundFromZero(System.Decimal,System.Int32)">
+            <summary>
+            Rounds a number away from zero to the given number of decimal places.
+            </summary>
+        </member>
+        <member name="T:DecimalMath.Helper">
+            <summary>
+            Helper functions.
+            </summary>
+        </member>
+        <member name="M:DecimalMath.Helper.Swap``1(``0@,``0@)">
+            <summary>
+            Swaps the value between two variables.
+            </summary>
+        </member>
+        <member name="F:DecimalMath.Helper.HashStart">
+            <summary>
+            Prime number to use to begin a hash of an object.
+            </summary>
+            <remarks>
+            See: http://stackoverflow.com/questions/263400
+            </remarks>
+        </member>
+        <member name="M:DecimalMath.Helper.HashObject(System.Int32,System.Object)">
+            <summary>
+            Adds a hash of an object to a running hash value.
+            </summary>
+            <param name="hash">A running hash value.</param>
+            <param name="obj">The object to hash and incorporate into the running hash.</param>
+        </member>
+        <member name="M:DecimalMath.Helper.HashValue``1(System.Int32,``0)">
+            <summary>
+            Adds a hash of a struct to a running hash value.
+            </summary>
+            <param name="hash">A running hash value.</param>
+            <param name="value">The struct to hash and incorporate into the running hash.</param>
+        </member>
+        <member name="T:DecimalMath.ITransformable`2">
+            <summary>
+            Interface that defines an object's ability to transform itself using a given matrix type.
+            </summary>
+            <typeparam name="TMatrix">Supported matrix type.</typeparam>
+            <typeparam name="TSelf">Type that is implementing interface.</typeparam>
+        </member>
+        <member name="M:DecimalMath.ITransformable`2.Transform(`0)">
+            <summary>
+            Applies a transform on itself using the given transformation matrix.
+            </summary>
+            <param name="matrix">The transformation matrix.</param>
+        </member>
+        <member name="T:DecimalMath.Matrix">
+            <summary>
+            Matrix operations against a matrix stored as a two-dimensional Decimal array where values
+            are addressed as [row, column].
+            </summary>
+        </member>
+        <member name="M:DecimalMath.Matrix.GetIdentityMatrix(System.Int32)">
+            <summary>
+            Gets the identity matrix for this size matrix.
+            </summary>
+        </member>
+        <member name="M:DecimalMath.Matrix.Multiply(System.Decimal[0:,0:],System.Decimal[0:,0:])">
+            <summary>
+            Multiply two matrices.
+            </summary>
+            <param name="m1">A matrix.</param>
+            <param name="m2">A matrix.</param>
+        </member>
+        <member name="M:DecimalMath.Matrix.ToColumn(System.Decimal[])">
+            <summary>
+            Converts a one dimensional array to rows in a two dimensional column matrix.
+            </summary>
+        </member>
+        <member name="M:DecimalMath.Matrix.ToRow(System.Decimal[])">
+            <summary>
+            Converts a one dimensional array to rows in a two dimensional row matrix.
+            </summary>
+        </member>
+        <member name="M:DecimalMath.Matrix.RowOrColumnToArray(System.Decimal[0:,0:])">
+            <summary>
+            Converts a column or row matrix into a simple array.
+            </summary>
+        </member>
+        <member name="T:DecimalMath.TransformationMatrixBase`1">
+            <summary>
+            A base class to support implementation of a square matrix to be used for affine transforms.
+            </summary>
+            <typeparam name="TSelf">Reference to the type inheriting this base class.</typeparam>
+        </member>
+        <member name="F:DecimalMath.TransformationMatrixBase`1.Size">
+            <summary>
+            The width / height of the square matrix.
+            </summary>
+        </member>
+        <member name="F:DecimalMath.TransformationMatrixBase`1.M">
+            <summary>
+            The raw matrix as a two-dimensional array. Stored as [row, column].
+            </summary>
+        </member>
+        <member name="M:DecimalMath.TransformationMatrixBase`1.#ctor(System.Int32)">
+            <summary>
+            Constructs a new matrix with height and width of <paramref name="size"/>.
+            </summary>
+            <param name="size">Size of matrix.</param>
+        </member>
+        <member name="M:DecimalMath.TransformationMatrixBase`1.#ctor(System.Int32,System.Decimal[0:,0:])">
+            <summary>
+            Constructs a new matrix with height and width of <paramref name="size"/>.
+            </summary>
+            <param name="size">Size of matrix.</param>
+            <param name="values">Values to use to initialize the matrix. These values are not used
+            directly, but are rather copied. Addressed as [row, column].</param>
+        </member>
+        <member name="P:DecimalMath.TransformationMatrixBase`1.Item(System.Int32,System.Int32)">
+            <summary>
+            Gets the direct value of the matrix at the given row and column.
+            </summary>
+            <param name="row">The row at which to get the value.</param>
+            <param name="column">The column at which to get the value.</param>
+        </member>
+        <member name="M:DecimalMath.TransformationMatrixBase`1.SetRow(System.Int32,System.Decimal[])">
+            <summary>
+            Sets a row using the given values as if they were a row matrix.
+            </summary>
+            <param name="row">The row to set.</param>
+            <param name="values">Values to set the row. Treated as a row matrix.</param>
+        </member>
+        <member name="M:DecimalMath.TransformationMatrixBase`1.Multiply``1(DecimalMath.TransformationMatrixBase{``0})">
+            <summary>
+            Multiplies this matrix by another matrix (this x other) and returns a third matrix.
+            </summary>
+            <param name="other">The other matrix to multiply by.</param>
+        </member>
+        <member name="M:DecimalMath.TransformationMatrixBase`1.Transform(System.Decimal[])">
+            <summary>
+            Applies the transform to a column matrix.
+            </summary>
+            <param name="columnMatrix">Column matrix with length equal to <see cref="F:DecimalMath.TransformationMatrixBase`1.Size"/>.</param>
+        </member>
+        <member name="M:DecimalMath.TransformationMatrixBase`1.InPlaceTransform``1(``0@)">
+            <summary> Transforms an object and returns the result by reference. </summary>
+        </member>
+        <member name="M:DecimalMath.TransformationMatrixBase`1.InPlaceTransform``2(``0@,``1@)">
+            <summary> Transforms objects and returns the results by reference. </summary>
+        </member>
+        <member name="M:DecimalMath.TransformationMatrixBase`1.InPlaceTransform``3(``0@,``1@,``2@)">
+            <summary> Transforms objects and returns the results by reference. </summary>
+        </member>
+        <member name="M:DecimalMath.TransformationMatrixBase`1.InPlaceTransform``4(``0@,``1@,``2@,``3@)">
+            <summary> Transforms objects and returns the results by reference. </summary>
+        </member>
+        <member name="M:DecimalMath.TransformationMatrixBase`1.InPlaceTransform``5(``0@,``1@,``2@,``3@,``4@)">
+            <summary> Transforms objects and returns the results by reference. </summary>
+        </member>
+        <member name="M:DecimalMath.TransformationMatrixBase`1.Transform``1(DecimalMath.ITransformable{`0,``0})">
+            <summary>
+            Transforms an object that supports transformations by this matrix type.
+            </summary>
+        </member>
+        <member name="M:DecimalMath.TransformationMatrixBase`1.Copy">
+            <summary>
+            Creates a deep copy of this matrix.
+            </summary>
+        </member>
+    </members>
+</doc>

@@ -7,7 +7,7 @@ title "Unity license"
 install_license
 
 title "Unit tests (Editor)"
-/opt/Unity/Editor/Unity \
+/opt/unity/Editor/Unity \
   -batchmode \
   -nographics \
   -logFile \

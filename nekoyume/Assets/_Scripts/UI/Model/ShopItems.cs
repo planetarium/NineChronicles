@@ -1,100 +1,61 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Libplanet;
+using Bencodex.Types;
+using Lib9c.Model.Order;
+using Nekoyume.Helper;
 using Nekoyume.Model.Item;
 using Nekoyume.State;
 using Nekoyume.UI.Module;
-using UniRx;
 
 namespace Nekoyume.UI.Model
 {
-    public class ShopItems : IDisposable
+    using UniRx;
+
+    public abstract class ShopItems : IDisposable
     {
-        public readonly ReactiveProperty<UI.Shop.StateType> State =
-            new ReactiveProperty<UI.Shop.StateType>();
-
-        public readonly ReactiveProperty<Dictionary<int, List<ShopItem>>> AgentProducts =
-            new ReactiveProperty<Dictionary<int, List<ShopItem>>>();
-
-        public readonly ReactiveProperty<Dictionary<int, List<ShopItem>>> ItemSubTypeProducts
+        public readonly ReactiveProperty<Dictionary<int, List<ShopItem>>> Items
             = new ReactiveProperty<Dictionary<int, List<ShopItem>>>();
-
         public readonly ReactiveProperty<ShopItemView> SelectedItemView =
             new ReactiveProperty<ShopItemView>();
-
-        public readonly ReactiveProperty<ShopItem> SelectedItemViewModel =
+        protected readonly ReactiveProperty<ShopItem> _selectedItemViewModel =
             new ReactiveProperty<ShopItem>();
+        private readonly Subject<ShopItemView> _onDoubleClickItemView = new Subject<ShopItemView>();
 
-        public readonly Subject<ShopItemView> OnDoubleClickItemView = new Subject<ShopItemView>();
+        public ItemSubTypeFilter itemSubTypeFilter = ItemSubTypeFilter.Weapon;
+        public ShopSortFilter sortFilter = ShopSortFilter.Class;
+        public List<int> searchIds = new List<int>();
+        public bool isReverseOrder = false;
+        public bool isMultiplePurchase = false;
 
-        public Module.ShopItems.ItemSubTypeFilter itemSubTypeFilter
-            = Module.ShopItems.ItemSubTypeFilter.All;
+        private IReadOnlyDictionary<ItemSubTypeFilter,
+                Dictionary<ShopSortFilter, Dictionary<int, List<ShopItem>>>> _items;
 
-        public Module.ShopItems.SortFilter sortFilter
-            = Module.ShopItems.SortFilter.Class;
-
-        private IReadOnlyDictionary<
-            Address, Dictionary<
-                Module.ShopItems.ItemSubTypeFilter, Dictionary<
-                    Module.ShopItems.SortFilter, Dictionary<int, List<ShopItem>>>>> _agentProducts;
-
-        private IReadOnlyDictionary<
-                Module.ShopItems.ItemSubTypeFilter, Dictionary<
-                    Module.ShopItems.SortFilter, Dictionary<int, List<ShopItem>>>>
-            _itemSubTypeProducts;
+        protected abstract void OnClickItem(ShopItemView view);
+        protected abstract void ResetSelectedState();
 
         public void Dispose()
         {
-            State.Dispose();
-            AgentProducts.Dispose();
-            ItemSubTypeProducts.Dispose();
+            Items.Dispose();
             SelectedItemView.Dispose();
-            SelectedItemViewModel.Dispose();
-            OnDoubleClickItemView.Dispose();
+            _selectedItemViewModel.Dispose();
+            _onDoubleClickItemView.Dispose();
         }
 
-        public void ResetAgentProducts(IReadOnlyDictionary<
-            Address, Dictionary<
-                Module.ShopItems.ItemSubTypeFilter, Dictionary<
-                    Module.ShopItems.SortFilter, Dictionary<
-                        int, List<Nekoyume.Model.Item.ShopItem>>>>> products)
+        // reactive shop state에서 스테이트 가져올때 전체적으로 리셋해줌.
+        public void ResetItems(IReadOnlyDictionary<
+                ItemSubTypeFilter, Dictionary<ShopSortFilter, Dictionary<int, List<OrderDigest>>>> digests)
         {
-            _agentProducts = products is null
-                ? new Dictionary<
-                    Address, Dictionary<
-                        Module.ShopItems.ItemSubTypeFilter, Dictionary<
-                            Module.ShopItems.SortFilter, Dictionary<int, List<ShopItem>>>>>()
-                : products.ToDictionary(
-                    pair => pair.Key,
-                    pair => ModelToViewModel(pair.Value));
-
-            ResetAgentProducts();
+            _items = digests is null
+                ? new Dictionary<ItemSubTypeFilter, Dictionary<ShopSortFilter, Dictionary<int, List<ShopItem>>>>()
+                : DigestToViewModel(digests);
+            ResetShopItems();
         }
 
-        public void ResetItemSubTypeProducts(IReadOnlyDictionary<
-                Module.ShopItems.ItemSubTypeFilter, Dictionary<
-                    Module.ShopItems.SortFilter, Dictionary<int, List<Nekoyume.Model.Item.ShopItem>>
-                >>
-            products)
-        {
-            _itemSubTypeProducts = products is null
-                ? new Dictionary<
-                    Module.ShopItems.ItemSubTypeFilter, Dictionary<
-                        Module.ShopItems.SortFilter, Dictionary<int, List<ShopItem>>>>()
-                : ModelToViewModel(products);
-
-
-            ResetItemSubTypeProducts();
-        }
-
-        private Dictionary<
-                Module.ShopItems.ItemSubTypeFilter, Dictionary<
-                    Module.ShopItems.SortFilter, Dictionary<int, List<ShopItem>>>>
-            ModelToViewModel(IReadOnlyDictionary<
-                Module.ShopItems.ItemSubTypeFilter, Dictionary<
-                    Module.ShopItems.SortFilter, Dictionary<
-                        int, List<Nekoyume.Model.Item.ShopItem>>>> shopItems)
+        private Dictionary<ItemSubTypeFilter, Dictionary<
+                    ShopSortFilter, Dictionary<int, List<ShopItem>>>>
+            DigestToViewModel(IReadOnlyDictionary<ItemSubTypeFilter, Dictionary<
+                    ShopSortFilter, Dictionary<int, List<OrderDigest>>>> shopItems)
         {
             return shopItems.ToDictionary(
                 pair => pair.Key,
@@ -105,136 +66,56 @@ namespace Nekoyume.UI.Model
                         pair3 => pair3.Value.Select(CreateShopItem).ToList())));
         }
 
-        private void SubscribeItemOnClick(ShopItemView view)
+        private ShopItem CreateShopItem(OrderDigest orderDigest)
         {
-            if (view is null ||
-                view == SelectedItemView.Value)
+            var item = new ShopItem(orderDigest);
+            item.OnClick.Subscribe(model =>
             {
-                DeselectItemView();
-                return;
-            }
+                if (!(model is ShopItem shopItemViewModel))
+                {
+                    return;
+                }
 
-            SelectItemView(view);
+                OnClickItem(shopItemViewModel.View);
+            });
+
+            return item;
         }
 
-        public void SelectItemView(ShopItemView view)
+        protected void SelectItemView(ShopItemView view)
         {
-            if (view is null ||
-                view.Model is null)
+            if (view == null || view.Model is null)
                 return;
 
             DeselectItemView();
-
-            SelectedItemView.Value = view;
-            SelectedItemViewModel.Value = view.Model;
-            SelectedItemViewModel.Value.Selected.Value = true;
+            _selectedItemViewModel.Value = view.Model;
+            var item = Util.GetItemBaseByTradableId(view.Model.TradableId.Value, view.Model.ExpiredBlockIndex.Value);
+            _selectedItemViewModel.Value.Selected.Value = true;
+            _selectedItemViewModel.Value.ItemBase.Value = item;
+            SelectedItemView.SetValueAndForceNotify(view);
         }
 
         public void DeselectItemView()
         {
             if (SelectedItemView.Value is null ||
-                SelectedItemViewModel.Value is null)
+                _selectedItemViewModel.Value is null)
             {
                 return;
             }
 
-            SelectedItemViewModel.Value.Selected.Value = false;
-            SelectedItemViewModel.Value = null;
-            SelectedItemView.Value = null;
+            _selectedItemViewModel.Value.Selected.Value = false;
+            _selectedItemViewModel.Value = null;
+            SelectedItemView.SetValueAndForceNotify(null);
         }
 
-        #region Shop Item
-
-        public void RemoveAgentProduct(Guid productId)
+        public void ResetShopItems()
         {
-            var agentAddress = States.Instance.AgentState.address;
-            if (!_agentProducts.ContainsKey(agentAddress))
-            {
-                return;
-            }
-
-            RemoveProduct(productId, _agentProducts[agentAddress], AgentProducts.Value);
-            AgentProducts.SetValueAndForceNotify(AgentProducts.Value);
-        }
-
-        public void RemoveItemSubTypeProduct(Guid productId)
-        {
-            RemoveProduct(productId, _itemSubTypeProducts, ItemSubTypeProducts.Value);
-            ItemSubTypeProducts.SetValueAndForceNotify(ItemSubTypeProducts.Value);
-        }
-
-        private static void RemoveProduct(
-            Guid productId,
-            IReadOnlyDictionary<
-                Module.ShopItems.ItemSubTypeFilter, Dictionary<
-                    Module.ShopItems.SortFilter, Dictionary<int, List<ShopItem>>>> origin,
-            Dictionary<int, List<ShopItem>> reactivePropertyValue)
-        {
-            foreach (var pair in origin)
-            {
-                var removed = false;
-                foreach (var pair2 in pair.Value)
-                {
-                    foreach (var pair3 in pair2.Value)
-                    {
-                        var target = pair3.Value.FirstOrDefault(item =>
-                            item.ProductId.Value.Equals(productId));
-                        if (target is null)
-                        {
-                            continue;
-                        }
-
-                        target.Dispose();
-                        pair3.Value.Remove(target);
-                        removed = true;
-                    }
-                }
-
-                if (removed)
-                {
-                    break;
-                }
-            }
-
-            foreach (var pair in reactivePropertyValue)
-            {
-                var target = pair.Value.FirstOrDefault(item =>
-                    item.ProductId.Value.Equals(productId));
-                if (target is null)
-                {
-                    continue;
-                }
-
-                target.Dispose();
-                pair.Value.Remove(target);
-            }
-        }
-
-        #endregion
-
-        #region Reset
-
-        public void ResetAgentProducts()
-        {
-            var agentAddress = States.Instance.AgentState.address;
-            if (_agentProducts is null ||
-                !_agentProducts.ContainsKey(agentAddress))
-            {
-                AgentProducts.Value = new Dictionary<int, List<ShopItem>>();
-                return;
-            }
-
-            AgentProducts.Value = GetFilteredAndSortedProducts(_agentProducts[agentAddress]);
-        }
-
-        public void ResetItemSubTypeProducts()
-        {
-            ItemSubTypeProducts.Value = GetFilteredAndSortedProducts(_itemSubTypeProducts);
+            Items.Value = GetFilteredAndSortedProducts(_items);
+            ResetSelectedState();
         }
 
         private Dictionary<int, List<ShopItem>> GetFilteredAndSortedProducts(IReadOnlyDictionary<
-            Module.ShopItems.ItemSubTypeFilter, Dictionary<
-                Module.ShopItems.SortFilter, Dictionary<int, List<ShopItem>>>> products)
+            ItemSubTypeFilter, Dictionary<ShopSortFilter, Dictionary<int, List<ShopItem>>>> products)
         {
             if (products is null)
             {
@@ -253,59 +134,55 @@ namespace Nekoyume.UI.Model
             }
 
             var sortProducts = itemSubTypeProducts[sortFilter];
-            return sortProducts.Count == 0
-                ? new Dictionary<int, List<ShopItem>>()
-                : sortProducts;
-        }
-
-        private ShopItem CreateShopItem(Nekoyume.Model.Item.ShopItem shopItem)
-        {
-            var item = new ShopItem(shopItem);
-            item.OnClick.Subscribe(model =>
+            if (sortProducts.Count == 0)
             {
-                if (!(model is ShopItem shopItemViewModel))
+                return new Dictionary<int, List<ShopItem>>();
+            }
+
+            var shopItems = new List<ShopItem>();
+            foreach (var product in sortProducts)
+            {
+                if (searchIds.Count > 0) //search
                 {
-                    return;
+                    var select = product.Value
+                        .Where(x => searchIds.Exists(y => y == x.ItemBase.Value.Id));
+                    shopItems.AddRange(select);
+                }
+                else
+                {
+                    shopItems.AddRange(product.Value);
+                }
+            }
+
+            if (shopItems.Count == 0)
+            {
+                return new Dictionary<int, List<ShopItem>>();
+            }
+
+            if (isReverseOrder)
+            {
+                shopItems.Reverse();
+            }
+
+            var result = new Dictionary<int, List<ShopItem>>();
+            int setCount = sortProducts.First().Value.Count;
+            int index = 0;
+            int page = 0;
+            while (true)
+            {
+                var count = Math.Min(shopItems.Count - index, setCount);
+                if (count <= 0)
+                {
+                    break;
                 }
 
-                SubscribeItemOnClick(shopItemViewModel.View);
-            });
-            item.OnDoubleClick.Subscribe(model =>
-            {
-                if (!(model is ShopItem shopItemViewModel))
-                {
-                    return;
-                }
+                var items = shopItems.GetRange(index, count);
+                result.Add(page, items);
+                index += count;
+                page ++;
+            }
 
-                DeselectItemView();
-                OnDoubleClickItemView.OnNext(shopItemViewModel.View);
-            });
-
-            return item;
-        }
-
-        #endregion
-
-        public bool TryGetShopItemFromAgentProducts(Guid itemId, out ShopItem shopItem)
-        {
-            shopItem = AgentProducts.Value.Values
-                .SelectMany(list => list)
-                .Where(item => item.ItemBase.Value is INonFungibleItem)
-                .FirstOrDefault(item =>
-                    ((INonFungibleItem) item.ItemBase.Value).ItemId.Equals(itemId));
-
-            return !(shopItem is null);
-        }
-
-        public bool TryGetShopItemFromItemSubTypeProducts(Guid itemId, out ShopItem shopItem)
-        {
-            shopItem = ItemSubTypeProducts.Value.Values
-                .SelectMany(list => list)
-                .Where(item => item.ItemBase.Value is INonFungibleItem)
-                .FirstOrDefault(item =>
-                    ((INonFungibleItem) item.ItemBase.Value).ItemId.Equals(itemId));
-
-            return !(shopItem is null);
+            return result;
         }
     }
 }

@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using Bencodex.Types;
 using Libplanet;
@@ -88,29 +87,22 @@ namespace Nekoyume.BlockChain
                 return;
             }
 
+            var agentAddress = States.Instance.AgentState.address;
             var avatarAddress = States.Instance.AgentState.avatarAddresses[index];
-            var avatarState = evaluation.OutputStates.GetAvatarState(avatarAddress);
-            if (avatarState is null)
+            if (evaluation.OutputStates.TryGetAvatarStateV2(agentAddress, avatarAddress, out var avatarState))
             {
-                return;
+                UpdateAvatarState(avatarState, index);
             }
-
-            UpdateAvatarState(avatarState, index);
         }
 
         protected void UpdateCurrentAvatarState<T>(ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
         {
-            //전투중이면 게임에서의 아바타상태를 바로 업데이트하지말고 쌓아둔다.
-            var avatarState = evaluation.OutputStates.GetAvatarState(States.Instance.CurrentAvatarState.address);
-            UpdateCurrentAvatarState(avatarState);
-        }
-
-        [Obsolete("Do not use ActionBase.ActionEvaluation<T>.OutputStates.GetState() method with ShopState.Address or Addresses.Shop.")]
-        protected void UpdateShopState<T>(ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
-        {
-            States.Instance.SetShopState(new ShopState(
-                (Bencodex.Types.Dictionary) evaluation.OutputStates.GetState(ShopState.Address)
-            ));
+            var agentAddress = States.Instance.AgentState.address;
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+            if (evaluation.OutputStates.TryGetAvatarStateV2(agentAddress, avatarAddress, out var avatarState))
+            {
+                UpdateCurrentAvatarState(avatarState);
+            }
         }
 
         protected void UpdateWeeklyArenaState<T>(ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
@@ -152,13 +144,9 @@ namespace Nekoyume.BlockChain
             States.Instance.AddOrReplaceAvatarState(avatarState, index);
         }
 
-        protected static void UpdateCombinationSlotState(CombinationSlotState state)
-        {
-            States.Instance.SetCombinationSlotState(state);
-        }
-
         public void UpdateCurrentAvatarState(AvatarState avatarState)
         {
+            // When in battle, do not immediately update the AvatarState, but pending it.
             if (Pending)
             {
                 Game.Game.instance.Stage.AvatarState = avatarState;

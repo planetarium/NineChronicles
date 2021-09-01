@@ -14,10 +14,10 @@ Nine Chronicles
 ### 설치 방법
 
  1. [Unity Hub] 설치
- 1. Unity 2019.1.0f2 버전 설치
+ 1. Unity 2020.3.4f1 버전 설치
  1. 저장소 클론
-    ```
-    git clone git@github.com:planetarium/nekoyume-unity.git
+    ```    
+    git clone https://github.com/planetarium/NineChronicles.git
     ```
  1. 터미널에서 클론한 디렉터리로 들어가서 아래 명령 실행
     ```
@@ -73,7 +73,7 @@ $ /UnityPath/Unity -quit -batchmode -projectPath=/path/to/nekoyume/ -executeMeth
 - Example
 
 ```
-$ /Applications/Unity/Hub/Editor/2019.1.0f2/Unity.app/Contents/MacOS/Unity -quit -batchmode -projectPath=~/planetarium/nekoyume-unity/nekoyume/ -executeMethod Editor.Builder.BuildAll
+$ /Applications/Unity/Hub/Editor/2020.3.4f1/Unity.app/Contents/MacOS/Unity -quit -batchmode -projectPath=~/planetarium/nekoyume-unity/nekoyume/ -executeMethod Editor.Builder.BuildAll
 ```
 
 ### 에디터 빌드

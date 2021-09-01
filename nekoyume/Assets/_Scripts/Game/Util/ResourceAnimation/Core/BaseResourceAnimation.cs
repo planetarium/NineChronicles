@@ -23,7 +23,7 @@ namespace Nekoyume.Game.Util
             Init();
         }
 
-        private void Start()
+        private void OnEnable()
         {
             if (startIndex < 0 || startIndex >= _frameCount)
             {

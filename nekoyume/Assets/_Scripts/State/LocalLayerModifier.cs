@@ -1,21 +1,12 @@
 using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
 using System.Numerics;
 using System.Security.Cryptography;
 using Libplanet;
 using Libplanet.Assets;
-using Nekoyume.Action;
-using Nekoyume.BlockChain;
-using Nekoyume.Game;
-using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using Nekoyume.State.Modifiers;
 using Nekoyume.State.Subjects;
 using Nekoyume.TableData;
-using Nekoyume.UI;
-using Nekoyume.UI.Module;
 
 namespace Nekoyume.State
 {
@@ -96,29 +87,17 @@ namespace Nekoyume.State
                 return;
             }
 
-            ReactiveAvatarState.ActionPoint.SetValueAndForceNotify(outAvatarState.actionPoint);
+            ReactiveAvatarState.UpdateActionPoint(outAvatarState.actionPoint);
         }
 
         #endregion
 
         #region Avatar / AddItem
 
-        public static void AddItem(Address avatarAddress, Guid guid, bool resetState = true)
-        {
-            var modifier = new AvatarInventoryNonFungibleItemRemover(guid);
-            LocalLayer.Instance.Remove(avatarAddress, modifier);
-
-            if (!resetState)
-            {
-                return;
-            }
-
-            TryResetLoadedAvatarState(avatarAddress, out _, out _);
-        }
-
         public static void AddItem(
             Address avatarAddress,
-            HashDigest<SHA256> id,
+            Guid tradableId,
+            long requiredBlockIndex,
             int count,
             bool resetState = true)
         {
@@ -127,7 +106,7 @@ namespace Nekoyume.State
                 return;
             }
 
-            var modifier = new AvatarInventoryFungibleItemRemover(id, count);
+            var modifier = new AvatarInventoryTradableItemRemover(tradableId, requiredBlockIndex, count);
             LocalLayer.Instance.Remove(avatarAddress, modifier);
 
             if (!resetState)
@@ -140,10 +119,16 @@ namespace Nekoyume.State
 
         public static void AddItem(
             Address avatarAddress,
-            Dictionary<HashDigest<SHA256>, int> idAndCountDictionary,
+            HashDigest<SHA256> fungibleId,
+            int count = 1,
             bool resetState = true)
         {
-            var modifier = new AvatarInventoryFungibleItemRemover(idAndCountDictionary);
+            if (count is 0)
+            {
+                return;
+            }
+
+            var modifier = new AvatarInventoryFungibleItemRemover(fungibleId, count);
             LocalLayer.Instance.Remove(avatarAddress, modifier);
 
             if (!resetState)
@@ -158,33 +143,25 @@ namespace Nekoyume.State
 
         #region Avatar / RemoveItem
 
-        public static void RemoveItem(Address avatarAddress, Guid guid)
+        public static void RemoveItem(Address avatarAddress, Guid tradableId, long requiredBlockIndex, int count)
         {
-            var modifier = new AvatarInventoryNonFungibleItemRemover(guid);
+            var modifier = new AvatarInventoryTradableItemRemover(tradableId, requiredBlockIndex, count);
             LocalLayer.Instance.Add(avatarAddress, modifier);
             RemoveItemInternal(avatarAddress, modifier);
         }
 
-        public static void RemoveItem(Address avatarAddress, HashDigest<SHA256> id, int count)
+        public static void RemoveItem(Address avatarAddress, HashDigest<SHA256> fungibleId, int count = 1)
         {
             if (count is 0)
             {
                 return;
             }
 
-            var modifier = new AvatarInventoryFungibleItemRemover(id, count);
+            var modifier = new AvatarInventoryFungibleItemRemover(fungibleId, count);
             LocalLayer.Instance.Add(avatarAddress, modifier);
             RemoveItemInternal(avatarAddress, modifier);
         }
 
-        public static void RemoveItem(
-            Address avatarAddress,
-            Dictionary<HashDigest<SHA256>, int> idAndCountDictionary)
-        {
-            var modifier = new AvatarInventoryFungibleItemRemover(idAndCountDictionary);
-            LocalLayer.Instance.Add(avatarAddress, modifier);
-            RemoveItemInternal(avatarAddress, modifier);
-        }
 
         private static void RemoveItemInternal(Address avatarAddress, AvatarStateModifier modifier)
         {
@@ -205,7 +182,7 @@ namespace Nekoyume.State
                 return;
             }
 
-            ReactiveAvatarState.Inventory.SetValueAndForceNotify(outAvatarState.inventory);
+            ReactiveAvatarState.UpdateInventory(outAvatarState.inventory);
         }
 
         #endregion
@@ -239,7 +216,32 @@ namespace Nekoyume.State
                 return;
             }
 
-            ReactiveAvatarState.MailBox.SetValueAndForceNotify(outAvatarState.mailBox);
+            ReactiveAvatarState.UpdateMailBox(outAvatarState.mailBox);
+        }
+
+        public static void AddNewMail(Address avatarAddress, Guid mailId)
+        {
+            var modifier = new AvatarMailNewSetter(mailId);
+            LocalLayer.Instance.Add(avatarAddress, modifier);
+
+            if (!TryGetLoadedAvatarState(
+                avatarAddress,
+                out var outAvatarState,
+                out _,
+                out var isCurrentAvatarState)
+            )
+            {
+                return;
+            }
+
+            outAvatarState = modifier.Modify(outAvatarState);
+
+            if (!isCurrentAvatarState)
+            {
+                return;
+            }
+
+            ReactiveAvatarState.UpdateMailBox(outAvatarState.mailBox);
         }
 
         public static void AddNewResultAttachmentMail(
@@ -290,10 +292,23 @@ namespace Nekoyume.State
                 return;
             }
 
-            TryResetLoadedAvatarState(
-                avatarAddress,
-                out var outAvatarState,
-                out var isCurrentAvatarState);
+            TryResetLoadedAvatarState(avatarAddress, out _, out _);
+        }
+
+        public static void RemoveNewMail(
+            Address avatarAddress,
+            Guid mailId,
+            bool resetState = true)
+        {
+            var modifier = new AvatarMailNewSetter(mailId);
+            LocalLayer.Instance.Remove(avatarAddress, modifier);
+
+            if (!resetState)
+            {
+                return;
+            }
+
+            TryResetLoadedAvatarState(avatarAddress, out _, out _);
         }
 
         public static void RemoveAttachmentResult(
@@ -309,12 +324,8 @@ namespace Nekoyume.State
                 return;
             }
 
-            TryResetLoadedAvatarState(
-                avatarAddress,
-                out var outAvatarState,
-                out var isCurrentAvatarState);
+            TryResetLoadedAvatarState(avatarAddress, out _, out _);
         }
-
         #endregion
 
         #region Avatar / Quest
@@ -346,7 +357,7 @@ namespace Nekoyume.State
                 return;
             }
 
-            ReactiveAvatarState.QuestList.SetValueAndForceNotify(outAvatarState.questList);
+            ReactiveAvatarState.UpdateQuestList(outAvatarState.questList);
         }
 
         /// <summary>
@@ -379,16 +390,16 @@ namespace Nekoyume.State
         /// Change the equipment's mounting status.
         /// </summary>
         /// <param name="avatarAddress"></param>
-        /// <param name="itemId"></param>
+        /// <param name="nonFungibleId"></param>
         /// <param name="equip"></param>
         /// <param name="resetState"></param>
         public static void SetItemEquip(
             Address avatarAddress,
-            Guid itemId,
+            Guid nonFungibleId,
             bool equip,
             bool resetState = true)
         {
-            var modifier = new AvatarInventoryItemEquippedModifier(itemId, equip);
+            var modifier = new AvatarInventoryItemEquippedModifier(nonFungibleId, equip);
             LocalLayer.Instance.Add(avatarAddress, modifier);
 
             if (!TryGetLoadedAvatarState(
@@ -409,7 +420,7 @@ namespace Nekoyume.State
                 return;
             }
 
-            ReactiveAvatarState.Inventory.SetValueAndForceNotify(outAvatarState.inventory);
+            ReactiveAvatarState.UpdateInventory(outAvatarState.inventory);
         }
 
         /// <summary>
@@ -438,17 +449,17 @@ namespace Nekoyume.State
             }
 
             outAvatarState = modifier.Modify(outAvatarState);
-            ReactiveAvatarState.DailyRewardReceivedIndex.SetValueAndForceNotify(
+            ReactiveAvatarState.UpdateDailyRewardReceivedIndex(
                 outAvatarState.dailyRewardReceivedIndex);
         }
 
         public static void ModifyAvatarItemRequiredIndex(
             Address avatarAddress,
-            Guid itemId,
+            Guid tradableId,
             long blockIndex
         )
         {
-            var modifier = new AvatarItemRequiredIndexModifier(blockIndex, itemId);
+            var modifier = new AvatarItemRequiredIndexModifier(blockIndex, tradableId);
             LocalLayer.Instance.Add(avatarAddress, modifier);
 
             if (!TryGetLoadedAvatarState(
@@ -468,80 +479,14 @@ namespace Nekoyume.State
                 return;
             }
 
-            ReactiveAvatarState.DailyRewardReceivedIndex.SetValueAndForceNotify(
+            ReactiveAvatarState.UpdateDailyRewardReceivedIndex(
                 outAvatarState.dailyRewardReceivedIndex);
         }
 
-        public static void RemoveAvatarItemRequiredIndex(Address avatarAddress, Guid itemId)
+        public static void RemoveAvatarItemRequiredIndex(Address avatarAddress, Guid tradableId)
         {
-            var modifier = new AvatarItemRequiredIndexModifier(itemId);
+            var modifier = new AvatarItemRequiredIndexModifier(tradableId);
             LocalLayer.Instance.Remove(avatarAddress, modifier);
-        }
-
-        public static void AddMaterial(Address avatarAddress, HashDigest<SHA256> itemId, int count, bool resetState)
-        {
-            if (count is 0)
-            {
-                return;
-            }
-
-            var modifier = new AvatarInventoryMaterialModifier(
-                new Dictionary<HashDigest<SHA256>, int>
-                {
-                    [itemId] = count,
-                }
-            );
-
-            LocalLayer.Instance.Add(avatarAddress, modifier);
-
-            if (!TryGetLoadedAvatarState(
-                avatarAddress,
-                out var outAvatarState,
-                out _,
-                out var isCurrentAvatarState)
-            )
-            {
-                return;
-            }
-
-            outAvatarState = modifier.Modify(outAvatarState);
-
-            if (!isCurrentAvatarState)
-            {
-                return;
-            }
-
-            if (!resetState)
-            {
-                return;
-            }
-
-            TryResetLoadedAvatarState(avatarAddress, out _, out _);
-
-        }
-
-        public static void RemoveMaterial(Address avatarAddress, HashDigest<SHA256> itemId, int count, bool resetState)
-        {
-            if (count is 0)
-            {
-                return;
-            }
-
-            var modifier = new AvatarInventoryMaterialModifier(
-                new Dictionary<HashDigest<SHA256>, int>
-                {
-                    [itemId] = count,
-                }
-            );
-
-            LocalLayer.Instance.Remove(avatarAddress, modifier);
-
-            if (!resetState)
-            {
-                return;
-            }
-
-            TryResetLoadedAvatarState(avatarAddress, out _, out _);
         }
 
         public static void AddWorld(Address avatarAddress, int worldId)
@@ -605,231 +550,6 @@ namespace Nekoyume.State
 
             state = modifier.Modify(state);
             WeeklyArenaStateSubject.WeeklyArenaState.OnNext(state);
-        }
-
-        #endregion
-
-        #region Workshop
-
-        public static void ModifyCombinationSlotEquipment(
-            TableSheets tableSheets,
-            EquipmentItemRecipeSheet.Row row,
-            CombinationPanel panel,
-            int slotIndex,
-            int? subRecipeId
-        )
-        {
-            var slotAddress = States.Instance.CurrentAvatarState.address.Derive(
-                string.Format(
-                    CultureInfo.InvariantCulture,
-                    CombinationSlotState.DeriveFormat,
-                    slotIndex
-                )
-            );
-
-            ModifyCombinationSlotEquipment(tableSheets, row, panel, slotAddress, subRecipeId);
-        }
-
-        public static void ModifyCombinationSlotEquipment(
-            TableSheets tableSheets,
-            EquipmentItemRecipeSheet.Row row,
-            CombinationPanel panel,
-            Address slotAddress,
-            int? subRecipeId
-        )
-        {
-            // When the layer is covered, additionally set the block height to prevent state updates until the actual state comes in.
-            var blockIndex = Game.Game.instance.Agent.BlockIndex + 100;
-            var requiredBlockIndex = row.RequiredBlockIndex + blockIndex;
-            if (subRecipeId.HasValue)
-            {
-                var subRow =
-                    tableSheets.EquipmentItemSubRecipeSheet.Values.First(r => r.Id == subRecipeId);
-                requiredBlockIndex += subRow.RequiredBlockIndex;
-            }
-
-            var equipRow =
-                tableSheets.EquipmentItemSheet.Values.First(i => i.Id == row.ResultEquipmentId);
-            var equipment = ItemFactory.CreateItemUsable(equipRow, Guid.Empty, requiredBlockIndex);
-            var materials = new Dictionary<Material, int>();
-            foreach (var (material, count) in panel.materialPanel.MaterialList)
-            {
-                materials[material] = count;
-            }
-
-            var result = new CombinationConsumable.ResultModel
-            {
-                // id: When applying the local layer for the first time, if the id is the default, the notification is not applied.
-                id = Guid.NewGuid(),
-                actionPoint = panel.CostAP,
-                gold = panel.CostNCG,
-                materials = materials,
-                itemUsable = equipment,
-                recipeId = row.Id,
-                subRecipeId = subRecipeId,
-                itemType = ItemType.Equipment,
-            };
-            var modifier = new CombinationSlotBlockIndexAndResultModifier(result, blockIndex, requiredBlockIndex);
-            var slotState = States.Instance.CombinationSlotStates[slotAddress];
-            LocalLayer.Instance.Set(slotState.address, modifier);
-            States.Instance.CombinationSlotStates[slotAddress] = modifier.Modify(slotState);
-            CombinationSlotStateSubject.OnNext(slotState);
-        }
-
-        public static void ModifyCombinationSlotConsumable(
-            TableSheets tableSheets,
-            ICombinationPanel panel,
-            ConsumableItemRecipeSheet.Row recipeRow,
-            int slotIndex
-        )
-        {
-            var slotAddress = States.Instance.CurrentAvatarState.address.Derive(
-                string.Format(
-                    CultureInfo.InvariantCulture,
-                    CombinationSlotState.DeriveFormat,
-                    slotIndex
-                )
-            );
-
-            ModifyCombinationSlotConsumable(tableSheets, panel, recipeRow, slotAddress);
-        }
-
-        public static void ModifyCombinationSlotConsumable(
-            TableSheets tableSheets,
-            ICombinationPanel panel,
-            ConsumableItemRecipeSheet.Row recipeRow,
-            Address slotAddress
-        )
-        {
-            // When the layer is covered, additionally set the block height to prevent state updates until the actual state comes in.
-            var blockIndex = Game.Game.instance.Agent.BlockIndex + 100;
-            var requiredBlockIndex = blockIndex + recipeRow.RequiredBlockIndex;
-            var consumableRow = tableSheets.ConsumableItemSheet.Values.First(i =>
-                i.Id == recipeRow.ResultConsumableItemId);
-            var consumable = ItemFactory.CreateItemUsable(
-                consumableRow,
-                Guid.Empty,
-                requiredBlockIndex);
-            var materials = new Dictionary<Material, int>();
-            foreach (var materialInfo in recipeRow.Materials)
-            {
-                var materialRow = tableSheets.MaterialItemSheet.Values.First(r => r.Id == materialInfo.Id);
-                var material = ItemFactory.CreateMaterial(materialRow);
-                materials[material] = materialInfo.Count;
-            }
-
-            var result = new CombinationConsumable.ResultModel
-            {
-                actionPoint = panel.CostAP,
-                gold = panel.CostNCG,
-                materials = materials,
-                itemUsable = consumable,
-                recipeId = recipeRow.Id,
-                itemType = ItemType.Consumable,
-            };
-            var modifier = new CombinationSlotBlockIndexAndResultModifier(result, blockIndex, requiredBlockIndex);
-            var slotState = States.Instance.CombinationSlotStates[slotAddress];
-            LocalLayer.Instance.Set(slotState.address, modifier);
-            States.Instance.CombinationSlotStates[slotAddress] = modifier.Modify(slotState);
-            CombinationSlotStateSubject.OnNext(slotState);
-        }
-
-        public static void ModifyCombinationSlotItemEnhancement(
-            Guid baseMaterialGuid,
-            Guid guid,
-            int slotIndex
-        )
-        {
-            var slotAddress = States.Instance.CurrentAvatarState.address.Derive(
-                string.Format(
-                    CultureInfo.InvariantCulture,
-                    CombinationSlotState.DeriveFormat,
-                    slotIndex
-                )
-            );
-
-            ModifyCombinationSlotItemEnhancement(baseMaterialGuid, guid, slotAddress);
-        }
-
-        public static void ModifyCombinationSlotItemEnhancement(
-            Guid baseMaterialGuid,
-            Guid otherMaterialGuid,
-            Address slotAddress
-        )
-        {
-
-            // When the layer is covered, additionally set the block height to prevent state updates until the actual state comes in.
-            var blockIndex = Game.Game.instance.Agent.BlockIndex + 100;
-            var requiredBlockIndex = blockIndex + 1;
-
-            var avatarAddress = States.Instance.CurrentAvatarState.address;
-            var avatarState = new AvatarState(
-                (Bencodex.Types.Dictionary) Game.Game.instance.Agent.GetState(avatarAddress));
-
-            if (!avatarState.inventory.TryGetNonFungibleItem(baseMaterialGuid, out ItemUsable item))
-            {
-                return;
-            }
-
-            if (!(item is Equipment equipment))
-            {
-                return;
-            }
-
-            equipment.LevelUp();
-            equipment.Update(requiredBlockIndex);
-
-            var enhancementRow = Game.Game.instance.TableSheets
-                .EnhancementCostSheet.Values
-                .FirstOrDefault(x => x.Grade == equipment.Grade && x.Level == equipment.level);
-
-            var result = new ItemEnhancement.ResultModel
-            {
-                // id: When applying the local layer for the first time, if the id is the default, the notification is not applied.
-                id = Guid.NewGuid(),
-                actionPoint = 0,
-                gold = enhancementRow.Cost,
-                materialItemIdList = new[] { otherMaterialGuid },
-                itemUsable = equipment,
-            };
-
-            var modifier = new CombinationSlotBlockIndexAndResultModifier(result, blockIndex, requiredBlockIndex);
-            var slotState = States.Instance.CombinationSlotStates[slotAddress];
-            LocalLayer.Instance.Set(slotState.address, modifier);
-            States.Instance.CombinationSlotStates[slotAddress] = modifier.Modify(slotState);
-            CombinationSlotStateSubject.OnNext(slotState);
-        }
-
-        public static void UnlockCombinationSlot(int slotIndex, long blockIndex)
-        {
-            var slotAddress = States.Instance.CurrentAvatarState.address.Derive(
-                string.Format(
-                    CultureInfo.InvariantCulture,
-                    CombinationSlotState.DeriveFormat,
-                    slotIndex
-                )
-            );
-
-            UnlockCombinationSlot(slotAddress, blockIndex);
-        }
-
-        private static void UnlockCombinationSlot(Address slotAddress, long blockIndex)
-        {
-            var slotState = States.Instance.CombinationSlotStates[slotAddress];
-            var modifier = new CombinationSlotBlockIndexModifier(blockIndex);
-            LocalLayer.Instance.Set(slotState.address, modifier);
-            States.Instance.CombinationSlotStates[slotAddress] = modifier.Modify(slotState);
-            CombinationSlotStateSubject.OnNext(slotState);
-        }
-
-        public static void ResetCombinationSlot(CombinationSlotState slot)
-        {
-            LocalLayer.Instance
-                .ResetCombinationSlotModifiers<CombinationSlotBlockIndexModifier>(
-                    slot.address);
-            LocalLayer.Instance
-                .ResetCombinationSlotModifiers<CombinationSlotBlockIndexAndResultModifier>(
-                    slot.address);
         }
 
         #endregion

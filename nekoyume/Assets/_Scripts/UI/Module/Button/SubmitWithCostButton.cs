@@ -1,5 +1,8 @@
 using System.Globalization;
 using System.Numerics;
+using Libplanet.Assets;
+using Nekoyume.EnumType;
+using Nekoyume.Game.Controller;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -8,67 +11,55 @@ namespace Nekoyume.UI.Module
 {
     public class SubmitWithCostButton : SubmitButton
     {
-        [SerializeField]
-        private Image costBackgroundImage = null;
+        [SerializeField] private Image costBackgroundImage;
 
-        [SerializeField]
-        private Image costBackgroundImageForSubmittable = null;
+        [SerializeField] private Image costBackgroundImageForSubmittable;
 
-        [SerializeField]
-        private GameObject costs = null;
+        [SerializeField] private GameObject costs;
 
-        [SerializeField]
-        private GameObject costNCG = null;
+        [SerializeField] private GameObject costNCG;
 
-        [SerializeField]
-        private Image costNCGImage = null;
+        [SerializeField] private Image costNCGImage;
 
-        [SerializeField]
-        private Image costNCGImageForSubmittable = null;
+        [SerializeField] private Image costNCGImageForSubmittable;
 
-        [SerializeField]
-        private TextMeshProUGUI costNCGText = null;
+        [SerializeField] private TextMeshProUGUI costNCGText;
 
-        [SerializeField]
-        private TextMeshProUGUI costNCGTextForSubmittable = null;
+        [SerializeField] private TextMeshProUGUI costNCGTextForSubmittable;
 
-        [SerializeField]
-        private GameObject costAP = null;
+        [SerializeField] private GameObject costAP;
 
-        [SerializeField]
-        private Image costAPImage = null;
+        [SerializeField] private Image costAPImage;
 
-        [SerializeField]
-        private Image costAPImageForSubmittable = null;
+        [SerializeField] private Image costAPImageForSubmittable;
 
-        [SerializeField]
-        private TextMeshProUGUI costAPText = null;
+        [SerializeField] private TextMeshProUGUI costAPText;
 
-        [SerializeField]
-        private TextMeshProUGUI costAPTextForSubmittable = null;
+        [SerializeField] private TextMeshProUGUI costAPTextForSubmittable;
 
-        [SerializeField]
-        private GameObject costHourglass = null;
+        [SerializeField] private GameObject costHourglass;
 
-        [SerializeField]
-        private Image costHourglassImage = null;
+        [SerializeField] private Image costHourglassImage;
 
-        [SerializeField]
-        private Image costHourGlassImageForSubmittable = null;
+        [SerializeField] private Image costHourGlassImageForSubmittable;
 
-        [SerializeField]
-        private TextMeshProUGUI costHourglassText = null;
+        [SerializeField] private TextMeshProUGUI costHourglassText;
 
-        [SerializeField]
-        private TextMeshProUGUI costHourglassTextForSubmittable = null;
+        [SerializeField] private TextMeshProUGUI costHourglassTextForSubmittable;
 
-        [SerializeField]
-        private HorizontalLayoutGroup layoutGroup = null;
+        [SerializeField] private HorizontalLayoutGroup layoutGroup;
 
         public void ShowNCG(BigInteger ncg, bool isEnough)
         {
             costNCG.SetActive(true);
             SetText(costNCGText, costNCGTextForSubmittable, isEnough, ncg);
+            UpdateSpace();
+        }
+
+        public void ShowNCG(FungibleAssetValue ncg, bool isEnough)
+        {
+            costNCG.SetActive(true);
+            SetText(costNCGText, costNCGTextForSubmittable, isEnough, ncg.GetQuantityString());
             UpdateSpace();
         }
 
@@ -143,33 +134,56 @@ namespace Nekoyume.UI.Module
             layoutGroup.spacing = costAP.activeSelf ^ costNCG.activeSelf ^ costHourglass.activeSelf ? 15 : 5;
         }
 
-        private static void SetText(TextMeshProUGUI textField, TextMeshProUGUI submitField, bool isEnough, int cost) =>
-            SetText(textField, submitField, isEnough, (BigInteger)cost);
+        private static void SetText(
+            TMP_Text textField,
+            TMP_Text submitField,
+            bool isEnough,
+            int cost) => SetText(textField, submitField, isEnough, cost.ToString(CultureInfo.InvariantCulture));
 
-        private static void SetText(TextMeshProUGUI textField, TextMeshProUGUI submitField, bool isEnough, BigInteger cost)
+        private static void SetText(
+            TMP_Text textField,
+            TMP_Text submitField,
+            bool isEnough,
+            BigInteger cost) => SetText(textField, submitField, isEnough, cost.ToString(CultureInfo.InvariantCulture));
+
+        private static void SetText(
+            TMP_Text textField,
+            TMP_Text submitField,
+            bool isEnough,
+            string cost)
         {
-            textField.text = cost.ToString(CultureInfo.InvariantCulture);
-            submitField.text = textField.text;
+            textField.text = cost;
+            submitField.text = cost;
             SetTextColor(textField, submitField, isEnough);
         }
 
-        private static void SetText(TextMeshProUGUI textField, TextMeshProUGUI submitField, bool isEnough, int cost, int reserve) =>
-            SetText(textField, submitField, isEnough, (BigInteger)cost, (BigInteger)reserve);
+        private static void SetText(
+            TMP_Text textField,
+            TMP_Text submitField,
+            bool isEnough,
+            int cost,
+            int reserve) => SetText(
+            textField,
+            submitField,
+            isEnough,
+            cost.ToString(CultureInfo.InvariantCulture),
+            reserve.ToString(CultureInfo.InvariantCulture));
 
-        private static void SetText(TextMeshProUGUI textField, TextMeshProUGUI submitField, bool isEnough, BigInteger cost, BigInteger reserve)
+        private static void SetText(
+            TMP_Text textField,
+            TMP_Text submitField,
+            bool isEnough,
+            string cost,
+            string reserve)
         {
-            var reserveText = reserve.ToString(CultureInfo.InvariantCulture);
-            var costText = cost.ToString(CultureInfo.InvariantCulture);
-
-            textField.text = isEnough ?
-                $"{costText}/{reserveText}" :
-                $"<color=#ff00005a>{costText}</color>/{reserveText}";
+            textField.text =
+                isEnough ? $"{cost}/{reserve}" : $"<color=#ff00005a>{cost}</color>/{reserve}";
             submitField.text = textField.text;
         }
 
-        private static void SetTextColor(TextMeshProUGUI textField, TextMeshProUGUI submitField, bool isEnough)
+        private static void SetTextColor(Graphic textField, Graphic submitField, bool isEnough)
         {
-            textField.color = isEnough ? Color.white : Color.red;
+            textField.color = isEnough ? Palette.GetColor(ColorType.ButtonEnabled) : Palette.GetColor(ColorType.ButtonDisabled);
             submitField.color = textField.color;
         }
     }

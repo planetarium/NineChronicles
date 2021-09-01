@@ -6,6 +6,7 @@ namespace Nekoyume.UI
     public class PopupWidget : Widget
     {
         public override WidgetType WidgetType => WidgetType.Popup;
+        public override CloseKeyType CloseKeyType => CloseKeyType.Escape;
 
         public override void Show(bool ignoreShowAnimation = false)
         {
@@ -13,9 +14,6 @@ namespace Nekoyume.UI
             PlayPopupSound();
         }
 
-        protected virtual void PlayPopupSound()
-        {
-            AudioController.PlayPopup();
-        }
+        protected virtual void PlayPopupSound() => AudioController.PlayPopup();
     }
 }

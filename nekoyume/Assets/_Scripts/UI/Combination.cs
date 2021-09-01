@@ -32,6 +32,8 @@ using Nekoyume.UI.Model;
 
 namespace Nekoyume.UI
 {
+    using UniRx;
+
     public class Combination : Widget
     {
         public enum StateType
@@ -189,8 +191,8 @@ namespace Nekoyume.UI
 
             blur.gameObject.SetActive(false);
 
-            CombinationSlotStateSubject.CombinationSlotState.Subscribe(_ => ResetSelectedIndex())
-                .AddTo(gameObject);
+            // CombinationSlotStateSubject.CombinationSlotState.Subscribe(_ => ResetSelectedIndex())
+            //     .AddTo(gameObject);
             Game.Game.instance.Agent.BlockIndexSubject.ObserveOnMainThread()
                 .Subscribe(SubscribeBlockIndex)
                 .AddTo(gameObject);
@@ -247,18 +249,6 @@ namespace Nekoyume.UI
                 State.SetValueAndForceNotify(StateType.SelectMenu);
             }
 
-            Find<BottomMenu>().Show(
-                UINavigator.NavigationType.Back,
-                SubscribeBackButtonClick,
-                true,
-                BottomMenu.ToggleableType.Mail,
-                BottomMenu.ToggleableType.Quest,
-                BottomMenu.ToggleableType.Chat,
-                BottomMenu.ToggleableType.IllustratedBook,
-                BottomMenu.ToggleableType.Character,
-                BottomMenu.ToggleableType.Combination
-            );
-
             if (_npc01 is null)
             {
                 var go = Game.Game.instance.Stage.npcFactory.Create(
@@ -281,14 +271,12 @@ namespace Nekoyume.UI
         public void ShowByEquipmentRecipe(int recipeId)
         {
             _equipmentRecipeIdToGo = recipeId;
-
+            ResetSelectedIndex();
             Show();
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
         {
-            Find<BottomMenu>().Close(ignoreCloseAnimation);
-
             _enhanceEquipment.Close(ignoreCloseAnimation);
             speechBubbleForEquipment.gameObject.SetActive(false);
             speechBubbleForUpgrade.gameObject.SetActive(false);
@@ -355,13 +343,10 @@ namespace Nekoyume.UI
             }
 
             Find<ItemInformationTooltip>().Close();
-            Find<BottomMenu>().ToggleGroup.SetToggledOffAll();
+            // Find<BottomMenu>().ToggleGroup.SetToggledOffAll();
 
             selectionArea.root.SetActive(value == StateType.SelectMenu);
             leftArea.SetActive(value != StateType.SelectMenu);
-
-            var tutorialController = Game.Game.instance.Stage.TutorialController;
-            var tutorialProgress = 0;
 
             switch (value)
             {
@@ -558,7 +543,7 @@ namespace Nekoyume.UI
             State.SetValueAndForceNotify((StateType) index);
         }
 
-        private void SubscribeBackButtonClick(BottomMenu bottomMenu)
+        private void SubscribeBackButtonClick(HeaderMenu headerMenu)
         {
             if (!CanClose)
             {
@@ -668,12 +653,6 @@ namespace Nekoyume.UI
 
         private void CreateConsumableCombinationAction(ConsumableItemRecipeSheet.Row row, int slotIndex)
         {
-            LocalLayerModifier.ModifyCombinationSlotConsumable(
-                Game.Game.instance.TableSheets,
-                combinationPanel,
-                row,
-                slotIndex
-            );
             Game.Game.instance.ActionManager.CombinationConsumable(row.Id, slotIndex)
                 .Subscribe(
                     _ => { },
@@ -687,12 +666,6 @@ namespace Nekoyume.UI
             EquipmentItemRecipeSheet.Row model,
             CombinationPanel panel)
         {
-            LocalLayerModifier.ModifyCombinationSlotEquipment(
-                Game.Game.instance.TableSheets,
-                model,
-                panel,
-                slotIndex,
-                subRecipeId);
             Game.Game.instance.ActionManager.CombinationEquipment(recipeId, slotIndex, subRecipeId);
         }
 
@@ -726,37 +699,44 @@ namespace Nekoyume.UI
 
         private void ResetSelectedIndex()
         {
-            var avatarState = States.Instance.CurrentAvatarState;
-            var slotStates = States.Instance.CombinationSlotStates;
-            if (avatarState is null || slotStates is null)
-            {
-                return;
-            }
-            var avatarAddress = avatarState.address;
-            var idx = -1;
-            for (var i = 0; i < AvatarState.CombinationSlotCapacity; i++)
-            {
-                var address = avatarAddress.Derive(
-                    string.Format(
-                        CultureInfo.InvariantCulture,
-                        CombinationSlotState.DeriveFormat,
-                        i
-                    )
-                );
-
-                if (slotStates.ContainsKey(address))
-                {
-                    var state = slotStates[address];
-                    if (state.Validate(avatarState, _blockIndex))
-                    {
-                        idx = i;
-                        break;
-                    }
-                }
-            }
-
-            selectedIndex = idx;
-            _enhanceEquipment.UpdateSubmittable();
+            // var avatarState = States.Instance.CurrentAvatarState;
+            // var slotStates = States.Instance.CombinationSlotStates;
+            // if (avatarState is null || slotStates is null)
+            // {
+            //     return;
+            // }
+            // var avatarAddress = avatarState.address;
+            // var idx = -1;
+            // for (var i = 0; i < AvatarState.CombinationSlotCapacity; i++)
+            // {
+            //     var address = avatarAddress.Derive(
+            //         string.Format(
+            //             CultureInfo.InvariantCulture,
+            //             CombinationSlotState.DeriveFormat,
+            //             i
+            //         )
+            //     );
+            //
+            //     if (slotStates.ContainsKey(address))
+            //     {
+            //         var state = slotStates[address];
+            //         if (state.Validate(avatarState, _blockIndex))
+            //         {
+            //             idx = i;
+            //             break;
+            //         }
+            //     }
+            // }
+            //
+            // selectedIndex = idx;
+            // if (selectedIndex < 0)
+            // {
+            //     Debug.Log("There is no valid slot in combination slot state.");
+            // }
+            //
+            // _enhanceEquipment.UpdateSubmittable();
+            // combinationPanel.UpdateSubmittable();
+            // elementalCombinationPanel.UpdateSubmittable();
         }
 
         public IEnumerator CoCombineNPCAnimation(ItemBase itemBase, System.Action action, bool isConsumable = false)
@@ -767,7 +747,6 @@ namespace Nekoyume.UI
             loadingScreen.SetCloseAction(action);
             canvasGroup.interactable = false;
             canvasGroup.blocksRaycasts = false;
-            Find<BottomMenu>().SetIntractable(false);
             blur.gameObject.SetActive(true);
             _npc01.SpineController.Disappear();
             Push();
@@ -780,7 +759,6 @@ namespace Nekoyume.UI
             _npc01.SpineController.Appear();
             canvasGroup.interactable = true;
             canvasGroup.blocksRaycasts = true;
-            Find<BottomMenu>().SetIntractable(true);
             blur.gameObject.SetActive(false);
             Pop();
             _selectedSpeechBubble.Hide();
@@ -802,7 +780,7 @@ namespace Nekoyume.UI
 
         public void LoadRecipeVFXSkipMap()
         {
-            var addressHex = ReactiveAvatarState.Address.Value.ToHex();
+            var addressHex = States.Instance.CurrentAvatarState.address.ToHex();
             var key = string.Format(RecipeVFXSkipListKey, addressHex);
 
             if (!PlayerPrefs.HasKey(key))
@@ -852,7 +830,7 @@ namespace Nekoyume.UI
 
         public void SaveRecipeVFXSkipMap()
         {
-            var addressHex = ReactiveAvatarState.Address.Value.ToHex();
+            var addressHex = States.Instance.CurrentAvatarState.address.ToHex();
             var key = string.Format(RecipeVFXSkipListKey, addressHex);
 
             var data = string.Empty;

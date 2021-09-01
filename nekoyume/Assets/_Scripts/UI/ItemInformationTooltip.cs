@@ -4,30 +4,45 @@ using System.Collections.Generic;
 using Nekoyume.EnumType;
 using Nekoyume.Extension;
 using Nekoyume.Game.Controller;
+using Nekoyume.State;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using TMPro;
-using UniRx;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
+    using System.Collections;
+    using UniRx;
+    using UnityEngine.EventSystems;
+    using UnityEngine.UI;
+
     public class ItemInformationTooltip : VerticalTooltipWidget<Model.ItemInformationTooltip>
     {
-        public TextMeshProUGUI titleText;
-        public Module.ItemInformation itemInformation;
-        public GameObject footerRoot;
-        public GameObject submitGameObject;
-        public GameObject submitGameObjectForRetrieve;
-        public SubmitButton submitButton;
-        public SubmitButton submitButtonForRetrieve;
-        public GameObject priceContainer;
-        public TextMeshProUGUI priceText;
+        [SerializeField] private TextMeshProUGUI titleText;
+        [SerializeField] private SubmitButton submitButton;
+        [SerializeField] private Button retrieveButton;
+        [SerializeField] private Button reregisterButton;
+        [SerializeField] private SubmitWithCostButton buyButton;
+        [SerializeField] private GameObject submit;
+        [SerializeField] private GameObject buy;
+        [SerializeField] private GameObject sell;
+        [SerializeField] private BlockTimer buyTimer;
+        [SerializeField] private BlockTimer sellTimer;
+
+        [SerializeField] private TextMeshProUGUI priceText;
+        [SerializeField] private Scrollbar scrollbar;
 
         private readonly List<IDisposable> _disposablesForModel = new List<IDisposable>();
 
-        public new Model.ItemInformationTooltip Model { get; private set; }
+        private bool _isPointerOnScrollArea;
+        private bool _isClickedButtonArea;
+
+        private new Model.ItemInformationTooltip Model { get; set; }
+
+        public Module.ItemInformation itemInformation;
 
         public RectTransform Target => Model.target.Value;
 
@@ -38,6 +53,7 @@ namespace Nekoyume.UI
             base.Awake();
 
             Model = new Model.ItemInformationTooltip();
+
             submitButton.OnSubmitClick.Subscribe(_ =>
             {
                 AudioController.PlayClick();
@@ -45,7 +61,7 @@ namespace Nekoyume.UI
                 Close();
             }).AddTo(gameObject);
 
-            submitButtonForRetrieve.OnSubmitClick.Subscribe(_ =>
+            buyButton.OnSubmitClick.Subscribe(_ =>
             {
                 AudioController.PlayClick();
                 Model.OnSubmitClick.OnNext(this);
@@ -60,8 +76,9 @@ namespace Nekoyume.UI
 
             SubmitWidget = () =>
             {
-                if (!submitButton.IsSubmittable && !submitButtonForRetrieve.IsSubmittable)
+                if (!submitButton.IsSubmittable)
                     return;
+
                 AudioController.PlayClick();
                 Model.OnSubmitClick.OnNext(this);
                 Close();
@@ -80,14 +97,21 @@ namespace Nekoyume.UI
             Show(target, item, null, null, null, onClose);
         }
 
-        public void Show(RectTransform target, CountableItem item, Func<CountableItem, bool> submitEnabledFunc,
-            string submitText, Action<ItemInformationTooltip> onSubmit, Action<ItemInformationTooltip> onClose = null,
-            bool retrieve = false)
+        public void Show(RectTransform target,
+                         CountableItem item,
+                         Func<CountableItem, bool> submitEnabledFunc,
+                         string submitText,
+                         Action<ItemInformationTooltip> onSubmit,
+                         Action<ItemInformationTooltip> onClose = null)
         {
             if (item?.ItemBase.Value is null)
             {
                 return;
             }
+
+            submit.SetActive(submitEnabledFunc != null);
+            sell.SetActive(false);
+            buy.SetActive(false);
 
             _disposablesForModel.DisposeAllAndClear();
             Model.target.Value = target;
@@ -95,28 +119,13 @@ namespace Nekoyume.UI
             Model.SubmitButtonEnabledFunc.SetValueAndForceNotify(submitEnabledFunc);
             Model.SubmitButtonText.Value = submitText;
 
-            // Show(Model)을 먼저 호출함으로써 Widget.Show()가 호출되고, 게임 오브젝트가 활성화 됨. 그래야 레이아웃 정리가 가능함.
             Show(Model);
-            // itemInformation UI의 모든 요소에 적절한 값이 들어가야 레이아웃 정리가 유효함.
             itemInformation.SetData(Model.ItemInformation);
 
             Model.TitleText.SubscribeTo(titleText).AddTo(_disposablesForModel);
-            Model.PriceEnabled.Subscribe(priceContainer.SetActive).AddTo(_disposablesForModel);
-            Model.PriceEnabled.SubscribeTo(priceText).AddTo(_disposablesForModel);
             Model.Price.SubscribeToPrice(priceText).AddTo(_disposablesForModel);
-
-            if (retrieve)
-            {
-                Model.SubmitButtonText.SubscribeTo(submitButtonForRetrieve).AddTo(_disposablesForModel);
-                Model.SubmitButtonEnabled.Subscribe(submitButtonForRetrieve.SetSubmittable).AddTo(_disposablesForModel);
-            }
-            else
-            {
-                Model.SubmitButtonText.SubscribeTo(submitButton).AddTo(_disposablesForModel);
-                Model.SubmitButtonEnabled.Subscribe(submitButton.SetSubmittable).AddTo(_disposablesForModel);
-            }
-            submitGameObject.SetActive(!retrieve);
-            submitGameObjectForRetrieve.SetActive(retrieve);
+            Model.SubmitButtonText.SubscribeTo(submitButton).AddTo(_disposablesForModel);
+            Model.SubmitButtonEnabled.Subscribe(submitButton.SetSubmittable).AddTo(_disposablesForModel);
 
             Model.SubmitButtonText.SubscribeTo(submitButton).AddTo(_disposablesForModel);
             Model.SubmitButtonEnabled.Subscribe(submitButton.SetSubmittable).AddTo(_disposablesForModel);
@@ -125,16 +134,123 @@ namespace Nekoyume.UI
             {
                 Model.OnCloseClick.Subscribe(onClose).AddTo(_disposablesForModel);
             }
-            Model.FooterRootActive.Subscribe(footerRoot.SetActive).AddTo(_disposablesForModel);
-            // Model.itemInformation.item을 마지막으로 구독해야 위에서의 구독으로 인해 바뀌는 레이아웃 상태를 모두 반영할 수 있음.
             Model.ItemInformation.item.Subscribe(value => SubscribeTargetItem(Model.target.Value))
                 .AddTo(_disposablesForModel);
 
-            StartCoroutine(CoUpdate());
+            scrollbar.value = 1f;
+            StartCoroutine(CoUpdate(submitButton.gameObject));
+        }
+
+        public void ShowForSell(RectTransform target,
+                                CountableItem item,
+                                Func<CountableItem, bool> submitEnabledFunc,
+                                string submitText,
+                                Action<ItemInformationTooltip> onSell,
+                                Action<ItemInformationTooltip> onSellCancellation,
+                                Action<ItemInformationTooltip> onClose)
+        {
+            if (item?.ItemBase.Value is null)
+            {
+                return;
+            }
+
+            submit.SetActive(false);
+            buy.SetActive(false);
+            sell.SetActive(true);
+            _disposablesForModel.DisposeAllAndClear();
+            Model.target.Value = target;
+            Model.ItemInformation.item.Value = item;
+            Model.SubmitButtonEnabledFunc.SetValueAndForceNotify(submitEnabledFunc);
+            Model.SubmitButtonText.Value = submitText;
+
+            Show(Model);
+            itemInformation.SetData(Model.ItemInformation);
+
+            Model.TitleText.SubscribeTo(titleText).AddTo(_disposablesForModel);
+            Model.Price.SubscribeToPrice(priceText).AddTo(_disposablesForModel);
+
+            if (onClose != null)
+            {
+                Model.OnCloseClick.Subscribe(onClose).AddTo(_disposablesForModel);
+            }
+
+            Model.ItemInformation.item
+                .Subscribe(value => SubscribeTargetItem(Model.target.Value))
+                .AddTo(_disposablesForModel);
+
+            retrieveButton.onClick.RemoveAllListeners();
+            retrieveButton.onClick.AddListener(() =>
+            {
+                onSellCancellation.Invoke(this);
+                Model.OnCloseClick.OnNext(this);
+                Close();
+            });
+
+            reregisterButton.onClick.RemoveAllListeners();
+            reregisterButton.onClick.AddListener(() =>
+            {
+                onSell.Invoke(this);
+                Model.OnCloseClick.OnNext(this);
+                Close();
+            });
+
+            scrollbar.value = 1f;
+            StartCoroutine(CoUpdate(sell));
+            sellTimer.UpdateTimer(Model.ExpiredBlockIndex.Value);
+        }
+
+        public void ShowForBuy(RectTransform target,
+                              CountableItem item,
+                              Func<CountableItem, bool> submitEnabledFunc,
+                              string submitText,
+                              Action<ItemInformationTooltip> onBuy,
+                              Action<ItemInformationTooltip> onClose)
+        {
+            if (item?.ItemBase.Value is null)
+            {
+                return;
+            }
+
+            submit.SetActive(false);
+            sell.SetActive(false);
+            buy.SetActive(true);
+
+            _disposablesForModel.DisposeAllAndClear();
+            Model.target.Value = target;
+            Model.ItemInformation.item.Value = item;
+            Model.SubmitButtonEnabledFunc.SetValueAndForceNotify(submitEnabledFunc);
+            Model.SubmitButtonText.Value = submitText;
+            Show(Model);
+            itemInformation.SetData(Model.ItemInformation);
+
+            Model.TitleText.SubscribeTo(titleText).AddTo(_disposablesForModel);
+            Model.Price.SubscribeToPrice(priceText).AddTo(_disposablesForModel);
+            Model.SubmitButtonText.SubscribeTo(buyButton).AddTo(_disposablesForModel);
+            Model.SubmitButtonEnabled.Subscribe(buyButton.SetSubmittable).AddTo(_disposablesForModel);
+            Model.Price.Subscribe(price =>
+            {
+                buyButton.ShowNCG(price, price <= States.Instance.GoldBalanceState.Gold);
+            }).AddTo(_disposablesForModel);
+
+            Model.OnSubmitClick.Subscribe(onBuy).AddTo(_disposablesForModel);
+            if (onClose != null)
+            {
+                Model.OnCloseClick.Subscribe(onClose).AddTo(_disposablesForModel);
+            }
+
+            Model.ItemInformation.item
+                .Subscribe(value => SubscribeTargetItem(Model.target.Value))
+                .AddTo(_disposablesForModel);
+
+            scrollbar.value = 1f;
+            StartCoroutine(CoUpdate(buy));
+            buyTimer.UpdateTimer(Model.ExpiredBlockIndex.Value);
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
         {
+            _isPointerOnScrollArea = false;
+            _isClickedButtonArea = false;
             _disposablesForModel.DisposeAllAndClear();
             Model.target.Value = null;
             Model.ItemInformation.item.Value = null;
@@ -143,15 +259,15 @@ namespace Nekoyume.UI
 
         protected override void SubscribeTarget(RectTransform target)
         {
-            // 아무 것도 하지 않도록 한다.
+            // Try not to do anything.
         }
 
-        protected void SubscribeTargetItem(RectTransform target)
+        private void SubscribeTargetItem(RectTransform target)
         {
+            LayoutRebuilder.ForceRebuildLayoutImmediate(panel);
             panel.SetAnchorAndPivot(AnchorPresetType.TopLeft, PivotPresetType.TopLeft);
             base.SubscribeTarget(target);
 
-            //target과 panel이 겹칠 경우 target의 왼쪽에 다시 위치
             if (!(target is null) && panel.position.x - target.position.x < 0)
             {
                 panel.SetAnchorAndPivot(AnchorPresetType.TopRight, PivotPresetType.TopRight);
@@ -160,9 +276,7 @@ namespace Nekoyume.UI
             }
         }
 
-        // NOTE: 아이템 툴팁 쪽에서 타겟의 상태를 관찰하면서 꺼주는 구조는 양방향으로 간섭이 일어나서 좋지 않아 보입니다.
-        // 타겟 쪽에서 확실히 툴팁을 꺼주는 방식이 읽기 쉬울 것 같습니다.
-        private IEnumerator CoUpdate()
+        private IEnumerator CoUpdate(GameObject target)
         {
             var selectedGameObjectCache = EventSystem.current.currentSelectedGameObject;
             while (selectedGameObjectCache is null)
@@ -175,6 +289,11 @@ namespace Nekoyume.UI
 
             while (enabled)
             {
+                if (Input.GetMouseButtonDown(0))
+                {
+                    _isClickedButtonArea = _isPointerOnScrollArea;
+                }
+
                 var current = EventSystem.current.currentSelectedGameObject;
                 if (current == selectedGameObjectCache)
                 {
@@ -202,25 +321,26 @@ namespace Nekoyume.UI
                 }
                 else
                 {
-                    if (current == submitButton.gameObject ||
-                        current == submitButtonForRetrieve.gameObject)
+                    if (current == target)
                     {
                         yield break;
                     }
 
-                    Model.OnCloseClick.OnNext(this);
-                    Close();
-                    yield break;
+                    if (!_isClickedButtonArea)
+                    {
+                        Model.OnCloseClick.OnNext(this);
+                        Close();
+                        yield break;
+                    }
                 }
 
                 yield return null;
             }
         }
 
-        public void TutorialActionClickItemInformationTooltipSubmitButton()
+        public void OnEnterButtonArea(bool value)
         {
-            Model.OnSubmitClick.OnNext(this);
-            Close();
+            _isPointerOnScrollArea = value;
         }
     }
 }

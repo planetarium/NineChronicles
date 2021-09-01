@@ -1,11 +1,25 @@
 using Nekoyume.EnumType;
 using mixpanel;
+using UnityEngine;
+using UnityEngine.UI;
+using UniRx;
 
 namespace Nekoyume.UI
 {
     public class SystemPopup : Alert
     {
         public override WidgetType WidgetType => WidgetType.SystemInfo;
+
+        [SerializeField]
+        private Button bgImageButton = null;
+
+        protected override void Awake()
+        {
+            base.Awake();
+            bgImageButton.OnClickAsObservable()
+                .Subscribe(_ => Close())
+                .AddTo(gameObject);
+        }
 
         public override void Show(string title, string content, string labelOK = "UI_OK", bool localize = true)
         {

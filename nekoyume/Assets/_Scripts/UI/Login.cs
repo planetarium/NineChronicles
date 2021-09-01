@@ -1,15 +1,11 @@
 using System;
 using System.Collections.Generic;
-using Nekoyume.BlockChain;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Util;
 using Nekoyume.State;
-using UniRx;
 using UnityEngine;
-using UnityEngine.UI;
 using mixpanel;
-using Nekoyume.UI.Module;
 
 namespace Nekoyume.UI
 {
@@ -35,7 +31,7 @@ namespace Nekoyume.UI
 
             Game.Event.OnNestEnter.AddListener(ClearPlayers);
             Game.Event.OnRoomEnter.AddListener(b => ClearPlayers());
-
+            Game.Event.OnRoomEnter.AddListener(b => ReactiveShopState.InitSellDigests());
             CloseWidget = null;
         }
 
@@ -74,6 +70,12 @@ namespace Nekoyume.UI
             }
 
             AudioController.instance.PlayMusic(AudioController.MusicCode.SelectCharacter);
+        }
+
+        protected override void OnCompleteOfShowAnimationInternal()
+        {
+            base.OnCompleteOfShowAnimationInternal();
+            HelpPopup.HelpMe(100000, true);
         }
 
         private void ClearPlayers()

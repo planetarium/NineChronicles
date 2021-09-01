@@ -1,23 +1,32 @@
 {
   "dependencies": {
+    "com.brunomikoski.animationsequencer": "0.1.6",
     "com.coffee.softmask-for-ugui": "https://github.com/mob-sakai/SoftMaskForUGUI.git#upm",
     "com.coffee.ui-effect": "https://github.com/mob-sakai/UIEffect.git#upm",
     "com.coffee.ui-particle": "https://github.com/mob-sakai/ParticleEffectForUGUI.git#main",
+    "com.cysharp.unitask": "https://github.com/Cysharp/UniTask.git?path=src/UniTask/Assets/Plugins/UniTask#2.2.5",
+    "com.demigiant.dotween": "1.2.42",
     "com.elringus.spriteglow": "https://github.com/Elringus/SpriteGlow.git#package",
     "com.mixpanel.unity": "https://github.com/mixpanel/mixpanel-unity.git#v2.2.0",
     "com.neuecc.unirx": "https://github.com/starikcetin/unirx.git#f93af89f2aafeccfc7aff9dee2cecc6d60ede06b",
-    "com.unity.addressables": "1.1.10",
-    "com.unity.analytics": "3.3.2",
-    "com.unity.collab-proxy": "1.2.16",
-    "com.unity.mathematics": "1.1.0",
-    "com.unity.memoryprofiler": "0.2.0-preview.1",
-    "com.unity.package-manager-ui": "2.1.2",
-    "com.unity.postprocessing": "2.1.7",
-    "com.unity.quicksearch": "1.4.1",
-    "com.unity.textmeshpro": "2.0.1",
-    "com.unity.timeline": "1.0.0",
+    "com.unity.2d.sprite": "1.0.0",
+    "com.unity.addressables": "1.16.16",
+    "com.unity.analytics": "3.5.3",
+    "com.unity.collab-proxy": "1.3.9",
+    "com.unity.ide.rider": "2.0.7",
+    "com.unity.ide.visualstudio": "2.0.7",
+    "com.unity.ide.vscode": "1.2.3",
+    "com.unity.mathematics": "1.2.1",
+    "com.unity.memoryprofiler": "0.2.9-preview.1",
+    "com.unity.postprocessing": "2.3.0",
+    "com.unity.quicksearch": "2.0.2",
+    "com.unity.test-framework": "1.1.24",
+    "com.unity.textmeshpro": "3.0.1",
+    "com.unity.timeline": "1.4.7",
+    "com.unity.ugui": "1.0.0",
     "jp.setchi.fancyscrollview": "https://github.com/setchi/FancyScrollView.git#upm",
     "com.unity.modules.ai": "1.0.0",
+    "com.unity.modules.androidjni": "1.0.0",
     "com.unity.modules.animation": "1.0.0",
     "com.unity.modules.assetbundle": "1.0.0",
     "com.unity.modules.audio": "1.0.0",
@@ -46,36 +55,19 @@
     "com.unity.modules.video": "1.0.0",
     "com.unity.modules.vr": "1.0.0",
     "com.unity.modules.wind": "1.0.0",
-    "com.unity.modules.xr": "1.0.0"
+    "com.unity.modules.xr": "1.0.0",
+    "com.laicasaane.texttyper": "3.1.0"
   },
-  "lock": {
-    "com.coffee.softmask-for-ugui": {
-      "hash": "5c54622518b193e917239d66e12fd6e5516db31d",
-      "revision": "upm"
-    },
-    "com.coffee.ui-effect": {
-      "hash": "b43e40508b167d143330d8b9eff0d5c9965cdf3c",
-      "revision": "upm"
-    },
-    "com.coffee.ui-particle": {
-      "hash": "429ff2dd09264fd091ed3005c7a4c247f118c7ae",
-      "revision": "main"
-    },
-    "com.elringus.spriteglow": {
-      "hash": "05442994ffb7f6c679f648d702cdf888bd8c01dc",
-      "revision": "package"
-    },
-    "com.mixpanel.unity": {
-      "hash": "7518e7202d655ab6d70d1a65c189f0374417f725",
-      "revision": "v2.2.0"
-    },
-    "com.neuecc.unirx": {
-      "hash": "f93af89f2aafeccfc7aff9dee2cecc6d60ede06b",
-      "revision": "f93af89f2aafeccfc7aff9dee2cecc6d60ede06b"
-    },
-    "jp.setchi.fancyscrollview": {
-      "hash": "18c1db90a91f5965260e6a216d9ec6aea51c4968",
-      "revision": "upm"
+  "scopedRegistries": [
+    {
+      "name": "package.openupm.com",
+      "url": "https://package.openupm.com",
+      "scopes": [
+        "com.brunomikoski.animationsequencer",
+        "com.demigiant.dotween",
+        "com.laicasaane.texttyper",
+        "com.openupm"
+      ]
     }
-  }
+  ]
 }

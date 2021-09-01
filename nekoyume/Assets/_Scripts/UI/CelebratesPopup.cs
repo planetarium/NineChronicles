@@ -18,7 +18,6 @@ using Nekoyume.Model.Mail;
 using Nekoyume.Model.Quest;
 using Nekoyume.State;
 using Nekoyume.TableData;
-using Nekoyume.UI.Scroller;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -46,7 +45,16 @@ namespace Nekoyume.UI
         private SimpleCountableItemView[] questRewardViews = null;
 
         [SerializeField]
-        private RecipeCellView recipeCellView = null;
+        private GameObject recipeAreaParent = null;
+
+        [SerializeField]
+        private RecipeCell recipeCell = null;
+
+        [SerializeField]
+        private GameObject[] gradeImages = null;
+
+        [SerializeField]
+        private TextMeshProUGUI recipeNameText = null;
 
         [SerializeField]
         private GameObject menuContainer = null;
@@ -83,6 +91,14 @@ namespace Nekoyume.UI
             blur.onClick = () => Close();
         }
 
+        public override void Initialize()
+        {
+            base.Initialize();
+
+            var format = L10nManager.Localize("UI_PRESS_TO_CONTINUE_FORMAT");
+            continueText.text = string.Format(format, ContinueTime);
+        }
+
         protected override void Update()
         {
             base.Update();
@@ -112,22 +128,22 @@ namespace Nekoyume.UI
                     menuText.text = string.Empty;
                     break;
                 case nameof(Combination):
-                    menuText.text = L10nManager.Localize("UI_COMBINATION");
+                    menuText.text = L10nManager.Localize("UI_MAIN_MENU_COMBINATION");
                     break;
                 case nameof(RankingBoard):
-                    menuText.text = L10nManager.Localize("UI_RANKING");
+                    menuText.text = L10nManager.Localize("UI_MAIN_MENU_RANKING");
                     break;
                 case nameof(Shop):
-                    menuText.text = L10nManager.Localize("UI_SHOP");
+                    menuText.text = L10nManager.Localize("UI_MAIN_MENU_SHOP");
                     break;
                 case nameof(MimisbrunnrPreparation):
-                    menuText.text = L10nManager.Localize("UI_MIMISBRUNNR");
+                    menuText.text = L10nManager.Localize("UI_MAIN_MENU_MIMISBRUNNR");
                     break;
             }
 
             menuContainer.SetActive(true);
             questRewards.SetActive(false);
-            recipeCellView.Hide();
+            recipeAreaParent.SetActive(false);
 
             _rewards = null;
 
@@ -191,7 +207,7 @@ namespace Nekoyume.UI
 
             menuContainer.SetActive(false);
             questRewards.SetActive(true);
-            recipeCellView.Hide();
+            recipeAreaParent.SetActive(false);
 
             _rewards = rewards;
 
@@ -233,11 +249,17 @@ namespace Nekoyume.UI
             titleText.text = L10nManager.Localize("UI_NEW_EQUIPMENT_RECIPE");
             continueText.alpha = 0f;
 
-            recipeCellView.Set(row);
-
             menuContainer.SetActive(false);
             questRewards.SetActive(false);
-            recipeCellView.Show();
+            recipeCell.Show(row, false);
+
+            var resultItem = row.GetResultEquipmentItemRow();
+            for (int i = 0; i < gradeImages.Length; ++i)
+            {
+                gradeImages[i].SetActive(i < resultItem.Grade);
+            }
+            recipeNameText.text = resultItem.GetLocalizedName(false);
+            recipeAreaParent.SetActive(true);
 
             _rewards = null;
 
@@ -282,7 +304,7 @@ namespace Nekoyume.UI
                 _coShowSomethingCoroutine = StartCoroutine(CoShowQuestRewards(_rewards));
             }
 
-            if (recipeCellView.gameObject.activeSelf)
+            if (recipeCell.gameObject.activeSelf)
             {
                 _coShowSomethingCoroutine = StartCoroutine(CoShowEquipmentRecipe());
             }
@@ -332,11 +354,10 @@ namespace Nekoyume.UI
                 LocalLayerModifier.AddItem(
                     avatarAddress,
                     materialRow.Value.ItemId,
-                    reward.Value,
-                    false);
+                    reward.Value);
             }
 
-            LocalLayerModifier.RemoveReceivableQuest(avatarAddress, questId);
+            LocalLayerModifier.RemoveReceivableQuest(avatarAddress, questId, true);
         }
 
         private void AppearNPC(bool ignoreShowAnimation, NPCAnimation.Type animationType)

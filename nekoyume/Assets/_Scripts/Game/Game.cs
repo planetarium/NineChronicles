@@ -3,13 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Amazon;
 using Amazon.CloudWatchLogs;
 using Amazon.CloudWatchLogs.Model;
-using Amazon.CognitoIdentity;
 using Bencodex.Types;
+#if !UNITY_EDITOR
 using Libplanet;
 using Libplanet.Crypto;
+#endif
 using mixpanel;
 using Nekoyume.Action;
 using Nekoyume.BlockChain;
@@ -21,14 +21,19 @@ using Nekoyume.Model.State;
 using Nekoyume.Pattern;
 using Nekoyume.State;
 using Nekoyume.UI;
+using Nekoyume.UI.Module;
 using UniRx;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
+using UnityEngine.Serialization;
 using Menu = Nekoyume.UI.Menu;
+
 
 namespace Nekoyume.Game
 {
+    using Nekoyume.GraphQL;
+    using UniRx;
+
     [RequireComponent(typeof(Agent), typeof(RPCAgent))]
     public class Game : MonoSingleton<Game>
     {
@@ -64,9 +69,13 @@ namespace Nekoyume.Game
 
         public const string AddressableAssetsContainerPath = nameof(AddressableAssetsContainer);
 
+        public NineChroniclesAPIClient ApiClient => _apiClient;
+
         private CommandLineOptions _options;
 
         private AmazonCloudWatchLogsClient _logsClient;
+
+        private NineChroniclesAPIClient _apiClient;
 
         private string _msg;
 
@@ -77,12 +86,17 @@ namespace Nekoyume.Game
 
         protected override void Awake()
         {
+            Debug.Log("[Game] Awake() invoked");
+
             Application.targetFrameRate = 60;
             Application.SetStackTraceLogType(LogType.Log, StackTraceLogType.None);
             base.Awake();
+
             _options = CommandLineOptions.Load(
                 CommandLineOptionsJsonPath
             );
+
+            Debug.Log("[Game] Awake() CommandLineOptions loaded");
 
 #if !UNITY_EDITOR
             // FIXME 이후 사용자가 원치 않으면 정보를 보내지 않게끔 해야 합니다.
@@ -97,6 +111,8 @@ namespace Nekoyume.Game
 
             Mixpanel.Init();
             Mixpanel.Track("Unity/Started");
+
+            Debug.Log("[Game] Awake() Mixpanel initialized");
 #endif
 
             if (_options.RpcClient)
@@ -116,6 +132,7 @@ namespace Nekoyume.Game
 
         private IEnumerator Start()
         {
+            Debug.Log("[Game] Start() invoked");
 #if UNITY_EDITOR
             if (useSystemLanguage)
             {
@@ -128,16 +145,19 @@ namespace Nekoyume.Game
 #else
             yield return L10nManager.Initialize(LanguageTypeMapper.ISO396(_options.Language)).ToYieldInstruction();
 #endif
+            Debug.Log("[Game] Start() L10nManager initialized");
 
-            // UI 초기화 1차.
+            // Initialize MainCanvas first
             MainCanvas.instance.InitializeFirst();
-            yield return Addressables.InitializeAsync();
+            // Initialize TableSheets. This should be done before initialize the Agent.
             yield return StartCoroutine(CoInitializeTableSheets());
+            Debug.Log("[Game] Start() TableSheets initialized");
+            yield return StartCoroutine(ResourcesHelper.CoInitialize());
+            Debug.Log("[Game] Start() ResourcesHelper initialized");
             AudioController.instance.Initialize();
+            Debug.Log("[Game] Start() AudioController initialized");
             yield return null;
-            // Agent 초기화.
-            // Agent를 초기화하기 전에 반드시 Table과 TableSheets를 초기화 함.
-            // Agent가 Table과 TableSheets에 약한 의존성을 갖고 있음.(Deserialize 단계 때문)
+            // Initialize Agent
             var agentInitialized = false;
             var agentInitializeSucceed = false;
             yield return StartCoroutine(
@@ -150,24 +170,25 @@ namespace Nekoyume.Game
                     }
                 )
             );
+
             yield return new WaitUntil(() => agentInitialized);
             // NOTE: Create ActionManager after Agent initialized.
             ActionManager = new ActionManager(Agent);
             yield return StartCoroutine(CoSyncTableSheets());
-            // UI 초기화 2차.
+            Debug.Log("[Game] Start() TableSheets synchronized");
+            // Initialize MainCanvas second
             yield return StartCoroutine(MainCanvas.instance.InitializeSecond());
+            // Initialize NineChroniclesAPIClient.
+            _apiClient = new NineChroniclesAPIClient(_options.ApiServerHost);
+            // Initialize Rank.SharedModel
+            Rank.UpdateSharedModel();
+            // Initialize Stage
             Stage.Initialize();
-
-            Observable.EveryUpdate()
-                .Where(_ => Input.GetMouseButtonUp(0))
-                .Select(_ => Input.mousePosition)
-                .Subscribe(PlayMouseOnClickVFX)
-                .AddTo(gameObject);
-
 
             Widget.Find<VersionInfo>().SetVersion(Agent.AppProtocolVersion);
 
             ShowNext(agentInitializeSucceed);
+            StartCoroutine(CoUpdate());
         }
 
         private void SubscribeRPCAgent()
@@ -177,23 +198,51 @@ namespace Nekoyume.Game
                 return;
             }
 
+            Debug.Log("[Game]Subscribe RPCAgent");
+
             rpcAgent.OnRetryStarted
                 .ObserveOnMainThread()
-                .Subscribe(OnRPCAgentRetryStarted)
+                .Subscribe(agent =>
+                {
+                    Debug.Log($"[Game]RPCAgent OnRetryStarted. {rpcAgent.Address.ToHex()}");
+                    OnRPCAgentRetryStarted(agent);
+                })
                 .AddTo(gameObject);
 
-            // NOTE: RPCAgent가 허브에 조인을 재시도하는 것과 프리로드를 끝마쳤을 때를 구독합니다.
             rpcAgent.OnRetryEnded
-                .Zip(rpcAgent.OnPreloadEnded, (agent, agent1) => agent)
-                .First()
-                .Repeat()
                 .ObserveOnMainThread()
-                .Subscribe(OnRPCAgentRetryAndPreloadEnded)
+                .Subscribe(agent =>
+                {
+                    Debug.Log($"[Game]RPCAgent OnRetryEnded. {rpcAgent.Address.ToHex()}");
+                    OnRPCAgentRetryAndPreloadEnded(agent);
+                })
+                .AddTo(gameObject);
+
+            rpcAgent.OnPreloadStarted
+                .ObserveOnMainThread()
+                .Subscribe(agent =>
+                {
+                    Debug.Log($"[Game]RPCAgent OnPreloadStarted. {rpcAgent.Address.ToHex()}");
+                    OnRPCAgentRetryAndPreloadEnded(agent);
+                })
+                .AddTo(gameObject);
+
+            rpcAgent.OnPreloadEnded
+                .ObserveOnMainThread()
+                .Subscribe(agent =>
+                {
+                    Debug.Log($"[Game]RPCAgent OnPreloadEnded. {rpcAgent.Address.ToHex()}");
+                    OnRPCAgentRetryAndPreloadEnded(agent);
+                })
                 .AddTo(gameObject);
 
             rpcAgent.OnDisconnected
                 .ObserveOnMainThread()
-                .Subscribe(QuitWithAgentConnectionError)
+                .Subscribe(agent =>
+                {
+                    Debug.Log($"[Game]RPCAgent OnDisconnected. {rpcAgent.Address.ToHex()}");
+                    QuitWithAgentConnectionError(agent);
+                })
                 .AddTo(gameObject);
         }
 
@@ -347,9 +396,10 @@ namespace Nekoyume.Game
 
         private void ShowNext(bool succeed)
         {
-            IsInitialized = true;
+            Debug.Log($"[Game]ShowNext({succeed}) invoked");
             if (succeed)
             {
+                IsInitialized = true;
                 var intro = Widget.Find<Intro>();
                 intro.Close();
                 Widget.Find<PreloadingScreen>().Show();
@@ -379,44 +429,35 @@ namespace Nekoyume.Game
             _logsClient?.Dispose();
         }
 
+        private IEnumerator CoUpdate()
+        {
+            while (enabled)
+            {
+                if (Input.GetMouseButtonUp(0))
+                {
+                    PlayMouseOnClickVFX(Input.mousePosition);
+                }
+
+                if (Input.GetKeyDown(KeyCode.Escape) &&
+                    !Widget.IsOpenAnyPopup())
+                {
+                    Quit();
+                }
+
+                yield return null;
+            }
+        }
+
         public static void Quit()
         {
-            var confirm = Widget.Find<Confirm>();
-
-            if (confirm.gameObject.activeSelf &&
-                confirm.title.text == L10nManager.Localize("UI_CONFIRM_QUIT_TITLE"))
+            var popup = Widget.Find<QuitPopup>();
+            if (popup.gameObject.activeSelf)
             {
-                confirm.Close();
+                popup.Close();
                 return;
             }
 
-
-            confirm.CloseCallback = result =>
-            {
-                if (result == ConfirmResult.Yes)
-                {
-#if UNITY_EDITOR
-                    UnityEditor.EditorApplication.isPlaying = false;
-#else
-                    Application.Quit();
-#endif
-                    return;
-                }
-
-                confirm.CloseCallback = null;
-
-                Event.OnNestEnter.Invoke();
-                Widget.Find<Login>().Show();
-                Widget.Find<Menu>().Close();
-            };
-
-            confirm.Show(
-                "UI_CONFIRM_QUIT_TITLE",
-                "UI_CONFIRM_QUIT_CONTENT",
-                "UI_QUIT",
-                "UI_CHARACTER_SELECT",
-                blurRadius: 2,
-                submittable: false);
+            popup.Show();
         }
 
         private static void PlayMouseOnClickVFX(Vector3 position)
@@ -632,7 +673,7 @@ namespace Nekoyume.Game
                 }
                 await _logsClient.PutLogEventsAsync(request);
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 // ignored
             }

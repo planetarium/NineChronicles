@@ -5,16 +5,15 @@ using System.Linq;
 using DG.Tweening;
 using Nekoyume.Model.Quest;
 using Nekoyume.Model.State;
-using Nekoyume.State;
-using Nekoyume.TableData;
 using Nekoyume.UI.Scroller;
 using Nekoyume.UI.Tween;
 using NUnit.Framework;
-using UniRx;
 using UnityEngine;
 
 namespace Nekoyume.UI.Module
 {
+    using UniRx;
+
     // TODO: 위젯으로 빼서 정적으로 동작할 수 있게 만드는 것이 좋았겠습니다.
     /// <summary>
     /// Show()를 통해 전달 받은 AvatarState의 퀘스트 리스트를 기반으로 가이드 퀘스트를 노출합니다.
@@ -185,7 +184,10 @@ namespace Nekoyume.UI.Module
                     EnterToShowing(onComplete, ignoreAnimation);
                     break;
                 case ViewState.Shown:
-                    StartCoroutine(CoUpdateList(onComplete));
+                    if (isActiveAndEnabled)
+                    {
+                        StartCoroutine(CoUpdateList(onComplete));
+                    }
                     break;
             }
         }
@@ -232,7 +234,8 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
-            if (stageId != SharedViewModel.worldQuest.Value.Goal)
+            if (SharedViewModel.worldQuest.Value is null ||
+                stageId != SharedViewModel.worldQuest.Value.Goal)
             {
                 onComplete?.Invoke(false);
                 return;

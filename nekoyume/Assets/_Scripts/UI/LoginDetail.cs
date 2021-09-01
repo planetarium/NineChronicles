@@ -14,10 +14,11 @@ using System.Collections;
 using mixpanel;
 using Nekoyume.Game;
 using Nekoyume.L10n;
-using TentuPlay.Api;
 
 namespace Nekoyume.UI
 {
+    using UniRx;
+
     public class LoginDetail : Widget
     {
         public GameObject btnLogin;
@@ -102,14 +103,8 @@ namespace Nekoyume.UI
                     {
                         var avatarState = States.Instance.SelectAvatar(_selectedIndex);
                         StartCoroutine(CreateAndLoginAnimation(avatarState));
-                        ActionRenderHandler.Instance.RenderQuest(avatarState.address,
+                        ActionRenderHandler.RenderQuest(avatarState.address,
                             avatarState.questList.completedQuestIds);
-
-                        //[TentuPlay]
-                        new TPStashEvent().CharacterLogin(
-                            player_uuid: States.Instance.AgentState.address.ToHex(),
-                            character_uuid: States.Instance.CurrentAvatarState.address.ToHex().Substring(0, 4)
-                        );
                     },
                     e =>
                     {
@@ -138,12 +133,6 @@ namespace Nekoyume.UI
             var avatarState = States.Instance.SelectAvatar(_selectedIndex);
             OnDidAvatarStateLoaded(avatarState);
             AudioController.PlayClick();
-
-            //[TentuPlay]
-            new TPStashEvent().CharacterLogin(
-                player_uuid: States.Instance.AgentState.address.ToHex(),
-                character_uuid: States.Instance.CurrentAvatarState.address.ToHex().Substring(0, 4)
-                );
         }
 
         public void BackToLogin()
@@ -214,7 +203,7 @@ namespace Nekoyume.UI
             foreach (var (statType, value, additionalValue) in tuples)
             {
                 var info = statusRows[idx];
-                info.Show(statType, value, additionalValue);
+                info.Show(statType, value + additionalValue, 0);
                 ++idx;
             }
         }

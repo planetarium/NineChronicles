@@ -31,7 +31,7 @@ namespace Nekoyume.Helper
 
         private string storagePath;
 
-        private string storageType;
+        private string storageType = "rocksdb";
 
         private bool rpcClient;
 
@@ -59,6 +59,8 @@ namespace Nekoyume.Helper
 
         // Unity 단독 빌드시의 해시 파워가 낮기 때문에, Unity 버전의 기존치는 .NET Core보다 낮게 잡습니다.
         private int minimumDifficulty = 100000;
+
+        private string apiServerHost;
 
         public bool Empty { get; private set; } = true;
 
@@ -334,10 +336,21 @@ namespace Nekoyume.Helper
             }
         }
 
+        [Option("api-server-host", Required = false, HelpText = "Host for the internal api client.")]
+        public string ApiServerHost
+        {
+            get => apiServerHost;
+            set
+            {
+                apiServerHost = value;
+                Empty = false;
+            }
+        }
+
         public static CommandLineOptions Load(string localPath)
         {
-            var options = CommnadLineParser.GetCommandLineOptions();
-            if (!options.Empty)
+            var options = CommandLineParser.GetCommandLineOptions();
+            if (options != null && !options.Empty)
             {
                 Debug.Log($"Get options from commandline.");
                 return options;
@@ -416,7 +429,7 @@ namespace Nekoyume.Helper
         }
     }
 
-    public static class CommnadLineParser
+    public static class CommandLineParser
     {
         public static CommandLineOptions GetCommandLineOptions()
         {

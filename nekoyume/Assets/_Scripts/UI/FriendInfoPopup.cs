@@ -1,6 +1,9 @@
-using System.Collections;
 using System.Linq;
 using Nekoyume.Battle;
+using Nekoyume.EnumType;
+using Nekoyume.Game.Character;
+using Nekoyume.Game.Factory;
+using Nekoyume.Helper;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Stat;
 using Nekoyume.Model.State;
@@ -15,7 +18,11 @@ namespace Nekoyume.UI
 {
     public class FriendInfoPopup : PopupWidget
     {
+        public override WidgetType WidgetType => WidgetType.Tooltip;
+
         private const string NicknameTextFormat = "<color=#B38271>Lv.{0}</color=> {1}";
+
+        private static readonly Vector3 NPCPosition = new Vector3(2000f, 1999.2f, 2.15f);
 
         [SerializeField]
         private Button blurButton = null;
@@ -27,7 +34,7 @@ namespace Nekoyume.UI
         private TextMeshProUGUI nicknameText = null;
 
         [SerializeField]
-        private TextMeshProUGUI titleText = null;
+        private Transform titleSocket = null;
 
         [SerializeField]
         private TextMeshProUGUI cpText = null;
@@ -41,19 +48,9 @@ namespace Nekoyume.UI
         [SerializeField]
         private AvatarStats avatarStats = null;
 
-        [SerializeField]
-        private RectTransform avatarPosition = null;
-
-        [SerializeField]
-        private Canvas contentCanvas = null;
-
-        private Vector3 _previousAvatarPosition;
-        private Vector3 _previousAvatarLocalScale;
-        private int _previousAvatarSortingLayerID;
-        private int _previousAvatarSortingLayerOrder;
-        private bool _previousAvatarActivated;
-        private Coroutine _constraintsAvatarToUICoroutine;
         private CharacterStats _tempStats;
+        private GameObject _cachedCharacterTitle;
+        private Player _player;
 
         #region Override
 
@@ -77,78 +74,39 @@ namespace Nekoyume.UI
 
         protected override void OnCompleteOfCloseAnimationInternal()
         {
-            ReturnPlayer();
+            TerminatePlayer();
         }
-
         #endregion
 
         public void Show(AvatarState avatarState, bool ignoreShowAnimation = false)
         {
             base.Show(ignoreShowAnimation);
 
-            ReplacePlayer(avatarState);
+            InitializePlayer(avatarState);
             UpdateSlotView(avatarState);
             UpdateStatViews();
         }
 
-        private void ReplacePlayer(AvatarState avatarState)
+        private void InitializePlayer(AvatarState avatarState)
         {
-            var stage = Game.Game.instance.Stage;
-            _previousAvatarActivated = stage.selectedPlayer && stage.selectedPlayer.gameObject.activeSelf;
-            var player = stage.GetPlayer();
-            player.Set(avatarState);
-            var playerTransform = player.transform;
-            _previousAvatarPosition = playerTransform.position;
-            _previousAvatarLocalScale = playerTransform.localScale;
-            _previousAvatarSortingLayerID = player.sortingGroup.sortingLayerID;
-            _previousAvatarSortingLayerOrder = player.sortingGroup.sortingOrder;
-
-            playerTransform.position = avatarPosition.position;
-            var orderInLayer = MainCanvas.instance.GetLayer(WidgetType).root.sortingOrder + 1;
-            contentCanvas.sortingOrder = orderInLayer;
-            player.SetSortingLayer(SortingLayer.NameToID("UI"), orderInLayer);
-
-            _tempStats = player.Model.Stats.Clone() as CharacterStats;
-
-            if (!(_constraintsAvatarToUICoroutine is null))
-            {
-                StopCoroutine(_constraintsAvatarToUICoroutine);
-            }
-
-            _constraintsAvatarToUICoroutine = StartCoroutine(CoConstraintsPlayerToUI(playerTransform));
+            _player = PlayerFactory.Create(avatarState).GetComponent<Player>();
+            var t = _player.transform;
+            t.localScale = Vector3.one;
+            t.position = NPCPosition;
         }
 
-        private IEnumerator CoConstraintsPlayerToUI(Transform playerTransform)
+        private void TerminatePlayer()
         {
-            while (true)
-            {
-                playerTransform.position = avatarPosition.position;
-                playerTransform.localScale = modal.localScale;
-                yield return null;
-            }
-        }
-
-        private void ReturnPlayer()
-        {
-            if (!(_constraintsAvatarToUICoroutine is null))
-            {
-                StopCoroutine(_constraintsAvatarToUICoroutine);
-                _constraintsAvatarToUICoroutine = null;
-            }
-
-            // NOTE: 플레이어를 강제로 재생성해서 플레이어의 모델이 장비 변경 상태를 반영하도록 합니다.
-            var player = Game.Game.instance.Stage.GetPlayer(_previousAvatarPosition, true);
-            var currentAvatarState = Game.Game.instance.States.CurrentAvatarState;
-            player.Set(currentAvatarState);
-            player.SetSortingLayer(_previousAvatarSortingLayerID, _previousAvatarSortingLayerOrder);
-            player.transform.localScale = _previousAvatarLocalScale;
-            player.gameObject.SetActive(_previousAvatarActivated);
+            var t = _player.transform;
+            t.SetParent(Game.Game.instance.Stage.transform);
+            t.localScale = Vector3.one;
+            _player.gameObject.SetActive(false);
         }
 
         private void UpdateSlotView(AvatarState avatarState)
         {
             var game = Game.Game.instance;
-            var playerModel = game.Stage.GetPlayer().Model;
+            var playerModel = _player.Model;
 
             nicknameText.text = string.Format(
                 NicknameTextFormat,
@@ -158,10 +116,14 @@ namespace Nekoyume.UI
             var title = avatarState.inventory.Costumes.FirstOrDefault(costume =>
                 costume.ItemSubType == ItemSubType.Title &&
                 costume.equipped);
-            titleText.text = title is null
-                ? ""
-                : title.GetLocalizedName();
-            
+
+            if (!(title is null))
+            {
+                Destroy(_cachedCharacterTitle);
+                var clone = ResourcesHelper.GetCharacterTitle(title.Grade, title.GetLocalizedNonColoredName(false));
+                _cachedCharacterTitle = Instantiate(clone, titleSocket);
+            }
+
             cpText.text = CPHelper
                 .GetCPV2(avatarState, game.TableSheets.CharacterSheet, game.TableSheets.CostumeStatSheet)
                 .ToString();
@@ -172,6 +134,7 @@ namespace Nekoyume.UI
 
         private void UpdateStatViews()
         {
+            _tempStats = _player.Model.Stats.Clone() as CharacterStats;
             var equipments = equipmentSlots
                 .Where(slot => !slot.IsLock && !slot.IsEmpty)
                 .Select(slot => slot.Item as Equipment)

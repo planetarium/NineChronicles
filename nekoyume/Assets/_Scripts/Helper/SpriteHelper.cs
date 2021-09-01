@@ -11,8 +11,6 @@ namespace Nekoyume.Helper
         private const string CharacterIconDefaultPath = "UI/Icons/Character/100000";
         private const string CharacterIconPathFormat = "UI/Icons/Character/{0}";
 
-        private const string SkillIconDefaultPath = "UI/Icons/Skill/100000";
-
         private const string ItemIconDefaultPath = "UI/Icons/Item/100000";
         private const string ItemIconPathFormat = "UI/Icons/Item/{0}";
 
@@ -31,7 +29,7 @@ namespace Nekoyume.Helper
         private const string RankIconPath = "UI/Textures/UI_icon_ranking_{0}";
 
         private const string TitleFramePathFormat = "UI/Textures/TitleFrames/{0}";
-        private static readonly string TitleFrameDefaultPath = string.Format(TitleFramePathFormat, 4990001);
+        private static readonly string TitleFrameDefaultPath = string.Format(TitleFramePathFormat, 49900001);
 
         private const string MenuIllustratePathFormat = "UI/Textures/MenuIllustrates/{0}";
 
@@ -70,20 +68,6 @@ namespace Nekoyume.Helper
         {
             return Resources.Load<Sprite>(string.Format(SmallItemBackgroundPathFormat, grade)) ??
                    Resources.Load<Sprite>(SmallItemBackgroundDefaultPath);
-        }
-
-        public static Sprite GetSkillIcon(int skillId)
-        {
-            var path = $"UI/Icons/Skill/{skillId}";
-            var sprite = Resources.Load<Sprite>(path);
-            if (sprite)
-            {
-                return sprite;
-            }
-
-            sprite = Resources.Load<Sprite>(SkillIconDefaultPath);
-
-            return sprite;
         }
 
         public static Sprite GetBuffIcon(string iconResource)
@@ -133,7 +117,7 @@ namespace Nekoyume.Helper
                     result = Resources.Load<Sprite>(
                         string.Format(MenuIllustratePathFormat, "UI_bg_ranking"));
                     break;
-                case nameof(Shop):
+                case "Shop":
                     result = Resources.Load<Sprite>(
                         string.Format(MenuIllustratePathFormat, "UI_bg_shop"));
                     break;

@@ -76,33 +76,35 @@ namespace Tests.EditMode
 
             var material = GetFirstMaterial();
             _avatarState.inventory.AddItem(material);
-            Assert.True(_avatarState.inventory.HasItem(material.ItemId));
+            Assert.True(_avatarState.inventory.HasFungibleItem(material.ItemId, Game.instance.Agent.BlockIndex));
             var modifier =
                 JsonTest(new AvatarInventoryFungibleItemRemover(material.ItemId, 1));
             _avatarState = modifier.Modify(_avatarState);
-            Assert.False(_avatarState.inventory.HasItem(material.ItemId));
+            Assert.False(_avatarState.inventory.HasFungibleItem(material.ItemId, Game.instance.Agent.BlockIndex));
         }
 
         [Test]
-        public void AvatarInventoryNonFungibleItemRemover()
+        public void AvatarInventoryTradableItemRemover()
         {
             if (_tableSheets.MaterialItemSheet.First is null)
                 return;
 
             var equipment = GetFirstEquipment();
             _avatarState.inventory.AddItem(equipment);
-            Assert.True(_avatarState.inventory.HasItem(equipment.ItemId));
+            Assert.True(_avatarState.inventory.HasTradableItem(equipment.TradableId, equipment.RequiredBlockIndex, 1));
             var modifier =
-                JsonTest(new AvatarInventoryNonFungibleItemRemover(equipment.ItemId));
+                JsonTest(new AvatarInventoryTradableItemRemover(equipment.TradableId,
+                    equipment.RequiredBlockIndex,
+                    1));
             _avatarState = modifier.Modify(_avatarState);
-            Assert.False(_avatarState.inventory.HasItem(equipment.ItemId));
+            Assert.False(_avatarState.inventory.HasNonFungibleItem(equipment.TradableId));
         }
 
         [Test]
         public void AvatarNewAttachmentMailSetter()
         {
             var equipment = GetFirstEquipment();
-            var combinationResult = new CombinationConsumable.ResultModel
+            var combinationResult = new CombinationConsumable5.ResultModel
             {
                 itemUsable = equipment
             };

@@ -7,11 +7,12 @@ using Nekoyume.Battle;
 using Nekoyume.Model.Elemental;
 using Nekoyume.Model.Item;
 using Nekoyume.UI.Module;
-using UniRx;
 using Material = Nekoyume.Model.Item.Material;
 
 namespace Nekoyume.UI.Model
 {
+    using UniRx;
+
     public class Inventory : IDisposable
     {
         public readonly ReactiveProperty<ItemType> State =
@@ -41,6 +42,9 @@ namespace Nekoyume.UI.Model
         public readonly ReactiveProperty<Func<InventoryItem, bool>> EquippedEnabledFunc =
             new ReactiveProperty<Func<InventoryItem, bool>>();
 
+        public readonly ReactiveProperty<Func<InventoryItem, bool>> ActiveFunc =
+            new ReactiveProperty<Func<InventoryItem, bool>>();
+
         private ItemSubType[] _itemSubTypesForNotification =
         {
             ItemSubType.Weapon,
@@ -59,6 +63,7 @@ namespace Nekoyume.UI.Model
             DimmedFunc.Subscribe(SubscribeDimmedFunc);
             EffectEnabledFunc.Subscribe(SubscribeEffectEnabledFunc);
             EquippedEnabledFunc.Subscribe(SubscribeEquippedEnabledFunc);
+            ActiveFunc.Subscribe(SubscribeAcitveFunc);
         }
 
         public void Dispose()
@@ -83,8 +88,13 @@ namespace Nekoyume.UI.Model
                 return;
             }
 
-            foreach (var item in inventory.Items)
+            foreach (var item in inventory.Items.OrderByDescending(x => x.item is ITradableItem))
             {
+                if (item.Locked)
+                {
+                    continue;
+                }
+
                 AddItem(item.item, item.count);
             }
 
@@ -104,21 +114,22 @@ namespace Nekoyume.UI.Model
         #endregion
 
         #region Add Item
-
         public void AddItem(ItemBase itemBase, int count = 1)
         {
-            var blockIndex = Game.Game.instance.Agent?.BlockIndex ?? -1;
+            if (itemBase is ITradableItem tradableItem)
+            {
+                var blockIndex = Game.Game.instance.Agent?.BlockIndex ?? -1;
+                if (tradableItem.RequiredBlockIndex > blockIndex)
+                {
+                    return;
+                }
+            }
+
             InventoryItem inventoryItem;
             switch (itemBase.ItemType)
             {
                 case ItemType.Consumable:
-                    var consumable = (Consumable) itemBase;
-                    if (consumable.RequiredBlockIndex > blockIndex)
-                    {
-                        break;
-                    }
-
-                    inventoryItem = CreateInventoryItem(consumable, count);
+                    inventoryItem = CreateInventoryItem(itemBase, count);
                     Consumables.Add(inventoryItem);
                     break;
                 case ItemType.Costume:
@@ -129,23 +140,18 @@ namespace Nekoyume.UI.Model
                     break;
                 case ItemType.Equipment:
                     var equipment = (Equipment) itemBase;
-                    if (equipment.RequiredBlockIndex > blockIndex)
-                    {
-                        break;
-                    }
-
-                    inventoryItem = CreateInventoryItem(equipment, count);
+                    inventoryItem = CreateInventoryItem(itemBase, count);
                     inventoryItem.EquippedEnabled.Value = equipment.equipped;
                     Equipments.Add(inventoryItem);
                     break;
                 case ItemType.Material:
                     var material = (Material) itemBase;
-                    if (TryGetMaterial(material, out inventoryItem))
+                    bool istTradable = material is TradableMaterial;
+                    if (TryGetMaterial(material, istTradable, out inventoryItem))
                     {
                         inventoryItem.Count.Value += count;
                         break;
                     }
-
                     inventoryItem = CreateInventoryItem(itemBase, count);
                     Materials.Add(inventoryItem);
                     break;
@@ -195,7 +201,8 @@ namespace Nekoyume.UI.Model
                     Equipments.Remove(inventoryItem);
                     break;
                 case ItemType.Material:
-                    if (!TryGetMaterial((Material) itemBase, out inventoryItem))
+                    bool isTradable = itemBase is TradableMaterial;
+                    if (!TryGetMaterial((Material) itemBase, isTradable, out inventoryItem))
                     {
                         break;
                     }
@@ -250,7 +257,8 @@ namespace Nekoyume.UI.Model
                 case ItemType.Equipment:
                     return TryGetEquipment((ItemUsable) itemBase, out inventoryItem);
                 case ItemType.Material:
-                    return TryGetMaterial((Material) itemBase, out inventoryItem);
+                    bool isTradable = itemBase is TradableMaterial;
+                    return TryGetMaterial((Material) itemBase, isTradable, out inventoryItem);
                 default:
                     throw new ArgumentOutOfRangeException();
             }
@@ -351,7 +359,7 @@ namespace Nekoyume.UI.Model
             return false;
         }
 
-        public bool TryGetMaterial(Material material, out InventoryItem inventoryItem)
+        public bool TryGetMaterial(Material material, bool isTradableMaterial, out InventoryItem inventoryItem)
         {
             if (material is null)
             {
@@ -359,10 +367,10 @@ namespace Nekoyume.UI.Model
                 return false;
             }
 
-            return TryGetMaterial(material.ItemId, out inventoryItem);
+            return TryGetMaterial(material.ItemId, isTradableMaterial, out inventoryItem);
         }
 
-        public bool TryGetMaterial(HashDigest<SHA256> itemId, out InventoryItem inventoryItem)
+        public bool TryGetMaterial(HashDigest<SHA256> itemId, bool isTradableMaterial, out InventoryItem inventoryItem)
         {
             foreach (var item in Materials)
             {
@@ -370,6 +378,21 @@ namespace Nekoyume.UI.Model
                     !material.ItemId.Equals(itemId))
                 {
                     continue;
+                }
+
+                if (isTradableMaterial)
+                {
+                    if (!(item.ItemBase.Value is TradableMaterial tradableMaterial))
+                    {
+                        continue;
+                    }
+                }
+                else
+                {
+                    if ((item.ItemBase.Value is TradableMaterial tradableMaterial))
+                    {
+                        continue;
+                    }
                 }
 
                 inventoryItem = item;
@@ -543,6 +566,30 @@ namespace Nekoyume.UI.Model
             }
         }
 
+        private void SubscribeAcitveFunc(Func<InventoryItem, bool> func)
+        {
+            ActiveFunc.Value ??= DefaultAcitveFunc;
+
+            foreach (var item in Consumables)
+            {
+                item.ActiveSelf.Value = ActiveFunc.Value(item);
+            }
+
+            foreach (var item in Costumes)
+            {
+                item.ActiveSelf.Value = ActiveFunc.Value(item);
+            }
+
+            foreach (var item in Equipments)
+            {
+                item.ActiveSelf.Value = ActiveFunc.Value(item);
+            }
+
+            foreach (var item in Materials)
+            {
+                item.ActiveSelf.Value = ActiveFunc.Value(item);
+            }
+        }
         #endregion
 
         public void UpdateEquipmentNotification(List<ElementalType> elementalTypes = null)
@@ -628,6 +675,11 @@ namespace Nekoyume.UI.Model
                 default:
                     return false;
             }
+        }
+
+        private static bool DefaultAcitveFunc(InventoryItem inventoryItem)
+        {
+            return false;
         }
 
         private void SetGlowedAll(bool value)

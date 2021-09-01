@@ -53,7 +53,7 @@ var
   UUIDLib: Variant;
 begin
   UUIDLib := CreateOleObject('Scriptlet.TypeLib');
-  result := Copy(UUIDLib.GUID(), 2, 36)
+  Result := Copy(UUIDLib.GUID(), 2, 36);
 end;
 
 function UseUUID(): String;
@@ -62,13 +62,20 @@ var
   LoadedUUID: AnsiString;
 begin
   UUIDPath := Format('%s\planetarium\.installer_mixpanel_uuid', [ExpandConstant('{localappdata}')]);
-  if (FileExists(UUIDPath)) and LoadStringFromFile(UUIDPath, LoadedUUID) then
+  if (FileExists(UUIDPath)) then
   begin
+    LoadStringFromFile(UUIDPath, LoadedUUID);
     Result := LoadedUUID;
   end else begin
     Result := GenerateUUID();
     SaveStringToFile(UUIDPath, Result, False);
   end
+end;
+
+function InitializeSetup(): Boolean;
+begin
+  UUID := UseUUID();
+  Result := True;
 end;
 
 procedure MixpanelTrack(Event, UUID: String);
@@ -78,7 +85,7 @@ begin
   WinHttpReq := CreateOleObject('WinHttp.WinHttpRequest.5.1');
   WinHttpReq.Open('POST', 'https://api.mixpanel.com/track', False);
   WinHttpReq.SetRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-  WinHttpReq.Send(Format('data={"event":"%s","properties":{"token":"80a1e14b57d050536185c7459d45195a","action":"start","distinct_id":"%s"}}', [Event, UUID]));
+  WinHttpReq.Send(Format('data={"event":"%s","properties":{"token":"80a1e14b57d050536185c7459d45195a", "version": "20210513", "distinct_id":"%s"}}', [Event, UUID]));
   if WinHttpReq.ResponseText = 1 then begin
     Log('Mixpanel request success.');
   end else begin
@@ -87,12 +94,9 @@ begin
 end;
 
 procedure CurStepChanged(CurStep: TSetupStep);
-var
-  UUID: String;
 begin
   if CurStep = ssInstall then
   begin
-    UUID := UseUUID();
     Log('Install: Request Mixpanel.');
     Log('UUID: ' + UUID);
     MixpanelTrack('Installer/Start', UUID);
@@ -100,7 +104,6 @@ begin
 
   if CurStep = ssPostInstall then
   begin
-    UUID := UseUUID();
     Log('PostInstall: Request Mixpanel.');
     Log('UUID: ' + UUID);
     MixpanelTrack('Installer/End', UUID);
@@ -108,15 +111,48 @@ begin
 end;
 
 procedure CurUninstallStepChanged(CurUninstallStep: TUninstallStep);
-var
-  UUID: String;
 begin
   if CurUninstallStep = usUninstall then
   begin
-    UUID := UseUUID();
     Log('UnInstall: Request Mixpanel.');
     Log('UUID: ' + UUID);
     MixpanelTrack('Installer/Uninstall', UUID);
+  end;
+end;
+
+procedure CurPageChanged(CurPageID: Integer);
+begin
+  case CurPageID of
+    wpSelectDir:
+      begin
+        Log('Install: Select Directory.');
+        Log('UUID: ' + UUID);
+        MixpanelTrack('Installer/SelectDir', UUID);
+      end;
+    wpSelectTasks:
+      begin
+        Log('Install: Select Tasks.');
+        Log('UUID: ' + UUID);
+        MixpanelTrack('Installer/SelectTasks', UUID);
+      end;
+    wpReady:
+      begin
+        Log('Install: Ready.');
+        Log('UUID: ' + UUID);
+        MixpanelTrack('Installer/Ready', UUID);
+      end;
+    wpInstalling:
+      begin
+        Log('Install: Installing.');
+        Log('UUID: ' + UUID);
+        MixpanelTrack('Installer/Installing', UUID);
+      end;
+    wpFinished:
+      begin
+        Log('Install: Finished.');
+        Log('UUID: ' + UUID);
+        MixpanelTrack('Installer/Finished', UUID);
+      end;
   end;
 end;
 
@@ -135,7 +171,7 @@ Filename: {tmp}\vc_redist.x64.exe; \
 
 [Run]
 Filename: {app}\Nine Chronicles Updater.exe; \
-    StatusMsg: "Updating Nine Chonicles Executables..."
+    StatusMsg: "Updating Nine Chronicles Executables..."
 
 [Run]
 Filename: "{app}\{#GameExeName}"; Flags: nowait postinstall skipifsilent

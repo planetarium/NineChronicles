@@ -6,12 +6,13 @@ using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.UI.Module;
 using TMPro;
-using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI.Scroller
 {
+    using UniRx;
+
     public class ArenaRankCell : RectCell<
         ArenaRankCell.ViewModel,
         ArenaRankScroll.ContextModel>
@@ -42,10 +43,7 @@ namespace Nekoyume.UI.Scroller
         private TextMeshProUGUI rankText = null;
 
         [SerializeField]
-        private FramedCharacterView characterView = null;
-
-        [SerializeField]
-        private TextMeshProUGUI levelText = null;
+        private DetailedCharacterView characterView = null;
 
         [SerializeField]
         private TextMeshProUGUI nameText = null;
@@ -85,6 +83,15 @@ namespace Nekoyume.UI.Scroller
 
         private void Awake()
         {
+            characterView.OnClickCharacterIcon
+                .Subscribe(avatarState =>
+                {
+                    avatarState ??= States.Instance.GetAvatarStateV2(ArenaInfo.AvatarAddress);
+
+                    Widget.Find<FriendInfoPopup>().Show(avatarState);
+                })
+                .AddTo(gameObject);
+
             avatarInfoButton.OnClickAsObservable()
                 .ThrottleFirst(new TimeSpan(0, 0, 1))
                 .Subscribe(_ =>
@@ -131,25 +138,44 @@ namespace Nekoyume.UI.Scroller
             });
         }
 
+        public void ShowMyDefaultInfo()
+        {
+            UpdateRank(-1);
+
+            var currentAvatarState = States.Instance.CurrentAvatarState;
+            characterView.SetByAvatarState(currentAvatarState);
+            nameText.text = currentAvatarState.NameWithHash;
+            scoreText.text = "-";
+            cpText.text = "-";
+
+            challengeCountTextContainer.SetActive(true);
+            challengeButton.gameObject.SetActive(false);
+            challengeCountText.text =
+                $"<color=orange>{GameConfig.ArenaChallengeCountMax}</color>/{GameConfig.ArenaChallengeCountMax}";
+        }
+
         public override void UpdateContent(ViewModel itemData)
         {
-            var rank = itemData.rank;
-            var arenaInfo = itemData.arenaInfo;
-            var currentAvatarArenaInfo = itemData.currentAvatarArenaInfo;
+            if (itemData is null)
+            {
+                Debug.LogError($"Argument is null. {nameof(itemData)}");
+                return;
+            }
 
-            ArenaInfo = arenaInfo ?? throw new ArgumentNullException(nameof(arenaInfo));
-            _isCurrentUser = States.Instance.CurrentAvatarState?.address == ArenaInfo.AvatarAddress;
+            ArenaInfo = itemData.arenaInfo ?? throw new ArgumentNullException(nameof(itemData.arenaInfo));
+            var currentAvatarArenaInfo = itemData.currentAvatarArenaInfo;
+            _isCurrentUser = currentAvatarArenaInfo is null ?
+                false : ArenaInfo.AvatarAddress == currentAvatarArenaInfo.AvatarAddress;
 
             if (controlBackgroundImage)
             {
                 backgroundImage.enabled = Index % 2 == 1;
             }
 
-            UpdateRank(rank);
-            levelText.text = ArenaInfo.Level.ToString();
+            UpdateRank(itemData.rank);
             nameText.text = ArenaInfo.AvatarName;
             scoreText.text = ArenaInfo.Score.ToString();
-            cpText.text = GetCP(arenaInfo);
+            cpText.text = GetCP(ArenaInfo);
 
             challengeCountTextContainer.SetActive(_isCurrentUser);
             challengeButton.gameObject.SetActive(!_isCurrentUser);
@@ -169,27 +195,35 @@ namespace Nekoyume.UI.Scroller
                 }
 
                 challengeCountText.text =
-                    $"<color=orange>{currentAvatarArenaInfo.DailyChallengeCount}</color>/{GameConfig.ArenaChallengeCountMax}";
+                    $"<color=orange>{ArenaInfo.DailyChallengeCount}</color>/{GameConfig.ArenaChallengeCountMax}";
             }
             else
             {
                 //FIXME 현재 코스튬대응이 안되있음 lib9c쪽과 함께 고쳐야함
-                characterView.SetByArmorId(arenaInfo.ArmorId);
-                if (currentAvatarArenaInfo is null)
+                characterView.SetByArenaInfo(ArenaInfo);
+
+                if (itemData.currentAvatarArenaInfo is null)
                 {
                     challengeButton.SetSubmittable(true);
                 }
                 else
                 {
-                    challengeButton.SetSubmittable(currentAvatarArenaInfo.DailyChallengeCount > 0);
+                    challengeButton.SetSubmittable(itemData.currentAvatarArenaInfo.DailyChallengeCount > 0);
                 }
             }
+
+            characterView.Show();
         }
 
         private void UpdateRank(int rank)
         {
             switch (rank)
             {
+                case -1:
+                    rankImageContainer.SetActive(false);
+                    rankTextContainer.SetActive(true);
+                    rankText.text = "-";
+                    break;
                 case 1:
                 case 2:
                 case 3:

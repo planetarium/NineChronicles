@@ -1,74 +1,53 @@
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
+using Cysharp.Threading.Tasks;
+using Lib9c.Model.Order;
 using Nekoyume.Action;
+using Nekoyume.EnumType;
+using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
+using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.UI.Model;
+using Nekoyume.UI.Module;
 using Nekoyume.UI.Scroller;
 using TMPro;
-using UniRx;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
+    using UniRx;
+
     public class Mail : XTweenWidget, IMail
     {
         public enum MailTabState : int
         {
             All,
             Workshop,
-            Auction,
+            Market,
             System
-        }
-
-        [Serializable]
-        public class TabButton
-        {
-            private static readonly Vector2 LeftBottom = new Vector2(-15f, -10.5f);
-            private static readonly Vector2 MinusRightTop = new Vector2(15f, 13f);
-
-            public Sprite highlightedSprite;
-            public Button button;
-            public Image hasNotificationImage;
-            public Image image;
-            public Image icon;
-            public TextMeshProUGUI text;
-            public TextMeshProUGUI textSelected;
-
-            public void Init(string localizationKey)
-            {
-                if (!button) return;
-                var localized = L10nManager.Localize(localizationKey);
-                var content = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(localized.ToLower());
-                text.text = content;
-                textSelected.text = content;
-            }
-
-            public void ChangeColor(bool isHighlighted = false)
-            {
-                image.overrideSprite = isHighlighted ? _selectedButtonSprite : null;
-                var imageRectTransform = image.rectTransform;
-                imageRectTransform.offsetMin = isHighlighted ? LeftBottom : Vector2.zero;
-                imageRectTransform.offsetMax = isHighlighted ? MinusRightTop : Vector2.zero;
-                icon.overrideSprite = isHighlighted ? highlightedSprite : null;
-                text.gameObject.SetActive(!isHighlighted);
-                textSelected.gameObject.SetActive(isHighlighted);
-            }
         }
 
         [SerializeField]
         private MailTabState tabState = default;
 
         [SerializeField]
-        private MailScroll scroll = null;
+        private CategoryTabButton allButton = null;
 
         [SerializeField]
-        private TabButton[] tabButtons = null;
+        private CategoryTabButton workshopButton = null;
+
+        [SerializeField]
+        private CategoryTabButton marketButton = null;
+
+        [SerializeField]
+        private CategoryTabButton systemButton = null;
+
+        [SerializeField]
+        private MailScroll scroll = null;
 
         [SerializeField]
         private GameObject emptyImage = null;
@@ -82,27 +61,37 @@ namespace Nekoyume.UI
         [SerializeField]
         private Blur blur = null;
 
+        private readonly Module.ToggleGroup _toggleGroup = new Module.ToggleGroup();
+
         private static Sprite _selectedButtonSprite;
 
         private const int TutorialEquipmentId = 10110000;
 
         public MailBox MailBox { get; private set; }
 
+        public override WidgetType WidgetType => WidgetType.Popup;
+        public override CloseKeyType CloseKeyType => CloseKeyType.Escape;
+
         #region override
+
+        protected override void Awake()
+        {
+            base.Awake();
+            _toggleGroup.RegisterToggleable(allButton);
+            _toggleGroup.RegisterToggleable(workshopButton);
+            _toggleGroup.RegisterToggleable(marketButton);
+            _toggleGroup.RegisterToggleable(systemButton);
+        }
 
         public override void Initialize()
         {
             base.Initialize();
             _selectedButtonSprite = Resources.Load<Sprite>("UI/Textures/button_yellow_02");
 
-            tabButtons[0].Init("ALL");
-            tabButtons[1].Init("UI_COMBINATION");
-            tabButtons[2].Init("UI_SHOP");
-            tabButtons[3].Init("SYSTEM");
             ReactiveAvatarState.MailBox?.Subscribe(SetList).AddTo(gameObject);
             Game.Game.instance.Agent.BlockIndexSubject
                 .ObserveOnMainThread()
-                .Subscribe(UpdateMailList)
+                .Subscribe(UpdateNotification)
                 .AddTo(gameObject);
 
             emptyText.text = L10nManager.Localize(emptyTextL10nKey);
@@ -110,8 +99,9 @@ namespace Nekoyume.UI
 
         public override void Show(bool ignoreShowAnimation = false)
         {
-            tabState = MailTabState.All;
             MailBox = States.Instance.CurrentAvatarState.mailBox;
+            _toggleGroup.SetToggledOffAll();
+            allButton.SetToggledOn();
             ChangeState(0);
             UpdateTabs();
             base.Show(ignoreShowAnimation);
@@ -120,6 +110,7 @@ namespace Nekoyume.UI
             {
                 blur.Show();
             }
+            HelpPopup.HelpMe(100010, true);
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
@@ -136,12 +127,7 @@ namespace Nekoyume.UI
 
         public void ChangeState(int state)
         {
-            tabState = (MailTabState)state;
-
-            for (var i = 0; i < tabButtons.Length; ++i)
-            {
-                tabButtons[i].ChangeColor(i == state);
-            }
+            tabState = (MailTabState) state;
 
             var blockIndex = Game.Game.instance.Agent.BlockIndex;
             UpdateMailList(blockIndex);
@@ -191,22 +177,23 @@ namespace Nekoyume.UI
 
         public void UpdateTabs(long? blockIndex = null)
         {
-            if (blockIndex is null)
-            {
-                blockIndex = Game.Game.instance.Agent.BlockIndex;
-            }
+            blockIndex ??= Game.Game.instance.Agent.BlockIndex;
 
             // 전체 탭
-            tabButtons[0].hasNotificationImage.enabled = MailBox
+            allButton.HasNotification.Value = MailBox
                 .Any(mail => mail.New && mail.requiredBlockIndex <= blockIndex);
 
-            for (var i = 1; i < tabButtons.Length; ++i)
-            {
-                var list = GetAvailableMailList(blockIndex.Value, (MailTabState) i);
-                var recent = list?.FirstOrDefault();
-                tabButtons[i].hasNotificationImage.enabled = recent is null ?
-                    false : recent.New;
-            }
+            var list = GetAvailableMailList(blockIndex.Value, MailTabState.Workshop);
+            var recent = list?.FirstOrDefault();
+            workshopButton.HasNotification.Value = recent is null ? false : recent.New;
+
+            list = GetAvailableMailList(blockIndex.Value, MailTabState.Market);
+            recent = list?.FirstOrDefault();
+            marketButton.HasNotification.Value = recent is null ? false : recent.New;
+
+            list = GetAvailableMailList(blockIndex.Value, MailTabState.System);
+            recent = list?.FirstOrDefault();
+            systemButton.HasNotification.Value = recent is null ? false : recent.New;
         }
 
         private void SetList(MailBox mailBox)
@@ -220,139 +207,206 @@ namespace Nekoyume.UI
             ChangeState((int) tabState);
         }
 
+        private void UpdateNotification(long blockIndex)
+        {
+            var avatarState = States.Instance.CurrentAvatarState;
+            if (avatarState is null)
+            {
+                return;
+            }
+
+            MailBox = avatarState.mailBox;
+            UpdateTabs(blockIndex);
+        }
+
         public void Read(CombinationMail mail)
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
-            var attachment = (CombinationConsumable.ResultModel) mail.attachment;
-            var itemBase = attachment.itemUsable ?? (ItemBase)attachment.costume;
-            var nonFungibleItem = attachment.itemUsable ?? (INonFungibleItem)attachment.costume;
-            var popup = Find<CombinationResultPopup>();
-            var materialItems = attachment.materials
-                .Select(pair => new {pair, item = pair.Key})
-                .Select(t => new CombinationMaterial(
-                    t.item,
-                    t.pair.Value,
-                    t.pair.Value,
-                    t.pair.Value))
-                .ToList();
-            var model = new UI.Model.CombinationResultPopup(new CountableItem(itemBase, 1))
+            var attachment = (CombinationConsumable5.ResultModel) mail.attachment;
+            if (attachment.itemUsable is null)
             {
-                isSuccess = true,
-                materialItems = materialItems
-            };
-            model.OnClickSubmit.Subscribe(_ =>
+                Debug.LogError("CombinationMail.itemUsable is null");
+                return;
+            }
+
+            var itemUsable = attachment.itemUsable;
+
+            // LocalLayer
+            UniTask.Run(() =>
             {
-                LocalLayerModifier.AddItem(avatarAddress, nonFungibleItem.ItemId, false);
-                LocalLayerModifier.RemoveNewAttachmentMail(avatarAddress, mail.id, false);
-                LocalLayerModifier.RemoveAttachmentResult(avatarAddress, mail.id);
-                LocalLayerModifier.ModifyAvatarItemRequiredIndex(
+                LocalLayerModifier.AddItem(
                     avatarAddress,
-                    nonFungibleItem.ItemId,
-                    Game.Game.instance.Agent.BlockIndex);
+                    itemUsable.TradableId,
+                    itemUsable.RequiredBlockIndex,
+                    1,
+                    false);
+                LocalLayerModifier.RemoveNewAttachmentMail(avatarAddress, mail.id, false);
+                return States.Instance.GetAvatarStateV2(avatarAddress);
+            }).ToObservable().SubscribeOnMainThread().Subscribe(avatarState =>
+            {
+                Debug.Log("CombinationMail LocalLayer task completed");
+                States.Instance.AddOrReplaceAvatarState(avatarState, States.Instance.CurrentAvatarKey);
             });
-            popup.Pop(model);
+            // ~LocalLayer
+
+            if (mail.attachment is CombinationConsumable5.ResultModel resultModel &&
+                resultModel.subRecipeId.HasValue &&
+                Game.Game.instance.TableSheets.EquipmentItemSubRecipeSheetV2.TryGetValue(
+                    resultModel.subRecipeId.Value,
+                    out var row))
+            {
+                Find<CombinationResult>().Show(itemUsable, row.Options.Count);   
+            }
         }
 
-        public void Read(SellCancelMail mail)
+        public void Read(OrderBuyerMail orderBuyerMail)
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
-            var attachment = (SellCancellation.Result) mail.attachment;
-            var itemBase = attachment.itemUsable ?? (ItemBase)attachment.costume;
-            var nonFungibleItem = attachment.itemUsable ?? (INonFungibleItem)attachment.costume;
-            //TODO 관련 기획이 끝나면 별도 UI를 생성
-            var popup = Find<ItemCountAndPricePopup>();
-            var model = new UI.Model.ItemCountAndPricePopup();
-            model.TitleText.Value = L10nManager.Localize("UI_RETRIEVE");
-            model.InfoText.Value = L10nManager.Localize("UI_SELL_CANCEL_INFO");
-            model.PriceInteractable.Value = false;
-            model.Price.Value = attachment.shopItem.Price;
-            model.CountEnabled.Value = false;
-            model.Item.Value = new CountEditableItem(itemBase, 1, 1, 1);
-            model.OnClickSubmit.Subscribe(_ =>
-            {
-                LocalLayerModifier.AddItem(avatarAddress, nonFungibleItem.ItemId, false);
-                LocalLayerModifier.RemoveNewAttachmentMail(avatarAddress, mail.id);
-                popup.Close();
-            }).AddTo(gameObject);
-            model.OnClickCancel.Subscribe(_ =>
-            {
-                //TODO 재판매 처리추가되야함\
-                LocalLayerModifier.AddItem(avatarAddress, nonFungibleItem.ItemId, false);
-                LocalLayerModifier.RemoveNewAttachmentMail(avatarAddress, mail.id);
-                popup.Close();
-            }).AddTo(gameObject);
-            popup.Pop(model);
-        }
-
-        public void Read(BuyerMail buyerMail)
-        {
-            var avatarAddress = States.Instance.CurrentAvatarState.address;
-            var attachment = (Buy.BuyerResult) buyerMail.attachment;
-            var itemBase = attachment.itemUsable ?? (ItemBase)attachment.costume;
-            var nonFungibleItem = attachment.itemUsable ?? (INonFungibleItem)attachment.costume;
+            var order = Util.GetOrder(orderBuyerMail.OrderId);
+            var itemBase = Util.GetItemBaseByTradableId(order.TradableId, order.ExpiredBlockIndex);
+            var count = order is FungibleOrder fungibleOrder ? fungibleOrder.ItemCount : 1;
             var popup = Find<CombinationResultPopup>();
-            var model = new UI.Model.CombinationResultPopup(new CountableItem(itemBase, 1))
+            var model = new UI.Model.CombinationResultPopup(new CountableItem(itemBase, count))
             {
                 isSuccess = true,
                 materialItems = new List<CombinationMaterial>()
             };
             model.OnClickSubmit.Subscribe(_ =>
             {
-                LocalLayerModifier.AddItem(avatarAddress, nonFungibleItem.ItemId, false);
-                LocalLayerModifier.RemoveNewAttachmentMail(avatarAddress, buyerMail.id);
+                LocalLayerModifier.AddItem(avatarAddress, order.TradableId, order.ExpiredBlockIndex, count);
+                LocalLayerModifier.RemoveNewMail(avatarAddress, orderBuyerMail.id, true);
             }).AddTo(gameObject);
             popup.Pop(model);
         }
 
-        public void Read(SellerMail sellerMail)
+        public void Read(OrderSellerMail orderSellerMail)
         {
-            var agentAddress = States.Instance.AgentState.address;
             var avatarAddress = States.Instance.CurrentAvatarState.address;
-            var attachment = (Buy.SellerResult) sellerMail.attachment;
+            var agentAddress = States.Instance.AgentState.address;
+            var order = Util.GetOrder(orderSellerMail.OrderId);
+            var taxedPrice = order.Price - order.GetTax();
+            LocalLayerModifier.ModifyAgentGold(agentAddress, taxedPrice);
+            LocalLayerModifier.RemoveNewMail(avatarAddress, orderSellerMail.id);
+        }
 
-            //TODO 관련 기획이 끝나면 별도 UI를 생성
-            LocalLayerModifier.ModifyAgentGold(agentAddress, attachment.gold);
-            LocalLayerModifier.RemoveNewAttachmentMail(avatarAddress, sellerMail.id);
+        public void Read(OrderExpirationMail orderExpirationMail)
+        {
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+            var order = Util.GetOrder(orderExpirationMail.OrderId);
+
+            Find<OneButtonPopup>().Show(L10nManager.Localize("UI_SELL_CANCEL_INFO"),
+                L10nManager.Localize("UI_YES"),
+                () =>
+                {
+                    LocalLayerModifier.AddItem(avatarAddress, order.TradableId, order.ExpiredBlockIndex, 1);
+                    LocalLayerModifier.RemoveNewMail(avatarAddress, orderExpirationMail.id);
+                });
+        }
+
+        public void Read(CancelOrderMail cancelOrderMail)
+        {
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+            var order = Util.GetOrder(cancelOrderMail.OrderId);
+
+            Find<OneButtonPopup>().Show(L10nManager.Localize("UI_SELL_CANCEL_INFO"),
+                L10nManager.Localize("UI_YES"),
+                () =>
+                {
+                    LocalLayerModifier.AddItem(avatarAddress, order.TradableId, order.ExpiredBlockIndex, 1);
+                    LocalLayerModifier.RemoveNewMail(avatarAddress, cancelOrderMail.id);
+                    var shopSell = Find<ShopSell>();
+                    if (shopSell.isActiveAndEnabled)
+                    {
+                        shopSell.Refresh();
+                    }
+                });
         }
 
         public void Read(ItemEnhanceMail itemEnhanceMail)
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             var attachment = (ItemEnhancement.ResultModel) itemEnhanceMail.attachment;
-            var popup = Find<CombinationResultPopup>();
-            var itemBase = attachment.itemUsable ?? (ItemBase)attachment.costume;
-            var nonFungibleItem = attachment.itemUsable ?? (INonFungibleItem)attachment.costume;
-            var model = new UI.Model.CombinationResultPopup(new CountableItem(itemBase, 1))
+            if (attachment.itemUsable is null)
             {
-                isSuccess = true,
-                materialItems = new List<CombinationMaterial>()
-            };
-            model.OnClickSubmit.Subscribe(_ =>
+                Debug.LogError("ItemEnhanceMail.itemUsable is null");
+                return;
+            }
+
+            var itemUsable = attachment.itemUsable;
+
+            // LocalLayer
+            UniTask.Run(() =>
             {
-                LocalLayerModifier.AddItem(avatarAddress, nonFungibleItem.ItemId, false);
-                LocalLayerModifier.RemoveNewAttachmentMail(avatarAddress, itemEnhanceMail.id);
+                LocalLayerModifier.AddItem(
+                    avatarAddress,
+                    itemUsable.TradableId,
+                    itemUsable.RequiredBlockIndex,
+                    1,
+                    false);
+                LocalLayerModifier.RemoveNewAttachmentMail(avatarAddress, itemEnhanceMail.id, false);
+                return States.Instance.GetAvatarStateV2(avatarAddress);
+            }).ToObservable().SubscribeOnMainThread().Subscribe(avatarState =>
+            {
+                Debug.Log("ItemEnhanceMail LocalLayer task completed");
+                States.Instance.AddOrReplaceAvatarState(avatarState, States.Instance.CurrentAvatarKey);
             });
-            popup.Pop(model);
+            // ~LocalLayer
+
+            Find<EnhancementResult>().Show(itemEnhanceMail);
         }
 
         public void Read(DailyRewardMail dailyRewardMail)
         {
-            var avatarAddress = States.Instance.CurrentAvatarState.address;
-            var attachment = (DailyReward.DailyRewardResult) dailyRewardMail.attachment;
-            var popup = Find<DailyRewardItemPopup>();
-            var materials = attachment.materials;
-            var material = materials.First();
+            // ignored.
+        }
 
-            var model = new UI.Model.ItemCountConfirmPopup();
-            model.TitleText.Value = L10nManager.Localize("UI_DAILY_REWARD_POPUP_TITLE");
-            model.Item.Value = new CountEditableItem(material.Key, material.Value, material.Value, material.Value);
-            model.OnClickSubmit.Subscribe(_ =>
+        public void Read(MonsterCollectionMail monsterCollectionMail)
+        {
+            if (!(monsterCollectionMail.attachment is MonsterCollectionResult monsterCollectionResult))
             {
-                LocalLayerModifier.AddItem(avatarAddress, material.Key.ItemId, material.Value, false);
-                LocalLayerModifier.RemoveNewAttachmentMail(avatarAddress, dailyRewardMail.id);
-                popup.Close();
-            }).AddTo(gameObject);
-            popup.Pop(model);
+                return;
+            }
+
+            var popup = Find<MonsterCollectionRewardsPopup>();
+            popup.OnClickSubmit.First().Subscribe(widget =>
+            {
+                // LocalLayer
+                for (var i = 0; i < monsterCollectionResult.rewards.Count; i++)
+                {
+                    var rewardInfo = monsterCollectionResult.rewards[i];
+                    if (!rewardInfo.ItemId.TryParseAsTradableId(
+                        Game.Game.instance.TableSheets.ItemSheet,
+                        out var tradableId))
+                    {
+                        continue;
+                    }
+
+
+                    if (!rewardInfo.ItemId.TryGetFungibleId(
+                        Game.Game.instance.TableSheets.ItemSheet,
+                        out var fungibleId))
+                    {
+                        continue;
+                    }
+
+                    var avatarState = States.Instance.CurrentAvatarState;
+                    avatarState.inventory.TryGetFungibleItems(fungibleId, out var items);
+                    var item = items.FirstOrDefault(x => x.item is ITradableItem);
+                    if (item != null && item is ITradableItem tradableItem)
+                    {
+                        LocalLayerModifier.AddItem(monsterCollectionResult.avatarAddress,
+                                                   tradableId,
+                                                   tradableItem.RequiredBlockIndex,
+                                                   rewardInfo.Quantity);
+                    }
+                }
+
+                LocalLayerModifier.RemoveNewAttachmentMail(monsterCollectionResult.avatarAddress, monsterCollectionMail.id, true);
+                // ~LocalLayer
+
+                widget.Close();
+            });
+            popup.Pop(monsterCollectionResult.rewards);
         }
 
         public void TutorialActionClickFirstCombinationMailSubmitButton()
@@ -372,5 +426,14 @@ namespace Nekoyume.UI
 
             Read(mail);
         }
+
+        [Obsolete]
+        public void Read(SellCancelMail mail) { }
+
+        [Obsolete]
+        public void Read(BuyerMail buyerMail) { }
+
+        [Obsolete]
+        public void Read(SellerMail sellerMail) { }
     }
 }

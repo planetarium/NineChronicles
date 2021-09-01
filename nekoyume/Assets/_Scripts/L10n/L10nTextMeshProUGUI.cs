@@ -6,6 +6,8 @@ using UnityEngine;
 
 namespace Nekoyume.L10n
 {
+    using UniRx;
+
     [DisallowMultipleComponent, RequireComponent(typeof(TextMeshProUGUI))]
     public class L10nTextMeshProUGUI : MonoBehaviour
     {
@@ -24,6 +26,10 @@ namespace Nekoyume.L10n
         [SerializeField,
          Tooltip("`L10nManager.OnLanguageTypeSettingsChange`를 구독해서 폰트 스페이싱 옵션을 반영할지를 설정합니다.")]
         private bool fixedSpacingOption = default;
+
+        [SerializeField,
+        Tooltip("`L10nManager.OnLanguageTypeSettingsChange`를 구독해서 폰트 마진 옵션을 반영할지를 설정합니다.")]
+        private bool fixedMarginOption = default;
 
         [SerializeField]
         private FontMaterialType fontMaterialType = default;
@@ -122,13 +128,11 @@ namespace Nekoyume.L10n
             }
             else
             {
-                L10nManager.OnInitialize
-                    .Subscribe(_ =>
-                    {
-                        SetLanguageTypeSettings(L10nManager.CurrentLanguageTypeSettings);
-                        SubscribeLanguageChange();
-                    })
-                    .AddTo(gameObject);
+                L10nManager.OnInitialize.Subscribe(_ =>
+                {
+                    SetLanguageTypeSettings(L10nManager.CurrentLanguageTypeSettings);
+                    SubscribeLanguageChange();
+                }).AddTo(gameObject);
             }
 
             if (!string.IsNullOrEmpty(l10nKey))
@@ -183,6 +187,13 @@ namespace Nekoyume.L10n
                 Text.characterSpacing = defaultCharacterSpacing + data.CharacterSpacingOffset;
                 Text.wordSpacing = defaultWordSpacing + data.WordSpacingOffset;
                 Text.lineSpacing = defaultLineSpacing + data.LineSpacingOffset;
+            }
+
+            if (!fixedMarginOption)
+            {
+                var margin = Text.margin;
+                margin.w += data.MarginBottom;
+                Text.margin = margin;
             }
         }
     }

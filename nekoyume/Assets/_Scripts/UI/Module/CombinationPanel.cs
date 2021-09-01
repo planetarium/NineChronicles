@@ -21,6 +21,14 @@ namespace Nekoyume.UI.Module
     {
         public BigInteger CostNCG { get; protected set; }
         public int CostAP { get; protected set; }
+        public bool HasEnoughAP => States.Instance.CurrentAvatarState.actionPoint >= CostAP;
+        public bool HasEnoughGold => States.Instance.GoldBalanceState.Gold.MajorUnit >= CostNCG;
+
+        public bool IsSubmittable => materialPanel.IsCraftable &&
+                                     HasEnoughGold &&
+                                     HasEnoughAP &&
+                                     Widget.Find<Combination>().selectedIndex >= 0;
+
         public Subject<long> RequiredBlockIndexSubject { get; } = new Subject<long>();
 
         public RecipeCellView recipeCellView;
@@ -114,28 +122,25 @@ namespace Nekoyume.UI.Module
             CostNCG = (int) materialPanel.costNCG;
             CostAP = materialPanel.costAP;
 
-            var hasEnoughAP = States.Instance.CurrentAvatarState.actionPoint >= CostAP;
             if (CostAP > 0)
             {
-                submitButton.ShowAP(CostAP, hasEnoughAP);
+                submitButton.ShowAP(CostAP, HasEnoughAP);
             }
             else
             {
                 submitButton.HideAP();
             }
 
-            var hasEnoughGold = States.Instance.GoldBalanceState.Gold.MajorUnit >= CostNCG;
             if (CostNCG > 0)
             {
-                submitButton.ShowNCG(CostNCG, hasEnoughGold);
+                submitButton.ShowNCG(CostNCG, HasEnoughGold);
             }
             else
             {
                 submitButton.HideNCG();
             }
 
-            var isCraftable = materialPanel.IsCraftable && hasEnoughGold && hasEnoughAP;
-            submitButton.SetSubmittable(isCraftable);
+            UpdateSubmittable();
         }
 
         public void SetData(EquipmentItemRecipeSheet.Row recipeRow, int? subRecipeId = null)
@@ -163,6 +168,11 @@ namespace Nekoyume.UI.Module
             materialPanel.SetData(recipeRow, true, Widget.Find<Combination>().selectedIndex >= 0);
             Enable();
             stateType = Combination.StateType.CombineConsumable;
+        }
+
+        public void UpdateSubmittable()
+        {
+            submitButton.SetSubmittable(IsSubmittable);
         }
     }
 }

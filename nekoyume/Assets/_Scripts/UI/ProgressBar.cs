@@ -19,13 +19,6 @@ namespace Nekoyume.UI
         public TextMeshProUGUI label;
         public float colorChangeThreshold = 0.35f;
 
-        public void UpdatePosition(GameObject target, Vector3 offset = new Vector3())
-        {
-            var targetPosition = target.transform.position + offset;
-            RectTransform.anchoredPosition = targetPosition.ToCanvasPosition(ActionCamera.instance.Cam, MainCanvas.instance.Canvas);
-            RectTransform.localScale = new Vector3(1, 1);
-        }
-
         public void Set(int current, int max)
         {
             SetText($"{current} / {max}");

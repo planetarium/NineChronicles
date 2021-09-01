@@ -45,6 +45,8 @@ using UnityEngine.Assertions;
 
 namespace Nekoyume.BlockChain
 {
+    using UniRx;
+
     /// <summary>
     /// 블록체인 노드 관련 로직을 처리
     /// </summary>
@@ -57,7 +59,7 @@ namespace Nekoyume.BlockChain
         public static readonly string DefaultStoragePath = StorePath.GetDefaultStoragePath();
 
         public Subject<long> BlockIndexSubject { get; } = new Subject<long>();
-        public Subject<HashDigest<SHA256>> BlockTipHashSubject { get; } = new Subject<HashDigest<SHA256>>();
+        public Subject<BlockHash> BlockTipHashSubject { get; } = new Subject<BlockHash>();
 
         private static IEnumerator _miner;
         private static IEnumerator _txProcessor;
@@ -100,7 +102,7 @@ namespace Nekoyume.BlockChain
 
         public ActionRenderer ActionRenderer => BlockPolicySource.ActionRenderer;
         public int AppProtocolVersion { get; private set; }
-        public HashDigest<SHA256> BlockTipHash => blocks.Tip.Hash;
+        public BlockHash BlockTipHash => blocks.Tip.Hash;
 
         public event EventHandler BootstrapStarted;
         public event EventHandler<PreloadState> PreloadProcessed;
@@ -418,10 +420,6 @@ namespace Nekoyume.BlockChain
                 }
 
                 // 상점의 상태를 한 번 동기화 한다.
-                States.Instance.SetShopState(
-                    GetState(ShopState.Address) is Bencodex.Types.Dictionary shopDict
-                        ? new ShopState(shopDict)
-                        : new ShopState());
 
                 if (GetState(GameConfigState.Address) is Dictionary configDict)
                 {
@@ -539,7 +537,7 @@ namespace Nekoyume.BlockChain
                 Debug.Log($"Storage Type {storageType} is not supported. DefaultStore will be used.");
             }
 
-            return store ?? new DefaultStore(path, flush: false, compress: true);
+            return store ?? new DefaultStore(path, flush: false);
         }
 
         private void StartSystemCoroutines()
@@ -639,12 +637,14 @@ namespace Nekoyume.BlockChain
 
         private IEnumerator CoLogger()
         {
+            Widget.Create<BattleSimulator>(true);
+            Widget.Create<CombinationSimulator>(true);
             Widget.Create<Cheat>(true);
             while (true)
             {
                 Cheat.Display("Logs", _tipInfo);
                 var peerStateString = string.Join("\n", _swarm.PeersStates.Select(peerState =>
-                    $"Address: {peerState.Address}\n" +
+                    $"Address: {peerState.Peer.Address}\n" +
                     $" - LastUpdated: {peerState.LastUpdated}\n" +
                     $" - LastChecked: {peerState.LastChecked}\n" +
                     $" - Latency: {peerState.Latency}"));
@@ -668,7 +668,7 @@ namespace Nekoyume.BlockChain
                 foreach(var (block, appendedTime) in lastTenBlocks.ToArray().Reverse())
                 {
                     log.Append($"[{block.Index}] {block.Hash}\n");
-                    log.Append($" -Miner : {block.Miner?.ToString()}\n");
+                    log.Append($" -Miner : {block.Miner.ToString()}\n");
                     log.Append($" -Created at : {block.Timestamp}\n");
                     log.Append($" -Appended at : {appendedTime}\n");
                 }
@@ -814,7 +814,7 @@ namespace Nekoyume.BlockChain
             var (oldTip, newTip) = tuple;
 
             _tipInfo = "Tip Information\n";
-            _tipInfo += $" -Miner           : {blocks.Tip.Miner?.ToString()}\n";
+            _tipInfo += $" -Miner           : {blocks.Tip.Miner.ToString()}\n";
             _tipInfo += $" -TimeStamp  : {DateTimeOffset.Now}\n";
             _tipInfo += $" -PrevBlock    : [{oldTip.Index}] {oldTip.Hash}\n";
             _tipInfo += $" -LatestBlock : [{newTip.Index}] {newTip.Hash}";

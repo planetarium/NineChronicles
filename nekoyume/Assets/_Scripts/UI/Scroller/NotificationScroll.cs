@@ -2,11 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using EasingCore;
-using UniRx;
 using UnityEngine;
 
 namespace Nekoyume.UI.Scroller
 {
+    using UniRx;
+
     public class NotificationScroll : FancyScrollView.FancyScrollView<
         NotificationCell.ViewModel,
         NotificationScroll.DefaultContext>

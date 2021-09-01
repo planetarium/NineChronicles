@@ -1,11 +1,12 @@
 using System;
 using Nekoyume.EnumType;
-using UniRx;
 using UnityEngine;
 using UnityEngine.Rendering;
 
 namespace Nekoyume.Game.Character
 {
+    using UniRx;
+
     public class DialogNPC : MonoBehaviour
     {
         private const float AnimatorTimeScale = 1.2f;

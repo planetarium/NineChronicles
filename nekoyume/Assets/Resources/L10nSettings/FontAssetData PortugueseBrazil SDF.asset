@@ -29,34 +29,53 @@ MonoBehaviour:
     material: {fileID: 2100000, guid: 478e3fd868d8b4ab19eeabd6063db20c, type: 2}
   - type: 6
     material: {fileID: 2100000, guid: 26af065b05af94a62b1a6bb893250616, type: 2}
-  - type: 7
-    material: {fileID: 2100000, guid: 56d3f2c7571e24574b01b0a87b99a3ce, type: 2}
-  - type: 8
-    material: {fileID: 2100000, guid: 35a64e5cae68e4dfe834303255b0fea9, type: 2}
   - type: 9
-    material: {fileID: 2100000, guid: c6d69cbb6e1c64ab783c2c9bd6ced8e7, type: 2}
+    material: {fileID: 2100000, guid: 56d3f2c7571e24574b01b0a87b99a3ce, type: 2}
   - type: 10
-    material: {fileID: 2100000, guid: a9ab0bc80f22c443f822ae6eeb7efa79, type: 2}
+    material: {fileID: 2100000, guid: 35a64e5cae68e4dfe834303255b0fea9, type: 2}
   - type: 11
-    material: {fileID: 2100000, guid: ee29ae1c11182434099f73771510d6c7, type: 2}
+    material: {fileID: 2100000, guid: c6d69cbb6e1c64ab783c2c9bd6ced8e7, type: 2}
   - type: 12
-    material: {fileID: 2100000, guid: e040826548a6a4d2a8592d10e79c94df, type: 2}
+    material: {fileID: 2100000, guid: a9ab0bc80f22c443f822ae6eeb7efa79, type: 2}
   - type: 13
-    material: {fileID: 2100000, guid: 4cac38991021348a49f59f8c3a3af1f1, type: 2}
+    material: {fileID: 2100000, guid: ee29ae1c11182434099f73771510d6c7, type: 2}
   - type: 14
-    material: {fileID: 2100000, guid: d270548e6b15641209fe19cfea4f5b5c, type: 2}
+    material: {fileID: 2100000, guid: e040826548a6a4d2a8592d10e79c94df, type: 2}
   - type: 15
-    material: {fileID: 2100000, guid: eb307082725a44f06a37b5f4d41ae2bd, type: 2}
+    material: {fileID: 2100000, guid: 4cac38991021348a49f59f8c3a3af1f1, type: 2}
   - type: 16
-    material: {fileID: 2100000, guid: 7f5cd8979f0234693912ff4e204bb817, type: 2}
+    material: {fileID: 2100000, guid: d270548e6b15641209fe19cfea4f5b5c, type: 2}
   - type: 17
-    material: {fileID: 2100000, guid: 95053567aab424706bd82747067de9b2, type: 2}
+    material: {fileID: 2100000, guid: eb307082725a44f06a37b5f4d41ae2bd, type: 2}
   - type: 18
-    material: {fileID: 2100000, guid: 8de5d6d8ea24545379713e450bedeb68, type: 2}
+    material: {fileID: 2100000, guid: 7f5cd8979f0234693912ff4e204bb817, type: 2}
   - type: 19
+    material: {fileID: 2100000, guid: 95053567aab424706bd82747067de9b2, type: 2}
+  - type: 20
+    material: {fileID: 2100000, guid: 8de5d6d8ea24545379713e450bedeb68, type: 2}
+  - type: 21
     material: {fileID: 2100000, guid: af7f7b5e5b279400ca396ce66909b666, type: 2}
+  - type: 22
+    material: {fileID: 2100000, guid: fd79cf097f4a24a50a3a15b428934373, type: 2}
+  - type: 23
+    material: {fileID: 2100000, guid: f5a3cf108363949f2ba2f46e78e412f6, type: 2}
+  - type: 7
+    material: {fileID: 2100000, guid: 6f005829226b045e589d60aeeabd71bb, type: 2}
+  - type: 8
+    material: {fileID: 2100000, guid: b3ff945b44fb04b44ba72e8f0f3919c0, type: 2}
+  - type: 24
+    material: {fileID: 2100000, guid: 3791dfd2000fb4d36b5ed9e786614e9e, type: 2}
+  - type: 25
+    material: {fileID: 2100000, guid: 3817120cb982e4282b5320ee75af3d29, type: 2}
+  - type: 26
+    material: {fileID: 2100000, guid: 60bb38f244d404153b6fc870b9f53c9b, type: 2}
+  - type: 27
+    material: {fileID: 2100000, guid: e190766a917eb45ed956f98ebbb4dbca, type: 2}
+  - type: 28
+    material: {fileID: 2100000, guid: 9623bbf8baa1d46a2856c1bf7ed04ab2, type: 2}
   setFontStyleBoldToDisabledAsForced: 0
   fontSizeOffset: 0
   characterSpacingOffset: 0
   wordSpacingOffset: 0
   lineSpacingOffset: 0
+  marginBottom: 3

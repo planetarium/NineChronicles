@@ -35,7 +35,7 @@ namespace Tests.EditMode
                 default,
                 default
             );
-            var optionIds = CombinationEquipment.SelectOption(
+            var optionIds = CombinationEquipment4.SelectOption(
                 _tableSheets.EquipmentItemOptionSheet,
                 _tableSheets.SkillSheet,
                 row,
@@ -60,7 +60,7 @@ namespace Tests.EditMode
                 default,
                 default
             );
-            var optionIds = CombinationEquipment.SelectOption(
+            var optionIds = CombinationEquipment4.SelectOption(
                 _tableSheets.EquipmentItemOptionSheet,
                 _tableSheets.SkillSheet,
                 row,
@@ -86,7 +86,7 @@ namespace Tests.EditMode
                 default,
                 default
             );
-            var optionIds = CombinationEquipment.SelectOption(
+            var optionIds = CombinationEquipment4.SelectOption(
                 _tableSheets.EquipmentItemOptionSheet,
                 _tableSheets.SkillSheet,
                 row,

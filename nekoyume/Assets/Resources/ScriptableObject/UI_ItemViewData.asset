@@ -1,0 +1,64 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 227f5d522014a9544804e5001249e82b, type: 3}
+  m_Name: UI_ItemViewData
+  m_EditorClassIdentifier: 
+  fallbackGrade: 0
+  datas:
+  - grade: 0
+    gradeBackground: {fileID: 21300000, guid: aa1fa6458568e40e7983241ea9d23893, type: 3}
+    gradeHsvRange: 0.5
+    gradeHsvHue: 0
+    gradeHsvSaturation: 0
+    gradeHsvValue: 0
+    enhancementMaterial: {fileID: 2100000, guid: d0ba5015ebc174e1980d7df502f1ebb6,
+      type: 2}
+  - grade: 1
+    gradeBackground: {fileID: 21300000, guid: aa1fa6458568e40e7983241ea9d23893, type: 3}
+    gradeHsvRange: 0.5
+    gradeHsvHue: 0
+    gradeHsvSaturation: 0
+    gradeHsvValue: 0
+    enhancementMaterial: {fileID: 2100000, guid: fffce470be0364f8fac6ed42147cdb68,
+      type: 2}
+  - grade: 2
+    gradeBackground: {fileID: 21300000, guid: 78d1bb025c01346e8b2f00141c0c43d6, type: 3}
+    gradeHsvRange: 0.5
+    gradeHsvHue: 0
+    gradeHsvSaturation: 0
+    gradeHsvValue: 0
+    enhancementMaterial: {fileID: 2100000, guid: e71700ec08bb942f484e04f6fb84b27b,
+      type: 2}
+  - grade: 3
+    gradeBackground: {fileID: 21300000, guid: 78d1bb025c01346e8b2f00141c0c43d6, type: 3}
+    gradeHsvRange: 0.5
+    gradeHsvHue: 0.24
+    gradeHsvSaturation: 0.14
+    gradeHsvValue: 0.05
+    enhancementMaterial: {fileID: 2100000, guid: d44a5a5c027c940f0b81b37678e9d7ef,
+      type: 2}
+  - grade: 4
+    gradeBackground: {fileID: 21300000, guid: 78d1bb025c01346e8b2f00141c0c43d6, type: 3}
+    gradeHsvRange: 0.5
+    gradeHsvHue: -0.26
+    gradeHsvSaturation: 0
+    gradeHsvValue: 0.05
+    enhancementMaterial: {fileID: 2100000, guid: 1d28cb217008f4359a1ca2bbf22f64aa,
+      type: 2}
+  - grade: 5
+    gradeBackground: {fileID: 21300000, guid: 78d1bb025c01346e8b2f00141c0c43d6, type: 3}
+    gradeHsvRange: 1
+    gradeHsvHue: 0.45
+    gradeHsvSaturation: 0.5
+    gradeHsvValue: 0.05
+    enhancementMaterial: {fileID: 2100000, guid: d0ba5015ebc174e1980d7df502f1ebb6,
+      type: 2}

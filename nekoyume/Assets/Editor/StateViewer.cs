@@ -120,7 +120,6 @@ namespace Editor
                     stateProxy.RegisterAlias($"avatar{i}", states.AvatarStates[i].address);
             }
             stateProxy.RegisterAlias("agent", states.AgentState.address);
-            stateProxy.RegisterAlias("shop", states.ShopState.address);
             for (int i = 0; i < RankingState.RankingMapCapacity; ++i)
             {
                 stateProxy.RegisterAlias("ranking", RankingState.Derive(i));

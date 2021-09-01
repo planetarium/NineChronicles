@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Linq;
 using Nekoyume.BlockChain;
@@ -6,21 +5,17 @@ using Nekoyume.Game;
 using Nekoyume.Game.Controller;
 using Nekoyume.State;
 using Nekoyume.UI.Module;
-using Nekoyume.Manager;
 using Nekoyume.Model.BattleStatus;
-using UniRx;
 using UnityEngine;
 using Random = UnityEngine.Random;
 using mixpanel;
 using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
-using System.Collections.Generic;
-using Nekoyume.State.Subjects;
-using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
+    using UniRx;
     public class Menu : Widget
     {
         private const string FirstOpenShopKeyFormat = "Nekoyume.UI.Menu.FirstOpenShopKey_{0}";
@@ -117,12 +112,11 @@ namespace Nekoyume.UI
 
             var worldId = worldRow.Id;
 
-            Find<BottomMenu>().Close(true);
             Find<LoadingScreen>().Show();
 
             var stage = Game.Game.instance.Stage;
-            stage.isExitReserved = false;
-            stage.repeatStage = false;
+            stage.IsExitReserved = false;
+            stage.IsRepeatStage = false;
             var player = stage.GetPlayer();
             player.StartRun();
             ActionCamera.instance.ChaseX(player.transform);
@@ -147,11 +141,6 @@ namespace Nekoyume.UI
 
         public void GoToStage(BattleLog battleLog)
         {
-            var props = new Value
-            {
-                ["StageId"] = battleLog.stageId,
-            };
-            Mixpanel.Track("Unity/Stage Start", props);
             Game.Event.OnStageStart.Invoke(battleLog);
             Find<LoadingScreen>().Close();
             Close(true);
@@ -161,8 +150,7 @@ namespace Nekoyume.UI
         {
             Mixpanel.Track("Unity/Click Guided Quest Combination Equipment");
 
-            CombinationClickInternal(() =>
-                Find<Combination>().ShowByEquipmentRecipe(recipeId));
+            CombinationClickInternal(() => Find<Craft>().Show(recipeId));
         }
 
         private void UpdateButtons()
@@ -173,20 +161,16 @@ namespace Nekoyume.UI
             btnRanking.Update();
             btnMimisbrunnr.Update();
 
-            var addressHax = ReactiveAvatarState.Address.Value.ToHex();
-            var firstOpenCombinationKey = string.Format(FirstOpenCombinationKeyFormat, addressHax);
-            var firstOpenShopKey = string.Format(FirstOpenShopKeyFormat, addressHax);
-            var firstOpenRankingKey = string.Format(FirstOpenRankingKeyFormat, addressHax);
-            var firstOpenQuestKey = string.Format(FirstOpenQuestKeyFormat, addressHax);
-            var firstOpenMimisbrunnrKey = string.Format(FirstOpenMimisbrunnrKeyFormat, addressHax);
-
-            var combination = Find<Combination>();
-            var hasNotificationOnCombination = combination.HasNotification;
+            var addressHex = States.Instance.CurrentAvatarState.address.ToHex();
+            var firstOpenCombinationKey = string.Format(FirstOpenCombinationKeyFormat, addressHex);
+            var firstOpenShopKey = string.Format(FirstOpenShopKeyFormat, addressHex);
+            var firstOpenQuestKey = string.Format(FirstOpenQuestKeyFormat, addressHex);
+            var firstOpenMimisbrunnrKey = string.Format(FirstOpenMimisbrunnrKeyFormat, addressHex);
 
             combinationExclamationMark.gameObject.SetActive(
                 btnCombination.IsUnlocked &&
                 (PlayerPrefs.GetInt(firstOpenCombinationKey, 0) == 0 ||
-                 hasNotificationOnCombination));
+                 Craft.SharedModel.HasNotification));
             shopExclamationMark.gameObject.SetActive(
                 btnShop.IsUnlocked &&
                 PlayerPrefs.GetInt(firstOpenShopKey, 0) == 0);
@@ -202,17 +186,17 @@ namespace Nekoyume.UI
 
             var worldMap = Find<WorldMap>();
             worldMap.UpdateNotificationInfo();
-            var hasNotificationInWorldmap = worldMap.HasNotification;
+            var hasNotificationInWorldMap = worldMap.HasNotification;
 
             questExclamationMark.gameObject.SetActive(
                 (btnQuest.IsUnlocked &&
                  PlayerPrefs.GetInt(firstOpenQuestKey, 0) == 0) ||
-                hasNotificationInWorldmap);
+                hasNotificationInWorldMap);
 
             mimisbrunnrExclamationMark.gameObject.SetActive(
                 (btnMimisbrunnr.IsUnlocked &&
                  PlayerPrefs.GetInt(firstOpenMimisbrunnrKey, 0) == 0) ||
-                hasNotificationInWorldmap);
+                hasNotificationInWorldMap);
         }
 
         private void HideButtons()
@@ -240,17 +224,16 @@ namespace Nekoyume.UI
 
             if (questExclamationMark.gameObject.activeSelf)
             {
-                var addressHax = ReactiveAvatarState.Address.Value.ToHex();
-                var key = string.Format(FirstOpenQuestKeyFormat, addressHax);
+                var addressHex = States.Instance.CurrentAvatarState.address.ToHex();
+                var key = string.Format(FirstOpenQuestKeyFormat, addressHex);
                 PlayerPrefs.SetInt(key, 1);
             }
 
-            Mixpanel.Track("Unity/Enter Dungeon");
             _coLazyClose = StartCoroutine(CoLazyClose());
             var avatarState = States.Instance.CurrentAvatarState;
             Find<WorldMap>().Show(avatarState.worldInformation);
+            Find<HeaderMenu>().UpdateAssets(HeaderMenu.AssetVisibleState.Battle);
             AudioController.PlayClick();
-            AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ClickMainBattle);
         }
 
         public void ShopClick()
@@ -263,31 +246,19 @@ namespace Nekoyume.UI
 
             if (shopExclamationMark.gameObject.activeSelf)
             {
-                var addressHax = ReactiveAvatarState.Address.Value.ToHex();
-                var key = string.Format(FirstOpenShopKeyFormat, addressHax);
+                var addressHex = States.Instance.CurrentAvatarState.address.ToHex();
+                var key = string.Format(FirstOpenShopKeyFormat, addressHex);
                 PlayerPrefs.SetInt(key, 1);
             }
 
             Close();
-            Find<Shop>().Show();
+            Find<ShopBuy>().Show();
+            Find<HeaderMenu>().UpdateAssets(HeaderMenu.AssetVisibleState.Shop);
             AudioController.PlayClick();
-            AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ClickMainShop);
         }
 
-        public void CombinationClick(int slotIndex = -1)
-        {
-            CombinationClickInternal(() =>
-            {
-                if (slotIndex >= 0)
-                {
-                    Find<Combination>().Show(slotIndex);
-                }
-                else
-                {
-                    Find<Combination>().Show();
-                }
-            });
-        }
+        public void CombinationClick() =>
+            CombinationClickInternal(() => Find<CombinationMain>().Show());
 
         private void CombinationClickInternal(System.Action showAction)
         {
@@ -304,16 +275,16 @@ namespace Nekoyume.UI
 
             if (combinationExclamationMark.gameObject.activeSelf)
             {
-                var addressHax = ReactiveAvatarState.Address.Value.ToHex();
-                var key = string.Format(FirstOpenCombinationKeyFormat, addressHax);
+                var addressHex = States.Instance.CurrentAvatarState.address.ToHex();
+                var key = string.Format(FirstOpenCombinationKeyFormat, addressHex);
                 PlayerPrefs.SetInt(key, 1);
             }
 
             Close();
+            Find<HeaderMenu>().UpdateAssets(HeaderMenu.AssetVisibleState.Combination);
             showAction();
 
             AudioController.PlayClick();
-            AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ClickMainCombination);
         }
 
         public void RankingClick()
@@ -324,8 +295,9 @@ namespace Nekoyume.UI
                 return;
             }
 
-            Close();
+            Close(true);
             Find<RankingBoard>().Show();
+            Find<HeaderMenu>().UpdateAssets(HeaderMenu.AssetVisibleState.Battle);
             AudioController.PlayClick();
         }
 
@@ -375,15 +347,13 @@ namespace Nekoyume.UI
 
             if (mimisbrunnrExclamationMark.gameObject.activeSelf)
             {
-                var addressHax = ReactiveAvatarState.Address.Value.ToHex();
-                var key = string.Format(FirstOpenMimisbrunnrKeyFormat, addressHax);
+                var addressHex = States.Instance.CurrentAvatarState.address.ToHex();
+                var key = string.Format(FirstOpenMimisbrunnrKeyFormat, addressHex);
                 PlayerPrefs.SetInt(key, 1);
             }
 
-            Mixpanel.Track("Unity/Enter Mimisbrunnr");
             _coLazyClose = StartCoroutine(CoLazyClose());
             AudioController.PlayClick();
-            AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ClickHardBattle);
 
             SharedViewModel.SelectedWorldId.SetValueAndForceNotify(world.Id);
             SharedViewModel.SelectedStageId.SetValueAndForceNotify(world.GetNextStageId());
@@ -391,6 +361,9 @@ namespace Nekoyume.UI
             stageInfo.Show(SharedViewModel, worldRow, StageInformation.StageType.Mimisbrunnr);
             var status = Find<Status>();
             status.Close(true);
+            Find<EventBanner>().Close(true);
+            Find<HeaderMenu>().UpdateAssets(HeaderMenu.AssetVisibleState.Battle);
+            HelpPopup.HelpMe(100019, true);
         }
 
         public void UpdateGuideQuest(AvatarState avatarState)
@@ -425,15 +398,27 @@ namespace Nekoyume.UI
         {
             var tutorialController = Game.Game.instance.Stage.TutorialController;
             var tutorialProgress = tutorialController.GetTutorialProgress();
+            var avatarState = Game.Game.instance.States.CurrentAvatarState;
+            var nextStageId = avatarState.worldInformation
+                .TryGetLastClearedStageId(out var stageId) ? stageId + 1 : 1;
+
+            if (nextStageId > 4)
+            {
+                HelpPopup.HelpMe(100001, true);
+                return;
+            }
+
             if (tutorialProgress <= 1)
             {
-                var avatarState = Game.Game.instance.States.CurrentAvatarState;
-                var nextStageId = avatarState.worldInformation
-                    .TryGetLastClearedStageId(out var stageId) ? stageId + 1 : 1;
-                if (nextStageId < 4)
+                if (nextStageId <= 3)
                 {
                     tutorialController.Play(1);
                     return;
+                }
+                else
+                {
+                    tutorialController.SaveTutorialProgress(1);
+                    tutorialProgress = 1;
                 }
             }
 
@@ -450,6 +435,10 @@ namespace Nekoyume.UI
                 if (!States.Instance.CurrentAvatarState.inventory.HasItem(recipeRow.MaterialId))
                 {
                     tutorialController.SaveTutorialProgress(2);
+                    if (!Game.Game.instance.Stage.TutorialController.IsPlaying)
+                    {
+                        HelpPopup.HelpMe(100001, true);
+                    }
                 }
                 else
                 {
@@ -474,17 +463,16 @@ namespace Nekoyume.UI
             StopSpeeches();
 
             guidedQuest.Hide(true);
-            Find<BottomMenu>().Close(true);
             Find<Status>().Close(true);
+            Find<EventBanner>().Close(true);
             base.Close(ignoreCloseAnimation);
         }
 
         private IEnumerator CoLazyClose(float duration = 1f, bool ignoreCloseAnimation = false)
         {
             StopSpeeches();
-
-            Find<BottomMenu>().Close(true);
             Find<Status>().Close(true);
+            Find<EventBanner>().Close(true);
             yield return new WaitForSeconds(duration);
             base.Close(ignoreCloseAnimation);
         }
@@ -534,18 +522,42 @@ namespace Nekoyume.UI
                 return;
             }
 
-            // Temporarily Lock tutorial recipe.
-            var combination = Find<Combination>();
-            var skipMap = combination.RecipeVFXSkipMap;
-            if (skipMap.ContainsKey(firstRecipeRow.Id))
+            // Temporarily lock tutorial recipe.
+            var skipMap = Craft.SharedModel.RecipeVFXSkipList;
+            if (skipMap.Contains(firstRecipeRow.Id))
             {
                 skipMap.Remove(firstRecipeRow.Id);
             }
-            combination.SaveRecipeVFXSkipMap();
+            Craft.SharedModel.SaveRecipeVFXSkipList();
             GoToCombinationEquipmentRecipe(firstRecipeRow.Id);
         }
 
-        public void TutorialActionClickGuidedQuestWorldStage2() =>
+        public void TutorialActionClickGuidedQuestWorldStage2()
+        {
+            var player = Game.Game.instance.Stage.GetPlayer();
+            player.DisableHudContainer();
             HackAndSlash(GuidedQuest.WorldQuest?.Goal ?? 4);
+        }
+
+#if UNITY_EDITOR
+        protected override void Update()
+        {
+            base.Update();
+
+            if (!Find<CombinationResult>().gameObject.activeSelf &&
+                !Find<EnhancementResult>().gameObject.activeSelf &&
+                Input.GetKey(KeyCode.LeftControl))
+            {
+                if (Input.GetKeyDown(KeyCode.C))
+                {
+                    Find<CombinationResult>().ShowWithEditorProperty();
+                }
+                else if (Input.GetKeyDown(KeyCode.E))
+                {
+                    Find<EnhancementResult>().ShowWithEditorProperty();
+                }
+            }
+        }
+#endif
     }
 }

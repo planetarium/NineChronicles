@@ -75,9 +75,7 @@ namespace Nekoyume.UI
 
         public void Show(RectTransform target, Address avatarAddress)
         {
-            var avatarState =
-                new AvatarState(
-                    (Bencodex.Types.Dictionary) Game.Game.instance.Agent.GetState(avatarAddress));
+            var avatarState = States.Instance.GetAvatarStateV2(avatarAddress);
             Show(target, avatarState);
         }
 
@@ -127,7 +125,7 @@ namespace Nekoyume.UI
         private void OnClickAvatarInfo(Unit unit)
         {
             AudioController.PlayClick();
-            Find<FriendInfoPopup>().Show(_selectedAvatarState);
+            Find<FriendInfoPopup>().Show(_selectedAvatarState, true);
             Close();
         }
     }

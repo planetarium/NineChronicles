@@ -1,9 +1,10 @@
 using System;
 using Nekoyume.Model.Item;
-using UniRx;
 
 namespace Nekoyume.UI.Model
 {
+    using UniRx;
+
     // todo: Item에 합쳐도 될 것 같음.
     public class CountableItem : Item
     {

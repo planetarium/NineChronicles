@@ -2,13 +2,14 @@ using System;
 using DG.Tweening;
 using Nekoyume.Game.Controller;
 using Nekoyume.TableData;
-using UniRx;
 using UniRx.Triggers;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
 {
+    using UniRx;
+
     public class WorldButton : MonoBehaviour
     {
         private enum State
@@ -32,9 +33,6 @@ namespace Nekoyume.UI.Module
 
         [SerializeField]
         private Image colorImage = null;
-
-        [SerializeField]
-        private Image nameImage = null;
 
         [SerializeField, Header("Direction"), Tooltip("대기 상태일 때 월드 이름이 스케일 되는 크기")]
         private float idleNameScaleTo = 1.1f;
@@ -152,7 +150,6 @@ namespace Nekoyume.UI.Module
                     button.interactable = true;
                     grayImage.enabled = false;
                     colorImage.enabled = true;
-                    nameImage.enabled = true;
                     lockImage.SetActive(false);
                     unlockImage.SetActive(true);
                     _animationState.SetValueAndForceNotify(AnimationState.Idle);
@@ -161,7 +158,6 @@ namespace Nekoyume.UI.Module
                     button.interactable = false;
                     grayImage.enabled = true;
                     colorImage.enabled = false;
-                    nameImage.enabled = false;
                     lockImage.SetActive(true);
                     unlockImage.SetActive(false);
                     _animationState.SetValueAndForceNotify(AnimationState.None);
@@ -177,7 +173,6 @@ namespace Nekoyume.UI.Module
             _tweener = null;
 
             transform.localScale = Vector3.one;
-            nameImage.transform.localScale = Vector3.one;
 
             if (_state.Value == State.Locked)
             {
@@ -189,10 +184,6 @@ namespace Nekoyume.UI.Module
                 case AnimationState.None:
                     break;
                 case AnimationState.Idle:
-                    _tweener = nameImage.transform
-                        .DOScale(idleNameScaleTo, 1f / idleNameScaleSpeed)
-                        .SetEase(Ease.Linear)
-                        .SetLoops(-1, LoopType.Yoyo);
                     break;
                 case AnimationState.Hover:
                     _tweener = transform

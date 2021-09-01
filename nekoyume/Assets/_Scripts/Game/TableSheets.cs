@@ -21,7 +21,7 @@ namespace Nekoyume.Game
                 }
 
                 var sheetObject = Activator.CreateInstance(sheetPropertyInfo.PropertyType);
-                var iSheet = (ISheet)sheetObject;
+                var iSheet = (ISheet) sheetObject;
                 if (iSheet is null)
                 {
                     var sb = new StringBuilder($"[{nameof(TableSheets)}]");
@@ -53,6 +53,8 @@ namespace Nekoyume.Game
         public BuffSheet BuffSheet { get; private set; }
 
         public ItemSheet ItemSheet { get; private set; }
+        
+        public ItemRequirementSheet ItemRequirementSheet { get; private set; }
 
         public ConsumableItemSheet ConsumableItemSheet { get; private set; }
 
@@ -106,6 +108,8 @@ namespace Nekoyume.Game
 
         public EquipmentItemSubRecipeSheet EquipmentItemSubRecipeSheet { get; private set; }
 
+        public EquipmentItemSubRecipeSheetV2 EquipmentItemSubRecipeSheetV2 { get; private set; }
+
         public EquipmentItemOptionSheet EquipmentItemOptionSheet { get; private set; }
 
         public GameConfigSheet GameConfigSheet { get; private set; }
@@ -118,11 +122,17 @@ namespace Nekoyume.Game
 
         public EnhancementCostSheet EnhancementCostSheet { get; private set; }
 
+        public EnhancementCostSheetV2 EnhancementCostSheetV2 { get; private set; }
+
         public WeeklyArenaRewardSheet WeeklyArenaRewardSheet { get; private set; }
 
         public CostumeStatSheet CostumeStatSheet { get; private set; }
 
         public MimisbrunnrSheet MimisbrunnrSheet { get; private set; }
+
+        public MonsterCollectionSheet MonsterCollectionSheet { get; private set; }
+
+        public MonsterCollectionRewardSheet MonsterCollectionRewardSheet { get; private set; }
 
         public void ItemSheetInitialize()
         {

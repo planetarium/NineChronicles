@@ -11,6 +11,8 @@ using UnityEngine;
 
 namespace Nekoyume.UI
 {
+    using UniRx;
+
     /// <summary>
     /// Usage: Just to call the `Notification.Push()` method anywhere.
     /// </summary>
@@ -29,11 +31,11 @@ namespace Nekoyume.UI
             public MailType mailType;
             public string message;
             public long requiredBlockIndex;
-            public Guid itemId;
+            public Guid tradableId;
         }
 
         private const float InternalTimeToAddOrRemoveCell = 1f;
-        private const float LifeTimeOfEachNotification = 6f;
+        private const float LifeTimeOfEachNotification = 1.5f;
 
         private static State _state = State.None;
 
@@ -69,18 +71,18 @@ namespace Nekoyume.UI
             MailType mailType,
             string message,
             long requiredBlockIndex,
-            Guid itemId)
+            Guid tradableId)
         {
             ReservationList.Add(new ReservationModel
             {
                 mailType = mailType,
                 message = message,
                 requiredBlockIndex = requiredBlockIndex,
-                itemId = itemId
+                tradableId = tradableId
             });
         }
 
-        public static void CancelReserve(Guid itemUsableItemId)
+        public static void CancelReserve(Guid tradableId)
         {
             if (!ReservationList.Any())
             {
@@ -88,7 +90,7 @@ namespace Nekoyume.UI
             }
 
             var message = ReservationList
-                .FirstOrDefault(m => m.itemId == itemUsableItemId);
+                .FirstOrDefault(m => m.tradableId == tradableId);
             if (message is null)
             {
                 return;

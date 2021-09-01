@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Concurrent;
-using System.Security.Cryptography;
 using Bencodex.Types;
 using Lib9c.Renderer;
 using Libplanet;
+using Libplanet.Blocks;
 using Libplanet.Assets;
 using Libplanet.Crypto;
 using Libplanet.Tx;
@@ -29,9 +29,9 @@ namespace Nekoyume.BlockChain
 
         int AppProtocolVersion { get; }
 
-        Subject<HashDigest<SHA256>> BlockTipHashSubject { get; }
+        Subject<BlockHash> BlockTipHashSubject { get; }
 
-        HashDigest<SHA256> BlockTipHash { get; }
+        BlockHash BlockTipHash { get; }
 
         void Initialize(
             CommandLineOptions options,

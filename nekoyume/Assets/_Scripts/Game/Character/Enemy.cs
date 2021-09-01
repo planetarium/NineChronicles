@@ -1,7 +1,6 @@
 using Nekoyume.UI;
 using System;
 using System.Collections;
-using Nekoyume.Game.Controller;
 using System.Collections.Generic;
 using System.Linq;
 using UniRx;
@@ -9,6 +8,8 @@ using UnityEngine;
 
 namespace Nekoyume.Game.Character
 {
+    using UniRx;
+
     public class Enemy : CharacterBase
     {
         private Player _player;

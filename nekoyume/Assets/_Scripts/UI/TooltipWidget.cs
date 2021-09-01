@@ -1,13 +1,13 @@
 using System;
 using System.Collections.Generic;
 using Nekoyume.EnumType;
-using Nekoyume.Game;
-using UniRx;
 using Unity.Mathematics;
 using UnityEngine;
 
 namespace Nekoyume.UI
 {
+    using UniRx;
+
     public abstract class TooltipWidget<T> : Widget where T : Model.Tooltip
     {
         public static readonly float2 DefaultOffsetFromTarget = new float2(10f, 0f);

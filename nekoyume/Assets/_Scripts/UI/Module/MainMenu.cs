@@ -1,6 +1,5 @@
 using System;
 using DG.Tweening;
-using UniRx;
 using UniRx.Triggers;
 using UnityEngine;
 using Nekoyume.Game.Character;
@@ -11,6 +10,8 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
 {
+    using UniRx;
+
     public enum MenuType
     {
         Combination,

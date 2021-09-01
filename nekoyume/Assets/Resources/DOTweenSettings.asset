@@ -9,7 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 16995157, guid: a811bde74b26b53498b4f6d872b09b6d, type: 3}
+  m_Script: {fileID: 16995157, guid: b79603e038c6c12439b661cc1bb71433, type: 3}
   m_Name: DOTweenSettings
   m_EditorClassIdentifier: 
   useSafeMode: 1
@@ -20,7 +20,7 @@ MonoBehaviour:
   maxSmoothUnscaledTime: 0.15
   rewindCallbackMode: 0
   showUnityEditorReport: 0
-  logBehaviour: 2
+  logBehaviour: 0
   drawGizmos: 1
   defaultRecyclable: 0
   defaultAutoPlay: 3
@@ -31,6 +31,8 @@ MonoBehaviour:
   defaultEasePeriod: 0
   defaultAutoKill: 1
   defaultLoopType: 0
+  debugMode: 0
+  debugStoreTargetId: 0
   showPreviewPanel: 1
   storeSettingsLocation: 0
   modules:
@@ -42,5 +44,7 @@ MonoBehaviour:
     uiEnabled: 1
     textMeshProEnabled: 0
     tk2DEnabled: 0
+    deAudioEnabled: 0
+    deUnityExtendedEnabled: 0
   showPlayingTweens: 0
   showPausedTweens: 0

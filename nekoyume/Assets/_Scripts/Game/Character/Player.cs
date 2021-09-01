@@ -2,22 +2,26 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using mixpanel;
 using Nekoyume.Helper;
-using Nekoyume.Manager;
 using Nekoyume.Model.Item;
 using Nekoyume.UI;
-using UniRx;
 using UnityEngine;
 using Nekoyume.State;
-using TentuPlay.Api;
 using Nekoyume.Model.State;
 
 namespace Nekoyume.Game.Character
 {
+    // NOTE: Avoid Ambiguous invocation:
+    // System.IDisposable Subscribe<T>(this IObservable<T>, Action<T>)
+    // System.ObservableExtensions and UniRx.ObservableExtensions
+    using UniRx;
+
     // todo: 경험치 정보를 `CharacterBase`로 옮기는 것이 좋겠음.
     public class Player : CharacterBase
     {
         private readonly List<IDisposable> _disposablesForModel = new List<IDisposable>();
+        private GameObject _cachedCharacterTitle;
 
         public long EXP = 0;
         public long EXPMax { get; private set; }
@@ -71,6 +75,35 @@ namespace Nekoyume.Game.Character
 
                     Animator.Touch();
                 }).AddTo(gameObject);
+        }
+
+        protected override void Update()
+        {
+            base.Update();
+            if (HudContainer)
+            {
+                if (Game.instance.Stage.IsInStage)
+                {
+                    if (Game.instance.Stage.IsShowHud)
+                    {
+                        HudContainer.UpdateAlpha(IsDead ? 0 : 1);
+                    }
+                    else
+                    {
+                        HudContainer.UpdateAlpha(0);
+                    }
+                }
+                else
+                {
+                    HudContainer.UpdateAlpha(SpineController.SkeletonAnimation.skeleton.A);
+                }
+            }
+        }
+
+        protected override void OnDisable()
+        {
+            base.OnDisable();
+            DestroyImmediate(_cachedCharacterTitle);
         }
 
         private void OnDestroy()
@@ -147,13 +180,35 @@ namespace Nekoyume.Game.Character
             return SpineController.BoxCollider;
         }
 
-        protected override void InitializeHpBar()
+        private void UpdateTitle(Costume costume = null)
         {
-            base.InitializeHpBar();
+            if (costume == null)
+            {
+                Destroy(_cachedCharacterTitle);
+                return;
+            }
 
-            var title = Costumes.FirstOrDefault(costume =>
-                costume.ItemSubType == ItemSubType.Title && costume.equipped);
-            HPBar.SetTitle(title);
+            if (_cachedCharacterTitle && costume.Id.ToString().Equals(_cachedCharacterTitle.name))
+            {
+                return;
+            }
+
+            Destroy(_cachedCharacterTitle);
+
+            if (sortingGroup != null &&
+                sortingGroup.sortingLayerID == SortingLayer.NameToID("UI"))
+            {
+                return;
+            }
+
+            if (HudContainer != null)
+            {
+                HudContainer.gameObject.SetActive(true);
+                var clone  = ResourcesHelper.GetCharacterTitle(costume.Grade, costume.GetLocalizedNonColoredName(false));
+                _cachedCharacterTitle = Instantiate(clone, HudContainer.transform);
+                _cachedCharacterTitle.name = costume.Id.ToString();
+                _cachedCharacterTitle.transform.SetAsFirstSibling();
+            }
         }
 
         #region AttackPoint & HitPoint
@@ -213,7 +268,7 @@ namespace Nekoyume.Game.Character
                     UpdateTailById(costume.Id);
                     break;
                 case ItemSubType.Title:
-                    // TODO: 구현!
+                    UpdateTitle(costume);
                     break;
             }
         }
@@ -251,7 +306,7 @@ namespace Nekoyume.Game.Character
                     UpdateTail();
                     break;
                 case ItemSubType.Title:
-                    // TODO: 구현!
+                    UpdateTitle();
                     break;
             }
         }
@@ -291,8 +346,11 @@ namespace Nekoyume.Game.Character
                 return;
             }
 
+            var id = weapon?.Id ?? 0;
+            var level = weapon?.level ?? 0;
+            var levelVFXPrefab = ResourcesHelper.GetAuraWeaponPrefab(id, level);
             var sprite = weapon.GetPlayerSpineTexture();
-            SpineController.UpdateWeapon(sprite);
+            SpineController.UpdateWeapon(id, sprite, levelVFXPrefab);
         }
 
         public void Equip(int armorId, int weaponId)
@@ -300,7 +358,7 @@ namespace Nekoyume.Game.Character
             var spineResourcePath = $"Character/Player/{armorId}";
             ChangeSpine(spineResourcePath);
             var sprite = SpriteHelper.GetPlayerSpineTextureWeapon(weaponId);
-            SpineController.UpdateWeapon(sprite);
+            SpineController.UpdateWeapon(weaponId, sprite);
         }
 
         #endregion
@@ -583,14 +641,11 @@ namespace Nekoyume.Game.Character
 
             if (Level != level)
             {
-                //[TentuPlay] 아바타 레벨업 기록
-                new TPStashEvent().CharacterLevelUp(
-                    player_uuid: Game.instance.Agent.Address.ToHex(),
-                    character_uuid: States.Instance.CurrentAvatarState.address.ToHex()
-                        .Substring(0, 4), level_from: (int) level, level_to: (int) Level);
+                Mixpanel.Track("Unity/User Level Up", new Value
+                {
+                    ["code"] = level,
+                });
 
-                AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ActionStatusLevelUp,
-                    level);
                 Widget.Find<LevelUpCelebratePopup>()?.Show(level, Level);
                 InitStats(Model);
             }

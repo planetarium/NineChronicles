@@ -3,7 +3,6 @@ using System;
 using Nekoyume.EnumType;
 using Nekoyume.L10n;
 using TMPro;
-using UniRx;
 using UniRx.Triggers;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -11,6 +10,8 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
 {
+    using UniRx;
+
     [RequireComponent(typeof(Animator))]
     public class ToggleableButton : MonoBehaviour, IToggleable, IWidgetControllable
     {
@@ -60,7 +61,7 @@ namespace Nekoyume.UI.Module
             if (sortingGroup)
             {
                 var widget = GetComponentInParent<Widget>();
-                if (widget is BottomMenu)
+                if (widget is HeaderMenu)
                 {
                     _originalSortingOrderOffset = 0;
                     sortingGroup.sortingOrder =

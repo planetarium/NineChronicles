@@ -126,5 +126,10 @@ namespace Nekoyume.UI
                 mask.rectTransform.sizeDelta = new Vector2(400, 500);
             }
         }
+
+        public override void Skip(System.Action callback)
+        {
+            // Do-nothing.
+        }
     }
 }

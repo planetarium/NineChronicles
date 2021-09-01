@@ -1,0 +1,112 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!687078895 &4343727234628468602
+SpriteAtlas:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Atlas_Indicator
+  m_EditorData:
+    serializedVersion: 2
+    textureSettings:
+      serializedVersion: 2
+      anisoLevel: 1
+      compressionQuality: 50
+      maxTextureSize: 2048
+      textureCompression: 0
+      filterMode: 1
+      generateMipMaps: 0
+      readable: 1
+      crunchedCompression: 0
+      sRGB: 1
+    platformSettings:
+    - serializedVersion: 3
+      m_BuildTarget: DefaultTexturePlatform
+      m_MaxTextureSize: 512
+      m_ResizeAlgorithm: 0
+      m_TextureFormat: -1
+      m_TextureCompression: 0
+      m_CompressionQuality: 50
+      m_CrunchedCompression: 0
+      m_AllowsAlphaSplitting: 0
+      m_Overridden: 0
+      m_AndroidETC2FallbackOverride: 0
+      m_ForceMaximumCompressionQuality_BC6H_BC7: 1
+    packingSettings:
+      serializedVersion: 2
+      padding: 4
+      blockOffset: 1
+      allowAlphaSplitting: 0
+      enableRotation: 1
+      enableTightPacking: 0
+    secondaryTextureSettings: {}
+    variantMultiplier: 1
+    packables:
+    - {fileID: 102900000, guid: 328772af3a83e43ad8f90ec31db8968c, type: 3}
+    totalSpriteSurfaceArea: 161280
+    bindAsDefault: 1
+    isAtlasV2: 0
+    cachedData: {fileID: 0}
+  m_MasterAtlas: {fileID: 0}
+  m_PackedSprites:
+  - {fileID: 21300000, guid: 84306031669f04123b972b642383fa01, type: 3}
+  - {fileID: 21300000, guid: 465dd8a18367540da91fec344ca924b4, type: 3}
+  - {fileID: 21300000, guid: 3434ffd1e753147cb8dbe5344efc0b0b, type: 3}
+  - {fileID: 21300000, guid: bf07c912e97e24002843363f9bf2a716, type: 3}
+  - {fileID: 21300000, guid: a8fe15e2552e14f1ba5517a1317de1b5, type: 3}
+  - {fileID: 21300000, guid: 9efda223936a44b29a37feaefa755e92, type: 3}
+  - {fileID: 21300000, guid: 6b251d04dfdbd4433b0dea4b5dc20920, type: 3}
+  - {fileID: 21300000, guid: cfb4d6340f85d47529b831cb7bcb7f49, type: 3}
+  - {fileID: 21300000, guid: 77e25074a94514f9f97ee3702cc49e96, type: 3}
+  - {fileID: 21300000, guid: ed33cda5e182146d4af4d62ea9539da6, type: 3}
+  - {fileID: 21300000, guid: 37d9cfe59a20d4e7cb52e6bf44ec0a3e, type: 3}
+  - {fileID: 21300000, guid: c544044754d164301a19c236644066f0, type: 3}
+  - {fileID: 21300000, guid: 544a1f47d129e4c09905e5ae07ebff06, type: 3}
+  - {fileID: 21300000, guid: bc37d077a65e047c991e481e363548e0, type: 3}
+  - {fileID: 21300000, guid: 05c994871bb1341c58732175d589a56d, type: 3}
+  - {fileID: 21300000, guid: d44b97f738ac04fa882edb8dae4f0682, type: 3}
+  - {fileID: 21300000, guid: bf8bc9597e23c46f4b1082bce90270d4, type: 3}
+  - {fileID: 21300000, guid: 96e073b9755bc4a9597ed4c066bf2fa4, type: 3}
+  - {fileID: 21300000, guid: d3dc8f0a6162648d1b0cb748455c4a9a, type: 3}
+  - {fileID: 21300000, guid: aa459a2a076c845f9a2b37db0aacb1ed, type: 3}
+  - {fileID: 21300000, guid: 7436068bf82e746cda332db5de5341a6, type: 3}
+  - {fileID: 21300000, guid: 9edde9ac23dfa40a89f85937bec4a74b, type: 3}
+  - {fileID: 21300000, guid: ab3591ec87dc34dcf944ce7674a42ddc, type: 3}
+  - {fileID: 21300000, guid: 34ae9f6d79f7347869e40887b237874c, type: 3}
+  - {fileID: 21300000, guid: 9ccb197d28b414b2dbdfec6effaf74fd, type: 3}
+  - {fileID: 21300000, guid: 8d2c1d2ed3afa40b3bcfd7cf56673017, type: 3}
+  - {fileID: 21300000, guid: 1db9db4e0194e42a092274aea46d19e3, type: 3}
+  - {fileID: 21300000, guid: 5e58c89f8880d4ec0ae616b88c202885, type: 3}
+  m_PackedSpriteNamesToIndex:
+  - Indicator_bg_10
+  - Indicator_bg_02
+  - Indicator_bg_28
+  - Indicator_bg_23
+  - Indicator_bg_09
+  - Indicator_bg_06
+  - Indicator_bg_19
+  - Indicator_bg_24
+  - Indicator_bg_14
+  - Indicator_bg_22
+  - Indicator_bg_16
+  - Indicator_bg_08
+  - Indicator_bg_05
+  - Indicator_bg_12
+  - Indicator_bg_18
+  - Indicator_bg_26
+  - Indicator_bg_15
+  - Indicator_bg_11
+  - Indicator_bg_03
+  - Indicator_bg_04
+  - Indicator_bg_21
+  - Indicator_bg_07
+  - Indicator_bg_17
+  - Indicator_bg_27
+  - Indicator_bg_25
+  - Indicator_bg_20
+  - Indicator_bg_01
+  - Indicator_bg_13
+  m_RenderDataMap: {}
+  m_Tag: Atlas_Indicator
+  m_IsVariant: 0

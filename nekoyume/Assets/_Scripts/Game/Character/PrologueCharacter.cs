@@ -12,6 +12,8 @@ using UnityEngine;
 
 namespace Nekoyume.Game.Character
 {
+    using UniRx;
+
     public class PrologueCharacter : MonoBehaviour
     {
         public bool AttackEndCalled { get; set; }

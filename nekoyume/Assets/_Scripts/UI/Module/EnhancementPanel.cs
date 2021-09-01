@@ -1,15 +1,15 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Numerics;
 using Nekoyume.Model.Item;
 using Nekoyume.State;
 using Nekoyume.UI.Model;
-using UniRx;
 using Material = Nekoyume.Model.Item.Material;
 
 namespace Nekoyume.UI.Module
 {
+    using UniRx;
+
     public class EnhancementPanel<TMaterialView> : Widget, ICombinationPanel
         where TMaterialView : CombinationMaterialView
     {
@@ -36,7 +36,7 @@ namespace Nekoyume.UI.Module
         public int CostAP { get; private set; }
 
         public bool IsThereAnyUnlockedEmptyMaterialView { get; private set; }
-        public virtual bool IsSubmittable { get; }
+        public virtual bool IsSubmittable { get; } = false;
 
         #region Initialize & Terminate
 
@@ -445,7 +445,7 @@ namespace Nekoyume.UI.Module
             CostNCG = GetCostNCG();
             SubscribeNCG(States.Instance.GoldBalanceState.Gold.MajorUnit);
             CostAP = GetCostAP();
-            SubscribeActionPoint(ReactiveAvatarState.ActionPoint.Value);
+            SubscribeActionPoint(States.Instance.CurrentAvatarState?.actionPoint ?? 0);
             UpdateSubmittable();
             OnCostNCGChange.OnNext(CostNCG);
             OnCostAPChange.OnNext(CostAP);

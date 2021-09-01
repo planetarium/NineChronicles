@@ -1,4 +1,4 @@
-using System;
+using Coffee.UIEffects;
 using DG.Tweening;
 using Nekoyume.Helper;
 using Nekoyume.TableData;
@@ -9,8 +9,7 @@ namespace Nekoyume.UI.Module
 {
     public class VanillaItemView : MonoBehaviour
     {
-        protected static readonly Color OriginColor = Color.white;
-        protected static readonly Color DimmedColor = ColorHelper.HexToColorRGB("848484");
+        [SerializeField] protected ItemViewDataScriptableObject itemViewData;
 
         public enum ImageSizeType
         {
@@ -18,8 +17,13 @@ namespace Nekoyume.UI.Module
             Middle
         }
 
-        public Image gradeImage;
-        public Image iconImage;
+        public Image iconImage = null;
+
+        [SerializeField]
+        protected Image gradeImage = null;
+
+        [SerializeField]
+        protected UIHsvModifier gradeHsv = null;
 
         private Tweener _tweener;
 
@@ -53,19 +57,13 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
-            Sprite gradeSprite;
-            switch (imageSizeType)
-            {
-                case ImageSizeType.Small:
-                    gradeSprite = SpriteHelper.GetSmallItemBackground(itemRow.Grade);
-                    break;
-                case ImageSizeType.Middle:
-                    gradeSprite = SpriteHelper.GetItemBackground(itemRow.Grade);
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(imageSizeType), imageSizeType, null);
-            }
-            gradeImage.overrideSprite = gradeSprite;
+            var data = itemViewData.GetItemViewData(itemRow.Grade);
+            gradeImage.overrideSprite = data.GradeBackground;
+
+            gradeHsv.range = data.GradeHsvRange;
+            gradeHsv.hue = data.GradeHsvHue;
+            gradeHsv.saturation = data.GradeHsvSaturation;
+            gradeHsv.value = data.GradeHsvValue;
 
             var itemSprite = SpriteHelper.GetItemIcon(itemRow.Id);
             if (itemSprite is null)
@@ -80,12 +78,6 @@ namespace Nekoyume.UI.Module
         {
             gradeImage.enabled = false;
             iconImage.enabled = false;
-        }
-
-        protected virtual void SetDim(bool isDim)
-        {
-            gradeImage.color = isDim ? DimmedColor : OriginColor;
-            iconImage.color = isDim ? DimmedColor : OriginColor;
         }
 
         protected Tweener PlayTween(float delay = default)

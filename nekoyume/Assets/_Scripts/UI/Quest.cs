@@ -6,98 +6,61 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using Nekoyume.EnumType;
 using Nekoyume.L10n;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using QuestModel = Nekoyume.Model.Quest.Quest;
+using Nekoyume.UI.Module;
 
 namespace Nekoyume.UI
 {
     public class Quest : XTweenWidget
     {
-        private enum QuestTabState
-        {
-            Adventure = 0,
-            Obtain,
-            Crafting,
-            Exchange
-        }
-
-        [Serializable]
-        public class TabButton
-        {
-            private static readonly Color HighlightedColor = ColorHelper.HexToColorRGB("a35400");
-            private static readonly Vector2 LeftBottom = new Vector2(-13f, -11f);
-            private static readonly Vector2 MinusRightTop = new Vector2(13f, 13f);
-            private static Sprite _selectedButtonSprite;
-
-            private static Sprite SelectedButtonSprite => _selectedButtonSprite
-                ? _selectedButtonSprite
-                : _selectedButtonSprite = Resources.Load<Sprite>("UI/Textures/button_yellow_02");
-
-            public Sprite highlightedSprite;
-            public Button button;
-            public Image hasNotificationImage;
-            public Image image;
-            public Image icon;
-            public TextMeshProUGUI text;
-            public TextMeshProUGUI textSelected;
-
-            public void Init(string localizationKey)
-            {
-                if (!button)
-                {
-                    throw new SerializeFieldNullException(nameof(button));
-                }
-
-                var localized = L10nManager.Localize(localizationKey);
-                var content = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(localized.ToLower());
-                text.text = content;
-                textSelected.text = content;
-            }
-
-            public void ChangeColor(bool isHighlighted = false)
-            {
-                image.overrideSprite = isHighlighted ? SelectedButtonSprite : null;
-                image.rectTransform.offsetMin = isHighlighted ? LeftBottom : Vector2.zero;
-                image.rectTransform.offsetMax = isHighlighted ? MinusRightTop : Vector2.zero;
-                icon.overrideSprite = isHighlighted ? highlightedSprite : null;
-                text.gameObject.SetActive(!isHighlighted);
-                textSelected.gameObject.SetActive(isHighlighted);
-            }
-        }
+        [SerializeField]
+        private CategoryTabButton adventureButton = null;
 
         [SerializeField]
-        private QuestTabState tabState;
+        private CategoryTabButton obtainButton = null;
+
+        [SerializeField]
+        private CategoryTabButton craftingButton = null;
+
+        [SerializeField]
+        private CategoryTabButton exchangeButton = null;
+
+        [SerializeField]
+        private QuestType filterType;
 
         [SerializeField]
         private QuestScroll scroll = null;
-
-        [SerializeField]
-        private TabButton[] tabButtons = null;
 
         [SerializeField]
         private Blur blur = null;
 
         private QuestList _questList;
 
+        private readonly Module.ToggleGroup _toggleGroup = new Module.ToggleGroup();
+
+        public override WidgetType WidgetType => WidgetType.Popup;
+        public override CloseKeyType CloseKeyType => CloseKeyType.Escape;
+
         #region override
-
-        public override void Initialize()
+        protected override void Awake()
         {
-            base.Initialize();
-
-            tabButtons[0].Init("ADVENTURE");
-            tabButtons[1].Init("OBTAIN");
-            tabButtons[2].Init("CRAFT");
-            tabButtons[3].Init("EXCHANGE");
+            base.Awake();
+            _toggleGroup.RegisterToggleable(adventureButton);
+            _toggleGroup.RegisterToggleable(obtainButton);
+            _toggleGroup.RegisterToggleable(craftingButton);
+            _toggleGroup.RegisterToggleable(exchangeButton);
         }
 
         public override void Show(bool ignoreShowAnimation = false)
         {
-            tabState = QuestTabState.Adventure;
             _questList = States.Instance.CurrentAvatarState.questList;
+            _toggleGroup.SetToggledOffAll();
+            adventureButton.SetToggledOn();
             ChangeState(0);
             UpdateTabs();
             base.Show(ignoreShowAnimation);
@@ -106,6 +69,7 @@ namespace Nekoyume.UI
             {
                 blur.Show();
             }
+            HelpPopup.HelpMe(100011, true);
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
@@ -122,12 +86,7 @@ namespace Nekoyume.UI
 
         public void ChangeState(int state)
         {
-            tabState = (QuestTabState) state;
-
-            for (var i = 0; i < tabButtons.Length; ++i)
-            {
-                tabButtons[i].ChangeColor(i == state);
-            }
+            filterType = (QuestType) state;
 
             var list = _questList
                 .ToList()
@@ -140,14 +99,30 @@ namespace Nekoyume.UI
         public void UpdateTabs()
         {
             scroll.DoneAnimation();
-            for (var i = 0; i < tabButtons.Length; ++i)
-            {
-                var cnt = _questList.Count(quest =>
-                    quest.QuestType == (QuestType) i &&
+
+            var hasNotification = _questList.Any(quest =>
+                    quest.QuestType == QuestType.Adventure &&
                     quest.Complete &&
                     quest.isReceivable);
-                tabButtons[i].hasNotificationImage.enabled = cnt > 0;
-            }
+            adventureButton.HasNotification.Value = hasNotification;
+
+            hasNotification = _questList.Any(quest =>
+                    quest.QuestType == QuestType.Obtain &&
+                    quest.Complete &&
+                    quest.isReceivable);
+            obtainButton.HasNotification.Value = hasNotification;
+
+            hasNotification = _questList.Any(quest =>
+                    quest.QuestType == QuestType.Craft &&
+                    quest.Complete &&
+                    quest.isReceivable);
+            craftingButton.HasNotification.Value = hasNotification;
+
+            hasNotification = _questList.Any(quest =>
+                    quest.QuestType == QuestType.Exchange &&
+                    quest.Complete &&
+                    quest.isReceivable);
+            exchangeButton.HasNotification.Value = hasNotification;
         }
 
         public void SetList(QuestList list)
@@ -159,7 +134,7 @@ namespace Nekoyume.UI
 
             _questList = list;
 
-            ChangeState((int) tabState);
+            ChangeState((int) filterType);
         }
 
         public void EnqueueCompletedQuest(QuestModel quest)

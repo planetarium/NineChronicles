@@ -3,12 +3,13 @@ using Nekoyume.EnumType;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
 using Spine.Unity;
-using UniRx;
 using UnityEngine;
 using UnityEngine.Rendering;
 
 namespace Nekoyume.Game.Character
 {
+    using UniRx;
+
     [RequireComponent(typeof(SortingGroup))]
     public class NPC : MonoBehaviour
     {

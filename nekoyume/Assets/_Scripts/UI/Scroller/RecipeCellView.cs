@@ -18,6 +18,8 @@ using Nekoyume.UI.Tween;
 
 namespace Nekoyume.UI.Scroller
 {
+    using UniRx;
+
     public class RecipeCellView : MonoBehaviour
     {
         protected static readonly Color DisabledColor = new Color(0.5f, 0.5f, 0.5f);
@@ -260,8 +262,7 @@ namespace Nekoyume.UI.Scroller
             Set(equipment);
 
             StatType = equipment.UniqueStatType;
-            var text = equipment.Stat.DecimalStatToString();
-            optionText.text = text;
+            optionText.text = equipment.StatsMap.GetStat(StatType, true).ToString();
             SetLocked(false, EquipmentRowData.UnlockStage);
         }
 
@@ -304,8 +305,8 @@ namespace Nekoyume.UI.Scroller
             var inventory = avatarState.inventory;
             var materialSheet = Game.Game.instance.TableSheets.MaterialItemSheet;
             if (materialSheet.TryGetValue(EquipmentRowData.MaterialId, out var materialRow) &&
-                inventory.TryGetMaterial(materialRow.ItemId, out var fungibleItem) &&
-                fungibleItem.count >= EquipmentRowData.MaterialCount)
+                inventory.TryGetFungibleItems(materialRow.ItemId, out var outFungibleItems) &&
+                outFungibleItems.Sum(e => e.count) >= EquipmentRowData.MaterialCount)
             {
                 // 서브 재료 검사.
                 if (EquipmentRowData.SubRecipeIds.Any())
@@ -321,8 +322,8 @@ namespace Nekoyume.UI.Scroller
                         foreach (var info in subRow.Materials)
                         {
                             if (materialSheet.TryGetValue(info.Id, out materialRow) &&
-                                inventory.TryGetMaterial(materialRow.ItemId, out fungibleItem) &&
-                                fungibleItem.count >= info.Count)
+                                inventory.TryGetFungibleItems(materialRow.ItemId, out outFungibleItems) &&
+                                outFungibleItems.Sum(e => e.count) >= info.Count)
                             {
                                 continue;
                             }
