@@ -37,7 +37,7 @@ namespace Nekoyume.BlockChain
 
         public const long V100068ObsoleteIndex = 2220000;
 
-        public const long V100073ObsoleteIndex = 2300000;
+        public const long V100074ObsoleteIndex = 2300000;
 
         private readonly TimeSpan _blockInterval = TimeSpan.FromSeconds(8);
 

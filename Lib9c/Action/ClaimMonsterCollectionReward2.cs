@@ -14,7 +14,7 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionObsolete(BlockChain.BlockPolicySource.V100073ObsoleteIndex)]
+    [ActionObsolete(BlockChain.BlockPolicySource.V100074ObsoleteIndex)]
     [ActionType("claim_monster_collection_reward2")]
     public class ClaimMonsterCollectionReward2 : GameAction
     {
@@ -39,7 +39,7 @@ namespace Nekoyume.Action
                     .SetState(MonsterCollectionState.DeriveAddress(context.Signer, 3), MarkChanged);
             }
 
-            CheckObsolete(BlockChain.BlockPolicySource.V100073ObsoleteIndex, context);
+            CheckObsolete(BlockChain.BlockPolicySource.V100074ObsoleteIndex, context);
 
             if (!states.TryGetAgentAvatarStatesV2(context.Signer, avatarAddress, out AgentState agentState, out AvatarState avatarState))
             {

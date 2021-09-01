@@ -18,7 +18,7 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionObsolete(BlockChain.BlockPolicySource.V100073ObsoleteIndex)]
+    [ActionObsolete(BlockChain.BlockPolicySource.V100074ObsoleteIndex)]
     [ActionType("item_enhancement7")]
     public class ItemEnhancement7 : GameAction
     {
@@ -56,7 +56,7 @@ namespace Nekoyume.Action
                     .SetState(slotAddress, MarkChanged);
             }
 
-            CheckObsolete(BlockChain.BlockPolicySource.V100073ObsoleteIndex, context);
+            CheckObsolete(BlockChain.BlockPolicySource.V100074ObsoleteIndex, context);
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
 
