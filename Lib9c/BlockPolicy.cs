@@ -34,16 +34,16 @@ namespace Nekoyume.BlockChain
         /// </summary>
         internal readonly bool IgnoreHardcodedPolicies;
 
-        public BlockPolicy(
-            IAction blockAction,
+        public BlockPolicy(IAction blockAction,
             TimeSpan blockInterval,
             long minimumDifficulty,
             int difficultyBoundDivisor,
             int maxTransactionsPerBlock,
             int maxBlockBytes,
             int maxGenesisBytes,
-            Func<Transaction<NCAction>, BlockChain<NCAction>, bool> doesTransactionFollowPolicy = null
-        )
+            bool ignoreHardcodedIndicesForBackwardCompatibility,
+            Func<Transaction<NCAction>, BlockChain<NCAction>, bool> doesTransactionFollowPolicy =
+                null)
             : this(
                 blockAction: blockAction,
                 blockInterval: blockInterval,
