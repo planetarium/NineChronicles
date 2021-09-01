@@ -108,6 +108,7 @@ namespace Nekoyume.UI
             {
                 return;
             }
+
             _questList.Value = list;
             ChangeState((int) filterType);
         }
