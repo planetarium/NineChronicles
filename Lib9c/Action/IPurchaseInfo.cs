@@ -7,6 +7,7 @@ namespace Nekoyume.Action
 {
     public interface IPurchaseInfo
     {
+        Guid? OrderId { get; }
         Address SellerAgentAddress { get; }
         Address SellerAvatarAddress { get; }
         FungibleAssetValue Price { get; }
