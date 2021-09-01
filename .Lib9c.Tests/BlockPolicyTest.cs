@@ -288,8 +288,7 @@ namespace Lib9c.Tests
                 10000,
                 100,
                 ignoreHardcodedPolicies: true,
-                permissionedMiningPolicy: null
-            );
+                permissionedMiningPolicy: null);
             IStagePolicy<PolymorphicAction<ActionBase>> stagePolicy =
                 new VolatileStagePolicy<PolymorphicAction<ActionBase>>();
             Block<PolymorphicAction<ActionBase>> genesis = MakeGenesisBlock(

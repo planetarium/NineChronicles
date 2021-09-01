@@ -94,7 +94,7 @@ namespace Lib9c.Tests.Action
                 .Id;
             var costume =
                 ItemFactory.CreateItem(_tableSheets.ItemSheet[costumeId], new TestRandom());
-            previousAvatarState.inventory.AddItem2(costume);
+            previousAvatarState.inventory.AddItem(costume);
 
             var mimisbrunnrSheet = _tableSheets.MimisbrunnrSheet;
             if (!mimisbrunnrSheet.TryGetValue(stageId, out var mimisbrunnrSheetRow))
@@ -105,7 +105,7 @@ namespace Lib9c.Tests.Action
             var equipmentRow =
                 _tableSheets.EquipmentItemSheet.Values.First(x => x.ElementalType == ElementalType.Fire);
             var equipment = ItemFactory.CreateItemUsable(equipmentRow, default, 0);
-            previousAvatarState.inventory.AddItem2(equipment);
+            previousAvatarState.inventory.AddItem(equipment);
 
             foreach (var equipmentId in previousAvatarState.inventory.Equipments)
             {
@@ -166,7 +166,6 @@ namespace Lib9c.Tests.Action
             });
 
             var nextAvatarState = nextState.GetAvatarStateV2(_avatarAddress);
-            var newWeeklyState = nextState.GetWeeklyArenaState(0);
             Assert.True(nextAvatarState.worldInformation.IsStageCleared(stageId));
             Assert.Equal(30, nextAvatarState.mailBox.Count);
 
@@ -212,7 +211,7 @@ namespace Lib9c.Tests.Action
             var equipmentRow =
                 _tableSheets.EquipmentItemSheet.Values.First(x => x.ElementalType == ElementalType.Fire);
             var equipment = ItemFactory.CreateItemUsable(equipmentRow, default, 0);
-            previousAvatarState.inventory.AddItem2(equipment);
+            previousAvatarState.inventory.AddItem(equipment);
 
             var mimisbrunnrSheet = _tableSheets.MimisbrunnrSheet;
             if (!mimisbrunnrSheet.TryGetValue(stageId, out var mimisbrunnrSheetRow))
@@ -413,7 +412,7 @@ namespace Lib9c.Tests.Action
                 .Id;
             var costume =
                 ItemFactory.CreateItem(_tableSheets.ItemSheet[costumeId], new TestRandom());
-            previousAvatarState.inventory.AddItem2(costume);
+            previousAvatarState.inventory.AddItem(costume);
 
             var mimisbrunnrSheet = _tableSheets.MimisbrunnrSheet;
             if (!mimisbrunnrSheet.TryGetValue(stageId, out var mimisbrunnrSheetRow))
@@ -424,7 +423,7 @@ namespace Lib9c.Tests.Action
             var equipmentRow =
                 _tableSheets.EquipmentItemSheet.Values.First(x => x.ElementalType == ElementalType.Fire);
             var equipment = ItemFactory.CreateItemUsable(equipmentRow, default, 0);
-            previousAvatarState.inventory.AddItem2(equipment);
+            previousAvatarState.inventory.AddItem(equipment);
 
             foreach (var equipmentId in previousAvatarState.inventory.Equipments)
             {
@@ -528,12 +527,12 @@ namespace Lib9c.Tests.Action
                 .Id;
             var costume =
                 ItemFactory.CreateItem(_tableSheets.ItemSheet[costumeId], new TestRandom());
-            avatarState.inventory.AddItem2(costume);
+            avatarState.inventory.AddItem(costume);
 
             var equipmentRow =
                 _tableSheets.EquipmentItemSheet.OrderedList.First(x => x.ElementalType == ElementalType.Fire);
             var equipment = ItemFactory.CreateItemUsable(equipmentRow, default, 0);
-            avatarState.inventory.AddItem2(equipment);
+            avatarState.inventory.AddItem(equipment);
             var nextState = _initialState.SetState(_avatarAddress, avatarState.Serialize());
 
             var action = new MimisbrunnrBattle()
