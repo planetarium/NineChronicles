@@ -79,6 +79,7 @@ namespace Nekoyume.Action
             }
         }
 
+        Guid? IPurchaseInfo.OrderId => null;
         Address IPurchaseInfo.SellerAgentAddress => sellerAgentAddress;
         Address IPurchaseInfo.SellerAvatarAddress => sellerAvatarAddress;
         FungibleAssetValue IPurchaseInfo.Price => price;

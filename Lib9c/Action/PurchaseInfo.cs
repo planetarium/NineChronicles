@@ -56,6 +56,7 @@ namespace Nekoyume.Action
         }
 
         public readonly Guid OrderId;
+        Guid? IPurchaseInfo.OrderId => OrderId;
         public readonly Guid TradableId;
         public Address SellerAgentAddress { get; }
         public Address SellerAvatarAddress { get; }

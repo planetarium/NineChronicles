@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Bencodex.Types;
 using Cocona;
+using Lib9c.Model.Order;
 using Libplanet;
 using Libplanet.Assets;
 using Libplanet.Blockchain;
@@ -79,7 +81,7 @@ namespace Lib9c.Tools.SubCommand
             Block<NCAction> block = end;
             int indexWidth = block.Index.ToString().Length + 1;
             Console.WriteLine(
-                "{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\t{7}\t{8}",
+                "{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\t{7}\t{8}\t{9}",
                 $"#IDX".PadRight(indexWidth),
                 "HASH".PadRight(BlockHash.Size * 2),
                 "TIME".PadRight(DateTimeOffset.Now.ToString("o").Length),
@@ -88,7 +90,8 @@ namespace Lib9c.Tools.SubCommand
                 "BUYER AVATER".PadRight(Address.Size * 2),
                 "SELLER".PadRight(Address.Size * 2),
                 "SELLER AVATER".PadRight(Address.Size * 2),
-                "PRICE"
+                "QUANTITY",
+                "TOTAL PRICE"
             );
 
             while (true)
@@ -124,6 +127,13 @@ namespace Lib9c.Tools.SubCommand
                             SellerAvatar = p.SellerAvatarAddress,
                             Price = p.Price,
                             ItemSubType = p.ItemSubType,
+                            Quantity = p.OrderId is {} oid
+                                ? chain.GetState(GetOrderAddress(oid)) is Dictionary rawOrder
+                                    ? OrderFactory.Deserialize(rawOrder) is FungibleOrder fo
+                                        ? fo.ItemCount
+                                        : (int?)null
+                                    : (int?)null
+                                : (int?)null,
                         }),
                         _ => new Order[0],
                     };
@@ -136,7 +146,7 @@ namespace Lib9c.Tools.SubCommand
                     foreach (Order order in orders)
                     {
                         Console.WriteLine(
-                            "{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\t{7}\t{8}",
+                            "{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\t{7}\t{8}\t{9}",
                             $"#{block.Index}".PadLeft(indexWidth),
                             block.Hash,
                             tx.Timestamp.ToString("o"),
@@ -145,6 +155,7 @@ namespace Lib9c.Tools.SubCommand
                             order.BuyerAvatar.ToHex(),
                             order.Seller.ToHex(),
                             order.SellerAvatar.ToHex(),
+                            order.Quantity?.ToString().PadLeft(8) ?? "",
                             order.Price?.ToString() ?? "(N/A)"
                         );
                     }
@@ -180,6 +191,9 @@ namespace Lib9c.Tools.SubCommand
             }
         }
 
+        private static Address GetOrderAddress(Guid orderId) =>
+            Model.Order.Order.DeriveAddress(orderId);
+
         struct Order
         {
             public Address BuyerAvatar;
@@ -187,6 +201,7 @@ namespace Lib9c.Tools.SubCommand
             public Address SellerAvatar;
             public FungibleAssetValue? Price;
             public ItemSubType? ItemSubType;
+            public int? Quantity;
         }
     }
 }
