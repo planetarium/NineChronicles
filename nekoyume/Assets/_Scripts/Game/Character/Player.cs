@@ -633,7 +633,7 @@ namespace Nekoyume.Game.Character
             }
 
             var level = Level;
-            Model.GetExpV2(exp);
+            Model.GetExp(exp);
             EXP += exp;
 
             if (Level != level)

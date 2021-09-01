@@ -608,7 +608,7 @@ namespace Nekoyume.BlockChain
                     Game.Game.instance.TableSheets.CostumeStatSheet,
                     StageSimulatorVersionV100025
                 );
-                simulator.SimulateV3();
+                simulator.Simulate();
                 BattleLog log = simulator.Log;
 
                 if (Widget.Find<LoadingScreen>().IsActive())
@@ -682,7 +682,7 @@ namespace Nekoyume.BlockChain
                     Game.Game.instance.TableSheets.CostumeStatSheet,
                     StageSimulatorVersionV100025
                 );
-                simulator.SimulateV2();
+                simulator.Simulate();
                 BattleLog log = simulator.Log;
 
                 if (Widget.Find<LoadingScreen>().IsActive())
