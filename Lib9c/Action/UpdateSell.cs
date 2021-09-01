@@ -123,7 +123,7 @@ namespace Nekoyume.Action
             var digestList = new OrderDigestListState(rawList);
 
             // migration method
-            avatarState.inventory.UnlockInvalidSlot(digestList);
+            avatarState.inventory.UnlockInvalidSlot(digestList, context.Signer, sellerAvatarAddress);
             avatarState.inventory.ReconfigureFungibleItem(digestList, tradableId);
             //
 

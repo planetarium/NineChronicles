@@ -765,11 +765,10 @@ namespace Nekoyume.Model.Item
             return tradableItem;
         }
 
-        public void UnlockInvalidSlot(OrderDigestListState digestListState)
+        public void UnlockInvalidSlot(OrderDigestListState digestListState, Address agentAddress, Address avatarAddress)
         {
             var slots = _items.Where(i => i.Locked);
             var orderIds = digestListState.OrderDigestList.Select(d => d.OrderId).ToList();
-            var sellerAgentAddress = digestListState.OrderDigestList.FirstOrDefault()?.SellerAgentAddress;
             foreach (var slot in slots)
             {
                 var orderLock = (OrderLock)slot.Lock;
@@ -779,9 +778,10 @@ namespace Nekoyume.Model.Item
                     slot.Unlock();
                     var itemId = slot.item.Id;
                     var itemCount = slot.count;
-                    Log.Verbose(
-                        "[UnlockInvalidSlot] sellerAgentAddress : {sellerAgentAddress} / OrderId : {orderId} / itemId : {itemId} / itemCount : {itemCount}",
-                        sellerAgentAddress, orderId, itemId, itemCount);
+                    Log.Information("[UnlockInvalidSlot] " +
+                                    "agentAddress : {agentAddress} / avatarAddress : {avatarAddress} /" +
+                                    "OrderId : {orderId} / itemId : {itemId} / itemCount : {itemCount}",
+                        agentAddress, avatarAddress, orderId, itemId, itemCount);
                 }
             }
         }
