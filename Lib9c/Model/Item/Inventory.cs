@@ -766,34 +766,37 @@ namespace Nekoyume.Model.Item
 
         public void ReconfigureFungibleItem(OrderDigestListState digestList, Guid tradableId)
         {
-            var tradableFungibleItems = _items.Where(i => i.Locked &&
-                                          i.item is ITradableFungibleItem item &&
-                                          item.TradableId.Equals(tradableId))
-                                        .ToList();
+            var tradableFungibleItems = _items
+                .Where(i => i.Locked &&
+                            i.item is ITradableFungibleItem item &&
+                            item.TradableId.Equals(tradableId))
+                .GroupBy(i => ((ITradableItem)i.item).RequiredBlockIndex)
+                .ToList();
 
             if (tradableFungibleItems.Count <= 0)
             {
                 return;
             }
 
-            foreach (var item in tradableFungibleItems)
+            foreach (var group in tradableFungibleItems)
             {
-                var material = item.item as TradableMaterial;
+                var blockIndex = group.Key;
                 var sortedDigests = digestList.OrderDigestList.Where(digest =>
-                                     digest.TradableId.Equals(tradableId) &&
-                                     digest.ExpiredBlockIndex.Equals(material.RequiredBlockIndex) &&
-                                     !item.Lock.Equals(new OrderLock(digest.OrderId))).ToList();
-
-                var sum = sortedDigests.Sum(x => x.ItemCount);
-                if (item.count != sum)
+                    digest.TradableId.Equals(tradableId) &&
+                    digest.ExpiredBlockIndex.Equals(blockIndex)).ToList();
+                if (group.Count() != sortedDigests.Count)
                 {
-                    item.count -= sum;
-                    foreach (var digest in sortedDigests)
+                    foreach (var item in group)
                     {
-                        var copy = (ITradableFungibleItem) ((ITradableFungibleItem) item.item).Clone();
-                        var clone = new Item((ItemBase)copy, digest.ItemCount);
-                        clone.LockUp(new OrderLock(digest.OrderId));
-                        _items.Add(clone);
+                        var orderLock = (OrderLock)item.Lock;
+                        foreach (var digest in sortedDigests.Where(d => !d.OrderId.Equals(orderLock.OrderId)))
+                        {
+                            item.count -= digest.ItemCount;
+                            var copy = (ITradableFungibleItem) ((ITradableFungibleItem) item.item).Clone();
+                            var clone = new Item((ItemBase)copy, digest.ItemCount);
+                            clone.LockUp(new OrderLock(digest.OrderId));
+                            _items.Add(clone);
+                        }
                     }
                 }
             }
