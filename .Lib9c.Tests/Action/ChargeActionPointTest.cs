@@ -70,12 +70,12 @@ namespace Lib9c.Tests.Action
             if (useTradable)
             {
                 var apStone = ItemFactory.CreateTradableMaterial(row);
-                avatarState.inventory.AddItem2(apStone);
+                avatarState.inventory.AddItem(apStone);
             }
             else
             {
                 var apStone = ItemFactory.CreateItem(row, new TestRandom());
-                avatarState.inventory.AddItem2(apStone);
+                avatarState.inventory.AddItem(apStone);
             }
 
             Assert.Equal(0, avatarState.actionPoint);
@@ -145,7 +145,7 @@ namespace Lib9c.Tests.Action
 
             if (enough)
             {
-                avatarState.inventory.AddItem2(apStone);
+                avatarState.inventory.AddItem(apStone);
                 state = state.SetState(_avatarAddress, avatarState.Serialize());
             }
 

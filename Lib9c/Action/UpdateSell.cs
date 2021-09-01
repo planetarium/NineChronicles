@@ -70,10 +70,10 @@ namespace Nekoyume.Action
                 return states
                     .SetState(context.Signer, MarkChanged)
                     .SetState(itemAddress, MarkChanged)
+                    .SetState(digestListAddress, MarkChanged)
                     .SetState(shopAddress, MarkChanged)
                     .SetState(updateSellShopAddress, MarkChanged)
                     .SetState(updateSellOrderAddress, MarkChanged)
-                    .SetState(digestListAddress, MarkChanged)
                     .SetState(inventoryAddress, MarkChanged)
                     .SetState(worldInformationAddress, MarkChanged)
                     .SetState(questListAddress, MarkChanged)
@@ -142,20 +142,8 @@ namespace Nekoyume.Action
             }
 
             var orderOnSale = OrderFactory.Deserialize(orderDict);
-            var fromPreviousAction = false;
-            try
-            {
-                orderOnSale.ValidateCancelOrder(avatarState, tradableId);
-            }
-            catch (Exception)
-            {
-                orderOnSale.ValidateCancelOrder2(avatarState, tradableId);
-                fromPreviousAction = true;
-            }
-
-            var itemOnSale = fromPreviousAction
-                ? orderOnSale.Cancel2(avatarState, context.BlockIndex)
-                : orderOnSale.Cancel(avatarState, context.BlockIndex);
+            orderOnSale.ValidateCancelOrder(avatarState, tradableId);
+            var itemOnSale = orderOnSale.Cancel(avatarState, context.BlockIndex);
             if (context.BlockIndex < orderOnSale.ExpiredBlockIndex)
             {
                 var shardedShopState = new ShardedShopStateV2(shopStateDict);

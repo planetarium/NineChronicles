@@ -144,14 +144,14 @@ namespace Lib9c.Tests.Action
             var costume = (Costume)ItemFactory.CreateItem(
                 _tableSheets.ItemSheet[row.CostumeId], new TestRandom());
             costume.equipped = true;
-            previousAvatar1State.inventory.AddItem2(costume);
+            previousAvatar1State.inventory.AddItem(costume);
 
             var row2 = _tableSheets.CostumeStatSheet.Values.First(r => r.StatType == StatType.DEF);
             var enemyCostume = (Costume)ItemFactory.CreateItem(
                 _tableSheets.ItemSheet[row2.CostumeId], new TestRandom());
             enemyCostume.equipped = true;
             var enemyAvatarState = _initialState.GetAvatarState(_avatar2Address);
-            enemyAvatarState.inventory.AddItem2(enemyCostume);
+            enemyAvatarState.inventory.AddItem(enemyCostume);
 
             if (avatarBackward)
             {
@@ -516,7 +516,7 @@ namespace Lib9c.Tests.Action
                     as Equipment;
 
                 equipments.Add(equipment.ItemId);
-                previousAvatarState.inventory.AddItem2(equipment);
+                previousAvatarState.inventory.AddItem(equipment);
             }
 
             var state = _initialState.SetState(_avatar1Address, previousAvatarState.Serialize());

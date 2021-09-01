@@ -143,7 +143,7 @@ namespace Lib9c.Tests.Model.Order
                     orderLock = new OrderLock(Guid.NewGuid());
                 }
 
-                _avatarState.inventory.AddItem2(item, count, orderLock);
+                _avatarState.inventory.AddItem(item, count, orderLock);
             }
 
             if (exc is null)
@@ -178,7 +178,7 @@ namespace Lib9c.Tests.Model.Order
                 ItemBase item = ItemFactory.CreateTradableMaterial(row);
                 ITradableItem tradableItem = (ITradableItem)item;
                 tradableItem.RequiredBlockIndex = blockIndex;
-                _avatarState.inventory.AddItem2(item, count);
+                _avatarState.inventory.AddItem(item, count);
             }
 
             Assert.Equal(orderData.InventoryData.Count, _avatarState.inventory.Items.Count);
@@ -226,7 +226,7 @@ namespace Lib9c.Tests.Model.Order
                     orderLock = new OrderLock(orderId);
                 }
 
-                _avatarState.inventory.AddItem2(item, count, orderLock);
+                _avatarState.inventory.AddItem(item, count, orderLock);
                 Assert.Equal(isLock, _avatarState.inventory.TryGetLockedItem(new OrderLock(orderId), out _));
             }
 
@@ -234,7 +234,7 @@ namespace Lib9c.Tests.Model.Order
 
             if (orderData.Exception is null)
             {
-                ITradableItem result = order.Sell3(_avatarState);
+                ITradableItem result = order.Sell(_avatarState);
 
                 Assert.Equal(order.ExpiredBlockIndex, result.RequiredBlockIndex);
                 Assert.Equal(order.TradableId, result.TradableId);
@@ -331,7 +331,7 @@ namespace Lib9c.Tests.Model.Order
 
             if (add)
             {
-                _avatarState.inventory.AddItem2(item, itemCount);
+                _avatarState.inventory.AddItem(item, itemCount);
             }
 
             if (exc is null)
@@ -387,7 +387,7 @@ namespace Lib9c.Tests.Model.Order
                 orderLock = new OrderLock(orderId);
             }
 
-            _avatarState.inventory.AddItem2(item, itemCount, orderLock);
+            _avatarState.inventory.AddItem(item, itemCount, orderLock);
 
             if (exc is null)
             {
@@ -422,12 +422,12 @@ namespace Lib9c.Tests.Model.Order
 
             if (add)
             {
-                _avatarState.inventory.AddItem2(item, itemCount);
+                _avatarState.inventory.AddItem(item, itemCount);
                 order.Sell2(_avatarState);
 
                 if (exist)
                 {
-                    _avatarState.inventory.AddItem2(item);
+                    _avatarState.inventory.AddItem(item);
                 }
             }
 
@@ -473,12 +473,12 @@ namespace Lib9c.Tests.Model.Order
 
             if (isLock)
             {
-                _avatarState.inventory.AddItem2(item, itemCount);
-                order.Sell3(_avatarState);
+                _avatarState.inventory.AddItem(item, itemCount);
+                order.Sell(_avatarState);
 
                 if (exist)
                 {
-                    _avatarState.inventory.AddItem2(item);
+                    _avatarState.inventory.AddItem(item);
                 }
             }
 
@@ -548,7 +548,7 @@ namespace Lib9c.Tests.Model.Order
 
             if (add)
             {
-                _avatarState.inventory.AddItem2(item, itemCount);
+                _avatarState.inventory.AddItem(item, itemCount);
             }
 
             Assert.Equal(expected, order.ValidateTransfer2(_avatarState, tradableId, price, blockIndex));
@@ -600,7 +600,7 @@ namespace Lib9c.Tests.Model.Order
 
             if (add)
             {
-                _avatarState.inventory.AddItem2(item, itemCount, new OrderLock(orderId));
+                _avatarState.inventory.AddItem(item, itemCount, new OrderLock(orderId));
             }
 
             Assert.Equal(expected, order.ValidateTransfer(_avatarState, tradableId, price, blockIndex));
@@ -627,7 +627,7 @@ namespace Lib9c.Tests.Model.Order
 
             if (add)
             {
-                _avatarState.inventory.AddItem2(item, 1);
+                _avatarState.inventory.AddItem(item, 1);
                 order.Sell2(_avatarState);
             }
 
@@ -676,8 +676,8 @@ namespace Lib9c.Tests.Model.Order
 
             if (add)
             {
-                _avatarState.inventory.AddItem2(item, 1);
-                order.Sell3(_avatarState);
+                _avatarState.inventory.AddItem(item, 1);
+                order.Sell(_avatarState);
             }
 
             var buyer = new AvatarState(

@@ -126,6 +126,9 @@ namespace Nekoyume.Action
             Log.Verbose("{AddressesHex}Sell Cancel Get ShopState: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();
 
+            avatarState.updatedAt = context.BlockIndex;
+            avatarState.blockIndex = context.BlockIndex;
+
             if (!states.TryGetState(digestListAddress, out Dictionary rawList))
             {
                 throw new FailedLoadStateException($"{addressesHex}failed to load {nameof(OrderDigest)}({digestListAddress}).");
@@ -143,20 +146,9 @@ namespace Nekoyume.Action
             }
 
             Order order = OrderFactory.Deserialize(orderDict);
-            bool fromPreviousAction = false;
-            try
-            {
-                order.ValidateCancelOrder(avatarState, tradableId);
-            }
-            catch (Exception)
-            {
-                order.ValidateCancelOrder2(avatarState, tradableId);
-                fromPreviousAction = true;
-            }
+            order.ValidateCancelOrder(avatarState, tradableId);
 
-            var sellItem = fromPreviousAction
-                ? order.Cancel2(avatarState, context.BlockIndex)
-                : order.Cancel(avatarState, context.BlockIndex);
+            var sellItem = order.Cancel(avatarState, context.BlockIndex);
             if (context.BlockIndex < order.ExpiredBlockIndex)
             {
                 var shardedShopState = new ShardedShopStateV2(shopStateDict);
@@ -178,9 +170,6 @@ namespace Nekoyume.Action
                 orderId
             );
             avatarState.Update(mail);
-
-            avatarState.updatedAt = context.BlockIndex;
-            avatarState.blockIndex = context.BlockIndex;
 
             sw.Stop();
             Log.Verbose("{AddressesHex}Sell Cancel Update AvatarState: {Elapsed}", addressesHex, sw.Elapsed);

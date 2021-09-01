@@ -65,7 +65,7 @@ namespace Lib9c.Tests.Model
                 {
                     var guid = Guid.NewGuid();
                     var equipment = (Equipment)ItemFactory.CreateItemUsable(row, guid, 0, 0);
-                    inventory.AddItem2(equipment);
+                    inventory.AddItem(equipment);
                 }
 
                 hasNotification = inventory.HasNotification(avatarState.level, 0);
@@ -122,7 +122,7 @@ namespace Lib9c.Tests.Model
             {
                 var guid = Guid.NewGuid();
                 var equipment = (Equipment)ItemFactory.CreateItemUsable(row, guid, 0, 0);
-                inventory.AddItem2(equipment);
+                inventory.AddItem(equipment);
             }
 
             hasNotification = inventory.HasNotification(avatarState.level, 0);
@@ -178,7 +178,7 @@ namespace Lib9c.Tests.Model
             {
                 var guid = Guid.NewGuid();
                 var equipment = (Equipment)ItemFactory.CreateItemUsable(row, guid, requiredBlockIndex, 0);
-                inventory.AddItem2(equipment);
+                inventory.AddItem(equipment);
             }
 
             hasNotification = inventory.HasNotification(avatarState.level, 0);

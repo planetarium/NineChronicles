@@ -181,6 +181,35 @@ namespace Lib9c.Tests.Action
             };
         }
 
+        public static IEnumerable<object[]> GetReconfigureFungibleItemMemberData()
+        {
+            yield return new object[]
+            {
+                new OrderData()
+                {
+                    ItemType = ItemType.Material,
+                    TradableId = new Guid("15396359-04db-68d5-f24a-d89c18665900"),
+                    OrderId = Guid.NewGuid(),
+                    SellerAgentAddress = new PrivateKey().ToAddress(),
+                    SellerAvatarAddress = new PrivateKey().ToAddress(),
+                    RequiredBlockIndex = Sell6.ExpiredBlockIndex,
+                    Price = 50,
+                    ItemCount = 50,
+                },
+                new OrderData()
+                {
+                    ItemType = ItemType.Material,
+                    TradableId = new Guid("15396359-04db-68d5-f24a-d89c18665900"),
+                    OrderId = Guid.NewGuid(),
+                    SellerAgentAddress = new PrivateKey().ToAddress(),
+                    SellerAvatarAddress = new PrivateKey().ToAddress(),
+                    RequiredBlockIndex = 0,
+                    Price = 10,
+                    ItemCount = 60,
+                },
+            };
+        }
+
         [Theory]
         [MemberData(nameof(GetExecuteMemberData))]
         public void Execute(params OrderData[] orderDataList)
@@ -248,9 +277,9 @@ namespace Lib9c.Tests.Action
                     itemSubType,
                     orderData.ItemCount
                 );
-                sellerAvatarState.inventory.AddItem2((ItemBase)tradableItem, orderData.ItemCount);
+                sellerAvatarState.inventory.AddItem((ItemBase)tradableItem, orderData.ItemCount);
 
-                var sellItem = order.Sell3(sellerAvatarState);
+                var sellItem = order.Sell(sellerAvatarState);
                 var orderDigest = order.Digest(sellerAvatarState, _tableSheets.CostumeStatSheet);
                 Assert.True(sellerAvatarState.inventory.TryGetLockedItem(new OrderLock(orderId), out _));
 
@@ -463,7 +492,7 @@ namespace Lib9c.Tests.Action
                     if (!errorCodeMember.NotContains)
                     {
                         var orderLock = new OrderLock(_orderId);
-                        sellerAvatarState.inventory.AddItem2(item, iLock: orderLock);
+                        sellerAvatarState.inventory.AddItem(item, iLock: orderLock);
                     }
 
                     var order = OrderFactory.Create(
@@ -485,14 +514,30 @@ namespace Lib9c.Tests.Action
                         );
                     }
 
-                    _initialState = _initialState.SetState(Order.DeriveAddress(_orderId), order.Serialize());
-
                     if (errorCodeMember.DigestExist)
                     {
+                        var orderDigest = new OrderDigest(
+                            sellerAvatarAddress,
+                            order.StartedBlockIndex,
+                            order.ExpiredBlockIndex,
+                            order.OrderId,
+                            order.TradableId,
+                            orderPrice,
+                            0,
+                            0,
+                            item.Id,
+                            1
+                        );
+                        var orderDigestList = new OrderDigestListState(OrderDigestListState.DeriveAddress(sellerAvatarAddress));
+                        orderDigestList.Add(orderDigest);
+                        _initialState = _initialState.SetState(orderDigestList.Address, orderDigestList.Serialize());
+
                         var digest = order.Digest(sellerAvatarState, _tableSheets.CostumeStatSheet);
                         shopState.Add(digest, 0);
-                        _initialState = _initialState.SetState(_sellerAvatarAddress, sellerAvatarState.Serialize());
+                        _initialState = _initialState.SetState(sellerAvatarAddress, sellerAvatarState.Serialize());
                     }
+
+                    _initialState = _initialState.SetState(Order.DeriveAddress(_orderId), order.Serialize());
                 }
 
                 _initialState = _initialState.SetState(shopAddress, shopState.Serialize());
@@ -538,6 +583,182 @@ namespace Lib9c.Tests.Action
                     _initialState.GetBalance(address, _goldCurrencyState.Currency),
                     nextState.GetBalance(address, _goldCurrencyState.Currency)
                 );
+            }
+        }
+
+        [Theory]
+        [MemberData(nameof(GetReconfigureFungibleItemMemberData))]
+        public void Execute_ReconfigureFungibleItem(params OrderData[] orderDataList)
+        {
+            AvatarState buyerAvatarState = _initialState.GetAvatarState(_buyerAvatarAddress);
+            List<PurchaseInfo> purchaseInfos = new List<PurchaseInfo>();
+
+            var firstData = orderDataList.First();
+            (AvatarState sellerAvatarState, AgentState sellerAgentState) =
+                CreateAvatarState(firstData.SellerAgentAddress, firstData.SellerAvatarAddress);
+            foreach (var orderData in orderDataList)
+            {
+                ITradableItem tradableItem;
+                Guid orderId = orderData.OrderId;
+                Guid itemId = orderData.TradableId;
+                ItemSubType itemSubType;
+                var material = ItemFactory.CreateTradableMaterial(
+                    _tableSheets.MaterialItemSheet.OrderedList.First(r => r.ItemSubType == ItemSubType.Hourglass));
+                tradableItem = material;
+                itemSubType = ItemSubType.Hourglass;
+
+                var result = new DailyReward2.DailyRewardResult()
+                {
+                    id = default,
+                    materials = new Dictionary<Material, int>(),
+                };
+
+                for (var i = 0; i < 100; i++)
+                {
+                    var mail = new DailyRewardMail(result, i, default, 0);
+                    sellerAvatarState.Update(mail);
+                    buyerAvatarState.Update(mail);
+                }
+
+                Address shardedShopAddress = ShardedShopStateV2.DeriveAddress(itemSubType, orderId);
+                var shopState = _initialState.GetState(shardedShopAddress) is null
+                    ? new ShardedShopStateV2(shardedShopAddress)
+                    : new ShardedShopStateV2((Dictionary)_initialState.GetState(shardedShopAddress));
+                var order = OrderFactory.Create(
+                    sellerAgentState.address,
+                    sellerAvatarState.address,
+                    orderId,
+                    new FungibleAssetValue(_goldCurrencyState.Currency, orderData.Price, 0),
+                    tradableItem.TradableId,
+                    0,
+                    itemSubType,
+                    orderData.ItemCount
+                );
+                sellerAvatarState.inventory.AddItem2((ItemBase)tradableItem, orderData.ItemCount);
+                var inventoryAddress = orderData.SellerAvatarAddress.Derive(LegacyInventoryKey);
+                _initialState.SetState(inventoryAddress, sellerAvatarState.inventory.Serialize());
+
+                var sellItem = order.Sell3(sellerAvatarState);
+                var orderDigest = order.Digest(sellerAvatarState, _tableSheets.CostumeStatSheet);
+
+                Address digestListAddress = OrderDigestListState.DeriveAddress(firstData.SellerAvatarAddress);
+                var digestListState = new OrderDigestListState(OrderDigestListState.DeriveAddress(firstData.SellerAvatarAddress));
+                if (_initialState.TryGetState(digestListAddress, out Dictionary rawDigestList))
+                {
+                    digestListState = new OrderDigestListState(rawDigestList);
+                }
+
+                var orderDigestListState = digestListState;
+                orderDigestListState.Add(orderDigest);
+                shopState.Add(orderDigest, 0);
+
+                Assert.Equal(order.ExpiredBlockIndex, sellItem.RequiredBlockIndex);
+                Assert.DoesNotContain(((ItemBase)tradableItem).Id, buyerAvatarState.itemMap.Keys);
+
+                var expirationMail = new OrderExpirationMail(
+                    101,
+                    orderId,
+                    order.ExpiredBlockIndex,
+                    orderId
+                );
+                sellerAvatarState.mailBox.Add(expirationMail);
+
+                var purchaseInfo = new PurchaseInfo(
+                    orderId,
+                    tradableItem.TradableId,
+                    firstData.SellerAgentAddress,
+                    firstData.SellerAvatarAddress,
+                    itemSubType,
+                    order.Price
+                );
+                purchaseInfos.Add(purchaseInfo);
+
+                _initialState = _initialState
+                    .SetState(Order.DeriveAddress(orderId), order.Serialize())
+                    .SetState(_buyerAvatarAddress, buyerAvatarState.Serialize())
+                    .SetState(sellerAvatarState.address, sellerAvatarState.Serialize())
+                    .SetState(shardedShopAddress, shopState.Serialize())
+                    .SetState(orderDigestListState.Address, orderDigestListState.Serialize());
+            }
+
+            var sumCount = orderDataList.Sum(x => x.ItemCount);
+            Assert.Equal(1, sellerAvatarState.inventory.Items.Count);
+            Assert.Equal(sumCount, sellerAvatarState.inventory.Items.First().count);
+
+            var buyAction = new Buy
+            {
+                buyerAvatarAddress = _buyerAvatarAddress,
+                purchaseInfos = purchaseInfos,
+            };
+            var nextState = buyAction.Execute(new ActionContext()
+            {
+                BlockIndex = 100,
+                PreviousStates = _initialState,
+                Random = new TestRandom(),
+                Rehearsal = false,
+                Signer = _buyerAgentAddress,
+            });
+
+            AvatarState nextBuyerAvatarState = nextState.GetAvatarState(_buyerAvatarAddress);
+
+            Assert.Empty(buyAction.errors);
+
+            foreach (var purchaseInfo in purchaseInfos)
+            {
+                Address shardedShopAddress =
+                    ShardedShopStateV2.DeriveAddress(purchaseInfo.ItemSubType, purchaseInfo.OrderId);
+                var nextShopState = new ShardedShopStateV2((Dictionary)nextState.GetState(shardedShopAddress));
+                Assert.DoesNotContain(nextShopState.OrderDigestList, o => o.OrderId.Equals(purchaseInfo.OrderId));
+                Order order =
+                    OrderFactory.Deserialize(
+                        (Dictionary)nextState.GetState(Order.DeriveAddress(purchaseInfo.OrderId)));
+                FungibleAssetValue tax = order.GetTax();
+
+                int itemCount = order is FungibleOrder fungibleOrder ? fungibleOrder.ItemCount : 1;
+                Assert.True(
+                    nextBuyerAvatarState.inventory.TryGetTradableItems(
+                        purchaseInfo.TradableId,
+                        100,
+                        itemCount,
+                        out List<Inventory.Item> inventoryItems)
+                );
+                Assert.Single(inventoryItems);
+                Inventory.Item inventoryItem = inventoryItems.First();
+                ITradableItem tradableItem = (ITradableItem)inventoryItem.item;
+                Assert.Equal(100, tradableItem.RequiredBlockIndex);
+                int expectedCount = tradableItem is TradableMaterial
+                    ? orderDataList.Sum(i => i.ItemCount)
+                    : itemCount;
+                Assert.Equal(expectedCount, inventoryItem.count);
+                Assert.Equal(expectedCount, nextBuyerAvatarState.itemMap[((ItemBase)tradableItem).Id]);
+
+                var nextSellerAvatarState = nextState.GetAvatarStateV2(purchaseInfo.SellerAvatarAddress);
+                Assert.False(
+                    nextSellerAvatarState.inventory.TryGetTradableItems(
+                        purchaseInfo.TradableId,
+                        100,
+                        itemCount,
+                        out _)
+                );
+                Assert.Equal(30, nextSellerAvatarState.mailBox.Count);
+                Assert.Empty(nextSellerAvatarState.mailBox.OfType<OrderExpirationMail>());
+                Assert.Equal(2, nextSellerAvatarState.mailBox.OfType<OrderSellerMail>().Count());
+
+                var buyerMail = nextBuyerAvatarState.mailBox
+                    .OfType<OrderBuyerMail>()
+                    .Single(i => i.OrderId.Equals(order.OrderId));
+                Assert.Equal(order.OrderId, buyerMail.OrderId);
+
+                var orderReceipt = new OrderReceipt((Dictionary)nextState.GetState(OrderReceipt.DeriveAddress(order.OrderId)));
+                Assert.Equal(order.OrderId, orderReceipt.OrderId);
+                Assert.Equal(_buyerAgentAddress, orderReceipt.BuyerAgentAddress);
+                Assert.Equal(_buyerAvatarAddress, orderReceipt.BuyerAvatarAddress);
+                Assert.Equal(100, orderReceipt.TransferredBlockIndex);
+
+                var nextOrderDigestListState = new OrderDigestListState(
+                    (Dictionary)nextState.GetState(OrderDigestListState.DeriveAddress(purchaseInfo.SellerAvatarAddress))
+                );
+                Assert.Empty(nextOrderDigestListState.OrderDigestList);
             }
         }
 
@@ -713,18 +934,6 @@ namespace Lib9c.Tests.Action
                     ShopStateExist = true,
                     OrderExist = true,
                     DigestExist = true,
-                    ErrorCode = Buy.ErrorCodeFailedLoadingState,
-                },
-            },
-            new object[]
-            {
-                new ErrorCodeMember()
-                {
-                    BuyerExist = true,
-                    ShopStateExist = true,
-                    OrderExist = true,
-                    DigestExist = true,
-                    EqualSellerAgent = true,
                     ErrorCode = Buy.ErrorCodeFailedLoadingState,
                 },
             },

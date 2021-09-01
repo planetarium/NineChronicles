@@ -123,7 +123,7 @@ namespace Lib9c.Tests.Action
             }
 
             Assert.Equal(0, tradableItem.RequiredBlockIndex);
-            avatarState.inventory.AddItem2((ItemBase)tradableItem, itemCount);
+            avatarState.inventory.AddItem((ItemBase)tradableItem, itemCount);
 
             var previousStates = _initialState;
             if (backward)
@@ -303,7 +303,7 @@ namespace Lib9c.Tests.Action
                     tradableId,
                     0);
                 var orderLock = new OrderLock(Guid.NewGuid());
-                _avatarState.inventory.AddItem2(tradableItem, 1, orderLock);
+                _avatarState.inventory.AddItem(tradableItem, 1, orderLock);
                 Assert.True(_avatarState.inventory.TryGetLockedItem(orderLock, out _));
                 _initialState = _initialState.SetState(
                     _avatarAddress.Derive(LegacyInventoryKey),
@@ -338,7 +338,7 @@ namespace Lib9c.Tests.Action
                 _tableSheets.EquipmentItemSheet.First,
                 equipmentId,
                 10);
-            _avatarState.inventory.AddItem2(equipment);
+            _avatarState.inventory.AddItem(equipment);
 
             _initialState = _initialState.SetState(_avatarAddress, _avatarState.Serialize());
 
@@ -368,7 +368,7 @@ namespace Lib9c.Tests.Action
                 _tableSheets.EquipmentItemSheet.Values.First(r => r.ItemSubType == ItemSubType.Weapon),
                 new TestRandom());
             AvatarState avatarState = _initialState.GetAvatarState(_avatarAddress);
-            avatarState.inventory.AddItem2((ItemBase)tradableItem);
+            avatarState.inventory.AddItem((ItemBase)tradableItem);
 
             Guid tradableId = tradableItem.TradableId;
             Guid orderId = Guid.NewGuid();

@@ -84,8 +84,8 @@ namespace Lib9c.Tests.Action
             var materialId = Guid.NewGuid();
             var material = (Equipment)ItemFactory.CreateItemUsable(row, materialId, 0, level);
 
-            _avatarState.inventory.AddItem2(equipment, count: 1);
-            _avatarState.inventory.AddItem2(material, count: 1);
+            _avatarState.inventory.AddItem(equipment, count: 1);
+            _avatarState.inventory.AddItem(material, count: 1);
 
             var result = new CombinationConsumable5.ResultModel()
             {

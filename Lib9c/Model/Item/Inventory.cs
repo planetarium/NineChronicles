@@ -767,9 +767,14 @@ namespace Nekoyume.Model.Item
         public void ReconfigureFungibleItem(OrderDigestListState digestList, Guid tradableId)
         {
             var removeList = _items.Where(i => i.Locked &&
-                                          i.item is ITradableItem item &&
+                                          i.item is ITradableFungibleItem item &&
                                           item.TradableId.Equals(tradableId))
                                         .ToList();
+
+            if (removeList.Count <= 0)
+            {
+                return;
+            }
 
             foreach (var item in removeList)
             {

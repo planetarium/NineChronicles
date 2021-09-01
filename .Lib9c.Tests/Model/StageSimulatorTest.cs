@@ -58,7 +58,7 @@ namespace Lib9c.Tests.Model
             var row = _tableSheets.CostumeStatSheet.Values.First(r => r.StatType == StatType.ATK);
             var costume = (Costume)ItemFactory.CreateItem(_tableSheets.ItemSheet[row.CostumeId], _random);
             costume.equipped = true;
-            _avatarState.inventory.AddItem2(costume);
+            _avatarState.inventory.AddItem(costume);
 
             var simulator = new StageSimulator(
                 _random,
