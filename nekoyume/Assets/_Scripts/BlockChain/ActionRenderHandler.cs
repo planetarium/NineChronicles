@@ -724,8 +724,8 @@ namespace Nekoyume.BlockChain
         {
             if (eval.Exception is null)
             {
-                var weeklyArenaAddress = eval.Action.WeeklyArenaAddress;
-                var avatarAddress = eval.Action.AvatarAddress;
+                var weeklyArenaAddress = eval.Action.weeklyArenaAddress;
+                var avatarAddress = eval.Action.avatarAddress;
 
                 LocalLayerModifier.RemoveWeeklyArenaInfoActivator(weeklyArenaAddress, avatarAddress);
 
