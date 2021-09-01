@@ -764,6 +764,20 @@ namespace Nekoyume.Model.Item
             return tradableItem;
         }
 
+        public void UnlockInvalidSlot(OrderDigestListState digestListState)
+        {
+            var slots = _items.Where(i => i.Locked);
+            var orderIds = digestListState.OrderDigestList.Select(d => d.OrderId).ToList();
+            foreach (var slot in slots)
+            {
+                var orderLock = (OrderLock)slot.Lock;
+                var orderId = orderLock.OrderId;
+                if (!orderIds.Contains(orderId))
+                {
+                    slot.Unlock();
+                }
+            }
+        }
         public void ReconfigureFungibleItem(OrderDigestListState digestList, Guid tradableId)
         {
             var tradableFungibleItems = _items
