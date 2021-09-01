@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Action;
 using Nekoyume.EnumType;
-using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
@@ -131,11 +130,7 @@ namespace Nekoyume.UI.Module
                             return;
                         }
 
-                        widget.Show(() =>
-                        {
-                            toggleInfo.Toggle.isOn = false;
-                            AudioController.PlayClick();
-                        });
+                        widget.Show(() => { toggleInfo.Toggle.isOn = false; });
                     }
                     else
                     {
