@@ -106,7 +106,7 @@ untuk menghadapi cobaan itu.","Tu vas avoir besoin d'équipements variés
 pour te préparer à faire face à cette épreuve.",,"អ្នកត្រូវការឧបករណ៍ជាច្រើនប្រភេទ
 ដើម្បីរៀបចំសម្រាប់ការតេស្តនេះ។",,为您准备好各种装备以备不时之需。,,,,
 SPEECH_COMBINE_0,"Have you collected the materials?
-Then come to me.","전투로 재료를 모았나?
+Then bring them to me.","전투로 재료를 모았나?
 그럼 내게 오시게","Você coletou
 os materiais?
 Então venha até mim.",,"素材を集めたら
@@ -191,7 +191,7 @@ mais son effet est puissant.",,"របស់ដែលអាចប្រេីប
 ប៉ុន្តែវាមានឥទ្ធិពលខ្លាំងខ្លា។",,"消耗品消失后的用法，
 但是效果很强大。",,,,
 SPEECH_COMBINE_6,"You want to further strengthen your weapon?
-Craft the same weapon and synthesize it.","무기를 더 강화하고 싶다고?
+Craft the same weapon and combine the two.","무기를 더 강화하고 싶다고?
 같은 무기를 만들어서 합성해보게","Você quer mais armas?
 nova linha Faça uma arma e sintetize-a.",,"もっと強い武器が欲しいのか？
 同じ武器を作って合成してみろ","Möchtest du deine Waffe weiter verstärken?
@@ -280,8 +280,8 @@ Freya rozdaje nagrody!",,,"Untuk kucing yang mulia,
 Freya memberikan hadiah!","Freya distribue des prix
 pour les chats glorieux !",,,,"对于光彩夺目的猫咪，
 芙蕾雅会颁发奖品！",,,,
-SPEECH_RANK_4,"If Odin hadn't let go of
-Loki's children like that..
+SPEECH_RANK_4,"If Odin hadn't banished
+Loki's children like that...
 Oh! Nevermind!","오딘님이 로키님의 자식들을
 그렇게 내치지만 않았어도..
 앗 아무것도 아니다!","Se Odin não tivesse abandonado os filhos de
@@ -417,18 +417,18 @@ evitar isso!",,!決める!,"!Du kannst dies
 nicht vermeiden!",¡Esto no lo puedes evadir!,!คุณไม่สามารถหลีกเลี่ยงสิ่งนี้ได้!,"!Nie unikniesz
 tego!",,,"!Kamu tidak akan bisa
 menghindari ini!","!Vous n'allez pas pouvoir
-éviter ça !",,,,!你无法避免！,,,,
-PLAYER_BOSS_STAGE_0,Hey... what's that?,왠지 불길한데..?,Ei ... o que é isso?,,何だ…あれは？,Hey... was ist das?,Ey...¿Que es eso?,เฮ้ย ... นั่นอะไร?,Hej... co to?,,,Hey.. Apaan tuh?,Eh... qu'est-ce que c'est ?,,,,嘿...那是什么？,,,,
-PLAYER_BOSS_STAGE_1,,,,,,,,,,,,,,,,,,,,,
-PLAYER_BOSS_ENCOUNTER_0,Come on!,와라!,Venha!,,来い！,Auf geht's!,¡Venga!,มาเลย!,Dawaj!,,,Ayolah!,Allez !,,,,加油！,,,,
-PLAYER_BOSS_ENCOUNTER_1,,,,,,,,,,,,,,,,,,,,,
-PLAYER_WIN_0,Great!,좋았어!,Ótimo!,,やった！,Super!,¡Grandioso!,เยี่ยมมาก!,Wspaniale!,,,Mantap!,Génial !,,,,太好了！,,,,
-PLAYER_WIN_1,That was difficult...,힘들었어..,Foi difícil...,,危なかった…,Das war schwer...,Esto fue dificil...,มันยากเกินไป...,Nie było łatwo...,,,Memang susah...,C'était difficile...,,,,很难...,,,,
-PLAYER_WIN_2,Yeah!,야호!,Yeah!,,よし！,Yeah!,¡Si!,เย่!,Jeej!,,,Yeah!,Ouais !,,,,耶！,,,,
-PLAYER_LOSE_0,Ugh...,으악!,Ugh...,,うぅ…,Ugh..,Ugh...,เอิ๊ก...,Ugh...,,,Aduh...,Hein...,,,,啊...,,,,
-PLAYER_LOSE_1,,,,,,,,,,,,,,,,,,,,,
-ENEMY_SKILL_1_2_0,!Burn them all!,!다 불태워버려라!,!Queime todos eles!,,!燃やせ！,!Verbrenne sie alle!,¡Quemalos a todos!,!เผาให้หมด!,!Spalić ich wszystkich!,,,!Bakar semuanya!,!Brûlez-les tous !,,,,!烧掉它们！,,,,
-ENEMY_SKILL_3_2_0,!Wipe them out!,!다 쓸어버려라!,!Acabe com todos eles!,,!消えろ！,!Vernichte sie!,¡Deshazte de ellos!,!กำจัดพวกมันให้หมด!,!Zmieść ich w pył!,,,!Habisi Mereka semua!,!Éradiquez-les !,,,,!把它们全部除掉！,,,,
+éviter ça !",,,,!你无法避免！,,,,,,,,,,,,,,,,,,,
+PLAYER_BOSS_STAGE_0,Hey.... what's that?,왠지 불길한데..?,Ei ... o que é isso?,,何だ…あれは？,Hey... was ist das?,Ey...¿Que es eso?,เฮ้ย ... นั่นอะไร?,Hej... co to?,,,Hey.. Apaan tuh?,Eh... qu'est-ce que c'est ?,,,,嘿...那是什么？,,,,,,,,,,,,,,,,,,,
+PLAYER_BOSS_STAGE_1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+PLAYER_BOSS_ENCOUNTER_0,Come on!,와라!,Venha!,,来い！,Auf geht's!,¡Venga!,มาเลย!,Dawaj!,,,Ayolah!,Allez !,,,,加油！,,,,,,,,,,,,,,,,,,,
+PLAYER_BOSS_ENCOUNTER_1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+PLAYER_WIN_0,Great!,좋았어!,Ótimo!,,やった！,Super!,¡Grandioso!,เยี่ยมมาก!,Wspaniale!,,,Mantap!,Génial !,,,,太好了！,,,,,,,,,,,,,,,,,,,
+PLAYER_WIN_1,That was difficult....,힘들었어..,Foi difícil...,,危なかった…,Das war schwer...,Esto fue dificil...,มันยากเกินไป...,Nie było łatwo...,,,Memang susah...,C'était difficile...,,,,很难...,,,,,,,,,,,,,,,,,,,
+PLAYER_WIN_2,Yeah!,야호!,Yeah!,,よし！,Yeah!,¡Si!,เย่!,Jeej!,,,Yeah!,Ouais !,,,,耶！,,,,,,,,,,,,,,,,,,,
+PLAYER_LOSE_0,Ugh....,으악!,Ugh...,,うぅ…,Ugh..,Ugh...,เอิ๊ก...,Ugh...,,,Aduh...,Hein...,,,,啊...,,,,,,,,,,,,,,,,,,,
+PLAYER_LOSE_1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+ENEMY_SKILL_1_2_0,!Burn them all!,!다 불태워버려라!,!Queime todos eles!,,!燃やせ！,!Verbrenne sie alle!,¡Quemalos a todos!,!เผาให้หมด!,!Spalić ich wszystkich!,,,!Bakar semuanya!,!Brûlez-les tous !,,,,!烧掉它们！,,,,,,,,,,,,,,,,,,,
+ENEMY_SKILL_3_2_0,!Wipe them out!,!다 쓸어버려라!,!Acabe com todos eles!,,!消えろ！,!Vernichte sie!,¡Deshazte de ellos!,!กำจัดพวกมันให้หมด!,!Zmieść ich w pył!,,,!Habisi Mereka semua!,!Éradiquez-les !,,,,!把它们全部除掉！,,,,,,,,,,,,,,,,,,,
 ENEMY_SKILL_4_2_0,"!I'm going to
 blow it all up!",!모두 날려버리겠다!,!Eu vou explodir tudo!,,!吹き飛ばしてやる！,"!Ich werde alles
 in die Luft jagen!",¡Voy a volarlo todo!,!ฉันจะระเบิดพวกมันให้หมด!,"!Wysadzę to
@@ -476,7 +476,6 @@ erhöhst oder bessere Ausrüstung herstellst.",Puedes volverte mas fuerte subien
 หรือสร้างอุปกรณ์ที่แข็งแกร่งขึ้น","Możesz stać się silniejszy podnosząc poziom
 lub tworząc lepszy ekwipunek.",,,"Kamu bisa menjadi lebih kuat dengan meningkatkan level
 atau membuat perlengkapan yang lebih kuat.","Tu peux devenir plus fort en augmentant ton niveau
-ou en créant des équipements plus puissants.",,,,您可以通过升级或制作更坚固的设备来变得更强大。 ..,,,,
 UI_BATTLE_LOSE,Lost...,전투 패배,Perdeu...,,敗北…,Gescheitert...,Perdiste...,พ่ายแพ้...,Przegrana...,,,Kalah...,Perdu...,,,,失败…,,,,
 UI_YES,Yes,네,Sim,,はい,Ja,Si,ใช่,Tak,,,Iya,Oui,,,,是,,,,
 UI_NO,No,아니오,Não,,いいえ,Nein,No,ไม่,Nie,,,Tidak,Non,,,,否,,,,
@@ -492,8 +491,8 @@ UI_DELETE,Delete,삭제,Apagar,,削除,Löschen,Borrar,ลบ,Usuń,,,Hapus,Effa
 UI_COMBINATION_ITEM,Combine,아이템 제작,Combinar,,アイテム製作,Kombinieren,Combinar,รวมกัน,Połącz,,,Gabung,Combiner,,,,合并,,,,
 UI_COMBINATION_ERROR,Error,조합 에러,Erro,,製作エラー,Fehler,Error,ข้อผิดพลาด,Błąd,,,Error,Erreur,,,,错误,,,,
 UI_COMBINATION_SUCCESS,Success!,조합 성공!,Sucesso!,,製作成功！,Erfolg!,¡Conseguido!,สำเร็จ!,Sukces!,,,Sukses!,Réussi !,,,,成功！,,,,
-UI_COMBINATION_NOTIFY_FORMAT,"<color=#FFA78B>[Workshop Cat]</color>
-I've finished crafting {0}","<color=#FFA78B>[대장장이 고양이]</color>
+UI_COMBINATION_NOTIFY_FORMAT,"<color=#FFA78B>[Workshop Deberg]</color>
+I've finished crafting {0}","<color=#FFA78B>[대장장이 드베르그]</color>
 {0} 제작을 완료하였네.","<color=#FFA78B>[Gato de oficina]</color>
 Eu terminei de fabricar {0}","<color=#FFA78B>[Gato de oficina]</color>
 Eu terminei de fabricar {0}","<color=#FFA78B>[ワークショップ猫]</color>
@@ -511,8 +510,8 @@ J'ai fini la fabrication de {0}","<color=#FFA78B>[Практикум Cat]</color
 میں فارغ تیار {0} ہے.","<color=#FFA78B>[车间猫]</color>
 我已经完成了{0}的制作工作。","<color=#FFA78B>[Műhelymunka]</color>
 Végeztem ravaszkodó {0}",,,
-UI_COMBINATION_NOTIFY_FORMAT_GREATER,"<color=#FFA78B>[Workshop Cat]</color>
-Great Success!! I've finished crafting {0}","<color=#FFA78B>[대장장이 고양이]</color>
+UI_COMBINATION_NOTIFY_FORMAT_GREATER,"<color=#FFA78B>[Workshop Deberg]</color>
+Great Success!! I've finished crafting {0}","<color=#FFA78B>[대장장이 드베르그]</color>
 대성공!! {0} 제작을 완료하였네.","<color=#FFA78B>[Gato de oficina]</color>
 Grande sucesso!! Eu terminei de fabricar {0}","<color=#FFA78B>[Gato de oficina]</color>
 Grande sucesso!! Eu terminei de fabricar {0}","<color=#FFA78B>[ワークショップ猫]</color>
@@ -530,8 +529,8 @@ Grand succès!! J'ai fini la fabrication de {0}","<color=#FFA78B>[Практик
 عظیم کامیابی!! میں فارغ تیار {0} ہے.","<color=#FFA78B>[车间猫]</color>
 巨大的成功！！ 我已经完成了{0}的制作工作。","<color=#FFA78B>[Műhelymunka]</color>
 Nagy siker!! Végeztem ravaszkodó {0}",,,
-UI_ITEM_ENHANCEMENT_MAIL_FORMAT_GREATER,"<color=#FFA78B>[Workshop Cat]</color>
-Great Success!! I've finished crafting {0}","<color=#FFA78B>[대장장이 고양이]</color>
+UI_ITEM_ENHANCEMENT_MAIL_FORMAT_GREATER,"<color=#FFA78B>[Workshop Deverg]</color>
+Great Success!! I've finished crafting {0}","<color=#FFA78B>[대장장이 드베르그]</color>
 대성공!! {0} 제작을 완료하였네.","<color=#FFA78B>[Gato de oficina]</color>
 Grande sucesso!! Eu terminei de fabricar {0}","<color=#FFA78B>[Gato de oficina]</color>
 Grande sucesso!! Eu terminei de fabricar {0}","<color=#FFA78B>[ワークショップ猫]</color>
@@ -549,8 +548,8 @@ Grand succès!! J'ai fini la fabrication de {0}","<color=#FFA78B>[Практик
 عظیم کامیابی!! میں فارغ تیار {0} ہے.","<color=#FFA78B>[车间猫]</color>
 巨大的成功！！ 我已经完成了{0}的制作工作。","<color=#FFA78B>[Műhelymunka]</color>
 Nagy siker!! Végeztem ravaszkodó {0}",,,
-UI_ITEM_ENHANCEMENT_MAIL_FORMAT_FAIL,"<color=#FFA78B>[Workshop Cat]</color>
-Sorry, I failed to upgrade {0}","<color=#FFA78B>[대장장이 고양이]</color>
+UI_ITEM_ENHANCEMENT_MAIL_FORMAT_FAIL,"<color=#FFA78B>[Workshop Deverg]</color>
+Sorry, I failed to upgrade {0}","<color=#FFA78B>[대장장이 ]</color>
 미안하네, {0} 강화를 실패했다네.","<color=#FFA78B>[Gato de oficina]</color>
 Desculpe, não consegui atualizar {0}","<color=#FFA78B>[Gato de oficina]</color>
 Desculpe, não consegui atualizar {0}","<color=#FFA78B>[ワークショップ猫]</color>
@@ -613,8 +612,8 @@ UI_CONSUMABLES,Consumables,소모품,Consumíveis,,消耗品,Verbrauchsgegenstä
 UI_CONSUMABLE,Consumable,소모품,Consumable,,消耗品,Consumable,Consumable,Consumable,Consumable,,,Consumable,Consumable,,,,消耗品,,,,
 UI_MATERIALS,Materials,재료,Materiais,,素材,Materialien,Materiales,วัสดุ,Materiały,,,Bahan,Matériaux,,,,材料,,,,
 UI_MATERIAL,Material,재료,Material,,素材,Material,Material,Material,Material,,,Material,Material,,,,材料,,,,
-UI_SYNOPSIS_0,"Peace, harmony, and honor...
-Long lost treasures of this bygone world where only their shells remain to be felt.","평화와 조화, 그리고 긍지
+UI_SYNOPSIS_0,"Peace, Honor, Harmony...
+Treasured ideals of days gone by. Now only their shadows remain.","평화와 조화, 그리고 긍지
 이 세 가지는 이미 신계에는 없어져, 껍데기만 남은 단어가 되고 말았다.","Paz , harmonia , e honra ...
 Tesouros perdidos há muito tempo neste mundo passado, onde apenas suas conchas permanecem para serem sentidas.",,"平和、調和、そして名誉...
 これらは新界ではすでに失われ、形だけの言葉になってしまいました。","Frieden, Harmonie and Ehre...
@@ -652,9 +651,9 @@ Afin d'éviter la Grande Bataille annoncée,
 il dispersa trois des enfants de son fils adoptif Loki,
 sans son consentement et les cacha de lui.",,,,"奥丁，Nine worlds 的守护者...为了防止大战，
 他不带他的养子分散了他领养的兄弟洛基（Loki）的三个孩子进入并隐藏他们。",,,,
-UI_SYNOPSIS_2,"The prophecy takes the family and the Nine Worlds apart...
-And as the conflicts between the Gods escalate,
-a strange tremor is felt in Asgard.","가족이지만 가족일 수 없었기에, 시작될 수밖에 없었던 신들의 갈등..
+UI_SYNOPSIS_2,"The conflicts between the Gods escalate....
+the Immortal family and the Nine Worlds are ripped apart,
+and a strange tremor is felt in Asgard.","가족이지만 가족일 수 없었기에, 시작될 수밖에 없었던 신들의 갈등..
 이 즈음, 아스가르드에는 점차 어수선한 기운이 감지되기 시작한다.","A profecia separa a família e os Nove Mundos ...
 E à medida que os conflitos entre os deuses aumentam,
 um estranho tremor é sentido em Asgard.",,"予言は彼らとナインワールドを引き裂きます...
@@ -671,8 +670,8 @@ getaran aneh dirasakan di Asgard.","La prophétie sépara la famille et les Neuf
 Et tandis que les conflits entre les dieux s'escaladèrent,
 un étrange frisson se fit sentir dans Asgard.",,,,"预言将家庭与Nine worlds 分开……
 随着众神之间的冲突升级，阿斯加德感到一种奇怪的震颤。",,,,
-UI_SYNOPSIS_3,"The World Tree, Yggdrasil begins shivering…
-This marked the beginning of a fate foretold since the ancient times.","세계수가 노하면 세계에 거대한 위협이 닥치리라!
+UI_SYNOPSIS_3,"The World Tree, Yggdrasil, begins to shiver and quake....
+A sign of the beginning of dark times foretold since ancient times.","세계수가 노하면 세계에 거대한 위협이 닥치리라!
 이는 이미 예부터 정해져 내려오던 시련이었다.","A Árvore do Mundo , Yggdrasil começa a tremer ...
 Isso marcou o início de um destino transmitido do passado.",,"世界樹、ユグドラシルが震え始め...
 これより、古より予言されていた運命が始まるのです。","Der Weltenbaum, Yggdrasil, beginnt zu frösteln...
@@ -822,8 +821,8 @@ UI_LOADING_ACTION_EXECUTE,Executing actions... {0} / {1},액션 실행 중... {0
 UI_RECEIVE,Receive,받기,Receber,,受信,Erhalten,,รับ,Odbierz,,,Terima,Recevoir,,,,接收,,,,
 UI_RECEIVED,Received,받음,Recebido,,受信済,Erhalten,,ได้รับ,Odebrano,,,Diterima,Reçu,,,,接收,,,,
 UI_GET_REWARDS,Receive Rewards,보상 받기,Receba as recompensas,,報酬の受けとり,Erhalte Belohnungen,,รับรางวัล,Otrzymaj nagrody,,,Terima Hadiah,Récompenses Reçues,,,,接收奖励,,,,
-UI_ITEM_ENHANCEMENT_MAIL_FORMAT,"<color=#FFA78B>[Workshop Cat]</color>
-I've finished upgrading {0}","<color=#FFA78B>[대장장이 고양이]</color>
+UI_ITEM_ENHANCEMENT_MAIL_FORMAT,"<color=#FFA78B>[Workshop Deverg]</color>
+I've finished upgrading {0}","<color=#FFA78B>[대장장이 드베르그]</color>
 {0} 강화를 완료하였네.","<color=#FFA78B>[Gato de oficina]</color>
 Concluí o upgrade do {0}","<color=#FFA78B>[Gato de oficina]</color>
 Concluí o upgrade do {0}","<color=#FFA78B>[ワークショップ猫]</color>
@@ -841,8 +840,8 @@ J'ai fini l'amélioration de {0}","<color=#FFA78B>[Практикум Cat]</colo
 میں فارغ اپ گریڈنگ {0} ہے.","<color=#FFA78B>[车间猫]</color>
 我已经完成升级{0}","<color=#FFA78B>[Műhelymunka]</color>
 Végeztem korszerűsítés {0}",,,
-UI_SELL_CANCEL_MAIL_FORMAT,"<color=#FFA78B>[Market Cat]</color>
-I canceled the sales of {0}","<color=#FFA78B>[Market Cat]</color>
+UI_SELL_CANCEL_MAIL_FORMAT,"<color=#FFA78B>[Market Jade]</color>
+I canceled the sales of {0}","<color=#FFA78B>[상점고양이 제이드]</color>
 {0} 판매를 취소했어!","<color=#FFA78B>[Market Cat]</color>
 Cancelei as vendas do {0}",,"<color=#FFA78B>[Market Cat]</color>
 {0} の販売をキャンセルしたわ。","<color=#FFA78B>[Market Cat]</color>
@@ -852,8 +851,8 @@ Anulowano sprzedaż {0}",,,"<color=#FFA78B>[Market Cat]</color>
 Saya telah membatalkan penjualan {0}","<color=#FFA78B>[Market Cat]</color>
 J'ai annulé la vente de {0}",,,,"<color=#FFA78B>[Market Cat]</color>
 我取消了{0}",,,,
-UI_BUYER_MAIL_FORMAT,"<color=#FFA78B>[Market Cat]</color>
-Purchased! {0} is yours now!","<color=#FFA78B>[Market Cat]</color>
+UI_BUYER_MAIL_FORMAT,"<color=#FFA78B>[Market Jade]</color>
+Purchased! {0} is yours now!","<color=#FFA78B>[상점고양이 제이드]</color>
 구매 완료! {0}는 이제 네거야!","<color=#FFA78B>[Market Cat]</color>
 Comprado! {0} agora é seu!",,"<color=#FFA78B>[Market Cat]</color>
 購入完了！ {0} はあなたのものよ！","<color=#FFA78B>[Market Cat]</color>
@@ -863,8 +862,8 @@ Kupiono! {0} jest teraz Twoje!",,,"<color=#FFA78B>[Market Cat]</color>
 Terbeli! {0} milikmu sekarang!","<color=#FFA78B>[Market Cat]</color>
 Acheté ! {0} est désormais à toi !",,,,"<color=#FFA78B>[Market Cat]</color>
 已购买！{0}现在是您的！",,,,
-UI_SELLER_MAIL_FORMAT,"<color=#FFA78B>[Market Cat]</color>
-You earned {0} by selling {1}","<color=#FFA78B>[Market Cat]</color>
+UI_SELLER_MAIL_FORMAT,"<color=#FFA78B>[Market Jade]</color>
+You earned {0} by selling {1}","<color=#FFA78B>[상점고양이 제이드]</color>
 {1}을 팔아서 {0}를 얻었어!","<color=#FFA78B>[Market Cat]</color>
 Você ganhou {0} com a venda {1}",,"<color=#FFA78B>[Market Cat]</color>
 {1} が {0} で売れたわよ。","<color=#FFA78B>[Market Cat]</color>
@@ -896,9 +895,9 @@ dobrych rzeczy.",,,"Akan ada banyak sekali
 barang bagus datang.
 Ayo lihat!","Il y a plein de
 bons trucs en vente.
-Viens jeter un coup d'œil.",,,,涌现出很多好东西。,,,,
+Viens jeter un coup d’œil.",,,,涌现出很多好东西。,,,,
 SPEECH_SHOP_BUY_1,"You need different equipment
-to prepare for the ordeal.",다양한 장비가 있어야 시련을 대비할 수 있어,"Você precisa de equipamento diferentes
+to prepare for the ordeal.",다양한 장비가 있어야 시련을 대비할 수 있어,"Você precisa de equipamentos diferentes
 para se preparar para o calvário.",,厳しい戦いに備えて色々な装備が必要よ！,"Du brauchst verschiedene Ausrüstung,
 um dich auf deine Probe vorzubereiten.",,"คุณจะต้องมีอุปกรณ์ที่หลากหลาย
 เพื่อเตรียมพร้อมสำหรับการทดสอบ","Musisz przygotować zróżnicowany
@@ -979,9 +978,9 @@ Hein ? Tu es déjà au courant de tout ça ?",,,,"等级越高，那里的插槽
 您已经意识到这一点吗？",,,,
 SPEECH_COMBINE_EQUIPMENT_0,I'll do my absolute best on this one.,"최선을 다해
 무기를 만들어주지",Eu farei o meu melhor trabalho neste item.,,最高の仕事をしてやるぜ！,Ich werde mein Bestes geben.,,ฉันจะทำงานชิ้นนี้ให้ออกมาดีที่สุด,Zrobie wszystko co w mojej mocy.,,,Saya akan melakukan yang terbaik untuk yang satu ini.,Je vais faire de mon mieux pour celui-là.,,,,我会尽力做到这一点。,,,,
-SPEECH_COMBINE_CONSUMABLE_0,"Consumable items disappears
+SPEECH_COMBINE_CONSUMABLE_0,"Consumable items disappear
 upon usage,
-but the effect is powerful.","소모템은 한번 쓰면 사라지지만
+but their effect is powerful.","소모템은 한번 쓰면 사라지지만
 그만큼 효과가 강력하다오","O item consumível desaparece
 depois que você o usa
 mas tem um efeito forte.",,"消耗品は使うと無くなっちまうが
@@ -996,8 +995,8 @@ setelah Anda menggunakannya
 tetapi memiliki efek yang kuat.","Les consommables disparaissent
 après leur utilisation,
 mais leur effet est puissant.",,,,消耗性物品消失后的用法，但效果很强。,,,,
-SPEECH_COMBINE_ENHANCE_EQUIPMENT_0,You can combine two equipment into one.,두 장비를 합칠 수 있어.,Você pode combinar dois equipamento em um.,,2 つの装備品を組み合わせて 1 つにできるぞ。,Du kannst zwei Gegenstände zu einem kombinieren.,,คุณสามารถรวมอุปกรณ์สองชิ้นเข้าด้วยกัน,Możesz połączyć dwa przedmioty w jeden.,,,Anda bisa menggabungkan dua perlengkapan menjadi satu.,Tu peux combiner deux équipements en un.,,,,您可以将两个设备组合为一个。,,,,
-SPEECH_COMBINE_STAGE_MATERIAL_0,You have to choose the same line of equipment as the material.,같은 장비 끼리만 합칠 수 있어!,Você tem que escolher a mesma linha de equipamento como o material.,,あなたは、材料と機器の同じ行を選択する必要があります。,Sie haben die gleiche Art von Ausrüstung wie das Material zu wählen.,Tienes que elegir la misma línea de equipos como el material.,คุณต้องเลือกบรรทัดเดียวกันของอุปกรณ์เป็นวัสดุ,"Musisz wybrać tę samą linię urządzeń, jak materiał.","Jūs turite pasirinkti tą pačią liniją įrangos, kaip ir medžiaga.",Je moet dezelfde lijn van de apparatuur als het materiaal te kiezen.,Anda harus memilih baris yang sama peralatan sebagai bahan.,Vous devez choisir la même ligne d'équipement comme matériau.,Вы должны выбрать ту же самую линию оборудования в качестве материала.,អ្នកត្រូវតែជ្រើសរើសយកបន្ទាត់ដូចគ្នានៃឧបករណ៍ជាសម្ភារៈនេះ។,,你必须选择设备的同一行的材料。,,,,
+SPEECH_COMBINE_ENHANCE_EQUIPMENT_0,You can combine two pieces of equipment into one.,두 장비를 합칠 수 있어.,Você pode combinar dois equipamentos em um.,,2 つの装備品を組み合わせて 1 つにできるぞ。,Du kannst zwei Gegenstände zu einem kombinieren.,,คุณสามารถรวมอุปกรณ์สองชิ้นเข้าด้วยกัน,Możesz połączyć dwa przedmioty w jeden.,,,Anda bisa menggabungkan dua perlengkapan menjadi satu.,Tu peux combiner deux équipements en un.,,,,您可以将两个设备组合为一个。,,,,
+SPEECH_COMBINE_STAGE_MATERIAL_0,You have to choose the same line of equipment as the material.,같은 장비 끼리만 합칠 수 있어!,Você tem que escolher a mesma linha de equipamentos como o material.,,あなたは、材料と機器の同じ行を選択する必要があります。,Sie haben die gleiche Art von Ausrüstung wie das Material zu wählen.,Tienes que elegir la misma línea de equipos como el material.,คุณต้องเลือกบรรทัดเดียวกันของอุปกรณ์เป็นวัสดุ,"Musisz wybrać tę samą linię urządzeń, jak materiał.","Jūs turite pasirinkti tą pačią liniją įrangos, kaip ir medžiaga.",Je moet dezelfde lijn van de apparatuur als het materiaal te kiezen.,Anda harus memilih baris yang sama peralatan sebagai bahan.,Vous devez choisir la même ligne d'équipement comme matériau.,Вы должны выбрать ту же самую линию оборудования в качестве материала.,អ្នកត្រូវតែជ្រើសរើសយកបន្ទាត់ដូចគ្នានៃឧបករណ៍ជាសម្ភារៈនេះ។,,你必须选择设备的同一行的材料。,,,,
 SPEECH_RANKING_BOARD_GREETING_0,"For the glorious cats,
 Freya is handing out prizes!","영예로운 고양이들에게는
 여신님께서 상을 주신다!","Para os gatos gloriosos
@@ -1103,7 +1102,7 @@ Visitons d'autres mondes et
 rejoignons le combat !",,,,"按下面的开关。
 让我们参观其他世界并加入战斗吧！",,,,
 UI_LOGIN_CONTENT,"This is a community-powered
-fantasy world that fully runs on the blockchain.","It is a fantasy world on the blockchain.
+fantasy world that runs fully on the blockchain.","It is a fantasy world on the blockchain.
 To start the game, you need to create your account.","Este é um mundo de fantasia
 alimentado pela comunidade que roda totalmente em blockchain.",,"ここはコミュニティによって作られるファンタジー世界であり、
 全てがブロックチェーン上で実行されています","Dies ist eine von der Community betriebene Fantasiewelt, die vollständig auf der Blockchain läuft.",,"มันคือโลกแฟนตาซีบนบล็อคเชน
@@ -1124,7 +1123,7 @@ UI_LOGIN_ENTER_PRIVATE_KEY,e.g. E3AB97633410A6513TPA3...557B,e.g. E3AB97633410A6
 UI_LOGIN_ACCOUNT,Your Account,계정,Sua conta,,アカウント,Dein Konto,,บัญชีผู้ใช้,Twoje konto,,,Akun Anda,Votre compte,,,,您的帐户,,,,
 UI_UNLOCK_COMBINATION,"Congratulations!
 You can enter the workshop now!
-Go back to lobby and craft something now.",조합 개방,"Parabéns!
+Go back to the lobby and craft something now.",조합 개방,"Parabéns!
 Você pode participar do workshop agora!
 Volte ao principal e crie algo agora.",,"工房に入れるようになりました！
 ロビーに戻ってアイテムを製作してみましょう。","Herzlichen Glückwunsch!
@@ -1141,7 +1140,7 @@ Retourne au lobby et fabrique quelque chose dès maintenant.",,,,"恭喜！您�
 回到大厅并开始制作。",,,,
 UI_UNLOCK_SHOP,"Congratulations!
 You can enter the market now!
-Go back to lobby and trade items with others.",상점 개방,"Parabéns!
+Go back to the lobby and trade items with others.",상점 개방,"Parabéns!
 Você pode entrar no mercado agora!
 Volte ao principal e negocie com outros.",,"マーケットに入れるようになりました！
 ロビーに戻ってお店をのぞいてみましょう。","Herlichen Glückwunsch!
@@ -1158,7 +1157,7 @@ Retourne au lobby et échange des articles avec les autres.",,,,"恭喜！您现
 回到大厅并与其他人交易物品。",,,,
 UI_UNLOCK_RANKING,"Congratulations!
 You can now check your ranking!
-Go back to lobby and see how strong you are.",랭킹 개방,"Parabéns!
+Go back to the lobby and see how strong you are.",랭킹 개방,"Parabéns!
 Agora você pode verificar sua classificação!
 Volte ao main e veja como você é forte.",,"ランキングを確認できるようになりました！
 ロビーに戻ってあなたのランクを見てみましょう。","Herzlichen Glückwunsch!
@@ -1175,10 +1174,10 @@ Retourne au lobby et va voir à quel point tu es fort.",,,,"恭喜！现在，�
 回到大厅，看看自己的实力。",,,,
 UI_UNLOCK_TITLE,New Menu Open,컨텐츠 개방,Novo Menu Aberto,,コンテンツ開放,Neues Menü verfügbar,,เปิดเมนูใหม่,Nowe menu otwarte,,,Menu Baru Terbuka,Ouverture du Nouveau Menu,,,,新菜单打开,,,,
 UI_BATTLE_EXIT_RESERVATION_TITLE,Battle Exit Reservation,전투 나가기 예약,Reserva de Saída de Batalha,,バトル終了の設定,Verlasse das Kampfreservat,,ออกจากการจองต่อสู้,Rezerwacja wyjścia z bitwy,,,Battle Exit Reservation,Réservation de Sortie de Combat,,,,退出战斗,,,,
-UI_BATTLE_EXIT_RESERVATION_CONTENT,Do you want to exit to the menu after this battle?,이 전투가 끝난 후 메인으로 이동하시겠습니까?,Deseja sair do menu após esta batalha?,,このバトルが終わったらメニュー画面に戻りますか？,Willst du nach diesem Kampf zum Menü zurückkehren?,,คุณต้องการไปที่หน้าหลักหลังจากการต่อสู้นี้จบลงหรือไม่?,Czy chcesz wyjść do menu po tej bitwie?,,,Apakah Anda ingin keluar ke menu setelah pertempuran ini?,Souhaitez-vous retourner au menu après ce combat ?,,,,您想在这场战斗后退出菜单吗？,,,,
-UI_BLESS_OF_GODDESS,Action Power,행동력,Poder de ação,,アクションパワー,Aktionspunkte,,เพาเวอร์แอคชั่น,Punkty akcji,,,Action Power,Pouvoir d'Action,,,,行动力,,,,
-UI_BLESS_OF_GODDESS_DESCRIPTION,"<b>Without the blessings of the Goddess Freya, cats cannot carry out their mission. Action Power is refilled when the Prosperity Meter is full.</b>",프레이야 여신은 고양이를 위해 가호를 선사합니다. 고양이는 가호가 있어야 모든 행동을 할 수 있습니다. 여신의 가호는 왕국 번영도가 가득 차면 갱신시킬 수 있습니다.,"<b>Sem as bênçãos da Deusa Freya, os gatos não podem cumprir sua missão. O poder de ação é recarregado quando o medidor de prosperidade está cheio.</b>",,<b>女神フレイヤの祝福がなければ猫たちはミッションを遂行できません。アクションパワーはプロスペリティメーターが満タンになると補充されます。</b>,"<b>Ohne den Segen der Göttin Freya können Katzen ihre Mission nicht erfüllen. Deine Aktionspunkte werden wieder aufgefüllt, wenn der Wohlstandsmesser voll ist.</b>",,<b> หากปราศจากพรของเทพธิดาเฟรย่าแมวก็ไม่สามารถปฏิบัติภารกิจได้ Action Power จะเพิ่มเมื่อความเจริญรุ่งเรืองมิเตอร์เต็ม </b>,"<b> Bez błogosławieństwa Bogini Freyi koty nie mogą wypełnić swojej misji. Punkty akcji są uzupełniane, gdy miernik dobrobytu jest pełny. </b>",,,"<b>Tanpa restu dari Dewi Freya, kucing tidak dapat menjalankan misinya. Action Power dapat diisi ulang saat Prosperity Meter penuh. </b>","<b>Sans la bénédiction de la Déesse Freya, les chats ne peuvent assurer leur mission. Le Pouvoir d'Action est rechargé lorsque le Compteur de Prospérité est plein.</b>",,,,<b>没有祝福猫女神芙蕾雅，猫无法执行任务。</b>,,,,
-UI_PROSPERITY_DEGREE,Prosperity Meter,번영도,Medidor de Prosperidade,,プロスペリティメーター,Wohlstandsmesser,,ความเจริญรุ่งเรืองมิเตอร์,Miernik dobrobytu,,,Prosperity Meter,Compteur de Prospérité,,,,繁荣仪表,,,,
+UI_BATTLE_EXIT_RESERVATION_CONTENT,Do you want to exit back to the menu after this battle?,이 전투가 끝난 후 메인으로 이동하시겠습니까?,Deseja sair do menu após esta batalha?,,このバトルが終わったらメニュー画面に戻りますか？,Willst du nach diesem Kampf zum Menü zurückkehren?,,คุณต้องการไปที่หน้าหลักหลังจากการต่อสู้นี้จบลงหรือไม่?,Czy chcesz wyjść do menu po tej bitwie?,,,Apakah Anda ingin keluar ke menu setelah pertempuran ini?,Souhaitez-vous retourner au menu après ce combat ?,,,,您想在这场战斗后退出菜单吗？,,,,
+UI_BLESS_OF_GODDESS,Action Power,행동력,Poder de ação,,アクションパワー,Aktionspunkte,,เพาเวอร์แอคชั่น,Punkty akcji,,,Action Power,Pouvoir d'Action,,,,行动力,,,,,,,,,,,,,,,,,,,
+UI_BLESS_OF_GODDESS_DESCRIPTION,"<b>Without the blessings of the Goddess Freya, cats cannot carry out their mission. Action Power can be refilled when the Prosperity Meter is full.</b>",프레이야 여신은 고양이를 위해 가호를 선사합니다. 고양이는 가호가 있어야 모든 행동을 할 수 있습니다. 여신의 가호는 왕국 번영도가 가득 차면 갱신시킬 수 있습니다.,"<b>Sem as bênçãos da Deusa Freya, os gatos não podem cumprir sua missão. O poder de ação é recarregado quando o medidor de prosperidade está cheio.</b>",,<b>女神フレイヤの祝福がなければ猫たちはミッションを遂行できません。アクションパワーはプロスペリティメーターが満タンになると補充されます。</b>,"<b>Ohne den Segen der Göttin Freya können Katzen ihre Mission nicht erfüllen. Deine Aktionspunkte werden wieder aufgefüllt, wenn der Wohlstandsmesser voll ist.</b>",,<b> หากปราศจากพรของเทพธิดาเฟรย่าแมวก็ไม่สามารถปฏิบัติภารกิจได้ Action Power จะเพิ่มเมื่อความเจริญรุ่งเรืองมิเตอร์เต็ม </b>,"<b> Bez błogosławieństwa Bogini Freyi koty nie mogą wypełnić swojej misji. Punkty akcji są uzupełniane, gdy miernik dobrobytu jest pełny. </b>",,,"<b>Tanpa restu dari Dewi Freya, kucing tidak dapat menjalankan misinya. Action Power dapat diisi ulang saat Prosperity Meter penuh. </b>","<b>Sans la bénédiction de la Déesse Freya, les chats ne peuvent assurer leur mission. Le Pouvoir d'Action est rechargé lorsque le Compteur de Prospérité est plein.</b>",,,,<b>没有祝福猫女神芙蕾雅，猫无法执行任务。</b>,,,,
+UI_PROSPERITY_DEGREE,Prosperity Meter,번영도,Medidor de Prosperidade,,プロスペリティメーター,Wohlstandsmesser,,ความเจริญรุ่งเรืองมิเตอร์,Miernik dobrobytu,,,Prosperity Meter,Compteur de Prospérité,,,,繁荣仪表,,,,,,,,,,,,,,,,,,,
 UI_PROSPERITY_DEGREE_DESCRIPTION,<b>The world gradually stabilizes and prospers thanks to the cats' remarkable deeds. Action Power can be refilled when the Prosperity Meter is full.</b>,고양이들의 활약으로 신계는 점차 안정되고 번영합니다. 번영도가 꽉 차면 여신의 가호를 갱신할 수 있습니다.,<b>O mundo gradualmente se estabiliza e prospera graças às ações notáveis dos gatos. O poder de ação é recarregado quando o medidor de prosperidade está cheio.</b>,,<b>猫たちの活躍で世界は徐々に安定と繁栄を取り戻しています。アクションパワーはプロスペリティメーターが満タンになると補充されます。,"<b>Die Welt stabilisiert sich allmählich und gedeiht wieder dank der bemerkenswerten Taten der Katzen. Deine Aktionspunkte werden wieder aufgefüllt, wenn der Wohlstandsmesser voll ist.</b>",,<b> โลกค่อยๆมีเสถียรภาพและเติบโตขึ้นด้วยการกระทำที่น่าทึ่งของแมว Action Power จะเพิ่มเมื่อความเจริญรุ่งเรืองมิเตอร์เต็ม </b>,"<b> Świat stopniowo stabilizuje się i rozwija dzięki niezwykłym czynom kotów. Punkty akcji można uzupełnić, gdy wskaźnik dobrobytu jest pełny. </b>",,,<b>Dunia berangsur-angsur menjadi stabil dan berkembang berkat perbuatan kucing yang luar biasa. Action Power dapat diisi ulang saat Prosperity Meter penuh. </b>,<b>Le monde se stabilise graduellement et prospère grâce aux actes remarquables des chats. Le Pouvoir d'Action est rechargé lorsque le Compteur de Prospérité est plein.</b>,,,,<b>由于猫的非凡成就，世界逐渐稳定起来并繁荣起来。</b>,,,,
 UI_MASTER_VOLUME,Master Volume,마스터 볼륨,Volume Master,,マスターボリューム,Gesamtlautstärke,,ระดับเสียงหลัก,Dźwięk główny,,,Volume Utama,Volume Principal,,,,主音量,,,,
 UI_MUSIC_VOLUME,Music Volume,음악 볼륨,Volume da Música,,BGM ボリューム,Musiklautstärke,,ระดับเสียงเพลง,Głośność muzyki,,,Volume Music,Volume Musique,,,,音乐音量,,,,
@@ -1186,8 +1185,8 @@ UI_SFX_VOLUME,SFX Volume,효과음 볼륨,Volume do SFX,,SE ボリューム,Soun
 UI_MUTE_AUDIO,Mute,음소거,Mudo,,ミュート,Stumm schalten,,ปิดเสียง,Wycisz,,,Bisukan,Mute,,,,静音,,,,
 UI_YOUR_ADDRESS,Your Address,당신의 주소,Seu endereço,,あなたのアドレス,Deine Adresse,,Address ของคุณ,Twój adres,,,Alamat Anda,Votre Adresse,,,,您的地址,,,,
 UI_YOUR_PRIVATE_KEY,Your Private Key,당신의 비밀 키,Sua Chave Privada,,秘密鍵,Dein privater Schlüssel,,Private Key ของคุณ,Twój klucz prywatny,,,Private Key Anda,Votre Clé Privée,,,,您的私钥,,,,
-BLOCK_CHAIN_MINING_TX,Verifying transaction..,트랜젝션을 전파 중..,Transações de mineração..,,トランザクションをマイニング中…,Miningtransaktionen,,กำลังขุดรายการธุรกรรม,Kopanie transakcji...,,,Mining Transactions..,Transactions de minage...,,,,采矿交易..,,,,
-STAGE_BLOCK_CHAIN_MINING_TX,Verifying transaction.. Going to {0} {1},트랜젝션을 전파 중.. {0} {1} 이동 중..,Transações de mineração.. Indo para {0} {1},,トランザクションをマイニング中… {0} {1} へ移動します,Miningtransaktionen... Gehe zu {0} {1},,กำลังขุดธุรกรรม .. ไปที่ {0} {1},Transakcje są wydobywane… Przechodzenie do {0} {1},,,Menambangan Transaksi .. Pergi ke {0} {1},Transactions de minage... Aller à {0} {1},,,,挖矿交易..转到 {0} {1},,,,
+BLOCK_CHAIN_MINING_TX,Verifying transaction...,트랜젝션을 전파 중..,Transações de mineração..,,トランザクションをマイニング中…,Miningtransaktionen,,กำลังขุดรายการธุรกรรม,Kopanie transakcji...,,,Mining Transactions..,Transactions de minage...,,,,采矿交易..,,,,
+STAGE_BLOCK_CHAIN_MINING_TX,Verifying transaction... Going to {0} {1},트랜젝션을 전파 중.. {0} {1} 이동 중..,Transações de mineração.. Indo para {0} {1},,トランザクションをマイニング中… {0} {1} へ移動します,Miningtransaktionen... Gehe zu {0} {1},,กำลังขุดธุรกรรม .. ไปที่ {0} {1},Transakcje są wydobywane… Przechodzenie do {0} {1},,,Menambangan Transaksi .. Pergi ke {0} {1},Transactions de minage... Aller à {0} {1},,,,挖矿交易..转到 {0} {1},,,,
 BLOCK_DOWNLOAD_FAIL,Block Download Failed,블록 다운로드 실패,Falha no download do bloco,,ブロックダウンロード失敗,Herunterladen des Blocks fehlgeschlagen,,การดาวน์โหลดบล็อกล้มเหลว,Pobieranie Bloku nie powiodło się,,,Gagal Mengunduh Block,Échec de Téléchargement de Bloc,,,,块下载失败,,,,
 BOOTSTRAP_FAIL,Network Initialization Failed,네트워크 초기 설정 실패,Falha na inicialização da rede,,ネットワーク初期化失敗,Netzwerk-Initialisierung fehlgeschlagen,,การเริ่มต้นเครือข่ายล้มเหลว,Inicjalizacja sieci nie powiodła się,,,Inisialisasi Jaringan Gagal,Échec d'Initialisation du Réseau,,,,网络初始化失败,,,,
 UI_GAME_SIGN_UP,Create ID,가입하기,Criar ID,,新規登録,ID erstellen,,สร้าง ID,Utwórz identyfikator,,,Buat ID,Créer ID,,,,创建ID,,,,
@@ -1395,7 +1394,7 @@ Error Code: {1}","{0}
 Please retry again.
 Error Code: {1}","{0}
 Please retry again.
-Error Code: {1}",,,
+Error Code: {1}",,,,
 UI_PREVIOUS,Previous,이전,anterior,,前,,,ก่อนหน้านี้,,,,,,,,,以前,,,,
 UI_NEXT,Next,다음,próxima,,次,,,ต่อไป,,,,,,,,,下一个,,,,
 UI_GOT_IT,Got it,확인,Está bem,,OK,,,ตกลง,,,,,,,,,确认,,,,
