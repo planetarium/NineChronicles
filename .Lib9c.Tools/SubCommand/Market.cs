@@ -131,7 +131,7 @@ namespace Lib9c.Tools.SubCommand
                                 ? chain.GetState(GetOrderAddress(oid)) is Dictionary rawOrder
                                     ? OrderFactory.Deserialize(rawOrder) is FungibleOrder fo
                                         ? fo.ItemCount
-                                        : (int?)null
+                                        : 1
                                     : (int?)null
                                 : (int?)null,
                         }),
