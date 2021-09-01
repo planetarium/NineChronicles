@@ -128,24 +128,6 @@ namespace Lib9c.Tests
         }
 
         [Fact]
-        public void AllowRotatedTx()
-        {
-            var policy = new StagePolicy(
-                default,
-                2
-            );
-
-            policy.Stage(_chain, _txs[_accounts[0].ToAddress()][0]);
-            policy.Stage(_chain, _txs[_accounts[0].ToAddress()][1]);
-            policy.Stage(_chain, _txs[_accounts[0].ToAddress()][2]);
-            policy.Stage(_chain, _txs[_accounts[0].ToAddress()][3]);
-
-            Assert.False(policy.Ignores(_chain, _txs[_accounts[0].ToAddress()][3].Id));
-            policy.Unstage(_chain, _txs[_accounts[0].ToAddress()][3].Id);
-            Assert.True(policy.Ignores(_chain, _txs[_accounts[0].ToAddress()][3].Id));
-        }
-
-        [Fact]
         public void StageSameNonce()
         {
             var policy = new StagePolicy(
@@ -189,6 +171,34 @@ namespace Lib9c.Tests
                 _txs[_accounts[2].ToAddress()][1],
                 _txs[_accounts[3].ToAddress()][0],
                 _txs[_accounts[3].ToAddress()][1]
+            );
+        }
+
+        [Fact]
+        public void IterateAfterUnstage()
+        {
+            var policy = new StagePolicy(
+                default,
+                2
+            );
+
+            policy.Stage(_chain, _txs[_accounts[0].ToAddress()][0]);
+            policy.Stage(_chain, _txs[_accounts[0].ToAddress()][1]);
+            policy.Stage(_chain, _txs[_accounts[0].ToAddress()][2]);
+            policy.Stage(_chain, _txs[_accounts[0].ToAddress()][3]);
+
+            AssertTxs(
+                policy,
+                _txs[_accounts[0].ToAddress()][0],
+                _txs[_accounts[0].ToAddress()][1]
+            );
+
+            policy.Unstage(_chain, _txs[_accounts[0].ToAddress()][0].Id);
+
+            AssertTxs(
+                policy,
+                _txs[_accounts[0].ToAddress()][1],
+                _txs[_accounts[0].ToAddress()][2]
             );
         }
 

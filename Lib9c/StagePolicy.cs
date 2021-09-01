@@ -14,13 +14,11 @@ namespace Nekoyume.BlockChain
     {
         private readonly VolatileStagePolicy<NCAction> _impl;
         private readonly ConcurrentDictionary<Address, SortedList<Transaction<NCAction>, TxId>> _txs;
-        private readonly ConcurrentDictionary<TxId, bool> _outdated;
         private readonly int _quotaPerSigner;
 
         public StagePolicy(TimeSpan txLifeTime, int quotaPerSigner)
         {
             _txs = new ConcurrentDictionary<Address, SortedList<Transaction<NCAction>, TxId>>();
-            _outdated = new ConcurrentDictionary<TxId, bool>();
             _quotaPerSigner = quotaPerSigner;
             _impl = (txLifeTime == default)
                 ? new VolatileStagePolicy<NCAction>()
@@ -30,59 +28,39 @@ namespace Nekoyume.BlockChain
         public Transaction<NCAction> Get(BlockChain<NCAction> blockChain, TxId id, bool includeUnstaged)
             => _impl.Get(blockChain, id, includeUnstaged);
 
-        public void Ignore(BlockChain<NCAction> blockChain, TxId id)
-        {
-            _outdated.TryRemove(id, out var _);
-            _impl.Ignore(blockChain, id);
-        }
+        public void Ignore(BlockChain<NCAction> blockChain, TxId id) 
+            => _impl.Ignore(blockChain, id);
 
         public bool Ignores(BlockChain<NCAction> blockChain, TxId id)
-            => !_outdated.ContainsKey(id) && _impl.Ignores(blockChain, id);
+            => _impl.Ignores(blockChain, id);
 
         public IEnumerable<Transaction<NCAction>> Iterate(BlockChain<NCAction> blockChain)
-            => _impl.Iterate(blockChain);
-
-        public void Stage(BlockChain<NCAction> blockChain, Transaction<NCAction> transaction)
         {
-            Address signer = transaction.Signer;
-            SortedList<Transaction<NCAction>, TxId> txsForSigner = _txs.GetOrAdd(
-                signer,
-                _ => new SortedList<Transaction<NCAction>, TxId>(
-                    new TxComparer()
-                )
-            );
-
-            lock (txsForSigner)
+            var txsPerSigner = new Dictionary<Address, SortedSet<Transaction<NCAction>>>();
+            foreach (Transaction<NCAction> tx in _impl.Iterate(blockChain))
             {
-                txsForSigner[transaction] = transaction.Id;
-                _impl.Stage(blockChain, transaction);
-
-                if (txsForSigner.Count > _quotaPerSigner)
+                if (!txsPerSigner.TryGetValue(tx.Signer, out var s))
                 {
-                    TxId lastId = txsForSigner.Values.Last();
-                    Unstage(blockChain, lastId);
-                    _outdated[lastId] = true;
+                    txsPerSigner[tx.Signer] = s = new SortedSet<Transaction<NCAction>>(new TxComparer());
+                }
+
+                s.Add(tx);
+                if (s.Count > _quotaPerSigner)
+                {
+                    s.Remove(s.Max);
                 }
             }
+
+#pragma warning disable LAA1002 // DictionariesOrSetsShouldBeOrderedToEnumerate
+            return txsPerSigner.Values.SelectMany(i => i);
+#pragma warning restore LAA1002 // DictionariesOrSetsShouldBeOrderedToEnumerate
         }
+
+        public void Stage(BlockChain<NCAction> blockChain, Transaction<NCAction> transaction) 
+            => _impl.Stage(blockChain, transaction);
 
         public void Unstage(BlockChain<NCAction> blockChain, TxId id)
-        {
-            if (Get(blockChain, id, includeUnstaged: true) is Transaction<NCAction> tx &&
-                _txs.TryGetValue(tx.Signer, out SortedList<Transaction<NCAction>, TxId> l))
-            {
-                lock (l)
-                {
-                    _impl.Unstage(blockChain, id);
-                    l.Remove(tx);
-                    if (l.Count == 0)
-                    {
-                        _txs.TryRemove(tx.Signer, out var _);
-                    }
-                    _outdated.TryRemove(id, out var _);
-                }
-            }
-        }
+            => _impl.Unstage(blockChain, id);
 
         private class TxComparer : IComparer<Transaction<NCAction>>
         {
