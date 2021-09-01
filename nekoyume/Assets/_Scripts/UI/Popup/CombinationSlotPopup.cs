@@ -376,12 +376,12 @@ namespace Nekoyume.UI
 
         private static void RapidCombination(CombinationSlotState state, int slotIndex, long currentBlockIndex)
         {
-            var row = Game.Game.instance.TableSheets.MaterialItemSheet.Values
+            var materialRow = Game.Game.instance.TableSheets.MaterialItemSheet.Values
                 .First(r => r.ItemSubType == ItemSubType.Hourglass);
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             var diff = state.UnlockBlockIndex - currentBlockIndex;
             var cost = RapidCombination0.CalculateHourglassCount(States.Instance.GameConfigState, diff);
-            LocalLayerModifier.RemoveItem(avatarAddress, row.ItemId, cost);
+            LocalLayerModifier.RemoveItem(avatarAddress, materialRow.ItemId, cost);
 
             // Notify
             string formatKey;
@@ -393,9 +393,19 @@ namespace Nekoyume.UI
                         currentBlockIndex);
                     if (combineResultModel.itemUsable is Equipment equipment)
                     {
-                        formatKey = equipment.optionCountFromCombination == 4
-                            ? "NOTIFICATION_COMBINATION_COMPLETE_GREATER"
-                            : "NOTIFICATION_COMBINATION_COMPLETE";
+                        if (combineResultModel.subRecipeId.HasValue &&
+                            Game.Game.instance.TableSheets.EquipmentItemSubRecipeSheetV2.TryGetValue(
+                                combineResultModel.subRecipeId.Value,
+                                out var subRecipeRow))
+                        {
+                            formatKey = equipment.optionCountFromCombination == subRecipeRow.Options.Count
+                                ? "NOTIFICATION_COMBINATION_COMPLETE_GREATER"
+                                : "NOTIFICATION_COMBINATION_COMPLETE";    
+                        }
+                        else
+                        {
+                            formatKey = "NOTIFICATION_COMBINATION_COMPLETE";
+                        }
                     }
                     else
                     {

@@ -101,6 +101,9 @@ namespace Nekoyume.UI
         [Header("Editor Properties For Test")]
         [Space(10)]
         [SerializeField]
+        private bool _isGreatSuccess;
+        
+        [SerializeField]
         private EquipmentOrFood _editorEquipmentOrFood;
 
         [SerializeField]
@@ -137,7 +140,6 @@ namespace Nekoyume.UI
 #if UNITY_EDITOR
         public void ShowWithEditorProperty()
         {
-            ItemUsable itemUsable;
             var tableSheets = Game.Game.instance.TableSheets;
             if (_editorEquipmentOrFood == EquipmentOrFood.Equipment)
             {
@@ -168,7 +170,7 @@ namespace Nekoyume.UI
                     equipment.optionCountFromCombination++;
                 }
 
-                itemUsable = equipment;
+                Show(equipment, _isGreatSuccess ? _editorStatOptions.Count + _editorSkillOptions.Count : 4);
             }
             else
             {
@@ -189,10 +191,8 @@ namespace Nekoyume.UI
                     consumable.StatsMap.AddStatValue(statOption.statType, statOption.value);
                 }
 
-                itemUsable = consumable;
+                Show(consumable);
             }
-
-            Show(itemUsable);
         }
 #endif
 
@@ -202,7 +202,7 @@ namespace Nekoyume.UI
             // ignore.
         }
 
-        public void Show(ItemUsable itemUsable)
+        public void Show(ItemUsable itemUsable, int? subRecipeOptionCount = null)
         {
             if (itemUsable is null)
             {
@@ -262,7 +262,7 @@ namespace Nekoyume.UI
 
             if (itemUsable.ItemType == ItemType.Equipment)
             {
-                PostShowAsEquipment();
+                PostShowAsEquipment(subRecipeOptionCount);
             }
             else
             {
@@ -282,7 +282,7 @@ namespace Nekoyume.UI
             Animator.SetTrigger(AnimatorHashSuccess);
         }
 
-        private void PostShowAsEquipment()
+        private void PostShowAsEquipment(int? subRecipeOptionCount = null)
         {
             _iconImage.overrideSprite = _equipmentIconSprite;
 
@@ -322,7 +322,8 @@ namespace Nekoyume.UI
 
             // NOTE: Ignore Show Animation
             base.Show(true);
-            if (_itemOptionInfo.OptionCountFromCombination == 4)
+            if (subRecipeOptionCount.HasValue &&
+                _itemOptionInfo.OptionCountFromCombination == subRecipeOptionCount)
             {
                 _titleSuccessObject.SetActive(false);
                 _titleGreatSuccessObject.SetActive(true);
