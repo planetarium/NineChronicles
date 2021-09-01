@@ -734,8 +734,7 @@ namespace Nekoyume.Model.State
             var equippableItems = inventory.Items
                 .Select(item => item.item)
                 .OfType<IEquippableItem>()
-                .Where(equippableItem => equippableItem.Equipped)
-                .ToImmutableHashSet();
+                .Where(equippableItem => equippableItem.Equipped);
 #pragma warning disable LAA1002
             foreach (var equippableItem in equippableItems)
 #pragma warning restore LAA1002

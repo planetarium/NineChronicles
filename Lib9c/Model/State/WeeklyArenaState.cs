@@ -335,17 +335,32 @@ namespace Nekoyume.Model.State
                     .Add("lose", Lose.Serialize())
                     .Add("draw", Draw.Serialize());
         }
+
         public readonly Address AvatarAddress;
-        public readonly Address AgentAddress;
-        public readonly string AvatarName;
         public readonly Record ArenaRecord;
-        public int Level { get; private set; }
-        public int CombatPoint { get; private set; }
-        public int ArmorId { get; private set; }
-        public bool Active { get; private set; }
-        public int DailyChallengeCount { get; private set; }
         public int Score { get; private set; }
+        public int DailyChallengeCount { get; private set; }
+        public bool Active { get; private set; }
+
+        [Obsolete("Not used anymore since v100070")]
+        public readonly Address AgentAddress;
+
+        [Obsolete("Not used anymore since v100070")]
         public bool Receive;
+
+        [Obsolete("Not used anymore since v100070")]
+        public readonly string AvatarName;
+
+        [Obsolete("Not used anymore since v100070")]
+        public int Level { get; private set; }
+
+        [Obsolete("Not used anymore since v100070")]
+        public int CombatPoint { get; private set; }
+
+        [Obsolete("Not used anymore since v100070")]
+        public int ArmorId { get; private set; }
+
+
 
         public ArenaInfo(AvatarState avatarState, CharacterSheet characterSheet, bool active)
         {

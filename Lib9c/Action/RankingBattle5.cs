@@ -8,6 +8,7 @@ using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Battle;
+using Nekoyume.BlockChain;
 using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
@@ -17,15 +18,16 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("ranking_battle6")]
-    public class RankingBattle : GameAction
+    [ActionType("ranking_battle5")]
+    [ActionObsolete(BlockPolicySource.V100074ObsoleteIndex)]
+    public class RankingBattle5 : GameAction
     {
         public const int StageId = 999999;
         public static readonly BigInteger EntranceFee = 100;
 
-        public Address avatarAddress;
-        public Address enemyAddress;
-        public Address weeklyArenaAddress;
+        public Address AvatarAddress;
+        public Address EnemyAddress;
+        public Address WeeklyArenaAddress;
         public List<Guid> costumeIds;
         public List<Guid> equipmentIds;
         public List<Guid> consumableIds;
@@ -35,18 +37,20 @@ namespace Nekoyume.Action
         {
             IActionContext ctx = context;
             var states = ctx.PreviousStates;
-            var inventoryAddress = avatarAddress.Derive(LegacyInventoryKey);
-            var worldInformationAddress = avatarAddress.Derive(LegacyWorldInformationKey);
-            var questListAddress = avatarAddress.Derive(LegacyQuestListKey);
+            var inventoryAddress = AvatarAddress.Derive(LegacyInventoryKey);
+            var worldInformationAddress = AvatarAddress.Derive(LegacyWorldInformationKey);
+            var questListAddress = AvatarAddress.Derive(LegacyQuestListKey);
             if (ctx.Rehearsal)
             {
                 return states
-                    .SetState(avatarAddress, MarkChanged)
-                    .SetState(weeklyArenaAddress, MarkChanged)
+                    .SetState(AvatarAddress, MarkChanged)
+                    .SetState(WeeklyArenaAddress, MarkChanged)
                     .SetState(inventoryAddress, MarkChanged)
                     .SetState(worldInformationAddress, MarkChanged)
                     .SetState(questListAddress, MarkChanged);
             }
+
+            CheckObsolete(BlockPolicySource.V100074ObsoleteIndex, ctx);
 
             // Avoid InvalidBlockStateRootHashException
             if (ctx.BlockIndex == 680341 && Id.Equals(new Guid("df37dbd8-5703-4dff-918b-ad22ee4c34c6")))
@@ -54,7 +58,7 @@ namespace Nekoyume.Action
                 return states;
             }
 
-            var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress, enemyAddress);
+            var addressesHex = GetSignerAndOtherAddressesHex(context, AvatarAddress, EnemyAddress);
 
             var sw = new Stopwatch();
             sw.Start();
@@ -66,12 +70,12 @@ namespace Nekoyume.Action
                 string.Join(",", equipmentIds)
             );
 
-            if (avatarAddress.Equals(enemyAddress))
+            if (AvatarAddress.Equals(EnemyAddress))
             {
                 throw new InvalidAddressException($"{addressesHex}Aborted as the signer tried to battle for themselves.");
             }
 
-            if (!states.TryGetAvatarStateV2(ctx.Signer, avatarAddress, out var avatarState))
+            if (!states.TryGetAvatarStateV2(ctx.Signer, AvatarAddress, out var avatarState))
             {
                 throw new FailedLoadStateException($"{addressesHex}Aborted as the avatar state of the signer was failed to load.");
             }
@@ -108,26 +112,26 @@ namespace Nekoyume.Action
             AvatarState enemyAvatarState;
             try
             {
-                enemyAvatarState = states.GetAvatarStateV2(enemyAddress);
+                enemyAvatarState = states.GetAvatarStateV2(EnemyAddress);
             }
             // BackWard compatible.
             catch (FailedLoadStateException)
             {
-                enemyAvatarState = states.GetAvatarState(enemyAddress);
+                enemyAvatarState = states.GetAvatarState(EnemyAddress);
             }
             if (enemyAvatarState is null)
             {
-                throw new FailedLoadStateException($"{addressesHex}Aborted as the avatar state of the opponent ({enemyAddress}) was failed to load.");
+                throw new FailedLoadStateException($"{addressesHex}Aborted as the avatar state of the opponent ({EnemyAddress}) was failed to load.");
             }
 
             sw.Stop();
             Log.Verbose("{AddressesHex}RankingBattle Get Enemy AvatarState: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();
 
-            var weeklyArenaState = states.GetWeeklyArenaState(weeklyArenaAddress);
+            var weeklyArenaState = states.GetWeeklyArenaState(WeeklyArenaAddress);
 
             sw.Stop();
-            Log.Verbose("{AddressesHex}RankingBattle Get WeeklyArenaState ({Address}): {Elapsed}", addressesHex, weeklyArenaAddress, sw.Elapsed);
+            Log.Verbose("{AddressesHex}RankingBattle Get WeeklyArenaState ({Address}): {Elapsed}", addressesHex, WeeklyArenaAddress, sw.Elapsed);
             sw.Restart();
 
             if (weeklyArenaState.Ended)
@@ -141,7 +145,7 @@ namespace Nekoyume.Action
             Log.Verbose("{AddressesHex}RankingBattle Get CostumeStatSheet: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();
 
-            if (!weeklyArenaState.ContainsKey(avatarAddress))
+            if (!weeklyArenaState.ContainsKey(AvatarAddress))
             {
                 var characterSheet = states.GetSheet<CharacterSheet>();
                 weeklyArenaState.SetV2(avatarState, characterSheet, costumeStatSheet);
@@ -150,7 +154,7 @@ namespace Nekoyume.Action
                 sw.Restart();
             }
 
-            var arenaInfo = weeklyArenaState[avatarAddress];
+            var arenaInfo = weeklyArenaState[AvatarAddress];
 
             if (arenaInfo.DailyChallengeCount <= 0)
             {
@@ -163,15 +167,9 @@ namespace Nekoyume.Action
                 arenaInfo.Activate();
             }
 
-            if (!weeklyArenaState.ContainsKey(enemyAddress))
+            if (!weeklyArenaState.ContainsKey(EnemyAddress))
             {
-                throw new WeeklyArenaStateNotContainsAvatarAddressException(addressesHex, enemyAddress);
-            }
-
-            var enemyArenaInfo = weeklyArenaState[enemyAddress];
-            if (!enemyArenaInfo.Active)
-            {
-                enemyArenaInfo.Activate();
+                throw new WeeklyArenaStateNotContainsAvatarAddressException(addressesHex, EnemyAddress);
             }
 
             Log.Verbose("{WeeklyArenaStateAddress}", weeklyArenaState.address.ToHex());
@@ -188,7 +186,7 @@ namespace Nekoyume.Action
                 states.GetRankingSimulatorSheets(),
                 StageId,
                 arenaInfo,
-                enemyArenaInfo,
+                weeklyArenaState[EnemyAddress],
                 costumeStatSheet);
 
             simulator.SimulateV2();
@@ -205,7 +203,7 @@ namespace Nekoyume.Action
             Log.Verbose(
                 "{AddressesHex}Execute RankingBattle({AvatarAddress}); result: {Result} event count: {EventCount}",
                 addressesHex,
-                avatarAddress,
+                AvatarAddress,
                 simulator.Log.result,
                 simulator.Log.Count
             );
@@ -223,7 +221,7 @@ namespace Nekoyume.Action
                 avatarState.inventory.AddItem(itemBase);
             }
 
-            states = states.SetState(weeklyArenaAddress, weeklyArenaState.Serialize());
+            states = states.SetState(WeeklyArenaAddress, weeklyArenaState.Serialize());
 
             sw.Stop();
             Log.Verbose("{AddressesHex}RankingBattle Serialize WeeklyArenaState: {Elapsed}", addressesHex, sw.Elapsed);
@@ -233,7 +231,7 @@ namespace Nekoyume.Action
                 .SetState(inventoryAddress, avatarState.inventory.Serialize())
                 .SetState(worldInformationAddress, avatarState.worldInformation.Serialize())
                 .SetState(questListAddress, avatarState.questList.Serialize())
-                .SetState(avatarAddress, avatarState.SerializeV2());
+                .SetState(AvatarAddress, avatarState.SerializeV2());
 
             sw.Stop();
             Log.Verbose("{AddressesHex}RankingBattle Serialize AvatarState: {Elapsed}", addressesHex, sw.Elapsed);
@@ -247,9 +245,9 @@ namespace Nekoyume.Action
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
             new Dictionary<string, IValue>
             {
-                ["avatarAddress"] = avatarAddress.Serialize(),
-                ["enemyAddress"] = enemyAddress.Serialize(),
-                ["weeklyArenaAddress"] = weeklyArenaAddress.Serialize(),
+                ["avatarAddress"] = AvatarAddress.Serialize(),
+                ["enemyAddress"] = EnemyAddress.Serialize(),
+                ["weeklyArenaAddress"] = WeeklyArenaAddress.Serialize(),
                 ["costume_ids"] = new List(costumeIds
                     .OrderBy(element => element)
                     .Select(e => e.Serialize())),
@@ -263,9 +261,9 @@ namespace Nekoyume.Action
 
         protected override void LoadPlainValueInternal(IImmutableDictionary<string, IValue> plainValue)
         {
-            avatarAddress = plainValue["avatarAddress"].ToAddress();
-            enemyAddress = plainValue["enemyAddress"].ToAddress();
-            weeklyArenaAddress = plainValue["weeklyArenaAddress"].ToAddress();
+            AvatarAddress = plainValue["avatarAddress"].ToAddress();
+            EnemyAddress = plainValue["enemyAddress"].ToAddress();
+            WeeklyArenaAddress = plainValue["weeklyArenaAddress"].ToAddress();
             costumeIds = ((List) plainValue["costume_ids"])
                 .Select(e => e.ToGuid())
                 .ToList();

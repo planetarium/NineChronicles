@@ -22,7 +22,7 @@ namespace Lib9c.Tests.Action
     using Xunit.Abstractions;
     using static SerializeKeys;
 
-    public class RankingBattleTest
+    public class RankingBattle5Test
     {
         private readonly TableSheets _tableSheets;
         private readonly Address _agent1Address;
@@ -31,7 +31,7 @@ namespace Lib9c.Tests.Action
         private readonly Address _weeklyArenaAddress;
         private readonly IAccountStateDelta _initialState;
 
-        public RankingBattleTest(ITestOutputHelper outputHelper)
+        public RankingBattle5Test(ITestOutputHelper outputHelper)
         {
             _initialState = new State();
 
@@ -179,11 +179,11 @@ namespace Lib9c.Tests.Action
                     .SetState(_avatar2Address, enemyAvatarState.SerializeV2());
             }
 
-            var action = new RankingBattle
+            var action = new RankingBattle5
             {
-                avatarAddress = _avatar1Address,
-                enemyAddress = _avatar2Address,
-                weeklyArenaAddress = _weeklyArenaAddress,
+                AvatarAddress = _avatar1Address,
+                EnemyAddress = _avatar2Address,
+                WeeklyArenaAddress = _weeklyArenaAddress,
                 costumeIds = new List<Guid> { costume.ItemId },
                 equipmentIds = new List<Guid>(),
                 consumableIds = new List<Guid>(),
@@ -212,11 +212,11 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void ExecuteThrowInvalidAddressException()
         {
-            var action = new RankingBattle
+            var action = new RankingBattle5
             {
-                avatarAddress = _avatar1Address,
-                enemyAddress = _avatar1Address,
-                weeklyArenaAddress = _weeklyArenaAddress,
+                AvatarAddress = _avatar1Address,
+                EnemyAddress = _avatar1Address,
+                WeeklyArenaAddress = _weeklyArenaAddress,
                 costumeIds = new List<Guid>(),
                 equipmentIds = new List<Guid>(),
                 consumableIds = new List<Guid>(),
@@ -257,11 +257,11 @@ namespace Lib9c.Tests.Action
                     break;
             }
 
-            var action = new RankingBattle
+            var action = new RankingBattle5
             {
-                avatarAddress = avatarAddress,
-                enemyAddress = enemyAddress,
-                weeklyArenaAddress = _weeklyArenaAddress,
+                AvatarAddress = avatarAddress,
+                EnemyAddress = enemyAddress,
+                WeeklyArenaAddress = _weeklyArenaAddress,
                 costumeIds = new List<Guid>(),
                 equipmentIds = new List<Guid>(),
                 consumableIds = new List<Guid>(),
@@ -292,11 +292,11 @@ namespace Lib9c.Tests.Action
                 _avatar1Address,
                 previousAvatar1State.Serialize());
 
-            var action = new RankingBattle
+            var action = new RankingBattle5
             {
-                avatarAddress = _avatar1Address,
-                enemyAddress = _avatar2Address,
-                weeklyArenaAddress = _weeklyArenaAddress,
+                AvatarAddress = _avatar1Address,
+                EnemyAddress = _avatar2Address,
+                WeeklyArenaAddress = _weeklyArenaAddress,
                 costumeIds = new List<Guid>(),
                 equipmentIds = new List<Guid>(),
                 consumableIds = new List<Guid>(),
@@ -324,11 +324,11 @@ namespace Lib9c.Tests.Action
                 _weeklyArenaAddress,
                 previousWeeklyArenaState.Serialize());
 
-            var action = new RankingBattle
+            var action = new RankingBattle5
             {
-                avatarAddress = _avatar1Address,
-                enemyAddress = _avatar2Address,
-                weeklyArenaAddress = _weeklyArenaAddress,
+                AvatarAddress = _avatar1Address,
+                EnemyAddress = _avatar2Address,
+                WeeklyArenaAddress = _weeklyArenaAddress,
                 costumeIds = new List<Guid>(),
                 equipmentIds = new List<Guid>(),
                 consumableIds = new List<Guid>(),
@@ -358,11 +358,11 @@ namespace Lib9c.Tests.Action
                 _weeklyArenaAddress,
                 previousWeeklyArenaState.Serialize());
 
-            var action = new RankingBattle
+            var action = new RankingBattle5
             {
-                avatarAddress = _avatar1Address,
-                enemyAddress = _avatar2Address,
-                weeklyArenaAddress = _weeklyArenaAddress,
+                AvatarAddress = _avatar1Address,
+                EnemyAddress = _avatar2Address,
+                WeeklyArenaAddress = _weeklyArenaAddress,
                 costumeIds = new List<Guid>(),
                 equipmentIds = new List<Guid>(),
                 consumableIds = new List<Guid>(),
@@ -399,11 +399,11 @@ namespace Lib9c.Tests.Action
                 _weeklyArenaAddress,
                 previousWeeklyArenaState.Serialize());
 
-            var action = new RankingBattle
+            var action = new RankingBattle5
             {
-                avatarAddress = _avatar1Address,
-                enemyAddress = _avatar2Address,
-                weeklyArenaAddress = _weeklyArenaAddress,
+                AvatarAddress = _avatar1Address,
+                EnemyAddress = _avatar2Address,
+                WeeklyArenaAddress = _weeklyArenaAddress,
                 costumeIds = new List<Guid>(),
                 equipmentIds = new List<Guid>(),
                 consumableIds = new List<Guid>(),
@@ -424,11 +424,11 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Rehearsal()
         {
-            var action = new RankingBattle
+            var action = new RankingBattle5
             {
-                avatarAddress = _avatar1Address,
-                enemyAddress = _avatar2Address,
-                weeklyArenaAddress = _weeklyArenaAddress,
+                AvatarAddress = _avatar1Address,
+                EnemyAddress = _avatar2Address,
+                WeeklyArenaAddress = _weeklyArenaAddress,
                 costumeIds = new List<Guid>(),
                 equipmentIds = new List<Guid>(),
                 consumableIds = new List<Guid>(),
@@ -459,11 +459,11 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void SerializeWithDotnetAPI()
         {
-            var action = new RankingBattle
+            var action = new RankingBattle5
             {
-                avatarAddress = _avatar1Address,
-                enemyAddress = _avatar2Address,
-                weeklyArenaAddress = _weeklyArenaAddress,
+                AvatarAddress = _avatar1Address,
+                EnemyAddress = _avatar2Address,
+                WeeklyArenaAddress = _weeklyArenaAddress,
                 costumeIds = new List<Guid>(),
                 equipmentIds = new List<Guid>(),
                 consumableIds = new List<Guid>(),
@@ -481,7 +481,7 @@ namespace Lib9c.Tests.Action
             formatter.Serialize(ms, action);
             ms.Seek(0, SeekOrigin.Begin);
 
-            var deserialized = (RankingBattle)formatter.Deserialize(ms);
+            var deserialized = (RankingBattle5)formatter.Deserialize(ms);
             Assert.Equal(action.PlainValue, deserialized.PlainValue);
         }
 
@@ -521,11 +521,11 @@ namespace Lib9c.Tests.Action
 
             var state = _initialState.SetState(_avatar1Address, previousAvatarState.Serialize());
 
-            var action = new RankingBattle
+            var action = new RankingBattle5
             {
-                avatarAddress = _avatar1Address,
-                enemyAddress = _avatar2Address,
-                weeklyArenaAddress = _weeklyArenaAddress,
+                AvatarAddress = _avatar1Address,
+                EnemyAddress = _avatar2Address,
+                WeeklyArenaAddress = _weeklyArenaAddress,
                 costumeIds = new List<Guid>(),
                 equipmentIds = equipments,
                 consumableIds = new List<Guid>(),

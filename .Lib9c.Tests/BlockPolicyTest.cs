@@ -612,7 +612,7 @@ namespace Lib9c.Tests
         [InlineData(BlockPolicySource.V100066ObsoleteIndex + 2, true)]
         public void IsObsolete(long blockIndex, bool expected)
         {
-            var action = new HackAndSlash
+            var action = new HackAndSlash7
             {
                 costumes = new List<Guid>(),
                 equipments = new List<Guid>(),

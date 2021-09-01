@@ -34,8 +34,10 @@ namespace Nekoyume.BlockChain
         public const int MaxGenesisBytes = 1024 * 1024 * 15; // 15 MiB
 
         public const long V100066ObsoleteIndex = 2200000;
-        
+
         public const long V100068ObsoleteIndex = 2220000;
+
+        public const long V100074ObsoleteIndex = 2300000;
 
         private readonly TimeSpan _blockInterval = TimeSpan.FromSeconds(8);
 
@@ -175,7 +177,7 @@ namespace Nekoyume.BlockChain
             }
             catch (IncompleteBlockStatesException)
             {
-                // It can be caused during `Swarm<T>.PreloadAsync()` because it doesn't fill its 
+                // It can be caused during `Swarm<T>.PreloadAsync()` because it doesn't fill its
                 // state right away...
                 // FIXME It should be removed after fix that Libplanet fills its state on IBD.
                 // See also: https://github.com/planetarium/lib9c/pull/151#discussion_r506039478
