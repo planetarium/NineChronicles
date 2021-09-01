@@ -25,14 +25,12 @@ namespace Nekoyume.UI
             {
                 Close(true);
                 Find<Craft>().Show();
-                AudioController.PlayClick();
             });
 
             upgradeButton.onClick.AddListener(() =>
             {
                 Close(true);
                 Find<UpgradeEquipment>().Show();
-                AudioController.PlayClick();
             });
 
             closeButton.onClick.AddListener(() =>
@@ -81,7 +79,7 @@ namespace Nekoyume.UI
             if (_npc)
             {
                 _npc.SpineController.SkeletonAnimation.skeleton.A = 0;
-                _npc = null;
+                _npc = null;    
             }
         }
 
