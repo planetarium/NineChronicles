@@ -39,13 +39,15 @@ namespace Nekoyume.State.Modifiers
 
         public override AvatarState Modify(AvatarState state)
         {
-            if (state is null)
-            {
-                return null;
-            }
-
-            state.dailyRewardReceivedIndex += blockCount;
             return state;
+
+            // if (state is null)
+            // {
+            //     return null;
+            // }
+            //
+            // state.dailyRewardReceivedIndex += blockCount;
+            // return state;
         }
 
         public override string ToString()
