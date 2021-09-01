@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
@@ -18,8 +18,9 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("sell_cancellation9")]
-    public class SellCancellation : GameAction
+    [ActionObsolete(BlockChain.BlockPolicySource.V100074ObsoleteIndex)]
+    [ActionType("sell_cancellation8")]
+    public class SellCancellation8 : GameAction
     {
         public Guid orderId;
         public Guid tradableId;
@@ -94,6 +95,8 @@ namespace Nekoyume.Action
                     .SetState(sellerAvatarAddress, MarkChanged);
             }
 
+            CheckObsolete(BlockChain.BlockPolicySource.V100074ObsoleteIndex, context);
+
             var addressesHex = GetSignerAndOtherAddressesHex(context, sellerAvatarAddress);
             var sw = new Stopwatch();
             sw.Start();
@@ -146,21 +149,8 @@ namespace Nekoyume.Action
             }
 
             Order order = OrderFactory.Deserialize(orderDict);
-            bool fromPreviousAction = false;
-            try
-            {
-                order.ValidateCancelOrder(avatarState, tradableId);
-            }
-            catch (Exception)
-            {
-                order.ValidateCancelOrder2(avatarState, tradableId);
-                fromPreviousAction = true;
-            }
-
-            var sellItem = fromPreviousAction
-                ? order.Cancel2(avatarState, context.BlockIndex)
-                : order.Cancel(avatarState, context.BlockIndex);
-
+            order.ValidateCancelOrder(avatarState, tradableId);
+            var sellItem = order.Cancel(avatarState, context.BlockIndex);
             if (context.BlockIndex < order.ExpiredBlockIndex)
             {
                 var shardedShopState = new ShardedShopStateV2(shopStateDict);
