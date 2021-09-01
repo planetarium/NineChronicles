@@ -381,7 +381,20 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 2409606032198229814}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: -5496858111173636998, guid: e9cba050c7b3a4e4abfe0bafa6b118d9,
+          type: 3}
+        m_TargetAssemblyTypeName: Nekoyume.Audio.ManagedAudio, Nekoyume
+        m_MethodName: Play
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &437364935040976078
 MonoBehaviour:
   m_ObjectHideFlags: 0
