@@ -210,15 +210,6 @@ namespace Nekoyume.UI
                 return;
             }
 
-            for (var i = 0; i < _itemOptionIconViews.Count; i++)
-            {
-                _itemOptionIconViews[i].Hide(true);
-            }
-
-            _itemOptionInfo = itemUsable is Equipment equipment
-                ? new ItemOptionInfo(equipment)
-                : new ItemOptionInfo(itemUsable);
-
             _cpListForAnimationSteps.Clear();
             _resultItem.itemNameText.text = itemUsable.GetLocalizedName(false);
             _resultItem.itemView.SetData(
@@ -226,8 +217,32 @@ namespace Nekoyume.UI
             _resultItem.mainStatText.text = string.Empty;
             _resultItem.cpText.text = string.Empty;
 
+            _itemOptionInfo = itemUsable is Equipment equipment
+                ? new ItemOptionInfo(equipment)
+                : new ItemOptionInfo(itemUsable);
+
             var statOptions = _itemOptionInfo.StatOptions;
             var statOptionsCount = statOptions.Count;
+            var statOptionsIconCount = statOptions.Sum(tuple => tuple.count);
+            var skillOptions = _itemOptionInfo.SkillOptions;
+            var skillOptionsCount = skillOptions.Count;
+            for (var i = 0; i < _itemOptionIconViews.Count; i++)
+            {
+                if (i < statOptionsIconCount)
+                {
+                    _itemOptionIconViews[i].UpdateAsStat();
+                    continue;
+                }
+
+                if (i < statOptionsIconCount + skillOptionsCount)
+                {
+                    _itemOptionIconViews[i].UpdateAsSkill();
+                    continue;
+                }
+
+                _itemOptionIconViews[i].Hide(true);
+            }
+
             for (var i = 0; i < _itemStatOptionViews.Count; i++)
             {
                 var optionView = _itemStatOptionViews[i];
@@ -238,13 +253,10 @@ namespace Nekoyume.UI
                     continue;
                 }
 
-                _itemOptionIconViews[i].UpdateAsStat();
                 var (type, value, count) = statOptions[i];
                 optionView.UpdateAsStatWithCount(type, value, count);
             }
 
-            var skillOptions = _itemOptionInfo.SkillOptions;
-            var skillOptionsCount = skillOptions.Count;
             for (var i = 0; i < _itemSkillOptionViews.Count; i++)
             {
                 var optionView = _itemSkillOptionViews[i];
@@ -255,7 +267,6 @@ namespace Nekoyume.UI
                     continue;
                 }
 
-                _itemOptionIconViews[i + statOptionsCount].UpdateAsSkill();
                 var (skillName, power, chance) = skillOptions[i];
                 optionView.UpdateAsSkill(skillName, power, chance);
             }
