@@ -32,7 +32,7 @@ namespace Nekoyume.UI
             Overall
         }
 
-        private static readonly Vector3 NPCPosition = new Vector3(1000.1f, 999.1f, 2.69f);
+        private static readonly Vector3 NPCPosition = new Vector3(999.8f, 998.3f);
         private const int NPCId = 300002;
 
         [SerializeField]
@@ -195,7 +195,7 @@ namespace Nekoyume.UI
             var go = Game.Game.instance.Stage.npcFactory.Create(
                 NPCId,
                 NPCPosition,
-                LayerType.InGameBackground,
+                LayerType.Character,
                 3);
             _npc = go.GetComponent<NPC>();
             _npc.gameObject.SetActive(true);
