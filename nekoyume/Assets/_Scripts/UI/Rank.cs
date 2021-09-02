@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Nekoyume.Game.Controller;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -116,6 +117,8 @@ namespace Nekoyume.UI
                     {
                         UpdateCategory(toggle.Category);
                     }
+
+                    AudioController.PlayClick();
                 });
             }
 
@@ -135,6 +138,8 @@ namespace Nekoyume.UI
                         firstElement.isOn = true;
                         firstElement.onValueChanged.Invoke(true);
                     }
+
+                    AudioController.PlayClick();
                 });
             }
 
