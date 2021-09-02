@@ -386,16 +386,16 @@ namespace Nekoyume.Action
                 sellerResultToAdd.id = sellerMail.id;
                 sellerResults.Add(sellerResultToAdd);
 
-                buyerAvatarState.UpdateV3(buyerMail);
+                buyerAvatarState.Update(buyerMail);
                 if (purchaseResult.itemUsable != null)
                 {
-                    buyerAvatarState.UpdateFromAddItem(purchaseResult.itemUsable, false);
+                    buyerAvatarState.UpdateFromAddItem2(purchaseResult.itemUsable, false);
                 }
                 if (purchaseResult.costume != null)
                 {
                     buyerAvatarState.UpdateFromAddCostume(purchaseResult.costume, false);
                 }
-                sellerAvatarState.UpdateV3(sellerMail);
+                sellerAvatarState.Update(sellerMail);
 
                 // Update quest.
                 buyerAvatarState.questList.UpdateTradeQuest(TradeType.Buy, shopItem.Price);
@@ -403,7 +403,7 @@ namespace Nekoyume.Action
 
                 sellerAvatarState.updatedAt = ctx.BlockIndex;
                 sellerAvatarState.blockIndex = ctx.BlockIndex;
-                sellerAvatarState.UpdateQuestRewards(materialSheet);
+                sellerAvatarState.UpdateQuestRewards2(materialSheet);
 
                 sw.Restart();
                 states = states.SetState(productInfo.sellerAvatarAddress, sellerAvatarState.Serialize());
@@ -417,7 +417,7 @@ namespace Nekoyume.Action
             buyerAvatarState.updatedAt = ctx.BlockIndex;
             buyerAvatarState.blockIndex = ctx.BlockIndex;
 
-            buyerAvatarState.UpdateQuestRewards(materialSheet);
+            buyerAvatarState.UpdateQuestRewards2(materialSheet);
 
             sw.Restart();
             states = states.SetState(buyerAvatarAddress, buyerAvatarState.Serialize());

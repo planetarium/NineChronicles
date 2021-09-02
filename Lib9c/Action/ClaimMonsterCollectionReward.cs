@@ -14,7 +14,7 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("claim_monster_collection_reward2")]
+    [ActionType("claim_monster_collection_reward3")]
     public class ClaimMonsterCollectionReward : GameAction
     {
         public Address avatarAddress;
@@ -51,7 +51,7 @@ namespace Nekoyume.Action
             }
 
             var monsterCollectionState = new MonsterCollectionState(stateDict);
-            List<MonsterCollectionRewardSheet.RewardInfo> rewards = 
+            List<MonsterCollectionRewardSheet.RewardInfo> rewards =
                 monsterCollectionState.CalculateRewards(
                     states.GetSheet<MonsterCollectionRewardSheet>(),
                     context.BlockIndex
@@ -65,7 +65,7 @@ namespace Nekoyume.Action
             Guid id = context.Random.GenerateRandomGuid();
             var result = new MonsterCollectionResult(id, avatarAddress, rewards);
             var mail = new MonsterCollectionMail(result, context.BlockIndex, id, context.BlockIndex);
-            avatarState.UpdateV3(mail);
+            avatarState.Update(mail);
 
             ItemSheet itemSheet = states.GetItemSheet();
             foreach (MonsterCollectionRewardSheet.RewardInfo rewardInfo in rewards)

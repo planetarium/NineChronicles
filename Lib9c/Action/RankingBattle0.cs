@@ -156,13 +156,13 @@ namespace Nekoyume.Action
                 arenaInfo,
                 weeklyArenaState[EnemyAddress]);
 
-            simulator.Simulate();
+            simulator.Simulate2();
 
             Result = simulator.Log;
 
             foreach (var itemBase in simulator.Reward.OrderBy(i => i.Id))
             {
-                avatarState.inventory.AddItem(itemBase);
+                avatarState.inventory.AddItem2(itemBase);
             }
 
             return states

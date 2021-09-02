@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
@@ -8,7 +8,6 @@ using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Battle;
-using Nekoyume.BlockChain;
 using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
@@ -18,8 +17,8 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
+    [ActionObsolete(BlockChain.BlockPolicySource.V100074ObsoleteIndex)]
     [ActionType("ranking_battle5")]
-    [ActionObsolete(BlockPolicySource.V100074ObsoleteIndex)]
     public class RankingBattle5 : GameAction
     {
         public const int StageId = 999999;
@@ -50,7 +49,7 @@ namespace Nekoyume.Action
                     .SetState(questListAddress, MarkChanged);
             }
 
-            CheckObsolete(BlockPolicySource.V100074ObsoleteIndex, ctx);
+            CheckObsolete(BlockChain.BlockPolicySource.V100074ObsoleteIndex, context);
 
             // Avoid InvalidBlockStateRootHashException
             if (ctx.BlockIndex == 680341 && Id.Equals(new Guid("df37dbd8-5703-4dff-918b-ad22ee4c34c6")))
@@ -189,7 +188,7 @@ namespace Nekoyume.Action
                 weeklyArenaState[EnemyAddress],
                 costumeStatSheet);
 
-            simulator.SimulateV2();
+            simulator.Simulate();
 
             sw.Stop();
             Log.Verbose(
@@ -218,7 +217,7 @@ namespace Nekoyume.Action
                     addressesHex,
                     itemBase.Id,
                     sw.Elapsed);
-                avatarState.inventory.AddItem(itemBase);
+                avatarState.inventory.AddItem2(itemBase);
             }
 
             states = states.SetState(WeeklyArenaAddress, weeklyArenaState.Serialize());

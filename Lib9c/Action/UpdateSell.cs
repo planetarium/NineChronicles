@@ -20,7 +20,7 @@ using BxList = Bencodex.Types.List;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("update_sell")]
+    [ActionType("update_sell2")]
     public class UpdateSell : GameAction
     {
         public Guid orderId;
@@ -64,16 +64,16 @@ namespace Nekoyume.Action
             var updateSellShopAddress = ShardedShopStateV2.DeriveAddress(itemSubType, updateSellOrderId);
             var updateSellOrderAddress = Order.DeriveAddress(updateSellOrderId);
             var itemAddress = Addresses.GetItemAddress(tradableId);
-            var orderReceiptAddress = OrderDigestListState.DeriveAddress(sellerAvatarAddress);
+            var digestListAddress = OrderDigestListState.DeriveAddress(sellerAvatarAddress);
             if (context.Rehearsal)
             {
                 return states
                     .SetState(context.Signer, MarkChanged)
                     .SetState(itemAddress, MarkChanged)
+                    .SetState(digestListAddress, MarkChanged)
                     .SetState(shopAddress, MarkChanged)
                     .SetState(updateSellShopAddress, MarkChanged)
                     .SetState(updateSellOrderAddress, MarkChanged)
-                    .SetState(orderReceiptAddress, MarkChanged)
                     .SetState(inventoryAddress, MarkChanged)
                     .SetState(worldInformationAddress, MarkChanged)
                     .SetState(questListAddress, MarkChanged)
@@ -116,6 +116,17 @@ namespace Nekoyume.Action
             avatarState.updatedAt = context.BlockIndex;
             avatarState.blockIndex = context.BlockIndex;
 
+            if (!states.TryGetState(digestListAddress, out Dictionary rawList))
+            {
+                throw new FailedLoadStateException($"{addressesHex} failed to load {nameof(OrderDigest)}({digestListAddress}).");
+            }
+            var digestList = new OrderDigestListState(rawList);
+
+            // migration method
+            avatarState.inventory.UnlockInvalidSlot(digestList, context.Signer, sellerAvatarAddress);
+            avatarState.inventory.ReconfigureFungibleItem(digestList, tradableId);
+            //
+
             // for sell cancel
             Log.Verbose("{AddressesHex} UpdateSell IsStageCleared: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();
@@ -133,37 +144,20 @@ namespace Nekoyume.Action
             }
 
             var orderOnSale = OrderFactory.Deserialize(orderDict);
-            var fromPreviousAction = false;
-            try
-            {
-                orderOnSale.ValidateCancelOrder(avatarState, tradableId);
-            }
-            catch (Exception)
-            {
-                orderOnSale.ValidateCancelOrder2(avatarState, tradableId);
-                fromPreviousAction = true;
-            }
-
-            var itemOnSale = fromPreviousAction
-                ? orderOnSale.Cancel2(avatarState, context.BlockIndex)
-                : orderOnSale.Cancel(avatarState, context.BlockIndex);
+            orderOnSale.ValidateCancelOrder(avatarState, tradableId);
+            var itemOnSale = orderOnSale.Cancel(avatarState, context.BlockIndex);
             if (context.BlockIndex < orderOnSale.ExpiredBlockIndex)
             {
                 var shardedShopState = new ShardedShopStateV2(shopStateDict);
                 shardedShopState.Remove(orderOnSale, context.BlockIndex);
                 states = states.SetState(shopAddress, shardedShopState.Serialize());
             }
-          
-            if (!states.TryGetState(orderReceiptAddress, out Dictionary rawList))
-            {
-                throw new FailedLoadStateException($"{addressesHex} failed to load {nameof(OrderDigest)}({orderReceiptAddress}).");
-            }
-            var digestList = new OrderDigestListState(rawList);
+
             digestList.Remove(orderOnSale.OrderId);
             states = states.SetState(itemAddress, itemOnSale.Serialize())
-                .SetState(orderReceiptAddress, digestList.Serialize());
+                .SetState(digestListAddress, digestList.Serialize());
             sw.Stop();
-            
+
             var expirationMail = avatarState.mailBox.OfType<OrderExpirationMail>()
                             .FirstOrDefault(m => m.OrderId.Equals(orderId));
             if (!(expirationMail is null))
@@ -188,7 +182,7 @@ namespace Nekoyume.Action
             updateSellShopState.Add(orderDigest, context.BlockIndex);
 
             digestList.Add(orderDigest);
-            states = states.SetState(orderReceiptAddress, digestList.Serialize());
+            states = states.SetState(digestListAddress, digestList.Serialize());
             states = states.SetState(inventoryAddress, avatarState.inventory.Serialize())
                 .SetState(worldInformationAddress, avatarState.worldInformation.Serialize())
                 .SetState(questListAddress, avatarState.questList.Serialize())

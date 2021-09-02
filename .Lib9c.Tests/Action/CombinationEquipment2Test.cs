@@ -77,7 +77,7 @@ namespace Lib9c.Tests.Action
             var row = _tableSheets.EquipmentItemRecipeSheet.Values.First();
             var materialRow = _tableSheets.MaterialItemSheet[row.MaterialId];
             var material = ItemFactory.CreateItem(materialRow, _random);
-            _avatarState.inventory.AddItem(material, count: row.MaterialCount);
+            _avatarState.inventory.AddItem2(material, count: row.MaterialCount);
 
             const int requiredStage = GameConfig.RequireClearedStageLevel.CombinationEquipmentAction;
             for (var i = 1; i < requiredStage + 1; i++)
@@ -107,7 +107,7 @@ namespace Lib9c.Tests.Action
             for (var i = 0; i < 100; i++)
             {
                 var mail = new CombinationMail(result, i, default, 0);
-                _avatarState.Update(mail);
+                _avatarState.Update2(mail);
             }
 
             _initialState = _initialState.SetState(_avatarAddress, _avatarState.Serialize());

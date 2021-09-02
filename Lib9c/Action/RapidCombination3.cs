@@ -78,7 +78,7 @@ namespace Nekoyume.Action
             var materialItemSheet = states.GetSheet<MaterialItemSheet>();
             var row = materialItemSheet.Values.First(r => r.ItemSubType == ItemSubType.Hourglass);
             var hourGlass = ItemFactory.CreateMaterial(row);
-            if (!avatarState.inventory.RemoveFungibleItemV2(hourGlass, context.BlockIndex, count))
+            if (!avatarState.inventory.RemoveFungibleItem(hourGlass, context.BlockIndex, count))
             {
                 throw new NotEnoughMaterialException(
                     $"{addressesHex}Aborted as the player has no enough material ({row.Id} * {count})");

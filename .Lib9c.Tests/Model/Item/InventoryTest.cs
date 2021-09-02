@@ -68,7 +68,7 @@
             inventory.AddItem(tradableMaterial);
             Assert.Equal(2, inventory.Items.Count);
             Assert.Equal(2, inventory.Materials.Count());
-            inventory.RemoveFungibleItem(row.ItemId);
+            inventory.RemoveFungibleItem2(row.ItemId);
             Assert.Single(inventory.Items);
             Assert.Single(inventory.Materials);
         }
@@ -84,15 +84,15 @@
             Assert.Empty(inventory.Items);
             inventory.AddItem(material);
             inventory.AddItem(tradableMaterial);
-            inventory.RemoveFungibleItem(row.ItemId);
+            inventory.RemoveFungibleItem2(row.ItemId);
             Assert.True(inventory.Materials.First() is ITradableFungibleItem);
-            inventory.RemoveFungibleItem(row.ItemId);
+            inventory.RemoveFungibleItem2(row.ItemId);
             Assert.Empty(inventory.Materials);
             inventory.AddItem(tradableMaterial);
             inventory.AddItem(material);
-            inventory.RemoveFungibleItem(row.ItemId);
+            inventory.RemoveFungibleItem2(row.ItemId);
             Assert.True(inventory.Materials.First() is ITradableFungibleItem);
-            inventory.RemoveFungibleItem(row.ItemId);
+            inventory.RemoveFungibleItem2(row.ItemId);
             Assert.Empty(inventory.Materials);
         }
 
@@ -587,7 +587,7 @@
             Assert.False(inventory.HasFungibleItem(row.ItemId, 0, 6));
             Assert.True(inventory.HasFungibleItem(row.ItemId, 0, 4));
             Assert.True(inventory.HasFungibleItem(row.ItemId, 1, 6));
-            inventory.RemoveFungibleItem(row.ItemId, 6);
+            inventory.RemoveFungibleItem2(row.ItemId, 6);
         }
 
         [Fact]
@@ -606,8 +606,8 @@
             }
 
             Assert.True(inventory.HasItem(row.Id, 6));
-            Assert.False(inventory.RemoveFungibleItemV2(row.ItemId, 0, 6));
-            Assert.True(inventory.RemoveFungibleItemV2(row.ItemId, 0, 2));
+            Assert.False(inventory.RemoveFungibleItem(row.ItemId, 0, 6));
+            Assert.True(inventory.RemoveFungibleItem(row.ItemId, 0, 2));
             Assert.True(inventory.HasItem(row.Id, 4));
             Assert.True(inventory.TryGetFungibleItems(row.ItemId, out List<Inventory.Item> items));
             Assert.All(items, item => Assert.True(item.item is IFungibleItem));

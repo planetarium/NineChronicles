@@ -73,7 +73,7 @@ namespace Lib9c.Tests.Action
             {
                 var materialRow = _tableSheets.MaterialItemSheet[materialInfo.Id];
                 var material = ItemFactory.CreateItem(materialRow, _random);
-                _avatarState.inventory.AddItem(material, count: materialInfo.Count);
+                _avatarState.inventory.AddItem2(material, count: materialInfo.Count);
             }
 
             const int requiredStage = GameConfig.RequireClearedStageLevel.CombinationConsumableAction;

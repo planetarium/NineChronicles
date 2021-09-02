@@ -147,7 +147,7 @@ namespace Nekoyume.Action
                 states = states.SetState(address, slotState.Serialize());
             }
 
-            avatarState.UpdateQuestRewards(materialItemSheet);
+            avatarState.UpdateQuestRewards2(materialItemSheet);
 
             sw.Stop();
             Log.Verbose("{AddressesHex}CreateAvatar CreateAvatarState: {Elapsed}", addressesHex, sw.Elapsed);

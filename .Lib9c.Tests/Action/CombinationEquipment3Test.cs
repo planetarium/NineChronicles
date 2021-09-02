@@ -82,12 +82,12 @@ namespace Lib9c.Tests.Action
             var row = _tableSheets.EquipmentItemRecipeSheet[109];
             var materialRow = _tableSheets.MaterialItemSheet[row.MaterialId];
             var material = ItemFactory.CreateItem(materialRow, _random);
-            _avatarState.inventory.AddItem(material, count: row.MaterialCount);
+            _avatarState.inventory.AddItem2(material, count: row.MaterialCount);
 
             foreach (var materialInfo in _tableSheets.EquipmentItemSubRecipeSheet[255].Materials)
             {
                 var subMaterial = ItemFactory.CreateItem(_tableSheets.MaterialItemSheet[materialInfo.Id], _random);
-                _avatarState.inventory.AddItem(subMaterial, count: materialInfo.Count);
+                _avatarState.inventory.AddItem2(subMaterial, count: materialInfo.Count);
             }
 
             const int requiredStage = 19;
@@ -119,7 +119,7 @@ namespace Lib9c.Tests.Action
             for (var i = 0; i < 100; i++)
             {
                 var mail = new CombinationMail(result, i, default, 0);
-                _avatarState.Update(mail);
+                _avatarState.Update2(mail);
             }
 
             _initialState = _initialState.SetState(_avatarAddress, _avatarState.Serialize());
@@ -165,12 +165,12 @@ namespace Lib9c.Tests.Action
             var row = _tableSheets.EquipmentItemRecipeSheet[2];
             var materialRow = _tableSheets.MaterialItemSheet[row.MaterialId];
             var material = ItemFactory.CreateItem(materialRow, _random);
-            _avatarState.inventory.AddItem(material, count: row.MaterialCount);
+            _avatarState.inventory.AddItem2(material, count: row.MaterialCount);
 
             foreach (var materialInfo in _tableSheets.EquipmentItemSubRecipeSheet[3].Materials)
             {
                 var subMaterial = ItemFactory.CreateItem(_tableSheets.MaterialItemSheet[materialInfo.Id], _random);
-                _avatarState.inventory.AddItem(subMaterial, count: materialInfo.Count);
+                _avatarState.inventory.AddItem2(subMaterial, count: materialInfo.Count);
             }
 
             const int requiredStage = 11;

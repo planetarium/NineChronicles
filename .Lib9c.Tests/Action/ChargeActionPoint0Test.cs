@@ -49,7 +49,7 @@ namespace Lib9c.Tests.Action
                 ItemFactory.CreateItem(
                     _tableSheets.MaterialItemSheet.Values.First(r => r.ItemSubType == ItemSubType.ApStone),
                     new TestRandom());
-            avatarState.inventory.AddItem(apStone);
+            avatarState.inventory.AddItem2(apStone);
 
             Assert.Equal(0, avatarState.actionPoint);
 

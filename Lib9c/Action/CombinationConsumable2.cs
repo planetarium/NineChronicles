@@ -135,7 +135,7 @@ namespace Nekoyume.Action
                     avatarState.inventory.TryGetItem(materialId, out var inventoryItem);
                     var material = (Material) inventoryItem.item;
                     materials[material] = count;
-                    avatarState.inventory.RemoveFungibleItem(material, count);
+                    avatarState.inventory.RemoveFungibleItem2(material, count);
                 }
                 else
                 {
@@ -191,14 +191,14 @@ namespace Nekoyume.Action
                 requiredBlockIndex
             );
             result.id = mail.id;
-            avatarState.UpdateV2(mail);
+            avatarState.Update3(mail);
             avatarState.UpdateFromCombination(itemUsable);
             sw.Stop();
             Log.Verbose("{AddressesHex}Combination Update AvatarState: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();
 
             var materialSheet = states.GetSheet<MaterialItemSheet>();
-            avatarState.UpdateQuestRewards(materialSheet);
+            avatarState.UpdateQuestRewards2(materialSheet);
 
             avatarState.updatedAt = ctx.BlockIndex;
             avatarState.blockIndex = ctx.BlockIndex;

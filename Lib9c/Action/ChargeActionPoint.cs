@@ -33,7 +33,7 @@ namespace Nekoyume.Action
                     .SetState(questListAddress, MarkChanged)
                     .SetState(avatarAddress, MarkChanged);
             }
-            
+
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
 
             if (!states.TryGetAvatarStateV2(context.Signer, avatarAddress, out var avatarState))
@@ -43,7 +43,7 @@ namespace Nekoyume.Action
             }
 
             var row = states.GetSheet<MaterialItemSheet>().Values.First(r => r.ItemSubType == ItemSubType.ApStone);
-            if (!avatarState.inventory.RemoveFungibleItemV2(row.ItemId, context.BlockIndex))
+            if (!avatarState.inventory.RemoveFungibleItem(row.ItemId, context.BlockIndex))
             {
                 throw new NotEnoughMaterialException(
                     $"{addressesHex}Aborted as the player has no enough material ({row.Id})");

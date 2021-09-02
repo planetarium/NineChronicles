@@ -57,17 +57,21 @@ namespace Lib9c.Model.Order
         }
 
         public abstract ITradableItem Sell(AvatarState avatarState);
-        public abstract OrderDigest Digest(AvatarState avatarState, CostumeStatSheet costumeStatSheet);
-        public abstract OrderReceipt Transfer(AvatarState seller, AvatarState buyer, long blockIndex);
-
         [Obsolete("Use Sell")]
         public abstract ITradableItem Sell2(AvatarState avatarState);
+        [Obsolete("Use Sell")]
+        public abstract ITradableItem Sell3(AvatarState avatarState);
+
+        public abstract OrderDigest Digest(AvatarState avatarState, CostumeStatSheet costumeStatSheet);
         [Obsolete("Use Digest")]
         public abstract OrderDigest Digest2(AvatarState avatarState, CostumeStatSheet costumeStatSheet);
+
+        public abstract OrderReceipt Transfer(AvatarState seller, AvatarState buyer,
+            long blockIndex);
         [Obsolete("Use Transfer")]
         public abstract OrderReceipt Transfer2(AvatarState seller, AvatarState buyer, long blockIndex);
-        [Obsolete("Use Cancel")]
-        public abstract ITradableItem Cancel2(AvatarState avatarState, long blockIndex);
+        [Obsolete("Use Transfer")]
+        public abstract OrderReceipt Transfer3(AvatarState seller, AvatarState buyer, long blockIndex);
 
         public FungibleAssetValue GetTax()
         {
@@ -99,6 +103,9 @@ namespace Lib9c.Model.Order
             throw new ItemDoesNotExistException(
                 $"Aborted because the tradable item({TradableId}) was failed to load from avatar's inventory.");
         }
+
+        [Obsolete("Use Cancel")]
+        public abstract ITradableItem Cancel2(AvatarState avatarState, long blockIndex);
 
         public virtual int ValidateTransfer(AvatarState avatarState, Guid tradableId,
             FungibleAssetValue price, long blockIndex)

@@ -14,7 +14,7 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("redeem_code2")]
+    [ActionType("redeem_code3")]
     public class RedeemCode : GameAction
     {
         public string Code { get; internal set; }

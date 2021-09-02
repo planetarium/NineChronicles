@@ -38,7 +38,7 @@ namespace Nekoyume.Action
 
             var row = states.GetSheet<MaterialItemSheet>().Values.FirstOrDefault(r => r.ItemSubType == ItemSubType.ApStone);
             var apStone = ItemFactory.CreateMaterial(row);
-            if (!avatarState.inventory.RemoveFungibleItem(apStone))
+            if (!avatarState.inventory.RemoveFungibleItem2(apStone))
             {
                 Log.Error("{AddressesHex}Not enough item {ApStone}", addressesHex, apStone);
                 return states;
