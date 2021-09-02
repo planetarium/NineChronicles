@@ -279,7 +279,7 @@ namespace Nekoyume.UI
             if (!arenaInfo.Active)
             {
                 currentAvatarCellView.ShowMyDefaultInfo();
-                LocalLayerModifier.AddWeeklyArenaInfoActivator(Game.Game.instance.TableSheets.CharacterSheet);
+                arenaInfo.Activate();
             }
 
             UpdateBoard(StateType.Arena);
