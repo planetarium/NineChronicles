@@ -1,4 +1,4 @@
-﻿Shader "Custom/Distortion_Additive"
+Shader "Custom/Distortion_Additive_Stencil"
 {
     Properties
     {
