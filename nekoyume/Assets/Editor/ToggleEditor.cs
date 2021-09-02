@@ -13,6 +13,7 @@ namespace Editor
             serializedObject.Update();
             EditorGUILayout.PropertyField(serializedObject.FindProperty("offObject"));
             EditorGUILayout.PropertyField(serializedObject.FindProperty("onObject"));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("onClickToggle"));
             serializedObject.ApplyModifiedProperties();
 
             if (GUI.changed)

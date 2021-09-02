@@ -9,6 +9,7 @@ namespace Nekoyume.UI.Module
     {
         public GameObject offObject;
         public GameObject onObject;
+        public UnityEngine.Events.UnityEvent onClickToggle;
 
         protected Toggle()
         {
@@ -39,6 +40,12 @@ namespace Nekoyume.UI.Module
         {
             onValueChanged.RemoveAllListeners();
             base.OnDestroy();
+        }
+
+        public override void OnPointerClick(UnityEngine.EventSystems.PointerEventData eventData)
+        {
+            base.OnPointerClick(eventData);
+            onClickToggle?.Invoke();
         }
     }
 }
