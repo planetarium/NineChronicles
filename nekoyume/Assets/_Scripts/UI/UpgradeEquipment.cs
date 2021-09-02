@@ -439,6 +439,8 @@ namespace Nekoyume.UI
                 view.Select(false);
                 UpdateState(State.RegisterMaterial);
             }
+
+            AudioController.instance.PlaySfx(AudioController.SfxCode.ChainMail2);
         }
 
         private void SetActiveContainer(bool isClear)
