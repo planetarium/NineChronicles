@@ -121,6 +121,8 @@ namespace Nekoyume.UI
                         UpdateCategory(toggle.Category);
                     }
                 });
+
+                toggle.Toggle.onClickToggle.AddListener(AudioController.PlayClick);
             }
 
             foreach (var dropDown in categoryDropdowns)
@@ -140,6 +142,8 @@ namespace Nekoyume.UI
                         firstElement.onValueChanged.Invoke(true);
                     }
                 });
+
+                dropDown.onClickToggle.AddListener(AudioController.PlayClick);
             }
 
             foreach (var button in notImplementedToggles)
