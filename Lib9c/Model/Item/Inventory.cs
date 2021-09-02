@@ -822,6 +822,11 @@ namespace Nekoyume.Model.Item
                             {
                                 _items.Remove(item);
                             }
+                            Log.Information("[ReconfigureFungibleItem] " +
+                                            "agentAddress : {agentAddress} /" +
+                                            "OrderId : {orderId} / itemId : {itemId} / itemCount : {itemCount}",
+                                digest.SellerAgentAddress, digest.OrderId, digest.ItemId, digest.ItemCount);
+
                             var copy = (ITradableFungibleItem) ((ITradableFungibleItem) item.item).Clone();
                             var clone = new Item((ItemBase)copy, digest.ItemCount);
                             clone.LockUp(new OrderLock(digest.OrderId));
