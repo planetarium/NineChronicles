@@ -813,7 +813,20 @@ namespace Nekoyume.Model.Item
                         var orderLock = (OrderLock)item.Lock;
                         foreach (var digest in sortedDigests.Where(d => !d.OrderId.Equals(orderLock.OrderId)))
                         {
+                            if (item.count - digest.ItemCount < 0)
+                            {
+                                throw new InvalidItemCountException();
+                            }
                             item.count -= digest.ItemCount;
+                            if (item.count == 0)
+                            {
+                                _items.Remove(item);
+                            }
+                            Log.Information("[ReconfigureFungibleItem] " +
+                                            "agentAddress : {agentAddress} /" +
+                                            "OrderId : {orderId} / itemId : {itemId} / itemCount : {itemCount}",
+                                digest.SellerAgentAddress, digest.OrderId, digest.ItemId, digest.ItemCount);
+
                             var copy = (ITradableFungibleItem) ((ITradableFungibleItem) item.item).Clone();
                             var clone = new Item((ItemBase)copy, digest.ItemCount);
                             clone.LockUp(new OrderLock(digest.OrderId));
