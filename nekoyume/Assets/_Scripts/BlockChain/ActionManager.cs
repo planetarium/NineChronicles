@@ -109,7 +109,6 @@ namespace Nekoyume.BlockChain
                 worldId = worldId,
                 stageId = stageId,
                 avatarAddress = avatarAddress,
-                rankingMapAddress = States.Instance.CurrentAvatarState.RankingMapAddress,
             };
             ProcessAction(action);
 
