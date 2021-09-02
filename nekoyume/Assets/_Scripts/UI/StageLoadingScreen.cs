@@ -101,7 +101,7 @@ namespace Nekoyume.UI
 
             var message = string.Format(L10nManager.Localize("STAGE_BLOCK_CHAIN_MINING_TX"),
                 worldName,
-                StageInformation.GetStageIdString(stageId));
+                StageInformation.GetStageIdString(stageId, true));
             indicator.Show(message);
         }
 

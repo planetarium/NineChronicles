@@ -240,7 +240,7 @@ namespace Nekoyume.UI
             SharedModel = model;
             _IsAlreadyOut = false;
 
-            worldStageId.text = $"{SharedModel.WorldName} {StageInformation.GetStageIdString(SharedModel.StageID)}";
+            worldStageId.text = $"{SharedModel.WorldName} {StageInformation.GetStageIdString(SharedModel.StageID, true)}";
             actionPoint.SetActionPoint(model.ActionPoint);
             actionPoint.SetEventTriggerEnabled(true);
 
