@@ -813,7 +813,15 @@ namespace Nekoyume.Model.Item
                         var orderLock = (OrderLock)item.Lock;
                         foreach (var digest in sortedDigests.Where(d => !d.OrderId.Equals(orderLock.OrderId)))
                         {
+                            if (item.count - digest.ItemCount < 0)
+                            {
+                                throw new InvalidItemCountException();
+                            }
                             item.count -= digest.ItemCount;
+                            if (item.count == 0)
+                            {
+                                _items.Remove(item);
+                            }
                             var copy = (ITradableFungibleItem) ((ITradableFungibleItem) item.item).Clone();
                             var clone = new Item((ItemBase)copy, digest.ItemCount);
                             clone.LockUp(new OrderLock(digest.OrderId));
