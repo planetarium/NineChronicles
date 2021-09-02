@@ -259,9 +259,9 @@ namespace Nekoyume.L10n
                 text = _dictionary[key];
                 return true;
             }
-            catch
+            catch (Exception e)
             {
-                Debug.LogError($"Key not found: {key}");
+                Debug.LogError($"{e.GetType().FullName}: {e.Message} key: {key}");
                 text = $"!{key}!";
                 return false;
             }
