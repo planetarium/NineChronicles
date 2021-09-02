@@ -339,9 +339,19 @@ namespace Nekoyume.BlockChain
                 string formatKey;
                 if (result.itemUsable is Equipment equipment)
                 {
-                    formatKey = equipment.optionCountFromCombination == 4
-                        ? "NOTIFICATION_COMBINATION_COMPLETE_GREATER"
-                        : "NOTIFICATION_COMBINATION_COMPLETE";
+                    if (eval.Action.subRecipeId.HasValue &&
+                        Game.Game.instance.TableSheets.EquipmentItemSubRecipeSheetV2.TryGetValue(
+                            eval.Action.subRecipeId.Value,
+                            out var row))
+                    {
+                        formatKey = equipment.optionCountFromCombination == row.Options.Count
+                            ? "NOTIFICATION_COMBINATION_COMPLETE_GREATER"
+                            : "NOTIFICATION_COMBINATION_COMPLETE";
+                    }
+                    else
+                    {
+                        formatKey = "NOTIFICATION_COMBINATION_COMPLETE";
+                    }
                 }
                 else
                 {

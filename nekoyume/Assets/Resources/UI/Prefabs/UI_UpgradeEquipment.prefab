@@ -6578,8 +6578,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 5753516113674615723}
   m_HandleRect: {fileID: 5125301551388603195}
   m_Direction: 2
-  m_Value: 0
-  m_Size: 1
+  m_Value: 1
+  m_Size: 0.47619048
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -50624,7 +50624,7 @@ PrefabInstance:
     - target: {fileID: 1429700768464904885, guid: 625a0f537a8a34715b15e8a00a11ebfd,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 0
+      value: 59.000004
       objectReference: {fileID: 0}
     - target: {fileID: 1429700768464904885, guid: 625a0f537a8a34715b15e8a00a11ebfd,
         type: 3}
@@ -50634,7 +50634,7 @@ PrefabInstance:
     - target: {fileID: 1429700768464904885, guid: 625a0f537a8a34715b15e8a00a11ebfd,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 40
+      value: 99
       objectReference: {fileID: 0}
     - target: {fileID: 1429700768464904885, guid: 625a0f537a8a34715b15e8a00a11ebfd,
         type: 3}
@@ -50654,7 +50654,7 @@ PrefabInstance:
     - target: {fileID: 2826735813725936144, guid: 625a0f537a8a34715b15e8a00a11ebfd,
         type: 3}
       propertyPath: m_fontSize
-      value: 16
+      value: 17.7
       objectReference: {fileID: 0}
     - target: {fileID: 2826735813725936144, guid: 625a0f537a8a34715b15e8a00a11ebfd,
         type: 3}
@@ -50706,6 +50706,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_AnchorMin.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5513988515000996111, guid: 625a0f537a8a34715b15e8a00a11ebfd,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 115
       objectReference: {fileID: 0}
     - target: {fileID: 5513988515000996111, guid: 625a0f537a8a34715b15e8a00a11ebfd,
         type: 3}

@@ -30,9 +30,20 @@ namespace Nekoyume.UI
                     string formatKey;
                     if (combinationMail.attachment.itemUsable is Equipment equipment)
                     {
-                        formatKey = equipment.optionCountFromCombination == 4
-                            ? "UI_COMBINATION_NOTIFY_FORMAT_GREATER"
-                            : "UI_COMBINATION_NOTIFY_FORMAT";
+                        if (combinationMail.attachment is CombinationConsumable5.ResultModel result &&
+                            result.subRecipeId.HasValue &&
+                            Game.Game.instance.TableSheets.EquipmentItemSubRecipeSheetV2.TryGetValue(
+                                result.subRecipeId.Value,
+                                out var row))
+                        {
+                            formatKey = equipment.optionCountFromCombination == row.Options.Count
+                                ? "UI_COMBINATION_NOTIFY_FORMAT_GREATER"
+                                : "UI_COMBINATION_NOTIFY_FORMAT";    
+                        }
+                        else
+                        {
+                            formatKey = "UI_COMBINATION_NOTIFY_FORMAT";
+                        }
                     }
                     else
                     {
@@ -47,29 +58,34 @@ namespace Nekoyume.UI
                 case ItemEnhanceMail itemEnhanceMail:
                 {
                     string formatKey;
-                    if (itemEnhanceMail.attachment is ItemEnhancement.ResultModel result)
+                    switch (itemEnhanceMail.attachment)
                     {
-                        switch (result.enhancementResult)
-                        {
-                            case ItemEnhancement.EnhancementResult.GreatSuccess:
-                                formatKey = "UI_ITEM_ENHANCEMENT_MAIL_FORMAT_GREATER";
-                                break;
-                            case ItemEnhancement.EnhancementResult.Success:
-                                formatKey = "UI_ITEM_ENHANCEMENT_MAIL_FORMAT";
-                                break;
-                            case ItemEnhancement.EnhancementResult.Fail:
-                                formatKey = "UI_ITEM_ENHANCEMENT_MAIL_FORMAT_FAIL";
-                                break;
-                            default:
-                                Debug.LogError($"Unexpected result.enhancementResult: {result.enhancementResult}");
-                                formatKey = "UI_ITEM_ENHANCEMENT_MAIL_FORMAT";
-                                break;
-                        }
-                    }
-                    else
-                    {
-                        Debug.LogError("itemEnhanceMail.attachment is not ItemEnhancement.ResultModel");
-                        formatKey = "UI_ITEM_ENHANCEMENT_MAIL_FORMAT";
+                        case ItemEnhancement.ResultModel result:
+                            switch (result.enhancementResult)
+                            {
+                                case ItemEnhancement.EnhancementResult.GreatSuccess:
+                                    formatKey = "UI_ITEM_ENHANCEMENT_MAIL_FORMAT_GREATER";
+                                    break;
+                                case ItemEnhancement.EnhancementResult.Success:
+                                    formatKey = "UI_ITEM_ENHANCEMENT_MAIL_FORMAT";
+                                    break;
+                                case ItemEnhancement.EnhancementResult.Fail:
+                                    formatKey = "UI_ITEM_ENHANCEMENT_MAIL_FORMAT_FAIL";
+                                    break;
+                                default:
+                                    Debug.LogError($"Unexpected result.enhancementResult: {result.enhancementResult}");
+                                    formatKey = "UI_ITEM_ENHANCEMENT_MAIL_FORMAT";
+                                    break;
+                            }
+
+                            break;
+                        case ItemEnhancement7.ResultModel _:
+                            formatKey = "UI_ITEM_ENHANCEMENT_MAIL_FORMAT";
+                            break;
+                        default:
+                            Debug.LogError("itemEnhanceMail.attachment is not ItemEnhancement.ResultModel");
+                            formatKey = "UI_ITEM_ENHANCEMENT_MAIL_FORMAT";
+                            break;
                     }
 
                     return string.Format(
