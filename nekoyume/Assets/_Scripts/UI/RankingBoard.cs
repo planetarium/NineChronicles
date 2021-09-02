@@ -189,6 +189,12 @@ namespace Nekoyume.UI
             base.Show(true);
 
             _state.SetValueAndForceNotify(stateType);
+            Find<BottomMenu>()?.Show(
+                UINavigator.NavigationType.Back,
+                SubscribeBackButtonClick,
+                true,
+                BottomMenu.ToggleableType.Ranking,
+                BottomMenu.ToggleableType.Character);
 
             Find<DataLoadingScreen>().Close();
             AudioController.instance.PlayMusic(AudioController.MusicCode.Ranking);
