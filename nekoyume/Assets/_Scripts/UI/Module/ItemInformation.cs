@@ -137,7 +137,7 @@ namespace Nekoyume.UI.Module
 
             // 속성.
             var sprite = item.ElementalType.GetSprite();
-            if (sprite is null)
+            if (sprite is null || item.ItemType == ItemType.Consumable || item.ItemType == ItemType.Material)
             {
                 iconArea.elementalTypeObject.SetActive(false);
                 return;
