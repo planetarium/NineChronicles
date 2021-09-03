@@ -27,6 +27,12 @@ namespace Nekoyume.BlockChain
 
         private readonly ActionRenderer _renderer;
 
+        public Guid LastBattleActionId { get; private set; }
+
+        public int LastBattleWorldId { get; private set; }
+
+        public int LastBattleStageId { get; private set; }
+
         private void ProcessAction(GameAction gameAction)
         {
             _agent.EnqueueAction(gameAction);
@@ -102,9 +108,9 @@ namespace Nekoyume.BlockChain
             }
 
             var avatarAddress = States.Instance.CurrentAvatarState.address;
-            costumes = costumes ?? new List<Costume>();
-            equipments = equipments ?? new List<Equipment>();
-            foods = foods ?? new List<Consumable>();
+            costumes ??= new List<Costume>();
+            equipments ??= new List<Equipment>();
+            foods ??= new List<Consumable>();
 
             var action = new MimisbrunnrBattle
             {
@@ -118,6 +124,10 @@ namespace Nekoyume.BlockChain
                 RankingMapAddress = States.Instance.CurrentAvatarState.RankingMapAddress,
             };
             ProcessAction(action);
+
+            LastBattleActionId = action.Id;
+            LastBattleWorldId = worldId;
+            LastBattleStageId = stageId;
 
             return _renderer.EveryRender<MimisbrunnrBattle>()
                 .SkipWhile(eval => !eval.Action.Id.Equals(action.Id))
@@ -169,6 +179,10 @@ namespace Nekoyume.BlockChain
                 RankingMapAddress = States.Instance.CurrentAvatarState.RankingMapAddress,
             };
             ProcessAction(action);
+
+            LastBattleActionId = action.Id;
+            LastBattleWorldId = worldId;
+            LastBattleStageId = stageId;
 
             return _renderer.EveryRender<HackAndSlash>()
                 .SkipWhile(eval => !eval.Action.Id.Equals(action.Id))
@@ -376,6 +390,8 @@ namespace Nekoyume.BlockChain
                 consumableIds = consumableIds
             };
             ProcessAction(action);
+
+            LastBattleActionId = action.Id;
 
             return _renderer.EveryRender<RankingBattle>()
                 .Where(eval => eval.Action.Id.Equals(action.Id))
