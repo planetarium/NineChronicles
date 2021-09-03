@@ -296,6 +296,7 @@ namespace Nekoyume.UI
             _tempStats = _player.Model.Stats.Clone() as CharacterStats;
             inventory.SharedModel.UpdateEquipmentNotification(GetElementalTypes());
             startButton.gameObject.SetActive(true);
+            startButton.interactable = true;
             HelpPopup.HelpMe(100020, true);
         }
 

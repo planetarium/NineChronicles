@@ -812,11 +812,6 @@ namespace Nekoyume.BlockChain
         {
             if (eval.Exception is null)
             {
-                var weeklyArenaAddress = eval.Action.WeeklyArenaAddress;
-                var avatarAddress = eval.Action.AvatarAddress;
-
-                LocalLayerModifier.RemoveWeeklyArenaInfoActivator(weeklyArenaAddress, avatarAddress);
-
                 _disposableForBattleEnd?.Dispose();
                 _disposableForBattleEnd =
                     Game.Game.instance.Stage.onEnterToStageEnd
