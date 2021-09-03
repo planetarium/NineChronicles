@@ -25,7 +25,6 @@ namespace Nekoyume.Action
         public int worldId;
         public int stageId;
         public Address avatarAddress;
-        public Address WeeklyArenaAddress;
         public Address rankingMapAddress;
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
