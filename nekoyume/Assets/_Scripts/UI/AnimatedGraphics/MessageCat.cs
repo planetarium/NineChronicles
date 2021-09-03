@@ -32,7 +32,7 @@ namespace Nekoyume.UI.AnimatedGraphics
 
         public bool IsShown => _gameObject.activeSelf;
 
-        public GameObject MakerObject { get; private set; } = null;
+        public GameObject CreatedByThisObject { get; private set; } = null;
 
         private void Awake()
         {
@@ -44,7 +44,7 @@ namespace Nekoyume.UI.AnimatedGraphics
 
         public void Show(Vector3 position, string message, GameObject maker, bool reverseDirection = false)
         {
-            MakerObject = maker;
+            CreatedByThisObject = maker;
             constraintsToMousePosition.enabled = false;
             _rectTransform.position = position;
             PostShow(message, reverseDirection);
@@ -52,7 +52,7 @@ namespace Nekoyume.UI.AnimatedGraphics
 
         public void Show(bool followMouse, string message, GameObject maker, bool reverseDirection = false)
         {
-            MakerObject = maker;
+            CreatedByThisObject = maker;
             constraintsToMousePosition.enabled = followMouse;
             PostShow(message, reverseDirection);
         }

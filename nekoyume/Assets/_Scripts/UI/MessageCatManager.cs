@@ -21,7 +21,7 @@ namespace Nekoyume.UI
             base.Awake();
 
             OnDisableStaticObservable
-                .Subscribe(widget => Hide(widget.gameObject, false))
+                .Subscribe(widget => HideSpecificCat(widget.gameObject, false))
                 .AddTo(gameObject);
 
             CloseWidget = null;
@@ -41,10 +41,10 @@ namespace Nekoyume.UI
             return cat;
         }
 
-        public void Hide(GameObject maker, bool lazyHide = true)
+        public void HideSpecificCat(GameObject maker, bool lazyHide = true)
         {
             foreach (var messageCat in _pool.Where(messageCat =>
-                messageCat.IsShown && (maker is null || messageCat.MakerObject.Equals(maker))))
+                messageCat.IsShown && (maker is null || messageCat.CreatedByThisObject.Equals(maker))))
             {
                 messageCat.Hide(lazyHide);
             }
