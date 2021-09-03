@@ -488,8 +488,11 @@ namespace Nekoyume.UI
                     var characterSheet = Game.Game.instance.TableSheets.CharacterSheet;
                     var costumeStatSheet = Game.Game.instance.TableSheets.CostumeStatSheet;
                     var cp = CPHelper.GetCPV2(States.Instance.CurrentAvatarState, characterSheet, costumeStatSheet);
-                    var address = state.OrderedArenaInfos.First(i => i.CombatPoint <= cp).AvatarAddress;
-                    infos2 = state.GetArenaInfos(address, 20, 20);
+                    var targetInfo = state.OrderedArenaInfos.FirstOrDefault(i => i.CombatPoint <= cp);
+                    if (targetInfo != null)
+                    {
+                        infos2 = state.GetArenaInfos(targetInfo.AvatarAddress, 20, 20);   
+                    }
                 }
 
                 infos.AddRange(infos2);
