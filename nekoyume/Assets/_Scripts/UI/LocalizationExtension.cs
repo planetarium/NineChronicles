@@ -38,7 +38,7 @@ namespace Nekoyume.UI
                         {
                             formatKey = equipment.optionCountFromCombination == row.Options.Count
                                 ? "UI_COMBINATION_NOTIFY_FORMAT_GREATER"
-                                : "UI_COMBINATION_NOTIFY_FORMAT";    
+                                : "UI_COMBINATION_NOTIFY_FORMAT";
                         }
                         else
                         {
@@ -52,7 +52,8 @@ namespace Nekoyume.UI
 
                     return string.Format(
                         L10nManager.Localize(formatKey),
-                        GetLocalizedNonColoredName(combinationMail.attachment.itemUsable));
+                        GetLocalizedNonColoredName(combinationMail.attachment.itemUsable,
+                            combinationMail.attachment.itemUsable.ItemType.HasElementType()));
                 }
 
                 case ItemEnhanceMail itemEnhanceMail:
@@ -115,9 +116,11 @@ namespace Nekoyume.UI
                         cancelItemName);
 
                 case BuyerMail buyerMail:
+                    var buyerMailItemBase = GetItemBase(buyerMail.attachment);
                     return string.Format(
                         L10nManager.Localize("UI_BUYER_MAIL_FORMAT"),
-                        GetLocalizedNonColoredName(GetItemBase(buyerMail.attachment)));
+                        GetLocalizedNonColoredName(buyerMailItemBase,
+                            buyerMailItemBase.ItemType.HasElementType()));
 
                 case SellerMail sellerMail:
                     var attachment = sellerMail.attachment;
@@ -125,16 +128,20 @@ namespace Nekoyume.UI
                     {
                         throw new InvalidCastException($"({nameof(Buy7.SellerResult)}){nameof(attachment)}");
                     }
+
                     return string.Format(
                         L10nManager.Localize("UI_SELLER_MAIL_FORMAT"),
                         sellerResult.gold,
-                        GetLocalizedNonColoredName(GetItemBase(attachment)));
+                        GetLocalizedNonColoredName(GetItemBase(attachment),
+                            attachment.itemUsable.ItemType.HasElementType()));
 
                 case SellCancelMail sellCancelMail:
+                    var cancelMailItemBase = GetItemBase(sellCancelMail.attachment);
                     return string.Format(
                         L10nManager.Localize("UI_SELL_CANCEL_MAIL_FORMAT"),
-                        GetLocalizedNonColoredName(GetItemBase(sellCancelMail.attachment))
-                    );
+                        GetLocalizedNonColoredName(cancelMailItemBase,
+                            cancelMailItemBase.ItemType.HasElementType()
+                        ));
 
                 case DailyRewardMail _:
                     return L10nManager.Localize("UI_DAILY_REWARD_MAIL_FORMAT");
@@ -348,7 +355,8 @@ namespace Nekoyume.UI
 
         public static string GetLocalizedNonColoredName(this ItemBase item, bool useElementalIcon = true)
         {
-            return GetLocalizedNonColoredName(item.ElementalType, item.Id, useElementalIcon);
+            return GetLocalizedNonColoredName(item.ElementalType, item.Id,
+                useElementalIcon && item.ItemType.HasElementType());
         }
 
         public static string GetLocalizedName(this EquipmentItemSheet.Row equipmentRow, int level, bool useElementalIcon = true)
@@ -363,7 +371,7 @@ namespace Nekoyume.UI
         public static string GetLocalizedName(this ConsumableItemSheet.Row consumableRow, bool hasColor = true)
         {
             var name = GetLocalizedNonColoredName(consumableRow.ElementalType, consumableRow.Id, false);
-            return hasColor ? 
+            return hasColor ?
                 $"<color=#{GetColorHexByGrade(consumableRow.Grade)}>{name}</color>" :
                 name;
         }
