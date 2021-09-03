@@ -663,6 +663,13 @@ namespace Nekoyume.BlockChain
         {
             if (eval.Exception is null)
             {
+                if (eval.Action.Id != Game.Game.instance.ActionManager.LastBattleActionId ||
+                    eval.Action.worldId != Game.Game.instance.ActionManager.LastBattleWorldId ||
+                    eval.Action.stageId != Game.Game.instance.ActionManager.LastBattleStageId)
+                {
+                    return;
+                }
+
                 _disposableForBattleEnd?.Dispose();
                 _disposableForBattleEnd =
                     Game.Game.instance.Stage.onEnterToStageEnd
@@ -673,7 +680,6 @@ namespace Nekoyume.BlockChain
                             {
                                 UpdateCurrentAvatarState(eval);
                                 UpdateWeeklyArenaState(eval);
-                                Address agentAddress = States.Instance.AgentState.address;
                                 var avatarState = States.Instance.CurrentAvatarState;
                                 RenderQuest(eval.Action.avatarAddress,
                                     avatarState.questList.completedQuestIds);
@@ -697,7 +703,7 @@ namespace Nekoyume.BlockChain
                     StageSimulatorVersionV100025
                 );
                 simulator.SimulateV3();
-                BattleLog log = simulator.Log;
+                var log = simulator.Log;
 
                 if (Widget.Find<LoadingScreen>().IsActive())
                 {
@@ -738,6 +744,13 @@ namespace Nekoyume.BlockChain
         {
             if (eval.Exception is null)
             {
+                if (eval.Action.Id != Game.Game.instance.ActionManager.LastBattleActionId ||
+                    eval.Action.worldId != Game.Game.instance.ActionManager.LastBattleWorldId ||
+                    eval.Action.stageId != Game.Game.instance.ActionManager.LastBattleStageId)
+                {
+                    return;
+                }
+
                 _disposableForBattleEnd?.Dispose();
                 _disposableForBattleEnd =
                     Game.Game.instance.Stage.onEnterToStageEnd
@@ -748,7 +761,6 @@ namespace Nekoyume.BlockChain
                             {
                                 UpdateCurrentAvatarState(eval);
                                 UpdateWeeklyArenaState(eval);
-                                Address agentAddress = States.Instance.AgentState.address;
                                 var avatarState = States.Instance.CurrentAvatarState;
                                 RenderQuest(eval.Action.avatarAddress,
                                     avatarState.questList.completedQuestIds);
@@ -771,7 +783,7 @@ namespace Nekoyume.BlockChain
                     StageSimulatorVersionV100025
                 );
                 simulator.SimulateV2();
-                BattleLog log = simulator.Log;
+                var log = simulator.Log;
 
                 if (Widget.Find<LoadingScreen>().IsActive())
                 {
@@ -812,6 +824,11 @@ namespace Nekoyume.BlockChain
         {
             if (eval.Exception is null)
             {
+                if (eval.Action.Id != Game.Game.instance.ActionManager.LastBattleActionId)
+                {
+                    return;
+                }
+
                 _disposableForBattleEnd?.Dispose();
                 _disposableForBattleEnd =
                     Game.Game.instance.Stage.onEnterToStageEnd
