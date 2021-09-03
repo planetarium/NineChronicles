@@ -814,6 +814,7 @@ namespace Nekoyume.Model.Item
                 var digest = digests.FirstOrDefault(x => item.Lock.Equals(new OrderLock(x.OrderId)));
                 if (digest != null)
                 {
+                    var preItemCount = item.count;
                     item.count = digest.ItemCount;
 
                     // for log
@@ -823,8 +824,9 @@ namespace Nekoyume.Model.Item
                     var itemCount = digest.ItemCount;
                     Log.Information("[ReconfigureFungibleItem] " +
                                     "agentAddress : {agentAddress} /" +
-                                    "OrderId : {orderId} / itemId : {itemId} / itemCount : {itemCount}",
-                        agentAddress, orderId, itemId, itemCount);
+                                    "OrderId : {orderId} / itemId : {itemId} / " +
+                                    "preItemCount : {preItemCount} / itemCount : {itemCount}",
+                        agentAddress, orderId, itemId, preItemCount, itemCount);
                 }
             }
         }
