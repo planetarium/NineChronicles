@@ -75,11 +75,12 @@ namespace Nekoyume.UI
         public override void Close(bool ignoreCloseAnimation = false)
         {
             base.Close(ignoreCloseAnimation);
+            AudioController.PlayClick();
 
             if (_npc)
             {
                 _npc.SpineController.SkeletonAnimation.skeleton.A = 0;
-                _npc = null;    
+                _npc = null;
             }
         }
 
