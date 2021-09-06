@@ -25,6 +25,7 @@ namespace Nekoyume.UI.Module
         [SerializeField] private GameObject selectedObject = null;
         [SerializeField] private GameObject lockObject = null;
         [SerializeField] private GameObject lockVFXObject = null;
+        [SerializeField] private GameObject lockOpenVFXObject = null;
         [SerializeField] private GameObject indicatorObject = null;
         [SerializeField] private TextMeshProUGUI unlockConditionText = null;
         [SerializeField] private Button button = null;
@@ -174,9 +175,7 @@ namespace Nekoyume.UI.Module
         public void Unlock()
         {
             AudioController.instance.PlaySfx(AudioController.SfxCode.UnlockRecipe);
-            var centerPos = GetComponent<RectTransform>()
-                .GetWorldPositionOfCenter();
-            VFXController.instance.CreateAndChaseCam<RecipeUnlockVFX>(centerPos);
+            lockOpenVFXObject.SetActive(true);
             Craft.SharedModel.RecipeVFXSkipList.Add(_recipeIdToUnlock);
             Craft.SharedModel.SaveRecipeVFXSkipList();
 
