@@ -8,7 +8,7 @@ id,stat_type,stat_min,stat_max,skill_id,skill_damage_min,skill_damage_max,skill_
 7,,,,110003,49,66,28,28
 8,ATK,179,336,,,,,
 9,SPD,503,914,,,,,
-10,ATK,287,480,,,,,
+10,ATK,215,360,,,,,
 11,,,,110005,6774,9032,12,12
 12,ATK,4,6,,,,,
 13,SPD,16,19,,,,,
@@ -360,7 +360,7 @@ id,stat_type,stat_min,stat_max,skill_id,skill_damage_min,skill_damage_max,skill_
 359,,,,220000,25,33,8,8
 360,HP,2249,4200,,,,,
 361,DEF,127,232,,,,,
-362,HP,3599,6000,,,,,
+362,HP,2699,4500,,,,,
 363,,,,220000,3175,4234,8,8
 364,HP,81,88,,,,,
 365,DEF,6,8,,,,,
@@ -712,7 +712,7 @@ id,stat_type,stat_min,stat_max,skill_id,skill_damage_min,skill_damage_max,skill_
 711,,,,250000,29,39,8,8
 712,SPD,388,725,,,,,
 713,HIT,650,1180,,,,,
-714,SPD,620,1035,,,,,
+714,SPD,465,777,,,,,
 715,,,,250000,2464,3285,8,8
 716,SPD,14,16,,,,,
 717,HIT,28,32,,,,,
@@ -932,7 +932,7 @@ id,stat_type,stat_min,stat_max,skill_id,skill_damage_min,skill_damage_max,skill_
 931,,,,240000,30,41,8,8
 932,HIT,742,1386,,,,,
 933,DEF,127,232,,,,,
-934,HIT,1187,1980,,,,,
+934,HIT,890,1485,,,,,
 935,,,,240000,3175,4234,8,8
 936,HIT,26,29,,,,,
 937,DEF,7,9,,,,,
@@ -1152,7 +1152,7 @@ id,stat_type,stat_min,stat_max,skill_id,skill_damage_min,skill_damage_max,skill_
 1151,,,,110005,144,192,9,9
 1152,ATK,179,336,,,,,
 1153,HIT,791,1436,,,,,
-1154,ATK,287,480,,,,,
+1154,ATK,215,360,,,,,
 1155,,,,110005,5080,6774,9,9
 1156,DEF,7,9,,,,,
 1157,HP,143,160,,,,,
