@@ -203,7 +203,7 @@ namespace Lib9c.Tests.Action
                     OrderId = Guid.NewGuid(),
                     SellerAgentAddress = new PrivateKey().ToAddress(),
                     SellerAvatarAddress = new PrivateKey().ToAddress(),
-                    RequiredBlockIndex = 0,
+                    RequiredBlockIndex = Sell6.ExpiredBlockIndex + 1,
                     Price = 10,
                     ItemCount = 60,
                 },
@@ -590,22 +590,23 @@ namespace Lib9c.Tests.Action
         [MemberData(nameof(GetReconfigureFungibleItemMemberData))]
         public void Execute_ReconfigureFungibleItem(params OrderData[] orderDataList)
         {
-            AvatarState buyerAvatarState = _initialState.GetAvatarState(_buyerAvatarAddress);
-            List<PurchaseInfo> purchaseInfos = new List<PurchaseInfo>();
-
+            var buyerAvatarState = _initialState.GetAvatarState(_buyerAvatarAddress);
+            var purchaseInfos = new List<PurchaseInfo>();
             var firstData = orderDataList.First();
-            (AvatarState sellerAvatarState, AgentState sellerAgentState) =
-                CreateAvatarState(firstData.SellerAgentAddress, firstData.SellerAvatarAddress);
+            var (sellerAvatarState, sellerAgentState) = CreateAvatarState(firstData.SellerAgentAddress, firstData.SellerAvatarAddress);
+
+            var dummyItem = ItemFactory.CreateTradableMaterial(
+                _tableSheets.MaterialItemSheet.OrderedList.First(r => r.ItemSubType == ItemSubType.Hourglass));
+            sellerAvatarState.inventory.AddItem2((ItemBase)dummyItem, orderDataList.Sum(x => x.ItemCount));
+
+            var index = 0;
             foreach (var orderData in orderDataList)
             {
-                ITradableItem tradableItem;
-                Guid orderId = orderData.OrderId;
-                Guid itemId = orderData.TradableId;
-                ItemSubType itemSubType;
+                var orderId = orderData.OrderId;
                 var material = ItemFactory.CreateTradableMaterial(
                     _tableSheets.MaterialItemSheet.OrderedList.First(r => r.ItemSubType == ItemSubType.Hourglass));
-                tradableItem = material;
-                itemSubType = ItemSubType.Hourglass;
+                ITradableItem tradableItem = material;
+                var itemSubType = ItemSubType.Hourglass;
 
                 var result = new DailyReward2.DailyRewardResult()
                 {
@@ -634,7 +635,6 @@ namespace Lib9c.Tests.Action
                     itemSubType,
                     orderData.ItemCount
                 );
-                sellerAvatarState.inventory.AddItem2((ItemBase)tradableItem, orderData.ItemCount);
                 var inventoryAddress = orderData.SellerAvatarAddress.Derive(LegacyInventoryKey);
                 _initialState.SetState(inventoryAddress, sellerAvatarState.inventory.Serialize());
 
@@ -672,6 +672,7 @@ namespace Lib9c.Tests.Action
                     order.Price
                 );
                 purchaseInfos.Add(purchaseInfo);
+                index++;
 
                 _initialState = _initialState
                     .SetState(Order.DeriveAddress(orderId), order.Serialize())
