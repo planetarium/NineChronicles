@@ -5,6 +5,7 @@ using Cysharp.Threading.Tasks;
 using Lib9c.Model.Order;
 using Nekoyume.Action;
 using Nekoyume.EnumType;
+using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
@@ -115,9 +116,10 @@ namespace Nekoyume.UI
 
         public override void Close(bool ignoreCloseAnimation = false)
         {
-            if (blur)
+            if (blur && blur.isActiveAndEnabled)
             {
                 blur.Close();
+                AudioController.PlayClick();
             }
 
             base.Close(ignoreCloseAnimation);
@@ -255,7 +257,7 @@ namespace Nekoyume.UI
                     resultModel.subRecipeId.Value,
                     out var row))
             {
-                Find<CombinationResult>().Show(itemUsable, row.Options.Count);   
+                Find<CombinationResult>().Show(itemUsable, row.Options.Count);
             }
         }
 

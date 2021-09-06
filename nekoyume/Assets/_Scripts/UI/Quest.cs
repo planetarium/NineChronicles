@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using Nekoyume.EnumType;
+using Nekoyume.Game.Controller;
 using Nekoyume.L10n;
 using TMPro;
 using UnityEngine;
@@ -76,9 +77,10 @@ namespace Nekoyume.UI
 
         public override void Close(bool ignoreCloseAnimation = false)
         {
-            if (blur)
+            if (blur && blur.isActiveAndEnabled)
             {
                 blur.Close();
+                AudioController.PlayClick();
             }
 
             base.Close(ignoreCloseAnimation);

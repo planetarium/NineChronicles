@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Nekoyume.Game.Controller;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -79,6 +80,9 @@ namespace Nekoyume.UI
 
         [SerializeField]
         private List<Button> notImplementedToggles = null;
+
+        [SerializeField]
+        private Blur blur = null;
 
         public const int RankingBoardDisplayCount = 100;
 
@@ -156,8 +160,24 @@ namespace Nekoyume.UI
 
         public override void Show(bool ignoreShowAnimation = false)
         {
+            if (blur)
+            {
+                blur.Show();
+            }
+
             base.Show(ignoreShowAnimation);
             UpdateCategory(RankCategory.Ability, true);
+        }
+
+        public override void Close(bool ignoreCloseAnimation = false)
+        {
+            if (blur && blur.isActiveAndEnabled)
+            {
+                blur.Close();
+                AudioController.PlayClick();
+            }
+
+            base.Close(ignoreCloseAnimation);
         }
 
         private void UpdateCategory(RankCategory category, bool toggleOn = false)

@@ -62,6 +62,9 @@ namespace Nekoyume.UI
         [SerializeField]
         private AvatarStats avatarStats = null;
 
+        [SerializeField]
+        private Blur blur = null;
+
         private EquipmentSlot _weaponSlot;
         private EquipmentSlot _armorSlot;
         private Player _player;
@@ -162,6 +165,12 @@ namespace Nekoyume.UI
 
         public override void Close(bool ignoreCloseAnimation = false)
         {
+            if (blur && blur.isActiveAndEnabled)
+            {
+                blur.Close();
+                AudioController.PlayClick();
+            }
+
             base.Close(ignoreCloseAnimation);
             IsTweenEnd.Value = false;
         }
@@ -172,6 +181,11 @@ namespace Nekoyume.UI
         {
             base.Show(ignoreShowAnimation);
             inventory.SharedModel.State.Value = ItemType.Equipment;
+
+            if (blur)
+            {
+                blur.Show();
+            }
 
             if (_player == null)
             {

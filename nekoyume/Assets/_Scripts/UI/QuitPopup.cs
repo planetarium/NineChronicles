@@ -1,6 +1,7 @@
 using System.Linq;
 using Nekoyume.EnumType;
 using Nekoyume.Game;
+using Nekoyume.Game.Controller;
 using Nekoyume.L10n;
 using Nekoyume.UI.Module;
 using UnityEngine;
@@ -47,6 +48,12 @@ namespace Nekoyume.UI
         {
             base.Show(ignoreShowAnimation);
             blur.Show(blurRadius);
+        }
+
+        public override void Close(bool ignoreCloseAnimation = false)
+        {
+            base.Close(ignoreCloseAnimation);
+            AudioController.PlayClick();
         }
 
         private void SelectCharacter()
