@@ -1,4 +1,8 @@
-﻿Shader "Custom/UIUnlitFrostedGlass" {
+﻿// https://gist.github.com/jhocking/9de4197daf84698a60e51c67695d2be3
+// blur shader from https://stackoverflow.com/questions/29030321/unity3d-blur-the-background-of-a-ui-canvas
+// added toggle https://forum.unity.com/threads/shader-properties-no-bool-support.157580/#post-3013337
+
+Shader "Custom/TintedUIBlur" {
 	Properties {
 		_Size("Blur", Range(0, 30)) = 3
 		[HideInInspector] _MainTex("Masking Texture", 2D) = "white" {}
