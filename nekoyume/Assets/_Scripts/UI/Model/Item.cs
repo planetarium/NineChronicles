@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Nekoyume.Helper;
 using Nekoyume.Model.Item;
 using UniRx;
@@ -42,7 +43,8 @@ namespace Nekoyume.UI.Model
 
             if (equipment != null)
             {
-                HasOptions.Value = equipment.optionCountFromCombination > 0;
+                HasOptions.Value = equipment.optionCountFromCombination > 0 ||
+                    equipment.StatsMap.GetAdditionalStats(true).Count() + equipment.Skills.Count > 0;
             }
         }
 
