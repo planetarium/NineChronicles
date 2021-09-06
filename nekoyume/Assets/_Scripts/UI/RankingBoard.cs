@@ -202,6 +202,8 @@ namespace Nekoyume.UI
             _npc.SpineController.Appear();
             ShowSpeech("SPEECH_RANKING_BOARD_GREETING_", CharacterAnimation.Type.Greeting);
             HelpPopup.HelpMe(100015, true);
+
+            Find<HeaderMenu>().Show(HeaderMenu.AssetVisibleState.Battle);
         }
 
         public override void Close(bool ignoreCloseAnimation = false)

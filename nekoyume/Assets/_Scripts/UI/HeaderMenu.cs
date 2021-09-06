@@ -188,6 +188,12 @@ namespace Nekoyume.UI.Module
             base.OnDisable();
         }
 
+        public void Show(AssetVisibleState assetVisibleState, bool ignoreShowAnimation = false)
+        {
+            UpdateAssets(assetVisibleState);
+            Show(ignoreShowAnimation);
+        }
+
         public override void Close(bool ignoreCloseAnimation = false)
         {
             foreach (var toggleInfo in toggles)

@@ -82,6 +82,7 @@ namespace Nekoyume.UI
 
         public void ShowInArena(bool ignoreShowAnimation = false)
         {
+            Find<HeaderMenu>().Close(true);
             stageTitle.Close();
             comboText.Close();
             stageProgressBar.Close();
