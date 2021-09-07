@@ -1,4 +1,4 @@
-namespace Lib9c.Tests.Model.State
+namespace Lib9c.Tests.Model.Mail
 {
     using System;
     using System.Collections.Generic;

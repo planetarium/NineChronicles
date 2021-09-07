@@ -306,12 +306,6 @@ namespace Nekoyume.Model.State
             mailBox.CleanUpV2();
         }
 
-        public void UpdateV4(Mail.Mail mail, long currentBlockIndex)
-        {
-            mailBox.Add(mail);
-            mailBox.CleanUpV3(currentBlockIndex);
-        }
-
         public void Customize(int hair, int lens, int ear, int tail)
         {
             this.hair = hair;
@@ -341,6 +335,18 @@ namespace Nekoyume.Model.State
         }
 
         public void UpdateFromRapidCombination(CombinationConsumable5.ResultModel result,
+            long requiredIndex)
+        {
+            var mail = mailBox.First(m => m.id == result.id);
+            mail.requiredBlockIndex = requiredIndex;
+            var item = inventory.Items
+                .Select(i => i.item)
+                .OfType<ItemUsable>()
+                .First(i => i.ItemId == result.itemUsable.ItemId);
+            item.Update(requiredIndex);
+        }
+
+        public void UpdateFromRapidCombinationV2(RapidCombination.ResultModel result,
             long requiredIndex)
         {
             var mail = mailBox.First(m => m.id == result.id);

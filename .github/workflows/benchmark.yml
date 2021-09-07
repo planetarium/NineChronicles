@@ -46,4 +46,4 @@ jobs:
           --no-build \
           --verbosity quiet \
           -- \
-          "$BENCHMARKS_SNAPSHOT_DIR"_migrate 50000
+          "$BENCHMARKS_SNAPSHOT_DIR"_migrate 5000

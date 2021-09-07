@@ -19,12 +19,12 @@ namespace Nekoyume.Action
     [Serializable]
     [ActionObsolete(BlockChain.BlockPolicySource.V100066ObsoleteIndex)]
     [ActionType("buy")]
-    public class Buy0 : GameAction
+    public class Buy0 : GameAction, IBuy0
     {
-        public Address buyerAvatarAddress;
-        public Address sellerAgentAddress;
-        public Address sellerAvatarAddress;
-        public Guid productId;
+        public Address buyerAvatarAddress { get; set; }
+        public Address sellerAgentAddress { get; set; }
+        public Address sellerAvatarAddress { get; set; }
+        public Guid productId { get; set; }
         public Buy7.BuyerResult buyerResult;
         public Buy7.SellerResult sellerResult;
 
@@ -204,6 +204,20 @@ namespace Nekoyume.Action
             var materialSheet = states.GetSheet<MaterialItemSheet>();
             buyerAvatarState.UpdateQuestRewards(materialSheet);
             sellerAvatarState.UpdateQuestRewards(materialSheet);
+
+            //Avoid InvalidBlockStateRootHashException to 50000 index.
+            if (sellerAvatarState.questList.Any(q => q.Complete && !q.IsPaidInAction))
+            {
+                var prevIds = sellerAvatarState.questList.completedQuestIds;
+                sellerAvatarState.UpdateQuestRewards(materialSheet);
+                sellerAvatarState.questList.completedQuestIds = prevIds;
+            }
+            if (context.BlockIndex != 4742 && buyerAvatarState.questList.Any(q => q.Complete && !q.IsPaidInAction))
+            {
+                var prevIds = buyerAvatarState.questList.completedQuestIds;
+                buyerAvatarState.UpdateQuestRewards(materialSheet);
+                buyerAvatarState.questList.completedQuestIds = prevIds;
+            }
 
             states = states.SetState(sellerAvatarAddress, sellerAvatarState.Serialize());
             sw.Stop();
