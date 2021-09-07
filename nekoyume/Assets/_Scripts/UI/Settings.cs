@@ -78,7 +78,12 @@ namespace Nekoyume.UI
                 Close(true);
             });
 
-            closeButton.onClick.AddListener(ApplyCurrentSettings);
+            closeButton.onClick.AddListener(() =>
+            {
+                ApplyCurrentSettings();
+                AudioController.PlayClick();
+            });
+            blur.button.onClick.AddListener(ApplyCurrentSettings);
             redeemCode.Close();
 
             InitResolution();
@@ -264,7 +269,6 @@ namespace Nekoyume.UI
             if (blur && blur.isActiveAndEnabled)
             {
                 blur.Close();
-                AudioController.PlayClick();
             }
 
             base.Close(ignoreCloseAnimation);

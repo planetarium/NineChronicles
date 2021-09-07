@@ -7,6 +7,7 @@ using Nekoyume.State;
 using Nekoyume.UI.Module;
 using RedBlueGames.Tools.TextTyper;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
@@ -20,10 +21,22 @@ namespace Nekoyume.UI
         [SerializeField]
         private Blur blur;
 
+        [SerializeField]
+        private Button closeButton;
+
         private readonly List<IDisposable> _disposablesOfOnEnable = new List<IDisposable>();
 
         public override WidgetType WidgetType => WidgetType.Popup;
         public override CloseKeyType CloseKeyType => CloseKeyType.Escape;
+
+        protected override void Awake()
+        {
+            closeButton.onClick.AddListener(() =>
+            {
+                Close();
+                AudioController.PlayClick();
+            });
+        }
 
         protected override void OnEnable()
         {
@@ -80,7 +93,6 @@ namespace Nekoyume.UI
             if (blur && blur.isActiveAndEnabled)
             {
                 blur.Close();
-                AudioController.PlayClick();
             }
 
             base.Close(ignoreCloseAnimation);

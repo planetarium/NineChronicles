@@ -3930,6 +3930,9 @@ MonoBehaviour:
   m_IsOn: 0
   offObject: {fileID: 7098471450624526430}
   onObject: {fileID: 2439771426713732585}
+  onClickToggle:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &7047791858583859175
 GameObject:
   m_ObjectHideFlags: 0
@@ -4681,6 +4684,9 @@ MonoBehaviour:
   m_IsOn: 1
   offObject: {fileID: 1990215789614080623}
   onObject: {fileID: 6397279382024728536}
+  onClickToggle:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!114 &9017998903969993838
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5327,19 +5333,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 0}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 8907150788172144174}
-        m_TargetAssemblyTypeName: 
-        m_MethodName: Close
-        m_Mode: 6
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!1 &9112409922550750337
 GameObject:
   m_ObjectHideFlags: 0

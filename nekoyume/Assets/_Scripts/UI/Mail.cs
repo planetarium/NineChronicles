@@ -17,6 +17,7 @@ using Nekoyume.UI.Module;
 using Nekoyume.UI.Scroller;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
@@ -62,6 +63,9 @@ namespace Nekoyume.UI
         [SerializeField]
         private Blur blur = null;
 
+        [SerializeField]
+        private Button closeButton = null;
+
         private readonly Module.ToggleGroup _toggleGroup = new Module.ToggleGroup();
 
         private static Sprite _selectedButtonSprite;
@@ -82,6 +86,11 @@ namespace Nekoyume.UI
             _toggleGroup.RegisterToggleable(workshopButton);
             _toggleGroup.RegisterToggleable(marketButton);
             _toggleGroup.RegisterToggleable(systemButton);
+            closeButton.onClick.AddListener(() =>
+            {
+                Close();
+                AudioController.PlayClick();
+            });
         }
 
         public override void Initialize()
@@ -119,7 +128,6 @@ namespace Nekoyume.UI
             if (blur && blur.isActiveAndEnabled)
             {
                 blur.Close();
-                AudioController.PlayClick();
             }
 
             base.Close(ignoreCloseAnimation);

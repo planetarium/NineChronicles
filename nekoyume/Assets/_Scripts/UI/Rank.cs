@@ -160,6 +160,14 @@ namespace Nekoyume.UI
                     UpdateCategory(RankCategory.Ability, true);
                 })
                 .AddTo(gameObject);
+
+            closeButton.onClick.AsObservable()
+                .Subscribe(_ =>
+                {
+                    Close();
+                    AudioController.PlayClick();
+                })
+                .AddTo(gameObject);
         }
 
         public override void Show(bool ignoreShowAnimation = false)
@@ -178,7 +186,6 @@ namespace Nekoyume.UI
             if (blur && blur.isActiveAndEnabled)
             {
                 blur.Close();
-                AudioController.PlayClick();
             }
 
             base.Close(ignoreCloseAnimation);

@@ -548,19 +548,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 5809345281819812582}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 2729468917560364934}
-        m_TargetAssemblyTypeName: 
-        m_MethodName: Close
-        m_Mode: 6
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!1 &4440314444098330108
 GameObject:
   m_ObjectHideFlags: 0
@@ -1184,6 +1172,7 @@ MonoBehaviour:
   - {fileID: 8373316632627378338}
   - {fileID: 4641064169886390598}
   blur: {fileID: 3207418638022211939}
+  closeButton: {fileID: 8578247668863715340}
 --- !u!82 &2487338847641967169
 AudioSource:
   m_ObjectHideFlags: 0
