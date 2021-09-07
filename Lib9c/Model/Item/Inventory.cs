@@ -8,6 +8,7 @@ using Libplanet;
 using Nekoyume.Action;
 using Nekoyume.Battle;
 using Nekoyume.Model.State;
+using Nekoyume.TableData;
 using Serilog;
 
 namespace Nekoyume.Model.Item
@@ -769,13 +770,16 @@ namespace Nekoyume.Model.Item
         {
             var slots = _items.Where(i => i.Locked);
             var orderIds = digestListState.OrderDigestList.Select(d => d.OrderId).ToList();
+            var removeList = new List<Item>();
             foreach (var slot in slots)
             {
                 var orderLock = (OrderLock)slot.Lock;
                 var orderId = orderLock.OrderId;
                 if (!orderIds.Contains(orderId))
                 {
-                    slot.Unlock();
+                    removeList.Add(slot);
+
+                    // for log
                     var itemId = slot.item.Id;
                     var itemCount = slot.count;
                     Log.Information("[UnlockInvalidSlot] " +
@@ -784,56 +788,57 @@ namespace Nekoyume.Model.Item
                         agentAddress, avatarAddress, orderId, itemId, itemCount);
                 }
             }
+
+            foreach (var item in removeList)
+            {
+                _items.Remove(item);
+            }
         }
 
         public void ReconfigureFungibleItem(OrderDigestListState digestList, Guid tradableId)
         {
-            var tradableFungibleItems = _items
-                .Where(i => i.Locked &&
-                            i.item is ITradableFungibleItem item &&
-                            item.TradableId.Equals(tradableId))
-                .GroupBy(i => ((ITradableItem)i.item).RequiredBlockIndex)
-                .ToList();
-
+            var tradableFungibleItems = _items.Where(i => i.Locked &&
+                                                          i.item is ITradableFungibleItem item &&
+                                                          item.TradableId.Equals(tradableId)).ToList();
             if (tradableFungibleItems.Count <= 0)
             {
                 return;
             }
 
-            foreach (var group in tradableFungibleItems)
+            foreach (var item in tradableFungibleItems)
             {
-                var blockIndex = group.Key;
-                var sortedDigests = digestList.OrderDigestList.Where(digest =>
-                    digest.TradableId.Equals(tradableId) &&
-                    digest.ExpiredBlockIndex.Equals(blockIndex)).ToList();
-                if (group.Count() != sortedDigests.Count)
-                {
-                    foreach (var item in group)
-                    {
-                        var orderLock = (OrderLock)item.Lock;
-                        foreach (var digest in sortedDigests.Where(d => !d.OrderId.Equals(orderLock.OrderId)))
-                        {
-                            if (item.count - digest.ItemCount < 0)
-                            {
-                                throw new InvalidItemCountException();
-                            }
-                            item.count -= digest.ItemCount;
-                            if (item.count == 0)
-                            {
-                                _items.Remove(item);
-                            }
-                            Log.Information("[ReconfigureFungibleItem] " +
-                                            "agentAddress : {agentAddress} /" +
-                                            "OrderId : {orderId} / itemId : {itemId} / itemCount : {itemCount}",
-                                digest.SellerAgentAddress, digest.OrderId, digest.ItemId, digest.ItemCount);
+                _items.Remove(item);
+            }
 
-                            var copy = (ITradableFungibleItem) ((ITradableFungibleItem) item.item).Clone();
-                            var clone = new Item((ItemBase)copy, digest.ItemCount);
-                            clone.LockUp(new OrderLock(digest.OrderId));
-                            _items.Add(clone);
-                        }
-                    }
+            var preItemCount = tradableFungibleItems.Sum(x => x.count);
+            var digests = digestList.OrderDigestList
+                                                   .Where(digest => digest.TradableId.Equals(tradableId))
+                                                   .OrderByDescending(digest=> digest.ExpiredBlockIndex)
+                                                   .ToList();
+            foreach (var digest in digests)
+            {
+                if (preItemCount <= 0)
+                {
+                    break;
                 }
+
+                var clone = (ITradableFungibleItem) ((ITradableFungibleItem) tradableFungibleItems.First().item).Clone();
+                clone.RequiredBlockIndex = digest.ExpiredBlockIndex;
+                var newItem = new Item((ItemBase)clone, digest.ItemCount);
+                newItem.LockUp(new OrderLock(digest.OrderId));
+                _items.Add(newItem);
+                preItemCount -= digest.ItemCount;
+
+                // for log
+                var agentAddress = digest.SellerAgentAddress;
+                var orderId = digest.OrderId;
+                var itemId = digest.ItemId;
+                var itemCount = digest.ItemCount;
+                Log.Information("[ReconfigureFungibleItem] " +
+                                "agentAddress : {agentAddress} /" +
+                                "OrderId : {orderId} / itemId : {itemId} / " +
+                                "preItemCount : {preItemCount} / itemCount : {itemCount}",
+                    agentAddress, orderId, itemId, preItemCount, itemCount);
             }
         }
     }

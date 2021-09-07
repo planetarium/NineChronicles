@@ -143,11 +143,6 @@ namespace Nekoyume.Action
                 throw new InvalidWorldException($"{addressesHex}{worldId} can't execute HackAndSlash action.");
             }
 
-            if (worldId == GameConfig.MimisbrunnrWorldId)
-            {
-                throw new InvalidWorldException($"{addressesHex}{worldId} can't execute HackAndSlash action.");
-            }
-
             avatarState.ValidateEquipmentsV2(equipments, context.BlockIndex);
             avatarState.ValidateConsumable(foods, context.BlockIndex);
             avatarState.ValidateCostume(costumes);
