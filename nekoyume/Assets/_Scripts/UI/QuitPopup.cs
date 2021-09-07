@@ -29,13 +29,25 @@ namespace Nekoyume.UI
         {
             base.Awake();
             characterSelectEventSubject.GetEvent("Click")
-                .Subscribe(_ => SelectCharacter())
+                .Subscribe(_ =>
+                {
+                    SelectCharacter();
+                    AudioController.PlayClick();
+                })
                 .AddTo(gameObject);
             quitEventSubject.GetEvent("Click")
-                .Subscribe(_ => Quit())
+                .Subscribe(_ =>
+                {
+                    Quit();
+                    AudioController.PlayClick();
+                })
                 .AddTo(gameObject);
             closeEventSubject.GetEvent("Click")
-                .Subscribe(_ => Close())
+                .Subscribe(_ =>
+                {
+                    Close();
+                    AudioController.PlayClick();
+                })
                 .AddTo(gameObject);
 
             CloseWidget = () =>
@@ -48,12 +60,6 @@ namespace Nekoyume.UI
         {
             base.Show(ignoreShowAnimation);
             blur.Show(blurRadius);
-        }
-
-        public override void Close(bool ignoreCloseAnimation = false)
-        {
-            base.Close(ignoreCloseAnimation);
-            AudioController.PlayClick();
         }
 
         private void SelectCharacter()

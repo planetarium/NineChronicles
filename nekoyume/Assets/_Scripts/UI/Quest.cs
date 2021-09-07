@@ -41,6 +41,9 @@ namespace Nekoyume.UI
         [SerializeField]
         private Blur blur = null;
 
+        [SerializeField]
+        private Button closeButton = null;
+
         private ReactiveProperty<QuestList> _questList = new ReactiveProperty<QuestList>();
 
         private readonly Module.ToggleGroup _toggleGroup = new Module.ToggleGroup();
@@ -57,6 +60,11 @@ namespace Nekoyume.UI
             _toggleGroup.RegisterToggleable(craftingButton);
             _toggleGroup.RegisterToggleable(exchangeButton);
             _questList.Subscribe(OnQuestListChanged);
+            closeButton.onClick.AddListener(() =>
+            {
+                Close();
+                AudioController.PlayClick();
+            });
         }
 
         public override void Show(bool ignoreShowAnimation = false)
@@ -80,7 +88,6 @@ namespace Nekoyume.UI
             if (blur && blur.isActiveAndEnabled)
             {
                 blur.Close();
-                AudioController.PlayClick();
             }
 
             base.Close(ignoreCloseAnimation);
