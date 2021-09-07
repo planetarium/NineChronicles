@@ -57,5 +57,8 @@ namespace Nekoyume
 
         public static bool TryGetOptionInfo(this ItemUsable itemUsable, out ItemOptionInfo itemOptionInfo) =>
             ItemOptionHelper.TryGet(itemUsable, out itemOptionInfo);
+
+        public static bool HasElementType(this ItemType type) => type == ItemType.Costume ||
+                                                                 type == ItemType.Equipment;
     }
 }
