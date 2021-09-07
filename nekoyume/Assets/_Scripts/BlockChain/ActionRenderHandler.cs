@@ -849,6 +849,12 @@ namespace Nekoyume.BlockChain
                 var row = Game.Game.instance.TableSheets.MaterialItemSheet.Values.First(r =>
                     r.ItemSubType == ItemSubType.ApStone);
                 LocalLayerModifier.AddItem(avatarAddress, row.ItemId, 1);
+
+                if (GameConfigStateSubject.ActionPointState.ContainsKey(eval.Action.avatarAddress))
+                {
+                    GameConfigStateSubject.ActionPointState.Remove(eval.Action.avatarAddress);
+                }
+
                 UpdateCurrentAvatarState(eval);
             }
         }
