@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Linq;
 using System.Security.Cryptography;
+using System.Text;
 using Libplanet;
+using Nekoyume.Battle;
 using Nekoyume.Helper;
 using Nekoyume.Model.Item;
 using Nekoyume.TableData;
@@ -40,5 +42,23 @@ namespace Nekoyume
             fungibleId = materialRow.ItemId;
             return true;
         }
+
+        public static string GetCPText(this ItemUsable itemUsable)
+        {
+            var cp = CPHelper.GetCP(itemUsable);
+            return $"<size=80%>CP</size> {cp}";
+        }
+
+        public static string GetCPText(this Costume costume, CostumeStatSheet sheet)
+        {
+            var cp = CPHelper.GetCP(costume, sheet);
+            return $"<size=80%>CP</size> {cp}";
+        }
+
+        public static bool TryGetOptionInfo(this ItemUsable itemUsable, out ItemOptionInfo itemOptionInfo) =>
+            ItemOptionHelper.TryGet(itemUsable, out itemOptionInfo);
+
+        public static bool HasElementType(this ItemType type) => type == ItemType.Costume ||
+                                                                 type == ItemType.Equipment;
     }
 }

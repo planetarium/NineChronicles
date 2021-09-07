@@ -2079,7 +2079,6 @@
         <member name="P:Libplanet.Blockchain.BlockChain`1.Tip">
             <summary>
             The topmost <see cref="T:Libplanet.Blocks.Block`1"/> of the current blockchain.
-            Can be <c>null</c> if the blockchain is empty.
             </summary>
         </member>
         <member name="P:Libplanet.Blockchain.BlockChain`1.Genesis">
@@ -2499,36 +2498,6 @@
             <param name="evaluations">The result of evaluated actions.</param>
             <returns>The corresponding <see cref="T:Libplanet.Tx.TxExecution"/>s.</returns>
         </member>
-        <member name="T:Libplanet.Blockchain.BlockPerception">
-            <summary>
-            Pair of a block and the time the local node perceived it.
-            <para>Purposes to be compared when the canonical chain is determined.</para>
-            </summary>
-        </member>
-        <member name="M:Libplanet.Blockchain.BlockPerception.#ctor(Libplanet.Blocks.IBlockExcerpt,System.DateTimeOffset)">
-            <summary>
-            Creates a pair.
-            </summary>
-            <param name="blockExcerpt">The block perceived by the local node.</param>
-            <param name="perceivedTime">The time the local node perceived the
-            <paramref name="blockExcerpt"/>.</param>
-        </member>
-        <member name="M:Libplanet.Blockchain.BlockPerception.#ctor(Libplanet.Blocks.IBlockExcerpt)">
-            <summary>
-            Creates a pair with setting <see cref="P:Libplanet.Blockchain.BlockPerception.PerceivedTime"/> to the current time.
-            </summary>
-            <param name="blockExcerpt">The block perceived by the local node.</param>
-        </member>
-        <member name="P:Libplanet.Blockchain.BlockPerception.BlockExcerpt">
-            <summary>
-            The block perceived by the local node.
-            </summary>
-        </member>
-        <member name="P:Libplanet.Blockchain.BlockPerception.PerceivedTime">
-            <summary>
-            The time the local node perceived the <see cref="P:Libplanet.Blockchain.BlockPerception.BlockExcerpt"/>.
-            </summary>
-        </member>
         <member name="T:Libplanet.Blockchain.FungibleAssetStateCompleter`1">
             <summary>
             A delegate to be called when <see cref="M:Libplanet.Blockchain.BlockChain`1.GetBalance(Libplanet.Address,Libplanet.Assets.Currency,System.Nullable{Libplanet.Blocks.BlockHash},Libplanet.Blockchain.FungibleAssetStateCompleter{`0})"/> method encounters
@@ -2596,7 +2565,7 @@
             <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> type.  It should match
             to <see cref="T:Libplanet.Blocks.Block`1"/>'s type parameter.</typeparam>
         </member>
-        <member name="M:Libplanet.Blockchain.Policies.BlockPolicy`1.#ctor(Libplanet.Action.IAction,System.Int32,System.Int64,System.Int32,System.Int32,System.Int32,System.Int32,System.Func{Libplanet.Tx.Transaction{`0},Libplanet.Blockchain.BlockChain{`0},System.Boolean},System.Collections.Generic.IComparer{Libplanet.Blockchain.BlockPerception},Libplanet.Blocks.HashAlgorithmGetter)">
+        <member name="M:Libplanet.Blockchain.Policies.BlockPolicy`1.#ctor(Libplanet.Action.IAction,System.Int32,System.Int64,System.Int32,System.Int32,System.Int32,System.Int32,System.Func{Libplanet.Tx.Transaction{`0},Libplanet.Blockchain.BlockChain{`0},System.Boolean},System.Collections.Generic.IComparer{Libplanet.Blocks.IBlockExcerpt},Libplanet.Blocks.HashAlgorithmGetter)">
             <summary>
             Creates a <see cref="T:Libplanet.Blockchain.Policies.BlockPolicy`1"/> with configuring
             <see cref="P:Libplanet.Blockchain.Policies.BlockPolicy`1.BlockInterval"/> in milliseconds,
@@ -2627,7 +2596,7 @@
             <param name="hashAlgorithmGetter">Configures <see cref="M:Libplanet.Blockchain.Policies.BlockPolicy`1.GetHashAlgorithm(System.Int64)"/>.
             If omitted, SHA-256 is used for every block.</param>
         </member>
-        <member name="M:Libplanet.Blockchain.Policies.BlockPolicy`1.#ctor(Libplanet.Action.IAction,System.TimeSpan,System.Int64,System.Int32,System.Int32,System.Int32,System.Int32,System.Func{Libplanet.Tx.Transaction{`0},Libplanet.Blockchain.BlockChain{`0},System.Boolean},System.Collections.Generic.IComparer{Libplanet.Blockchain.BlockPerception},Libplanet.Blocks.HashAlgorithmGetter)">
+        <member name="M:Libplanet.Blockchain.Policies.BlockPolicy`1.#ctor(Libplanet.Action.IAction,System.TimeSpan,System.Int64,System.Int32,System.Int32,System.Int32,System.Int32,System.Func{Libplanet.Tx.Transaction{`0},Libplanet.Blockchain.BlockChain{`0},System.Boolean},System.Collections.Generic.IComparer{Libplanet.Blocks.IBlockExcerpt},Libplanet.Blocks.HashAlgorithmGetter)">
             <summary>
             Creates a <see cref="T:Libplanet.Blockchain.Policies.BlockPolicy`1"/> with configuring
             <see cref="P:Libplanet.Blockchain.Policies.BlockPolicy`1.BlockInterval"/>, <see cref="P:Libplanet.Blockchain.Policies.BlockPolicy`1.MinimumDifficulty"/> and
@@ -2651,9 +2620,7 @@
             A predicate that determines if the transaction follows the block policy.
             </param>
             <param name="canonicalChainComparer">The custom rule to determine which is the canonical
-            chain.  If omitted, <see cref="T:Libplanet.Blockchain.TotalDifficultyComparer"/> (having
-            <see cref="P:Libplanet.Blockchain.TotalDifficultyComparer.OutdateAfter"/> configured to triple of
-            <paramref name="blockInterval"/>) is used by default.</param>
+            chain.  If omitted, <see cref="T:Libplanet.Blockchain.TotalDifficultyComparer"/> is used by default.</param>
             <param name="hashAlgorithmGetter">Configures <see cref="M:Libplanet.Blockchain.Policies.BlockPolicy`1.GetHashAlgorithm(System.Int64)"/>.
             If omitted, SHA-256 is used for every block.</param>
         </member>
@@ -3384,7 +3351,7 @@
             ]]></code>
             </example>
         </member>
-        <member name="M:Libplanet.Blockchain.Renderers.DelayedActionRenderer`1.#ctor(Libplanet.Blockchain.Renderers.IActionRenderer{`0},System.Collections.Generic.IComparer{Libplanet.Blockchain.BlockPerception},Libplanet.Store.IStore,System.Int32,System.Int64)">
+        <member name="M:Libplanet.Blockchain.Renderers.DelayedActionRenderer`1.#ctor(Libplanet.Blockchain.Renderers.IActionRenderer{`0},System.Collections.Generic.IComparer{Libplanet.Blocks.IBlockExcerpt},Libplanet.Store.IStore,System.Int32,System.Int64)">
             <summary>
             Creates a new <see cref="T:Libplanet.Blockchain.Renderers.DelayedActionRenderer`1"/> instance decorating the given
             <paramref name="renderer"/>.
@@ -3478,12 +3445,12 @@
             ]]></code>
             </example>
             <remarks>Since <see cref="T:Libplanet.Blockchain.Renderers.IActionRenderer`1"/> is a subtype of <see cref="T:Libplanet.Blockchain.Renderers.IRenderer`1"/>,
-            <see cref="M:Libplanet.Blockchain.Renderers.DelayedRenderer`1.#ctor(Libplanet.Blockchain.Renderers.IRenderer{`0},System.Collections.Generic.IComparer{Libplanet.Blockchain.BlockPerception},Libplanet.Store.IStore,System.Int32)"/>
+            <see cref="M:Libplanet.Blockchain.Renderers.DelayedRenderer`1.#ctor(Libplanet.Blockchain.Renderers.IRenderer{`0},System.Collections.Generic.IComparer{Libplanet.Blocks.IBlockExcerpt},Libplanet.Store.IStore,System.Int32)"/>
             constructor can take an <see cref="T:Libplanet.Blockchain.Renderers.IActionRenderer`1"/> instance as well.
             However, even it takes an action renderer, action-level fine-grained events won't hear.
             For action renderers, please use <see cref="T:Libplanet.Blockchain.Renderers.DelayedActionRenderer`1"/> instead.</remarks>
         </member>
-        <member name="M:Libplanet.Blockchain.Renderers.DelayedRenderer`1.#ctor(Libplanet.Blockchain.Renderers.IRenderer{`0},System.Collections.Generic.IComparer{Libplanet.Blockchain.BlockPerception},Libplanet.Store.IStore,System.Int32)">
+        <member name="M:Libplanet.Blockchain.Renderers.DelayedRenderer`1.#ctor(Libplanet.Blockchain.Renderers.IRenderer{`0},System.Collections.Generic.IComparer{Libplanet.Blocks.IBlockExcerpt},Libplanet.Store.IStore,System.Int32)">
             <summary>
             Creates a new <see cref="T:Libplanet.Blockchain.Renderers.DelayedRenderer`1"/> instance decorating the given
             <paramref name="renderer"/>.
@@ -4141,31 +4108,12 @@
             <seealso cref="P:Libplanet.Blockchain.Policies.IBlockPolicy`1.CanonicalChainComparer"/>
             <seealso cref="T:Libplanet.Blocks.IBlockExcerpt"/>
         </member>
-        <member name="M:Libplanet.Blockchain.TotalDifficultyComparer.#ctor(System.TimeSpan)">
+        <member name="M:Libplanet.Blockchain.TotalDifficultyComparer.#ctor">
             <summary>
             Creates a <see cref="T:Libplanet.Blockchain.TotalDifficultyComparer"/> instance.
             </summary>
-            <param name="outdateAfter">Blocks taken this time since they are perceived are
-            considered outdated, so that chains having these blocks as their tips become stale.
-            </param>
         </member>
-        <member name="M:Libplanet.Blockchain.TotalDifficultyComparer.#ctor(System.TimeSpan,System.Func{System.DateTimeOffset})">
-            <summary>
-            Creates a <see cref="T:Libplanet.Blockchain.TotalDifficultyComparer"/> instance.
-            </summary>
-            <param name="outdateAfter">Blocks taken this time since they are perceived are
-            considered outdated, so that chains having these blocks as their tips become stale.
-            </param>
-            <param name="currentTimeGetter">Configures the way to get the current time instead of
-            <see cref="P:System.DateTimeOffset.UtcNow"/> property.</param>
-        </member>
-        <member name="P:Libplanet.Blockchain.TotalDifficultyComparer.OutdateAfter">
-            <summary>
-            Blocks taken this time since they are perceived are considered outdated, so that
-            chains having these blocks as their tips become stale.
-            </summary>
-        </member>
-        <member name="M:Libplanet.Blockchain.TotalDifficultyComparer.Compare(Libplanet.Blockchain.BlockPerception,Libplanet.Blockchain.BlockPerception)">
+        <member name="M:Libplanet.Blockchain.TotalDifficultyComparer.Compare(Libplanet.Blocks.IBlockExcerpt,Libplanet.Blocks.IBlockExcerpt)">
             <inheritdoc cref="M:System.Collections.Generic.IComparer`1.Compare(`0,`0)"/>
         </member>
         <member name="F:Libplanet.Blocks.Block`1.CurrentProtocolVersion">
@@ -4437,12 +4385,12 @@
             </summary>
             <seealso cref="P:Libplanet.Blockchain.Policies.IBlockPolicy`1.MaxTransactionsPerBlock"/>
         </member>
-        <member name="T:Libplanet.Blocks.BlockExcerpt">
+        <member name="T:Libplanet.Blocks.BlockExcerptExtensions">
             <summary>
             The extension methods for <see cref="T:Libplanet.Blocks.IBlockExcerpt"/>.
             </summary>
         </member>
-        <member name="M:Libplanet.Blocks.BlockExcerpt.ToExcerptString(Libplanet.Blocks.IBlockExcerpt)">
+        <member name="M:Libplanet.Blocks.BlockExcerptExtensions.ToExcerptString(Libplanet.Blocks.IBlockExcerpt)">
             <summary>
             Shows <see cref="T:Libplanet.Blocks.IBlockExcerpt"/> instance's members as a string.
             </summary>
@@ -4674,6 +4622,49 @@
             </summary>
             <returns><see cref="T:Bencodex.Types.Dictionary"/> representation of
             <see cref="T:Libplanet.Blocks.BlockHeader"/>.</returns>
+        </member>
+        <member name="T:Libplanet.Blocks.BlockPerception">
+            <summary>
+            <para>
+            An implementation of <see cref="T:Libplanet.Blocks.IBlockExcerpt"/> with a timestamp attached.
+            </para>
+            <para>
+            Used for keeping track of when the local node has percieved <see cref="T:Libplanet.Blocks.IBlockExcerpt"/>s.
+            </para>
+            </summary>
+        </member>
+        <member name="M:Libplanet.Blocks.BlockPerception.#ctor(Libplanet.Blocks.IBlockExcerpt,System.DateTimeOffset)">
+            <summary>
+            Creates an instance of <see cref="T:Libplanet.Blocks.BlockPerception"/> with
+            a provided timestamp.
+            </summary>
+            <param name="blockExcerpt">The excerpt of a block to attach a timestamp to.</param>
+            <param name="perceivedTime">The time in UTC when the local node perceived
+            <paramref name="blockExcerpt"/>.</param>
+        </member>
+        <member name="M:Libplanet.Blocks.BlockPerception.#ctor(Libplanet.Blocks.IBlockExcerpt)">
+            <summary>
+            Creates an instance of <see cref="T:Libplanet.Blocks.BlockPerception"/> with the local time in UTC.
+            </summary>
+            <param name="blockExcerpt">The excerpt of a block to attach a timestamp to.</param>
+        </member>
+        <member name="P:Libplanet.Blocks.BlockPerception.ProtocolVersion">
+            <inheritdoc/>
+        </member>
+        <member name="P:Libplanet.Blocks.BlockPerception.Index">
+            <inheritdoc/>
+        </member>
+        <member name="P:Libplanet.Blocks.BlockPerception.Hash">
+            <inheritdoc/>
+        </member>
+        <member name="P:Libplanet.Blocks.BlockPerception.TotalDifficulty">
+            <inheritdoc/>
+        </member>
+        <member name="P:Libplanet.Blocks.BlockPerception.PerceivedTime">
+            <summary>
+            The time in UTC when the local node perceived
+            the corresponding <see cref="T:Libplanet.Blocks.IBlockExcerpt"/>.
+            </summary>
         </member>
         <member name="T:Libplanet.Blocks.HashAlgorithmGetter">
             <summary>
@@ -7222,12 +7213,26 @@
         <member name="P:Libplanet.Net.StateDownloadState.CurrentPhase">
             <inheritdoc />
         </member>
-        <member name="P:Libplanet.Net.Swarm`1.BlockDemand">
+        <member name="P:Libplanet.Net.Swarm`1.BlockDemandTable">
             <summary>
             Information of <see cref="T:Libplanet.Net.Swarm`1"/>'s demand for new blocks.
-            It is null when the <see cref="T:Libplanet.Net.Swarm`1"/> does not have any block to demand.
-            <seealso cref="P:Libplanet.Net.Swarm`1.BlockDemand"/>
+            It is empty when the <see cref="T:Libplanet.Net.Swarm`1"/> does not have any block to demand.
+            <seealso cref="T:Libplanet.Net.BlockDemandTable`1"/>
             </summary>
+        </member>
+        <member name="M:Libplanet.Net.Swarm`1.PullBlocksAsync(System.TimeSpan,System.Int32,System.Threading.CancellationToken)">
+            <summary>
+            Fill blocks from the <see cref="T:Libplanet.Net.BoundPeer"/>s in the
+            <see cref="P:Libplanet.Net.Swarm`1.RoutingTable"/>.
+            </summary>
+            <param name="timeout">
+            The timeout value for the request to get the tip of the block.
+            </param>
+            <param name="maximumPollPeers">The maximum targets to send request to.</param>
+            <param name="cancellationToken">
+            A cancellation token used to propagate notification that this
+            operation should be canceled.</param>
+            <returns>An awaitable task without value.</returns>
         </member>
         <member name="M:Libplanet.Net.Swarm`1.#ctor(Libplanet.Blockchain.BlockChain{`0},Libplanet.Crypto.PrivateKey,Libplanet.Net.AppProtocolVersion,System.Int32,System.String,System.Nullable{System.Int32},System.Collections.Generic.IEnumerable{Libplanet.Net.IceServer},Libplanet.Net.DifferentAppProtocolVersionEncountered,System.Collections.Generic.IEnumerable{Libplanet.Crypto.PublicKey},Libplanet.Net.SwarmOptions)">
             <summary>
@@ -7433,6 +7438,16 @@
             that this operation should be canceled.</param>
             <returns>An awaitable task without value.</returns>
         </member>
+        <member name="M:Libplanet.Net.Swarm`1.IsBlockNeeded(Libplanet.Blocks.IBlockExcerpt)">
+            <summary>
+            Checks if the corresponding <see cref="T:Libplanet.Blocks.Block`1"/> to a given
+            <see cref="T:Libplanet.Blocks.IBlockExcerpt"/> is needed for <see cref="P:Libplanet.Net.Swarm`1.BlockChain"/>.
+            </summary>
+            <param name="target">The <see cref="T:Libplanet.Blocks.IBlockExcerpt"/> to compare to the current
+            <see cref="P:Libplanet.Blockchain.BlockChain`1.Tip"/> of <see cref="P:Libplanet.Net.Swarm`1.BlockChain"/>.</param>
+            <returns><c>true</c> if the corresponding <see cref="T:Libplanet.Blocks.Block`1"/> to
+            <paramref name="target"/> is needed, otherwise, <c>false</c>.</returns>
+        </member>
         <member name="P:Libplanet.Net.SwarmOptions.MaxTimeout">
             <summary>
             The maximum timeout used in <see cref="T:Libplanet.Net.Swarm`1"/>.
@@ -7521,6 +7536,16 @@
             The size of each bucket of the Kademlia based routing table.
             </summary>
             <seealso cref="T:Libplanet.Net.Protocols.RoutingTable"/>
+        </member>
+        <member name="P:Libplanet.Net.SwarmOptions.PollInterval">
+            <summary>
+            The interval between block polling.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.SwarmOptions.MaximumPollPeers">
+            <summary>
+            The maximum number of peers to poll blocks.
+            </summary>
         </member>
         <member name="T:Libplanet.Net.Transports.BoundPeerExtensions">
             <summary>
@@ -7621,7 +7646,7 @@
             <returns>The replies of the <paramref name="message"/>
             sent by <paramref name="peer"/>.</returns>
         </member>
-        <member name="M:Libplanet.Net.Transports.ITransport.SendMessageWithReplyAsync(Libplanet.Net.BoundPeer,Libplanet.Net.Messages.Message,System.Nullable{System.TimeSpan},System.Int32,System.Boolean,System.Threading.CancellationToken)">
+        <member name="M:Libplanet.Net.Transports.ITransport.SendMessageWithReplyAsync(Libplanet.Net.BoundPeer,Libplanet.Net.Messages.Message,System.Nullable{System.TimeSpan},System.Int32,System.Threading.CancellationToken)">
             <summary>
             Sends the <paramref name="message"/>
             to given <paramref name="peer"/> and waits for its multiple replies.
@@ -7630,8 +7655,6 @@
             <param name="message">A <see cref="T:Libplanet.Net.Messages.Message"/> to send.</param>
             <param name="timeout">A timeout of waiting for the reply of the message.</param>
             <param name="expectedResponses">The number of expected replies for the message.</param>
-            <param name="returnWhenTimeout">Determines the behavior when failed to receive
-            <paramref name="expectedResponses"/> messages and timeout occurred.</param>
             <param name="cancellationToken">
             A cancellation token used to propagate notification that this
             operation should be canceled.</param>
@@ -7744,7 +7767,7 @@
         <member name="M:Libplanet.Net.Transports.NetMQTransport.SendMessageWithReplyAsync(Libplanet.Net.BoundPeer,Libplanet.Net.Messages.Message,System.Nullable{System.TimeSpan},System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="M:Libplanet.Net.Transports.NetMQTransport.SendMessageWithReplyAsync(Libplanet.Net.BoundPeer,Libplanet.Net.Messages.Message,System.Nullable{System.TimeSpan},System.Int32,System.Boolean,System.Threading.CancellationToken)">
+        <member name="M:Libplanet.Net.Transports.NetMQTransport.SendMessageWithReplyAsync(Libplanet.Net.BoundPeer,Libplanet.Net.Messages.Message,System.Nullable{System.TimeSpan},System.Int32,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
         <member name="M:Libplanet.Net.Transports.NetMQTransport.BroadcastMessage(System.Nullable{Libplanet.Address},Libplanet.Net.Messages.Message)">

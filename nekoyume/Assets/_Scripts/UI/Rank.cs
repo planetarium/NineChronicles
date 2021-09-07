@@ -39,7 +39,7 @@ namespace Nekoyume.UI
             RankLoadingTask = model.Update(RankingBoardDisplayCount);
         }
 
-        public override WidgetType WidgetType => WidgetType.Tooltip;
+        public override WidgetType WidgetType => WidgetType.Popup;
 
         [SerializeField]
         private Button closeButton = null;
@@ -96,6 +96,8 @@ namespace Nekoyume.UI
             { RankCategory.EquipmentNecklace, ("UI_CP", "UI_NAME") },
             { RankCategory.EquipmentRing, ("UI_CP", "UI_NAME") },
         };
+
+        public override CloseKeyType CloseKeyType => CloseKeyType.Escape;
 
         public override void Initialize()
         {

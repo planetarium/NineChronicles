@@ -101,7 +101,7 @@ namespace Nekoyume.UI
             var remainBlock = gameConfigState.DailyArenaInterval - value;
             var time = Util.GetBlockToTime((int)remainBlock);
             remainTime.text = string.Format(
-                L10nManager.Localize("UI_REMAININGTIME"),
+                L10nManager.Localize("UI_REMAINING_TIME_WITH_BLOCK_COUNT"),
                 time,
                 (int) value, gameConfigState.DailyArenaInterval);
         }

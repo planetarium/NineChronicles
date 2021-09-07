@@ -1,43 +1,22 @@
-﻿Shader "Custom/Stencil_2"
+﻿Shader "Custom/Distortion_Stencil"
 {
-    Properties
-    {
-	_RefNumber ("Stencil Masking Number", int) = 3
-    }
-
     SubShader
     {
-        Tags { "RenderType"="Opaque" "Queue"="Geometry"}
+        Tags
+        {
+            "RenderType"="Opaque"
+            "Queue"="Geometry-1"
+        }
+
+        Stencil
+        {
+            Ref 2
+            Comp always
+            Pass replace
+        }
 
         Pass
-        {
-            Stencil
-            {
-                 Ref [_RefNumber]
-                 Comp always
-                 Pass replace
-            }
-
-            ColorMask 0
-
-            CGPROGRAM
-            #pragma vertex vert
-            #pragma fragment frag
-            struct appdata {
-                float4 vertex : POSITION;
-            };
-            struct v2f {
-                float4 pos : SV_POSITION;
-            };
-            v2f vert(appdata v) {
-                v2f o;
-                o.pos = UnityObjectToClipPos(v.vertex);
-                return o;
-            }
-            half4 frag(v2f i) : SV_Target {
-                return half4(1,0,0,1);
-            }
-            ENDCG
-        }
+	{
+	}
     }
 }
