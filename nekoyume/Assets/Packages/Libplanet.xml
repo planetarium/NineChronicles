@@ -7621,7 +7621,7 @@
             <returns>The replies of the <paramref name="message"/>
             sent by <paramref name="peer"/>.</returns>
         </member>
-        <member name="M:Libplanet.Net.Transports.ITransport.SendMessageWithReplyAsync(Libplanet.Net.BoundPeer,Libplanet.Net.Messages.Message,System.Nullable{System.TimeSpan},System.Int32,System.Threading.CancellationToken)">
+        <member name="M:Libplanet.Net.Transports.ITransport.SendMessageWithReplyAsync(Libplanet.Net.BoundPeer,Libplanet.Net.Messages.Message,System.Nullable{System.TimeSpan},System.Int32,System.Boolean,System.Threading.CancellationToken)">
             <summary>
             Sends the <paramref name="message"/>
             to given <paramref name="peer"/> and waits for its multiple replies.
@@ -7630,6 +7630,8 @@
             <param name="message">A <see cref="T:Libplanet.Net.Messages.Message"/> to send.</param>
             <param name="timeout">A timeout of waiting for the reply of the message.</param>
             <param name="expectedResponses">The number of expected replies for the message.</param>
+            <param name="returnWhenTimeout">Determines the behavior when failed to receive
+            <paramref name="expectedResponses"/> messages and timeout occurred.</param>
             <param name="cancellationToken">
             A cancellation token used to propagate notification that this
             operation should be canceled.</param>
@@ -7742,7 +7744,7 @@
         <member name="M:Libplanet.Net.Transports.NetMQTransport.SendMessageWithReplyAsync(Libplanet.Net.BoundPeer,Libplanet.Net.Messages.Message,System.Nullable{System.TimeSpan},System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
-        <member name="M:Libplanet.Net.Transports.NetMQTransport.SendMessageWithReplyAsync(Libplanet.Net.BoundPeer,Libplanet.Net.Messages.Message,System.Nullable{System.TimeSpan},System.Int32,System.Threading.CancellationToken)">
+        <member name="M:Libplanet.Net.Transports.NetMQTransport.SendMessageWithReplyAsync(Libplanet.Net.BoundPeer,Libplanet.Net.Messages.Message,System.Nullable{System.TimeSpan},System.Int32,System.Boolean,System.Threading.CancellationToken)">
             <inheritdoc />
         </member>
         <member name="M:Libplanet.Net.Transports.NetMQTransport.BroadcastMessage(System.Nullable{Libplanet.Address},Libplanet.Net.Messages.Message)">
