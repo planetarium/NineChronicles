@@ -355,6 +355,7 @@ namespace Nekoyume.UI.Module
                     break;
                 case 2:
                     _onDoubleClick?.Invoke(this);
+                    // note : _onDoubleClick has another sfx, not `sfx_click`.
                     break;
             }
         }
