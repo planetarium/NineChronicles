@@ -1466,6 +1466,7 @@ MonoBehaviour:
   filterType: 0
   scroll: {fileID: 192174903448513590}
   blur: {fileID: 1155115870064445939}
+  closeButton: {fileID: 8235199005190274074}
 --- !u!82 &5166568895246881991
 AudioSource:
   m_ObjectHideFlags: 0
@@ -6120,12 +6121,6 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: 3d234b369f44823448c5c1656261a989, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 087d608eb50946b409525e83801de9d2, type: 3}
---- !u!224 &4006001943990741339 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 224898616830980190, guid: 087d608eb50946b409525e83801de9d2,
-    type: 3}
-  m_PrefabInstance: {fileID: 3785044119864760581}
-  m_PrefabAsset: {fileID: 0}
 --- !u!114 &1155115870064445939 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 2630355418658099446, guid: 087d608eb50946b409525e83801de9d2,
@@ -6138,6 +6133,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0398d8905be44004b803f2412d77ef52, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!224 &4006001943990741339 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 224898616830980190, guid: 087d608eb50946b409525e83801de9d2,
+    type: 3}
+  m_PrefabInstance: {fileID: 3785044119864760581}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &7100942771439766540
 PrefabInstance:
   m_ObjectHideFlags: 0
