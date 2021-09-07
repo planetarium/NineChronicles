@@ -144,6 +144,25 @@ namespace Nekoyume.UI.Module
 
             menuToggleDropdown.onValueChanged.AddListener((value) =>
             {
+                if (value)
+                {
+                    CloseWidget = () => { menuToggleDropdown.isOn = false; };
+                    WidgetStack.Push(gameObject);
+                }
+                else
+                {
+                    CloseWidget = null;
+                    Observable.NextFrame().Subscribe(_ =>
+                    {
+                        var list = WidgetStack.ToList();
+                        list.Remove(gameObject);
+                        foreach (var go in list)
+                        {
+                            WidgetStack.Push(go);
+                        }
+                    });
+                }
+
                 foreach (var toggleInfo in toggles)
                 {
                     if (!value || !toggleInfo.Lock || !toggleInfo.LockText)
@@ -163,11 +182,6 @@ namespace Nekoyume.UI.Module
                 .ObserveOnMainThread()
                 .Subscribe(SubscribeBlockIndex)
                 .AddTo(gameObject);
-
-            CloseWidget = ()=>
-            {
-                menuToggleDropdown.isOn = false;
-            };
         }
 
         protected override void OnEnable()
