@@ -30,7 +30,7 @@ namespace Nekoyume.UI
         private static readonly Dictionary<Type, PoolElementModel> Pool =
             new Dictionary<Type, PoolElementModel>();
 
-        private static readonly Stack<GameObject> WidgetStack = new Stack<GameObject>();
+        protected static readonly Stack<GameObject> WidgetStack = new Stack<GameObject>();
 
         public static IObservable<Widget> OnEnableStaticObservable => OnEnableStaticSubject;
 
@@ -462,4 +462,3 @@ namespace Nekoyume.UI
         }
     }
 }
-
