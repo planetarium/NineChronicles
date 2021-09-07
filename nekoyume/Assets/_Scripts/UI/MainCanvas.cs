@@ -252,8 +252,6 @@ namespace Nekoyume.UI
             yield return null;
             secondWidgets.Add(Widget.Create<ItemCountAndPricePopup>());
             yield return null;
-            secondWidgets.Add(Widget.Create<ItemCountableAndPricePopup>());
-            yield return null;
             secondWidgets.Add(Widget.Create<Alert>());
             yield return null;
             secondWidgets.Add(Widget.Create<InputBox>());
@@ -289,6 +287,8 @@ namespace Nekoyume.UI
             secondWidgets.Add(Widget.Create<EnhancementResult>());
             yield return null;
             secondWidgets.Add(Widget.Create<BattleResult>());
+            yield return null;
+            secondWidgets.Add(Widget.Create<ItemCountableAndPricePopup>());
             yield return null;
 
             // popup
