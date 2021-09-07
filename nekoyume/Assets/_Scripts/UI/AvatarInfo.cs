@@ -19,6 +19,7 @@ using Nekoyume.UI.Tween;
 using TMPro;
 using UniRx;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
@@ -64,6 +65,9 @@ namespace Nekoyume.UI
 
         [SerializeField]
         private Blur blur = null;
+
+        [SerializeField]
+        private Button closeButton = null;
 
         private EquipmentSlot _weaponSlot;
         private EquipmentSlot _armorSlot;
@@ -141,6 +145,12 @@ namespace Nekoyume.UI
             {
                 slot.ShowUnlockTooltip = true;
             }
+
+            closeButton.onClick.AddListener(() =>
+            {
+                Close();
+                AudioController.PlayClick();
+            });
         }
 
         public override void Show(bool ignoreShowAnimation = false)
@@ -168,7 +178,6 @@ namespace Nekoyume.UI
             if (blur && blur.isActiveAndEnabled)
             {
                 blur.Close();
-                AudioController.PlayClick();
             }
 
             base.Close(ignoreCloseAnimation);

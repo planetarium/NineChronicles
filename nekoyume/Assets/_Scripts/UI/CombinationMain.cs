@@ -25,18 +25,21 @@ namespace Nekoyume.UI
             {
                 Close(true);
                 Find<Craft>().Show();
+                AudioController.PlayClick();
             });
 
             upgradeButton.onClick.AddListener(() =>
             {
                 Close(true);
                 Find<UpgradeEquipment>().Show();
+                AudioController.PlayClick();
             });
 
             closeButton.onClick.AddListener(() =>
             {
                 Close(true);
                 Game.Event.OnRoomEnter.Invoke(true);
+                AudioController.PlayClick();
             });
 
             CloseWidget = () =>
@@ -75,7 +78,6 @@ namespace Nekoyume.UI
         public override void Close(bool ignoreCloseAnimation = false)
         {
             base.Close(ignoreCloseAnimation);
-            AudioController.PlayClick();
 
             if (_npc)
             {
