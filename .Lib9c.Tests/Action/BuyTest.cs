@@ -599,7 +599,6 @@ namespace Lib9c.Tests.Action
                 _tableSheets.MaterialItemSheet.OrderedList.First(r => r.ItemSubType == ItemSubType.Hourglass));
             sellerAvatarState.inventory.AddItem2((ItemBase)dummyItem, orderDataList.Sum(x => x.ItemCount));
 
-            var index = 0;
             foreach (var orderData in orderDataList)
             {
                 var orderId = orderData.OrderId;
@@ -672,7 +671,6 @@ namespace Lib9c.Tests.Action
                     order.Price
                 );
                 purchaseInfos.Add(purchaseInfo);
-                index++;
 
                 _initialState = _initialState
                     .SetState(Order.DeriveAddress(orderId), order.Serialize())
