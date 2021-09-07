@@ -42,5 +42,7 @@ namespace Lib9c
 
         public HashAlgorithmType GetHashAlgorithm(long index) =>
             HashAlgorithmType.Of<SHA256>();
+
+        public int GetMaxTransactionsPerSignerPerBlock(long index) => MaxTransactionsPerBlock;
     }
 }
