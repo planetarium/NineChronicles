@@ -27,11 +27,10 @@ namespace Nekoyume.BlockChain
 
         private readonly ActionRenderer _renderer;
 
-        public Guid LastBattleActionId { get; private set; }
+        private Guid _lastBattleActionId;
 
-        public int LastBattleWorldId { get; private set; }
-
-        public int LastBattleStageId { get; private set; }
+        public static bool IsLastBattleActionId(Guid actionId) =>
+            actionId == Game.Game.instance.ActionManager._lastBattleActionId;
 
         private void ProcessAction(GameAction gameAction)
         {
@@ -125,9 +124,7 @@ namespace Nekoyume.BlockChain
             };
             ProcessAction(action);
 
-            LastBattleActionId = action.Id;
-            LastBattleWorldId = worldId;
-            LastBattleStageId = stageId;
+            _lastBattleActionId = action.Id;
 
             return _renderer.EveryRender<MimisbrunnrBattle>()
                 .SkipWhile(eval => !eval.Action.Id.Equals(action.Id))
@@ -180,9 +177,7 @@ namespace Nekoyume.BlockChain
             };
             ProcessAction(action);
 
-            LastBattleActionId = action.Id;
-            LastBattleWorldId = worldId;
-            LastBattleStageId = stageId;
+            _lastBattleActionId = action.Id;
 
             return _renderer.EveryRender<HackAndSlash>()
                 .SkipWhile(eval => !eval.Action.Id.Equals(action.Id))
@@ -391,7 +386,7 @@ namespace Nekoyume.BlockChain
             };
             ProcessAction(action);
 
-            LastBattleActionId = action.Id;
+            _lastBattleActionId = action.Id;
 
             return _renderer.EveryRender<RankingBattle>()
                 .Where(eval => eval.Action.Id.Equals(action.Id))

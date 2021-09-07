@@ -663,9 +663,7 @@ namespace Nekoyume.BlockChain
         {
             if (eval.Exception is null)
             {
-                if (eval.Action.Id != Game.Game.instance.ActionManager.LastBattleActionId ||
-                    eval.Action.worldId != Game.Game.instance.ActionManager.LastBattleWorldId ||
-                    eval.Action.stageId != Game.Game.instance.ActionManager.LastBattleStageId)
+                if (!ActionManager.IsLastBattleActionId(eval.Action.Id))
                 {
                     return;
                 }
@@ -744,9 +742,7 @@ namespace Nekoyume.BlockChain
         {
             if (eval.Exception is null)
             {
-                if (eval.Action.Id != Game.Game.instance.ActionManager.LastBattleActionId ||
-                    eval.Action.worldId != Game.Game.instance.ActionManager.LastBattleWorldId ||
-                    eval.Action.stageId != Game.Game.instance.ActionManager.LastBattleStageId)
+                if (!ActionManager.IsLastBattleActionId(eval.Action.Id))
                 {
                     return;
                 }
@@ -824,7 +820,7 @@ namespace Nekoyume.BlockChain
         {
             if (eval.Exception is null)
             {
-                if (eval.Action.Id != Game.Game.instance.ActionManager.LastBattleActionId)
+                if (!ActionManager.IsLastBattleActionId(eval.Action.Id))
                 {
                     return;
                 }
