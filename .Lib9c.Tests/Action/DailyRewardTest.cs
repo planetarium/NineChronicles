@@ -106,17 +106,11 @@ namespace Lib9c.Tests.Action
 
             var nextState = ExecuteInternal(previousStates, 1800);
             var nextGameConfigState = nextState.GetGameConfigState();
-            var nextAvatarState = avatarStateSerializedVersion switch
-            {
-                1 => nextState.GetAvatarState(_avatarAddress),
-                2 => nextState.GetAvatarStateV2(_avatarAddress),
-                _ => null
-            };
-            if (nextAvatarState is null)
-            {
-                return;
-            }
-
+            var nextAvatarState = nextState.GetAvatarStateV2(_avatarAddress);
+            Assert.NotNull(nextAvatarState);
+            Assert.NotNull(nextAvatarState.inventory);
+            Assert.NotNull(nextAvatarState.questList);
+            Assert.NotNull(nextAvatarState.worldInformation);
             Assert.Equal(nextGameConfigState.ActionPointMax, nextAvatarState.actionPoint);
         }
 
