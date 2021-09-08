@@ -795,13 +795,23 @@ namespace Nekoyume.Model.Item
             }
         }
 
-        public void ReconfigureFungibleItem(OrderDigestListState digestList, Guid tradableId)
+        public void ReconfigureFungibleItem(OrderDigestListState digestList, Guid tradableId, long blockIndex)
         {
             var tradableFungibleItems = _items.Where(i => i.Locked &&
                                                           i.item is ITradableFungibleItem item &&
                                                           item.TradableId.Equals(tradableId)).ToList();
+
+            var digests = digestList.OrderDigestList
+                .Where(digest => digest.TradableId.Equals(tradableId))
+                .OrderByDescending(digest=> digest.ExpiredBlockIndex)
+                .ToList();
+
             if (tradableFungibleItems.Count <= 0)
             {
+                if (digests.Count > 0)
+                {
+                    TestMig(digests, tradableId, blockIndex);
+                }
                 return;
             }
 
@@ -811,10 +821,7 @@ namespace Nekoyume.Model.Item
             }
 
             var preItemCount = tradableFungibleItems.Sum(x => x.count);
-            var digests = digestList.OrderDigestList
-                                                   .Where(digest => digest.TradableId.Equals(tradableId))
-                                                   .OrderByDescending(digest=> digest.ExpiredBlockIndex)
-                                                   .ToList();
+
             foreach (var digest in digests)
             {
                 if (preItemCount <= 0)
@@ -839,6 +846,51 @@ namespace Nekoyume.Model.Item
                                 "OrderId : {orderId} / itemId : {itemId} / " +
                                 "preItemCount : {preItemCount} / itemCount : {itemCount}",
                     agentAddress, orderId, itemId, preItemCount, itemCount);
+            }
+        }
+
+        private void TestMig(List<OrderDigest> digests, Guid tradableId, long blockIndex)
+        {
+            var selectedDigests = digests.Where(x => x.ExpiredBlockIndex > blockIndex).ToList();
+
+            var unlockItems = _items.Where(i => !i.Locked &&
+                                                          i.item is ITradableFungibleItem item &&
+                                                          item.TradableId.Equals(tradableId)).ToList();
+
+            var totalCount = unlockItems.Sum(x => x.count);
+            var digestTotalCount = selectedDigests.Sum(x => x.ItemCount);
+            if (totalCount < digestTotalCount)
+            {
+                // 판매리스트에 올라와있는 판매중인 아이템 수보다 가지고 있는아이템이 적음
+                return;
+            }
+
+            foreach (var item in unlockItems)
+            {
+                _items.Remove(item);
+            }
+            var clone = (ITradableFungibleItem)((ITradableFungibleItem)unlockItems.First().item).Clone();
+            var newItem = new Item((ItemBase)clone, totalCount);
+            _items.Add(newItem);
+
+            var selectedItems = _items.Where(i => !i.Locked &&
+                                                          i.item is ITradableFungibleItem item &&
+                                                          item.TradableId.Equals(tradableId)).ToList();
+            if (selectedItems.Count != 1)
+            {
+                // 아이템 합치기 실패
+                return;
+            }
+
+            var selectedItem = selectedItems.First();
+            foreach (var selectedDigest in selectedDigests)
+            {
+                selectedItem.count -= selectedDigest.ItemCount;
+                var clone2 = (ITradableFungibleItem)((ITradableFungibleItem)selectedItem).Clone();
+                clone2.RequiredBlockIndex = selectedDigest.ExpiredBlockIndex;
+                var newItem2 = new Item((ItemBase)clone, selectedDigest.ItemCount);
+                newItem2.LockUp(new OrderLock(selectedDigest.OrderId));
+                _items.Add(newItem2);
             }
         }
     }
