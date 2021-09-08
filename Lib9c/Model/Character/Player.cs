@@ -189,7 +189,11 @@ namespace Nekoyume.Model
             AttackCountMax = AttackCountHelper.GetCountMax(Level);
             characterLevelSheet = levelSheet;
             UpdateExp();
-            Equip(Inventory.Items, equipmentItemSetEffectSheet);
+
+            if (Inventory != null)
+            {
+                Equip(Inventory.Items, equipmentItemSetEffectSheet);    
+            }
         }
 
         private void UpdateExp()
