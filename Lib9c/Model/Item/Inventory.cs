@@ -447,9 +447,6 @@ namespace Nekoyume.Model.Item
             return true;
         }
 
-        public bool RemoveTradableFungibleItem(HashDigest<SHA256> fungibleId, int count = 1) =>
-            RemoveFungibleItem2(fungibleId, count, true);
-
         [Obsolete("Use RemoveNonFungibleItem(INonFungibleItem nonFungibleItem)")]
         public bool LegacyRemoveNonFungibleItem(Costume costume)
             => LegacyRemoveNonFungibleItem(costume.ItemId);
