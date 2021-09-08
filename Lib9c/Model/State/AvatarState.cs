@@ -366,10 +366,30 @@ namespace Nekoyume.Model.State
             eventMap.Add(new KeyValuePair<int, int>((int)type, 1));
             UpdateGeneralQuest(new[] { type });
             UpdateCompletedQuest();
+            UpdateFromAddItem(itemUsable, false);
+        }
+
+        public void UpdateFromCombination2(ItemUsable itemUsable)
+        {
+            questList.UpdateCombinationQuest(itemUsable);
+            var type = itemUsable.ItemType == ItemType.Equipment ? QuestEventType.Equipment : QuestEventType.Consumable;
+            eventMap.Add(new KeyValuePair<int, int>((int)type, 1));
+            UpdateGeneralQuest(new[] { type });
+            UpdateCompletedQuest();
             UpdateFromAddItem2(itemUsable, false);
         }
 
         public void UpdateFromItemEnhancement(Equipment equipment)
+        {
+            questList.UpdateItemEnhancementQuest(equipment);
+            var type = QuestEventType.Enhancement;
+            eventMap.Add(new KeyValuePair<int, int>((int)type, 1));
+            UpdateGeneralQuest(new[] { type });
+            UpdateCompletedQuest();
+            UpdateFromAddItem(equipment, false);
+        }
+
+        public void UpdateFromItemEnhancement2(Equipment equipment)
         {
             questList.UpdateItemEnhancementQuest(equipment);
             var type = QuestEventType.Enhancement;

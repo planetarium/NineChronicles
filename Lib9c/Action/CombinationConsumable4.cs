@@ -192,7 +192,7 @@ namespace Nekoyume.Action
             );
             result.id = mail.id;
             avatarState.Update(mail);
-            avatarState.UpdateFromCombination(itemUsable);
+            avatarState.UpdateFromCombination2(itemUsable);
             sw.Stop();
             Log.Verbose("{AddressesHex}Combination Update AvatarState: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();
