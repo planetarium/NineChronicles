@@ -476,9 +476,9 @@ namespace Nekoyume.UI.Module
         {
             chatButton.Show();
 
-            var requiredStage = GameConfig.RequireClearedStageLevel.UIBottomMenuChat;
-            if (!States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(GameConfig
-                .RequireClearedStageLevel.UIBottomMenuChat))
+            const int requiredStage = GameConfig.RequireClearedStageLevel.UIBottomMenuChat;
+            if (States.Instance.CurrentAvatarState.worldInformation != null &&
+                !States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(requiredStage))
             {
                 if (_disposablesForLockedButtons.TryGetValue(ToggleableType.Chat, out var _))
                 {
@@ -531,11 +531,11 @@ namespace Nekoyume.UI.Module
         {
             mailButton.Show();
 
-            var requiredStage = GameConfig.RequireClearedStageLevel.UIBottomMenuMail;
-            if (!States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(GameConfig
-                .RequireClearedStageLevel.UIBottomMenuMail))
+            const int requiredStage = GameConfig.RequireClearedStageLevel.UIBottomMenuMail;
+            if (States.Instance.CurrentAvatarState.worldInformation != null &&
+                !States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(requiredStage))
             {
-                if (_disposablesForLockedButtons.TryGetValue(ToggleableType.Mail, out var _))
+                if (_disposablesForLockedButtons.TryGetValue(ToggleableType.Mail, out _))
                 {
                     mailButton.SetInteractable(false);
                     return true;
@@ -587,11 +587,11 @@ namespace Nekoyume.UI.Module
         {
             questButton.Show();
 
-            var requiredStage = GameConfig.RequireClearedStageLevel.UIBottomMenuQuest;
-            if (!States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(GameConfig
-                .RequireClearedStageLevel.UIBottomMenuQuest))
+            const int requiredStage = GameConfig.RequireClearedStageLevel.UIBottomMenuQuest;
+            if (States.Instance.CurrentAvatarState.worldInformation != null &&
+                !States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(requiredStage))
             {
-                if (_disposablesForLockedButtons.TryGetValue(ToggleableType.Quest, out var _))
+                if (_disposablesForLockedButtons.TryGetValue(ToggleableType.Quest, out _))
                 {
                     questButton.SetInteractable(false);
                     return true;
@@ -646,8 +646,9 @@ namespace Nekoyume.UI.Module
         {
             rankingButton.Show();
 
-            var requiredStage = 1;
-            if (!States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(requiredStage))
+            const int requiredStage = 1;
+            if (States.Instance.CurrentAvatarState.worldInformation != null &&
+                !States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(requiredStage))
             {
                 if (_disposablesForLockedButtons.TryGetValue(ToggleableType.Ranking, out var _))
                 {
@@ -699,9 +700,9 @@ namespace Nekoyume.UI.Module
         {
             characterButton.Show();
 
-            var requiredStage = GameConfig.RequireClearedStageLevel.UIBottomMenuCharacter;
-            if (!States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(GameConfig
-                .RequireClearedStageLevel.UIBottomMenuCharacter))
+            const int requiredStage = GameConfig.RequireClearedStageLevel.UIBottomMenuCharacter;
+            if (States.Instance.CurrentAvatarState.worldInformation != null &&
+                !States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(requiredStage))
             {
                 if (_disposablesForLockedButtons.TryGetValue(ToggleableType.Character, out var _))
                 {
@@ -760,12 +761,13 @@ namespace Nekoyume.UI.Module
             settingsButton.Show();
 
             if (_disposablesForLockedButtons.TryGetValue(ToggleableType.Settings, out var tuple))
-                {
-                    tuple.pointerEnter.Dispose();
-                    tuple.pointerExit.Dispose();
-                    _disposablesForLockedButtons.Remove(ToggleableType.Settings);
-                }
-                settingsButton.SetInteractable(true);
+            {
+                tuple.pointerEnter.Dispose();
+                tuple.pointerExit.Dispose();
+                _disposablesForLockedButtons.Remove(ToggleableType.Settings);
+            }
+
+            settingsButton.SetInteractable(true);
 
             return true;
         }
@@ -774,9 +776,9 @@ namespace Nekoyume.UI.Module
         {
             combinationButton.Show();
 
-            var requiredStage = GameConfig.RequireClearedStageLevel.CombinationEquipmentAction;
-            if (!States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(GameConfig
-                .RequireClearedStageLevel.CombinationEquipmentAction))
+            const int requiredStage = GameConfig.RequireClearedStageLevel.CombinationEquipmentAction;
+            if (States.Instance.CurrentAvatarState.worldInformation != null &&
+                !States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(requiredStage))
             {
                 if (_disposablesForLockedButtons.TryGetValue(ToggleableType.Combination, out var _))
                 {

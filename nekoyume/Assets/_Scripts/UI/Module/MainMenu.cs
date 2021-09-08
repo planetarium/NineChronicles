@@ -147,7 +147,8 @@ namespace Nekoyume.UI.Module
         {
             if (_requireStage > 0)
             {
-                if (States.Instance.CurrentAvatarState.worldInformation.TryGetUnlockedWorldByStageClearedBlockIndex(
+                if (States.Instance.CurrentAvatarState.worldInformation != null &&
+                    States.Instance.CurrentAvatarState.worldInformation.TryGetUnlockedWorldByStageClearedBlockIndex(
                     out var world))
                 {
                     IsUnlocked = _requireStage <= world.StageClearedId;

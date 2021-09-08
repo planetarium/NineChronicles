@@ -413,8 +413,10 @@ namespace Nekoyume.UI
             var tutorialController = Game.Game.instance.Stage.TutorialController;
             var tutorialProgress = tutorialController.GetTutorialProgress();
             var avatarState = Game.Game.instance.States.CurrentAvatarState;
-            var nextStageId = avatarState.worldInformation
-                .TryGetLastClearedStageId(out var stageId) ? stageId + 1 : 1;
+            var nextStageId = avatarState.worldInformation != null &&
+                              avatarState.worldInformation.TryGetLastClearedStageId(out var stageId)
+                ? stageId + 1
+                : 1;
 
             if (nextStageId > 4)
             {
