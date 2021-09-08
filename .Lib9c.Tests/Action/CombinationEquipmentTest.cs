@@ -109,7 +109,7 @@ namespace Lib9c.Tests.Action
             var equipmentRow = _tableSheets.EquipmentItemSheet[row.ResultEquipmentId];
             var equipment = ItemFactory.CreateItemUsable(equipmentRow, default, 0);
 
-            var result = new CombinationConsumable5.ResultModel()
+            var result = new CombinationConsumable5.ResultModel
             {
                 id = default,
                 gold = 0,
@@ -126,20 +126,21 @@ namespace Lib9c.Tests.Action
                 _avatarState.Update(mail);
             }
 
+            IAccountStateDelta previousState;
             if (backward)
             {
-                _initialState = _initialState.SetState(_avatarAddress, _avatarState.Serialize());
+                previousState = _initialState.SetState(_avatarAddress, _avatarState.Serialize());
             }
             else
             {
-                _initialState = _initialState
+                previousState = _initialState
                     .SetState(_avatarAddress.Derive(LegacyInventoryKey), _avatarState.inventory.Serialize())
                     .SetState(_avatarAddress.Derive(LegacyWorldInformationKey), _avatarState.worldInformation.Serialize())
                     .SetState(_avatarAddress.Derive(LegacyQuestListKey), _avatarState.questList.Serialize())
                     .SetState(_avatarAddress, _avatarState.SerializeV2());
             }
 
-            var action = new CombinationEquipment()
+            var action = new CombinationEquipment
             {
                 AvatarAddress = _avatarAddress,
                 RecipeId = row.Id,
@@ -147,22 +148,20 @@ namespace Lib9c.Tests.Action
                 SubRecipeId = 255,
             };
 
-            var nextState = action.Execute(new ActionContext()
+            var nextState = action.Execute(new ActionContext
             {
-                PreviousStates = _initialState,
+                PreviousStates = previousState,
                 Signer = _agentAddress,
                 BlockIndex = 1,
                 Random = _random,
             });
 
-            var slotState = nextState.GetCombinationSlotState(_avatarAddress, 0);
+            var nextAvatarState = nextState.GetAvatarStateV2(_avatarAddress);
+            Assert.Equal(30, nextAvatarState.mailBox.Count);
 
+            var slotState = nextState.GetCombinationSlotState(_avatarAddress, 0);
             Assert.NotNull(slotState.Result);
             Assert.NotNull(slotState.Result.itemUsable);
-
-            var nextAvatarState = nextState.GetAvatarStateV2(_avatarAddress);
-
-            Assert.Equal(30, nextAvatarState.mailBox.Count);
             Assert.Equal(2, slotState.Result.itemUsable.GetOptionCount());
 
             var goldCurrencyState = nextState.GetGoldCurrency();
@@ -201,7 +200,7 @@ namespace Lib9c.Tests.Action
 
             _initialState = _initialState.SetState(_avatarAddress, _avatarState.Serialize());
 
-            var action = new CombinationEquipment()
+            var action = new CombinationEquipment
             {
                 AvatarAddress = _avatarAddress,
                 RecipeId = row.Id,
@@ -209,7 +208,7 @@ namespace Lib9c.Tests.Action
                 SubRecipeId = 3,
             };
 
-            Assert.Throws<InsufficientBalanceException>(() => action.Execute(new ActionContext()
+            Assert.Throws<InsufficientBalanceException>(() => action.Execute(new ActionContext
             {
                 PreviousStates = _initialState,
                 Signer = _agentAddress,
@@ -220,7 +219,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Rehearsal()
         {
-            var action = new CombinationEquipment()
+            var action = new CombinationEquipment
             {
                 AvatarAddress = _avatarAddress,
                 RecipeId = 1,
@@ -235,7 +234,7 @@ namespace Lib9c.Tests.Action
                 )
             );
 
-            var updatedAddresses = new List<Address>()
+            var updatedAddresses = new List<Address>
             {
                 _agentAddress,
                 _avatarAddress,
@@ -248,7 +247,7 @@ namespace Lib9c.Tests.Action
 
             var state = new State();
 
-            var nextState = action.Execute(new ActionContext()
+            var nextState = action.Execute(new ActionContext
             {
                 PreviousStates = state,
                 Signer = _agentAddress,
