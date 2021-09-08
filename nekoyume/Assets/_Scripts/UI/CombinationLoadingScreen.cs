@@ -7,6 +7,7 @@ using Nekoyume.Game.VFX;
 using Nekoyume.UI.Tween;
 using System.Collections;
 using Nekoyume.L10n;
+using Nekoyume.Model.Item;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using TMPro;
@@ -84,14 +85,14 @@ namespace Nekoyume.UI
             _bgAlphaTweener.PlayReverse();
         }
 
-        public void AnimateNPC()
+        public void AnimateNPC(Nekoyume.Model.Item.ItemType itemType)
         {
-            _npcAppearCoroutine = StartCoroutine(CoAnimateNPC());
+            _npcAppearCoroutine = StartCoroutine(CoAnimateNPC(itemType));
         }
 
-        public void AnimateNPC(string quote)
+        public void AnimateNPC(Nekoyume.Model.Item.ItemType itemType, string quote)
         {
-            _npcAppearCoroutine = StartCoroutine(CoAnimateNPC(quote));
+            _npcAppearCoroutine = StartCoroutine(CoAnimateNPC(itemType, quote));
         }
 
         public void DisappearNPC()
@@ -111,7 +112,7 @@ namespace Nekoyume.UI
             _closeAction = closeAction;
         }
 
-        private IEnumerator CoAnimateNPC(string quote = null)
+        private IEnumerator CoAnimateNPC(Nekoyume.Model.Item.ItemType itemType, string quote = null)
         {
             var go = Game.Game.instance.Stage.npcFactory.Create(
                 NPCId,
@@ -123,7 +124,11 @@ namespace Nekoyume.UI
             ShowButton();
             var pos = ActionCamera.instance.Cam.transform.position;
             _sparkVFX = VFXController.instance.CreateAndChaseCam<CombinationSparkVFX>(pos);
-            _npc.PlayAnimation(NPCAnimation.Type.Appear_02);
+            _npc.PlayAnimation(itemType switch
+            {
+                ItemType.Consumable => NPCAnimation.Type.Appear_03,
+                ItemType.Equipment => NPCAnimation.Type.Appear_02,
+            });
             yield return new WaitForSeconds(1f);
 
             speechBubble.Show();
