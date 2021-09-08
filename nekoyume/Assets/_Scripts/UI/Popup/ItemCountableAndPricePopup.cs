@@ -35,7 +35,7 @@ namespace Nekoyume.UI
         private readonly List<IDisposable> _disposablesForAwake = new List<IDisposable>();
         private readonly List<IDisposable> _disposablesForSetData = new List<IDisposable>();
 
-        private const int DefaultPrice = 1;
+        private const int DefaultPrice = 10;
         public override CloseKeyType CloseKeyType => CloseKeyType.Escape;
 
         #region Mono
@@ -119,7 +119,7 @@ namespace Nekoyume.UI
                 addPriceButton[i].OnClickAsObservable().Subscribe(_ =>
                 {
                     var price = InputFieldValueToValue<int>(priceInputField) +
-                                (int) Mathf.Pow(DefaultPrice, digit + 1);
+                                (int) Mathf.Pow(DefaultPrice, digit);
                     _data.OnChangePrice.OnNext(price);
                 }).AddTo(_disposablesForAwake);
             }
