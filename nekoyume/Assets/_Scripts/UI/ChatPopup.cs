@@ -1,5 +1,6 @@
 ﻿
 using Nekoyume.EnumType;
+using Nekoyume.Game.Controller;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -17,6 +18,7 @@ namespace Nekoyume.UI
             {
                 Application.OpenURL(GameConfig.DiscordLink);
                 HelpPopup.HelpMe(100012, true);
+                AudioController.PlayClick();
                 Close(true);
             });
 

@@ -339,9 +339,19 @@ namespace Nekoyume.BlockChain
                 string formatKey;
                 if (result.itemUsable is Equipment equipment)
                 {
-                    formatKey = equipment.optionCountFromCombination == 4
-                        ? "NOTIFICATION_COMBINATION_COMPLETE_GREATER"
-                        : "NOTIFICATION_COMBINATION_COMPLETE";
+                    if (eval.Action.subRecipeId.HasValue &&
+                        Game.Game.instance.TableSheets.EquipmentItemSubRecipeSheetV2.TryGetValue(
+                            eval.Action.subRecipeId.Value,
+                            out var row))
+                    {
+                        formatKey = equipment.optionCountFromCombination == row.Options.Count
+                            ? "NOTIFICATION_COMBINATION_COMPLETE_GREATER"
+                            : "NOTIFICATION_COMBINATION_COMPLETE";
+                    }
+                    else
+                    {
+                        formatKey = "NOTIFICATION_COMBINATION_COMPLETE";
+                    }
                 }
                 else
                 {
@@ -653,6 +663,11 @@ namespace Nekoyume.BlockChain
         {
             if (eval.Exception is null)
             {
+                if (!ActionManager.IsLastBattleActionId(eval.Action.Id))
+                {
+                    return;
+                }
+
                 _disposableForBattleEnd?.Dispose();
                 _disposableForBattleEnd =
                     Game.Game.instance.Stage.onEnterToStageEnd
@@ -663,7 +678,6 @@ namespace Nekoyume.BlockChain
                             {
                                 UpdateCurrentAvatarState(eval);
                                 UpdateWeeklyArenaState(eval);
-                                Address agentAddress = States.Instance.AgentState.address;
                                 var avatarState = States.Instance.CurrentAvatarState;
                                 RenderQuest(eval.Action.avatarAddress,
                                     avatarState.questList.completedQuestIds);
@@ -687,7 +701,7 @@ namespace Nekoyume.BlockChain
                     StageSimulatorVersionV100025
                 );
                 simulator.SimulateV3();
-                BattleLog log = simulator.Log;
+                var log = simulator.Log;
 
                 if (Widget.Find<LoadingScreen>().IsActive())
                 {
@@ -728,6 +742,11 @@ namespace Nekoyume.BlockChain
         {
             if (eval.Exception is null)
             {
+                if (!ActionManager.IsLastBattleActionId(eval.Action.Id))
+                {
+                    return;
+                }
+
                 _disposableForBattleEnd?.Dispose();
                 _disposableForBattleEnd =
                     Game.Game.instance.Stage.onEnterToStageEnd
@@ -738,7 +757,6 @@ namespace Nekoyume.BlockChain
                             {
                                 UpdateCurrentAvatarState(eval);
                                 UpdateWeeklyArenaState(eval);
-                                Address agentAddress = States.Instance.AgentState.address;
                                 var avatarState = States.Instance.CurrentAvatarState;
                                 RenderQuest(eval.Action.avatarAddress,
                                     avatarState.questList.completedQuestIds);
@@ -761,7 +779,7 @@ namespace Nekoyume.BlockChain
                     StageSimulatorVersionV100025
                 );
                 simulator.SimulateV2();
-                BattleLog log = simulator.Log;
+                var log = simulator.Log;
 
                 if (Widget.Find<LoadingScreen>().IsActive())
                 {
@@ -802,10 +820,10 @@ namespace Nekoyume.BlockChain
         {
             if (eval.Exception is null)
             {
-                var weeklyArenaAddress = eval.Action.WeeklyArenaAddress;
-                var avatarAddress = eval.Action.AvatarAddress;
-
-                LocalLayerModifier.RemoveWeeklyArenaInfoActivator(weeklyArenaAddress, avatarAddress);
+                if (!ActionManager.IsLastBattleActionId(eval.Action.Id))
+                {
+                    return;
+                }
 
                 _disposableForBattleEnd?.Dispose();
                 _disposableForBattleEnd =

@@ -502,58 +502,6 @@ namespace Nekoyume.State
 
         #endregion
 
-        #region WeeklyArena
-
-        /// <summary>
-        /// Activates the one corresponding to the address of the current avatar state among the `ArenaInfo` included in the weekly arena state you are viewing.
-        /// </summary>
-        /// <param name="characterSheet"></param>
-        /// <param name="addArenaInfoIfNotContained"></param>
-        public static void AddWeeklyArenaInfoActivator(
-            CharacterSheet characterSheet,
-            bool addArenaInfoIfNotContained = true)
-        {
-            var avatarState = States.Instance.CurrentAvatarState;
-            var avatarAddress = avatarState.address;
-            var weeklyArenaState = States.Instance.WeeklyArenaState;
-            var weeklyArenaAddress = weeklyArenaState.address;
-
-            if (addArenaInfoIfNotContained &&
-                !weeklyArenaState.ContainsKey(avatarAddress))
-            {
-                weeklyArenaState.Set(avatarState, characterSheet);
-            }
-
-            var modifier = new WeeklyArenaInfoActivator(avatarAddress);
-            LocalLayer.Instance.Add(weeklyArenaAddress, modifier);
-            weeklyArenaState = modifier.Modify(weeklyArenaState);
-            WeeklyArenaStateSubject.WeeklyArenaState.OnNext(weeklyArenaState);
-        }
-
-        /// <summary>
-        /// Regress the logic of the `AddWeeklyArenaInfoActivator()` method.
-        /// </summary>
-        /// <param name="weeklyArenaAddress"></param>
-        /// <param name="avatarAddress"></param>
-        public static void RemoveWeeklyArenaInfoActivator(
-            Address weeklyArenaAddress,
-            Address avatarAddress)
-        {
-            var modifier = new WeeklyArenaInfoActivator(avatarAddress);
-            LocalLayer.Instance.Remove(weeklyArenaAddress, modifier);
-
-            var state = States.Instance.WeeklyArenaState;
-            if (!state.address.Equals(weeklyArenaAddress))
-            {
-                return;
-            }
-
-            state = modifier.Modify(state);
-            WeeklyArenaStateSubject.WeeklyArenaState.OnNext(state);
-        }
-
-        #endregion
-
         /// <summary>
         /// Returns the same object as `avatarAddress` and its key among the avatar states included in `States.AvatarStates`.
         /// </summary>

@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using Nekoyume.EnumType;
+using Nekoyume.Game.Controller;
 using Nekoyume.L10n;
 using TMPro;
 using UnityEngine;
@@ -16,6 +17,7 @@ using Nekoyume.UI.Module;
 
 namespace Nekoyume.UI
 {
+    using UniRx;
     public class Quest : XTweenWidget
     {
         [SerializeField]
@@ -39,7 +41,10 @@ namespace Nekoyume.UI
         [SerializeField]
         private Blur blur = null;
 
-        private QuestList _questList;
+        [SerializeField]
+        private Button closeButton = null;
+
+        private ReactiveProperty<QuestList> _questList = new ReactiveProperty<QuestList>();
 
         private readonly Module.ToggleGroup _toggleGroup = new Module.ToggleGroup();
 
@@ -54,15 +59,21 @@ namespace Nekoyume.UI
             _toggleGroup.RegisterToggleable(obtainButton);
             _toggleGroup.RegisterToggleable(craftingButton);
             _toggleGroup.RegisterToggleable(exchangeButton);
+            _questList.Subscribe(OnQuestListChanged);
+            closeButton.onClick.AddListener(() =>
+            {
+                Close();
+                AudioController.PlayClick();
+            });
         }
 
         public override void Show(bool ignoreShowAnimation = false)
         {
-            _questList = States.Instance.CurrentAvatarState.questList;
+            _questList.Value = States.Instance.CurrentAvatarState.questList;
             _toggleGroup.SetToggledOffAll();
             adventureButton.SetToggledOn();
             ChangeState(0);
-            UpdateTabs();
+            DoneScrollAnimation();
             base.Show(ignoreShowAnimation);
 
             if (blur)
@@ -74,7 +85,7 @@ namespace Nekoyume.UI
 
         public override void Close(bool ignoreCloseAnimation = false)
         {
-            if (blur)
+            if (blur && blur.isActiveAndEnabled)
             {
                 blur.Close();
             }
@@ -88,41 +99,16 @@ namespace Nekoyume.UI
         {
             filterType = (QuestType) state;
 
-            var list = _questList
-                .ToList()
+            var list = _questList.Value.ToList()
                 .FindAll(e => e.QuestType == (QuestType) state)
                 .OrderBy(e => e, new QuestOrderComparer())
                 .ToList();
             scroll.UpdateData(list, true);
         }
 
-        public void UpdateTabs()
+        public void DoneScrollAnimation()
         {
             scroll.DoneAnimation();
-
-            var hasNotification = _questList.Any(quest =>
-                    quest.QuestType == QuestType.Adventure &&
-                    quest.Complete &&
-                    quest.isReceivable);
-            adventureButton.HasNotification.Value = hasNotification;
-
-            hasNotification = _questList.Any(quest =>
-                    quest.QuestType == QuestType.Obtain &&
-                    quest.Complete &&
-                    quest.isReceivable);
-            obtainButton.HasNotification.Value = hasNotification;
-
-            hasNotification = _questList.Any(quest =>
-                    quest.QuestType == QuestType.Craft &&
-                    quest.Complete &&
-                    quest.isReceivable);
-            craftingButton.HasNotification.Value = hasNotification;
-
-            hasNotification = _questList.Any(quest =>
-                    quest.QuestType == QuestType.Exchange &&
-                    quest.Complete &&
-                    quest.isReceivable);
-            exchangeButton.HasNotification.Value = hasNotification;
         }
 
         public void SetList(QuestList list)
@@ -132,8 +118,7 @@ namespace Nekoyume.UI
                 return;
             }
 
-            _questList = list;
-
+            _questList.Value = list;
             ChangeState((int) filterType);
         }
 
@@ -145,6 +130,29 @@ namespace Nekoyume.UI
         public void DisappearAnimation(int index)
         {
             scroll.DisappearAnimation(index);
+        }
+
+        private void OnQuestListChanged(QuestList list)
+        {
+            if (list is null)
+            {
+                return;
+            }
+
+            foreach (var questType in (QuestType[]) Enum.GetValues(typeof(QuestType)))
+            {
+                var button = questType switch
+                {
+                    QuestType.Adventure => adventureButton,
+                    QuestType.Obtain => obtainButton,
+                    QuestType.Craft => craftingButton,
+                    QuestType.Exchange => exchangeButton
+                };
+                button.HasNotification.Value = list.Any(quest =>
+                    quest.QuestType == questType &&
+                    quest.Complete &&
+                    quest.isReceivable);
+            }
         }
     }
 

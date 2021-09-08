@@ -1,10 +1,13 @@
 using System;
 using System.Collections.Generic;
 using Nekoyume.EnumType;
+using Nekoyume.Game.Controller;
 using Nekoyume.Model.Item;
 using Nekoyume.State;
 using Nekoyume.UI.Module;
+using RedBlueGames.Tools.TextTyper;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
@@ -12,12 +15,28 @@ namespace Nekoyume.UI
 
     public class CombinationSlots : XTweenWidget
     {
-        [SerializeField] private List<CombinationSlot> slots;
+        [SerializeField]
+        private List<CombinationSlot> slots;
+
+        [SerializeField]
+        private Blur blur;
+
+        [SerializeField]
+        private Button closeButton;
 
         private readonly List<IDisposable> _disposablesOfOnEnable = new List<IDisposable>();
 
         public override WidgetType WidgetType => WidgetType.Popup;
         public override CloseKeyType CloseKeyType => CloseKeyType.Escape;
+
+        protected override void Awake()
+        {
+            closeButton.onClick.AddListener(() =>
+            {
+                Close();
+                AudioController.PlayClick();
+            });
+        }
 
         protected override void OnEnable()
         {
@@ -35,6 +54,11 @@ namespace Nekoyume.UI
 
         public override void Show(bool ignoreShowAnimation = false)
         {
+            if (blur)
+            {
+                blur.Show();
+            }
+
             base.Show(ignoreShowAnimation);
             UpdateSlots(Game.Game.instance.Agent.BlockIndex);
             HelpPopup.HelpMe(100008, true);
@@ -62,6 +86,16 @@ namespace Nekoyume.UI
 
             slotIndex = -1;
             return false;
+        }
+
+        public override void Close(bool ignoreCloseAnimation = false)
+        {
+            if (blur && blur.isActiveAndEnabled)
+            {
+                blur.Close();
+            }
+
+            base.Close(ignoreCloseAnimation);
         }
 
         private void SubscribeBlockIndex(long blockIndex)

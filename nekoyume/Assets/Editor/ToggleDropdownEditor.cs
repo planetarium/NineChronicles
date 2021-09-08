@@ -14,6 +14,7 @@ namespace Editor
             EditorGUILayout.PropertyField(serializedObject.FindProperty("offObject"));
             EditorGUILayout.PropertyField(serializedObject.FindProperty("duration"));
             EditorGUILayout.PropertyField(serializedObject.FindProperty("allOffOnAwake"));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("onClickToggle"));
             DrawList(serializedObject.FindProperty("items"), "item");
 
             serializedObject.ApplyModifiedProperties();

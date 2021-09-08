@@ -27,6 +27,11 @@ namespace Nekoyume.BlockChain
 
         private readonly ActionRenderer _renderer;
 
+        private Guid _lastBattleActionId;
+
+        public static bool IsLastBattleActionId(Guid actionId) =>
+            actionId == Game.Game.instance.ActionManager._lastBattleActionId;
+
         private void ProcessAction(GameAction gameAction)
         {
             _agent.EnqueueAction(gameAction);
@@ -102,9 +107,9 @@ namespace Nekoyume.BlockChain
             }
 
             var avatarAddress = States.Instance.CurrentAvatarState.address;
-            costumes = costumes ?? new List<Costume>();
-            equipments = equipments ?? new List<Equipment>();
-            foods = foods ?? new List<Consumable>();
+            costumes ??= new List<Costume>();
+            equipments ??= new List<Equipment>();
+            foods ??= new List<Consumable>();
 
             var action = new MimisbrunnrBattle
             {
@@ -118,6 +123,8 @@ namespace Nekoyume.BlockChain
                 RankingMapAddress = States.Instance.CurrentAvatarState.RankingMapAddress,
             };
             ProcessAction(action);
+
+            _lastBattleActionId = action.Id;
 
             return _renderer.EveryRender<MimisbrunnrBattle>()
                 .SkipWhile(eval => !eval.Action.Id.Equals(action.Id))
@@ -169,6 +176,8 @@ namespace Nekoyume.BlockChain
                 RankingMapAddress = States.Instance.CurrentAvatarState.RankingMapAddress,
             };
             ProcessAction(action);
+
+            _lastBattleActionId = action.Id;
 
             return _renderer.EveryRender<HackAndSlash>()
                 .SkipWhile(eval => !eval.Action.Id.Equals(action.Id))
@@ -376,6 +385,8 @@ namespace Nekoyume.BlockChain
                 consumableIds = consumableIds
             };
             ProcessAction(action);
+
+            _lastBattleActionId = action.Id;
 
             return _renderer.EveryRender<RankingBattle>()
                 .Where(eval => eval.Action.Id.Equals(action.Id))

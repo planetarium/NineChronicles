@@ -1192,7 +1192,6 @@ GameObject:
   - component: {fileID: 7289817523081818103}
   - component: {fileID: 3435350990856342212}
   - component: {fileID: 5786717896447969965}
-  - component: {fileID: 4775228062504606391}
   m_Layer: 5
   m_Name: icon
   m_TagString: Untagged
@@ -1257,123 +1256,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &4775228062504606391
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3968678610284364445}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c10d422b52559da41aa9676770a8fc65, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  animationSteps:
-  - id: 0
-  duration: 8
-  initializeMode: 2
-  references:
-    version: 1
-    00000000:
-      type: {class: DOTweenAnimationStep, ns: BrunoMikoski.AnimationSequencer, asm: BrunoMikoski.AnimationSequencer}
-      data:
-        delay: 0.5
-        flowType: 0
-        target: {fileID: 3968678610284364445}
-        duration: 2.5
-        loopCount: -1
-        loopType: 0
-        actions:
-        - id: 1
-    00000001:
-      type: {class: ScaleDOTweenAction, ns: BrunoMikoski.AnimationSequencer, asm: BrunoMikoski.AnimationSequencer}
-      data:
-        direction: 0
-        ease:
-          ease: 37
-          curve:
-            serializedVersion: 2
-            m_Curve:
-            - serializedVersion: 3
-              time: 0
-              value: 0
-              inSlope: 2
-              outSlope: 2
-              tangentMode: 0
-              weightedMode: 0
-              inWeight: 0
-              outWeight: 0
-            - serializedVersion: 3
-              time: 0.039965525
-              value: 0.9996679
-              inSlope: -0.0046901447
-              outSlope: -0.0046901447
-              tangentMode: 0
-              weightedMode: 0
-              inWeight: 0.33333334
-              outWeight: 0.4911794
-            - serializedVersion: 3
-              time: 0.10969042
-              value: 0.45143408
-              inSlope: 0.005885724
-              outSlope: 0.005885724
-              tangentMode: 0
-              weightedMode: 0
-              inWeight: 0.33333334
-              outWeight: 1
-            - serializedVersion: 3
-              time: 0.17226653
-              value: 0.64203894
-              inSlope: 0.0055929027
-              outSlope: 0.0055929027
-              tangentMode: 0
-              weightedMode: 0
-              inWeight: 0.33333334
-              outWeight: 0.6967036
-            - serializedVersion: 3
-              time: 0.24175744
-              value: 0.33712465
-              inSlope: -2.4439583
-              outSlope: -2.4439583
-              tangentMode: 0
-              weightedMode: 0
-              inWeight: 0.17366022
-              outWeight: 0.08338544
-            - serializedVersion: 3
-              time: 0.3714647
-              value: 0.33128977
-              inSlope: 0.013615063
-              outSlope: 0.013615063
-              tangentMode: 0
-              weightedMode: 0
-              inWeight: 0.33333334
-              outWeight: 0.42073888
-            - serializedVersion: 3
-              time: 0.53201556
-              value: 0
-              inSlope: -1.2202853
-              outSlope: 0
-              tangentMode: 65
-              weightedMode: 0
-              inWeight: 0.33333334
-              outWeight: 0.33333334
-            - serializedVersion: 3
-              time: 1
-              value: 0
-              inSlope: 0
-              outSlope: 0
-              tangentMode: 0
-              weightedMode: 0
-              inWeight: 0
-              outWeight: 0
-            m_PreInfinity: 2
-            m_PostInfinity: 2
-            m_RotationOrder: 4
-        isRelative: 0
-        autoKill: 0
-        scale: {x: 1.12, y: 1.12, z: 0}
-        axisConstraint: 0
 --- !u!1 &4616060553571203341
 GameObject:
   m_ObjectHideFlags: 0
@@ -1737,8 +1619,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: 0.
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 72dcfe1acfcde406b8b7dc8b42635600, type: 2}
-  m_sharedMaterial: {fileID: 2100000, guid: 962a4ff994795415d9702af51859281d, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: e14cdec1ec99d4f2ba55eff738f74f8e, type: 2}
+  m_sharedMaterial: {fileID: 2100000, guid: 564789d320b8746c3b64e7be95c3afd3, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -2507,8 +2389,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: 00
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 72dcfe1acfcde406b8b7dc8b42635600, type: 2}
-  m_sharedMaterial: {fileID: 2100000, guid: 962a4ff994795415d9702af51859281d, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: e14cdec1ec99d4f2ba55eff738f74f8e, type: 2}
+  m_sharedMaterial: {fileID: 2100000, guid: 564789d320b8746c3b64e7be95c3afd3, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []

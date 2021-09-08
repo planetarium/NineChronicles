@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Libplanet;
 using Libplanet.Crypto;
+using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
@@ -77,7 +78,12 @@ namespace Nekoyume.UI
                 Close(true);
             });
 
-            closeButton.onClick.AddListener(ApplyCurrentSettings);
+            closeButton.onClick.AddListener(() =>
+            {
+                ApplyCurrentSettings();
+                AudioController.PlayClick();
+            });
+            blur.button.onClick.AddListener(ApplyCurrentSettings);
             redeemCode.Close();
 
             InitResolution();
@@ -260,7 +266,7 @@ namespace Nekoyume.UI
 
         public override void Close(bool ignoreCloseAnimation = false)
         {
-            if (blur)
+            if (blur && blur.isActiveAndEnabled)
             {
                 blur.Close();
             }

@@ -346,7 +346,7 @@ namespace Nekoyume.UI
 
             var format = L10nManager.Localize("UI_COST_BLOCK");
             var quote = string.Format(format, blockIndex);
-            loadingScreen.AnimateNPC(quote);
+            loadingScreen.AnimateNPC(itemBase.ItemType, quote);
         }
 
         private void SubscribeSelectItem(BigInventoryItemView view)
@@ -439,6 +439,8 @@ namespace Nekoyume.UI
                 view.Select(false);
                 UpdateState(State.RegisterMaterial);
             }
+
+            AudioController.instance.PlaySfx(AudioController.SfxCode.ChainMail2);
         }
 
         private void SetActiveContainer(bool isClear)

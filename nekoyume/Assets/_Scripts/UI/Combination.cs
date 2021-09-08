@@ -751,7 +751,7 @@ namespace Nekoyume.UI
             _npc01.SpineController.Disappear();
             Push();
             yield return new WaitForSeconds(.5f);
-            loadingScreen.AnimateNPC();
+            loadingScreen.AnimateNPC(itemBase.ItemType);
         }
 
         private void OnNPCDisappear()

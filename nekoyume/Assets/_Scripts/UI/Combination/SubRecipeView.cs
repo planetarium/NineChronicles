@@ -68,7 +68,7 @@ namespace Nekoyume.UI
         private RecipeInfo _selectedRecipeInfo;
 
         private const string StatTextFormat = "{0} {1}";
-        private const string OptionTextFormat = "{0} +({1}~{2})";
+        private const string OptionTextFormat = "{0} +({1}-{2})";
 
         private void Awake()
         {

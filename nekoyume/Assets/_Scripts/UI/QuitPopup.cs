@@ -1,6 +1,7 @@
 using System.Linq;
 using Nekoyume.EnumType;
 using Nekoyume.Game;
+using Nekoyume.Game.Controller;
 using Nekoyume.L10n;
 using Nekoyume.UI.Module;
 using UnityEngine;
@@ -28,13 +29,25 @@ namespace Nekoyume.UI
         {
             base.Awake();
             characterSelectEventSubject.GetEvent("Click")
-                .Subscribe(_ => SelectCharacter())
+                .Subscribe(_ =>
+                {
+                    SelectCharacter();
+                    AudioController.PlayClick();
+                })
                 .AddTo(gameObject);
             quitEventSubject.GetEvent("Click")
-                .Subscribe(_ => Quit())
+                .Subscribe(_ =>
+                {
+                    Quit();
+                    AudioController.PlayClick();
+                })
                 .AddTo(gameObject);
             closeEventSubject.GetEvent("Click")
-                .Subscribe(_ => Close())
+                .Subscribe(_ =>
+                {
+                    Close();
+                    AudioController.PlayClick();
+                })
                 .AddTo(gameObject);
 
             CloseWidget = () =>

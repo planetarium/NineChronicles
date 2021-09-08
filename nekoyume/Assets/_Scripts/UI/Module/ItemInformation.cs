@@ -107,7 +107,7 @@ namespace Nekoyume.UI.Module
             tradableText.text = isTradable ?
                 L10nManager.Localize("UI_TRADABLE") : L10nManager.Localize("UI_UNTRADABLE");
             tradableText.color = isTradable ?
-                Palette.GetColor(ColorType.TextElement04) : Palette.GetColor(ColorType.TextElement00);
+                Palette.GetColor(ColorType.ButtonEnabled) : Palette.GetColor(ColorType.TextDenial);
         }
 
         private void UpdateViewIconArea()
@@ -123,6 +123,7 @@ namespace Nekoyume.UI.Module
 
             var item = Model.item.Value.ItemBase.Value;
 
+
             // 아이콘.
             iconArea.itemView.SetData(new CountableItem(
                 Model.item.Value.ItemBase.Value,
@@ -137,7 +138,7 @@ namespace Nekoyume.UI.Module
 
             // 속성.
             var sprite = item.ElementalType.GetSprite();
-            if (sprite is null)
+            if (sprite is null || !item.ItemType.HasElementType())
             {
                 iconArea.elementalTypeObject.SetActive(false);
                 return;
