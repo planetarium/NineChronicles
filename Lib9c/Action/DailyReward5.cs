@@ -5,14 +5,15 @@ using System.Text;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
+using Nekoyume.BlockChain;
 using Nekoyume.Model.State;
-using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("daily_reward6")]
-    public class DailyReward : GameAction
+    [ActionObsolete(BlockPolicySource.V100074ObsoleteIndex)]
+    [ActionType("daily_reward5")]
+    public class DailyReward5 : GameAction
     {
         public Address avatarAddress;
         public const string AvatarAddressKey = "a";
@@ -20,17 +21,12 @@ namespace Nekoyume.Action
         public override IAccountStateDelta Execute(IActionContext context)
         {
             var states = context.PreviousStates;
-            var inventoryAddress = avatarAddress.Derive(LegacyInventoryKey);
-            var worldInformationAddress = avatarAddress.Derive(LegacyWorldInformationKey);
-            var questListAddress = avatarAddress.Derive(LegacyQuestListKey);
             if (context.Rehearsal)
             {
-                return states
-                    .SetState(avatarAddress, MarkChanged)
-                    .SetState(inventoryAddress, MarkChanged)
-                    .SetState(worldInformationAddress, MarkChanged)
-                    .SetState(questListAddress, MarkChanged);
+                return states.SetState(avatarAddress, MarkChanged);
             }
+
+            CheckObsolete(BlockPolicySource.V100074ObsoleteIndex, context);
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
 
@@ -59,11 +55,7 @@ namespace Nekoyume.Action
             avatarState.dailyRewardReceivedIndex = context.BlockIndex;
             avatarState.actionPoint = gameConfigState.ActionPointMax;
 
-            return states
-                .SetState(avatarAddress, avatarState.SerializeV2())
-                .SetState(inventoryAddress, avatarState.inventory.Serialize())
-                .SetState(worldInformationAddress, avatarState.worldInformation.Serialize())
-                .SetState(questListAddress, avatarState.questList.Serialize());
+            return states.SetState(avatarAddress, avatarState.SerializeV2());
         }
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal => new Dictionary<string, IValue>

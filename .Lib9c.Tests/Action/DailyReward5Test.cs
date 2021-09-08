@@ -13,13 +13,13 @@ namespace Lib9c.Tests.Action
     using Xunit.Abstractions;
     using static SerializeKeys;
 
-    public class DailyRewardTest
+    public class DailyReward5Test
     {
         private readonly Address _agentAddress;
         private readonly Address _avatarAddress;
         private readonly IAccountStateDelta _initialState;
 
-        public DailyRewardTest(ITestOutputHelper outputHelper)
+        public DailyReward5Test(ITestOutputHelper outputHelper)
         {
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Verbose()
@@ -62,7 +62,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Rehearsal()
         {
-            var action = new DailyReward
+            var action = new DailyReward5
             {
                 avatarAddress = _avatarAddress,
             };
@@ -79,9 +79,6 @@ namespace Lib9c.Tests.Action
             var updatedAddresses = new List<Address>
             {
                 _avatarAddress,
-                _avatarAddress.Derive(LegacyInventoryKey),
-                _avatarAddress.Derive(LegacyWorldInformationKey),
-                _avatarAddress.Derive(LegacyQuestListKey),
             };
 
             Assert.Equal(updatedAddresses.ToImmutableHashSet(), nextState.UpdatedAddresses);
@@ -106,11 +103,17 @@ namespace Lib9c.Tests.Action
 
             var nextState = ExecuteInternal(previousStates, 1800);
             var nextGameConfigState = nextState.GetGameConfigState();
-            var nextAvatarState = nextState.GetAvatarStateV2(_avatarAddress);
-            Assert.NotNull(nextAvatarState);
-            Assert.NotNull(nextAvatarState.inventory);
-            Assert.NotNull(nextAvatarState.questList);
-            Assert.NotNull(nextAvatarState.worldInformation);
+            var nextAvatarState = avatarStateSerializedVersion switch
+            {
+                1 => nextState.GetAvatarState(_avatarAddress),
+                2 => nextState.GetAvatarStateV2(_avatarAddress),
+                _ => null
+            };
+            if (nextAvatarState is null)
+            {
+                return;
+            }
+
             Assert.Equal(nextGameConfigState.ActionPointMax, nextAvatarState.actionPoint);
         }
 
@@ -152,7 +155,7 @@ namespace Lib9c.Tests.Action
 
         private IAccountStateDelta ExecuteInternal(IAccountStateDelta previousStates, long blockIndex = 0)
         {
-            var dailyRewardAction = new DailyReward
+            var dailyRewardAction = new DailyReward5
             {
                 avatarAddress = _avatarAddress,
             };
