@@ -11,7 +11,7 @@ using Nekoyume.Model.State;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionObsolete(BlockPolicySource.V100075ObsoleteIndex)]
+    [ActionObsolete(BlockPolicySource.V100074ObsoleteIndex)]
     [ActionType("daily_reward5")]
     public class DailyReward5 : GameAction
     {
@@ -26,7 +26,7 @@ namespace Nekoyume.Action
                 return states.SetState(avatarAddress, MarkChanged);
             }
 
-            CheckObsolete(BlockPolicySource.V100075ObsoleteIndex, context);
+            CheckObsolete(BlockPolicySource.V100074ObsoleteIndex, context);
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
 
