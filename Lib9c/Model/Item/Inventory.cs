@@ -864,7 +864,14 @@ namespace Nekoyume.Model.Item
                                                      !lockItems.Exists(y => y.Lock.Equals(new OrderLock(x.OrderId)))).ToList();
 
             var totalCount = unlockItems.Sum(x => x.count);
+
             var digestTotalCount = selectedDigests.Sum(x => x.ItemCount);
+
+            if (digestTotalCount <= 0)
+            {
+                return;
+            }
+
             if (totalCount < digestTotalCount)
             {
                 // 판매리스트에 올라와있는 판매중인 아이템 수보다 가지고 있는아이템이 적음
