@@ -795,7 +795,7 @@ namespace Nekoyume.Model.Item
             }
         }
 
-        public void ReconfigureFungibleItem(OrderDigestListState digestList, Guid tradableId, long blockIndex)
+        public void ReconfigureFungibleItem(OrderDigestListState digestList, Guid tradableId)
         {
             var tradableFungibleItems = _items.Where(i => i.Locked &&
                                                           i.item is ITradableFungibleItem item &&
@@ -808,10 +808,6 @@ namespace Nekoyume.Model.Item
 
             if (tradableFungibleItems.Count <= 0)
             {
-                if (digests.Count > 0)
-                {
-                    TestMig(digests, tradableId, blockIndex);
-                }
                 return;
             }
 
@@ -849,13 +845,23 @@ namespace Nekoyume.Model.Item
             }
         }
 
-        private void TestMig(List<OrderDigest> digests, Guid tradableId, long blockIndex)
+        public void TestMig(OrderDigestListState digestList, Guid tradableId, long blockIndex)
         {
-            var selectedDigests = digests.Where(x => x.ExpiredBlockIndex > blockIndex).ToList();
-
             var unlockItems = _items.Where(i => !i.Locked &&
-                                                          i.item is ITradableFungibleItem item &&
-                                                          item.TradableId.Equals(tradableId)).ToList();
+                                                i.item is ITradableFungibleItem item &&
+                                                item.TradableId.Equals(tradableId)).ToList();
+
+            var lockItems = _items.Where(i => i.Locked &&
+                                              i.item is ITradableFungibleItem item &&
+                                              item.TradableId.Equals(tradableId)).ToList();
+
+            var digests = digestList.OrderDigestList
+                .Where(digest => digest.TradableId.Equals(tradableId))
+                .OrderByDescending(digest=> digest.ExpiredBlockIndex)
+                .ToList();
+
+            var selectedDigests = digests.Where(x => x.ExpiredBlockIndex > blockIndex &&
+                                                     !lockItems.Exists(y => y.Lock.Equals(new OrderLock(x.OrderId)))).ToList();
 
             var totalCount = unlockItems.Sum(x => x.count);
             var digestTotalCount = selectedDigests.Sum(x => x.ItemCount);
@@ -886,7 +892,7 @@ namespace Nekoyume.Model.Item
             foreach (var selectedDigest in selectedDigests)
             {
                 selectedItem.count -= selectedDigest.ItemCount;
-                var clone2 = (ITradableFungibleItem)((ITradableFungibleItem)selectedItem).Clone();
+                var clone2 = (ITradableFungibleItem)((ITradableFungibleItem)selectedItem.item).Clone();
                 clone2.RequiredBlockIndex = selectedDigest.ExpiredBlockIndex;
                 var newItem2 = new Item((ItemBase)clone, selectedDigest.ItemCount);
                 newItem2.LockUp(new OrderLock(selectedDigest.OrderId));
