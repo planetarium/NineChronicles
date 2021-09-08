@@ -21,8 +21,7 @@ namespace Lib9c.Tests.Action
         private readonly Dictionary<string, string> _sheets;
         private readonly IRandom _random;
         private readonly TableSheets _tableSheets;
-        private readonly AvatarState _avatarState;
-        private IAccountStateDelta _initialState;
+        private readonly IAccountStateDelta _initialState;
 
         public CombinationConsumableTest()
         {
@@ -43,7 +42,7 @@ namespace Lib9c.Tests.Action
             agentState.avatarAddresses[0] = _avatarAddress;
             var gameConfigState = new GameConfigState();
 
-            _avatarState = new AvatarState(
+            var avatarState = new AvatarState(
                 _avatarAddress,
                 _agentAddress,
                 1,
@@ -54,12 +53,11 @@ namespace Lib9c.Tests.Action
 
             _initialState = new State()
                 .SetState(_agentAddress, agentState.Serialize())
-                .SetState(_avatarAddress, _avatarState.Serialize());
+                .SetState(_avatarAddress, avatarState.Serialize());
 
             foreach (var (key, value) in _sheets)
             {
-                _initialState =
-                    _initialState.SetState(Addresses.TableSheet.Derive(key), value.Serialize());
+                _initialState = _initialState.SetState(Addresses.TableSheet.Derive(key), value.Serialize());
             }
         }
 
@@ -68,18 +66,19 @@ namespace Lib9c.Tests.Action
         [InlineData(false)]
         public void Execute(bool backward)
         {
+            var avatarState = _initialState.GetAvatarState(_avatarAddress);
             var row = _tableSheets.ConsumableItemRecipeSheet.Values.First();
             foreach (var materialInfo in row.Materials)
             {
                 var materialRow = _tableSheets.MaterialItemSheet[materialInfo.Id];
                 var material = ItemFactory.CreateItem(materialRow, _random);
-                _avatarState.inventory.AddItem2(material, count: materialInfo.Count);
+                avatarState.inventory.AddItem(material, count: materialInfo.Count);
             }
 
             const int requiredStage = GameConfig.RequireClearedStageLevel.CombinationConsumableAction;
             for (var i = 1; i < requiredStage + 1; i++)
             {
-                _avatarState.worldInformation.ClearStage(
+                avatarState.worldInformation.ClearStage(
                     1,
                     i,
                     0,
@@ -90,7 +89,7 @@ namespace Lib9c.Tests.Action
 
             var equipment = ItemFactory.CreateItemUsable(_tableSheets.EquipmentItemSheet.First, default, 0);
 
-            var result = new CombinationConsumable5.ResultModel()
+            var result = new CombinationConsumable5.ResultModel
             {
                 id = default,
                 gold = 0,
@@ -103,50 +102,46 @@ namespace Lib9c.Tests.Action
             for (var i = 0; i < 100; i++)
             {
                 var mail = new CombinationMail(result, i, default, 0);
-                _avatarState.Update(mail);
+                avatarState.Update(mail);
             }
 
-            _initialState = _initialState.SetState(_slotAddress, new CombinationSlotState(_slotAddress, requiredStage).Serialize());
-
+            var previousState = _initialState.SetState(_slotAddress, new CombinationSlotState(_slotAddress, requiredStage).Serialize());
             if (backward)
             {
-                _initialState = _initialState.SetState(_avatarAddress, _avatarState.Serialize());
+                previousState = previousState.SetState(_avatarAddress, avatarState.Serialize());
             }
             else
             {
-                _initialState = _initialState
-                    .SetState(_avatarAddress.Derive(LegacyInventoryKey), _avatarState.inventory.Serialize())
-                    .SetState(_avatarAddress.Derive(LegacyWorldInformationKey), _avatarState.worldInformation.Serialize())
-                    .SetState(_avatarAddress.Derive(LegacyQuestListKey), _avatarState.questList.Serialize())
-                    .SetState(_avatarAddress, _avatarState.SerializeV2());
+                previousState = previousState
+                    .SetState(_avatarAddress.Derive(LegacyInventoryKey), avatarState.inventory.Serialize())
+                    .SetState(_avatarAddress.Derive(LegacyWorldInformationKey), avatarState.worldInformation.Serialize())
+                    .SetState(_avatarAddress.Derive(LegacyQuestListKey), avatarState.questList.Serialize())
+                    .SetState(_avatarAddress, avatarState.SerializeV2());
             }
 
-            var action = new CombinationConsumable()
+            var action = new CombinationConsumable
             {
                 AvatarAddress = _avatarAddress,
                 recipeId = row.Id,
                 slotIndex = 0,
             };
 
-            var nextState = action.Execute(new ActionContext()
+            var nextState = action.Execute(new ActionContext
             {
-                PreviousStates = _initialState,
+                PreviousStates = previousState,
                 Signer = _agentAddress,
                 BlockIndex = 1,
                 Random = _random,
             });
 
-            var slotState = nextState.GetCombinationSlotState(_avatarAddress, 0);
-
-            Assert.NotNull(slotState.Result);
-
-            var consumable = (Consumable)slotState.Result.itemUsable;
-            Assert.NotNull(consumable);
-
             var nextAvatarState = nextState.GetAvatarStateV2(_avatarAddress);
-
             Assert.Equal(30, nextAvatarState.mailBox.Count);
             Assert.IsType<CombinationMail>(nextAvatarState.mailBox.First());
+
+            var slotState = nextState.GetCombinationSlotState(_avatarAddress, 0);
+            Assert.NotNull(slotState.Result);
+            var consumable = (Consumable)slotState.Result.itemUsable;
+            Assert.NotNull(consumable);
         }
     }
 }
