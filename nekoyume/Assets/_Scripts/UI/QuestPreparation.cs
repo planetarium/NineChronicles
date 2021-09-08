@@ -95,6 +95,9 @@ namespace Nekoyume.UI
          Tooltip("Gap between start position X and middle position X")]
         private float middleXGap = 1f;
 
+        [SerializeField]
+        private GameObject coverToBlockClick = null;
+
         private Stage _stage;
         private Game.Character.Player _player;
         private EquipmentSlot _weaponSlot;
@@ -290,6 +293,7 @@ namespace Nekoyume.UI
             inventory.SharedModel.UpdateEquipmentNotification();
             questButton.gameObject.SetActive(true);
             questButton.interactable = true;
+            coverToBlockClick.SetActive(false);
             HelpPopup.HelpMe(100004, true);
         }
 
@@ -497,6 +501,7 @@ namespace Nekoyume.UI
             StartCoroutine(CoQuestClick(repeat));
             questButton.interactable = false;
             repeatToggle.interactable = false;
+            coverToBlockClick.SetActive(true);
         }
 
         private IEnumerator CoQuestClick(bool repeat)
