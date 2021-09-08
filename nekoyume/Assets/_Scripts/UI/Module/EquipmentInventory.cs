@@ -9,6 +9,7 @@ using Nekoyume.State;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Scroller;
 using TMPro;
+using UniRx.Triggers;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -96,6 +97,7 @@ namespace Nekoyume.UI.Module
                 {
                     _grade = filter;
                     SortedData(_grade, _elemental);
+                    AudioController.PlayClick();
                 })
                 .AddTo(gameObject);
 
@@ -116,7 +118,13 @@ namespace Nekoyume.UI.Module
                 {
                     _elemental = filter;
                     SortedData(_grade, _elemental);
+                    AudioController.PlayClick();
                 })
+                .AddTo(gameObject);
+
+            gradeFilter.OnPointerClickAsObservable().Subscribe(_ => AudioController.PlayClick())
+                .AddTo(gameObject);
+            elementalFilter.OnPointerClickAsObservable().Subscribe(_ => AudioController.PlayClick())
                 .AddTo(gameObject);
         }
 

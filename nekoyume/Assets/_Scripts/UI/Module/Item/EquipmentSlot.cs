@@ -10,6 +10,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using Coffee.UIEffects;
 using System.Collections.Generic;
+using Nekoyume.Game.Controller;
 
 namespace Nekoyume.UI.Module
 {
@@ -350,9 +351,11 @@ namespace Nekoyume.UI.Module
             {
                 case 1:
                     _onClick?.Invoke(this);
+                    AudioController.PlayClick();
                     break;
                 case 2:
                     _onDoubleClick?.Invoke(this);
+                    // note : _onDoubleClick has another sfx, not `sfx_click`.
                     break;
             }
         }
