@@ -66,7 +66,8 @@ MonoBehaviour:
   - {fileID: 3642105214608156333}
   - {fileID: 8197547125620294889}
   textSize: {fileID: 122627736266227573}
-  text: {fileID: 6349302617784710487}
+  tempText: {fileID: 122627736266227573}
+  realText: {fileID: 6349302617784710487}
   speechSpeedInterval: 0.04
   speechWaitTime: 2
   bubbleTweenTime: 0.2
