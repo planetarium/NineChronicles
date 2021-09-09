@@ -41,7 +41,7 @@ namespace Nekoyume.UI
         protected override void OnDisable()
         {
             _forceFixed = false;
-            realText.text = tempText.text = string.Empty;
+            realText.text = string.Empty;
             KillTween();
             base.OnDisable();
         }
@@ -96,7 +96,7 @@ namespace Nekoyume.UI
 
         public virtual void Hide()
         {
-            realText.text = tempText.text = string.Empty;
+            realText.text = string.Empty;
             gameObject.SetActive(false);
         }
 
