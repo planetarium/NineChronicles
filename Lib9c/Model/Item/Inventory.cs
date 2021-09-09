@@ -847,13 +847,10 @@ namespace Nekoyume.Model.Item
 
         public void LockByReferringToDigestList(OrderDigestListState digestList, Guid tradableId, long blockIndex)
         {
-            var unlockItems = _items.Where(i => !i.Locked &&
-                                                i.item is ITradableFungibleItem item &&
-                                                item.TradableId.Equals(tradableId)).ToList();
+            var tradables = _items.Where(i.item is ITradableFungibleItem item && item.TradableId.Equals(tradableId)).ToList();
+            var unlockItems = tradables.Where(i => !i.Locked).ToList();
 
-            var lockItems = _items.Where(i => i.Locked &&
-                                              i.item is ITradableFungibleItem item &&
-                                              item.TradableId.Equals(tradableId)).ToList();
+            var lockItems = tradables.Where(i => i.Locked).ToList();
 
             var digests = digestList.OrderDigestList
                 .Where(digest => digest.TradableId.Equals(tradableId))
