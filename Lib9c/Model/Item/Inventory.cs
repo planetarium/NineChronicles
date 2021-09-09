@@ -422,6 +422,23 @@ namespace Nekoyume.Model.Item
         public bool RemoveNonFungibleItem(Guid nonFungibleId)
             => TryGetNonFungibleItem(nonFungibleId, out var item) && _items.Remove(item);
 
+        [Obsolete("Use RemoveNonFungibleItem(Guid nonFungibleId)")]
+        public bool RemoveNonFungibleItem2(Guid nonFungibleId)
+        {
+            var isRemoved = TryGetNonFungibleItem(nonFungibleId, out Item item);
+            if (!isRemoved) return false;
+
+            foreach (var element in _items)
+            {
+                if (element.item.Id == item.item.Id)
+                {
+                    _items.Remove(element);
+                    break;
+                }
+            }
+            return true;
+        }
+
         public bool RemoveTradableItem(ITradableItem tradableItem, int count = 1) =>
             RemoveTradableItem(tradableItem.TradableId, tradableItem.RequiredBlockIndex, count);
 
@@ -444,30 +461,6 @@ namespace Nekoyume.Model.Item
                 _items.Remove(target);
             }
 
-            return true;
-        }
-
-        public bool RemoveTradableFungibleItem(HashDigest<SHA256> fungibleId, int count = 1) =>
-            RemoveFungibleItem2(fungibleId, count, true);
-
-        [Obsolete("Use RemoveNonFungibleItem(INonFungibleItem nonFungibleItem)")]
-        public bool LegacyRemoveNonFungibleItem(Costume costume)
-            => LegacyRemoveNonFungibleItem(costume.ItemId);
-
-        [Obsolete("Use RemoveNonFungibleItem(Guid itemId)")]
-        public bool LegacyRemoveNonFungibleItem(Guid nonFungibleId)
-        {
-            var isRemoved = TryGetNonFungibleItem(nonFungibleId, out Item item);
-            if (!isRemoved) return false;
-
-            foreach (var element in _items)
-            {
-                if (element.item.Id == item.item.Id)
-                {
-                    _items.Remove(element);
-                    break;
-                }
-            }
             return true;
         }
 

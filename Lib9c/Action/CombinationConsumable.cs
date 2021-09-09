@@ -181,7 +181,7 @@ namespace Nekoyume.Action
                     }
 
                     materials[material] = count;
-                    avatarState.inventory.RemoveFungibleItem(material, count);
+                    avatarState.inventory.RemoveFungibleItem(material, context.BlockIndex, count);
                 }
                 else
                 {
@@ -198,7 +198,6 @@ namespace Nekoyume.Action
             {
                 materials = materials,
                 itemType = ItemType.Consumable,
-
             };
 
             var costAP = recipeRow.RequiredActionPoint;

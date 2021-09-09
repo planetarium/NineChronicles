@@ -108,10 +108,10 @@ namespace Nekoyume.Action
                 throw new SheetRowNotFoundException(addressesHex, nameof(MaterialItemSheet), recipe.MaterialId);
             }
 
-            if (!avatarState.inventory.RemoveFungibleItem(material.ItemId, recipe.MaterialCount))
+            if (!avatarState.inventory.RemoveFungibleItem(material.ItemId, context.BlockIndex, recipe.MaterialCount))
             {
                 throw new NotEnoughMaterialException(
-                    $"{addressesHex}Aborted as the player has no enough material ({material} * {recipe.MaterialCount})"
+                    $"{addressesHex}Aborted as the player has no enough material ({material} * {recipe.MaterialCount}). BlockIndex({context.BlockIndex})"
                 );
             }
 
@@ -157,11 +157,13 @@ namespace Nekoyume.Action
                         throw new SheetRowNotFoundException(addressesHex, nameof(MaterialItemSheet), materialInfo.Id);
                     }
 
-                    if (!avatarState.inventory.RemoveFungibleItem(subMaterialRow.ItemId,
+                    if (!avatarState.inventory.RemoveFungibleItem(
+                        subMaterialRow.ItemId,
+                        context.BlockIndex,
                         materialInfo.Count))
                     {
                         throw new NotEnoughMaterialException(
-                            $"{addressesHex}Aborted as the player has no enough material ({subMaterialRow} * {materialInfo.Count})"
+                            $"{addressesHex}Aborted as the player has no enough material ({subMaterialRow} * {materialInfo.Count}). BlockIndex({context.BlockIndex})"
                         );
                     }
 
