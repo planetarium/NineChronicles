@@ -205,7 +205,7 @@ namespace Nekoyume.UI
                 yield return new WaitForSeconds(speechWaitTime);
                 yield return new WaitWhile(() => forceFixed);
 
-                realText.text = tempText.text = string.Empty;
+                realText.text = string.Empty;
                 textSize.rectTransform.DOScale(0.0f, bubbleTweenTime).SetEase(Ease.InBack);
                 yield return new WaitForSeconds(bubbleTweenTime);
             }
