@@ -110977,12 +110977,19 @@ PrefabInstance:
       propertyPath: m_LocalScale.z
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 7477101674795470996, guid: 5d868248d41888644bba6cbfa759c9f0,
+        type: 3}
+      propertyPath: m_Particles.Array.data[0]
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 8744368677755501508, guid: 5d868248d41888644bba6cbfa759c9f0,
         type: 3}
       propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 4190502120024296605, guid: 5d868248d41888644bba6cbfa759c9f0, type: 3}
+    - {fileID: 671130295737589718, guid: 5d868248d41888644bba6cbfa759c9f0, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 5d868248d41888644bba6cbfa759c9f0, type: 3}
 --- !u!224 &2613258689465047373 stripped
 RectTransform:
@@ -112107,6 +112114,11 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 7477101674795470996, guid: 5d868248d41888644bba6cbfa759c9f0,
+        type: 3}
+      propertyPath: m_Particles.Array.data[0]
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 7947069589050151860, guid: 5d868248d41888644bba6cbfa759c9f0,
         type: 3}
       propertyPath: m_Enabled
@@ -112117,7 +112129,9 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 4190502120024296605, guid: 5d868248d41888644bba6cbfa759c9f0, type: 3}
+    - {fileID: 671130295737589718, guid: 5d868248d41888644bba6cbfa759c9f0, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 5d868248d41888644bba6cbfa759c9f0, type: 3}
 --- !u!114 &6429070273133382742 stripped
 MonoBehaviour:
@@ -112279,12 +112293,19 @@ PrefabInstance:
       propertyPath: m_LocalScale.z
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 7477101674795470996, guid: 5d868248d41888644bba6cbfa759c9f0,
+        type: 3}
+      propertyPath: m_Particles.Array.data[0]
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 8744368677755501508, guid: 5d868248d41888644bba6cbfa759c9f0,
         type: 3}
       propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 4190502120024296605, guid: 5d868248d41888644bba6cbfa759c9f0, type: 3}
+    - {fileID: 671130295737589718, guid: 5d868248d41888644bba6cbfa759c9f0, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 5d868248d41888644bba6cbfa759c9f0, type: 3}
 --- !u!114 &6314197635888546990 stripped
 MonoBehaviour:
