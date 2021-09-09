@@ -297,7 +297,6 @@ namespace Nekoyume.UI
 
             Close(true);
             Find<RankingBoard>().Show();
-            Find<HeaderMenu>().UpdateAssets(HeaderMenu.AssetVisibleState.Battle);
             AudioController.PlayClick();
         }
 
