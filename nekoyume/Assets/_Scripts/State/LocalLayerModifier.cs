@@ -713,13 +713,9 @@ namespace Nekoyume.State
             var requiredBlockIndex = blockIndex + 1;
 
             var avatarAddress = States.Instance.CurrentAvatarState.address;
-            var avatarState = States.Instance.GetAvatarStateV2(avatarAddress);
-            if (!avatarState.inventory.TryGetNonFungibleItem(baseMaterialGuid, out ItemUsable item))
-            {
-                return;
-            }
-
-            if (!(item is Equipment equipment))
+            if (!States.TryGetAvatarState(avatarAddress, out var avatarState) ||
+                !avatarState.inventory.TryGetNonFungibleItem(baseMaterialGuid, out ItemUsable item) ||
+                !(item is Equipment equipment))
             {
                 return;
             }
@@ -847,7 +843,7 @@ namespace Nekoyume.State
                 avatarAddress,
                 outKey,
                 isCurrentAvatarState);
-            return true;
+            return outAvatarState != null;
         }
     }
 }
