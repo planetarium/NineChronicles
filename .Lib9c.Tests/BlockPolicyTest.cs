@@ -771,6 +771,10 @@ namespace Lib9c.Tests
                 where T : IAction, new()
             {
             }
+
+            public void Dispose()
+            {
+            }
         }
     }
 }
