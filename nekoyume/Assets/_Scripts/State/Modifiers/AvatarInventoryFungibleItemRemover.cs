@@ -109,7 +109,10 @@ namespace Nekoyume.State.Modifiers
 
             foreach (var pair in innerDictionary.Value)
             {
-                state.inventory.RemoveFungibleItem(pair.Key.Value, pair.Value);
+                state.inventory.RemoveFungibleItem(
+                    pair.Key.Value,
+                    Game.Game.instance.Agent.BlockIndex,
+                    pair.Value);
             }
 
             return state;
