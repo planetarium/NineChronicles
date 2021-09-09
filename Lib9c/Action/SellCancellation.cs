@@ -138,7 +138,7 @@ namespace Nekoyume.Action
             // migration method
             avatarState.inventory.UnlockInvalidSlot(digestList, context.Signer, sellerAvatarAddress);
             avatarState.inventory.ReconfigureFungibleItem(digestList, tradableId);
-            avatarState.inventory.TestMig(digestList, tradableId, context.BlockIndex);
+            avatarState.inventory.LockByReferringToDigestList(digestList, tradableId, context.BlockIndex);
             //
 
             digestList.Remove(orderId);
