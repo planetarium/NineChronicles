@@ -1,5 +1,7 @@
 namespace Lib9c.Tests
 {
+    using System.Collections.Generic;
+    using System.Linq;
     using System.Security.Cryptography;
     using System.Threading.Tasks;
     using Libplanet;
@@ -15,6 +17,7 @@ namespace Lib9c.Tests
     using Nekoyume.BlockChain;
     using Serilog.Core;
     using Xunit;
+    using NCAction = Libplanet.Action.PolymorphicAction<Nekoyume.Action.ActionBase>;
 
     public class MinerTest
     {
@@ -24,15 +27,15 @@ namespace Lib9c.Tests
             using var store = new DefaultStore(null);
             using var stateStore = new TrieStateStore(new DefaultKeyValueStore(null), new DefaultKeyValueStore(null));
             var blockPolicySource = new BlockPolicySource(Logger.None);
-            var genesis = BlockChain<PolymorphicAction<ActionBase>>.MakeGenesisBlock(HashAlgorithmType.Of<SHA256>());
-            var blockChain = new BlockChain<PolymorphicAction<ActionBase>>(
+            var genesis = BlockChain<NCAction>.MakeGenesisBlock(HashAlgorithmType.Of<SHA256>());
+            var blockChain = new BlockChain<NCAction>(
                 blockPolicySource.GetPolicy(
                     minimumDifficulty: 50_000,
                     maximumTransactions: 100,
                     permissionedMiningPolicy: null,
                     ignoreHardcodedPolicies: true
                 ),
-                new VolatileStagePolicy<PolymorphicAction<ActionBase>>(),
+                new VolatileStagePolicy<NCAction>(),
                 store,
                 stateStore,
                 genesis,
@@ -41,10 +44,27 @@ namespace Lib9c.Tests
 
             var minerKey = new PrivateKey();
             var miner = new Miner(blockChain, null, minerKey, false);
-            Block<PolymorphicAction<ActionBase>> mined = await miner.MineBlockAsync(100, default);
-            Transaction<PolymorphicAction<ActionBase>> tx = Assert.Single(mined.Transactions);
+            Block<NCAction> mined = await miner.MineBlockAsync(100, default);
+            Transaction<NCAction> tx = Assert.Single(mined.Transactions);
 
             Assert.Equal(miner.Address, tx.Signer);
+        }
+
+        [Fact]
+        public void GetProofTxPriority()
+        {
+            BlockHash genesis = default(BlockHash);
+            NCAction[] actions = new NCAction[0];
+            Transaction<NCAction>[] txs = Enumerable.Range(0, 100)
+                .Select(_ => Transaction<NCAction>.Create(0, new PrivateKey(), genesis, actions))
+                .ToArray();
+
+            for (int i = 0; i < 100; i += 5)
+            {
+                Transaction<NCAction> proof = txs[i];
+                IComparer<Transaction<NCAction>> txPriority = Miner.GetProofTxPriority(proof);
+                Assert.Same(proof, txs.OrderBy(tx => tx, txPriority).First());
+            }
         }
     }
 }

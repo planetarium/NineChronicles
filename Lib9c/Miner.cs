@@ -84,14 +84,19 @@ namespace Nekoyume.BlockChain
                     _chain.UnstageTransaction(tx);
                 }
 
-                // All miner needs proof in permissioned mining.
-                StageProofTransaction();
+                // All miner needs proof in permissioned mining:
+                Transaction<NCAction> proof = StageProofTransaction();
+
+                // Proof txs have priority over other txs:
+                IComparer<Transaction<NCAction>> txPriority = GetProofTxPriority(proof);
+
                 block = await _chain.MineBlock(
                     Address,
                     DateTimeOffset.UtcNow,
                     cancellationToken: cancellationToken,
                     maxTransactions: maxTransactions,
-                    append: false);
+                    append: false,
+                    txPriority: txPriority);
 
                 _chain.Append(block);
                 if (_swarm is Swarm<NCAction> s && s.Running)
@@ -149,5 +154,12 @@ namespace Nekoyume.BlockChain
             _privateKey = privateKey;
             AuthorizedMiner = authorizedMiner;
         }
+
+        public static IComparer<Transaction<NCAction>> GetProofTxPriority(
+            Transaction<NCAction> proofTx
+        ) =>
+            Comparer<Transaction<NCAction>>.Create(
+                (a, b) => a.Id.Equals(proofTx.Id) ? -1 : (b.Id.Equals(proofTx.Id) ? 1 : 0)
+            );
     }
 }
