@@ -9009,15 +9009,15 @@ AnimationClip:
   m_HasMotionFloatCurves: 0
   m_Events:
   - time: 0
-    functionName: OnAnimatorStateBeginning
-    data: GreatSuccess
+    functionName: OnRequestPlaySFX
+    data: sfx_great_success_drum
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 0
     messageOptions: 0
   - time: 0
-    functionName: OnRequestPlaySFX
-    data: sfx_great_success_drum
+    functionName: OnAnimatorStateBeginning
+    data: GreatSuccess
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 0
@@ -9057,28 +9057,28 @@ AnimationClip:
     floatParameter: 0
     intParameter: 0
     messageOptions: 0
-  - time: 2.3666666
+  - time: 2.4166667
     functionName: HideOptionIcon
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 0
     messageOptions: 0
-  - time: 2.5166667
+  - time: 2.5
     functionName: HideOptionIcon
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 1
     messageOptions: 0
-  - time: 2.7
+  - time: 2.5833333
     functionName: HideOptionIcon
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 2
     messageOptions: 0
-  - time: 2.8666666
+  - time: 2.6666667
     functionName: HideOptionIcon
     data: 
     objectReferenceParameter: {fileID: 0}
