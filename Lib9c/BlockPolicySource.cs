@@ -90,6 +90,7 @@ namespace Nekoyume.BlockChain
                 blockInterval: _blockInterval,
                 minimumDifficulty: minimumDifficulty,
                 difficultyBoundDivisor: DifficultyBoundDivisor,
+                minTransactionsPerBlock: 0,
                 maxTransactionsPerBlock: maximumTransactions,
                 maxBlockBytes: MaxBlockBytes,
                 maxGenesisBytes: MaxGenesisBytes,
