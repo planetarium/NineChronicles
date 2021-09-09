@@ -800,6 +800,12 @@ namespace Nekoyume.Model.Item
             var tradableFungibleItems = _items.Where(i => i.Locked &&
                                                           i.item is ITradableFungibleItem item &&
                                                           item.TradableId.Equals(tradableId)).ToList();
+
+            var digests = digestList.OrderDigestList
+                .Where(digest => digest.TradableId.Equals(tradableId))
+                .OrderByDescending(digest=> digest.ExpiredBlockIndex)
+                .ToList();
+
             if (tradableFungibleItems.Count <= 0)
             {
                 return;
@@ -811,10 +817,7 @@ namespace Nekoyume.Model.Item
             }
 
             var preItemCount = tradableFungibleItems.Sum(x => x.count);
-            var digests = digestList.OrderDigestList
-                                                   .Where(digest => digest.TradableId.Equals(tradableId))
-                                                   .OrderByDescending(digest=> digest.ExpiredBlockIndex)
-                                                   .ToList();
+
             foreach (var digest in digests)
             {
                 if (preItemCount <= 0)
@@ -839,6 +842,78 @@ namespace Nekoyume.Model.Item
                                 "OrderId : {orderId} / itemId : {itemId} / " +
                                 "preItemCount : {preItemCount} / itemCount : {itemCount}",
                     agentAddress, orderId, itemId, preItemCount, itemCount);
+            }
+        }
+
+        public void LockByReferringToDigestList(OrderDigestListState digestList, Guid tradableId, long blockIndex)
+        {
+            var tradables = _items.Where(i => i.item is ITradableFungibleItem item && item.TradableId.Equals(tradableId)).ToList();
+            var unlockItems = tradables.Where(i => !i.Locked).ToList();
+            var lockItems = tradables.Where(i => i.Locked).ToList();
+
+            var digests = digestList.OrderDigestList
+                .Where(digest => digest.TradableId.Equals(tradableId))
+                .OrderByDescending(digest=> digest.ExpiredBlockIndex)
+                .ToList();
+
+            var selectedDigests = digests.Where(x => x.ExpiredBlockIndex > blockIndex &&
+                                                     !lockItems.Exists(y => y.Lock.Equals(new OrderLock(x.OrderId)))).ToList();
+
+            var totalCount = unlockItems.Sum(x => x.count);
+
+            var digestTotalCount = selectedDigests.Sum(x => x.ItemCount);
+
+            if (digestTotalCount <= 0)
+            {
+                return;
+            }
+
+            if (totalCount < digestTotalCount)
+            {
+                return;
+            }
+
+            foreach (var item in unlockItems)
+            {
+                _items.Remove(item);
+            }
+            var unlockItemClone = (ITradableFungibleItem)((ITradableFungibleItem)unlockItems.First().item).Clone();
+            var newUnlockItem = new Item((ItemBase)unlockItemClone, totalCount);
+            _items.Add(newUnlockItem);
+
+            var selectedItems = _items.Where(i => !i.Locked &&
+                                                          i.item is ITradableFungibleItem item &&
+                                                          item.TradableId.Equals(tradableId)).ToList();
+            if (selectedItems.Count != 1)
+            {
+                // Failed to merge into one item
+                return;
+            }
+
+            Log.Information("[LockByReferringToDigestList] " +
+                            "totalCount : {totalCount} / digestTotalCount : {digestTotalCount}",
+                totalCount, digestTotalCount);
+            var selectedItem = selectedItems.First();
+            foreach (var selectedDigest in selectedDigests)
+            {
+                selectedItem.count -= selectedDigest.ItemCount;
+                var selectedItemClone = (ITradableFungibleItem)((ITradableFungibleItem)selectedItem.item).Clone();
+                selectedItemClone.RequiredBlockIndex = selectedDigest.ExpiredBlockIndex;
+                var newItem = new Item((ItemBase)selectedItemClone, selectedDigest.ItemCount);
+                newItem.LockUp(new OrderLock(selectedDigest.OrderId));
+                _items.Add(newItem);
+
+                // for log
+                var agentAddress = selectedDigest.SellerAgentAddress;
+                var orderId = selectedDigest.OrderId;
+                var itemId = selectedDigest.ItemId;
+                var itemCount = selectedDigest.ItemCount;
+                Log.Information("[LockByReferringToDigestList] " +
+                                "agentAddress : {agentAddress} /" +
+                                "OrderId : {orderId} / " +
+                                "itemId : {itemId} / " +
+                                "itemCount : {itemCount}",
+                    agentAddress, orderId, itemId, itemCount);
             }
         }
     }
