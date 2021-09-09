@@ -488,14 +488,21 @@ namespace Nekoyume.UI
                 infos = infos.ToImmutableHashSet().OrderBy(tuple => tuple.rank).ToList();
             }
 
-            _weeklyCachedInfo = infos.Select(tuple =>
-            {
-                var avatarState = States.Instance.GetAvatarStateV2(tuple.arenaInfo.AvatarAddress);
-                var characterSheet = Game.Game.instance.TableSheets.CharacterSheet;
-                var costumeStatSheet = Game.Game.instance.TableSheets.CostumeStatSheet;
-                tuple.arenaInfo.Update(avatarState, characterSheet, costumeStatSheet);
-                return tuple;
-            }).ToList();
+            _weeklyCachedInfo = infos
+                .Select(tuple =>
+                {
+                    if (!States.TryGetAvatarState(tuple.arenaInfo.AvatarAddress, out var avatarState))
+                    {
+                        return (0, null);
+                    }
+
+                    var characterSheet = Game.Game.instance.TableSheets.CharacterSheet;
+                    var costumeStatSheet = Game.Game.instance.TableSheets.CostumeStatSheet;
+                    tuple.arenaInfo.Update(avatarState, characterSheet, costumeStatSheet);
+                    return tuple;
+                })
+                .Where(tuple => tuple.rank > 0)
+                .ToList();
         }
     }
 }

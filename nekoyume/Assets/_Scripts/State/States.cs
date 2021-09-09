@@ -121,32 +121,50 @@ namespace Nekoyume.State
             AgentStateSubject.OnNextGold(GoldBalanceState.Gold);
         }
 
-        public AvatarState AddOrReplaceAvatarState(Address avatarAddress, int index, bool initializeReactiveState = true)
-        {
-            var state = GetAvatarStateV2(avatarAddress);
-            return AddOrReplaceAvatarState(state, index, initializeReactiveState);
-        }
+        public AvatarState AddOrReplaceAvatarState(
+            Address avatarAddress,
+            int index,
+            bool initializeReactiveState = true) =>
+            TryGetAvatarState(avatarAddress, out var avatarState)
+                ? AddOrReplaceAvatarState(avatarState, index, initializeReactiveState)
+                : null;
 
-        public AvatarState GetAvatarStateV2(Address address)
+        public static bool TryGetAvatarState(Address address, out AvatarState avatarState)
         {
-            string[] keys =
+            avatarState = null;
+            var agent = Game.Game.instance.Agent;
+            var avatarStateValue = agent.GetState(address);
+            if (!(avatarStateValue is Bencodex.Types.Dictionary dict))
+            {
+                Debug.LogError("Failed to get AvatarState");
+                return false;
+            }
+
+            if (dict.ContainsKey(LegacyInventoryKey))
+            {
+                avatarState = new AvatarState(dict);
+                return true;
+            }
+
+            foreach (var key in new[]
             {
                 LegacyInventoryKey,
                 LegacyWorldInformationKey,
                 LegacyQuestListKey,
-            };
-
-            var state = (Dictionary) Game.Game.instance.Agent.GetState(address);
-            foreach (var key in keys)
+            })
             {
-                if (!state.ContainsKey(key))
+                var address2 = address.Derive(key);
+                var value = agent.GetState(address2);
+                if (value is null)
                 {
-                    var keyAddress = address.Derive(key);
-                    var serialized = Game.Game.instance.Agent.GetState(keyAddress);
-                    state = state.SetItem(key, serialized);
+                    continue;
                 }
+
+                dict = dict.SetItem(key, value);
             }
-            return  new AvatarState(state);
+
+            avatarState = new AvatarState(dict);
+            return true;
         }
 
         /// <summary>
@@ -225,8 +243,11 @@ namespace Nekoyume.State
 
             if (isNew)
             {
-                var state = GetAvatarStateV2(avatarState.address);
-                var curAvatarState = new AvatarState(state);
+                if (!TryGetAvatarState(avatarState.address, out var curAvatarState))
+                {
+                    return null;
+                }
+
                 AddOrReplaceAvatarState(curAvatarState, CurrentAvatarKey);
                 SetCombinationSlotStates(curAvatarState);
             }
