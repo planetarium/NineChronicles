@@ -162,8 +162,6 @@ namespace Nekoyume.UI
 
                 // 팝업 영역.
                 Widget.Create<Settings>(),
-                Widget.Create<OneButtonPopup>(),
-                Widget.Create<TwoButtonPopup>(),
 
                 // 팝업 영역: 알림.
                 Widget.Create<UpdatePopup>(),
@@ -292,6 +290,10 @@ namespace Nekoyume.UI
             yield return null;
 
             // popup
+            secondWidgets.Add(Widget.Create<OneButtonPopup>());
+            yield return null;
+            secondWidgets.Add(Widget.Create<TwoButtonPopup>());
+            yield return null;
             secondWidgets.Add(Widget.Create<CombinationSlotPopup>());
             yield return null;
             secondWidgets.Add(Widget.Create<CombinationResultPopup>());
