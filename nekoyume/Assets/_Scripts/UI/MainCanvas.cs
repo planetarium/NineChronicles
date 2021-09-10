@@ -162,8 +162,6 @@ namespace Nekoyume.UI
 
                 // 팝업 영역.
                 Widget.Create<Settings>(),
-                Widget.Create<OneButtonPopup>(),
-                Widget.Create<TwoButtonPopup>(),
 
                 // 팝업 영역: 알림.
                 Widget.Create<UpdatePopup>(),
@@ -177,6 +175,8 @@ namespace Nekoyume.UI
                 Widget.Create<Notification>(true),
                 Widget.Create<OneLinePopup>(true),
                 Widget.Create<VersionInfo>(true),
+                Widget.Create<OneButtonPopup>(),
+                Widget.Create<TwoButtonPopup>(),
             };
 
             foreach (var value in firstWidgets)
