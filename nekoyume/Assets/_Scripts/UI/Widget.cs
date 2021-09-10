@@ -83,7 +83,7 @@ namespace Nekoyume.UI
             CloseWidget = () => Close();
             SubmitWidget = null;
 
-            AnimationState.Subscribe(type =>
+            AnimationState.Subscribe(stateType =>
             {
                 var fields = GetType().GetFields(System.Reflection.BindingFlags.NonPublic |
                                                  System.Reflection.BindingFlags.Instance);
@@ -91,7 +91,7 @@ namespace Nekoyume.UI
                     .Where(field => field is UnityEngine.UI.Selectable))
                 {
                     ((UnityEngine.UI.Selectable) selectable).interactable =
-                        type == AnimationStateType.Shown;
+                        stateType == AnimationStateType.Shown;
                 }
             }).AddTo(gameObject);
         }
