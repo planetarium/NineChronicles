@@ -175,6 +175,8 @@ namespace Nekoyume.UI
                 Widget.Create<Notification>(true),
                 Widget.Create<OneLinePopup>(true),
                 Widget.Create<VersionInfo>(true),
+                Widget.Create<OneButtonPopup>(true),
+                Widget.Create<TwoButtonPopup>(true),
             };
 
             foreach (var value in firstWidgets)
@@ -290,10 +292,6 @@ namespace Nekoyume.UI
             yield return null;
 
             // popup
-            secondWidgets.Add(Widget.Create<OneButtonPopup>());
-            yield return null;
-            secondWidgets.Add(Widget.Create<TwoButtonPopup>());
-            yield return null;
             secondWidgets.Add(Widget.Create<CombinationSlotPopup>());
             yield return null;
             secondWidgets.Add(Widget.Create<CombinationResultPopup>());
