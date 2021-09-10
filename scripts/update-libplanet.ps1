@@ -2,7 +2,8 @@ $9cRoot = git rev-parse --show-toplevel
 $LibplanetRoot = Join-Path -Path $9cRoot -ChildPath "nekoyume/Assets/_Scripts/Lib9c/lib9c/.Libplanet"
 $LibplanetRocksDBStorePath = Join-Path -Path $LibplanetRoot -ChildPath "Libplanet.RocksDBStore/"
 $LibplanetRocksDBStoreProj = Join-Path -Path $LibplanetRocksDBStorePath -ChildPath "Libplanet.RocksDBStore.csproj"
-$TempOutputPath = Join-Path -Path $env:TEMP -ChildPath $(New-Guid)
+$tempDir = [System.IO.Path]::GetTempPath()
+$TempOutputPath = Join-Path -Path $tempDir -ChildPath $(New-Guid)
 $PackagePath = Join-Path -Path $9cRoot -ChildPath "nekoyume/Assets/Packages/"
 
 git submodule update --recursive
