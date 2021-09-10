@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Globalization;
 using Bencodex.Types;
 using Libplanet;
@@ -125,25 +126,41 @@ namespace Nekoyume.State
             Address avatarAddress,
             int index,
             bool initializeReactiveState = true) =>
-            TryGetAvatarState(avatarAddress, out var avatarState)
+            TryGetAvatarState(avatarAddress, true, out var avatarState)
                 ? AddOrReplaceAvatarState(avatarState, index, initializeReactiveState)
                 : null;
 
-        public static bool TryGetAvatarState(Address address, out AvatarState avatarState)
+        public static bool TryGetAvatarState(Address address, out AvatarState avatarState) =>
+            TryGetAvatarState(address, false, out avatarState);
+
+        public static bool TryGetAvatarState(Address address, bool allowBrokenState, out AvatarState avatarState)
         {
-            avatarState = null;
+            try
+            {
+                avatarState = GetAvatarState(address, allowBrokenState);
+                return true;
+            }
+            catch (Exception e)
+            {
+                Debug.LogWarning($"{e.GetType().FullName}: {e.Message} address({address.ToHex()})\n{e.StackTrace}");
+                avatarState = null;
+                return false;
+            }
+        }
+
+        private static AvatarState GetAvatarState(Address address, bool allowBrokenState)
+        {
             var agent = Game.Game.instance.Agent;
             var avatarStateValue = agent.GetState(address);
             if (!(avatarStateValue is Bencodex.Types.Dictionary dict))
             {
-                Debug.LogError("Failed to get AvatarState");
-                return false;
+                Debug.LogWarning("Failed to get AvatarState");
+                throw new FailedLoadStateException($"Failed to get AvatarState: {address.ToHex()}");
             }
 
-            if (dict.ContainsKey(LegacyInventoryKey))
+            if (dict.ContainsKey(LegacyNameKey))
             {
-                avatarState = new AvatarState(dict);
-                return true;
+                return new AvatarState(dict);
             }
 
             foreach (var key in new[]
@@ -157,14 +174,19 @@ namespace Nekoyume.State
                 var value = agent.GetState(address2);
                 if (value is null)
                 {
+                    if (allowBrokenState &&
+                        dict.ContainsKey(key))
+                    {
+                        dict = new Bencodex.Types.Dictionary(dict.Remove((Text)key));
+                    }
+
                     continue;
                 }
 
                 dict = dict.SetItem(key, value);
             }
 
-            avatarState = new AvatarState(dict);
-            return true;
+            return new AvatarState(dict);
         }
 
         /// <summary>
