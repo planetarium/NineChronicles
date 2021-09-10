@@ -48,10 +48,10 @@ namespace Nekoyume.UI
                 return;
             }
 
-            if (!States.Instance.AvatarStates.TryGetValue(index, out var avatarState) ||
-                avatarState.inventory == null ||
-                avatarState.questList == null ||
-                avatarState.worldInformation == null)
+            if (States.Instance.AvatarStates.TryGetValue(index, out var avatarState) &&
+                (avatarState.inventory == null ||
+                 avatarState.questList == null ||
+                 avatarState.worldInformation == null))
             {
                 Notification.Push(MailType.System, L10nManager.Localize("NOTIFICATION_CHARACTER_IS_BEING_RESTORED"));
                 return;
