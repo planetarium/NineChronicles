@@ -208,10 +208,10 @@ namespace Nekoyume
             CloseWidget = null;
         }
 
-        protected override void Update()
-        {
-            UpdateInput();
-        }
+        // protected override void Update()
+        // {
+        //     UpdateInput();
+        // }
 
         public override void Show(bool ignoreShowAnimation = false)
         {
