@@ -175,8 +175,8 @@ namespace Nekoyume.UI
                 Widget.Create<Notification>(true),
                 Widget.Create<OneLinePopup>(true),
                 Widget.Create<VersionInfo>(true),
-                Widget.Create<OneButtonPopup>(true),
-                Widget.Create<TwoButtonPopup>(true),
+                Widget.Create<OneButtonPopup>(),
+                Widget.Create<TwoButtonPopup>(),
             };
 
             foreach (var value in firstWidgets)
