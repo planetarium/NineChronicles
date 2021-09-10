@@ -15,7 +15,8 @@ namespace Nekoyume.UI
         public Transform bubbleContainer;
         public Image[] bubbleImages;
         public TextMeshProUGUI textSize;
-        public TextMeshProUGUI text;
+        public TextMeshProUGUI tempText;
+        public TextMeshProUGUI realText;
         public float speechSpeedInterval = 0.02f;
         public float speechWaitTime = 1.0f;
         public float bubbleTweenTime = 0.2f;
@@ -40,7 +41,7 @@ namespace Nekoyume.UI
         protected override void OnDisable()
         {
             _forceFixed = false;
-            text.text = string.Empty;
+            realText.text = string.Empty;
             KillTween();
             base.OnDisable();
         }
@@ -95,7 +96,7 @@ namespace Nekoyume.UI
 
         public virtual void Hide()
         {
-            text.text = string.Empty;
+            realText.text = string.Empty;
             gameObject.SetActive(false);
         }
 
@@ -107,7 +108,7 @@ namespace Nekoyume.UI
             }
 
             KillTween();
-            text.text = string.Empty;
+            realText.text = tempText.text = string.Empty;
             gameObject.SetActive(true);
         }
 
@@ -135,7 +136,7 @@ namespace Nekoyume.UI
         private IEnumerator ShowText(string speech, bool instant, bool forceFixed)
         {
             _forceFixed = forceFixed;
-            text.text = string.Empty;
+            tempText.text = string.Empty;
             var breakTime = speechBreakTime;
             if (!string.IsNullOrEmpty(speech))
             {
@@ -148,7 +149,7 @@ namespace Nekoyume.UI
                 else
                     SetBubbleImage(0);
 
-                textSize.text = speech;
+                tempText.text = textSize.text = speech;
                 textSize.rectTransform.DOScale(0.0f, 0.0f);
                 textSize.rectTransform.DOScale(1.0f, bubbleTweenTime).SetEase(Ease.OutBack);
 
@@ -182,13 +183,13 @@ namespace Nekoyume.UI
 
                 if (instant)
                 {
-                    text.text = speech;
+                    realText.text = speech;
                 }
                 else
                 {
                     for (var i = 1; i <= speech.Length; ++i)
                     {
-                        text.text = i == speech.Length
+                        realText.text = i == speech.Length
                             ? $"{speech.Substring(0, i)}"
                             : $"{speech.Substring(0, i)}<alpha=#00>{speech.Substring(i)}";
                         yield return new WaitForSeconds(speechSpeedInterval);
@@ -204,7 +205,7 @@ namespace Nekoyume.UI
                 yield return new WaitForSeconds(speechWaitTime);
                 yield return new WaitWhile(() => forceFixed);
 
-                text.text = string.Empty;
+                realText.text = string.Empty;
                 textSize.rectTransform.DOScale(0.0f, bubbleTweenTime).SetEase(Ease.InBack);
                 yield return new WaitForSeconds(bubbleTweenTime);
             }

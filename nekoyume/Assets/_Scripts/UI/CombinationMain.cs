@@ -1,5 +1,6 @@
 using DG.Tweening;
 using Nekoyume.EnumType;
+using Nekoyume.Game;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using UnityEngine;
@@ -9,11 +10,23 @@ namespace Nekoyume.UI
 {
     public class CombinationMain : Widget
     {
-        [SerializeField] private Button combineButton = null;
-        [SerializeField] private Button upgradeButton = null;
-        [SerializeField] private Button closeButton = null;
-        [SerializeField] private Image craftNotificationImage = null;
-        [SerializeField] private Transform npcPosition = null;
+        [SerializeField]
+        private Button combineButton = null;
+
+        [SerializeField]
+        private Button upgradeButton = null;
+
+        [SerializeField]
+        private Button closeButton = null;
+
+        [SerializeField]
+        private Image craftNotificationImage = null;
+
+        [SerializeField]
+        private Transform npcPosition = null;
+
+        [SerializeField]
+        private SpeechBubble speechBubble = null;
 
         private NPC _npc = null;
         private const int NPCID = 300001;
@@ -47,6 +60,8 @@ namespace Nekoyume.UI
                 Close(true);
                 Game.Event.OnRoomEnter.Invoke(true);
             };
+
+            speechBubble.SetKey("SPEECH_COMBINE_EQUIPMENT_");
         }
 
         public override void Show(bool ignoreShowAnimation = false)
@@ -73,6 +88,7 @@ namespace Nekoyume.UI
 
             NPCShowAnimation();
             HelpPopup.HelpMe(100007, true);
+            StartCoroutine(speechBubble.CoShowText(true));
         }
 
         public override void Close(bool ignoreCloseAnimation = false)

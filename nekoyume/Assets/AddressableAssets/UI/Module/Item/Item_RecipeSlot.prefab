@@ -1040,6 +1040,7 @@ MonoBehaviour:
   selectedObject: {fileID: 4423364714699765298}
   lockObject: {fileID: 6706624862869275031}
   lockVFXObject: {fileID: 4187752526587129867}
+  lockOpenVFXObject: {fileID: 6942684687364404803}
   indicatorObject: {fileID: 4301618597938750152}
   unlockConditionText: {fileID: 2566518020154693237}
   button: {fileID: 2408656741481977993}
@@ -2100,6 +2101,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: feb9b77b2718d457db0aa446ad50517a, type: 3}
+--- !u!1 &6942684687364404803 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6323760130086865249, guid: feb9b77b2718d457db0aa446ad50517a,
+    type: 3}
+  m_PrefabInstance: {fileID: 4007038895097986850}
+  m_PrefabAsset: {fileID: 0}
 --- !u!224 &2013257748436780099 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 3200752997128584033, guid: feb9b77b2718d457db0aa446ad50517a,
