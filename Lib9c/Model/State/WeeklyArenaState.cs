@@ -474,6 +474,31 @@ namespace Nekoyume.Model.State
             return Score - current;
         }
 
+        public int Update(AvatarState avatarState, ArenaInfo enemyInfo, BattleLog.Result result)
+        {
+            switch (result)
+            {
+                case BattleLog.Result.Win:
+                    ArenaRecord.Win++;
+                    break;
+                case BattleLog.Result.Lose:
+                    ArenaRecord.Lose++;
+                    break;
+                case BattleLog.Result.TimeOver:
+                    ArenaRecord.Draw++;
+                    return 0;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(result), result, null);
+            }
+
+            DailyChallengeCount--;
+            ArmorId = avatarState.GetArmorId();
+            Level = avatarState.level;
+            var earnedScore = ArenaScoreHelper.GetScore(Score, enemyInfo.Score, result);
+            Score = Math.Max(1000, Score + earnedScore);
+            return earnedScore;
+        }
+
         public void Activate()
         {
             Active = true;
