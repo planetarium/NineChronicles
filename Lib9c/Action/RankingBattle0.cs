@@ -16,7 +16,6 @@ using Serilog;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionObsolete(BlockChain.BlockPolicySource.V100066ObsoleteIndex)]
     [ActionType("ranking_battle")]
     public class RankingBattle0 : GameAction
     {
@@ -43,8 +42,6 @@ namespace Nekoyume.Action
                     .SetState(ctx.Signer, MarkChanged)
                     .MarkBalanceChanged(GoldCurrencyMock, ctx.Signer, WeeklyArenaAddress);
             }
-
-            CheckObsolete(BlockChain.BlockPolicySource.V100066ObsoleteIndex, context);
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, AvatarAddress, EnemyAddress);
 
@@ -156,13 +153,13 @@ namespace Nekoyume.Action
                 arenaInfo,
                 weeklyArenaState[EnemyAddress]);
 
-            simulator.Simulate();
+            simulator.Simulate2();
 
             Result = simulator.Log;
 
             foreach (var itemBase in simulator.Reward.OrderBy(i => i.Id))
             {
-                avatarState.inventory.AddItem(itemBase);
+                avatarState.inventory.AddItem2(itemBase);
             }
 
             return states

@@ -137,20 +137,29 @@ namespace Nekoyume.Model.Mail
         {
             if (_mails.Count > 30)
             {
-                _mails = _mails.OrderByDescending(m => m.blockIndex).Take(30).ToList();
-            }
-        }
-        
-        public void CleanUpV2()
-        {
-            if (_mails.Count > 30)
-            {
                 _mails = _mails
                     .OrderByDescending(m => m.blockIndex)
                     .ThenBy(m => m.id)
                     .Take(30)
                     .ToList();
             }
+        }
+
+        [Obsolete("Use CleanUp")]
+        public void CleanUp2()
+        {
+            if (_mails.Count > 30)
+            {
+                _mails = _mails.OrderByDescending(m => m.blockIndex).Take(30).ToList();
+            }
+        }
+
+        [Obsolete("No longer in use.")]
+        public void CleanUpTemp(long blockIndex)
+        {
+            _mails = _mails
+                .Where(m => m.requiredBlockIndex >= blockIndex)
+                .ToList();
         }
 
         public void Remove(Mail mail)

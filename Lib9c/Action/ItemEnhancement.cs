@@ -301,7 +301,7 @@ namespace Nekoyume.Action
             var mail = new ItemEnhanceMail(result, ctx.BlockIndex, ctx.Random.GenerateRandomGuid(), requiredBlockIndex);
             result.id = mail.id;
             avatarState.inventory.RemoveNonFungibleItem(enhancementEquipment);
-            avatarState.UpdateV3(mail);
+            avatarState.Update(mail);
             avatarState.UpdateFromItemEnhancement(enhancementEquipment);
 
             // Update quest reward

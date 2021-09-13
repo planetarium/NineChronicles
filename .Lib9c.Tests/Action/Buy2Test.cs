@@ -110,8 +110,8 @@ namespace Lib9c.Tests.Action
             for (var i = 0; i < 100; i++)
             {
                 var mail = new CombinationMail(result, i, default, 0);
-                _buyerAvatarState.Update(mail);
-                sellerAvatarState.Update(mail);
+                _buyerAvatarState.Update2(mail);
+                sellerAvatarState.Update2(mail);
             }
 
             _initialState = _initialState

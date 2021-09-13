@@ -19,7 +19,6 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionObsolete(BlockChain.BlockPolicySource.V100066ObsoleteIndex)]
     [ActionType("buy8")]
     public class Buy8 : GameAction, IBuy5
     {
@@ -96,8 +95,6 @@ namespace Nekoyume.Action
                     .SetState(buyerQuestListAddress, MarkChanged)
                     .SetState(ctx.Signer, MarkChanged);
             }
-
-            CheckObsolete(BlockChain.BlockPolicySource.V100066ObsoleteIndex, context);
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, buyerAvatarAddress);
 
@@ -259,8 +256,8 @@ namespace Nekoyume.Action
                     orderId
                 );
 
-                buyerAvatarState.UpdateV3(orderBuyerMail);
-                sellerAvatarState.UpdateV3(orderSellerMail);
+                buyerAvatarState.Update(orderBuyerMail);
+                sellerAvatarState.Update(orderSellerMail);
 
                 // // Update quest.
                 buyerAvatarState.questList.UpdateTradeQuest(TradeType.Buy, order.Price);
@@ -269,8 +266,8 @@ namespace Nekoyume.Action
                 sellerAvatarState.updatedAt = ctx.BlockIndex;
                 sellerAvatarState.blockIndex = ctx.BlockIndex;
 
-                buyerAvatarState.UpdateQuestRewards(materialSheet);
-                sellerAvatarState.UpdateQuestRewards(materialSheet);
+                buyerAvatarState.UpdateQuestRewards2(materialSheet);
+                sellerAvatarState.UpdateQuestRewards2(materialSheet);
 
                 FungibleAssetValue tax = order.GetTax();
                 var taxedPrice = order.Price - tax;

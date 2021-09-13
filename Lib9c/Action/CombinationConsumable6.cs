@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
@@ -18,7 +18,6 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionObsolete(BlockChain.BlockPolicySource.V100070ObsoleteIndex)]
     [ActionType("combination_consumable6")]
     public class CombinationConsumable6 : GameAction
     {
@@ -80,8 +79,6 @@ namespace Nekoyume.Action
                     .SetState(questListAddress, MarkChanged)
                     .SetState(slotAddress, MarkChanged);
             }
-
-            CheckObsolete(BlockChain.BlockPolicySource.V100070ObsoleteIndex, context);
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, AvatarAddress);
 
@@ -196,7 +193,7 @@ namespace Nekoyume.Action
                 requiredBlockIndex
             );
             result.id = mail.id;
-            avatarState.UpdateV3(mail);
+            avatarState.Update(mail);
             avatarState.UpdateFromCombination(itemUsable);
             sw.Stop();
             Log.Verbose("{AddressesHex}Combination Update AvatarState: {Elapsed}", addressesHex, sw.Elapsed);

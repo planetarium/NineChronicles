@@ -111,7 +111,7 @@ namespace Lib9c.Tests.Action
             for (var i = 0; i < 100; i++)
             {
                 var mail = new DailyRewardMail(result, i, default, 0);
-                avatarState.Update(mail);
+                avatarState.Update2(mail);
             }
 
             Address shardedShopAddress = ShardedShopState.DeriveAddress(itemSubType, productId);
@@ -127,7 +127,7 @@ namespace Lib9c.Tests.Action
             if (contain)
             {
                 shopState.Register(shopItem);
-                avatarState.inventory.AddItem((ItemBase)nonFungibleItem);
+                avatarState.inventory.AddItem2((ItemBase)nonFungibleItem);
                 Assert.Empty(legacyShopState.Products);
                 Assert.Single(shopState.Products);
             }

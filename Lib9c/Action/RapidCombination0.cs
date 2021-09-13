@@ -14,7 +14,6 @@ using Serilog;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionObsolete(BlockChain.BlockPolicySource.V100066ObsoleteIndex)]
     [ActionType("rapid_combination")]
     public class RapidCombination0 : GameAction
     {
@@ -62,8 +61,6 @@ namespace Nekoyume.Action
                     .SetState(slotAddress, MarkChanged);
             }
 
-            CheckObsolete(BlockChain.BlockPolicySource.V100066ObsoleteIndex, context);
-
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
 
             Log.Warning("{AddressesHex}rapid_combination is deprecated. Please use rapid_combination2", addressesHex);
@@ -104,7 +101,7 @@ namespace Nekoyume.Action
             var materialItemSheet = states.GetSheet<MaterialItemSheet>();
             var row = materialItemSheet.Values.First(r => r.ItemSubType == ItemSubType.Hourglass);
             var hourGlass = ItemFactory.CreateMaterial(row);
-            if (!avatarState.inventory.RemoveFungibleItem(hourGlass, count))
+            if (!avatarState.inventory.RemoveFungibleItem2(hourGlass, count))
             {
                 throw new NotEnoughMaterialException(
                     $"{addressesHex}Aborted as the player has no enough material ({row.Id} * {count})");

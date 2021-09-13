@@ -124,7 +124,7 @@ namespace Lib9c.Tests.Action
             for (var i = 0; i < 100; i++)
             {
                 var mail = new DailyRewardMail(result, i, default, 0);
-                avatarState.Update(mail);
+                avatarState.Update2(mail);
             }
 
             Address shardedShopAddress = ShardedShopState.DeriveAddress(itemSubType, productId);
@@ -150,12 +150,12 @@ namespace Lib9c.Tests.Action
                         {
                             RequiredBlockIndex = tradableItem.RequiredBlockIndex - i,
                         };
-                        avatarState.inventory.AddItem(tradable, 2 - i);
+                        avatarState.inventory.AddItem2(tradable, 2 - i);
                     }
                 }
                 else
                 {
-                    avatarState.inventory.AddItem((ItemBase)tradableItem, itemCount);
+                    avatarState.inventory.AddItem2((ItemBase)tradableItem, itemCount);
                 }
 
                 Assert.Empty(legacyShopState.Products);

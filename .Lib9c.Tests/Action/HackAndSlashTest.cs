@@ -98,12 +98,17 @@ namespace Lib9c.Tests.Action
         }
 
         [Theory]
-        [InlineData(GameConfig.RequireCharacterLevel.CharacterFullCostumeSlot, 1, 1, false, false, false)]
         [InlineData(GameConfig.RequireCharacterLevel.CharacterFullCostumeSlot, 1, 1, false, false, true)]
+        [InlineData(GameConfig.RequireCharacterLevel.CharacterFullCostumeSlot, 1, 1, false, true, true)]
+        [InlineData(GameConfig.RequireCharacterLevel.CharacterFullCostumeSlot, 1, 1, true, false, true)]
+        [InlineData(200, 1, GameConfig.RequireClearedStageLevel.ActionsInRankingBoard, false, false, true)]
+        [InlineData(200, 1, GameConfig.RequireClearedStageLevel.ActionsInRankingBoard, true, false, true)]
+        [InlineData(GameConfig.RequireCharacterLevel.CharacterFullCostumeSlot, 1, 1, false, false, false)]
         [InlineData(GameConfig.RequireCharacterLevel.CharacterFullCostumeSlot, 1, 1, false, true, false)]
+        [InlineData(GameConfig.RequireCharacterLevel.CharacterFullCostumeSlot, 1, 1, true, false, false)]
+        [InlineData(200, 1, GameConfig.RequireClearedStageLevel.ActionsInRankingBoard, false, false, false)]
         [InlineData(200, 1, GameConfig.RequireClearedStageLevel.ActionsInRankingBoard, true, false, false)]
-        [InlineData(200, 1, GameConfig.RequireClearedStageLevel.ActionsInRankingBoard, true, true, false)]
-        public void Execute(int avatarLevel, int worldId, int stageId, bool contains, bool backward, bool isLock)
+        public void Execute(int avatarLevel, int worldId, int stageId, bool backward, bool isLock, bool isClearedBefore)
         {
             Assert.True(_tableSheets.WorldSheet.TryGetValue(worldId, out var worldRow));
             Assert.True(stageId >= worldRow.StageBegin);
@@ -112,10 +117,12 @@ namespace Lib9c.Tests.Action
 
             var previousAvatarState = _initialState.GetAvatarStateV2(_avatarAddress);
             previousAvatarState.level = avatarLevel;
+            var clearedStageId = _tableSheets.StageSheet.First?.Id ?? 0;
+            clearedStageId = isClearedBefore ? Math.Max(clearedStageId, stageId - 1) : stageId - 1;
             previousAvatarState.worldInformation = new WorldInformation(
                 0,
                 _tableSheets.WorldSheet,
-                Math.Max(_tableSheets.StageSheet.First?.Id ?? 1, stageId - 1));
+                clearedStageId);
 
             List<Guid> costumes = new List<Guid>();
             IRandom random = new TestRandom();
@@ -216,8 +223,7 @@ namespace Lib9c.Tests.Action
                 worldId = worldId,
                 stageId = stageId,
                 avatarAddress = _avatarAddress,
-                WeeklyArenaAddress = _weeklyArenaState.address,
-                RankingMapAddress = _rankingMapAddress,
+                rankingMapAddress = _rankingMapAddress,
             };
 
             var nextState = action.Execute(new ActionContext
@@ -230,29 +236,20 @@ namespace Lib9c.Tests.Action
             });
 
             var nextAvatarState = nextState.GetAvatarStateV2(_avatarAddress);
-            var newWeeklyState = nextState.GetWeeklyArenaState(0);
 
-            Assert.Equal(contains, newWeeklyState.ContainsKey(_avatarAddress));
             Assert.True(nextAvatarState.worldInformation.IsStageCleared(stageId));
             Assert.Equal(30, nextAvatarState.mailBox.Count);
-            if (contains)
-            {
-                //Check for Costume CP.
-                Assert.True(
-                    newWeeklyState[_avatarAddress].CombatPoint >
-                    CPHelper.GetCP(nextAvatarState, _tableSheets.CharacterSheet)
-                );
-            }
-
             Assert.Equal(!isLock, nextAvatarState.inventory.Equipments.OfType<Weapon>().Any(w => w.equipped));
 
             var value = nextState.GetState(_rankingMapAddress);
 
-            var rankingMapState = new RankingMapState((Dictionary)value);
-            var info = rankingMapState.GetRankingInfos(null).First();
-
-            Assert.Equal(info.AgentAddress, _agentAddress);
-            Assert.Equal(info.AvatarAddress, _avatarAddress);
+            if (!isClearedBefore)
+            {
+                var rankingMapState = new RankingMapState((Dictionary)value);
+                var info = rankingMapState.GetRankingInfos(null).First();
+                Assert.Equal(info.AgentAddress, _agentAddress);
+                Assert.Equal(info.AvatarAddress, _avatarAddress);
+            }
         }
 
         [Theory]
@@ -315,8 +312,7 @@ namespace Lib9c.Tests.Action
                 worldId = worldId,
                 stageId = stageId,
                 avatarAddress = avatarState.address,
-                WeeklyArenaAddress = _weeklyArenaState.address,
-                RankingMapAddress = _rankingMapAddress,
+                rankingMapAddress = _rankingMapAddress,
             };
 
             // First Execute
@@ -389,8 +385,7 @@ namespace Lib9c.Tests.Action
                 worldId = worldId,
                 stageId = stageId,
                 avatarAddress = _avatarAddress,
-                WeeklyArenaAddress = _weeklyArenaState.address,
-                RankingMapAddress = _rankingMapAddress,
+                rankingMapAddress = _rankingMapAddress,
             };
 
             var nextState = action.Execute(new ActionContext
@@ -452,8 +447,7 @@ namespace Lib9c.Tests.Action
                 worldId = 1,
                 stageId = 1,
                 avatarAddress = _avatarAddress,
-                WeeklyArenaAddress = _weeklyArenaState.address,
-                RankingMapAddress = _rankingMapAddress,
+                rankingMapAddress = _rankingMapAddress,
             };
 
             var exec = Assert.Throws<DuplicateEquipmentException>(() => action.Execute(new ActionContext
@@ -478,8 +472,7 @@ namespace Lib9c.Tests.Action
                 worldId = 1,
                 stageId = 1,
                 avatarAddress = _avatarAddress,
-                WeeklyArenaAddress = _weeklyArenaState.address,
-                RankingMapAddress = default,
+                rankingMapAddress = default,
             };
 
             var exec = Assert.Throws<InvalidAddressException>(() =>
@@ -508,7 +501,6 @@ namespace Lib9c.Tests.Action
                 worldId = 1,
                 stageId = 1,
                 avatarAddress = _avatarAddress,
-                WeeklyArenaAddress = _weeklyArenaState.address,
             };
 
             IAccountStateDelta state = backward ? new State() : _initialState;
@@ -542,8 +534,7 @@ namespace Lib9c.Tests.Action
                 worldId = 100,
                 stageId = 1,
                 avatarAddress = _avatarAddress,
-                WeeklyArenaAddress = _weeklyArenaState.address,
-                RankingMapAddress = _rankingMapAddress,
+                rankingMapAddress = _rankingMapAddress,
             };
 
             var exec = Assert.Throws<SheetRowNotFoundException>(() => action.Execute(new ActionContext()
@@ -569,8 +560,7 @@ namespace Lib9c.Tests.Action
                 worldId = 1,
                 stageId = stageId,
                 avatarAddress = _avatarAddress,
-                WeeklyArenaAddress = _weeklyArenaState.address,
-                RankingMapAddress = _rankingMapAddress,
+                rankingMapAddress = _rankingMapAddress,
             };
 
             var exec = Assert.Throws<SheetRowColumnException>(() => action.Execute(new ActionContext()
@@ -594,8 +584,7 @@ namespace Lib9c.Tests.Action
                 worldId = 1,
                 stageId = 1,
                 avatarAddress = _avatarAddress,
-                WeeklyArenaAddress = _weeklyArenaState.address,
-                RankingMapAddress = _rankingMapAddress,
+                rankingMapAddress = _rankingMapAddress,
             };
 
             var state = _initialState;
@@ -622,8 +611,7 @@ namespace Lib9c.Tests.Action
                 worldId = 1,
                 stageId = 1,
                 avatarAddress = _avatarAddress,
-                WeeklyArenaAddress = _weeklyArenaState.address,
-                RankingMapAddress = _rankingMapAddress,
+                rankingMapAddress = _rankingMapAddress,
             };
 
             var state = _initialState;
@@ -658,8 +646,7 @@ namespace Lib9c.Tests.Action
                 worldId = 2,
                 stageId = 51,
                 avatarAddress = _avatarAddress,
-                WeeklyArenaAddress = _weeklyArenaState.address,
-                RankingMapAddress = _rankingMapAddress,
+                rankingMapAddress = _rankingMapAddress,
             };
 
             Assert.False(_avatarState.worldInformation.IsStageCleared(51));
@@ -685,8 +672,7 @@ namespace Lib9c.Tests.Action
                 worldId = 1,
                 stageId = 3,
                 avatarAddress = _avatarAddress,
-                WeeklyArenaAddress = _weeklyArenaState.address,
-                RankingMapAddress = _rankingMapAddress,
+                rankingMapAddress = _rankingMapAddress,
             };
 
             var avatarState = new AvatarState(_avatarState);
@@ -727,8 +713,7 @@ namespace Lib9c.Tests.Action
                 worldId = 1,
                 stageId = 2,
                 avatarAddress = _avatarAddress,
-                WeeklyArenaAddress = _weeklyArenaState.address,
-                RankingMapAddress = _rankingMapAddress,
+                rankingMapAddress = _rankingMapAddress,
             };
 
             _avatarState.worldInformation.TryGetWorld(1, out var world);
@@ -768,8 +753,7 @@ namespace Lib9c.Tests.Action
                 worldId = 1,
                 stageId = 1,
                 avatarAddress = _avatarAddress,
-                WeeklyArenaAddress = _weeklyArenaState.address,
-                RankingMapAddress = _rankingMapAddress,
+                rankingMapAddress = _rankingMapAddress,
             };
 
             var state = _initialState
@@ -817,8 +801,7 @@ namespace Lib9c.Tests.Action
                 worldId = 1,
                 stageId = 1,
                 avatarAddress = _avatarAddress,
-                WeeklyArenaAddress = _weeklyArenaState.address,
-                RankingMapAddress = _rankingMapAddress,
+                rankingMapAddress = _rankingMapAddress,
             };
 
             var exec = Assert.Throws<EquipmentSlotUnlockException>(() => action.Execute(new ActionContext()
@@ -847,8 +830,7 @@ namespace Lib9c.Tests.Action
                 worldId = 1,
                 stageId = 1,
                 avatarAddress = _avatarAddress,
-                WeeklyArenaAddress = _weeklyArenaState.address,
-                RankingMapAddress = _rankingMapAddress,
+                rankingMapAddress = _rankingMapAddress,
             };
 
             var state = _initialState;
@@ -875,15 +857,13 @@ namespace Lib9c.Tests.Action
                 worldId = 1,
                 stageId = 1,
                 avatarAddress = _avatarAddress,
-                WeeklyArenaAddress = _weeklyArenaState.address,
-                RankingMapAddress = _rankingMapAddress,
+                rankingMapAddress = _rankingMapAddress,
             };
 
             var updatedAddresses = new List<Address>()
             {
                 _agentAddress,
                 _avatarAddress,
-                _weeklyArenaState.address,
                 _rankingMapAddress,
                 _avatarAddress.Derive(LegacyInventoryKey),
                 _avatarAddress.Derive(LegacyWorldInformationKey),

@@ -14,7 +14,6 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionObsolete(BlockChain.BlockPolicySource.V100070ObsoleteIndex)]
     [ActionType("rapid_combination4")]
     public class RapidCombination4 : GameAction
     {
@@ -43,8 +42,6 @@ namespace Nekoyume.Action
                     .SetState(questListAddress, MarkChanged)
                     .SetState(slotAddress, MarkChanged);
             }
-
-            CheckObsolete(BlockChain.BlockPolicySource.V100070ObsoleteIndex, context);
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
 
@@ -85,7 +82,7 @@ namespace Nekoyume.Action
             var materialItemSheet = states.GetSheet<MaterialItemSheet>();
             var row = materialItemSheet.Values.First(r => r.ItemSubType == ItemSubType.Hourglass);
             var hourGlass = ItemFactory.CreateMaterial(row);
-            if (!avatarState.inventory.RemoveFungibleItemV2(hourGlass, context.BlockIndex, count))
+            if (!avatarState.inventory.RemoveFungibleItem(hourGlass, context.BlockIndex, count))
             {
                 throw new NotEnoughMaterialException(
                     $"{addressesHex}Aborted as the player has no enough material ({row.Id} * {count})");

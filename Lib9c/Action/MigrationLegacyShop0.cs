@@ -10,7 +10,6 @@ using Serilog;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionObsolete(BlockChain.BlockPolicySource.V100066ObsoleteIndex)]
     [ActionType("migration_legacy_shop")]
     public class MigrationLegacyShop0 : GameAction
     {
@@ -27,7 +26,7 @@ namespace Nekoyume.Action
                 return states.SetState(Addresses.Shop, MarkChanged);
             }
 
-            CheckObsolete(BlockChain.BlockPolicySource.V100066ObsoleteIndex, context);
+            
             CheckPermission(context);
 
             Log.Debug("Start Migration Legacy Shop");
@@ -55,11 +54,11 @@ namespace Nekoyume.Action
 
                     if (!(shopItem.ItemUsable is null))
                     {
-                        avatarState.inventory.AddItem(shopItem.ItemUsable);
+                        avatarState.inventory.AddItem2(shopItem.ItemUsable);
                     }
                     if (!(shopItem.Costume is null))
                     {
-                        avatarState.inventory.AddItem(shopItem.Costume);
+                        avatarState.inventory.AddItem2(shopItem.Costume);
                     }
                     shopState.Unregister(shopItem);
                 }

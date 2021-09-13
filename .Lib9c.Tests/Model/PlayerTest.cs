@@ -170,7 +170,7 @@ namespace Lib9c.Tests.Model
             Assert.Equal(590, player.CurrentHP);
 
             var requiredExp = _tableSheets.CharacterLevelSheet[1].ExpNeed;
-            player.GetExp(requiredExp);
+            player.GetExp2(requiredExp);
 
             Assert.Equal(2, player.Level);
             Assert.Equal(612, player.HP);
@@ -193,7 +193,7 @@ namespace Lib9c.Tests.Model
             for (int i = 0; i < count; ++i)
             {
                 var requiredExp = _tableSheets.CharacterLevelSheet[level].ExpNeed;
-                player.GetExpV2(requiredExp);
+                player.GetExp3(requiredExp);
 
                 Assert.Equal(level + 1, player.Level);
                 ++level;
@@ -227,7 +227,7 @@ namespace Lib9c.Tests.Model
                 requiredExp += _tableSheets.CharacterLevelSheet[i + 1].ExpNeed;
             }
 
-            player.GetExpV3(requiredExp, log);
+            player.GetExp(requiredExp, log);
 
             if (log)
             {
@@ -261,7 +261,7 @@ namespace Lib9c.Tests.Model
             var expRow = _tableSheets.CharacterLevelSheet[maxLevel];
             var maxLevelExp = expRow.Exp;
             var requiredExp = expRow.ExpNeed;
-            player.GetExpV2(requiredExp);
+            player.GetExp3(requiredExp);
 
             Assert.Equal(maxLevel, player.Level);
             Assert.Equal(requiredExp - 1, player.Exp.Current - expRow.Exp);

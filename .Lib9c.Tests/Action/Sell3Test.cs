@@ -71,18 +71,18 @@
                 _tableSheets.EquipmentItemSheet.First,
                 Guid.NewGuid(),
                 0);
-            _avatarState.inventory.AddItem(equipment);
+            _avatarState.inventory.AddItem2(equipment);
 
             var consumable = ItemFactory.CreateItemUsable(
                 _tableSheets.ConsumableItemSheet.First,
                 Guid.NewGuid(),
                 0);
-            _avatarState.inventory.AddItem(consumable);
+            _avatarState.inventory.AddItem2(consumable);
 
             var costume = ItemFactory.CreateCostume(
                 _tableSheets.CostumeItemSheet.First,
                 Guid.NewGuid());
-            _avatarState.inventory.AddItem(costume);
+            _avatarState.inventory.AddItem2(costume);
 
             _initialState = _initialState
                 .SetState(GoldCurrencyState.Address, goldCurrencyState.Serialize())
@@ -251,7 +251,7 @@
                 _tableSheets.EquipmentItemSheet.First,
                 equipmentId,
                 10);
-            _avatarState.inventory.AddItem(equipment);
+            _avatarState.inventory.AddItem2(equipment);
 
             _initialState = _initialState.SetState(_avatarAddress, _avatarState.Serialize());
 
