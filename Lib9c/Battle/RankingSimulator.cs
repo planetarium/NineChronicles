@@ -76,7 +76,7 @@ namespace Nekoyume.Battle
             _enemyPlayer.SetCostumeStat(costumeStatSheet);
         }
 
-                public Player Simulate()
+        public Player Simulate()
         {
 #if TEST_LOG
             var sb = new System.Text.StringBuilder();
@@ -155,7 +155,7 @@ namespace Nekoyume.Battle
                 Characters.Enqueue(character, TurnPriority / character.SPD);
             }
 
-            Log.diffScore = _arenaInfo.UpdateV3(_avatarState, _enemyInfo, Result);
+            Log.diffScore = _arenaInfo.Update(_avatarState, _enemyInfo, Result);
             Log.score = _arenaInfo.Score;
 
             var itemSelector = new WeightedSelector<StageSheet.RewardData>(Random);
