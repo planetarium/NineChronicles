@@ -75,7 +75,11 @@ namespace Nekoyume.UI
 
         public void Show(RectTransform target, Address avatarAddress)
         {
-            var avatarState = States.Instance.GetAvatarStateV2(avatarAddress);
+            if (!States.TryGetAvatarState(avatarAddress, out var avatarState))
+            {
+                return;
+            }
+
             Show(target, avatarState);
         }
 

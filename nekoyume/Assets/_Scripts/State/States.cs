@@ -123,32 +123,71 @@ namespace Nekoyume.State
             AgentStateSubject.OnNextGold(GoldBalanceState.Gold);
         }
 
-        public AvatarState AddOrReplaceAvatarState(Address avatarAddress, int index, bool initializeReactiveState = true)
+        public AvatarState AddOrReplaceAvatarState(
+            Address avatarAddress,
+            int index,
+            bool initializeReactiveState = true) =>
+            TryGetAvatarState(avatarAddress, true, out var avatarState)
+                ? AddOrReplaceAvatarState(avatarState, index, initializeReactiveState)
+                : null;
+
+        public static bool TryGetAvatarState(Address address, out AvatarState avatarState) =>
+            TryGetAvatarState(address, false, out avatarState);
+
+        public static bool TryGetAvatarState(Address address, bool allowBrokenState, out AvatarState avatarState)
         {
-            var state = GetAvatarStateV2(avatarAddress);
-            return AddOrReplaceAvatarState(state, index, initializeReactiveState);
+            try
+            {
+                avatarState = GetAvatarState(address, allowBrokenState);
+                return true;
+            }
+            catch (Exception e)
+            {
+                Debug.LogWarning($"{e.GetType().FullName}: {e.Message} address({address.ToHex()})\n{e.StackTrace}");
+                avatarState = null;
+                return false;
+            }
         }
 
-        public AvatarState GetAvatarStateV2(Address address)
+        private static AvatarState GetAvatarState(Address address, bool allowBrokenState)
         {
-            string[] keys =
+            var agent = Game.Game.instance.Agent;
+            var avatarStateValue = agent.GetState(address);
+            if (!(avatarStateValue is Bencodex.Types.Dictionary dict))
+            {
+                Debug.LogWarning("Failed to get AvatarState");
+                throw new FailedLoadStateException($"Failed to get AvatarState: {address.ToHex()}");
+            }
+
+            if (dict.ContainsKey(LegacyNameKey))
+            {
+                return new AvatarState(dict);
+            }
+
+            foreach (var key in new[]
             {
                 LegacyInventoryKey,
                 LegacyWorldInformationKey,
                 LegacyQuestListKey,
-            };
-
-            var state = (Dictionary) Game.Game.instance.Agent.GetState(address);
-            foreach (var key in keys)
+            })
             {
-                if (!state.ContainsKey(key))
+                var address2 = address.Derive(key);
+                var value = agent.GetState(address2);
+                if (value is null)
                 {
-                    var keyAddress = address.Derive(key);
-                    var serialized = Game.Game.instance.Agent.GetState(keyAddress);
-                    state = state.SetItem(key, serialized);
+                    if (allowBrokenState &&
+                        dict.ContainsKey(key))
+                    {
+                        dict = new Bencodex.Types.Dictionary(dict.Remove((Text)key));
+                    }
+
+                    continue;
                 }
+
+                dict = dict.SetItem(key, value);
             }
-            return  new AvatarState(state);
+
+            return new AvatarState(dict);
         }
 
         /// <summary>
@@ -227,8 +266,11 @@ namespace Nekoyume.State
 
             if (isNew)
             {
-                var state = GetAvatarStateV2(avatarState.address);
-                var curAvatarState = new AvatarState(state);
+                if (!TryGetAvatarState(avatarState.address, out var curAvatarState))
+                {
+                    return null;
+                }
+
                 AddOrReplaceAvatarState(curAvatarState, CurrentAvatarKey);
                 SetCombinationSlotStates(curAvatarState);
             }

@@ -8,11 +8,9 @@ namespace Editor
 {
     public class Builder {
 
-        public static string PlayerName = PlayerSettings.productName;
+        public static readonly string PlayerName = PlayerSettings.productName;
 
         public const string BuildBasePath = "Build";
-
-        public static readonly string ProjectBasePath = Path.Combine(Application.dataPath, "..", "..");
 
         [MenuItem("Build/Standalone/Windows + macOS + Linux")]
         public static void BuildAll()
@@ -26,14 +24,14 @@ namespace Editor
         public static void BuildMacOS()
         {
             Debug.Log("Build macOS");
-            Build(BuildTarget.StandaloneOSX, targetDirName: "macOS", scriptName: "run", snapshotName: "NineChroniclesSnapshot");
+            Build(BuildTarget.StandaloneOSX, targetDirName: "macOS");
         }
 
         [MenuItem("Build/Standalone/Windows")]
         public static void BuildWindows()
         {
             Debug.Log("Build Windows");
-            Build(BuildTarget.StandaloneWindows64, targetDirName: "Windows", scriptName: "run.bat", snapshotName: "NineChroniclesSnapshot.exe");
+            Build(BuildTarget.StandaloneWindows64, targetDirName: "Windows");
         }
 
         [MenuItem("Build/Standalone/Linux")]
@@ -76,21 +74,21 @@ namespace Editor
         public static void BuildMacOSDevelopment()
         {
             Debug.Log("Build MacOS Development");
-            Build(BuildTarget.StandaloneOSX, BuildOptions.Development, targetDirName: "macOS", scriptName: "run", snapshotName: "NineChroniclesSnapshot");
+            Build(BuildTarget.StandaloneOSX, BuildOptions.Development | BuildOptions.AllowDebugging, "macOS");
         }
 
         [MenuItem("Build/Development/Windows")]
         public static void BuildWindowsDevelopment()
         {
             Debug.Log("Build Windows Development");
-            Build(BuildTarget.StandaloneWindows64, BuildOptions.Development, targetDirName: "Windows", scriptName: "run.bat", snapshotName: "NineChroniclesSnapshot.exe");
+            Build(BuildTarget.StandaloneWindows64, BuildOptions.Development | BuildOptions.AllowDebugging, "Windows");
         }
 
         [MenuItem("Build/Development/Linux")]
         public static void BuildLinuxDevelopment()
         {
             Debug.Log("Build Linux Development");
-            Build(BuildTarget.StandaloneLinux64, BuildOptions.Development, targetDirName: "Linux");
+            Build(BuildTarget.StandaloneLinux64, BuildOptions.Development | BuildOptions.AllowDebugging, "Linux");
         }
 
         [MenuItem("Build/Development/macOS Headless")]
@@ -106,7 +104,7 @@ namespace Editor
             Debug.Log("Build Linux Headless Development");
             Build(
                 BuildTarget.StandaloneLinux64,
-                BuildOptions.EnableHeadlessMode | BuildOptions.Development,
+                BuildOptions.EnableHeadlessMode | BuildOptions.Development | BuildOptions.AllowDebugging,
                 "LinuxHeadless");
         }
 
@@ -117,41 +115,40 @@ namespace Editor
             Build(BuildTarget.StandaloneWindows64, BuildOptions.EnableHeadlessMode, "WindowsHeadless");
         }
 
-        public static void Build(
+        private static void Build(
             BuildTarget buildTarget,
             BuildOptions options = BuildOptions.None,
-            string targetDirName = null,
-            string scriptName = null,
-            string snapshotName = null)
+            string targetDirName = null)
         {
             string[] scenes = { "Assets/_Scenes/Game.unity" };
 
-            targetDirName = targetDirName ?? buildTarget.ToString();
-            string locationPathName = Path.Combine(
+            targetDirName ??= buildTarget.ToString();
+            var locationPathName = Path.Combine(
                 BuildBasePath,
                 targetDirName,
                 buildTarget.HasFlag(BuildTarget.StandaloneWindows64) ? $"{PlayerName}.exe" : PlayerName);
 
-            BuildPlayerOptions buildPlayerOptions = new BuildPlayerOptions
+            var buildPlayerOptions = new BuildPlayerOptions
             {
                 scenes = scenes,
                 locationPathName = locationPathName,
                 target = buildTarget,
-                options = EditorUserBuildSettings.development ? options | BuildOptions.Development : options,
+                options = EditorUserBuildSettings.development
+                    ? options | BuildOptions.Development | BuildOptions.AllowDebugging
+                    : options,
             };
 
-            BuildReport report = BuildPipeline.BuildPlayer(buildPlayerOptions);
+            var report = BuildPipeline.BuildPlayer(buildPlayerOptions);
+            var summary = report.summary;
 
-            BuildSummary summary = report.summary;
-
-            if (summary.result == BuildResult.Succeeded)
+            switch (summary.result)
             {
-                Debug.Log("Build succeeded: " + summary.totalSize + " bytes");
-            }
-
-            if (summary.result == BuildResult.Failed)
-            {
-                Debug.LogError("Build failed");
+                case BuildResult.Succeeded:
+                    Debug.Log("Build succeeded: " + summary.totalSize + " bytes");
+                    break;
+                case BuildResult.Failed:
+                    Debug.LogError("Build failed");
+                    break;
             }
         }
 
@@ -185,13 +182,12 @@ namespace Editor
             }
 
             var srcLibPath = Path.Combine(Application.dataPath, "Packages", libDir);
-
             var src = new DirectoryInfo(srcLibPath);
             var dest = new DirectoryInfo(destLibPath);
 
             Directory.CreateDirectory(dest.FullName);
 
-            foreach (FileInfo fileInfo in src.GetFiles())
+            foreach (var fileInfo in src.GetFiles())
             {
                 if (fileInfo.Extension == ".meta")
                 {

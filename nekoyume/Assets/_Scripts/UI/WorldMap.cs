@@ -186,8 +186,7 @@ namespace Nekoyume.UI
 
         public void UpdateNotificationInfo()
         {
-            var questStageId = Game.Game.instance.States
-                .CurrentAvatarState.questList
+            var questStageId = Game.Game.instance.States.CurrentAvatarState.questList?
                 .OfType<WorldQuest>()
                 .Where(x => !x.Complete)
                 .OrderBy(x => x.Goal)

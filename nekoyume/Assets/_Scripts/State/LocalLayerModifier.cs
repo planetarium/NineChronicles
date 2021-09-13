@@ -567,7 +567,7 @@ namespace Nekoyume.State
                 avatarAddress,
                 outKey,
                 isCurrentAvatarState);
-            return true;
+            return outAvatarState != null;
         }
     }
 }

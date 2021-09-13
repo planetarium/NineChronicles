@@ -6,6 +6,9 @@ using Nekoyume.Game.Util;
 using Nekoyume.State;
 using UnityEngine;
 using mixpanel;
+using Nekoyume.L10n;
+using Nekoyume.Model.Mail;
+using Nekoyume.UI.Module;
 
 namespace Nekoyume.UI
 {
@@ -38,7 +41,18 @@ namespace Nekoyume.UI
         public void SlotClick(int index)
         {
             if (!ready)
+            {
                 return;
+            }
+
+            if (States.Instance.AvatarStates.TryGetValue(index, out var avatarState) &&
+                (avatarState.inventory == null ||
+                 avatarState.questList == null ||
+                 avatarState.worldInformation == null))
+            {
+                Notification.Push(MailType.System, L10nManager.Localize("NOTIFICATION_CHARACTER_IS_BEING_RESTORED"));
+                return;
+            }
 
             Game.Event.OnLoginDetail.Invoke(index);
             gameObject.SetActive(false);

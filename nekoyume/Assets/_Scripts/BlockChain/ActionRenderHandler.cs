@@ -700,8 +700,9 @@ namespace Nekoyume.BlockChain
                     Game.Game.instance.TableSheets.CostumeStatSheet,
                     StageSimulatorVersionV100025
                 );
-                simulator.SimulateV3();
+                simulator.Simulate();
                 var log = simulator.Log;
+
 
                 if (Widget.Find<LoadingScreen>().IsActive())
                 {
@@ -778,8 +779,8 @@ namespace Nekoyume.BlockChain
                     Game.Game.instance.TableSheets.CostumeStatSheet,
                     StageSimulatorVersionV100025
                 );
-                simulator.SimulateV2();
-                var log = simulator.Log;
+                simulator.Simulate();
+                BattleLog log = simulator.Log;
 
                 if (Widget.Find<LoadingScreen>().IsActive())
                 {
@@ -897,6 +898,12 @@ namespace Nekoyume.BlockChain
                 var row = Game.Game.instance.TableSheets.MaterialItemSheet.Values.First(r =>
                     r.ItemSubType == ItemSubType.ApStone);
                 LocalLayerModifier.AddItem(avatarAddress, row.ItemId, 1);
+
+                if (GameConfigStateSubject.ActionPointState.ContainsKey(eval.Action.avatarAddress))
+                {
+                    GameConfigStateSubject.ActionPointState.Remove(eval.Action.avatarAddress);
+                }
+
                 UpdateCurrentAvatarState(eval);
             }
         }
@@ -1037,11 +1044,7 @@ namespace Nekoyume.BlockChain
         {
             Debug.LogException(exc);
 
-            if (DoNotUsePopupError(exc, out var key, out var code, out var errorMsg))
-            {
-                return;
-            }
-
+            var (key, code, errorMsg) = ErrorCode.GetErrorCode(exc);
             Game.Event.OnRoomEnter.Invoke(showLoadingScreen);
             Game.Game.instance.Stage.OnRoomEnterEnd
                 .First()
@@ -1053,31 +1056,8 @@ namespace Nekoyume.BlockChain
         public static void PopupError(Exception exc)
         {
             Debug.LogException(exc);
-
-            if (DoNotUsePopupError(exc, out var key, out var code, out var errorMsg))
-            {
-                return;
-            }
-
+            var (key, code, errorMsg) = ErrorCode.GetErrorCode(exc);
             PopupError(key, code, errorMsg);
-        }
-
-        private static bool DoNotUsePopupError(Exception exc, out string key, out string code, out string errorMsg)
-        {
-            var tuple = ErrorCode.GetErrorCode(exc);
-            key = tuple.Item1;
-            code = tuple.Item2;
-            errorMsg = tuple.Item3;
-            if (code == "27")
-            {
-                // NOTE: `ActionTimeoutException` 이지만 아직 해당 액션이 스테이지 되어 있을 경우(27)에는 무시합니다.
-                // 이 경우 `Game.Game.Instance.Agent`에서 블록 싱크를 시도하며 결과적으로 싱크에 성공하거나 `Disconnected`가 됩니다.
-                // 싱크에 성공할 경우에는 `UnableToRenderWhenSyncingBlocksException` 예외로 다시 들어옵니다.
-                // `Disconnected`가 될 경우에는 이 `BackToMain`이 호출되지 않고 `Game.Game.Instance.QuitWithAgentConnectionError()`가 호출됩니다.
-                return true;
-            }
-
-            return false;
         }
 
         private static void PopupError(string key, string code, string errorMsg)

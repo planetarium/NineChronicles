@@ -101,11 +101,6 @@ namespace Nekoyume.BlockChain
             int worldId,
             int stageId)
         {
-            if (!ArenaHelper.TryGetThisWeekAddress(out var weeklyArenaAddress))
-            {
-                throw new NullReferenceException(nameof(weeklyArenaAddress));
-            }
-
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             costumes ??= new List<Costume>();
             equipments ??= new List<Equipment>();
@@ -119,8 +114,7 @@ namespace Nekoyume.BlockChain
                 worldId = worldId,
                 stageId = stageId,
                 avatarAddress = avatarAddress,
-                WeeklyArenaAddress = weeklyArenaAddress,
-                RankingMapAddress = States.Instance.CurrentAvatarState.RankingMapAddress,
+                rankingMapAddress = States.Instance.CurrentAvatarState.RankingMapAddress,
             };
             ProcessAction(action);
 
@@ -154,11 +148,6 @@ namespace Nekoyume.BlockChain
             int worldId,
             int stageId)
         {
-            if (!ArenaHelper.TryGetThisWeekAddress(out var weeklyArenaAddress))
-            {
-                throw new NullReferenceException(nameof(weeklyArenaAddress));
-            }
-
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             costumes ??= new List<Costume>();
             equipments ??= new List<Equipment>();
@@ -172,8 +161,7 @@ namespace Nekoyume.BlockChain
                 worldId = worldId,
                 stageId = stageId,
                 avatarAddress = avatarAddress,
-                WeeklyArenaAddress = weeklyArenaAddress,
-                RankingMapAddress = States.Instance.CurrentAvatarState.RankingMapAddress,
+                rankingMapAddress = States.Instance.CurrentAvatarState.RankingMapAddress,
             };
             ProcessAction(action);
 
@@ -377,9 +365,9 @@ namespace Nekoyume.BlockChain
             Mixpanel.Track("Unity/Ranking Battle");
             var action = new RankingBattle
             {
-                AvatarAddress = States.Instance.CurrentAvatarState.address,
-                EnemyAddress = enemyAddress,
-                WeeklyArenaAddress = weeklyArenaAddress,
+                avatarAddress = States.Instance.CurrentAvatarState.address,
+                enemyAddress = enemyAddress,
+                weeklyArenaAddress = weeklyArenaAddress,
                 costumeIds = costumeIds,
                 equipmentIds = equipmentIds,
                 consumableIds = consumableIds

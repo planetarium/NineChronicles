@@ -47,7 +47,7 @@ namespace Tests.EditMode.Battle
                 arenaInfo,
                 arenaInfo
             );
-            simulator.SimulateV2();
+            simulator.Simulate();
 
             void ToBytes()
             {

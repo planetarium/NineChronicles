@@ -86,7 +86,13 @@ namespace Nekoyume.UI.Scroller
             characterView.OnClickCharacterIcon
                 .Subscribe(avatarState =>
                 {
-                    avatarState ??= States.Instance.GetAvatarStateV2(ArenaInfo.AvatarAddress);
+                    avatarState ??= States.TryGetAvatarState(ArenaInfo.AvatarAddress, out var state)
+                        ? state
+                        : null;
+                    if (avatarState is null)
+                    {
+                        return;
+                    }
 
                     Widget.Find<FriendInfoPopup>().Show(avatarState);
                 })

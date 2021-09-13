@@ -499,7 +499,7 @@ namespace Nekoyume.UI.Module
         private static CombinationEquipmentQuest GetTargetCombinationEquipmentQuest(
             QuestList questList)
         {
-            if (SharedViewModel.avatarState is null ||
+            if (SharedViewModel.avatarState?.worldInformation is null ||
                 !SharedViewModel.avatarState.worldInformation.TryGetLastClearedStageId(out var lastClearedStageId) ||
                 lastClearedStageId < GameConfig.RequireClearedStageLevel.CombinationEquipmentAction)
             {

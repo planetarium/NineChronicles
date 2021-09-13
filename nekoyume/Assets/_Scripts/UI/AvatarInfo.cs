@@ -13,6 +13,7 @@ using Nekoyume.Model.Item;
 using Nekoyume.Model.Stat;
 using Nekoyume.Model.State;
 using Nekoyume.State;
+using Nekoyume.State.Subjects;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using Nekoyume.UI.Tween;
@@ -713,6 +714,14 @@ namespace Nekoyume.UI
                 Notification.Push(Nekoyume.Model.Mail.MailType.System,
                     L10nManager.Localize("UI_CHARGE_AP"));
                 Game.Game.instance.ActionManager.ChargeActionPoint();
+
+                var address = States.Instance.CurrentAvatarState.address;
+                if (GameConfigStateSubject.ActionPointState.ContainsKey(address))
+                {
+                    GameConfigStateSubject.ActionPointState.Remove(address);
+                }
+                GameConfigStateSubject.ActionPointState.Add(address, true);
+
                 LocalLayerModifier.RemoveItem(States.Instance.CurrentAvatarState.address,
                     material.ItemId, 1);
                 LocalLayerModifier.ModifyAvatarActionPoint(

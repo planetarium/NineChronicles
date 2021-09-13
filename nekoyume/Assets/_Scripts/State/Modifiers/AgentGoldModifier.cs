@@ -84,8 +84,12 @@ namespace Nekoyume.State.Modifiers
             Gold -= m.Gold;
         }
 
-        public GoldBalanceState Modify(GoldBalanceState state) =>
-            state?.Add(Gold);
+        public GoldBalanceState Modify(GoldBalanceState state)
+        {
+            return state;
+
+            // return state?.Add(Gold);
+        }
 
         public override string ToString()
         {

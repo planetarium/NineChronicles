@@ -27,7 +27,6 @@ using Nekoyume.Shared.Services;
 using Nekoyume.State;
 using Nekoyume.UI;
 using NineChronicles.RPC.Shared.Exceptions;
-using UniRx;
 using UnityEngine;
 using static Nekoyume.Action.ActionBase;
 using Logger = Serilog.Core.Logger;
@@ -163,6 +162,10 @@ namespace Nekoyume.BlockChain
             {
                 await _hub.DisposeAsync();
             }
+            if (!(_service is null))
+            {
+                await _service.RemoveClient(Address.ToByteArray());
+            }
             if (!(_channel is null))
             {
                 await _channel?.ShutdownAsync();
@@ -175,7 +178,7 @@ namespace Nekoyume.BlockChain
         {
             Task t = Task.Run(async () =>
             {
-                await _hub.JoinAsync();
+                await Join();
             });
 
             yield return new WaitUntil(() => t.IsCompleted);
@@ -326,7 +329,7 @@ namespace Nekoyume.BlockChain
             var newTipHeader = BlockHeader.Deserialize(newTip);
             BlockIndex = newTipHeader.Index;
             BlockIndexSubject.OnNext(BlockIndex);
-            BlockTipHash = new BlockHash(newTipHeader.Hash);
+            BlockTipHash = new BlockHash(newTip);
             BlockTipHashSubject.OnNext(BlockTipHash);
             _lastTipChangedAt = DateTimeOffset.UtcNow;
             BlockRenderer.RenderBlock(null, null);
@@ -348,15 +351,15 @@ namespace Nekoyume.BlockChain
         {
             OnRetryStarted.OnNext(this);
             var retryCount = 10;
-            Debug.Log($"Retry rpc connection. (count: {retryCount})");
             while (retryCount > 0)
             {
+                Debug.Log($"Retry rpc connection. (count: {retryCount})");
                 await Task.Delay(5000);
                 _hub = StreamingHubClient.Connect<IActionEvaluationHub, IActionEvaluationHubReceiver>(_channel, this);
                 try
                 {
                     Debug.Log($"Trying to join hub...");
-                    await _hub.JoinAsync();
+                    await Join();
                     Debug.Log($"Join complete! Registering disconnect event...");
                     RegisterDisconnectEvent(_hub);
                     UpdateSubscribeAddresses();
@@ -382,6 +385,12 @@ namespace Nekoyume.BlockChain
 
             Connected = false;
             OnDisconnected.OnNext(this);
+        }
+
+        private async Task Join()
+        {
+            await _hub.JoinAsync(Address.ToHex());
+            await _service.AddClient(Address.ToByteArray());
         }
 
         public void OnReorged(byte[] oldTip, byte[] newTip, byte[] branchpoint)
@@ -452,7 +461,7 @@ namespace Nekoyume.BlockChain
             }
 
             Debug.Log($"Subscribing addresses: {string.Join(", ", addresses)}");
-            _service.SetAddressesToSubscribe(addresses.Select(addr => addr.ToByteArray()));
+            _service.SetAddressesToSubscribe(Address.ToByteArray(), addresses.Select(addr => addr.ToByteArray()));
         }
 
         public bool IsActionStaged(Guid actionId, out TxId txId)

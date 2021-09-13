@@ -487,7 +487,9 @@ namespace Nekoyume.UI
         private IEnumerator CoProceedNextStage()
         {
             if (!nextButton.interactable)
+            {
                 yield break;
+            }
 
             if (Find<Menu>().IsActive())
             {
@@ -514,21 +516,39 @@ namespace Nekoyume.UI
             player.DisableHUD();
             ActionRenderHandler.Instance.Pending = true;
 
-            yield return Game.Game.instance.ActionManager
-                .HackAndSlash(
-                    player.Costumes,
-                    player.Equipments,
-                    new List<Consumable>(),
-                    SharedModel.WorldID,
-                    SharedModel.StageID + 1)
-                .Subscribe(_ => { },
-                    e => ActionRenderHandler.BackToMain(false, e));
+            // NOTE: Check mimisbrunnr
+            if (SharedModel.WorldID > 10000)
+            {
+                yield return Game.Game.instance.ActionManager
+                    .MimisbrunnrBattle(
+                        player.Costumes,
+                        player.Equipments,
+                        new List<Consumable>(),
+                        SharedModel.WorldID,
+                        SharedModel.StageID + 1)
+                    .DoOnError(e => ActionRenderHandler.BackToMain(false, e))
+                    .Subscribe();
+            }
+            else
+            {
+                yield return Game.Game.instance.ActionManager
+                    .HackAndSlash(
+                        player.Costumes,
+                        player.Equipments,
+                        new List<Consumable>(),
+                        SharedModel.WorldID,
+                        SharedModel.StageID + 1)
+                    .DoOnError(e => ActionRenderHandler.BackToMain(false, e))
+                    .Subscribe();
+            }
         }
 
         private IEnumerator CoRepeatStage()
         {
             if (!repeatButton.interactable)
+            {
                 yield break;
+            }
 
             if (Find<Menu>().IsActive())
             {
@@ -562,15 +582,31 @@ namespace Nekoyume.UI
             var eventName = $"Unity/Stage Exit {eventKey}";
             Mixpanel.Track(eventName, props);
 
-            yield return Game.Game.instance.ActionManager
-                .HackAndSlash(
-                    player.Costumes,
-                    player.Equipments,
-                    new List<Consumable>(),
-                    SharedModel.WorldID,
-                    SharedModel.StageID)
-                .Subscribe(_ => { },
-                    e => ActionRenderHandler.BackToMain(false, e));
+            // NOTE: Check mimisbrunnr
+            if (SharedModel.WorldID > 10000)
+            {
+                yield return Game.Game.instance.ActionManager
+                    .MimisbrunnrBattle(
+                        player.Costumes,
+                        player.Equipments,
+                        new List<Consumable>(),
+                        SharedModel.WorldID,
+                        SharedModel.StageID)
+                    .DoOnError(e => ActionRenderHandler.BackToMain(false, e))
+                    .Subscribe();
+            }
+            else
+            {
+                yield return Game.Game.instance.ActionManager
+                    .HackAndSlash(
+                        player.Costumes,
+                        player.Equipments,
+                        new List<Consumable>(),
+                        SharedModel.WorldID,
+                        SharedModel.StageID)
+                    .DoOnError(e => ActionRenderHandler.BackToMain(false, e))
+                    .Subscribe();
+            }
         }
 
         public void NextStage(BattleLog log)
