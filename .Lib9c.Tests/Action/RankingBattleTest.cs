@@ -181,9 +181,9 @@ namespace Lib9c.Tests.Action
 
             var action = new RankingBattle
             {
-                AvatarAddress = _avatar1Address,
-                EnemyAddress = _avatar2Address,
-                WeeklyArenaAddress = _weeklyArenaAddress,
+                avatarAddress = _avatar1Address,
+                enemyAddress = _avatar2Address,
+                weeklyArenaAddress = _weeklyArenaAddress,
                 costumeIds = new List<Guid> { costume.ItemId },
                 equipmentIds = new List<Guid>(),
                 consumableIds = new List<Guid>(),
@@ -214,9 +214,9 @@ namespace Lib9c.Tests.Action
         {
             var action = new RankingBattle
             {
-                AvatarAddress = _avatar1Address,
-                EnemyAddress = _avatar1Address,
-                WeeklyArenaAddress = _weeklyArenaAddress,
+                avatarAddress = _avatar1Address,
+                enemyAddress = _avatar1Address,
+                weeklyArenaAddress = _weeklyArenaAddress,
                 costumeIds = new List<Guid>(),
                 equipmentIds = new List<Guid>(),
                 consumableIds = new List<Guid>(),
@@ -259,9 +259,9 @@ namespace Lib9c.Tests.Action
 
             var action = new RankingBattle
             {
-                AvatarAddress = avatarAddress,
-                EnemyAddress = enemyAddress,
-                WeeklyArenaAddress = _weeklyArenaAddress,
+                avatarAddress = avatarAddress,
+                enemyAddress = enemyAddress,
+                weeklyArenaAddress = _weeklyArenaAddress,
                 costumeIds = new List<Guid>(),
                 equipmentIds = new List<Guid>(),
                 consumableIds = new List<Guid>(),
@@ -294,9 +294,9 @@ namespace Lib9c.Tests.Action
 
             var action = new RankingBattle
             {
-                AvatarAddress = _avatar1Address,
-                EnemyAddress = _avatar2Address,
-                WeeklyArenaAddress = _weeklyArenaAddress,
+                avatarAddress = _avatar1Address,
+                enemyAddress = _avatar2Address,
+                weeklyArenaAddress = _weeklyArenaAddress,
                 costumeIds = new List<Guid>(),
                 equipmentIds = new List<Guid>(),
                 consumableIds = new List<Guid>(),
@@ -326,9 +326,9 @@ namespace Lib9c.Tests.Action
 
             var action = new RankingBattle
             {
-                AvatarAddress = _avatar1Address,
-                EnemyAddress = _avatar2Address,
-                WeeklyArenaAddress = _weeklyArenaAddress,
+                avatarAddress = _avatar1Address,
+                enemyAddress = _avatar2Address,
+                weeklyArenaAddress = _weeklyArenaAddress,
                 costumeIds = new List<Guid>(),
                 equipmentIds = new List<Guid>(),
                 consumableIds = new List<Guid>(),
@@ -360,9 +360,9 @@ namespace Lib9c.Tests.Action
 
             var action = new RankingBattle
             {
-                AvatarAddress = _avatar1Address,
-                EnemyAddress = _avatar2Address,
-                WeeklyArenaAddress = _weeklyArenaAddress,
+                avatarAddress = _avatar1Address,
+                enemyAddress = _avatar2Address,
+                weeklyArenaAddress = _weeklyArenaAddress,
                 costumeIds = new List<Guid>(),
                 equipmentIds = new List<Guid>(),
                 consumableIds = new List<Guid>(),
@@ -401,9 +401,9 @@ namespace Lib9c.Tests.Action
 
             var action = new RankingBattle
             {
-                AvatarAddress = _avatar1Address,
-                EnemyAddress = _avatar2Address,
-                WeeklyArenaAddress = _weeklyArenaAddress,
+                avatarAddress = _avatar1Address,
+                enemyAddress = _avatar2Address,
+                weeklyArenaAddress = _weeklyArenaAddress,
                 costumeIds = new List<Guid>(),
                 equipmentIds = new List<Guid>(),
                 consumableIds = new List<Guid>(),
@@ -426,9 +426,9 @@ namespace Lib9c.Tests.Action
         {
             var action = new RankingBattle
             {
-                AvatarAddress = _avatar1Address,
-                EnemyAddress = _avatar2Address,
-                WeeklyArenaAddress = _weeklyArenaAddress,
+                avatarAddress = _avatar1Address,
+                enemyAddress = _avatar2Address,
+                weeklyArenaAddress = _weeklyArenaAddress,
                 costumeIds = new List<Guid>(),
                 equipmentIds = new List<Guid>(),
                 consumableIds = new List<Guid>(),
@@ -461,9 +461,9 @@ namespace Lib9c.Tests.Action
         {
             var action = new RankingBattle
             {
-                AvatarAddress = _avatar1Address,
-                EnemyAddress = _avatar2Address,
-                WeeklyArenaAddress = _weeklyArenaAddress,
+                avatarAddress = _avatar1Address,
+                enemyAddress = _avatar2Address,
+                weeklyArenaAddress = _weeklyArenaAddress,
                 costumeIds = new List<Guid>(),
                 equipmentIds = new List<Guid>(),
                 consumableIds = new List<Guid>(),
@@ -523,9 +523,9 @@ namespace Lib9c.Tests.Action
 
             var action = new RankingBattle
             {
-                AvatarAddress = _avatar1Address,
-                EnemyAddress = _avatar2Address,
-                WeeklyArenaAddress = _weeklyArenaAddress,
+                avatarAddress = _avatar1Address,
+                enemyAddress = _avatar2Address,
+                weeklyArenaAddress = _weeklyArenaAddress,
                 costumeIds = new List<Guid>(),
                 equipmentIds = equipments,
                 consumableIds = new List<Guid>(),

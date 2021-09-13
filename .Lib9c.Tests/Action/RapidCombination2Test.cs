@@ -75,7 +75,7 @@ namespace Lib9c.Tests.Action
             var material = ItemFactory.CreateMaterial(
                 _tableSheets.MaterialItemSheet.Values.First(r =>
                     r.ItemSubType == ItemSubType.Hourglass));
-            avatarState.inventory.AddItem(material);
+            avatarState.inventory.AddItem2(material);
 
             var firstEquipmentRow = _tableSheets.EquipmentItemSheet.First;
             Assert.NotNull(firstEquipmentRow);
@@ -86,7 +86,7 @@ namespace Lib9c.Tests.Action
                 firstEquipmentRow,
                 Guid.NewGuid(),
                 requiredBlockIndex);
-            avatarState.inventory.AddItem(equipment);
+            avatarState.inventory.AddItem2(equipment);
 
             var result = new CombinationConsumable5.ResultModel
             {
@@ -100,7 +100,7 @@ namespace Lib9c.Tests.Action
 
             var mail = new CombinationMail(result, 0, default, requiredBlockIndex);
             result.id = mail.id;
-            avatarState.Update(mail);
+            avatarState.Update2(mail);
 
             var slotAddress = _avatarAddress.Derive(string.Format(
                 CultureInfo.InvariantCulture,
@@ -287,7 +287,7 @@ namespace Lib9c.Tests.Action
             var material = ItemFactory.CreateMaterial(
                 _tableSheets.MaterialItemSheet.Values.First(r =>
                     r.ItemSubType == ItemSubType.Hourglass));
-            avatarState.inventory.AddItem(material, count: alreadyHasCount);
+            avatarState.inventory.AddItem2(material, count: alreadyHasCount);
 
             var firstEquipmentRow = _tableSheets.EquipmentItemSheet.First;
             Assert.NotNull(firstEquipmentRow);
@@ -298,7 +298,7 @@ namespace Lib9c.Tests.Action
                 firstEquipmentRow,
                 Guid.NewGuid(),
                 requiredBlockIndex);
-            avatarState.inventory.AddItem(equipment);
+            avatarState.inventory.AddItem2(equipment);
 
             var result = new CombinationConsumable5.ResultModel
             {
@@ -312,7 +312,7 @@ namespace Lib9c.Tests.Action
 
             var mail = new CombinationMail(result, 0, default, requiredBlockIndex);
             result.id = mail.id;
-            avatarState.Update(mail);
+            avatarState.Update2(mail);
 
             var slotAddress = _avatarAddress.Derive(string.Format(
                 CultureInfo.InvariantCulture,

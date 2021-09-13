@@ -292,24 +292,27 @@ namespace Nekoyume.Model.State
         public void Update(Mail.Mail mail)
         {
             mailBox.Add(mail);
-        }
-
-        public void UpdateV2(Mail.Mail mail)
-        {
-            mailBox.Add(mail);
             mailBox.CleanUp();
         }
 
-        public void UpdateV3(Mail.Mail mail)
+        [Obsolete("Use Update")]
+        public void Update2(Mail.Mail mail)
         {
             mailBox.Add(mail);
-            mailBox.CleanUpV2();
         }
 
-        public void UpdateV4(Mail.Mail mail, long currentBlockIndex)
+        [Obsolete("Use Update")]
+        public void Update3(Mail.Mail mail)
         {
             mailBox.Add(mail);
-            mailBox.CleanUpV3(currentBlockIndex);
+            mailBox.CleanUp2();
+        }
+
+        [Obsolete("No longer in use.")]
+        public void UpdateTemp(Mail.Mail mail, long currentBlockIndex)
+        {
+            mailBox.Add(mail);
+            mailBox.CleanUpTemp(currentBlockIndex);
         }
 
         public void Customize(int hair, int lens, int ear, int tail)
@@ -366,6 +369,16 @@ namespace Nekoyume.Model.State
             UpdateFromAddItem(itemUsable, false);
         }
 
+        public void UpdateFromCombination2(ItemUsable itemUsable)
+        {
+            questList.UpdateCombinationQuest(itemUsable);
+            var type = itemUsable.ItemType == ItemType.Equipment ? QuestEventType.Equipment : QuestEventType.Consumable;
+            eventMap.Add(new KeyValuePair<int, int>((int)type, 1));
+            UpdateGeneralQuest(new[] { type });
+            UpdateCompletedQuest();
+            UpdateFromAddItem2(itemUsable, false);
+        }
+
         public void UpdateFromItemEnhancement(Equipment equipment)
         {
             questList.UpdateItemEnhancementQuest(equipment);
@@ -376,9 +389,35 @@ namespace Nekoyume.Model.State
             UpdateFromAddItem(equipment, false);
         }
 
+        public void UpdateFromItemEnhancement2(Equipment equipment)
+        {
+            questList.UpdateItemEnhancementQuest(equipment);
+            var type = QuestEventType.Enhancement;
+            eventMap.Add(new KeyValuePair<int, int>((int)type, 1));
+            UpdateGeneralQuest(new[] { type });
+            UpdateCompletedQuest();
+            UpdateFromAddItem2(equipment, false);
+        }
+
         public void UpdateFromAddItem(ItemUsable itemUsable, bool canceled)
         {
             var pair = inventory.AddItem(itemUsable);
+            itemMap.Add(pair);
+
+            if (!canceled)
+            {
+                questList.UpdateCollectQuest(itemMap);
+                questList.UpdateItemGradeQuest(itemUsable);
+                questList.UpdateItemTypeCollectQuest(new[] { itemUsable });
+            }
+
+            UpdateCompletedQuest();
+        }
+
+        [Obsolete("Use UpdateFromAddItem")]
+        public void UpdateFromAddItem2(ItemUsable itemUsable, bool canceled)
+        {
+            var pair = inventory.AddItem2(itemUsable);
             itemMap.Add(pair);
 
             if (!canceled)
@@ -405,10 +444,24 @@ namespace Nekoyume.Model.State
             UpdateCompletedQuest();
         }
 
+        [Obsolete("Use UpdateFromAddItem")]
+        public void UpdateFromAddItem2(ItemBase itemUsable, int count, bool canceled)
+        {
+            var pair = inventory.AddItem2(itemUsable, count: count);
+            itemMap.Add(pair);
+
+            if (!canceled)
+            {
+                questList.UpdateCollectQuest(itemMap);
+                questList.UpdateItemTypeCollectQuest(new[] { itemUsable });
+            }
+
+            UpdateCompletedQuest();
+        }
 
         public void UpdateFromAddCostume(Costume costume, bool canceled)
         {
-            var pair = inventory.AddItem(costume);
+            var pair = inventory.AddItem2(costume);
             itemMap.Add(pair);
         }
 
@@ -430,9 +483,25 @@ namespace Nekoyume.Model.State
             UpdateCompletedQuest();
         }
 
-        /// <summary>
-        /// 완료된 퀘스트의 보상 처리를 한다.
-        /// </summary>
+        [Obsolete("Use UpdateFromQuestReward")]
+        public void UpdateFromQuestReward2(Quest.Quest quest, MaterialItemSheet materialItemSheet)
+        {
+            var items = new List<Material>();
+            foreach (var pair in quest.Reward.ItemMap.OrderBy(kv => kv.Key))
+            {
+                var row = materialItemSheet.OrderedList.First(itemRow => itemRow.Id == pair.Key);
+                var item = ItemFactory.CreateMaterial(row);
+                var map = inventory.AddItem2(item, count: pair.Value);
+                itemMap.Add(map);
+                items.Add(item);
+            }
+
+            quest.IsPaidInAction = true;
+            questList.UpdateCollectQuest(itemMap);
+            questList.UpdateItemTypeCollectQuest(items);
+            UpdateCompletedQuest();
+        }
+
         public void UpdateQuestRewards(MaterialItemSheet materialItemSheet)
         {
             var completedQuests = questList
@@ -445,6 +514,24 @@ namespace Nekoyume.Model.State
             foreach (var quest in completedQuests)
             {
                 UpdateFromQuestReward(quest, materialItemSheet);
+            }
+
+            questList.completedQuestIds = completedQuestIds;
+        }
+
+        [Obsolete("Use UpdateQuestRewards")]
+        public void UpdateQuestRewards2(MaterialItemSheet materialItemSheet)
+        {
+            var completedQuests = questList
+                .Where(quest => quest.Complete && !quest.IsPaidInAction)
+                .ToList();
+            // 완료되었지만 보상을 받지 않은 퀘스트를 return 문에서 Select 하지 않고 미리 저장하는 이유는
+            // 지연된 실행에 의해, return 시점에서 이미 모든 퀘스트의 보상 처리가 완료된 상태에서
+            // completed를 호출 시 where문의 predicate가 평가되어 컬렉션이 텅 비기 때문이다.
+            var completedQuestIds = completedQuests.Select(quest => quest.Id).ToList();
+            foreach (var quest in completedQuests)
+            {
+                UpdateFromQuestReward2(quest, materialItemSheet);
             }
 
             questList.completedQuestIds = completedQuestIds;
@@ -734,8 +821,7 @@ namespace Nekoyume.Model.State
             var equippableItems = inventory.Items
                 .Select(item => item.item)
                 .OfType<IEquippableItem>()
-                .Where(equippableItem => equippableItem.Equipped)
-                .ToImmutableHashSet();
+                .Where(equippableItem => equippableItem.Equipped);
 #pragma warning disable LAA1002
             foreach (var equippableItem in equippableItems)
 #pragma warning restore LAA1002

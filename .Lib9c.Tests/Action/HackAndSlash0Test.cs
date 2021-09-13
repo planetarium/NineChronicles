@@ -96,7 +96,7 @@ namespace Lib9c.Tests.Action
                 .Id;
             var costume =
                 ItemFactory.CreateItem(_tableSheets.ItemSheet[costumeId], new TestRandom());
-            previousAvatarState.inventory.AddItem(costume);
+            previousAvatarState.inventory.AddItem2(costume);
 
             var state = _initialState.SetState(_avatarAddress, previousAvatarState.Serialize());
 
@@ -451,7 +451,7 @@ namespace Lib9c.Tests.Action
             var avatarState = new AvatarState(_avatarState);
             var equipRow = _tableSheets.EquipmentItemSheet.Values.First(r => r.ItemSubType == itemSubType);
             var equipment = ItemFactory.CreateItemUsable(equipRow, Guid.NewGuid(), 100);
-            avatarState.inventory.AddItem(equipment);
+            avatarState.inventory.AddItem2(equipment);
 
             var action = new HackAndSlash0()
             {
@@ -496,7 +496,7 @@ namespace Lib9c.Tests.Action
             var avatarState = new AvatarState(_avatarState);
             var equipRow = _tableSheets.EquipmentItemSheet.Values.First(r => r.ItemSubType == itemSubType);
             var equipment = ItemFactory.CreateItemUsable(equipRow, Guid.NewGuid(), 0);
-            avatarState.inventory.AddItem(equipment);
+            avatarState.inventory.AddItem2(equipment);
             avatarState.level = 0;
 
             var action = new HackAndSlash0()

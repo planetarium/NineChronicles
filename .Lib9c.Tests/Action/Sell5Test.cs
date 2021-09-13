@@ -129,7 +129,7 @@ namespace Lib9c.Tests.Action
             }
 
             Assert.Equal(0, tradableItem.RequiredBlockIndex);
-            avatarState.inventory.AddItem((ItemBase)tradableItem, itemCount);
+            avatarState.inventory.AddItem2((ItemBase)tradableItem, itemCount);
 
             var previousStates = _initialState;
             previousStates = previousStates.SetState(_avatarAddress, avatarState.Serialize());
@@ -362,7 +362,7 @@ namespace Lib9c.Tests.Action
                 _tableSheets.EquipmentItemSheet.First,
                 equipmentId,
                 10);
-            _avatarState.inventory.AddItem(equipment);
+            _avatarState.inventory.AddItem2(equipment);
 
             _initialState = _initialState.SetState(_avatarAddress, _avatarState.Serialize());
 

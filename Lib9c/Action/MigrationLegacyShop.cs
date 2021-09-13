@@ -66,11 +66,11 @@ namespace Nekoyume.Action
 
                     if (!(shopItem.ItemUsable is null))
                     {
-                        avatarState.inventory.AddItem(shopItem.ItemUsable);
+                        avatarState.inventory.AddItem2(shopItem.ItemUsable);
                     }
                     if (!(shopItem.Costume is null))
                     {
-                        avatarState.inventory.AddItem(shopItem.Costume);
+                        avatarState.inventory.AddItem2(shopItem.Costume);
                     }
                     shopState.Unregister(shopItem);
                 }

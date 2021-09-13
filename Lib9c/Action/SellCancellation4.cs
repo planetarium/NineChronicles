@@ -13,7 +13,6 @@ using Serilog;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionObsolete(BlockChain.BlockPolicySource.V100066ObsoleteIndex)]
     [ActionType("sell_cancellation4")]
     public class SellCancellation4 : GameAction
     {
@@ -42,8 +41,6 @@ namespace Nekoyume.Action
                 states = states.SetState(ShopState.Address, MarkChanged);
                 return states.SetState(sellerAvatarAddress, MarkChanged);
             }
-
-            CheckObsolete(BlockChain.BlockPolicySource.V100066ObsoleteIndex, context);
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, sellerAvatarAddress);
             
@@ -113,11 +110,11 @@ namespace Nekoyume.Action
             var mail = new SellCancelMail(result, ctx.BlockIndex, ctx.Random.GenerateRandomGuid(), ctx.BlockIndex);
             result.id = mail.id;
 
-            avatarState.UpdateV3(mail);
+            avatarState.Update(mail);
 
             if (result.itemUsable != null)
             {
-                avatarState.UpdateFromAddItem(result.itemUsable, true);
+                avatarState.UpdateFromAddItem2(result.itemUsable, true);
             }
 
             if (result.costume != null)

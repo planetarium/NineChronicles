@@ -18,7 +18,7 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("item_enhancement7")]
+    [ActionType("item_enhancement8")]
     public class ItemEnhancement : GameAction
     {
         public const int RequiredBlockCount = 1;
@@ -257,7 +257,7 @@ namespace Nekoyume.Action
             result.id = mail.id;
 
             avatarState.inventory.RemoveNonFungibleItem(enhancementEquipment);
-            avatarState.UpdateV3(mail);
+            avatarState.Update(mail);
             avatarState.UpdateFromItemEnhancement(enhancementEquipment);
 
             var materialSheet = states.GetSheet<MaterialItemSheet>();

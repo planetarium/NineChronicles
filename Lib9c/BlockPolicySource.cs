@@ -33,10 +33,6 @@ namespace Nekoyume.BlockChain
         // Note: The genesis block of 9c-main net weighs 11,085,640 B (11 MiB).
         public const int MaxGenesisBytes = 1024 * 1024 * 15; // 15 MiB
 
-        public const long V100066ObsoleteIndex = 2200000;
-        
-        public const long V100068ObsoleteIndex = 2220000;
-
         private readonly TimeSpan _blockInterval = TimeSpan.FromSeconds(8);
 
         public readonly ActionRenderer ActionRenderer = new ActionRenderer();
@@ -121,7 +117,7 @@ namespace Nekoyume.BlockChain
         {
             // Avoid NRE when genesis block appended
             long index = blockChain.Tip?.Index ?? 0;
-            if (transaction.Actions.Count > 1 || IsObsolete(transaction, index))
+            if (transaction.Actions.Count > 1)
             {
                 return false;
             }
@@ -175,7 +171,7 @@ namespace Nekoyume.BlockChain
             }
             catch (IncompleteBlockStatesException)
             {
-                // It can be caused during `Swarm<T>.PreloadAsync()` because it doesn't fill its 
+                // It can be caused during `Swarm<T>.PreloadAsync()` because it doesn't fill its
                 // state right away...
                 // FIXME It should be removed after fix that Libplanet fills its state on IBD.
                 // See also: https://github.com/planetarium/lib9c/pull/151#discussion_r506039478

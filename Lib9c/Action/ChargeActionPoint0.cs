@@ -13,7 +13,6 @@ using Serilog;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionObsolete(BlockChain.BlockPolicySource.V100066ObsoleteIndex)]
     [ActionType("charge_action_point")]
     public class ChargeActionPoint0 : GameAction
     {
@@ -27,8 +26,6 @@ namespace Nekoyume.Action
                 return states.SetState(avatarAddress, MarkChanged);
             }
 
-            CheckObsolete(BlockChain.BlockPolicySource.V100066ObsoleteIndex, context);
-
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
 
             if (!states.TryGetAgentAvatarStates(context.Signer, avatarAddress, out var _, out var avatarState))
@@ -38,7 +35,7 @@ namespace Nekoyume.Action
 
             var row = states.GetSheet<MaterialItemSheet>().Values.FirstOrDefault(r => r.ItemSubType == ItemSubType.ApStone);
             var apStone = ItemFactory.CreateMaterial(row);
-            if (!avatarState.inventory.RemoveFungibleItem(apStone))
+            if (!avatarState.inventory.RemoveFungibleItem2(apStone))
             {
                 Log.Error("{AddressesHex}Not enough item {ApStone}", addressesHex, apStone);
                 return states;

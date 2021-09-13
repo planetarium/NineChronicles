@@ -128,7 +128,7 @@
             }
 
             Assert.Equal(0, tradableItem.RequiredBlockIndex);
-            avatarState.inventory.AddItem((ItemBase)tradableItem, itemCount);
+            avatarState.inventory.AddItem2((ItemBase)tradableItem, itemCount);
 
             var previousStates = _initialState;
             if (backward)
@@ -361,7 +361,7 @@
                 _tableSheets.EquipmentItemSheet.First,
                 equipmentId,
                 10);
-            _avatarState.inventory.AddItem(equipment);
+            _avatarState.inventory.AddItem2(equipment);
 
             _initialState = _initialState.SetState(_avatarAddress, _avatarState.Serialize());
 
@@ -391,7 +391,7 @@
                 _tableSheets.EquipmentItemSheet.Values.First(r => r.ItemSubType == ItemSubType.Weapon),
                 new TestRandom());
             AvatarState avatarState = _initialState.GetAvatarState(_avatarAddress);
-            avatarState.inventory.AddItem((ItemBase)tradableItem);
+            avatarState.inventory.AddItem2((ItemBase)tradableItem);
 
             Guid tradableId = tradableItem.TradableId;
             Guid orderId = Guid.NewGuid();

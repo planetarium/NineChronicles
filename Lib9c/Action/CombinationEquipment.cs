@@ -20,7 +20,7 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("combination_equipment6")]
+    [ActionType("combination_equipment7")]
     public class CombinationEquipment : GameAction
     {
         public static readonly Address BlacksmithAddress = ItemEnhancement.BlacksmithAddress;
@@ -108,10 +108,10 @@ namespace Nekoyume.Action
                 throw new SheetRowNotFoundException(addressesHex, nameof(MaterialItemSheet), recipe.MaterialId);
             }
 
-            if (!avatarState.inventory.RemoveFungibleItem(material.ItemId, recipe.MaterialCount))
+            if (!avatarState.inventory.RemoveFungibleItem(material.ItemId, context.BlockIndex, recipe.MaterialCount))
             {
                 throw new NotEnoughMaterialException(
-                    $"{addressesHex}Aborted as the player has no enough material ({material} * {recipe.MaterialCount})"
+                    $"{addressesHex}Aborted as the player has no enough material ({material} * {recipe.MaterialCount}). BlockIndex({context.BlockIndex})"
                 );
             }
 
@@ -157,11 +157,13 @@ namespace Nekoyume.Action
                         throw new SheetRowNotFoundException(addressesHex, nameof(MaterialItemSheet), materialInfo.Id);
                     }
 
-                    if (!avatarState.inventory.RemoveFungibleItem(subMaterialRow.ItemId,
+                    if (!avatarState.inventory.RemoveFungibleItem(
+                        subMaterialRow.ItemId,
+                        context.BlockIndex,
                         materialInfo.Count))
                     {
                         throw new NotEnoughMaterialException(
-                            $"{addressesHex}Aborted as the player has no enough material ({subMaterialRow} * {materialInfo.Count})"
+                            $"{addressesHex}Aborted as the player has no enough material ({subMaterialRow} * {materialInfo.Count}). BlockIndex({context.BlockIndex})"
                         );
                     }
 
@@ -225,7 +227,7 @@ namespace Nekoyume.Action
             var mail = new CombinationMail(result, ctx.BlockIndex, ctx.Random.GenerateRandomGuid(),
                 requiredBlockIndex);
             result.id = mail.id;
-            avatarState.UpdateV3(mail);
+            avatarState.Update(mail);
             avatarState.questList.UpdateCombinationEquipmentQuest(RecipeId);
             avatarState.UpdateFromCombination(equipment);
             avatarState.UpdateQuestRewards(materialSheet);

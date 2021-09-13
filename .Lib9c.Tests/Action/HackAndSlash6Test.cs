@@ -106,7 +106,7 @@ namespace Lib9c.Tests.Action
 
                 var costume = (Costume)ItemFactory.CreateItem(
                     _tableSheets.ItemSheet[costumeId], random);
-                previousAvatarState.inventory.AddItem(costume);
+                previousAvatarState.inventory.AddItem2(costume);
                 costumes.Add(costume.ItemId);
             }
 
@@ -127,7 +127,7 @@ namespace Lib9c.Tests.Action
                     random)
                     as Equipment;
                 equipments.Add(weapon.ItemId);
-                previousAvatarState.inventory.AddItem(weapon);
+                previousAvatarState.inventory.AddItem2(weapon);
             }
 
             if (avatarLevel >= GameConfig.RequireCharacterLevel.CharacterEquipmentSlotArmor)
@@ -145,7 +145,7 @@ namespace Lib9c.Tests.Action
                     random)
                     as Equipment;
                 equipments.Add(armor.ItemId);
-                previousAvatarState.inventory.AddItem(armor);
+                previousAvatarState.inventory.AddItem2(armor);
             }
 
             var mailEquipmentRow = _tableSheets.EquipmentItemSheet.Values.First();
@@ -162,7 +162,7 @@ namespace Lib9c.Tests.Action
             for (var i = 0; i < 100; i++)
             {
                 var mail = new CombinationMail(result, i, default, 0);
-                previousAvatarState.Update(mail);
+                previousAvatarState.Update2(mail);
             }
 
             IAccountStateDelta state;
@@ -317,7 +317,7 @@ namespace Lib9c.Tests.Action
                     as Equipment;
 
                 equipments.Add(equipment.ItemId);
-                previousAvatarState.inventory.AddItem(equipment);
+                previousAvatarState.inventory.AddItem2(equipment);
             }
 
             var state = _initialState.SetState(_avatarAddress, previousAvatarState.Serialize());
@@ -669,7 +669,7 @@ namespace Lib9c.Tests.Action
             var avatarState = new AvatarState(_avatarState);
             var equipRow = _tableSheets.EquipmentItemSheet.Values.First(r => r.ItemSubType == itemSubType);
             var equipment = ItemFactory.CreateItemUsable(equipRow, Guid.NewGuid(), 100);
-            avatarState.inventory.AddItem(equipment);
+            avatarState.inventory.AddItem2(equipment);
 
             var action = new HackAndSlash6
             {
@@ -714,7 +714,7 @@ namespace Lib9c.Tests.Action
             var avatarState = new AvatarState(_avatarState);
             var equipRow = _tableSheets.EquipmentItemSheet.Values.First(r => r.ItemSubType == itemSubType);
             var equipment = ItemFactory.CreateItemUsable(equipRow, Guid.NewGuid(), 0);
-            avatarState.inventory.AddItem(equipment);
+            avatarState.inventory.AddItem2(equipment);
             avatarState.level = 0;
 
             var action = new HackAndSlash6
