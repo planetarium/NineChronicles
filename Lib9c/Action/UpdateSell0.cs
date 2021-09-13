@@ -20,7 +20,6 @@ using BxList = Bencodex.Types.List;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionObsolete(BlockChain.BlockPolicySource.V100074ObsoleteIndex)]
     [ActionType("update_sell")]
     public class UpdateSell0 : GameAction
     {
@@ -80,8 +79,6 @@ namespace Nekoyume.Action
                     .SetState(questListAddress, MarkChanged)
                     .SetState(sellerAvatarAddress, MarkChanged);
             }
-
-            CheckObsolete(BlockChain.BlockPolicySource.V100074ObsoleteIndex, context);
 
             // common
             var addressesHex = GetSignerAndOtherAddressesHex(context, sellerAvatarAddress);

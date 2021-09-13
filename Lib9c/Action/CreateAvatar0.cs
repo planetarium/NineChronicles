@@ -18,7 +18,6 @@ using Serilog;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionObsolete(BlockChain.BlockPolicySource.V100066ObsoleteIndex)]
     [ActionType("create_avatar")]
     public class CreateAvatar0 : GameAction
     {
@@ -76,8 +75,6 @@ namespace Nekoyume.Action
                     .SetState(Addresses.Ranking, MarkChanged)
                     .MarkBalanceChanged(GoldCurrencyMock, GoldCurrencyState.Address, context.Signer);
             }
-
-            CheckObsolete(BlockChain.BlockPolicySource.V100066ObsoleteIndex, context);
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
 
