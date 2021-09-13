@@ -4,7 +4,7 @@ using Nekoyume.Model.BattleStatus;
 
 namespace Nekoyume.Battle
 {
-    public class ArenaScoreHelper
+    public static class ArenaScoreHelper
     {
         public const int DifferLowerLimit = -1000;
         public const int DifferUpperLimit = 1000;
