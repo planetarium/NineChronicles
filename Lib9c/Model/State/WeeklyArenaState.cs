@@ -430,7 +430,8 @@ namespace Nekoyume.Model.State
                 [(Text)"receive"] = Receive.Serialize(),
             });
 
-        public void Update(AvatarState state, CharacterSheet characterSheet)
+        [Obsolete("Use Update()")]
+        public void UpdateV1(AvatarState state, CharacterSheet characterSheet)
         {
             ArmorId = state.GetArmorId();
             Level = state.level;

@@ -258,7 +258,7 @@ namespace Nekoyume.Action
                     if (weekly.ContainsKey(avatarAddress))
                     {
                         var info = weekly[avatarAddress];
-                        info.Update(avatarState, characterSheet);
+                        info.UpdateV1(avatarState, characterSheet);
                         weekly.Update(info);
                     }
                     else
