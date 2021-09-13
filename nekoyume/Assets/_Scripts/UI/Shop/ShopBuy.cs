@@ -84,10 +84,10 @@ namespace Nekoyume.UI
 
         public override void Show(bool ignoreShowAnimation = false)
         {
-            AsyncShow();
+            ShowAsync();
         }
 
-        private async void AsyncShow(bool ignoreShowAnimation = false)
+        private async void ShowAsync(bool ignoreShowAnimation = false)
         {
             Find<DataLoadingScreen>().Show();
             Game.Game.instance.Stage.GetPlayer().gameObject.SetActive(false);

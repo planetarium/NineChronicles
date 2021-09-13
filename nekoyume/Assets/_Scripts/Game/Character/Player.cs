@@ -30,10 +30,12 @@ namespace Nekoyume.Game.Character
         public TouchHandler touchHandler;
 
         public List<Costume> Costumes =>
-            Inventory.Items.Select(i => i.item).OfType<Costume>().Where(e => e.equipped).ToList();
+            Inventory?.Items.Select(i => i.item).OfType<Costume>().Where(e => e.equipped).ToList() ??
+            new List<Costume>();
 
         public List<Equipment> Equipments =>
-            Inventory.Items.Select(i => i.item).OfType<Equipment>().Where(e => e.equipped).ToList();
+            Inventory?.Items.Select(i => i.item).OfType<Equipment>().Where(e => e.equipped).ToList() ??
+            new List<Equipment>();
 
         protected override float RunSpeedDefault => CharacterModel.RunSpeed;
 
@@ -237,6 +239,11 @@ namespace Nekoyume.Game.Character
 
         private void EquipCostumes(IEnumerable<Costume> costumes)
         {
+            if (costumes is null)
+            {
+                return;
+            }
+
             foreach (var costume in costumes)
             {
                 EquipCostume(costume);
@@ -633,7 +640,7 @@ namespace Nekoyume.Game.Character
             }
 
             var level = Level;
-            Model.GetExpV2(exp);
+            Model.GetExp(exp);
             EXP += exp;
 
             if (Level != level)
