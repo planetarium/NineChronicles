@@ -17,7 +17,6 @@ using Serilog;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionObsolete(BlockChain.BlockPolicySource.V100066ObsoleteIndex)]
     [ActionType("buy_multiple")]
     public class BuyMultiple : GameAction
     {
@@ -230,8 +229,6 @@ namespace Nekoyume.Action
 
                 return states.SetState(ShopState.Address, MarkChanged);
             }
-
-            CheckObsolete(BlockChain.BlockPolicySource.V100066ObsoleteIndex, context);
 
             var availableInfos = purchaseInfos.Where(p => !(p is null));
 

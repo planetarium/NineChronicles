@@ -14,7 +14,6 @@ using Serilog;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionObsolete(BlockChain.BlockPolicySource.V100066ObsoleteIndex)]
     [ActionType("redeem_code")]
     public class RedeemCode0 : GameAction
     {
@@ -44,8 +43,6 @@ namespace Nekoyume.Action
                 states = states.MarkBalanceChanged(GoldCurrencyMock, context.Signer);
                 return states;
             }
-
-            CheckObsolete(BlockChain.BlockPolicySource.V100066ObsoleteIndex, context);
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, AvatarAddress);
 
