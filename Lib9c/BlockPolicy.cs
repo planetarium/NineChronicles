@@ -40,23 +40,25 @@ namespace Nekoyume.BlockChain
             long minimumDifficulty,
             int difficultyBoundDivisor,
             int minTransactionsPerBlock,
-            int maxTransactionsPerBlock,
             int maxBlockBytes,
             int maxGenesisBytes,
-            Func<Transaction<NCAction>, BlockChain<NCAction>, bool> doesTransactionFollowPolicy = null,
+            Func<BlockChain<NCAction>, Transaction<NCAction>, TxPolicyViolationException>
+                validateNextBlockTx = null,
+            Func<long, int> getMinTransactionsPerBlock = null,
+            Func<long, int> getMaxTransactionsPerBlock = null,
             Func<long, int> getMaxTransactionsPerSignerPerBlock = null)
             : this(
                 blockAction: blockAction,
                 blockInterval: blockInterval,
                 minimumDifficulty: minimumDifficulty,
                 difficultyBoundDivisor: difficultyBoundDivisor,
-                minTransactionsPerBlock: minTransactionsPerBlock,
-                maxTransactionsPerBlock: maxTransactionsPerBlock,
                 maxBlockBytes: maxBlockBytes,
                 maxGenesisBytes: maxGenesisBytes,
                 ignoreHardcodedPolicies: false,
                 permissionedMiningPolicy: BlockChain.PermissionedMiningPolicy.Mainnet,
-                doesTransactionFollowPolicy: doesTransactionFollowPolicy,
+                validateNextBlockTx: validateNextBlockTx,
+                getMinTransactionsPerBlock: getMinTransactionsPerBlock,
+                getMaxTransactionsPerBlock: getMaxTransactionsPerBlock,
                 getMaxTransactionsPerSignerPerBlock: getMaxTransactionsPerSignerPerBlock)
         {
         }
@@ -66,28 +68,29 @@ namespace Nekoyume.BlockChain
             TimeSpan blockInterval,
             long minimumDifficulty,
             int difficultyBoundDivisor,
-            int minTransactionsPerBlock,
-            int maxTransactionsPerBlock,
             int maxBlockBytes,
             int maxGenesisBytes,
             bool ignoreHardcodedPolicies,
             PermissionedMiningPolicy? permissionedMiningPolicy,
-            Func<Transaction<NCAction>, BlockChain<NCAction>, bool> doesTransactionFollowPolicy = null,
+            Func<BlockChain<NCAction>, Transaction<NCAction>, TxPolicyViolationException>
+                validateNextBlockTx = null,
+            Func<long, int> getMinTransactionsPerBlock = null,
+            Func<long, int> getMaxTransactionsPerBlock = null,
             Func<long, int> getMaxTransactionsPerSignerPerBlock = null)
             : base(
                 blockAction: blockAction,
                 blockInterval: blockInterval,
                 minimumDifficulty: minimumDifficulty,
                 difficultyBoundDivisor: difficultyBoundDivisor,
-                minTransactionsPerBlock: minTransactionsPerBlock,
-                maxTransactionsPerBlock: maxTransactionsPerBlock,
                 maxBlockBytes: maxBlockBytes,
                 maxGenesisBytes: maxGenesisBytes,
-                doesTransactionFollowPolicy: doesTransactionFollowPolicy,
+                validateNextBlockTx: validateNextBlockTx,
                 canonicalChainComparer: new CanonicalChainComparer(null),
 #pragma warning disable LAA1002
                 hashAlgorithmGetter: HashAlgorithmTable.ToHashAlgorithmGetter(),
 #pragma warning restore LAA1002
+                getMinTransactionsPerBlock: getMinTransactionsPerBlock,
+                getMaxTransactionsPerBlock: getMaxTransactionsPerBlock,
                 getMaxTransactionsPerSignerPerBlock: getMaxTransactionsPerSignerPerBlock)
         {
             _minimumDifficulty = minimumDifficulty;
@@ -108,23 +111,23 @@ namespace Nekoyume.BlockChain
 
         public PermissionedMiningPolicy? PermissionedMiningPolicy { get; }
 
-        public override InvalidBlockException ValidateNextBlock(
-            BlockChain<NCAction> blocks,
+        public override BlockPolicyViolationException ValidateNextBlock(
+            BlockChain<NCAction> blockChain,
             Block<NCAction> nextBlock
         ) =>
             CheckTxCount(nextBlock)
             ?? ValidateMinerPermission(nextBlock)
             ?? ValidateMinerAuthority(nextBlock)
-            ?? base.ValidateNextBlock(blocks, nextBlock);
+            ?? base.ValidateNextBlock(blockChain, nextBlock);
 
-        public override long GetNextBlockDifficulty(BlockChain<NCAction> blocks)
+        public override long GetNextBlockDifficulty(BlockChain<NCAction> blockChain)
         {
             if (AuthorizedMinersState is null)
             {
-                return base.GetNextBlockDifficulty(blocks);
+                return base.GetNextBlockDifficulty(blockChain);
             }
 
-            long index = blocks.Count;
+            long index = blockChain.Count;
 
             if (index < 0)
             {
@@ -142,7 +145,7 @@ namespace Nekoyume.BlockChain
 
             if (beforePrevIndex > AuthorizedMinersState.ValidUntil)
             {
-                return base.GetNextBlockDifficulty(blocks);
+                return base.GetNextBlockDifficulty(blockChain);
             }
 
             if (IsTargetBlock(index) || prevIndex <= 1 || beforePrevIndex <= 1)
@@ -150,8 +153,8 @@ namespace Nekoyume.BlockChain
                 return _minimumDifficulty;
             }
 
-            var prevBlock = blocks[prevIndex];
-            var beforePrevBlock = blocks[beforePrevIndex];
+            var prevBlock = blockChain[prevIndex];
+            var beforePrevBlock = blockChain[beforePrevIndex];
 
             DateTimeOffset beforePrevTimestamp = beforePrevBlock.Timestamp;
             DateTimeOffset prevTimestamp = prevBlock.Timestamp;
@@ -168,7 +171,7 @@ namespace Nekoyume.BlockChain
             return Math.Max(nextDifficulty, _minimumDifficulty);
         }
 
-        private InvalidBlockException CheckTxCount(Block<NCAction> block)
+        private BlockPolicyViolationException CheckTxCount(Block<NCAction> block)
         {
             if (!(block.Miner is Address miner))
             {
@@ -181,17 +184,15 @@ namespace Nekoyume.BlockChain
             if (block.Transactions.Count <= 0 &&
                 (IgnoreHardcodedPolicies || block.Index > 2_173_700))
             {
-                return new InvalidMinerException(
-                    $"The block #{block.Index} {block.Hash} (mined by {miner}) should " +
-                    "include at least one transaction.",
-                    miner
-                );
+                return new BlockPolicyViolationException(
+                    $"Block #{block.Index} {block.Hash} mined by {miner} should " +
+                    "include at least one transaction.");
             }
 
             return null;
         }
 
-        private InvalidBlockException ValidateMinerPermission(Block<NCAction> block)
+        private BlockPolicyViolationException ValidateMinerPermission(Block<NCAction> block)
         {
             Address miner = block.Miner;
 
@@ -215,13 +216,11 @@ namespace Nekoyume.BlockChain
                 return null;
             }
 
-            return new InvalidMinerException(
-                $"The block #{block.Index} {block.Hash} is not mined by a permissioned miner.",
-                miner
-            );
+            return new BlockPolicyViolationException(
+                $"Block #{block.Index} {block.Hash} is not mined by a permissioned miner.");
         }
 
-        private InvalidBlockException ValidateMinerAuthority(Block<NCAction> block)
+        private BlockPolicyViolationException ValidateMinerAuthority(Block<NCAction> block)
         {
             Address miner = block.Miner;
 
@@ -237,10 +236,8 @@ namespace Nekoyume.BlockChain
 
             if (!AuthorizedMinersState.Miners.Contains(miner))
             {
-                return new InvalidMinerException(
-                    $"The block #{block.Index} {block.Hash} is not mined by an authorized miner.",
-                    miner
-                );
+                return new BlockPolicyViolationException(
+                    $"The block #{block.Index} {block.Hash} is not mined by an authorized miner.");
             }
 
             // Authority should be proven through a no-op transaction (= txs with zero actions).
@@ -261,11 +258,9 @@ namespace Nekoyume.BlockChain
 #else
             const string debug = "";
 #endif
-                return new InvalidMinerException(
-                    $"The block #{block.Index} {block.Hash}'s miner {miner} should be proven by " +
-                    "including a no-op transaction by signed the same authority." + debug,
-                    miner
-                );
+                return new BlockPolicyViolationException(
+                    $"Block #{block.Index} {block.Hash}'s miner {miner} should be proven by " +
+                    "including a no-op transaction by signed the same authority." + debug);
             }
 
             return null;

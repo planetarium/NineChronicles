@@ -63,16 +63,14 @@ namespace Nekoyume.BlockChain
                 minimumDifficulty,
                 maximumTransactions,
                 ignoreHardcodedPolicies: false,
-                permissionedMiningPolicy: PermissionedMiningPolicy.Mainnet
-            );
+                permissionedMiningPolicy: PermissionedMiningPolicy.Mainnet);
 
         // FIXME 남은 설정들도 설정화 해야 할지도?
         internal IBlockPolicy<NCAction> GetPolicy(
             int minimumDifficulty,
             int maximumTransactions,
             PermissionedMiningPolicy? permissionedMiningPolicy,
-            bool ignoreHardcodedPolicies
-        )
+            bool ignoreHardcodedPolicies)
         {
 #if UNITY_EDITOR
             return new Lib9c.DebugPolicy();
@@ -82,13 +80,13 @@ namespace Nekoyume.BlockChain
                 blockInterval: _blockInterval,
                 minimumDifficulty: minimumDifficulty,
                 difficultyBoundDivisor: DifficultyBoundDivisor,
-                minTransactionsPerBlock: 0,
-                maxTransactionsPerBlock: maximumTransactions,
                 maxBlockBytes: MaxBlockBytes,
                 maxGenesisBytes: MaxGenesisBytes,
                 ignoreHardcodedPolicies: ignoreHardcodedPolicies,
                 permissionedMiningPolicy: permissionedMiningPolicy,
-                doesTransactionFollowPolicy: DoesTransactionFollowPolicy,
+                validateNextBlockTx: ValidateNextBlockTx,
+                getMinTransactionsPerBlock: (long index) => 0,
+                getMaxTransactionsPerBlock: (long index) => maximumTransactions,
                 getMaxTransactionsPerSignerPerBlock: (long index) => index > V100073ObsoleteIndex
                     ? maxTransactionsPerSignerPerBlockV100074
                     : maximumTransactions);
@@ -111,18 +109,20 @@ namespace Nekoyume.BlockChain
                 );
         }
 
-        private bool DoesTransactionFollowPolicy(
-            Transaction<NCAction> transaction,
-            BlockChain<NCAction> blockChain
-        )
+        private TxPolicyViolationException ValidateNextBlockTx(
+            BlockChain<NCAction> blockChain,
+            Transaction<NCAction> transaction)
         {
-            return CheckTransaction(transaction, blockChain);
+            return CheckTransaction(blockChain, transaction)
+                ? null
+                : new TxPolicyViolationException(
+                    transaction.Id,
+                    $"Transaction {transaction.Id} is invalid due to policy violation.");
         }
 
         private bool CheckTransaction(
-            Transaction<NCAction> transaction,
-            BlockChain<NCAction> blockChain
-        )
+            BlockChain<NCAction> blockChain,
+            Transaction<NCAction> transaction)
         {
             // Avoid NRE when genesis block appended
             if (transaction.Actions.Count > 1)
