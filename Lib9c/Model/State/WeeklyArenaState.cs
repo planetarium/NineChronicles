@@ -460,7 +460,7 @@ namespace Nekoyume.Model.State
                     throw new ArgumentOutOfRangeException(nameof(result), result, null);
             }
 
-            var score = ArenaScoreHelper.GetScore(Score, enemyInfo.Score, result);
+            var score = ArenaScoreHelper.GetScoreV1(Score, enemyInfo.Score, result);
             var calculated = Score + score;
             var current = Score;
             Score = Math.Max(1000, calculated);

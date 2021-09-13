@@ -42,7 +42,7 @@ namespace Nekoyume.Battle
             {DifferUpperLimit, (WinScoreMin, LoseScoreMax)},
         };
 
-        public static int GetScore(int challengerRating, int defenderRating, BattleLog.Result result)
+        public static int GetScoreV1(int challengerRating, int defenderRating, BattleLog.Result result)
         {
             var differ = challengerRating - defenderRating;
             if (differ < 0)
