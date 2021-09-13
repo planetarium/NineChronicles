@@ -126,7 +126,7 @@ namespace Nekoyume.BlockChain
         {
             // Avoid NRE when genesis block appended
             long index = blockChain.Tip?.Index ?? 0;
-            if (transaction.Actions.Count > 1)
+            if (transaction.Actions.Count > 0 || IsObsolete(transaction, index))
             {
                 return false;
             }
