@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Globalization;
+using System.Linq;
 using Bencodex.Types;
 using Libplanet;
 using Nekoyume.Action;
@@ -39,8 +40,8 @@ namespace Nekoyume.State
 
         public GameConfigState GameConfigState { get; private set; }
 
-        public readonly Dictionary<Address, CombinationSlotState> CombinationSlotStates =
-            new Dictionary<Address, CombinationSlotState>();
+        private readonly Dictionary<int, CombinationSlotState> _combinationSlotStates =
+            new Dictionary<int, CombinationSlotState>();
 
         public States()
         {
@@ -297,7 +298,6 @@ namespace Nekoyume.State
             if (avatarState is null)
             {
                 LocalLayer.Instance.InitializeCombinationSlotsByCurrentAvatarState(null);
-
                 return;
             }
 
@@ -311,18 +311,41 @@ namespace Nekoyume.State
                         i
                     )
                 );
-                var slotState = new CombinationSlotState(
-                    (Dictionary) Game.Game.instance.Agent.GetState(slotAddress));
-                SetCombinationSlotState(slotState);
+                var state = new CombinationSlotState((Dictionary) Game.Game.instance.Agent.GetState(slotAddress));
+                UpdateCombinationSlotState(i, state);
             }
         }
 
-        public void SetCombinationSlotState(CombinationSlotState state)
+        public void UpdateCombinationSlotState(int index, CombinationSlotState state)
         {
-            state = LocalLayer.Instance.Modify(state);
-            CombinationSlotStates[state.address] = state;
+            if (_combinationSlotStates.ContainsKey(index))
+            {
+                _combinationSlotStates[index] = state;
+            }
+            else
+            {
+                _combinationSlotStates.Add(index, state);
+            }
+        }
 
-            CombinationSlotStateSubject.OnNext(state);
+        public void RemoveSlotState(int index)
+        {
+            if (_combinationSlotStates.ContainsKey(index))
+            {
+                _combinationSlotStates.Remove(index);
+            }
+        }
+
+        public Dictionary<int, CombinationSlotState> GetCombinationSlotState(long currentBlockIndex)
+        {
+            if (_combinationSlotStates == null)
+            {
+                return new Dictionary<int, CombinationSlotState>();
+            }
+
+            return _combinationSlotStates
+                .Where(pair => !pair.Value.Validate(CurrentAvatarState, currentBlockIndex))
+                .ToDictionary(pair => pair.Key, pair => pair.Value);
         }
 
         public void SetGameConfigState(GameConfigState state)

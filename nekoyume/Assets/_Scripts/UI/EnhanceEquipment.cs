@@ -137,7 +137,7 @@ namespace Nekoyume.UI
             }
 
             var row = Game.Game.instance.TableSheets
-                .EnhancementCostSheet.Values
+                .EnhancementCostSheetV2.Values
                 .FirstOrDefault(x => x.Grade == equipment.Grade && x.Level == equipment.level + 1);
 
             return row is null ? 0 : row.Cost;
@@ -284,10 +284,10 @@ namespace Nekoyume.UI
             Guid otherItemGuid,
             int slotIndex)
         {
-            LocalLayerModifier.ModifyCombinationSlotItemEnhancement(
-                baseItemGuid,
-                otherItemGuid,
-                slotIndex);
+            // LocalLayerModifier.ModifyCombinationSlotItemEnhancement(
+            //     baseItemGuid,
+            //     otherItemGuid,
+            //     slotIndex);
             var msg = L10nManager.Localize("NOTIFICATION_ITEM_ENHANCEMENT_START");
             Notification.Push(MailType.Workshop, msg);
             Game.Game.instance.ActionManager

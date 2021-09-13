@@ -27,6 +27,11 @@ namespace Nekoyume.BlockChain
 
         private readonly ActionRenderer _renderer;
 
+        private Guid _lastBattleActionId;
+
+        public static bool IsLastBattleActionId(Guid actionId) =>
+            actionId == Game.Game.instance.ActionManager._lastBattleActionId;
+
         private void ProcessAction(GameAction gameAction)
         {
             _agent.EnqueueAction(gameAction);
@@ -113,6 +118,8 @@ namespace Nekoyume.BlockChain
             };
             ProcessAction(action);
 
+            _lastBattleActionId = action.Id;
+
             return _renderer.EveryRender<MimisbrunnrBattle>()
                 .SkipWhile(eval => !eval.Action.Id.Equals(action.Id))
                 .First()
@@ -142,9 +149,9 @@ namespace Nekoyume.BlockChain
             int stageId)
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
-            costumes = costumes ?? new List<Costume>();
-            equipments = equipments ?? new List<Equipment>();
-            foods = foods ?? new List<Consumable>();
+            costumes ??= new List<Costume>();
+            equipments ??= new List<Equipment>();
+            foods ??= new List<Consumable>();
 
             var action = new HackAndSlash
             {
@@ -157,6 +164,8 @@ namespace Nekoyume.BlockChain
                 rankingMapAddress = States.Instance.CurrentAvatarState.RankingMapAddress,
             };
             ProcessAction(action);
+
+            _lastBattleActionId = action.Id;
 
             return _renderer.EveryRender<HackAndSlash>()
                 .SkipWhile(eval => !eval.Action.Id.Equals(action.Id))
@@ -177,7 +186,7 @@ namespace Nekoyume.BlockChain
             var action = new CombinationConsumable
             {
                 recipeId = recipeId,
-                AvatarAddress = States.Instance.CurrentAvatarState.address,
+                avatarAddress = States.Instance.CurrentAvatarState.address,
                 slotIndex = slotIndex,
             };
             ProcessAction(action);
@@ -365,6 +374,8 @@ namespace Nekoyume.BlockChain
             };
             ProcessAction(action);
 
+            _lastBattleActionId = action.Id;
+
             return _renderer.EveryRender<RankingBattle>()
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .First()
@@ -395,10 +406,10 @@ namespace Nekoyume.BlockChain
 
             var action = new CombinationEquipment
             {
-                AvatarAddress = States.Instance.CurrentAvatarState.address,
-                RecipeId = recipeId,
-                SubRecipeId = subRecipeId,
-                SlotIndex = slotIndex,
+                avatarAddress = States.Instance.CurrentAvatarState.address,
+                slotIndex = slotIndex,
+                recipeId = recipeId,
+                subRecipeId = subRecipeId,
             };
             ProcessAction(action);
 
@@ -410,11 +421,11 @@ namespace Nekoyume.BlockChain
                 .DoOnError(e => HandleException(action.Id, e));
         }
 
-        public IObservable<ActionBase.ActionEvaluation<RapidCombination>> RapidCombination(int slotIndex)
+        public IObservable<ActionBase.ActionEvaluation<RapidCombination>> RapidCombination(Address avatarAddress, int slotIndex)
         {
             var action = new RapidCombination
             {
-                avatarAddress = States.Instance.CurrentAvatarState.address,
+                avatarAddress = avatarAddress,
                 slotIndex = slotIndex
             };
             ProcessAction(action);

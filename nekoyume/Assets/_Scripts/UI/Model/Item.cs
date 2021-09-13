@@ -1,4 +1,6 @@
 using System;
+using System.Linq;
+using Nekoyume.Helper;
 using Nekoyume.Model.Item;
 using UniRx;
 
@@ -11,6 +13,7 @@ namespace Nekoyume.UI.Model
         public readonly ReactiveProperty<string> Enhancement = new ReactiveProperty<string>();
         public readonly ReactiveProperty<bool> EnhancementEnabled = new ReactiveProperty<bool>(false);
         public readonly ReactiveProperty<bool> EnhancementEffectEnabled = new ReactiveProperty<bool>(false);
+        public readonly ReactiveProperty<bool> HasOptions = new ReactiveProperty<bool>(false);
         public readonly ReactiveProperty<bool> Dimmed = new ReactiveProperty<bool>(false);
         public readonly ReactiveProperty<bool> Selected = new ReactiveProperty<bool>(false);
         public readonly ReactiveProperty<bool> ActiveSelf = new ReactiveProperty<bool>(true);
@@ -18,23 +21,30 @@ namespace Nekoyume.UI.Model
         public readonly Subject<Item> OnClick = new Subject<Item>();
         public readonly Subject<Item> OnDoubleClick = new Subject<Item>();
 
-        private const int VisibleEnhancementEffectValue = 11; // todo : When a weapon effect is added, the value must be modified.
         public Item(ItemBase value)
         {
             ItemBase.Value = value;
 
-            if (ItemBase.Value is Equipment equipment &&
+            var equipment = ItemBase.Value as Equipment;
+
+            if (equipment != null &&
                 equipment.level > 0)
             {
                 Enhancement.Value = $"+{equipment.level}";
                 EnhancementEnabled.Value = true;
-                EnhancementEffectEnabled.Value = equipment.level >= VisibleEnhancementEffectValue;
+                EnhancementEffectEnabled.Value = equipment.level >= Util.VisibleEnhancementEffectLevel;
             }
             else
             {
                 Enhancement.Value = string.Empty;
                 EnhancementEnabled.Value = false;
                 EnhancementEffectEnabled.Value = false;
+            }
+
+            if (equipment != null)
+            {
+                HasOptions.Value = equipment.optionCountFromCombination > 0 ||
+                    equipment.StatsMap.GetAdditionalStats(true).Count() + equipment.Skills.Count > 0;
             }
         }
 
@@ -45,6 +55,7 @@ namespace Nekoyume.UI.Model
             Enhancement.Dispose();
             EnhancementEnabled.Dispose();
             EnhancementEffectEnabled.Dispose();
+            HasOptions.Dispose();
             Dimmed.Dispose();
             ActiveSelf.Dispose();
             Selected.Dispose();

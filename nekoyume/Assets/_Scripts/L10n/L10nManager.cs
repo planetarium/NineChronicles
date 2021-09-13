@@ -218,7 +218,8 @@ namespace Nekoyume.L10n
 
                             if (dictionary.ContainsKey(key))
                             {
-                                throw new L10nAlreadyContainsKeyException($"key: {key}, recordsIndex: {recordsIndex}, csvFileInfo: {csvFileInfo.FullName}");
+                                throw new L10nAlreadyContainsKeyException(
+                                    $"key: {key}, recordsIndex: {recordsIndex}, csvFileInfo: {csvFileInfo.FullName}");
                             }
 
                             dictionary.Add(key, value);
@@ -239,15 +240,8 @@ namespace Nekoyume.L10n
 
         public static string Localize(string key)
         {
-            ValidateStateAndKey(key);
-
-            if (_dictionary.ContainsKey(key))
-            {
-                return _dictionary[key];
-            }
-
-            Debug.LogError($"Key not found: {key}");
-            return $"!{key}!";
+            TryLocalize(key, out var text);
+            return text;
         }
 
         public static string Localize(string key, params object[] args)
@@ -257,18 +251,20 @@ namespace Nekoyume.L10n
                 : text;
         }
 
-        public static bool TryLocalize(string key, out string text)
+        private static bool TryLocalize(string key, out string text)
         {
-            ValidateStateAndKey(key);
-
-            if (_dictionary.ContainsKey(key))
+            try
             {
+                ValidateStateAndKey(key);
                 text = _dictionary[key];
                 return true;
             }
-
-            text = string.Empty;
-            return false;
+            catch (Exception e)
+            {
+                Debug.LogError($"{e.GetType().FullName}: {e.Message} key: {key}");
+                text = $"!{key}!";
+                return false;
+            }
         }
 
         public static string LocalizeCharacterName(int characterId)

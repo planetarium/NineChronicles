@@ -1,3 +1,4 @@
+using System;
 using Nekoyume.EnumType;
 using Nekoyume.Game;
 using Nekoyume.Game.Character;
@@ -6,6 +7,7 @@ using Nekoyume.Game.VFX;
 using Nekoyume.UI.Tween;
 using System.Collections;
 using Nekoyume.L10n;
+using Nekoyume.Model.Item;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using TMPro;
@@ -16,44 +18,27 @@ namespace Nekoyume.UI
 {
     public class CombinationLoadingScreen : Widget
     {
-        // NOTE : NPC 애니메이션에 의존적인 부분이 있어 애니메이션 대신 트윈을 사용합니다.
-
-        [SerializeField]
-        private Button button = null;
-
-        [SerializeField]
-        private CanvasGroup _buttonCanvasGroup = null;
-
-        [SerializeField]
-        private CanvasGroup _bgCanvasGroup = null;
-
-        [SerializeField]
-        private DOTweenGroupAlpha _buttonAlphaTweener = null;
-
-        [SerializeField]
-        private DOTweenGroupAlpha _bgAlphaTweener = null;
-
-        [SerializeField]
-        private Transform npcPosition = null;
-
-        [SerializeField]
-        private TextMeshProUGUI continueText = null;
-
-        [SerializeField]
-        private SpeechBubbleWithItem speechBubble = null;
+        [SerializeField] private Button button = null;
+        [SerializeField] private CanvasGroup _buttonCanvasGroup = null;
+        [SerializeField] private CanvasGroup _bgCanvasGroup = null;
+        [SerializeField] private DOTweenGroupAlpha _buttonAlphaTweener = null;
+        [SerializeField] private DOTweenGroupAlpha _bgAlphaTweener = null;
+        [SerializeField] private TextMeshProUGUI continueText = null;
+        [SerializeField] private SpeechBubbleWithItem speechBubble = null;
 
         private NPC _npc = null;
         private Coroutine _npcAppearCoroutine = null;
-        private WaitForSeconds _waitForOneSec = new WaitForSeconds(1f);
+        private readonly WaitForSeconds _waitForOneSec = new WaitForSeconds(1f);
 
         private CombinationSparkVFX _sparkVFX = null;
-        private CombinationBGFireVFX _fireVFX = null;
 
         public System.Action OnDisappear { get; set; }
 
-        private const int ContinueTime = 3;
+        private const int ContinueTime = 5;
         private const int NPCId = 300001;
         private System.Action _closeAction;
+
+        private static readonly Vector3 NPCPosition = new Vector3(1000f, 999.2f, 2.15f);
 
         public override WidgetType WidgetType => WidgetType.Screen;
 
@@ -67,13 +52,14 @@ namespace Nekoyume.UI
         {
             _buttonCanvasGroup.alpha = 0f;
             _bgCanvasGroup.alpha = 0f;
-            Find<BottomMenu>().combinationButton.SetSortOrderToTop();
+            var format = L10nManager.Localize("UI_PRESS_TO_CONTINUE_FORMAT");
+            continueText.text = string.Format(format, ContinueTime);
             base.Show(ignoreShowAnimation);
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
         {
-            if(!(_npc is null))
+            if (!(_npc is null))
             {
                 _npc.gameObject.SetActive(false);
             }
@@ -83,13 +69,6 @@ namespace Nekoyume.UI
                 _sparkVFX.Stop();
                 _sparkVFX = null;
             }
-
-            if (_fireVFX)
-            {
-                _fireVFX.Stop();
-                _fireVFX = null;
-            }
-            Find<BottomMenu>().combinationButton.SetSortOrderToNormal();
 
             base.Close(ignoreCloseAnimation);
         }
@@ -106,11 +85,14 @@ namespace Nekoyume.UI
             _bgAlphaTweener.PlayReverse();
         }
 
-        public void AnimateNPC()
+        public void AnimateNPC(Nekoyume.Model.Item.ItemType itemType)
         {
-            var format = L10nManager.Localize("UI_PRESS_TO_CONTINUE_FORMAT");
-            continueText.text = string.Format(format, ContinueTime);
-            _npcAppearCoroutine = StartCoroutine(CoAnimateNPC());
+            _npcAppearCoroutine = StartCoroutine(CoAnimateNPC(itemType));
+        }
+
+        public void AnimateNPC(Nekoyume.Model.Item.ItemType itemType, string quote)
+        {
+            _npcAppearCoroutine = StartCoroutine(CoAnimateNPC(itemType, quote));
         }
 
         public void DisappearNPC()
@@ -130,11 +112,11 @@ namespace Nekoyume.UI
             _closeAction = closeAction;
         }
 
-        private IEnumerator CoAnimateNPC()
+        private IEnumerator CoAnimateNPC(Nekoyume.Model.Item.ItemType itemType, string quote = null)
         {
             var go = Game.Game.instance.Stage.npcFactory.Create(
                 NPCId,
-                npcPosition.position,
+                NPCPosition,
                 LayerType.UI,
                 31);
             _npc = go.GetComponent<NPC>();
@@ -142,16 +124,28 @@ namespace Nekoyume.UI
             ShowButton();
             var pos = ActionCamera.instance.Cam.transform.position;
             _sparkVFX = VFXController.instance.CreateAndChaseCam<CombinationSparkVFX>(pos);
-            _npc.PlayAnimation(NPCAnimation.Type.Appear_02);
+            _npc.PlayAnimation(itemType switch
+            {
+                ItemType.Consumable => NPCAnimation.Type.Appear_03,
+                ItemType.Equipment => NPCAnimation.Type.Appear_02,
+            });
             yield return new WaitForSeconds(1f);
-            _fireVFX = VFXController.instance.CreateAndChaseCam<CombinationBGFireVFX>(pos, new Vector3(-.7f, -.35f));
-            speechBubble.SetKey("SPEECH_COMBINATION_START_");
-            StartCoroutine(speechBubble.CoShowText(true));
+
+            speechBubble.Show();
+            if (quote is null)
+            {
+                speechBubble.SetKey("SPEECH_COMBINATION_START_");
+                StartCoroutine(speechBubble.CoShowText(true));
+            }
+            else
+            {
+                StartCoroutine(speechBubble.CoShowText(quote, true));
+            }
             StartCoroutine(CoWorkshopItemMove());
 
             var format = L10nManager.Localize("UI_PRESS_TO_CONTINUE_FORMAT");
 
-            for (int timer = ContinueTime; timer >= 0; --timer)
+            for (var timer = ContinueTime; timer >= 0; --timer)
             {
                 continueText.text = string.Format(format, timer);
                 yield return _waitForOneSec;
@@ -162,16 +156,16 @@ namespace Nekoyume.UI
 
         private IEnumerator CoWorkshopItemMove()
         {
-            var item = speechBubble.item;
-
             yield return new WaitForSeconds(speechBubble.bubbleTweenTime);
 
-            var endPosition = Find<BottomMenu>().combinationButton.transform.position;
+            var item = speechBubble.item;
+            var target = Find<HeaderMenu>().GetToggle(HeaderMenu.ToggleType.CombinationSlots);
+            var targetPosition = target ? target.position : Vector3.zero;
 
             ItemMoveAnimation.Show(
                 item.ItemBase.Value.GetIconSprite(),
                 speechBubble.ItemView.transform.position,
-                endPosition,
+                targetPosition,
                 Vector2.one * 1.5f,
                 false,
                 false,
@@ -190,12 +184,10 @@ namespace Nekoyume.UI
             {
                 _sparkVFX.LazyStop();
             }
-            if (_fireVFX)
-            {
-                _fireVFX.LazyStop();
-            }
+
             yield return new WaitForSeconds(.5f);
             _npc.gameObject.SetActive(false);
+            speechBubble.Hide();
             OnDisappear?.Invoke();
             _closeAction?.Invoke();
             Close();

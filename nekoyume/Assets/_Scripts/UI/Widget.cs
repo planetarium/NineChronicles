@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Nekoyume.EnumType;
 using UniRx;
 using UnityEngine;
@@ -29,7 +30,7 @@ namespace Nekoyume.UI
         private static readonly Dictionary<Type, PoolElementModel> Pool =
             new Dictionary<Type, PoolElementModel>();
 
-        private static readonly Stack<GameObject> WidgetStack = new Stack<GameObject>();
+        protected static readonly Stack<GameObject> WidgetStack = new Stack<GameObject>();
 
         public static IObservable<Widget> OnEnableStaticObservable => OnEnableStaticSubject;
 
@@ -43,6 +44,7 @@ namespace Nekoyume.UI
 
         private readonly Subject<Widget> _onEnableSubject = new Subject<Widget>();
         private readonly Subject<Widget> _onDisableSubject = new Subject<Widget>();
+        private System.Action _onClose;
 
         private Coroutine _coClose;
         private Coroutine _coCompleteCloseAnimation;
@@ -51,6 +53,7 @@ namespace Nekoyume.UI
         protected System.Action SubmitWidget;
 
         public virtual WidgetType WidgetType => WidgetType.Widget;
+        public virtual CloseKeyType CloseKeyType => CloseKeyType.Backspace;
 
         protected RectTransform RectTransform { get; private set; }
 
@@ -179,7 +182,12 @@ namespace Nekoyume.UI
             return true;
         }
 
-        public static T FindOrCreate<T>() where T : HudWidget
+        public static IEnumerable<Widget> FindWidgets()
+        {
+            return Pool.Values.Select(value => value.widget);
+        }
+
+        public static T FindOrCreate<T>() where T : Widget
         {
             var type = typeof(T);
             var names = type.ToString().Split('.');
@@ -187,18 +195,38 @@ namespace Nekoyume.UI
             var resName = $"UI/Prefabs/{widgetName}";
             var pool = Game.Game.instance.Stage.objectPool;
             var go = pool.Get(widgetName, false);
-            if (go is null)
+            if (go)
+            {
+                var widget = go.GetComponent<T>();
+                go.transform.SetParent(MainCanvas.instance.GetLayerRootTransform(widget.WidgetType));
+                return widget;
+            }
+            else
             {
                 Debug.Log("create new");
-                var res = Resources.Load<GameObject>(resName);
-                var go2 = Instantiate(res, MainCanvas.instance.transform);
-                go2.name = widgetName;
-                pool.Add(go2, 1);
-                return go2.GetComponent<T>();
+                var prefab = Resources.Load<GameObject>(resName);
+                go = Instantiate(prefab, MainCanvas.instance.RectTransform);
+                go.name = widgetName;
+                pool.Add(go, 1);
+                var widget = go.GetComponent<T>();
+                go.transform.SetParent(MainCanvas.instance.GetLayerRootTransform(widget.WidgetType));
+
+                return widget;
+            }
+        }
+
+        public static bool IsOpenAnyPopup()
+        {
+            foreach (var model in Pool)
+            {
+                if (model.Value.widget.CloseKeyType == CloseKeyType.Escape &&
+                    model.Value.gameObject.activeSelf)
+                {
+                    return true;
+                }
             }
 
-            go.transform.SetParent(MainCanvas.instance.GetLayerRootTransform(WidgetType.Hud));
-            return go.GetComponent<T>();
+            return false;
         }
 
         public virtual bool IsActive()
@@ -218,8 +246,20 @@ namespace Nekoyume.UI
             }
         }
 
+        public void Show(System.Action onClose, bool ignoreShowAnimation = false)
+        {
+            _onClose = onClose;
+            Show(ignoreShowAnimation);
+        }
+
         public virtual void Show(bool ignoreShowAnimation = false)
         {
+            if (!(_coClose is null))
+            {
+                StopCoroutine(_coClose);
+                _coClose = null;
+            }
+
             if (CloseWidget != null ||
                 SubmitWidget != null ||
                 WidgetType == WidgetType.Screen)
@@ -243,8 +283,7 @@ namespace Nekoyume.UI
             AnimationState = AnimationStateType.Showing;
             gameObject.SetActive(true);
 
-            if (!Animator ||
-                ignoreShowAnimation)
+            if (!Animator || ignoreShowAnimation)
             {
                 AnimationState = AnimationStateType.Shown;
                 return;
@@ -266,6 +305,8 @@ namespace Nekoyume.UI
             {
                 return;
             }
+
+            _onClose?.Invoke();
 
             if (!Animator ||
                 ignoreCloseAnimation)
@@ -290,7 +331,10 @@ namespace Nekoyume.UI
                 _coCompleteCloseAnimation = null;
             }
 
-            _coClose = StartCoroutine(CoClose());
+            if (isActiveAndEnabled)
+            {
+                _coClose = StartCoroutine(CoClose());
+            }
         }
 
         protected void Push()
@@ -386,13 +430,14 @@ namespace Nekoyume.UI
                 return;
             }
 
+            if (Input.GetKeyDown(KeyCode.Backspace))
+            {
+                InvokeCloseWidget(KeyCode.Backspace);
+            }
+
             if (Input.GetKeyDown(KeyCode.Escape))
             {
-                if (!WidgetHandler.Instance.IsActiveTutorialMaskWidget)
-                {
-                    WidgetHandler.Instance.HideAllMessageCat();
-                    CloseWidget?.Invoke();
-                }
+                InvokeCloseWidget(KeyCode.Escape);
             }
 
             if (Input.GetKeyDown(KeyCode.Return))
@@ -401,6 +446,19 @@ namespace Nekoyume.UI
                 SubmitWidget?.Invoke();
             }
         }
+
+        private void InvokeCloseWidget(KeyCode keyCode)
+        {
+            if (!keyCode.ToString().Equals(CloseKeyType.ToString()))
+            {
+                return;
+            }
+
+            if (!WidgetHandler.Instance.IsActiveTutorialMaskWidget)
+            {
+                WidgetHandler.Instance.HideAllMessageCat();
+                CloseWidget?.Invoke();
+            }
+        }
     }
 }
-

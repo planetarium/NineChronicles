@@ -37,6 +37,7 @@ namespace Nekoyume.UI
         [SerializeField] private TextMeshProUGUI noticeText = null;
         [SerializeField] private SpeechBubble speechBubble = null;
         [SerializeField] private Button buyButton = null;
+        [SerializeField] private Button closeButton = null;
 
         private NPC _npc;
         private static readonly Vector2 NPCPosition = new Vector2(2.76f, -1.72f);
@@ -62,6 +63,18 @@ namespace Nekoyume.UI
                 _npc?.gameObject.SetActive(false);
                 gameObject.SetActive(false);
             });
+
+            closeButton.onClick.AddListener(() =>
+            {
+                Close(true);
+                Game.Event.OnRoomEnter.Invoke(true);
+            });
+
+            CloseWidget = () =>
+            {
+                Close(true);
+                Game.Event.OnRoomEnter.Invoke(true);
+            };
         }
 
         public override void Initialize()
@@ -127,6 +140,7 @@ namespace Nekoyume.UI
             Find<TwoButtonPopup>().Close();
             Find<ItemCountableAndPricePopup>().Close();
             speechBubble.gameObject.SetActive(false);
+            Find<ShopBuy>().ForceClose();
             base.Close(ignoreCloseAnimation);
         }
 
@@ -234,8 +248,8 @@ namespace Nekoyume.UI
 
             var data = SharedModel.ItemCountableAndPricePopup.Value;
             var currency = States.Instance.GoldBalanceState.Gold.Currency;
-            data.TotalPrice.Value = new FungibleAssetValue(currency, 10, 0);
-            data.Price.Value = new FungibleAssetValue(currency, 10, 0);
+            data.TotalPrice.Value = new FungibleAssetValue(currency, Shop.MinimumPrice, 0);
+            data.Price.Value = new FungibleAssetValue(currency, Shop.MinimumPrice, 0);
             data.Count.Value = 1;
             data.IsSell.Value = true;
 
@@ -350,6 +364,7 @@ namespace Nekoyume.UI
         private void SubscribeSellPopupCancel(Model.ItemCountableAndPricePopup data)
         {
             SharedModel.ItemCountableAndPricePopup.Value.Item.Value = null;
+            inventory.SharedModel.DeselectItemView();
             Find<ItemCountableAndPricePopup>().Close();
         }
 

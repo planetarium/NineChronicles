@@ -178,16 +178,17 @@ namespace Nekoyume.Game.Character
 
         private void InitializeHudContainer()
         {
+            // No pooling. Widget.Create<HudContainer> didn't pooling HUD object.
+            // HUD Pooling causes HUD positioning bug.
             if (!HudContainer)
             {
-                var hud = Widget.FindOrCreate<HudContainer>();
-                HudContainer = hud;
+                HudContainer = Widget.Create<HudContainer>(true);
             }
         }
 
         protected virtual void InitializeHpBar()
         {
-            HPBar = Widget.FindOrCreate<HpBar>();
+            HPBar = Widget.Create<HpBar>(true);
             HPBar.transform.SetParent(HudContainer.transform);
             HPBar.transform.localPosition = Vector3.zero;
             HPBar.transform.localScale = Vector3.one;
@@ -441,12 +442,17 @@ namespace Nekoyume.Game.Character
 
         public void DisableHUD()
         {
+            // No pooling. HUD Pooling causes HUD positioning bug.
             if (HPBar)
             {
-                HPBar.gameObject.SetActive(false);
+                Destroy(HPBar.gameObject);
                 HPBar = null;
-                HudContainer.UpdateAlpha(0);
-                HudContainer.gameObject.SetActive(false);
+            }
+
+            // No pooling. HUD Pooling causes HUD positioning bug.
+            if (HudContainer)
+            {
+                Destroy(HudContainer.gameObject);
                 HudContainer = null;
             }
 

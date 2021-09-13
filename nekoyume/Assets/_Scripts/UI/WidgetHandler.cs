@@ -8,7 +8,7 @@ namespace Nekoyume.UI
         private static WidgetHandler _instance;
         public static WidgetHandler Instance => _instance ?? (_instance = new WidgetHandler());
         private MessageCatManager _messageCatManager;
-        private BottomMenu _bottomMenu;
+        private HeaderMenu _headerMenu;
         private Battle _battle;
         private Menu _menu;
 
@@ -19,7 +19,6 @@ namespace Nekoyume.UI
                 ? _messageCatManager
                 : (_messageCatManager = Widget.Find<MessageCatManager>());
 
-        public BottomMenu BottomMenu => _bottomMenu ? _bottomMenu : (_bottomMenu = Widget.Find<BottomMenu>());
         public Battle Battle => _battle ? _battle : (_battle = Widget.Find<Battle>());
         public Menu Menu => _menu ? _menu : (_menu = Widget.Find<Menu>());
 

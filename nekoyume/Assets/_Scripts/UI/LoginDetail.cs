@@ -203,7 +203,7 @@ namespace Nekoyume.UI
             foreach (var (statType, value, additionalValue) in tuples)
             {
                 var info = statusRows[idx];
-                info.Show(statType, value, additionalValue);
+                info.Show(statType, value + additionalValue, 0);
                 ++idx;
             }
         }
