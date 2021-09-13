@@ -445,7 +445,9 @@ namespace Nekoyume.Model.State
             Level = state.level;
             CombatPoint = CPHelper.GetCPV2(state, characterSheet, costumeStatSheet);
         }
-        public int Update(AvatarState avatarState, ArenaInfo enemyInfo, BattleLog.Result result)
+
+        [Obsolete("Use Update()")]
+        public int UpdateV3(AvatarState avatarState, ArenaInfo enemyInfo, BattleLog.Result result)
         {
             switch (result)
             {
