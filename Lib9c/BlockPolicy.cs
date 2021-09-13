@@ -38,6 +38,8 @@ namespace Nekoyume.BlockChain
             int minTransactionsPerBlock,
             int maxBlockBytes,
             int maxGenesisBytes,
+            IComparer<IBlockExcerpt> canonicalChainComparer,
+            HashAlgorithmGetter hashAlgorithmGetter,
             Func<BlockChain<NCAction>, Transaction<NCAction>, TxPolicyViolationException>
                 validateNextBlockTx = null,
             Func<long, int> getMinTransactionsPerBlock = null,
@@ -52,6 +54,8 @@ namespace Nekoyume.BlockChain
                 maxGenesisBytes: maxGenesisBytes,
                 ignoreHardcodedPolicies: false,
                 permissionedMiningPolicy: BlockChain.PermissionedMiningPolicy.Mainnet,
+                canonicalChainComparer: canonicalChainComparer,
+                hashAlgorithmGetter: hashAlgorithmGetter,
                 validateNextBlockTx: validateNextBlockTx,
                 getMinTransactionsPerBlock: getMinTransactionsPerBlock,
                 getMaxTransactionsPerBlock: getMaxTransactionsPerBlock,
@@ -68,6 +72,8 @@ namespace Nekoyume.BlockChain
             int maxGenesisBytes,
             bool ignoreHardcodedPolicies,
             PermissionedMiningPolicy? permissionedMiningPolicy,
+            IComparer<IBlockExcerpt> canonicalChainComparer,
+            HashAlgorithmGetter hashAlgorithmGetter,
             Func<BlockChain<NCAction>, Transaction<NCAction>, TxPolicyViolationException>
                 validateNextBlockTx = null,
             Func<long, int> getMinTransactionsPerBlock = null,
@@ -81,10 +87,8 @@ namespace Nekoyume.BlockChain
                 maxBlockBytes: maxBlockBytes,
                 maxGenesisBytes: maxGenesisBytes,
                 validateNextBlockTx: validateNextBlockTx,
-                canonicalChainComparer: new CanonicalChainComparer(null),
-#pragma warning disable LAA1002
-                hashAlgorithmGetter: HashAlgorithmTable.ToHashAlgorithmGetter(),
-#pragma warning restore LAA1002
+                canonicalChainComparer: canonicalChainComparer,
+                hashAlgorithmGetter: hashAlgorithmGetter,
                 getMinTransactionsPerBlock: getMinTransactionsPerBlock,
                 getMaxTransactionsPerBlock: getMaxTransactionsPerBlock,
                 getMaxTransactionsPerSignerPerBlock: getMaxTransactionsPerSignerPerBlock)
@@ -112,9 +116,9 @@ namespace Nekoyume.BlockChain
             Block<NCAction> nextBlock
         ) =>
             CheckTxCount(nextBlock)
-            ?? ValidateMinerPermission(nextBlock)
-            ?? ValidateMinerAuthority(nextBlock)
-            ?? base.ValidateNextBlock(blockChain, nextBlock);
+                ?? ValidateMinerPermission(nextBlock)
+                ?? ValidateMinerAuthority(nextBlock)
+                ?? base.ValidateNextBlock(blockChain, nextBlock);
 
         public override long GetNextBlockDifficulty(BlockChain<NCAction> blockChain)
         {
@@ -136,15 +140,15 @@ namespace Nekoyume.BlockChain
                 return index == 0 ? 0 : _minimumDifficulty;
             }
 
-            var prevIndex = IsTargetBlock(index - 1) ? index - 2 : index - 1;
-            var beforePrevIndex = IsTargetBlock(prevIndex - 1) ? prevIndex - 2 : prevIndex - 1;
+            var prevIndex = IsTargetBlockIndex(index - 1) ? index - 2 : index - 1;
+            var beforePrevIndex = IsTargetBlockIndex(prevIndex - 1) ? prevIndex - 2 : prevIndex - 1;
 
             if (beforePrevIndex > AuthorizedMinersState.ValidUntil)
             {
                 return base.GetNextBlockDifficulty(blockChain);
             }
 
-            if (IsTargetBlock(index) || prevIndex <= 1 || beforePrevIndex <= 1)
+            if (IsTargetBlockIndex(index) || prevIndex <= 1 || beforePrevIndex <= 1)
             {
                 return _minimumDifficulty;
             }
@@ -225,7 +229,7 @@ namespace Nekoyume.BlockChain
                 return null;
             }
 
-            if (!IsTargetBlock(block.Index))
+            if (!IsTargetBlockIndex(block.Index))
             {
                 return null;
             }
@@ -262,11 +266,11 @@ namespace Nekoyume.BlockChain
             return null;
         }
 
-        private bool IsTargetBlock(long blockIndex)
+        private bool IsTargetBlockIndex(long blockIndex)
         {
             return blockIndex > 0
-                   && blockIndex <= AuthorizedMinersState.ValidUntil
-                   && blockIndex % AuthorizedMinersState.Interval == 0;
+                && blockIndex <= AuthorizedMinersState.ValidUntil
+                && blockIndex % AuthorizedMinersState.Interval == 0;
         }
     }
 }

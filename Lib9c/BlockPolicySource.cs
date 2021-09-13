@@ -3,8 +3,11 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Reflection;
+using System.Security.Cryptography;
 using Bencodex.Types;
+using Lib9c;
 using Lib9c.Renderer;
+using Libplanet.Blocks;
 using Libplanet.Blockchain;
 using Libplanet.Blockchain.Policies;
 using Libplanet.Tx;
@@ -16,7 +19,6 @@ using Nekoyume.Model.State;
 using Serilog;
 using Serilog.Events;
 #if UNITY_EDITOR || UNITY_STANDALONE
-using Lib9c;
 using UniRx;
 #else
 #endif
@@ -38,6 +40,9 @@ namespace Nekoyume.BlockChain
 
         // FIXME: Should be finalized before release.
         public const int maxTransactionsPerSignerPerBlockV100074 = 4;
+
+        private static readonly Dictionary<long, HashAlgorithmType> _hashAlgorithmTable =
+            new Dictionary<long, HashAlgorithmType> { [0] = HashAlgorithmType.Of<SHA256>() };
 
         private readonly TimeSpan _blockInterval = TimeSpan.FromSeconds(8);
 
@@ -84,6 +89,10 @@ namespace Nekoyume.BlockChain
                 maxGenesisBytes: MaxGenesisBytes,
                 ignoreHardcodedPolicies: ignoreHardcodedPolicies,
                 permissionedMiningPolicy: permissionedMiningPolicy,
+                canonicalChainComparer: new CanonicalChainComparer(null),
+#pragma warning disable LAA1002
+                hashAlgorithmGetter: _hashAlgorithmTable.ToHashAlgorithmGetter(),
+#pragma warning restore LAA1002
                 validateNextBlockTx: ValidateNextBlockTx,
                 getMinTransactionsPerBlock: (long index) => 0,
                 getMaxTransactionsPerBlock: (long index) => maximumTransactions,
