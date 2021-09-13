@@ -230,8 +230,8 @@
                 for (var i = 0; i < 100; i++)
                 {
                     var mail = new DailyRewardMail(result, i, default, 0);
-                    sellerAvatarState.Update(mail);
-                    buyerAvatarState.Update(mail);
+                    sellerAvatarState.Update2(mail);
+                    buyerAvatarState.Update2(mail);
                 }
 
                 Address shardedShopAddress = ShardedShopStateV2.DeriveAddress(itemSubType, orderId);
@@ -248,7 +248,7 @@
                     itemSubType,
                     orderData.ItemCount
                 );
-                sellerAvatarState.inventory.AddItem((ItemBase)tradableItem, orderData.ItemCount);
+                sellerAvatarState.inventory.AddItem2((ItemBase)tradableItem, orderData.ItemCount);
                 var sellItem = order.Sell2(sellerAvatarState);
                 OrderDigest orderDigest = order.Digest2(sellerAvatarState, _tableSheets.CostumeStatSheet);
                 var orderDigestListState =
@@ -468,7 +468,7 @@
                     var sellerAvatarState = _initialState.GetAvatarState(_sellerAvatarAddress);
                     if (!errorCodeMember.NotContains)
                     {
-                        sellerAvatarState.inventory.AddItem(item);
+                        sellerAvatarState.inventory.AddItem2(item);
                     }
 
                     var order = OrderFactory.Create(

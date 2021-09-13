@@ -1,4 +1,4 @@
-namespace Lib9c.Tests.Action
+﻿namespace Lib9c.Tests.Action
 {
     using System.Collections.Generic;
     using System.Globalization;
@@ -73,7 +73,7 @@ namespace Lib9c.Tests.Action
             {
                 var materialRow = _tableSheets.MaterialItemSheet[materialInfo.Id];
                 var material = ItemFactory.CreateItem(materialRow, _random);
-                _avatarState.inventory.AddItem(material, count: materialInfo.Count);
+                _avatarState.inventory.AddItem2(material, count: materialInfo.Count);
             }
 
             const int requiredStage = GameConfig.RequireClearedStageLevel.CombinationConsumableAction;
@@ -90,7 +90,7 @@ namespace Lib9c.Tests.Action
 
             var equipment = ItemFactory.CreateItemUsable(_tableSheets.EquipmentItemSheet.First, default, 0);
 
-            var result = new CombinationConsumable5.ResultModel
+            var result = new CombinationConsumable5.ResultModel()
             {
                 id = default,
                 gold = 0,
@@ -103,7 +103,7 @@ namespace Lib9c.Tests.Action
             for (var i = 0; i < 100; i++)
             {
                 var mail = new CombinationMail(result, i, default, 0);
-                _avatarState.Update(mail);
+                _avatarState.Update2(mail);
             }
 
             _initialState = _initialState.SetState(_slotAddress, new CombinationSlotState(_slotAddress, requiredStage).Serialize());
@@ -121,14 +121,14 @@ namespace Lib9c.Tests.Action
                     .SetState(_avatarAddress, _avatarState.SerializeV2());
             }
 
-            var action = new CombinationConsumable6
+            var action = new CombinationConsumable6()
             {
                 AvatarAddress = _avatarAddress,
                 recipeId = row.Id,
                 slotIndex = 0,
             };
 
-            var nextState = action.Execute(new ActionContext
+            var nextState = action.Execute(new ActionContext()
             {
                 PreviousStates = _initialState,
                 Signer = _agentAddress,

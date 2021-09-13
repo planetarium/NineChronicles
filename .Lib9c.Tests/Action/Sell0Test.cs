@@ -69,7 +69,7 @@ namespace Lib9c.Tests.Action
                 _tableSheets.EquipmentItemSheet.First,
                 Guid.NewGuid(),
                 0);
-            _avatarState.inventory.AddItem(equipment);
+            _avatarState.inventory.AddItem2(equipment);
 
             _initialState = _initialState
                 .SetState(GoldCurrencyState.Address, goldCurrencyState.Serialize())
@@ -212,7 +212,7 @@ namespace Lib9c.Tests.Action
                 _tableSheets.EquipmentItemSheet.First,
                 equipmentId,
                 10);
-            _avatarState.inventory.AddItem(equipment);
+            _avatarState.inventory.AddItem2(equipment);
 
             _initialState = _initialState.SetState(_avatarAddress, _avatarState.Serialize());
 

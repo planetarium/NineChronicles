@@ -44,6 +44,8 @@ namespace Nekoyume.BlockChain
         // FIXME: Fix version and value when release.
         public const long V100073ObsoleteIndex = 3000000;
 
+        public const long V100074ObsoleteIndex = 2310000;
+
         // FIXME: Should be finalized before release.
         public const int maxTransactionsPerSignerPerBlockV100074 = 4;
 

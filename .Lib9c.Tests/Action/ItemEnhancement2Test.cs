@@ -79,8 +79,8 @@ namespace Lib9c.Tests.Action
             var materialId = Guid.NewGuid();
             var material = (Equipment)ItemFactory.CreateItemUsable(row, materialId, 0, level);
 
-            _avatarState.inventory.AddItem(equipment, count: 1);
-            _avatarState.inventory.AddItem(material, count: 1);
+            _avatarState.inventory.AddItem2(equipment, count: 1);
+            _avatarState.inventory.AddItem2(material, count: 1);
 
             _avatarState.worldInformation.ClearStage(1, 1, 1, _tableSheets.WorldSheet, _tableSheets.WorldUnlockSheet);
 
@@ -164,7 +164,7 @@ namespace Lib9c.Tests.Action
             var row = _tableSheets.EquipmentItemSheet.Values.First(r => r.Grade == 1);
             var equipment = (Equipment)ItemFactory.CreateItemUsable(row, default, 100, 1);
 
-            _avatarState.inventory.AddItem(equipment, count: 1);
+            _avatarState.inventory.AddItem2(equipment, count: 1);
 
             _initialState = _initialState.SetState(_avatarAddress, _avatarState.Serialize());
 
@@ -191,7 +191,7 @@ namespace Lib9c.Tests.Action
             var row = _tableSheets.ConsumableItemSheet.Values.First(r => r.Grade == 1);
             var consumable = (Consumable)ItemFactory.CreateItemUsable(row, default, 0, 1);
 
-            _avatarState.inventory.AddItem(consumable, count: 1);
+            _avatarState.inventory.AddItem2(consumable, count: 1);
 
             _initialState = _initialState.SetState(_avatarAddress, _avatarState.Serialize());
 
@@ -218,7 +218,7 @@ namespace Lib9c.Tests.Action
             var row = _tableSheets.EquipmentItemSheet.Values.First(r => r.Grade == 1);
             var equipment = (Equipment)ItemFactory.CreateItemUsable(row, default, 0, 1);
 
-            _avatarState.inventory.AddItem(equipment, count: 1);
+            _avatarState.inventory.AddItem2(equipment, count: 1);
 
             _initialState = _initialState
                 .SetState(_avatarAddress, _avatarState.Serialize())
@@ -249,8 +249,8 @@ namespace Lib9c.Tests.Action
             var materialId = Guid.NewGuid();
             var material = (Equipment)ItemFactory.CreateItemUsable(row, materialId, 0);
 
-            _avatarState.inventory.AddItem(equipment, count: 1);
-            _avatarState.inventory.AddItem(material, count: 1);
+            _avatarState.inventory.AddItem2(equipment, count: 1);
+            _avatarState.inventory.AddItem2(material, count: 1);
 
             _avatarState.worldInformation.ClearStage(1, 1, 1, _tableSheets.WorldSheet, _tableSheets.WorldUnlockSheet);
 
@@ -280,7 +280,7 @@ namespace Lib9c.Tests.Action
             var equipment = (Equipment)ItemFactory.CreateItemUsable(row, default, 0);
             var materialId = Guid.NewGuid();
 
-            _avatarState.inventory.AddItem(equipment);
+            _avatarState.inventory.AddItem2(equipment);
 
             _avatarState.worldInformation.ClearStage(1, 1, 1, _tableSheets.WorldSheet, _tableSheets.WorldUnlockSheet);
 
@@ -363,8 +363,8 @@ namespace Lib9c.Tests.Action
             var materialId = new Guid(materialGuid);
             var material = (Equipment)ItemFactory.CreateItemUsable(materialRow, materialId, 0, materialLevel);
 
-            _avatarState.inventory.AddItem(equipment);
-            _avatarState.inventory.AddItem(material);
+            _avatarState.inventory.AddItem2(equipment);
+            _avatarState.inventory.AddItem2(material);
 
             _avatarState.worldInformation.ClearStage(1, 1, 1, _tableSheets.WorldSheet, _tableSheets.WorldUnlockSheet);
 

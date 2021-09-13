@@ -18,7 +18,7 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionObsolete(BlockChain.BlockPolicySource.V100070ObsoleteIndex)]
+    [ActionObsolete(BlockChain.BlockPolicySource.V100074ObsoleteIndex)]
     [ActionType("item_enhancement7")]
     public class ItemEnhancement7 : GameAction
     {
@@ -92,7 +92,7 @@ namespace Nekoyume.Action
                     .SetState(slotAddress, MarkChanged);
             }
 
-            CheckObsolete(BlockChain.BlockPolicySource.V100070ObsoleteIndex, context);
+            CheckObsolete(BlockChain.BlockPolicySource.V100074ObsoleteIndex, context);
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
 
@@ -260,11 +260,12 @@ namespace Nekoyume.Action
             result.id = mail.id;
 
             avatarState.inventory.RemoveNonFungibleItem(enhancementEquipment);
-            avatarState.UpdateV3(mail);
-            avatarState.UpdateFromItemEnhancement(enhancementEquipment);
+
+            avatarState.Update(mail);
+            avatarState.UpdateFromItemEnhancement2(enhancementEquipment);
 
             var materialSheet = states.GetSheet<MaterialItemSheet>();
-            avatarState.UpdateQuestRewards(materialSheet);
+            avatarState.UpdateQuestRewards2(materialSheet);
 
             slotState.Update(result, ctx.BlockIndex, requiredBlockIndex);
 
@@ -323,6 +324,11 @@ namespace Nekoyume.Action
         {
             equipment.LevelUp();
             return equipment;
+        }
+
+        public static int GetRequiredAp()
+        {
+            return GameConfig.EnhanceEquipmentCostAP;
         }
     }
 }

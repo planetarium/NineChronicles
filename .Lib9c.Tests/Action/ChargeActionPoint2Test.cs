@@ -65,12 +65,12 @@ namespace Lib9c.Tests.Action
             if (useTradable)
             {
                 var apStone = ItemFactory.CreateTradableMaterial(row);
-                avatarState.inventory.AddItem(apStone);
+                avatarState.inventory.AddItem2(apStone);
             }
             else
             {
                 var apStone = ItemFactory.CreateItem(row, new TestRandom());
-                avatarState.inventory.AddItem(apStone);
+                avatarState.inventory.AddItem2(apStone);
             }
 
             Assert.Equal(0, avatarState.actionPoint);
@@ -130,7 +130,7 @@ namespace Lib9c.Tests.Action
                 var row = _tableSheets.MaterialItemSheet.Values.First(r => r.ItemSubType == ItemSubType.ApStone);
                 var apStone = ItemFactory.CreateTradableMaterial(row);
                 apStone.RequiredBlockIndex = 10;
-                avatarState.inventory.AddItem(apStone);
+                avatarState.inventory.AddItem2(apStone);
             }
 
             Assert.Equal(0, avatarState.actionPoint);

@@ -43,8 +43,9 @@ namespace Nekoyume.Model.State
                 return false;
             }
 
-            return avatarState.worldInformation.IsStageCleared(UnlockStage)
-                   && blockIndex >= UnlockBlockIndex;
+            return avatarState.worldInformation != null &&
+                   avatarState.worldInformation.IsStageCleared(UnlockStage) &&
+                   blockIndex >= UnlockBlockIndex;
         }
 
         public void Update(AttachmentActionResult result, long blockIndex, long unlockBlockIndex)

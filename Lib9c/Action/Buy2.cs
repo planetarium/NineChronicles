@@ -190,9 +190,9 @@ namespace Nekoyume.Action
                 ctx.BlockIndex);
             sellerResult.id = sellerMail.id;
 
-            buyerAvatarState.UpdateV2(buyerMail);
-            buyerAvatarState.UpdateFromAddItem(buyerResult.itemUsable, false);
-            sellerAvatarState.UpdateV2(sellerMail);
+            buyerAvatarState.Update3(buyerMail);
+            buyerAvatarState.UpdateFromAddItem2(buyerResult.itemUsable, false);
+            sellerAvatarState.Update3(sellerMail);
 
             // 퀘스트 업데이트
             buyerAvatarState.questList.UpdateTradeQuest(TradeType.Buy, shopItem.Price);
@@ -204,8 +204,8 @@ namespace Nekoyume.Action
             sellerAvatarState.blockIndex = ctx.BlockIndex;
 
             var materialSheet = states.GetSheet<MaterialItemSheet>();
-            buyerAvatarState.UpdateQuestRewards(materialSheet);
-            sellerAvatarState.UpdateQuestRewards(materialSheet);
+            buyerAvatarState.UpdateQuestRewards2(materialSheet);
+            sellerAvatarState.UpdateQuestRewards2(materialSheet);
 
             states = states.SetState(sellerAvatarAddress, sellerAvatarState.Serialize());
             sw.Stop();

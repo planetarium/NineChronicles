@@ -288,8 +288,7 @@ namespace Lib9c.Tests
                 10000,
                 100,
                 ignoreHardcodedPolicies: true,
-                permissionedMiningPolicy: null
-            );
+                permissionedMiningPolicy: null);
             IStagePolicy<PolymorphicAction<ActionBase>> stagePolicy =
                 new VolatileStagePolicy<PolymorphicAction<ActionBase>>();
             Block<PolymorphicAction<ActionBase>> genesis = MakeGenesisBlock(
@@ -612,7 +611,7 @@ namespace Lib9c.Tests
         [InlineData(BlockPolicySource.V100066ObsoleteIndex + 2, true)]
         public void IsObsolete(long blockIndex, bool expected)
         {
-            var action = new HackAndSlash
+            var action = new HackAndSlash7
             {
                 costumes = new List<Guid>(),
                 equipments = new List<Guid>(),

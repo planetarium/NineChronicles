@@ -115,7 +115,7 @@ namespace Nekoyume.Action
             else if (avatarState.inventory.TryGetNonFungibleItem<Costume>(itemId, out var costume))
             {
 #pragma warning disable 618
-                avatarState.inventory.LegacyRemoveNonFungibleItem(itemId);
+                avatarState.inventory.RemoveNonFungibleItem2(itemId);
 #pragma warning restore 618
                 costume.equipped = false;
                 shopItem = new ShopItem(

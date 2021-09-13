@@ -163,7 +163,7 @@ namespace Nekoyume.Action
             foreach (var pair in requiredFungibleItems.OrderBy(pair => pair.Key))
             {
                 if (!materialItemSheet.TryGetValue(pair.Key, out var materialRow) ||
-                    !inventory.RemoveFungibleItemV2(materialRow.ItemId, context.BlockIndex, pair.Value))
+                    !inventory.RemoveFungibleItem(materialRow.ItemId, context.BlockIndex, pair.Value))
                 {
                     throw new NotEnoughMaterialException(
                         $"{addressesHex}Aborted as the player has no enough material ({pair.Key} * {pair.Value})");
@@ -221,7 +221,7 @@ namespace Nekoyume.Action
                 context.BlockIndex,
                 mailId,
                 endBlockIndex);
-            avatarState.UpdateV3(mail);
+            avatarState.Update(mail);
             // ~Create Mail
 
             return states

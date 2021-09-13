@@ -6,11 +6,12 @@ using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Model.State;
+using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("daily_reward5")]
+    [ActionType("daily_reward6")]
     public class DailyReward : GameAction
     {
         public Address avatarAddress;
@@ -19,9 +20,16 @@ namespace Nekoyume.Action
         public override IAccountStateDelta Execute(IActionContext context)
         {
             var states = context.PreviousStates;
+            var inventoryAddress = avatarAddress.Derive(LegacyInventoryKey);
+            var worldInformationAddress = avatarAddress.Derive(LegacyWorldInformationKey);
+            var questListAddress = avatarAddress.Derive(LegacyQuestListKey);
             if (context.Rehearsal)
             {
-                return states.SetState(avatarAddress, MarkChanged);
+                return states
+                    .SetState(avatarAddress, MarkChanged)
+                    .SetState(inventoryAddress, MarkChanged)
+                    .SetState(worldInformationAddress, MarkChanged)
+                    .SetState(questListAddress, MarkChanged);
             }
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
@@ -51,7 +59,11 @@ namespace Nekoyume.Action
             avatarState.dailyRewardReceivedIndex = context.BlockIndex;
             avatarState.actionPoint = gameConfigState.ActionPointMax;
 
-            return states.SetState(avatarAddress, avatarState.SerializeV2());
+            return states
+                .SetState(avatarAddress, avatarState.SerializeV2())
+                .SetState(inventoryAddress, avatarState.inventory.Serialize())
+                .SetState(worldInformationAddress, avatarState.worldInformation.Serialize())
+                .SetState(questListAddress, avatarState.questList.Serialize());
         }
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal => new Dictionary<string, IValue>

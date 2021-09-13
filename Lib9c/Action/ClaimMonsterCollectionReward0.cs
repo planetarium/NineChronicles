@@ -71,14 +71,14 @@ namespace Nekoyume.Action
                 Guid id = context.Random.GenerateRandomGuid();
                 MonsterCollectionResult result = new MonsterCollectionResult(id, avatarAddress, rewards);
                 MonsterCollectionMail mail = new MonsterCollectionMail(result, context.BlockIndex, id, context.BlockIndex);
-                avatarState.UpdateV3(mail);
+                avatarState.Update(mail);
                 foreach (var rewardInfo in rewards)
                 {
                     var row = itemSheet[rewardInfo.ItemId];
                     var item = row is MaterialItemSheet.Row materialRow
                         ? ItemFactory.CreateTradableMaterial(materialRow)
                         : ItemFactory.CreateItem(row, context.Random);
-                    avatarState.inventory.AddItem(item, rewardInfo.Quantity);
+                    avatarState.inventory.AddItem2(item, rewardInfo.Quantity);
                 }
                 monsterCollectionState.UpdateRewardMap(level, result, context.BlockIndex);
             }

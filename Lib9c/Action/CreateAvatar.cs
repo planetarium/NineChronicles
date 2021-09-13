@@ -14,7 +14,7 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("create_avatar3")]
+    [ActionType("create_avatar4")]
     public class CreateAvatar : GameAction
     {
         public const string DeriveFormat = "avatar-state-{0}";
@@ -83,7 +83,7 @@ namespace Nekoyume.Action
                     .SetState(questListAddress, MarkChanged)
                     .MarkBalanceChanged(GoldCurrencyMock, GoldCurrencyState.Address, context.Signer);
             }
-            
+
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
 
             if (!Regex.IsMatch(name, GameConfig.AvatarNickNamePattern))

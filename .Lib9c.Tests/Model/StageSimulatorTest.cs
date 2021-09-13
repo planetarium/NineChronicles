@@ -45,7 +45,7 @@ namespace Lib9c.Tests.Model
                 3,
                 _tableSheets.GetStageSimulatorSheets(),
                 2);
-            simulator.SimulateV2();
+            simulator.Simulate3();
             var filtered =
                 simulator.Log.Where(e => e.GetType() != typeof(GetReward) || e.GetType() != typeof(DropBox));
             Assert.Equal(typeof(WaveTurnEnd), filtered.Last().GetType());
@@ -73,7 +73,7 @@ namespace Lib9c.Tests.Model
             var player = simulator.Player;
             Assert.Equal(row.Stat, player.Stats.OptionalStats.ATK);
 
-            var player2 = simulator.SimulateV2();
+            var player2 = simulator.Simulate3();
             Assert.Equal(row.Stat, player2.Stats.OptionalStats.ATK);
         }
 
@@ -94,7 +94,7 @@ namespace Lib9c.Tests.Model
 
             while (player.Level == 1)
             {
-                simulator.SimulateV3();
+                simulator.Simulate();
             }
 
             var player2 = simulator.Player;

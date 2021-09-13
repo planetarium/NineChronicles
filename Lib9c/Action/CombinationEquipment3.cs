@@ -104,7 +104,7 @@ namespace Nekoyume.Action
                 throw new SheetRowNotFoundException(addressesHex, nameof(MaterialItemSheet), recipe.MaterialId);
             }
 
-            if (!avatarState.inventory.RemoveFungibleItem(material.ItemId, recipe.MaterialCount))
+            if (!avatarState.inventory.RemoveFungibleItem2(material.ItemId, recipe.MaterialCount))
             {
                 throw new NotEnoughMaterialException(
                     $"{addressesHex}Aborted as the player has no enough material ({material} * {recipe.MaterialCount})"
@@ -153,7 +153,7 @@ namespace Nekoyume.Action
                         throw new SheetRowNotFoundException(addressesHex, nameof(MaterialItemSheet), materialInfo.Id);
                     }
 
-                    if (!avatarState.inventory.RemoveFungibleItem(subMaterialRow.ItemId,
+                    if (!avatarState.inventory.RemoveFungibleItem2(subMaterialRow.ItemId,
                         materialInfo.Count))
                     {
                         throw new NotEnoughMaterialException(
@@ -221,10 +221,10 @@ namespace Nekoyume.Action
             var mail = new CombinationMail(result, ctx.BlockIndex, ctx.Random.GenerateRandomGuid(),
                 requiredBlockIndex);
             result.id = mail.id;
-            avatarState.UpdateV2(mail);
+            avatarState.Update3(mail);
             avatarState.questList.UpdateCombinationEquipmentQuest(RecipeId);
-            avatarState.UpdateFromCombination(equipment);
-            avatarState.UpdateQuestRewards(materialSheet);
+            avatarState.UpdateFromCombination2(equipment);
+            avatarState.UpdateQuestRewards2(materialSheet);
             return states
                 .SetState(AvatarAddress, avatarState.Serialize())
                 .SetState(slotAddress, slotState.Serialize())
