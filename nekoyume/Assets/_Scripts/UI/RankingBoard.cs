@@ -158,35 +158,11 @@ namespace Nekoyume.UI
             SetRankingInfos(States.Instance.RankingMapStates);
         }
 
-<<<<<<< HEAD
         public void Show(StateType stateType = StateType.Arena) => ShowAsync(stateType);
 
         private async void ShowAsync(StateType stateType)
         {
             Find<DataLoadingScreen>().Show();
-=======
-        public void Show(StateType stateType = StateType.Arena)
-        {
-            var agent = Game.Game.instance.Agent;
-            var gameConfigState = States.Instance.GameConfigState;
-            var weeklyArenaIndex = (int) agent.BlockIndex / gameConfigState.WeeklyArenaInterval;
-            var weeklyArenaAddress = WeeklyArenaState.DeriveAddress(weeklyArenaIndex);
-            var weeklyArenaState =
-                new WeeklyArenaState(
-                    (Bencodex.Types.Dictionary) agent.GetState(weeklyArenaAddress));
-            States.Instance.SetWeeklyArenaState(weeklyArenaState);
-
-            for (var i = 0; i < RankingState.RankingMapCapacity; ++i)
-            {
-                var rankingMapAddress = RankingState.Derive(i);
-                var rankingMapState = agent.GetState(rankingMapAddress) is Bencodex.Types.Dictionary serialized
-                    ? new RankingMapState(serialized)
-                    : new RankingMapState(rankingMapAddress);
-                States.Instance.SetRankingMapStates(rankingMapState);
-            }
-
-            base.Show(true);
->>>>>>> development
 
             var stage = Game.Game.instance.Stage;
             stage.LoadBackground("ranking");
@@ -202,7 +178,6 @@ namespace Nekoyume.UI
             _npc.gameObject.SetActive(true);
             _npc.SpineController.Appear();
 
-<<<<<<< HEAD
             await UniTask.Run(() =>
             {
                 var agent = Game.Game.instance.Agent;
@@ -227,36 +202,12 @@ namespace Nekoyume.UI
             base.Show(true);
 
             _state.SetValueAndForceNotify(stateType);
-            Find<BottomMenu>()?.Show(
-                UINavigator.NavigationType.Back,
-                SubscribeBackButtonClick,
-                true,
-                BottomMenu.ToggleableType.Ranking,
-                BottomMenu.ToggleableType.Character);
-
             Find<DataLoadingScreen>().Close();
             AudioController.instance.PlayMusic(AudioController.MusicCode.Ranking);
             HelpPopup.HelpMe(100015, true);
             ShowSpeech("SPEECH_RANKING_BOARD_GREETING_", CharacterAnimation.Type.Greeting);
-=======
-            AudioController.instance.PlayMusic(AudioController.MusicCode.Ranking);
-            WeeklyArenaStateSubject.WeeklyArenaState
-                .Subscribe(SubscribeWeeklyArenaState)
-                .AddTo(_disposablesFromShow);
-
-            var go = Game.Game.instance.Stage.npcFactory.Create(
-                NPCId,
-                NPCPosition,
-                LayerType.Character,
-                3);
-            _npc = go.GetComponent<NPC>();
-            _npc.gameObject.SetActive(true);
-            _npc.SpineController.Appear();
-            ShowSpeech("SPEECH_RANKING_BOARD_GREETING_", CharacterAnimation.Type.Greeting);
-            HelpPopup.HelpMe(100015, true);
 
             Find<HeaderMenu>().Show(HeaderMenu.AssetVisibleState.Battle);
->>>>>>> development
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
@@ -533,19 +484,8 @@ namespace Nekoyume.UI
                 // Player does not play prev & this week arena.
                 if (!infos2.Any() && state.OrderedArenaInfos.Any())
                 {
-<<<<<<< HEAD
                     var address = state.OrderedArenaInfos.Last().AvatarAddress;
                     infos2 = state.GetArenaInfos(address, 20, 0);
-=======
-                    var characterSheet = Game.Game.instance.TableSheets.CharacterSheet;
-                    var costumeStatSheet = Game.Game.instance.TableSheets.CostumeStatSheet;
-                    var cp = CPHelper.GetCPV2(States.Instance.CurrentAvatarState, characterSheet, costumeStatSheet);
-                    var targetInfo = state.OrderedArenaInfos.FirstOrDefault(i => i.CombatPoint <= cp);
-                    if (targetInfo != null)
-                    {
-                        infos2 = state.GetArenaInfos(targetInfo.AvatarAddress, 20, 20);   
-                    }
->>>>>>> development
                 }
 
                 infos.AddRange(infos2);

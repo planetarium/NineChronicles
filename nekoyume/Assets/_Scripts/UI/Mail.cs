@@ -251,7 +251,12 @@ namespace Nekoyume.UI
                     1,
                     false);
                 LocalLayerModifier.RemoveNewAttachmentMail(avatarAddress, mail.id, false);
-                return States.Instance.GetAvatarStateV2(avatarAddress);
+                if (!States.TryGetAvatarState(avatarAddress, out var avatarState))
+                {
+                    return null;
+                }
+
+                return avatarState;
             }).ToObservable().SubscribeOnMainThread().Subscribe(avatarState =>
             {
                 Debug.Log("CombinationMail LocalLayer task completed");
@@ -354,7 +359,12 @@ namespace Nekoyume.UI
                     1,
                     false);
                 LocalLayerModifier.RemoveNewAttachmentMail(avatarAddress, itemEnhanceMail.id, false);
-                return States.Instance.GetAvatarStateV2(avatarAddress);
+                if (!States.TryGetAvatarState(avatarAddress, out var avatarState))
+                {
+                    return null;
+                }
+
+                return avatarState;
             }).ToObservable().SubscribeOnMainThread().Subscribe(avatarState =>
             {
                 Debug.Log("ItemEnhanceMail LocalLayer task completed");
