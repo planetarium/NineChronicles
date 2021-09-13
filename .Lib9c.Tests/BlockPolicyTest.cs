@@ -607,13 +607,13 @@ namespace Lib9c.Tests
         }
 
         [Fact]
-        public async Task PermisionedBlockPolicy()
+        public async Task PermissionedBlockPolicy()
         {
+            // This creates genesis with _privateKey as its miner.
             Block<PolymorphicAction<ActionBase>> genesis = MakeGenesisBlock(
                 default(Address),
-                ImmutableHashSet<Address>.Empty
-            );
-            var permissionedMinerKey = new PrivateKey();
+                ImmutableHashSet<Address>.Empty);
+            var permissionedMinerKey = _privateKey;
             var nonPermissionedMinerKey = new PrivateKey();
             using var store = new DefaultStore(null);
             using var stateStore = new TrieStateStore(new DefaultKeyValueStore(null), new DefaultKeyValueStore(null));
@@ -638,8 +638,10 @@ namespace Lib9c.Tests
                 renderers: new[] { blockPolicySource.BlockRenderer }
             );
 
+            // Since activation transaction is attached to _privateKey,
+            // Next nonce is 1.
             blockChain.StageTransaction(Transaction<PolymorphicAction<ActionBase>>.Create(
-                0,
+                1,
                 permissionedMinerKey,
                 genesis.Hash,
                 new PolymorphicAction<ActionBase>[] { }

@@ -74,8 +74,8 @@ namespace Nekoyume.BlockChain
         internal IBlockPolicy<NCAction> GetPolicy(
             int minimumDifficulty,
             int maximumTransactions,
-            PermissionedMiningPolicy? permissionedMiningPolicy,
-            bool ignoreHardcodedPolicies)
+            bool ignoreHardcodedPolicies,
+            PermissionedMiningPolicy? permissionedMiningPolicy)
         {
 #if UNITY_EDITOR
             return new Lib9c.DebugPolicy();
