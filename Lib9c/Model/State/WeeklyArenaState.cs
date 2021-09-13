@@ -438,7 +438,8 @@ namespace Nekoyume.Model.State
             CombatPoint = CPHelper.GetCP(state, characterSheet);
         }
 
-        public void Update(AvatarState state, CharacterSheet characterSheet, CostumeStatSheet costumeStatSheet)
+        [Obsolete("Use Update()")]
+        public void UpdateV2(AvatarState state, CharacterSheet characterSheet, CostumeStatSheet costumeStatSheet)
         {
             ArmorId = state.GetArmorId();
             Level = state.level;
