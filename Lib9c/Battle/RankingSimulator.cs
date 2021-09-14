@@ -155,7 +155,7 @@ namespace Nekoyume.Battle
                 Characters.Enqueue(character, TurnPriority / character.SPD);
             }
 
-            Log.diffScore = _arenaInfo.Update(_avatarState, _enemyInfo, Result);
+            Log.diffScore = _arenaInfo.Update(_enemyInfo, Result);
             Log.score = _arenaInfo.Score;
 
             var itemSelector = new WeightedSelector<StageSheet.RewardData>(Random);

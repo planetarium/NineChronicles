@@ -172,7 +172,7 @@ namespace Nekoyume.Model.State
             return Score - current;
         }
 
-        public int Update(AvatarState avatarState, ArenaInfo enemyInfo, BattleLog.Result result)
+        public int Update(ArenaInfo enemyInfo, BattleLog.Result result)
         {
             switch (result)
             {
@@ -190,8 +190,6 @@ namespace Nekoyume.Model.State
             }
 
             DailyChallengeCount--;
-            ArmorId = avatarState.GetArmorId();
-            Level = avatarState.level;
             var earnedScore = ArenaScoreHelper.GetScore(Score, enemyInfo.Score, result);
             Score = Math.Max(1000, Score + earnedScore);
             return earnedScore;
