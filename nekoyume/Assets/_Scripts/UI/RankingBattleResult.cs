@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
+using Nekoyume.Game.VFX;
 using Nekoyume.L10n;
 using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.Item;
@@ -22,6 +23,8 @@ namespace Nekoyume.UI
         public TextMeshProUGUI scoreText;
         public List<SimpleCountableItemView> rewards;
 
+        private static readonly Vector3 VfxBattleWinOffset = new Vector3(-0.05f, .25f, 10f);
+
         protected override void Awake()
         {
             base.Awake();
@@ -40,6 +43,11 @@ namespace Nekoyume.UI
             AudioController.instance.PlayMusic(code);
             victoryImageContainer.SetActive(win);
             defeatImageContainer.SetActive(!win);
+            if (win)
+            {
+                VFXController.instance.CreateAndChase<PVPVictoryVFX>(
+                    ActionCamera.instance.transform, VfxBattleWinOffset);
+            }
             scoreText.text = $"{log.score}";
             for (var i = 0; i < rewards.Count; i++)
             {
