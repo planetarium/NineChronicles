@@ -38,7 +38,7 @@ namespace Lib9c.Tests
         }
 
         [Fact]
-        public async Task DoesTransactionFollowsPolicy()
+        public async Task ValidateNextBlockTx()
         {
             var adminPrivateKey = new PrivateKey();
             var adminAddress = adminPrivateKey.ToAddress();
@@ -123,7 +123,7 @@ namespace Lib9c.Tests
         }
 
         [Fact]
-        public void DoesTransactionFollowsPolicyWithAuthorizedMiners()
+        public void ValidateNextBlockTxWithAuthorizedMiners()
         {
             var adminPrivateKey = new PrivateKey();
             var adminAddress = adminPrivateKey.ToAddress();

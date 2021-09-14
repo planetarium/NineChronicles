@@ -85,8 +85,6 @@ namespace Nekoyume.BlockChain
                 blockInterval: _blockInterval,
                 minimumDifficulty: minimumDifficulty,
                 difficultyBoundDivisor: DifficultyBoundDivisor,
-                maxBlockBytes: MaxBlockBytes,
-                maxGenesisBytes: MaxGenesisBytes,
                 ignoreHardcodedPolicies: ignoreHardcodedPolicies,
                 permissionedMiningPolicy: permissionedMiningPolicy,
                 canonicalChainComparer: new CanonicalChainComparer(null),
@@ -94,6 +92,7 @@ namespace Nekoyume.BlockChain
                 hashAlgorithmGetter: _hashAlgorithmTable.ToHashAlgorithmGetter(),
 #pragma warning restore LAA1002
                 validateNextBlockTx: ValidateNextBlockTx,
+                getMaxBlockBytes: (long index) => index > 0 ? MaxBlockBytes : MaxGenesisBytes,
                 getMinTransactionsPerBlock: (long index) => 0,
                 getMaxTransactionsPerBlock: (long index) => maximumTransactions,
                 getMaxTransactionsPerSignerPerBlock: (long index) => index > V100073ObsoleteIndex
