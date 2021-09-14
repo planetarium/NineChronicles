@@ -17,20 +17,16 @@ namespace Nekoyume.BlockChain
     public class BlockPolicy : BlockPolicy<NCAction>
     {
         private static readonly Dictionary<long, HashAlgorithmType> HashAlgorithmTable =
-            new Dictionary<long, HashAlgorithmType>
-            {
-                [0] = HashAlgorithmType.Of<SHA256>(),
-            };
+            new Dictionary<long, HashAlgorithmType> { [0] = HashAlgorithmType.Of<SHA256>() };
         private readonly long _minimumDifficulty;
         private readonly long _difficultyBoundDivisor;
         private AuthorizedMinersState _authorizedMinersState;
 
         /// <summary>
-        /// Whether to ignore or respect hardcoded policies. If it's turned off
-        /// (by default) older blocks pass some new rules by force.
-        /// Therefore, on the mainnet this should be turned off.
-        /// This option is made mainly due to unit tests.  Turning on this
-        /// option can be useful for tests.
+        /// Whether to ignore or respect hardcoded policies. If this is turned off,
+        /// older blocks pass some new rules by force. Therefore, on the mainnet,
+        /// this should be turned off. This option is made mainly due to unit tests.
+        /// Turning on this option can be useful for tests.
         /// </summary>
         internal readonly bool IgnoreHardcodedPolicies;
 
