@@ -98,6 +98,9 @@ namespace Nekoyume.UI
         [SerializeField]
         private GameObject coverToBlockClick = null;
 
+        [SerializeField]
+        private TMP_InputField boostTestInputField;
+
         private Stage _stage;
         private Game.Character.Player _player;
         private EquipmentSlot _weaponSlot;
@@ -490,6 +493,19 @@ namespace Nekoyume.UI
 
         private void QuestClick(bool repeat)
         {
+            if (boostTestInputField.text.Equals(string.Empty))
+            {
+                OneLinePopup.Push(MailType.Auction, "boostTestInputField에 1이상 넣어주세요.");
+                return;
+            }
+
+            var playCount = int.Parse(boostTestInputField.text);
+            if (playCount <= 0)
+            {
+                OneLinePopup.Push(MailType.Auction, "boostTestInputField에 1이상 넣어주세요.");
+                return;
+            }
+
             if (_stage.IsInStage)
             {
                 questButton.interactable = false;
@@ -806,13 +822,16 @@ namespace Nekoyume.UI
             _stage.IsRepeatStage = repeat;
             _stage.foodCount = consumables.Count;
             ActionRenderHandler.Instance.Pending = true;
+
+            var playCount = int.Parse(boostTestInputField.text);
             Game.Game.instance.ActionManager
                 .HackAndSlash(
                     costumes,
                     equipments,
                     consumables,
                     _worldId,
-                    _stageId.Value
+                    _stageId.Value,
+                    playCount
                 )
                 .Subscribe(
                     _ =>
@@ -893,7 +912,7 @@ namespace Nekoyume.UI
                 tableSheets.GetStageSimulatorSheets(),
                 tableSheets.CostumeStatSheet
             );
-            simulator.Simulate();
+            simulator.Simulate(1);
             GoToStage(simulator.Log);
         }
     }

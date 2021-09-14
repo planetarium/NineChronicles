@@ -975,7 +975,7 @@ namespace Nekoyume.UI
                 tableSheets.GetStageSimulatorSheets(),
                 tableSheets.CostumeStatSheet
             );
-            simulator.Simulate();
+            simulator.Simulate(1);
             GoToStage(simulator.Log);
         }
 

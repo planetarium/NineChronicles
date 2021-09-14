@@ -131,14 +131,16 @@ namespace Nekoyume.BlockChain
         public IObservable<ActionBase.ActionEvaluation<HackAndSlash>> HackAndSlash(
             Player player,
             int worldId,
-            int stageId)
+            int stageId,
+            int playCount)
         {
             return HackAndSlash(
                 player.Costumes,
                 player.Equipments,
                 null,
                 worldId,
-                stageId);
+                stageId,
+                playCount);
         }
 
         public IObservable<ActionBase.ActionEvaluation<HackAndSlash>> HackAndSlash(
@@ -146,7 +148,8 @@ namespace Nekoyume.BlockChain
             List<Equipment> equipments,
             List<Consumable> foods,
             int worldId,
-            int stageId)
+            int stageId,
+            int playCount)
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             costumes ??= new List<Costume>();
@@ -160,6 +163,7 @@ namespace Nekoyume.BlockChain
                 foods = foods.Select(f => f.ItemId).ToList(),
                 worldId = worldId,
                 stageId = stageId,
+                playCount = playCount,
                 avatarAddress = avatarAddress,
                 rankingMapAddress = States.Instance.CurrentAvatarState.RankingMapAddress,
             };

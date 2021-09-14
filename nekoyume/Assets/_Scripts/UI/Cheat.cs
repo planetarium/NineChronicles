@@ -417,7 +417,7 @@ namespace Nekoyume
                 tableSheets.GetStageSimulatorSheets(),
                 _selectedSkill
             );
-            simulator.Simulate();
+            simulator.Simulate(1);
             simulator.Log.result = _result;
 
             var stage = Game.Game.instance.Stage;
