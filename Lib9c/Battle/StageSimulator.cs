@@ -249,7 +249,7 @@ namespace Nekoyume.Battle
             Player.SetCostumeStat(costumeStatSheet);
         }
 
-        public Player Simulate()
+        public Player Simulate(int playCount)
         {
             Log.worldId = WorldId;
             Log.stageId = StageId;
@@ -276,7 +276,7 @@ namespace Nekoyume.Battle
                             Result = BattleLog.Result.Lose;
                             if (StageId < GameConfig.MimisbrunnrStartStageId)
                             {
-                                Player.GetExp((int) (Exp * 0.3m), true);
+                                Player.GetExp((int) (Exp * 0.3m * playCount), true);
                             }
                         }
                         else
@@ -300,7 +300,7 @@ namespace Nekoyume.Battle
                             Result = BattleLog.Result.Lose;
                             if (StageId < GameConfig.MimisbrunnrStartStageId)
                             {
-                                Player.GetExp((int) (Exp * 0.3m), true);
+                                Player.GetExp((int) (Exp * 0.3m * playCount), true);
                             }
                         }
                         else
@@ -321,13 +321,13 @@ namespace Nekoyume.Battle
                             case 1:
                                 if (StageId < GameConfig.MimisbrunnrStartStageId)
                                 {
-                                    Player.GetExp(Exp, true);
+                                    Player.GetExp(Exp * playCount, true);
                                 }
 
                                 break;
                             case 2:
                             {
-                                ItemMap = Player.GetRewards(_waveRewards);
+                                ItemMap = Player.GetRewards(_waveRewards, playCount);
                                 var dropBox = new DropBox(null, _waveRewards);
                                 Log.Add(dropBox);
                                 var getReward = new GetReward(null, _waveRewards);
@@ -795,6 +795,127 @@ namespace Nekoyume.Battle
                             case 2:
                             {
                                 ItemMap = Player.GetRewards2(_waveRewards);
+                                var dropBox = new DropBox(null, _waveRewards);
+                                Log.Add(dropBox);
+                                var getReward = new GetReward(null, _waveRewards);
+                                Log.Add(getReward);
+                                break;
+                            }
+                            default:
+                                if (WaveNumber == _waves.Count)
+                                {
+                                    if (!IsCleared)
+                                    {
+                                        Log.newlyCleared = true;
+                                    }
+                                }
+
+                                break;
+                        }
+
+                        break;
+                    }
+
+                    foreach (var other in Characters)
+                    {
+                        var current = Characters.GetPriority(other);
+                        var speed = current * 0.6m;
+                        Characters.UpdatePriority(other, speed);
+                    }
+
+                    Characters.Enqueue(character, TurnPriority / character.SPD);
+                }
+
+                // 제한 턴을 넘거나 플레이어가 죽은 경우 break;
+                if (TurnNumber > TurnLimit ||
+                    Player.IsDead)
+                    break;
+            }
+
+            Log.result = Result;
+            return Player;
+        }
+
+        [Obsolete("Use Simulate")]
+        public Player Simulate5()
+        {
+            Log.worldId = WorldId;
+            Log.stageId = StageId;
+            Log.waveCount = _waves.Count;
+            Log.clearedWaveNumber = 0;
+            Log.newlyCleared = false;
+            Player.SpawnV2();
+            TurnNumber = 0;
+            for (var i = 0; i < _waves.Count; i++)
+            {
+                Characters = new SimplePriorityQueue<CharacterBase, decimal>();
+                Characters.Enqueue(Player, TurnPriority / Player.SPD);
+
+                WaveNumber = i + 1;
+                WaveTurn = 1;
+                _waves[i].SpawnV2(this);
+                while (true)
+                {
+                    // 제한 턴을 넘어서는 경우 break.
+                    if (TurnNumber > TurnLimit)
+                    {
+                        if (i == 0)
+                        {
+                            Result = BattleLog.Result.Lose;
+                            if (StageId < GameConfig.MimisbrunnrStartStageId)
+                            {
+                                Player.GetExp((int) (Exp * 0.3m), true);
+                            }
+                        }
+                        else
+                        {
+                            Result = BattleLog.Result.TimeOver;
+                        }
+                        break;
+                    }
+
+                    // 캐릭터 큐가 비어 있는 경우 break.
+                    if (!Characters.TryDequeue(out var character))
+                        break;
+
+                    character.Tick();
+
+                    // 플레이어가 죽은 경우 break;
+                    if (Player.IsDead)
+                    {
+                        if (i == 0)
+                        {
+                            Result = BattleLog.Result.Lose;
+                            if (StageId < GameConfig.MimisbrunnrStartStageId)
+                            {
+                                Player.GetExp((int) (Exp * 0.3m), true);
+                            }
+                        }
+                        else
+                        {
+                            Result = BattleLog.Result.Win;
+                        }
+                        break;
+                    }
+
+                    // 플레이어의 타겟(적)이 없는 경우 break.
+                    if (!Player.Targets.Any())
+                    {
+                        Result = BattleLog.Result.Win;
+                        Log.clearedWaveNumber = WaveNumber;
+
+                        switch (WaveNumber)
+                        {
+                            case 1:
+                                if (StageId < GameConfig.MimisbrunnrStartStageId)
+                                {
+                                    Player.GetExp(Exp, true);
+                                }
+
+                                break;
+                            case 2:
+                            {
+                                ItemMap = Player.GetRewards3(_waveRewards);
                                 var dropBox = new DropBox(null, _waveRewards);
                                 Log.Add(dropBox);
                                 var getReward = new GetReward(null, _waveRewards);

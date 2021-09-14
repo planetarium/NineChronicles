@@ -355,13 +355,13 @@ namespace Nekoyume.Model
             UpdateExp();
         }
 
-        // ToDo. 지금은 스테이지에서 재료 아이템만 주고 있음. 추후 대체 불가능 아이템도 줄 경우 수정 대상.
-        public CollectionMap GetRewards(List<ItemBase> items)
+        // todo : Only material items are provided on stage. If NFT items are provided in the future, they need to be modified.
+        public CollectionMap GetRewards(List<ItemBase> items, int count)
         {
             var map = new CollectionMap();
             foreach (var item in items)
             {
-                map.Add(Inventory.AddItem(item));
+                map.Add(Inventory.AddItem(item, count:count));
             }
 
             return map;
@@ -374,6 +374,18 @@ namespace Nekoyume.Model
             foreach (var item in items)
             {
                 map.Add(Inventory.AddItem2(item));
+            }
+
+            return map;
+        }
+
+        [Obsolete("Use GetRewards")]
+        public CollectionMap GetRewards3(List<ItemBase> items)
+        {
+            var map = new CollectionMap();
+            foreach (var item in items)
+            {
+                map.Add(Inventory.AddItem(item));
             }
 
             return map;
