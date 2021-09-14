@@ -12,7 +12,6 @@ using Nekoyume.TableData;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionObsolete(BlockChain.BlockPolicySource.V100066ObsoleteIndex)]
     [ActionType("charge_action_point2")]
     public class ChargeActionPoint2 : GameAction
     {
@@ -25,8 +24,6 @@ namespace Nekoyume.Action
             {
                 return states.SetState(avatarAddress, MarkChanged);
             }
-
-            CheckObsolete(BlockChain.BlockPolicySource.V100066ObsoleteIndex, context);
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
 

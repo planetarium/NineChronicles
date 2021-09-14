@@ -18,9 +18,8 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionObsolete(BlockChain.BlockPolicySource.V100066ObsoleteIndex)]
     [ActionType("buy7")]
-    public class Buy7 : GameAction
+    public class Buy7 : GameAction, IBuy5
     {
         public const int TaxRate = 8;
         public const int ErrorCodeFailedLoadingState = 1;
@@ -30,8 +29,9 @@ namespace Nekoyume.Action
         public const int ErrorCodeInvalidAddress = 5;
         public const int ErrorCodeInvalidPrice = 6;
 
-        public Address buyerAvatarAddress;
+        public Address buyerAvatarAddress { get; set; }
         public IEnumerable<PurchaseInfo0> purchaseInfos;
+        IEnumerable<IPurchaseInfo> IBuy5.purchaseInfos => purchaseInfos.Cast<IPurchaseInfo>();
         public BuyerMultipleResult buyerMultipleResult;
         public SellerMultipleResult sellerMultipleResult;
 
@@ -212,8 +212,6 @@ namespace Nekoyume.Action
                     .SetState(ctx.Signer, MarkChanged)
                     .SetState(Addresses.Shop, MarkChanged);
             }
-
-            CheckObsolete(BlockChain.BlockPolicySource.V100066ObsoleteIndex, context);
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, buyerAvatarAddress);
 

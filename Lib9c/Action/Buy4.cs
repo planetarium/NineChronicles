@@ -16,14 +16,13 @@ using Serilog;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionObsolete(BlockChain.BlockPolicySource.V100066ObsoleteIndex)]
     [ActionType("buy4")]
-    public class Buy4 : GameAction
+    public class Buy4 : GameAction, IBuy0
     {
-        public Address buyerAvatarAddress;
-        public Address sellerAgentAddress;
-        public Address sellerAvatarAddress;
-        public Guid productId;
+        public Address buyerAvatarAddress { get; set; }
+        public Address sellerAgentAddress { get; set; }
+        public Address sellerAvatarAddress { get; set; }
+        public Guid productId { get; set; }
         public Buy7.BuyerResult buyerResult;
         public Buy7.SellerResult sellerResult;
 
@@ -60,8 +59,6 @@ namespace Nekoyume.Action
                         GoldCurrencyState.Address);
                 return states.SetState(ShopState.Address, MarkChanged);
             }
-
-            CheckObsolete(BlockChain.BlockPolicySource.V100066ObsoleteIndex, context);
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, buyerAvatarAddress, sellerAvatarAddress);
 

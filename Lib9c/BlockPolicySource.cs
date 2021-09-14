@@ -16,6 +16,7 @@ using Nekoyume.Model;
 using Serilog;
 using Serilog.Events;
 #if UNITY_EDITOR || UNITY_STANDALONE
+using Lib9c;
 using UniRx;
 #else
 #endif
@@ -33,11 +34,10 @@ namespace Nekoyume.BlockChain
         // Note: The genesis block of 9c-main net weighs 11,085,640 B (11 MiB).
         public const int MaxGenesisBytes = 1024 * 1024 * 15; // 15 MiB
 
-        public const long V100066ObsoleteIndex = 2200000;
+        public const long V100073ObsoleteIndex = 3000000;
 
-        public const long V100068ObsoleteIndex = 2220000;
-
-        public const long V100074ObsoleteIndex = 2310000;
+        // FIXME: Should be finalized before release.
+        public const int maxTransactionsPerSignerPerBlockV100074 = 4;
 
         private readonly TimeSpan _blockInterval = TimeSpan.FromSeconds(8);
 
@@ -82,13 +82,16 @@ namespace Nekoyume.BlockChain
                 blockInterval: _blockInterval,
                 minimumDifficulty: minimumDifficulty,
                 difficultyBoundDivisor: DifficultyBoundDivisor,
+                minTransactionsPerBlock: 0,
                 maxTransactionsPerBlock: maximumTransactions,
                 maxBlockBytes: MaxBlockBytes,
                 maxGenesisBytes: MaxGenesisBytes,
                 ignoreHardcodedPolicies: ignoreHardcodedPolicies,
                 permissionedMiningPolicy: permissionedMiningPolicy,
-                doesTransactionFollowPolicy: DoesTransactionFollowPolicy
-            );
+                doesTransactionFollowPolicy: DoesTransactionFollowPolicy,
+                getMaxTransactionsPerSignerPerBlock: (long index) => index > V100073ObsoleteIndex
+                    ? maxTransactionsPerSignerPerBlockV100074
+                    : maximumTransactions);
 #endif
         }
 
@@ -122,8 +125,7 @@ namespace Nekoyume.BlockChain
         )
         {
             // Avoid NRE when genesis block appended
-            long index = blockChain.Tip?.Index ?? 0;
-            if (transaction.Actions.Count > 1 || IsObsolete(transaction, index))
+            if (transaction.Actions.Count > 1)
             {
                 return false;
             }
