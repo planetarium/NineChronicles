@@ -12,16 +12,16 @@ using System.Runtime.Serialization;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("transfer_asset2")]
-    public class TransferAsset : ActionBase, ISerializable
+    [ActionType("transfer_asset")]
+    public class TransferAsset0 : ActionBase, ISerializable
     {
         private const int MemoMaxLength = 80;
 
-        public TransferAsset()
+        public TransferAsset0()
         {
         }
 
-        public TransferAsset(Address sender, Address recipient, FungibleAssetValue amount, string memo = null)
+        public TransferAsset0(Address sender, Address recipient, FungibleAssetValue amount, string memo = null)
         {
             Sender = sender;
             Recipient = recipient;
@@ -31,7 +31,7 @@ namespace Nekoyume.Action
             Memo = memo;
         }
 
-        protected TransferAsset(SerializationInfo info, StreamingContext context)
+        protected TransferAsset0(SerializationInfo info, StreamingContext context)
         {
             var rawBytes = (byte[])info.GetValue("serialized", typeof(byte[]));
             Dictionary pv = (Dictionary) new Codec().Decode(rawBytes);
@@ -82,17 +82,6 @@ namespace Nekoyume.Action
             if (context.BlockIndex > 380000 && Sender == Recipient)
             {
                 throw new InvalidTransferRecipientException(Sender, Recipient);
-            }
-
-            if (state.GetState(Addresses.ActivatedAccount) is Dictionary asDict)
-            {
-                var activatedAccountsState = new ActivatedAccountsState(asDict);
-                var activatedAccounts = activatedAccountsState.Accounts;
-                if (activatedAccounts.Count != 0
-                    && !activatedAccounts.Contains(Recipient))
-                {
-                    throw new InvalidTransferRecipientException(Sender, Recipient);
-                }
             }
 
             Currency currency = Amount.Currency;
