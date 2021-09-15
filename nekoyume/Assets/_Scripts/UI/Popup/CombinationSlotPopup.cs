@@ -189,7 +189,6 @@ namespace Nekoyume.UI
             var statOptionRows = ItemOptionHelper.GetStatOptionRows(
                 resultModel.subRecipeId.Value,
                 resultModel.itemUsable);
-            var format = L10nManager.Localize("UI_COMBINATION_POPUP_COMBINATION_RESULT_STATS");
             for (var i = 0; i < information.StatOptions.Count; i++)
             {
                 var optionView = information.StatOptions[i];
@@ -206,12 +205,11 @@ namespace Nekoyume.UI
                     continue;
                 }
 
-                var text = string.Format(format, optionRow.StatType, optionRow.StatMin, optionRow.StatMax);
+                var text = $"{optionRow.StatType} ({optionRow.StatMin} - {optionRow.StatMax})";
                 optionView.UpdateView(text, string.Empty, 1);
                 optionView.Show();
             }
 
-            format = L10nManager.Localize("UI_COMBINATION_POPUP_COMBINATION_RESULT_SKILLS");
             for (var i = 0; i < information.SkillOptions.Count; i++)
             {
                 var optionView = information.SkillOptions[i];
@@ -229,8 +227,7 @@ namespace Nekoyume.UI
                 }
 
                 var (skillName, _, _) = itemOptionInfo.SkillOptions[i];
-                var text = string.Format(format, skillName);
-                optionView.UpdateView(text, string.Empty);
+                optionView.UpdateView(skillName, string.Empty);
                 optionView.Show();
             }
         }
@@ -260,7 +257,7 @@ namespace Nekoyume.UI
                 return;
             }
 
-            var format = L10nManager.Localize("UI_COMBINATION_POPUP_ENHANCEMENT_RESULT_STATS");
+            var format = "{0} +({1:N0}% - {2:N0}%)";
             if (row.BaseStatGrowthMin == 0 && row.BaseStatGrowthMax == 0)
             {
                 information.MainStatView.Hide();
@@ -297,7 +294,7 @@ namespace Nekoyume.UI
                 optionView.Show();
             }
 
-            format = L10nManager.Localize("UI_COMBINATION_POPUP_ENHANCEMENT_RESULT_SKILLS");
+            format = "{0} +({1:N0}% - {2:N0}%) / ({3:N0}% - {4:N0}%)";
             for (var i = 0; i < information.SkillOptions.Count; i++)
             {
                 var optionView = information.SkillOptions[i];
