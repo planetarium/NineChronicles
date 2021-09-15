@@ -152,6 +152,7 @@ namespace Nekoyume.UI
 
             var stage = Game.Game.instance.Stage;
             stage.LoadBackground("ranking");
+            stage.GetPlayer().gameObject.SetActive(false);
 
             var go = Game.Game.instance.Stage.npcFactory.Create(
                 NPCId,
