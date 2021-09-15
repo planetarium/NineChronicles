@@ -11,7 +11,7 @@ using Libplanet;
 using Nekoyume.Model.State;
 using NCAction = Libplanet.Action.PolymorphicAction<Nekoyume.Action.ActionBase>;
 
-namespace Nekoyume.BlockChain
+namespace Nekoyume.BlockChain.Policy
 {
     public class BlockPolicy : BlockPolicy<NCAction>
     {
@@ -54,7 +54,7 @@ namespace Nekoyume.BlockChain
                 minimumDifficulty: minimumDifficulty,
                 difficultyBoundDivisor: difficultyBoundDivisor,
                 ignoreHardcodedPolicies: false,
-                permissionedMiningPolicy: BlockChain.PermissionedMiningPolicy.Mainnet,
+                permissionedMiningPolicy: Policy.PermissionedMiningPolicy.Mainnet,
                 canonicalChainComparer: canonicalChainComparer,
                 hashAlgorithmGetter: hashAlgorithmGetter,
                 validateNextBlockTx: validateNextBlockTx,

@@ -5,7 +5,6 @@ using System.Linq;
 using System.Reflection;
 using System.Security.Cryptography;
 using Bencodex.Types;
-using Lib9c;
 using Lib9c.Renderer;
 using Libplanet.Blocks;
 using Libplanet.Blockchain;
@@ -24,7 +23,7 @@ using UniRx;
 #endif
 using NCAction = Libplanet.Action.PolymorphicAction<Nekoyume.Action.ActionBase>;
 
-namespace Nekoyume.BlockChain
+namespace Nekoyume.BlockChain.Policy
 {
     public class BlockPolicySource
     {

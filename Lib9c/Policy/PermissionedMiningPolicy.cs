@@ -1,8 +1,8 @@
-using Libplanet;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using Libplanet;
 
-namespace Nekoyume.BlockChain
+namespace Nekoyume.BlockChain.Policy
 {
     public struct PermissionedMiningPolicy
     {

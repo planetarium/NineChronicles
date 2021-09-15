@@ -4,8 +4,6 @@ namespace Lib9c.Tests
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.Linq;
-    using System.Reflection;
-    using System.Text.RegularExpressions;
     using System.Threading.Tasks;
     using Bencodex.Types;
     using Libplanet;
@@ -21,6 +19,7 @@ namespace Lib9c.Tests
     using Nekoyume;
     using Nekoyume.Action;
     using Nekoyume.BlockChain;
+    using Nekoyume.BlockChain.Policy;
     using Nekoyume.Model;
     using Nekoyume.Model.State;
     using Serilog.Core;
