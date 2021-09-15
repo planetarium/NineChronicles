@@ -400,8 +400,12 @@ namespace Nekoyume.UI
             //TODO 소모품장착
             Game.Game.instance.ActionManager.RankingBattle(
                 arenaRankCell.ArenaInfo.AvatarAddress,
-                currentAvatarInventory.Costumes.Select(i => i.ItemId).ToList(),
-                currentAvatarInventory.Equipments.Select(i => i.ItemId).ToList(),
+                currentAvatarInventory.Costumes
+                    .Where(i => i.equipped)
+                    .Select(i => i.ItemId).ToList(),
+                currentAvatarInventory.Equipments
+                    .Where(i => i.equipped)
+                    .Select(i => i.ItemId).ToList(),
                 new List<Guid>()
             );
             Find<ArenaBattleLoadingScreen>().Show(arenaRankCell.ArenaInfo);
