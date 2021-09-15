@@ -91,7 +91,7 @@ namespace Nekoyume.Action
                 if (activatedAccounts.Count != 0
                     && !activatedAccounts.Contains(Recipient))
                 {
-                    throw new InvalidTransferRecipientException(Sender, Recipient);
+                    throw new InvalidTransferUnactivatedRecipientException(Sender, Recipient);
                 }
             }
 
