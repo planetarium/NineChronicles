@@ -54,14 +54,14 @@ namespace Nekoyume.UI
 
         public override void Show(bool ignoreShowAnimation = false)
         {
+            base.Show(ignoreShowAnimation);
+            UpdateSlots(Game.Game.instance.Agent.BlockIndex);
+            HelpPopup.HelpMe(100008, true);
+
             if (blur)
             {
                 blur.Show();
             }
-
-            base.Show(ignoreShowAnimation);
-            UpdateSlots(Game.Game.instance.Agent.BlockIndex);
-            HelpPopup.HelpMe(100008, true);
         }
 
         public void SetCaching(int slotIndex, bool value, long requiredBlockIndex = 0, ItemUsable itemUsable = null)

@@ -172,13 +172,13 @@ namespace Nekoyume.UI
 
         public override void Show(bool ignoreShowAnimation = false)
         {
+            base.Show(ignoreShowAnimation);
+            UpdateCategory(RankCategory.Ability, true);
+
             if (blur)
             {
                 blur.Show();
             }
-
-            base.Show(ignoreShowAnimation);
-            UpdateCategory(RankCategory.Ability, true);
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
