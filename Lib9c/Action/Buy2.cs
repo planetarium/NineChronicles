@@ -17,16 +17,15 @@ using Serilog;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionObsolete(BlockChain.BlockPolicySource.V100066ObsoleteIndex)]
     [ActionType("buy2")]
-    public class Buy2 : GameAction
+    public class Buy2 : GameAction, IBuy0
     {
         public const int TaxRate = 8;
 
-        public Address buyerAvatarAddress;
-        public Address sellerAgentAddress;
-        public Address sellerAvatarAddress;
-        public Guid productId;
+        public Address buyerAvatarAddress { get; set; }
+        public Address sellerAgentAddress { get; set; }
+        public Address sellerAvatarAddress { get; set; }
+        public Guid productId { get; set; }
         public Buy7.BuyerResult buyerResult;
         public Buy7.SellerResult sellerResult;
 
@@ -63,8 +62,6 @@ namespace Nekoyume.Action
                         GoldCurrencyState.Address);
                 return states.SetState(ShopState.Address, MarkChanged);
             }
-
-            CheckObsolete(BlockChain.BlockPolicySource.V100066ObsoleteIndex, context);
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, buyerAvatarAddress, sellerAvatarAddress);
 
@@ -190,9 +187,9 @@ namespace Nekoyume.Action
                 ctx.BlockIndex);
             sellerResult.id = sellerMail.id;
 
-            buyerAvatarState.UpdateV2(buyerMail);
-            buyerAvatarState.UpdateFromAddItem(buyerResult.itemUsable, false);
-            sellerAvatarState.UpdateV2(sellerMail);
+            buyerAvatarState.Update3(buyerMail);
+            buyerAvatarState.UpdateFromAddItem2(buyerResult.itemUsable, false);
+            sellerAvatarState.Update3(sellerMail);
 
             // 퀘스트 업데이트
             buyerAvatarState.questList.UpdateTradeQuest(TradeType.Buy, shopItem.Price);
@@ -204,8 +201,8 @@ namespace Nekoyume.Action
             sellerAvatarState.blockIndex = ctx.BlockIndex;
 
             var materialSheet = states.GetSheet<MaterialItemSheet>();
-            buyerAvatarState.UpdateQuestRewards(materialSheet);
-            sellerAvatarState.UpdateQuestRewards(materialSheet);
+            buyerAvatarState.UpdateQuestRewards2(materialSheet);
+            sellerAvatarState.UpdateQuestRewards2(materialSheet);
 
             states = states.SetState(sellerAvatarAddress, sellerAvatarState.Serialize());
             sw.Stop();

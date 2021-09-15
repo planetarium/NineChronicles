@@ -8,7 +8,7 @@ namespace Lib9c.Tests.Model.State
     using System.Threading.Tasks;
     using Bencodex;
     using Bencodex.Types;
-    using Lib9c.Tests.Action;
+    using Lib9c.Tests.Model.Item;
     using Libplanet;
     using Libplanet.Crypto;
     using Nekoyume;
@@ -321,7 +321,7 @@ namespace Lib9c.Tests.Model.State
             for (var i = 0; i < 100; i++)
             {
                 var mail = new CombinationMail(result, i, default, 0);
-                avatarState.UpdateV3(mail);
+                avatarState.Update(mail);
             }
 
             Assert.Equal(30, avatarState.mailBox.Count);
@@ -346,13 +346,13 @@ namespace Lib9c.Tests.Model.State
             for (var i = 0; i < 100; i++)
             {
                 var mail = new CombinationMail(result, i, default, i);
-                avatarState.UpdateV3(mail);
+                avatarState.Update(mail);
             }
 
             Assert.Equal(30, avatarState.mailBox.Count);
 
             var newMail = new CombinationMail(result, 101, default, 101);
-            avatarState.UpdateV4(newMail, 101);
+            avatarState.UpdateTemp(newMail, 101);
             Assert.Single(avatarState.mailBox);
         }
 
@@ -375,7 +375,7 @@ namespace Lib9c.Tests.Model.State
                 mailBox.Add(mail);
             }
 
-            mailBox.CleanUp();
+            mailBox.CleanUp2();
 
             Assert.Equal(30, mailBox.Count);
             Assert.DoesNotContain(mailBox, m => m.blockIndex < 30);

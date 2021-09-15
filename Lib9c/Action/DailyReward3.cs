@@ -12,7 +12,6 @@ using Nekoyume.TableData;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionObsolete(BlockChain.BlockPolicySource.V100066ObsoleteIndex)]
     [ActionType("daily_reward3")]
     public class DailyReward3 : GameAction
     {
@@ -29,8 +28,6 @@ namespace Nekoyume.Action
             {
                 return states.SetState(avatarAddress, MarkChanged);
             }
-
-            CheckObsolete(BlockChain.BlockPolicySource.V100066ObsoleteIndex, context);
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
 
@@ -70,8 +67,8 @@ namespace Nekoyume.Action
 
             result.id = mail.id;
             dailyRewardResult = result;
-            avatarState.UpdateV3(mail);
-            avatarState.UpdateFromAddItem(material, rewardItemCount, false);
+            avatarState.Update(mail);
+            avatarState.UpdateFromAddItem2(material, rewardItemCount, false);
             return states.SetState(avatarAddress, avatarState.Serialize());
         }
 

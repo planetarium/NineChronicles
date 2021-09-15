@@ -30,7 +30,6 @@ namespace Lib9c.Tests.Action
 
         private readonly Address _rankingMapAddress;
 
-        private readonly WeeklyArenaState _weeklyArenaState;
         private readonly IAccountStateDelta _initialState;
 
         public MimisbrunnrBattleTest()
@@ -57,10 +56,7 @@ namespace Lib9c.Tests.Action
             };
             agentState.avatarAddresses.Add(0, _avatarAddress);
 
-            _weeklyArenaState = new WeeklyArenaState(0);
-
             _initialState = new State()
-                .SetState(_weeklyArenaState.address, _weeklyArenaState.Serialize())
                 .SetState(_agentAddress, agentState.Serialize())
                 .SetState(_avatarAddress, avatarState.Serialize())
                 .SetState(_rankingMapAddress, new RankingMapState(_rankingMapAddress).Serialize());
@@ -157,8 +153,7 @@ namespace Lib9c.Tests.Action
                 worldId = worldId,
                 stageId = stageId,
                 avatarAddress = _avatarAddress,
-                WeeklyArenaAddress = _weeklyArenaState.address,
-                RankingMapAddress = _rankingMapAddress,
+                rankingMapAddress = _rankingMapAddress,
             };
 
             var nextState = action.Execute(new ActionContext()
@@ -171,7 +166,6 @@ namespace Lib9c.Tests.Action
             });
 
             var nextAvatarState = nextState.GetAvatarStateV2(_avatarAddress);
-            var newWeeklyState = nextState.GetWeeklyArenaState(0);
             Assert.True(nextAvatarState.worldInformation.IsStageCleared(stageId));
             Assert.Equal(30, nextAvatarState.mailBox.Count);
 
@@ -242,8 +236,7 @@ namespace Lib9c.Tests.Action
                 worldId = worldId,
                 stageId = stageId,
                 avatarAddress = _avatarAddress,
-                WeeklyArenaAddress = _weeklyArenaState.address,
-                RankingMapAddress = _rankingMapAddress,
+                rankingMapAddress = _rankingMapAddress,
             };
 
             Assert.Throws<InvalidStageException>(() =>
@@ -269,8 +262,7 @@ namespace Lib9c.Tests.Action
                 worldId = 10001,
                 stageId = 10000002,
                 avatarAddress = _avatarAddress,
-                WeeklyArenaAddress = _weeklyArenaState.address,
-                RankingMapAddress = _rankingMapAddress,
+                rankingMapAddress = _rankingMapAddress,
             };
 
             Assert.Throws<FailedLoadStateException>(() =>
@@ -294,8 +286,7 @@ namespace Lib9c.Tests.Action
                 worldId = 10001,
                 stageId = 10000002,
                 avatarAddress = _avatarAddress,
-                WeeklyArenaAddress = _weeklyArenaState.address,
-                RankingMapAddress = default,
+                rankingMapAddress = default,
             };
 
             Assert.Throws<InvalidAddressException>(() =>
@@ -319,8 +310,7 @@ namespace Lib9c.Tests.Action
                 worldId = 10011,
                 stageId = 10000002,
                 avatarAddress = _avatarAddress,
-                WeeklyArenaAddress = _weeklyArenaState.address,
-                RankingMapAddress = _rankingMapAddress,
+                rankingMapAddress = _rankingMapAddress,
             };
 
             Assert.Throws<SheetRowNotFoundException>(() =>
@@ -344,8 +334,7 @@ namespace Lib9c.Tests.Action
                 worldId = 10001,
                 stageId = 10000022,
                 avatarAddress = _avatarAddress,
-                WeeklyArenaAddress = _weeklyArenaState.address,
-                RankingMapAddress = _rankingMapAddress,
+                rankingMapAddress = _rankingMapAddress,
             };
 
             Assert.Throws<SheetRowColumnException>(() =>
@@ -384,8 +373,7 @@ namespace Lib9c.Tests.Action
                 worldId = 10001,
                 stageId = 10000001,
                 avatarAddress = _avatarAddress,
-                WeeklyArenaAddress = _weeklyArenaState.address,
-                RankingMapAddress = _rankingMapAddress,
+                rankingMapAddress = _rankingMapAddress,
             };
 
             var state = _initialState;
@@ -471,8 +459,7 @@ namespace Lib9c.Tests.Action
                 worldId = worldId,
                 stageId = stageId,
                 avatarAddress = _avatarAddress,
-                WeeklyArenaAddress = _weeklyArenaState.address,
-                RankingMapAddress = _rankingMapAddress,
+                rankingMapAddress = _rankingMapAddress,
             };
 
             Assert.Throws<InvalidWorldException>(() =>
@@ -511,8 +498,7 @@ namespace Lib9c.Tests.Action
                 worldId = worldId,
                 stageId = stageId,
                 avatarAddress = _avatarAddress,
-                WeeklyArenaAddress = _weeklyArenaState.address,
-                RankingMapAddress = _rankingMapAddress,
+                rankingMapAddress = _rankingMapAddress,
             };
 
             Assert.Throws<FailedAddWorldException>(() =>
@@ -557,8 +543,7 @@ namespace Lib9c.Tests.Action
                 worldId = GameConfig.MimisbrunnrWorldId,
                 stageId = GameConfig.MimisbrunnrStartStageId,
                 avatarAddress = _avatarAddress,
-                WeeklyArenaAddress = _weeklyArenaState.address,
-                RankingMapAddress = _rankingMapAddress,
+                rankingMapAddress = _rankingMapAddress,
             };
 
             action.Execute(new ActionContext
@@ -581,14 +566,13 @@ namespace Lib9c.Tests.Action
                 worldId = 1,
                 stageId = 1,
                 avatarAddress = _avatarAddress,
-                WeeklyArenaAddress = _weeklyArenaState.address,
-                RankingMapAddress = _rankingMapAddress,
+                rankingMapAddress = _rankingMapAddress,
             };
 
             var updatedAddresses = new List<Address>()
             {
+                _agentAddress,
                 _avatarAddress,
-                _weeklyArenaState.address,
                 _rankingMapAddress,
                 _avatarAddress.Derive(LegacyInventoryKey),
                 _avatarAddress.Derive(LegacyWorldInformationKey),

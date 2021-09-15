@@ -98,7 +98,7 @@ namespace Lib9c.Tests.Action
                 .Id;
             var costume =
                 ItemFactory.CreateItem(_tableSheets.ItemSheet[costumeId], new TestRandom());
-            previousAvatarState.inventory.AddItem(costume);
+            previousAvatarState.inventory.AddItem2(costume);
 
             var equipmentRow = _tableSheets.EquipmentItemSheet.Values.First();
             var equipment = ItemFactory.CreateItemUsable(equipmentRow, default, 0);
@@ -114,7 +114,7 @@ namespace Lib9c.Tests.Action
             for (var i = 0; i < 100; i++)
             {
                 var mail = new CombinationMail(result, i, default, 0);
-                previousAvatarState.Update(mail);
+                previousAvatarState.Update2(mail);
             }
 
             var state = _initialState.SetState(_avatarAddress, previousAvatarState.Serialize());

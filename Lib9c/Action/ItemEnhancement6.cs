@@ -17,7 +17,6 @@ using Serilog;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionObsolete(BlockChain.BlockPolicySource.V100066ObsoleteIndex)]
     [ActionType("item_enhancement6")]
     public class ItemEnhancement6 : GameAction
     {
@@ -48,8 +47,6 @@ namespace Nekoyume.Action
                     .SetState(avatarAddress, MarkChanged)
                     .SetState(slotAddress, MarkChanged);
             }
-
-            CheckObsolete(BlockChain.BlockPolicySource.V100066ObsoleteIndex, context);
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
 
@@ -112,7 +109,7 @@ namespace Nekoyume.Action
                 );
             }
 
-            var result = new ItemEnhancement.ResultModel
+            var result = new ItemEnhancement7.ResultModel
             {
                 itemUsable = enhancementEquipment,
                 materialItemIdList = new[] { materialId }
@@ -127,7 +124,7 @@ namespace Nekoyume.Action
             }
 
             var enhancementCostSheet = states.GetSheet<EnhancementCostSheet>();
-            var requiredNCG = ItemEnhancement.GetRequiredNCG(enhancementCostSheet, enhancementEquipment.Grade, enhancementEquipment.level + 1);
+            var requiredNCG = ItemEnhancement7.GetRequiredNCG(enhancementCostSheet, enhancementEquipment.Grade, enhancementEquipment.level + 1);
 
             avatarState.actionPoint -= requiredAP;
             result.actionPoint = requiredAP;
@@ -199,7 +196,7 @@ namespace Nekoyume.Action
 
             enhancementEquipment.Unequip();
 
-            enhancementEquipment = ItemEnhancement.UpgradeEquipment(enhancementEquipment);
+            enhancementEquipment = ItemEnhancement7.UpgradeEquipment(enhancementEquipment);
 
             var requiredBlockIndex = ctx.BlockIndex + RequiredBlockCount;
             enhancementEquipment.Update(requiredBlockIndex);
@@ -217,11 +214,11 @@ namespace Nekoyume.Action
             result.id = mail.id;
 
             avatarState.inventory.RemoveNonFungibleItem(enhancementEquipment);
-            avatarState.UpdateV3(mail);
-            avatarState.UpdateFromItemEnhancement(enhancementEquipment);
+            avatarState.Update(mail);
+            avatarState.UpdateFromItemEnhancement2(enhancementEquipment);
 
             var materialSheet = states.GetSheet<MaterialItemSheet>();
-            avatarState.UpdateQuestRewards(materialSheet);
+            avatarState.UpdateQuestRewards2(materialSheet);
 
             slotState.Update(result, ctx.BlockIndex, requiredBlockIndex);
 

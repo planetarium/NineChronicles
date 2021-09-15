@@ -19,8 +19,8 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("buy9")]
-    public class Buy : GameAction
+    [ActionType("buy10")]
+    public class Buy : GameAction, IBuy5
     {
         public const int TaxRate = 8;
         public const int ErrorCodeFailedLoadingState = 1;
@@ -34,9 +34,10 @@ namespace Nekoyume.Action
         public const int ErrorCodeInvalidItemType = 9;
         public const int ErrorCodeDuplicateSell = 10;
 
-        public Address buyerAvatarAddress;
+        public Address buyerAvatarAddress { get; set; }
         public List<(Guid orderId, int errorCode)> errors = new List<(Guid orderId, int errorCode)>();
         public IEnumerable<PurchaseInfo> purchaseInfos;
+        IEnumerable<IPurchaseInfo> IBuy5.purchaseInfos => purchaseInfos.Cast<IPurchaseInfo>();
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal => new Dictionary<string, IValue>
         {
@@ -134,7 +135,6 @@ namespace Nekoyume.Action
                 Address orderAddress = Order.DeriveAddress(orderId);
                 Address digestListAddress = OrderDigestListState.DeriveAddress(sellerAvatarAddress);
 
-
                 if (purchaseInfo.SellerAgentAddress == ctx.Signer)
                 {
                     errors.Add((orderId, ErrorCodeInvalidAddress));
@@ -188,11 +188,22 @@ namespace Nekoyume.Action
                 Log.Verbose("{AddressesHex}Buy Get Seller AgentAvatarStates: {Elapsed}", addressesHex, sw.Elapsed);
                 sw.Restart();
 
-                // ValidateTransfer will no longer be required in the next version. (current version : buy9)
-                var errorCode = sellerAvatarState.inventory.TryGetLockedItem(new OrderLock(orderId), out _)
-                        ? order.ValidateTransfer(sellerAvatarState, purchaseInfo.TradableId, purchaseInfo.Price, context.BlockIndex)
-                        : order.ValidateTransfer2(sellerAvatarState, purchaseInfo.TradableId, purchaseInfo.Price, context.BlockIndex);
+                if (!states.TryGetState(digestListAddress, out Dictionary rawDigestList))
+                {
+                    errors.Add((orderId, ErrorCodeFailedLoadingState));
+                    continue;
+                }
+                var digestList = new OrderDigestListState(rawDigestList);
 
+                // migration method
+                sellerAvatarState.inventory.UnlockInvalidSlot(digestList, sellerAgentAddress, sellerAvatarAddress);
+                sellerAvatarState.inventory.ReconfigureFungibleItem(digestList, order.TradableId);
+                sellerAvatarState.inventory.LockByReferringToDigestList(digestList, order.TradableId, context.BlockIndex);
+                //
+
+                digestList.Remove(orderId);
+
+                var errorCode = order.ValidateTransfer(sellerAvatarState, purchaseInfo.TradableId, purchaseInfo.Price, context.BlockIndex);
                 if (errorCode != 0)
                 {
                     errors.Add((orderId, errorCode));
@@ -214,10 +225,7 @@ namespace Nekoyume.Action
                 OrderReceipt orderReceipt;
                 try
                 {
-                    // Transfer will no longer be required in the next version. (current version : buy9)
-                    orderReceipt = sellerAvatarState.inventory.TryGetLockedItem(new OrderLock(orderId), out _)
-                            ? order.Transfer(sellerAvatarState, buyerAvatarState, context.BlockIndex)
-                            : order.Transfer2(sellerAvatarState, buyerAvatarState, context.BlockIndex);
+                    orderReceipt = order.Transfer(sellerAvatarState, buyerAvatarState, context.BlockIndex);
                 }
                 catch (ItemDoesNotExistException)
                 {
@@ -231,15 +239,6 @@ namespace Nekoyume.Action
                     errors.Add((orderId, ErrorCodeDuplicateSell));
                     continue;
                 }
-
-                if (!states.TryGetState(digestListAddress, out Dictionary rawDigestList))
-                {
-                    errors.Add((orderId, ErrorCodeFailedLoadingState));
-                    continue;
-                }
-
-                var digestList = new OrderDigestListState(rawDigestList);
-                digestList.Remove(orderId);
 
                 var expirationMail = sellerAvatarState.mailBox.OfType<OrderExpirationMail>()
                     .FirstOrDefault(m => m.OrderId.Equals(orderId));
@@ -261,8 +260,8 @@ namespace Nekoyume.Action
                     orderId
                 );
 
-                buyerAvatarState.UpdateV3(orderBuyerMail);
-                sellerAvatarState.UpdateV3(orderSellerMail);
+                buyerAvatarState.Update(orderBuyerMail);
+                sellerAvatarState.Update(orderSellerMail);
 
                 // // Update quest.
                 buyerAvatarState.questList.UpdateTradeQuest(TradeType.Buy, order.Price);

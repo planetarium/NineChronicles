@@ -14,7 +14,6 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionObsolete(BlockChain.BlockPolicySource.V100066ObsoleteIndex)]
     [ActionType("claim_monster_collection_reward")]
     public class ClaimMonsterCollectionReward0 : GameAction
     {
@@ -32,8 +31,6 @@ namespace Nekoyume.Action
                     .SetState(avatarAddress, MarkChanged)
                     .SetState(collectionAddress, MarkChanged);
             }
-
-            CheckObsolete(BlockChain.BlockPolicySource.V100066ObsoleteIndex, context);
 
             if (!states.TryGetAgentAvatarStates(context.Signer, avatarAddress, out AgentState agentState, out AvatarState avatarState))
             {
@@ -71,14 +68,14 @@ namespace Nekoyume.Action
                 Guid id = context.Random.GenerateRandomGuid();
                 MonsterCollectionResult result = new MonsterCollectionResult(id, avatarAddress, rewards);
                 MonsterCollectionMail mail = new MonsterCollectionMail(result, context.BlockIndex, id, context.BlockIndex);
-                avatarState.UpdateV3(mail);
+                avatarState.Update(mail);
                 foreach (var rewardInfo in rewards)
                 {
                     var row = itemSheet[rewardInfo.ItemId];
                     var item = row is MaterialItemSheet.Row materialRow
                         ? ItemFactory.CreateTradableMaterial(materialRow)
                         : ItemFactory.CreateItem(row, context.Random);
-                    avatarState.inventory.AddItem(item, rewardInfo.Quantity);
+                    avatarState.inventory.AddItem2(item, rewardInfo.Quantity);
                 }
                 monsterCollectionState.UpdateRewardMap(level, result, context.BlockIndex);
             }

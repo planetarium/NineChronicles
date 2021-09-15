@@ -15,7 +15,6 @@ using Serilog;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionObsolete(BlockChain.BlockPolicySource.V100066ObsoleteIndex)]
     [ActionType("hack_and_slash2")]
     public class HackAndSlash2 : GameAction
     {
@@ -67,8 +66,6 @@ namespace Nekoyume.Action
                 states = states.SetState(WeeklyArenaAddress, MarkChanged);
                 return states.SetState(ctx.Signer, MarkChanged);
             }
-
-            CheckObsolete(BlockChain.BlockPolicySource.V100066ObsoleteIndex, context);
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
 
@@ -180,7 +177,7 @@ namespace Nekoyume.Action
             Log.Verbose("{AddressesHex}HAS Initialize Simulator: {Elapsed}", addressesHex, sw.Elapsed);
 
             sw.Restart();
-            simulator.Simulate();
+            simulator.Simulate2();
             sw.Stop();
             Log.Verbose("{AddressesHex}HAS Simulator.Simulate(): {Elapsed}", addressesHex, sw.Elapsed);
 
@@ -214,9 +211,16 @@ namespace Nekoyume.Action
 
             sw.Restart();
             avatarState.Update(simulator);
-
             var materialSheet = states.GetSheet<MaterialItemSheet>();
-            avatarState.UpdateQuestRewards(materialSheet);
+            avatarState.UpdateQuestRewards2(materialSheet);
+
+            //Avoid InvalidBlockStateRootHashException to 50000 index.
+            if (avatarState.questList.Any(q => q.Complete && !q.IsPaidInAction))
+            {
+                var prevIds = avatarState.questList.completedQuestIds;
+                avatarState.UpdateQuestRewards(materialSheet);
+                avatarState.questList.completedQuestIds = prevIds;
+            }
 
             avatarState.updatedAt = ctx.BlockIndex;
             states = states.SetState(avatarAddress, avatarState.Serialize());

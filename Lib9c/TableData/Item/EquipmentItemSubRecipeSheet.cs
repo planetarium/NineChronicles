@@ -1,11 +1,12 @@
 using System.Collections.Generic;
-using static Nekoyume.TableData.TableExtensions;
 
 namespace Nekoyume.TableData
 {
+    using static TableExtensions;
+    
     public class EquipmentItemSubRecipeSheet : Sheet<int, EquipmentItemSubRecipeSheet.Row>
     {
-        public struct MaterialInfo
+        public readonly struct MaterialInfo
         {
             public readonly int Id;
             public readonly int Count;
@@ -17,7 +18,7 @@ namespace Nekoyume.TableData
             }
         }
 
-        public struct OptionInfo
+        public readonly struct OptionInfo
         {
             public readonly int Id;
             public readonly decimal Ratio;
@@ -46,25 +47,37 @@ namespace Nekoyume.TableData
                 RequiredActionPoint = ParseInt(fields[1]);
                 RequiredGold = ParseLong(fields[2]);
                 RequiredBlockIndex = ParseInt(fields[3]);
+
                 Materials = new List<MaterialInfo>();
-                Options = new List<OptionInfo>();
                 for (var i = 0; i < 3; i++)
                 {
                     var offset = i * 2;
-                    if (string.IsNullOrEmpty(fields[4 + offset]) || string.IsNullOrEmpty(fields[5 + offset]))
+                    if (string.IsNullOrEmpty(fields[4 + offset]) ||
+                        string.IsNullOrEmpty(fields[5 + offset]))
+                    {
                         continue;
+                    }
 
-                    Materials.Add(new MaterialInfo(ParseInt(fields[4 + offset]), ParseInt(fields[5 + offset])));
+                    Materials.Add(new MaterialInfo(
+                        ParseInt(fields[4 + offset]),
+                        ParseInt(fields[5 + offset])));
                 }
 
+                Options = new List<OptionInfo>();
                 for (var i = 0; i < 4; i++)
                 {
                     var offset = i * 2;
-                    if (string.IsNullOrEmpty(fields[10 + offset]) || string.IsNullOrEmpty(fields[11 + offset]))
+                    if (string.IsNullOrEmpty(fields[10 + offset]) ||
+                        string.IsNullOrEmpty(fields[11 + offset]))
+                    {
                         continue;
+                    }
 
-                    Options.Add(new OptionInfo(ParseInt(fields[10 + offset]), ParseDecimal(fields[11 + offset])));
+                    Options.Add(new OptionInfo(
+                        ParseInt(fields[10 + offset]),
+                        ParseDecimal(fields[11 + offset])));
                 }
+
                 MaxOptionLimit = ParseInt(fields[18]);
             }
         }

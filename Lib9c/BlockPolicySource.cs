@@ -3,16 +3,19 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Reflection;
+using System.Security.Cryptography;
 using Bencodex.Types;
+using Lib9c;
 using Lib9c.Renderer;
+using Libplanet.Blocks;
 using Libplanet.Blockchain;
 using Libplanet.Blockchain.Policies;
 using Libplanet.Tx;
-using Nekoyume.Action;
-using Nekoyume.Model.State;
 using Libplanet;
 using Libplanet.Blockchain.Renderers;
+using Nekoyume.Action;
 using Nekoyume.Model;
+using Nekoyume.Model.State;
 using Serilog;
 using Serilog.Events;
 #if UNITY_EDITOR || UNITY_STANDALONE
@@ -33,9 +36,13 @@ namespace Nekoyume.BlockChain
         // Note: The genesis block of 9c-main net weighs 11,085,640 B (11 MiB).
         public const int MaxGenesisBytes = 1024 * 1024 * 15; // 15 MiB
 
-        public const long V100066ObsoleteIndex = 2200000;
-        
-        public const long V100068ObsoleteIndex = 2220000;
+        public const long V100073ObsoleteIndex = 3000000;
+
+        // FIXME: Should be finalized before release.
+        public const int maxTransactionsPerSignerPerBlockV100074 = 4;
+
+        private static readonly Dictionary<long, HashAlgorithmType> _hashAlgorithmTable =
+            new Dictionary<long, HashAlgorithmType> { [0] = HashAlgorithmType.Of<SHA256>() };
 
         private readonly TimeSpan _blockInterval = TimeSpan.FromSeconds(8);
 
@@ -61,16 +68,14 @@ namespace Nekoyume.BlockChain
                 minimumDifficulty,
                 maximumTransactions,
                 ignoreHardcodedPolicies: false,
-                permissionedMiningPolicy: PermissionedMiningPolicy.Mainnet
-            );
+                permissionedMiningPolicy: PermissionedMiningPolicy.Mainnet);
 
         // FIXME 남은 설정들도 설정화 해야 할지도?
         internal IBlockPolicy<NCAction> GetPolicy(
             int minimumDifficulty,
             int maximumTransactions,
-            PermissionedMiningPolicy? permissionedMiningPolicy,
-            bool ignoreHardcodedPolicies
-        )
+            bool ignoreHardcodedPolicies,
+            PermissionedMiningPolicy? permissionedMiningPolicy)
         {
 #if UNITY_EDITOR
             return new Lib9c.DebugPolicy();
@@ -80,13 +85,19 @@ namespace Nekoyume.BlockChain
                 blockInterval: _blockInterval,
                 minimumDifficulty: minimumDifficulty,
                 difficultyBoundDivisor: DifficultyBoundDivisor,
-                maxTransactionsPerBlock: maximumTransactions,
-                maxBlockBytes: MaxBlockBytes,
-                maxGenesisBytes: MaxGenesisBytes,
                 ignoreHardcodedPolicies: ignoreHardcodedPolicies,
                 permissionedMiningPolicy: permissionedMiningPolicy,
-                doesTransactionFollowPolicy: DoesTransactionFollowPolicy
-            );
+                canonicalChainComparer: new CanonicalChainComparer(null),
+#pragma warning disable LAA1002
+                hashAlgorithmGetter: _hashAlgorithmTable.ToHashAlgorithmGetter(),
+#pragma warning restore LAA1002
+                validateNextBlockTx: ValidateNextBlockTx,
+                getMaxBlockBytes: (long index) => index > 0 ? MaxBlockBytes : MaxGenesisBytes,
+                getMinTransactionsPerBlock: (long index) => 0,
+                getMaxTransactionsPerBlock: (long index) => maximumTransactions,
+                getMaxTransactionsPerSignerPerBlock: (long index) => index > V100073ObsoleteIndex
+                    ? maxTransactionsPerSignerPerBlockV100074
+                    : maximumTransactions);
 #endif
         }
 
@@ -106,34 +117,55 @@ namespace Nekoyume.BlockChain
                 );
         }
 
-        private bool DoesTransactionFollowPolicy(
-            Transaction<NCAction> transaction,
-            BlockChain<NCAction> blockChain
-        )
+        public static bool IsAuthorizedMinerTransaction(
+            BlockChain<NCAction> blockChain, Transaction<NCAction> transaction)
         {
-            return CheckTransaction(transaction, blockChain);
+            return blockChain.GetState(AuthorizedMinersState.Address) is Dictionary rawAms
+                && new AuthorizedMinersState(rawAms).Miners.Contains(transaction.Signer);
         }
 
-        private bool CheckTransaction(
-            Transaction<NCAction> transaction,
-            BlockChain<NCAction> blockChain
-        )
+        public static bool IsAdminTransaction(
+            BlockChain<NCAction> blockChain, Transaction<NCAction> transaction)
+        {
+            return blockChain.GetState(Addresses.Admin) is Dictionary rawAdmin
+                && new AdminState(rawAdmin).AdminAddress.Equals(transaction.Signer);
+        }
+
+        private TxPolicyViolationException ValidateNextBlockTx(
+            BlockChain<NCAction> blockChain,
+            Transaction<NCAction> transaction)
         {
             // Avoid NRE when genesis block appended
-            long index = blockChain.Tip?.Index ?? 0;
-            if (transaction.Actions.Count > 1 || IsObsolete(transaction, index))
+            // Here, index is the index of a prospective block that transaction
+            // will be included.
+            long index = blockChain.Count > 0 ? blockChain.Tip.Index : 0;
+
+            if (transaction.Actions.Count > 1)
             {
-                return false;
+                return new TxPolicyViolationException(
+                    transaction.Id,
+                    $"Transaction {transaction.Id} has too many actions: "
+                        + $"{transaction.Actions.Count}");
+            }
+            else if (IsObsolete(transaction, index))
+            {
+                return new TxPolicyViolationException(
+                    transaction.Id,
+                    $"Transaction {transaction.Id} is obsolete.");
             }
 
             try
             {
                 // Check if it is a no-op transaction to prove it's made by the authorized miner.
-                if (blockChain.GetState(AuthorizedMinersState.Address) is Dictionary rawAms &&
-                    new AuthorizedMinersState(rawAms).Miners.Contains(transaction.Signer))
+                if (IsAuthorizedMinerTransaction(blockChain, transaction))
                 {
                     // The authorization proof has to have no actions at all.
-                    return !transaction.Actions.Any();
+                    return transaction.Actions.Any()
+                        ? new TxPolicyViolationException(
+                            transaction.Id,
+                            $"Transaction {transaction.Id} by an authorized miner should not have "
+                                + $"any action: {transaction.Actions.Count}")
+                        : null;
                 }
 
                 // Check ActivateAccount
@@ -141,46 +173,59 @@ namespace Nekoyume.BlockChain
                     transaction.Actions.First().InnerAction is IActivateAction aa)
                 {
                     return blockChain.GetState(aa.GetPendingAddress()) is Dictionary rawPending &&
-                           new PendingActivationState(rawPending).Verify(aa.GetSignature());
+                        new PendingActivationState(rawPending).Verify(aa.GetSignature())
+                        ? null
+                        : new TxPolicyViolationException(
+                            transaction.Id,
+                            $"Transaction {transaction.Id} has an invalid activate action.");
                 }
 
                 // Check admin
-                if (blockChain.GetState(Addresses.Admin) is Dictionary rawAdmin
-                    && new AdminState(rawAdmin).AdminAddress.Equals(transaction.Signer))
+                if (IsAdminTransaction(blockChain, transaction))
                 {
-                    return true;
+                    return null;
                 }
 
                 switch (blockChain.GetState(transaction.Signer.Derive(ActivationKey.DeriveKey)))
                 {
                     case null:
                         // Fallback for pre-migration.
-                        if (blockChain.GetState(ActivatedAccountsState.Address) is Dictionary asDict)
+                        if (blockChain.GetState(ActivatedAccountsState.Address)
+                            is Dictionary asDict)
                         {
                             IImmutableSet<Address> activatedAccounts =
                                 new ActivatedAccountsState(asDict).Accounts;
                             return !activatedAccounts.Any() ||
-                                   activatedAccounts.Contains(transaction.Signer);
+                                activatedAccounts.Contains(transaction.Signer)
+                                ? null
+                                : new TxPolicyViolationException(
+                                    transaction.Id,
+                                    $"Transaction {transaction.Id} is by a signer "
+                                        + $"without account activation: {transaction.Signer}");
                         }
-                        return true;
+                        return null;
                     case Bencodex.Types.Boolean _:
-                        return true;
+                        return null;
                 }
 
-                return true;
+                return null;
             }
             catch (InvalidSignatureException)
             {
-                return false;
+                return new TxPolicyViolationException(
+                    transaction.Id,
+                    $"Transaction {transaction.Id} has invalid signautre.");
             }
             catch (IncompleteBlockStatesException)
             {
-                // It can be caused during `Swarm<T>.PreloadAsync()` because it doesn't fill its 
+                // It can be caused during `Swarm<T>.PreloadAsync()` because it doesn't fill its
                 // state right away...
                 // FIXME It should be removed after fix that Libplanet fills its state on IBD.
                 // See also: https://github.com/planetarium/lib9c/pull/151#discussion_r506039478
-                return true;
+                return null;
             }
+
+            return null;
         }
     }
 }

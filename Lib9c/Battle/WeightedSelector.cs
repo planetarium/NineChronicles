@@ -43,6 +43,7 @@ namespace Nekoyume.Battle
             }
         }
 
+        [Obsolete("Use SelectV2()")]
         public IEnumerable<T> Select(int count)
         {
             Validate(count);
@@ -83,6 +84,7 @@ namespace Nekoyume.Battle
             }
         }
 
+        [Obsolete("Use SelectV3()")]
         public IEnumerable<T> SelectV2(int count)
         {
             Validate(count);

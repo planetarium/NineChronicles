@@ -8,6 +8,7 @@ using Libplanet;
 using Nekoyume.Action;
 using Nekoyume.Battle;
 using Nekoyume.Model.State;
+using Nekoyume.TableData;
 using Serilog;
 
 namespace Nekoyume.Model.Item
@@ -191,7 +192,55 @@ namespace Nekoyume.Model.Item
             return new KeyValuePair<int, int>(itemBase.Id, count);
         }
 
+        [Obsolete("Use AddItem")]
+        public KeyValuePair<int, int> AddItem2(ItemBase itemBase, int count = 1, ILock iLock = null)
+        {
+            switch (itemBase.ItemType)
+            {
+                case ItemType.Consumable:
+                case ItemType.Equipment:
+                case ItemType.Costume:
+                    AddNonFungibleItem(itemBase, iLock);
+                    break;
+                case ItemType.Material:
+                    AddFungibleItem2(itemBase, count, iLock);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+            _items.Sort();
+            return new KeyValuePair<int, int>(itemBase.Id, count);
+        }
+
         public Item AddFungibleItem(ItemBase itemBase, int count = 1, ILock iLock = null)
+        {
+            if (!(itemBase is IFungibleItem fungibleItem))
+            {
+                throw new ArgumentException(
+                    $"Aborted because {nameof(itemBase)} cannot cast to {nameof(IFungibleItem)}");
+            }
+
+            var item = _items.FirstOrDefault(e => e.item.Equals(fungibleItem) && !e.Locked);
+            if (item is null)
+            {
+                item = new Item(itemBase, count);
+                _items.Add(item);
+            }
+            else
+            {
+                item.count += count;
+            }
+
+            if (!(iLock is null))
+            {
+                item.LockUp(iLock);
+            }
+
+            return item;
+        }
+
+        [Obsolete("Use AddFungibleItem")]
+        public Item AddFungibleItem2(ItemBase itemBase, int count = 1, ILock iLock = null)
         {
             if (!(itemBase is IFungibleItem fungibleItem))
             {
@@ -235,63 +284,12 @@ namespace Nekoyume.Model.Item
 
         public bool RemoveFungibleItem(
             IFungibleItem fungibleItem,
-            int count = 1,
-            bool onlyTradableItem = default) =>
-            RemoveFungibleItem(fungibleItem.FungibleId, count, onlyTradableItem);
-
-        public bool RemoveFungibleItem(
-            HashDigest<SHA256> fungibleId,
-            int count = 1,
-            bool onlyTradableItem = default
-        )
-        {
-            var targetItems = (onlyTradableItem
-                    ? _items
-                        .Where(e =>
-                            e.item is ITradableFungibleItem tradableFungibleItem &&
-                            tradableFungibleItem.FungibleId.Equals(fungibleId))
-                    : _items
-                        .Where(e =>
-                            e.item is IFungibleItem ownedFungibleItem &&
-                            ownedFungibleItem.FungibleId.Equals(fungibleId))
-                        .OrderBy(e => e.item is ITradableItem))
-                .ToArray();
-            if (targetItems.Length == 0)
-            {
-                return false;
-            }
-
-            var totalCount = targetItems.Sum(e => e.count);
-            if (totalCount < count)
-            {
-                return false;
-            }
-
-            for (var i = 0; i < targetItems.Length; i++)
-            {
-                var item = targetItems[i];
-                if (item.count > count)
-                {
-                    item.count -= count;
-                    break;
-                }
-
-                count -= item.count;
-                item.count = 0;
-                _items.Remove(item);
-            }
-
-            return true;
-        }
-
-        public bool RemoveFungibleItemV2(
-            IFungibleItem fungibleItem,
             long blockIndex,
             int count = 1,
             bool onlyTradableItem = default
-        ) => RemoveFungibleItemV2(fungibleItem.FungibleId, blockIndex, count, onlyTradableItem);
+        ) => RemoveFungibleItem(fungibleItem.FungibleId, blockIndex, count, onlyTradableItem);
 
-        public bool RemoveFungibleItemV2(
+        public bool RemoveFungibleItem(
             HashDigest<SHA256> fungibleId,
             long blockIndex,
             int count = 1,
@@ -365,11 +363,81 @@ namespace Nekoyume.Model.Item
             return true;
         }
 
+        [Obsolete("Use RemoveFungibleItem")]
+        public bool RemoveFungibleItem2(
+            IFungibleItem fungibleItem,
+            int count = 1,
+            bool onlyTradableItem = default) =>
+            RemoveFungibleItem2(fungibleItem.FungibleId, count, onlyTradableItem);
+
+        [Obsolete("Use RemoveFungibleItem")]
+        public bool RemoveFungibleItem2(
+            HashDigest<SHA256> fungibleId,
+            int count = 1,
+            bool onlyTradableItem = default
+        )
+        {
+            var targetItems = (onlyTradableItem
+                    ? _items
+                        .Where(e =>
+                            e.item is ITradableFungibleItem tradableFungibleItem &&
+                            tradableFungibleItem.FungibleId.Equals(fungibleId))
+                    : _items
+                        .Where(e =>
+                            e.item is IFungibleItem ownedFungibleItem &&
+                            ownedFungibleItem.FungibleId.Equals(fungibleId))
+                        .OrderBy(e => e.item is ITradableItem))
+                .ToArray();
+            if (targetItems.Length == 0)
+            {
+                return false;
+            }
+
+            var totalCount = targetItems.Sum(e => e.count);
+            if (totalCount < count)
+            {
+                return false;
+            }
+
+            for (var i = 0; i < targetItems.Length; i++)
+            {
+                var item = targetItems[i];
+                if (item.count > count)
+                {
+                    item.count -= count;
+                    break;
+                }
+
+                count -= item.count;
+                item.count = 0;
+                _items.Remove(item);
+            }
+
+            return true;
+        }
+
         public bool RemoveNonFungibleItem(INonFungibleItem nonFungibleItem)
             => RemoveNonFungibleItem(nonFungibleItem.NonFungibleId);
 
         public bool RemoveNonFungibleItem(Guid nonFungibleId)
             => TryGetNonFungibleItem(nonFungibleId, out var item) && _items.Remove(item);
+
+        [Obsolete("Use RemoveNonFungibleItem(Guid nonFungibleId)")]
+        public bool RemoveNonFungibleItem2(Guid nonFungibleId)
+        {
+            var isRemoved = TryGetNonFungibleItem(nonFungibleId, out Item item);
+            if (!isRemoved) return false;
+
+            foreach (var element in _items)
+            {
+                if (element.item.Id == item.item.Id)
+                {
+                    _items.Remove(element);
+                    break;
+                }
+            }
+            return true;
+        }
 
         public bool RemoveTradableItem(ITradableItem tradableItem, int count = 1) =>
             RemoveTradableItem(tradableItem.TradableId, tradableItem.RequiredBlockIndex, count);
@@ -393,30 +461,6 @@ namespace Nekoyume.Model.Item
                 _items.Remove(target);
             }
 
-            return true;
-        }
-
-        public bool RemoveTradableFungibleItem(HashDigest<SHA256> fungibleId, int count = 1) =>
-            RemoveFungibleItem(fungibleId, count, true);
-
-        [Obsolete("Use RemoveNonFungibleItem(INonFungibleItem nonFungibleItem)")]
-        public bool LegacyRemoveNonFungibleItem(Costume costume)
-            => LegacyRemoveNonFungibleItem(costume.ItemId);
-
-        [Obsolete("Use RemoveNonFungibleItem(Guid itemId)")]
-        public bool LegacyRemoveNonFungibleItem(Guid nonFungibleId)
-        {
-            var isRemoved = TryGetNonFungibleItem(nonFungibleId, out Item item);
-            if (!isRemoved) return false;
-
-            foreach (var element in _items)
-            {
-                if (element.item.Id == item.item.Id)
-                {
-                    _items.Remove(element);
-                    break;
-                }
-            }
             return true;
         }
 
@@ -560,53 +604,6 @@ namespace Nekoyume.Model.Item
         {
             _items.Remove(item);
         }
-
-        // public bool TryGetTradableItemWithoutNonTradableFungibleItem(
-        //     Guid tradeId,
-        //     out Item outItem)
-        // {
-        //     foreach (var item in _items)
-        //     {
-        //         if (!(item.item is ITradableItem tradableItem) ||
-        //             !tradableItem.TradableId.Equals(tradeId))
-        //         {
-        //             continue;
-        //         }
-        //
-        //         if (tradableItem is IFungibleItem fungibleItem &&
-        //             !(fungibleItem is ITradableFungibleItem))
-        //         {
-        //             continue;
-        //         }
-        //
-        //         outItem = item;
-        //         return true;
-        //     }
-        //
-        //     outItem = null;
-        //     return false;
-        // }
-
-        // public bool TryGetNonTradableFungibleItem(
-        //     HashDigest<SHA256> fungibleId,
-        //     out Item outItem)
-        // {
-        //     foreach (var item in _items)
-        //     {
-        //         if (!(item.item is IFungibleItem fungibleItem) ||
-        //             fungibleItem is ITradableFungibleItem ||
-        //             !fungibleItem.FungibleId.Equals(fungibleId))
-        //         {
-        //             continue;
-        //         }
-        //
-        //         outItem = item;
-        //         return true;
-        //     }
-        //
-        //     outItem = null;
-        //     return false;
-        // }
 
         #endregion
 
@@ -752,14 +749,165 @@ namespace Nekoyume.Model.Item
                 {
                     RequiredBlockIndex = requiredBlockIndex
                 };
-                AddItem(material, count);
+                AddItem2(material, count);
                 return material;
             }
 
             // NonFungibleItem case.
             tradableItem.RequiredBlockIndex = requiredBlockIndex;
-            AddItem((ItemBase) tradableItem, count);
+            AddItem2((ItemBase) tradableItem, count);
             return tradableItem;
+        }
+
+        public void UnlockInvalidSlot(OrderDigestListState digestListState, Address agentAddress, Address avatarAddress)
+        {
+            var slots = _items.Where(i => i.Locked);
+            var orderIds = digestListState.OrderDigestList.Select(d => d.OrderId).ToList();
+            var removeList = new List<Item>();
+            foreach (var slot in slots)
+            {
+                var orderLock = (OrderLock)slot.Lock;
+                var orderId = orderLock.OrderId;
+                if (!orderIds.Contains(orderId))
+                {
+                    removeList.Add(slot);
+
+                    // for log
+                    var itemId = slot.item.Id;
+                    var itemCount = slot.count;
+                    Log.Information("[UnlockInvalidSlot] " +
+                                    "agentAddress : {agentAddress} / avatarAddress : {avatarAddress} /" +
+                                    "OrderId : {orderId} / itemId : {itemId} / itemCount : {itemCount}",
+                        agentAddress, avatarAddress, orderId, itemId, itemCount);
+                }
+            }
+
+            foreach (var item in removeList)
+            {
+                _items.Remove(item);
+            }
+        }
+
+        public void ReconfigureFungibleItem(OrderDigestListState digestList, Guid tradableId)
+        {
+            var tradableFungibleItems = _items.Where(i => i.Locked &&
+                                                          i.item is ITradableFungibleItem item &&
+                                                          item.TradableId.Equals(tradableId)).ToList();
+
+            var digests = digestList.OrderDigestList
+                .Where(digest => digest.TradableId.Equals(tradableId))
+                .OrderByDescending(digest=> digest.ExpiredBlockIndex)
+                .ToList();
+
+            if (tradableFungibleItems.Count <= 0)
+            {
+                return;
+            }
+
+            foreach (var item in tradableFungibleItems)
+            {
+                _items.Remove(item);
+            }
+
+            var preItemCount = tradableFungibleItems.Sum(x => x.count);
+
+            foreach (var digest in digests)
+            {
+                if (preItemCount <= 0)
+                {
+                    break;
+                }
+
+                var clone = (ITradableFungibleItem) ((ITradableFungibleItem) tradableFungibleItems.First().item).Clone();
+                clone.RequiredBlockIndex = digest.ExpiredBlockIndex;
+                var newItem = new Item((ItemBase)clone, digest.ItemCount);
+                newItem.LockUp(new OrderLock(digest.OrderId));
+                _items.Add(newItem);
+                preItemCount -= digest.ItemCount;
+
+                // for log
+                var agentAddress = digest.SellerAgentAddress;
+                var orderId = digest.OrderId;
+                var itemId = digest.ItemId;
+                var itemCount = digest.ItemCount;
+                Log.Information("[ReconfigureFungibleItem] " +
+                                "agentAddress : {agentAddress} /" +
+                                "OrderId : {orderId} / itemId : {itemId} / " +
+                                "preItemCount : {preItemCount} / itemCount : {itemCount}",
+                    agentAddress, orderId, itemId, preItemCount, itemCount);
+            }
+        }
+
+        public void LockByReferringToDigestList(OrderDigestListState digestList, Guid tradableId, long blockIndex)
+        {
+            var tradables = _items.Where(i => i.item is ITradableFungibleItem item && item.TradableId.Equals(tradableId)).ToList();
+            var unlockItems = tradables.Where(i => !i.Locked).ToList();
+            var lockItems = tradables.Where(i => i.Locked).ToList();
+
+            var digests = digestList.OrderDigestList
+                .Where(digest => digest.TradableId.Equals(tradableId))
+                .OrderByDescending(digest=> digest.ExpiredBlockIndex)
+                .ToList();
+
+            var selectedDigests = digests.Where(x => x.ExpiredBlockIndex > blockIndex &&
+                                                     !lockItems.Exists(y => y.Lock.Equals(new OrderLock(x.OrderId)))).ToList();
+
+            var totalCount = unlockItems.Sum(x => x.count);
+
+            var digestTotalCount = selectedDigests.Sum(x => x.ItemCount);
+
+            if (digestTotalCount <= 0)
+            {
+                return;
+            }
+
+            if (totalCount < digestTotalCount)
+            {
+                return;
+            }
+
+            foreach (var item in unlockItems)
+            {
+                _items.Remove(item);
+            }
+            var unlockItemClone = (ITradableFungibleItem)((ITradableFungibleItem)unlockItems.First().item).Clone();
+            var newUnlockItem = new Item((ItemBase)unlockItemClone, totalCount);
+            _items.Add(newUnlockItem);
+
+            var selectedItems = _items.Where(i => !i.Locked &&
+                                                          i.item is ITradableFungibleItem item &&
+                                                          item.TradableId.Equals(tradableId)).ToList();
+            if (selectedItems.Count != 1)
+            {
+                // Failed to merge into one item
+                return;
+            }
+
+            Log.Information("[LockByReferringToDigestList] " +
+                            "totalCount : {totalCount} / digestTotalCount : {digestTotalCount}",
+                totalCount, digestTotalCount);
+            var selectedItem = selectedItems.First();
+            foreach (var selectedDigest in selectedDigests)
+            {
+                selectedItem.count -= selectedDigest.ItemCount;
+                var selectedItemClone = (ITradableFungibleItem)((ITradableFungibleItem)selectedItem.item).Clone();
+                selectedItemClone.RequiredBlockIndex = selectedDigest.ExpiredBlockIndex;
+                var newItem = new Item((ItemBase)selectedItemClone, selectedDigest.ItemCount);
+                newItem.LockUp(new OrderLock(selectedDigest.OrderId));
+                _items.Add(newItem);
+
+                // for log
+                var agentAddress = selectedDigest.SellerAgentAddress;
+                var orderId = selectedDigest.OrderId;
+                var itemId = selectedDigest.ItemId;
+                var itemCount = selectedDigest.ItemCount;
+                Log.Information("[LockByReferringToDigestList] " +
+                                "agentAddress : {agentAddress} /" +
+                                "OrderId : {orderId} / " +
+                                "itemId : {itemId} / " +
+                                "itemCount : {itemCount}",
+                    agentAddress, orderId, itemId, itemCount);
+            }
         }
     }
 }

@@ -16,7 +16,6 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionObsolete(BlockChain.BlockPolicySource.V100066ObsoleteIndex)]
     [ActionType("sell4")]
     public class Sell4 : GameAction
     {
@@ -55,8 +54,6 @@ namespace Nekoyume.Action
                 return states
                     .SetState(ctx.Signer, MarkChanged);
             }
-
-            CheckObsolete(BlockChain.BlockPolicySource.V100066ObsoleteIndex, context);
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, sellerAvatarAddress);
 
@@ -190,7 +187,7 @@ namespace Nekoyume.Action
             };
             var mail = new SellCancelMail(result, ctx.BlockIndex, ctx.Random.GenerateRandomGuid(), expiredBlockIndex);
             result.id = mail.id;
-            avatarState.UpdateV3(mail);
+            avatarState.Update(mail);
 
             states = states.SetState(sellerAvatarAddress, avatarState.Serialize());
             sw.Stop();

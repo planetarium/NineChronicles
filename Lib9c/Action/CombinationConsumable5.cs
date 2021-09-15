@@ -18,7 +18,6 @@ using Material = Nekoyume.Model.Item.Material;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionObsolete(BlockChain.BlockPolicySource.V100066ObsoleteIndex)]
     [ActionType("combination_consumable5")]
     public class CombinationConsumable5 : GameAction
     {
@@ -117,8 +116,6 @@ namespace Nekoyume.Action
                     .SetState(slotAddress, MarkChanged);
             }
 
-            CheckObsolete(BlockChain.BlockPolicySource.V100066ObsoleteIndex, context);
-
             var addressesHex = GetSignerAndOtherAddressesHex(context, AvatarAddress);
 
             var sw = new Stopwatch();
@@ -177,7 +174,7 @@ namespace Nekoyume.Action
                     }
 
                     materials[material] = count;
-                    avatarState.inventory.RemoveFungibleItem(material, count);
+                    avatarState.inventory.RemoveFungibleItem2(material, count);
                 }
                 else
                 {
@@ -233,14 +230,14 @@ namespace Nekoyume.Action
                 requiredBlockIndex
             );
             result.id = mail.id;
-            avatarState.UpdateV3(mail);
-            avatarState.UpdateFromCombination(itemUsable);
+            avatarState.Update(mail);
+            avatarState.UpdateFromCombination2(itemUsable);
             sw.Stop();
             Log.Verbose("{AddressesHex}Combination Update AvatarState: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();
 
             var materialSheet = states.GetSheet<MaterialItemSheet>();
-            avatarState.UpdateQuestRewards(materialSheet);
+            avatarState.UpdateQuestRewards2(materialSheet);
 
             avatarState.updatedAt = ctx.BlockIndex;
             avatarState.blockIndex = ctx.BlockIndex;

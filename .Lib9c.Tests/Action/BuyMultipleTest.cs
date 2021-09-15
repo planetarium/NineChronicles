@@ -264,7 +264,7 @@
                 // Case for backward compatibility of `Buy`
                 if (product.ContainsInInventory)
                 {
-                    sellerAvatarState.inventory.AddItem((ItemBase)nonFungibleItem);
+                    sellerAvatarState.inventory.AddItem2((ItemBase)nonFungibleItem);
                 }
 
                 var shopItemId = Guid.NewGuid();

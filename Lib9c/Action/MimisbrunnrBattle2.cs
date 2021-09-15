@@ -16,7 +16,6 @@ using Serilog;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionObsolete(BlockChain.BlockPolicySource.V100066ObsoleteIndex)]
     [ActionType("mimisbrunnr_battle2")]
     public class MimisbrunnrBattle2 : GameAction
     {
@@ -67,8 +66,6 @@ namespace Nekoyume.Action
                 states = states.SetState(avatarAddress, MarkChanged);
                 return states.SetState(WeeklyArenaAddress, MarkChanged);
             }
-
-            CheckObsolete(BlockChain.BlockPolicySource.V100066ObsoleteIndex, context);
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
             
@@ -216,7 +213,7 @@ namespace Nekoyume.Action
             Log.Verbose("{AddressesHex}Mimisbrunnr Initialize Simulator: {Elapsed}", addressesHex, sw.Elapsed);
             
             sw.Restart();
-            simulator.SimulateV2();
+            simulator.Simulate3();
             sw.Stop();
             Log.Verbose("{AddressesHex}Mimisbrunnr Simulator.Simulate(): {Elapsed}", addressesHex, sw.Elapsed);
             
@@ -250,10 +247,10 @@ namespace Nekoyume.Action
             avatarState.Update(simulator);
 
             var materialSheet = states.GetSheet<MaterialItemSheet>();
-            avatarState.UpdateQuestRewards(materialSheet);
+            avatarState.UpdateQuestRewards2(materialSheet);
 
             avatarState.updatedAt = ctx.BlockIndex;
-            avatarState.mailBox.CleanUpV2();
+            avatarState.mailBox.CleanUp();
             states = states.SetState(avatarAddress, avatarState.Serialize());
 
             sw.Stop();

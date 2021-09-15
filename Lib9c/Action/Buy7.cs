@@ -18,9 +18,8 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionObsolete(BlockChain.BlockPolicySource.V100066ObsoleteIndex)]
     [ActionType("buy7")]
-    public class Buy7 : GameAction
+    public class Buy7 : GameAction, IBuy5
     {
         public const int TaxRate = 8;
         public const int ErrorCodeFailedLoadingState = 1;
@@ -30,8 +29,9 @@ namespace Nekoyume.Action
         public const int ErrorCodeInvalidAddress = 5;
         public const int ErrorCodeInvalidPrice = 6;
 
-        public Address buyerAvatarAddress;
+        public Address buyerAvatarAddress { get; set; }
         public IEnumerable<PurchaseInfo0> purchaseInfos;
+        IEnumerable<IPurchaseInfo> IBuy5.purchaseInfos => purchaseInfos.Cast<IPurchaseInfo>();
         public BuyerMultipleResult buyerMultipleResult;
         public SellerMultipleResult sellerMultipleResult;
 
@@ -212,8 +212,6 @@ namespace Nekoyume.Action
                     .SetState(ctx.Signer, MarkChanged)
                     .SetState(Addresses.Shop, MarkChanged);
             }
-
-            CheckObsolete(BlockChain.BlockPolicySource.V100066ObsoleteIndex, context);
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, buyerAvatarAddress);
 
@@ -429,10 +427,10 @@ namespace Nekoyume.Action
                 sellerResult.id = sellerMail.id;
                 sellerResults.Add(sellerResult);
 
-                buyerAvatarState.UpdateV3(buyerMail);
+                buyerAvatarState.Update(buyerMail);
                 if (purchaseResult.itemUsable != null)
                 {
-                    buyerAvatarState.UpdateFromAddItem(purchaseResult.itemUsable, false);
+                    buyerAvatarState.UpdateFromAddItem2(purchaseResult.itemUsable, false);
                 }
 
                 if (purchaseResult.costume != null)
@@ -442,10 +440,10 @@ namespace Nekoyume.Action
 
                 if (purchaseResult.tradableFungibleItem is TradableMaterial material)
                 {
-                    buyerAvatarState.UpdateFromAddItem(material, shopItem.TradableFungibleItemCount, false);
+                    buyerAvatarState.UpdateFromAddItem2(material, shopItem.TradableFungibleItemCount, false);
                 }
 
-                sellerAvatarState.UpdateV3(sellerMail);
+                sellerAvatarState.Update(sellerMail);
 
                 // Update quest.
                 buyerAvatarState.questList.UpdateTradeQuest(TradeType.Buy, shopItem.Price);
@@ -454,8 +452,8 @@ namespace Nekoyume.Action
                 sellerAvatarState.updatedAt = ctx.BlockIndex;
                 sellerAvatarState.blockIndex = ctx.BlockIndex;
 
-                buyerAvatarState.UpdateQuestRewards(materialSheet);
-                sellerAvatarState.UpdateQuestRewards(materialSheet);
+                buyerAvatarState.UpdateQuestRewards2(materialSheet);
+                sellerAvatarState.UpdateQuestRewards2(materialSheet);
 
                 states = states.SetState(sellerAvatarAddress, sellerAvatarState.Serialize());
                 sw.Stop();
