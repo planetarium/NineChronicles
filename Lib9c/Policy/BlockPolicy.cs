@@ -15,10 +15,15 @@ namespace Nekoyume.BlockChain.Policy
 {
     public class BlockPolicy : BlockPolicy<NCAction>
     {
-        private static readonly Dictionary<long, HashAlgorithmType> HashAlgorithmTable =
+        private static readonly Dictionary<long, HashAlgorithmType> _hashAlgorithmTable =
             new Dictionary<long, HashAlgorithmType> { [0] = HashAlgorithmType.Of<SHA256>() };
         private readonly long _minimumDifficulty;
         private readonly long _difficultyBoundDivisor;
+        private readonly Func<BlockChain<NCAction>, AdminState> _getAdminState;
+        private readonly Func<BlockChain<NCAction>, AuthorizedMinersState>
+            _getAuthorizedMinersState;
+        private readonly Func<Block<NCAction>, BlockPolicyViolationException>
+            _validateTxCountPerBlock;
 
         /// <summary>
         /// <para>
@@ -47,7 +52,8 @@ namespace Nekoyume.BlockChain.Policy
             Func<long, int> getMaxBlockBytes = null,
             Func<long, int> getMinTransactionsPerBlock = null,
             Func<long, int> getMaxTransactionsPerBlock = null,
-            Func<long, int> getMaxTransactionsPerSignerPerBlock = null)
+            Func<long, int> getMaxTransactionsPerSignerPerBlock = null,
+            Func<Block<NCAction>, BlockPolicyViolationException> validateTxCountPerBlock = null)
             : this(
                 blockAction: blockAction,
                 blockInterval: blockInterval,
@@ -61,7 +67,8 @@ namespace Nekoyume.BlockChain.Policy
                 getMaxBlockBytes: getMaxBlockBytes,
                 getMinTransactionsPerBlock: getMinTransactionsPerBlock,
                 getMaxTransactionsPerBlock: getMaxTransactionsPerBlock,
-                getMaxTransactionsPerSignerPerBlock: getMaxTransactionsPerSignerPerBlock)
+                getMaxTransactionsPerSignerPerBlock: getMaxTransactionsPerSignerPerBlock,
+                validateTxCountPerBlock: validateTxCountPerBlock)
         {
         }
 
@@ -79,7 +86,10 @@ namespace Nekoyume.BlockChain.Policy
             Func<long, int> getMaxBlockBytes = null,
             Func<long, int> getMinTransactionsPerBlock = null,
             Func<long, int> getMaxTransactionsPerBlock = null,
-            Func<long, int> getMaxTransactionsPerSignerPerBlock = null)
+            Func<long, int> getMaxTransactionsPerSignerPerBlock = null,
+            Func<BlockChain<NCAction>, AdminState> getAdminState = null,
+            Func<BlockChain<NCAction>, AuthorizedMinersState> getAuthorizedMinersState = null,
+            Func<Block<NCAction>, BlockPolicyViolationException> validateTxCountPerBlock = null)
             : base(
                 blockAction: blockAction,
                 blockInterval: blockInterval,
@@ -95,11 +105,12 @@ namespace Nekoyume.BlockChain.Policy
         {
             _minimumDifficulty = minimumDifficulty;
             _difficultyBoundDivisor = difficultyBoundDivisor;
+            _getAdminState = getAdminState;
+            _getAuthorizedMinersState = getAuthorizedMinersState;
+            _validateTxCountPerBlock = validateTxCountPerBlock;
             IgnoreHardcodedPolicies = ignoreHardcodedPolicies;
             PermissionedMiningPolicy = permissionedMiningPolicy;
         }
-
-        public AuthorizedMinersState AuthorizedMinersState { get; set; }
 
         public PermissionedMiningPolicy? PermissionedMiningPolicy { get; }
 
@@ -107,18 +118,13 @@ namespace Nekoyume.BlockChain.Policy
             BlockChain<NCAction> blockChain,
             Block<NCAction> nextBlock
         ) =>
-            CheckTxCount(nextBlock)
-                ?? ValidateMinerAuthority(nextBlock)
+            ValidateTxCountPerBlock(nextBlock)
+                ?? ValidateMinerAuthority(blockChain, nextBlock)
                 ?? ValidateMinerPermission(nextBlock)
                 ?? base.ValidateNextBlock(blockChain, nextBlock);
 
         public override long GetNextBlockDifficulty(BlockChain<NCAction> blockChain)
         {
-            if (AuthorizedMinersState is null)
-            {
-                return base.GetNextBlockDifficulty(blockChain);
-            }
-
             long index = blockChain.Count;
 
             if (index < 0)
@@ -126,21 +132,27 @@ namespace Nekoyume.BlockChain.Policy
                 throw new InvalidBlockIndexException(
                     $"index must be 0 or more, but its index is {index}.");
             }
-
-            if (index <= 1)
+            else if (index <= 1)
             {
                 return index == 0 ? 0 : _minimumDifficulty;
             }
-
-            var prevIndex = IsTargetBlockIndex(index - 1) ? index - 2 : index - 1;
-            var beforePrevIndex = IsTargetBlockIndex(prevIndex - 1) ? prevIndex - 2 : prevIndex - 1;
-
-            if (beforePrevIndex > AuthorizedMinersState.ValidUntil)
+            // FIXME: Uninstantiated blockChain can be passed as an argument.
+            // Until this is fixed, it is crucial block index is checked first.
+            // Authorized minor validity is only checked for certain indices.
+            else if (GetAuthorizedMinersState(blockChain) is null)
             {
                 return base.GetNextBlockDifficulty(blockChain);
             }
 
-            if (IsTargetBlockIndex(index) || prevIndex <= 1 || beforePrevIndex <= 1)
+            var prevIndex = IsAuthorizedBlockIndex(blockChain, index - 1) ? index - 2 : index - 1;
+            var beforePrevIndex = IsAuthorizedBlockIndex(blockChain, prevIndex - 1) ? prevIndex - 2 : prevIndex - 1;
+
+            if (beforePrevIndex > GetAuthorizedMinersState(blockChain).ValidUntil)
+            {
+                return base.GetNextBlockDifficulty(blockChain);
+            }
+
+            if (IsAuthorizedBlockIndex(blockChain, index) || prevIndex <= 1 || beforePrevIndex <= 1)
             {
                 return _minimumDifficulty;
             }
@@ -161,35 +173,6 @@ namespace Nekoyume.BlockChain.Policy
             long nextDifficulty = prevDifficulty + (offset * multiplier);
 
             return Math.Max(nextDifficulty, _minimumDifficulty);
-        }
-
-        private BlockPolicyViolationException CheckTxCount(Block<NCAction> block)
-        {
-            if (!(block.Miner is Address miner))
-            {
-                return null;
-            }
-
-            // To prevent selfish mining, we define a consensus that blocks with no transactions are do not accepted.
-            // (For backward compatibility, blocks before 2,175,000th don't have to be proven.
-            // Note that as of Aug 19, 2021, there are about 2,171,000+ blocks.)
-            if (block.Transactions.Count <= 0)
-            {
-                if (IgnoreHardcodedPolicies)
-                {
-                    return new BlockPolicyViolationException(
-                        $"Block #{block.Index} {block.Hash} mined by {miner} should " +
-                        "include at least one transaction. (Forced failure)");
-                }
-                else if (block.Index > 2_173_700)
-                {
-                    return new BlockPolicyViolationException(
-                        $"Block #{block.Index} {block.Hash} mined by {miner} should " +
-                        "include at least one transaction.");
-                }
-            }
-
-            return null;
         }
 
         private BlockPolicyViolationException ValidateMinerPermission(Block<NCAction> block)
@@ -221,22 +204,25 @@ namespace Nekoyume.BlockChain.Policy
             return null;
         }
 
-        private BlockPolicyViolationException ValidateMinerAuthority(Block<NCAction> block)
+        private BlockPolicyViolationException ValidateMinerAuthority(
+            BlockChain<NCAction> blockChain, Block<NCAction> block)
         {
             Address miner = block.Miner;
 
-            // If AuthorizedMinorState is null, do not check miner authority.
-            if (AuthorizedMinersState is null)
+            // FIXME: Uninstantiated blockChain can be passed as an argument.
+            // Until this is fixed, it is crucial block index is checked first.
+            // Authorized minor validity is only checked for certain indices.
+            if (!IsAuthorizedBlockIndex(blockChain, block.Index))
             {
                 return null;
             }
-            // Authorized minor validity is only checked for certain indices.
-            else if (!IsTargetBlockIndex(block.Index))
+            // If AuthorizedMinorState is null, do not check miner authority.
+            else if (!(GetAuthorizedMinersState(blockChain) is AuthorizedMinersState aws))
             {
                 return null;
             }
             // Otherwise, block's miner should be one of the authorized miners.
-            else if (!AuthorizedMinersState.Miners.Contains(miner))
+            else if (!aws.Miners.Contains(miner))
             {
                 return new BlockPolicyViolationException(
                     $"The block #{block.Index} {block.Hash} is not mined by an authorized miner.");
@@ -277,11 +263,23 @@ namespace Nekoyume.BlockChain.Policy
             return null;
         }
 
-        private bool IsTargetBlockIndex(long blockIndex)
+        private bool IsAuthorizedBlockIndex(BlockChain<NCAction> blockChain, long index)
         {
-            return blockIndex > 0
-                && blockIndex <= AuthorizedMinersState.ValidUntil
-                && blockIndex % AuthorizedMinersState.Interval == 0;
+            // FIXME: Uninstantiated blockChain can be passed as an argument.
+            // Until this is fixed, it is crucial block index is checked first.
+            return index > 0
+                && GetAuthorizedMinersState(blockChain) is AuthorizedMinersState aws
+                && index <= aws.ValidUntil
+                && index % aws.Interval == 0;
         }
+
+        public AdminState GetAdminState(BlockChain<NCAction> blockChain) =>
+            _getAdminState(blockChain);
+
+        public AuthorizedMinersState GetAuthorizedMinersState(BlockChain<NCAction> blockChain) =>
+            _getAuthorizedMinersState(blockChain);
+
+        public BlockPolicyViolationException ValidateTxCountPerBlock(Block<NCAction> block) =>
+            _validateTxCountPerBlock(block);
     }
 }

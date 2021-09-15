@@ -306,17 +306,11 @@ namespace Lib9c.Tests
                 renderers: new[] { blockPolicySource.BlockRenderer }
             );
 
-            if (policy is BlockPolicy bp)
-            {
-                bp.AuthorizedMinersState = new AuthorizedMinersState(
-                    (Dictionary)blockChain.GetState(AuthorizedMinersState.Address)
-                    );
-            }
-
             blockChain.MakeTransaction(
                 adminPrivateKey,
                 new PolymorphicAction<ActionBase>[] { new DailyReward(), }
             );
+
             await blockChain.MineBlock(stranger);
 
             await Assert.ThrowsAsync<BlockPolicyViolationException>(async () =>
@@ -420,13 +414,6 @@ namespace Lib9c.Tests
                 renderers: new[] { blockPolicySource.BlockRenderer }
             );
             var minerObj = new Miner(blockChain, null, minerKey, true);
-
-            if (policy is BlockPolicy bp)
-            {
-                bp.AuthorizedMinersState = new AuthorizedMinersState(
-                    (Dictionary)blockChain.GetState(AuthorizedMinersState.Address)
-                    );
-            }
 
             var dateTimeOffset = DateTimeOffset.MinValue;
 
@@ -620,7 +607,7 @@ namespace Lib9c.Tests
             var blockChain = new BlockChain<PolymorphicAction<ActionBase>>(
                 blockPolicySource.GetPolicy(
                     minimumDifficulty: 50_000,
-                    maximumTransactions: 100,
+                    maxTransactionsPerBlock: 100,
                     permissionedMiningPolicy: new PermissionedMiningPolicy(
                         threshold: 1,
                         miners: new[]

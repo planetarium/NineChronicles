@@ -30,7 +30,7 @@ namespace Lib9c.Tests
             var blockChain = new BlockChain<NCAction>(
                 blockPolicySource.GetPolicy(
                     minimumDifficulty: 50_000,
-                    maximumTransactions: 100
+                    maxTransactionsPerBlock: 100
                 ),
                 new VolatileStagePolicy<NCAction>(),
                 store,
