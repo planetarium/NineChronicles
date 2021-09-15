@@ -158,7 +158,6 @@ public class BattleSimulator : Widget
             equipment.Unequip();
         }
 
-
         var random = new DebugRandom();
         // weapon
         AddCustomEquipment(avatarState: avatarState, random: random,
@@ -209,7 +208,7 @@ public class BattleSimulator : Widget
             tableSheets.CostumeStatSheet
         );
 
-        simulator.Simulate();
+        simulator.Simulate(1);
 
         var log = simulator.Log;
         return log;

@@ -539,7 +539,8 @@ namespace Nekoyume.UI
                         player.Equipments,
                         new List<Consumable>(),
                         SharedModel.WorldID,
-                        SharedModel.StageID + 1)
+                        SharedModel.StageID + 1,
+                        1)
                     .DoOnError(e => ActionRenderHandler.BackToMain(false, e))
                     .Subscribe();
             }
@@ -605,7 +606,8 @@ namespace Nekoyume.UI
                         player.Equipments,
                         new List<Consumable>(),
                         SharedModel.WorldID,
-                        SharedModel.StageID)
+                        SharedModel.StageID,
+                        1)
                     .DoOnError(e => ActionRenderHandler.BackToMain(false, e))
                     .Subscribe();
             }
