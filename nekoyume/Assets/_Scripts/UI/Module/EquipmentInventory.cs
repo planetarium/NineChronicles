@@ -130,12 +130,13 @@ namespace Nekoyume.UI.Module
 
         private void OnEnable()
         {
-            gradeFilter.SetValueWithoutNotify(0);
-            elementalFilter.SetValueWithoutNotify(0);
+            gradeFilter.value = 0;
+            elementalFilter.value = 0;
             ReactiveAvatarState.Inventory.Subscribe(inventoryState =>
             {
                 SharedModel.ResetItems(inventoryState);
                 _onResetItems.OnNext(this);
+                SortedData(_grade, _elemental);
             }).AddTo(_disposablesAtOnEnable);
         }
 
