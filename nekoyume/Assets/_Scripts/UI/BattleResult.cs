@@ -132,6 +132,8 @@ namespace Nekoyume.UI
 
         private BattleWin03VFX _battleWin03VFX;
 
+        private BattleWin04VFX _battleWin04VFX;
+
         private Coroutine _coUpdateBottomText;
 
         private readonly WaitForSeconds _battleWinVFXYield = new WaitForSeconds(0.2f);
@@ -698,6 +700,12 @@ namespace Nekoyume.UI
             {
                 _battleWin03VFX.Stop();
                 _battleWin03VFX = null;
+            }
+
+            if (_battleWin04VFX)
+            {
+                _battleWin04VFX.Stop();
+                _battleWin04VFX = null;
             }
 
             foreach (var reward in rewardsArea.rewards)
