@@ -101,6 +101,7 @@ namespace Nekoyume.UI
             t.SetParent(Game.Game.instance.Stage.transform);
             t.localScale = Vector3.one;
             _player.gameObject.SetActive(false);
+            _player = null;
         }
 
         private void UpdateSlotView(AvatarState avatarState)
