@@ -98,6 +98,9 @@ namespace Nekoyume.UI
         [SerializeField]
         private GameObject coverToBlockClick = null;
 
+        [SerializeField]
+        private Button boostPopupButton;
+
         private Stage _stage;
         private Game.Character.Player _player;
         private EquipmentSlot _weaponSlot;
@@ -193,6 +196,9 @@ namespace Nekoyume.UI
                 .Subscribe(_ =>
                     OneLinePopup.Push(MailType.System, L10nManager.Localize("ERROR_ACTION_POINT")))
                 .AddTo(gameObject);
+
+            boostPopupButton.OnClickAsObservable()
+                .Subscribe(_ => Widget.Find<BoosterPopup>().Show(_stage));
 
             Game.Event.OnRoomEnter.AddListener(b => Close());
 
