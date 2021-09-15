@@ -77,7 +77,6 @@ namespace Nekoyume.UI
 
         private Nekoyume.Model.State.RankingInfo[] _avatarRankingStates;
         private NPC _npc;
-        private Player _player;
 
         private readonly ReactiveProperty<StateType> _state =
             new ReactiveProperty<StateType>(StateType.Arena);
@@ -166,8 +165,7 @@ namespace Nekoyume.UI
 
             var stage = Game.Game.instance.Stage;
             stage.LoadBackground("ranking");
-            _player = stage.GetPlayer();
-            _player.gameObject.SetActive(false);
+            stage.GetPlayer().gameObject.SetActive(false);
 
             var go = Game.Game.instance.Stage.npcFactory.Create(
                 NPCId,
@@ -401,11 +399,17 @@ namespace Nekoyume.UI
 
         private void OnClickChallenge(ArenaRankCell arenaRankCell)
         {
+            var currentAvatarInventory = States.Instance.CurrentAvatarState.inventory;
+
             //TODO 소모품장착
             Game.Game.instance.ActionManager.RankingBattle(
                 arenaRankCell.ArenaInfo.AvatarAddress,
-                _player.Costumes.Select(i => i.ItemId).ToList(),
-                _player.Equipments.Select(i => i.ItemId).ToList(),
+                currentAvatarInventory.Costumes
+                    .Where(i => i.equipped)
+                    .Select(i => i.ItemId).ToList(),
+                currentAvatarInventory.Equipments
+                    .Where(i => i.equipped)
+                    .Select(i => i.ItemId).ToList(),
                 new List<Guid>()
             );
             Find<ArenaBattleLoadingScreen>().Show(arenaRankCell.ArenaInfo);
