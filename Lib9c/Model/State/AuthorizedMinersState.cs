@@ -9,10 +9,11 @@ namespace Nekoyume.Model.State
     public class AuthorizedMinersState : State
     {
         public readonly static Address Address = Addresses.AuthorizedMiners;
+
         public long Interval { get; private set; }
 
         public ImmutableHashSet<Address> Miners { get; private set; }
-        
+
         public long ValidUntil { get; private set; }
 
         public AuthorizedMinersState(
@@ -25,8 +26,8 @@ namespace Nekoyume.Model.State
             Interval = interval;
             ValidUntil = validUntil;
         }
-    
-        public AuthorizedMinersState(Dictionary serialized) 
+
+        public AuthorizedMinersState(Dictionary serialized)
             : base(serialized)
         {
             Miners = ((List)serialized[nameof(Miners)]).Select(v => v.ToAddress())
@@ -34,7 +35,7 @@ namespace Nekoyume.Model.State
             Interval = serialized[nameof(Interval)].ToLong();
             ValidUntil = serialized[nameof(ValidUntil)].ToLong();
         }
-        
+
         public override IValue Serialize()
         {
 #pragma warning disable LAA1002
