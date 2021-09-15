@@ -17,7 +17,7 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("combination_consumable7")]
+    [ActionType("combination_consumable8")]
     public class CombinationConsumable : GameAction
     {
         public const string AvatarAddressKey = "a";
