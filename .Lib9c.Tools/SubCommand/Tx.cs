@@ -82,6 +82,7 @@ namespace Lib9c.Tools.SubCommand
                         nameof(AddRedeemCode) => new AddRedeemCode(),
                         nameof(Nekoyume.Action.MigrationLegacyShop) => new MigrationLegacyShop(),
                         nameof(Nekoyume.Action.MigrationActivatedAccountsState) => new MigrationActivatedAccountsState(),
+                        nameof(Nekoyume.Action.MigrationAvatarState) => new MigrationAvatarState(),
                         _ => throw new CommandExitedException($"Can't determine given action type: {type}", 128),
                     };
                     action.LoadPlainValue(plainValue);
