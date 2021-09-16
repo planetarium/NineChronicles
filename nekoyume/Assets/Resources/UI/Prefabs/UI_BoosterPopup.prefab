@@ -277,8 +277,10 @@ MonoBehaviour:
   submitButton: {fileID: 3712809225209114361}
   apSlider: {fileID: 1812224293785284412}
   boostCountText: {fileID: 2924946892653736347}
-  needAPText: {fileID: 7468031755429921163}
-  ownAPText: {fileID: 592431692454325105}
+  needAPText: {fileID: 592431692454325105}
+  ownAPText: {fileID: 7468031755429921163}
+  boostPlusButton: {fileID: 2708281601089831345}
+  boostMinusButton: {fileID: 303096996114411661}
 --- !u!1 &597781185739659812
 GameObject:
   m_ObjectHideFlags: 0

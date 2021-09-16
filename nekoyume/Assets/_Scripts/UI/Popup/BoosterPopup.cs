@@ -31,6 +31,12 @@ namespace Nekoyume.UI
         [SerializeField]
         private TMP_Text ownAPText;
 
+        [SerializeField]
+        private Button boostPlusButton;
+
+        [SerializeField]
+        private Button boostMinusButton;
+
         private Stage _stage;
         private List<Costume> _costumes;
         private List<Equipment> _equipments;
@@ -42,6 +48,8 @@ namespace Nekoyume.UI
 
             cancelButton.OnClickAsObservable().Subscribe(_ => Close()).AddTo(gameObject);
             submitButton.OnClickAsObservable().Subscribe(_ => BoostQuest()).AddTo(gameObject);
+            boostPlusButton.OnClickAsObservable().Subscribe(_ => apSlider.value++);
+            boostMinusButton.OnClickAsObservable().Subscribe(_ => apSlider.value--);
         }
 
         public void Show(Stage stage, List<Costume> costumes, List<Equipment> equipments, List<Consumable> consumables)
@@ -64,6 +72,10 @@ namespace Nekoyume.UI
                     .TableSheets.StageSheet.Values.FirstOrDefault(i =>
                         i.Id == Find<WorldMap>().SelectedStageId).CostAP * value).ToString();
             });
+
+            var actionPoint = Game.Game.instance.States.CurrentAvatarState.actionPoint;
+            ownAPText.text = actionPoint.ToString();
+            apSlider.value = apSlider.maxValue = actionPoint / 5;
             Show();
         }
 
