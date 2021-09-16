@@ -87,7 +87,7 @@ namespace Nekoyume.BlockChain
                 difficultyBoundDivisor: DifficultyBoundDivisor,
                 ignoreHardcodedPolicies: ignoreHardcodedPolicies,
                 permissionedMiningPolicy: permissionedMiningPolicy,
-                canonicalChainComparer: new CanonicalChainComparer(null),
+                canonicalChainComparer: new TotalDifficultyComparer(),
 #pragma warning disable LAA1002
                 hashAlgorithmGetter: _hashAlgorithmTable.ToHashAlgorithmGetter(),
 #pragma warning restore LAA1002
