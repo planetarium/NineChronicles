@@ -35,8 +35,12 @@ namespace Nekoyume.BlockChain.Policy
         public const int MaxGenesisBytes = 1024 * 1024 * 15; // 15 MiB
 
         /// <summary>
+        /// Starting point in which Validate restriction will apply.
+        /// </summary>
+        public const long ValidateMinerAuthorityNoOpTxHardcodedIndex = 1_200_001;
+
+        /// <summary>
         /// Starting point in which MinTransactionsPerBlock restriction will apply.
-        /// Reached around Aug 19, 2021.
         /// </summary>
         public const long MinTransactionsPerBlockHardcodedIndex = 2_173_701;
 
@@ -70,6 +74,7 @@ namespace Nekoyume.BlockChain.Policy
                 new LoggedRenderer<NCAction>(BlockRenderer, logger, logEventLevel);
         }
 
+        // FIXME 남은 설정들도 설정화 해야 할지도?
         public IBlockPolicy<NCAction> GetPolicy(int minimumDifficulty, int maxTransactionsPerBlock) =>
             GetPolicy(
                 minimumDifficulty,
@@ -77,7 +82,28 @@ namespace Nekoyume.BlockChain.Policy
                 ignoreHardcodedPolicies: false,
                 permissionedMiningPolicy: PermissionedMiningPolicy.Mainnet);
 
-        // FIXME 남은 설정들도 설정화 해야 할지도?
+        /// <summary>
+        /// Gets a <see cref="BlockPolicy"/> constructed from given parameters.
+        /// </summary>
+        /// <param name="minimumDifficulty">The minimum difficulty that a <see cref="Block{T}"/>
+        /// can have.  This is ignored for genesis blocks.</param>
+        /// <param name="maxTransactionsPerBlock">The maximum number of
+        /// <see cref="Transaction{T}"/>s that a <see cref="Block{T}"/> can have.</param>
+        /// <param name="ignoreHardcodedPolicies">
+        /// <para>
+        /// Whether to ignore or respect hardcoded policies.
+        /// </para>
+        /// <para>
+        /// There are several policies where each policy only applies after its corresponding
+        /// hardcoded index.  Turning on this option ignores these hard coded indices and
+        /// applies said policies starting from index 0, the gensis.
+        /// </para>
+        /// <para>
+        /// This is purely for unit testing and should be set to false for production.
+        /// </para>
+        /// </param>
+        /// <param name="permissionedMiningPolicy">Used for permissioned mining.</param>
+        /// <returns>A <see cref="BlockPolicy"/> constructed from given parameters.</returns>
         internal IBlockPolicy<NCAction> GetPolicy(
             int minimumDifficulty,
             int maxTransactionsPerBlock,
@@ -92,20 +118,19 @@ namespace Nekoyume.BlockChain.Policy
                 blockInterval: BlockInterval,
                 minimumDifficulty: minimumDifficulty,
                 difficultyBoundDivisor: DifficultyBoundDivisor,
-                ignoreHardcodedPolicies: ignoreHardcodedPolicies,
                 permissionedMiningPolicy: permissionedMiningPolicy,
                 canonicalChainComparer: new TotalDifficultyComparer(),
 #pragma warning disable LAA1002
                 hashAlgorithmGetter: HashAlgorithmTable.ToHashAlgorithmGetter(),
 #pragma warning restore LAA1002
                 validateNextBlockTx: ValidateNextBlockTx,
+                validateNextBlock: ValidateNextBlockFactory(permissionedMiningPolicy, ignoreHardcodedPolicies),
                 getMaxBlockBytes: GetMaxBlockBytes,
                 getMinTransactionsPerBlock: GetMinTransactionsPerBlock,
                 getMaxTransactionsPerBlock: GetMaxTransactionsPerBlockFactory(maxTransactionsPerBlock),
                 getMaxTransactionsPerSignerPerBlock: GetMaxTransactionsPerSignerPerBlock,
                 getAdminState: GetAdminState,
-                getAuthorizedMinersState: GetAuthorizedMinersState,
-                validateTxCountPerBlock: ValidateTxCountPerBlockFactory(ignoreHardcodedPolicies));
+                getAuthorizedMinersState: GetAuthorizedMinersState);
 #endif
         }
 
@@ -207,6 +232,30 @@ namespace Nekoyume.BlockChain.Policy
             }
 
             return null;
+        }
+
+        public static BlockPolicyViolationException ValidateNextBlockRaw(
+            BlockChain<NCAction> blockChain,
+            Block<NCAction> nextBlock,
+            PermissionedMiningPolicy? permissionedMiningPolicy,
+            bool ignoreHardcodedPolicies)
+        {
+            return ValidateTxCountPerBlockRaw(nextBlock, ignoreHardcodedPolicies)
+                ?? ValidateMinerAuthorityRaw(blockChain, nextBlock, ignoreHardcodedPolicies)
+                ?? ValidateMinerPermissionRaw(nextBlock, permissionedMiningPolicy, ignoreHardcodedPolicies);
+        }
+
+        public static Func<BlockChain<NCAction>, Block<NCAction>, BlockPolicyViolationException>
+            ValidateNextBlockFactory(
+                PermissionedMiningPolicy? permissionedMiningPolicy,
+                bool ignoreHardcodedPolicies)
+        {
+            return (blockChain, nextBlock) =>
+                ValidateNextBlockRaw(
+                    blockChain,
+                    nextBlock,
+                    permissionedMiningPolicy,
+                    ignoreHardcodedPolicies);
         }
 
         public static int GetMaxBlockBytes(long index)

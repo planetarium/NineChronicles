@@ -72,6 +72,16 @@ namespace Nekoyume.BlockChain.Policy
             }
         }
 
+        internal static bool IsAuthorizedBlockIndex(BlockChain<NCAction> blockChain, long index)
+        {
+            // FIXME: Uninstantiated blockChain can be passed as an argument.
+            // Until this is fixed, it is crucial block index is checked first.
+            return index > 0
+                && GetAuthorizedMinersState(blockChain) is AuthorizedMinersState ams
+                && index <= ams.ValidUntil
+                && index % ams.Interval == 0;
+        }
+
         internal static BlockPolicyViolationException ValidateTxCountPerBlockRaw(
             Block<NCAction> block, bool ignoreHardcodedPolicies)
         {
@@ -101,10 +111,116 @@ namespace Nekoyume.BlockChain.Policy
             return null;
         }
 
+        internal static BlockPolicyViolationException ValidateMinerPermissionRaw(
+            Block<NCAction> block,
+            PermissionedMiningPolicy? permissionedMiningPolicy,
+            bool ignoreHardcodedPolicies)
+        {
+            Address miner = block.Miner;
+
+            // If no permission policy is given, pass validation by default.
+            if (!(permissionedMiningPolicy is PermissionedMiningPolicy policy))
+            {
+                return null;
+            }
+
+            // Predicate for permission validity.
+            if (!policy.Miners.Contains(miner) || !block.Transactions.Any(t => t.Signer.Equals(miner)))
+            {
+                if (ignoreHardcodedPolicies)
+                {
+                    return new BlockPolicyViolationException(
+                        $"Block #{block.Index} {block.Hash} is not mined by a permissioned miner.  "
+                            + "(Forced failure)");
+                }
+                else if (block.Index >= policy.Threshold)
+                {
+                    return new BlockPolicyViolationException(
+                        $"Block #{block.Index} {block.Hash} is not mined by a permissioned miner.");
+                }
+            }
+
+            return null;
+        }
+
+        internal static Func<Block<NCAction>, BlockPolicyViolationException>
+            ValidateMinerPermissionFactory(
+                PermissionedMiningPolicy? permissionedMiningPolicy,
+                bool ignoreHardcodedPolicies)
+        {
+            return block => ValidateMinerPermissionRaw(
+                block, permissionedMiningPolicy, ignoreHardcodedPolicies);
+        }
+
         internal static Func<Block<NCAction>, BlockPolicyViolationException>
             ValidateTxCountPerBlockFactory(bool ignoreHardcodedPolicies)
         {
             return block => ValidateTxCountPerBlockRaw(block, ignoreHardcodedPolicies);
+        }
+
+        internal static BlockPolicyViolationException ValidateMinerAuthorityRaw(
+            BlockChain<NCAction> blockChain, Block<NCAction> block, bool ignoreHardcodedPolicies)
+        {
+            Address miner = block.Miner;
+
+            // FIXME: Uninstantiated blockChain can be passed as an argument.
+            // Until this is fixed, it is crucial block index is checked first.
+            // Authorized minor validity is only checked for certain indices.
+            if (!IsAuthorizedBlockIndex(blockChain, block.Index))
+            {
+                return null;
+            }
+            // If AuthorizedMinorState is null, do not check miner authority.
+            else if (!(GetAuthorizedMinersState(blockChain) is AuthorizedMinersState ams))
+            {
+                return null;
+            }
+            // Otherwise, block's miner should be one of the authorized miners.
+            else if (!ams.Miners.Contains(miner))
+            {
+                return new BlockPolicyViolationException(
+                    $"The block #{block.Index} {block.Hash} is not mined by an authorized miner.");
+            }
+
+            // Authority is proven through a no-op transaction, i.e. a transaction
+            // with zero actions, starting from ValidateMinerAuthorityNoOpHardcodedIndex.
+            Transaction<NCAction>[] txs = block.Transactions.ToArray();
+            if (!txs.Any(tx => tx.Signer.Equals(miner) && !tx.Actions.Any())
+                    && block.ProtocolVersion > 0)
+            {
+                if (ignoreHardcodedPolicies)
+                {
+                    return new BlockPolicyViolationException(
+                        $"Block #{block.Index} {block.Hash}'s miner {miner} should be proven by "
+                            + "including a no-op transaction by signed the same authority.  "
+                            + "(Forced failure)");
+                }
+                else if (block.Index >= ValidateMinerAuthorityNoOpTxHardcodedIndex)
+                {
+#if DEBUG
+                    string debug =
+                        "  Note that there " +
+                        (txs.Length == 1 ? "is a transaction:" : $"are {txs.Length} transactions:") +
+                        txs.Select((tx, i) =>
+                                $"\n    {i}. {tx.Actions.Count} actions; signed by {tx.Signer}")
+                            .Aggregate(string.Empty, (a, b) => a + b);
+#else
+                    const string debug = "";
+#endif
+                    return new BlockPolicyViolationException(
+                        $"Block #{block.Index} {block.Hash}'s miner {miner} should be proven by " +
+                        "including a no-op transaction by signed the same authority." + debug);
+                }
+            }
+
+            return null;
+        }
+
+        internal static Func<BlockChain<NCAction>, Block<NCAction>, BlockPolicyViolationException>
+            ValidateMinerAuthorityFactory(bool ignoreHardcodedPolicies)
+        {
+            return (blockChain, block) =>
+                ValidateMinerAuthorityRaw(blockChain, block, ignoreHardcodedPolicies);
         }
     }
 }
