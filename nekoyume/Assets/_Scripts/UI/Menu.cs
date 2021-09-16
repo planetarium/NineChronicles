@@ -481,7 +481,7 @@ namespace Nekoyume.UI
         {
             yield return new WaitForSeconds(2.0f);
 
-            while (AnimationState == AnimationStateType.Shown)
+            while (AnimationState.Value == AnimationStateType.Shown)
             {
                 var n = speechBubbles.Length;
                 while (n > 1)
