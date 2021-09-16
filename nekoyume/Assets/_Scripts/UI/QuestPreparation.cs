@@ -198,7 +198,26 @@ namespace Nekoyume.UI
                 .AddTo(gameObject);
 
             boostPopupButton.OnClickAsObservable()
-                .Subscribe(_ => Widget.Find<BoosterPopup>().Show(_stage));
+                .Subscribe(_ =>
+                {
+                    var costumes = _player.Costumes;
+                    var equipments = equipmentSlots
+                        .Where(slot => !slot.IsLock && !slot.IsEmpty)
+                        .Select(slot => (Equipment)slot.Item)
+                        .ToList();
+
+                    var consumables = consumableSlots
+                        .Where(slot => !slot.IsLock && !slot.IsEmpty)
+                        .Select(slot => (Consumable)slot.Item)
+                        .ToList();
+
+                    _stage.IsExitReserved = false;
+                    _stage.IsRepeatStage = false;
+                    _stage.foodCount = consumables.Count;
+                    ActionRenderHandler.Instance.Pending = true;
+
+                    Find<BoosterPopup>().Show(_stage, costumes, equipments, consumables);
+                });
 
             Game.Event.OnRoomEnter.AddListener(b => Close());
 
@@ -496,19 +515,6 @@ namespace Nekoyume.UI
 
         private void QuestClick(bool repeat)
         {
-            if (boostTestInputField.text.Equals(string.Empty))
-            {
-                OneLinePopup.Push(MailType.Auction, "boostTestInputField에 1이상 넣어주세요.");
-                return;
-            }
-
-            var playCount = int.Parse(boostTestInputField.text);
-            if (playCount <= 0)
-            {
-                OneLinePopup.Push(MailType.Auction, "boostTestInputField에 1이상 넣어주세요.");
-                return;
-            }
-
             if (_stage.IsInStage)
             {
                 questButton.interactable = false;
@@ -826,7 +832,7 @@ namespace Nekoyume.UI
             _stage.foodCount = consumables.Count;
             ActionRenderHandler.Instance.Pending = true;
 
-            var playCount = int.Parse(boostTestInputField.text);
+            var playCount = 1; //int.Parse(boostTestInputField.text);
             Game.Game.instance.ActionManager
                 .HackAndSlash(
                     costumes,

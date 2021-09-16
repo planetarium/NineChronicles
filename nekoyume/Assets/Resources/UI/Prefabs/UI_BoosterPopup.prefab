@@ -273,6 +273,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tutorialTargets: []
   tutorialActions: 
+  cancelButton: {fileID: 3094954755268877896}
+  submitButton: {fileID: 3712809225209114361}
+  apSlider: {fileID: 1812224293785284412}
+  boostCountText: {fileID: 2924946892653736347}
+  needAPText: {fileID: 7468031755429921163}
+  ownAPText: {fileID: 592431692454325105}
 --- !u!1 &597781185739659812
 GameObject:
   m_ObjectHideFlags: 0
@@ -907,10 +913,10 @@ MonoBehaviour:
   m_FillRect: {fileID: 1929801171093273235}
   m_HandleRect: {fileID: 824142859206355751}
   m_Direction: 0
-  m_MinValue: 0
-  m_MaxValue: 1
-  m_WholeNumbers: 0
-  m_Value: 1
+  m_MinValue: 2
+  m_MaxValue: 12
+  m_WholeNumbers: 1
+  m_Value: 12
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -3749,3 +3755,15 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 7883462216081652815}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &3712809225209114361 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6836784520103154358, guid: f7054cc9c15e14f0fa1e5cbc714e3845,
+    type: 3}
+  m_PrefabInstance: {fileID: 7883462216081652815}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1724844193247563348}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
