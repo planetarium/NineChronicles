@@ -174,6 +174,7 @@ namespace Nekoyume.Model.State
 
         public int Update(ArenaInfo enemyInfo, BattleLog.Result result)
         {
+            DailyChallengeCount--;
             switch (result)
             {
                 case BattleLog.Result.Win:
@@ -189,7 +190,6 @@ namespace Nekoyume.Model.State
                     throw new ArgumentOutOfRangeException(nameof(result), result, null);
             }
 
-            DailyChallengeCount--;
             var earnedScore = ArenaScoreHelper.GetScore(Score, enemyInfo.Score, result);
             Score = Math.Max(1000, Score + earnedScore);
             return earnedScore;
