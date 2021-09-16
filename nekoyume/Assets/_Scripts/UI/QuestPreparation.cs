@@ -198,6 +198,7 @@ namespace Nekoyume.UI
                 .AddTo(gameObject);
 
             boostPopupButton.OnClickAsObservable()
+                .Where(_ => Game.Game.instance.States.CurrentAvatarState.worldInformation.IsStageCleared(_stageId.Value))
                 .Subscribe(_ =>
                 {
                     var costumes = _player.Costumes;
