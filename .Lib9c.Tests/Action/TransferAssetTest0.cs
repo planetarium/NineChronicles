@@ -76,7 +76,7 @@ namespace Lib9c.Tests.Action
             var prevState = new State(
                 balance: balance
             );
-            var action = new TransferAsset(
+            var action = new TransferAsset0(
                 sender: _sender,
                 recipient: _recipient,
                 amount: _currency * 100
@@ -108,7 +108,7 @@ namespace Lib9c.Tests.Action
                 balance: balance
             );
             // Should not allow TransferAsset with same sender and recipient.
-            var action = new TransferAsset(
+            var action = new TransferAsset0(
                 sender: _sender,
                 recipient: _sender,
                 amount: _currency * 100
@@ -147,7 +147,7 @@ namespace Lib9c.Tests.Action
             var prevState = new State(
                 balance: balance
             );
-            var action = new TransferAsset(
+            var action = new TransferAsset0(
                 sender: _sender,
                 recipient: _recipient,
                 amount: _currency * 100000
@@ -175,7 +175,7 @@ namespace Lib9c.Tests.Action
             var prevState = new State(
                 balance: balance
             );
-            var action = new TransferAsset(
+            var action = new TransferAsset0(
                 sender: _sender,
                 recipient: _recipient,
                 amount: currencyBySender * 100
@@ -206,7 +206,7 @@ namespace Lib9c.Tests.Action
             var prevState = new State(
                 balance: balance
             );
-            var action = new TransferAsset(
+            var action = new TransferAsset0(
                 sender: _sender,
                 recipient: _recipient,
                 amount: currencyByRecipient * 100
@@ -230,7 +230,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Rehearsal()
         {
-            var action = new TransferAsset(
+            var action = new TransferAsset0(
                 sender: _sender,
                 recipient: _recipient,
                 amount: _currency * 100
@@ -261,7 +261,7 @@ namespace Lib9c.Tests.Action
         [InlineData("Nine Chronicles")]
         public void PlainValue(string memo)
         {
-            var action = new TransferAsset(_sender, _recipient, _currency * 100, memo);
+            var action = new TransferAsset0(_sender, _recipient, _currency * 100, memo);
             Dictionary plainValue = (Dictionary)action.PlainValue;
 
             Assert.Equal(_sender, plainValue["sender"].ToAddress());
@@ -290,7 +290,7 @@ namespace Lib9c.Tests.Action
             }
 
             var plainValue = new Dictionary(pairs);
-            var action = new TransferAsset();
+            var action = new TransferAsset0();
             action.LoadPlainValue(plainValue);
 
             Assert.Equal(_sender, action.Sender);
@@ -302,7 +302,7 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void LoadPlainValue_ThrowsMemoLengthOverflowException()
         {
-            var action = new TransferAsset();
+            var action = new TransferAsset0();
             var plainValue = new Dictionary(new[]
             {
                 new KeyValuePair<IKey, IValue>((Text)"sender", _sender.Serialize()),
@@ -320,13 +320,13 @@ namespace Lib9c.Tests.Action
         public void SerializeWithDotnetAPI(string memo)
         {
             var formatter = new BinaryFormatter();
-            var action = new TransferAsset(_sender, _recipient, _currency * 100, memo);
+            var action = new TransferAsset0(_sender, _recipient, _currency * 100, memo);
 
             using var ms = new MemoryStream();
             formatter.Serialize(ms, action);
 
             ms.Seek(0, SeekOrigin.Begin);
-            var deserialized = (TransferAsset)formatter.Deserialize(ms);
+            var deserialized = (TransferAsset0)formatter.Deserialize(ms);
 
             Assert.Equal(_sender, deserialized.Sender);
             Assert.Equal(_recipient, deserialized.Recipient);
