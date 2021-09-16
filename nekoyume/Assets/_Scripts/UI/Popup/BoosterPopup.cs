@@ -2,6 +2,7 @@
 using System.Linq;
 using Nekoyume.BlockChain;
 using Nekoyume.Game;
+using Nekoyume.Game.Character;
 using Nekoyume.Model.Item;
 using Nekoyume.State;
 using TMPro;
@@ -38,6 +39,7 @@ namespace Nekoyume.UI
         private Button boostMinusButton;
 
         private Stage _stage;
+        private Player _player;
         private List<Costume> _costumes;
         private List<Equipment> _equipments;
         private List<Consumable> _consumables;
@@ -58,6 +60,7 @@ namespace Nekoyume.UI
             _costumes = costumes;
             _equipments = equipments;
             _consumables = consumables;
+            _player = _stage.GetPlayer(Vector3.zero);
 
             ReactiveAvatarState.ActionPoint.Subscribe(value =>
             {
@@ -95,6 +98,17 @@ namespace Nekoyume.UI
             var worldMap = Find<WorldMap>();
             var worldId = worldMap.SelectedWorldId;
             var stageId = worldMap.SelectedStageId;
+
+            _player.StartRun();
+            ActionCamera.instance.ChaseX(_player.transform);
+
+            Find<WorldMap>().Close(true);
+            Find<StageInformation>().Close(true);
+            Find<LoadingScreen>().Show();
+            Close();
+
+            _stage.IsInStage = true;
+            _stage.IsShowHud = true;
 
             Game.Game.instance.ActionManager
                 .HackAndSlash(
