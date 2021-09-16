@@ -10,8 +10,10 @@ namespace Lib9c.Tests.Action
     using Libplanet;
     using Libplanet.Action;
     using Libplanet.Assets;
+    using Libplanet.Crypto;
     using Nekoyume;
     using Nekoyume.Action;
+    using Nekoyume.Model;
     using Nekoyume.Model.State;
     using Xunit;
 
@@ -44,12 +46,11 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Execute()
         {
-            var activatedAddress = new ActivatedAccountsState().AddAccount(_recipient);
             var balance = ImmutableDictionary<(Address, Currency), FungibleAssetValue>.Empty
                 .Add((_sender, _currency), _currency * 1000)
                 .Add((_recipient, _currency), _currency * 10);
             var state = ImmutableDictionary<Address, IValue>.Empty
-                .Add(Addresses.ActivatedAccount, activatedAddress.Serialize());
+                .Add(_recipient.Derive(ActivationKey.DeriveKey), true.Serialize());
             var prevState = new State(
                 state: state,
                 balance: balance
@@ -234,11 +235,12 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void ExecuteWithUnactivatedRecipient()
         {
-            var activatedAddress = new ActivatedAccountsState().AddAccount(_sender);
+            var activatedAddress = new ActivatedAccountsState().AddAccount(new PrivateKey().ToAddress());
             var balance = ImmutableDictionary<(Address, Currency), FungibleAssetValue>.Empty
                 .Add((_sender, _currency), _currency * 1000)
                 .Add((_recipient, _currency), _currency * 10);
             var state = ImmutableDictionary<Address, IValue>.Empty
+                .Add(_sender.Derive(ActivationKey.DeriveKey), true.Serialize())
                 .Add(Addresses.ActivatedAccount, activatedAddress.Serialize());
             var prevState = new State(
                 state: state,

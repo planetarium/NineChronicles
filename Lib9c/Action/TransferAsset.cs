@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
+using Nekoyume.Model;
 
 namespace Nekoyume.Action
 {
@@ -84,10 +85,14 @@ namespace Nekoyume.Action
                 throw new InvalidTransferRecipientException(Sender, Recipient);
             }
 
-            if (state.GetState(Addresses.ActivatedAccount) is Dictionary asDict)
+            Address recipientAddress = Recipient.Derive(ActivationKey.DeriveKey);
+
+            // Check new type of activation first.
+            if (state.GetState(recipientAddress) is null && state.GetState(Addresses.ActivatedAccount) is Dictionary asDict )
             {
                 var activatedAccountsState = new ActivatedAccountsState(asDict);
                 var activatedAccounts = activatedAccountsState.Accounts;
+                // if ActivatedAccountsState is empty, all user is activate.
                 if (activatedAccounts.Count != 0
                     && !activatedAccounts.Contains(Recipient))
                 {
