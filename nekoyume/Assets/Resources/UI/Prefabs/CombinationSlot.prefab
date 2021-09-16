@@ -1463,7 +1463,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: '-'
+  m_text: UI_SENDING_THROUGH_MAIL
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8a682b7747d4a664089b7b1065aa0035, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: 7721c898419b5d3439390484c2636cea, type: 2}
@@ -1550,7 +1550,7 @@ MonoBehaviour:
   fixedSpacingOption: 0
   fixedMarginOption: 0
   fontMaterialType: 0
-  l10nKey: UI_COMBINATION_SLOT_AVAILABLE
+  l10nKey: UI_SENDING_THROUGH_MAIL
   fontMaterialIndexInitialized: 0
   fontMaterialIndex: 0
   defaultFontStylesInitialized: 0
@@ -3577,6 +3577,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   itemView: {fileID: 6515776821774594355}
+  waitingReceiveItemView: {fileID: 8726438744542644943}
   touchHandler: {fileID: 4775150537336452424}
   progressBar: {fileID: 7205290273317793929}
   hasNotificationImage: {fileID: 6923336197392039846}
@@ -3585,11 +3586,13 @@ MonoBehaviour:
   itemNameText: {fileID: 6803621960291199455}
   hourglassCountText: {fileID: 8832039012577117513}
   preparingText: {fileID: 6888471728550160247}
+  waitingReceiveText: {fileID: 1847141195033864165}
   lockContainer: {fileID: 7549546908799120084}
   baseContainer: {fileID: 7200825233628535501}
   noneContainer: {fileID: 2260112677859200079}
   preparingContainer: {fileID: 5608372893450762639}
   workingContainer: {fileID: 5994851212524165853}
+  waitReceiveContainer: {fileID: 592734672684037806}
 --- !u!114 &4775150537336452424
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4108,6 +4111,18 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 293307426578827213}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &8726438744542644943 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 9009592072719338754, guid: 7ad634ecd8fec49ba9291bfa3f942e7b,
+    type: 3}
+  m_PrefabInstance: {fileID: 293307426578827213}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 147892081c584a24a43178f1822491f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &2838446708130954289
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4352,6 +4367,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7ad634ecd8fec49ba9291bfa3f942e7b, type: 3}
+--- !u!224 &1849666679564753566 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 4525948530569832111, guid: 7ad634ecd8fec49ba9291bfa3f942e7b,
+    type: 3}
+  m_PrefabInstance: {fileID: 2838446708130954289}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &6515776821774594355 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 9009592072719338754, guid: 7ad634ecd8fec49ba9291bfa3f942e7b,
@@ -4364,12 +4385,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 147892081c584a24a43178f1822491f7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!224 &1849666679564753566 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 4525948530569832111, guid: 7ad634ecd8fec49ba9291bfa3f942e7b,
-    type: 3}
-  m_PrefabInstance: {fileID: 2838446708130954289}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &6407636431358129520
 PrefabInstance:
   m_ObjectHideFlags: 0
