@@ -12,23 +12,54 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2cd6324defe910049a00728bad803885, type: 3}
   m_Name: UI_Palette
   m_EditorClassIdentifier: 
-  ButtonColorPalette:
-  - ButtonColorType: 0
+  type: 12
+  enums:
+  - ButtonEnabled
+  - ButtonColorDisabled
+  - ButtonAlphaDisabled
+  - ButtonDisabled
+  - TextDenial
+  - TextPositive
+  - TextGrade00
+  - TextGrade01
+  - TextGrade02
+  - TextGrade03
+  - TextGrade04
+  - TextElement00
+  - TextElement01
+  - TextElement02
+  - TextElement04
+  - TextElement05
+  Palette:
+  - colorType: 0
     Color: {r: 1, g: 1, b: 1, a: 1}
-  - ButtonColorType: 1
-    Color: {r: 0.39215687, g: 0.39215687, b: 0.39215687, a: 1}
-  - ButtonColorType: 2
-    Color: {r: 1, g: 1, b: 1, a: 0.3529412}
-  - ButtonColorType: 3
+  - colorType: 1
+    Color: {r: 0.3921569, g: 0.3921569, b: 0.3921569, a: 1}
+  - colorType: 2
+    Color: {r: 1, g: 1, b: 1, a: 0.39215687}
+  - colorType: 3
     Color: {r: 1, g: 0, b: 0, a: 1}
-  GradientColorPalette:
-  - GradientColorType: 0
-    ColorMode: 2
-    Colors:
-    - {r: 0.85490197, g: 0.65882355, b: 0.32941177, a: 1}
-    - {r: 0.7529412, g: 0.34509805, b: 0.13725491, a: 1}
-  palette:
-  - {r: 1, g: 1, b: 1, a: 1}
-  - {r: 0.39215687, g: 0.39215687, b: 0.39215687, a: 1}
-  - {r: 1, g: 1, b: 1, a: 0.3529412}
-  - {r: 1, g: 0, b: 0, a: 1}
+  - colorType: 4
+    Color: {r: 1, g: 0.3537736, b: 0.3537736, a: 1}
+  - colorType: 5
+    Color: {r: 0.2216981, g: 1, b: 0.24148045, a: 1}
+  - colorType: 6
+    Color: {r: 0.7019608, g: 0.6117647, b: 0.50980395, a: 1}
+  - colorType: 7
+    Color: {r: 0.2901961, g: 0.95686275, b: 0.15686275, a: 1}
+  - colorType: 8
+    Color: {r: 0.2688679, g: 0.51452684, b: 1, a: 1}
+  - colorType: 9
+    Color: {r: 1, g: 0.8117647, b: 0.16470589, a: 1}
+  - colorType: 10
+    Color: {r: 0.9372549, g: 0.23921569, b: 1, a: 1}
+  - colorType: 11
+    Color: {r: 0.7169812, g: 0.65087867, b: 0.57155573, a: 1}
+  - colorType: 12
+    Color: {r: 1, g: 0.3443396, b: 0.3443396, a: 1}
+  - colorType: 13
+    Color: {r: 0.764151, g: 0.518531, b: 0.19103774, a: 1}
+  - colorType: 14
+    Color: {r: 0.08627451, g: 0.7058824, b: 0.93725497, a: 1}
+  - colorType: 15
+    Color: {r: 0, g: 0.6666667, b: 0.29411766, a: 1}

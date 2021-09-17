@@ -313,22 +313,22 @@ eye_01
   offset: 0, 0
   index: -1
 eye_02
-  rotate: false
-  xy: 524, 667
+  rotate: true
+  xy: 324, 624
   size: 35, 15
   orig: 35, 15
   offset: 0, 0
   index: -1
 eye_03
-  rotate: true
-  xy: 326, 589
+  rotate: false
+  xy: 800, 746
   size: 33, 10
   orig: 33, 10
   offset: 0, 0
   index: -1
 eye_04
-  rotate: true
-  xy: 324, 624
+  rotate: false
+  xy: 763, 744
   size: 35, 12
   orig: 35, 12
   offset: 0, 0
@@ -341,15 +341,15 @@ eye_05
   offset: 0, 0
   index: -1
 eyebrow_01
-  rotate: false
-  xy: 763, 743
+  rotate: true
+  xy: 326, 588
   size: 34, 13
   orig: 34, 13
   offset: 0, 0
   index: -1
 eyebrow_02
-  rotate: false
-  xy: 799, 743
+  rotate: true
+  xy: 504, 671
   size: 30, 13
   orig: 30, 13
   offset: 0, 0
@@ -366,13 +366,6 @@ face
   xy: 897, 757
   size: 56, 72
   orig: 56, 72
-  offset: 0, 0
-  index: -1
-face_02
-  rotate: false
-  xy: 962, 832
-  size: 18, 30
-  orig: 18, 30
   offset: 0, 0
   index: -1
 faceeffect
@@ -524,7 +517,7 @@ hand_L_02
   index: -1
 hand_R
   rotate: true
-  xy: 504, 673
+  xy: 962, 834
   size: 28, 18
   orig: 28, 18
   offset: 0, 0
@@ -580,21 +573,21 @@ mouth_01
   index: -1
 mouth_02
   rotate: true
-  xy: 411, 902
+  xy: 835, 741
   size: 15, 7
   orig: 15, 7
   offset: 0, 0
   index: -1
 mouth_03
   rotate: true
-  xy: 561, 668
+  xy: 411, 903
   size: 14, 7
   orig: 14, 7
   offset: 0, 0
   index: -1
 mouth_04
   rotate: false
-  xy: 831, 747
+  xy: 411, 892
   size: 11, 9
   orig: 11, 9
   offset: 0, 0
@@ -604,6 +597,13 @@ mouth_05
   xy: 1018, 1015
   size: 7, 4
   orig: 7, 4
+  offset: 0, 0
+  index: -1
+mouth_06
+  rotate: false
+  xy: 330, 679
+  size: 10, 6
+  orig: 10, 6
   offset: 0, 0
   index: -1
 neck

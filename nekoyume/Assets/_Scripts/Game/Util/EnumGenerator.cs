@@ -11,15 +11,17 @@ namespace Nekoyume.Game.Util
 
         public static void Generate<T>(T enumType, IEnumerable<string> enums) where T : Enum
         {
-            string enumName = enumType.GetType().ToString();
-            string filePathAndName = $"{Path}{enumName}.cs";
+            var nameSpace = enumType.GetType().Namespace;
+            var enumName = enumType.GetType().ToString();
+            enumName = enumName.Replace($"{nameSpace}.", string.Empty);
+            var filePathAndName = $"{Path}{enumName}.cs";
             using StreamWriter streamWriter = new StreamWriter(filePathAndName);
-            streamWriter.WriteLine($"public enum {enumName}\n{{");
+            streamWriter.WriteLine($"namespace {nameSpace}\n{{\n    public enum {enumName}\n    {{");
             foreach (var i in enums)
             {
                 streamWriter.WriteLine($"\t{i}," );
             }
-            streamWriter.WriteLine("}");
+            streamWriter.WriteLine("    }\n}");
         }
 
         public static List<string> EnumToList<T>(T enumType) where T : Enum

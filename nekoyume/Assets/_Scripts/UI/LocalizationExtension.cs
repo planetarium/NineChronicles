@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Action;
+using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model;
@@ -25,12 +26,73 @@ namespace Nekoyume.UI
             switch (mail)
             {
                 case CombinationMail combinationMail:
-                    return string.Format(L10nManager.Localize("UI_COMBINATION_NOTIFY_FORMAT"),
-                        GetLocalizedNonColoredName(combinationMail.attachment.itemUsable));
+                {
+                    string formatKey;
+                    if (combinationMail.attachment.itemUsable is Equipment equipment)
+                    {
+                        if (combinationMail.attachment is CombinationConsumable5.ResultModel result &&
+                            result.subRecipeId.HasValue &&
+                            Game.Game.instance.TableSheets.EquipmentItemSubRecipeSheetV2.TryGetValue(
+                                result.subRecipeId.Value,
+                                out var row))
+                        {
+                            formatKey = equipment.optionCountFromCombination == row.Options.Count
+                                ? "UI_COMBINATION_NOTIFY_FORMAT_GREATER"
+                                : "UI_COMBINATION_NOTIFY_FORMAT";
+                        }
+                        else
+                        {
+                            formatKey = "UI_COMBINATION_NOTIFY_FORMAT";
+                        }
+                    }
+                    else
+                    {
+                        formatKey = "UI_COMBINATION_NOTIFY_FORMAT";
+                    }
+
+                    return string.Format(
+                        L10nManager.Localize(formatKey),
+                        GetLocalizedNonColoredName(combinationMail.attachment.itemUsable,
+                            combinationMail.attachment.itemUsable.ItemType.HasElementType()));
+                }
 
                 case ItemEnhanceMail itemEnhanceMail:
-                    return string.Format(L10nManager.Localize("UI_ITEM_ENHANCEMENT_MAIL_FORMAT"),
+                {
+                    string formatKey;
+                    switch (itemEnhanceMail.attachment)
+                    {
+                        case ItemEnhancement.ResultModel result:
+                            switch (result.enhancementResult)
+                            {
+                                case ItemEnhancement.EnhancementResult.GreatSuccess:
+                                    formatKey = "UI_ITEM_ENHANCEMENT_MAIL_FORMAT_GREATER";
+                                    break;
+                                case ItemEnhancement.EnhancementResult.Success:
+                                    formatKey = "UI_ITEM_ENHANCEMENT_MAIL_FORMAT";
+                                    break;
+                                case ItemEnhancement.EnhancementResult.Fail:
+                                    formatKey = "UI_ITEM_ENHANCEMENT_MAIL_FORMAT_FAIL";
+                                    break;
+                                default:
+                                    Debug.LogError($"Unexpected result.enhancementResult: {result.enhancementResult}");
+                                    formatKey = "UI_ITEM_ENHANCEMENT_MAIL_FORMAT";
+                                    break;
+                            }
+
+                            break;
+                        case ItemEnhancement7.ResultModel _:
+                            formatKey = "UI_ITEM_ENHANCEMENT_MAIL_FORMAT";
+                            break;
+                        default:
+                            Debug.LogError("itemEnhanceMail.attachment is not ItemEnhancement.ResultModel");
+                            formatKey = "UI_ITEM_ENHANCEMENT_MAIL_FORMAT";
+                            break;
+                    }
+
+                    return string.Format(
+                        L10nManager.Localize(formatKey),
                         GetLocalizedNonColoredName(itemEnhanceMail.attachment.itemUsable));
+                }
 
                 case OrderBuyerMail orderBuyerMail:
                     var buyerItemName = Util.GetItemNameByOrdierId(orderBuyerMail.OrderId, true);
@@ -40,9 +102,8 @@ namespace Nekoyume.UI
                 case OrderSellerMail orderSellerMail:
                     var order = Util.GetOrder(orderSellerMail.OrderId);
                     var sellerItemName = Util.GetItemNameByOrdierId(orderSellerMail.OrderId, true);
-                    var format = L10nManager.Localize("UI_SELLER_MAIL_FORMAT");
                     var taxedPrice = order.Price - order.GetTax();
-                    return string.Format(format, taxedPrice, sellerItemName);
+                    return string.Format(L10nManager.Localize("UI_SELLER_MAIL_FORMAT"), taxedPrice, sellerItemName);
 
                 case OrderExpirationMail orderExpirationMail:
                     var expiredItemName = Util.GetItemNameByOrdierId(orderExpirationMail.OrderId, true);
@@ -55,9 +116,11 @@ namespace Nekoyume.UI
                         cancelItemName);
 
                 case BuyerMail buyerMail:
+                    var buyerMailItemBase = GetItemBase(buyerMail.attachment);
                     return string.Format(
                         L10nManager.Localize("UI_BUYER_MAIL_FORMAT"),
-                        GetLocalizedNonColoredName(GetItemBase(buyerMail.attachment)));
+                        GetLocalizedNonColoredName(buyerMailItemBase,
+                            buyerMailItemBase.ItemType.HasElementType()));
 
                 case SellerMail sellerMail:
                     var attachment = sellerMail.attachment;
@@ -65,16 +128,20 @@ namespace Nekoyume.UI
                     {
                         throw new InvalidCastException($"({nameof(Buy7.SellerResult)}){nameof(attachment)}");
                     }
+
                     return string.Format(
                         L10nManager.Localize("UI_SELLER_MAIL_FORMAT"),
                         sellerResult.gold,
-                        GetLocalizedNonColoredName(GetItemBase(attachment)));
+                        GetLocalizedNonColoredName(GetItemBase(attachment),
+                            attachment.itemUsable.ItemType.HasElementType()));
 
                 case SellCancelMail sellCancelMail:
+                    var cancelMailItemBase = GetItemBase(sellCancelMail.attachment);
                     return string.Format(
                         L10nManager.Localize("UI_SELL_CANCEL_MAIL_FORMAT"),
-                        GetLocalizedNonColoredName(GetItemBase(sellCancelMail.attachment))
-                    );
+                        GetLocalizedNonColoredName(cancelMailItemBase,
+                            cancelMailItemBase.ItemType.HasElementType()
+                        ));
 
                 case DailyRewardMail _:
                     return L10nManager.Localize("UI_DAILY_REWARD_MAIL_FORMAT");
@@ -219,9 +286,10 @@ namespace Nekoyume.UI
                     }
                 case CombinationEquipmentQuest combinationEquipmentQuest:
                     var unlockFormat = L10nManager.Localize("QUEST_COMBINATION_EQUIPMENT_FORMAT");
-                    var itemId = Game.Game.instance.TableSheets.EquipmentItemRecipeSheet.Values
-                        .First(r => r.Id == combinationEquipmentQuest.RecipeId).ResultEquipmentId;
-                    return string.Format(unlockFormat, L10nManager.LocalizeItemName(itemId));
+                    var recipeRow = Game.Game.instance.TableSheets.EquipmentItemRecipeSheet.Values
+                        .First(r => r.Id == combinationEquipmentQuest.RecipeId);
+                    var itemRow = recipeRow.GetResultEquipmentItemRow();
+                    return string.Format(unlockFormat, itemRow.GetLocalizedName(false, true));
                 default:
                     throw new NotSupportedException(
                         $"Given quest[{quest}] doesn't support {nameof(GetContent)}() method.");
@@ -268,13 +336,16 @@ namespace Nekoyume.UI
             }
         }
 
-        public static string GetLocalizedName(this ItemBase item)
+        public static string GetLocalizedName(
+            this ItemBase item,
+            bool useElementalIcon = true,
+            bool ignoreLevel = false)
         {
-            string name = item.GetLocalizedNonColoredName();
+            var name = item.GetLocalizedNonColoredName(useElementalIcon);
             switch (item)
             {
                 case Equipment equipment:
-                    return equipment.level > 0
+                    return !ignoreLevel && equipment.level > 0
                         ? $"<color=#{GetColorHexByGrade(item)}>+{equipment.level} {name}</color>"
                         : $"<color=#{GetColorHexByGrade(item)}>{name}</color>";
                 default:
@@ -282,29 +353,75 @@ namespace Nekoyume.UI
             }
         }
 
-        public static string GetLocalizedName(EquipmentItemSheet sheet, int equipmentId, int level)
+        public static string GetLocalizedNonColoredName(this ItemBase item, bool useElementalIcon = true)
         {
-            var grade = sheet[equipmentId].Grade;
-            var name = GetLocalizedNonColoredName(equipmentId);
+            return GetLocalizedNonColoredName(item.ElementalType, item.Id,
+                useElementalIcon && item.ItemType.HasElementType());
+        }
+
+        public static string GetLocalizedName(this EquipmentItemSheet.Row equipmentRow, int level, bool useElementalIcon = true)
+        {
+            var name = GetLocalizedNonColoredName(equipmentRow.ElementalType, equipmentRow.Id, useElementalIcon);
 
             return level > 0
-                ? $"<color=#{GetColorHexByGrade(grade)}>+{level} {name}</color>"
-                : $"<color=#{GetColorHexByGrade(grade)}>{name}</color>";
+                ? $"<color=#{GetColorHexByGrade(equipmentRow.Grade)}>+{level} {name}</color>"
+                : $"<color=#{GetColorHexByGrade(equipmentRow.Grade)}>{name}</color>";
         }
 
-        public static string GetLocalizedNonColoredName(this ItemBase item)
+        public static string GetLocalizedName(this ConsumableItemSheet.Row consumableRow, bool hasColor = true)
         {
-            return GetLocalizedNonColoredName(item.Id);
+            var name = GetLocalizedNonColoredName(consumableRow.ElementalType, consumableRow.Id, false);
+            return hasColor ?
+                $"<color=#{GetColorHexByGrade(consumableRow.Grade)}>{name}</color>" :
+                name;
         }
 
-        public static string GetLocalizedNonColoredName(int id)
+        public static string GetLocalizedNonColoredName(ElementalType elementalType, int equipmentId, bool useElementalIcon)
         {
-            return L10nManager.Localize($"ITEM_NAME_{id}");
+            var elemental = useElementalIcon ? GetElementalIcon(elementalType) : string.Empty;
+            var name = L10nManager.Localize($"ITEM_NAME_{equipmentId}");
+            return $"{name}{elemental}";
+        }
+
+        public static Color GetElementalTypeColor(this ItemBase item)
+        {
+            return item.ElementalType switch
+            {
+                ElementalType.Normal => Palette.GetColor(EnumType.ColorType.TextElement00),
+                ElementalType.Fire => Palette.GetColor(EnumType.ColorType.TextElement01),
+                ElementalType.Land => Palette.GetColor(EnumType.ColorType.TextElement02),
+                ElementalType.Water => Palette.GetColor(EnumType.ColorType.TextElement04),
+                ElementalType.Wind => Palette.GetColor(EnumType.ColorType.TextElement05),
+                _ => Color.white,
+            };
         }
 
         public static Color GetItemGradeColor(this ItemBase item)
         {
-            return ColorHelper.HexToColorRGB(GetColorHexByGrade(item));
+            return GetItemGradeColor(item.Grade);
+        }
+
+        public static Color GetItemGradeColor(int grade)
+        {
+            return grade switch
+            {
+                1 => Palette.GetColor(EnumType.ColorType.TextGrade00),
+                2 => Palette.GetColor(EnumType.ColorType.TextGrade01),
+                3 => Palette.GetColor(EnumType.ColorType.TextGrade02),
+                4 => Palette.GetColor(EnumType.ColorType.TextGrade03),
+                5 => Palette.GetColor(EnumType.ColorType.TextGrade04),
+                _ => Palette.GetColor(EnumType.ColorType.TextGrade00),
+            };
+        }
+
+        public static string ColorToHex(this Color color)
+        {
+            var r = (int)(color.r * 255);
+            var g = (int)(color.g * 255);
+            var b = (int)(color.b * 255);
+
+            var result = string.Format("{0:x2}{1:x2}{2:x2}", r, g, b);
+            return result;
         }
 
         public static string GetLocalizedDescription(this ItemBase item)
@@ -312,28 +429,75 @@ namespace Nekoyume.UI
             return L10nManager.Localize($"ITEM_DESCRIPTION_{item.Id}");
         }
 
-        private static string GetColorHexByGrade(ItemBase item)
-        {
-            return GetColorHexByGrade(item.Grade);
-        }
-
         private static string GetColorHexByGrade(int grade)
         {
-            switch (grade)
+            var color = GetItemGradeColor(grade);
+            return color.ColorToHex();
+        }
+
+        public static string GetColorHexByGrade(this ItemBase item)
+        {
+            var color = GetColorHexByGrade(item.Grade);
+            return color;
+        }
+
+        private static string GetElementalIcon(ElementalType type)
+        {
+            return type switch
             {
-                case 1:
-                    return ColorConfig.ColorHexForGrade1;
-                case 2:
-                    return ColorConfig.ColorHexForGrade2;
-                case 3:
-                    return ColorConfig.ColorHexForGrade3;
-                case 4:
-                    return ColorConfig.ColorHexForGrade4;
-                case 5:
-                    return ColorConfig.ColorHexForGrade5;
+                ElementalType.Normal => "<sprite name=icon_Element_0>",
+                ElementalType.Fire => "<sprite name=icon_Element_1>",
+                ElementalType.Water => "<sprite name=icon_Element_2>",
+                ElementalType.Land => "<sprite name=icon_Element_3>",
+                ElementalType.Wind => "<sprite name=icon_Element_4>",
+                _ => "<sprite name=icon_Element_0>"
+            };
+        }
+
+        public static string GetLocalizedItemSubTypeText(ItemSubType type)
+        {
+            switch (type)
+            {
+                case ItemSubType.Title:
+                case ItemSubType.FullCostume:
+                case ItemSubType.HairCostume:
+                case ItemSubType.EarCostume:
+                case ItemSubType.EyeCostume:
+                case ItemSubType.TailCostume:
+                    return L10nManager.Localize("UI_COSTUME");
+                case ItemSubType.ApStone:
+                case ItemSubType.Food:
+                    return L10nManager.Localize("UI_CONSUMABLE");
+                case ItemSubType.Weapon:
+                    return L10nManager.Localize("UI_WEAPON");
+                case ItemSubType.Armor:
+                    return L10nManager.Localize("UI_ARMOR");
+                case ItemSubType.Belt:
+                    return L10nManager.Localize("UI_BELT");
+                case ItemSubType.Necklace:
+                    return L10nManager.Localize("UI_NECKLACE");
+                case ItemSubType.Ring:
+                    return L10nManager.Localize("UI_RING");
+                case ItemSubType.EquipmentMaterial:
+                case ItemSubType.FoodMaterial:
+                case ItemSubType.MonsterPart:
+                case ItemSubType.NormalMaterial:
+                case ItemSubType.Hourglass:
+                    return L10nManager.Localize("UI_MATERIAL");
                 default:
-                    return ColorConfig.ColorHexForGrade1;
+                    return string.Empty;
             }
+        }
+
+        public static string GetGradeText(this ItemBase itemBase)
+        {
+            var gradeText = L10nManager.Localize($"UI_ITEM_GRADE_{itemBase.Grade}");
+            return gradeText;
+        }
+        public static string GetSubTypeText(this ItemBase itemBase)
+        {
+            var subTypeText = GetLocalizedItemSubTypeText(itemBase.ItemSubType);
+            return subTypeText;
         }
     }
 }

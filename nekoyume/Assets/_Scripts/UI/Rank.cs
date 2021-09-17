@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Nekoyume.Game.Controller;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -39,7 +40,7 @@ namespace Nekoyume.UI
             RankLoadingTask = model.Update(RankingBoardDisplayCount);
         }
 
-        public override WidgetType WidgetType => WidgetType.Tooltip;
+        public override WidgetType WidgetType => WidgetType.Popup;
 
         [SerializeField]
         private Button closeButton = null;
@@ -80,6 +81,9 @@ namespace Nekoyume.UI
         [SerializeField]
         private List<Button> notImplementedToggles = null;
 
+        [SerializeField]
+        private Blur blur = null;
+
         public const int RankingBoardDisplayCount = 100;
 
         private readonly Dictionary<RankCategory, Toggle> _toggleMap = new Dictionary<RankCategory, Toggle>();
@@ -96,6 +100,8 @@ namespace Nekoyume.UI
             { RankCategory.EquipmentNecklace, ("UI_CP", "UI_NAME") },
             { RankCategory.EquipmentRing, ("UI_CP", "UI_NAME") },
         };
+
+        public override CloseKeyType CloseKeyType => CloseKeyType.Escape;
 
         public override void Initialize()
         {
@@ -115,6 +121,8 @@ namespace Nekoyume.UI
                         UpdateCategory(toggle.Category);
                     }
                 });
+
+                toggle.Toggle.onClickToggle.AddListener(AudioController.PlayClick);
             }
 
             foreach (var dropDown in categoryDropdowns)
@@ -134,6 +142,8 @@ namespace Nekoyume.UI
                         firstElement.onValueChanged.Invoke(true);
                     }
                 });
+
+                dropDown.onClickToggle.AddListener(AudioController.PlayClick);
             }
 
             foreach (var button in notImplementedToggles)
@@ -150,12 +160,35 @@ namespace Nekoyume.UI
                     UpdateCategory(RankCategory.Ability, true);
                 })
                 .AddTo(gameObject);
+
+            closeButton.onClick.AsObservable()
+                .Subscribe(_ =>
+                {
+                    Close();
+                    AudioController.PlayClick();
+                })
+                .AddTo(gameObject);
         }
 
         public override void Show(bool ignoreShowAnimation = false)
         {
             base.Show(ignoreShowAnimation);
             UpdateCategory(RankCategory.Ability, true);
+
+            if (blur)
+            {
+                blur.Show();
+            }
+        }
+
+        public override void Close(bool ignoreCloseAnimation = false)
+        {
+            if (blur && blur.isActiveAndEnabled)
+            {
+                blur.Close();
+            }
+
+            base.Close(ignoreCloseAnimation);
         }
 
         private void UpdateCategory(RankCategory category, bool toggleOn = false)

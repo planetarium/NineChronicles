@@ -220,9 +220,9 @@ namespace Nekoyume.UI.Module
                 //같은 이미지가 사용됨
                 imageKey = "02";
             }
-            disabledImage.sprite = Resources.Load<Sprite>($"UI/Textures/WorldMap/battle_UI_icon_02");
+            disabledImage.sprite = Resources.Load<Sprite>($"UI/Textures/WorldMap/battle_UI_icon_01");
             disabledImage.SetNativeSize();
-            selectedImage.sprite = Resources.Load<Sprite>($"UI/Textures/WorldMap/battle_UI_icon_03");
+            selectedImage.sprite = Resources.Load<Sprite>($"UI/Textures/WorldMap/battle_UI_icon_01");
             selectedImage.SetNativeSize();
             bossImage.enabled = isBoss;
             ResetScale();

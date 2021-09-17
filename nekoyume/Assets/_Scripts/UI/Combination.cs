@@ -122,7 +122,7 @@ namespace Nekoyume.UI
         public bool HasNotification => itemRecipe.HasNotification;
 
         public override bool CanHandleInputEvent => State.Value == StateType.CombinationConfirm
-            ? AnimationState == AnimationStateType.Shown
+            ? AnimationState.Value == AnimationStateType.Shown
             : base.CanHandleInputEvent;
 
         #region Override
@@ -191,8 +191,8 @@ namespace Nekoyume.UI
 
             blur.gameObject.SetActive(false);
 
-            CombinationSlotStateSubject.CombinationSlotState.Subscribe(_ => ResetSelectedIndex())
-                .AddTo(gameObject);
+            // CombinationSlotStateSubject.CombinationSlotState.Subscribe(_ => ResetSelectedIndex())
+            //     .AddTo(gameObject);
             Game.Game.instance.Agent.BlockIndexSubject.ObserveOnMainThread()
                 .Subscribe(SubscribeBlockIndex)
                 .AddTo(gameObject);
@@ -249,19 +249,6 @@ namespace Nekoyume.UI
                 State.SetValueAndForceNotify(StateType.SelectMenu);
             }
 
-            Find<BottomMenu>().Show(
-                UINavigator.NavigationType.Back,
-                SubscribeBackButtonClick,
-                true,
-                BottomMenu.ToggleableType.Mail,
-                BottomMenu.ToggleableType.Quest,
-                BottomMenu.ToggleableType.Chat,
-                BottomMenu.ToggleableType.IllustratedBook,
-                BottomMenu.ToggleableType.Ranking,
-                BottomMenu.ToggleableType.Character,
-                BottomMenu.ToggleableType.Combination
-            );
-
             if (_npc01 is null)
             {
                 var go = Game.Game.instance.Stage.npcFactory.Create(
@@ -290,8 +277,6 @@ namespace Nekoyume.UI
 
         public override void Close(bool ignoreCloseAnimation = false)
         {
-            Find<BottomMenu>().Close(ignoreCloseAnimation);
-
             _enhanceEquipment.Close(ignoreCloseAnimation);
             speechBubbleForEquipment.gameObject.SetActive(false);
             speechBubbleForUpgrade.gameObject.SetActive(false);
@@ -358,7 +343,7 @@ namespace Nekoyume.UI
             }
 
             Find<ItemInformationTooltip>().Close();
-            Find<BottomMenu>().ToggleGroup.SetToggledOffAll();
+            // Find<BottomMenu>().ToggleGroup.SetToggledOffAll();
 
             selectionArea.root.SetActive(value == StateType.SelectMenu);
             leftArea.SetActive(value != StateType.SelectMenu);
@@ -558,7 +543,7 @@ namespace Nekoyume.UI
             State.SetValueAndForceNotify((StateType) index);
         }
 
-        private void SubscribeBackButtonClick(BottomMenu bottomMenu)
+        private void SubscribeBackButtonClick(HeaderMenu headerMenu)
         {
             if (!CanClose)
             {
@@ -584,12 +569,12 @@ namespace Nekoyume.UI
 
         public void OnTweenRecipe()
         {
-            AnimationState = AnimationStateType.Showing;
+            AnimationState.Value = AnimationStateType.Showing;
         }
 
         public void OnTweenRecipeCompleted()
         {
-            AnimationState = AnimationStateType.Shown;
+            AnimationState.Value = AnimationStateType.Shown;
         }
 
         private void SubscribeSlotStates(Dictionary<Address, CombinationSlotState> states)
@@ -668,12 +653,6 @@ namespace Nekoyume.UI
 
         private void CreateConsumableCombinationAction(ConsumableItemRecipeSheet.Row row, int slotIndex)
         {
-            LocalLayerModifier.ModifyCombinationSlotConsumable(
-                Game.Game.instance.TableSheets,
-                combinationPanel,
-                row,
-                slotIndex
-            );
             Game.Game.instance.ActionManager.CombinationConsumable(row.Id, slotIndex)
                 .Subscribe(
                     _ => { },
@@ -687,12 +666,6 @@ namespace Nekoyume.UI
             EquipmentItemRecipeSheet.Row model,
             CombinationPanel panel)
         {
-            LocalLayerModifier.ModifyCombinationSlotEquipment(
-                Game.Game.instance.TableSheets,
-                model,
-                panel,
-                slotIndex,
-                subRecipeId);
             Game.Game.instance.ActionManager.CombinationEquipment(recipeId, slotIndex, subRecipeId);
         }
 
@@ -726,44 +699,44 @@ namespace Nekoyume.UI
 
         private void ResetSelectedIndex()
         {
-            var avatarState = States.Instance.CurrentAvatarState;
-            var slotStates = States.Instance.CombinationSlotStates;
-            if (avatarState is null || slotStates is null)
-            {
-                return;
-            }
-            var avatarAddress = avatarState.address;
-            var idx = -1;
-            for (var i = 0; i < AvatarState.CombinationSlotCapacity; i++)
-            {
-                var address = avatarAddress.Derive(
-                    string.Format(
-                        CultureInfo.InvariantCulture,
-                        CombinationSlotState.DeriveFormat,
-                        i
-                    )
-                );
-
-                if (slotStates.ContainsKey(address))
-                {
-                    var state = slotStates[address];
-                    if (state.Validate(avatarState, _blockIndex))
-                    {
-                        idx = i;
-                        break;
-                    }
-                }
-            }
-
-            selectedIndex = idx;
-            if (selectedIndex < 0)
-            {
-                Debug.Log("There is no valid slot in combination slot state.");
-            }
-
-            _enhanceEquipment.UpdateSubmittable();
-            combinationPanel.UpdateSubmittable();
-            elementalCombinationPanel.UpdateSubmittable();
+            // var avatarState = States.Instance.CurrentAvatarState;
+            // var slotStates = States.Instance.CombinationSlotStates;
+            // if (avatarState is null || slotStates is null)
+            // {
+            //     return;
+            // }
+            // var avatarAddress = avatarState.address;
+            // var idx = -1;
+            // for (var i = 0; i < AvatarState.CombinationSlotCapacity; i++)
+            // {
+            //     var address = avatarAddress.Derive(
+            //         string.Format(
+            //             CultureInfo.InvariantCulture,
+            //             CombinationSlotState.DeriveFormat,
+            //             i
+            //         )
+            //     );
+            //
+            //     if (slotStates.ContainsKey(address))
+            //     {
+            //         var state = slotStates[address];
+            //         if (state.Validate(avatarState, _blockIndex))
+            //         {
+            //             idx = i;
+            //             break;
+            //         }
+            //     }
+            // }
+            //
+            // selectedIndex = idx;
+            // if (selectedIndex < 0)
+            // {
+            //     Debug.Log("There is no valid slot in combination slot state.");
+            // }
+            //
+            // _enhanceEquipment.UpdateSubmittable();
+            // combinationPanel.UpdateSubmittable();
+            // elementalCombinationPanel.UpdateSubmittable();
         }
 
         public IEnumerator CoCombineNPCAnimation(ItemBase itemBase, System.Action action, bool isConsumable = false)
@@ -774,12 +747,11 @@ namespace Nekoyume.UI
             loadingScreen.SetCloseAction(action);
             canvasGroup.interactable = false;
             canvasGroup.blocksRaycasts = false;
-            Find<BottomMenu>().SetIntractable(false);
             blur.gameObject.SetActive(true);
             _npc01.SpineController.Disappear();
             Push();
             yield return new WaitForSeconds(.5f);
-            loadingScreen.AnimateNPC();
+            loadingScreen.AnimateNPC(itemBase.ItemType);
         }
 
         private void OnNPCDisappear()
@@ -787,7 +759,6 @@ namespace Nekoyume.UI
             _npc01.SpineController.Appear();
             canvasGroup.interactable = true;
             canvasGroup.blocksRaycasts = true;
-            Find<BottomMenu>().SetIntractable(true);
             blur.gameObject.SetActive(false);
             Pop();
             _selectedSpeechBubble.Hide();

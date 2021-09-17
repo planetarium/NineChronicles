@@ -30,6 +30,8 @@ namespace Nekoyume.UI
 
         private readonly List<int> _mixpanelTargets = new List<int>() { 1, 2, 6, 11, 49 };
 
+        public bool IsPlaying => _tutorial.IsActive();
+
         public TutorialController(IEnumerable<Widget> widgets)
         {
             foreach (var widget in widgets)
@@ -128,7 +130,7 @@ namespace Nekoyume.UI
             var preset = _preset.First(x => x.id == data.presetId);
             var target = _targets.ContainsKey(data.targetType) ? _targets[data.targetType] : null;
             var scriptKey = data.scriptKey;
-            var script = L10nManager.TryLocalize(scriptKey, out var s) ? s : scriptKey;
+            var script = L10nManager.Localize(scriptKey);
 
             return new List<ITutorialData>()
             {

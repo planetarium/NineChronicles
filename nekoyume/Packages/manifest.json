@@ -1,9 +1,11 @@
 {
   "dependencies": {
+    "com.brunomikoski.animationsequencer": "0.1.6",
     "com.coffee.softmask-for-ugui": "https://github.com/mob-sakai/SoftMaskForUGUI.git#upm",
     "com.coffee.ui-effect": "https://github.com/mob-sakai/UIEffect.git#upm",
     "com.coffee.ui-particle": "https://github.com/mob-sakai/ParticleEffectForUGUI.git#main",
     "com.cysharp.unitask": "https://github.com/Cysharp/UniTask.git?path=src/UniTask/Assets/Plugins/UniTask#2.2.5",
+    "com.demigiant.dotween": "1.2.42",
     "com.elringus.spriteglow": "https://github.com/Elringus/SpriteGlow.git#package",
     "com.mixpanel.unity": "https://github.com/mixpanel/mixpanel-unity.git#v2.2.0",
     "com.neuecc.unirx": "https://github.com/starikcetin/unirx.git#f93af89f2aafeccfc7aff9dee2cecc6d60ede06b",
@@ -54,8 +56,7 @@
     "com.unity.modules.vr": "1.0.0",
     "com.unity.modules.wind": "1.0.0",
     "com.unity.modules.xr": "1.0.0",
-    "com.brunomikoski.animationsequencer": "0.1.6",
-    "com.demigiant.dotween": "1.2.42"
+    "com.laicasaane.texttyper": "3.1.0"
   },
   "scopedRegistries": [
     {
@@ -64,6 +65,7 @@
       "scopes": [
         "com.brunomikoski.animationsequencer",
         "com.demigiant.dotween",
+        "com.laicasaane.texttyper",
         "com.openupm"
       ]
     }

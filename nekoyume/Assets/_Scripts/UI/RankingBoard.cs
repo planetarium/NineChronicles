@@ -16,8 +16,8 @@ using Nekoyume.State.Subjects;
 using Nekoyume.UI.Module;
 using Nekoyume.UI.Scroller;
 using TMPro;
-using UniRx;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
@@ -33,8 +33,8 @@ namespace Nekoyume.UI
             Overall
         }
 
+        private static readonly Vector3 NPCPosition = new Vector3(999.8f, 998.3f);
         private const int NPCId = 300002;
-        private static readonly Vector3 NPCPosition = new Vector3(1.2f, -1.72f);
 
         [SerializeField]
         private CategoryButton arenaButton = null;
@@ -44,6 +44,9 @@ namespace Nekoyume.UI
 
         [SerializeField]
         private CategoryButton overallButton = null;
+
+        [SerializeField]
+        private Button closeButton;
 
         [SerializeField]
         private GameObject arenaRankingHeader = null;
@@ -140,7 +143,17 @@ namespace Nekoyume.UI
             winText.text = L10nManager.Localize("UI_WIN");
             loseText.text = L10nManager.Localize("UI_LOSE");
 
-            CloseWidget = null;
+            closeButton.onClick.AddListener(() =>
+            {
+                Close(true);
+                Game.Event.OnRoomEnter.Invoke(true);
+            });
+
+            CloseWidget = () =>
+            {
+                Close(true);
+                Game.Event.OnRoomEnter.Invoke(true);
+            };
             SubmitWidget = null;
             SetRankingInfos(States.Instance.RankingMapStates);
         }
@@ -189,27 +202,18 @@ namespace Nekoyume.UI
             base.Show(true);
 
             _state.SetValueAndForceNotify(stateType);
-            Find<BottomMenu>()?.Show(
-                UINavigator.NavigationType.Back,
-                SubscribeBackButtonClick,
-                true,
-                BottomMenu.ToggleableType.Ranking,
-                BottomMenu.ToggleableType.Character);
-
             Find<DataLoadingScreen>().Close();
             AudioController.instance.PlayMusic(AudioController.MusicCode.Ranking);
             HelpPopup.HelpMe(100015, true);
             ShowSpeech("SPEECH_RANKING_BOARD_GREETING_", CharacterAnimation.Type.Greeting);
+
+            Find<HeaderMenu>().Show(HeaderMenu.AssetVisibleState.Battle);
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
         {
             _disposablesFromShow.DisposeAllAndClear();
-
-            Find<BottomMenu>()?.Close();
-
             base.Close(ignoreCloseAnimation);
-
             _npc?.gameObject.SetActive(false);
             speechBubble.Hide();
         }
@@ -275,7 +279,7 @@ namespace Nekoyume.UI
             if (!arenaInfo.Active)
             {
                 currentAvatarCellView.ShowMyDefaultInfo();
-                LocalLayerModifier.AddWeeklyArenaInfoActivator(Game.Game.instance.TableSheets.CharacterSheet);
+                arenaInfo.Activate();
             }
 
             UpdateBoard(StateType.Arena);
@@ -334,7 +338,7 @@ namespace Nekoyume.UI
                         Game.Game.instance.TableSheets.CharacterSheet,
                         false);
                 }
-                
+
                 currentAvatarCellView.Show((
                     currentAvatarRank,
                     currentAvatarArenaInfo,
@@ -407,7 +411,7 @@ namespace Nekoyume.UI
             Find<ArenaBattleLoadingScreen>().Show(arenaRankCell.ArenaInfo);
         }
 
-        private void SubscribeBackButtonClick(BottomMenu bottomMenu)
+        private void SubscribeBackButtonClick(HeaderMenu headerMenu)
         {
             var avatarInfo = Find<AvatarInfo>();
             var friendInfoPopup = Find<FriendInfoPopup>();

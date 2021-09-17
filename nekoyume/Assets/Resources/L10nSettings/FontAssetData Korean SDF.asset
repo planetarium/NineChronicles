@@ -71,8 +71,13 @@ MonoBehaviour:
     material: {fileID: 2100000, guid: 7a8f63fef1d0e4bdabf2c620b8ee8e93, type: 2}
   - type: 27
     material: {fileID: 2100000, guid: 02f0968b1b2e244b2a9f839fb52be52e, type: 2}
+  - type: 28
+    material: {fileID: 2100000, guid: 064cbb864f1f4491b89814468bf6cbaf, type: 2}
+  - type: 29
+    material: {fileID: 2100000, guid: 21e8c9d295c2e407d923e8cb160b527e, type: 2}
   setFontStyleBoldToDisabledAsForced: 0
   fontSizeOffset: 0
   characterSpacingOffset: 0
   wordSpacingOffset: 0
   lineSpacingOffset: 0
+  marginBottom: 0

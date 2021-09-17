@@ -19,6 +19,11 @@ namespace Nekoyume.UI.Module
             contentText.text = L10nManager.Localize(content);
             panelImage.rectTransform.position = position;
 
+            panelImage.rectTransform.localPosition = new Vector3(
+                panelImage.rectTransform.localPosition.x,
+                panelImage.rectTransform.localPosition.y,
+                0);
+
             base.Show();
         }
 
