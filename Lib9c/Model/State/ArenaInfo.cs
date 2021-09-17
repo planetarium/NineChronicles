@@ -52,13 +52,13 @@ namespace Nekoyume.Model.State
         public readonly string AvatarName;
 
         [Obsolete("Not used anymore since v100070")]
-        public int Level { get; private set; }
+        public int Level;
 
         [Obsolete("Not used anymore since v100070")]
-        public int CombatPoint { get; private set; }
+        public int CombatPoint;
 
         [Obsolete("Not used anymore since v100070")]
-        public int ArmorId { get; private set; }
+        public int ArmorId;
 
         public ArenaInfo(AvatarState avatarState, CharacterSheet characterSheet, bool active)
         {
