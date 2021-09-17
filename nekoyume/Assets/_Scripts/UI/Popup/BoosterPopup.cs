@@ -64,7 +64,7 @@ namespace Nekoyume.UI
 
             ReactiveAvatarState.ActionPoint.Subscribe(value =>
             {
-                apSlider.maxValue = value / 5;
+                apSlider.maxValue = value / 5 >= 12 ? 12 : value / 5;
                 ownAPText.text = value.ToString();
             }).AddTo(gameObject);
 
@@ -78,7 +78,9 @@ namespace Nekoyume.UI
 
             var actionPoint = Game.Game.instance.States.CurrentAvatarState.actionPoint;
             ownAPText.text = actionPoint.ToString();
-            apSlider.value = apSlider.maxValue = actionPoint / 5;
+            // Call onValueChanged by Change value
+            apSlider.value = 0;
+            apSlider.value = apSlider.maxValue = actionPoint / 5 >= 12 ? 12 : actionPoint / 5;
             Show();
         }
 
