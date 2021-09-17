@@ -697,7 +697,8 @@ namespace Nekoyume.Game
                     isTutorial = true;
                 }
 
-                battle.Show(stageId, IsRepeatStage, IsExitReserved, isTutorial);
+                battle.Show(stageId, IsRepeatStage, IsExitReserved, isTutorial,
+                    _battleLog.playCount);
                 var stageSheet = Game.instance.TableSheets.StageSheet;
                 if (stageSheet.TryGetValue(stageId, out var row))
                 {
