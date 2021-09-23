@@ -234,8 +234,8 @@ namespace Nekoyume.UI
 
             var data = SharedModel.ItemCountableAndPricePopup.Value;
             var currency = States.Instance.GoldBalanceState.Gold.Currency;
-            data.TotalPrice.Value = new FungibleAssetValue(currency, 10, 0);
-            data.Price.Value = new FungibleAssetValue(currency, 10, 0);
+            data.TotalPrice.Value = new FungibleAssetValue(currency, Shop.MinimumPrice, 0);
+            data.Price.Value = new FungibleAssetValue(currency, Shop.MinimumPrice, 0);
             data.Count.Value = 1;
             data.IsSell.Value = true;
 
