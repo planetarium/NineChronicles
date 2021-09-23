@@ -90,6 +90,10 @@ namespace Lib9c.Tools.SubCommand
                     return (NCAction)action;
                 }).ToList();
             }
+            else
+            {
+                parsedActions = new List<NCAction>();
+            }
             Transaction<NCAction> tx = Transaction<NCAction>.Create(
                 nonce: nonce,
                 privateKey: new PrivateKey(ByteUtil.ParseHex(privateKey)),
