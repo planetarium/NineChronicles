@@ -113,11 +113,6 @@ namespace Nekoyume.BlockChain.Policy
 #if UNITY_EDITOR
             return new Lib9c.DebugPolicy();
 #else
-            Func<BlockChain<NCAction>, Address, long, bool> isAllowedToMine =
-                IsAllowedToMineFactory(
-                    IsPermissionedMiningBlockIndexFactory(permissionedMiningPolicy),
-                    IsPermissionedToMineFactory(permissionedMiningPolicy));
-
             return new BlockPolicy(
                 new RewardGold(),
                 blockInterval: BlockInterval,
@@ -129,13 +124,17 @@ namespace Nekoyume.BlockChain.Policy
                 hashAlgorithmGetter: HashAlgorithmTable.ToHashAlgorithmGetter(),
 #pragma warning restore LAA1002
                 validateNextBlockTx: ValidateNextBlockTx,
-                validateNextBlock: ValidateNextBlockFactory(permissionedMiningPolicy, ignoreHardcodedPolicies),
+                validateNextBlock: ValidateNextBlockFactory(
+                    permissionedMiningPolicy, ignoreHardcodedPolicies),
                 getMaxBlockBytes: GetMaxBlockBytes,
                 getMinTransactionsPerBlock: GetMinTransactionsPerBlock,
                 getMaxTransactionsPerBlock: GetMaxTransactionsPerBlockFactory(maxTransactionsPerBlock),
                 getMaxTransactionsPerSignerPerBlock: GetMaxTransactionsPerSignerPerBlock,
-                getAuthorizedMinersState: GetAuthorizedMinersState,
-                isAllowedToMine: isAllowedToMine);
+                getNextBlockDifficulty: GetNextBlockDifficultyFactory(
+                    BlockInterval, DifficultyStability, minimumDifficulty),
+                isAllowedToMine: IsAllowedToMineFactory(
+                    IsPermissionedMiningBlockIndexFactory(permissionedMiningPolicy),
+                    IsPermissionedToMineFactory(permissionedMiningPolicy)));
 #endif
         }
 
@@ -291,6 +290,87 @@ namespace Nekoyume.BlockChain.Policy
             return index >= MaxTransactionsPerSignerPerBlockHardcodedIndex
                 ? MaxTransactionsPerSignerPerBlock
                 : int.MaxValue;
+        }
+
+        public static long GetNextBlockDifficultyRaw(
+            BlockChain<NCAction> blockChain,
+            TimeSpan targetBlockInterval,
+            long difficultyStability,
+            long minimumDifficulty,
+            Func<BlockChain<NCAction>, long> defaultAlgorithm)
+        {
+            long index = blockChain.Count;
+
+            if (index < 0)
+            {
+                throw new InvalidBlockIndexException(
+                    $"index must be 0 or more, but its index is {index}.");
+            }
+            else if (index <= 1)
+            {
+                return index == 0 ? 0 : minimumDifficulty;
+            }
+            // FIXME: Uninstantiated blockChain can be passed as an argument.
+            // Until this is fixed, it is crucial block index is checked first.
+            // Authorized minor validity is only checked for certain indices.
+            else if (GetAuthorizedMinersState(blockChain) is AuthorizedMinersState ams)
+            {
+                long prevIndex = IsAuthorizedMiningBlockIndex(blockChain, index - 1)
+                    ? index - 2
+                    : index - 1;
+                long prevPrevIndex = IsAuthorizedMiningBlockIndex(blockChain, prevIndex - 1)
+                    ? prevIndex - 2
+                    : prevIndex - 1;
+
+                if (prevPrevIndex > ams.ValidUntil)
+                {
+                    return defaultAlgorithm(blockChain);
+                }
+                else if (IsAuthorizedMiningBlockIndex(blockChain, index)
+                    || prevIndex <= 1
+                    || prevPrevIndex <= 1)
+                {
+                    return minimumDifficulty;
+                }
+                else
+                {
+                    Block<NCAction> prevBlock = blockChain[prevIndex];
+                    Block<NCAction> prevPrevBlock = blockChain[prevPrevIndex];
+                    TimeSpan prevTimeDiff = prevBlock.Timestamp - prevPrevBlock.Timestamp;
+                    const long minimumAdjustmentMultiplier = -99;
+
+                    long adjustmentMultiplier = Math.Max(
+                        1 - ((long)prevTimeDiff.TotalMilliseconds /
+                            (long)targetBlockInterval.TotalMilliseconds),
+                        minimumAdjustmentMultiplier);
+                    long difficultyAdjustment =
+                        prevBlock.Difficulty / difficultyStability * adjustmentMultiplier;
+
+                    long nextDifficulty = Math.Max(
+                        prevBlock.Difficulty + difficultyAdjustment, minimumDifficulty);
+
+                    return nextDifficulty;
+                }
+            }
+            else
+            {
+                return defaultAlgorithm(blockChain);
+            }
+        }
+
+        public static Func<BlockChain<NCAction>, long> GetNextBlockDifficultyFactory(
+            TimeSpan targetBlockInterval,
+            long difficultyStability,
+            long minimumDifficulty)
+        {
+            return (blockChain) =>
+                GetNextBlockDifficultyRaw(
+                    blockChain: blockChain,
+                    targetBlockInterval: targetBlockInterval,
+                    difficultyStability: difficultyStability,
+                    minimumDifficulty: minimumDifficulty,
+                    defaultAlgorithm: DifficultyAdjustment<NCAction>.AlgorithmFactory(
+                        targetBlockInterval, difficultyStability, minimumDifficulty));
         }
     }
 }
