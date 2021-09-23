@@ -45,7 +45,7 @@ namespace Lib9c.Tools
         {
             var policySource = new BlockPolicySource(logger);
             IBlockPolicy<NCAction> policy = policySource.GetPolicy(
-                BlockPolicySource.DifficultyBoundDivisor + 1,
+                BlockPolicySource.DifficultyStability + 1,
                 int.MaxValue
             );
             IStagePolicy<NCAction> stagePolicy = new VolatileStagePolicy<NCAction>();

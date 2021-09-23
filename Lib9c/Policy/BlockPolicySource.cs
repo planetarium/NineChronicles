@@ -26,7 +26,7 @@ namespace Nekoyume.BlockChain.Policy
 {
     public partial class BlockPolicySource
     {
-        public const int DifficultyBoundDivisor = 2048;
+        public const int DifficultyStability = 2048;
 
         // Note: The heaviest block of 9c-main (except for the genesis) weighs 58,408 B (58 KiB).
         public const int MaxBlockBytes = 1024 * 100; // 100 KiB
@@ -121,8 +121,8 @@ namespace Nekoyume.BlockChain.Policy
             return new BlockPolicy(
                 new RewardGold(),
                 blockInterval: BlockInterval,
+                difficultyStability: DifficultyStability,
                 minimumDifficulty: minimumDifficulty,
-                difficultyBoundDivisor: DifficultyBoundDivisor,
                 permissionedMiningPolicy: permissionedMiningPolicy,
                 canonicalChainComparer: new TotalDifficultyComparer(),
 #pragma warning disable LAA1002

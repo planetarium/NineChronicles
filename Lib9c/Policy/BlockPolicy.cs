@@ -14,7 +14,7 @@ namespace Nekoyume.BlockChain.Policy
     public class BlockPolicy : BlockPolicy<NCAction>
     {
         private readonly long _minimumDifficulty;
-        private readonly long _difficultyBoundDivisor;
+        private readonly long _difficultyStability;
         private readonly Func<BlockChain<NCAction>, AuthorizedMinersState>
             _getAuthorizedMinersState;
         private readonly Func<BlockChain<NCAction>, Address, long, bool> _isAllowedToMine;
@@ -22,8 +22,8 @@ namespace Nekoyume.BlockChain.Policy
         public BlockPolicy(
             IAction blockAction,
             TimeSpan blockInterval,
+            long difficultyStability,
             long minimumDifficulty,
-            int difficultyBoundDivisor,
             PermissionedMiningPolicy? permissionedMiningPolicy,
             IComparer<IBlockExcerpt> canonicalChainComparer,
             HashAlgorithmGetter hashAlgorithmGetter,
@@ -40,8 +40,8 @@ namespace Nekoyume.BlockChain.Policy
             : base(
                 blockAction: blockAction,
                 blockInterval: blockInterval,
+                difficultyStability: difficultyStability,
                 minimumDifficulty: minimumDifficulty,
-                difficultyBoundDivisor: difficultyBoundDivisor,
                 validateNextBlockTx: validateNextBlockTx,
                 validateNextBlock: validateNextBlock,
                 canonicalChainComparer: canonicalChainComparer,
@@ -52,7 +52,7 @@ namespace Nekoyume.BlockChain.Policy
                 getMaxTransactionsPerSignerPerBlock: getMaxTransactionsPerSignerPerBlock)
         {
             _minimumDifficulty = minimumDifficulty;
-            _difficultyBoundDivisor = difficultyBoundDivisor;
+            _difficultyStability = difficultyStability;
             _getAuthorizedMinersState = getAuthorizedMinersState;
             _isAllowedToMine = isAllowedToMine;
         }
@@ -109,7 +109,7 @@ namespace Nekoyume.BlockChain.Policy
             multiplier = Math.Max(multiplier, minimumMultiplier);
 
             var prevDifficulty = prevBlock.Difficulty;
-            var offset = prevDifficulty / _difficultyBoundDivisor;
+            var offset = prevDifficulty / _difficultyStability;
             long nextDifficulty = prevDifficulty + (offset * multiplier);
 
             return Math.Max(nextDifficulty, _minimumDifficulty);
