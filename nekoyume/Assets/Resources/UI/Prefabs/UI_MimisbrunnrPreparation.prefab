@@ -4865,6 +4865,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: RepeatButton
       objectReference: {fileID: 0}
+    - target: {fileID: 1857734840486863176, guid: 661d328d271f7c24b8d73a3db97964cb,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2581880035794571417, guid: 661d328d271f7c24b8d73a3db97964cb,
         type: 3}
       propertyPath: m_textAlignment
@@ -10617,7 +10622,7 @@ PrefabInstance:
     - target: {fileID: 7430616929449913940, guid: 29c5c99555c2b5f40a6f757cea5554b3,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 88
       objectReference: {fileID: 0}
     - target: {fileID: 7430616929449913940, guid: 29c5c99555c2b5f40a6f757cea5554b3,
         type: 3}
