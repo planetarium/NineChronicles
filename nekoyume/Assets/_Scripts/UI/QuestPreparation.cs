@@ -83,7 +83,7 @@ namespace Nekoyume.UI
         private Transform buttonStarImageTransform = null;
 
         [SerializeField]
-        private Toggle repeatToggle;
+        private Toggle repeatToggle; // It is not currently in use
 
         [SerializeField, Range(.5f, 3.0f)]
         private float animationTime = 1f;
