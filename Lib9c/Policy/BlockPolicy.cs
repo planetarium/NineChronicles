@@ -1,3 +1,4 @@
+using Libplanet;
 using Libplanet.Action;
 using Libplanet.Blockchain;
 using Libplanet.Blockchain.Policies;
@@ -14,9 +15,9 @@ namespace Nekoyume.BlockChain.Policy
     {
         private readonly long _minimumDifficulty;
         private readonly long _difficultyBoundDivisor;
-        private readonly Func<BlockChain<NCAction>, AdminState> _getAdminState;
         private readonly Func<BlockChain<NCAction>, AuthorizedMinersState>
             _getAuthorizedMinersState;
+        private readonly Func<BlockChain<NCAction>, Address, long, bool> _isAllowedToMine;
 
         public BlockPolicy(
             IAction blockAction,
@@ -34,8 +35,8 @@ namespace Nekoyume.BlockChain.Policy
             Func<long, int> getMinTransactionsPerBlock = null,
             Func<long, int> getMaxTransactionsPerBlock = null,
             Func<long, int> getMaxTransactionsPerSignerPerBlock = null,
-            Func<BlockChain<NCAction>, AdminState> getAdminState = null,
-            Func<BlockChain<NCAction>, AuthorizedMinersState> getAuthorizedMinersState = null)
+            Func<BlockChain<NCAction>, AuthorizedMinersState> getAuthorizedMinersState = null,
+            Func<BlockChain<NCAction>, Address, long, bool> isAllowedToMine = null)
             : base(
                 blockAction: blockAction,
                 blockInterval: blockInterval,
@@ -52,8 +53,8 @@ namespace Nekoyume.BlockChain.Policy
         {
             _minimumDifficulty = minimumDifficulty;
             _difficultyBoundDivisor = difficultyBoundDivisor;
-            _getAdminState = getAdminState;
             _getAuthorizedMinersState = getAuthorizedMinersState;
+            _isAllowedToMine = isAllowedToMine;
         }
 
         public override long GetNextBlockDifficulty(BlockChain<NCAction> blockChain)
@@ -77,15 +78,21 @@ namespace Nekoyume.BlockChain.Policy
                 return base.GetNextBlockDifficulty(blockChain);
             }
 
-            var prevIndex = IsAuthorizedBlockIndex(blockChain, index - 1) ? index - 2 : index - 1;
-            var beforePrevIndex = IsAuthorizedBlockIndex(blockChain, prevIndex - 1) ? prevIndex - 2 : prevIndex - 1;
+            var prevIndex = IsAuthorizedMiningBlockIndex(blockChain, index - 1)
+                ? index - 2
+                : index - 1;
+            var beforePrevIndex = IsAuthorizedMiningBlockIndex(blockChain, prevIndex - 1)
+                ? prevIndex - 2
+                : prevIndex - 1;
 
             if (beforePrevIndex > GetAuthorizedMinersState(blockChain).ValidUntil)
             {
                 return base.GetNextBlockDifficulty(blockChain);
             }
 
-            if (IsAuthorizedBlockIndex(blockChain, index) || prevIndex <= 1 || beforePrevIndex <= 1)
+            if (IsAuthorizedMiningBlockIndex(blockChain, index)
+                || prevIndex <= 1
+                || beforePrevIndex <= 1)
             {
                 return _minimumDifficulty;
             }
@@ -108,7 +115,7 @@ namespace Nekoyume.BlockChain.Policy
             return Math.Max(nextDifficulty, _minimumDifficulty);
         }
 
-        public bool IsAuthorizedBlockIndex(BlockChain<NCAction> blockChain, long index)
+        public bool IsAuthorizedMiningBlockIndex(BlockChain<NCAction> blockChain, long index)
         {
             // FIXME: Uninstantiated blockChain can be passed as an argument.
             // Until this is fixed, it is crucial block index is checked first.
@@ -118,10 +125,10 @@ namespace Nekoyume.BlockChain.Policy
                 && index % ams.Interval == 0;
         }
 
-        public AdminState GetAdminState(BlockChain<NCAction> blockChain) =>
-            _getAdminState(blockChain);
-
         public AuthorizedMinersState GetAuthorizedMinersState(BlockChain<NCAction> blockChain) =>
             _getAuthorizedMinersState(blockChain);
+
+        public bool IsAllowedToMine(BlockChain<NCAction> blockChain, Address miner, long index) =>
+            _isAllowedToMine(blockChain, miner, index);
     }
 }

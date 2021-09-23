@@ -113,6 +113,11 @@ namespace Nekoyume.BlockChain.Policy
 #if UNITY_EDITOR
             return new Lib9c.DebugPolicy();
 #else
+            Func<BlockChain<NCAction>, Address, long, bool> isAllowedToMine =
+                IsAllowedToMineFactory(
+                    IsPermissionedMiningBlockIndexFactory(permissionedMiningPolicy),
+                    IsPermissionedToMineFactory(permissionedMiningPolicy));
+
             return new BlockPolicy(
                 new RewardGold(),
                 blockInterval: BlockInterval,
@@ -129,8 +134,8 @@ namespace Nekoyume.BlockChain.Policy
                 getMinTransactionsPerBlock: GetMinTransactionsPerBlock,
                 getMaxTransactionsPerBlock: GetMaxTransactionsPerBlockFactory(maxTransactionsPerBlock),
                 getMaxTransactionsPerSignerPerBlock: GetMaxTransactionsPerSignerPerBlock,
-                getAdminState: GetAdminState,
-                getAuthorizedMinersState: GetAuthorizedMinersState);
+                getAuthorizedMinersState: GetAuthorizedMinersState,
+                isAllowedToMine: isAllowedToMine);
 #endif
         }
 
@@ -265,7 +270,9 @@ namespace Nekoyume.BlockChain.Policy
 
         public static int GetMinTransactionsPerBlock(long index)
         {
-            return 0;
+            return index >= MinTransactionsPerBlockHardcodedIndex
+                ? MinTransactionsPerBlock
+                : 0;
         }
 
         public static int GetMaxTransactionsPerBlockRaw(long index, int maxTransactionsPerBlock)

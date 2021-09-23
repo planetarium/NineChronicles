@@ -72,16 +72,6 @@ namespace Nekoyume.BlockChain.Policy
             }
         }
 
-        internal static bool IsAuthorizedBlockIndex(BlockChain<NCAction> blockChain, long index)
-        {
-            // FIXME: Uninstantiated blockChain can be passed as an argument.
-            // Until this is fixed, it is crucial block index is checked first.
-            return index > 0
-                && GetAuthorizedMinersState(blockChain) is AuthorizedMinersState ams
-                && index <= ams.ValidUntil
-                && index % ams.Interval == 0;
-        }
-
         internal static BlockPolicyViolationException ValidateTxCountPerBlockRaw(
             Block<NCAction> block, bool ignoreHardcodedPolicies)
         {
@@ -166,7 +156,11 @@ namespace Nekoyume.BlockChain.Policy
             // FIXME: Uninstantiated blockChain can be passed as an argument.
             // Until this is fixed, it is crucial block index is checked first.
             // Authorized minor validity is only checked for certain indices.
-            if (!IsAuthorizedBlockIndex(blockChain, block.Index))
+            if (block.Index == 0)
+            {
+                return null;
+            }
+            if (!IsAuthorizedMiningBlockIndex(blockChain, block.Index))
             {
                 return null;
             }
@@ -221,6 +215,160 @@ namespace Nekoyume.BlockChain.Policy
         {
             return (blockChain, block) =>
                 ValidateMinerAuthorityRaw(blockChain, block, ignoreHardcodedPolicies);
+        }
+
+        internal static bool IsAllowedToMineRaw(
+            BlockChain<NCAction> blockChain,
+            Address miner,
+            long index,
+            Func<BlockChain<NCAction>, long, bool> isPermissionedMiningBlockIndex,
+            Func<BlockChain<NCAction>, Address, long, bool> isPermissionedToMine)
+        {
+            // For genesis blocks, any miner is allowed to mine.
+            if (index == 0)
+            {
+                return true;
+            }
+            else if (IsAuthorizedMiningBlockIndex(blockChain, index))
+            {
+                return IsAuthorizedToMine(blockChain, miner, index);
+            }
+            else if (isPermissionedMiningBlockIndex(blockChain, index))
+            {
+                return isPermissionedToMine(blockChain, miner, index);
+            }
+
+            // If none of the conditions apply, any miner is allowed to mine.
+            return true;
+        }
+
+        internal static Func<BlockChain<NCAction>, Address, long, bool> IsAllowedToMineFactory(
+            Func<BlockChain<NCAction>, long, bool> isPermissionedMiningBlockIndex,
+            Func<BlockChain<NCAction>, Address, long, bool> isPermissionedToMine)
+        {
+            return (blockChain, miner, index) =>
+                IsAllowedToMineRaw(
+                    blockChain, miner, index, isPermissionedMiningBlockIndex, isPermissionedToMine);
+        }
+
+        /// <summary>
+        /// Checks if authorized mining policy applies to given block index.
+        /// </summary>
+        /// <remarks>
+        /// An implementation should be agnostic about other policies affecting the same index.
+        /// Policy overruling between different policies should be handled elsewhere.
+        /// </remarks>
+        internal static bool IsAuthorizedMiningBlockIndex(
+            BlockChain<NCAction> blockChain, long index)
+        {
+            if (GetAuthorizedMinersState(blockChain) is AuthorizedMinersState ams)
+            {
+                return index % ams.Interval == 0 && index <= ams.ValidUntil;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Checks if given miner is allowed to mine a block with given index according to
+        /// authorized mining policy.
+        /// </summary>
+        /// <remarks>
+        /// An implementation should be agnostic about other policies affecting the same index.
+        /// Policy overruling between different policies should be handled elsewhere.
+        /// </remarks>
+        internal static bool IsAuthorizedToMine(
+            BlockChain<NCAction> blockChain, Address miner, long index)
+        {
+            if (IsAuthorizedMiningBlockIndex(blockChain, index))
+            {
+                if (GetAuthorizedMinersState(blockChain) is AuthorizedMinersState ams)
+                {
+                    return ams.Miners.Contains(miner);
+                }
+                else
+                {
+                    throw new ArgumentException(
+                        $"Result of {nameof(GetAuthorizedMinersState)} cannot be null.");
+                }
+            }
+            else
+            {
+                throw new ArgumentException(
+                    $"Result of {nameof(IsAuthorizedMiningBlockIndex)} must be true.");
+            }
+        }
+
+        /// <summary>
+        /// Checks if permissioned mining policy applies to given block index.
+        /// </summary>
+        /// <remarks>
+        /// An implementation should be agnostic about other policies affecting the same index.
+        /// Policy overruling between different policies should be handled elsewhere.
+        /// </remarks>
+        internal static bool IsPermissionedMiningBlockIndexRaw(
+            BlockChain<NCAction> blockChain,
+            long index,
+            PermissionedMiningPolicy? permissionedMiningPolicy)
+        {
+            if (permissionedMiningPolicy is PermissionedMiningPolicy pmp)
+            {
+                return index >= pmp.Threshold;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        internal static Func<BlockChain<NCAction>, long, bool>
+            IsPermissionedMiningBlockIndexFactory(
+                PermissionedMiningPolicy? permissionedMiningPolicy)
+        {
+            return (blockChain, index) => IsPermissionedMiningBlockIndexRaw(
+                blockChain, index, permissionedMiningPolicy);
+        }
+
+        /// <summary>
+        /// Checks if given miner is allowed to mine a block with given index according to
+        /// permissioned mining policy.
+        /// </summary>
+        /// <remarks>
+        /// An implementation should be agnostic about other policies affecting the same index.
+        /// Policy overruling between different policies should be handled elsewhere.
+        /// </remarks>
+        internal static bool IsPermissionedToMineRaw(
+            BlockChain<NCAction> blockChain,
+            Address miner,
+            long index,
+            PermissionedMiningPolicy? permissionedMiningPolicy)
+        {
+            if (IsPermissionedMiningBlockIndexRaw(blockChain, index, permissionedMiningPolicy))
+            {
+                if (permissionedMiningPolicy is PermissionedMiningPolicy pms)
+                {
+                    return pms.Miners.Contains(miner);
+                }
+                else
+                {
+                    throw new ArgumentException(
+                        $"Argument {nameof(permissionedMiningPolicy)} cannot be null.");
+                }
+            }
+            else
+            {
+                throw new ArgumentException(
+                    $"Result of {nameof(IsPermissionedMiningBlockIndexRaw)} must be true.");
+            }
+        }
+
+        internal static Func<BlockChain<NCAction>, Address, long, bool>
+            IsPermissionedToMineFactory(PermissionedMiningPolicy? permissionedMiningPolicy)
+        {
+            return (blockChain, miner, index) => IsPermissionedToMineRaw(
+                blockChain, miner, index, permissionedMiningPolicy);
         }
     }
 }
