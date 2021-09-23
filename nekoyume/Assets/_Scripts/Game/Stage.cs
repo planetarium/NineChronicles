@@ -928,7 +928,7 @@ namespace Nekoyume.Game
             yield return new WaitWhile(() => characters.Any(i => i.actions.Any()));
             foreach (var item in rewards)
             {
-                var countableItem = new CountableItem(item, 1);
+                var countableItem = new CountableItem(item, _battleLog.playCount);
                 _battleResultModel.AddReward(countableItem);
             }
 
