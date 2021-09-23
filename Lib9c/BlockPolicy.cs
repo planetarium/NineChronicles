@@ -7,7 +7,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
-using Lib9c;
 using Libplanet;
 using Nekoyume.Model.State;
 using NCAction = Libplanet.Action.PolymorphicAction<Nekoyume.Action.ActionBase>;
@@ -20,7 +19,6 @@ namespace Nekoyume.BlockChain
             new Dictionary<long, HashAlgorithmType> { [0] = HashAlgorithmType.Of<SHA256>() };
         private readonly long _minimumDifficulty;
         private readonly long _difficultyBoundDivisor;
-        private AuthorizedMinersState _authorizedMinersState;
 
         /// <summary>
         /// <para>
@@ -101,15 +99,7 @@ namespace Nekoyume.BlockChain
             PermissionedMiningPolicy = permissionedMiningPolicy;
         }
 
-        public AuthorizedMinersState AuthorizedMinersState
-        {
-            get => _authorizedMinersState;
-            set
-            {
-                _authorizedMinersState = value;
-                ((CanonicalChainComparer)CanonicalChainComparer).AuthorizedMinersState = value;
-            }
-        }
+        public AuthorizedMinersState AuthorizedMinersState { get; set; }
 
         public PermissionedMiningPolicy? PermissionedMiningPolicy { get; }
 
