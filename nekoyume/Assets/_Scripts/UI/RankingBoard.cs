@@ -504,9 +504,14 @@ namespace Nekoyume.UI
                         return (0, null);
                     }
 
-                    var characterSheet = Game.Game.instance.TableSheets.CharacterSheet;
-                    var costumeStatSheet = Game.Game.instance.TableSheets.CostumeStatSheet;
-                    tuple.arenaInfo.Update(avatarState, characterSheet, costumeStatSheet);
+                    var arenaInfo = tuple.arenaInfo;
+#pragma warning disable 618
+                    arenaInfo.Level = avatarState.level;
+                    arenaInfo.ArmorId = avatarState.TryGetEquippedFullCostume(out var fullCostume)
+                        ? fullCostume.Id
+                        : avatarState.GetArmorId();
+                    arenaInfo.CombatPoint = avatarState.GetCP();
+#pragma warning restore 618
                     return tuple;
                 })
                 .Where(tuple => tuple.rank > 0)
