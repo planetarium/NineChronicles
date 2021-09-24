@@ -2,33 +2,36 @@ namespace Lib9c.Tests.Action
 {
     using System;
     using System.Collections.Generic;
+    using System.Collections.Immutable;
+    using System.IO;
     using System.Linq;
+    using System.Runtime.Serialization.Formatters.Binary;
     using Libplanet;
     using Libplanet.Action;
-    using Libplanet.Assets;
     using Libplanet.Crypto;
     using Nekoyume;
     using Nekoyume.Action;
     using Nekoyume.Model;
     using Nekoyume.Model.BattleStatus;
+    using Nekoyume.Model.Item;
+    using Nekoyume.Model.Stat;
     using Nekoyume.Model.State;
     using Nekoyume.TableData;
+    using Serilog;
     using Xunit;
+    using Xunit.Abstractions;
+    using static SerializeKeys;
 
-    public class RankingBattle0Test
+    public class RankingBattle6Test
     {
-        private readonly IAccountStateDelta _initialState;
-
         private readonly TableSheets _tableSheets;
-
         private readonly Address _agent1Address;
         private readonly Address _avatar1Address;
-
         private readonly Address _avatar2Address;
-
         private readonly Address _weeklyArenaAddress;
+        private readonly IAccountStateDelta _initialState;
 
-        public RankingBattle0Test()
+        public RankingBattle6Test(ITestOutputHelper outputHelper)
         {
             _initialState = new State();
 
@@ -59,9 +62,9 @@ namespace Lib9c.Tests.Action
             _avatar2Address = avatar2State.address;
 
             var weeklyArenaState = new WeeklyArenaState(0);
-            weeklyArenaState.Set(avatar1State, _tableSheets.CharacterSheet);
+            weeklyArenaState.SetV2(avatar1State, _tableSheets.CharacterSheet, _tableSheets.CostumeStatSheet);
             weeklyArenaState[_avatar1Address].Activate();
-            weeklyArenaState.Set(avatar2State, _tableSheets.CharacterSheet);
+            weeklyArenaState.SetV2(avatar2State, _tableSheets.CharacterSheet, _tableSheets.CostumeStatSheet);
             weeklyArenaState[_avatar2Address].Activate();
             _weeklyArenaAddress = weeklyArenaState.address;
 
@@ -71,6 +74,11 @@ namespace Lib9c.Tests.Action
                 .SetState(agent2Address, agent2State.Serialize())
                 .SetState(_avatar2Address, avatar2State.Serialize())
                 .SetState(_weeklyArenaAddress, weeklyArenaState.Serialize());
+
+            Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Verbose()
+                .WriteTo.TestOutput(outputHelper)
+                .CreateLogger();
         }
 
         public static (AgentState, AvatarState) GetAgentStateWithAvatarState(
@@ -102,12 +110,25 @@ namespace Lib9c.Tests.Action
             return (agentState, avatarState);
         }
 
-        [Fact]
-        public void Execute()
+        [Theory]
+        [InlineData(true, true, true)]
+        [InlineData(true, true, false)]
+        [InlineData(true, false, true)]
+        [InlineData(true, false, false)]
+        [InlineData(false, true, true)]
+        [InlineData(false, true, false)]
+        [InlineData(false, false, true)]
+        [InlineData(false, false, false)]
+        public void Execute(bool isNew, bool avatarBackward, bool enemyBackward)
         {
             var previousWeeklyState = _initialState.GetWeeklyArenaState(0);
             var previousAvatar1State = _initialState.GetAvatarState(_avatar1Address);
             previousAvatar1State.level = 10;
+            var prevScore = previousWeeklyState[_avatar1Address].Score;
+            if (isNew)
+            {
+                previousWeeklyState.Remove(_avatar1Address);
+            }
 
             var previousState = _initialState.SetState(
                 _avatar1Address,
@@ -119,12 +140,51 @@ namespace Lib9c.Tests.Action
 
             Assert.All(itemIds, id => Assert.False(previousAvatar1State.inventory.HasItem(id)));
 
-            var action = new RankingBattle0
+            var row = _tableSheets.CostumeStatSheet.Values.First(r => r.StatType == StatType.ATK);
+            var costume = (Costume)ItemFactory.CreateItem(
+                _tableSheets.ItemSheet[row.CostumeId], new TestRandom());
+            costume.equipped = true;
+            previousAvatar1State.inventory.AddItem(costume);
+
+            var row2 = _tableSheets.CostumeStatSheet.Values.First(r => r.StatType == StatType.DEF);
+            var enemyCostume = (Costume)ItemFactory.CreateItem(
+                _tableSheets.ItemSheet[row2.CostumeId], new TestRandom());
+            enemyCostume.equipped = true;
+            var enemyAvatarState = _initialState.GetAvatarState(_avatar2Address);
+            enemyAvatarState.inventory.AddItem(enemyCostume);
+
+            if (avatarBackward)
             {
-                AvatarAddress = _avatar1Address,
-                EnemyAddress = _avatar2Address,
-                WeeklyArenaAddress = _weeklyArenaAddress,
-                costumeIds = new List<int>(),
+                previousState = previousState.SetState(_avatar1Address, previousAvatar1State.Serialize());
+            }
+            else
+            {
+                previousState = previousState
+                    .SetState(_avatar1Address.Derive(LegacyInventoryKey), previousAvatar1State.inventory.Serialize())
+                    .SetState(_avatar1Address.Derive(LegacyWorldInformationKey), previousAvatar1State.worldInformation.Serialize())
+                    .SetState(_avatar1Address.Derive(LegacyQuestListKey), previousAvatar1State.questList.Serialize())
+                    .SetState(_avatar1Address, previousAvatar1State.SerializeV2());
+            }
+
+            if (enemyBackward)
+            {
+                previousState = previousState.SetState(_avatar2Address, enemyAvatarState.Serialize());
+            }
+            else
+            {
+                previousState = previousState
+                    .SetState(_avatar2Address.Derive(LegacyInventoryKey), enemyAvatarState.inventory.Serialize())
+                    .SetState(_avatar2Address.Derive(LegacyWorldInformationKey), enemyAvatarState.worldInformation.Serialize())
+                    .SetState(_avatar2Address.Derive(LegacyQuestListKey), enemyAvatarState.questList.Serialize())
+                    .SetState(_avatar2Address, enemyAvatarState.SerializeV2());
+            }
+
+            var action = new RankingBattle6
+            {
+                avatarAddress = _avatar1Address,
+                enemyAddress = _avatar2Address,
+                weeklyArenaAddress = _weeklyArenaAddress,
+                costumeIds = new List<Guid> { costume.ItemId },
                 equipmentIds = new List<Guid>(),
                 consumableIds = new List<Guid>(),
             };
@@ -139,26 +199,25 @@ namespace Lib9c.Tests.Action
                 Rehearsal = false,
             });
 
-            var nextAvatar1State = nextState.GetAvatarState(_avatar1Address);
+            var nextAvatar1State = nextState.GetAvatarStateV2(_avatar1Address);
             var nextWeeklyState = nextState.GetWeeklyArenaState(0);
 
             Assert.Contains(nextAvatar1State.inventory.Materials, i => itemIds.Contains(i.Id));
             Assert.NotNull(action.Result);
             Assert.Contains(typeof(GetReward), action.Result.Select(e => e.GetType()));
             Assert.Equal(BattleLog.Result.Win, action.Result.result);
-            Assert.True(nextWeeklyState[_avatar1Address].Score >
-                        previousWeeklyState[_avatar1Address].Score);
+            Assert.True(nextWeeklyState[_avatar1Address].Score > prevScore);
         }
 
         [Fact]
         public void ExecuteThrowInvalidAddressException()
         {
-            var action = new RankingBattle0
+            var action = new RankingBattle6
             {
-                AvatarAddress = _avatar1Address,
-                EnemyAddress = _avatar1Address,
-                WeeklyArenaAddress = _weeklyArenaAddress,
-                costumeIds = new List<int>(),
+                avatarAddress = _avatar1Address,
+                enemyAddress = _avatar1Address,
+                weeklyArenaAddress = _weeklyArenaAddress,
+                costumeIds = new List<Guid>(),
                 equipmentIds = new List<Guid>(),
                 consumableIds = new List<Guid>(),
             };
@@ -198,12 +257,12 @@ namespace Lib9c.Tests.Action
                     break;
             }
 
-            var action = new RankingBattle0
+            var action = new RankingBattle6
             {
-                AvatarAddress = avatarAddress,
-                EnemyAddress = enemyAddress,
-                WeeklyArenaAddress = _weeklyArenaAddress,
-                costumeIds = new List<int>(),
+                avatarAddress = avatarAddress,
+                enemyAddress = enemyAddress,
+                weeklyArenaAddress = _weeklyArenaAddress,
+                costumeIds = new List<Guid>(),
                 equipmentIds = new List<Guid>(),
                 consumableIds = new List<Guid>(),
             };
@@ -233,12 +292,12 @@ namespace Lib9c.Tests.Action
                 _avatar1Address,
                 previousAvatar1State.Serialize());
 
-            var action = new RankingBattle0
+            var action = new RankingBattle6
             {
-                AvatarAddress = _avatar1Address,
-                EnemyAddress = _avatar2Address,
-                WeeklyArenaAddress = _weeklyArenaAddress,
-                costumeIds = new List<int>(),
+                avatarAddress = _avatar1Address,
+                enemyAddress = _avatar2Address,
+                weeklyArenaAddress = _weeklyArenaAddress,
+                costumeIds = new List<Guid>(),
                 equipmentIds = new List<Guid>(),
                 consumableIds = new List<Guid>(),
             };
@@ -265,12 +324,12 @@ namespace Lib9c.Tests.Action
                 _weeklyArenaAddress,
                 previousWeeklyArenaState.Serialize());
 
-            var action = new RankingBattle0
+            var action = new RankingBattle6
             {
-                AvatarAddress = _avatar1Address,
-                EnemyAddress = _avatar2Address,
-                WeeklyArenaAddress = _weeklyArenaAddress,
-                costumeIds = new List<int>(),
+                avatarAddress = _avatar1Address,
+                enemyAddress = _avatar2Address,
+                weeklyArenaAddress = _weeklyArenaAddress,
+                costumeIds = new List<Guid>(),
                 equipmentIds = new List<Guid>(),
                 consumableIds = new List<Guid>(),
             };
@@ -287,22 +346,10 @@ namespace Lib9c.Tests.Action
             });
         }
 
-        [Theory]
-        [InlineData(0)]
-        [InlineData(1)]
-        public void ExecuteThrowWeeklyArenaStateNotContainsAvatarAddressException(
-            int caseIndex)
+        [Fact]
+        public void ExecuteThrowWeeklyArenaStateNotContainsAvatarAddressException()
         {
-            Address targetAddress;
-            switch (caseIndex)
-            {
-                case 0:
-                    targetAddress = _avatar1Address;
-                    break;
-                case 1:
-                    targetAddress = _avatar2Address;
-                    break;
-            }
+            var targetAddress = _avatar2Address;
 
             var previousWeeklyArenaState = _initialState.GetWeeklyArenaState(_weeklyArenaAddress);
             previousWeeklyArenaState.Remove(targetAddress);
@@ -311,12 +358,12 @@ namespace Lib9c.Tests.Action
                 _weeklyArenaAddress,
                 previousWeeklyArenaState.Serialize());
 
-            var action = new RankingBattle0
+            var action = new RankingBattle6
             {
-                AvatarAddress = _avatar1Address,
-                EnemyAddress = _avatar2Address,
-                WeeklyArenaAddress = _weeklyArenaAddress,
-                costumeIds = new List<int>(),
+                avatarAddress = _avatar1Address,
+                enemyAddress = _avatar2Address,
+                weeklyArenaAddress = _weeklyArenaAddress,
+                costumeIds = new List<Guid>(),
                 equipmentIds = new List<Guid>(),
                 consumableIds = new List<Guid>(),
             };
@@ -352,12 +399,12 @@ namespace Lib9c.Tests.Action
                 _weeklyArenaAddress,
                 previousWeeklyArenaState.Serialize());
 
-            var action = new RankingBattle0
+            var action = new RankingBattle6
             {
-                AvatarAddress = _avatar1Address,
-                EnemyAddress = _avatar2Address,
-                WeeklyArenaAddress = _weeklyArenaAddress,
-                costumeIds = new List<int>(),
+                avatarAddress = _avatar1Address,
+                enemyAddress = _avatar2Address,
+                weeklyArenaAddress = _weeklyArenaAddress,
+                costumeIds = new List<Guid>(),
                 equipmentIds = new List<Guid>(),
                 consumableIds = new List<Guid>(),
             };
@@ -375,49 +422,124 @@ namespace Lib9c.Tests.Action
         }
 
         [Fact]
-        public void ExecuteThrowNotEnoughFungibleAssetValueException()
+        public void Rehearsal()
         {
-            var previousWeeklyArenaState = _initialState.GetWeeklyArenaState(_weeklyArenaAddress);
-            var arenaInfo = previousWeeklyArenaState.GetArenaInfo(_avatar1Address);
-            previousWeeklyArenaState.Update(new ArenaInfo(arenaInfo));
-
-            var previousState = _initialState.SetState(
-                _weeklyArenaAddress,
-                previousWeeklyArenaState.Serialize());
-
-            var goldCurrency = new Currency("NCG", 2, Addresses.GoldCurrency);
-            var previousAgentGoldState = _initialState.GetBalance(
-                _agent1Address,
-                goldCurrency);
-
-            if (previousAgentGoldState.Sign > 0)
+            var action = new RankingBattle6
             {
-                previousState = _initialState.TransferAsset(
-                    _agent1Address,
-                    Addresses.GoldCurrency,
-                    previousAgentGoldState);
-            }
-
-            var action = new RankingBattle0
-            {
-                AvatarAddress = _avatar1Address,
-                EnemyAddress = _avatar2Address,
-                WeeklyArenaAddress = _weeklyArenaAddress,
-                costumeIds = new List<int>(),
+                avatarAddress = _avatar1Address,
+                enemyAddress = _avatar2Address,
+                weeklyArenaAddress = _weeklyArenaAddress,
+                costumeIds = new List<Guid>(),
                 equipmentIds = new List<Guid>(),
                 consumableIds = new List<Guid>(),
             };
 
-            Assert.Throws<NotEnoughFungibleAssetValueException>(() =>
+            var updatedAddresses = new List<Address>()
             {
-                action.Execute(new ActionContext()
-                {
-                    PreviousStates = previousState,
-                    Signer = _agent1Address,
-                    Random = new TestRandom(),
-                    Rehearsal = false,
-                });
+                _avatar1Address,
+                _weeklyArenaAddress,
+                _avatar1Address.Derive(LegacyInventoryKey),
+                _avatar1Address.Derive(LegacyWorldInformationKey),
+                _avatar1Address.Derive(LegacyQuestListKey),
+            };
+
+            var state = new State();
+
+            var nextState = action.Execute(new ActionContext()
+            {
+                PreviousStates = state,
+                Signer = _agent1Address,
+                BlockIndex = 0,
+                Rehearsal = true,
             });
+
+            Assert.Equal(updatedAddresses.ToImmutableHashSet(), nextState.UpdatedAddresses);
+        }
+
+        [Fact]
+        public void SerializeWithDotnetAPI()
+        {
+            var action = new RankingBattle6
+            {
+                avatarAddress = _avatar1Address,
+                enemyAddress = _avatar2Address,
+                weeklyArenaAddress = _weeklyArenaAddress,
+                costumeIds = new List<Guid>(),
+                equipmentIds = new List<Guid>(),
+                consumableIds = new List<Guid>(),
+            };
+            action.Execute(new ActionContext()
+            {
+                PreviousStates = _initialState,
+                Signer = _agent1Address,
+                Random = new TestRandom(),
+                Rehearsal = false,
+            });
+
+            var formatter = new BinaryFormatter();
+            using var ms = new MemoryStream();
+            formatter.Serialize(ms, action);
+            ms.Seek(0, SeekOrigin.Begin);
+
+            var deserialized = (RankingBattle6)formatter.Deserialize(ms);
+            Assert.Equal(action.PlainValue, deserialized.PlainValue);
+        }
+
+        [Theory]
+        [InlineData(ItemSubType.Weapon, GameConfig.MaxEquipmentSlotCount.Weapon)]
+        [InlineData(ItemSubType.Armor, GameConfig.MaxEquipmentSlotCount.Armor)]
+        [InlineData(ItemSubType.Belt, GameConfig.MaxEquipmentSlotCount.Belt)]
+        [InlineData(ItemSubType.Necklace, GameConfig.MaxEquipmentSlotCount.Necklace)]
+        [InlineData(ItemSubType.Ring, GameConfig.MaxEquipmentSlotCount.Ring)]
+        public void MultipleEquipmentTest(ItemSubType type, int maxCount)
+        {
+            var previousAvatarState = _initialState.GetAvatarState(_avatar1Address);
+            var maxLevel = _tableSheets.CharacterLevelSheet.Max(row => row.Value.Level);
+            var expRow = _tableSheets.CharacterLevelSheet[maxLevel];
+            var maxLevelExp = expRow.Exp;
+
+            previousAvatarState.level = maxLevel;
+            previousAvatarState.exp = maxLevelExp;
+
+            var weaponRows = _tableSheets
+                .EquipmentItemSheet
+                .Values
+                .Where(r => r.ItemSubType == type)
+                .Take(maxCount + 1);
+
+            var equipments = new List<Guid>();
+            foreach (var row in weaponRows)
+            {
+                var equipment = ItemFactory.CreateItem(
+                        _tableSheets.EquipmentItemSheet[row.Id],
+                        new TestRandom())
+                    as Equipment;
+
+                equipments.Add(equipment.ItemId);
+                previousAvatarState.inventory.AddItem(equipment);
+            }
+
+            var state = _initialState.SetState(_avatar1Address, previousAvatarState.Serialize());
+
+            var action = new RankingBattle6
+            {
+                avatarAddress = _avatar1Address,
+                enemyAddress = _avatar2Address,
+                weeklyArenaAddress = _weeklyArenaAddress,
+                costumeIds = new List<Guid>(),
+                equipmentIds = equipments,
+                consumableIds = new List<Guid>(),
+            };
+
+            Assert.Null(action.Result);
+
+            Assert.Throws<DuplicateEquipmentException>(() => action.Execute(new ActionContext
+            {
+                PreviousStates = state,
+                Signer = _agent1Address,
+                Random = new TestRandom(),
+                Rehearsal = false,
+            }));
         }
     }
 }
