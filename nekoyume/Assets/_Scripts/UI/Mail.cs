@@ -263,13 +263,19 @@ namespace Nekoyume.UI
             });
             // ~LocalLayer
 
-            if (mail.attachment is CombinationConsumable5.ResultModel resultModel &&
-                resultModel.subRecipeId.HasValue &&
-                Game.Game.instance.TableSheets.EquipmentItemSubRecipeSheetV2.TryGetValue(
-                    resultModel.subRecipeId.Value,
-                    out var row))
+            if (mail.attachment is CombinationConsumable5.ResultModel resultModel)
             {
-                Find<CombinationResult>().Show(itemUsable, row.Options.Count);
+                if (resultModel.subRecipeId.HasValue &&
+                    Game.Game.instance.TableSheets.EquipmentItemSubRecipeSheetV2.TryGetValue(
+                        resultModel.subRecipeId.Value,
+                        out var row))
+                {
+                    Find<CombinationResult>().Show(itemUsable, row.Options.Count);
+                }
+                else
+                {
+                    Find<CombinationResult>().Show(itemUsable);
+                }
             }
         }
 
