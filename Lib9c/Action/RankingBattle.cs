@@ -17,7 +17,7 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("ranking_battle6")]
+    [ActionType("ranking_battle7")]
     public class RankingBattle : GameAction
     {
         public const int StageId = 999999;

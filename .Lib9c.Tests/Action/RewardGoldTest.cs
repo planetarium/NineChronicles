@@ -58,7 +58,7 @@ namespace Lib9c.Tests.Action
         {
             var weekly = new WeeklyArenaState(0);
             weekly.Set(_avatarState, _tableSheets.CharacterSheet);
-            weekly[_avatarState.address].Update(_avatarState, weekly[_avatarState.address], BattleLog.Result.Lose);
+            weekly[_avatarState.address].Update(weekly[_avatarState.address], BattleLog.Result.Lose);
             var gameConfigState = new GameConfigState();
             gameConfigState.Set(_tableSheets.GameConfigSheet);
             var state = _baseState
