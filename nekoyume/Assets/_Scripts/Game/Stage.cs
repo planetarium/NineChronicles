@@ -598,7 +598,7 @@ namespace Nekoyume.Game
                 }
             }
 
-            Widget.Find<BattleResult>().Show(_battleResultModel);
+            Widget.Find<BattleResult>().Show(_battleResultModel, log.playCount > 1);
 
             yield return null;
 
