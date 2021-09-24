@@ -42,14 +42,12 @@ namespace Nekoyume.Model.State
         public int DailyChallengeCount { get; private set; }
         public bool Active { get; private set; }
 
-        [Obsolete("Not used anymore since v100070")]
         public readonly Address AgentAddress;
+
+        public readonly string AvatarName;
 
         [Obsolete("Not used anymore since v100070")]
         public bool Receive;
-
-        [Obsolete("Not used anymore since v100070")]
-        public readonly string AvatarName;
 
         [Obsolete("Not used anymore since v100070")]
         public int Level;
