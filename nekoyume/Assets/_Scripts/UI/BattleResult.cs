@@ -301,7 +301,7 @@ namespace Nekoyume.UI
         private IEnumerator CoUpdateViewAsVictory(bool isBoosted)
         {
             AudioController.instance.PlayMusic(AudioController.MusicCode.Win, 0.3f);
-            StartCoroutine(EmitBattleWinVFX());
+            StartCoroutine(EmitBattleWinVFX(isBoosted));
 
             victoryImageContainer.SetActive(true);
             _victoryImageAnimator.SetInteger("ClearedWave",
@@ -317,10 +317,20 @@ namespace Nekoyume.UI
             yield return StartCoroutine(CoUpdateRewards());
         }
 
-        private IEnumerator EmitBattleWinVFX()
+        private IEnumerator EmitBattleWinVFX(bool isBoosted)
         {
             yield return _battleWinVFXYield;
             AudioController.instance.PlaySfx(AudioController.SfxCode.Win);
+
+            if (isBoosted)
+            {
+                _battleWin04VFX =
+                    VFXController.instance.CreateAndChase<BattleWin04VFX>(
+                        ActionCamera.instance.transform,
+                        VfxBattleWinOffset);
+                yield break;
+            }
+
             switch (SharedModel.ClearedWaveNumber)
             {
                 case 1:
@@ -708,7 +718,7 @@ namespace Nekoyume.UI
             if (_battleWin04VFX)
             {
                 _battleWin04VFX.Stop();
-                _battleWin04VFX = null;
+                _battleWin04VFX.Stop();
             }
 
             foreach (var reward in rewardsArea.rewards)
