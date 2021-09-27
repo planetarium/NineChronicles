@@ -6,7 +6,6 @@ using Libplanet.Blocks;
 using Libplanet.Tx;
 using System;
 using System.Collections.Generic;
-using Nekoyume.Model.State;
 using NCAction = Libplanet.Action.PolymorphicAction<Nekoyume.Action.ActionBase>;
 
 namespace Nekoyume.BlockChain.Policy
