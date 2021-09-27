@@ -23,6 +23,7 @@ namespace Nekoyume.Battle
 
         public const int ConstructorVersionDefault = 1;
         public const int ConstructorVersionV100025 = 2;
+        public const int ConstructorVersionV100080 = 3;
 
         private int WorldId { get; }
         public int StageId { get; }
@@ -38,8 +39,9 @@ namespace Nekoyume.Battle
             int worldId,
             int stageId,
             StageSimulatorSheets stageSimulatorSheets,
-            int constructorVersion
-        )
+            int constructorVersion,
+            int playCount
+            )
             : base(
                 random,
                 avatarState,
@@ -85,6 +87,24 @@ namespace Nekoyume.Battle
                         Random,
                         MaterialItemSheet
                     );
+                    break;
+                case ConstructorVersionV100080:
+                    _waveRewards = new List<ItemBase>();
+                    for (var i = 0; i < playCount; i++)
+                    {
+                        itemSelector = SetItemSelector(stageRow, Random);
+                        var rewards = SetRewardV2(
+                            itemSelector,
+                            maxCount,
+                            Random,
+                            MaterialItemSheet
+                        );
+
+                        foreach (var reward in rewards)
+                        {
+                            _waveRewards.Add(reward);
+                        }
+                    }
                     break;
             }
         }
@@ -143,7 +163,8 @@ namespace Nekoyume.Battle
             int stageId,
             StageSimulatorSheets stageSimulatorSheets,
             Model.Skill.Skill skill,
-            int constructorVersion
+            int constructorVersion,
+            int playCount
         )
             : this(
                 random,
@@ -152,7 +173,8 @@ namespace Nekoyume.Battle
                 worldId,
                 stageId,
                 stageSimulatorSheets,
-                constructorVersion
+                constructorVersion,
+                playCount
             )
         {
             var stageSheet = stageSimulatorSheets.StageSheet;
@@ -210,7 +232,8 @@ namespace Nekoyume.Battle
             int stageId,
             StageSimulatorSheets stageSimulatorSheets,
             CostumeStatSheet costumeStatSheet,
-            int constructorVersion
+            int constructorVersion,
+            int playCount = 1
         )
             : this(
                 random,
@@ -219,7 +242,8 @@ namespace Nekoyume.Battle
                 worldId,
                 stageId,
                 stageSimulatorSheets,
-                constructorVersion
+                constructorVersion,
+                playCount
             )
         {
             Player.SetCostumeStat(costumeStatSheet);
@@ -327,7 +351,7 @@ namespace Nekoyume.Battle
                                 break;
                             case 2:
                             {
-                                ItemMap = Player.GetRewards(_waveRewards, playCount);
+                                ItemMap = Player.GetRewards(_waveRewards);
                                 var dropBox = new DropBox(null, _waveRewards);
                                 Log.Add(dropBox);
                                 var getReward = new GetReward(null, _waveRewards);
@@ -915,7 +939,7 @@ namespace Nekoyume.Battle
                                 break;
                             case 2:
                             {
-                                ItemMap = Player.GetRewards3(_waveRewards);
+                                ItemMap = Player.GetRewards(_waveRewards);
                                 var dropBox = new DropBox(null, _waveRewards);
                                 Log.Add(dropBox);
                                 var getReward = new GetReward(null, _waveRewards);

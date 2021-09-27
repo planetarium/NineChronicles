@@ -192,7 +192,7 @@ namespace Nekoyume.Model
 
             if (Inventory != null)
             {
-                Equip(Inventory.Items, equipmentItemSetEffectSheet);    
+                Equip(Inventory.Items, equipmentItemSetEffectSheet);
             }
         }
 
@@ -355,13 +355,13 @@ namespace Nekoyume.Model
             UpdateExp();
         }
 
-        // todo : Only material items are provided on stage. If NFT items are provided in the future, they need to be modified.
-        public CollectionMap GetRewards(List<ItemBase> items, int count)
+        // // todo : Only material items are provided on stage. If NFT items are provided in the future, they need to be modified.
+        public CollectionMap GetRewards(List<ItemBase> items)
         {
             var map = new CollectionMap();
             foreach (var item in items)
             {
-                map.Add(Inventory.AddItem(item, count:count));
+                map.Add(Inventory.AddItem(item));
             }
 
             return map;
@@ -374,18 +374,6 @@ namespace Nekoyume.Model
             foreach (var item in items)
             {
                 map.Add(Inventory.AddItem2(item));
-            }
-
-            return map;
-        }
-
-        [Obsolete("Use GetRewards")]
-        public CollectionMap GetRewards3(List<ItemBase> items)
-        {
-            var map = new CollectionMap();
-            foreach (var item in items)
-            {
-                map.Add(Inventory.AddItem(item));
             }
 
             return map;

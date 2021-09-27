@@ -44,7 +44,8 @@ namespace Lib9c.Tests.Model
                 1,
                 3,
                 _tableSheets.GetStageSimulatorSheets(),
-                2);
+                2,
+                1);
             simulator.Simulate3();
             var filtered =
                 simulator.Log.Where(e => e.GetType() != typeof(GetReward) || e.GetType() != typeof(DropBox));

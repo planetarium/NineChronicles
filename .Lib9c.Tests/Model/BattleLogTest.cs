@@ -40,7 +40,8 @@ namespace Lib9c.Tests.Model
                 1,
                 1,
                 _tableSheets.GetStageSimulatorSheets(),
-                2);
+                2,
+                1);
             Assert.False(simulator.Log.IsClear);
         }
 

@@ -165,13 +165,6 @@ namespace Nekoyume.Action
                                                    $"current playCount : {playCount}");
             }
 
-            if (playCount > 1 && !worldInformation.IsStageCleared(stageId))
-            {
-                throw new InvalidRepeatPlayException(
-                    $"{addressesHex}Only cleared stages can be played repeatedly. " +
-                    $"{stageId} is not cleared / current playCount : {playCount} ");
-            }
-
             var totalCostActionPoint = stageRow.CostAP * playCount;
             if (avatarState.actionPoint < totalCostActionPoint)
             {
@@ -214,7 +207,8 @@ namespace Nekoyume.Action
                 stageId,
                 states.GetStageSimulatorSheets(),
                 costumeStatSheet,
-                StageSimulator.ConstructorVersionV100025);
+                StageSimulator.ConstructorVersionV100080,
+                playCount);
 
             sw.Stop();
             Log.Verbose("{AddressesHex}HAS Initialize Simulator: {Elapsed}", addressesHex, sw.Elapsed);
