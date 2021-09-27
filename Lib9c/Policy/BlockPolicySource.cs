@@ -2,10 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using System.Reflection;
 using System.Security.Cryptography;
 using Bencodex.Types;
-using Lib9c;
 using Lib9c.Renderer;
 using Libplanet.Blocks;
 using Libplanet.Blockchain;
@@ -24,9 +22,9 @@ using UniRx;
 #endif
 using NCAction = Libplanet.Action.PolymorphicAction<Nekoyume.Action.ActionBase>;
 
-namespace Nekoyume.BlockChain
+namespace Nekoyume.BlockChain.Policy
 {
-    public class BlockPolicySource
+    public partial class BlockPolicySource
     {
         public const int DifficultyBoundDivisor = 2048;
 
@@ -36,15 +34,28 @@ namespace Nekoyume.BlockChain
         // Note: The genesis block of 9c-main net weighs 11,085,640 B (11 MiB).
         public const int MaxGenesisBytes = 1024 * 1024 * 15; // 15 MiB
 
-        public const long V100073ObsoleteIndex = 3000000;
+        /// <summary>
+        /// Starting point in which Validate restriction will apply.
+        /// </summary>
+        public const long ValidateMinerAuthorityNoOpTxHardcodedIndex = 1_200_001;
+
+        /// <summary>
+        /// Starting point in which MinTransactionsPerBlock restriction will apply.
+        /// </summary>
+        public const long MinTransactionsPerBlockHardcodedIndex = 2_173_701;
+
+        public const int MinTransactionsPerBlock = 1;
 
         // FIXME: Should be finalized before release.
-        public const int maxTransactionsPerSignerPerBlockV100074 = 4;
+        public const long MaxTransactionsPerSignerPerBlockHardcodedIndex = 3_000_001;
 
-        private static readonly Dictionary<long, HashAlgorithmType> _hashAlgorithmTable =
+        // FIXME: Should be finalized before release.
+        public const int MaxTransactionsPerSignerPerBlock = 4;
+
+        public readonly Dictionary<long, HashAlgorithmType> HashAlgorithmTable =
             new Dictionary<long, HashAlgorithmType> { [0] = HashAlgorithmType.Of<SHA256>() };
 
-        private readonly TimeSpan _blockInterval = TimeSpan.FromSeconds(8);
+        public readonly TimeSpan BlockInterval = TimeSpan.FromSeconds(8);
 
         public readonly ActionRenderer ActionRenderer = new ActionRenderer();
 
@@ -63,75 +74,75 @@ namespace Nekoyume.BlockChain
                 new LoggedRenderer<NCAction>(BlockRenderer, logger, logEventLevel);
         }
 
-        public IBlockPolicy<NCAction> GetPolicy(int minimumDifficulty, int maximumTransactions) =>
+        // FIXME 남은 설정들도 설정화 해야 할지도?
+        public IBlockPolicy<NCAction> GetPolicy(int minimumDifficulty, int maxTransactionsPerBlock) =>
             GetPolicy(
                 minimumDifficulty,
-                maximumTransactions,
+                maxTransactionsPerBlock,
                 ignoreHardcodedPolicies: false,
                 permissionedMiningPolicy: PermissionedMiningPolicy.Mainnet);
 
-        // FIXME 남은 설정들도 설정화 해야 할지도?
+        /// <summary>
+        /// Gets a <see cref="BlockPolicy"/> constructed from given parameters.
+        /// </summary>
+        /// <param name="minimumDifficulty">The minimum difficulty that a <see cref="Block{T}"/>
+        /// can have.  This is ignored for genesis blocks.</param>
+        /// <param name="maxTransactionsPerBlock">The maximum number of
+        /// <see cref="Transaction{T}"/>s that a <see cref="Block{T}"/> can have.</param>
+        /// <param name="ignoreHardcodedPolicies">
+        /// <para>
+        /// Whether to ignore or respect hardcoded policies.
+        /// </para>
+        /// <para>
+        /// There are several policies where each policy only applies after its corresponding
+        /// hardcoded index.  Turning on this option ignores these hard coded indices and
+        /// applies said policies starting from index 0, the gensis.
+        /// </para>
+        /// <para>
+        /// This is purely for unit testing and should be set to false for production.
+        /// </para>
+        /// </param>
+        /// <param name="permissionedMiningPolicy">Used for permissioned mining.</param>
+        /// <returns>A <see cref="BlockPolicy"/> constructed from given parameters.</returns>
         internal IBlockPolicy<NCAction> GetPolicy(
             int minimumDifficulty,
-            int maximumTransactions,
+            int maxTransactionsPerBlock,
             bool ignoreHardcodedPolicies,
             PermissionedMiningPolicy? permissionedMiningPolicy)
         {
 #if UNITY_EDITOR
             return new Lib9c.DebugPolicy();
 #else
+            Func<BlockChain<NCAction>, Address, long, bool> isAllowedToMine =
+                IsAllowedToMineFactory(
+                    IsPermissionedMiningBlockIndexFactory(permissionedMiningPolicy),
+                    IsPermissionedToMineFactory(permissionedMiningPolicy));
+
             return new BlockPolicy(
                 new RewardGold(),
-                blockInterval: _blockInterval,
+                blockInterval: BlockInterval,
                 minimumDifficulty: minimumDifficulty,
                 difficultyBoundDivisor: DifficultyBoundDivisor,
-                ignoreHardcodedPolicies: ignoreHardcodedPolicies,
                 permissionedMiningPolicy: permissionedMiningPolicy,
                 canonicalChainComparer: new TotalDifficultyComparer(),
 #pragma warning disable LAA1002
-                hashAlgorithmGetter: _hashAlgorithmTable.ToHashAlgorithmGetter(),
+                hashAlgorithmGetter: HashAlgorithmTable.ToHashAlgorithmGetter(),
 #pragma warning restore LAA1002
                 validateNextBlockTx: ValidateNextBlockTx,
-                getMaxBlockBytes: (long index) => index > 0 ? MaxBlockBytes : MaxGenesisBytes,
-                getMinTransactionsPerBlock: (long index) => 0,
-                getMaxTransactionsPerBlock: (long index) => maximumTransactions,
-                getMaxTransactionsPerSignerPerBlock: (long index) => index > V100073ObsoleteIndex
-                    ? maxTransactionsPerSignerPerBlockV100074
-                    : maximumTransactions);
+                validateNextBlock: ValidateNextBlockFactory(permissionedMiningPolicy, ignoreHardcodedPolicies),
+                getMaxBlockBytes: GetMaxBlockBytes,
+                getMinTransactionsPerBlock: GetMinTransactionsPerBlock,
+                getMaxTransactionsPerBlock: GetMaxTransactionsPerBlockFactory(maxTransactionsPerBlock),
+                getMaxTransactionsPerSignerPerBlock: GetMaxTransactionsPerSignerPerBlock,
+                getAuthorizedMinersState: GetAuthorizedMinersState,
+                isAllowedToMine: isAllowedToMine);
 #endif
         }
 
         public IEnumerable<IRenderer<NCAction>> GetRenderers() =>
             new IRenderer<NCAction>[] { BlockRenderer, LoggedActionRenderer };
 
-        public static bool IsObsolete(Transaction<NCAction> transaction, long blockIndex)
-        {
-            return transaction.Actions
-                .Select(action => action.InnerAction.GetType())
-                .Any(
-                    at =>
-                    at.IsDefined(typeof(ActionObsoleteAttribute), false) &&
-                    at.GetCustomAttributes()
-                        .OfType<ActionObsoleteAttribute>()
-                        .FirstOrDefault()?.ObsoleteIndex < blockIndex
-                );
-        }
-
-        public static bool IsAuthorizedMinerTransaction(
-            BlockChain<NCAction> blockChain, Transaction<NCAction> transaction)
-        {
-            return blockChain.GetState(AuthorizedMinersState.Address) is Dictionary rawAms
-                && new AuthorizedMinersState(rawAms).Miners.Contains(transaction.Signer);
-        }
-
-        public static bool IsAdminTransaction(
-            BlockChain<NCAction> blockChain, Transaction<NCAction> transaction)
-        {
-            return blockChain.GetState(Addresses.Admin) is Dictionary rawAdmin
-                && new AdminState(rawAdmin).AdminAddress.Equals(transaction.Signer);
-        }
-
-        private TxPolicyViolationException ValidateNextBlockTx(
+        public static TxPolicyViolationException ValidateNextBlockTx(
             BlockChain<NCAction> blockChain,
             Transaction<NCAction> transaction)
         {
@@ -220,12 +231,66 @@ namespace Nekoyume.BlockChain
             {
                 // It can be caused during `Swarm<T>.PreloadAsync()` because it doesn't fill its
                 // state right away...
-                // FIXME It should be removed after fix that Libplanet fills its state on IBD.
+                // FIXME: It should be removed after fix that Libplanet fills its state on IBD.
                 // See also: https://github.com/planetarium/lib9c/pull/151#discussion_r506039478
                 return null;
             }
 
             return null;
+        }
+
+        public static BlockPolicyViolationException ValidateNextBlockRaw(
+            BlockChain<NCAction> blockChain,
+            Block<NCAction> nextBlock,
+            PermissionedMiningPolicy? permissionedMiningPolicy,
+            bool ignoreHardcodedPolicies)
+        {
+            return ValidateTxCountPerBlockRaw(nextBlock, ignoreHardcodedPolicies)
+                ?? ValidateMinerAuthorityRaw(blockChain, nextBlock, ignoreHardcodedPolicies)
+                ?? ValidateMinerPermissionRaw(nextBlock, permissionedMiningPolicy, ignoreHardcodedPolicies);
+        }
+
+        public static Func<BlockChain<NCAction>, Block<NCAction>, BlockPolicyViolationException>
+            ValidateNextBlockFactory(
+                PermissionedMiningPolicy? permissionedMiningPolicy,
+                bool ignoreHardcodedPolicies)
+        {
+            return (blockChain, nextBlock) =>
+                ValidateNextBlockRaw(
+                    blockChain,
+                    nextBlock,
+                    permissionedMiningPolicy,
+                    ignoreHardcodedPolicies);
+        }
+
+        public static int GetMaxBlockBytes(long index)
+        {
+            return index > 0 ? MaxBlockBytes : MaxGenesisBytes;
+        }
+
+        public static int GetMinTransactionsPerBlock(long index)
+        {
+            return index >= MinTransactionsPerBlockHardcodedIndex
+                ? MinTransactionsPerBlock
+                : 0;
+        }
+
+        public static int GetMaxTransactionsPerBlockRaw(long index, int maxTransactionsPerBlock)
+        {
+            return maxTransactionsPerBlock;
+        }
+
+        public static Func<long, int> GetMaxTransactionsPerBlockFactory(
+            int maxTransactionsPerBlock)
+        {
+            return index => GetMaxTransactionsPerBlockRaw(index, maxTransactionsPerBlock);
+        }
+
+        public static int GetMaxTransactionsPerSignerPerBlock(long index)
+        {
+            return index >= MaxTransactionsPerSignerPerBlockHardcodedIndex
+                ? MaxTransactionsPerSignerPerBlock
+                : int.MaxValue;
         }
     }
 }
