@@ -119,6 +119,7 @@ namespace Lib9c.Tests.Action
             previousAvatarState.level = avatarLevel;
             var clearedStageId = _tableSheets.StageSheet.First?.Id ?? 0;
             clearedStageId = isClearedBefore ? Math.Max(clearedStageId, stageId - 1) : stageId - 1;
+            clearedStageId = playCount > 1 ? clearedStageId + 1 : clearedStageId;
             previousAvatarState.worldInformation = new WorldInformation(
                 0,
                 _tableSheets.WorldSheet,
@@ -394,7 +395,7 @@ namespace Lib9c.Tests.Action
                 foods = new List<Guid>(),
                 worldId = worldId,
                 stageId = stageId,
-                playCount = 2,
+                playCount = 1,
                 avatarAddress = _avatarAddress,
                 rankingMapAddress = _rankingMapAddress,
             };
