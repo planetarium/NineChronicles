@@ -165,6 +165,13 @@ namespace Nekoyume.Action
                                                    $"current playCount : {playCount}");
             }
 
+            if (playCount > 1 && !worldInformation.IsStageCleared(stageId))
+            {
+                throw new InvalidRepeatPlayException(
+                    $"{addressesHex}Only cleared stages can be played repeatedly. " +
+                    $"{stageId} is not cleared / current playCount : {playCount} ");
+            }
+
             var totalCostActionPoint = stageRow.CostAP * playCount;
             if (avatarState.actionPoint < totalCostActionPoint)
             {
