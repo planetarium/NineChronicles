@@ -379,77 +379,8 @@ namespace Nekoyume.UI
             var diff = state.UnlockBlockIndex - currentBlockIndex;
             var cost = RapidCombination0.CalculateHourglassCount(States.Instance.GameConfigState, diff);
             LocalLayerModifier.RemoveItem(avatarAddress, materialRow.ItemId, cost);
-
-            // Notify
-            string formatKey;
-            switch (state.Result)
-            {
-                case CombinationConsumable5.ResultModel combineResultModel:
-                {
-                    LocalLayerModifier.AddNewResultAttachmentMail(avatarAddress, combineResultModel.id,
-                        currentBlockIndex);
-                    if (combineResultModel.itemUsable is Equipment equipment)
-                    {
-                        if (combineResultModel.subRecipeId.HasValue &&
-                            Game.Game.instance.TableSheets.EquipmentItemSubRecipeSheetV2.TryGetValue(
-                                combineResultModel.subRecipeId.Value,
-                                out var subRecipeRow))
-                        {
-                            formatKey = equipment.optionCountFromCombination == subRecipeRow.Options.Count
-                                ? "NOTIFICATION_COMBINATION_COMPLETE_GREATER"
-                                : "NOTIFICATION_COMBINATION_COMPLETE";    
-                        }
-                        else
-                        {
-                            formatKey = "NOTIFICATION_COMBINATION_COMPLETE";
-                        }
-                    }
-                    else
-                    {
-                        formatKey = "NOTIFICATION_COMBINATION_COMPLETE";
-                    }
-
-                    break;
-                }
-                case ItemEnhancement.ResultModel enhancementResultModel:
-                {
-                    LocalLayerModifier.AddNewResultAttachmentMail(avatarAddress, enhancementResultModel.id,
-                        currentBlockIndex);
-                    switch (enhancementResultModel.enhancementResult)
-                    {
-                        case ItemEnhancement.EnhancementResult.GreatSuccess:
-                            formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE_GREATER";
-                            break;
-                        case ItemEnhancement.EnhancementResult.Success:
-                            formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE";
-                            break;
-                        case ItemEnhancement.EnhancementResult.Fail:
-                            formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE_FAIL";
-                            break;
-                        default:
-                            Debug.LogError(
-                                $"Unexpected result.enhancementResult: {enhancementResultModel.enhancementResult}");
-                            formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE";
-                            break;
-                    }
-
-                    break;
-                }
-                default:
-                    Debug.LogError(
-                        $"Unexpected state.Result: {state.Result}");
-                    formatKey = "NOTIFICATION_COMBINATION_COMPLETE";
-                    break;
-            }
-
-            var format = L10nManager.Localize(formatKey);
-            Notification.CancelReserve(state.Result.itemUsable.TradableId);
-            Notification.Push(MailType.Workshop, string.Format(format, state.Result.itemUsable.GetLocalizedName()));
-            // ~Notify
-
             Game.Game.instance.ActionManager.RapidCombination(avatarAddress, slotIndex);
-            States.Instance.RemoveSlotState(slotIndex);
-            Find<CombinationSlots>().SetCaching(slotIndex, false);
+            Find<CombinationSlots>().SetCaching(slotIndex, true, slotType:CombinationSlot.SlotType.WaitingReceive);
         }
     }
 }

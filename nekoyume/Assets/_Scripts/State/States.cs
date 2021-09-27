@@ -328,14 +328,6 @@ namespace Nekoyume.State
             }
         }
 
-        public void RemoveSlotState(int index)
-        {
-            if (_combinationSlotStates.ContainsKey(index))
-            {
-                _combinationSlotStates.Remove(index);
-            }
-        }
-
         public Dictionary<int, CombinationSlotState> GetCombinationSlotState(long currentBlockIndex)
         {
             if (_combinationSlotStates == null)
