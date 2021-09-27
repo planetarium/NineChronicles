@@ -44,6 +44,8 @@ namespace Nekoyume.UI
         private List<Equipment> _equipments;
         private List<Consumable> _consumables;
 
+        private static readonly Vector3 PlayerPosition = new Vector3(1999.8f, 1999.3f, 3f);
+
         protected override void Awake()
         {
             base.Awake();
@@ -60,7 +62,7 @@ namespace Nekoyume.UI
             _costumes = costumes;
             _equipments = equipments;
             _consumables = consumables;
-            _player = _stage.GetPlayer(Vector3.zero);
+            _player = _stage.GetPlayer(PlayerPosition);
 
             ReactiveAvatarState.ActionPoint.Subscribe(value =>
             {
@@ -81,12 +83,7 @@ namespace Nekoyume.UI
             // Call onValueChanged by Change value
             apSlider.value = 0;
             apSlider.value = apSlider.maxValue = actionPoint / 5 >= 12 ? 12 : actionPoint / 5;
-            Show();
-        }
-
-        public override void Show(bool ignoreShowAnimation = false)
-        {
-            base.Show(ignoreShowAnimation);
+            base.Show();
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
