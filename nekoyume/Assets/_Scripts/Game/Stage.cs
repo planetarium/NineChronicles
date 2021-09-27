@@ -90,6 +90,7 @@ namespace Nekoyume.Game
         public bool IsExitReserved { get; set; }
         public bool IsRepeatStage { get; set; }
         public bool IsAvatarStateUpdatedAfterBattle { get; set; }
+        public int PlayCount { get; set; }
 
 
 
@@ -598,7 +599,7 @@ namespace Nekoyume.Game
                 }
             }
 
-            Widget.Find<BattleResult>().Show(_battleResultModel, log.playCount > 1);
+            Widget.Find<BattleResult>().Show(_battleResultModel, PlayCount > 1);
 
             yield return null;
 
@@ -697,8 +698,7 @@ namespace Nekoyume.Game
                     isTutorial = true;
                 }
 
-                battle.Show(stageId, IsRepeatStage, IsExitReserved, isTutorial,
-                    _battleLog.playCount);
+                battle.Show(stageId, IsRepeatStage, IsExitReserved, isTutorial, PlayCount);
                 var stageSheet = Game.instance.TableSheets.StageSheet;
                 if (stageSheet.TryGetValue(stageId, out var row))
                 {
@@ -928,7 +928,7 @@ namespace Nekoyume.Game
             yield return new WaitWhile(() => characters.Any(i => i.actions.Any()));
             foreach (var item in rewards)
             {
-                var countableItem = new CountableItem(item, _battleLog.playCount);
+                var countableItem = new CountableItem(item, PlayCount);
                 _battleResultModel.AddReward(countableItem);
             }
 

@@ -702,6 +702,7 @@ namespace Nekoyume.BlockChain
                 );
                 simulator.Simulate(eval.Action.playCount);
                 var log = simulator.Log;
+                Game.Game.instance.Stage.PlayCount = eval.Action.playCount;
 
 
                 if (Widget.Find<LoadingScreen>().IsActive())
