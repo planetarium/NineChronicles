@@ -5,14 +5,20 @@ using Libplanet;
 
 namespace Nekoyume.BlockChain.Policy
 {
-    public struct PermissionedMiningPolicy
+    public struct AuthorizedMiningPolicy
     {
-        public PermissionedMiningPolicy(ISet<Address> miners, long startIndex, long? endIndex)
+        public AuthorizedMiningPolicy(
+            ISet<Address> miners, long startIndex, long? endIndex, long interval)
         {
             if (endIndex is long ei && ei < startIndex)
             {
                 throw new ArgumentOutOfRangeException(
                     $"Non-null {nameof(endIndex)} cannot be less than {nameof(startIndex)}.");
+            }
+            else if (interval <= 0)
+            {
+                throw new ArgumentOutOfRangeException(
+                    $"Value of {nameof(interval)} must be positive.");
             }
             else if (miners.Count == 0)
             {
@@ -23,6 +29,7 @@ namespace Nekoyume.BlockChain.Policy
             Miners = miners;
             StartIndex = startIndex;
             EndIndex = endIndex;
+            Interval = interval;
         }
 
         public ISet<Address> Miners { get; private set; }
@@ -31,13 +38,16 @@ namespace Nekoyume.BlockChain.Policy
 
         public long? EndIndex { get; private set; }
 
+        public long Interval { get; private set; }
+
         public bool IsTargetBlockIndex(long index)
         {
-            return StartIndex <= index
+            return index % Interval == 0
+                && StartIndex <= index
                 && (EndIndex is long endIndex && index <= endIndex);
         }
 
-        public static PermissionedMiningPolicy Mainnet => new PermissionedMiningPolicy()
+        public static AuthorizedMiningPolicy Mainnet => new AuthorizedMiningPolicy()
         {
             Miners = new[]
             {
@@ -46,8 +56,9 @@ namespace Nekoyume.BlockChain.Policy
                 new Address("474CB59Dea21159CeFcC828b30a8D864e0b94a6B"),
                 new Address("636d187B4d434244A92B65B06B5e7da14b3810A9"),
             }.ToImmutableHashSet(),
-            StartIndex = 2_225_500,
-            EndIndex = null,
+            StartIndex = 0,
+            EndIndex = 3_153_600,
+            Interval = 50,
         };
     }
 }

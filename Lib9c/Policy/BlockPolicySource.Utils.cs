@@ -109,13 +109,13 @@ namespace Nekoyume.BlockChain.Policy
             Address miner = block.Miner;
 
             // If no permission policy is given, pass validation by default.
-            if (!(permissionedMiningPolicy is PermissionedMiningPolicy policy))
+            if (!(permissionedMiningPolicy is PermissionedMiningPolicy pmp))
             {
                 return null;
             }
 
             // Predicate for permission validity.
-            if (!policy.Miners.Contains(miner) || !block.Transactions.Any(t => t.Signer.Equals(miner)))
+            if (!pmp.Miners.Contains(miner) || !block.Transactions.Any(t => t.Signer.Equals(miner)))
             {
                 if (ignoreHardcodedPolicies)
                 {
@@ -123,7 +123,7 @@ namespace Nekoyume.BlockChain.Policy
                         $"Block #{block.Index} {block.Hash} is not mined by a permissioned miner.  "
                             + "(Forced failure)");
                 }
-                else if (block.Index >= policy.Threshold)
+                else if (block.Index >= pmp.StartIndex)
                 {
                     return new BlockPolicyViolationException(
                         $"Block #{block.Index} {block.Hash} is not mined by a permissioned miner.");
@@ -315,7 +315,7 @@ namespace Nekoyume.BlockChain.Policy
         {
             if (permissionedMiningPolicy is PermissionedMiningPolicy pmp)
             {
-                return index >= pmp.Threshold;
+                return index >= pmp.StartIndex;
             }
             else
             {
@@ -347,9 +347,9 @@ namespace Nekoyume.BlockChain.Policy
         {
             if (IsPermissionedMiningBlockIndexRaw(blockChain, index, permissionedMiningPolicy))
             {
-                if (permissionedMiningPolicy is PermissionedMiningPolicy pms)
+                if (permissionedMiningPolicy is PermissionedMiningPolicy pmp)
                 {
-                    return pms.Miners.Contains(miner);
+                    return pmp.Miners.Contains(miner);
                 }
                 else
                 {
