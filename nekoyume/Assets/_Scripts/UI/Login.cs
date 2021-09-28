@@ -1,14 +1,13 @@
 using System;
 using System.Collections.Generic;
-using Nekoyume.BlockChain;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Util;
 using Nekoyume.State;
-using UniRx;
 using UnityEngine;
-using UnityEngine.UI;
 using mixpanel;
+using Nekoyume.L10n;
+using Nekoyume.Model.Mail;
 using Nekoyume.UI.Module;
 
 namespace Nekoyume.UI
@@ -35,14 +34,25 @@ namespace Nekoyume.UI
 
             Game.Event.OnNestEnter.AddListener(ClearPlayers);
             Game.Event.OnRoomEnter.AddListener(b => ClearPlayers());
-
+            Game.Event.OnRoomEnter.AddListener(b => ReactiveShopState.InitSellDigests());
             CloseWidget = null;
         }
 
         public void SlotClick(int index)
         {
             if (!ready)
+            {
                 return;
+            }
+
+            if (States.Instance.AvatarStates.TryGetValue(index, out var avatarState) &&
+                (avatarState.inventory == null ||
+                 avatarState.questList == null ||
+                 avatarState.worldInformation == null))
+            {
+                Notification.Push(MailType.System, L10nManager.Localize("NOTIFICATION_CHARACTER_IS_BEING_RESTORED"));
+                return;
+            }
 
             Game.Event.OnLoginDetail.Invoke(index);
             gameObject.SetActive(false);
@@ -74,6 +84,12 @@ namespace Nekoyume.UI
             }
 
             AudioController.instance.PlayMusic(AudioController.MusicCode.SelectCharacter);
+        }
+
+        protected override void OnCompleteOfShowAnimationInternal()
+        {
+            base.OnCompleteOfShowAnimationInternal();
+            HelpPopup.HelpMe(100000, true);
         }
 
         private void ClearPlayers()

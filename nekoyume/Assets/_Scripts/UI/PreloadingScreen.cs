@@ -2,6 +2,7 @@ using Libplanet;
 using Nekoyume.Game.Factory;
 using System.Collections.Generic;
 using System.Linq;
+using Nekoyume.State;
 using UnityEngine;
 using UnityEngine.Video;
 
@@ -64,8 +65,18 @@ namespace Nekoyume.UI
                     {
                         try
                         {
-                            State.States.Instance.SelectAvatar(index);
-                            Game.Event.OnRoomEnter.Invoke(false);
+                            var avatarState = States.Instance.AvatarStates[index];
+                            if (avatarState?.inventory == null ||
+                                avatarState.questList == null ||
+                                avatarState.worldInformation == null)
+                            {
+                                EnterLogin();
+                            }
+                            else
+                            {
+                                States.Instance.SelectAvatar(index);
+                                Game.Event.OnRoomEnter.Invoke(false);    
+                            }
                         }
                         catch (KeyNotFoundException e)
                         {
@@ -84,7 +95,7 @@ namespace Nekoyume.UI
             indicator.Close();
         }
 
-        private void EnterLogin()
+        private static void EnterLogin()
         {
             Find<Login>().Show();
             Game.Event.OnNestEnter.Invoke();

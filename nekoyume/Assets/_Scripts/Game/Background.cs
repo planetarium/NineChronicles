@@ -22,6 +22,8 @@ namespace Nekoyume.Game
         {
             _cameraTransform = ActionCamera.instance.transform;
             var initPosition = transform.localPosition;
+            var cameraPosition = ActionCamera.instance.Cam.transform.localPosition;
+            initPosition.x += cameraPosition.x;
             transform.localPosition = Vector3.zero;
             InstantiateChildren();
             InitParallax(initPosition);

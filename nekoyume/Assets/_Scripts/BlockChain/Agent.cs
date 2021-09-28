@@ -638,6 +638,7 @@ namespace Nekoyume.BlockChain
         private IEnumerator CoLogger()
         {
             Widget.Create<BattleSimulator>(true);
+            Widget.Create<CombinationSimulator>(true);
             Widget.Create<Cheat>(true);
             while (true)
             {
@@ -667,7 +668,7 @@ namespace Nekoyume.BlockChain
                 foreach(var (block, appendedTime) in lastTenBlocks.ToArray().Reverse())
                 {
                     log.Append($"[{block.Index}] {block.Hash}\n");
-                    log.Append($" -Miner : {block.Miner?.ToString()}\n");
+                    log.Append($" -Miner : {block.Miner.ToString()}\n");
                     log.Append($" -Created at : {block.Timestamp}\n");
                     log.Append($" -Appended at : {appendedTime}\n");
                 }
@@ -813,7 +814,7 @@ namespace Nekoyume.BlockChain
             var (oldTip, newTip) = tuple;
 
             _tipInfo = "Tip Information\n";
-            _tipInfo += $" -Miner           : {blocks.Tip.Miner?.ToString()}\n";
+            _tipInfo += $" -Miner           : {blocks.Tip.Miner.ToString()}\n";
             _tipInfo += $" -TimeStamp  : {DateTimeOffset.Now}\n";
             _tipInfo += $" -PrevBlock    : [{oldTip.Index}] {oldTip.Hash}\n";
             _tipInfo += $" -LatestBlock : [{newTip.Index}] {newTip.Hash}";
