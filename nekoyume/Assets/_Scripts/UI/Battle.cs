@@ -1,3 +1,4 @@
+using System.Linq;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
 using Nekoyume.L10n;
@@ -117,7 +118,7 @@ namespace Nekoyume.UI
             base.Show(ignoreShowAnimation);
         }
 
-        public void Show(int stageId, bool isRepeat, bool isExitReserved, bool isTutorial, int boostCount)
+        public void Show(int stageId, bool isRepeat, bool isExitReserved, bool isTutorial, int boostCost)
         {
             if (isTutorial)
             {
@@ -141,9 +142,11 @@ namespace Nekoyume.UI
             //repeatToggle.isOn = isExitReserved ? false : isRepeat;
             helpButton.gameObject.SetActive(true);
             //repeatToggle.gameObject.SetActive(true);
-            boostEffectObject.SetActive(boostCount > 1);
+            boostEffectObject.SetActive(boostCost > Game.Game.instance
+                .TableSheets.StageSheet.Values.FirstOrDefault(i =>
+                    i.Id == Find<WorldMap>().SelectedStageId).CostAP);
             exitToggle.gameObject.SetActive(true);
-            boostCountText.text = boostCount.ToString();
+            boostCountText.text = $"{boostCost}AP";
         }
 
         public void ClearStage(int stageId, System.Action<bool> onComplete)

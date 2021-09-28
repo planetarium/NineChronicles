@@ -72,10 +72,12 @@ namespace Nekoyume.UI
 
             apSlider.onValueChanged.AddListener(value =>
             {
-                boostCountText.text = value.ToString();
-                needAPText.text = (Game.Game.instance
+                var cost = Game.Game.instance
                     .TableSheets.StageSheet.Values.FirstOrDefault(i =>
-                        i.Id == Find<WorldMap>().SelectedStageId).CostAP * value).ToString();
+                        i.Id == Find<WorldMap>().SelectedStageId).CostAP;
+
+                boostCountText.text = value.ToString();
+                needAPText.text = (cost * value).ToString();
             });
 
             var actionPoint = Game.Game.instance.States.CurrentAvatarState.actionPoint;
