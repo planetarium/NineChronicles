@@ -72,14 +72,13 @@ namespace Nekoyume.UI
                 .ToDictionary(sealedCode => sealedCode,
                     sealedCode => GetItems(State, sealedCode));
 
-            var button = Find<BottomMenu>().codeRewardButton;
             if (_codeRewards.Any())
             {
-                button.Show(OnClickButton, _codeRewards.Count);
+                Find<CodeRewardButton>().Show(OnClickButton, _codeRewards.Count);
             }
             else
             {
-                button.Close();
+                Find<CodeRewardButton>().Close();
             }
         }
 
@@ -98,20 +97,28 @@ namespace Nekoyume.UI
             }
         }
 
-        private static List<(ItemBase, int)> GetItems(RedeemCodeState redeemCodeState,
-            string redeemCode)
+        private static List<(ItemBase, int)> GetItems(RedeemCodeState redeemCodeState, string redeemCode)
         {
-            var privateKey = new PrivateKey(ByteUtil.ParseHex(redeemCode));
-            PublicKey publicKey = privateKey.PublicKey;
-            var reward = redeemCodeState.Map[publicKey];
+            PublicKey publicKey;
+            try
+            {
+                var privateKey = new PrivateKey(ByteUtil.ParseHex(redeemCode));
+                publicKey = privateKey.PublicKey;
+            }
+            catch (FormatException e)
+            {
+                Debug.LogError($"{e.Message} {redeemCode}");
+                return new List<(ItemBase, int)>();
+            }
 
-            TableSheets tableSheets = Game.Game.instance.TableSheets;
-            ItemSheet itemSheet = tableSheets.ItemSheet;
-            RedeemRewardSheet.Row row =
-                tableSheets.RedeemRewardSheet.OrderedList.First(r => r.Id == reward.RewardId);
-            var itemRewards = row.Rewards.Where(r => r.Type != RewardType.Gold).Select(r =>
-                (ItemFactory.CreateItem(itemSheet[r.ItemId.Value], new Cheat.DebugRandom()),
-                    r.Quantity)).ToList();
+            var reward = redeemCodeState.Map[publicKey];
+            var tableSheets = Game.Game.instance.TableSheets;
+            var itemSheet = tableSheets.ItemSheet;
+            var row = tableSheets.RedeemRewardSheet.OrderedList.First(r => r.Id == reward.RewardId);
+            var itemRewards = row.Rewards
+                .Where(r => r.Type == RewardType.Item && r.ItemId.HasValue)
+                .Select(r => (ItemFactory.CreateItem(itemSheet[r.ItemId.Value], new Cheat.DebugRandom()), r.Quantity))
+                .ToList();
 
             return itemRewards;
         }

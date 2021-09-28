@@ -1,4 +1,5 @@
-﻿using Nekoyume.Constraints;
+﻿using System;
+using Nekoyume.Constraints;
 using TMPro;
 using UniRx;
 using UniRx.Triggers;
@@ -31,6 +32,8 @@ namespace Nekoyume.UI.AnimatedGraphics
 
         public bool IsShown => _gameObject.activeSelf;
 
+        public GameObject CreatedByThisObject { get; private set; } = null;
+
         private void Awake()
         {
             _gameObject = gameObject;
@@ -39,15 +42,17 @@ namespace Nekoyume.UI.AnimatedGraphics
             _originMessageTransformLocalScale = messageTransform.localScale;
         }
 
-        public void Show(Vector3 position, string message, bool reverseDirection = false)
+        public void Show(Vector3 position, string message, GameObject maker, bool reverseDirection = false)
         {
+            CreatedByThisObject = maker;
             constraintsToMousePosition.enabled = false;
             _rectTransform.position = position;
             PostShow(message, reverseDirection);
         }
 
-        public void Show(bool followMouse, string message, bool reverseDirection = false)
+        public void Show(bool followMouse, string message, GameObject maker, bool reverseDirection = false)
         {
+            CreatedByThisObject = maker;
             constraintsToMousePosition.enabled = followMouse;
             PostShow(message, reverseDirection);
         }

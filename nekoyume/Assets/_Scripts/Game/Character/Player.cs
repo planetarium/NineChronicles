@@ -30,10 +30,12 @@ namespace Nekoyume.Game.Character
         public TouchHandler touchHandler;
 
         public List<Costume> Costumes =>
-            Inventory.Items.Select(i => i.item).OfType<Costume>().Where(e => e.equipped).ToList();
+            Inventory?.Items.Select(i => i.item).OfType<Costume>().Where(e => e.equipped).ToList() ??
+            new List<Costume>();
 
         public List<Equipment> Equipments =>
-            Inventory.Items.Select(i => i.item).OfType<Equipment>().Where(e => e.equipped).ToList();
+            Inventory?.Items.Select(i => i.item).OfType<Equipment>().Where(e => e.equipped).ToList() ??
+            new List<Equipment>();
 
         protected override float RunSpeedDefault => CharacterModel.RunSpeed;
 
@@ -204,7 +206,7 @@ namespace Nekoyume.Game.Character
             if (HudContainer != null)
             {
                 HudContainer.gameObject.SetActive(true);
-                var clone  = ResourcesHelper.GetCharacterTitle(costume.Grade, costume.GetLocalizedNonColoredName());
+                var clone  = ResourcesHelper.GetCharacterTitle(costume.Grade, costume.GetLocalizedNonColoredName(false));
                 _cachedCharacterTitle = Instantiate(clone, HudContainer.transform);
                 _cachedCharacterTitle.name = costume.Id.ToString();
                 _cachedCharacterTitle.transform.SetAsFirstSibling();
@@ -237,6 +239,11 @@ namespace Nekoyume.Game.Character
 
         private void EquipCostumes(IEnumerable<Costume> costumes)
         {
+            if (costumes is null)
+            {
+                return;
+            }
+
             foreach (var costume in costumes)
             {
                 EquipCostume(costume);
@@ -346,8 +353,11 @@ namespace Nekoyume.Game.Character
                 return;
             }
 
+            var id = weapon?.Id ?? 0;
+            var level = weapon?.level ?? 0;
+            var levelVFXPrefab = ResourcesHelper.GetAuraWeaponPrefab(id, level);
             var sprite = weapon.GetPlayerSpineTexture();
-            SpineController.UpdateWeapon(sprite);
+            SpineController.UpdateWeapon(id, sprite, levelVFXPrefab);
         }
 
         public void Equip(int armorId, int weaponId)
@@ -355,7 +365,7 @@ namespace Nekoyume.Game.Character
             var spineResourcePath = $"Character/Player/{armorId}";
             ChangeSpine(spineResourcePath);
             var sprite = SpriteHelper.GetPlayerSpineTextureWeapon(weaponId);
-            SpineController.UpdateWeapon(sprite);
+            SpineController.UpdateWeapon(weaponId, sprite);
         }
 
         #endregion
@@ -633,7 +643,7 @@ namespace Nekoyume.Game.Character
             }
 
             var level = Level;
-            Model.GetExpV2(exp);
+            Model.GetExp(exp);
             EXP += exp;
 
             if (Level != level)

@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
+using Cysharp.Threading.Tasks;
 using mixpanel;
+using Nekoyume.Action;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Controller;
 using Nekoyume.L10n;
@@ -67,7 +69,7 @@ namespace Nekoyume.UI
 
         private void OnCloseBuyWishList(Unit unit)
         {
-            if (shopItems.SharedModel.wishItems.Count > 0)
+            if (shopItems.SharedModel.WishItemCount > 0)
             {
                 Widget.Find<TwoButtonPopup>().Show(L10nManager.Localize("UI_CLOSE_BUY_WISH_LIST"),
                                                    L10nManager.Localize("UI_YES"),
@@ -94,7 +96,7 @@ namespace Nekoyume.UI
             }
 
             var content = string.Format(L10nManager.Localize("UI_BUY_MULTIPLE_FORMAT"),
-                shopItems.SharedModel.wishItems.Count, _price);
+                shopItems.SharedModel.WishItemCount, _price);
 
             Widget.Find<TwoButtonPopup>().Show(content,
                                                L10nManager.Localize("UI_BUY"),
@@ -104,21 +106,21 @@ namespace Nekoyume.UI
 
         private void BuyMultiple()
         {
-            var purchaseInfos = shopItems.SharedModel.wishItems.Select(ShopBuy.GetPurchseInfo).ToList();
-            Game.Game.instance.ActionManager.Buy(purchaseInfos,
-                shopItems.SharedModel.wishItems.ToList());
+            var wishItems = shopItems.SharedModel.GetWishItems;
+            var purchaseInfos = new List<PurchaseInfo>();
+            purchaseInfos.AddRange(wishItems.Select(x => ShopBuy.GetPurchseInfo(x.OrderId.Value)));
+            Game.Game.instance.ActionManager.Buy(purchaseInfos, wishItems);
 
-            if (shopItems.SharedModel.wishItems != null &&
-                shopItems.SharedModel.wishItems.Count > 0)
+            if (shopItems.SharedModel.WishItemCount > 0)
             {
                 var props = new Value
                 {
-                    ["Count"] = shopItems.SharedModel.wishItems.Count,
+                    ["Count"] = shopItems.SharedModel.WishItemCount,
                 };
                 Mixpanel.Track("Unity/Number of Purchased Items", props);
             }
 
-            foreach (var shopItem in shopItems.SharedModel.wishItems)
+            foreach (var shopItem in shopItems.SharedModel.GetWishItems)
             {
                 var props = new Value
                 {
@@ -127,10 +129,8 @@ namespace Nekoyume.UI
                 Mixpanel.Track("Unity/Buy", props);
                 shopItem.Selected.Value = false;
                 var buyerAgentAddress = States.Instance.AgentState.address;
-                var productId = shopItem.ProductId.Value;
-
                 LocalLayerModifier.ModifyAgentGold(buyerAgentAddress, -shopItem.Price.Value);
-                ReactiveShopState.RemoveShopItem(productId);
+                ReactiveShopState.RemoveBuyDigest(shopItem.OrderId.Value);
                 var format = L10nManager.Localize("NOTIFICATION_BUY_START");
                 OneLinePopup.Push(MailType.Auction,
                     string.Format(format, shopItem.ItemBase.Value.GetLocalizedName()));
@@ -157,9 +157,9 @@ namespace Nekoyume.UI
         {
             Clear();
             _price = 0.0f;
-            for (int i = 0; i < shopItems.SharedModel.wishItems.Count; i++)
+            for (int i = 0; i < shopItems.SharedModel.WishItemCount; i++)
             {
-                var item = shopItems.SharedModel.wishItems[i];
+                var item = shopItems.SharedModel.GetWishItems[i];
                 _price += double.Parse(item.Price.Value.GetQuantityString());
                 items[i].gameObject.SetActive(true);
                 items[i].SetData(item, () =>
@@ -173,17 +173,17 @@ namespace Nekoyume.UI
             var currentGold = double.Parse(States.Instance.GoldBalanceState.Gold.GetQuantityString());
             if (currentGold < _price)
             {
-                priceText.color = Palette.GetButtonColor(ButtonColorType.Unable);
-                buyButton.image.color = Palette.GetButtonColor(ButtonColorType.ColorDisabled);
-                buyText.color = Palette.GetButtonColor(ButtonColorType.AlphaDisabled);
+                priceText.color = Palette.GetColor(ColorType.ButtonDisabled);
+                buyButton.image.color = Palette.GetColor(ColorType.ButtonColorDisabled);
+                buyText.color = Palette.GetColor(ColorType.ButtonAlphaDisabled);
             }
             else
             {
-                priceText.color = Palette.GetButtonColor(0);
-                buyButton.image.color = shopItems.SharedModel.wishItems.Count > 0 ?
-                    Palette.GetButtonColor(ButtonColorType.Enabled) : Palette.GetButtonColor(ButtonColorType.ColorDisabled);
-                buyText.color = shopItems.SharedModel.wishItems.Count > 0 ?
-                    Palette.GetButtonColor(ButtonColorType.Enabled) : Palette.GetButtonColor(ButtonColorType.AlphaDisabled);
+                priceText.color = Palette.GetColor(0);
+                buyButton.image.color = shopItems.SharedModel.WishItemCount > 0 ?
+                    Palette.GetColor(ColorType.ButtonEnabled) : Palette.GetColor(ColorType.ButtonColorDisabled);
+                buyText.color = shopItems.SharedModel.WishItemCount > 0 ?
+                    Palette.GetColor(ColorType.ButtonEnabled) : Palette.GetColor(ColorType.ButtonAlphaDisabled);
             }
         }
 

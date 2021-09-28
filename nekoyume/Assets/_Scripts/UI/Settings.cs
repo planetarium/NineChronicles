@@ -1,13 +1,16 @@
-﻿using TMPro;
+using TMPro;
 using UnityEngine.UI;
 using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
 using Libplanet;
 using Libplanet.Crypto;
+using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
+using Nekoyume.Model.Mail;
 using UniRx;
+using TimeSpan = System.TimeSpan;
 
 namespace Nekoyume.UI
 {
@@ -19,6 +22,7 @@ namespace Nekoyume.UI
         public TextMeshProUGUI privateKeyTitleText;
         public TMP_InputField privateKeyContentInputField;
         public Button privateKeyCopyButton;
+        public Button closeButton;
         public TextMeshProUGUI warningText;
         public TextMeshProUGUI volumeMasterText;
         public Slider volumeMasterSlider;
@@ -53,15 +57,43 @@ namespace Nekoyume.UI
             confirmText.text = L10nManager.Localize("UI_CLOSE");
             redeemCodeText.text = L10nManager.Localize("UI_REDEEM_CODE");
 
-            addressCopyButton.OnClickAsObservable().Subscribe(_ => CopyAddressToClipboard());
-            privateKeyCopyButton.OnClickAsObservable().Subscribe(_ => CopyPrivateKeyToClipboard());
+            addressCopyButton.OnClickAsObservable().Subscribe(_ => CopyAddressToClipboard())
+                .AddTo(addressCopyButton);
+
+            addressCopyButton.OnClickAsObservable().ThrottleFirst(TimeSpan.FromSeconds(2f))
+                .Subscribe(_ =>
+                    OneLinePopup.Push(MailType.System, L10nManager.Localize("UI_COPIED")))
+                .AddTo(addressCopyButton);
+
+            privateKeyCopyButton.OnClickAsObservable().Subscribe(_ => CopyPrivateKeyToClipboard())
+                .AddTo(privateKeyCopyButton);
+
+            privateKeyCopyButton.OnClickAsObservable().ThrottleFirst(TimeSpan.FromSeconds(2f))
+                .Subscribe(_ =>
+                    OneLinePopup.Push(MailType.System, L10nManager.Localize("UI_COPIED")))
+                .AddTo(privateKeyCopyButton);
+
             redeemCode.OnRequested.AddListener(() =>
             {
-                Close();
+                Close(true);
             });
+
+            closeButton.onClick.AddListener(() =>
+            {
+                ApplyCurrentSettings();
+                AudioController.PlayClick();
+            });
+            blur.button.onClick.AddListener(ApplyCurrentSettings);
             redeemCode.Close();
 
             InitResolution();
+        }
+
+        protected override void OnEnable()
+        {
+            SubmitWidget = () => Close(true);
+            CloseWidget = () => Close(true);
+            base.OnEnable();
         }
 
 
@@ -112,25 +144,26 @@ namespace Nekoyume.UI
             volumeMasterToggle.isOn = settings.isVolumeMasterMuted;
             windowedToggle.isOn = settings.isWindowed;
 
-            base.Show(ignoreStartAnimation);
+            base.Show(true);
 
             if (blur)
             {
                 blur.Show();
             }
+            HelpPopup.HelpMe(100014, true);
         }
 
         public void ApplyCurrentSettings()
         {
             Nekoyume.Settings.Instance.ApplyCurrentSettings();
-            Close();
+            Close(true);
         }
 
         public void RevertSettings()
         {
             Nekoyume.Settings.Instance.ReloadSettings();
             UpdateSoundSettings();
-            Close();
+            Close(true);
         }
 
         public void UpdateSoundSettings()
@@ -233,7 +266,7 @@ namespace Nekoyume.UI
 
         public override void Close(bool ignoreCloseAnimation = false)
         {
-            if (blur)
+            if (blur && blur.isActiveAndEnabled)
             {
                 blur.Close();
             }

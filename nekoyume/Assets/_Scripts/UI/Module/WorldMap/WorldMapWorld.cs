@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Cysharp.Threading.Tasks;
 using Nekoyume.Game.Controller;
+using Nekoyume.Model.Quest;
 using Nekoyume.TableData;
 using TMPro;
 using UniRx;
@@ -33,23 +35,11 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        [SerializeField]
-        private TextMeshProUGUI stagePageText = null;
-
-        [SerializeField]
-        private HorizontalScrollSnap horizontalScrollSnap = null;
-
-        [SerializeField]
-        private List<WorldMapPage> pages = null;
-
-        [SerializeField]
-        private Button previousButton = null;
-
-        [SerializeField]
-        private Button nextButton = null;
-
-        [SerializeField]
-        private TextMeshProUGUI titleText;
+        [SerializeField] private HorizontalScrollSnap horizontalScrollSnap = null;
+        [SerializeField] private List<WorldMapPage> pages = null;
+        [SerializeField] private List<Toggle> toggles = null;
+        [SerializeField] private Button previousButton = null;
+        [SerializeField] private Button nextButton = null;
 
         private readonly List<IDisposable> _disposablesForModel = new List<IDisposable>();
 
@@ -67,13 +57,33 @@ namespace Nekoyume.UI.Module
                 .AddTo(gameObject);
 
             horizontalScrollSnap.OnSelectionPageChangedEvent.AddListener(value =>
-                SharedViewModel.CurrentPageNumber.Value =
-                    Mathf.Clamp(value + 1, 1, SharedViewModel.PageCount.Value));
+            {
+                var pageNumber = Mathf.Clamp(value + 1, 1, SharedViewModel.PageCount.Value);
+                SharedViewModel.CurrentPageNumber.SetValueAndForceNotify(pageNumber);
+                ToggleOn(pageNumber);
+            });
 
             foreach (var stage in pages.SelectMany(page => page.Stages))
             {
                 stage.onClick.Subscribe(SubscribeOnClick)
                     .AddTo(gameObject);
+            }
+
+            foreach (var (toggle, index) in toggles.Select((toggle, index) => (toggle, index)))
+            {
+                toggle.onValueChanged.AddListener(value =>
+                {
+                    if (value)
+                    {
+                        if (SharedViewModel.CurrentPageNumber.Value != index + 1)
+                        {
+                            horizontalScrollSnap.ChangePage(index);
+                        }
+
+                        SharedViewModel.CurrentPageNumber.SetValueAndForceNotify(
+                            Mathf.Clamp(index + 1, 1, SharedViewModel.PageCount.Value));
+                    }
+                });
             }
         }
 
@@ -98,7 +108,6 @@ namespace Nekoyume.UI.Module
                     $"{worldRow.Id}: worldRow.StagesCount({worldRow.StagesCount}) != stageRowsCount({stageRowsCount})");
             }
 
-            titleText.text = worldRow.Name;
             var stageOffset = 0;
             var nextPageShouldHide = false;
             var pageIndex = 1;
@@ -152,16 +161,17 @@ namespace Nekoyume.UI.Module
 
             SharedViewModel.StageIdToShow.Value = worldRow.StageBegin + stageRowsCount - 1;
             SharedViewModel.PageCount.Value = pages.Count(p => p.gameObject.activeSelf);
+
+            for (var i = 0; i < toggles.Count; i++)
+            {
+                toggles[i].gameObject.SetActive(i < SharedViewModel.PageCount.Value);
+            }
+            
             SharedViewModel.CurrentPageNumber.Value = 1;
 
-            SharedViewModel.PageCount
-                .Subscribe(pageCount =>
-                    stagePageText.text = $"{SharedViewModel.CurrentPageNumber.Value}/{pageCount}")
-                .AddTo(_disposablesForModel);
             SharedViewModel.CurrentPageNumber
                 .Subscribe(currentPageNumber =>
                 {
-                    stagePageText.text = $"{currentPageNumber}/{SharedViewModel.PageCount.Value}";
                     previousButton.gameObject.SetActive(currentPageNumber > 1);
                     nextButton.gameObject.SetActive(
                         currentPageNumber < SharedViewModel.PageCount.Value);
@@ -196,23 +206,12 @@ namespace Nekoyume.UI.Module
 
         public void ShowByStageId(int value, int stageIdToNotify)
         {
-            ShowByPageNumber(GetPageNumber(value));
+            var pageNumber = GetPageNumber(value);
+            SharedViewModel.CurrentPageNumber.SetValueAndForceNotify(pageNumber);
+            horizontalScrollSnap.ChangePage(pageNumber - 1);
+            horizontalScrollSnap.StartingScreen = pageNumber - 1;
             SetSelectedStageId(value, stageIdToNotify);
-
             gameObject.SetActive(true);
-        }
-
-        private void ShowByPageNumber(int value)
-        {
-            SharedViewModel.CurrentPageNumber.SetValueAndForceNotify(value);
-            horizontalScrollSnap.ChangePage(SharedViewModel.CurrentPageNumber.Value - 1);
-            horizontalScrollSnap.StartingScreen = SharedViewModel.CurrentPageNumber.Value - 1;
-            gameObject.SetActive(true);
-        }
-
-        public void Hide()
-        {
-            gameObject.SetActive(false);
         }
 
         private int GetPageNumber(int stageId)
@@ -250,6 +249,16 @@ namespace Nekoyume.UI.Module
         private void SubscribeOnClick(WorldMapStage stage)
         {
             SetSelectedStageId(stage.SharedViewModel.stageId, Widget.Find<WorldMap>().StageIdToNotify);
+        }
+
+        private void ToggleOn(int pageNumber)
+        {
+            if(toggles.Count < pageNumber)
+                return;
+
+            var toggle = toggles[pageNumber - 1];
+            toggle.isOn = false;
+            toggle.isOn = true;
         }
     }
 }

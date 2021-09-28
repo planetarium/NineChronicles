@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using Cysharp.Threading.Tasks;
 using Libplanet;
 using Nekoyume.Action;
 using Nekoyume.Battle;
@@ -15,11 +16,12 @@ using Nekoyume.State.Subjects;
 using Nekoyume.UI.Module;
 using Nekoyume.UI.Scroller;
 using TMPro;
-using UniRx;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
+    using Nekoyume.Model.BattleStatus;
     using UniRx;
 
     public class RankingBoard : Widget
@@ -31,8 +33,8 @@ namespace Nekoyume.UI
             Overall
         }
 
+        private static readonly Vector3 NPCPosition = new Vector3(999.8f, 998.3f);
         private const int NPCId = 300002;
-        private static readonly Vector3 NPCPosition = new Vector3(1.2f, -1.72f);
 
         [SerializeField]
         private CategoryButton arenaButton = null;
@@ -42,6 +44,9 @@ namespace Nekoyume.UI
 
         [SerializeField]
         private CategoryButton overallButton = null;
+
+        [SerializeField]
+        private Button closeButton;
 
         [SerializeField]
         private GameObject arenaRankingHeader = null;
@@ -138,55 +143,31 @@ namespace Nekoyume.UI
             winText.text = L10nManager.Localize("UI_WIN");
             loseText.text = L10nManager.Localize("UI_LOSE");
 
-            CloseWidget = null;
+            closeButton.onClick.AddListener(() =>
+            {
+                Close(true);
+                Game.Event.OnRoomEnter.Invoke(true);
+            });
+
+            CloseWidget = () =>
+            {
+                Close(true);
+                Game.Event.OnRoomEnter.Invoke(true);
+            };
             SubmitWidget = null;
             SetRankingInfos(States.Instance.RankingMapStates);
         }
 
-        protected override void OnCompleteOfShowAnimationInternal()
+        public void Show(StateType stateType = StateType.Arena) => ShowAsync(stateType);
+
+        private async void ShowAsync(StateType stateType)
         {
-            base.OnCompleteOfShowAnimationInternal();
-            _npc.gameObject.SetActive(true);
-            _npc.SpineController.Appear();
-            ShowSpeech("SPEECH_RANKING_BOARD_GREETING_", CharacterAnimation.Type.Greeting);
-        }
-
-        public void Show(StateType stateType = StateType.Arena)
-        {
-            var agent = Game.Game.instance.Agent;
-            var gameConfigState = States.Instance.GameConfigState;
-            var weeklyArenaIndex = (int) agent.BlockIndex / gameConfigState.WeeklyArenaInterval;
-            var weeklyArenaAddress = WeeklyArenaState.DeriveAddress(weeklyArenaIndex);
-            var weeklyArenaState =
-                new WeeklyArenaState(
-                    (Bencodex.Types.Dictionary) agent.GetState(weeklyArenaAddress));
-            States.Instance.SetWeeklyArenaState(weeklyArenaState);
-
-            for (var i = 0; i < RankingState.RankingMapCapacity; ++i)
-            {
-                var rankingMapAddress = RankingState.Derive(i);
-                var rankingMapState = agent.GetState(rankingMapAddress) is Bencodex.Types.Dictionary serialized
-                    ? new RankingMapState(serialized)
-                    : new RankingMapState(rankingMapAddress);
-                States.Instance.SetRankingMapStates(rankingMapState);
-            }
-
-            base.Show();
+            Find<DataLoadingScreen>().Show();
 
             var stage = Game.Game.instance.Stage;
             stage.LoadBackground("ranking");
             _player = stage.GetPlayer();
             _player.gameObject.SetActive(false);
-            UpdateWeeklyCache(States.Instance.WeeklyArenaState);
-
-            _state.SetValueAndForceNotify(stateType);
-
-            Find<BottomMenu>()?.Show(
-                UINavigator.NavigationType.Back,
-                SubscribeBackButtonClick,
-                true,
-                BottomMenu.ToggleableType.Ranking,
-                BottomMenu.ToggleableType.Character);
 
             var go = Game.Game.instance.Stage.npcFactory.Create(
                 NPCId,
@@ -194,22 +175,45 @@ namespace Nekoyume.UI
                 LayerType.InGameBackground,
                 3);
             _npc = go.GetComponent<NPC>();
-            _npc.gameObject.SetActive(false);
+            _npc.gameObject.SetActive(true);
+            _npc.SpineController.Appear();
 
+            await UniTask.Run(() =>
+            {
+                var agent = Game.Game.instance.Agent;
+                var gameConfigState = States.Instance.GameConfigState;
+                var weeklyArenaIndex = (int)agent.BlockIndex / gameConfigState.WeeklyArenaInterval;
+                var weeklyArenaAddress = WeeklyArenaState.DeriveAddress(weeklyArenaIndex);
+                var weeklyArenaState =
+                    new WeeklyArenaState((Bencodex.Types.Dictionary)agent.GetState(weeklyArenaAddress));
+                States.Instance.SetWeeklyArenaState(weeklyArenaState);
+                UpdateWeeklyCache(States.Instance.WeeklyArenaState);
+
+                for (var i = 0; i < RankingState.RankingMapCapacity; ++i)
+                {
+                    var rankingMapAddress = RankingState.Derive(i);
+                    var rankingMapState = agent.GetState(rankingMapAddress) is Bencodex.Types.Dictionary serialized
+                        ? new RankingMapState(serialized)
+                        : new RankingMapState(rankingMapAddress);
+                    States.Instance.SetRankingMapStates(rankingMapState);
+                }
+            });
+
+            base.Show(true);
+
+            _state.SetValueAndForceNotify(stateType);
+            Find<DataLoadingScreen>().Close();
             AudioController.instance.PlayMusic(AudioController.MusicCode.Ranking);
-            WeeklyArenaStateSubject.WeeklyArenaState
-                .Subscribe(SubscribeWeeklyArenaState)
-                .AddTo(_disposablesFromShow);
+            HelpPopup.HelpMe(100015, true);
+            ShowSpeech("SPEECH_RANKING_BOARD_GREETING_", CharacterAnimation.Type.Greeting);
+
+            Find<HeaderMenu>().Show(HeaderMenu.AssetVisibleState.Battle);
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
         {
             _disposablesFromShow.DisposeAllAndClear();
-
-            Find<BottomMenu>()?.Close();
-
             base.Close(ignoreCloseAnimation);
-
             _npc?.gameObject.SetActive(false);
             speechBubble.Hide();
         }
@@ -249,12 +253,6 @@ namespace Nekoyume.UI
             }
         }
 
-        private void SubscribeWeeklyArenaState(WeeklyArenaState state)
-        {
-            UpdateWeeklyCache(state);
-            UpdateArena();
-        }
-
         private void UpdateArena()
         {
             var weeklyArenaState = States.Instance.WeeklyArenaState;
@@ -281,7 +279,7 @@ namespace Nekoyume.UI
             if (!arenaInfo.Active)
             {
                 currentAvatarCellView.ShowMyDefaultInfo();
-                LocalLayerModifier.AddWeeklyArenaInfoActivator(Game.Game.instance.TableSheets.CharacterSheet);
+                arenaInfo.Activate();
             }
 
             UpdateBoard(StateType.Arena);
@@ -340,7 +338,7 @@ namespace Nekoyume.UI
                         Game.Game.instance.TableSheets.CharacterSheet,
                         false);
                 }
-                
+
                 currentAvatarCellView.Show((
                     currentAvatarRank,
                     currentAvatarArenaInfo,
@@ -413,7 +411,7 @@ namespace Nekoyume.UI
             Find<ArenaBattleLoadingScreen>().Show(arenaRankCell.ArenaInfo);
         }
 
-        private void SubscribeBackButtonClick(BottomMenu bottomMenu)
+        private void SubscribeBackButtonClick(HeaderMenu headerMenu)
         {
             var avatarInfo = Find<AvatarInfo>();
             var friendInfoPopup = Find<FriendInfoPopup>();
@@ -456,9 +454,9 @@ namespace Nekoyume.UI
             }
         }
 
-        public void GoToStage(ActionBase.ActionEvaluation<RankingBattle> eval)
+        public void GoToStage(BattleLog log)
         {
-            Game.Event.OnRankingBattleStart.Invoke(eval.Action.Result);
+            Game.Event.OnRankingBattleStart.Invoke(log);
             Close();
         }
 
@@ -479,7 +477,6 @@ namespace Nekoyume.UI
         private void UpdateWeeklyCache(WeeklyArenaState state)
         {
             var infos = state.GetArenaInfos(1, 3);
-
             if (States.Instance.CurrentAvatarState != null)
             {
                 var currentAvatarAddress = States.Instance.CurrentAvatarState.address;
@@ -487,17 +484,29 @@ namespace Nekoyume.UI
                 // Player does not play prev & this week arena.
                 if (!infos2.Any() && state.OrderedArenaInfos.Any())
                 {
-                    var characterSheet = Game.Game.instance.TableSheets.CharacterSheet;
-                    var costumeStatSheet = Game.Game.instance.TableSheets.CostumeStatSheet;
-                    var cp = CPHelper.GetCPV2(States.Instance.CurrentAvatarState, characterSheet, costumeStatSheet);
-                    var address = state.OrderedArenaInfos.First(i => i.CombatPoint <= cp).AvatarAddress;
-                    infos2 = state.GetArenaInfos(address, 20, 20);
+                    var address = state.OrderedArenaInfos.Last().AvatarAddress;
+                    infos2 = state.GetArenaInfos(address, 20, 0);
                 }
 
                 infos.AddRange(infos2);
                 infos = infos.ToImmutableHashSet().OrderBy(tuple => tuple.rank).ToList();
             }
-            _weeklyCachedInfo = infos;
+
+            _weeklyCachedInfo = infos
+                .Select(tuple =>
+                {
+                    if (!States.TryGetAvatarState(tuple.arenaInfo.AvatarAddress, out var avatarState))
+                    {
+                        return (0, null);
+                    }
+
+                    var characterSheet = Game.Game.instance.TableSheets.CharacterSheet;
+                    var costumeStatSheet = Game.Game.instance.TableSheets.CostumeStatSheet;
+                    tuple.arenaInfo.Update(avatarState, characterSheet, costumeStatSheet);
+                    return tuple;
+                })
+                .Where(tuple => tuple.rank > 0)
+                .ToList();
         }
     }
 }

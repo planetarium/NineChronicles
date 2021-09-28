@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,6 +6,7 @@ using Nekoyume.Game.Controller;
 using Nekoyume.L10n;
 using UnityEngine;
 using RedBlueGames.Tools.TextTyper;
+using System;
 
 namespace Nekoyume.UI
 {
@@ -29,6 +29,8 @@ namespace Nekoyume.UI
 
         private readonly int PlayHash = Animator.StringToHash("Play");
         private readonly int StopHash = Animator.StringToHash("Stop");
+
+        private const float DefaultPrintDelay = 0.02f;
 
         public override void Play<T>(T data, System.Action callback)
         {
@@ -125,7 +127,7 @@ namespace Nekoyume.UI
             }
 
             var printDelay = printDelays.FirstOrDefault(x => x.languageType == L10nManager.CurrentLanguage);
-            textTyper.TypeText(_script, printDelay?.delay ?? 0.1f);
+            textTyper.TypeText(_script, printDelay?.delay ?? DefaultPrintDelay);
             _script = string.Empty;
         }
 
@@ -148,19 +150,18 @@ namespace Nekoyume.UI
         }
 
         #region Skip
-        // private void OnClick()
-        // {
-        //
-        //     if (textTyper.IsSkippable())
-        //     {
-        //         textTyper.Skip();
-        //     }
-        //     else
-        //     {
-        //         PlayEmojiAnimation(StopHash);
-        //         _callback?.Invoke();
-        //     }
-        // }
+
+        public override void Skip(System.Action callback)
+        {
+            if (textTyper.IsSkippable())
+            {
+                textTyper.Skip();
+            }
+            else
+            {
+                PlayEmojiAnimation(StopHash);
+            }
+        }
         #endregion
     }
 

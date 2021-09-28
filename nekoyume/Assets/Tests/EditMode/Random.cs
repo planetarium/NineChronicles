@@ -7,5 +7,7 @@ namespace Tests.EditMode
         public Random(int seed = int.MaxValue) : base(seed)
         {
         }
+
+        public int Seed => throw new System.NotImplementedException();
     }
 }

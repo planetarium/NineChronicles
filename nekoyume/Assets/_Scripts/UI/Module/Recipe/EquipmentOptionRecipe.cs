@@ -79,7 +79,7 @@ namespace Nekoyume.UI.Module
                 }
 
                 optionRecipeView.Show(
-                    row.GetLocalizedName(),
+                    row.GetLocalizedName(false),
                     subRecipeId,
                     new EquipmentItemSubRecipeSheet.MaterialInfo(recipeRow.MaterialId, recipeRow.MaterialCount),
                     true,
