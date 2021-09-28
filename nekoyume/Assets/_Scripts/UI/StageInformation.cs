@@ -9,8 +9,8 @@ using Nekoyume.State;
 using Nekoyume.TableData;
 using Nekoyume.UI.Module;
 using TMPro;
-using UniRx;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
@@ -24,29 +24,29 @@ namespace Nekoyume.UI
             Quest,
             Mimisbrunnr,
         }
-        [SerializeField]
-        private HelpButton stageHelpButton = null;
-        [SerializeField]
-        private TextMeshProUGUI titleText = null;
-        [SerializeField]
-        private TextMeshProUGUI monstersAreaText = null;
-        [SerializeField]
-        private List<VanillaCharacterView> monstersAreaCharacterViews = null;
-        [SerializeField]
-        private TextMeshProUGUI rewardsAreaText = null;
-        [SerializeField]
-        private List<StageRewardItemView> rewardsAreaItemViews = null;
-        [SerializeField]
-        private TextMeshProUGUI expText = null;
-        [SerializeField]
-        private SubmitButton submitButton = null;
-        [SerializeField]
-        private WorldMapWorld world = null;
-        [SerializeField]
-        private GameObject buttonNotification = null;
+        [SerializeField] private HelpButton stageHelpButton = null;
+        [SerializeField] private TextMeshProUGUI titleText = null;
+        [SerializeField] private TextMeshProUGUI monstersAreaText = null;
+        [SerializeField] private List<VanillaCharacterView> monstersAreaCharacterViews = null;
+        [SerializeField] private TextMeshProUGUI rewardsAreaText = null;
+        [SerializeField] private List<StageRewardItemView> rewardsAreaItemViews = null;
+        [SerializeField]private TextMeshProUGUI expText = null;
+        [SerializeField]private TextMeshProUGUI closeButtonText = null;
+        [SerializeField] private SubmitButton submitButton = null;
+        [SerializeField] private WorldMapWorld world = null;
+        [SerializeField] private GameObject buttonNotification = null;
+        [SerializeField] private Button closeButton;
 
         private WorldMap.ViewModel _sharedViewModel;
         private StageType _stageType = StageType.None;
+
+        protected override void Awake()
+        {
+            base.Awake();
+
+            closeButton.onClick.AddListener(OnClickClose);
+            CloseWidget = OnClickClose;
+        }
 
         public override void Initialize()
         {
@@ -83,6 +83,15 @@ namespace Nekoyume.UI
                 .AddTo(gameObject);
         }
 
+        private void OnClickClose()
+        {
+            if (_stageType == StageType.Mimisbrunnr)
+            {
+                Game.Event.OnRoomEnter.Invoke(true);
+            }
+            base.Close(true);
+        }
+
         public void Show(WorldMap.ViewModel viewModel, WorldSheet.Row worldRow, StageType stageType)
         {
             _sharedViewModel = viewModel;
@@ -93,6 +102,7 @@ namespace Nekoyume.UI
                 )
                 .AddTo(gameObject);
             _sharedViewModel.WorldInformation.TryGetWorld(worldRow.Id, out var worldModel);
+            closeButtonText.text = L10nManager.Localize($"WORLD_NAME_{worldModel.Name.ToUpper()}");
             UpdateStageInformation(_sharedViewModel.SelectedStageId.Value, States.Instance.CurrentAvatarState.level);
             if (_sharedViewModel.SelectedStageId.Value == 1)
             {
@@ -104,7 +114,6 @@ namespace Nekoyume.UI
             }
 
             _stageType = stageType;
-            SetBottomMenu(stageType);
 
             world.Set(worldRow);
             var questStageId = Game.Game.instance.States
@@ -125,43 +134,8 @@ namespace Nekoyume.UI
                 LockWorld();
             }
 
-            base.Show();
-        }
-
-        private void SetBottomMenu(StageType stageType)
-        {
-            var bottomMenu = Find<BottomMenu>();
-            switch (stageType)
-            {
-                case StageType.Quest:
-                    bottomMenu.Show(
-                        UINavigator.NavigationType.None,
-                        null,
-                        true,
-                        BottomMenu.ToggleableType.WorldMap);
-
-                    bottomMenu.worldMapButton.OnClick
-                        .Subscribe(_ => BackToWorldMap())
-                        .AddTo(gameObject);
-                    bottomMenu.ToggleGroup?.SetToggledOffAll();
-                    break;
-                case StageType.Mimisbrunnr:
-                    bottomMenu.Show(UINavigator.NavigationType.Back, SubscribeBackButtonClick, false);
-                    break;
-            }
-        }
-
-        private void SubscribeBackButtonClick(BottomMenu bottomMenu)
-        {
-            var stageInfo = Find<UI.StageInformation>();
-            stageInfo.Close();
-            Game.Event.OnRoomEnter.Invoke(true);
-        }
-
-        private void BackToWorldMap()
-        {
-            Close();
-            Find<WorldMap>().Show(States.Instance.CurrentAvatarState.worldInformation);
+            base.Show(true);
+            HelpPopup.HelpMe(100003, true);
         }
 
         private void UpdateStageInformation(int stageId, int characterLevel)
@@ -177,7 +151,7 @@ namespace Nekoyume.UI
 
             var stageWaveSheet = Game.Game.instance.TableSheets.StageWaveSheet;
             stageWaveSheet.TryGetValue(stageId, out var stageWaveRow, true);
-            titleText.text = $"Stage {GetStageIdString(stageWaveRow.StageId)}";
+            titleText.text = $"Stage {GetStageIdString(stageWaveRow.StageId, true)}";
 
             var monsterCount = stageWaveRow.TotalMonsterIds.Count;
             for (var i = 0; i < monstersAreaCharacterViews.Count; i++)
@@ -221,18 +195,20 @@ namespace Nekoyume.UI
 
         private void GoToPreparation()
         {
-            Close();
-
             switch (_stageType)
             {
                 case StageType.Quest:
-                    Find<WorldMap>().Close(true);
-                    Find<QuestPreparation>().Show();
+                    Find<QuestPreparation>().Show(
+                        $"{closeButtonText.text} {_sharedViewModel.SelectedStageId.Value}",
+                        true);
                     break;
 
                 case StageType.Mimisbrunnr:
-                    Find<MimisbrunnrPreparation>().StageId = _sharedViewModel.SelectedStageId.Value;
-                    Find<MimisbrunnrPreparation>().Show();
+                    var stageId = _sharedViewModel.SelectedStageId.Value;
+                    Find<MimisbrunnrPreparation>().Show(
+                        $"{closeButtonText.text} {stageId % 10000000}",
+                        stageId,
+                        true);
                     break;
             }
         }
@@ -247,9 +223,10 @@ namespace Nekoyume.UI
             world.Set(openedStageId, selectedStageId);
         }
 
-        public static string GetStageIdString(int stageId)
+        public static string GetStageIdString(int stageId, bool isTitle = false)
         {
-            return stageId > 10000000 ? $"Fire {stageId % 10000000}" : stageId.ToString();
+            var enter = isTitle ? string.Empty : "\n";
+            return stageId > 10000000 ? $"<sprite name=icon_Element_1>{enter}{stageId % 10000000}" : stageId.ToString();
         }
     }
 }

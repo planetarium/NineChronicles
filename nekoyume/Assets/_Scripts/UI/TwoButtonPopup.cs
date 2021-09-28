@@ -1,11 +1,12 @@
-﻿using Nekoyume.Game.Controller;
+﻿using Nekoyume.EnumType;
+using Nekoyume.Game.Controller;
 using Nekoyume.UI.Module;
 using TMPro;
 using UniRx;
 
 namespace Nekoyume.UI
 {
-    public class TwoButtonPopup : PopupWidget
+    public class TwoButtonPopup : SystemInfoWidget
     {
         public SubmitButton confirmButton;
         public SubmitButton cancalButton;

@@ -86,10 +86,12 @@ namespace Nekoyume.UI.Scroller
             characterView.OnClickCharacterIcon
                 .Subscribe(avatarState =>
                 {
+                    avatarState ??= States.TryGetAvatarState(ArenaInfo.AvatarAddress, out var state)
+                        ? state
+                        : null;
                     if (avatarState is null)
                     {
-                        avatarState = new AvatarState(
-                            (Bencodex.Types.Dictionary) Game.Game.instance.Agent.GetState(ArenaInfo.AvatarAddress));
+                        return;
                     }
 
                     Widget.Find<FriendInfoPopup>().Show(avatarState);
@@ -167,7 +169,9 @@ namespace Nekoyume.UI.Scroller
             }
 
             ArenaInfo = itemData.arenaInfo ?? throw new ArgumentNullException(nameof(itemData.arenaInfo));
-            _isCurrentUser = ArenaInfo.AvatarAddress == itemData.currentAvatarArenaInfo.AvatarAddress;
+            var currentAvatarArenaInfo = itemData.currentAvatarArenaInfo;
+            _isCurrentUser = currentAvatarArenaInfo is null ?
+                false : ArenaInfo.AvatarAddress == currentAvatarArenaInfo.AvatarAddress;
 
             if (controlBackgroundImage)
             {

@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Globalization;
+using System.Linq;
 using Bencodex.Types;
 using Libplanet;
 using Nekoyume.Action;
@@ -8,6 +10,7 @@ using Nekoyume.BlockChain;
 using Nekoyume.Model.State;
 using Nekoyume.State.Subjects;
 using Debug = UnityEngine.Debug;
+using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.State
 {
@@ -37,8 +40,8 @@ namespace Nekoyume.State
 
         public GameConfigState GameConfigState { get; private set; }
 
-        public readonly Dictionary<Address, CombinationSlotState> CombinationSlotStates =
-            new Dictionary<Address, CombinationSlotState>();
+        private readonly Dictionary<int, CombinationSlotState> _combinationSlotStates =
+            new Dictionary<int, CombinationSlotState>();
 
         public States()
         {
@@ -117,14 +120,74 @@ namespace Nekoyume.State
             }
 
             GoldBalanceState = LocalLayer.Instance.Modify(goldBalanceState);
-            AgentStateSubject.Gold.OnNext(GoldBalanceState.Gold);
+            AgentStateSubject.OnNextGold(GoldBalanceState.Gold);
         }
 
-        public AvatarState AddOrReplaceAvatarState(Address avatarAddress, int index, bool initializeReactiveState = true)
+        public AvatarState AddOrReplaceAvatarState(
+            Address avatarAddress,
+            int index,
+            bool initializeReactiveState = true) =>
+            TryGetAvatarState(avatarAddress, true, out var avatarState)
+                ? AddOrReplaceAvatarState(avatarState, index, initializeReactiveState)
+                : null;
+
+        public static bool TryGetAvatarState(Address address, out AvatarState avatarState) =>
+            TryGetAvatarState(address, false, out avatarState);
+
+        public static bool TryGetAvatarState(Address address, bool allowBrokenState, out AvatarState avatarState)
         {
-            var avatarState =
-                new AvatarState((Bencodex.Types.Dictionary) Game.Game.instance.Agent.GetState(avatarAddress));
-            return AddOrReplaceAvatarState(avatarState, index, initializeReactiveState);
+            try
+            {
+                avatarState = GetAvatarState(address, allowBrokenState);
+                return true;
+            }
+            catch (Exception e)
+            {
+                Debug.LogWarning($"{e.GetType().FullName}: {e.Message} address({address.ToHex()})\n{e.StackTrace}");
+                avatarState = null;
+                return false;
+            }
+        }
+
+        private static AvatarState GetAvatarState(Address address, bool allowBrokenState)
+        {
+            var agent = Game.Game.instance.Agent;
+            var avatarStateValue = agent.GetState(address);
+            if (!(avatarStateValue is Bencodex.Types.Dictionary dict))
+            {
+                Debug.LogWarning("Failed to get AvatarState");
+                throw new FailedLoadStateException($"Failed to get AvatarState: {address.ToHex()}");
+            }
+
+            if (dict.ContainsKey(LegacyNameKey))
+            {
+                return new AvatarState(dict);
+            }
+
+            foreach (var key in new[]
+            {
+                LegacyInventoryKey,
+                LegacyWorldInformationKey,
+                LegacyQuestListKey,
+            })
+            {
+                var address2 = address.Derive(key);
+                var value = agent.GetState(address2);
+                if (value is null)
+                {
+                    if (allowBrokenState &&
+                        dict.ContainsKey(key))
+                    {
+                        dict = new Bencodex.Types.Dictionary(dict.Remove((Text)key));
+                    }
+
+                    continue;
+                }
+
+                dict = dict.SetItem(key, value);
+            }
+
+            return new AvatarState(dict);
         }
 
         /// <summary>
@@ -203,7 +266,11 @@ namespace Nekoyume.State
 
             if (isNew)
             {
-                var curAvatarState = new AvatarState((Dictionary) Game.Game.instance.Agent.GetState(avatarState.address));
+                if (!TryGetAvatarState(avatarState.address, out var curAvatarState))
+                {
+                    return null;
+                }
+
                 AddOrReplaceAvatarState(curAvatarState, CurrentAvatarKey);
                 SetCombinationSlotStates(curAvatarState);
             }
@@ -231,7 +298,6 @@ namespace Nekoyume.State
             if (avatarState is null)
             {
                 LocalLayer.Instance.InitializeCombinationSlotsByCurrentAvatarState(null);
-
                 return;
             }
 
@@ -245,18 +311,41 @@ namespace Nekoyume.State
                         i
                     )
                 );
-                var slotState = new CombinationSlotState(
-                    (Dictionary) Game.Game.instance.Agent.GetState(slotAddress));
-                SetCombinationSlotState(slotState);
+                var state = new CombinationSlotState((Dictionary) Game.Game.instance.Agent.GetState(slotAddress));
+                UpdateCombinationSlotState(i, state);
             }
         }
 
-        public void SetCombinationSlotState(CombinationSlotState state)
+        public void UpdateCombinationSlotState(int index, CombinationSlotState state)
         {
-            state = LocalLayer.Instance.Modify(state);
-            CombinationSlotStates[state.address] = state;
+            if (_combinationSlotStates.ContainsKey(index))
+            {
+                _combinationSlotStates[index] = state;
+            }
+            else
+            {
+                _combinationSlotStates.Add(index, state);
+            }
+        }
 
-            CombinationSlotStateSubject.OnNext(state);
+        public void RemoveSlotState(int index)
+        {
+            if (_combinationSlotStates.ContainsKey(index))
+            {
+                _combinationSlotStates.Remove(index);
+            }
+        }
+
+        public Dictionary<int, CombinationSlotState> GetCombinationSlotState(long currentBlockIndex)
+        {
+            if (_combinationSlotStates == null)
+            {
+                return new Dictionary<int, CombinationSlotState>();
+            }
+
+            return _combinationSlotStates
+                .Where(pair => !pair.Value.Validate(CurrentAvatarState, currentBlockIndex))
+                .ToDictionary(pair => pair.Key, pair => pair.Value);
         }
 
         public void SetGameConfigState(GameConfigState state)

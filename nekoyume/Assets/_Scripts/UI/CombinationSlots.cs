@@ -1,69 +1,121 @@
+using System;
 using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using Libplanet;
-using Nekoyume.Action;
-using Nekoyume.Model.State;
+using Nekoyume.EnumType;
+using Nekoyume.Game.Controller;
+using Nekoyume.Model.Item;
 using Nekoyume.State;
-using Nekoyume.State.Subjects;
 using Nekoyume.UI.Module;
-using UniRx;
+using RedBlueGames.Tools.TextTyper;
+using UnityEngine;
+using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
+    using UniRx;
+
     public class CombinationSlots : XTweenWidget
     {
-        public CombinationSlot[] slots;
-        private long _blockIndex;
+        [SerializeField]
+        private List<CombinationSlot> slots;
+
+        [SerializeField]
+        private Blur blur;
+
+        [SerializeField]
+        private Button closeButton;
+
+        private readonly List<IDisposable> _disposablesOfOnEnable = new List<IDisposable>();
+
+        public override WidgetType WidgetType => WidgetType.Popup;
+        public override CloseKeyType CloseKeyType => CloseKeyType.Escape;
 
         protected override void Awake()
         {
-            base.Awake();
-            CombinationSlotStateSubject.CombinationSlotState
-                .Subscribe(SetSlot)
-                .AddTo(gameObject);
-            Game.Game.instance.Agent.BlockIndexSubject.ObserveOnMainThread()
-                .Subscribe(SubscribeBlockIndex)
-                .AddTo(gameObject);
-            _blockIndex = Game.Game.instance.Agent.BlockIndex;
+            closeButton.onClick.AddListener(() =>
+            {
+                Close();
+                AudioController.PlayClick();
+            });
         }
 
-        private void SetSlot(CombinationSlotState state)
+        protected override void OnEnable()
         {
-            var avatarState = States.Instance.CurrentAvatarState;
-            if (avatarState is null)
+            base.OnEnable();
+            Game.Game.instance.Agent.BlockIndexSubject.ObserveOnMainThread()
+                .Subscribe(SubscribeBlockIndex)
+                .AddTo(_disposablesOfOnEnable);
+        }
+
+        protected override void OnDisable()
+        {
+            _disposablesOfOnEnable.DisposeAllAndClear();
+            base.OnDisable();
+        }
+
+        public override void Show(bool ignoreShowAnimation = false)
+        {
+            base.Show(ignoreShowAnimation);
+            UpdateSlots(Game.Game.instance.Agent.BlockIndex);
+            HelpPopup.HelpMe(100008, true);
+
+            if (blur)
             {
-                return;
+                blur.Show();
+            }
+        }
+
+        public void SetCaching(int slotIndex, bool value, long requiredBlockIndex = 0, ItemUsable itemUsable = null)
+        {
+            slots[slotIndex].SetCached(value, requiredBlockIndex, itemUsable);
+            UpdateSlots(Game.Game.instance.Agent.BlockIndex);
+        }
+
+        public bool TryGetEmptyCombinationSlot(out int slotIndex)
+        {
+            UpdateSlots(Game.Game.instance.Agent.BlockIndex);
+            for (var i = 0; i < slots.Count; i++)
+            {
+                if (slots[i].Type != CombinationSlot.SlotType.Empty)
+                {
+                    continue;
+                }
+
+                slotIndex = i;
+                return true;
             }
 
-            UpdateSlot(state);
+            slotIndex = -1;
+            return false;
+        }
+
+        public override void Close(bool ignoreCloseAnimation = false)
+        {
+            if (blur && blur.isActiveAndEnabled)
+            {
+                blur.Close();
+            }
+
+            base.Close(ignoreCloseAnimation);
         }
 
         private void SubscribeBlockIndex(long blockIndex)
         {
-            _blockIndex = blockIndex;
-            foreach (var state in States.Instance.CombinationSlotStates.Values)
-            {
-                UpdateSlot(state);
-            }
+            UpdateSlots(blockIndex);
         }
 
-        private void UpdateSlot(CombinationSlotState state)
+        private void UpdateSlots(long blockIndex)
         {
-            for (var i = 0; i < slots.Length; i++)
+            var states = States.Instance.GetCombinationSlotState(blockIndex);
+
+            for (var i = 0; i < slots.Count; i++)
             {
-                var slot = slots[i];
-                var address = States.Instance.CurrentAvatarState.address.Derive(
-                    string.Format(
-                        CultureInfo.InvariantCulture,
-                        CombinationSlotState.DeriveFormat,
-                        i
-                    )
-                );
-                if (address == state.address)
+                if (states != null && states.TryGetValue(i, out var state))
                 {
-                    slot.SetData(state, _blockIndex, i);
-                    break;
+                    slots[i].SetSlot(blockIndex, i, state);
+                }
+                else
+                {
+                    slots[i].SetSlot(blockIndex, i );
                 }
             }
         }

@@ -75,6 +75,8 @@ namespace Nekoyume.UI
         private States _prevState;
         public Blur blur;
 
+        public override CloseKeyType CloseKeyType => CloseKeyType.Escape;
+
         protected override void Awake()
         {
             State.Value = States.Show;

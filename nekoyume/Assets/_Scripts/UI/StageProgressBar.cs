@@ -1,4 +1,5 @@
-﻿using System.Collections;
+using System.Collections;
+using System.Collections.Generic;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
@@ -32,12 +33,8 @@ namespace Nekoyume.UI
         private bool _vfxEnabled;
 
         [SerializeField] private StageProgressBarVFX stageProgressBarVFX = null;
-        [SerializeField] private Star01VFX star01VFX = null;
-        [SerializeField] private Star02VFX star02VFX = null;
-        [SerializeField] private Star03VFX star03VFX = null;
-        [SerializeField] private StarEmission01VFX starEmission01VFX = null;
-        [SerializeField] private StarEmission02VFX starEmission02VFX = null;
-        [SerializeField] private StarEmission03VFX starEmission03VFX = null;
+        [SerializeField] private List<VFX> starVFXList = null;
+        [SerializeField] private List<VFX> starEmissionVFXList = null;
 
         private Coroutine _smoothenCoroutine = null;
 
@@ -46,11 +43,11 @@ namespace Nekoyume.UI
             _xLength = vfxClamper.rect.width;
             Game.Event.OnEnemyDeadStart.AddListener(OnEnemyDeadStart);
             Game.Event.OnWaveStart.AddListener(SetNextWave);
-            Clear();
         }
 
         public void Show()
         {
+            Clear();
             gameObject.SetActive(true);
         }
 
@@ -72,17 +69,16 @@ namespace Nekoyume.UI
 
             _currentStar.Subscribe(star =>
             {
-                if(star > 0)
+                if (star > 0)
                     AudioController.instance.PlaySfx(AudioController.SfxCode.RewardItem);
 
                 PlayVFX(star);
             }).AddTo(gameObject);
         }
 
-        private void CompleteWave()
+        public void SetStarProgress(int star)
         {
-            _currentStar.Value += 1;
-
+            _currentStar.Value = star;
             var lerpSpeed = _currentStar.Value == 3 ? 0.5f : 1.0f;
 
             if (!(_smoothenCoroutine is null))
@@ -98,7 +94,16 @@ namespace Nekoyume.UI
             else
             {
                 UpdateSliderValue(sliderValue);
+                for (int i = 0; i < star; ++i)
+                {
+                    activatedStarImages[i].enabled = true;
+                }
             }
+        }
+
+        private void CompleteWave()
+        {
+            SetStarProgress(_currentStar.Value + 1);
         }
 
         private void SetNextWave(int waveHpSum)
@@ -142,8 +147,8 @@ namespace Nekoyume.UI
             while (current < value - smoothenFinishThreshold)
             {
                 current = Mathf.Lerp(current, value, Time.deltaTime * speed);
-                slider.value = current;
                 vfxOffset.anchoredPosition = new Vector2(current * _xLength, vfxOffset.anchoredPosition.y);
+                slider.value = current;
                 yield return null;
             }
 
@@ -176,41 +181,28 @@ namespace Nekoyume.UI
 
         private void UpdateSliderValue(float value)
         {
-            slider.value = value;
             vfxOffset.anchoredPosition = new Vector2(value * _xLength, vfxOffset.anchoredPosition.y);
+            slider.value = value;
             _smoothenCoroutine = null;
         }
 
         private void PlayVFX(int star)
         {
-            switch (star)
+            for (int i = 0; i < star; ++i)
             {
-                case 1:
+                var starVFX = starVFXList[i];
+                var emissionVFX = starEmissionVFXList[i];
+                var isStarEnabled = activatedStarImages[i].enabled;
+
+                if (!isStarEnabled)
+                {
                     if (_vfxEnabled)
                     {
-                        star01VFX.Play();
-                        starEmission01VFX.Play();
+                        starVFX.Play();
+                        emissionVFX.Play();
                     }
-                    activatedStarImages[0].gameObject.SetActive(true);
-                    break;
-                case 2:
-                    if (_vfxEnabled)
-                    {
-                        star02VFX.Play();
-                        starEmission02VFX.Play();
-                    }
-                    activatedStarImages[1].gameObject.SetActive(true);
-                    break;
-                case 3:
-                    if (_vfxEnabled)
-                    {
-                        star03VFX.Play();
-                        starEmission03VFX.Play();
-                    }
-                    activatedStarImages[2].gameObject.SetActive(true);
-                    break;
-                default:
-                    return;
+                    activatedStarImages[i].enabled = true;
+                }
             }
         }
 
@@ -218,15 +210,18 @@ namespace Nekoyume.UI
         {
             _currentStar.Value = 0;
             slider.value = 0.0f;
-            activatedStarImages[0].gameObject.SetActive(false);
-            activatedStarImages[1].gameObject.SetActive(false);
-            activatedStarImages[2].gameObject.SetActive(false);
-            star01VFX.Stop();
-            star02VFX.Stop();
-            star03VFX.Stop();
-            starEmission01VFX.Stop();
-            starEmission02VFX.Stop();
-            starEmission03VFX.Stop();
+            foreach (var image in activatedStarImages)
+            {
+                image.enabled = false;
+            }
+            foreach (var vfx in starVFXList)
+            {
+                vfx.Stop();
+            }
+            foreach (var vfx in starEmissionVFXList)
+            {
+                vfx.Stop();
+            }
             stageProgressBarVFX.Stop();
         }
     }

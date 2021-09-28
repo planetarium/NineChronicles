@@ -41,5 +41,39 @@ namespace Nekoyume.Helper
             data.Title.GetComponentInChildren<TextMeshProUGUI>().text = text;
             return data.Title;
         }
+
+        public static GameObject GetAuraWeaponPrefab(int id, int level)
+        {
+            var datas = Get<WeaponAuraScriptableObject>().data;
+
+            var auras = datas.FirstOrDefault(x => x.id == id);
+            if (auras != null)
+            {
+                var index = WeaponLevelToIndex(level);
+                return index > -1 ? auras.prefab[index] : null;
+            }
+
+            return null;
+        }
+
+        private static int WeaponLevelToIndex(int level)
+        {
+            if (4 <= level && level < 7)
+            {
+                return 0;
+            }
+
+            if (7 <= level && level < 10)
+            {
+                return 1;
+            }
+
+            if (level >= 10)
+            {
+                return 2;
+            }
+
+            return -1;
+        }
     }
 }
