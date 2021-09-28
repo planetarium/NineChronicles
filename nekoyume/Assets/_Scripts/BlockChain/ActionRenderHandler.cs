@@ -40,9 +40,6 @@ namespace Nekoyume.BlockChain
             internal static readonly ActionRenderHandler Value = new ActionRenderHandler();
         }
 
-        // FIXME We should move this constant to `StageSimulator.VersionV100025`
-        private const int StageSimulatorVersionV100025 = 2;
-
         public static ActionRenderHandler Instance => Singleton.Value;
 
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
@@ -698,7 +695,8 @@ namespace Nekoyume.BlockChain
                     eval.Action.stageId,
                     Game.Game.instance.TableSheets.GetStageSimulatorSheets(),
                     Game.Game.instance.TableSheets.CostumeStatSheet,
-                    StageSimulatorVersionV100025
+                    StageSimulator.ConstructorVersionV100080,
+                    eval.Action.playCount
                 );
                 simulator.Simulate(eval.Action.playCount);
                 var log = simulator.Log;
@@ -778,7 +776,7 @@ namespace Nekoyume.BlockChain
                     eval.Action.stageId,
                     Game.Game.instance.TableSheets.GetStageSimulatorSheets(),
                     Game.Game.instance.TableSheets.CostumeStatSheet,
-                    StageSimulatorVersionV100025
+                    StageSimulator.ConstructorVersionV100080
                 );
                 simulator.Simulate(1);
                 BattleLog log = simulator.Log;
