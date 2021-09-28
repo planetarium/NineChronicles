@@ -25,6 +25,7 @@ using Nekoyume.UI.Module;
 using UniRx;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
+using UnityEngine.Serialization;
 using Menu = Nekoyume.UI.Menu;
 
 
@@ -64,8 +65,6 @@ namespace Nekoyume.Game
 
         public bool IsInitialized { get; private set; }
 
-        public ShopProducts ShopProducts;
-
         public Prologue Prologue => prologue;
 
         public const string AddressableAssetsContainerPath = nameof(AddressableAssetsContainer);
@@ -88,7 +87,7 @@ namespace Nekoyume.Game
         protected override void Awake()
         {
             Debug.Log("[Game] Awake() invoked");
-            
+
             Application.targetFrameRate = 60;
             Application.SetStackTraceLogType(LogType.Log, StackTraceLogType.None);
             base.Awake();
@@ -96,7 +95,7 @@ namespace Nekoyume.Game
             _options = CommandLineOptions.Load(
                 CommandLineOptionsJsonPath
             );
-            
+
             Debug.Log("[Game] Awake() CommandLineOptions loaded");
 
 #if !UNITY_EDITOR
@@ -112,7 +111,7 @@ namespace Nekoyume.Game
 
             Mixpanel.Init();
             Mixpanel.Track("Unity/Started");
-            
+
             Debug.Log("[Game] Awake() Mixpanel initialized");
 #endif
 
@@ -150,8 +149,6 @@ namespace Nekoyume.Game
 
             // Initialize MainCanvas first
             MainCanvas.instance.InitializeFirst();
-            yield return Addressables.InitializeAsync();
-            Debug.Log("[Game] Start() Addressables initialized");
             // Initialize TableSheets. This should be done before initialize the Agent.
             yield return StartCoroutine(CoInitializeTableSheets());
             Debug.Log("[Game] Start() TableSheets initialized");
@@ -175,8 +172,6 @@ namespace Nekoyume.Game
             );
 
             yield return new WaitUntil(() => agentInitialized);
-            Debug.Log("[Game] Start() Agent initialized");
-            ShopProducts = new ShopProducts();
             // NOTE: Create ActionManager after Agent initialized.
             ActionManager = new ActionManager(Agent);
             yield return StartCoroutine(CoSyncTableSheets());
@@ -190,15 +185,10 @@ namespace Nekoyume.Game
             // Initialize Stage
             Stage.Initialize();
 
-            Observable.EveryUpdate()
-                .Where(_ => Input.GetMouseButtonUp(0))
-                .Select(_ => Input.mousePosition)
-                .Subscribe(PlayMouseOnClickVFX)
-                .AddTo(gameObject);
-
             Widget.Find<VersionInfo>().SetVersion(Agent.AppProtocolVersion);
 
             ShowNext(agentInitializeSucceed);
+            StartCoroutine(CoUpdate());
         }
 
         private void SubscribeRPCAgent()
@@ -224,7 +214,7 @@ namespace Nekoyume.Game
                 .Subscribe(agent =>
                 {
                     Debug.Log($"[Game]RPCAgent OnRetryEnded. {rpcAgent.Address.ToHex()}");
-                    OnRPCAgentRetryAndPreloadEnded(agent);
+                    OnRPCAgentRetryEnded(agent);
                 })
                 .AddTo(gameObject);
 
@@ -233,16 +223,16 @@ namespace Nekoyume.Game
                 .Subscribe(agent =>
                 {
                     Debug.Log($"[Game]RPCAgent OnPreloadStarted. {rpcAgent.Address.ToHex()}");
-                    OnRPCAgentRetryAndPreloadEnded(agent);
+                    OnRPCAgentPreloadStarted(agent);
                 })
                 .AddTo(gameObject);
-            
+
             rpcAgent.OnPreloadEnded
                 .ObserveOnMainThread()
                 .Subscribe(agent =>
                 {
                     Debug.Log($"[Game]RPCAgent OnPreloadEnded. {rpcAgent.Address.ToHex()}");
-                    OnRPCAgentRetryAndPreloadEnded(agent);
+                    OnRPCAgentPreloadEnded(agent);
                 })
                 .AddTo(gameObject);
 
@@ -261,7 +251,84 @@ namespace Nekoyume.Game
             Widget.Find<BlockSyncLoadingScreen>().Show();
         }
 
-        private static void OnRPCAgentRetryAndPreloadEnded(RPCAgent rpcAgent)
+        private static void OnRPCAgentRetryEnded(RPCAgent rpcAgent)
+        {
+            var widget = (Widget) Widget.Find<BlockSyncLoadingScreen>();
+            if (widget.IsActive())
+            {
+                widget.Close();
+            }
+        }
+
+        private static void OnRPCAgentPreloadStarted(RPCAgent rpcAgent)
+        {
+            if (Widget.Find<Intro>().IsActive() ||
+                Widget.Find<PreloadingScreen>().IsActive() ||
+                Widget.Find<Synopsis>().IsActive())
+            {
+                // NOTE: 타이틀 화면에서 리트라이와 프리로드가 완료된 상황입니다.
+                // FIXME: 이 경우에는 메인 로비가 아니라 기존 초기화 로직이 흐르도록 처리해야 합니다.
+                return;
+            }
+
+            var needToBackToMain = false;
+            var showLoadingScreen = false;
+            var widget = (Widget) Widget.Find<BlockSyncLoadingScreen>();
+            if (widget.IsActive())
+            {
+                widget.Close();
+            }
+
+            if (Widget.Find<LoadingScreen>().IsActive())
+            {
+                Widget.Find<LoadingScreen>().Close();
+                widget = Widget.Find<QuestPreparation>();
+                if (widget.IsActive())
+                {
+                    widget.Close(true);
+                    needToBackToMain = true;
+                }
+
+                widget = Widget.Find<Menu>();
+                if (widget.IsActive())
+                {
+                    widget.Close(true);
+                    needToBackToMain = true;
+                }
+            }
+            else if (Widget.Find<StageLoadingScreen>().IsActive())
+            {
+                Widget.Find<StageLoadingScreen>().Close();
+
+                if (Widget.Find<BattleResult>().IsActive())
+                {
+                    Widget.Find<BattleResult>().Close(true);
+                }
+
+                needToBackToMain = true;
+                showLoadingScreen = true;
+            }
+            else if (Widget.Find<ArenaBattleLoadingScreen>().IsActive())
+            {
+                Widget.Find<ArenaBattleLoadingScreen>().Close();
+                needToBackToMain = true;
+            }
+            else if (Widget.Find<MimisbrunnrPreparation>().IsActive())
+            {
+                Widget.Find<MimisbrunnrPreparation>().Close(true);
+                needToBackToMain = true;
+            }
+
+            if (!needToBackToMain)
+            {
+                return;
+            }
+
+            ActionRenderHandler.BackToMain(
+                showLoadingScreen,
+                new UnableToRenderWhenSyncingBlocksException());
+        }
+        private static void OnRPCAgentPreloadEnded(RPCAgent rpcAgent)
         {
             if (Widget.Find<Intro>().IsActive() ||
                 Widget.Find<PreloadingScreen>().IsActive() ||
@@ -437,6 +504,25 @@ namespace Nekoyume.Game
                 Mixpanel.Flush();
             }
             _logsClient?.Dispose();
+        }
+
+        private IEnumerator CoUpdate()
+        {
+            while (enabled)
+            {
+                if (Input.GetMouseButtonUp(0))
+                {
+                    PlayMouseOnClickVFX(Input.mousePosition);
+                }
+
+                if (Input.GetKeyDown(KeyCode.Escape) &&
+                    !Widget.IsOpenAnyPopup())
+                {
+                    Quit();
+                }
+
+                yield return null;
+            }
         }
 
         public static void Quit()

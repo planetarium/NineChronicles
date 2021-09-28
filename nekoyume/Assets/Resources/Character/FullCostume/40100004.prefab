@@ -58,10 +58,12 @@ MeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 0
   m_ReflectionProbeUsage: 0
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: c7a880f6e8ecc754da48966ccecf92ff, type: 2}
+  - {fileID: 2100000, guid: 55c076e0ea9ae61488298379073d1193, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -69,6 +71,7 @@ MeshRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
@@ -81,6 +84,7 @@ MeshRenderer:
   m_SortingLayerID: -385277771
   m_SortingLayer: 3
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!114 &4764817466011113707
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -93,7 +97,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d247ba06193faa74d9335f5481b2b56c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  skeletonDataAsset: {fileID: 11400000, guid: 8bebc4803bbb81d44ad43c99c232873e, type: 2}
+  skeletonDataAsset: {fileID: 11400000, guid: 978c7955a644dc54e80547d7df0f1249, type: 2}
   initialSkinName: 
   initialFlipX: 0
   initialFlipY: 0
@@ -162,47 +166,47 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   statesAndAnimations:
   - stateName: Appear
-    animation: {fileID: 11400000, guid: 5a84d9f392e2f7d4d9cee9fa37b4f8ad, type: 2}
+    animation: {fileID: 11400000, guid: 37b4d8e9965377343876d0a5cbb1a85f, type: 2}
   - stateName: Disappear
-    animation: {fileID: 11400000, guid: 5a84d9f392e2f7d4d9cee9fa37b4f8ad, type: 2}
+    animation: {fileID: 11400000, guid: 37b4d8e9965377343876d0a5cbb1a85f, type: 2}
   - stateName: Standing
-    animation: {fileID: 11400000, guid: 5a84d9f392e2f7d4d9cee9fa37b4f8ad, type: 2}
+    animation: {fileID: 11400000, guid: 37b4d8e9965377343876d0a5cbb1a85f, type: 2}
   - stateName: StandingToIdle
-    animation: {fileID: 11400000, guid: 5a84d9f392e2f7d4d9cee9fa37b4f8ad, type: 2}
+    animation: {fileID: 11400000, guid: 37b4d8e9965377343876d0a5cbb1a85f, type: 2}
   - stateName: Idle
-    animation: {fileID: 11400000, guid: 5a84d9f392e2f7d4d9cee9fa37b4f8ad, type: 2}
+    animation: {fileID: 11400000, guid: 37b4d8e9965377343876d0a5cbb1a85f, type: 2}
   - stateName: Touch
-    animation: {fileID: 11400000, guid: 167285ea1c2be4580933d35fbdd0b8f0, type: 2}
+    animation: {fileID: 11400000, guid: 524648781ee71e649a73ced4b717e366, type: 2}
   - stateName: Run
-    animation: {fileID: 11400000, guid: d551bd0416e67b14f94d413c4d89b6a1, type: 2}
+    animation: {fileID: 11400000, guid: 554b7ec76508fa142babd7c40d2fe8cf, type: 2}
   - stateName: Attack
-    animation: {fileID: 11400000, guid: 2307ba4a15354a9448d18273dae14233, type: 2}
+    animation: {fileID: 11400000, guid: f5f019f4967ca644ca271c71e599189a, type: 2}
   - stateName: Casting
-    animation: {fileID: 11400000, guid: c0a569477f089e14faf3c6a6b9005ef9, type: 2}
+    animation: {fileID: 11400000, guid: 3f4064470dc27a24e9b07a82fbd11f1d, type: 2}
   - stateName: CastingAttack
-    animation: {fileID: 11400000, guid: 2307ba4a15354a9448d18273dae14233, type: 2}
+    animation: {fileID: 11400000, guid: f5f019f4967ca644ca271c71e599189a, type: 2}
   - stateName: CriticalAttack
-    animation: {fileID: 11400000, guid: bd2632811649fec48bbe991a6927e57a, type: 2}
+    animation: {fileID: 11400000, guid: fd9b1c1d93df3fd419612603c42ae078, type: 2}
   - stateName: Hit
-    animation: {fileID: 11400000, guid: 46562c813bc9cc8499d77334d8fe7541, type: 2}
+    animation: {fileID: 11400000, guid: 89367800a4e091f479b8363165f4ef8e, type: 2}
   - stateName: Die
-    animation: {fileID: 11400000, guid: 2dc34a5448b511d49a02c4527e1b2d5f, type: 2}
+    animation: {fileID: 11400000, guid: b278bd6e0841265449ddcde2e6fb6afc, type: 2}
   - stateName: Win
-    animation: {fileID: 11400000, guid: e94ee456956a87149b556d329f1a18c2, type: 2}
+    animation: {fileID: 11400000, guid: c9419133766e6734e95d94bbdefbbaad, type: 2}
   - stateName: Win_02
-    animation: {fileID: 11400000, guid: e94ee456956a87149b556d329f1a18c2, type: 2}
+    animation: {fileID: 11400000, guid: c9419133766e6734e95d94bbdefbbaad, type: 2}
   - stateName: Win_03
-    animation: {fileID: 11400000, guid: e94ee456956a87149b556d329f1a18c2, type: 2}
+    animation: {fileID: 11400000, guid: c9419133766e6734e95d94bbdefbbaad, type: 2}
   - stateName: Greeting
-    animation: {fileID: 11400000, guid: 5a84d9f392e2f7d4d9cee9fa37b4f8ad, type: 2}
+    animation: {fileID: 11400000, guid: 37b4d8e9965377343876d0a5cbb1a85f, type: 2}
   - stateName: Emotion
-    animation: {fileID: 11400000, guid: 5a84d9f392e2f7d4d9cee9fa37b4f8ad, type: 2}
+    animation: {fileID: 11400000, guid: 37b4d8e9965377343876d0a5cbb1a85f, type: 2}
   - stateName: Skill_01
-    animation: {fileID: 11400000, guid: 5a84d9f392e2f7d4d9cee9fa37b4f8ad, type: 2}
+    animation: {fileID: 11400000, guid: 37b4d8e9965377343876d0a5cbb1a85f, type: 2}
   - stateName: Skill_02
-    animation: {fileID: 11400000, guid: 5a84d9f392e2f7d4d9cee9fa37b4f8ad, type: 2}
+    animation: {fileID: 11400000, guid: 37b4d8e9965377343876d0a5cbb1a85f, type: 2}
   - stateName: TurnOver_01
-    animation: {fileID: 11400000, guid: 745b964a07f35234ab7306d9430ef7b1, type: 2}
+    animation: {fileID: 11400000, guid: 523a21bc1de5e7e4381ca2402689c60f, type: 2}
   - stateName: TurnOver_02
-    animation: {fileID: 11400000, guid: edf4ca9f23509b6458f7a13c22a20401, type: 2}
+    animation: {fileID: 11400000, guid: 9ba59e8f2adc8fe43b12b067ece188c6, type: 2}
   hairTypeIndex: 1

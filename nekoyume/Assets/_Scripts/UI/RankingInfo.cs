@@ -25,6 +25,9 @@ namespace Nekoyume.UI
         private TextMeshProUGUI remainTime = null;
 
         [SerializeField]
+        private TextMeshProUGUI remainTitle = null;
+
+        [SerializeField]
         private Slider remainTimeSlider = null;
 
         private long _resetIndex;
@@ -100,8 +103,9 @@ namespace Nekoyume.UI
             var gameConfigState = States.Instance.GameConfigState;
             var remainBlock = gameConfigState.DailyArenaInterval - value;
             var time = Util.GetBlockToTime((int)remainBlock);
+            remainTitle.text = L10nManager.Localize("UI_REMAINING_TIME_ONLY");
             remainTime.text = string.Format(
-                L10nManager.Localize("UI_REMAININGTIME"),
+                L10nManager.Localize("UI_ABOUT"),
                 time,
                 (int) value, gameConfigState.DailyArenaInterval);
         }

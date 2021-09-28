@@ -8,9 +8,13 @@ using UniRx.Triggers;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using Coffee.UIEffects;
+using System.Collections.Generic;
+using Nekoyume.Game.Controller;
 
 namespace Nekoyume.UI.Module
 {
+    using System.Linq;
     using UniRx;
 
     // TODO: 지금의 `EquipmentSlot`은 장비 뿐만 아니라 소모품과 코스튬이 모두 사용하고 있습니다.
@@ -23,7 +27,7 @@ namespace Nekoyume.UI.Module
         private static readonly Color DimmedColor = ColorHelper.HexToColorRGB("848484");
 
         [SerializeField]
-        private Image gradeImage = null;
+        protected OptionTagDataScriptableObject optionTagData = null;
 
         [SerializeField]
         private Image defaultImage = null;
@@ -42,6 +46,24 @@ namespace Nekoyume.UI.Module
 
         [SerializeField]
         private int itemSubTypeIndex = 1;
+
+        [SerializeField]
+        protected UIHsvModifier optionTagBg = null;
+
+        [SerializeField]
+        protected List<Image> optionTagImages = null;
+
+        [SerializeField]
+        protected ItemViewDataScriptableObject itemViewData;
+
+        [SerializeField]
+        protected Image gradeImage;
+
+        [SerializeField]
+        protected UIHsvModifier gradeHsv;
+
+        [SerializeField]
+        protected Image enhancementImage;
 
         private int _requireLevel;
         private string _messageForCat;
@@ -159,7 +181,7 @@ namespace Nekoyume.UI.Module
                         _cat.Hide();
                     }
 
-                    _cat = Widget.Find<MessageCatManager>().Show(true, _messageForCat);
+                    _cat = Widget.Find<MessageCatManager>().Show(true, _messageForCat, gameObject);
                 })
                 .AddTo(gameObject);
 
@@ -203,19 +225,64 @@ namespace Nekoyume.UI.Module
             itemImage.SetNativeSize();
             Item = itemBase;
 
-            var gradeSprite = itemBase.GetBackgroundSprite();
-            if (gradeSprite is null)
-            {
-                throw new FailedToLoadResourceException<Sprite>(itemBase.Grade.ToString());
-            }
-
             gradeImage.enabled = true;
-            gradeImage.overrideSprite = gradeSprite;
+            var gradeData = itemViewData.GetItemViewData(itemBase.Grade);
+            gradeImage.overrideSprite = gradeData.GradeBackground;
+            gradeHsv.range = gradeData.GradeHsvRange;
+            gradeHsv.hue = gradeData.GradeHsvHue;
+            gradeHsv.saturation = gradeData.GradeHsvSaturation;
+            gradeHsv.value = gradeData.GradeHsvValue;
 
-            if (itemBase is Equipment equip && equip.level > 0)
+            optionTagBg.gameObject.SetActive(false);
+            enhancementImage.gameObject.SetActive(false);
+            if (itemBase is Equipment equip)
             {
-                enhancementText.enabled = true;
-                enhancementText.text = $"+{equip.level}";
+                var isUpgraded = equip.level > 0;
+                enhancementText.enabled = isUpgraded;
+                if (isUpgraded)
+                {
+                    enhancementText.text = $"+{equip.level}";
+                }
+
+                if (equip.level >= Util.VisibleEnhancementEffectLevel)
+                {
+                    enhancementImage.gameObject.SetActive(true);
+                    enhancementImage.material = gradeData.EnhancementMaterial;
+                }
+
+                foreach (var image in optionTagImages)
+                {
+                    image.gameObject.SetActive(false);
+                }
+
+                if (equip.optionCountFromCombination > 0)
+                {
+                    var data = optionTagData.GetOptionTagData(Item.Grade);
+                    optionTagBg.gameObject.SetActive(true);
+                    optionTagBg.range = data.GradeHsvRange;
+                    optionTagBg.hue = data.GradeHsvHue;
+                    optionTagBg.saturation = data.GradeHsvSaturation;
+                    optionTagBg.value = data.GradeHsvValue;
+                }
+
+                var optionInfo = new ItemOptionInfo(Item as Equipment);
+                var optionCount = optionInfo.StatOptions.Sum(x => x.count);
+                var index = 0;
+                for (var i = 0; i < optionCount; ++i)
+                {
+                    var image = optionTagImages[index];
+                    image.gameObject.SetActive(true);
+                    image.sprite = optionTagData.StatOptionSprite;
+                    ++index;
+                }
+
+                for (var i = 0; i < optionInfo.SkillOptions.Count; ++i)
+                {
+                    var image = optionTagImages[index];
+                    image.gameObject.SetActive(true);
+                    image.sprite = optionTagData.SkillOptionSprite;
+                    ++index;
+                }
             }
             else
             {
@@ -255,6 +322,8 @@ namespace Nekoyume.UI.Module
             itemImage.enabled = false;
             gradeImage.enabled = false;
             enhancementText.enabled = false;
+            enhancementImage.gameObject.SetActive(false);
+            optionTagBg.gameObject.SetActive(false);
             Item = null;
             Unlock();
         }
@@ -282,9 +351,11 @@ namespace Nekoyume.UI.Module
             {
                 case 1:
                     _onClick?.Invoke(this);
+                    AudioController.PlayClick();
                     break;
                 case 2:
                     _onDoubleClick?.Invoke(this);
+                    // note : _onDoubleClick has another sfx, not `sfx_click`.
                     break;
             }
         }

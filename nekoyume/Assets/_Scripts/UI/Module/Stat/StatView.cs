@@ -30,12 +30,14 @@ namespace Nekoyume.UI.Module
             Show(statMapEx.StatType, statMapEx.TotalValueAsInt);
         }
 
-        public virtual void Show(StatType statType, int value)
+        public virtual void Show(StatType statType, int value, bool showPlus = false)
         {
-            Show(statType.ToString(),
+            var valueString =
                 statType == StatType.SPD
                     ? (value / 100f).ToString(CultureInfo.InvariantCulture)
-                    : value.ToString());
+                    : value.ToString();
+
+            Show(statType.ToString(), showPlus ? $"+{valueString}" : valueString);
         }
 
         public virtual void Show(string statType, string value)
@@ -49,6 +51,7 @@ namespace Nekoyume.UI.Module
         {
             statTypeText.enabled = true;
             valueText.enabled = true;
+            gameObject.SetActive(true);
         }
 
         public virtual void Hide()

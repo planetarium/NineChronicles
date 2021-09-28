@@ -52,7 +52,7 @@
     },
     {
       "id": 6,
-      "nextId": 7,
+      "nextId": 8,
       "data": {
         "presetId": 3,
         "targetType": "CombineEquipmentCategory",
@@ -64,20 +64,6 @@
       }
     },
     {
-      "id": 7,
-      "nextId": 8,
-      "data": {
-        "presetId": 5,
-        "targetType": "CombineEquipmentCategory",
-        "actionType": "None",
-        "emojiType": "Idle",
-        "guideType": "None",
-        "scriptKey": "TUTORIAL_02_006",
-        "fullScreenButton" : true,
-        "noArrow": true
-      }
-    },
-    {
       "id": 8,
       "nextId": 9,
       "data": {
@@ -85,13 +71,13 @@
         "targetType": "EquipmentRecipeCellView",
         "actionType": "TutorialActionClickFirstRecipeCellView",
         "emojiType": "Idle",
-        "guideType": "Square",
+        "guideType": "None",
         "scriptKey": "TUTORIAL_02_007"
       }
     },
     {
       "id": 9,
-      "nextId": 10,
+      "nextId": 11,
       "data": {
         "presetId": 5,
         "targetType": "EquipmentRecipeCellView",
@@ -104,18 +90,6 @@
       }
     },
     {
-      "id": 10,
-      "nextId": 11,
-      "data": {
-        "presetId": 9,
-        "targetType": "EquipmentRecipeCellView",
-        "actionType": "TutorialActionClickFirstRecipeCellView",
-        "emojiType": "Idle",
-        "guideType": "Square",
-        "scriptKey": "TUTORIAL_02_009"
-      }
-    },
-    {
       "id": 11,
       "nextId": 12,
       "data": {
@@ -123,7 +97,7 @@
         "targetType": "CombineWithCostButton",
         "actionType": "TutorialActionClickCombinationSubmitButton",
         "emojiType": "Idle",
-        "guideType": "None",
+        "guideType": "Square",
         "scriptKey": "TUTORIAL_02_010"
       }
     },

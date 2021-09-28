@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.EnumType;
+using Nekoyume.Model.Mail;
 using Nekoyume.Pattern;
 using Nekoyume.UI.Module;
 using UnityEngine;
@@ -161,10 +162,6 @@ namespace Nekoyume.UI
 
                 // 팝업 영역.
                 Widget.Create<Settings>(),
-                Widget.Create<Confirm>(),
-                Widget.Create<QuitPopup>(),
-                Widget.Create<OneButtonPopup>(),
-                Widget.Create<TwoButtonPopup>(),
 
                 // 팝업 영역: 알림.
                 Widget.Create<UpdatePopup>(),
@@ -178,6 +175,8 @@ namespace Nekoyume.UI
                 Widget.Create<Notification>(true),
                 Widget.Create<OneLinePopup>(true),
                 Widget.Create<VersionInfo>(true),
+                Widget.Create<OneButtonPopup>(),
+                Widget.Create<TwoButtonPopup>(),
             };
 
             foreach (var value in firstWidgets)
@@ -213,83 +212,100 @@ namespace Nekoyume.UI
             yield return null;
             secondWidgets.Add(Widget.Create<Blind>());
             yield return null;
-
             secondWidgets.Add(Widget.Create<ShopSell>());
             yield return null;
             secondWidgets.Add(Widget.Create<ShopBuy>());
-            yield return null;
-
-            secondWidgets.Add(Widget.Create<QuestPreparation>());
             yield return null;
             secondWidgets.Add(Widget.Create<WorldMap>());
             yield return null;
             secondWidgets.Add(Widget.Create<StageInformation>());
             yield return null;
+            secondWidgets.Add(Widget.Create<QuestPreparation>());
+            yield return null;
             secondWidgets.Add(Widget.Create<Status>());
-            yield return null;
-            secondWidgets.Add(Widget.Create<Combination>());
-            yield return null;
-            secondWidgets.Add(Widget.Create<EnhanceEquipment>());
             yield return null;
             secondWidgets.Add(Widget.Create<RankingBoard>());
             yield return null;
             secondWidgets.Add(Widget.Create<MimisbrunnrPreparation>());
             yield return null;
+            secondWidgets.Add(Widget.Create<EventBanner>());
+            yield return null;
+            secondWidgets.Add(Widget.Create<CodeRewardButton>());
+            yield return null;
 
-            // 로딩
+            // loading
             secondWidgets.Add(Widget.Create<StageLoadingScreen>());
             yield return null;
 
-            // 모듈류.
+            // module
             secondWidgets.Add(Widget.Create<StageTitle>());
             yield return null;
-            secondWidgets.Add(Widget.Create<Mail>());
+            secondWidgets.Add(Widget.Create<CombinationMain>());
             yield return null;
-            secondWidgets.Add(Widget.Create<Quest>());
+            secondWidgets.Add(Widget.Create<Craft>());
             yield return null;
-            secondWidgets.Add(Widget.Create<CombinationSlots>());
-            yield return null;
-            secondWidgets.Add(Widget.Create<Rank>());
-            yield return null;
-            secondWidgets.Add(Widget.Create<AvatarInfo>());
+            secondWidgets.Add(Widget.Create<UpgradeEquipment>());
             yield return null;
 
-            // 팝업류.
-            secondWidgets.Add(Widget.Create<BattleResult>());
-            yield return null;
+            // popup
             secondWidgets.Add(Widget.Create<RankingBattleResult>());
             yield return null;
             secondWidgets.Add(Widget.Create<ItemCountAndPricePopup>());
-            yield return null;
-            secondWidgets.Add(Widget.Create<ItemCountableAndPricePopup>());
-            yield return null;
-            secondWidgets.Add(Widget.Create<DailyRewardItemPopup>());
-            yield return null;
-            secondWidgets.Add(Widget.Create<CombinationResultPopup>());
             yield return null;
             secondWidgets.Add(Widget.Create<Alert>());
             yield return null;
             secondWidgets.Add(Widget.Create<InputBox>());
             yield return null;
-            secondWidgets.Add(Widget.Create<CombinationSlotPopup>());
-            yield return null;
             secondWidgets.Add(Widget.Create<LevelUpCelebratePopup>());
             yield return null;
             secondWidgets.Add(Widget.Create<MonsterCollectionRewardsPopup>());
             yield return null;
-            // 임시로 팝업보다 상단에 배치합니다.
-            secondWidgets.Add(Widget.Create<BottomMenu>());
+
+            // header menu
+            secondWidgets.Add(Widget.Create<HeaderMenu>());
+            yield return null;
+
+            // Popup included in header menu
+            secondWidgets.Add(Widget.Create<Mail>());
+            yield return null;
+            secondWidgets.Add(Widget.Create<Quest>());
+            yield return null;
+            secondWidgets.Add(Widget.Create<AvatarInfo>());
+            yield return null;
+            secondWidgets.Add(Widget.Create<CombinationSlots>());
+            yield return null;
+            secondWidgets.Add(Widget.Create<Rank>());
+            yield return null;
+            secondWidgets.Add(Widget.Create<ChatPopup>());
+            yield return null;
+            secondWidgets.Add(Widget.Create<QuitPopup>());
+            yield return null;
+
+            // Over than HeaderMenu
+            secondWidgets.Add(Widget.Create<CombinationResult>());
+            yield return null;
+            secondWidgets.Add(Widget.Create<EnhancementResult>());
+            yield return null;
+            secondWidgets.Add(Widget.Create<BattleResult>());
+            yield return null;
+            secondWidgets.Add(Widget.Create<ItemCountableAndPricePopup>());
+            yield return null;
+
+            // popup
+            secondWidgets.Add(Widget.Create<CombinationSlotPopup>());
+            yield return null;
+            secondWidgets.Add(Widget.Create<CombinationResultPopup>());
             yield return null;
             secondWidgets.Add(Widget.Create<FriendInfoPopup>());
             yield return null;
             secondWidgets.Add(Widget.Create<ItemInformationTooltip>());
             yield return null;
-            // 팝업이지만 하단 메뉴보다 위에 그려져야 하는 것들입니다.
             secondWidgets.Add(Widget.Create<Dialog>());
             yield return null;
-            secondWidgets.Add(Widget.Create<CodeReward>(true));
+            secondWidgets.Add(Widget.Create<CodeReward>());
             yield return null;
-            // 팝업이지만 하단 메뉴보다 위에 그려져야 하는 것들입니다.
+            secondWidgets.Add(Widget.Create<DailyRewardItemPopup>());
+            yield return null;
             secondWidgets.Add(Widget.Create<PrologueDialog>());
             yield return null;
             secondWidgets.Add(Widget.Create<CombinationLoadingScreen>());
@@ -297,14 +313,16 @@ namespace Nekoyume.UI
             secondWidgets.Add(Widget.Create<CelebratesPopup>());
             yield return null;
             secondWidgets.Add(Widget.Create<HelpPopup>());
+            yield return null;
+            secondWidgets.Add(Widget.Create<Confirm>());
 
-            // 툴팁류.
+            // tooltip
             secondWidgets.Add(Widget.Create<AvatarTooltip>());
             yield return null;
             secondWidgets.Add(Widget.Create<MessageCatManager>(true));
             yield return null;
 
-            // 튜토리얼
+            // tutorial
             secondWidgets.Add(Widget.Create<Tutorial>());
             yield return null;
 
@@ -323,6 +341,8 @@ namespace Nekoyume.UI
             }
             Widgets.AddRange(secondWidgets);
             UpdateLayers();
+
+            Widget.Find<Settings>().transform.SetAsLastSibling();
         }
 
         public void SetLayerSortingOrderToTarget(

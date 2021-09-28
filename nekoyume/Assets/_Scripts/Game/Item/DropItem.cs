@@ -103,7 +103,13 @@ namespace Nekoyume.Game.Item
                 yield return null;
             }
 
-            Widget.Find<BottomMenu>().PlayGetItemAnimation();
+            var headerMenu = Widget.Find<HeaderMenu>();
+            if (!headerMenu)
+            {
+                throw new WidgetNotFoundException<HeaderMenu>();
+            }
+            headerMenu.PlayVFX(ItemMoveAnimation.EndPoint.Inventory);
+
             Event.OnGetItem.Invoke(this);
             gameObject.SetActive(false);
         }
@@ -116,13 +122,14 @@ namespace Nekoyume.Game.Item
             }
             else
             {
-                var bottomMenu = Widget.Find<BottomMenu>();
-                if (!bottomMenu)
+                var headerMenu = Widget.Find<HeaderMenu>();
+                if (!headerMenu)
                 {
-                    throw new WidgetNotFoundException<BottomMenu>();
+                    throw new WidgetNotFoundException<HeaderMenu>();
                 }
 
-                _inventoryPosition = bottomMenu.characterButton.transform.position;
+                var target = headerMenu.GetToggle(HeaderMenu.ToggleType.AvatarInfo);
+                _inventoryPosition = target ? target.position : Vector3.zero;
                 _inventoryPosition.z = transform.position.z;
             }
         }

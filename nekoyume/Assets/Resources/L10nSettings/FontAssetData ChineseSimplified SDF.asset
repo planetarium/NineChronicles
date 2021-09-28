@@ -30,7 +30,7 @@ MonoBehaviour:
   - type: 6
     material: {fileID: 2100000, guid: ae0317c0f59f04ff8a2fbb6bdff3c700, type: 2}
   - type: 9
-    material: {fileID: 2100000, guid: 4d7c416cf5a5e4cc18dbc87489620e29, type: 2}
+    material: {fileID: 2100000, guid: a83621d448879441c8dc4efe3c991ce5, type: 2}
   - type: 10
     material: {fileID: 2100000, guid: 0c3fd213a9e7c4f938aad1b417417eca, type: 2}
   - type: 11
@@ -71,8 +71,13 @@ MonoBehaviour:
     material: {fileID: 2100000, guid: 0a877833de2e64720ab1e33502a343d7, type: 2}
   - type: 27
     material: {fileID: 2100000, guid: 10fdc98cf3afd4b65bd545e6f01445f1, type: 2}
+  - type: 28
+    material: {fileID: 2100000, guid: 5c205523f393342c0bc4b74eb0efa68f, type: 2}
+  - type: 29
+    material: {fileID: 2100000, guid: 0236d56178d524c79a6871824a64c6cb, type: 2}
   setFontStyleBoldToDisabledAsForced: 0
   fontSizeOffset: -3
   characterSpacingOffset: 0
   wordSpacingOffset: 0
   lineSpacingOffset: 0
+  marginBottom: 2

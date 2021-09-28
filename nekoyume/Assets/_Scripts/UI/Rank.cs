@@ -5,19 +5,30 @@ using Nekoyume.State;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using Nekoyume.UI.Scroller;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Nekoyume.Game.Controller;
 using TMPro;
-using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 using Toggle = Nekoyume.UI.Module.Toggle;
 
 namespace Nekoyume.UI
 {
+    using Nekoyume.Model.Item;
+    using UniRx;
+
     public class Rank : Widget
     {
+        [Serializable]
+        private struct CategoryToggle
+        {
+            public Toggle Toggle;
+            public RankCategory Category;
+        }
+
         private static readonly Model.Rank SharedModel = new Model.Rank();
 
         private static Task RankLoadingTask = null;
@@ -29,16 +40,10 @@ namespace Nekoyume.UI
             RankLoadingTask = model.Update(RankingBoardDisplayCount);
         }
 
-        public override WidgetType WidgetType => WidgetType.Tooltip;
+        public override WidgetType WidgetType => WidgetType.Popup;
 
         [SerializeField]
         private Button closeButton = null;
-
-        [SerializeField]
-        private Model.Rank rankPanel = null;
-
-        [SerializeField]
-        private List<Toggle> toggles = new List<Toggle>();
 
         [SerializeField]
         private TextMeshProUGUI firstColumnText = null;
@@ -67,22 +72,19 @@ namespace Nekoyume.UI
         [SerializeField]
         private Button refreshButton = null;
 
+        [SerializeField]
+        private List<CategoryToggle> categoryToggles = null;
+
+        [SerializeField]
+        private List<ToggleDropdown> categoryDropdowns = null;
+
+        [SerializeField]
+        private List<Button> notImplementedToggles = null;
+
+        [SerializeField]
+        private Blur blur = null;
+
         public const int RankingBoardDisplayCount = 100;
-
-        private RankCategory CurrentCategory
-        {
-            get => _currentCategory;
-            set
-            {
-                _previousCategory = _currentCategory;
-                _currentCategory = value;
-                UpdateCategory(_currentCategory);
-            }
-        }
-
-        private RankCategory _currentCategory;
-
-        private RankCategory _previousCategory;
 
         private readonly Dictionary<RankCategory, Toggle> _toggleMap = new Dictionary<RankCategory, Toggle>();
 
@@ -91,79 +93,64 @@ namespace Nekoyume.UI
             { RankCategory.Ability, ("UI_CP", "UI_LEVEL") },
             { RankCategory.Stage, ("UI_STAGE", null)},
             { RankCategory.Mimisburnnr, ("UI_STAGE", null) },
-            { RankCategory.Weapon, ("UI_CP", null) },
+            { RankCategory.Crafting, ("UI_COUNTS_CRAFTED", null) },
+            { RankCategory.EquipmentWeapon, ("UI_CP", "UI_NAME") },
+            { RankCategory.EquipmentArmor, ("UI_CP", "UI_NAME") },
+            { RankCategory.EquipmentBelt, ("UI_CP", "UI_NAME") },
+            { RankCategory.EquipmentNecklace, ("UI_CP", "UI_NAME") },
+            { RankCategory.EquipmentRing, ("UI_CP", "UI_NAME") },
         };
+
+        public override CloseKeyType CloseKeyType => CloseKeyType.Escape;
 
         public override void Initialize()
         {
             base.Initialize();
 
-            var currentCategory = RankCategory.Ability;
-            foreach (var toggle in toggles)
+            foreach (var toggle in categoryToggles)
             {
-                var innerCategory = currentCategory;
-                if (toggle is ToggleDropdown toggleDropdown)
+                if (!_toggleMap.ContainsKey(toggle.Category))
                 {
-                    var subElements = toggleDropdown.items;
-                    if (subElements is null || !subElements.Any())
-                    {
-                        _toggleMap[innerCategory] = toggleDropdown;
-                        toggleDropdown.onValueChanged.AddListener(value =>
-                        {
-                            if (value)
-                            {
-                                CurrentCategory = innerCategory;
-                            }
-                        });
-                        ++currentCategory;
-                    }
-                    else
-                    {
-                        foreach (var element in subElements)
-                        {
-                            var innerCategory2 = innerCategory;
-                            _toggleMap[innerCategory2] = element;
-                            element.onValueChanged.AddListener(value =>
-                            {
-                                if (value)
-                                {
-                                    CurrentCategory = innerCategory2;
-                                }
-                            });
-                            ++innerCategory;
-                            ++currentCategory;
-                        }
-
-                        toggleDropdown.onValueChanged.AddListener(value =>
-                        {
-                            if (value)
-                            {
-                                var firstElement = subElements.First();
-
-                                if (firstElement.isOn)
-                                {
-                                    firstElement.onValueChanged.Invoke(true);
-                                }
-                                else
-                                {
-                                    firstElement.isOn = true;
-                                }
-                            }
-                        });
-                    }
+                    _toggleMap[toggle.Category] = toggle.Toggle;
                 }
-                else
+
+                toggle.Toggle.onValueChanged.AddListener(value =>
                 {
-                    _toggleMap[innerCategory] = toggle;
-                    toggle.onValueChanged.AddListener(value =>
+                    if (value)
                     {
-                        if (value)
-                        {
-                            CurrentCategory = innerCategory;
-                        }
-                    });
-                    ++currentCategory;
+                        UpdateCategory(toggle.Category);
+                    }
+                });
+
+                toggle.Toggle.onClickToggle.AddListener(AudioController.PlayClick);
+            }
+
+            foreach (var dropDown in categoryDropdowns)
+            {
+                if (dropDown.items is null ||
+                    !dropDown.items.Any())
+                {
+                    return;
                 }
+
+                dropDown.onValueChanged.AddListener(value =>
+                {
+                    if (value)
+                    {
+                        var firstElement = dropDown.items.FirstOrDefault();
+                        firstElement.isOn = true;
+                        firstElement.onValueChanged.Invoke(true);
+                    }
+                });
+
+                dropDown.onClickToggle.AddListener(AudioController.PlayClick);
+            }
+
+            foreach (var button in notImplementedToggles)
+            {
+                button.OnClickAsObservable()
+                    .Subscribe(_ => AlertNotImplemented())
+                    .AddTo(gameObject);
             }
 
             refreshButton.onClick.AsObservable()
@@ -173,12 +160,35 @@ namespace Nekoyume.UI
                     UpdateCategory(RankCategory.Ability, true);
                 })
                 .AddTo(gameObject);
+
+            closeButton.onClick.AsObservable()
+                .Subscribe(_ =>
+                {
+                    Close();
+                    AudioController.PlayClick();
+                })
+                .AddTo(gameObject);
         }
 
         public override void Show(bool ignoreShowAnimation = false)
         {
             base.Show(ignoreShowAnimation);
             UpdateCategory(RankCategory.Ability, true);
+
+            if (blur)
+            {
+                blur.Show();
+            }
+        }
+
+        public override void Close(bool ignoreCloseAnimation = false)
+        {
+            if (blur && blur.isActiveAndEnabled)
+            {
+                blur.Close();
+            }
+
+            base.Close(ignoreCloseAnimation);
         }
 
         private void UpdateCategory(RankCategory category, bool toggleOn = false)
@@ -189,6 +199,7 @@ namespace Nekoyume.UI
         private async void UpdateCategoryAsync(RankCategory category, bool toggleOn)
         {
             preloadingObject.SetActive(true);
+
             if (toggleOn)
             {
                 ToggleCategory(category);
@@ -196,15 +207,16 @@ namespace Nekoyume.UI
 
             await UniTask.WaitWhile(() => RankLoadingTask is null);
 
+            var states = States.Instance;
+
             if (!RankLoadingTask.IsCompleted)
             {
                 missingObject.SetActive(true);
                 refreshObject.SetActive(false);
                 missingText.text = L10nManager.Localize("UI_PRELOADING_MESSAGE");
+                myInfoCell.SetEmpty(states.CurrentAvatarState);
                 await RankLoadingTask;
             }
-
-            var states = States.Instance;
 
             if (RankLoadingTask.IsFaulted)
             {
@@ -215,7 +227,8 @@ namespace Nekoyume.UI
                 return;
             }
 
-            if (!SharedModel.IsInitialized)
+            var isApiLoaded = SharedModel.IsInitialized;
+            if (!isApiLoaded)
             {
                 missingObject.SetActive(true);
                 refreshObject.SetActive(false);
@@ -223,68 +236,6 @@ namespace Nekoyume.UI
                 return;
             }
 
-            preloadingObject.SetActive(false);
-            missingObject.SetActive(false);
-            refreshObject.SetActive(false);
-
-            switch (category)
-            {
-                case RankCategory.Ability:
-                    var abilityRankingInfos = SharedModel.AbilityRankingInfos;
-                    if (SharedModel.AgentAbilityRankingInfos
-                        .TryGetValue(states.CurrentAvatarKey, out var abilityInfo))
-                    {
-                        myInfoCell.SetDataAsAbility(abilityInfo);
-                    }
-                    else
-                    {
-                        myInfoCell.SetEmpty(states.CurrentAvatarState);
-                    }
-
-                    rankScroll.Show(abilityRankingInfos, true);
-                    break;
-                case RankCategory.Stage:
-                    var stageRankingInfos = SharedModel.StageRankingInfos;
-                    if (SharedModel.AgentStageRankingInfos
-                        .TryGetValue(states.CurrentAvatarKey, out var stageInfo))
-                    {
-                        myInfoCell.SetDataAsStage(stageInfo);
-                    }
-                    else
-                    {
-                        myInfoCell.SetEmpty(states.CurrentAvatarState);
-                    }
-
-                    rankScroll.Show(stageRankingInfos, true);
-                    break;
-                case RankCategory.Mimisburnnr:
-                    var mimisbrunnrRankingInfos = SharedModel.MimisbrunnrRankingInfos;
-                    if (SharedModel.AgentMimisbrunnrRankingInfos
-                        .TryGetValue(states.CurrentAvatarKey, out var mimisbrunnrInfo))
-                    {
-                        myInfoCell.SetDataAsStage(mimisbrunnrInfo);
-                    }
-                    else
-                    {
-                        myInfoCell.SetEmpty(states.CurrentAvatarState);
-                    }
-
-                    rankScroll.Show(mimisbrunnrRankingInfos, true);
-                    break;
-                case RankCategory.Weapon:
-                    var weaponRankingInfos = SharedModel.WeaponRankingModel;
-                    if (weaponRankingInfos is null)
-                    {
-                        Find<SystemPopup>().Show("UI_ALERT_NOT_IMPLEMENTED_TITLE", "UI_ALERT_NOT_IMPLEMENTED_CONTENT");
-                        CurrentCategory = _previousCategory;
-                        ToggleCategory(CurrentCategory);
-                        return;
-                    }
-
-                    break;
-                default:
-                    break;
-            }
 
             var firstCategory = _rankColumnMap[category].Item1;
             if (firstCategory is null)
@@ -305,6 +256,84 @@ namespace Nekoyume.UI
             {
                 secondColumnText.text = secondCategory.StartsWith("UI_") ? L10nManager.Localize(secondCategory) : secondCategory;
             }
+
+            preloadingObject.SetActive(false);
+            missingObject.SetActive(false);
+            refreshObject.SetActive(false);
+
+            if (!isApiLoaded)
+            {
+                return;
+            }
+
+            switch (category)
+            {
+                case RankCategory.Ability:
+                    SetScroll(SharedModel.AgentAbilityRankingInfos, SharedModel.AbilityRankingInfos);
+                    break;
+                case RankCategory.Stage:
+                    SetScroll(SharedModel.AgentStageRankingInfos, SharedModel.StageRankingInfos);
+                    break;
+                case RankCategory.Mimisburnnr:
+                    SetScroll(SharedModel.AgentMimisbrunnrRankingInfos, SharedModel.MimisbrunnrRankingInfos);
+                    break;
+                case RankCategory.Crafting:
+                    SetScroll(SharedModel.AgentCraftRankingInfos, SharedModel.CraftRankingInfos);
+                    break;
+                case RankCategory.EquipmentWeapon:
+                    SetEquipmentScroll(ItemSubType.Weapon);
+                    break;
+                case RankCategory.EquipmentArmor:
+                    SetEquipmentScroll(ItemSubType.Armor);
+                    break;
+                case RankCategory.EquipmentBelt:
+                    SetEquipmentScroll(ItemSubType.Belt);
+                    break;
+                case RankCategory.EquipmentNecklace:
+                    SetEquipmentScroll(ItemSubType.Necklace);
+                    break;
+                case RankCategory.EquipmentRing:
+                    SetEquipmentScroll(ItemSubType.Ring);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        private void SetScroll<T>(
+            IReadOnlyDictionary<int, T> myRecordMap,
+            IEnumerable<T> rankingInfos)
+            where T : RankingModel
+        {
+            var states = States.Instance;
+            if (myRecordMap.TryGetValue(states.CurrentAvatarKey, out var rankingInfo))
+            {
+                myInfoCell.SetData(rankingInfo);
+            }
+            else
+            {
+                myInfoCell.SetEmpty(states.CurrentAvatarState);
+            }
+
+            rankScroll.Show(rankingInfos, true);
+        }
+
+        private void SetEquipmentScroll(ItemSubType type)
+        {
+            var states = States.Instance;
+            var rankingInfos = SharedModel.EquipmentRankingInfosMap[type];
+            if (SharedModel.AgentEquipmentRankingInfos
+                .TryGetValue(states.CurrentAvatarKey, out var equipmentRankingMap))
+            {
+                var rankingInfo = equipmentRankingMap[type];
+                myInfoCell.SetData(rankingInfo);
+            }
+            else
+            {
+                myInfoCell.SetEmpty(states.CurrentAvatarState);
+            }
+
+            rankScroll.Show(rankingInfos, true);
         }
 
         private void ToggleCategory(RankCategory category)
@@ -331,6 +360,11 @@ namespace Nekoyume.UI
 
                 firstSubElement.isOn = true;
             }
+        }
+
+        private void AlertNotImplemented()
+        {
+            Find<SystemPopup>().Show("UI_ALERT_NOT_IMPLEMENTED_TITLE", "UI_ALERT_NOT_IMPLEMENTED_CONTENT");
         }
     }
 }

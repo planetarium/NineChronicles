@@ -1,14 +1,22 @@
 using System;
 using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
 using Lib9c.Renderer;
+using Libplanet.Action;
+using Libplanet.Blocks;
+using Nekoyume.Action;
 using Nekoyume.L10n;
 using Nekoyume.Model.State;
 using Nekoyume.State;
-using UniRx;
+using Nekoyume.State.Subjects;
+using UnityEngine;
+using static Lib9c.SerializeKeys;
 
 namespace Nekoyume.BlockChain
 {
     using UniRx;
+    using NCAction = PolymorphicAction<ActionBase>;
+    using NCBlock = Block<PolymorphicAction<ActionBase>>;
 
     public class BlockRenderHandler
     {
@@ -33,6 +41,8 @@ namespace Nekoyume.BlockChain
 
             Reorg();
             UpdateWeeklyArenaState();
+
+            _blockRenderer.BlockSubject.ObserveOnMainThread().Subscribe(UpdateValues).AddTo(_disposables);
         }
 
         public void Stop()
@@ -89,6 +99,46 @@ namespace Nekoyume.BlockChain
                     States.Instance.SetWeeklyArenaState(weeklyArenaState);
                 })
                 .AddTo(_disposables);
+        }
+
+        private void UpdateValues((NCBlock OldTip, NCBlock NewTip) tuple)
+        {
+            if (States.Instance.AgentState != null)
+            {
+                UniTask.Run(() =>
+                {
+                    var value = Game.Game.instance.Agent.GetBalance(
+                        States.Instance.AgentState.address,
+                        States.Instance.GoldBalanceState.Gold.Currency);
+                    AgentStateSubject.OnNextGold(value);
+                });
+            }
+
+            if (States.Instance.CurrentAvatarState != null)
+            {
+                UniTask.Run(() =>
+                {
+                    var value = Game.Game.instance.Agent.GetState(States.Instance.CurrentAvatarState.address);
+                    if (!(value is Bencodex.Types.Dictionary dict))
+                    {
+                        return;
+                    }
+
+                    var ap = dict.ContainsKey(ActionPointKey)
+                        ? (int)(Bencodex.Types.Integer)dict[ActionPointKey]
+                        : dict.ContainsKey(LegacyActionPointKey)
+                            ? (int)(Bencodex.Types.Integer)dict[LegacyActionPointKey]
+                            : 0;
+                    ReactiveAvatarState.UpdateActionPoint(ap);
+
+                    var bi = dict.ContainsKey(DailyRewardReceivedIndexKey)
+                        ? (int)(Bencodex.Types.Integer)dict[DailyRewardReceivedIndexKey]
+                        : dict.ContainsKey(LegacyDailyRewardReceivedIndexKey)
+                            ? (int)(Bencodex.Types.Integer)dict[LegacyDailyRewardReceivedIndexKey]
+                            : 0;
+                    ReactiveAvatarState.UpdateDailyRewardReceivedIndex(bi);
+                });
+            }
         }
     }
 }

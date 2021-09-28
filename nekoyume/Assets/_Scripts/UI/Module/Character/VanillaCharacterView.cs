@@ -3,6 +3,7 @@ using Libplanet;
 using Nekoyume.Helper;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
+using Nekoyume.State;
 using UnityEngine;
 using UnityEngine.UI;
 using Player = Nekoyume.Game.Character.Player;
@@ -26,8 +27,11 @@ namespace Nekoyume.UI.Module
 
         public void SetByAvatarAddress(Address avatarAddress)
         {
-            var iValue = Game.Game.instance.Agent.GetState(avatarAddress);
-            var avatarState = new AvatarState((Bencodex.Types.Dictionary) iValue);
+            if (!States.TryGetAvatarState(avatarAddress, out var avatarState))
+            {
+                return;
+            }
+
             SetByAvatarState(avatarState);
         }
 
