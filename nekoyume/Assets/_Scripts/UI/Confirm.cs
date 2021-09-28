@@ -24,7 +24,7 @@ namespace Nekoyume.UI
         public ConfirmDelegate CloseCallback { get; set; }
         public Blur blur;
 
-        private float blurRadius;
+        private float blurSize;
 
         protected override void Awake()
         {
@@ -40,26 +40,26 @@ namespace Nekoyume.UI
 
             if (blur)
             {
-                blur.Show(radius: blurRadius);
+                blur.Show(size: blurSize);
             }
         }
 
         public void Show(string title, string content, string labelYes = "UI_OK", string labelNo = "UI_CANCEL",
-            bool localize = true, float blurRadius = 1, bool submittable = true)
+            bool localize = true, float blurSize = 1, bool submittable = true)
         {
             if (gameObject.activeSelf)
             {
                 Close(true);
-                Show(title, content, labelYes, labelNo, localize, blurRadius);
+                Show(title, content, labelYes, labelNo, localize, blurSize);
                 return;
             }
 
-            Set(title, content, labelYes, labelNo, localize, blurRadius, submittable);
+            Set(title, content, labelYes, labelNo, localize, blurSize, submittable);
             Show();
         }
 
         public void Set(string title, string content, string labelYes = "UI_OK", string labelNo = "UI_CANCEL",
-            bool localize = true, float blurRadius = 1, bool submittable = true)
+            bool localize = true, float blurSize = 1, bool submittable = true)
         {
             bool titleExists = !string.IsNullOrEmpty(title);
             if (localize)
@@ -80,7 +80,7 @@ namespace Nekoyume.UI
 
             this.title.gameObject.SetActive(titleExists);
             titleBorder.SetActive(titleExists);
-            this.blurRadius = blurRadius;
+            this.blurSize = blurSize;
             submitButton.SetSubmittableWithoutInteractable(submittable);
         }
 

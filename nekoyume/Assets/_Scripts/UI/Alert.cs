@@ -15,7 +15,7 @@ namespace Nekoyume.UI
         public AlertDelegate CloseCallback { get; set; }
         public Blur blur;
 
-        private float blurRadius;
+        private float blurSize;
 
         protected override void Awake()
         {
@@ -30,7 +30,7 @@ namespace Nekoyume.UI
 
             if (blur)
             {
-                blur.Show(radius: blurRadius);
+                blur.Show(size: blurSize);
             }
         }
 
@@ -47,7 +47,7 @@ namespace Nekoyume.UI
             Show();
         }
 
-        public void Set(string title, string content, string labelOK = "UI_OK", bool localize = true, float blurRadius = 1)
+        public void Set(string title, string content, string labelOK = "UI_OK", bool localize = true, float blurSize = 1)
         {
             bool titleExists = !string.IsNullOrEmpty(title);
             if (localize)
@@ -66,7 +66,7 @@ namespace Nekoyume.UI
 
             this.title.gameObject.SetActive(titleExists);
             titleBorder.SetActive(titleExists);
-            this.blurRadius = blurRadius;
+            this.blurSize = blurSize;
         }
 
         public override void Close(bool ignoreCloseAnimation = false)

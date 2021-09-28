@@ -255,15 +255,21 @@ namespace Nekoyume.UI.Module
                     image.gameObject.SetActive(false);
                 }
 
-                if (equip.optionCountFromCombination > 0)
+                var hasOptions = equip.optionCountFromCombination > 0 ||
+                    equip.StatsMap.GetAdditionalStats(true).Count() + equip.Skills.Count > 0;
+
+                if (!hasOptions)
                 {
-                    var data = optionTagData.GetOptionTagData(Item.Grade);
-                    optionTagBg.gameObject.SetActive(true);
-                    optionTagBg.range = data.GradeHsvRange;
-                    optionTagBg.hue = data.GradeHsvHue;
-                    optionTagBg.saturation = data.GradeHsvSaturation;
-                    optionTagBg.value = data.GradeHsvValue;
+                    optionTagBg.gameObject.SetActive(false);
+                    return;
                 }
+
+                var data = optionTagData.GetOptionTagData(Item.Grade);
+                optionTagBg.gameObject.SetActive(true);
+                optionTagBg.range = data.GradeHsvRange;
+                optionTagBg.hue = data.GradeHsvHue;
+                optionTagBg.saturation = data.GradeHsvSaturation;
+                optionTagBg.value = data.GradeHsvValue;
 
                 var optionInfo = new ItemOptionInfo(Item as Equipment);
                 var optionCount = optionInfo.StatOptions.Sum(x => x.count);
