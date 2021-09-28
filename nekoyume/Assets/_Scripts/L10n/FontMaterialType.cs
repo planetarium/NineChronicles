@@ -30,5 +30,7 @@ namespace Nekoyume.L10n
         Paper,
         PopupTitle,
 	MainSpeech,
+	Preparing,
+	DiceCount,
     }
 }

@@ -90,6 +90,11 @@ namespace Nekoyume.UI.Model
 
             foreach (var item in inventory.Items.OrderByDescending(x => x.item is ITradableItem))
             {
+                if (item.Locked)
+                {
+                    continue;
+                }
+
                 AddItem(item.item, item.count);
             }
 
@@ -109,7 +114,6 @@ namespace Nekoyume.UI.Model
         #endregion
 
         #region Add Item
-
         public void AddItem(ItemBase itemBase, int count = 1)
         {
             if (itemBase is ITradableItem tradableItem)

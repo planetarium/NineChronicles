@@ -161,8 +161,7 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
-            if (actionPoint != null &&
-                actionPoint.IsRemained)
+            if (States.Instance.CurrentAvatarState.actionPoint > 0)
             {
                 var confirm = Widget.Find<Confirm>();
                 confirm.Show("UI_CONFIRM", "UI_AP_REFILL_CONFIRM_CONTENT");

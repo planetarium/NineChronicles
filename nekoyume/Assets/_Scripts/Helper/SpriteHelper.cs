@@ -11,8 +11,6 @@ namespace Nekoyume.Helper
         private const string CharacterIconDefaultPath = "UI/Icons/Character/100000";
         private const string CharacterIconPathFormat = "UI/Icons/Character/{0}";
 
-        private const string SkillIconDefaultPath = "UI/Icons/Skill/100000";
-
         private const string ItemIconDefaultPath = "UI/Icons/Item/100000";
         private const string ItemIconPathFormat = "UI/Icons/Item/{0}";
 
@@ -70,20 +68,6 @@ namespace Nekoyume.Helper
         {
             return Resources.Load<Sprite>(string.Format(SmallItemBackgroundPathFormat, grade)) ??
                    Resources.Load<Sprite>(SmallItemBackgroundDefaultPath);
-        }
-
-        public static Sprite GetSkillIcon(int skillId)
-        {
-            var path = $"UI/Icons/Skill/{skillId}";
-            var sprite = Resources.Load<Sprite>(path);
-            if (sprite)
-            {
-                return sprite;
-            }
-
-            sprite = Resources.Load<Sprite>(SkillIconDefaultPath);
-
-            return sprite;
         }
 
         public static Sprite GetBuffIcon(string iconResource)

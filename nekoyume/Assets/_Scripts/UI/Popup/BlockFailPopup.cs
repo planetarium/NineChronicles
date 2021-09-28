@@ -29,7 +29,6 @@ namespace Nekoyume.UI
 #else
             CloseCallback = () => Application.Quit(21);
 #endif
-
         }
 
         private IEnumerator CoCheckBlockIndex()

@@ -2,12 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Nekoyume.Game.Controller;
 using Nekoyume.L10n;
 using Nekoyume.State;
 using Nekoyume.UI.Model;
 using TMPro;
-using UniRx;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 using ShopItem = Nekoyume.UI.Model.ShopItem;
 
@@ -18,7 +19,6 @@ namespace Nekoyume.UI.Module
     public class ShopBuyItems : MonoBehaviour
     {
         public List<ShopItemView> Items { get; } = new List<ShopItemView>();
-
         [SerializeField] private List<ToggleDropdown> toggleDropdowns = new List<ToggleDropdown>();
         [SerializeField] private TextMeshProUGUI pageText = null;
         [SerializeField] private Button previousPageButton = null;
@@ -89,7 +89,8 @@ namespace Nekoyume.UI.Module
             },
         };
 
-        public Model.ShopItems SharedModel { get; private set; }
+        public Model.ShopBuyItems SharedModel { get; private set; }
+        public bool IsActiveInputField => inputField.isFocused;
 
         #region Mono
 
@@ -106,11 +107,8 @@ namespace Nekoyume.UI.Module
             _sortText = sortButton.GetComponentInChildren<TextMeshProUGUI>();
             inputPlaceholder.SetAsLastSibling();
 
-            SharedModel = new Model.ShopItems();
-            SharedModel.AgentProducts
-                .Subscribe(_ => UpdateView())
-                .AddTo(gameObject);
-            SharedModel.ItemSubTypeProducts
+            SharedModel = new Model.ShopBuyItems();
+            SharedModel.Items
                 .Subscribe(_ => UpdateView())
                 .AddTo(gameObject);
 
@@ -134,6 +132,7 @@ namespace Nekoyume.UI.Module
                         OnItemSubTypeFilterChanged();
                     }
                 });
+                toggleDropdown.onClickToggle.AddListener(AudioController.PlayClick);
 
                 var subItems = toggleDropdown.items;
 
@@ -150,6 +149,7 @@ namespace Nekoyume.UI.Module
                             OnItemSubTypeFilterChanged();
                         }
                     });
+                    item.onClickToggle.AddListener(AudioController.PlayClick);
                 }
             }
 
@@ -172,12 +172,11 @@ namespace Nekoyume.UI.Module
             resetAnimator.Play(_hashDisabled);
             sortOrderIcon.localScale = new Vector3(1, -1, 1);
             SharedModel.itemSubTypeFilter = ItemSubTypeFilter.Weapon;
-            SharedModel.sortFilter = ShopSortFilter.Class;
             SharedModel.isReverseOrder = false;
             SharedModel.searchIds = new List<int>();
             SharedModel.SetMultiplePurchase(false);
-            SharedModel.ResetAgentProducts();
-            SharedModel.ResetItemSubTypeProducts();
+            SharedModel.ResetShopItems();
+            _sortFilter = ShopSortFilter.Class;
             UpdateSort();
         }
 
@@ -185,12 +184,8 @@ namespace Nekoyume.UI.Module
         {
             Reset();
 
-            ReactiveShopState.AgentProducts
-                .Subscribe(SharedModel.ResetAgentProducts)
-                .AddTo(_disposablesAtOnEnable);
-
-            ReactiveShopState.ItemSubTypeProducts
-                .Subscribe(SharedModel.ResetItemSubTypeProducts)
+            ReactiveShopState.BuyDigests
+                .Subscribe(SharedModel.ResetItems)
                 .AddTo(_disposablesAtOnEnable);
         }
 
@@ -219,7 +214,7 @@ namespace Nekoyume.UI.Module
             }
 
             _filteredPageIndex = 0;
-            UpdateViewWithFilteredPageIndex(SharedModel.ItemSubTypeProducts.Value);
+            UpdateViewWithFilteredPageIndex(SharedModel.Items.Value);
         }
 
         private void UpdateViewWithFilteredPageIndex(
@@ -262,14 +257,12 @@ namespace Nekoyume.UI.Module
 
         private void OnItemSubTypeFilterChanged()
         {
-            SharedModel.ResetAgentProducts();
-            SharedModel.ResetItemSubTypeProducts();
+            SharedModel.ResetShopItems();
         }
 
         private void OnSortFilterChanged()
         {
-            SharedModel.ResetAgentProducts();
-            SharedModel.ResetItemSubTypeProducts();
+            SharedModel.ResetShopItems();
         }
 
         private void OnClickPreviousPage(Unit unit)
@@ -288,12 +281,12 @@ namespace Nekoyume.UI.Module
                 previousPageButton.gameObject.SetActive(false);
             }
 
-            UpdateViewWithFilteredPageIndex(SharedModel.ItemSubTypeProducts.Value);
+            UpdateViewWithFilteredPageIndex(SharedModel.Items.Value);
         }
 
         private void OnClickNextPage(Unit unit)
         {
-            var count = SharedModel.ItemSubTypeProducts.Value.Count;
+            var count = SharedModel.Items.Value.Count;
 
             if (_filteredPageIndex + 1 >= count)
             {
@@ -309,20 +302,19 @@ namespace Nekoyume.UI.Module
                 nextPageButton.gameObject.SetActive(false);
             }
 
-            UpdateViewWithFilteredPageIndex(SharedModel.ItemSubTypeProducts.Value);
+            UpdateViewWithFilteredPageIndex(SharedModel.Items.Value);
         }
 
         private void OnClickSort(Unit unit)
         {
+            int count = Enum.GetNames(typeof(ShopSortFilter)).Length;
+            _sortFilter = (int) _sortFilter < count - 1 ? _sortFilter + 1 : 0;
             UpdateSort();
         }
 
         private void UpdateSort()
         {
-            int count = Enum.GetNames(typeof(ShopSortFilter)).Length;
-            _sortFilter = (int) _sortFilter < count - 1 ? _sortFilter + 1 : 0;
             _sortText.text = L10nManager.Localize($"UI_{_sortFilter.ToString().ToUpper()}");
-
             SharedModel.sortFilter = _sortFilter;
             OnSortFilterChanged();
         }

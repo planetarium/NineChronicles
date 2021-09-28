@@ -184,7 +184,10 @@ namespace Nekoyume.UI.Module
                     EnterToShowing(onComplete, ignoreAnimation);
                     break;
                 case ViewState.Shown:
-                    StartCoroutine(CoUpdateList(onComplete));
+                    if (isActiveAndEnabled)
+                    {
+                        StartCoroutine(CoUpdateList(onComplete));
+                    }
                     break;
             }
         }
@@ -231,7 +234,8 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
-            if (stageId != SharedViewModel.worldQuest.Value.Goal)
+            if (SharedViewModel.worldQuest.Value is null ||
+                stageId != SharedViewModel.worldQuest.Value.Goal)
             {
                 onComplete?.Invoke(false);
                 return;
@@ -495,7 +499,7 @@ namespace Nekoyume.UI.Module
         private static CombinationEquipmentQuest GetTargetCombinationEquipmentQuest(
             QuestList questList)
         {
-            if (SharedViewModel.avatarState is null ||
+            if (SharedViewModel.avatarState?.worldInformation is null ||
                 !SharedViewModel.avatarState.worldInformation.TryGetLastClearedStageId(out var lastClearedStageId) ||
                 lastClearedStageId < GameConfig.RequireClearedStageLevel.CombinationEquipmentAction)
             {
