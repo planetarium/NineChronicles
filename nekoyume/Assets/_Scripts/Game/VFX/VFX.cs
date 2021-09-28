@@ -16,10 +16,14 @@ namespace Nekoyume.Game.VFX
         private float _particlesDuration = 0f;
 
         protected ParticleSystem _particlesRoot = null;
+        protected Renderer _rootRenderer = null;
         protected virtual float EmitDuration { get; set; } = 1.0f;
 
         private bool _isPlaying = false;
         private bool _isFinished = false;
+
+        [SerializeField]
+        private bool _initializeSortingProbsOfChildren;
 
         /// <summary>
         /// VFX 재생이 성공적으로 완료되었을 때 호출되는 콜백
@@ -41,6 +45,8 @@ namespace Nekoyume.Game.VFX
             _particles = GetComponentsInChildren<ParticleSystem>();
             _particlesLength = _particles.Length;
             Assert.Greater(_particlesLength, 0);
+            _particlesRoot = _particles[0];
+            _rootRenderer = _particlesRoot.GetComponent<Renderer>();
 
             foreach (var particle in _particles)
             {
@@ -56,9 +62,12 @@ namespace Nekoyume.Game.VFX
                 {
                     r.sortingLayerName = StringVFX;
                 }
-            }
 
-            _particlesRoot = _particles[0];
+                if (_initializeSortingProbsOfChildren && !particle.Equals(_particlesRoot))
+                {
+                    InitializeSortingProbsOfChildren(particle, r);
+                }
+            }
         }
 
         protected virtual void OnEnable()
@@ -130,6 +139,16 @@ namespace Nekoyume.Game.VFX
             }
             yield return new WaitForSeconds(delay);
             Stop();
+        }
+
+        private void InitializeSortingProbsOfChildren(ParticleSystem particle, Renderer r)
+        {
+            particle.gameObject.layer = _particlesRoot.gameObject.layer;
+            if (_rootRenderer)
+            {
+                r.sortingLayerName = _rootRenderer.sortingLayerName;
+                r.sortingOrder = _rootRenderer.sortingOrder + 9;
+            }
         }
     }
 }

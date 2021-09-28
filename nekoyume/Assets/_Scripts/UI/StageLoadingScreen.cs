@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.EnumType;
 using Nekoyume.L10n;
-using Nekoyume.State;
 using UnityEngine;
 using UnityEngine.U2D;
 using UnityEngine.UI;
@@ -68,7 +67,6 @@ namespace Nekoyume.UI
 
         public void Show(string background, string worldName, int stageId, bool isNext, int clearedStageId)
         {
-
             _shouldClose = false;
             _rects = new List<RectTransform>();
             var position = new Vector2(MainCanvas.instance.RectTransform.rect.width, 0f);
@@ -87,6 +85,7 @@ namespace Nekoyume.UI
             }
 
             base.Show();
+            Find<HeaderMenu>().Close();
             StartCoroutine(ShowSequence(worldName, stageId, isNext, clearedStageId));
             StartCoroutine(CoRun());
         }
@@ -102,15 +101,8 @@ namespace Nekoyume.UI
 
             var message = string.Format(L10nManager.Localize("STAGE_BLOCK_CHAIN_MINING_TX"),
                 worldName,
-                StageInformation.GetStageIdString(stageId));
+                StageInformation.GetStageIdString(stageId, true));
             indicator.Show(message);
-
-            if (States.Instance.CurrentAvatarState.worldInformation
-                    .TryGetUnlockedWorldByStageClearedBlockIndex(out var world) &&
-                world.StageClearedId >= GameConfig.RequireClearedStageLevel.UIBottomMenuInBattle)
-            {
-                WidgetHandler.Instance.Battle.ShowBottomMenu(world, false);
-            }
         }
 
         private IEnumerator CoDialog(int worldStage)

@@ -1,13 +1,17 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Nekoyume.Battle;
+using Nekoyume.EnumType;
+using Nekoyume.Game.Controller;
+using Nekoyume.Helper;
+using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Stat;
 using Nekoyume.UI.Model;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using Material = Nekoyume.Model.Item.Material;
 
 namespace Nekoyume.UI.Module
 {
@@ -17,7 +21,16 @@ namespace Nekoyume.UI.Module
         public struct IconArea
         {
             public SimpleCountableItemView itemView;
-            public List<Image> elementalTypeImages;
+            public TextMeshProUGUI gradeText;
+            public Image gradeAndSubTypeSpacer;
+            public TextMeshProUGUI subTypeText;
+            public GameObject combatPowerObject;
+            public TextMeshProUGUI combatPowerText;
+            public GameObject elementalTypeObject;
+            public Image elementalTypeImage;
+            public TextMeshProUGUI elementalTypeText;
+            public GameObject countObject;
+            public TextMeshProUGUI countText;
         }
 
         [Serializable]
@@ -25,33 +38,32 @@ namespace Nekoyume.UI.Module
         {
             public GameObject itemDescriptionGameObject;
             public TextMeshProUGUI itemDescriptionText;
-            public GameObject dividerImageGameObject;
-            public GameObject commonGameObject;
-            public TextMeshProUGUI commonText;
             public GameObject levelLimitGameObject;
             public TextMeshProUGUI levelLimitText;
-            public GameObject combatPowerObject;
-            public TextMeshProUGUI combatPowerText;
         }
 
         [Serializable]
-        public struct StatsArea
+        public struct StatRow
         {
-            public RectTransform root;
-            public List<BulletedStatView> stats;
-        }
-
-        [Serializable]
-        public struct SkillsArea
-        {
-            public RectTransform root;
-            public List<SkillView> skills;
+            public StatView StatView;
+            public List<GameObject> StarImages;
         }
 
         public IconArea iconArea;
         public DescriptionArea descriptionArea;
-        public StatsArea statsArea;
-        public SkillsArea skillsArea;
+
+        [SerializeField]
+        private GameObject optionSpacer = null;
+
+        [SerializeField]
+        private GameObject optionAreaRoot = null;
+
+        public StatView uniqueStat;
+        public List<StatRow> statRows;
+        public List<SkillView> skills;
+
+        [SerializeField]
+        private TextMeshProUGUI tradableText = null;
 
         public Model.ItemInformation Model { get; private set; }
 
@@ -85,8 +97,17 @@ namespace Nekoyume.UI.Module
         {
             UpdateViewIconArea();
             UpdateDescriptionArea();
-            UpdateStatsArea();
-            UpdateSkillsArea();
+            var statCount = UpdateStatsArea();
+            var skillCount = UpdateSkillsArea();
+            var hasOptions = uniqueStat.gameObject.activeSelf || statCount + skillCount > 0;
+            optionSpacer.SetActive(hasOptions);
+            optionAreaRoot.SetActive(hasOptions);
+
+            var isTradable = Model.item.Value.ItemBase.Value is ITradableItem;
+            tradableText.text = isTradable ?
+                L10nManager.Localize("UI_TRADABLE") : L10nManager.Localize("UI_UNTRADABLE");
+            tradableText.color = isTradable ?
+                Palette.GetColor(ColorType.ButtonEnabled) : Palette.GetColor(ColorType.TextDenial);
         }
 
         private void UpdateViewIconArea()
@@ -95,40 +116,38 @@ namespace Nekoyume.UI.Module
             {
                 // 아이콘.
                 iconArea.itemView.Clear();
-
-                // 속성.
-                foreach (var image in iconArea.elementalTypeImages)
-                {
-                    image.enabled = false;
-                }
+                iconArea.elementalTypeObject.SetActive(false);
 
                 return;
             }
 
             var item = Model.item.Value.ItemBase.Value;
 
+
             // 아이콘.
             iconArea.itemView.SetData(new CountableItem(
                 Model.item.Value.ItemBase.Value,
                 Model.item.Value.Count.Value));
 
+            var gradeColor = LocalizationExtension.GetItemGradeColor(item);
+            iconArea.gradeText.text = item.GetGradeText();
+            iconArea.gradeText.color = gradeColor;
+            iconArea.subTypeText.text = item.GetSubTypeText();
+            iconArea.subTypeText.color = gradeColor;
+            iconArea.gradeAndSubTypeSpacer.color = gradeColor;
+
             // 속성.
             var sprite = item.ElementalType.GetSprite();
-            var elementalCount = item.Grade;
-            for (var i = 0; i < iconArea.elementalTypeImages.Count; i++)
+            if (sprite is null || !item.ItemType.HasElementType())
             {
-                var image = iconArea.elementalTypeImages[i];
-                if (sprite is null ||
-                    i >= elementalCount)
-                {
-                    image.enabled = false;
-                    continue;
-                }
-
-                image.enabled = true;
-                image.overrideSprite = sprite;
-                image.SetNativeSize();
+                iconArea.elementalTypeObject.SetActive(false);
+                return;
             }
+
+            iconArea.elementalTypeText.text = LocalizationExtension.GetLocalizedString(item.ElementalType);
+            iconArea.elementalTypeText.color = item.GetElementalTypeColor();
+            iconArea.elementalTypeImage.overrideSprite = sprite;
+            iconArea.elementalTypeObject.SetActive(true);
         }
 
         private void UpdateDescriptionArea()
@@ -144,54 +163,43 @@ namespace Nekoyume.UI.Module
             descriptionArea.itemDescriptionText.text = Model.item.Value.ItemBase.Value.GetLocalizedDescription();
         }
 
-        private void UpdateStatsArea()
+        private int UpdateStatsArea()
         {
             if (Model?.item.Value is null)
             {
-                statsArea.root.gameObject.SetActive(false);
-
-                return;
+                return 0;
             }
 
-            foreach (var stat in statsArea.stats)
+            foreach (var row in statRows)
             {
-                stat.Hide();
+                row.StatView.gameObject.SetActive(false);
+                row.StarImages.ForEach(x => x.SetActive(false));
             }
 
             var statCount = 0;
             if (Model.item.Value.ItemBase.Value is Equipment equipment)
             {
-                descriptionArea.commonGameObject.SetActive(false);
-                descriptionArea.dividerImageGameObject.SetActive(false);
                 descriptionArea.levelLimitGameObject.SetActive(false);
-                descriptionArea.combatPowerObject.SetActive(true);
-                descriptionArea.combatPowerText.text = CPHelper.GetCP(equipment).ToString();
+                iconArea.combatPowerObject.SetActive(true);
+                iconArea.combatPowerText.text = equipment.GetCPText();
+                iconArea.countObject.SetActive(false);
 
-                var uniqueStatType = equipment.UniqueStatType;
-                foreach (var statMapEx in equipment.StatsMap.GetStats())
+                var optionInfo = new ItemOptionInfo(equipment);
+                var (mainStatType, _, mainStatTotalValue) = optionInfo.MainStat;
+                uniqueStat.Show(mainStatType, mainStatTotalValue);
+
+                foreach (var (type, value, count) in optionInfo.StatOptions)
                 {
-                    if (!statMapEx.StatType.Equals(uniqueStatType))
-                        continue;
-
-                    AddStat(statMapEx, true);
-                    statCount++;
-                }
-
-                foreach (var statMapEx in equipment.StatsMap.GetStats())
-                {
-                    if (statMapEx.StatType.Equals(uniqueStatType))
-                        continue;
-
-                    AddStat(statMapEx);
-                    statCount++;
+                    AddStat(type, value, count);
+                    statCount += count;
                 }
             }
             else if (Model.item.Value.ItemBase.Value is ItemUsable itemUsable)
             {
-                descriptionArea.commonGameObject.SetActive(false);
-                descriptionArea.dividerImageGameObject.SetActive(false);
                 descriptionArea.levelLimitGameObject.SetActive(false);
-                descriptionArea.combatPowerObject.SetActive(false);
+                iconArea.combatPowerObject.SetActive(false);
+                iconArea.countObject.SetActive(false);
+                uniqueStat.gameObject.SetActive(false);
 
                 foreach (var statMapEx in itemUsable.StatsMap.GetStats())
                 {
@@ -201,10 +209,10 @@ namespace Nekoyume.UI.Module
             }
             else if (Model.item.Value.ItemBase.Value is Costume costume)
             {
+                uniqueStat.gameObject.SetActive(false);
                 var costumeSheet = Game.Game.instance.TableSheets.CostumeStatSheet;
-                descriptionArea.commonGameObject.SetActive(false);
-                descriptionArea.dividerImageGameObject.SetActive(false);
                 descriptionArea.levelLimitGameObject.SetActive(false);
+                iconArea.countObject.SetActive(false);
                 var statsMap = new StatsMap();
                 foreach (var row in costumeSheet.OrderedList.Where(r => r.CostumeId == costume.Id))
                 {
@@ -218,40 +226,42 @@ namespace Nekoyume.UI.Module
                 }
 
                 var cpEnable = statCount > 0;
-                descriptionArea.combatPowerObject.SetActive(cpEnable);
+                iconArea.combatPowerObject.SetActive(cpEnable);
                 if (cpEnable)
                 {
-                    descriptionArea.combatPowerText.text = CPHelper.GetCP(costume, costumeSheet).ToString();
+                    iconArea.combatPowerText.text = costume.GetCPText(costumeSheet);
                 }
+            }
+            else if (Model.item.Value.ItemBase.Value is Material)
+            {
+                uniqueStat.gameObject.SetActive(false);
+                descriptionArea.levelLimitGameObject.SetActive(false);
+                iconArea.combatPowerObject.SetActive(false);
+
+                var countFormat = L10nManager.Localize("UI_COUNT_FORMAT");
+                var countString = string.Format(countFormat, Model.item.Value.Count.Value);
+                iconArea.countText.text = countString;
+                iconArea.countObject.SetActive(true);
             }
             else
             {
+                uniqueStat.gameObject.SetActive(false);
                 descriptionArea.levelLimitGameObject.SetActive(false);
-                descriptionArea.combatPowerObject.SetActive(false);
-                descriptionArea.commonGameObject.SetActive(false);
-                descriptionArea.dividerImageGameObject.SetActive(false);
+                iconArea.combatPowerObject.SetActive(false);
+                iconArea.countObject.SetActive(false);
             }
 
-            if (statCount <= 0)
-            {
-                statsArea.root.gameObject.SetActive(false);
-
-                return;
-            }
-
-            statsArea.root.gameObject.SetActive(true);
+            return statCount;
         }
 
-        private void UpdateSkillsArea()
+        private int UpdateSkillsArea()
         {
             if (Model?.item.Value is null)
             {
-                skillsArea.root.gameObject.SetActive(false);
-
-                return;
+                return 0;
             }
 
-            foreach (var skill in skillsArea.skills)
+            foreach (var skill in skills)
             {
                 skill.Hide();
             }
@@ -272,29 +282,51 @@ namespace Nekoyume.UI.Module
                 }
             }
 
-            if (skillCount <= 0)
-            {
-                skillsArea.root.gameObject.SetActive(false);
+            return skillCount;
+        }
 
+        private void AddStat(StatMapEx model)
+        {
+            var statView = GetDisabledStatRow();
+            if (statView.Equals(default) ||
+                statView.StatView is null)
+                throw new NotFoundComponentException<StatView>();
+
+            statView.StatView.Show(model);
+            var starImage = statView.StarImages.FirstOrDefault();
+            if (starImage is null)
+            {
+                Debug.LogError("Failed to get star image for option.");
                 return;
             }
-
-            skillsArea.root.gameObject.SetActive(true);
+            starImage.SetActive(true);
         }
 
-        private void AddStat(StatMapEx model, bool isMainStat = false)
+        private void AddStat(StatType statType, int value, int count)
         {
-            var statView = GetDisabledStatView();
-            if (statView is null)
-                throw new NotFoundComponentException<BulletedStatView>();
-            statView.Show(model, isMainStat);
-        }
+            var statView = GetDisabledStatRow();
+            if (statView.Equals(default) ||
+                statView.StatView is null)
+                throw new NotFoundComponentException<StatView>();
+            statView.StatView.Show(statType, value, true);
 
-        private BulletedStatView GetDisabledStatView()
-        {
-            foreach (var stat in statsArea.stats)
+            for (int i = 0; i < count; ++i)
             {
-                if (stat.IsShow)
+                var starImage = statView.StarImages.FirstOrDefault(x => !x.activeSelf);
+                if (starImage is null)
+                {
+                    Debug.LogError("Failed to get star image for option.");
+                    return;
+                }
+                starImage.SetActive(true);
+            }
+        }
+
+        private StatRow GetDisabledStatRow()
+        {
+            foreach (var stat in statRows)
+            {
+                if (stat.StatView.gameObject.activeSelf)
                 {
                     continue;
                 }
@@ -302,13 +334,13 @@ namespace Nekoyume.UI.Module
                 return stat;
             }
 
-            return null;
+            return default;
         }
 
 
         private void AddSkill(Model.SkillView model)
         {
-            foreach (var skill in skillsArea.skills.Where(skill => !skill.IsShown))
+            foreach (var skill in skills.Where(skill => !skill.IsShown))
             {
                 skill.SetData(model);
                 skill.Show();

@@ -3,6 +3,7 @@ using Nekoyume.Model;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.Quest;
 using Nekoyume.Model.State;
+using System;
 using UniRx;
 using Inventory = Nekoyume.Model.Item.Inventory;
 
@@ -13,16 +14,50 @@ namespace Nekoyume.State
     /// </summary>
     public static class ReactiveAvatarState
     {
-        public static readonly ReactiveProperty<Address> Address = new ReactiveProperty<Address>();
-        public static readonly ReactiveProperty<Inventory> Inventory = new ReactiveProperty<Inventory>();
-        public static readonly ReactiveProperty<MailBox> MailBox = new ReactiveProperty<MailBox>();
+        private static readonly ReactiveProperty<Address> _address;
+        public static IObservable<Address> Address;
 
-        public static readonly ReactiveProperty<WorldInformation> WorldInformation =
-            new ReactiveProperty<WorldInformation>();
+        private static readonly ReactiveProperty<Inventory> _inventory;
+        public static IObservable<Inventory> Inventory;
 
-        public static readonly ReactiveProperty<int> ActionPoint = new ReactiveProperty<int>();
-        public static readonly ReactiveProperty<long> DailyRewardReceivedIndex = new ReactiveProperty<long>();
-        public static readonly ReactiveProperty<QuestList> QuestList = new ReactiveProperty<QuestList>();
+        private static readonly ReactiveProperty<MailBox> _mailBox;
+        public static readonly IObservable<MailBox> MailBox;
+
+        private static readonly ReactiveProperty<WorldInformation> _worldInformation;
+        public static readonly IObservable<WorldInformation> WorldInformation;
+
+        private static readonly ReactiveProperty<int> _actionPoint;
+        public static readonly IObservable<int> ActionPoint;
+
+        private static readonly ReactiveProperty<long> _dailyRewardReceivedIndex;
+        public static readonly IObservable<long> DailyRewardReceivedIndex;
+
+        private static readonly ReactiveProperty<QuestList> _questList;
+        public static readonly IObservable<QuestList> QuestList;
+
+        static ReactiveAvatarState()
+        {
+            _address = new ReactiveProperty<Address>();
+            Address = _address.ObserveOnMainThread();
+
+            _inventory = new ReactiveProperty<Inventory>();
+            Inventory = _inventory.ObserveOnMainThread();
+
+            _mailBox = new ReactiveProperty<MailBox>();
+            MailBox = _mailBox.ObserveOnMainThread();
+
+            _worldInformation = new ReactiveProperty<WorldInformation>();
+            WorldInformation = _worldInformation.ObserveOnMainThread();
+
+            _actionPoint = new ReactiveProperty<int>();
+            ActionPoint = _actionPoint.ObserveOnMainThread();
+
+            _dailyRewardReceivedIndex = new ReactiveProperty<long>();
+            DailyRewardReceivedIndex = _dailyRewardReceivedIndex.ObserveOnMainThread();
+
+            _questList = new ReactiveProperty<QuestList>();
+            QuestList = _questList.ObserveOnMainThread();
+        }
 
         public static void Initialize(AvatarState state)
         {
@@ -32,13 +67,53 @@ namespace Nekoyume.State
                 return;
             }
 
-            Address.SetValueAndForceNotify(state.address);
-            Inventory.SetValueAndForceNotify(state.inventory);
-            MailBox.SetValueAndForceNotify(state.mailBox);
-            WorldInformation.SetValueAndForceNotify(state.worldInformation);
-            ActionPoint.SetValueAndForceNotify(state.actionPoint);
-            DailyRewardReceivedIndex.SetValueAndForceNotify(state.dailyRewardReceivedIndex);
-            QuestList.SetValueAndForceNotify(state.questList);
+            _address.SetValueAndForceNotify(state.address);
+            _inventory.SetValueAndForceNotify(state.inventory);
+            _mailBox.SetValueAndForceNotify(state.mailBox);
+            _worldInformation.SetValueAndForceNotify(state.worldInformation);
+            _actionPoint.SetValueAndForceNotify(state.actionPoint);
+            _dailyRewardReceivedIndex.SetValueAndForceNotify(state.dailyRewardReceivedIndex);
+            _questList.SetValueAndForceNotify(state.questList);
+        }
+
+        public static void UpdateActionPoint(int actionPoint)
+        {
+            _actionPoint.SetValueAndForceNotify(actionPoint);
+        }
+
+        public static void UpdateInventory(Inventory inventory)
+        {
+            if (inventory is null)
+            {
+                return;
+            }
+
+            _inventory.SetValueAndForceNotify(inventory);
+        }
+
+        public static void UpdateDailyRewardReceivedIndex(long index)
+        {
+            _dailyRewardReceivedIndex.SetValueAndForceNotify(index);
+        }
+
+        public static void UpdateMailBox(MailBox mailBox)
+        {
+            if (mailBox is null)
+            {
+                return;
+            }
+
+            _mailBox.SetValueAndForceNotify(mailBox);
+        }
+
+        public static void UpdateQuestList(QuestList questList)
+        {
+            if (questList is null)
+            {
+                return;
+            }
+
+            _questList.SetValueAndForceNotify(questList);
         }
     }
 }

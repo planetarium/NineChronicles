@@ -49,7 +49,6 @@ namespace Nekoyume
 
         private int _viewIndex;
         private Transform _modal;
-        private float _updateTime = 0.0f;
         private StringBuilder _logString = new StringBuilder();
         private BattleLog.Result _result;
         private int[,] _stageRange;
@@ -59,7 +58,18 @@ namespace Nekoyume
 
         public class DebugRandom : IRandom
         {
+            public DebugRandom()
+            {
+            }
+
+            public DebugRandom(int seed)
+            {
+                _random = new System.Random(seed);
+            }
+
             private readonly System.Random _random = new System.Random();
+
+            public int Seed => throw new NotImplementedException();
 
             public int Next()
             {
@@ -207,12 +217,12 @@ namespace Nekoyume
             CloseWidget = null;
         }
 
+#if UNITY_EDITOR
         protected override void Update()
         {
-            _updateTime += Time.deltaTime;
             UpdateInput();
         }
-
+#endif
         public override void Show(bool ignoreShowAnimation = false)
         {
             _modal.gameObject.SetActive(true);

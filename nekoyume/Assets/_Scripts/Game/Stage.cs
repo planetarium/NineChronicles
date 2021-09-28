@@ -4,7 +4,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Bencodex.Types;
+using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using mixpanel;
 using Nekoyume.Battle;
@@ -26,8 +26,8 @@ using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.UI;
 using Nekoyume.UI.Model;
+using Nekoyume.UI.Module;
 using Spine.Unity;
-using UniRx;
 using UnityEngine;
 using UnityEngine.Rendering;
 using CharacterBase = Nekoyume.Model.CharacterBase;
@@ -38,6 +38,8 @@ using Random = UnityEngine.Random;
 
 namespace Nekoyume.Game
 {
+    using UniRx;
+
     public class Stage : MonoBehaviour, IStage
     {
         public const float StageStartPosition = -1.2f;
@@ -62,10 +64,7 @@ namespace Nekoyume.Game
         public int waveNumber;
         public int waveTurn;
         public Player selectedPlayer;
-        public readonly Vector2 questPreparationPosition = new Vector2(2.45f, -0.35f);
         public readonly Vector2 roomPosition = new Vector2(-2.808f, -1.519f);
-        public bool repeatStage;
-        public bool isExitReserved;
         public int foodCount;
         public string zone;
         public Animator roomAnimator { get; private set; }
@@ -75,15 +74,25 @@ namespace Nekoyume.Game
         private BattleResult.Model _battleResultModel;
         private bool _rankingBattle;
         private Coroutine _battleCoroutine;
+        private Player _stageRunningPlayer;
+        private Vector3 _playerPosition;
+        private Coroutine _positionCheckCoroutine;
+        private List<int> prevFood;
 
         public List<GameObject> ReleaseWhiteList { get; private set; } = new List<GameObject>();
         public SkillController SkillController { get; private set; }
         public BuffController BuffController { get; private set; }
         public TutorialController TutorialController { get; private set; }
-        public bool IsInStage { get; set; }
-        public bool IsShowHud { get; set; }
         public Enemy Boss { get; private set; }
         public AvatarState AvatarState { get; set; }
+        public bool IsInStage { get; set; }
+        public bool IsShowHud { get; set; }
+        public bool IsExitReserved { get; set; }
+        public bool IsRepeatStage { get; set; }
+        public bool IsAvatarStateUpdatedAfterBattle { get; set; }
+
+
+
 
         public Vector3 SelectPositionBegin(int index) =>
             new Vector3(-2.15f + index * 2.22f, -1.79f, 0.0f);
@@ -92,13 +101,6 @@ namespace Nekoyume.Game
             new Vector3(-2.15f + index * 2.22f, -0.25f, 0.0f);
 
         public bool showLoadingScreen;
-
-        private Player _stageRunningPlayer;
-        private Vector3 _playerPosition;
-
-        private List<int> prevFood;
-
-        private Coroutine _positionCheckCoroutine;
 
         #region Events
 
@@ -327,6 +329,7 @@ namespace Nekoyume.Game
 
             IsInStage = true;
             yield return StartCoroutine(CoStageEnter(log));
+            HelpPopup.HelpMe(100005, true);
             foreach (var e in log)
             {
                 yield return StartCoroutine(e.CoExecute(this));
@@ -430,9 +433,8 @@ namespace Nekoyume.Game
             ReleaseWhiteList.Clear();
             ReleaseWhiteList.Add(_stageRunningPlayer.gameObject);
 
-            var battle = Widget.Find<UI.Battle>();
             Game.instance.TableSheets.StageSheet.TryGetValue(stageId, out var stageData);
-            battle.StageProgressBar.Initialize(true);
+            Widget.Find<UI.Battle>().StageProgressBar.Initialize(true);
             Widget.Find<BattleResult>().StageProgressBar.Initialize(false);
             var title = Widget.Find<StageTitle>();
             title.Show(stageId);
@@ -470,7 +472,13 @@ namespace Nekoyume.Game
 
         private IEnumerator CoStageEnd(BattleLog log)
         {
+            IsAvatarStateUpdatedAfterBattle = false;
+            // NOTE ActionRenderHandler.Instance.Pending should be false before _onEnterToStageEnd.OnNext() invoked.
+            ActionRenderHandler.Instance.Pending = false;
             _onEnterToStageEnd.OnNext(this);
+            yield return new WaitUntil(() => IsAvatarStateUpdatedAfterBattle);
+            var avatarState = States.Instance.CurrentAvatarState;
+
             _battleResultModel.ClearedWaveNumber = log.clearedWaveNumber;
             var characters = GetComponentsInChildren<Character.CharacterBase>();
             yield return new WaitWhile(() => characters.Any(i => i.actions.Any()));
@@ -533,9 +541,6 @@ namespace Nekoyume.Game
                 objectPool.ReleaseExcept(ReleaseWhiteList);
             }
 
-            var avatarAddress = States.Instance.CurrentAvatarState.address;
-            var avatarState = new AvatarState(
-                (Dictionary) Game.instance.Agent.GetState(avatarAddress));
             _battleResultModel.ActionPoint = avatarState.actionPoint;
             _battleResultModel.State = log.result;
             Game.instance.TableSheets.WorldSheet.TryGetValue(log.worldId, out var world);
@@ -547,7 +552,7 @@ namespace Nekoyume.Game
             _battleResultModel.IsClear = log.IsClear;
             _battleResultModel.IsEndStage = false;
 
-            if (isExitReserved)
+            if (IsExitReserved)
             {
                 _battleResultModel.NextState = BattleResult.NextState.GoToMain;
                 _battleResultModel.ActionPointNotEnough = false;
@@ -569,7 +574,7 @@ namespace Nekoyume.Game
                 {
                     if (isClear)
                     {
-                        _battleResultModel.NextState = repeatStage ?
+                        _battleResultModel.NextState = IsRepeatStage ?
                             BattleResult.NextState.RepeatStage :
                             BattleResult.NextState.NextStage;
 
@@ -578,7 +583,7 @@ namespace Nekoyume.Game
                             if (stageId == worldRow.StageEnd)
                             {
                                 _battleResultModel.IsEndStage = true;
-                                _battleResultModel.NextState = repeatStage ?
+                                _battleResultModel.NextState = IsRepeatStage ?
                                     BattleResult.NextState.RepeatStage :
                                     BattleResult.NextState.GoToMain;
                             }
@@ -586,14 +591,13 @@ namespace Nekoyume.Game
                     }
                     else
                     {
-                        _battleResultModel.NextState = repeatStage ?
+                        _battleResultModel.NextState = IsRepeatStage ?
                             BattleResult.NextState.RepeatStage :
                             BattleResult.NextState.GoToMain;
                     }
                 }
             }
 
-            ActionRenderHandler.Instance.Pending = false;
             Widget.Find<BattleResult>().Show(_battleResultModel);
 
             yield return null;
@@ -605,7 +609,7 @@ namespace Nekoyume.Game
             {
                 ["StageId"] = log.stageId,
                 ["ClearedWave"] = log.clearedWaveNumber,
-                ["Repeat"] = repeatStage,
+                ["Repeat"] = IsRepeatStage,
                 ["CP"] = cp,
                 ["FoodCount"] = foodCount
             };
@@ -623,7 +627,13 @@ namespace Nekoyume.Game
 
         private IEnumerator CoRankingBattleEnd(BattleLog log, bool forceQuit = false)
         {
+            IsAvatarStateUpdatedAfterBattle = false;
+
+            // NOTE ActionRenderHandler.Instance.Pending should be false before _onEnterToStageEnd.OnNext() invoked.
+            ActionRenderHandler.Instance.Pending = false;
             _onEnterToStageEnd.OnNext(this);
+            yield return new WaitUntil(() => IsAvatarStateUpdatedAfterBattle);
+
             var characters = GetComponentsInChildren<Character.CharacterBase>();
 
             if (!forceQuit)
@@ -643,7 +653,6 @@ namespace Nekoyume.Game
             Widget.Find<UI.Battle>().Close();
             Widget.Find<Status>().Close();
 
-            ActionRenderHandler.Instance.Pending = false;
             Widget.Find<RankingBattleResult>().Show(log, _battleResultModel.Rewards);
             yield return null;
         }
@@ -668,7 +677,27 @@ namespace Nekoyume.Game
             }
             else
             {
-                battle.Show(stageId, repeatStage, isExitReserved);
+                var isTutorial = false;
+                if (States.Instance.CurrentAvatarState.worldInformation
+                    .TryGetUnlockedWorldByStageClearedBlockIndex(out var worldInfo))
+                {
+                    if (worldInfo.StageClearedId < UI.Battle.RequiredStageForExitButton)
+                    {
+                        Widget.Find<HeaderMenu>().Close(true);
+                        isTutorial = true;
+                    }
+                    else
+                    {
+                        Widget.Find<HeaderMenu>().Show();
+                    }
+                }
+                else
+                {
+                    Widget.Find<HeaderMenu>().Close(true);
+                    isTutorial = true;
+                }
+
+                battle.Show(stageId, IsRepeatStage, IsExitReserved, isTutorial);
                 var stageSheet = Game.instance.TableSheets.StageSheet;
                 if (stageSheet.TryGetValue(stageId, out var row))
                 {
@@ -819,7 +848,9 @@ namespace Nekoyume.Game
         {
             var prevEnemies = GetComponentsInChildren<Character.Enemy>();
             yield return new WaitWhile(() => prevEnemies.Any(enemy => enemy.isActiveAndEnabled));
-            if (items.Count > 0)
+
+            var isHeaderMenuShown = Widget.Find<HeaderMenu>().IsActive();
+            if (isHeaderMenuShown && items.Count > 0)
             {
                 var player = GetPlayer();
                 var position = player.transform.position;
@@ -1023,7 +1054,7 @@ namespace Nekoyume.Game
             return selectedPlayer;
         }
 
-        public Player GetPlayer(Vector2 position, bool forceCreate = false)
+        public Player GetPlayer(Vector3 position, bool forceCreate = false)
         {
             var player = GetPlayer(forceCreate);
             player.transform.position = position;
