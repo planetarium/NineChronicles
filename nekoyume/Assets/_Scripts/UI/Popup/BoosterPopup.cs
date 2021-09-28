@@ -85,6 +85,8 @@ namespace Nekoyume.UI
             // Call onValueChanged by Change value
             apSlider.value = 0;
             apSlider.value = apSlider.maxValue = actionPoint / cost >= MaxBoostCount ? MaxBoostCount : actionPoint / cost;
+            boostCountText.text = apSlider.value.ToString();
+            needAPText.text = (cost * apSlider.value).ToString();
             base.Show();
         }
 
