@@ -39,7 +39,7 @@ namespace Nekoyume.BlockChain.Policy
         /// <summary>
         /// Starting point in which Validate restriction will apply.
         /// </summary>
-        public const long ValidateMinerAuthorityNoOpTxHardcodedIndex = 1_200_001;
+        public const long AuthorizedMiningNoOpTxHardcodedIndex = 1_200_001;
 
         /// <summary>
         /// Starting point in which MinTransactionsPerBlock restriction will apply.
@@ -95,6 +95,7 @@ namespace Nekoyume.BlockChain.Policy
                 maxTransactionsPerBlock,
                 ignoreHardcodedPolicies: false,
                 authorizedMiningPolicy: AuthorizedMiningPolicy.Mainnet,
+                authorizedMiningNoOpTxPolicy: AuthorizedMiningNoOpTxPolicy.Mainnet,
                 permissionedMiningPolicy: PermissionedMiningPolicy.Mainnet);
 
         /// <summary>
@@ -118,6 +119,7 @@ namespace Nekoyume.BlockChain.Policy
         /// </para>
         /// </param>
         /// <param name="authorizedMiningPolicy">Used for authorized mining.</param>
+        /// <param name="authorizedMiningNoOpTxPolicy">Used for no-op tx authorized mining.</param>
         /// <param name="permissionedMiningPolicy">Used for permissioned mining.</param>
         /// <returns>A <see cref="BlockPolicy"/> constructed from given parameters.</returns>
         internal IBlockPolicy<NCAction> GetPolicy(
@@ -125,16 +127,37 @@ namespace Nekoyume.BlockChain.Policy
             int maxTransactionsPerBlock,
             bool ignoreHardcodedPolicies,
             AuthorizedMiningPolicy? authorizedMiningPolicy,
+            AuthorizedMiningNoOpTxPolicy? authorizedMiningNoOpTxPolicy,
             PermissionedMiningPolicy? permissionedMiningPolicy)
         {
 #if UNITY_EDITOR
             return new DebugPolicy();
 #else
+            // Basic sanity check.
+            if (authorizedMiningPolicy is AuthorizedMiningPolicy amp
+                && authorizedMiningNoOpTxPolicy is AuthorizedMiningNoOpTxPolicy amnotp)
+            {
+                if (amnotp.StartIndex < amp.StartIndex
+                    || amnotp.EndIndex != amp.EndIndex
+                    || amnotp.Interval != amp.Interval)
+                {
+                    throw new ArgumentException(
+                        $"Invalid {nameof(authorizedMiningNoOpTxPolicy)} given as a subpolicy"
+                            + $" for given {nameof(authorizedMiningPolicy)}.");
+                }
+            }
+            else if (authorizedMiningPolicy is null && !(authorizedMiningNoOpTxPolicy is null))
+            {
+                throw new ArgumentException(
+                    $"Argument {nameof(authorizedMiningNoOpTxPolicy)} cannot be null while"
+                        + $" {nameof(authorizedMiningPolicy)} is null.");
+            }
 
             var validateNextBlockTx = ValidateNextBlockTxFactory(
                 authorizedMiningPolicy);
             var validateNextBlock = ValidateNextBlockFactory(
                 authorizedMiningPolicy,
+                authorizedMiningNoOpTxPolicy,
                 permissionedMiningPolicy,
                 ignoreHardcodedPolicies);
             var getNextBlockDifficulty = GetNextBlockDifficultyFactory(
@@ -282,17 +305,23 @@ namespace Nekoyume.BlockChain.Policy
             BlockChain<NCAction> blockChain,
             Block<NCAction> nextBlock,
             AuthorizedMiningPolicy? authorizedMiningPolicy,
+            AuthorizedMiningNoOpTxPolicy? authorizedMiningNoOpTxPolicy,
             PermissionedMiningPolicy? permissionedMiningPolicy,
             bool ignoreHardcodedPolicies)
         {
             return ValidateTxCountPerBlockRaw(nextBlock, ignoreHardcodedPolicies)
-                ?? ValidateMinerAuthorityRaw(nextBlock, authorizedMiningPolicy, ignoreHardcodedPolicies)
+                ?? ValidateMinerAuthorityRaw(
+                    nextBlock,
+                    authorizedMiningPolicy,
+                    authorizedMiningNoOpTxPolicy,
+                    ignoreHardcodedPolicies)
                 ?? ValidateMinerPermissionRaw(nextBlock, permissionedMiningPolicy, ignoreHardcodedPolicies);
         }
 
         public static Func<BlockChain<NCAction>, Block<NCAction>, BlockPolicyViolationException>
             ValidateNextBlockFactory(
                 AuthorizedMiningPolicy? authorizedMiningPolicy,
+                AuthorizedMiningNoOpTxPolicy? authorizedMiningNoOpTxPolicy,
                 PermissionedMiningPolicy? permissionedMiningPolicy,
                 bool ignoreHardcodedPolicies)
         {
@@ -301,6 +330,7 @@ namespace Nekoyume.BlockChain.Policy
                     blockChain,
                     nextBlock,
                     authorizedMiningPolicy,
+                    authorizedMiningNoOpTxPolicy,
                     permissionedMiningPolicy,
                     ignoreHardcodedPolicies);
         }
