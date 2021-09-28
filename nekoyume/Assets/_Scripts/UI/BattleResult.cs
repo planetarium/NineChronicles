@@ -718,7 +718,7 @@ namespace Nekoyume.UI
             if (_battleWin04VFX)
             {
                 _battleWin04VFX.Stop();
-                _battleWin04VFX.Stop();
+                _battleWin04VFX = null;
             }
 
             foreach (var reward in rewardsArea.rewards)
