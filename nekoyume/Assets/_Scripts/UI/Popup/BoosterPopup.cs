@@ -45,6 +45,7 @@ namespace Nekoyume.UI
         private List<Consumable> _consumables;
 
         private static readonly Vector3 PlayerPosition = new Vector3(1999.8f, 1999.3f, 3f);
+        private const int MaxBoostCount = 12;
 
         protected override void Awake()
         {
@@ -66,25 +67,24 @@ namespace Nekoyume.UI
 
             ReactiveAvatarState.ActionPoint.Subscribe(value =>
             {
-                apSlider.maxValue = value / 5 >= 12 ? 12 : value / 5;
+                var cost = GetCostOfStage();
+                apSlider.maxValue = value / cost >= MaxBoostCount ? MaxBoostCount : value / cost;
                 ownAPText.text = value.ToString();
             }).AddTo(gameObject);
 
             apSlider.onValueChanged.AddListener(value =>
             {
-                var cost = Game.Game.instance
-                    .TableSheets.StageSheet.Values.FirstOrDefault(i =>
-                        i.Id == Find<WorldMap>().SelectedStageId).CostAP;
-
+                var cost = GetCostOfStage();
                 boostCountText.text = value.ToString();
                 needAPText.text = (cost * value).ToString();
             });
 
+            var cost = GetCostOfStage();
             var actionPoint = Game.Game.instance.States.CurrentAvatarState.actionPoint;
             ownAPText.text = actionPoint.ToString();
             // Call onValueChanged by Change value
             apSlider.value = 0;
-            apSlider.value = apSlider.maxValue = actionPoint / 5 >= 12 ? 12 : actionPoint / 5;
+            apSlider.value = apSlider.maxValue = actionPoint / cost >= MaxBoostCount ? MaxBoostCount : actionPoint / cost;
             base.Show();
         }
 
@@ -129,6 +129,13 @@ namespace Nekoyume.UI
                                     i => i.Id == stageId).CostAP);
                     }, e => ActionRenderHandler.BackToMain(false, e))
                 .AddTo(this);
+        }
+
+        private static int GetCostOfStage()
+        {
+            return Game.Game.instance
+                .TableSheets.StageSheet.Values.FirstOrDefault(i =>
+                    i.Id == Find<WorldMap>().SelectedStageId).CostAP;
         }
     }
 }
