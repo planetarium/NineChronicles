@@ -40,7 +40,7 @@ namespace Nekoyume.UI
         /// AnimationState 캡슐화가 깨지는 setter를 사용하지 않도록 한다.
         /// BottomMenu에서만 예외적으로 사용하고 있는데, 이를 Widget 안으로 옮긴 후에 setter를 private으로 변경한다.
         /// </summary>
-        protected ReactiveProperty<AnimationStateType> AnimationState { get; set; } =
+        protected readonly ReactiveProperty<AnimationStateType> AnimationState =
             new ReactiveProperty<AnimationStateType>(AnimationStateType.Closed);
 
         private readonly Subject<Widget> _onEnableSubject = new Subject<Widget>();
@@ -87,11 +87,11 @@ namespace Nekoyume.UI
             {
                 var fields = GetType().GetFields(System.Reflection.BindingFlags.NonPublic |
                                                  System.Reflection.BindingFlags.Instance);
-                foreach (var selectable in fields.Select(field => field.GetValue(this))
-                    .Where(field => field is UnityEngine.UI.Selectable))
+                foreach (var selectable in fields
+                    .Select(field => field.GetValue(this))
+                    .OfType<UnityEngine.UI.Selectable>())
                 {
-                    ((UnityEngine.UI.Selectable) selectable).interactable =
-                        stateType == AnimationStateType.Shown;
+                    selectable.interactable = stateType == AnimationStateType.Shown;
                 }
             }).AddTo(gameObject);
         }
