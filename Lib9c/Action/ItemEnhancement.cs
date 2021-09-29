@@ -19,7 +19,7 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("item_enhancement8")]
+    [ActionType("item_enhancement9")]
     public class ItemEnhancement : GameAction
     {
         public static readonly Address BlacksmithAddress = Addresses.Blacksmith;
@@ -39,7 +39,7 @@ namespace Nekoyume.Action
         [Serializable]
         public class ResultModel : AttachmentActionResult
         {
-            protected override string TypeId => "item_enhancement8.result";
+            protected override string TypeId => "item_enhancement9.result";
             public Guid id;
             public IEnumerable<Guid> materialItemIdList;
             public BigInteger gold;
