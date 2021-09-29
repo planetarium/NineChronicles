@@ -329,7 +329,7 @@ namespace Nekoyume.BlockChain
             var newTipHeader = BlockHeader.Deserialize(newTip);
             BlockIndex = newTipHeader.Index;
             BlockIndexSubject.OnNext(BlockIndex);
-            BlockTipHash = new BlockHash(newTip);
+            BlockTipHash = new BlockHash(newTipHeader.Hash.ToByteArray());
             BlockTipHashSubject.OnNext(BlockTipHash);
             _lastTipChangedAt = DateTimeOffset.UtcNow;
             BlockRenderer.RenderBlock(null, null);

@@ -253,18 +253,87 @@ namespace Nekoyume.BlockChain
             {
                 var avatarAddress = eval.Action.avatarAddress;
                 var slotIndex = eval.Action.slotIndex;
-                var slot = eval.OutputStates.GetCombinationSlotState(avatarAddress, slotIndex);
-                var result = (RapidCombination.ResultModel) slot.Result;
+                var slotState = eval.OutputStates.GetCombinationSlotState(avatarAddress, slotIndex);
+                var result = (RapidCombination.ResultModel) slotState.Result;
                 foreach (var pair in result.cost)
                 {
                     LocalLayerModifier.AddItem(avatarAddress, pair.Key.ItemId, pair.Value);
                 }
 
-                LocalLayerModifier.RemoveAvatarItemRequiredIndex(avatarAddress, result.itemUsable.NonFungibleId);
-                States.Instance.RemoveSlotState(slotIndex);
+                var formatKey = string.Empty;
+                var currentBlockIndex = Game.Game.instance.Agent.BlockIndex;
+                var combinationSlotState = States.Instance.GetCombinationSlotState(currentBlockIndex);
+                var stateResult = combinationSlotState[slotIndex]?.Result;
+                switch (stateResult)
+                {
+                    case CombinationConsumable5.ResultModel combineResultModel:
+                    {
+                        LocalLayerModifier.AddNewResultAttachmentMail(avatarAddress, combineResultModel.id,
+                            currentBlockIndex);
+                        if (combineResultModel.itemUsable is Equipment equipment)
+                        {
+                            if (combineResultModel.subRecipeId.HasValue &&
+                                Game.Game.instance.TableSheets.EquipmentItemSubRecipeSheetV2.TryGetValue(
+                                    combineResultModel.subRecipeId.Value,
+                                    out var subRecipeRow))
+                            {
+                                formatKey = equipment.optionCountFromCombination == subRecipeRow.Options.Count
+                                    ? "NOTIFICATION_COMBINATION_COMPLETE_GREATER"
+                                    : "NOTIFICATION_COMBINATION_COMPLETE";
+                            }
+                            else
+                            {
+                                formatKey = "NOTIFICATION_COMBINATION_COMPLETE";
+                            }
+                        }
+                        else
+                        {
+                            formatKey = "NOTIFICATION_COMBINATION_COMPLETE";
+                        }
+
+                        break;
+                    }
+                    case ItemEnhancement.ResultModel enhancementResultModel:
+                    {
+                        LocalLayerModifier.AddNewResultAttachmentMail(avatarAddress, enhancementResultModel.id,
+                            currentBlockIndex);
+
+                        switch (enhancementResultModel.enhancementResult)
+                        {
+                            case Action.ItemEnhancement.EnhancementResult.GreatSuccess:
+                                formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE_GREATER";
+                                break;
+                            case Action.ItemEnhancement.EnhancementResult.Success:
+                                formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE";
+                                break;
+                            case Action.ItemEnhancement.EnhancementResult.Fail:
+                                formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE_FAIL";
+                                break;
+                            default:
+                                Debug.LogError(
+                                    $"Unexpected result.enhancementResult: {enhancementResultModel.enhancementResult}");
+                                formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE";
+                                break;
+                        }
+
+                        break;
+                    }
+                    default:
+                        Debug.LogError(
+                            $"Unexpected state.Result: {stateResult}");
+                        formatKey = "NOTIFICATION_COMBINATION_COMPLETE";
+                        break;
+                }
+
+                var format = L10nManager.Localize(formatKey);
+                UI.Notification.CancelReserve(result.itemUsable.TradableId);
+                UI.Notification.Push(MailType.Workshop, string.Format(format, result.itemUsable.GetLocalizedName()));
+
+                States.Instance.UpdateCombinationSlotState(slotIndex, slotState);
                 UpdateAgentState(eval);
                 UpdateCurrentAvatarState(eval);
             }
+            Widget.Find<CombinationSlots>().SetCaching(eval.Action.slotIndex, false);
         }
 
         private void ResponseCombinationEquipment(ActionBase.ActionEvaluation<CombinationEquipment> eval)
