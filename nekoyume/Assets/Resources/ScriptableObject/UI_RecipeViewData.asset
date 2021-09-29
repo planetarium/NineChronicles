@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 932ac4a1f622fe1468c58f6420ed9c6c, type: 3}
+  m_Name: UI_RecipeViewData
+  m_EditorClassIdentifier: 
+  datas:
+  - <Grade>k__BackingField: 1
+    <BgSprite>k__BackingField: {fileID: 21300000, guid: 64d3712fd3c144545b6a9ec5674a529b,
+      type: 3}
+  - <Grade>k__BackingField: 2
+    <BgSprite>k__BackingField: {fileID: 21300000, guid: cf3941ab6508d4ee7b66668948a7358e,
+      type: 3}
+  - <Grade>k__BackingField: 3
+    <BgSprite>k__BackingField: {fileID: 21300000, guid: e123146d88eb44a739883087e4b9967b,
+      type: 3}
+  - <Grade>k__BackingField: 4
+    <BgSprite>k__BackingField: {fileID: 21300000, guid: 2ccc5e57f9ec549508dbc27349d3bfed,
+      type: 3}
+  - <Grade>k__BackingField: 5
+    <BgSprite>k__BackingField: {fileID: 21300000, guid: bab990cfa756e49299b6b288c502eaf3,
+      type: 3}
+  fallbackGrade: 1

@@ -1,4 +1,3 @@
-using System.Linq;
 using Coffee.UIEffects;
 using DG.Tweening;
 using Nekoyume.Helper;
@@ -11,8 +10,6 @@ namespace Nekoyume.UI.Module
     public class VanillaItemView : MonoBehaviour
     {
         [SerializeField] protected ItemViewDataScriptableObject itemViewData;
-        protected static readonly Color OriginColor = Color.white;
-        protected static readonly Color DimmedColor = ColorHelper.HexToColorRGB("848484");
 
         public enum ImageSizeType
         {
@@ -20,9 +17,13 @@ namespace Nekoyume.UI.Module
             Middle
         }
 
-        public Image gradeImage;
-        public UIHsvModifier gradeHsv;
-        public Image iconImage;
+        public Image iconImage = null;
+
+        [SerializeField]
+        protected Image gradeImage = null;
+
+        [SerializeField]
+        protected UIHsvModifier gradeHsv = null;
 
         private Tweener _tweener;
 
@@ -77,12 +78,6 @@ namespace Nekoyume.UI.Module
         {
             gradeImage.enabled = false;
             iconImage.enabled = false;
-        }
-
-        protected virtual void SetDim(bool isDim)
-        {
-            gradeImage.color = isDim ? DimmedColor : OriginColor;
-            iconImage.color = isDim ? DimmedColor : OriginColor;
         }
 
         protected Tweener PlayTween(float delay = default)

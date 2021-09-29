@@ -185,7 +185,7 @@ namespace Nekoyume.UI.Scroller
         public void UpdateTab()
         {
             UpdateView();
-            Widget.Find<Quest>().UpdateTabs();
+            Widget.Find<Quest>().DoneScrollAnimation();
         }
 
         public void ShowAsComplete()

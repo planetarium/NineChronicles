@@ -86,18 +86,19 @@ Material:
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
-    - _Mag: 0.02
+    - _Mag: 0.023
     - _Metallic: 0
     - _Mode: 0
     - _OcclusionStrength: 1
     - _Offset: 1
     - _Parallax: 0.02
+    - _RefNumber: 1
     - _Saturation: 1
     - _Shininess: 0.2
-    - _Size: 4
+    - _Size: 14.5
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
-    - _Speed: 0.5
+    - _Speed: 1
     - _SrcBlend: 1
     - _Stencil: 0
     - _StencilComp: 8
@@ -108,6 +109,7 @@ Material:
     - _UseUIAlphaClip: 0
     - _ZWrite: 1
     m_Colors:
-    - _Color: {r: 0.3679245, g: 0.3679245, b: 0.3679245, a: 1}
+    - _Color: {r: 0.6698113, g: 0.5908241, b: 0.5908241, a: 0.78431374}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _Specular: {r: 0, g: 0, b: 0, a: 0}
+  m_BuildTextureStacks: []

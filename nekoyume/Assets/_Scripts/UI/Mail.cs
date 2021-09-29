@@ -1,8 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Cysharp.Threading.Tasks;
 using Lib9c.Model.Order;
 using Nekoyume.Action;
+using Nekoyume.EnumType;
+using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
@@ -14,6 +17,7 @@ using Nekoyume.UI.Module;
 using Nekoyume.UI.Scroller;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
@@ -59,6 +63,9 @@ namespace Nekoyume.UI
         [SerializeField]
         private Blur blur = null;
 
+        [SerializeField]
+        private Button closeButton = null;
+
         private readonly Module.ToggleGroup _toggleGroup = new Module.ToggleGroup();
 
         private static Sprite _selectedButtonSprite;
@@ -66,6 +73,9 @@ namespace Nekoyume.UI
         private const int TutorialEquipmentId = 10110000;
 
         public MailBox MailBox { get; private set; }
+
+        public override WidgetType WidgetType => WidgetType.Popup;
+        public override CloseKeyType CloseKeyType => CloseKeyType.Escape;
 
         #region override
 
@@ -76,6 +86,11 @@ namespace Nekoyume.UI
             _toggleGroup.RegisterToggleable(workshopButton);
             _toggleGroup.RegisterToggleable(marketButton);
             _toggleGroup.RegisterToggleable(systemButton);
+            closeButton.onClick.AddListener(() =>
+            {
+                Close();
+                AudioController.PlayClick();
+            });
         }
 
         public override void Initialize()
@@ -105,11 +120,12 @@ namespace Nekoyume.UI
             {
                 blur.Show();
             }
+            HelpPopup.HelpMe(100010, true);
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
         {
-            if (blur)
+            if (blur && blur.isActiveAndEnabled)
             {
                 blur.Close();
             }
@@ -147,7 +163,7 @@ namespace Nekoyume.UI
 
         private void UpdateMailList(long blockIndex)
         {
-            var list = GetAvailableMailList(blockIndex, tabState);
+            var list = GetAvailableMailList(blockIndex, tabState)?.ToList();
 
             if (list is null)
             {
@@ -162,7 +178,7 @@ namespace Nekoyume.UI
         private void OnReceivedTutorialEquipment()
         {
             var tutorialController = Game.Game.instance.Stage.TutorialController;
-            var tutorialProgress = tutorialController.GetTutorialProgress();
+            tutorialController.GetTutorialProgress();
             if (tutorialController.CurrentlyPlayingId < 37)
             {
                 tutorialController.Stop(() => tutorialController.Play(37));
@@ -171,10 +187,7 @@ namespace Nekoyume.UI
 
         public void UpdateTabs(long? blockIndex = null)
         {
-            if (blockIndex is null)
-            {
-                blockIndex = Game.Game.instance.Agent.BlockIndex;
-            }
+            blockIndex ??= Game.Game.instance.Agent.BlockIndex;
 
             // 전체 탭
             allButton.HasNotification.Value = MailBox
@@ -182,15 +195,15 @@ namespace Nekoyume.UI
 
             var list = GetAvailableMailList(blockIndex.Value, MailTabState.Workshop);
             var recent = list?.FirstOrDefault();
-            workshopButton.HasNotification.Value = recent is null ? false : recent.New;
+            workshopButton.HasNotification.Value = recent is { New: true };
 
             list = GetAvailableMailList(blockIndex.Value, MailTabState.Market);
             recent = list?.FirstOrDefault();
-            marketButton.HasNotification.Value = recent is null ? false : recent.New;
+            marketButton.HasNotification.Value = recent is { New: true };
 
             list = GetAvailableMailList(blockIndex.Value, MailTabState.System);
             recent = list?.FirstOrDefault();
-            systemButton.HasNotification.Value = recent is null ? false : recent.New;
+            systemButton.HasNotification.Value = recent is { New: true };
         }
 
         private void SetList(MailBox mailBox)
@@ -206,46 +219,64 @@ namespace Nekoyume.UI
 
         private void UpdateNotification(long blockIndex)
         {
-            if (States.Instance.CurrentAvatarState is null)
+            var avatarState = States.Instance.CurrentAvatarState;
+            if (avatarState is null)
             {
                 return;
             }
 
-            MailBox = States.Instance.CurrentAvatarState.mailBox;
+            MailBox = avatarState.mailBox;
             UpdateTabs(blockIndex);
         }
 
         public void Read(CombinationMail mail)
         {
+            var itemUsable = mail?.attachment?.itemUsable;
+            if (itemUsable is null)
+            {
+                Debug.LogError("CombinationMail.itemUsable is null");
+                return;
+            }
+
             var avatarAddress = States.Instance.CurrentAvatarState.address;
-            var attachment = (CombinationConsumable5.ResultModel) mail.attachment;
-            var itemBase = attachment.itemUsable ?? (ItemBase)attachment.costume;
-            var tradableItem = attachment.itemUsable ?? (ITradableItem)attachment.costume;
-            var popup = Find<CombinationResultPopup>();
-            var materialItems = attachment.materials
-                .Select(pair => new {pair, item = pair.Key})
-                .Select(t => new CombinationMaterial(
-                    t.item,
-                    t.pair.Value,
-                    t.pair.Value,
-                    t.pair.Value))
-                .ToList();
-            var model = new UI.Model.CombinationResultPopup(new CountableItem(itemBase, 1))
+
+            // LocalLayer
+            UniTask.Run(() =>
             {
-                isSuccess = true,
-                materialItems = materialItems
-            };
-            model.OnClickSubmit.Subscribe(_ =>
-            {
-                LocalLayerModifier.AddItem(avatarAddress, tradableItem.TradableId, tradableItem.RequiredBlockIndex,1);
-                LocalLayerModifier.RemoveNewAttachmentMail(avatarAddress, mail.id);
-                LocalLayerModifier.RemoveAttachmentResult(avatarAddress, mail.id, true);
-                LocalLayerModifier.ModifyAvatarItemRequiredIndex(
+                LocalLayerModifier.AddItem(
                     avatarAddress,
-                    tradableItem.TradableId,
-                    Game.Game.instance.Agent.BlockIndex);
+                    itemUsable.TradableId,
+                    itemUsable.RequiredBlockIndex,
+                    1,
+                    false);
+                LocalLayerModifier.RemoveNewAttachmentMail(avatarAddress, mail.id, false);
+                if (!States.TryGetAvatarState(avatarAddress, out var avatarState))
+                {
+                    return null;
+                }
+
+                return avatarState;
+            }).ToObservable().SubscribeOnMainThread().Subscribe(avatarState =>
+            {
+                Debug.Log("CombinationMail LocalLayer task completed");
+                States.Instance.AddOrReplaceAvatarState(avatarState, States.Instance.CurrentAvatarKey);
             });
-            popup.Pop(model);
+            // ~LocalLayer
+
+            if (mail.attachment is CombinationConsumable5.ResultModel resultModel)
+            {
+                if (resultModel.subRecipeId.HasValue &&
+                    Game.Game.instance.TableSheets.EquipmentItemSubRecipeSheetV2.TryGetValue(
+                        resultModel.subRecipeId.Value,
+                        out var row))
+                {
+                    Find<CombinationResult>().Show(itemUsable, row.Options.Count);
+                }
+                else
+                {
+                    Find<CombinationResult>().Show(itemUsable);
+                }
+            }
         }
 
         public void Read(OrderBuyerMail orderBuyerMail)
@@ -313,22 +344,39 @@ namespace Nekoyume.UI
 
         public void Read(ItemEnhanceMail itemEnhanceMail)
         {
+            var itemUsable = itemEnhanceMail?.attachment?.itemUsable;
+            if (itemUsable is null)
+            {
+                Debug.LogError("ItemEnhanceMail.itemUsable is null");
+                return;
+            }
+
             var avatarAddress = States.Instance.CurrentAvatarState.address;
-            var attachment = (ItemEnhancement.ResultModel) itemEnhanceMail.attachment;
-            var popup = Find<CombinationResultPopup>();
-            var itemBase = attachment.itemUsable ?? (ItemBase)attachment.costume;
-            var tradableItem = attachment.itemUsable ?? (ITradableItem)attachment.costume;
-            var model = new UI.Model.CombinationResultPopup(new CountableItem(itemBase, 1))
+
+            // LocalLayer
+            UniTask.Run(() =>
             {
-                isSuccess = true,
-                materialItems = new List<CombinationMaterial>()
-            };
-            model.OnClickSubmit.Subscribe(_ =>
+                LocalLayerModifier.AddItem(
+                    avatarAddress,
+                    itemUsable.TradableId,
+                    itemUsable.RequiredBlockIndex,
+                    1,
+                    false);
+                LocalLayerModifier.RemoveNewAttachmentMail(avatarAddress, itemEnhanceMail.id, false);
+                if (!States.TryGetAvatarState(avatarAddress, out var avatarState))
+                {
+                    return null;
+                }
+
+                return avatarState;
+            }).ToObservable().SubscribeOnMainThread().Subscribe(avatarState =>
             {
-                LocalLayerModifier.AddItem(avatarAddress, tradableItem.TradableId, tradableItem.RequiredBlockIndex, 1);
-                LocalLayerModifier.RemoveNewAttachmentMail(avatarAddress, itemEnhanceMail.id, true);
+                Debug.Log("ItemEnhanceMail LocalLayer task completed");
+                States.Instance.AddOrReplaceAvatarState(avatarState, States.Instance.CurrentAvatarKey);
             });
-            popup.Pop(model);
+            // ~LocalLayer
+
+            Find<EnhancementResult>().Show(itemEnhanceMail);
         }
 
         public void Read(DailyRewardMail dailyRewardMail)

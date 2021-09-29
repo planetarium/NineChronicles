@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.TableData;
@@ -19,11 +19,6 @@ namespace Nekoyume.UI
             }
 
             return L10nManager.Localize($"SKILL_NAME_{row.Id}");
-        }
-
-        public static Sprite GetIcon(this SkillSheet.Row row)
-        {
-            return SpriteHelper.GetSkillIcon(row.Id);
         }
     }
 }

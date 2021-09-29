@@ -2,11 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Nekoyume.Game.Controller;
 using Nekoyume.L10n;
 using Nekoyume.State;
 using Nekoyume.UI.Model;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 using ShopItem = Nekoyume.UI.Model.ShopItem;
 
@@ -17,7 +19,6 @@ namespace Nekoyume.UI.Module
     public class ShopBuyItems : MonoBehaviour
     {
         public List<ShopItemView> Items { get; } = new List<ShopItemView>();
-
         [SerializeField] private List<ToggleDropdown> toggleDropdowns = new List<ToggleDropdown>();
         [SerializeField] private TextMeshProUGUI pageText = null;
         [SerializeField] private Button previousPageButton = null;
@@ -89,6 +90,7 @@ namespace Nekoyume.UI.Module
         };
 
         public Model.ShopBuyItems SharedModel { get; private set; }
+        public bool IsActiveInputField => inputField.isFocused;
 
         #region Mono
 
@@ -130,6 +132,7 @@ namespace Nekoyume.UI.Module
                         OnItemSubTypeFilterChanged();
                     }
                 });
+                toggleDropdown.onClickToggle.AddListener(AudioController.PlayClick);
 
                 var subItems = toggleDropdown.items;
 
@@ -146,6 +149,7 @@ namespace Nekoyume.UI.Module
                             OnItemSubTypeFilterChanged();
                         }
                     });
+                    item.onClickToggle.AddListener(AudioController.PlayClick);
                 }
             }
 

@@ -58,6 +58,15 @@ namespace Nekoyume
 
         public class DebugRandom : IRandom
         {
+            public DebugRandom()
+            {
+            }
+
+            public DebugRandom(int seed)
+            {
+                _random = new System.Random(seed);
+            }
+
             private readonly System.Random _random = new System.Random();
 
             public int Seed => throw new NotImplementedException();
@@ -208,11 +217,12 @@ namespace Nekoyume
             CloseWidget = null;
         }
 
-        // protected override void Update()
-        // {
-        //     UpdateInput();
-        // }
-
+#if UNITY_EDITOR
+        protected override void Update()
+        {
+            UpdateInput();
+        }
+#endif
         public override void Show(bool ignoreShowAnimation = false)
         {
             _modal.gameObject.SetActive(true);
