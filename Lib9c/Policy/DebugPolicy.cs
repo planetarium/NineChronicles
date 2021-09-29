@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Security.Cryptography;
 using Libplanet;
@@ -9,7 +8,7 @@ using Libplanet.Blocks;
 using Libplanet.Tx;
 using Nekoyume.Action;
 
-namespace Lib9c
+namespace Nekoyume.BlockChain.Policy
 {
     public class DebugPolicy : IBlockPolicy<PolymorphicAction<ActionBase>>
     {
@@ -17,26 +16,26 @@ namespace Lib9c
 
         public IAction BlockAction { get; } = new RewardGold();
 
-        public InvalidBlockException ValidateNextBlock(
-            BlockChain<PolymorphicAction<ActionBase>> blocks,
-            Block<PolymorphicAction<ActionBase>> nextBlock
-        )
+        public TxPolicyViolationException ValidateNextBlockTx(
+            BlockChain<PolymorphicAction<ActionBase>> blockChain,
+            Transaction<PolymorphicAction<ActionBase>> transaction)
         {
             return null;
         }
 
-        public long GetNextBlockDifficulty(BlockChain<PolymorphicAction<ActionBase>> blocks)
+        public BlockPolicyViolationException ValidateNextBlock(
+            BlockChain<PolymorphicAction<ActionBase>> blockChain,
+            Block<PolymorphicAction<ActionBase>> nextBlock)
         {
-            return blocks.Count > 0 ? 1 : 0;
+            return null;
+        }
+
+        public long GetNextBlockDifficulty(BlockChain<PolymorphicAction<ActionBase>> blockChain)
+        {
+            return blockChain.Count > 0 ? 1 : 0;
         }
 
         public int GetMaxBlockBytes(long index) => int.MaxValue;
-
-        public bool DoesTransactionFollowsPolicy(
-            Transaction<PolymorphicAction<ActionBase>> transaction,
-            BlockChain<PolymorphicAction<ActionBase>> blockChain
-        ) =>
-            true;
 
         public HashAlgorithmType GetHashAlgorithm(long index) =>
             HashAlgorithmType.Of<SHA256>();

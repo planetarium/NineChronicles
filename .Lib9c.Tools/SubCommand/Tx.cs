@@ -82,6 +82,7 @@ namespace Lib9c.Tools.SubCommand
                         nameof(AddRedeemCode) => new AddRedeemCode(),
                         nameof(Nekoyume.Action.MigrationLegacyShop) => new MigrationLegacyShop(),
                         nameof(Nekoyume.Action.MigrationActivatedAccountsState) => new MigrationActivatedAccountsState(),
+                        nameof(Nekoyume.Action.MigrationAvatarState) => new MigrationAvatarState(),
                         _ => throw new CommandExitedException($"Can't determine given action type: {type}", 128),
                     };
                     action.LoadPlainValue(plainValue);
@@ -174,6 +175,35 @@ namespace Lib9c.Tools.SubCommand
 
             byte[] raw = _codec.Encode(bencoded);
             Console.WriteLine(ByteUtil.Hex(raw));
+        }
+
+        [Command(Description = "Create MigrationAvatarState action and dump it.")]
+        public void MigrationAvatarState(
+        [Argument("directory-path", Description = "path of the directory contained hex-encoded avatar states.")] string directoryPath,
+        [Argument("output-path", Description = "path of the output file dumped action.")] string outputPath
+        )
+        {
+            var files = Directory.GetFiles(directoryPath, "*", SearchOption.AllDirectories);
+            var avatarStates = files.Select(a =>
+            {
+                var raw = File.ReadAllText(a);
+                return (Dictionary)_codec.Decode(ByteUtil.ParseHex(raw));
+            }).ToList();
+            var action = new MigrationAvatarState()
+            {
+                avatarStates = avatarStates
+            };
+
+            var encoded = new List(
+                new IValue[]
+                {
+                    (Text) nameof(Nekoyume.Action.MigrationAvatarState),
+                    action.PlainValue
+                }
+            );
+
+            byte[] raw = _codec.Encode(encoded);
+            File.WriteAllText(outputPath, ByteUtil.Hex(raw));
         }
 
         [Command(Description = "Create new transaction with AddRedeemCode action and dump it.")]

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Security.Cryptography;
 using Bencodex.Types;
 using Libplanet;
@@ -16,6 +15,7 @@ using Libplanet.RocksDBStore;
 using Libplanet.Store;
 using Libplanet.Store.Trie;
 using Nekoyume.BlockChain;
+using Nekoyume.BlockChain.Policy;
 using Serilog;
 using Serilog.Events;
 using NCAction = Libplanet.Action.PolymorphicAction<Nekoyume.Action.ActionBase>;
@@ -39,7 +39,7 @@ namespace Lib9c.Benchmarks
             Libplanet.Crypto.CryptoConfig.CryptoBackend = new Secp256K1CryptoBackend<SHA256>();
             var policySource = new BlockPolicySource(Log.Logger, LogEventLevel.Verbose);
             IBlockPolicy<NCAction> policy =
-                policySource.GetPolicy(BlockPolicySource.DifficultyBoundDivisor + 1, 10000);
+                policySource.GetPolicy(BlockPolicySource.DifficultyStability + 1, 10000);
             IStagePolicy<NCAction> stagePolicy = new VolatileStagePolicy<NCAction>();
             var store = new RocksDBStore(storePath);
             if (!(store.GetCanonicalChainId() is Guid chainId))

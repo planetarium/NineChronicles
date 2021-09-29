@@ -388,7 +388,7 @@
             while (true)
             {
                 var arenaInfo = previousWeeklyArenaState.GetArenaInfo(_avatar1Address);
-                arenaInfo.Update(previousAvatarState, arenaInfo, BattleLog.Result.Lose);
+                arenaInfo.UpdateV3(previousAvatarState, arenaInfo, BattleLog.Result.Lose);
                 if (arenaInfo.DailyChallengeCount == 0)
                 {
                     break;
