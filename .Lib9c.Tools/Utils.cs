@@ -55,9 +55,7 @@ namespace Lib9c.Tools
                 : new RocksDBStore(storePath);
             IKeyValueStore stateKeyValueStore =
                 new RocksDBKeyValueStore(Path.Combine(storePath, "states"));
-            IKeyValueStore stateHashKeyValueStore =
-                new RocksDBKeyValueStore(Path.Combine(storePath, "state_hashes"));
-            IStateStore stateStore = new TrieStateStore(stateKeyValueStore, stateHashKeyValueStore);
+            IStateStore stateStore = new TrieStateStore(stateKeyValueStore);
             Guid chainIdValue
                 = chainId ??
                   store.GetCanonicalChainId() ??
@@ -79,7 +77,10 @@ namespace Lib9c.Tools
                     1
                 );
             }
-            Block<NCAction> genesis = store.GetBlock<NCAction>(genesisBlockHash);
+            Block<NCAction> genesis = store.GetBlock<NCAction>(
+                policy.GetHashAlgorithm,
+                genesisBlockHash
+            );
             BlockChain<NCAction> chain = new BlockChain<NCAction>(
                 policy,
                 stagePolicy,
