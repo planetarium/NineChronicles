@@ -37,8 +37,23 @@ namespace Lib9c.Benchmarks
             int limit = int.Parse(args[1]);
             int offset = 0;
 
-            if (args.Length == 3){
+            if (args.Length >= 3)
+            {
                 offset = int.Parse(args[2]);
+            }
+
+            if (limit < 0)
+            {
+                Console.Error.WriteLine("Limit value must be greater than 0. Entered value: {0}", limit);
+                Environment.Exit(1);
+                return;
+            }
+
+            if (offset < 0)
+            {
+                Console.Error.WriteLine("Offset value must be greater than 0. Entered value: {0}", offset);
+                Environment.Exit(1);
+                return;
             }
 
             Log.Logger = new LoggerConfiguration().MinimumLevel.Verbose().WriteTo.Console().CreateLogger();
