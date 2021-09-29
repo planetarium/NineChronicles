@@ -4,7 +4,6 @@ using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
-using System.Numerics;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
@@ -139,7 +138,7 @@ namespace Nekoyume.Action
                     }
 
                     materials[material] = count;
-                    avatarState.inventory.RemoveFungibleItem2(material, count);
+                    avatarState.inventory.RemoveFungibleItem(material, count);
                 }
                 else
                 {
@@ -156,7 +155,6 @@ namespace Nekoyume.Action
             {
                 materials = materials,
                 itemType = ItemType.Consumable,
-
             };
 
             var costAP = recipeRow.RequiredActionPoint;
@@ -196,13 +194,13 @@ namespace Nekoyume.Action
             );
             result.id = mail.id;
             avatarState.Update(mail);
-            avatarState.UpdateFromCombination2(itemUsable);
+            avatarState.UpdateFromCombination(itemUsable);
             sw.Stop();
             Log.Verbose("{AddressesHex}Combination Update AvatarState: {Elapsed}", addressesHex, sw.Elapsed);
             sw.Restart();
 
             var materialSheet = states.GetSheet<MaterialItemSheet>();
-            avatarState.UpdateQuestRewards2(materialSheet);
+            avatarState.UpdateQuestRewards(materialSheet);
 
             avatarState.updatedAt = ctx.BlockIndex;
             avatarState.blockIndex = ctx.BlockIndex;

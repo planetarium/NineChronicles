@@ -211,8 +211,17 @@ namespace Nekoyume.Action
             result.id = mail.id;
             avatarState.Update2(mail);
             avatarState.questList.UpdateCombinationEquipmentQuest(RecipeId);
-            avatarState.UpdateFromCombination2(equipment);
-            avatarState.UpdateQuestRewards2(materialSheet);
+            avatarState.UpdateFromCombination(equipment);
+            avatarState.UpdateQuestRewards(materialSheet);
+
+            //Avoid InvalidBlockStateRootHashException to 50000 index.
+            if (avatarState.questList.Any(q => q.Complete && !q.IsPaidInAction))
+            {
+                var prevIds = avatarState.questList.completedQuestIds;
+                avatarState.UpdateQuestRewards(materialSheet);
+                avatarState.questList.completedQuestIds = prevIds;
+            }
+
             return states
                 .SetState(AvatarAddress, avatarState.Serialize())
                 .SetState(slotAddress, slotState.Serialize())

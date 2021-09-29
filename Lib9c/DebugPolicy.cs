@@ -13,34 +13,39 @@ namespace Lib9c
 {
     public class DebugPolicy : IBlockPolicy<PolymorphicAction<ActionBase>>
     {
-        public IComparer<BlockPerception> CanonicalChainComparer { get; } = new TotalDifficultyComparer(TimeSpan.FromSeconds(3));
+        public IComparer<IBlockExcerpt> CanonicalChainComparer { get; } = new TotalDifficultyComparer();
 
         public IAction BlockAction { get; } = new RewardGold();
 
-        public InvalidBlockException ValidateNextBlock(
-            BlockChain<PolymorphicAction<ActionBase>> blocks,
-            Block<PolymorphicAction<ActionBase>> nextBlock
-        )
+        public TxPolicyViolationException ValidateNextBlockTx(
+            BlockChain<PolymorphicAction<ActionBase>> blockChain,
+            Transaction<PolymorphicAction<ActionBase>> transaction)
         {
             return null;
         }
 
-        public long GetNextBlockDifficulty(BlockChain<PolymorphicAction<ActionBase>> blocks)
+        public BlockPolicyViolationException ValidateNextBlock(
+            BlockChain<PolymorphicAction<ActionBase>> blockChain,
+            Block<PolymorphicAction<ActionBase>> nextBlock)
         {
-            return blocks.Tip is null ? 0 : 1;
+            return null;
         }
 
-        public int MaxTransactionsPerBlock { get; } = int.MaxValue;
+        public long GetNextBlockDifficulty(BlockChain<PolymorphicAction<ActionBase>> blockChain)
+        {
+            return blockChain.Count > 0 ? 1 : 0;
+        }
 
         public int GetMaxBlockBytes(long index) => int.MaxValue;
 
-        public bool DoesTransactionFollowsPolicy(
-            Transaction<PolymorphicAction<ActionBase>> transaction,
-            BlockChain<PolymorphicAction<ActionBase>> blockChain
-        ) =>
-            true;
-
         public HashAlgorithmType GetHashAlgorithm(long index) =>
             HashAlgorithmType.Of<SHA256>();
+
+        public int GetMinTransactionsPerBlock(long index) => 0;
+
+        public int GetMaxTransactionsPerBlock(long index) => int.MaxValue;
+
+        public int GetMaxTransactionsPerSignerPerBlock(long index) =>
+            GetMaxTransactionsPerBlock(index);
     }
 }

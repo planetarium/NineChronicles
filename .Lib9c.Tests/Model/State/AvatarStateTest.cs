@@ -8,7 +8,7 @@ namespace Lib9c.Tests.Model.State
     using System.Threading.Tasks;
     using Bencodex;
     using Bencodex.Types;
-    using Lib9c.Tests.Action;
+    using Lib9c.Tests.Model.Item;
     using Libplanet;
     using Libplanet.Crypto;
     using Nekoyume;
@@ -133,7 +133,7 @@ namespace Lib9c.Tests.Model.State
                 var id = Guid.NewGuid();
                 var consumable = ItemFactory.CreateItemUsable(row, id, 0);
                 consumableIds.Add(id);
-                avatarState.inventory.AddItem2(consumable);
+                avatarState.inventory.AddItem(consumable);
             }
 
             avatarState.ValidateConsumable(consumableIds, 0);
@@ -151,7 +151,7 @@ namespace Lib9c.Tests.Model.State
             var id = Guid.NewGuid();
             var consumable = ItemFactory.CreateItemUsable(row, id, 1);
             consumableIds.Add(id);
-            avatarState.inventory.AddItem2(consumable);
+            avatarState.inventory.AddItem(consumable);
             Assert.Throws<RequiredBlockIndexException>(() => avatarState.ValidateConsumable(consumableIds, 0));
         }
 
@@ -170,7 +170,7 @@ namespace Lib9c.Tests.Model.State
                 var id = Guid.NewGuid();
                 var consumable = ItemFactory.CreateItemUsable(row, id, 0);
                 consumableIds.Add(id);
-                avatarState.inventory.AddItem2(consumable);
+                avatarState.inventory.AddItem(consumable);
             }
 
             Assert.Throws<ConsumableSlotOutOfRangeException>(() => avatarState.ValidateConsumable(consumableIds, 0));
@@ -196,7 +196,7 @@ namespace Lib9c.Tests.Model.State
                 var id = Guid.NewGuid();
                 var consumable = ItemFactory.CreateItemUsable(row, id, 0);
                 consumableIds.Add(id);
-                avatarState.inventory.AddItem2(consumable);
+                avatarState.inventory.AddItem(consumable);
             }
 
             Assert.Throws<ConsumableSlotUnlockException>(() => avatarState.ValidateConsumable(consumableIds, 0));
@@ -225,7 +225,7 @@ namespace Lib9c.Tests.Model.State
                 var row = _tableSheets.CostumeItemSheet.Values.First(r => r.ItemSubType == subType);
                 var costume = ItemFactory.CreateCostume(row, default);
                 costumeIds.Add(costume.Id);
-                avatarState.inventory.AddItem2(costume);
+                avatarState.inventory.AddItem(costume);
             }
 
             avatarState.ValidateCostume(costumeIds);
@@ -250,13 +250,13 @@ namespace Lib9c.Tests.Model.State
             var row = _tableSheets.CostumeItemSheet.Values.First(r => r.ItemSubType != type);
             var costume = ItemFactory.CreateCostume(row, default);
             costumeIds.Add(costume.Id);
-            avatarState.inventory.AddItem2(costume);
+            avatarState.inventory.AddItem(costume);
 
             foreach (var duplicateRow in duplicateRows)
             {
                 var duplicateCostume = ItemFactory.CreateCostume(duplicateRow, default);
                 costumeIds.Add(duplicateCostume.Id);
-                avatarState.inventory.AddItem2(duplicateCostume);
+                avatarState.inventory.AddItem(duplicateCostume);
             }
 
             Assert.Throws<DuplicateCostumeException>(() => avatarState.ValidateCostume(costumeIds));
@@ -276,7 +276,7 @@ namespace Lib9c.Tests.Model.State
             serialized = serialized.SetItem("item_sub_type", ItemSubType.Armor.Serialize());
             var costume2 = new Costume(serialized);
             var costumeIds = new HashSet<int> { costume2.Id };
-            avatarState.inventory.AddItem2(costume2);
+            avatarState.inventory.AddItem(costume2);
 
             Assert.Throws<InvalidItemTypeException>(() => avatarState.ValidateCostume(costumeIds));
         }
@@ -298,7 +298,7 @@ namespace Lib9c.Tests.Model.State
             var row = _tableSheets.CostumeItemSheet.Values.First(r => r.ItemSubType == type);
             var costume = ItemFactory.CreateCostume(row, default);
             var costumeIds = new HashSet<int> { costume.Id };
-            avatarState.inventory.AddItem2(costume);
+            avatarState.inventory.AddItem(costume);
 
             Assert.Throws<CostumeSlotUnlockException>(() => avatarState.ValidateCostume(costumeIds));
         }
@@ -385,8 +385,8 @@ namespace Lib9c.Tests.Model.State
         public void EquipItems()
         {
             var avatarState = GetNewAvatarState(new PrivateKey().ToAddress(), new PrivateKey().ToAddress());
-            avatarState.inventory.AddItem2(EquipmentTest.CreateFirstEquipment(_tableSheets));
-            avatarState.inventory.AddItem2(CostumeTest.CreateFirstCostume(_tableSheets));
+            avatarState.inventory.AddItem(EquipmentTest.CreateFirstEquipment(_tableSheets));
+            avatarState.inventory.AddItem(CostumeTest.CreateFirstCostume(_tableSheets));
 
             var equippableItems = avatarState.inventory.Items
                 .Select(item => item.item)
@@ -438,7 +438,7 @@ namespace Lib9c.Tests.Model.State
                     as Equipment;
 
                 equipments.Add(equipment.ItemId);
-                avatarState.inventory.AddItem2(equipment);
+                avatarState.inventory.AddItem(equipment);
             }
 
             try

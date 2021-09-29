@@ -7,7 +7,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
-using Lib9c;
 using Libplanet;
 using Nekoyume.Model.State;
 using NCAction = Libplanet.Action.PolymorphicAction<Nekoyume.Action.ActionBase>;
@@ -17,44 +16,52 @@ namespace Nekoyume.BlockChain
     public class BlockPolicy : BlockPolicy<NCAction>
     {
         private static readonly Dictionary<long, HashAlgorithmType> HashAlgorithmTable =
-            new Dictionary<long, HashAlgorithmType>
-            {
-                [0] = HashAlgorithmType.Of<SHA256>(),
-            };
+            new Dictionary<long, HashAlgorithmType> { [0] = HashAlgorithmType.Of<SHA256>() };
         private readonly long _minimumDifficulty;
         private readonly long _difficultyBoundDivisor;
-        private AuthorizedMinersState _authorizedMinersState;
 
         /// <summary>
-        /// Whether to ignore or respect hardcoded policies. If it's turned off
-        /// (by default) older blocks pass some new rules by force.
-        /// Therefore, on the mainnet this should be turned off.
-        /// This option is made mainly due to unit tests.  Turning on this
-        /// option can be useful for tests.
+        /// <para>
+        /// Whether to ignore or respect hardcoded policies.
+        /// </para>
+        /// <para>
+        /// There are several policies where each policy only applies after its corresponding
+        /// hardcoded index.  Turning on this option ignores these hard coded indices and
+        /// applies said policies starting from index 0, the gensis.
+        /// </para>
+        /// <para>
+        /// This is purely for unit testing and should be set to false for production.
+        /// </para>
         /// </summary>
         internal readonly bool IgnoreHardcodedPolicies;
 
-        public BlockPolicy(IAction blockAction,
+        public BlockPolicy(
+            IAction blockAction,
             TimeSpan blockInterval,
             long minimumDifficulty,
             int difficultyBoundDivisor,
-            int maxTransactionsPerBlock,
-            int maxBlockBytes,
-            int maxGenesisBytes,
-            Func<Transaction<NCAction>, BlockChain<NCAction>, bool> doesTransactionFollowPolicy = null
-            )
+            IComparer<IBlockExcerpt> canonicalChainComparer,
+            HashAlgorithmGetter hashAlgorithmGetter,
+            Func<BlockChain<NCAction>, Transaction<NCAction>, TxPolicyViolationException>
+                validateNextBlockTx = null,
+            Func<long, int> getMaxBlockBytes = null,
+            Func<long, int> getMinTransactionsPerBlock = null,
+            Func<long, int> getMaxTransactionsPerBlock = null,
+            Func<long, int> getMaxTransactionsPerSignerPerBlock = null)
             : this(
                 blockAction: blockAction,
                 blockInterval: blockInterval,
                 minimumDifficulty: minimumDifficulty,
                 difficultyBoundDivisor: difficultyBoundDivisor,
-                maxTransactionsPerBlock: maxTransactionsPerBlock,
-                maxBlockBytes: maxBlockBytes,
-                maxGenesisBytes: maxGenesisBytes,
                 ignoreHardcodedPolicies: false,
                 permissionedMiningPolicy: BlockChain.PermissionedMiningPolicy.Mainnet,
-                doesTransactionFollowPolicy: doesTransactionFollowPolicy
-            )
+                canonicalChainComparer: canonicalChainComparer,
+                hashAlgorithmGetter: hashAlgorithmGetter,
+                validateNextBlockTx: validateNextBlockTx,
+                getMaxBlockBytes: getMaxBlockBytes,
+                getMinTransactionsPerBlock: getMinTransactionsPerBlock,
+                getMaxTransactionsPerBlock: getMaxTransactionsPerBlock,
+                getMaxTransactionsPerSignerPerBlock: getMaxTransactionsPerSignerPerBlock)
         {
         }
 
@@ -63,29 +70,28 @@ namespace Nekoyume.BlockChain
             TimeSpan blockInterval,
             long minimumDifficulty,
             int difficultyBoundDivisor,
-            int maxTransactionsPerBlock,
-            int maxBlockBytes,
-            int maxGenesisBytes,
             bool ignoreHardcodedPolicies,
             PermissionedMiningPolicy? permissionedMiningPolicy,
-            Func<Transaction<NCAction>, BlockChain<NCAction>, bool> doesTransactionFollowPolicy = null
-        )
+            IComparer<IBlockExcerpt> canonicalChainComparer,
+            HashAlgorithmGetter hashAlgorithmGetter,
+            Func<BlockChain<NCAction>, Transaction<NCAction>, TxPolicyViolationException>
+                validateNextBlockTx = null,
+            Func<long, int> getMaxBlockBytes = null,
+            Func<long, int> getMinTransactionsPerBlock = null,
+            Func<long, int> getMaxTransactionsPerBlock = null,
+            Func<long, int> getMaxTransactionsPerSignerPerBlock = null)
             : base(
                 blockAction: blockAction,
                 blockInterval: blockInterval,
                 minimumDifficulty: minimumDifficulty,
                 difficultyBoundDivisor: difficultyBoundDivisor,
-                maxTransactionsPerBlock: maxTransactionsPerBlock,
-                maxBlockBytes: maxBlockBytes,
-                maxGenesisBytes: maxGenesisBytes,
-                doesTransactionFollowPolicy: doesTransactionFollowPolicy,
-                canonicalChainComparer: new CanonicalChainComparer(
-                    null,
-                    TimeSpan.FromTicks(blockInterval.Ticks * 10)),
-#pragma warning disable LAA1002
-                hashAlgorithmGetter: HashAlgorithmTable.ToHashAlgorithmGetter()
-#pragma warning restore LAA1002
-            )
+                validateNextBlockTx: validateNextBlockTx,
+                canonicalChainComparer: canonicalChainComparer,
+                hashAlgorithmGetter: hashAlgorithmGetter,
+                getMaxBlockBytes: getMaxBlockBytes,
+                getMinTransactionsPerBlock: getMinTransactionsPerBlock,
+                getMaxTransactionsPerBlock: getMaxTransactionsPerBlock,
+                getMaxTransactionsPerSignerPerBlock: getMaxTransactionsPerSignerPerBlock)
         {
             _minimumDifficulty = minimumDifficulty;
             _difficultyBoundDivisor = difficultyBoundDivisor;
@@ -93,35 +99,27 @@ namespace Nekoyume.BlockChain
             PermissionedMiningPolicy = permissionedMiningPolicy;
         }
 
-        public AuthorizedMinersState AuthorizedMinersState
-        {
-            get => _authorizedMinersState;
-            set
-            {
-                _authorizedMinersState = value;
-                ((CanonicalChainComparer)CanonicalChainComparer).AuthorizedMinersState = value;
-            }
-        }
+        public AuthorizedMinersState AuthorizedMinersState { get; set; }
 
         public PermissionedMiningPolicy? PermissionedMiningPolicy { get; }
 
-        public override InvalidBlockException ValidateNextBlock(
-            BlockChain<NCAction> blocks,
+        public override BlockPolicyViolationException ValidateNextBlock(
+            BlockChain<NCAction> blockChain,
             Block<NCAction> nextBlock
         ) =>
             CheckTxCount(nextBlock)
-            ?? ValidateMinerPermission(nextBlock)
-            ?? ValidateMinerAuthority(nextBlock)
-            ?? base.ValidateNextBlock(blocks, nextBlock);
+                ?? ValidateMinerAuthority(nextBlock)
+                ?? ValidateMinerPermission(nextBlock)
+                ?? base.ValidateNextBlock(blockChain, nextBlock);
 
-        public override long GetNextBlockDifficulty(BlockChain<NCAction> blocks)
+        public override long GetNextBlockDifficulty(BlockChain<NCAction> blockChain)
         {
             if (AuthorizedMinersState is null)
             {
-                return base.GetNextBlockDifficulty(blocks);
+                return base.GetNextBlockDifficulty(blockChain);
             }
 
-            long index = blocks.Count;
+            long index = blockChain.Count;
 
             if (index < 0)
             {
@@ -134,21 +132,21 @@ namespace Nekoyume.BlockChain
                 return index == 0 ? 0 : _minimumDifficulty;
             }
 
-            var prevIndex = IsTargetBlock(index - 1) ? index - 2 : index - 1;
-            var beforePrevIndex = IsTargetBlock(prevIndex - 1) ? prevIndex - 2 : prevIndex - 1;
+            var prevIndex = IsTargetBlockIndex(index - 1) ? index - 2 : index - 1;
+            var beforePrevIndex = IsTargetBlockIndex(prevIndex - 1) ? prevIndex - 2 : prevIndex - 1;
 
             if (beforePrevIndex > AuthorizedMinersState.ValidUntil)
             {
-                return base.GetNextBlockDifficulty(blocks);
+                return base.GetNextBlockDifficulty(blockChain);
             }
 
-            if (IsTargetBlock(index) || prevIndex <= 1 || beforePrevIndex <= 1)
+            if (IsTargetBlockIndex(index) || prevIndex <= 1 || beforePrevIndex <= 1)
             {
                 return _minimumDifficulty;
             }
 
-            var prevBlock = blocks[prevIndex];
-            var beforePrevBlock = blocks[beforePrevIndex];
+            var prevBlock = blockChain[prevIndex];
+            var beforePrevBlock = blockChain[beforePrevIndex];
 
             DateTimeOffset beforePrevTimestamp = beforePrevBlock.Timestamp;
             DateTimeOffset prevTimestamp = prevBlock.Timestamp;
@@ -165,7 +163,7 @@ namespace Nekoyume.BlockChain
             return Math.Max(nextDifficulty, _minimumDifficulty);
         }
 
-        private InvalidBlockException CheckTxCount(Block<NCAction> block)
+        private BlockPolicyViolationException CheckTxCount(Block<NCAction> block)
         {
             if (!(block.Miner is Address miner))
             {
@@ -175,104 +173,115 @@ namespace Nekoyume.BlockChain
             // To prevent selfish mining, we define a consensus that blocks with no transactions are do not accepted.
             // (For backward compatibility, blocks before 2,175,000th don't have to be proven.
             // Note that as of Aug 19, 2021, there are about 2,171,000+ blocks.)
-            if (block.Transactions.Count <= 0 &&
-                (IgnoreHardcodedPolicies || block.Index > 2_173_700))
+            if (block.Transactions.Count <= 0)
             {
-                return new InvalidMinerException(
-                    $"The block #{block.Index} {block.Hash} (mined by {miner}) should " +
-                    "include at least one transaction.",
-                    miner
-                );
+                if (IgnoreHardcodedPolicies)
+                {
+                    return new BlockPolicyViolationException(
+                        $"Block #{block.Index} {block.Hash} mined by {miner} should " +
+                        "include at least one transaction. (Forced failure)");
+                }
+                else if (block.Index > 2_173_700)
+                {
+                    return new BlockPolicyViolationException(
+                        $"Block #{block.Index} {block.Hash} mined by {miner} should " +
+                        "include at least one transaction.");
+                }
             }
 
             return null;
         }
 
-        private InvalidBlockException ValidateMinerPermission(Block<NCAction> block)
+        private BlockPolicyViolationException ValidateMinerPermission(Block<NCAction> block)
         {
             Address miner = block.Miner;
 
-            if (!IgnoreHardcodedPolicies)
-            {
-                return null;
-            }
-
+            // If no permission policy is given, pass validation by default.
             if (!(PermissionedMiningPolicy is PermissionedMiningPolicy policy))
             {
                 return null;
             }
 
-            if (block.Index < policy.Threshold)
+            // Predicate for permission validity.
+            if (!policy.Miners.Contains(miner) || !block.Transactions.Any(t => t.Signer.Equals(miner)))
             {
-                return null;
+                if (IgnoreHardcodedPolicies)
+                {
+                    return new BlockPolicyViolationException(
+                        $"Block #{block.Index} {block.Hash} is not mined by a permissioned miner.  "
+                            + "(Forced failure)");
+                }
+                else if (block.Index >= policy.Threshold)
+                {
+                    return new BlockPolicyViolationException(
+                        $"Block #{block.Index} {block.Hash} is not mined by a permissioned miner.");
+                }
             }
 
-            if (policy.Miners.Contains(miner) && block.Transactions.Any(t => t.Signer.Equals(miner)))
-            {
-                return null;
-            }
-
-            return new InvalidMinerException(
-                $"The block #{block.Index} {block.Hash} is not mined by a permissioned miner.",
-                miner
-            );
+            return null;
         }
 
-        private InvalidBlockException ValidateMinerAuthority(Block<NCAction> block)
+        private BlockPolicyViolationException ValidateMinerAuthority(Block<NCAction> block)
         {
             Address miner = block.Miner;
 
+            // If AuthorizedMinorState is null, do not check miner authority.
             if (AuthorizedMinersState is null)
             {
                 return null;
             }
-
-            if (!IsTargetBlock(block.Index))
+            // Authorized minor validity is only checked for certain indices.
+            else if (!IsTargetBlockIndex(block.Index))
             {
                 return null;
             }
-
-            if (!AuthorizedMinersState.Miners.Contains(miner))
+            // Otherwise, block's miner should be one of the authorized miners.
+            else if (!AuthorizedMinersState.Miners.Contains(miner))
             {
-                return new InvalidMinerException(
-                    $"The block #{block.Index} {block.Hash} is not mined by an authorized miner.",
-                    miner
-                );
+                return new BlockPolicyViolationException(
+                    $"The block #{block.Index} {block.Hash} is not mined by an authorized miner.");
             }
 
             // Authority should be proven through a no-op transaction (= txs with zero actions).
             // (For backward compatibility, blocks before 1,200,000th don't have to be proven.
             // Note that as of Feb 9, 2021, there are about 770,000+ blocks.)
             Transaction<NCAction>[] txs = block.Transactions.ToArray();
-            if (!txs.Any(tx => tx.Signer.Equals(miner) && !tx.Actions.Any()) &&
-                block.ProtocolVersion > 0 &&
-                (IgnoreHardcodedPolicies || block.Index > 1_200_000))
+            if (!txs.Any(tx => tx.Signer.Equals(miner) && !tx.Actions.Any())
+                    && block.ProtocolVersion > 0)
             {
+                if (IgnoreHardcodedPolicies)
+                {
+                    return new BlockPolicyViolationException(
+                        $"Block #{block.Index} {block.Hash}'s miner {miner} should be proven by "
+                            + "including a no-op transaction by signed the same authority.  "
+                            + "(Forced failure)");
+                }
+                else if (block.Index > 1_200_000)
+                {
 #if DEBUG
-                string debug =
-                    "  Note that there " +
-                    (txs.Length == 1 ? "is a transaction:" : $"are {txs.Length} transactions:") +
-                    txs.Select((tx, i) =>
-                            $"\n    {i}. {tx.Actions.Count} actions; signed by {tx.Signer}")
-                        .Aggregate(string.Empty, (a, b) => a + b);
+                    string debug =
+                        "  Note that there " +
+                        (txs.Length == 1 ? "is a transaction:" : $"are {txs.Length} transactions:") +
+                        txs.Select((tx, i) =>
+                                $"\n    {i}. {tx.Actions.Count} actions; signed by {tx.Signer}")
+                            .Aggregate(string.Empty, (a, b) => a + b);
 #else
-            const string debug = "";
+                    const string debug = "";
 #endif
-                return new InvalidMinerException(
-                    $"The block #{block.Index} {block.Hash}'s miner {miner} should be proven by " +
-                    "including a no-op transaction by signed the same authority." + debug,
-                    miner
-                );
+                    return new BlockPolicyViolationException(
+                        $"Block #{block.Index} {block.Hash}'s miner {miner} should be proven by " +
+                        "including a no-op transaction by signed the same authority." + debug);
+                }
             }
 
             return null;
         }
 
-        private bool IsTargetBlock(long blockIndex)
+        private bool IsTargetBlockIndex(long blockIndex)
         {
             return blockIndex > 0
-                   && blockIndex <= AuthorizedMinersState.ValidUntil
-                   && blockIndex % AuthorizedMinersState.Interval == 0;
+                && blockIndex <= AuthorizedMinersState.ValidUntil
+                && blockIndex % AuthorizedMinersState.Interval == 0;
         }
     }
 }

@@ -8,11 +8,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
+using Nekoyume.Model;
 
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("transfer_asset")]
+    [ActionType("transfer_asset2")]
     public class TransferAsset : ActionBase, ISerializable
     {
         private const int MemoMaxLength = 80;
@@ -82,6 +83,21 @@ namespace Nekoyume.Action
             if (context.BlockIndex > 380000 && Sender == Recipient)
             {
                 throw new InvalidTransferRecipientException(Sender, Recipient);
+            }
+
+            Address recipientAddress = Recipient.Derive(ActivationKey.DeriveKey);
+
+            // Check new type of activation first.
+            if (state.GetState(recipientAddress) is null && state.GetState(Addresses.ActivatedAccount) is Dictionary asDict )
+            {
+                var activatedAccountsState = new ActivatedAccountsState(asDict);
+                var activatedAccounts = activatedAccountsState.Accounts;
+                // if ActivatedAccountsState is empty, all user is activate.
+                if (activatedAccounts.Count != 0
+                    && !activatedAccounts.Contains(Recipient))
+                {
+                    throw new InvalidTransferUnactivatedRecipientException(Sender, Recipient);
+                }
             }
 
             Currency currency = Amount.Currency;
