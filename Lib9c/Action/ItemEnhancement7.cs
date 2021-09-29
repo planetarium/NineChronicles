@@ -30,6 +30,42 @@ namespace Nekoyume.Action
         public Address avatarAddress;
         public int slotIndex;
 
+        [Serializable]
+        public class ResultModel : AttachmentActionResult
+        {
+            protected override string TypeId => "itemEnhancement.result";
+            public Guid id;
+            public IEnumerable<Guid> materialItemIdList;
+            public BigInteger gold;
+            public int actionPoint;
+
+            public ResultModel()
+            {
+            }
+
+            public ResultModel(Bencodex.Types.Dictionary serialized)
+                : base(serialized)
+            {
+                id = serialized["id"].ToGuid();
+                materialItemIdList = serialized["materialItemIdList"].ToList(StateExtensions.ToGuid);
+                gold = serialized["gold"].ToBigInteger();
+                actionPoint = serialized["actionPoint"].ToInteger();
+            }
+
+            public override IValue Serialize() =>
+#pragma warning disable LAA1002
+                new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
+                {
+                    [(Text) "id"] = id.Serialize(),
+                    [(Text) "materialItemIdList"] = materialItemIdList
+                        .OrderBy(i => i)
+                        .Select(g => g.Serialize()).Serialize(),
+                    [(Text) "gold"] = gold.Serialize(),
+                    [(Text) "actionPoint"] = actionPoint.Serialize(),
+                }.Union((Bencodex.Types.Dictionary) base.Serialize()));
+#pragma warning restore LAA1002
+        }
+
         public override IAccountStateDelta Execute(IActionContext context)
         {
             IActionContext ctx = context;
@@ -116,7 +152,7 @@ namespace Nekoyume.Action
                 );
             }
 
-            var result = new ItemEnhancement.ResultModel
+            var result = new ResultModel
             {
                 itemUsable = enhancementEquipment,
                 materialItemIdList = new[] { materialId }
@@ -131,7 +167,7 @@ namespace Nekoyume.Action
             }
 
             var enhancementCostSheet = states.GetSheet<EnhancementCostSheet>();
-            var requiredNCG = ItemEnhancement.GetRequiredNCG(enhancementCostSheet, enhancementEquipment.Grade, enhancementEquipment.level + 1);
+            var requiredNCG = GetRequiredNCG(enhancementCostSheet, enhancementEquipment.Grade, enhancementEquipment.level + 1);
 
             avatarState.actionPoint -= requiredAP;
             result.actionPoint = requiredAP;
@@ -203,7 +239,7 @@ namespace Nekoyume.Action
 
             enhancementEquipment.Unequip();
 
-            enhancementEquipment = ItemEnhancement.UpgradeEquipment(enhancementEquipment);
+            enhancementEquipment = UpgradeEquipment(enhancementEquipment);
 
             var requiredBlockIndex = ctx.BlockIndex + RequiredBlockCount;
             enhancementEquipment.Update(requiredBlockIndex);
@@ -221,6 +257,7 @@ namespace Nekoyume.Action
             result.id = mail.id;
 
             avatarState.inventory.RemoveNonFungibleItem(enhancementEquipment);
+
             avatarState.Update(mail);
             avatarState.UpdateFromItemEnhancement2(enhancementEquipment);
 

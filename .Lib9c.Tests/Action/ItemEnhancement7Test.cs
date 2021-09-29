@@ -84,8 +84,8 @@
             var materialId = Guid.NewGuid();
             var material = (Equipment)ItemFactory.CreateItemUsable(row, materialId, 0, level);
 
-            _avatarState.inventory.AddItem2(equipment, count: 1);
-            _avatarState.inventory.AddItem2(material, count: 1);
+            _avatarState.inventory.AddItem(equipment, count: 1);
+            _avatarState.inventory.AddItem(material, count: 1);
 
             var result = new CombinationConsumable5.ResultModel()
             {
@@ -100,7 +100,7 @@
             for (var i = 0; i < 100; i++)
             {
                 var mail = new CombinationMail(result, i, default, 0);
-                _avatarState.Update2(mail);
+                _avatarState.Update(mail);
             }
 
             _avatarState.worldInformation.ClearStage(1, 1, 1, _tableSheets.WorldSheet, _tableSheets.WorldUnlockSheet);
@@ -157,7 +157,7 @@
                 .FirstOrDefault(x => x.Grade == grade && x.Level == resultEquipment.level);
             var stateDict = (Dictionary)nextState.GetState(slotAddress);
             var slot = new CombinationSlotState(stateDict);
-            var slotResult = (ItemEnhancement.ResultModel)slot.Result;
+            var slotResult = (ItemEnhancement7.ResultModel)slot.Result;
 
             Assert.Equal(costRow.Cost, slotResult.gold);
         }

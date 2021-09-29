@@ -5,6 +5,7 @@ namespace Lib9c.Tests.Action
     using System.Runtime.Serialization.Formatters.Binary;
     using Libplanet;
     using Nekoyume.Action;
+    using Nekoyume.Model;
     using Nekoyume.Model.State;
     using Nekoyume.TableData;
     using Xunit;

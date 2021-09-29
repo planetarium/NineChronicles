@@ -449,7 +449,7 @@ namespace Lib9c.Tests.Action
 
             var row = _tableSheets.EquipmentItemSheet.Values.First();
             var itemUsable = ItemFactory.CreateItemUsable(row, default, 0);
-            var result = new ItemEnhancement.ResultModel()
+            var result = new ItemEnhancement7.ResultModel()
             {
                 id = default,
                 materialItemIdList = new[] { guid1, guid2 },
@@ -458,7 +458,7 @@ namespace Lib9c.Tests.Action
                 itemUsable = itemUsable,
             };
 
-            var result2 = new ItemEnhancement.ResultModel()
+            var result2 = new ItemEnhancement7.ResultModel()
             {
                 id = default,
                 materialItemIdList = new[] { guid2, guid1 },

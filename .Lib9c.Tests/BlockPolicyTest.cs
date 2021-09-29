@@ -38,7 +38,7 @@ namespace Lib9c.Tests
         }
 
         [Fact]
-        public async Task DoesTransactionFollowsPolicy()
+        public async Task ValidateNextBlockTx()
         {
             var adminPrivateKey = new PrivateKey();
             var adminAddress = adminPrivateKey.ToAddress();
@@ -70,7 +70,7 @@ namespace Lib9c.Tests
                 );
 
             // New private key which is not in activated addresses list is blocked.
-            Assert.False(policy.DoesTransactionFollowsPolicy(txByStranger, blockChain));
+            Assert.NotNull(policy.ValidateNextBlockTx(blockChain, txByStranger));
 
             var newActivatedPrivateKey = new PrivateKey();
             var newActivatedAddress = newActivatedPrivateKey.ToAddress();
@@ -91,7 +91,7 @@ namespace Lib9c.Tests
                 );
 
             // Test success because the key is activated.
-            Assert.True(policy.DoesTransactionFollowsPolicy(txByNewActivated, blockChain));
+            Assert.Null(policy.ValidateNextBlockTx(blockChain, txByNewActivated));
 
             var singleAction = new PolymorphicAction<ActionBase>[]
             {
@@ -118,12 +118,12 @@ namespace Lib9c.Tests
                 );
 
             // Transaction with more than two actions is rejected.
-            Assert.True(policy.DoesTransactionFollowsPolicy(txWithSingleAction, blockChain));
-            Assert.False(policy.DoesTransactionFollowsPolicy(txWithManyActions, blockChain));
+            Assert.Null(policy.ValidateNextBlockTx(blockChain, txWithSingleAction));
+            Assert.NotNull(policy.ValidateNextBlockTx(blockChain, txWithManyActions));
         }
 
         [Fact]
-        public void DoesTransactionFollowsPolicyWithAuthorizedMiners()
+        public void ValidateNextBlockTxWithAuthorizedMiners()
         {
             var adminPrivateKey = new PrivateKey();
             var adminAddress = adminPrivateKey.ToAddress();
@@ -168,7 +168,7 @@ namespace Lib9c.Tests
                 );
 
             // Deny tx even if contains valid activation key.
-            Assert.False(policy.DoesTransactionFollowsPolicy(txFromAuthorizedMiner, blockChain));
+            Assert.NotNull(policy.ValidateNextBlockTx(blockChain, txFromAuthorizedMiner));
         }
 
         [Fact]
@@ -320,7 +320,7 @@ namespace Lib9c.Tests
             );
             await blockChain.MineBlock(stranger);
 
-            await Assert.ThrowsAsync<InvalidMinerException>(async () =>
+            await Assert.ThrowsAsync<BlockPolicyViolationException>(async () =>
             {
                 await blockChain.MineBlock(stranger);
             });
@@ -340,7 +340,7 @@ namespace Lib9c.Tests
                 new PolymorphicAction<ActionBase>[] { new DailyReward(), }
             );
             // it isn't :(
-            await Assert.ThrowsAsync<InvalidMinerException>(async () =>
+            await Assert.ThrowsAsync<BlockPolicyViolationException>(async () =>
             {
                 await blockChain.MineBlock(stranger);
             });
@@ -350,7 +350,7 @@ namespace Lib9c.Tests
                 new PolymorphicAction<ActionBase>[] { new DailyReward(), }
             );
             // the authorization block should be proved by a proof tx
-            await Assert.ThrowsAsync<InvalidMinerException>(
+            await Assert.ThrowsAsync<BlockPolicyViolationException>(
                 async () => await blockChain.MineBlock(miners[1])
             );
 
@@ -362,7 +362,7 @@ namespace Lib9c.Tests
                 new PolymorphicAction<ActionBase>[0]
             );
             blockChain.StageTransaction(othersProof);
-            await Assert.ThrowsAsync<InvalidMinerException>(
+            await Assert.ThrowsAsync<BlockPolicyViolationException>(
                 async () => await blockChain.MineBlock(miners[1])
             );
 
@@ -377,7 +377,7 @@ namespace Lib9c.Tests
                 new[] { action }
             );
             blockChain.StageTransaction(nonEmptyProof);
-            await Assert.ThrowsAsync<InvalidMinerException>(
+            await Assert.ThrowsAsync<BlockPolicyViolationException>(
                 async () => await blockChain.MineBlock(miners[1])
             );
 
@@ -607,13 +607,13 @@ namespace Lib9c.Tests
         }
 
         [Fact]
-        public async Task PermisionedBlockPolicy()
+        public async Task PermissionedBlockPolicy()
         {
+            // This creates genesis with _privateKey as its miner.
             Block<PolymorphicAction<ActionBase>> genesis = MakeGenesisBlock(
                 default(Address),
-                ImmutableHashSet<Address>.Empty
-            );
-            var permissionedMinerKey = new PrivateKey();
+                ImmutableHashSet<Address>.Empty);
+            var permissionedMinerKey = _privateKey;
             var nonPermissionedMinerKey = new PrivateKey();
             using var store = new DefaultStore(null);
             using var stateStore = new TrieStateStore(new DefaultKeyValueStore(null), new DefaultKeyValueStore(null));
@@ -638,8 +638,10 @@ namespace Lib9c.Tests
                 renderers: new[] { blockPolicySource.BlockRenderer }
             );
 
+            // Since activation transaction is attached to _privateKey,
+            // Next nonce is 1.
             blockChain.StageTransaction(Transaction<PolymorphicAction<ActionBase>>.Create(
-                0,
+                1,
                 permissionedMinerKey,
                 genesis.Hash,
                 new PolymorphicAction<ActionBase>[] { }
@@ -647,7 +649,8 @@ namespace Lib9c.Tests
             await blockChain.MineBlock(permissionedMinerKey.ToAddress());
 
             // Error, there is no proof tx.
-            await Assert.ThrowsAsync<InvalidMinerException>(() => blockChain.MineBlock(permissionedMinerKey.ToAddress()));
+            await Assert.ThrowsAsync<BlockPolicyViolationException>(
+                () => blockChain.MineBlock(permissionedMinerKey.ToAddress()));
 
             // Error, it's invalid proof
             blockChain.StageTransaction(Transaction<PolymorphicAction<ActionBase>>.Create(
@@ -656,10 +659,12 @@ namespace Lib9c.Tests
                 genesis.Hash,
                 new PolymorphicAction<ActionBase>[] { }
             ));
-            await Assert.ThrowsAsync<InvalidMinerException>(() => blockChain.MineBlock(permissionedMinerKey.ToAddress()));
+            await Assert.ThrowsAsync<BlockPolicyViolationException>(
+                () => blockChain.MineBlock(permissionedMinerKey.ToAddress()));
 
             // Error, it isn't permissioned miner.
-            await Assert.ThrowsAsync<InvalidMinerException>(() => blockChain.MineBlock(nonPermissionedMinerKey.ToAddress()));
+            await Assert.ThrowsAsync<BlockPolicyViolationException>(
+                () => blockChain.MineBlock(nonPermissionedMinerKey.ToAddress()));
         }
 
         private Block<PolymorphicAction<ActionBase>> MakeGenesisBlock(
@@ -706,6 +711,10 @@ namespace Lib9c.Tests
 
             public void ForkStates<T>(Guid sourceChainId, Guid destinationChainId, Block<T> branchpoint)
                 where T : IAction, new()
+            {
+            }
+
+            public void Dispose()
             {
             }
         }

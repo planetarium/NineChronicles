@@ -1,4 +1,4 @@
-﻿namespace Lib9c.Tests.Action
+namespace Lib9c.Tests.Action
 {
     using System.Collections.Generic;
     using System.Collections.Immutable;
@@ -86,12 +86,12 @@
             var row = _tableSheets.EquipmentItemRecipeSheet[109];
             var materialRow = _tableSheets.MaterialItemSheet[row.MaterialId];
             var material = ItemFactory.CreateItem(materialRow, _random);
-            _avatarState.inventory.AddItem2(material, count: row.MaterialCount);
+            _avatarState.inventory.AddItem(material, count: row.MaterialCount);
 
             foreach (var materialInfo in _tableSheets.EquipmentItemSubRecipeSheet[255].Materials)
             {
                 var subMaterial = ItemFactory.CreateItem(_tableSheets.MaterialItemSheet[materialInfo.Id], _random);
-                _avatarState.inventory.AddItem2(subMaterial, count: materialInfo.Count);
+                _avatarState.inventory.AddItem(subMaterial, count: materialInfo.Count);
             }
 
             const int requiredStage = 19;
@@ -123,7 +123,7 @@
             for (var i = 0; i < 100; i++)
             {
                 var mail = new CombinationMail(result, i, default, 0);
-                _avatarState.Update2(mail);
+                _avatarState.Update(mail);
             }
 
             if (backward)
@@ -139,7 +139,7 @@
                     .SetState(_avatarAddress, _avatarState.SerializeV2());
             }
 
-            var action = new CombinationEquipment6()
+            var action = new CombinationEquipment6
             {
                 AvatarAddress = _avatarAddress,
                 RecipeId = row.Id,
@@ -147,7 +147,7 @@
                 SubRecipeId = 255,
             };
 
-            var nextState = action.Execute(new ActionContext()
+            var nextState = action.Execute(new ActionContext
             {
                 PreviousStates = _initialState,
                 Signer = _agentAddress,
@@ -179,12 +179,12 @@
             var row = _tableSheets.EquipmentItemRecipeSheet[2];
             var materialRow = _tableSheets.MaterialItemSheet[row.MaterialId];
             var material = ItemFactory.CreateItem(materialRow, _random);
-            _avatarState.inventory.AddItem2(material, count: row.MaterialCount);
+            _avatarState.inventory.AddItem(material, count: row.MaterialCount);
 
             foreach (var materialInfo in _tableSheets.EquipmentItemSubRecipeSheet[3].Materials)
             {
                 var subMaterial = ItemFactory.CreateItem(_tableSheets.MaterialItemSheet[materialInfo.Id], _random);
-                _avatarState.inventory.AddItem2(subMaterial, count: materialInfo.Count);
+                _avatarState.inventory.AddItem(subMaterial, count: materialInfo.Count);
             }
 
             const int requiredStage = 11;
@@ -201,7 +201,7 @@
 
             _initialState = _initialState.SetState(_avatarAddress, _avatarState.Serialize());
 
-            var action = new CombinationEquipment6()
+            var action = new CombinationEquipment6
             {
                 AvatarAddress = _avatarAddress,
                 RecipeId = row.Id,
@@ -220,7 +220,7 @@
         [Fact]
         public void Rehearsal()
         {
-            var action = new CombinationEquipment6()
+            var action = new CombinationEquipment6
             {
                 AvatarAddress = _avatarAddress,
                 RecipeId = 1,
@@ -235,7 +235,7 @@
                 )
             );
 
-            var updatedAddresses = new List<Address>()
+            var updatedAddresses = new List<Address>
             {
                 _agentAddress,
                 _avatarAddress,
@@ -248,7 +248,7 @@
 
             var state = new State();
 
-            var nextState = action.Execute(new ActionContext()
+            var nextState = action.Execute(new ActionContext
             {
                 PreviousStates = state,
                 Signer = _agentAddress,
