@@ -57,10 +57,9 @@ namespace Lib9c.Benchmarks
             }
 
             DateTimeOffset started = DateTimeOffset.UtcNow;
-            Block<NCAction> genesis = store.GetBlock<NCAction>(gHash);
-            IKeyValueStore stateRootKeyValueStore = new RocksDBKeyValueStore(Path.Combine(storePath, "state_hashes")),
-                stateKeyValueStore = new RocksDBKeyValueStore(Path.Combine(storePath, "states"));
-            var stateStore = new TrieStateStore(stateKeyValueStore, stateRootKeyValueStore);
+            Block<NCAction> genesis = store.GetBlock<NCAction>(policy.GetHashAlgorithm, gHash);
+            IKeyValueStore stateKeyValueStore = new RocksDBKeyValueStore(Path.Combine(storePath, "states"));
+            var stateStore = new TrieStateStore(stateKeyValueStore);
             var chain = new BlockChain<NCAction>(policy, stagePolicy, store, stateStore, genesis);
             long height = chain.Tip.Index;
             BlockHash[] blockHashes = limit < 0
@@ -87,7 +86,14 @@ namespace Lib9c.Benchmarks
 
                 IEnumerable<ActionEvaluation> blockEvals =
                 chain.ExecuteActions(block, StateCompleterSet<NCAction>.Reject);
-                SetStates(chain.Id, stateStore, block, blockEvals.ToArray(), buildStateReferences: true);
+                SetStates(
+                    chain.Id,
+                    store,
+                    stateStore,
+                    block,
+                    blockEvals.ToArray(),
+                    buildStateReferences: true
+                );
                 txs += block.Transactions.LongCount();
                 actions += block.Transactions.Sum(tx => tx.Actions.LongCount()) + 1;
             }
@@ -105,6 +111,7 @@ namespace Lib9c.Benchmarks
         // Copied from BlockChain<T>.SetStates().
         private static void SetStates(
             Guid chainId,
+            IStore store,
             IStateStore stateStore,
             Block<NCAction> block,
             IReadOnlyList<ActionEvaluation> actionEvaluations,
@@ -119,10 +126,11 @@ namespace Lib9c.Benchmarks
                     .SelectMany(kv => kv.Value.Select(c => (kv.Key, c))))
                 .ToImmutableHashSet();
 
-            if (!stateStore.ContainsBlockStates(block.Hash))
+            if (!stateStore.ContainsStateRoot(block.StateRootHash))
             {
+                HashDigest<SHA256>? prevStateRootHash = store.GetStateRootHash(block.PreviousHash);
                 var totalDelta = GetTotalDelta(actionEvaluations, ToStateKey, ToFungibleAssetKey);
-                stateStore.SetStates(block, totalDelta);
+                stateStore.Commit(prevStateRootHash, totalDelta);
             }
         }
 
