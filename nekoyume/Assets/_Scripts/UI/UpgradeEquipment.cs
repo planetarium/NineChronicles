@@ -309,7 +309,7 @@ namespace Nekoyume.UI
             var sheet = Game.Game.instance.TableSheets.EnhancementCostSheetV2;
             if (ItemEnhancement.TryGetRow(_baseItem, sheet, out var row))
             {
-                slots.SetCaching(slotIndex, true, row.SuccessRequiredBlockIndex, itemUsable:_baseItem);
+                slots.SetCaching(slotIndex, true, row.SuccessRequiredBlockIndex, _baseItem);
             }
 
             LocalLayerModifier.ModifyAgentGold(agentAddress, -_costNcg);

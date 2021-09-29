@@ -31,35 +31,14 @@ namespace Nekoyume.UI
                     if (combinationMail.attachment.itemUsable is Equipment equipment)
                     {
                         if (combinationMail.attachment is CombinationConsumable5.ResultModel result &&
-                            result.subRecipeId.HasValue)
-                        {
-                            if (Game.Game.instance.TableSheets.EquipmentItemSubRecipeSheetV2 is null)
-                            {
-                                if (Game.Game.instance.TableSheets.EquipmentItemSubRecipeSheet.TryGetValue(
-                                    result.subRecipeId.Value,
-                                    out var row))
-                                {
-                                    formatKey = equipment.optionCountFromCombination == row.Options.Count
-                                        ? "UI_COMBINATION_NOTIFY_FORMAT_GREATER"
-                                        : "UI_COMBINATION_NOTIFY_FORMAT";
-                                }
-                                else
-                                {
-                                    formatKey = "UI_COMBINATION_NOTIFY_FORMAT";
-                                }
-                            }
-                            else if (Game.Game.instance.TableSheets.EquipmentItemSubRecipeSheetV2.TryGetValue(
+                            result.subRecipeId.HasValue &&
+                            Game.Game.instance.TableSheets.EquipmentItemSubRecipeSheetV2.TryGetValue(
                                 result.subRecipeId.Value,
                                 out var row))
-                            {
-                                formatKey = equipment.optionCountFromCombination == row.Options.Count
-                                    ? "UI_COMBINATION_NOTIFY_FORMAT_GREATER"
-                                    : "UI_COMBINATION_NOTIFY_FORMAT";
-                            }
-                            else
-                            {
-                                formatKey = "UI_COMBINATION_NOTIFY_FORMAT";
-                            }
+                        {
+                            formatKey = equipment.optionCountFromCombination == row.Options.Count
+                                ? "UI_COMBINATION_NOTIFY_FORMAT_GREATER"
+                                : "UI_COMBINATION_NOTIFY_FORMAT";
                         }
                         else
                         {

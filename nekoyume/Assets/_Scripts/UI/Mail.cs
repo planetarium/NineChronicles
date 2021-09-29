@@ -163,7 +163,7 @@ namespace Nekoyume.UI
 
         private void UpdateMailList(long blockIndex)
         {
-            var list = GetAvailableMailList(blockIndex, tabState)?.ToList();
+            var list = GetAvailableMailList(blockIndex, tabState);
 
             if (list is null)
             {
@@ -178,7 +178,7 @@ namespace Nekoyume.UI
         private void OnReceivedTutorialEquipment()
         {
             var tutorialController = Game.Game.instance.Stage.TutorialController;
-            tutorialController.GetTutorialProgress();
+            var tutorialProgress = tutorialController.GetTutorialProgress();
             if (tutorialController.CurrentlyPlayingId < 37)
             {
                 tutorialController.Stop(() => tutorialController.Play(37));
@@ -195,15 +195,15 @@ namespace Nekoyume.UI
 
             var list = GetAvailableMailList(blockIndex.Value, MailTabState.Workshop);
             var recent = list?.FirstOrDefault();
-            workshopButton.HasNotification.Value = recent is { New: true };
+            workshopButton.HasNotification.Value = recent is null ? false : recent.New;
 
             list = GetAvailableMailList(blockIndex.Value, MailTabState.Market);
             recent = list?.FirstOrDefault();
-            marketButton.HasNotification.Value = recent is { New: true };
+            marketButton.HasNotification.Value = recent is null ? false : recent.New;
 
             list = GetAvailableMailList(blockIndex.Value, MailTabState.System);
             recent = list?.FirstOrDefault();
-            systemButton.HasNotification.Value = recent is { New: true };
+            systemButton.HasNotification.Value = recent is null ? false : recent.New;
         }
 
         private void SetList(MailBox mailBox)
@@ -231,14 +231,15 @@ namespace Nekoyume.UI
 
         public void Read(CombinationMail mail)
         {
-            var itemUsable = mail?.attachment?.itemUsable;
-            if (itemUsable is null)
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+            var attachment = (CombinationConsumable5.ResultModel) mail.attachment;
+            if (attachment.itemUsable is null)
             {
                 Debug.LogError("CombinationMail.itemUsable is null");
                 return;
             }
 
-            var avatarAddress = States.Instance.CurrentAvatarState.address;
+            var itemUsable = attachment.itemUsable;
 
             // LocalLayer
             UniTask.Run(() =>
@@ -263,19 +264,13 @@ namespace Nekoyume.UI
             });
             // ~LocalLayer
 
-            if (mail.attachment is CombinationConsumable5.ResultModel resultModel)
+            if (mail.attachment is CombinationConsumable5.ResultModel resultModel &&
+                resultModel.subRecipeId.HasValue &&
+                Game.Game.instance.TableSheets.EquipmentItemSubRecipeSheetV2.TryGetValue(
+                    resultModel.subRecipeId.Value,
+                    out var row))
             {
-                if (resultModel.subRecipeId.HasValue &&
-                    Game.Game.instance.TableSheets.EquipmentItemSubRecipeSheetV2.TryGetValue(
-                        resultModel.subRecipeId.Value,
-                        out var row))
-                {
-                    Find<CombinationResult>().Show(itemUsable, row.Options.Count);
-                }
-                else
-                {
-                    Find<CombinationResult>().Show(itemUsable);
-                }
+                Find<CombinationResult>().Show(itemUsable, row.Options.Count);
             }
         }
 
@@ -344,14 +339,15 @@ namespace Nekoyume.UI
 
         public void Read(ItemEnhanceMail itemEnhanceMail)
         {
-            var itemUsable = itemEnhanceMail?.attachment?.itemUsable;
-            if (itemUsable is null)
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+            var attachment = (ItemEnhancement.ResultModel) itemEnhanceMail.attachment;
+            if (attachment.itemUsable is null)
             {
                 Debug.LogError("ItemEnhanceMail.itemUsable is null");
                 return;
             }
 
-            var avatarAddress = States.Instance.CurrentAvatarState.address;
+            var itemUsable = attachment.itemUsable;
 
             // LocalLayer
             UniTask.Run(() =>

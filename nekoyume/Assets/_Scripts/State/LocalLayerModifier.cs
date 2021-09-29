@@ -483,6 +483,12 @@ namespace Nekoyume.State
                 outAvatarState.dailyRewardReceivedIndex);
         }
 
+        public static void RemoveAvatarItemRequiredIndex(Address avatarAddress, Guid tradableId)
+        {
+            var modifier = new AvatarItemRequiredIndexModifier(tradableId);
+            LocalLayer.Instance.Remove(avatarAddress, modifier);
+        }
+
         public static void AddWorld(Address avatarAddress, int worldId)
         {
             var modifier = new AvatarWorldInformationAddWorldModifier(worldId);

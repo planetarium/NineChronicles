@@ -3,11 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.EnumType;
+using UniRx;
 using UnityEngine;
 
 namespace Nekoyume.UI
 {
-    using UniRx;
     public class Widget : MonoBehaviour
     {
         protected enum AnimationStateType
@@ -40,8 +40,7 @@ namespace Nekoyume.UI
         /// AnimationState 캡슐화가 깨지는 setter를 사용하지 않도록 한다.
         /// BottomMenu에서만 예외적으로 사용하고 있는데, 이를 Widget 안으로 옮긴 후에 setter를 private으로 변경한다.
         /// </summary>
-        protected ReactiveProperty<AnimationStateType> AnimationState { get; set; } =
-            new ReactiveProperty<AnimationStateType>(AnimationStateType.Closed);
+        protected AnimationStateType AnimationState { get; set; } = AnimationStateType.Closed;
 
         private readonly Subject<Widget> _onEnableSubject = new Subject<Widget>();
         private readonly Subject<Widget> _onDisableSubject = new Subject<Widget>();
@@ -69,7 +68,7 @@ namespace Nekoyume.UI
 
         public IObservable<Widget> OnDisableObservable => _onDisableSubject;
 
-        public virtual bool CanHandleInputEvent => AnimationState.Value == AnimationStateType.Shown;
+        public virtual bool CanHandleInputEvent => AnimationState == AnimationStateType.Shown;
 
         protected bool CanClose => CanHandleInputEvent;
 
@@ -82,18 +81,6 @@ namespace Nekoyume.UI
 
             CloseWidget = () => Close();
             SubmitWidget = null;
-
-            AnimationState.Subscribe(stateType =>
-            {
-                var fields = GetType().GetFields(System.Reflection.BindingFlags.NonPublic |
-                                                 System.Reflection.BindingFlags.Instance);
-                foreach (var selectable in fields.Select(field => field.GetValue(this))
-                    .Where(field => field is UnityEngine.UI.Selectable))
-                {
-                    ((UnityEngine.UI.Selectable) selectable).interactable =
-                        stateType == AnimationStateType.Shown;
-                }
-            }).AddTo(gameObject);
         }
 
         protected virtual void Update()
@@ -293,12 +280,12 @@ namespace Nekoyume.UI
                     WidgetType.Screen);
             }
 
-            AnimationState.Value = AnimationStateType.Showing;
+            AnimationState = AnimationStateType.Showing;
             gameObject.SetActive(true);
 
             if (!Animator || ignoreShowAnimation)
             {
-                AnimationState.Value = AnimationStateType.Shown;
+                AnimationState = AnimationStateType.Shown;
                 return;
             }
 
@@ -326,11 +313,11 @@ namespace Nekoyume.UI
             {
                 OnCompleteOfCloseAnimation();
                 gameObject.SetActive(false);
-                AnimationState.Value = AnimationStateType.Closed;
+                AnimationState = AnimationStateType.Closed;
                 return;
             }
 
-            AnimationState.Value = AnimationStateType.Closing;
+            AnimationState = AnimationStateType.Closing;
             // TODO : wait close animation
             if (!(_coClose is null))
             {
@@ -392,7 +379,7 @@ namespace Nekoyume.UI
             }
 
             gameObject.SetActive(false);
-            AnimationState.Value = AnimationStateType.Closed;
+            AnimationState = AnimationStateType.Closed;
         }
 
         private IEnumerator CoCompleteCloseAnimation()
@@ -401,7 +388,7 @@ namespace Nekoyume.UI
             if (!IsCloseAnimationCompleted)
             {
                 IsCloseAnimationCompleted = true;
-                AnimationState.Value = AnimationStateType.Closed;
+                AnimationState = AnimationStateType.Closed;
             }
         }
 
@@ -410,7 +397,7 @@ namespace Nekoyume.UI
         private void OnCompleteOfShowAnimation()
         {
             OnCompleteOfShowAnimationInternal();
-            AnimationState.Value = AnimationStateType.Shown;
+            AnimationState = AnimationStateType.Shown;
         }
 
         protected virtual void OnCompleteOfShowAnimationInternal()

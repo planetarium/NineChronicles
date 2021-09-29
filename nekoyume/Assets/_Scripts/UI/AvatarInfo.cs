@@ -185,12 +185,6 @@ namespace Nekoyume.UI
             IsTweenEnd.Value = false;
         }
 
-        protected override void OnCompleteOfCloseAnimationInternal()
-        {
-            _player?.gameObject.SetActive(false);
-            _player = null;
-        }
-
         #endregion
 
         public void Show(AvatarState avatarState, bool ignoreShowAnimation = false)
@@ -203,7 +197,10 @@ namespace Nekoyume.UI
                 blur.Show();
             }
 
-            CreatePlayer(avatarState);
+            if (_player == null)
+            {
+                CreatePlayer(avatarState);
+            }
             _player.gameObject.SetActive(true);
 
             UpdateSlotView(avatarState);

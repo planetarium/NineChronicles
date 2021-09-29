@@ -185,43 +185,6 @@ namespace Nekoyume.UI.Module
             UpdateView();
         }
 
-        public void SetDataExceptOptionTag(TViewModel model)
-        {
-            if (model is null)
-            {
-                Clear();
-                return;
-            }
-
-            ItemSheet.Row row;
-
-            row = Game.Game.instance.TableSheets.ItemSheet.Values
-                .FirstOrDefault(r => r.Id == model.ItemBase.Value.Id);
-
-            if (row is null)
-            {
-                throw new ArgumentOutOfRangeException(nameof(ItemSheet.Row),
-                    model.ItemBase.Value.Id, null);
-            }
-
-            base.SetData(row);
-
-            var viewData = base.itemViewData.GetItemViewData(row.Grade);
-            enhancementImage.GetComponent<Image>().material = viewData.EnhancementMaterial;
-
-            _disposablesAtSetData.DisposeAllAndClear();
-            Model = model;
-            Model.GradeEnabled.SubscribeTo(gradeImage).AddTo(_disposablesAtSetData);
-            Model.Enhancement.SubscribeTo(enhancementText).AddTo(_disposablesAtSetData);
-            Model.EnhancementEnabled.SubscribeTo(enhancementText).AddTo(_disposablesAtSetData);
-            Model.EnhancementEffectEnabled
-                .Subscribe(x => enhancementImage.gameObject.SetActive(x))
-                .AddTo(_disposablesAtSetData);
-            Model.Dimmed.SubscribeTo(disable).AddTo(_disposablesAtSetData);
-            Model.Selected.SubscribeTo(selection).AddTo(_disposablesAtSetData);
-            UpdateView();
-        }
-
         public virtual void SetToUnknown()
         {
             Clear();

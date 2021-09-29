@@ -122,7 +122,7 @@ namespace Nekoyume.UI
         public bool HasNotification => itemRecipe.HasNotification;
 
         public override bool CanHandleInputEvent => State.Value == StateType.CombinationConfirm
-            ? AnimationState.Value == AnimationStateType.Shown
+            ? AnimationState == AnimationStateType.Shown
             : base.CanHandleInputEvent;
 
         #region Override
@@ -569,12 +569,12 @@ namespace Nekoyume.UI
 
         public void OnTweenRecipe()
         {
-            AnimationState.Value = AnimationStateType.Showing;
+            AnimationState = AnimationStateType.Showing;
         }
 
         public void OnTweenRecipeCompleted()
         {
-            AnimationState.Value = AnimationStateType.Shown;
+            AnimationState = AnimationStateType.Shown;
         }
 
         private void SubscribeSlotStates(Dictionary<Address, CombinationSlotState> states)

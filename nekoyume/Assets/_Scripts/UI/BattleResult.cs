@@ -483,7 +483,6 @@ namespace Nekoyume.UI
                 floatTimeMinusOne = limitSeconds - 1f;
             }
 
-            StopVFX();
             switch (SharedModel.NextState)
             {
                 case NextState.GoToMain:

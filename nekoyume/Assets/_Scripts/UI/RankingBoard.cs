@@ -77,6 +77,7 @@ namespace Nekoyume.UI
 
         private Nekoyume.Model.State.RankingInfo[] _avatarRankingStates;
         private NPC _npc;
+        private Player _player;
 
         private readonly ReactiveProperty<StateType> _state =
             new ReactiveProperty<StateType>(StateType.Arena);
@@ -165,7 +166,8 @@ namespace Nekoyume.UI
 
             var stage = Game.Game.instance.Stage;
             stage.LoadBackground("ranking");
-            stage.GetPlayer().gameObject.SetActive(false);
+            _player = stage.GetPlayer();
+            _player.gameObject.SetActive(false);
 
             var go = Game.Game.instance.Stage.npcFactory.Create(
                 NPCId,
@@ -399,17 +401,11 @@ namespace Nekoyume.UI
 
         private void OnClickChallenge(ArenaRankCell arenaRankCell)
         {
-            var currentAvatarInventory = States.Instance.CurrentAvatarState.inventory;
-
             //TODO 소모품장착
             Game.Game.instance.ActionManager.RankingBattle(
                 arenaRankCell.ArenaInfo.AvatarAddress,
-                currentAvatarInventory.Costumes
-                    .Where(i => i.equipped)
-                    .Select(i => i.ItemId).ToList(),
-                currentAvatarInventory.Equipments
-                    .Where(i => i.equipped)
-                    .Select(i => i.ItemId).ToList(),
+                _player.Costumes.Select(i => i.ItemId).ToList(),
+                _player.Equipments.Select(i => i.ItemId).ToList(),
                 new List<Guid>()
             );
             Find<ArenaBattleLoadingScreen>().Show(arenaRankCell.ArenaInfo);
@@ -504,14 +500,9 @@ namespace Nekoyume.UI
                         return (0, null);
                     }
 
-                    var arenaInfo = tuple.arenaInfo;
-#pragma warning disable 618
-                    arenaInfo.Level = avatarState.level;
-                    arenaInfo.ArmorId = avatarState.TryGetEquippedFullCostume(out var fullCostume)
-                        ? fullCostume.Id
-                        : avatarState.GetArmorId();
-                    arenaInfo.CombatPoint = avatarState.GetCP();
-#pragma warning restore 618
+                    var characterSheet = Game.Game.instance.TableSheets.CharacterSheet;
+                    var costumeStatSheet = Game.Game.instance.TableSheets.CostumeStatSheet;
+                    tuple.arenaInfo.Update(avatarState, characterSheet, costumeStatSheet);
                     return tuple;
                 })
                 .Where(tuple => tuple.rank > 0)
