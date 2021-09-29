@@ -146,6 +146,7 @@ namespace Lib9c.Tests
                 minimumDifficulty: 10000,
                 maxTransactionsPerBlock: 100,
                 minTransactionsPerBlockPolicy: null,
+                maxTransactionsPerSignerPerBlockPolicy: null,
                 authorizedMiningPolicy: authorizedMiningPolicy,
                 authorizedMiningNoOpTxPolicy: null,
                 permissionedMiningPolicy: null);
@@ -297,6 +298,7 @@ namespace Lib9c.Tests
                 10000,
                 100,
                 minTransactionsPerBlockPolicy: null,
+                maxTransactionsPerSignerPerBlockPolicy: null,
                 authorizedMiningPolicy: authorizedMiningPolicy,
                 authorizedMiningNoOpTxPolicy: authorizedMiningNoOpTxPolicy,
                 permissionedMiningPolicy: null);
@@ -413,6 +415,7 @@ namespace Lib9c.Tests
                 minimumDifficulty: 4096,
                 maxTransactionsPerBlock: 100,
                 minTransactionsPerBlockPolicy: null,
+                maxTransactionsPerSignerPerBlockPolicy: null,
                 authorizedMiningPolicy: authorizedMiningPolicy,
                 authorizedMiningNoOpTxPolicy: null,
                 permissionedMiningPolicy: null);
@@ -646,6 +649,7 @@ namespace Lib9c.Tests
                     minimumDifficulty: 50_000,
                     maxTransactionsPerBlock: 100,
                     minTransactionsPerBlockPolicy: null,
+                    maxTransactionsPerSignerPerBlockPolicy: null,
                     authorizedMiningPolicy: null,
                     authorizedMiningNoOpTxPolicy: null,
                     permissionedMiningPolicy: new PermissionedMiningPolicy(

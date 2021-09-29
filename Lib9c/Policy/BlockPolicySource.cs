@@ -100,6 +100,7 @@ namespace Nekoyume.BlockChain.Policy
             GetPolicy(
                 minimumDifficulty,
                 maxTransactionsPerBlock,
+                maxTransactionsPerSignerPerBlockPolicy: MaxTransactionsPerSignerPerBlockPolicy.Mainnet,
                 minTransactionsPerBlockPolicy: MinTransactionsPerBlockPolicy.Mainnet,
                 authorizedMiningPolicy: AuthorizedMiningPolicy.Mainnet,
                 authorizedMiningNoOpTxPolicy: AuthorizedMiningNoOpTxPolicy.Mainnet,
@@ -122,6 +123,7 @@ namespace Nekoyume.BlockChain.Policy
             int minimumDifficulty,
             int maxTransactionsPerBlock,
             MinTransactionsPerBlockPolicy? minTransactionsPerBlockPolicy,
+            MaxTransactionsPerSignerPerBlockPolicy? maxTransactionsPerSignerPerBlockPolicy,
             AuthorizedMiningPolicy? authorizedMiningPolicy,
             AuthorizedMiningNoOpTxPolicy? authorizedMiningNoOpTxPolicy,
             PermissionedMiningPolicy? permissionedMiningPolicy)
@@ -165,6 +167,8 @@ namespace Nekoyume.BlockChain.Policy
                 minTransactionsPerBlockPolicy);
             var getMaxTransactionsPerBlock = GetMaxTransactionsPerBlockFactory(
                 maxTransactionsPerBlock);
+            var getMaxTransactionsPerSignerPerBlock = GetMaxTransactionsPerSignerPerBlockFactory(
+                maxTransactionsPerSignerPerBlockPolicy);
             var isAllowedToMine = IsAllowedToMineFactory(
                 IsAuthorizedMiningBlockIndexFactory(authorizedMiningPolicy),
                 IsAuthorizedToMineFactory(authorizedMiningPolicy),
@@ -186,7 +190,7 @@ namespace Nekoyume.BlockChain.Policy
                 getMaxBlockBytes: GetMaxBlockBytes,
                 getMinTransactionsPerBlock: getMinTransactionsPerBlock,
                 getMaxTransactionsPerBlock: getMaxTransactionsPerBlock,
-                getMaxTransactionsPerSignerPerBlock: GetMaxTransactionsPerSignerPerBlock,
+                getMaxTransactionsPerSignerPerBlock: getMaxTransactionsPerSignerPerBlock,
                 getNextBlockDifficulty: getNextBlockDifficulty,
                 isAllowedToMine: isAllowedToMine);
 #endif
@@ -374,11 +378,25 @@ namespace Nekoyume.BlockChain.Policy
             return index => GetMaxTransactionsPerBlockRaw(index, maxTransactionsPerBlock);
         }
 
-        public static int GetMaxTransactionsPerSignerPerBlock(long index)
+        public static int GetMaxTransactionsPerSignerPerBlockRaw(
+            long index, MaxTransactionsPerSignerPerBlockPolicy? maxTransactionsPerSignerPerBlockPolicy)
         {
-            return index >= MaxTransactionsPerSignerPerBlockHardcodedIndex
-                ? MaxTransactionsPerSignerPerBlock
-                : int.MaxValue;
+            if (maxTransactionsPerSignerPerBlockPolicy is MaxTransactionsPerSignerPerBlockPolicy mtpspbp)
+            {
+                if (mtpspbp.IsTargetBlockIndex(index))
+                {
+                    return mtpspbp.MaxTransactionsPerSignerPerBlock;
+                }
+            }
+
+            return int.MaxValue;
+        }
+
+        public static Func<long, int> GetMaxTransactionsPerSignerPerBlockFactory(
+            MaxTransactionsPerSignerPerBlockPolicy? maxTransactionsPerSignerPerBlockPolicy)
+        {
+            return index => GetMaxTransactionsPerSignerPerBlockRaw(
+                index, maxTransactionsPerSignerPerBlockPolicy);
         }
 
         public static long GetNextBlockDifficultyRaw(
