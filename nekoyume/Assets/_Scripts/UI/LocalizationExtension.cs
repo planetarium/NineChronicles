@@ -491,7 +491,8 @@ namespace Nekoyume.UI
 
         public static string GetGradeText(this ItemBase itemBase)
         {
-            var gradeText = L10nManager.Localize($"UI_ITEM_GRADE_{itemBase.Grade}");
+            var grade = itemBase.Grade >= 1 ? itemBase.Grade : 1;
+            var gradeText = L10nManager.Localize($"UI_ITEM_GRADE_{grade}");
             return gradeText;
         }
         public static string GetSubTypeText(this ItemBase itemBase)

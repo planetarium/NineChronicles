@@ -250,18 +250,15 @@ namespace Nekoyume.UI.Module
                     enhancementImage.material = gradeData.EnhancementMaterial;
                 }
 
-                foreach (var image in optionTagImages)
-                {
-                    image.gameObject.SetActive(false);
-                }
-
-                var hasOptions = equip.optionCountFromCombination > 0 ||
-                    equip.StatsMap.GetAdditionalStats(true).Count() + equip.Skills.Count > 0;
-
-                if (!hasOptions)
+                if (equip.GetOptionCountFromCombination() <= 0)
                 {
                     optionTagBg.gameObject.SetActive(false);
                     return;
+                }
+
+                foreach (var image in optionTagImages)
+                {
+                    image.gameObject.SetActive(false);
                 }
 
                 var data = optionTagData.GetOptionTagData(Item.Grade);

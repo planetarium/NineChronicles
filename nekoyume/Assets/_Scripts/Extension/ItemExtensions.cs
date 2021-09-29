@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
@@ -60,5 +60,14 @@ namespace Nekoyume
 
         public static bool HasElementType(this ItemType type) => type == ItemType.Costume ||
                                                                  type == ItemType.Equipment;
+
+        public static int GetOptionCountFromCombination(this Equipment equipment)
+        {
+            var additionalStats = equipment.StatsMap.GetAdditionalStats(true).ToList();
+
+            return equipment.optionCountFromCombination > 0
+                ? equipment.optionCountFromCombination
+                : additionalStats.Count + equipment.Skills.Count;
+        }
     }
 }
