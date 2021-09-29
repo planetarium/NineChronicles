@@ -265,7 +265,7 @@ namespace Nekoyume.UI
             }
 
             var slots = Find<CombinationSlots>();
-            slots.SetCaching(slotIndex, true, requiredBlockIndex, equipment);
+            slots.SetCaching(slotIndex, true, requiredBlockIndex, itemUsable:equipment);
 
             equipmentSubRecipeView.UpdateView();
             Game.Game.instance.ActionManager.CombinationEquipment(
@@ -290,7 +290,7 @@ namespace Nekoyume.UI
                 consumableRow.GetResultConsumableItemRow(), Guid.Empty, default);
             var requiredBlockIndex = consumableRow.RequiredBlockIndex;
             var slots = Find<CombinationSlots>();
-            slots.SetCaching(slotIndex, true, requiredBlockIndex, consumable);
+            slots.SetCaching(slotIndex, true, requiredBlockIndex, itemUsable:consumable);
 
             consumableSubRecipeView.UpdateView();
             Game.Game.instance.ActionManager.CombinationConsumable(

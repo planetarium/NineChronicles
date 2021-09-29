@@ -103,7 +103,10 @@ namespace Nekoyume.UI
                 title = resultItem.GetLocalizedName(true, false);
 
                 var stat = resultItem.GetUniqueStat();
-                statText.text = string.Format(StatTextFormat, stat.Type, stat.ValueAsInt);
+                var statValueText = stat.Type == StatType.SPD
+                    ? (stat.ValueAsInt * 0.01m).ToString(CultureInfo.InvariantCulture)
+                    : stat.ValueAsInt.ToString();
+                statText.text = string.Format(StatTextFormat, stat.Type, statValueText);
                 recipeCell.Show(equipmentRow, false);
 
             }
@@ -113,7 +116,10 @@ namespace Nekoyume.UI
                 title = resultItem.GetLocalizedName();
 
                 var stat = resultItem.GetUniqueStat();
-                statText.text = string.Format(StatTextFormat, stat.StatType, stat.ValueAsInt);
+                var statValueText = stat.StatType == StatType.SPD
+                    ? (stat.ValueAsInt * 0.01m).ToString(CultureInfo.InvariantCulture)
+                    : stat.ValueAsInt.ToString();
+                statText.text = string.Format(StatTextFormat, stat.StatType, statValueText);
                 recipeCell.Show(consumableRow, false);
             }
 
