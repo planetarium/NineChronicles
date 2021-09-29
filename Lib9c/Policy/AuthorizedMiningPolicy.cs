@@ -56,8 +56,8 @@ namespace Nekoyume.BlockChain.Policy
         public static AuthorizedMiningPolicy Mainnet => new AuthorizedMiningPolicy()
         {
             StartIndex = 0,
-            EndIndex = 3_153_600,
-            Interval = 50,
+            EndIndex = BlockPolicySource.AuthorizedMiningPolicyEndIndex,
+            Interval = BlockPolicySource.AuthorizedMiningPolicyInterval,
             Miners = new[]
             {
                 new Address("ab1dce17dCE1Db1424BB833Af6cC087cd4F5CB6d"),

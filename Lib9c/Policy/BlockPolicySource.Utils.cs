@@ -70,30 +70,25 @@ namespace Nekoyume.BlockChain.Policy
             }
         }
 
+        // FIXME: Tx count validation should be done in libplanet, not here.
+        // Should be removed once libplanet is updated.
         internal static BlockPolicyViolationException ValidateTxCountPerBlockRaw(
-            Block<NCAction> block, bool ignoreHardcodedPolicies)
+            Block<NCAction> block,
+            MinTransactionsPerBlockPolicy? minTransactionsPerBlockPolicy)
         {
-            if (!(block.Miner is Address miner))
-            {
-                return null;
-            }
-
             // To prevent selfish mining, we define a consensus that blocks with no transactions
             // are not accepted starting from MinTransactionsPerBlockHardcodedIndex.
-            if (block.Transactions.Count < MinTransactionsPerBlock)
+            return ValidateMinTransactionsPerBlockRaw(block, minTransactionsPerBlockPolicy);
+        }
+
+        internal static BlockPolicyViolationException ValidateMinTransactionsPerBlockRaw(
+            Block<NCAction> block, MinTransactionsPerBlockPolicy? minTransactionsPerBlockPolicy)
+        {
+            if (block.Transactions.Count < GetMinTransactionsPerBlockRaw(block.Index, minTransactionsPerBlockPolicy))
             {
-                if (ignoreHardcodedPolicies)
-                {
-                    return new BlockPolicyViolationException(
-                        $"Block #{block.Index} {block.Hash} mined by {miner} should " +
-                        "include at least one transaction. (Forced failure)");
-                }
-                else if (block.Index >= MinTransactionsPerBlockHardcodedIndex)
-                {
-                    return new BlockPolicyViolationException(
-                        $"Block #{block.Index} {block.Hash} mined by {miner} should " +
-                        $"include at least {MinTransactionsPerBlock} transaction(s).");
-                }
+                return new BlockPolicyViolationException(
+                    $"Block #{block.Index} {block.Hash} should include " +
+                    $"at least {MinTransactionsPerBlock} transaction(s).");
             }
 
             return null;
@@ -102,8 +97,7 @@ namespace Nekoyume.BlockChain.Policy
         internal static BlockPolicyViolationException ValidateMinerAuthorityRaw(
             Block<NCAction> block,
             AuthorizedMiningPolicy? authorizedMiningPolicy,
-            AuthorizedMiningNoOpTxPolicy? authorizedMiningNoOpTxPolicy,
-            bool ignoreHardcodedPolicies)
+            AuthorizedMiningNoOpTxPolicy? authorizedMiningNoOpTxPolicy)
         {
             // For genesis block, any miner can mine.
             if (block.Index == 0)
@@ -130,15 +124,13 @@ namespace Nekoyume.BlockChain.Policy
         internal static Func<BlockChain<NCAction>, Block<NCAction>, BlockPolicyViolationException>
             ValidateMinerAuthorityFactory(
                 AuthorizedMiningPolicy? authorizedMiningPolicy,
-                AuthorizedMiningNoOpTxPolicy? authorizedMiningNoOpTxPolicy,
-                bool ignoreHardcodedPolicies)
+                AuthorizedMiningNoOpTxPolicy? authorizedMiningNoOpTxPolicy)
         {
             return (blockChain, block) =>
                 ValidateMinerAuthorityRaw(
                     block,
                     authorizedMiningPolicy,
-                    authorizedMiningNoOpTxPolicy,
-                    ignoreHardcodedPolicies);
+                    authorizedMiningNoOpTxPolicy);
         }
 
         internal static BlockPolicyViolationException ValidateMinerAuthorityNoOpTxRaw(
@@ -155,7 +147,7 @@ namespace Nekoyume.BlockChain.Policy
                     if (!txs.Any(tx => tx.Signer.Equals(block.Miner) && !tx.Actions.Any())
                             && block.ProtocolVersion > 0)
                     {
-    #if DEBUG
+#if DEBUG
                         string debug =
                             "  Note that there " +
                             (txs.Length == 1
@@ -164,28 +156,22 @@ namespace Nekoyume.BlockChain.Policy
                             txs.Select((tx, i) =>
                                     $"\n    {i}. {tx.Actions.Count} actions; signed by {tx.Signer}")
                                 .Aggregate(string.Empty, (a, b) => a + b);
-    #else
+#else
                         const string debug = "";
-    #endif
+#endif
                         return new BlockPolicyViolationException(
                             $"Block #{block.Index} {block.Hash}'s miner {block.Miner} should be "
                                 + "proven by including a no-op transaction signed by "
                                 + "the same authority." + debug);
                     }
                 }
-
-                return null;
             }
-            else
-            {
-                return null;
-            }
+            return null;
         }
 
         internal static BlockPolicyViolationException ValidateMinerPermissionRaw(
             Block<NCAction> block,
-            PermissionedMiningPolicy? permissionedMiningPolicy,
-            bool ignoreHardcodedPolicies)
+            PermissionedMiningPolicy? permissionedMiningPolicy)
         {
             Address miner = block.Miner;
 
@@ -198,13 +184,7 @@ namespace Nekoyume.BlockChain.Policy
             // Predicate for permission validity.
             if (!pmp.Miners.Contains(miner) || !block.Transactions.Any(t => t.Signer.Equals(miner)))
             {
-                if (ignoreHardcodedPolicies)
-                {
-                    return new BlockPolicyViolationException(
-                        $"Block #{block.Index} {block.Hash} is not mined by a permissioned miner.  "
-                            + "(Forced failure)");
-                }
-                else if (block.Index >= pmp.StartIndex)
+                if (block.Index >= pmp.StartIndex)
                 {
                     return new BlockPolicyViolationException(
                         $"Block #{block.Index} {block.Hash} is not mined by a permissioned miner.");
@@ -216,17 +196,19 @@ namespace Nekoyume.BlockChain.Policy
 
         internal static Func<Block<NCAction>, BlockPolicyViolationException>
             ValidateMinerPermissionFactory(
-                PermissionedMiningPolicy? permissionedMiningPolicy,
-                bool ignoreHardcodedPolicies)
+                PermissionedMiningPolicy? permissionedMiningPolicy)
         {
             return block => ValidateMinerPermissionRaw(
-                block, permissionedMiningPolicy, ignoreHardcodedPolicies);
+                block, permissionedMiningPolicy);
         }
 
         internal static Func<Block<NCAction>, BlockPolicyViolationException>
-            ValidateTxCountPerBlockFactory(bool ignoreHardcodedPolicies)
+            ValidateTxCountPerBlockFactory(
+                MinTransactionsPerBlockPolicy? minTransactionsPerBlockPolicy)
         {
-            return block => ValidateTxCountPerBlockRaw(block, ignoreHardcodedPolicies);
+            return block => ValidateTxCountPerBlockRaw(
+                block,
+                minTransactionsPerBlockPolicy);
         }
 
         internal static bool IsAllowedToMineRaw(

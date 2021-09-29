@@ -145,7 +145,7 @@ namespace Lib9c.Tests
             IBlockPolicy<PolymorphicAction<ActionBase>> policy = blockPolicySource.GetPolicy(
                 minimumDifficulty: 10000,
                 maxTransactionsPerBlock: 100,
-                ignoreHardcodedPolicies: false,
+                minTransactionsPerBlockPolicy: null,
                 authorizedMiningPolicy: authorizedMiningPolicy,
                 authorizedMiningNoOpTxPolicy: null,
                 permissionedMiningPolicy: null);
@@ -275,7 +275,7 @@ namespace Lib9c.Tests
         }
 
         [Fact]
-        public async Task ValidateNextBlockWithAuthorizedMinersState()
+        public async Task ValidateNextBlockWithAuthorizedMiningPolicy()
         {
             var adminPrivateKey = new PrivateKey();
             var adminAddress = adminPrivateKey.ToAddress();
@@ -296,7 +296,7 @@ namespace Lib9c.Tests
             IBlockPolicy<PolymorphicAction<ActionBase>> policy = blockPolicySource.GetPolicy(
                 10000,
                 100,
-                ignoreHardcodedPolicies: true,
+                minTransactionsPerBlockPolicy: null,
                 authorizedMiningPolicy: authorizedMiningPolicy,
                 authorizedMiningNoOpTxPolicy: authorizedMiningNoOpTxPolicy,
                 permissionedMiningPolicy: null);
@@ -396,7 +396,7 @@ namespace Lib9c.Tests
         }
 
         [Fact]
-        public async Task GetNextBlockDifficultyWithAuthorizedMinersState()
+        public async Task GetNextBlockDifficultyWithAuthorizedMiningPolicy()
         {
             var adminPrivateKey = new PrivateKey();
             var adminAddress = adminPrivateKey.ToAddress();
@@ -412,7 +412,7 @@ namespace Lib9c.Tests
             IBlockPolicy<PolymorphicAction<ActionBase>> policy = blockPolicySource.GetPolicy(
                 minimumDifficulty: 4096,
                 maxTransactionsPerBlock: 100,
-                ignoreHardcodedPolicies: false,
+                minTransactionsPerBlockPolicy: null,
                 authorizedMiningPolicy: authorizedMiningPolicy,
                 authorizedMiningNoOpTxPolicy: null,
                 permissionedMiningPolicy: null);
@@ -645,7 +645,7 @@ namespace Lib9c.Tests
                 blockPolicySource.GetPolicy(
                     minimumDifficulty: 50_000,
                     maxTransactionsPerBlock: 100,
-                    ignoreHardcodedPolicies: true,
+                    minTransactionsPerBlockPolicy: null,
                     authorizedMiningPolicy: null,
                     authorizedMiningNoOpTxPolicy: null,
                     permissionedMiningPolicy: new PermissionedMiningPolicy(
