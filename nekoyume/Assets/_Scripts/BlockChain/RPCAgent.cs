@@ -27,7 +27,6 @@ using Nekoyume.Shared.Services;
 using Nekoyume.State;
 using Nekoyume.UI;
 using NineChronicles.RPC.Shared.Exceptions;
-using UniRx;
 using UnityEngine;
 using static Nekoyume.Action.ActionBase;
 using Logger = Serilog.Core.Logger;
@@ -330,7 +329,7 @@ namespace Nekoyume.BlockChain
             var newTipHeader = BlockHeader.Deserialize(newTip);
             BlockIndex = newTipHeader.Index;
             BlockIndexSubject.OnNext(BlockIndex);
-            BlockTipHash = new BlockHash(newTipHeader.Hash);
+            BlockTipHash = new BlockHash(newTipHeader.Hash.ToByteArray());
             BlockTipHashSubject.OnNext(BlockTipHash);
             _lastTipChangedAt = DateTimeOffset.UtcNow;
             BlockRenderer.RenderBlock(null, null);

@@ -13,6 +13,7 @@ using Nekoyume.Model.Stat;
 using Nekoyume.UI;
 using UnityEngine;
 using mixpanel;
+using Nekoyume.UI.Module;
 
 namespace Nekoyume.Game
 {
@@ -46,7 +47,8 @@ namespace Nekoyume.Game
             _player.StartRun();
             ActionCamera.instance.ChaseX(_player.transform);
             _battle = Widget.Find<UI.Battle>();
-            _battle.ShowForTutorial();
+            _battle.ShowForTutorial(true);
+            Widget.Find<HeaderMenu>().Close(true);
             yield return new WaitForSeconds(2f);
             var go2 = EnemyFactory.Create(205007, _player.transform.position, 7f, _player);
             _fenrir = go2.GetComponent<PrologueCharacter>();

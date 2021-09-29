@@ -4,9 +4,9 @@ using System.Linq;
 using Nekoyume.Model;
 using Nekoyume.Model.Quest;
 using Nekoyume.UI.Module;
-using UniRx;
 using UnityEngine;
 using mixpanel;
+using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
@@ -23,10 +23,8 @@ namespace Nekoyume.UI
             public WorldInformation WorldInformation;
         }
 
-        [SerializeField]
-        private GameObject worldMapRoot = null;
-
-        private readonly List<IDisposable> _disposablesAtShow = new List<IDisposable>();
+        [SerializeField] private GameObject worldMapRoot = null;
+        [SerializeField] private Button closeButton;
 
         private WorldButton[] _worldButtons;
         public ViewModel SharedViewModel { get; private set; }
@@ -55,7 +53,17 @@ namespace Nekoyume.UI
         {
             base.Awake();
 
-            CloseWidget = null;
+            closeButton.onClick.AddListener(() =>
+            {
+                Close();
+                Game.Event.OnRoomEnter.Invoke(true);
+            });
+
+            CloseWidget = () =>
+            {
+                Close();
+                Game.Event.OnRoomEnter.Invoke(true);
+            };
             _worldButtons = GetComponentsInChildren<WorldButton>();
         }
 
@@ -123,36 +131,21 @@ namespace Nekoyume.UI
             {
                 throw new Exception("worldInformation.TryGetFirstWorld() failed!");
             }
-            var bottomMenu = Find<BottomMenu>();
-            bottomMenu.Show(
-                UINavigator.NavigationType.Back,
-                SubscribeBackButtonClick);
-            var status = Find<Status>();
 
+            var status = Find<Status>();
             status.Close(true);
-            Show();
+            Show(true);
+            HelpPopup.HelpMe(100002, true);
         }
 
         public void Show(int worldId, int stageId, bool showWorld, bool callByShow = false)
         {
-            var bottomMenu = Find<BottomMenu>();
-            bottomMenu.Show(
-                UINavigator.NavigationType.None,
-                null,
-                true,
-                BottomMenu.ToggleableType.WorldMap);
-            bottomMenu.worldMapButton.OnClick
-                .Subscribe(_ => SharedViewModel.IsWorldShown.SetValueAndForceNotify(true))
-                .AddTo(_disposablesAtShow);
-
             ShowWorld(worldId, stageId, showWorld, callByShow);
-            Show();
+            Show(true);
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
         {
-            _disposablesAtShow.DisposeAllAndClear();
-            Find<BottomMenu>().Close(true);
             base.Close(true);
         }
 
@@ -166,15 +159,7 @@ namespace Nekoyume.UI
                 Mixpanel.Track("Unity/Click Yggdrasil");
             }
 
-            CloseWidget = () =>
-            {
-                var button = Find<BottomMenu>().worldMapButton;
-                button.OnClick.OnNext(button);
-            };
-            CloseWidget += Pop;
-            CloseWidget += () => CloseWidget = null;
             Push();
-
             ShowWorld(world.Id, world.GetNextStageId(), false);
         }
 
@@ -215,24 +200,8 @@ namespace Nekoyume.UI
         private void CallByShowUpdateWorld()
         {
             var status = Find<Status>();
-
-            var bottomMenu = Find<BottomMenu>();
-            bottomMenu.worldMapButton.Hide();
-            bottomMenu.backButton.Show();
             status.Close(true);
             worldMapRoot.SetActive(true);
-        }
-
-        private void SubscribeBackButtonClick(BottomMenu bottomMenu)
-        {
-            if (!CanClose)
-            {
-                return;
-            }
-
-            SharedViewModel.IsWorldShown.SetValueAndForceNotify(false);
-            Close();
-            Game.Event.OnRoomEnter.Invoke(true);
         }
     }
 }

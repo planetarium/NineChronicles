@@ -16,10 +16,11 @@ namespace Nekoyume.UI
         private const int FenrirId = 205007;
         private const int FreyaId = 300005;
 
+        private static readonly Vector3 FenrirSpinePosition = new Vector3(4001.7f, 3998.2f);
+        private static readonly Vector3 FreyaSpinePosition = new Vector3(4000.8f, 3994.3f);
+
         public TextMeshProUGUI txtName;
         public TextMeshProUGUI txtDialog;
-        public RectTransform fenrirPosition;
-        public RectTransform freyaPosition;
         private DialogNPC _fenrir;
         private DialogNPC _freya;
 
@@ -111,7 +112,7 @@ namespace Nekoyume.UI
                     {
                         var go = Game.Game.instance.Stage.npcFactory.CreateDialogNPC(
                             FenrirId,
-                            fenrirPosition.position,
+                            FenrirSpinePosition,
                             LayerType.UI,
                             100);
                         _fenrir = go.GetComponent<DialogNPC>();
@@ -126,7 +127,7 @@ namespace Nekoyume.UI
                     {
                         var go = Game.Game.instance.Stage.npcFactory.CreateDialogNPC(
                             FreyaId,
-                            freyaPosition.position,
+                            FreyaSpinePosition,
                             LayerType.UI,
                             100);
                         _freya = go.GetComponent<DialogNPC>();

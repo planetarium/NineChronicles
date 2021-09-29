@@ -14,7 +14,10 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
+    using System.Collections;
     using UniRx;
+    using UnityEngine.EventSystems;
+    using UnityEngine.UI;
 
     public class ItemInformationTooltip : VerticalTooltipWidget<Model.ItemInformationTooltip>
     {
@@ -30,7 +33,7 @@ namespace Nekoyume.UI
         [SerializeField] private BlockTimer sellTimer;
 
         [SerializeField] private TextMeshProUGUI priceText;
-
+        [SerializeField] private Scrollbar scrollbar;
 
         private readonly List<IDisposable> _disposablesForModel = new List<IDisposable>();
 
@@ -134,6 +137,7 @@ namespace Nekoyume.UI
             Model.ItemInformation.item.Subscribe(value => SubscribeTargetItem(Model.target.Value))
                 .AddTo(_disposablesForModel);
 
+            scrollbar.value = 1f;
             StartCoroutine(CoUpdate(submitButton.gameObject));
         }
 
@@ -190,16 +194,17 @@ namespace Nekoyume.UI
                 Close();
             });
 
+            scrollbar.value = 1f;
             StartCoroutine(CoUpdate(sell));
             sellTimer.UpdateTimer(Model.ExpiredBlockIndex.Value);
         }
 
-          public void ShowForBuy(RectTransform target,
-                                CountableItem item,
-                                Func<CountableItem, bool> submitEnabledFunc,
-                                string submitText,
-                                Action<ItemInformationTooltip> onBuy,
-                                Action<ItemInformationTooltip> onClose)
+        public void ShowForBuy(RectTransform target,
+                              CountableItem item,
+                              Func<CountableItem, bool> submitEnabledFunc,
+                              string submitText,
+                              Action<ItemInformationTooltip> onBuy,
+                              Action<ItemInformationTooltip> onClose)
         {
             if (item?.ItemBase.Value is null)
             {
@@ -237,6 +242,7 @@ namespace Nekoyume.UI
                 .Subscribe(value => SubscribeTargetItem(Model.target.Value))
                 .AddTo(_disposablesForModel);
 
+            scrollbar.value = 1f;
             StartCoroutine(CoUpdate(buy));
             buyTimer.UpdateTimer(Model.ExpiredBlockIndex.Value);
         }
@@ -258,6 +264,7 @@ namespace Nekoyume.UI
 
         private void SubscribeTargetItem(RectTransform target)
         {
+            LayoutRebuilder.ForceRebuildLayoutImmediate(panel);
             panel.SetAnchorAndPivot(AnchorPresetType.TopLeft, PivotPresetType.TopLeft);
             base.SubscribeTarget(target);
 

@@ -1,3 +1,4 @@
+using Nekoyume.EnumType;
 using Nekoyume.Game.Controller;
 using Nekoyume.UI.Module;
 using TMPro;
@@ -5,7 +6,7 @@ using UniRx;
 
 namespace Nekoyume.UI
 {
-    public class OneButtonPopup : PopupWidget
+    public class OneButtonPopup : SystemInfoWidget
     {
         public SubmitButton confirmButton;
         public TextMeshProUGUI contentText;

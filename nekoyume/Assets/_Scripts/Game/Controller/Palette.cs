@@ -8,9 +8,9 @@ namespace Nekoyume.Game.Controller
 {
     public static class Palette
     {
-        private static Dictionary<ButtonColorType, Color> _buttonColorMap;
+        private static Dictionary<ColorType, Color> _buttonColorMap;
 
-        private static Dictionary<ButtonColorType, Color> ButtonColorMap
+        private static Dictionary<ColorType, Color> ButtonColorMap
         {
             get
             {
@@ -18,14 +18,14 @@ namespace Nekoyume.Game.Controller
                 {
                     var colorRef = Resources.Load<PaletteScriptableObject>(
                         "ScriptableObject/UI_Palette");
-                    _buttonColorMap = colorRef.ButtonColorPalette.ToDictionary(c => c.ButtonColorType, c => c.Color);
+                    _buttonColorMap = colorRef.Palette.ToDictionary(c => c.colorType, c => c.Color);
                 }
 
                 return _buttonColorMap;
             }
         }
 
-        public static Color GetButtonColor(ButtonColorType colorType)
+        public static Color GetColor(ColorType colorType)
         {
             return ButtonColorMap.ContainsKey(colorType) ? ButtonColorMap[colorType] : Color.black;
         }

@@ -21,24 +21,33 @@ namespace Nekoyume.UI
             base.Awake();
 
             OnDisableStaticObservable
-                .Subscribe(_ => HideAll(false))
+                .Subscribe(widget => HideSpecificCat(widget.gameObject, false))
                 .AddTo(gameObject);
 
             CloseWidget = null;
         }
 
-        public MessageCat Show(Vector3 position, string message, bool reverseDirection = false)
+        public MessageCat Show(Vector3 position, string message, GameObject maker, bool reverseDirection = false)
         {
             var cat = Pick();
-            cat.Show(position, message, reverseDirection);
+            cat.Show(position, message, maker, reverseDirection);
             return cat;
         }
 
-        public MessageCat Show(bool followMouse, string message, bool reverseDirection = false)
+        public MessageCat Show(bool followMouse, string message, GameObject maker, bool reverseDirection = false)
         {
             var cat = Pick();
-            cat.Show(followMouse, message, reverseDirection);
+            cat.Show(followMouse, message, maker, reverseDirection);
             return cat;
+        }
+
+        public void HideSpecificCat(GameObject maker, bool lazyHide = true)
+        {
+            foreach (var messageCat in _pool.Where(messageCat =>
+                messageCat.IsShown && (maker is null || messageCat.CreatedByThisObject.Equals(maker))))
+            {
+                messageCat.Hide(lazyHide);
+            }
         }
 
         public void HideAll(bool lazyHide = true)

@@ -255,21 +255,88 @@ namespace Nekoyume.BlockChain
             if (eval.Exception is null)
             {
                 var avatarAddress = eval.Action.avatarAddress;
-                var slot =
-                    eval.OutputStates.GetCombinationSlotState(avatarAddress, eval.Action.slotIndex);
-                var result = (RapidCombination0.ResultModel) slot.Result;
+                var slotIndex = eval.Action.slotIndex;
+                var slotState = eval.OutputStates.GetCombinationSlotState(avatarAddress, slotIndex);
+                var result = (RapidCombination.ResultModel) slotState.Result;
                 foreach (var pair in result.cost)
                 {
-                    // NOTE: 최종적으로 UpdateCurrentAvatarState()를 호출한다면, 그곳에서 상태를 새로 설정할 것이다.
                     LocalLayerModifier.AddItem(avatarAddress, pair.Key.ItemId, pair.Value);
                 }
-                LocalLayerModifier.RemoveAvatarItemRequiredIndex(avatarAddress, result.itemUsable.NonFungibleId);
-                LocalLayerModifier.ResetCombinationSlot(slot);
 
+                var formatKey = string.Empty;
+                var currentBlockIndex = Game.Game.instance.Agent.BlockIndex;
+                var combinationSlotState = States.Instance.GetCombinationSlotState(currentBlockIndex);
+                var stateResult = combinationSlotState[slotIndex]?.Result;
+                switch (stateResult)
+                {
+                    case CombinationConsumable5.ResultModel combineResultModel:
+                    {
+                        LocalLayerModifier.AddNewResultAttachmentMail(avatarAddress, combineResultModel.id,
+                            currentBlockIndex);
+                        if (combineResultModel.itemUsable is Equipment equipment)
+                        {
+                            if (combineResultModel.subRecipeId.HasValue &&
+                                Game.Game.instance.TableSheets.EquipmentItemSubRecipeSheetV2.TryGetValue(
+                                    combineResultModel.subRecipeId.Value,
+                                    out var subRecipeRow))
+                            {
+                                formatKey = equipment.optionCountFromCombination == subRecipeRow.Options.Count
+                                    ? "NOTIFICATION_COMBINATION_COMPLETE_GREATER"
+                                    : "NOTIFICATION_COMBINATION_COMPLETE";
+                            }
+                            else
+                            {
+                                formatKey = "NOTIFICATION_COMBINATION_COMPLETE";
+                            }
+                        }
+                        else
+                        {
+                            formatKey = "NOTIFICATION_COMBINATION_COMPLETE";
+                        }
+
+                        break;
+                    }
+                    case ItemEnhancement.ResultModel enhancementResultModel:
+                    {
+                        LocalLayerModifier.AddNewResultAttachmentMail(avatarAddress, enhancementResultModel.id,
+                            currentBlockIndex);
+
+                        switch (enhancementResultModel.enhancementResult)
+                        {
+                            case Action.ItemEnhancement.EnhancementResult.GreatSuccess:
+                                formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE_GREATER";
+                                break;
+                            case Action.ItemEnhancement.EnhancementResult.Success:
+                                formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE";
+                                break;
+                            case Action.ItemEnhancement.EnhancementResult.Fail:
+                                formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE_FAIL";
+                                break;
+                            default:
+                                Debug.LogError(
+                                    $"Unexpected result.enhancementResult: {enhancementResultModel.enhancementResult}");
+                                formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE";
+                                break;
+                        }
+
+                        break;
+                    }
+                    default:
+                        Debug.LogError(
+                            $"Unexpected state.Result: {stateResult}");
+                        formatKey = "NOTIFICATION_COMBINATION_COMPLETE";
+                        break;
+                }
+
+                var format = L10nManager.Localize(formatKey);
+                UI.Notification.CancelReserve(result.itemUsable.TradableId);
+                UI.Notification.Push(MailType.Workshop, string.Format(format, result.itemUsable.GetLocalizedName()));
+
+                States.Instance.UpdateCombinationSlotState(slotIndex, slotState);
                 UpdateAgentState(eval);
                 UpdateCurrentAvatarState(eval);
-                UpdateCombinationSlotState(slot);
             }
+            Widget.Find<CombinationSlots>().SetCaching(eval.Action.slotIndex, false);
         }
 
         private void ResponseCombinationEquipment(ActionBase.ActionEvaluation<CombinationEquipment> eval)
@@ -277,8 +344,9 @@ namespace Nekoyume.BlockChain
             if (eval.Exception is null)
             {
                 var agentAddress = eval.Signer;
-                var avatarAddress = eval.Action.AvatarAddress;
-                var slot = eval.OutputStates.GetCombinationSlotState(avatarAddress, eval.Action.SlotIndex);
+                var avatarAddress = eval.Action.avatarAddress;
+                var slotIndex = eval.Action.slotIndex;
+                var slot = eval.OutputStates.GetCombinationSlotState(avatarAddress, slotIndex);
                 var result = (CombinationConsumable5.ResultModel) slot.Result;
 
                 if (!eval.OutputStates.TryGetAvatarStateV2(agentAddress, avatarAddress, out var avatarState))
@@ -286,7 +354,6 @@ namespace Nekoyume.BlockChain
                     return;
                 }
 
-                // NOTE: 사용한 자원에 대한 레이어 벗기기.
                 LocalLayerModifier.ModifyAgentGold(agentAddress, result.gold);
                 LocalLayerModifier.ModifyAvatarActionPoint(avatarAddress, result.actionPoint);
                 foreach (var pair in result.materials)
@@ -294,35 +361,25 @@ namespace Nekoyume.BlockChain
                     LocalLayerModifier.AddItem(avatarAddress, pair.Key.ItemId, pair.Value);
                 }
 
-                // NOTE: 메일 레이어 씌우기.
                 LocalLayerModifier.RemoveItem(avatarAddress, result.itemUsable.ItemId, result.itemUsable.RequiredBlockIndex, 1);
                 LocalLayerModifier.AddNewAttachmentMail(avatarAddress, result.id);
-                LocalLayerModifier.ResetCombinationSlot(slot);
-
-                // NOTE: 노티 예약 걸기.
-                var format = L10nManager.Localize("NOTIFICATION_COMBINATION_COMPLETE");
-                UI.Notification.Reserve(
-                    MailType.Workshop,
-                    string.Format(format, result.itemUsable.GetLocalizedName()),
-                    slot.UnlockBlockIndex,
-                    result.itemUsable.ItemId);
 
                 var gameInstance = Game.Game.instance;
-                var nextQuest = gameInstance.States.CurrentAvatarState.questList?
+                var nextQuest = avatarState.questList?
                     .OfType<CombinationEquipmentQuest>()
                     .Where(x => !x.Complete)
                     .OrderBy(x => x.StageId)
                     .FirstOrDefault(x =>
                         gameInstance.TableSheets.EquipmentItemRecipeSheet.TryGetValue(x.RecipeId, out _));
 
+                States.Instance.UpdateCombinationSlotState(slotIndex, slot);
                 UpdateAgentState(eval);
                 UpdateCurrentAvatarState(eval);
-                RenderQuest(avatarAddress, avatarState.questList.completedQuestIds);
-                UpdateCombinationSlotState(slot);
+                RenderQuest(avatarAddress, avatarState.questList?.completedQuestIds);
 
                 if (!(nextQuest is null))
                 {
-                    var isRecipeMatch = nextQuest.RecipeId == eval.Action.RecipeId;
+                    var isRecipeMatch = nextQuest.RecipeId == eval.Action.recipeId;
 
                     if (isRecipeMatch)
                     {
@@ -346,7 +403,40 @@ namespace Nekoyume.BlockChain
                             });
                     }
                 }
+
+                // Notify
+                string formatKey;
+                if (result.itemUsable is Equipment equipment)
+                {
+                    if (eval.Action.subRecipeId.HasValue &&
+                        Game.Game.instance.TableSheets.EquipmentItemSubRecipeSheetV2.TryGetValue(
+                            eval.Action.subRecipeId.Value,
+                            out var row))
+                    {
+                        formatKey = equipment.optionCountFromCombination == row.Options.Count
+                            ? "NOTIFICATION_COMBINATION_COMPLETE_GREATER"
+                            : "NOTIFICATION_COMBINATION_COMPLETE";
+                    }
+                    else
+                    {
+                        formatKey = "NOTIFICATION_COMBINATION_COMPLETE";
+                    }
+                }
+                else
+                {
+                    Debug.LogError($"[{nameof(ResponseCombinationEquipment)}] result.itemUsable is not Equipment");
+                    formatKey = "NOTIFICATION_COMBINATION_COMPLETE";
+                }
+
+                var format = L10nManager.Localize(formatKey);
+                UI.Notification.Reserve(
+                    MailType.Workshop,
+                    string.Format(format, result.itemUsable.GetLocalizedName()),
+                    slot.UnlockBlockIndex,
+                    result.itemUsable.TradableId);
+                // ~Notify
             }
+            Widget.Find<CombinationSlots>().SetCaching(eval.Action.slotIndex, false);
         }
 
         private void ResponseCombinationConsumable(ActionBase.ActionEvaluation<CombinationConsumable> eval)
@@ -354,8 +444,9 @@ namespace Nekoyume.BlockChain
             if (eval.Exception is null)
             {
                 var agentAddress = eval.Signer;
-                var avatarAddress = eval.Action.AvatarAddress;
-                var slot = eval.OutputStates.GetCombinationSlotState(avatarAddress, eval.Action.slotIndex);
+                var avatarAddress = eval.Action.avatarAddress;
+                var slotIndex = eval.Action.slotIndex;
+                var slot = eval.OutputStates.GetCombinationSlotState(avatarAddress, slotIndex);
                 var result = (CombinationConsumable5.ResultModel) slot.Result;
                 var itemUsable = result.itemUsable;
                 if (!eval.OutputStates.TryGetAvatarStateV2(agentAddress, avatarAddress, out var avatarState))
@@ -372,21 +463,87 @@ namespace Nekoyume.BlockChain
 
                 LocalLayerModifier.RemoveItem(avatarAddress, itemUsable.ItemId, itemUsable.RequiredBlockIndex, 1);
                 LocalLayerModifier.AddNewAttachmentMail(avatarAddress, result.id);
-                LocalLayerModifier.ResetCombinationSlot(slot);
 
+                States.Instance.UpdateCombinationSlotState(slotIndex, slot);
+                UpdateAgentState(eval);
+                UpdateCurrentAvatarState(eval);
+                RenderQuest(avatarAddress, avatarState.questList.completedQuestIds);
+
+                // Notify
                 var format = L10nManager.Localize("NOTIFICATION_COMBINATION_COMPLETE");
                 UI.Notification.Reserve(
                     MailType.Workshop,
                     string.Format(format, result.itemUsable.GetLocalizedName()),
                     slot.UnlockBlockIndex,
-                    result.itemUsable.ItemId
-                );
+                    result.itemUsable.TradableId);
+                // ~Notify
+            }
+            Widget.Find<CombinationSlots>().SetCaching(eval.Action.slotIndex, false);
+        }
 
+        private void ResponseItemEnhancement(ActionBase.ActionEvaluation<ItemEnhancement> eval)
+        {
+            if (eval.Exception is null)
+            {
+                var agentAddress = eval.Signer;
+                var avatarAddress = eval.Action.avatarAddress;
+                var slotIndex = eval.Action.slotIndex;
+                var slot = eval.OutputStates.GetCombinationSlotState(avatarAddress, slotIndex);
+                var result = (ItemEnhancement.ResultModel) slot.Result;
+                var itemUsable = result.itemUsable;
+                if (!eval.OutputStates.TryGetAvatarStateV2(agentAddress, avatarAddress, out var avatarState))
+                {
+                    return;
+                }
+
+                LocalLayerModifier.ModifyAgentGold(agentAddress, result.gold);
+                LocalLayerModifier.AddItem(avatarAddress, itemUsable.TradableId, itemUsable.RequiredBlockIndex, 1);
+                foreach (var tradableId in result.materialItemIdList)
+                {
+                    if (avatarState.inventory.TryGetNonFungibleItem(tradableId,
+                        out ItemUsable materialItem))
+                    {
+                        LocalLayerModifier.AddItem(avatarAddress, tradableId, materialItem.RequiredBlockIndex, 1);
+                    }
+                }
+
+                LocalLayerModifier.RemoveItem(avatarAddress, itemUsable.TradableId, itemUsable.RequiredBlockIndex, 1);
+                LocalLayerModifier.AddNewAttachmentMail(avatarAddress, result.id);
+
+                States.Instance.UpdateCombinationSlotState(slotIndex, slot);
                 UpdateAgentState(eval);
                 UpdateCurrentAvatarState(eval);
-                UpdateCombinationSlotState(slot);
                 RenderQuest(avatarAddress, avatarState.questList.completedQuestIds);
+
+                // Notify
+                string formatKey;
+                switch (result.enhancementResult)
+                {
+                    case Action.ItemEnhancement.EnhancementResult.GreatSuccess:
+                        formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE_GREATER";
+                        break;
+                    case Action.ItemEnhancement.EnhancementResult.Success:
+                        formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE";
+                        break;
+                    case Action.ItemEnhancement.EnhancementResult.Fail:
+                        formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE_FAIL";
+                        break;
+                    default:
+                        Debug.LogError($"Unexpected result.enhancementResult: {result.enhancementResult}");
+                        formatKey = "NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE";
+                        break;
+                }
+
+                var format = L10nManager.Localize(formatKey);
+                UI.Notification.Reserve(
+                    MailType.Workshop,
+                    string.Format(format, result.itemUsable.GetLocalizedName()),
+                    slot.UnlockBlockIndex,
+                    result.itemUsable.TradableId);
+                // ~Notify
             }
+
+            Widget.Find<CombinationSlots>().SetCaching(eval.Action.slotIndex, false);
         }
 
         private void ResponseSell(ActionBase.ActionEvaluation<Sell> eval)
@@ -575,6 +732,11 @@ namespace Nekoyume.BlockChain
         {
             if (eval.Exception is null)
             {
+                if (!ActionManager.IsLastBattleActionId(eval.Action.Id))
+                {
+                    return;
+                }
+
                 _disposableForBattleEnd?.Dispose();
                 _disposableForBattleEnd =
                     Game.Game.instance.Stage.onEnterToStageEnd
@@ -585,7 +747,6 @@ namespace Nekoyume.BlockChain
                             {
                                 UpdateCurrentAvatarState(eval);
                                 UpdateWeeklyArenaState(eval);
-                                Address agentAddress = States.Instance.AgentState.address;
                                 var avatarState = States.Instance.CurrentAvatarState;
                                 RenderQuest(eval.Action.avatarAddress,
                                     avatarState.questList.completedQuestIds);
@@ -609,7 +770,8 @@ namespace Nekoyume.BlockChain
                     StageSimulatorVersionV100025
                 );
                 simulator.Simulate();
-                BattleLog log = simulator.Log;
+                var log = simulator.Log;
+
 
                 if (Widget.Find<LoadingScreen>().IsActive())
                 {
@@ -650,6 +812,11 @@ namespace Nekoyume.BlockChain
         {
             if (eval.Exception is null)
             {
+                if (!ActionManager.IsLastBattleActionId(eval.Action.Id))
+                {
+                    return;
+                }
+
                 _disposableForBattleEnd?.Dispose();
                 _disposableForBattleEnd =
                     Game.Game.instance.Stage.onEnterToStageEnd
@@ -660,7 +827,6 @@ namespace Nekoyume.BlockChain
                             {
                                 UpdateCurrentAvatarState(eval);
                                 UpdateWeeklyArenaState(eval);
-                                Address agentAddress = States.Instance.AgentState.address;
                                 var avatarState = States.Instance.CurrentAvatarState;
                                 RenderQuest(eval.Action.avatarAddress,
                                     avatarState.questList.completedQuestIds);
@@ -724,10 +890,10 @@ namespace Nekoyume.BlockChain
         {
             if (eval.Exception is null)
             {
-                var weeklyArenaAddress = eval.Action.weeklyArenaAddress;
-                var avatarAddress = eval.Action.avatarAddress;
-
-                LocalLayerModifier.RemoveWeeklyArenaInfoActivator(weeklyArenaAddress, avatarAddress);
+                if (!ActionManager.IsLastBattleActionId(eval.Action.Id))
+                {
+                    return;
+                }
 
                 _disposableForBattleEnd?.Dispose();
                 _disposableForBattleEnd =
@@ -768,54 +934,6 @@ namespace Nekoyume.BlockChain
                 }
 
                 BackToMain(showLoadingScreen, eval.Exception.InnerException);
-            }
-        }
-
-        private void ResponseItemEnhancement(ActionBase.ActionEvaluation<ItemEnhancement> eval)
-        {
-            if (eval.Exception is null)
-            {
-                var agentAddress = eval.Signer;
-                var avatarAddress = eval.Action.avatarAddress;
-                var slot = eval.OutputStates.GetCombinationSlotState(avatarAddress, eval.Action.slotIndex);
-                var result = (ItemEnhancement.ResultModel) slot.Result;
-                var itemUsable = result.itemUsable;
-                if (!eval.OutputStates.TryGetAvatarStateV2(agentAddress, avatarAddress, out var avatarState))
-                {
-                    return;
-                }
-
-                // NOTE: 사용한 자원에 대한 레이어 벗기기.
-                LocalLayerModifier.ModifyAgentGold(agentAddress, result.gold);
-                LocalLayerModifier.AddItem(avatarAddress, itemUsable.TradableId, itemUsable.RequiredBlockIndex, 1);
-                foreach (var tradableId in result.materialItemIdList)
-                {
-                    if (avatarState.inventory.TryGetNonFungibleItem(tradableId,
-                        out ItemUsable materialItem))
-                    {
-                        LocalLayerModifier.AddItem(avatarAddress, tradableId, materialItem.RequiredBlockIndex, 1);
-                    }
-                }
-
-                // NOTE: 메일 레이어 씌우기.
-                LocalLayerModifier.RemoveItem(avatarAddress, itemUsable.TradableId, itemUsable.RequiredBlockIndex, 1);
-                LocalLayerModifier.AddNewAttachmentMail(avatarAddress, result.id);
-
-                // NOTE: 워크샵 슬롯의 모든 휘발성 상태 변경자를 제거하기.
-                LocalLayerModifier.ResetCombinationSlot(slot);
-
-                // NOTE: 노티 예약 걸기.
-                var format = L10nManager.Localize("NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE");
-                UI.Notification.Reserve(
-                    MailType.Workshop,
-                    string.Format(format, result.itemUsable.GetLocalizedName()),
-                    slot.UnlockBlockIndex,
-                    result.itemUsable.TradableId);
-
-                UpdateAgentState(eval);
-                UpdateCurrentAvatarState(eval);
-                UpdateCombinationSlotState(slot);
-                RenderQuest(avatarAddress, avatarState.questList.completedQuestIds);
             }
         }
 

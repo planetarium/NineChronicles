@@ -206,7 +206,7 @@ namespace Nekoyume.Game.Character
             if (HudContainer != null)
             {
                 HudContainer.gameObject.SetActive(true);
-                var clone  = ResourcesHelper.GetCharacterTitle(costume.Grade, costume.GetLocalizedNonColoredName());
+                var clone  = ResourcesHelper.GetCharacterTitle(costume.Grade, costume.GetLocalizedNonColoredName(false));
                 _cachedCharacterTitle = Instantiate(clone, HudContainer.transform);
                 _cachedCharacterTitle.name = costume.Id.ToString();
                 _cachedCharacterTitle.transform.SetAsFirstSibling();
@@ -353,8 +353,11 @@ namespace Nekoyume.Game.Character
                 return;
             }
 
+            var id = weapon?.Id ?? 0;
+            var level = weapon?.level ?? 0;
+            var levelVFXPrefab = ResourcesHelper.GetAuraWeaponPrefab(id, level);
             var sprite = weapon.GetPlayerSpineTexture();
-            SpineController.UpdateWeapon(sprite);
+            SpineController.UpdateWeapon(id, sprite, levelVFXPrefab);
         }
 
         public void Equip(int armorId, int weaponId)
@@ -362,7 +365,7 @@ namespace Nekoyume.Game.Character
             var spineResourcePath = $"Character/Player/{armorId}";
             ChangeSpine(spineResourcePath);
             var sprite = SpriteHelper.GetPlayerSpineTextureWeapon(weaponId);
-            SpineController.UpdateWeapon(sprite);
+            SpineController.UpdateWeapon(weaponId, sprite);
         }
 
         #endregion
