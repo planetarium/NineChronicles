@@ -64,9 +64,13 @@ namespace Nekoyume.UI
             }
         }
 
-        public void SetCaching(int slotIndex, bool value, long requiredBlockIndex = 0, ItemUsable itemUsable = null)
+        public void SetCaching(int slotIndex,
+            bool value,
+            long requiredBlockIndex = 0,
+            CombinationSlot.SlotType slotType = CombinationSlot.SlotType.Appraise,
+            ItemUsable itemUsable = null)
         {
-            slots[slotIndex].SetCached(value, requiredBlockIndex, itemUsable);
+            slots[slotIndex].SetCached(value, requiredBlockIndex, slotType, itemUsable);
             UpdateSlots(Game.Game.instance.Agent.BlockIndex);
         }
 
