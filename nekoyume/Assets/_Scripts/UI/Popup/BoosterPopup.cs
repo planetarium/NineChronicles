@@ -126,9 +126,7 @@ namespace Nekoyume.UI
                     _ =>
                     {
                         LocalLayerModifier.ModifyAvatarActionPoint(
-                            States.Instance.CurrentAvatarState.address, Game.Game.instance
-                                .TableSheets.StageSheet.Values.FirstOrDefault(
-                                    i => i.Id == stageId).CostAP);
+                            States.Instance.CurrentAvatarState.address, GetCostOfStage());
                     }, e => ActionRenderHandler.BackToMain(false, e))
                 .AddTo(this);
         }
