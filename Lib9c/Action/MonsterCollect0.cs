@@ -12,6 +12,7 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
+    [ActionObsolete(BlockChain.BlockPolicySource.V100066ObsoleteIndex)]
     [ActionType("monster_collect")]
     public class MonsterCollect0 : GameAction
     {
@@ -28,6 +29,8 @@ namespace Nekoyume.Action
                     .SetState(context.Signer, MarkChanged)
                     .MarkBalanceChanged(GoldCurrencyMock, context.Signer, monsterCollectionAddress);
             }
+
+            CheckObsolete(BlockChain.BlockPolicySource.V100066ObsoleteIndex, context);
 
             MonsterCollectionSheet monsterCollectionSheet = states.GetSheet<MonsterCollectionSheet>();
 

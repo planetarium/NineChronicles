@@ -17,6 +17,7 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
+    [ActionObsolete(BlockChain.BlockPolicySource.V100080ObsoleteIndex)]
     [ActionType("ranking_battle5")]
     public class RankingBattle5 : GameAction
     {
@@ -47,6 +48,8 @@ namespace Nekoyume.Action
                     .SetState(worldInformationAddress, MarkChanged)
                     .SetState(questListAddress, MarkChanged);
             }
+
+            CheckObsolete(BlockChain.BlockPolicySource.V100080ObsoleteIndex, context);
 
             // Avoid InvalidBlockStateRootHashException
             if (ctx.BlockIndex == 680341 && Id.Equals(new Guid("df37dbd8-5703-4dff-918b-ad22ee4c34c6")))

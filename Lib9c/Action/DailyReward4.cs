@@ -13,6 +13,7 @@ using static Lib9c.SerializeKeys;
 namespace Nekoyume.Action
 {
     [Serializable]
+    [ActionObsolete(BlockChain.BlockPolicySource.V100068ObsoleteIndex)]
     [ActionType("daily_reward4")]
     public class DailyReward4 : GameAction
     {
@@ -36,6 +37,8 @@ namespace Nekoyume.Action
                     .SetState(questListAddress, MarkChanged)
                     .SetState(avatarAddress, MarkChanged);
             }
+
+            CheckObsolete(BlockChain.BlockPolicySource.V100068ObsoleteIndex, context);
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, avatarAddress);
 

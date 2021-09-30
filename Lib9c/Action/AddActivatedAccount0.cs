@@ -8,6 +8,7 @@ using Nekoyume.Model.State;
 namespace Nekoyume.Action
 {
     [Serializable]
+    [ActionObsolete(BlockChain.BlockPolicySource.V100066ObsoleteIndex)]
     [ActionType("add_activated_account")]
     public class AddActivatedAccount0 : ActionBase
     {
@@ -45,7 +46,7 @@ namespace Nekoyume.Action
                 throw new ActivatedAccountsDoesNotExistsException();
             }
 
-            
+            CheckObsolete(BlockChain.BlockPolicySource.V100066ObsoleteIndex, context);
             CheckPermission(context);
 
             var accounts = new ActivatedAccountsState(accountsAsDict);

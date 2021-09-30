@@ -606,6 +606,68 @@ namespace Lib9c.Tests
             Assert.False(blockChain.ContainsBlock(block3.Hash));
         }
 
+        [Theory]
+        [InlineData(199, false)]
+        [InlineData(BlockPolicySource.V100066ObsoleteIndex + 2, true)]
+        public void IsObsolete(long blockIndex, bool expected)
+        {
+            var action = new HackAndSlash7
+            {
+                costumes = new List<Guid>(),
+                equipments = new List<Guid>(),
+                foods = new List<Guid>(),
+                worldId = 1,
+                stageId = 1,
+                avatarAddress = default,
+                WeeklyArenaAddress = default,
+                RankingMapAddress = default,
+            };
+            var tx = Transaction<PolymorphicAction<ActionBase>>.Create(
+                0,
+                new PrivateKey(),
+                default,
+                new List<PolymorphicAction<ActionBase>>
+            {
+                action,
+            });
+
+            Assert.False(BlockPolicySource.IsObsolete(tx, blockIndex));
+
+            var action2 = new HackAndSlash4
+            {
+                costumes = new List<Guid>(),
+                equipments = new List<Guid>(),
+                foods = new List<Guid>(),
+                worldId = 1,
+                stageId = 1,
+                avatarAddress = default,
+                WeeklyArenaAddress = default,
+                RankingMapAddress = default,
+            };
+            var tx2 = Transaction<PolymorphicAction<ActionBase>>.Create(
+                0,
+                new PrivateKey(),
+                default,
+                new List<PolymorphicAction<ActionBase>>
+                {
+                    action2,
+                });
+
+            Assert.Equal(expected, BlockPolicySource.IsObsolete(tx2, blockIndex));
+        }
+
+        [Fact]
+        public void Obsolete_Actions()
+        {
+            Assert.Empty(Assembly.GetAssembly(typeof(ActionBase))!.GetTypes().Where(
+                type => type.Namespace is { } @namespace &&
+                        @namespace.StartsWith($"{nameof(Nekoyume)}.{nameof(Nekoyume.Action)}") &&
+                        typeof(ActionBase).IsAssignableFrom(type) &&
+                        !type.IsAbstract &&
+                        Regex.IsMatch(type.Name, @"\d+$") &&
+                        !type.IsDefined(typeof(ActionObsoleteAttribute), false)));
+        }
+
         [Fact]
         public async Task PermissionedBlockPolicy()
         {
