@@ -19,6 +19,7 @@ using Nekoyume.TableData;
 namespace Nekoyume.Action
 {
     [Serializable]
+    [ActionObsolete(BlockChain.BlockPolicySource.V100080ObsoleteIndex)]
     [ActionType("combination_equipment4")]
     public class CombinationEquipment4 : GameAction
     {
@@ -48,6 +49,8 @@ namespace Nekoyume.Action
                     .SetState(ctx.Signer, MarkChanged)
                     .MarkBalanceChanged(GoldCurrencyMock, ctx.Signer, BlacksmithAddress);
             }
+
+            CheckObsolete(BlockChain.BlockPolicySource.V100080ObsoleteIndex, context);
 
             var addressesHex = GetSignerAndOtherAddressesHex(context, AvatarAddress);
 

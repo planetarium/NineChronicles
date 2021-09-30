@@ -36,7 +36,10 @@ namespace Nekoyume.BlockChain
         // Note: The genesis block of 9c-main net weighs 11,085,640 B (11 MiB).
         public const int MaxGenesisBytes = 1024 * 1024 * 15; // 15 MiB
 
+        // FIXME: This field not used for action obsolete. Do not confuse!!!!
         public const long V100073ObsoleteIndex = 3000000;
+
+        public const long V100080ObsoleteIndex = 2448000;
 
         // FIXME: Should be finalized before release.
         public const int maxTransactionsPerSignerPerBlockV100074 = 4;
