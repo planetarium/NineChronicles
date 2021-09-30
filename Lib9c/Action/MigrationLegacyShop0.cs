@@ -10,7 +10,7 @@ using Serilog;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionObsolete(BlockChain.BlockPolicySource.V100066ObsoleteIndex)]
+    [ActionObsolete(BlockChain.BlockPolicySource.V100080ObsoleteIndex)]
     [ActionType("migration_legacy_shop")]
     public class MigrationLegacyShop0 : GameAction
     {
@@ -27,7 +27,7 @@ namespace Nekoyume.Action
                 return states.SetState(Addresses.Shop, MarkChanged);
             }
 
-            CheckObsolete(BlockChain.BlockPolicySource.V100066ObsoleteIndex, context);
+            CheckObsolete(BlockChain.BlockPolicySource.V100080ObsoleteIndex, context);
             CheckPermission(context);
 
             Log.Debug("Start Migration Legacy Shop");

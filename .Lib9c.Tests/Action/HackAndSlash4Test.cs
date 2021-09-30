@@ -778,7 +778,7 @@ namespace Lib9c.Tests.Action
                 PreviousStates = _initialState,
                 Signer = _agentAddress,
                 Random = new TestRandom(),
-                BlockIndex = BlockPolicySource.V100066ObsoleteIndex + 100000,
+                BlockIndex = BlockPolicySource.V100080ObsoleteIndex + 100000,
             }));
         }
 
