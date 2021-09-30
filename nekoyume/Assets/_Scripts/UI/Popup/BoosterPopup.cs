@@ -67,16 +67,16 @@ namespace Nekoyume.UI
 
             ReactiveAvatarState.ActionPoint.Subscribe(value =>
             {
-                var cost = GetCostOfStage();
-                apSlider.maxValue = value / cost >= MaxBoostCount ? MaxBoostCount : value / cost;
+                var costOfStage = GetCostOfStage();
+                apSlider.maxValue = value / costOfStage >= MaxBoostCount ? MaxBoostCount : value / costOfStage;
                 ownAPText.text = value.ToString();
             }).AddTo(gameObject);
 
             apSlider.onValueChanged.AddListener(value =>
             {
-                var cost = GetCostOfStage();
+                var costOfStage = GetCostOfStage();
                 boostCountText.text = value.ToString();
-                needAPText.text = (cost * value).ToString();
+                needAPText.text = (costOfStage * value).ToString();
             });
 
             var cost = GetCostOfStage();
@@ -133,9 +133,12 @@ namespace Nekoyume.UI
 
         private static int GetCostOfStage()
         {
-            return Game.Game.instance
-                .TableSheets.StageSheet.Values.FirstOrDefault(i =>
-                    i.Id == Find<WorldMap>().SelectedStageId).CostAP;
+            var selectedStageIdRow =
+                Game.Game.instance.TableSheets.StageSheet.Values.FirstOrDefault(i =>
+                    i.Id == Find<WorldMap>().SelectedStageId);
+
+            Debug.Assert(selectedStageIdRow != null, nameof(selectedStageIdRow) + " != null");
+            return selectedStageIdRow.CostAP;
         }
     }
 }
