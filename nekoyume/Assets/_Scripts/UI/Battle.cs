@@ -146,7 +146,7 @@ namespace Nekoyume.UI
                 .TableSheets.StageSheet.Values.FirstOrDefault(i =>
                     i.Id == Find<WorldMap>().SelectedStageId).CostAP);
             exitToggle.gameObject.SetActive(true);
-            boostCountText.text = $"<sprite name=UI_main_icon_star> {boostCost}";
+            boostCountText.text = $"<sprite name=UI_main_icon_star><size=75%>{boostCost}</size>";
         }
 
         public void ClearStage(int stageId, System.Action<bool> onComplete)
